@@ -1,3 +1,5 @@
+import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
+import type { Deprecated } from '@rocket.chat/rest-typings/dist/helpers/Deprecated';
 import { route } from 'preact-router';
 import { useContext } from 'preact/hooks';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
@@ -96,7 +98,13 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 		try {
 			const { _id: rid } = room;
 			const result = await Livechat.transferChat({ rid, department });
-			const { success } = result;
+			// TODO: Investigate why the api results are not returning the correct type
+			const { success } = result as Serialized<
+				Deprecated<{
+					room: IOmnichannelRoom;
+					success: boolean;
+				}>
+			>;
 			if (!success) {
 				throw t('no_available_agents_to_transfer');
 			}

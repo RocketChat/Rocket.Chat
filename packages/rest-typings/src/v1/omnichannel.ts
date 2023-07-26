@@ -3308,7 +3308,7 @@ export type OmnichannelEndpoints = {
 		POST: (params: POSTLivechatRoomCloseByUserParams) => void;
 	};
 	'/v1/livechat/room.transfer': {
-		POST: (params: POSTLivechatRoomTransferParams) => Deprecated<{ room: IOmnichannelRoom; success: boolean }>;
+		POST: (params: POSTLivechatRoomTransferParams) => Deprecated<{ room: IOmnichannelRoom }>;
 	};
 	'/v1/livechat/room.survey': {
 		POST: (params: POSTLivechatRoomSurveyParams) => { rid: string; data: unknown };
