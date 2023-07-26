@@ -8,7 +8,7 @@ import { Messages, Users } from '@rocket.chat/models';
 import { settings } from '../../../settings/server';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { updateMessage } from '../functions';
+import { updateMessage } from '../functions/updateMessage';
 
 const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg'];
 
