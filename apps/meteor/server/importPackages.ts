@@ -81,7 +81,6 @@ import '../app/search/server';
 import '../app/discussion/server';
 import '../app/mail-messages/server';
 import '../app/user-status/server';
-import '../app/utils/server';
 import '../app/metrics/server';
 import '../app/notifications/server';
 import '../app/ui-utils/server';

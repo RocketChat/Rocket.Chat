@@ -11,6 +11,9 @@ import Title from './CardTitle';
 
 export const DOUBLE_COLUMN_CARD_WIDTH = 552;
 
+/**
+ * @deprecated Avoid default usage, use named imports instead
+ */
 export default Object.assign(Card, {
 	Title,
 	Body: CardBody,

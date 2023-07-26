@@ -38,7 +38,7 @@ import { setupGitUser } from './gitUtils';
 	const mainPackagePath = path.join(cwd, 'apps', 'meteor');
 
 	if (action === 'publish-final') {
-		await publishRelease({ githubToken, exitCandidate: true, mainPackagePath });
+		await publishRelease({ githubToken, mergeFinal: true, mainPackagePath });
 	} else if (action === 'publish') {
 		await publishRelease({ githubToken, baseRef, mainPackagePath });
 	} else if (action === 'bump') {

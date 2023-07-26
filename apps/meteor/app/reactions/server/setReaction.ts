@@ -7,7 +7,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { callbacks } from '../../../lib/callbacks';
 import { emoji } from '../../emoji/server';
-import { isTheLastMessage } from '../../lib/server';
+import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
 import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';

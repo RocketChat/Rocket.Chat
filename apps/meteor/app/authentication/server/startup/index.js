@@ -20,6 +20,7 @@ import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
 import { joinDefaultChannels } from '../../../lib/server/functions/joinDefaultChannels';
 import { setAvatarFromServiceWithValidation } from '../../../lib/server/functions/setUserAvatar';
 import { i18n } from '../../../../server/lib/i18n';
+import { beforeCreateUserCallback } from '../../../../lib/callbacks/beforeCreateUserCallback';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -158,7 +159,7 @@ const getLinkedInName = ({ firstName, lastName }) => {
 };
 
 const onCreateUserAsync = async function (options, user = {}) {
-	await callbacks.run('beforeCreateUser', options, user);
+	await beforeCreateUserCallback.run(options, user);
 
 	user.status = 'offline';
 	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');

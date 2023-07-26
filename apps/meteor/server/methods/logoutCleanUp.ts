@@ -3,8 +3,8 @@ import { check } from 'meteor/check';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { callbacks } from '../../lib/callbacks';
 import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
+import { afterLogoutCleanUpCallback } from '../../lib/callbacks/afterLogoutCleanUpCallback';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -18,7 +18,7 @@ Meteor.methods<ServerMethods>({
 		check(user, Object);
 
 		setImmediate(() => {
-			void callbacks.run('afterLogoutCleanUp', user);
+			void afterLogoutCleanUpCallback.run(user);
 		});
 
 		// App IPostUserLogout event hook

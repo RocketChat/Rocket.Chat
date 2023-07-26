@@ -99,6 +99,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 					<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
 					<Box display='flex' flexDirection='row' mbs='none'>
 						<Margins inline='x4'>
+							{/* FIXME: replace to IconButton */}
 							<Button square onClick={clickUpload}>
 								<Icon name='upload' size='x20' />
 							</Button>
