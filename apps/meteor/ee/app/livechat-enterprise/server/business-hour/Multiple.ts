@@ -105,8 +105,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		if (!department.businessHourId) {
 			// If this department doesn't have a business hour, we need to apply default business hour to these agents
 			// And then reset their status based on these BH
-			const isDefaultBHActive = (await filterBusinessHoursThatMustBeOpened([defaultBusinessHour])).length > 0;
-			if (!isDefaultBHActive) {
+			const isDefaultBusinessHourActive = (await filterBusinessHoursThatMustBeOpened([defaultBusinessHour])).length > 0;
+			if (!isDefaultBusinessHourActive) {
 				bhLogger.debug('Default business hour is not active. No need to apply it to agents');
 				return options;
 			}
