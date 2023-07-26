@@ -550,7 +550,7 @@ jobs:
 
     strategy:
       matrix:
-        service: ['account', 'authorization', 'ddp-streamer', 'presence', 'stream-hub']
+        service: ['account', 'authorization', 'ddp-streamer', 'presence', 'stream-hub', 'federation']
 
     steps:
       - name: Login to DockerHub

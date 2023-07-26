@@ -178,7 +178,8 @@ jobs:
             account-service \
             ddp-streamer-service \
             presence-service \
-            stream-hub-service
+            stream-hub-service \
+            federation-service
 
       - name: Cache Playwright binaries
         if: inputs.type == 'ui'
