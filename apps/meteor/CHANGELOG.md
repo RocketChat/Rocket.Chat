@@ -1,5 +1,30 @@
 # @rocket.chat/meteor
 
+## 6.3.0-rc.8
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- 6437cdfbe0: fix: Performance issue when using api to create users
+  - @rocket.chat/core-typings@6.3.0-rc.8
+  - @rocket.chat/rest-typings@6.3.0-rc.8
+  - @rocket.chat/api-client@0.1.0-rc.8
+  - @rocket.chat/omnichannel-services@0.0.6-rc.8
+  - @rocket.chat/pdf-worker@0.0.6-rc.8
+  - @rocket.chat/presence@0.0.6-rc.8
+  - @rocket.chat/core-services@0.1.0-rc.8
+  - @rocket.chat/cron@0.0.2-rc.8
+  - @rocket.chat/gazzodown@1.0.0-rc.8
+  - @rocket.chat/model-typings@0.0.6-rc.8
+  - @rocket.chat/ui-contexts@1.0.0-rc.8
+  - @rocket.chat/fuselage-ui-kit@1.0.0-rc.8
+  - @rocket.chat/models@0.0.6-rc.8
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.0-rc.8
+  - @rocket.chat/ui-video-conf@1.0.0-rc.8
+  - @rocket.chat/web-ui-registration@1.0.0-rc.8
+  - @rocket.chat/instance-status@0.0.6-rc.8
+
 ## 6.3.0-rc.7
 
 ### Patch Changes
