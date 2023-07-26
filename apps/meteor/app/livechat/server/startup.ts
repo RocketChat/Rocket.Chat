@@ -15,15 +15,15 @@ import { Livechat } from './lib/Livechat';
 import { RoutingManager } from './lib/RoutingManager';
 import './roomAccessValidator.internalService';
 import { i18n } from '../../../server/lib/i18n';
+import { beforeLeaveRoomCallback } from '../../../lib/callbacks/beforeLeaveRoomCallback';
 
 Meteor.startup(async () => {
 	roomCoordinator.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
 
-	callbacks.add(
-		'beforeLeaveRoom',
+	beforeLeaveRoomCallback.add(
 		function (user, room) {
 			if (!isOmnichannelRoom(room)) {
-				return user;
+				return;
 			}
 			throw new Meteor.Error(
 				i18n.t('You_cant_leave_a_livechat_room_Please_use_the_close_button', {
