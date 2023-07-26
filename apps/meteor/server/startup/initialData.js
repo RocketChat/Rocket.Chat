@@ -1,18 +1,18 @@
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import { Settings, Rooms, Users } from '@rocket.chat/models';
 import colors from 'colors/safe';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
-import { RocketChatFile } from '../../app/file/server';
-import { FileUpload } from '../../app/file-upload/server';
 import { getUsersInRole } from '../../app/authorization/server';
-import { addUserRolesAsync } from '../lib/roles/addUserRoles';
-import { settings } from '../../app/settings/server';
+import { FileUpload } from '../../app/file-upload/server';
+import { RocketChatFile } from '../../app/file/server';
 import { addUserToDefaultChannels } from '../../app/lib/server/functions/addUserToDefaultChannels';
 import { checkUsernameAvailability } from '../../app/lib/server/functions/checkUsernameAvailability';
+import { settings } from '../../app/settings/server';
 import { validateEmail } from '../../lib/emailValidator';
+import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 
-Meteor.startup(async function () {
+Meteor.startup(async () => {
 	if (!settings.get('Initial_Channel_Created')) {
 		const exists = await Rooms.findOneById('GENERAL', { projection: { _id: 1 } });
 		if (!exists) {

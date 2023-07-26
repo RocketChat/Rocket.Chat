@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { isPOSTCannedResponsesProps, isDELETECannedResponsesProps, isCannedResponsesProps } from '@rocket.chat/rest-typings';
 import type { ILivechatDepartment, IOmnichannelCannedResponse, IUser } from '@rocket.chat/core-typings';
+import { isPOSTCannedResponsesProps, isDELETECannedResponsesProps, isCannedResponsesProps } from '@rocket.chat/rest-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
+import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../app/api/server';
-import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from './lib/canned-responses';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
+import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from './lib/canned-responses';
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

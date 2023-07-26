@@ -1,10 +1,10 @@
-import { useMemo, lazy, useEffect } from 'react';
-import { useSetting } from '@rocket.chat/ui-contexts';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { useSetting } from '@rocket.chat/ui-contexts';
+import { useMemo, lazy, useEffect } from 'react';
 
-import OTR from './OTR';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
+import OTR from './OTR';
 
 const template = lazy(() => import('../../../client/views/room/contextualBar/OTR'));
 

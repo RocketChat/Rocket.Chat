@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { LivechatDepartment } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
