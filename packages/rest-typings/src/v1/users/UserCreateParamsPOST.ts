@@ -21,7 +21,7 @@ export type UserCreateParamsPOST = {
 	verified?: boolean;
 	customFields?: object;
 	/* @deprecated */
-	fields: string;
+	fields?: string;
 };
 
 const userCreateParamsPostSchema = {

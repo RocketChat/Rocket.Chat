@@ -9,12 +9,12 @@ import { Controller, useFormState, get } from 'react-hook-form';
 
 type CustomFieldFormProps<T extends FieldValues> = {
 	metadata: CustomFieldMetadata[];
-	formControl: Control<T>;
+	formControl?: Control<T>;
 	formName: string;
 };
 
 type CustomFieldProps<T extends FieldValues> = Omit<CustomFieldMetadata, 'name'> & {
-	control: Control<T>;
+	control?: Control<T>;
 	name: string;
 };
 
