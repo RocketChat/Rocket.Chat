@@ -1,7 +1,7 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, hashQueryKey } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
@@ -52,6 +52,9 @@ const CallTable = () => {
 	const getVoipRooms = useEndpoint('GET', '/v1/voip/rooms');
 	const { data, isSuccess, isLoading } = useQuery(['voip-rooms', query], async () => getVoipRooms(query));
 
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell key='fname' direction={sortDirection} active={sortBy === 'fname'} onClick={setSort} sort='fname' w='x400'>
@@ -92,7 +95,7 @@ const CallTable = () => {
 
 	return (
 		<>
-			<FilterByText onChange={({ text }) => setText(text)} />
+			{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }) => setText(text)} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -101,7 +104,16 @@ const CallTable = () => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data?.rooms.length === 0 && <GenericNoResults />}
+			{isSuccess && data?.rooms.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data?.rooms.length === 0 && !queryHasChanged && (
+				<GenericNoResults
+					icon='phone'
+					title={t('No_calls_yet')}
+					description={t('No_calls_yet_description')}
+					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkText={t('Learn_more_about_voice_channel')}
+				/>
+			)}
 			{isSuccess && data?.rooms.length > 0 && (
 				<>
 					<GenericTable>
