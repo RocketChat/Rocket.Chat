@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
-import { MessageAction } from '../../ui-utils/client';
-import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
+import { messageArgs } from '../../../client/lib/utils/messageArgs';
+import { MessageAction } from '../../ui-utils/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	MessageAction.addButton({
 		id: 'reaction-message',
 		icon: 'add-reaction',
@@ -39,7 +39,7 @@ Meteor.startup(function () {
 
 			return true;
 		},
-		order: -2,
+		order: -3,
 		group: ['message', 'menu'],
 	});
 });

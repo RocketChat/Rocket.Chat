@@ -1,4 +1,17 @@
 import type {
+	IOmnichannelRoom,
+	RocketChatRecordDeleted,
+	IOmnichannelRoomClosingInfo,
+	DeepWritable,
+	ISetting,
+	IMessage,
+	ILivechatPriority,
+	IOmnichannelServiceLevelAgreements,
+} from '@rocket.chat/core-typings';
+import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import { Settings } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type {
 	Db,
 	Collection,
 	IndexDescription,
@@ -10,23 +23,10 @@ import type {
 	FindCursor,
 	UpdateResult,
 } from 'mongodb';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Settings } from '@rocket.chat/models';
-import type {
-	IOmnichannelRoom,
-	RocketChatRecordDeleted,
-	IOmnichannelRoomClosingInfo,
-	DeepWritable,
-	ISetting,
-	IMessage,
-	ILivechatPriority,
-	IOmnichannelServiceLevelAgreements,
-} from '@rocket.chat/core-typings';
-import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 
-import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { BaseRaw } from './BaseRaw';
 
 /**
  * @extends BaseRaw<ILivechatRoom>
@@ -2044,13 +2044,13 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					'metrics.response.ft': analyticsData.firstResponseTime,
 				}),
 			},
-			$inc: {
-				...(analyticsData && {
+			...(analyticsData && {
+				$inc: {
 					'metrics.response.total': 1,
 					'metrics.response.tt': analyticsData.responseTime as number,
 					'metrics.reaction.tt': analyticsData.reactionTime as number,
-				}),
-			},
+				},
+			}),
 		};
 
 		// livechat analytics : update last message timestamps

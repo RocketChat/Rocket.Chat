@@ -1,7 +1,7 @@
 import { Messages, Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { deleteRoom } from '../../../lib/server';
+import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 
 /**
  * We need to propagate the writing of new message in a discussion to the linking
@@ -9,7 +9,7 @@ import { deleteRoom } from '../../../lib/server';
  */
 callbacks.add(
 	'afterSaveMessage',
-	async function (message, { _id, prid }) {
+	async (message, { _id, prid }) => {
 		if (!prid) {
 			return message;
 		}
@@ -35,7 +35,7 @@ callbacks.add(
 
 callbacks.add(
 	'afterDeleteMessage',
-	async function (message, { _id, prid }) {
+	async (message, { _id, prid }) => {
 		if (prid) {
 			const room = await Rooms.findOneById(_id, {
 				projection: {

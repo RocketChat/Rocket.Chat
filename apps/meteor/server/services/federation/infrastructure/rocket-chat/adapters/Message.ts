@@ -2,13 +2,15 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
-import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../converters/to-external-parser-formatter';
-import type { FederatedUser } from '../../../domain/FederatedUser';
-import type { FederatedRoom } from '../../../domain/FederatedRoom';
-import { deleteMessage, sendMessage, updateMessage } from '../../../../../../app/lib/server';
-import { getURL } from '../../../../../../app/utils/server';
-import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
+import { deleteMessage } from '../../../../../../app/lib/server/functions/deleteMessage';
+import { sendMessage } from '../../../../../../app/lib/server/functions/sendMessage';
+import { updateMessage } from '../../../../../../app/lib/server/functions/updateMessage';
 import { executeSetReaction } from '../../../../../../app/reactions/server/setReaction';
+import { getURL } from '../../../../../../app/utils/server/getURL';
+import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
+import type { FederatedRoom } from '../../../domain/FederatedRoom';
+import type { FederatedUser } from '../../../domain/FederatedUser';
+import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../converters/to-external-parser-formatter';
 
 const DEFAULT_EMOJI_TO_REACT_WHEN_RECEIVED_EMOJI_DOES_NOT_EXIST = ':grey_question:';
 

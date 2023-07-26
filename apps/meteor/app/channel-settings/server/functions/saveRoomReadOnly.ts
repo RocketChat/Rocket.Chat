@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
-import { Rooms } from '@rocket.chat/models';
-import type { IUser } from '@rocket.chat/core-typings';
 import { Message } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
+import { Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 export async function saveRoomReadOnly(
 	rid: string,

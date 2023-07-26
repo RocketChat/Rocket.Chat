@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Subscriptions, Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 type UserPreferences = {
 	language: string;
@@ -36,6 +36,7 @@ type UserPreferences = {
 	dontAskAgainList: { action: string; label: string }[];
 	themeAppearence: 'auto' | 'light' | 'dark';
 	receiveLoginDetectionEmail: boolean;
+	notifyCalendarEvents: boolean;
 };
 
 declare module '@rocket.chat/ui-contexts' {
@@ -78,6 +79,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		muteFocusedConversations: Match.Optional(Boolean),
 		omnichannelTranscriptEmail: Match.Optional(Boolean),
 		omnichannelTranscriptPDF: Match.Optional(Boolean),
+		notifyCalendarEvents: Match.Optional(Boolean),
 	};
 	check(settings, Match.ObjectIncluding(keys));
 	const user = await Users.findOneById(userId);

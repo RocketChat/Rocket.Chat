@@ -1,8 +1,11 @@
-import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+import { throttle } from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
+import { i18n } from '../../../server/lib/i18n';
+import { validateUserRoles } from '../../app/authorization/server/validateUserRoles';
 import { canAddNewUser, getMaxActiveUsers, onValidateLicenses } from '../../app/license/server/license';
 import {
 	createSeatsLimitBanners,
@@ -11,8 +14,6 @@ import {
 	enableDangerBanner,
 	enableWarningBanner,
 } from '../../app/license/server/maxSeatsBanners';
-import { validateUserRoles } from '../../app/authorization/server/validateUserRoles';
-import { i18n } from '../../../server/lib/i18n';
 
 callbacks.add(
 	'onCreateUser',
@@ -79,7 +80,7 @@ callbacks.add(
 	'check-max-user-seats',
 );
 
-async function handleMaxSeatsBanners() {
+const handleMaxSeatsBanners = throttle(async function _handleMaxSeatsBanners() {
 	const maxActiveUsers = getMaxActiveUsers();
 
 	if (!maxActiveUsers) {
@@ -106,7 +107,7 @@ async function handleMaxSeatsBanners() {
 	} else {
 		await enableDangerBanner();
 	}
-}
+}, 10000);
 
 callbacks.add('afterCreateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 

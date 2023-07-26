@@ -1,13 +1,13 @@
-import { useMemo, lazy } from 'react';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUser, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { useMemo, lazy } from 'react';
 
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../client/contexts/VideoConfContext';
-import type { ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
-import { addAction } from '../../../client/views/room/lib/Toolbox';
 import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 import { useVideoConfWarning } from '../../../client/views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
+import type { ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
+import { addAction } from '../../../client/views/room/lib/Toolbox';
 import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
 
 addAction('calls', ({ room }) => {
@@ -44,6 +44,7 @@ addAction('start-call', ({ room }) => {
 	const isRinging = useVideoConfIsRinging();
 	const federated = isRoomFederated(room);
 	const canPostReadOnly = usePermission('post-readonly', room._id);
+	const canStartCall = usePermission('call-management', room._id);
 
 	const ownUser = room.uids && room.uids.length === 1;
 
@@ -57,7 +58,7 @@ addAction('start-call', ({ room }) => {
 	const live = room?.streamingOptions && room.streamingOptions.type === 'call';
 	const enabled = enabledDMs || enabledChannel || enabledTeams || enabledGroups || enabledLiveChat;
 
-	const enableOption = enabled && (!user?.username || !room.muted?.includes(user.username));
+	const enableOption = enabled && canStartCall && (!user?.username || !room.muted?.includes(user.username));
 
 	const groups = useStableArray(
 		[

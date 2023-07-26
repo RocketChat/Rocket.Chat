@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -159,6 +158,7 @@ const MessageBox = ({
 	const handleSendMessage = useMutableCallback(() => {
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
+		clearPopup();
 
 		onSend?.({
 			value: text,
@@ -334,6 +334,7 @@ const MessageBox = ({
 		commandsRef,
 		callbackRef: c,
 		filter,
+		clearPopup,
 	} = useComposerBoxPopup<{ _id: string; sort?: number }>({
 		configurations: composerPopupConfig,
 	});

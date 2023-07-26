@@ -1,19 +1,19 @@
 import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken, UserStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
+import type { UsersSendConfirmationEmailParamsPOST } from '..';
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
 import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
-import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
 import type { UserDeactivateIdleParamsPOST } from './users/UserDeactivateIdleParamsPOST';
 import type { UserLogoutParamsPOST } from './users/UserLogoutParamsPOST';
 import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
-import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
+import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../helpers/PaginatedResult';
-import type { UsersSendConfirmationEmailParamsPOST } from '..';
+import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
 
 const ajv = new Ajv({
 	coerceTypes: true,

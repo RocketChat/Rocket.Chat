@@ -1,18 +1,18 @@
-import { ServiceClass } from '@rocket.chat/core-services';
-import type { AppsEngineAppResult, IAppsEngineService } from '@rocket.chat/core-services';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { AppsEngineAppResult, IAppsEngineService } from '@rocket.chat/core-services';
+import { ServiceClass } from '@rocket.chat/core-services';
 import type { Db } from 'mongodb';
-import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps, AppEvents } from '../orchestrator';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { OrchestratorFactory } from './orchestratorFactory';
 import { transformProxiedAppToAppResult } from './lib/transformProxiedAppToAppResult';
+import { OrchestratorFactory } from './orchestratorFactory';
 
 export class AppsEngineService extends ServiceClass implements IAppsEngineService {
 	protected name = 'apps-engine';
@@ -31,7 +31,7 @@ export class AppsEngineService extends ServiceClass implements IAppsEngineServic
 		return this.apps.load();
 	}
 
-	async isInitialized(): Promise<boolean> {
+	isInitialized(): boolean {
 		return Apps.isInitialized();
 	}
 

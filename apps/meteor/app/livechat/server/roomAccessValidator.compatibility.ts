@@ -1,8 +1,8 @@
 import type { IUser, ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
-import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
 import { RoutingManager } from './lib/RoutingManager';
 
 type OmnichannelRoomAccessValidator = (
@@ -35,7 +35,7 @@ export const validators: OmnichannelRoomAccessValidator[] = [
 			}
 		}
 
-		return extraData?.visitorToken && room.v && room.v.token === extraData.visitorToken;
+		return extraData?.visitorToken && room.v && room.v.token === extraData.visitorToken && room.open === true;
 	},
 	async function (room, user) {
 		if (!user?._id) {

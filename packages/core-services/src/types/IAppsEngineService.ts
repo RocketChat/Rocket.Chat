@@ -1,9 +1,8 @@
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
-import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-// import { AppLicenseValidationResult } from '@rocket.chat/apps-engine/server/marketplace/license';
+import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
 export type AppsEngineAppResult = {
 	appId: string;

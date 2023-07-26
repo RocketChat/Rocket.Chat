@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials, message } from '../../data/api-data.js';
-import { password } from '../../data/user';
-import { createRoom } from '../../data/rooms.helper.js';
 import { sendSimpleMessage, deleteMessage, pinMessage } from '../../data/chat.helper.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { createRoom } from '../../data/rooms.helper.js';
+import { password } from '../../data/user';
 import { createUser, login } from '../../data/users.helper';
 
 describe('[Chat]', function () {

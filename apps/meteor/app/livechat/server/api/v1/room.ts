@@ -1,9 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { Random } from '@rocket.chat/random';
 import type { ILivechatAgent, IOmnichannelRoom, IUser, SelectedAgent } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Subscriptions, Messages } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 import {
 	isLiveChatRoomForwardProps,
 	isPOSTLivechatRoomCloseParams,
@@ -14,21 +12,23 @@ import {
 	isLiveChatRoomSaveInfoProps,
 	isPOSTLivechatRoomCloseByUserParams,
 } from '@rocket.chat/rest-typings';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { settings as rcSettings } from '../../../../settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
+import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
-import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
-import { Livechat } from '../../lib/Livechat';
-import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { normalizeTransferredByData } from '../../lib/Helper';
-import { findVisitorInfo } from '../lib/visitors';
+import { isWidget } from '../../../../api/server/helpers/isWidget';
 import { canAccessRoomAsync } from '../../../../authorization/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { addUserToRoom } from '../../../../lib/server/functions';
-import { callbacks } from '../../../../../lib/callbacks';
+import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
+import { settings as rcSettings } from '../../../../settings/server';
+import { normalizeTransferredByData } from '../../lib/Helper';
+import { Livechat } from '../../lib/Livechat';
 import type { CloseRoomParams } from '../../lib/LivechatTyped';
-import { isWidget } from '../../../../api/server/helpers/isWidget';
-import { i18n } from '../../../../../server/lib/i18n';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
+import { findVisitorInfo } from '../lib/visitors';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: true }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 

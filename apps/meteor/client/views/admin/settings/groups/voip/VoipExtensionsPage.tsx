@@ -89,7 +89,7 @@ const VoipExtensionsPage = () => {
 									<GenericTableCell withTruncatedText>
 										{username ? (
 											<Box display='flex' alignItems='center'>
-												<UserAvatar size={'x28'} username={username} />
+												<UserAvatar size='x28' username={username} />
 												<Box display='flex' mi='x8'>
 													<Box display='flex' flexDirection='column' alignSelf='center'>
 														<Box fontScale='p2m' color='default'>

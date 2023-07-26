@@ -1,6 +1,6 @@
-import { useMemo, lazy } from 'react';
-import { usePermission } from '@rocket.chat/ui-contexts';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { usePermission } from '@rocket.chat/ui-contexts';
+import { useMemo, lazy } from 'react';
 
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
 

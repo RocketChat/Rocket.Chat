@@ -1,4 +1,4 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -19,8 +19,7 @@ const EmailInboxPage = (): ReactElement => {
 			<Page>
 				<Page.Header title={t('Email_Inboxes')}>
 					{context && (
-						<Button onClick={(): void => emailInboxRoute.push({})}>
-							<Icon name='back' />
+						<Button icon='back' onClick={(): void => emailInboxRoute.push({})}>
 							{t('Back')}
 						</Button>
 					)}
