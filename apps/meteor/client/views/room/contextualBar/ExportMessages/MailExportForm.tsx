@@ -66,10 +66,16 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 	const roomsExport = useEndpoint('POST', '/v1/rooms.export');
 
 	const handleSubmit = async (): Promise<void> => {
-		if (toUsers.length === 0 && additionalEmails === '') {
+		if (!toUsers.length && !additionalEmails) {
 			setErrorMessage(t('Mail_Message_Missing_to'));
 			return;
 		}
+
+		if (!subject.trim()) {
+			setErrorMessage(t('Mail_Message_Missing_subject'));
+			return;
+		}
+
 		if (additionalEmails !== '' && !validateEmail(additionalEmails)) {
 			setErrorMessage(t('Mail_Message_Invalid_emails', additionalEmails));
 			return;

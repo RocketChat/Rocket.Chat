@@ -1,8 +1,9 @@
 import type { IMessage, IRoom, IUser, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../helpers/PaginatedResult';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { RoomsExportProps } from './RoomsExportProps';
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -167,77 +168,6 @@ const RoomsCreateDiscussionSchema = {
 };
 
 export const isRoomsCreateDiscussionProps = ajv.compile<RoomsCreateDiscussionProps>(RoomsCreateDiscussionSchema);
-
-type RoomsExportProps = {
-	rid: IRoom['_id'];
-	type: 'email' | 'file';
-	toUsers?: IUser['username'][];
-	toEmails?: string[];
-	additionalEmails?: string;
-	subject?: string;
-	messages?: IMessage['_id'][];
-	dateFrom?: string;
-	dateTo?: string;
-	format?: 'html' | 'json';
-};
-
-const RoomsExportSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-		},
-		type: {
-			type: 'string',
-			nullable: true,
-		},
-		toUsers: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			nullable: true,
-		},
-		toEmails: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			nullable: true,
-		},
-		additionalEmails: {
-			type: 'string',
-			nullable: true,
-		},
-		subject: {
-			type: 'string',
-			nullable: true,
-		},
-		messages: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			nullable: true,
-		},
-		dateFrom: {
-			type: 'string',
-			nullable: true,
-		},
-		dateTo: {
-			type: 'string',
-			nullable: true,
-		},
-		format: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: ['rid'],
-	additionalProperties: false,
-};
-
-export const isRoomsExportProps = ajv.compile<RoomsExportProps>(RoomsExportSchema);
 
 type RoomsAdminRoomsProps = PaginatedRequest<{
 	filter?: string;
