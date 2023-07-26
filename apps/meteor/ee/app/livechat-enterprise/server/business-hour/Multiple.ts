@@ -118,11 +118,16 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		}
 
 		// This department has a business hour, so we need to
-		// 1. Remove default business hour from these agents if they have it
+		// 1. Attempt to remove default business hour from agents who were not part of any department before being added to this one
 		// 2. Add this department's business hour to these agents
 		// 3. Update their status based on these BH
-		await removeBusinessHourByAgentIds(agentsId, defaultBusinessHour._id);
 
+		// step 1
+		const agentsStillConnectedToDefaultBh = await LivechatDepartmentAgents.findAgentsConnectedToDefaultBusinessHour(agentsId, departmentId);
+		const agentsNoLongerConnectedToAnyDepartmentB4 = agentsId.filter((agentId) => !agentsStillConnectedToDefaultBh.includes(agentId));
+		await removeBusinessHourByAgentIds(agentsNoLongerConnectedToAnyDepartmentB4, defaultBusinessHour._id);
+
+		// step 2 and 3
 		const businessHour = await this.BusinessHourRepository.findOneById(department.businessHourId);
 		if (!businessHour) {
 			return options;
