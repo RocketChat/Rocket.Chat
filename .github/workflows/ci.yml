@@ -262,6 +262,32 @@ jobs:
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
 
+  test-load:
+    runs-on: ubuntu-20.04
+
+    name: Load Tests
+    needs: [checks, build, release-versions]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache-modules: true
+          install: true
+
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+      - name: Unit Test
+        run: yarn build --filter=@rocket.chat/performance-scripts
+
+      - name: Run local k6 test
+        uses: grafana/k6-action@v0.2.0
+        with:
+          filename: packages/performance-scripts/dist/index.test.js
+
   test-api-ee:
     name: 🔨 Test API (EE)
     needs: [checks, build, release-versions]
