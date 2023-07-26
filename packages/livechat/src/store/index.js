@@ -54,7 +54,6 @@ export const store = new Store(initialState(), { dontPersist });
 
 if (process.env.NODE_ENV === 'development') {
 	store.on('change', ([, , partialState]) => {
-		// eslint-disable-next-line no-console
 		console.log('%cstore.setState %c%o', 'color: blue', 'color: initial', partialState);
 	});
 }

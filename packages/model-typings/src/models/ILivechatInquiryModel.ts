@@ -1,10 +1,10 @@
-import type { FindOptions, DistinctOptions, Document, UpdateResult, DeleteResult, FindCursor } from 'mongodb';
 import type {
 	IMessage,
 	ILivechatInquiryRecord,
 	LivechatInquiryStatus,
 	OmnichannelSortingMechanismSettingType,
 } from '@rocket.chat/core-typings';
+import type { FindOptions, DistinctOptions, Document, UpdateResult, DeleteResult, FindCursor } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 

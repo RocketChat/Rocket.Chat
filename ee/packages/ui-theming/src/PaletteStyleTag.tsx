@@ -3,11 +3,11 @@ import { createPortal } from 'react-dom';
 
 import { convertToCss } from './helpers/convertToCss';
 import { filterOnlyChangedColors } from './helpers/filterOnlyChangedColors';
+import { useCreateStyleContainer } from './hooks/useCreateStyleContainer';
+import { useThemeMode } from './hooks/useThemeMode';
 import { defaultPalette } from './palette';
 import { darkPalette } from './paletteDark';
 import { paletteHighContrast } from './paletteHighContrast';
-import { useThemeMode } from './hooks/useThemeMode';
-import { useCreateStyleContainer } from './hooks/useCreateStyleContainer';
 
 export const PaletteStyleTag = memo(function PaletteStyleTag() {
 	const [, , theme] = useThemeMode();

@@ -1,5 +1,5 @@
-import type { FindCursor, FindOptions, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 import type { ICustomUserStatus } from '@rocket.chat/core-typings';
+import type { FindCursor, FindOptions, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 
 import type { IBaseModel, InsertionModel } from './IBaseModel';
 

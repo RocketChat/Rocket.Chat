@@ -1,7 +1,7 @@
 import type { ILivechatDepartment, RocketChatRecordDeleted, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
-import type { Collection, DeleteResult, Document, Filter, FindCursor, FindOptions, UpdateFilter, UpdateResult, Db } from 'mongodb';
 import { LivechatUnit } from '@rocket.chat/models';
+import type { Collection, DeleteResult, Document, Filter, FindCursor, FindOptions, UpdateFilter, UpdateResult, Db } from 'mongodb';
 
 import { LivechatDepartmentRaw } from '../../../../server/models/raw/LivechatDepartment';
 
