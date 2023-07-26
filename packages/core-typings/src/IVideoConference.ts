@@ -1,8 +1,8 @@
-import type { AtLeast } from './utils';
+import type { IMessage } from './IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRoom } from './IRoom';
 import type { IUser } from './IUser';
-import type { IMessage } from './IMessage';
+import type { AtLeast } from './utils';
 
 export enum VideoConferenceStatus {
 	CALLING = 0,

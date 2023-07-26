@@ -27,7 +27,7 @@ describe('[OAuth Server]', function () {
 	});
 
 	describe('[/oauth-apps.create]', () => {
-		it('should create the oauth app', async function () {
+		it('should create the oauth app', async () => {
 			const data = {
 				name: 'api-test',
 				redirectUri: 'http://test.com,http://asd.com',
@@ -55,7 +55,7 @@ describe('[OAuth Server]', function () {
 				});
 		});
 
-		it('should authorize oauth to retrieve code', async function () {
+		it('should authorize oauth to retrieve code', async () => {
 			const params = new URLSearchParams({
 				scope: 'user',
 				response_type: 'token,code',
@@ -84,7 +84,7 @@ describe('[OAuth Server]', function () {
 				});
 		});
 
-		it('should use code to retrieve access_token', async function () {
+		it('should use code to retrieve access_token', async () => {
 			await request
 				.post(`/oauth/token`)
 				.type('form')
@@ -107,7 +107,7 @@ describe('[OAuth Server]', function () {
 				});
 		});
 
-		it('should be able to refresh the access_token', async function () {
+		it('should be able to refresh the access_token', async () => {
 			await request
 				.post(`/oauth/token`)
 				.type('form')
@@ -128,11 +128,11 @@ describe('[OAuth Server]', function () {
 				});
 		});
 
-		it('should not be able to get user info with old access_token', async function () {
+		it('should not be able to get user info with old access_token', async () => {
 			await request.get(`/oauth/userinfo`).auth(accessToken, { type: 'bearer' }).expect(401);
 		});
 
-		it('should be able to get user info with refreshed access_token', async function () {
+		it('should be able to get user info with refreshed access_token', async () => {
 			await request
 				.get(`/oauth/userinfo`)
 				.auth(refreshedAccessToken, { type: 'bearer' })

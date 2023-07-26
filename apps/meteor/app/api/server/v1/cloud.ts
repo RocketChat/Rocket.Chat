@@ -1,13 +1,13 @@
 import { check } from 'meteor/check';
 
-import { API } from '../api';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { saveRegistrationData } from '../../../cloud/server/functions/saveRegistrationData';
-import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
-import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
-import { registerPreIntentWorkspaceWizard } from '../../../cloud/server/functions/registerPreIntentWorkspaceWizard';
 import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirmationPoll';
+import { registerPreIntentWorkspaceWizard } from '../../../cloud/server/functions/registerPreIntentWorkspaceWizard';
+import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
+import { saveRegistrationData } from '../../../cloud/server/functions/saveRegistrationData';
+import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'cloud.manualRegister',

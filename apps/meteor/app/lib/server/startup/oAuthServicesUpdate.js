@@ -138,11 +138,11 @@ async function OAuthServicesRemove(_id) {
 	});
 }
 
-settings.watchByRegex(/^Accounts_OAuth_.+/, function () {
+settings.watchByRegex(/^Accounts_OAuth_.+/, () => {
 	return OAuthServicesUpdate(); // eslint-disable-line new-cap
 });
 
-settings.watchByRegex(/^Accounts_OAuth_Custom-[a-z0-9_]+/, function (key, value) {
+settings.watchByRegex(/^Accounts_OAuth_Custom-[a-z0-9_]+/, (key, value) => {
 	if (!value) {
 		return OAuthServicesRemove(key); // eslint-disable-line new-cap
 	}

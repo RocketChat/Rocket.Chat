@@ -1,13 +1,13 @@
 import { CronTime } from 'cron';
+import date from 'date.js';
 import debugInitializer from 'debug';
 import humanInterval from 'human-interval';
 import moment from 'moment-timezone';
-import date from 'date.js';
 
-import { noCallback } from './lib/noCallback';
-import { parsePriority } from './lib/parsePriority';
 import type { Agenda, RepeatOptions } from './Agenda';
 import type { IJob, IJobAttributes } from './definition/IJob';
+import { noCallback } from './lib/noCallback';
+import { parsePriority } from './lib/parsePriority';
 
 const debug = debugInitializer('agenda:job');
 

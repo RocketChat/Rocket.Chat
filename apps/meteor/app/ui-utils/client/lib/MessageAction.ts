@@ -1,17 +1,17 @@
-import type { ContextType } from 'react';
+import type { IMessage, IUser, ISubscription, IRoom, SettingValue, Serialized, ITranslatedMessage } from '@rocket.chat/core-typings';
+import type { Keys as IconName } from '@rocket.chat/icons';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import type { IMessage, IUser, ISubscription, IRoom, SettingValue, Serialized, ITranslatedMessage } from '@rocket.chat/core-typings';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { Keys as IconName } from '@rocket.chat/icons';
+import type { ContextType } from 'react';
 
-import { Messages, ChatRoom, Subscriptions } from '../../../models/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
-import type { ToolboxContextValue } from '../../../../client/views/room/contexts/ToolboxContext';
-import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
 import type { AutoTranslateOptions } from '../../../../client/views/room/MessageList/hooks/useAutoTranslate';
+import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
+import type { ToolboxContextValue } from '../../../../client/views/room/contexts/ToolboxContext';
+import { Messages, ChatRoom, Subscriptions } from '../../../models/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> => {
@@ -157,7 +157,7 @@ export const MessageAction = new (class {
 	}
 
 	getButtonsByGroup = mem(
-		function (group: MessageActionGroup, arr: MessageActionConfigList = MessageAction._getButtons()): MessageActionConfigList {
+		(group: MessageActionGroup, arr: MessageActionConfigList = MessageAction._getButtons()): MessageActionConfigList => {
 			return arr.filter((button) => !button.group || (Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
 		},
 		{ maxAge: 1000 },

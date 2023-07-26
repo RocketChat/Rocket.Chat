@@ -1,11 +1,11 @@
-import EJSON from 'ejson';
 import { FederationRoomEvents } from '@rocket.chat/models';
+import EJSON from 'ejson';
 
 import { API } from '../../../api/server';
-import { serverLogger } from '../lib/logger';
+import { dispatchEvents } from '../handler';
 import { decryptIfNeeded } from '../lib/crypt';
 import { isFederationEnabled } from '../lib/isFederationEnabled';
-import { dispatchEvents } from '../handler';
+import { serverLogger } from '../lib/logger';
 
 API.v1.addRoute(
 	'federation.events.requestFromLatest',

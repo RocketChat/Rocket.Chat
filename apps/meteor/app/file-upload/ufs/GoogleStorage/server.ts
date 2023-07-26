@@ -1,12 +1,12 @@
-import { check } from 'meteor/check';
-import { Random } from '@rocket.chat/random';
 import type { GetSignedUrlConfig } from '@google-cloud/storage';
 import { Storage } from '@google-cloud/storage';
-import type { OptionalId } from 'mongodb';
 import type { IUpload } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
+import { check } from 'meteor/check';
+import type { OptionalId } from 'mongodb';
 
-import { UploadFS } from '../../../../server/ufs';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { UploadFS } from '../../../../server/ufs';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
 
 type GStoreOptions = StoreOptions & {
