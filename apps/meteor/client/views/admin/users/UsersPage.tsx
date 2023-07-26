@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { usePermission, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useRef } from 'react';
@@ -60,13 +60,13 @@ const UsersPage = (): ReactElement => {
 					) : (
 						<ButtonGroup>
 							{canCreateUser && (
-								<Button onClick={handleNewUser}>
-									<Icon size='x20' name='user-plus' /> {t('New')}
+								<Button icon='user-plus' onClick={handleNewUser}>
+									{t('New')}
 								</Button>
 							)}
 							{canBulkCreateUser && (
-								<Button onClick={handleInviteUser}>
-									<Icon size='x20' name='mail' /> {t('Invite')}
+								<Button icon='mail' onClick={handleInviteUser}>
+									{t('Invite')}
 								</Button>
 							)}
 						</ButtonGroup>

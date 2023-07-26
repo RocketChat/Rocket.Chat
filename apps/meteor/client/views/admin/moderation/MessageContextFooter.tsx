@@ -1,4 +1,4 @@
-import { Button, Icon, Menu, Option, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, Menu, Option, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import type { FC } from 'react';
@@ -14,8 +14,15 @@ const MessageContextFooter: FC<{ userId: string }> = ({ userId }) => {
 
 	return (
 		<ButtonGroup flexGrow={1}>
-			<Button flexGrow={1} onClick={action} title={t('delete-message')} aria-label={t('Moderation_Delete_all_messages')} danger>
-				<Icon name='trash' /> {t('Moderation_Delete_all_messages')}
+			<Button
+				icon='trash'
+				flexGrow={1}
+				onClick={action}
+				title={t('delete-message')}
+				aria-label={t('Moderation_Delete_all_messages')}
+				danger
+			>
+				{t('Moderation_Delete_all_messages')}
 			</Button>
 
 			<Menu

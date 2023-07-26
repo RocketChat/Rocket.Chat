@@ -1,23 +1,30 @@
 import moment from 'moment-timezone';
+import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/model-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 import type { UpdateFilter } from 'mongodb';
 
 import type { IWorkHoursCronJobsWrapper } from '../../../../server/models/raw/LivechatBusinessHours';
+import { businessHourLogger } from '../lib/logger';
+import { filterBusinessHoursThatMustBeOpened } from './Helper';
 
 export interface IBusinessHourBehavior {
 	findHoursToCreateJobs(): Promise<IWorkHoursCronJobsWrapper[]>;
 	openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
 	closeBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
 	onDisableBusinessHours(): Promise<void>;
-	onAddAgentToDepartment(options?: Record<string, any>): Promise<any>;
+	onAddAgentToDepartment(options?: { departmentId: string; agentsId: string[] }): Promise<any>;
 	onRemoveAgentFromDepartment(options?: Record<string, any>): Promise<any>;
-	onRemoveDepartment(department?: ILivechatDepartment): Promise<any>;
+	onRemoveDepartment(options: { department: ILivechatDepartment; agentsIds: string[] }): Promise<any>;
+	onDepartmentDisabled(department?: ILivechatDepartment): Promise<any>;
+	onDepartmentArchived(department: Pick<ILivechatDepartment, '_id'>): Promise<void>;
 	onStartBusinessHours(): Promise<void>;
 	afterSaveBusinessHours(businessHourData: ILivechatBusinessHour): Promise<void>;
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
 	changeAgentActiveStatus(agentId: string, status: string): Promise<any>;
+	// If a new agent is created, this callback will be called
+	onNewAgentCreated(agentId: string): Promise<void>;
 }
 
 export interface IBusinessHourType {
@@ -44,13 +51,38 @@ export abstract class AbstractBusinessHourBehavior {
 		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
 
-	async changeAgentActiveStatus(agentId: string, status: string): Promise<any> {
+	async changeAgentActiveStatus(agentId: string, status: ILivechatAgentStatus): Promise<any> {
 		return this.UsersRepository.setLivechatStatusIf(
 			agentId,
 			status,
-			{ livechatStatusSystemModified: true },
+			// Why this works: statusDefault is the property set when a user manually changes their status
+			// So if it's set to offline, we can be sure the user will be offline after login and we can skip the update
+			{ livechatStatusSystemModified: true, statusDefault: { $ne: 'offline' } },
 			{ livechatStatusSystemModified: true },
 		);
+	}
+
+	async onNewAgentCreated(agentId: string): Promise<void> {
+		businessHourLogger.debug(`Executing onNewAgentCreated for agentId: ${agentId}`);
+
+		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour();
+		if (!defaultBusinessHour) {
+			businessHourLogger.debug(`No default business hour found for agentId: ${agentId}`);
+			return;
+		}
+
+		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([defaultBusinessHour]);
+		if (!businessHourToOpen.length) {
+			businessHourLogger.debug(
+				`No business hour to open found for agentId: ${agentId}. Default business hour is closed. Setting agentId: ${agentId} to status: ${ILivechatAgentStatus.NOT_AVAILABLE}`,
+			);
+			await Users.setLivechatStatus(agentId, ILivechatAgentStatus.NOT_AVAILABLE);
+			return;
+		}
+
+		await Users.addBusinessHourByAgentIds([agentId], defaultBusinessHour._id);
+
+		businessHourLogger.debug(`Setting agentId: ${agentId} to status: ${ILivechatAgentStatus.AVAILABLE}`);
 	}
 }
 
@@ -76,6 +108,15 @@ export abstract class AbstractBusinessHourType {
 		businessHourData.workHours.forEach((hour: any) => {
 			const startUtc = moment.tz(`${hour.day}:${hour.start}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
 			const finishUtc = moment.tz(`${hour.day}:${hour.finish}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
+
+			if (hour.open && finishUtc.isBefore(startUtc)) {
+				throw new Error('error-business-hour-finish-time-before-start-time');
+			}
+
+			if (hour.open && startUtc.isSame(finishUtc)) {
+				throw new Error('error-business-hour-finish-time-equals-start-time');
+			}
+
 			hour.start = {
 				time: hour.start,
 				utc: {

@@ -9,6 +9,9 @@ callbacks.add(
 		if (!(isOmnichannelRoom(room) && room.v.token)) {
 			return message;
 		}
+		if (message.t) {
+			return message;
+		}
 		if (message.token) {
 			await LivechatRooms.setVisitorLastMessageTimestampByRoomId(room._id, message.ts);
 		}

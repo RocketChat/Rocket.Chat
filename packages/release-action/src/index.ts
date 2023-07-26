@@ -4,9 +4,9 @@ import path from 'path';
 import * as core from '@actions/core';
 
 import { publishRelease } from './publishRelease';
-import { setupGitUser } from './gitUtils';
 import { bumpNextVersion } from './bumpNextVersion';
 import { startPatchRelease } from './startPatchRelease';
+import { setupGitUser } from './gitUtils';
 
 // const getOptionalInput = (name: string) => core.getInput(name) || undefined;
 

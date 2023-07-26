@@ -1,18 +1,17 @@
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
-import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Random } from '@rocket.chat/random';
 import { Emitter } from '@rocket.chat/emitter';
 import { UIKitInteractionTypes } from '@rocket.chat/core-typings';
+import { lazy } from 'react';
 
-import Notifications from '../../notifications/client/lib/Notifications';
-import { CachedCollectionManager } from '../../ui-cached-collection/client';
-import { t } from '../../utils/client';
+import { t } from '../../utils/lib/i18n';
 import * as banners from '../../../client/lib/banners';
 import { dispatchToastMessage } from '../../../client/lib/toast';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
-import UiKitModal from '../../../client/views/modal/uikit/UiKitModal';
 import { sdk } from '../../utils/client/lib/SDKClient';
+import { router } from '../../../client/providers/RouterProvider';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+
+const UiKitModal = lazy(() => import('../../../client/views/modal/uikit/UiKitModal'));
 
 const events = new Emitter();
 
@@ -45,7 +44,7 @@ export const generateTriggerId = (appId) => {
 	return triggerId;
 };
 
-const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) => {
+export const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) => {
 	if (!triggersId.has(triggerId)) {
 		return;
 	}
@@ -124,7 +123,14 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 			},
 		});
 
-		FlowRouter.setParams({ tab: 'app', context: viewId });
+		router.navigate({
+			name: router.getRouteName(),
+			params: {
+				...router.getRouteParameters(),
+				tab: 'app',
+				context: viewId,
+			},
+		});
 
 		return UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN;
 	}
@@ -160,7 +166,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	return UIKitInteractionTypes.MODAL_ClOSE;
 };
 
-export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, container, ...rest }) =>
+export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, container, tmid, ...rest }) =>
 	new Promise(async (resolve, reject) => {
 		const triggerId = generateTriggerId(appId);
 
@@ -177,6 +183,7 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, c
 					container,
 					mid,
 					rid,
+					tmid,
 					triggerId,
 					viewId,
 				});
@@ -248,11 +255,3 @@ export const getUserInteractionPayloadByViewId = (viewId) => {
 
 	return instance.payload;
 };
-
-Meteor.startup(() =>
-	CachedCollectionManager.onLogin(() =>
-		Notifications.onUser('uiInteraction', ({ type, ...data }) => {
-			handlePayloadUserInteraction(type, data);
-		}),
-	),
-);

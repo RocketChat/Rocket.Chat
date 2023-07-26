@@ -36,6 +36,7 @@ import type { IDeviceManagementService } from './types/IDeviceManagementService'
 import type { IPushService } from './types/IPushService';
 import type { IOmnichannelService } from './types/IOmnichannelService';
 import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent';
+import type { ICalendarService } from './types/ICalendarService';
 import type { IOmnichannelTranscriptService } from './types/IOmnichannelTranscriptService';
 import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerService';
 import type { ITranslationService } from './types/ITranslationService';
@@ -109,6 +110,7 @@ export {
 	ISendFileMessageParams,
 	IUploadFileParams,
 	IUploadService,
+	ICalendarService,
 	IOmnichannelTranscriptService,
 	IQueueWorkerService,
 	HealthAggResult,
@@ -142,6 +144,7 @@ export const SAUMonitor = proxifyWithWait<ISAUMonitorService>('sau-monitor');
 export const DeviceManagement = proxifyWithWait<IDeviceManagementService>('device-management');
 export const VideoConf = proxifyWithWait<IVideoConfService>('video-conference');
 export const Upload = proxifyWithWait<IUploadService>('upload');
+export const Calendar = proxifyWithWait<ICalendarService>('calendar');
 export const QueueWorker = proxifyWithWait<IQueueWorkerService>('queue-worker');
 export const OmnichannelTranscript = proxifyWithWait<IOmnichannelTranscriptService>('omnichannel-transcript');
 export const Message = proxifyWithWait<IMessageService>('message');

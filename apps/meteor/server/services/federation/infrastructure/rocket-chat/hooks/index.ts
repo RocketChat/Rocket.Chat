@@ -4,12 +4,13 @@ import { isMessageFromMatrixFederation, isRoomFederated, isEditedMessage } from 
 import type { FederationRoomServiceSender } from '../../../application/room/sender/RoomServiceSender';
 import { settings } from '../../../../../../app/settings/server';
 import { callbacks } from '../../../../../../lib/callbacks';
+import { afterLeaveRoomCallback } from '../../../../../../lib/callbacks/afterLeaveRoomCallback';
+import { afterRemoveFromRoomCallback } from '../../../../../../lib/callbacks/afterRemoveFromRoomCallback';
 
 export class FederationHooks {
 	public static afterUserLeaveRoom(callback: (user: IUser, room: IRoom) => Promise<void>): void {
-		callbacks.add(
-			'afterLeaveRoom',
-			async (user: IUser, room: IRoom | undefined): Promise<void> => {
+		afterLeaveRoomCallback.add(
+			async (user: IUser, room?: IRoom): Promise<void> => {
 				if (!room || !isRoomFederated(room) || !user || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
@@ -21,9 +22,8 @@ export class FederationHooks {
 	}
 
 	public static onUserRemovedFromRoom(callback: (removedUser: IUser, room: IRoom, userWhoRemoved: IUser) => Promise<void>): void {
-		callbacks.add(
-			'afterRemoveFromRoom',
-			async (params: { removedUser: IUser; userWhoRemoved: IUser }, room: IRoom | undefined): Promise<void> => {
+		afterRemoveFromRoomCallback.add(
+			async (params, room): Promise<void> => {
 				if (
 					!room ||
 					!isRoomFederated(room) ||
@@ -255,8 +255,8 @@ export class FederationHooks {
 	}
 
 	public static removeAllListeners(): void {
-		callbacks.remove('afterLeaveRoom', 'federation-v2-after-leave-room');
-		callbacks.remove('afterRemoveFromRoom', 'federation-v2-after-remove-from-room');
+		afterLeaveRoomCallback.remove('federation-v2-after-leave-room');
+		afterRemoveFromRoomCallback.remove('federation-v2-after-remove-from-room');
 		callbacks.remove('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-non-federated-room');
 		callbacks.remove('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-federated-room');
 		callbacks.remove('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce');

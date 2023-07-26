@@ -35,14 +35,13 @@ export const validators: OmnichannelRoomAccessValidator[] = [
 			}
 		}
 
-		return extraData?.visitorToken && room.v && room.v.token === extraData.visitorToken;
+		return extraData?.visitorToken && room.v && room.v.token === extraData.visitorToken && room.open === true;
 	},
 	async function (room, user) {
 		if (!user?._id) {
 			return false;
 		}
-		const { previewRoom } = RoutingManager.getConfig();
-		if (!previewRoom) {
+		if (!RoutingManager.getConfig()?.previewRoom) {
 			return;
 		}
 

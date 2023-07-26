@@ -1,7 +1,7 @@
 import { Messages, Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { deleteRoom } from '../../../lib/server';
+import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 
 /**
  * We need to propagate the writing of new message in a discussion to the linking

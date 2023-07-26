@@ -10,8 +10,8 @@ const MessageFooterCallout = forwardRef<
 		variant?: 'default' | 'error';
 		dashed?: boolean;
 	}
->(
-	({ dashed, ...props }, ref): ReactElement => (
+>(function MessageFooterCallout({ dashed, ...props }, ref): ReactElement {
+	return (
 		<Box
 			ref={ref}
 			{...(dashed && {
@@ -29,7 +29,7 @@ const MessageFooterCallout = forwardRef<
 			justifyContent='center'
 			{...props}
 		/>
-	),
-);
+	);
+});
 
 export default MessageFooterCallout;
