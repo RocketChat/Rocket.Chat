@@ -462,7 +462,7 @@ describe('LIVECHAT - Agents', function () {
 					expect(res.body).to.have.property('error', 'error-business-hours-are-closed');
 				});
 		});
-		it('should allow managers to make other agents available outside business hour', async () => {
+		it('should not allow managers to make other agents available outside business hour', async () => {
 			await updatePermission('manage-livechat-agents', ['admin']);
 
 			const currentUser: ILivechatAgent = await getMe(agent2.credentials as any);
@@ -476,7 +476,7 @@ describe('LIVECHAT - Agents', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('status', newStatus);
+					expect(res.body).to.have.property('status', currentStatus);
 				});
 
 			await disableDefaultBusinessHour();
