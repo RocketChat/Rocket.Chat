@@ -368,6 +368,59 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 	findAllAgentsConnectedToListOfDepartments(departmentIds: string[]): Promise<string[]> {
 		return this.col.distinct('agentId', { departmentId: { $in: departmentIds }, departmentEnabled: true });
 	}
+
+	async findAgentsConnectedToDefaultBusinessHour(agentIds: string[]): Promise<string[]> {
+		const aggregation = [
+			{
+				$match: {
+					agentId: { $in: agentIds },
+					departmentEnabled: true,
+				},
+			},
+			{
+				$group: {
+					_id: '$agentId',
+					departmentIds: { $push: '$departmentId' },
+					totalDepartmentCount: { $sum: 1 },
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_livechat_department',
+					localField: 'departmentIds',
+					foreignField: '_id',
+					as: 'departments',
+					pipeline: [
+						{
+							$match: {
+								businessHourId: { $exists: false },
+							},
+						},
+					],
+				},
+			},
+			{
+				$addFields: {
+					totalDepartmentsWithDefaultBH: {
+						$size: '$departments',
+					},
+				},
+			},
+			{
+				$match: {
+					totalDepartmentsWithDefaultBH: { $gt: 0 },
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					agentId: '$_id',
+				},
+			},
+		];
+
+		return (await this.col.aggregate<{ agentId: string }>(aggregation).toArray()).map((agent) => agent.agentId);
+	}
 }
 
 const isStringValue = (value: any): value is string => typeof value === 'string';
