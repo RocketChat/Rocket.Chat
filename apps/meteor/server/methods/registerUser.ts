@@ -34,7 +34,7 @@ Meteor.methods<ServerMethods>({
 		const AllowAnonymousWrite = settings.get<boolean>('Accounts_AllowAnonymousWrite');
 		const manuallyApproveNewUsers = settings.get<boolean>('Accounts_ManuallyApproveNewUsers');
 		if (AllowAnonymousRead === true && AllowAnonymousWrite === true && !formData.email) {
-			const userId = await User.create(
+			const userId = await User.insertUserDoc(
 				{
 					globalRoles: ['anonymous'],
 				},
@@ -104,7 +104,7 @@ Meteor.methods<ServerMethods>({
 				await Accounts.setPasswordAsync(importedUser._id, userData.password);
 				userId = importedUser._id;
 			} else {
-				userId = await User.createWithPassword(userData);
+				userId = await User.create(userData);
 			}
 		} catch (e) {
 			if (e instanceof Meteor.Error) {

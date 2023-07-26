@@ -128,7 +128,7 @@ Accounts.emailTemplates.enrollAccount.html = function (user = {} /* , url*/) {
 
 Accounts.insertUserDoc = function (...args) {
 	// Depends on meteor support for Async
-	return Promise.await(User.create(...args));
+	return Promise.await(User.insertUserDoc(...args));
 };
 
 const validateLoginAttemptAsync = async function (login) {

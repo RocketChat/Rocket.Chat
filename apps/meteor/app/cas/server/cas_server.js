@@ -243,7 +243,7 @@ Accounts.registerLoginHandler('cas', async function (options) {
 
 		// Create the user
 		logger.debug(`User "${result.username}" does not exist yet, creating it`);
-		const userId = await User.create({ globalRoles: ['user'] }, newUser);
+		const userId = await User.insertUserDoc({ globalRoles: ['user'] }, newUser);
 
 		// Fetch and use it
 		user = await Users.findOneById(userId);

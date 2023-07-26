@@ -30,6 +30,6 @@ export type CreateUserOptions = UserDocOptions & ({ username: string } | { email
 
 export interface IUserService {
 	hashPassword(password: string | { algorithm: string; digest: string }): Promise<string>;
-	create(options: UserDocOptions, doc: Partial<InsertionModel<IUser>>): Promise<IUser['_id']>;
-	createWithPassword(options: CreateUserOptions): Promise<IUser['_id']>;
+	insertUserDoc(options: UserDocOptions, doc: Partial<InsertionModel<IUser>>): Promise<IUser['_id']>;
+	create(options: CreateUserOptions): Promise<IUser['_id']>;
 }

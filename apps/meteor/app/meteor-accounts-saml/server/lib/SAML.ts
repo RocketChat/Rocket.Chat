@@ -162,7 +162,7 @@ export class SAML {
 				}
 			}
 
-			const userId = await User.create({ globalRoles: roles }, newUser);
+			const userId = await User.insertUserDoc({ globalRoles: roles }, newUser);
 			user = await Users.findOneById(userId);
 
 			if (user && userObject.channels && channelsAttributeUpdate !== true) {

@@ -138,7 +138,7 @@ export class UserService extends ServiceClassInternal implements IUserService {
 		}
 	}
 
-	public async create(options: UserDocOptions, doc: Partial<InsertionModel<IUser>>): Promise<IUser['_id']> {
+	public async insertUserDoc(options: UserDocOptions, doc: Partial<InsertionModel<IUser>>): Promise<IUser['_id']> {
 		const globalRoles = [];
 
 		if (Match.test(options.globalRoles, [String]) && options.globalRoles.length > 0) {
@@ -274,7 +274,6 @@ export class UserService extends ServiceClassInternal implements IUserService {
 	}
 
 	private async validateNewUser(user: InsertionModel<IUser>): Promise<void> {
-		// validateNewUser
 		await this.validateRegistrationDisabled(user);
 		await this.validateDomainAllowList(user);
 	}
@@ -315,13 +314,11 @@ export class UserService extends ServiceClassInternal implements IUserService {
 		}
 	}
 
-	public async createWithPassword(options: CreateUserOptions): Promise<IUser['_id']> {
+	public async create(options: CreateUserOptions): Promise<IUser['_id']> {
 		const { username, email, password } = options;
 		if (!username && !email) {
 			throw new Meteor.Error(400, 'Need to set a username or email');
 		}
-
-		// #TODO: Check if username and email are not already in use.
 
 		const user = {
 			...(username ? { username } : {}),

@@ -285,7 +285,7 @@ const saveNewUser = async function (userData, sendPassword) {
 		createUser.email = userData.email;
 	}
 
-	const _id = await User.createWithPassword(createUser);
+	const _id = await User.create(createUser);
 
 	const updateUser = {
 		$set: {

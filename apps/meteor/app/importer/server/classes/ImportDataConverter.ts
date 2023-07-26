@@ -290,11 +290,11 @@ export class ImportDataConverter {
 	async insertUser(userData: IImportUser): Promise<IUser> {
 		const password = `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 		const userId = userData.emails.length
-			? await User.createWithPassword({
+			? await User.create({
 					email: userData.emails[0],
 					password,
 			  })
-			: await User.createWithPassword({
+			: await User.create({
 					username: userData.username,
 					password,
 					joinDefaultChannelsSilenced: true,

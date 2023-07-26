@@ -298,7 +298,7 @@ export class CROWD {
 
 		// Attempt to create the new user
 		try {
-			crowdUser._id = await User.createWithPassword(crowdUser);
+			crowdUser._id = await User.create(crowdUser);
 
 			// sync the user data
 			await this.syncDataToUser(crowdUser, crowdUser._id);
