@@ -6,8 +6,8 @@
 // and we use that to construct hex string.
 
 import { BrowserRandomGenerator } from './BrowserRandomGenerator';
-import { createAleaGeneratorWithGeneratedSeed } from './createAleaGenerator';
 import type { RandomGenerator } from './RandomGenerator';
+import { createAleaGeneratorWithGeneratedSeed } from './createAleaGenerator';
 
 let generator: RandomGenerator;
 if (typeof window !== 'undefined' && !!window.crypto?.getRandomValues) {

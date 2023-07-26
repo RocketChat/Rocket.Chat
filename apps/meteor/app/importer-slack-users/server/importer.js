@@ -1,7 +1,7 @@
 import { Settings } from '@rocket.chat/models';
 
-import { Base, ProgressStep } from '../../importer/server';
 import { RocketChatFile } from '../../file/server';
+import { Base, ProgressStep } from '../../importer/server';
 
 export class SlackUsersImporter extends Base {
 	constructor(info, importRecord) {

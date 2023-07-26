@@ -1,25 +1,28 @@
-import { Meteor } from 'meteor/meteor';
+import type { IMethodConnection, IUser, IRoom } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { DDPCommon } from 'meteor/ddp-common';
-import { DDP } from 'meteor/ddp';
+import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { Accounts } from 'meteor/accounts-base';
+import { DDP } from 'meteor/ddp';
+import { DDPCommon } from 'meteor/ddp-common';
+import { Meteor } from 'meteor/meteor';
+import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
+import { RateLimiter } from 'meteor/rate-limit';
 import type { Request, Response } from 'meteor/rocketchat:restivus';
 import { Restivus } from 'meteor/rocketchat:restivus';
 import _ from 'underscore';
-import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
-import { RateLimiter } from 'meteor/rate-limit';
-import type { IMethodConnection, IUser, IRoom } from '@rocket.chat/core-typings';
-import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
-import { Users } from '@rocket.chat/models';
 
+import { isObject } from '../../../lib/utils/isObject';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
-import { settings } from '../../settings/server';
-import { metrics } from '../../metrics/server';
-import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { apiDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
+import { Logger } from '../../logger/server';
+import { metrics } from '../../metrics/server';
+import { settings } from '../../settings/server';
+import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import type { PermissionsPayload } from './api.helpers';
 import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
-import { isObject } from '../../../lib/utils/isObject';
 import type {
 	FailureResult,
 	InternalError,
@@ -30,11 +33,8 @@ import type {
 	SuccessResult,
 	UnauthorizedResult,
 } from './definition';
-import { parseJsonQuery } from './helpers/parseJsonQuery';
-import { Logger } from '../../logger/server';
 import { getUserInfo } from './helpers/getUserInfo';
-import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { apiDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
+import { parseJsonQuery } from './helpers/parseJsonQuery';
 
 const logger = new Logger('API');
 

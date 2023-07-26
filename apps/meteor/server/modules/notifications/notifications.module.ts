@@ -1,8 +1,8 @@
-import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
+import { Authorization, VideoConf } from '@rocket.chat/core-services';
 import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
-import { Authorization, VideoConf } from '@rocket.chat/core-services';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ui-contexts';
+import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
 
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
@@ -363,7 +363,7 @@ export class NotificationsModule {
 			return Authorization.hasAtLeastOnePermission(this.userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations']);
 		});
 
-		this.streamLivechatRoom.allowRead(async function (roomId, extraData) {
+		this.streamLivechatRoom.allowRead(async (roomId, extraData) => {
 			const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't' | 'v'>>(roomId, {
 				projection: { _id: 0, t: 1, v: 1 },
 			});

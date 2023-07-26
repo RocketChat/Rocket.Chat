@@ -1,12 +1,12 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
-import { Users, Settings } from '@rocket.chat/models';
 import { eventTypes } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
+import { Users, Settings } from '@rocket.chat/models';
 
 import { resolveSRV, resolveTXT } from '../../app/federation/server/functions/resolveDNS';
-import { settings, settingsRegistry } from '../../app/settings/server';
 import { dispatchEvent } from '../../app/federation/server/handler';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
+import { settings, settingsRegistry } from '../../app/settings/server';
 
 async function updateSetting(id: string, value: SettingValue | null): Promise<void> {
 	if (value !== null) {
