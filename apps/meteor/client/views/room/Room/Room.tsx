@@ -31,11 +31,7 @@ const Room = (): ReactElement => {
 				<RoomLayout
 					aria-label={t('Channel')}
 					data-qa-rc-room={room._id}
-					header={
-						<Suspense fallback={null}>
-							<Header room={room} />
-						</Suspense>
-					}
+					header={<Header room={room} />}
 					body={<RoomBody />}
 					aside={
 						(tab && (
