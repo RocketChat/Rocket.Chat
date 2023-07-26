@@ -1,5 +1,29 @@
 # @rocket.chat/meteor
 
+## 6.2.10
+
+### Patch Changes
+
+- 2a09b648b9: fix: Prevent app's bridges from overriding the lastMsg prop which further was affecting Omni-Visitor abandonment feature for app
+- ef4cd97c61: Fix Toggle message box formatting toolbar on click
+  - @rocket.chat/core-typings@6.2.10
+  - @rocket.chat/rest-typings@6.2.10
+  - @rocket.chat/omnichannel-services@0.0.5
+  - @rocket.chat/pdf-worker@0.0.5
+  - @rocket.chat/presence@0.0.5
+  - @rocket.chat/api-client@0.0.5
+  - @rocket.chat/core-services@0.0.5
+  - @rocket.chat/gazzodown@0.0.1
+  - @rocket.chat/model-typings@0.0.5
+  - @rocket.chat/ui-contexts@0.0.5
+  - @rocket.chat/models@0.0.5
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/fuselage-ui-kit@0.31.16
+  - @rocket.chat/ui-client@0.0.1
+  - @rocket.chat/ui-video-conf@0.0.1
+  - @rocket.chat/web-ui-registration@0.0.1
+  - @rocket.chat/instance-status@0.0.5
+
 ## 6.2.9
 
 ### Patch Changes

@@ -1,3 +1,6 @@
+import { Team, api } from '@rocket.chat/core-services';
+import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
+import { Users, Subscriptions } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
@@ -14,41 +17,38 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
-import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
-import { Users, Subscriptions } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
-import { Team, api } from '@rocket.chat/core-services';
 
+import { i18n } from '../../../../server/lib/i18n';
+import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
+import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
+import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
+import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { settings } from '../../../settings/server';
-import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
-import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
-import { saveUser } from '../../../lib/server/functions/saveUser';
-import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
-import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
 import {
 	checkUsernameAvailability,
 	checkUsernameAvailabilityWithValidation,
 } from '../../../lib/server/functions/checkUsernameAvailability';
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
+import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
+import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
+import { saveUser } from '../../../lib/server/functions/saveUser';
 import { setStatusText } from '../../../lib/server/functions/setStatusText';
-import { API } from '../api';
-import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
-import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
-import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
-import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
-import { isValidQuery } from '../lib/isValidQuery';
+import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
+import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
+import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
+import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/server/getURL';
-import { getUploadFormData } from '../lib/getUploadFormData';
+import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { isUserFromParams } from '../helpers/isUserFromParams';
-import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
-import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
-import { i18n } from '../../../../server/lib/i18n';
+import { getUploadFormData } from '../lib/getUploadFormData';
+import { isValidQuery } from '../lib/isValidQuery';
+import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
 API.v1.addRoute(
 	'users.getAvatar',

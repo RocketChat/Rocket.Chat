@@ -1,9 +1,9 @@
 import { Button } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { LoginService } from '@rocket.chat/ui-contexts';
 import { useLoginWithService, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, SetStateAction, Dispatch } from 'react';
 import { useCallback } from 'react';
-import type { Keys as IconName } from '@rocket.chat/icons';
 
 import type { LoginErrors } from './LoginForm';
 

@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+import { Imports } from '@rocket.chat/models';
 import {
 	isUploadImportFileParamsPOST,
 	isDownloadPublicImportFileParamsPOST,
@@ -10,9 +10,8 @@ import {
 	isDownloadPendingAvatarsParamsPOST,
 	isGetCurrentImportOperationParamsGET,
 } from '@rocket.chat/rest-typings';
-import { Imports } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { API } from '../api';
 import { Importers } from '../../../importer/server';
 import {
 	executeUploadImportFile,
@@ -22,6 +21,7 @@ import {
 	executeStartImport,
 	executeGetLatestImportOperations,
 } from '../../../importer/server/methods';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'uploadImportFile',

@@ -1,13 +1,13 @@
 import crypto from 'crypto';
 
-import polka from 'polka';
-import WebSocket from 'ws';
-import { throttle } from 'underscore';
 import { MeteorService, Presence, ServiceClass } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
+import polka from 'polka';
+import { throttle } from 'underscore';
+import WebSocket from 'ws';
 
-import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
+import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
 import { Client } from './Client';
 import { events, server } from './configureServer';

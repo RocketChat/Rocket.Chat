@@ -1,19 +1,19 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IFederationService } from '@rocket.chat/core-services';
 
-import type { InMemoryQueue } from './infrastructure/queue/InMemoryQueue';
-import type { IFederationBridge } from './domain/IFederationBridge';
-import type { RocketChatSettingsAdapter } from './infrastructure/rocket-chat/adapters/Settings';
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
 import type { FederationUserServiceSender } from './application/user/sender/UserServiceSender';
-import type { RocketChatRoomAdapter } from './infrastructure/rocket-chat/adapters/Room';
-import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapters/User';
+import type { IFederationBridge } from './domain/IFederationBridge';
+import { FederationFactory } from './infrastructure/Factory';
+import type { InMemoryQueue } from './infrastructure/queue/InMemoryQueue';
 import type { RocketChatFileAdapter } from './infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from './infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatNotificationAdapter } from './infrastructure/rocket-chat/adapters/Notification';
+import type { RocketChatRoomAdapter } from './infrastructure/rocket-chat/adapters/Room';
+import type { RocketChatSettingsAdapter } from './infrastructure/rocket-chat/adapters/Settings';
+import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapters/User';
 import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
-import { FederationFactory } from './infrastructure/Factory';
 
 export abstract class AbstractFederationService extends ServiceClassInternal {
 	private cancelSettingsObserver: () => void;

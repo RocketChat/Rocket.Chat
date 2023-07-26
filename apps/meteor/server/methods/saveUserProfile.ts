@@ -1,20 +1,20 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import { Accounts } from 'meteor/accounts-base';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Users } from '@rocket.chat/models';
 import type { UserStatus } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Accounts } from 'meteor/accounts-base';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { saveCustomFields } from '../../app/lib/server/functions/saveCustomFields';
-import { passwordPolicy } from '../../app/lib/server';
-import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
-import { settings as rcSettings } from '../../app/settings/server';
 import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
+import { saveCustomFields } from '../../app/lib/server/functions/saveCustomFields';
+import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
+import { passwordPolicy } from '../../app/lib/server/lib/passwordPolicy';
+import { settings as rcSettings } from '../../app/settings/server';
+import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
+import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
-import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
-import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
 
 async function saveUserProfile(
 	this: Meteor.MethodThisType,

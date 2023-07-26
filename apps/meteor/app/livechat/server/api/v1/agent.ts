@@ -1,13 +1,13 @@
-import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.chat/rest-typings';
-import { Users } from '@rocket.chat/models';
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
-import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../../lib/Livechat';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
 	async get() {

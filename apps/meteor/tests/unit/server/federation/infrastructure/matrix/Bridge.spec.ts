@@ -1,4 +1,3 @@
-/* eslint-disable import/first */
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 
@@ -18,7 +17,7 @@ describe('Federation - Infrastructure - Matrix - Bridge', () => {
 		{
 			getHomeServerDomain: () => defaultProxyDomain,
 		} as any,
-		() => {}, // eslint-disable-line
+		() => undefined,
 	);
 
 	describe('#isUserIdFromTheSameHomeserver()', () => {
