@@ -521,6 +521,15 @@ export const Livechat = {
 		return postData;
 	},
 
+	async afterAgentAdded(user) {
+		await Users.setOperator(user._id, true);
+		await this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
+
+		callbacks.runAsync('livechat.onNewAgentCreated', user._id);
+
+		return user;
+	},
+
 	async addAgent(username) {
 		check(username, String);
 
@@ -531,12 +540,7 @@ export const Livechat = {
 		}
 
 		if (await addUserRolesAsync(user._id, ['livechat-agent'])) {
-			await Users.setOperator(user._id, true);
-			await this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
-
-			callbacks.runAsync('livechat.onNewAgentCreated', user._id);
-
-			return user;
+			return this.afterAgentAdded(user);
 		}
 
 		return false;
@@ -560,6 +564,15 @@ export const Livechat = {
 		return false;
 	},
 
+	async afterRemoveAgent(user) {
+		await Promise.all([
+			Users.removeAgent(user._id),
+			LivechatDepartmentAgents.removeByAgentId(user._id),
+			LivechatVisitors.removeContactManagerByUsername(user.username),
+		]);
+		return true;
+	},
+
 	async removeAgent(username) {
 		check(username, String);
 
@@ -574,12 +587,7 @@ export const Livechat = {
 		const { _id } = user;
 
 		if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
-			await Promise.all([
-				Users.removeAgent(_id),
-				LivechatDepartmentAgents.removeByAgentId(_id),
-				LivechatVisitors.removeContactManagerByUsername(username),
-			]);
-			return true;
+			return this.afterRemoveAgent(user);
 		}
 
 		return false;

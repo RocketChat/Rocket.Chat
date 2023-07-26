@@ -329,12 +329,6 @@ const saveNewUser = async function (userData, sendPassword) {
 		}
 	}
 
-	const userUpdated = await Users.findOneById(_id);
-	await callbacks.run('afterSaveUser', {
-		user: userUpdated,
-		oldUser: null,
-	});
-
 	return _id;
 };
 
