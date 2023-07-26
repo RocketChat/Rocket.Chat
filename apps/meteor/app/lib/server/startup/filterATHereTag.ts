@@ -46,6 +46,6 @@ callbacks.add(
 
 		return message;
 	},
-	callbacks.priority.HIGH,
+	callbacks.priority.MEDIUM,
 	'filterATHereTag',
 );
