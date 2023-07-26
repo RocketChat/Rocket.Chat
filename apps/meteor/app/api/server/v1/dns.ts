@@ -3,6 +3,8 @@ import { Match, check } from 'meteor/check';
 
 import { API } from '../api';
 import { resolveSRV, resolveTXT } from '../../../federation/server/functions/resolveDNS';
+import { isErrnoException } from '../../../../server/lib/isErrnoException';
+import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 /**
  * @openapi
@@ -64,9 +66,17 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-missing-param', 'The required "url" param is missing.');
 			}
 
-			const resolved = await resolveSRV(url);
+			try {
+				const resolved = await resolveSRV(url);
 
-			return API.v1.success({ resolved });
+				return API.v1.success({ resolved });
+			} catch (error: unknown) {
+				if (isErrnoException(error)) {
+					return API.v1.failure(error.message);
+				}
+
+				return API.v1.failure(String(error));
+			}
 		},
 	},
 );
@@ -74,18 +84,24 @@ API.v1.addRoute(
 /**
  * @openapi
  *  /api/v1/dns.resolve.txt:
- * 	  get:
+ * 	  post:
  *      description: Resolves DNS text records (TXT records) for a hostname
  *      security:
  *        $ref: '#/security/authenticated'
- *      parameters:
- *        - name: url
- *          in: query
- *          description: The hostname
- *          required: true
- *          schema:
- *            type: string
- *          example: open.rocket.chat
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *             description: The hostname
+ *             required: true
+ *            schema:
+ *              type: object
+ *              properties:
+ *                url:
+ *                  type: string
+ *            example: |
+ *              {
+ *                 "url": "open.rocket.chat"
+ *              }
  *      responses:
  *        200:
  *          description: The resolved records
@@ -110,21 +126,36 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
+			const params = { ...this.queryParams, ...this.bodyParams };
 			check(
-				this.queryParams,
+				params,
 				Match.ObjectIncluding({
 					url: String,
 				}),
 			);
 
-			const { url } = this.queryParams;
+			if (!this.bodyParams && this.queryParams) {
+				apiDeprecationLogger.warn(
+					'Using query parameters on the dns.resolve.txt endpoint is deprecated and will no longer be supported in the next major release of Rocket.Chat.',
+				);
+			}
+
+			const { url } = params;
 			if (!url) {
 				throw new Meteor.Error('error-missing-param', 'The required "url" param is missing.');
 			}
 
-			const resolved = await resolveTXT(url);
+			try {
+				const resolved = await resolveTXT(url.trim());
 
-			return API.v1.success({ resolved });
+				return API.v1.success({ resolved });
+			} catch (error: unknown) {
+				if (isErrnoException(error)) {
+					return API.v1.failure(error.message);
+				}
+
+				return API.v1.failure(String(error));
+			}
 		},
 	},
 );
