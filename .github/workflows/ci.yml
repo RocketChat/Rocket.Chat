@@ -80,8 +80,8 @@ jobs:
           echo "DOCKER_TAG: ${DOCKER_TAG}"
           echo "gh-docker-tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
 
-  yarn-build:
-    name: 📦 Build
+  packages-build:
+    name: 📦 Build Packages
     needs: [release-versions]
     runs-on: ubuntu-20.04
     steps:
@@ -125,7 +125,7 @@ jobs:
 
   build:
     name: 📦 Meteor Build
-    needs: [release-versions, yarn-build]
+    needs: [release-versions, packages-build]
     runs-on: ubuntu-20.04
 
     steps:
@@ -244,7 +244,7 @@ jobs:
           path: /tmp/Rocket.Chat.tar.gz
 
   checks:
-    needs: [release-versions, yarn-build]
+    needs: [release-versions, packages-build]
 
     name: 🔎 Code Check
     uses: ./.github/workflows/ci-code-check.yml
@@ -253,7 +253,7 @@ jobs:
 
   test-unit:
     name: 🔨 Test Unit
-    needs: [yarn-build, release-versions]
+    needs: [packages-build, release-versions]
 
     uses: ./.github/workflows/ci-test-unit.yml
     with:
