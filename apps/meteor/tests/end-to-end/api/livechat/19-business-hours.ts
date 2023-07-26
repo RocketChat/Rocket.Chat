@@ -721,10 +721,6 @@ describe('LIVECHAT - business hours', function () {
 			agentCredentials = await login(agent.username, password);
 		});
 
-		after(async () => {
-			await deleteUser(agent);
-		});
-
 		it('should create a new agent and verify if it is assigned to the default business hour which is open', async () => {
 			agent = await createAgent(agent.username);
 
@@ -780,7 +776,11 @@ describe('LIVECHAT - business hours', function () {
 		});
 
 		after(async () => {
-			await deleteUser(agent._id);
+			await deleteUser(agent);
 		});
+	});
+
+	after(async () => {
+		await updateSetting('Livechat_enable_business_hours', false);
 	});
 });
