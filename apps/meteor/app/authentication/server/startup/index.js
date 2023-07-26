@@ -269,6 +269,28 @@ const insertUserDocAsync = async function (options, user) {
 		_id,
 	});
 
+	/**
+	 * if settings shows setup wizard to be pending
+	 * and no admin's been found,
+	 * and existing role list doesn't include admin
+	 * create this user admin.
+	 * count this as the completion of setup wizard step 1.
+	 */
+	const hasAdmin = await Users.findOneByRolesAndType('admin', 'user', { projection: { _id: 1 } });
+	if (!roles.includes('admin') && !hasAdmin) {
+		roles.push('admin');
+		if (settings.get('Show_Setup_Wizard') === 'pending') {
+			await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+		}
+	}
+
+	await addUserRolesAsync(_id, roles);
+
+	// Make user's roles to be present on callback
+	user = await Users.findOne({
+		_id,
+	});
+
 	if (user.username) {
 		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
 			await joinDefaultChannels(_id, options.joinDefaultChannelsSilenced);
@@ -290,23 +312,6 @@ const insertUserDocAsync = async function (options, user) {
 			}
 		}
 	}
-
-	/**
-	 * if settings shows setup wizard to be pending
-	 * and no admin's been found,
-	 * and existing role list doesn't include admin
-	 * create this user admin.
-	 * count this as the completion of setup wizard step 1.
-	 */
-	const hasAdmin = await Users.findOneByRolesAndType('admin', 'user', { projection: { _id: 1 } });
-	if (!roles.includes('admin') && !hasAdmin) {
-		roles.push('admin');
-		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
-		}
-	}
-
-	await addUserRolesAsync(_id, roles);
 
 	return _id;
 };
