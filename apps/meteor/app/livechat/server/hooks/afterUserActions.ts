@@ -47,7 +47,7 @@ const handleActivateUser = async (user: IUser) => {
 
 callbacks.add('afterCreateUser', handleAgentCreated, callbacks.priority.LOW, 'livechat-after-create-user-update-agent');
 
-callbacks.add('afterCreateUser', handleAgentUpdated, callbacks.priority.LOW, 'livechat-after-save-user-update-agent');
+callbacks.add('afterSaveUser', handleAgentUpdated, callbacks.priority.LOW, 'livechat-after-save-user-update-agent');
 
 callbacks.add('afterDeactivateUser', handleDeactivateUser, callbacks.priority.LOW, 'livechat-after-deactivate-user-remove-agent');
 
