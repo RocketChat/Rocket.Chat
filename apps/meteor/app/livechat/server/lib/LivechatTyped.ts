@@ -770,47 +770,24 @@ class LivechatClass {
 			.map((dept) => dept.departmentId);
 		const toAddIds = agentDepartments.filter((d) => !currentDepartmentsForAgent.some((c) => c.departmentId === d));
 
-		const toRemove: { departmentId: string; departmentEnabled: boolean }[] = [];
-		const toAdd: { departmentId: string; departmentEnabled: boolean }[] = [];
-		const allDepts = await LivechatDepartment.findInIds([...toRemoveIds, ...toAddIds], {
-			projection: {
-				_id: 1,
-				enabled: 1,
-			},
-		}).toArray();
-		for (const dept of allDepts) {
-			if (toRemoveIds.includes(dept._id)) {
-				toRemove.push({ departmentId: dept._id, departmentEnabled: dept.enabled });
-			} else if (toAddIds.includes(dept._id)) {
-				toAdd.push({ departmentId: dept._id, departmentEnabled: dept.enabled });
-			}
-		}
-
-		const promises = [];
-		for (const dept of toRemove) {
-			promises.push(
-				updateDepartmentAgents(
-					dept.departmentId,
-					{
-						remove: [{ agentId: _id }],
-					},
-					dept.departmentEnabled,
-				),
-			);
-		}
-		for (const dept of toAdd) {
-			promises.push(
-				updateDepartmentAgents(
-					dept.departmentId,
-					{
-						upsert: [{ agentId: _id }],
-					},
-					dept.departmentEnabled,
-				),
-			);
-		}
-
-		await Promise.all(promises);
+		await Promise.all(
+			await LivechatDepartment.findInIds([...toRemoveIds, ...toAddIds], {
+				projection: {
+					_id: 1,
+					enabled: 1,
+				},
+			})
+				.map((dep) => {
+					return updateDepartmentAgents(
+						dep._id,
+						{
+							...(toRemoveIds.includes(dep._id) ? { remove: [{ agentId: _id }] } : { upsert: [{ agentId: _id }] }),
+						},
+						dep.enabled,
+					);
+				})
+				.toArray(),
+		);
 
 		return true;
 	}
