@@ -151,14 +151,12 @@ const RoomMembers = ({
 				<ContextualbarFooter>
 					<ButtonGroup stretch>
 						{onClickInvite && (
-							<Button onClick={onClickInvite} width='50%'>
-								<Icon name='link' size='x20' mie='x4' />
+							<Button icon='link' onClick={onClickInvite} width='50%'>
 								{t('Invite_Link')}
 							</Button>
 						)}
 						{onClickAdd && (
-							<Button onClick={onClickAdd} width='50%' primary>
-								<Icon name='user-plus' size='x20' mie='x4' />
+							<Button icon='user-plus' onClick={onClickAdd} width='50%' primary>
 								{t('Add')}
 							</Button>
 						)}

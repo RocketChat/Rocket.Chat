@@ -1,7 +1,7 @@
 import { useRole, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import UpsellModal from '../../../components/UpsellModal';
+import GenericUpsellModal from '../../../components/GenericUpsellModal';
 
 const HighContrastUpsellModal = ({ onClose }: { onClose: () => void }) => {
 	const t = useTranslation();
@@ -23,7 +23,7 @@ const HighContrastUpsellModal = ({ onClose }: { onClose: () => void }) => {
 
 	if (!isAdmin) {
 		return (
-			<UpsellModal
+			<GenericUpsellModal
 				title={t('High_contrast_upsell_title')}
 				img='images/high-contrast-upsell-modal.svg'
 				subtitle={t('High_contrast_upsell_subtitle')}
@@ -36,7 +36,7 @@ const HighContrastUpsellModal = ({ onClose }: { onClose: () => void }) => {
 		);
 	}
 	return (
-		<UpsellModal
+		<GenericUpsellModal
 			title={t('High_contrast_upsell_title')}
 			img='images/high-contrast-upsell-modal.svg'
 			subtitle={t('High_contrast_upsell_subtitle')}

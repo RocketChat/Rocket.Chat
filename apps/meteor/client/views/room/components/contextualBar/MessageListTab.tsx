@@ -1,9 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { Icon } from '@rocket.chat/fuselage';
 import { Box, MessageDivider, Throbber } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import { useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
-import type { ReactElement, ComponentProps, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -29,7 +29,7 @@ import { useRoomSubscription } from '../../contexts/RoomContext';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
 
 type MessageListTabProps = {
-	iconName: ComponentProps<typeof Icon>['name'];
+	iconName: IconName;
 	title: ReactNode;
 	emptyResultMessage: string;
 	context: MessageActionContext;
