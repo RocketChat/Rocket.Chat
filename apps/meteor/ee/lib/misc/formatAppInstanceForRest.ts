@@ -1,7 +1,7 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-import type { AppLicenseValidationResult } from '@rocket.chat/apps-engine/server/marketplace/license';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
+import type { AppLicenseValidationResult } from '@rocket.chat/apps-engine/server/marketplace/license';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../lib/apps/getInstallationSourceFromAppStorageItem';
