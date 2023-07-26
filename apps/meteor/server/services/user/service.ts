@@ -216,6 +216,13 @@ export class UserService extends ServiceClassInternal implements IUserService {
 
 		const _id = await this.insertOne(user);
 
+		const hasAdmin = await Users.findOneByRolesAndType('admin', 'user', { projection: { _id: 1 } });
+		if (!roles.includes('admin') && !hasAdmin) {
+			roles.push('admin');
+		}
+
+		await addUserRolesAsync(_id, roles);
+
 		const newUser = await Users.findOne({
 			_id,
 		});
@@ -224,21 +231,16 @@ export class UserService extends ServiceClassInternal implements IUserService {
 			throw new Error('error-user-not-found');
 		}
 
+		if (!hasAdmin && roles.includes('admin') && settings.get('Show_Setup_Wizard') === 'pending') {
+			await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+		}
+
 		if (newUser.username) {
 			await this.addUserToDefaultChannels(newUser, options);
 			await this.callAfterCreateUser(newUser);
 			await this.setDefaultAvatar(newUser);
 		}
 
-		const hasAdmin = await Users.findOneByRolesAndType('admin', 'user', { projection: { _id: 1 } });
-		if (!roles.includes('admin') && !hasAdmin) {
-			roles.push('admin');
-			if (settings.get('Show_Setup_Wizard') === 'pending') {
-				await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
-			}
-		}
-
-		await addUserRolesAsync(_id, roles);
 		return _id;
 	}
 
