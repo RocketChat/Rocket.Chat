@@ -11,6 +11,7 @@ import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { getUsersInRole } from '../../app/authorization/server';
+import { afterRemoveFromRoomCallback } from '../../lib/callbacks/afterRemoveFromRoomCallback';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -78,7 +79,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 	}
 
 	setImmediate(function () {
-		void callbacks.run('afterRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
+		void afterRemoveFromRoomCallback.run({ removedUser, userWhoRemoved: fromUser }, room);
 	});
 
 	return true;

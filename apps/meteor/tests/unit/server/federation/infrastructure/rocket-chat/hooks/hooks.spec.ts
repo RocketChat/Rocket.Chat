@@ -9,6 +9,8 @@ const get = sinon.stub();
 const hooks: Record<string, any> = {};
 
 import type * as hooksModule from '../../../../../../../server/services/federation/infrastructure/rocket-chat/hooks';
+import { afterLeaveRoomCallback } from '../../../../../../../lib/callbacks/afterLeaveRoomCallback';
+import { afterRemoveFromRoomCallback } from '../../../../../../../lib/callbacks/afterRemoveFromRoomCallback';
 
 const { FederationHooks } = proxyquire
 	.noCallThru()
@@ -28,113 +30,150 @@ const { FederationHooks } = proxyquire
 				},
 			},
 		},
+		'../../../../../../lib/callbacks/afterLeaveRoomCallback': {
+			afterLeaveRoomCallback,
+		},
+		'../../../../../../lib/callbacks/afterRemoveFromRoomCallback': {
+			afterRemoveFromRoomCallback,
+		},
 		'../../../../../../app/settings/server': {
 			settings: { get },
 		},
 	});
 
 describe('Federation - Infrastructure - RocketChat - Hooks', () => {
-	afterEach(() => {
+	beforeEach(() => {
+		FederationHooks.removeAllListeners();
 		remove.reset();
 		get.reset();
 	});
 
 	describe('#afterUserLeaveRoom()', () => {
-		it('should NOT execute the callback if no room was provided', () => {
+		it('should NOT execute the callback if no room was provided', async () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterUserLeaveRoom(stub);
-			hooks['federation-v2-after-leave-room']();
+
+			// @ts-expect-error
+			await afterLeaveRoomCallback.run();
 			expect(stub.called).to.be.false;
 		});
 
-		it('should NOT execute the callback if the provided room is not federated', () => {
+		it('should NOT execute the callback if the provided room is not federated', async () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterUserLeaveRoom(stub);
-			hooks['federation-v2-after-leave-room']({}, {});
+
+			// @ts-expect-error
+			await afterLeaveRoomCallback.run({}, {});
+
 			expect(stub.called).to.be.false;
 		});
 
-		it('should NOT execute the callback if no user was provided', () => {
+		it('should NOT execute the callback if no user was provided', async () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterUserLeaveRoom(stub);
-			hooks['federation-v2-after-leave-room'](undefined, { federated: true });
+
+			// @ts-expect-error
+			await afterLeaveRoomCallback.run(undefined, { federated: true });
+
 			expect(stub.called).to.be.false;
 		});
 
-		it('should NOT execute the callback if federation module was disabled', () => {
+		it('should NOT execute the callback if federation module was disabled', async () => {
 			get.returns(false);
 			const stub = sinon.stub();
 			FederationHooks.afterUserLeaveRoom(stub);
-			hooks['federation-v2-after-leave-room']({}, { federated: true });
+
+			// @ts-expect-error
+			await afterLeaveRoomCallback.run({}, { federated: true });
+
 			expect(stub.called).to.be.false;
 		});
 
-		it('should execute the callback when everything is correct', () => {
+		it('should execute the callback when everything is correct', async () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterUserLeaveRoom(stub);
-			hooks['federation-v2-after-leave-room']({}, { federated: true });
+
+			// @ts-expect-error
+			await afterLeaveRoomCallback.run({}, { federated: true });
+
 			expect(stub.calledWith({}, { federated: true })).to.be.true;
 		});
 	});
 
 	describe('#onUserRemovedFromRoom()', () => {
-		it('should NOT execute the callback if no room was provided', () => {
+		it('should NOT execute the callback if no room was provided', async () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.onUserRemovedFromRoom(stub);
-			hooks['federation-v2-after-remove-from-room']();
+
+			// @ts-expect-error
+			await afterRemoveFromRoomCallback.run();
+
 			expect(stub.called).to.be.false;
 		});
 
-		it('should NOT execute the callback if the provided room is not federated', () => {
+		it('should NOT execute the callback if the provided room is not federated', async () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.onUserRemovedFromRoom(stub);
-			hooks['federation-v2-after-remove-from-room']({}, {});
+
+			// @ts-expect-error
+			await afterRemoveFromRoomCallback.run({}, {});
+
 			expect(stub.called).to.be.false;
 		});
 
-		it('should NOT execute the callback if no params were provided', () => {
+		it('should NOT execute the callback if no params were provided', async () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.onUserRemovedFromRoom(stub);
-			hooks['federation-v2-after-remove-from-room']({}, { federated: true });
+
+			// @ts-expect-error
+			await afterRemoveFromRoomCallback.run({}, { federated: true });
+
 			expect(stub.called).to.be.false;
 		});
 
-		it('should NOT execute the callback if no removedUser was provided', () => {
+		it('should NOT execute the callback if no removedUser was provided', async () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.onUserRemovedFromRoom(stub);
-			hooks['federation-v2-after-remove-from-room']({}, { federated: true }, {});
+			// @ts-expect-error
+			await afterRemoveFromRoomCallback.run({}, { federated: true }, {});
+
 			expect(stub.called).to.be.false;
 		});
 
-		it('should NOT execute the callback if no userWhoRemoved was provided', () => {
+		it('should NOT execute the callback if no userWhoRemoved was provided', async () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.onUserRemovedFromRoom(stub);
-			hooks['federation-v2-after-remove-from-room']({ removedUser: 'removedUser' }, { federated: true });
+			// @ts-expect-error
+			await afterRemoveFromRoomCallback.run({ removedUser: 'removedUser' }, { federated: true });
+
 			expect(stub.called).to.be.false;
 		});
 
-		it('should NOT execute the callback if federation module was disabled', () => {
+		it('should NOT execute the callback if federation module was disabled', async () => {
 			get.returns(false);
 			const stub = sinon.stub();
 			FederationHooks.onUserRemovedFromRoom(stub);
-			hooks['federation-v2-after-remove-from-room']({ removedUser: 'removedUser', userWhoRemoved: 'userWhoRemoved' }, { federated: true });
+
+			// @ts-expect-error
+			await afterRemoveFromRoomCallback.run({ removedUser: 'removedUser', userWhoRemoved: 'userWhoRemoved' }, { federated: true });
 			expect(stub.called).to.be.false;
 		});
 
-		it('should execute the callback when everything is correct', () => {
+		it('should execute the callback when everything is correct', async () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.onUserRemovedFromRoom(stub);
-			hooks['federation-v2-after-remove-from-room']({ removedUser: 'removedUser', userWhoRemoved: 'userWhoRemoved' }, { federated: true });
+			// @ts-expect-error
+			await afterRemoveFromRoomCallback.run({ removedUser: 'removedUser', userWhoRemoved: 'userWhoRemoved' }, { federated: true });
 			expect(stub.calledWith('removedUser', { federated: true }, 'userWhoRemoved')).to.be.true;
 		});
 	});
@@ -696,24 +735,22 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 	describe('#removeAllListeners()', () => {
 		it('should remove all the listeners', () => {
 			FederationHooks.removeAllListeners();
-			expect(remove.callCount).to.be.equal(11);
-			expect(remove.getCall(0).calledWith('afterLeaveRoom', 'federation-v2-after-leave-room')).to.be.equal(true);
-			expect(remove.getCall(1).calledWith('afterRemoveFromRoom', 'federation-v2-after-remove-from-room')).to.be.equal(true);
+			expect(remove.callCount).to.be.equal(9);
 			expect(
-				remove.getCall(2).calledWith('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-non-federated-room'),
+				remove.getCall(0).calledWith('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-non-federated-room'),
 			).to.be.equal(true);
 			expect(
-				remove.getCall(3).calledWith('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-federated-room'),
+				remove.getCall(1).calledWith('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-federated-room'),
 			).to.be.equal(true);
 			expect(
-				remove.getCall(4).calledWith('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce'),
+				remove.getCall(2).calledWith('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce'),
 			).to.be.equal(true);
-			expect(remove.getCall(5).calledWith('afterSetReaction', 'federation-v2-after-message-reacted')).to.be.equal(true);
-			expect(remove.getCall(6).calledWith('afterUnsetReaction', 'federation-v2-after-message-unreacted')).to.be.equal(true);
-			expect(remove.getCall(7).calledWith('afterDeleteMessage', 'federation-v2-after-room-message-deleted')).to.be.equal(true);
-			expect(remove.getCall(8).calledWith('afterSaveMessage', 'federation-v2-after-room-message-updated')).to.be.equal(true);
-			expect(remove.getCall(9).calledWith('afterSaveMessage', 'federation-v2-after-room-message-sent')).to.be.equal(true);
-			expect(remove.getCall(10).calledWith('afterSaveMessage', 'federation-v2-after-room-message-sent')).to.be.equal(true);
+			expect(remove.getCall(3).calledWith('afterSetReaction', 'federation-v2-after-message-reacted')).to.be.equal(true);
+			expect(remove.getCall(4).calledWith('afterUnsetReaction', 'federation-v2-after-message-unreacted')).to.be.equal(true);
+			expect(remove.getCall(5).calledWith('afterDeleteMessage', 'federation-v2-after-room-message-deleted')).to.be.equal(true);
+			expect(remove.getCall(6).calledWith('afterSaveMessage', 'federation-v2-after-room-message-updated')).to.be.equal(true);
+			expect(remove.getCall(7).calledWith('afterSaveMessage', 'federation-v2-after-room-message-sent')).to.be.equal(true);
+			expect(remove.getCall(8).calledWith('afterSaveMessage', 'federation-v2-after-room-message-sent')).to.be.equal(true);
 		});
 	});
 });
