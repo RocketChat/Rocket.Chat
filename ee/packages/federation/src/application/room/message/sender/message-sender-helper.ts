@@ -50,7 +50,7 @@ class FileExternalMessageSender implements IExternalMessageSender {
 
 	public async sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<void> {
 		const file = await this.internalFileHelper.getFileRecordById((message.files || [])[0]?._id);
-		if (!file || !file.size || !file.type) {
+		if (!file?.size || !file.type) {
 			return;
 		}
 
@@ -78,7 +78,7 @@ class FileExternalMessageSender implements IExternalMessageSender {
 		messageToReplyTo: IMessage,
 	): Promise<void> {
 		const file = await this.internalFileHelper.getFileRecordById((message.files || [])[0]?._id);
-		if (!file || !file.size || !file.type) {
+		if (!file?.size || !file.type) {
 			return;
 		}
 
