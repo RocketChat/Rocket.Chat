@@ -13,16 +13,7 @@ class ChatFinished extends Component {
 		onRedirectChat && onRedirectChat();
 	};
 
-	render = ({
-		color,
-		title,
-		greeting,
-		message,
-		// eslint-disable-next-line no-unused-vars
-		onRedirectChat,
-		t,
-		...props
-	}) => {
+	render = ({ color, title, greeting, message, onRedirectChat, t, ...props }) => {
 		const defaultGreeting = t('thanks_for_talking_with_us');
 		const defaultMessage = t('if_you_have_any_other_questions_just_press_the_but');
 

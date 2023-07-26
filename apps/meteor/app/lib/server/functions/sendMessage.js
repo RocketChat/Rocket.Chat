@@ -1,15 +1,15 @@
-import { Match, check } from 'meteor/check';
 import { Messages } from '@rocket.chat/models';
+import { Match, check } from 'meteor/check';
 
-import { settings } from '../../../settings/server';
-import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../ee/server/apps';
-import { isURL } from '../../../../lib/utils/isURL';
-import { FileUpload } from '../../../file-upload/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { parseUrlsInMessage } from './parseUrlsInMessage';
+import { callbacks } from '../../../../lib/callbacks';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
+import { isURL } from '../../../../lib/utils/isURL';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { FileUpload } from '../../../file-upload/server';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { settings } from '../../../settings/server';
+import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 /**
  * IMPORTANT

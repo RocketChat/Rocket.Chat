@@ -1,5 +1,5 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Subscriptions } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -204,7 +204,7 @@ export class UsersRaw extends BaseRaw {
 
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
-		const orStmt = (searchFields || []).reduce(function (acc, el) {
+		const orStmt = (searchFields || []).reduce((acc, el) => {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
@@ -247,7 +247,7 @@ export class UsersRaw extends BaseRaw {
 
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
-		const orStmt = (searchFields || []).reduce(function (acc, el) {
+		const orStmt = (searchFields || []).reduce((acc, el) => {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);

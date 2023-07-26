@@ -1,8 +1,8 @@
 import { isGETLivechatTriggersParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
-import { findTriggers, findTriggerById } from '../../../server/api/lib/triggers';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { findTriggers, findTriggerById } from '../../../server/api/lib/triggers';
 
 API.v1.addRoute(
 	'livechat/triggers',

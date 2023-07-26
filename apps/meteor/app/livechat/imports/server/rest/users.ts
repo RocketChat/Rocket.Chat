@@ -1,13 +1,13 @@
+import { Users } from '@rocket.chat/models';
+import { isLivechatUsersManagerGETProps, isPOSTLivechatUsersTypeProps } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 import _ from 'underscore';
-import { isLivechatUsersManagerGETProps, isPOSTLivechatUsersTypeProps } from '@rocket.chat/rest-typings';
-import { Users } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
-import { Livechat } from '../../../server/lib/Livechat';
-import { findAgents, findManagers } from '../../../server/api/lib/users';
-import { hasAtLeastOnePermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { hasAtLeastOnePermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { findAgents, findManagers } from '../../../server/api/lib/users';
+import { Livechat } from '../../../server/lib/Livechat';
 
 API.v1.addRoute(
 	'livechat/users/:type',

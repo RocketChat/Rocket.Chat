@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 import { afterLogoutCleanUpCallback } from '../../lib/callbacks/afterLogoutCleanUpCallback';

@@ -1,8 +1,8 @@
-import { lazy, useMemo } from 'react';
 import { useSetting } from '@rocket.chat/ui-contexts';
+import { lazy, useMemo } from 'react';
 
-import { useHasLicenseModule } from '../../../client/hooks/useHasLicenseModule';
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
+import { useHasLicenseModule } from '../../../client/hooks/useHasLicenseModule';
 
 addAction('canned-responses', () => {
 	const hasLicense = useHasLicenseModule('canned-responses');

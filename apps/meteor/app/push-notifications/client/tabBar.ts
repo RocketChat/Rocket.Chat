@@ -1,5 +1,5 @@
-import { lazy, useMemo } from 'react';
 import { useUserSubscription } from '@rocket.chat/ui-contexts';
+import { lazy, useMemo } from 'react';
 
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 
