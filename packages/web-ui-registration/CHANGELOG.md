@@ -1,5 +1,11 @@
 # @rocket.chat/web-ui-registration
 
+## 1.0.0-rc.7
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@1.0.0-rc.7
+
 ## 1.0.0-rc.6
 
 ### Patch Changes
