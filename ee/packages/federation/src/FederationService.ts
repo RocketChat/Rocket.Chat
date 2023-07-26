@@ -504,7 +504,6 @@ export class FederationService extends ServiceClassInternal implements IFederati
 	private async onValidEnterpriseLicenseAdded(): Promise<void> {
 		const { addDMMultipleFederationSlashCommand } = await import('./infrastructure/rocket-chat/slash-commands');
 		addDMMultipleFederationSlashCommand();
-		// TODO: add also the EE endpoints
 	}
 
 	public async createDirectMessageRoom(internalUserId: string, invitees: string[]): Promise<void> {
