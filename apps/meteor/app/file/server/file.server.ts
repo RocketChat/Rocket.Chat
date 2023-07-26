@@ -195,7 +195,7 @@ class FileSystem implements IRocketChatFileStore {
 
 	async deleteFile(fileName: string) {
 		try {
-			return this.remove(fileName);
+			return await this.remove(fileName);
 		} catch (error1) {
 			//
 		}
