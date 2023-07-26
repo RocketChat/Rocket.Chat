@@ -1,0 +1,17 @@
+name: Docs
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  docs:
+    name: docs workflow
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Run docs workflow
+        env:
+          GH_TOKEN: ${{ secrets.DOCS_PAT }}
+        run: |
+          gh workflow run versions-table.yml -R RocketChat/docs
