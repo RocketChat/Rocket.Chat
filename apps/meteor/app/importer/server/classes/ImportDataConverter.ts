@@ -317,7 +317,6 @@ export class ImportDataConverter {
 				skipAfterCreateUserCallback: this._options.skipUserCallbacks,
 				skipDefaultAvatar: true,
 				skipAppsEngineEvent: !!process.env.IMPORTER_SKIP_APPS_EVENT,
-				...(userData.roles?.length ? { globalRoles: userData.roles } : {}),
 			},
 			{
 				type: userData.type || 'user',
@@ -344,6 +343,7 @@ export class ImportDataConverter {
 				...(userData.importIds?.length && { importIds: userData.importIds }),
 				...(!!userData.customFields && { customFields: userData.customFields }),
 				...(userData.deleted !== undefined && { active: !userData.deleted }),
+				...(userData.roles?.length ? { globalRoles: userData.roles } : {}),
 			},
 		);
 
