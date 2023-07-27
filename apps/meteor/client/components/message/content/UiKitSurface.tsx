@@ -7,7 +7,6 @@ import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import type { ContextType, ReactElement } from 'react';
 import React from 'react';
 
-import { useActionManager } from '../../../contexts/ActionManagerContext';
 import {
 	useVideoConfDispatchOutgoing,
 	useVideoConfIsCalling,
@@ -18,6 +17,7 @@ import {
 } from '../../../contexts/VideoConfContext';
 import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 import GazzodownText from '../../GazzodownText';
+import { useUiKitActionManager } from '/client/hooks/useUiKitActionManager';
 
 let patched = false;
 const patchMessageParser = () => {
@@ -58,7 +58,7 @@ const UiKitSurface = ({ mid: _mid, blocks, rid, appId }: UiKitSurfaceProps): Rea
 		}
 	});
 
-	const actionManager = useActionManager();
+	const actionManager = useUiKitActionManager();
 
 	// TODO: this structure is attrociously wrong; we should revisit this
 	const context: ContextType<typeof kitContext> = {
