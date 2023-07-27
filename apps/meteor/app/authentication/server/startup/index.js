@@ -323,7 +323,7 @@ const insertUserDocAsync = async function (options, user) {
 	await addUserRolesAsync(_id, roles);
 
 	// Make user's roles to be present on callback
-	user = await Users.findOneById(_id, { projection: { username: 1, type: 1,  } });
+	user = await Users.findOneById(_id, { projection: { username: 1, type: 1 } });
 
 	if (user.username) {
 		if (options.joinDefaultChannels !== false) {
