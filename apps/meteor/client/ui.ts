@@ -10,7 +10,10 @@ import { useDiscussionsRoomAction } from './hooks/roomActions/useDiscussionsRoom
 import { useE2EERoomAction } from './hooks/roomActions/useE2EERoomAction';
 import { useExportMessagesRoomAction } from './hooks/roomActions/useExportMessagesRoomAction';
 import { useKeyboardShortcutListRoomAction } from './hooks/roomActions/useKeyboardShortcutListRoomAction';
+import { useMembersListRoomAction } from './hooks/roomActions/useMembersListRoomAction';
 import { useStartCallRoomAction } from './hooks/roomActions/useStartCallRoomAction';
+import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroupRoomAction';
+import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction';
 import type { ToolboxActionConfig } from './views/room/lib/Toolbox';
 
 export const roomActionHooks = [
@@ -26,5 +29,8 @@ export const roomActionHooks = [
 	useExportMessagesRoomAction,
 	useGameCenterRoomAction,
 	useKeyboardShortcutListRoomAction,
+	useMembersListRoomAction,
 	useStartCallRoomAction,
+	useUserInfoGroupRoomAction,
+	useUserInfoRoomAction,
 ] satisfies (() => ToolboxActionConfig | undefined)[];

@@ -1,5 +1,4 @@
-import { usePermission } from '@rocket.chat/ui-contexts';
-import { useMemo, lazy } from 'react';
+import { lazy } from 'react';
 
 import { addAction } from '.';
 
@@ -10,42 +9,6 @@ addAction('rocket-search', {
 	icon: 'magnifier',
 	template: lazy(() => import('../../contextualBar/MessageSearchTab')),
 	order: 6,
-});
-
-addAction('user-info', {
-	groups: ['direct'],
-	id: 'user-info',
-	title: 'User_Info',
-	icon: 'user',
-	template: lazy(() => import('../../MemberListRouter')),
-	order: 1,
-});
-
-addAction('user-info-group', {
-	groups: ['direct_multiple'],
-	id: 'user-info-group',
-	title: 'Members',
-	icon: 'members',
-	template: lazy(() => import('../../MemberListRouter')),
-	order: 1,
-});
-
-addAction('members-list', ({ room }) => {
-	const hasPermission = usePermission('view-broadcast-member-list', room._id);
-	return useMemo(
-		() =>
-			!room.broadcast || hasPermission
-				? {
-						groups: ['channel', 'group', 'team'],
-						id: 'members-list',
-						title: room.teamMain ? 'Teams_members' : 'Members',
-						icon: 'members',
-						template: lazy(() => import('../../MemberListRouter')),
-						order: 5,
-				  }
-				: null,
-		[hasPermission, room.broadcast, room.teamMain],
-	);
 });
 
 addAction('uploaded-files-list', {
