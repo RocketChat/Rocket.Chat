@@ -3,6 +3,7 @@ import { useCannedResponsesRoomAction } from '../ee/client/hooks/roomActions/use
 import { useGameCenterRoomAction } from '../ee/client/hooks/roomActions/useGameCenterRoomAction';
 import { useChatForwardQuickAction } from './hooks/quickActions/useChatForwardQuickAction';
 import { useMoveQueueQuickAction } from './hooks/quickActions/useMoveQueueQuickAction';
+import { useTranscriptQuickAction } from './hooks/quickActions/useTranscriptQuickAction';
 import { useAutotranslateRoomAction } from './hooks/roomActions/useAutotranslateRoomAction';
 import { useChannelSettingsRoomAction } from './hooks/roomActions/useChannelSettingsRoomAction';
 import { useCleanHistoryRoomAction } from './hooks/roomActions/useCleanHistoryRoomAction';
@@ -68,6 +69,6 @@ export const roomActionHooks = [
 	useWebRTCVideoRoomAction,
 ] satisfies (() => ToolboxActionConfig | undefined)[];
 
-export const quickActionHooks = [useMoveQueueQuickAction, useChatForwardQuickAction] satisfies (() =>
+export const quickActionHooks = [useMoveQueueQuickAction, useChatForwardQuickAction, useTranscriptQuickAction] satisfies (() =>
 	| QuickActionsActionConfig
 	| undefined)[];
