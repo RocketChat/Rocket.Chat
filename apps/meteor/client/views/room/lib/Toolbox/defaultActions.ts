@@ -21,15 +21,6 @@ addAction('user-info', {
 	order: 1,
 });
 
-addAction('contact-profile', {
-	groups: ['live' /* , 'voip'*/],
-	id: 'contact-profile',
-	title: 'Contact_Info',
-	icon: 'user',
-	template: lazy(() => import('../../../omnichannel/directory/contacts/contextualBar/ContactsContextualBar')),
-	order: 1,
-});
-
 addAction('user-info-group', {
 	groups: ['direct_multiple'],
 	id: 'user-info-group',
