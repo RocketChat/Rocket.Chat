@@ -7,6 +7,7 @@ import { useCleanHistoryRoomAction } from './hooks/roomActions/useCleanHistoryRo
 import { useContactChatHistoryRoomAction } from './hooks/roomActions/useContactChatHistoryRoomAction';
 import { useContactProfileRoomAction } from './hooks/roomActions/useContactProfileRoomAction';
 import { useDiscussionsRoomAction } from './hooks/roomActions/useDiscussionsRoomAction';
+import { useE2EERoomAction } from './hooks/roomActions/useE2EERoomAction';
 import { useStartCallRoomAction } from './hooks/roomActions/useStartCallRoomAction';
 import type { ToolboxActionConfig } from './views/room/lib/Toolbox';
 
@@ -19,6 +20,7 @@ export const roomActionHooks = [
 	useContactChatHistoryRoomAction,
 	useContactProfileRoomAction,
 	useDiscussionsRoomAction,
+	useE2EERoomAction,
 	useGameCenterRoomAction,
 	useStartCallRoomAction,
 ] satisfies (() => ToolboxActionConfig | undefined)[];
