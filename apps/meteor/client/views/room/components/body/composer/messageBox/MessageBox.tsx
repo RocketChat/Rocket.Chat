@@ -1,5 +1,5 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { Button, Tag, Box } from '@rocket.chat/fuselage';
+import { Button, Tag, IconButton, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
@@ -39,6 +39,8 @@ import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedR
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
+import { MessagePreview } from './MessagePreview';
+import { useMarkdownPreview } from './hooks/useMarkdownPreview';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
@@ -143,6 +145,8 @@ const MessageBox = ({
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
+	const { md, channels, mentions, setShowMarkdownPreview, showMarkdownPreview, handleViewPreview } = useMarkdownPreview(rid);
+
 	const handleOpenEmojiPicker: MouseEventHandler<HTMLElement> = useMutableCallback((e) => {
 		e.stopPropagation();
 		e.preventDefault();
@@ -159,6 +163,9 @@ const MessageBox = ({
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
 		clearPopup();
+		if (showMarkdownPreview) {
+			setShowMarkdownPreview(!showMarkdownPreview);
+		}
 
 		onSend?.({
 			value: text,
@@ -172,6 +179,12 @@ const MessageBox = ({
 		const input = event.target as HTMLTextAreaElement;
 
 		const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
+
+		if (isSubmitKey && showMarkdownPreview) {
+			event.preventDefault();
+			handleSendMessage();
+			return false;
+		}
 
 		if (isSubmitKey) {
 			const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
@@ -272,7 +285,9 @@ const MessageBox = ({
 
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
-	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef, isRecordingAudio);
+	const hideTextArea = isRecordingAudio || showMarkdownPreview;
+
+	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef, hideTextArea);
 
 	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid), [rid]));
 
@@ -391,11 +406,21 @@ const MessageBox = ({
 					aria-activedescendant={ariaActiveDescendant}
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
+				{showMarkdownPreview && <MessagePreview md={md} channels={channels} mentions={mentions} />}
+
+				<IconButton
+					info={typing || isEditing}
+					disabled={!canSend || (!typing && !isEditing)}
+					style={{ position: 'absolute', right: 0, marginTop: '10px', marginRight: '5px', zIndex: 100 }}
+					small
+					icon={showMarkdownPreview ? 'eye-off' : 'eye'}
+					onClick={() => handleViewPreview(chat.composer?.text as any)}
+				/>
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
 							icon='emoji'
-							disabled={!useEmojis || isRecording || !canSend}
+							disabled={!useEmojis || isRecording || !canSend || showMarkdownPreview}
 							onClick={handleOpenEmojiPicker}
 							title={t('Emoji')}
 						/>
@@ -405,7 +430,7 @@ const MessageBox = ({
 								composer={chat.composer}
 								variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 								items={formatters}
-								disabled={isRecording || !canSend}
+								disabled={isRecording || !canSend || showMarkdownPreview}
 							/>
 						)}
 						<MessageComposerActionsDivider />
