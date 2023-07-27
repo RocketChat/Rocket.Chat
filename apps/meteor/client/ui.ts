@@ -24,6 +24,7 @@ import { useStartCallRoomAction } from './hooks/roomActions/useStartCallRoomActi
 import { useTeamChannelsRoomAction } from './hooks/roomActions/useTeamChannelsRoomAction';
 import { useTeamInfoRoomAction } from './hooks/roomActions/useTeamInfoRoomAction';
 import { useThreadRoomAction } from './hooks/roomActions/useThreadRoomAction';
+import { useUploadedFilesListRoomAction } from './hooks/roomActions/useUploadedFilesListRoomAction';
 import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroupRoomAction';
 import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction';
 import type { ToolboxActionConfig } from './views/room/lib/Toolbox';
@@ -55,6 +56,7 @@ export const roomActionHooks = [
 	useTeamChannelsRoomAction,
 	useTeamInfoRoomAction,
 	useThreadRoomAction,
+	useUploadedFilesListRoomAction,
 	useUserInfoGroupRoomAction,
 	useUserInfoRoomAction,
 ] satisfies (() => ToolboxActionConfig | undefined)[];
