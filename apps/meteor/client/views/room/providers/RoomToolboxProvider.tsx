@@ -1,36 +1,32 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useUserId, useSetting, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import React, { useContext, useLayoutEffect, useMemo, useState } from 'react';
 
-import { useRoomActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
+import { useRoom } from '../contexts/RoomContext';
 import type { ToolboxContextValue } from '../contexts/ToolboxContext';
 import { ToolboxContext } from '../contexts/ToolboxContext';
-import type { Store } from '../lib/Toolbox/generator';
-import type { ToolboxAction, ToolboxActionConfig } from '../lib/Toolbox/index';
+import type { ToolboxActionConfig } from '../lib/Toolbox/index';
 import VirtualAction from './VirtualAction';
-import { useToolboxActions } from './hooks/useToolboxActions';
+import { useAppsRoomActions } from './hooks/useAppsRoomActions';
+import { useCoreRoomActions } from './hooks/useCoreRoomActions';
 
-const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom }): JSX.Element => {
-	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
-	const uid = useUserId();
-	const [list, setList] = useSafely(useDebouncedState<Store<ToolboxAction>>(new Map<string, ToolboxActionConfig>(), 5));
+type RoomToolboxProviderProps = { children: ReactNode };
+
+const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
+	const room = useRoom();
+
+	const [list, setList] = useSafely(useDebouncedState(() => new Map<string, ToolboxActionConfig>(), 5));
 	const handleChange = useMutableCallback((fn) => {
 		fn(list);
 		setList((list) => new Map(list));
 	});
-	const { listen, actions } = useToolboxActions(room);
 
 	const router = useRouter();
 
 	const tab = useRouteParameter('tab');
-	const context = useRouteParameter('context');
 
-	const activeTabBar = useMemo(
-		(): [ToolboxActionConfig | undefined, string?] => [tab ? (list.get(tab) as ToolboxActionConfig) : undefined, context],
-		[tab, list, context],
-	);
+	const activeTabBar = useMemo(() => (tab ? list.get(tab) : undefined), [tab, list]);
 
 	const close = useMutableCallback(() => {
 		const routeName = router.getRouteName();
@@ -51,7 +47,7 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 	});
 
 	const open = useMutableCallback((actionId: string, context?: string) => {
-		if (actionId === activeTabBar[0]?.id && context === undefined) {
+		if (actionId === activeTabBar?.id && context === undefined) {
 			return close();
 		}
 
@@ -79,45 +75,67 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 			case 'l':
 				open('room-info', username);
 				break;
+
 			case 'v':
 				open('voip-room-info', username);
 				break;
+
 			case 'd':
 				(room.uids?.length ?? 0) > 2 ? open('user-info-group', username) : open('user-info', username);
 				break;
+
 			default:
 				open('members-list', username);
 				break;
 		}
 	});
 
+	const { listen, actions } = useContext(ToolboxContext);
+	const [legacyCoreRoomActions, updateLegacyCoreRoomActions] = useSafely(useState(() => Array.from(actions.entries())));
+
+	useLayoutEffect(
+		() =>
+			listen((actions) => {
+				updateLegacyCoreRoomActions(Array.from(actions.entries()));
+			}),
+		[listen, updateLegacyCoreRoomActions],
+	);
+
+	const context = useRouteParameter('context');
+
 	const contextValue = useMemo(
 		(): ToolboxContextValue => ({
 			listen,
 			actions: new Map(list),
-			activeTabBar: activeTabBar[0],
-			context: activeTabBar[1],
+			activeTabBar,
+			context,
 			open,
 			close,
 			openRoomInfo,
 		}),
-		[listen, list, activeTabBar, open, close, openRoomInfo],
+		[listen, list, activeTabBar, context, open, close, openRoomInfo],
 	);
 
-	const appActions = useRoomActionAppsActionButtons();
+	const coreRoomActions = useCoreRoomActions();
+	const appsRoomActions = useAppsRoomActions();
+
+	const allowAnonymousRead = useSetting<boolean>('Accounts_AllowAnonymousRead', false);
+	const uid = useUserId();
+
+	const roomActions = [
+		...legacyCoreRoomActions,
+		...coreRoomActions.map((action) => [action.id, action] as [ToolboxActionConfig['id'], ToolboxActionConfig]),
+		...appsRoomActions.map((action) => [action.id, action] as [ToolboxActionConfig['id'], ToolboxActionConfig]),
+	].filter(([, action]) => uid || (allowAnonymousRead && 'anonymous' in action && action.anonymous));
 
 	return (
 		<ToolboxContext.Provider value={contextValue}>
-			{[...actions, ...(appActions.data ?? [])]
-				.filter(
-					([, action]) => uid || (allowAnonymousRead && action.hasOwnProperty('anonymous') && (action as ToolboxActionConfig).anonymous),
-				)
-				.map(([id, item]) => (
-					<VirtualAction action={item} room={room} id={id} key={id + room._id} handleChange={handleChange} />
-				))}
+			{roomActions.map(([id, roomAction]) => (
+				<VirtualAction key={id + room._id} action={roomAction} handleChange={handleChange} />
+			))}
 			{children}
 		</ToolboxContext.Provider>
 	);
 };
 
-export default ToolboxProvider;
+export default RoomToolboxProvider;
