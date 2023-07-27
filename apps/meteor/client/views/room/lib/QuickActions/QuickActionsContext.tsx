@@ -4,8 +4,6 @@ import { createContext, useContext } from 'react';
 import type { QuickActionsActionConfig, Events } from '.';
 import { actions, listen } from '.';
 
-import './defaultActions';
-
 type QuickActionsEventHandler = (handler: EventHandlerOf<Events, 'change'>) => unknown;
 
 type QuickActionsContextValue = {
