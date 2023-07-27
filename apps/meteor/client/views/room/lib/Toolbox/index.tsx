@@ -39,7 +39,7 @@ export type ToolboxActionConfig = {
 		tabBar: ToolboxContextValue;
 		_id: IRoom['_id'];
 		rid: IRoom['_id'];
-		teamId: IRoom['_id'];
+		teamId: IRoom['teamId'];
 	}>;
 	'featured'?: boolean;
 };
