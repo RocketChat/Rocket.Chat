@@ -127,7 +127,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 	},
 });
 
-settings.watch('FileUpload_FileSystemPath', function () {
+settings.watch('FileUpload_FileSystemPath', () => {
 	const options = {
 		path: settings.get('FileUpload_FileSystemPath'), // '/tmp/uploads/photos',
 	};

@@ -1,6 +1,6 @@
 import type { FederationAddServerProps, FederationPaginatedResult, FederationRemoveServerProps } from '.';
-import type { FederationSearchPublicRoomsProps } from './FederationPublicRoomsProps';
 import type { FederationJoinExternalPublicRoomProps } from './FederationJoinExternalPublicRoomProps';
+import type { FederationSearchPublicRoomsProps } from './FederationPublicRoomsProps';
 
 export interface IFederationPublicRooms {
 	id: string;

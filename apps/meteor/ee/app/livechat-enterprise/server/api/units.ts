@@ -2,10 +2,10 @@ import type { ILivechatUnitMonitor, IOmnichannelBusinessUnit } from '@rocket.cha
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
-import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
-import { LivechatEnterprise } from '../lib/LivechatEnterprise';
-import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../lib/Department';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
+import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../lib/Department';
+import { LivechatEnterprise } from '../lib/LivechatEnterprise';
+import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

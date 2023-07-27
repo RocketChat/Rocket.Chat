@@ -1,5 +1,5 @@
-import { readFileSync } from 'fs';
 import { randomUUID } from 'crypto';
+import { readFileSync } from 'fs';
 import path from 'path';
 
 import { expect } from 'chai';

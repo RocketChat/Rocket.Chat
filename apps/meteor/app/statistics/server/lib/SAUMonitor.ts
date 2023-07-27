@@ -1,16 +1,16 @@
+import type { ISession, ISessionDevice, ISocketConnectionLogged, IUser } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
+import { Sessions, Users } from '@rocket.chat/models';
+import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import UAParser from 'ua-parser-js';
-import mem from 'mem';
-import type { ISession, ISessionDevice, ISocketConnectionLogged, IUser } from '@rocket.chat/core-typings';
-import { Sessions, Users } from '@rocket.chat/models';
-import { cronJobs } from '@rocket.chat/cron';
 
-import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
-import { aggregates } from '../../../../server/models/raw/Sessions';
-import { Logger } from '../../../../server/lib/logger/Logger';
 import { getMostImportantRole } from '../../../../lib/roles/getMostImportantRole';
-import { sauEvents } from '../../../../server/services/sauMonitor/events';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
+import { Logger } from '../../../../server/lib/logger/Logger';
+import { aggregates } from '../../../../server/models/raw/Sessions';
+import { sauEvents } from '../../../../server/services/sauMonitor/events';
+import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 
 type DateObj = { day: number; month: number; year: number };
 

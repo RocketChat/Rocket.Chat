@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { TOTP } from '../lib/totp';
 import { settings } from '../../../settings/server';
+import { TOTP } from '../lib/totp';
 import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 
 export class TOTPCheck implements ICodeCheck {

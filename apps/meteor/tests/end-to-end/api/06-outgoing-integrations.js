@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { updatePermission } from '../../data/permissions.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
-import { createUser, login } from '../../data/users.helper';
+import { updatePermission } from '../../data/permissions.helper';
 import { password } from '../../data/user';
+import { createUser, login } from '../../data/users.helper';
 
 describe('[Outgoing Integrations]', function () {
 	this.retries(0);

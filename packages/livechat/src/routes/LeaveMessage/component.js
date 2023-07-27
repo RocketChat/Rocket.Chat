@@ -7,7 +7,8 @@ import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
 import { Form, FormField, SelectInput, TextInput, Validations } from '../../components/Form';
 import Screen from '../../components/Screen';
-import { createClassName, sortArrayByColumn } from '../../components/helpers';
+import { createClassName } from '../../helpers/createClassName';
+import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import styles from './styles.scss';
 
 class LeaveMessage extends Component {

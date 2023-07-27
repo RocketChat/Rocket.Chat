@@ -94,6 +94,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 				<Field>
 					<Field.Label alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
 						{t('Custom_Emoji')}
+						{/* FIXME: replace to IconButton */}
 						<Button square onClick={clickUpload}>
 							<Icon name='upload' size='x20' />
 						</Button>
