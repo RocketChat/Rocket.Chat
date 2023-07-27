@@ -3,18 +3,20 @@ import Ajv from 'ajv';
 const ajv = new Ajv();
 
 export type FederationVerifyMatrixIdProps = {
-	matrixId: string;
+	matrixIds: string[];
 };
 
 const FederationVerifyMatrixIdPropsSchema = {
 	type: 'object',
 	properties: {
-		matrixId: {
-			type: 'string',
+		matrixIds: {
+			type: 'array',
+			items: [{ type: 'string' }],
+			uniqueItems: true,
 		},
 	},
 	additionalProperties: false,
-	required: ['matrixId'],
+	required: ['matrixIds'],
 };
 
 export const isFederationVerifyMatrixIdProps = ajv.compile<FederationVerifyMatrixIdProps>(FederationVerifyMatrixIdPropsSchema);

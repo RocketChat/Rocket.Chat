@@ -81,7 +81,7 @@ export interface IFederationBridge {
 	getRoomTopic(externalRoomId: string, externalUserId: string): Promise<string | undefined>;
 	setRoomName(externalRoomId: string, externalUserId: string, roomName: string): Promise<void>;
 	setRoomTopic(externalRoomId: string, externalUserId: string, roomTopic: string): Promise<void>;
-	verifyInviteeId(externalInviteeId: string): Promise<string>;
+	verifyInviteeIds(matrixIds: string[]): Promise<Map<string, string>>;
 	getRoomData(
 		externalUserId: string,
 		externalRoomId: string,

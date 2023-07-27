@@ -169,7 +169,19 @@ export class MatrixBridge implements IFederationBridge {
 		}
 	}
 
-	public async verifyInviteeId(externalInviteeId: string): Promise<VerificationStatus> {
+	public async verifyInviteeIds(matrixIds: string[]): Promise<Map<string, string>> {
+		const matrixIdVerificationMap = new Map();
+		const matrixIdsVerificationPromises = matrixIds.map((matrixId) => this.verifyInviteeId(matrixId));
+		const matrixIdsVerificationPromiseResponse = await Promise.allSettled(matrixIdsVerificationPromises);
+		const matrixIdsVerificationFulfilledResults = matrixIdsVerificationPromiseResponse
+			.filter((result): result is PromiseFulfilledResult<VerificationStatus> => result.status === 'fulfilled')
+			.map((result) => result.value);
+
+		matrixIds.forEach((matrixId, idx) => matrixIdVerificationMap.set(matrixId, matrixIdsVerificationFulfilledResults[idx]));
+		return matrixIdVerificationMap;
+	}
+
+	private async verifyInviteeId(externalInviteeId: string): Promise<VerificationStatus> {
 		const [userId, homeserverUrl] = extractUserIdAndHomeserverFromMatrixId(externalInviteeId);
 		try {
 			const response = await fetch(`https://${homeserverUrl}/_matrix/client/v3/register/available`, { params: { username: userId } });
