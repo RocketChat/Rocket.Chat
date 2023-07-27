@@ -102,10 +102,27 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		if (!defaultBusinessHour) {
 			return options;
 		}
-		await removeBusinessHourByAgentIds(agentsId, defaultBusinessHour._id);
 		if (!department.businessHourId) {
+			// If this department doesn't have a business hour, we need to apply default business hour to these agents
+			// And then reset their status based on these BH
+			const isDefaultBusinessHourActive = (await filterBusinessHoursThatMustBeOpened([defaultBusinessHour])).length > 0;
+			if (!isDefaultBusinessHourActive) {
+				bhLogger.debug('Default business hour is not active. No need to apply it to agents');
+				return options;
+			}
+
+			await this.UsersRepository.addBusinessHourByAgentIds(agentsId, defaultBusinessHour._id);
+			await this.UsersRepository.makeAgentsWithinBusinessHourAvailable(agentsId);
+
 			return options;
 		}
+
+		// This department has a business hour, so we need to
+		// 1. Remove default business hour from these agents if they have it
+		// 2. Add this department's business hour to these agents
+		// 3. Update their status based on these BH
+		await removeBusinessHourByAgentIds(agentsId, defaultBusinessHour._id);
+
 		const businessHour = await this.BusinessHourRepository.findOneById(department.businessHourId);
 		if (!businessHour) {
 			return options;
@@ -115,6 +132,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			return options;
 		}
 		await this.UsersRepository.addBusinessHourByAgentIds(agentsId, businessHour._id);
+		await this.UsersRepository.makeAgentsWithinBusinessHourAvailable(agentsId);
+
 		return options;
 	}
 

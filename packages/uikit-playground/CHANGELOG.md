@@ -1,5 +1,12 @@
 # @rocket.chat/uikit-playground
 
+## 0.1.0-rc.8
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@1.0.0-rc.8
+- @rocket.chat/fuselage-ui-kit@1.0.0-rc.8
+
 ## 0.1.0-rc.7
 
 ### Patch Changes
