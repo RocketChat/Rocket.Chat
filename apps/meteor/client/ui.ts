@@ -28,6 +28,7 @@ import { useUploadedFilesListRoomAction } from './hooks/roomActions/useUploadedF
 import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroupRoomAction';
 import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction';
 import { useVoIPRoomInfoRoomAction } from './hooks/roomActions/useVoIPRoomInfoRoomAction';
+import { useWebRTCVideoRoomAction } from './hooks/roomActions/useWebRTCVideoRoomAction';
 import type { ToolboxActionConfig } from './views/room/lib/Toolbox';
 
 export const roomActionHooks = [
@@ -61,4 +62,5 @@ export const roomActionHooks = [
 	useUserInfoGroupRoomAction,
 	useUserInfoRoomAction,
 	useVoIPRoomInfoRoomAction,
+	useWebRTCVideoRoomAction,
 ] satisfies (() => ToolboxActionConfig | undefined)[];
