@@ -2,7 +2,6 @@ import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { BadgeProps } from '@rocket.chat/fuselage';
 import { HeaderToolboxAction, HeaderToolboxActionBadge } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
-
 import React, { useMemo, lazy } from 'react';
 import type { LazyExoticComponent, FC, ReactNode } from 'react';
 

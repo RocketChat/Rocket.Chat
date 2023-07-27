@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 
+import { MatrixEventType } from '../../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixEventType';
 import {
 	MatrixEnumRelatesToRelType,
 	MatrixEnumSendMessageType,
 } from '../../../../../../../server/services/federation/infrastructure/matrix/definitions/events/RoomMessageSent';
-import { MatrixEventType } from '../../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixEventType';
 import { MatrixRoomMessageSentHandler } from '../../../../../../../server/services/federation/infrastructure/matrix/handlers/Room';
 
 describe('Federation - Infrastructure - handlers - Room - MatrixRoomMessageSentHandler ', () => {
