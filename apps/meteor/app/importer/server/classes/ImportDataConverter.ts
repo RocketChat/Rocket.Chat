@@ -80,6 +80,8 @@ export class ImportDataConverter {
 		return this._options;
 	}
 
+	public aborted = false;
+
 	constructor(options?: IConverterOptions) {
 		this._options = options || {
 			flagEmailsAsVerified: false,
@@ -285,7 +287,8 @@ export class ImportDataConverter {
 
 	// TODO
 	async insertUser(userData: IImportUser): Promise<IUser> {
-		const password = `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
+		const password =
+			userData.password || `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 		const userId = userData.emails.length
 			? await Accounts.createUserAsync({
 					email: userData.emails[0],
@@ -329,6 +332,10 @@ export class ImportDataConverter {
 	public async convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
 		const users = (await this.getUsersToImport()) as IImportUserRecord[];
 		for await (const { data, _id } of users) {
+			if (this.aborted) {
+				return;
+			}
+
 			try {
 				if (beforeImportFn && !(await beforeImportFn(data, 'user'))) {
 					await this.skipRecord(_id);
@@ -568,6 +575,10 @@ export class ImportDataConverter {
 		const messages = await this.getMessagesToImport();
 
 		for await (const { data, _id } of messages) {
+			if (this.aborted) {
+				return;
+			}
+
 			try {
 				if (beforeImportFn && !(await beforeImportFn(data, 'message'))) {
 					await this.skipRecord(_id);
@@ -937,6 +948,10 @@ export class ImportDataConverter {
 	async convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
 		const channels = await this.getChannelsToImport();
 		for await (const { data, _id } of channels) {
+			if (this.aborted) {
+				return;
+			}
+
 			try {
 				if (beforeImportFn && !(await beforeImportFn(data, 'channel'))) {
 					await this.skipRecord(_id);

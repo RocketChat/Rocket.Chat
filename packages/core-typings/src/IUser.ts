@@ -180,6 +180,7 @@ export interface IUser extends IRocketChatRecord {
 		};
 	};
 	importIds?: string[];
+	_pendingAvatarUrl?: string;
 }
 
 export interface IRegisterUser extends IUser {

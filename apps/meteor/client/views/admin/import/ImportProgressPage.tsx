@@ -1,3 +1,4 @@
+import type { ProgressStep } from '@rocket.chat/core-typings';
 import { Box, Margins, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
@@ -7,7 +8,6 @@ import React, { useEffect } from 'react';
 import { ImportingStartedStates } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 import Page from '../../../components/Page';
-import type { ProgressStep } from './ImportTypes';
 import { useErrorHandler } from './useErrorHandler';
 
 const ImportProgressPage = function ImportProgressPage() {
