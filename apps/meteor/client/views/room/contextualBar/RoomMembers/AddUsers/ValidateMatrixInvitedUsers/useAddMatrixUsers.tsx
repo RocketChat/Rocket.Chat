@@ -2,9 +2,9 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useMethod, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React, { lazy } from 'react';
+import React from 'react';
 
-const ValidateMatrixIdModal = lazy(() => import('./ValidateMatrixIdModal'));
+import ValidateMatrixIdModal from './ValidateMatrixIdModal';
 
 export type useAddMatrixUsersProps = {
 	rid: IRoom['_id'];
