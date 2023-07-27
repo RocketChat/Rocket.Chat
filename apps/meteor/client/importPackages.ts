@@ -42,7 +42,6 @@ import '../app/slashcommands-unarchiveroom/client';
 import '../app/tokenpass/client';
 import '../app/ui/client';
 import '../app/ui-clean-history/client';
-import '../app/videobridge/client';
 import '../app/webdav/client';
 import '../app/webrtc/client';
 import '../app/wordpress/client';
