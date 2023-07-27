@@ -1,12 +1,12 @@
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IVisitor } from '@rocket.chat/apps-engine/definition/livechat';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { IAppsConverterService } from '@rocket.chat/core-services';
 
-import { OrchestratorFactory } from './orchestratorFactory';
 import type { AppServerOrchestrator } from '../orchestrator';
+import { OrchestratorFactory } from './orchestratorFactory';
 
 export class AppsConverterService extends ServiceClass implements IAppsConverterService {
 	protected name = 'apps-converter';

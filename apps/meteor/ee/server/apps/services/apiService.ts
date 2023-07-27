@@ -2,14 +2,14 @@ import * as util from 'util';
 
 import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IApiEndpoint, IApiRequest } from '@rocket.chat/apps-engine/definition/api';
-import { Router } from 'express';
-import type { Request, NextFunction } from 'express';
 import type { AppsApiServiceResponse, IAppsApiService, IRequestWithPrivateHash } from '@rocket.chat/core-services';
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { Serialized } from '@rocket.chat/core-typings';
+import type { Request, NextFunction } from 'express';
+import { Router } from 'express';
 
-import { OrchestratorFactory } from './orchestratorFactory';
 import type { AppServerOrchestrator } from '../orchestrator';
+import { OrchestratorFactory } from './orchestratorFactory';
 
 /**
  * This type is used to replace the Express Response object, as in the service it won't be

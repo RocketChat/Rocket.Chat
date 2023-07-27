@@ -2,8 +2,8 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { AppsStatisticsResult, IAppsStatisticsService } from '@rocket.chat/core-services';
 
-import { OrchestratorFactory } from './orchestratorFactory';
 import type { AppServerOrchestrator } from '../orchestrator';
+import { OrchestratorFactory } from './orchestratorFactory';
 
 export class AppsStatisticsService extends ServiceClass implements IAppsStatisticsService {
 	protected name = 'apps-statistics';

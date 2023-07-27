@@ -1,22 +1,22 @@
-import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
-import type { IAppInstallParameters, IAppUninstallParameters } from '@rocket.chat/apps-engine/server/AppManager';
-import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type {
 	SlashCommandContext,
 	ISlashCommandPreview,
 	ISlashCommandPreviewItem,
 } from '@rocket.chat/apps-engine/definition/slashcommands';
+import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
+import type { IAppInstallParameters, IAppUninstallParameters } from '@rocket.chat/apps-engine/server/AppManager';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { AppFabricationFulfillment, AppsEngineAppResult, IAppsManagerService } from '@rocket.chat/core-services';
 
-import { OrchestratorFactory } from './orchestratorFactory';
 import type { AppServerOrchestrator } from '../orchestrator';
-import { transformProxiedAppToAppResult } from './lib/transformProxiedAppToAppResult';
 import { transformAppFabricationFulfillment } from './lib/transformAppFabricationFulfillment';
+import { transformProxiedAppToAppResult } from './lib/transformProxiedAppToAppResult';
+import { OrchestratorFactory } from './orchestratorFactory';
 
 export class AppsManagerService extends ServiceClass implements IAppsManagerService {
 	protected name = 'apps-manager';

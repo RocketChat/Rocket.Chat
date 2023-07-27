@@ -1,12 +1,12 @@
-import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
-import type { VideoConfData, VideoConfDataExtended, IVideoConferenceOptions } from '@rocket.chat/apps-engine/definition/videoConfProviders';
-import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
+import type { VideoConfData, VideoConfDataExtended, IVideoConferenceOptions } from '@rocket.chat/apps-engine/definition/videoConfProviders';
+import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
+import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { IAppsVideoManagerService } from '@rocket.chat/core-services';
 
-import { OrchestratorFactory } from './orchestratorFactory';
 import type { AppServerOrchestrator } from '../orchestrator';
+import { OrchestratorFactory } from './orchestratorFactory';
 
 export class AppsVideoManagerService extends ServiceClass implements IAppsVideoManagerService {
 	protected name = 'apps-video-manager';
