@@ -61,7 +61,7 @@ function ChatInfo({ id, route }) {
 	const queueTime = () => {
 		// Room served
 		if (servedBy) {
-			return moment(room.closedAt).from(moment(queueStartedAt), true);
+			return moment(servedBy.ts).from(moment(queueStartedAt), true);
 		}
 
 		// Room open and not served
