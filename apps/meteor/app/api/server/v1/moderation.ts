@@ -1,3 +1,5 @@
+import type { IModerationReport } from '@rocket.chat/core-typings';
+import { ModerationReports, Users } from '@rocket.chat/models';
 import {
 	isReportHistoryProps,
 	isArchiveReportProps,
@@ -6,12 +8,10 @@ import {
 	isModerationDeleteMsgHistoryParams,
 	isReportsByMsgIdParams,
 } from '@rocket.chat/rest-typings';
-import { ModerationReports, Users } from '@rocket.chat/models';
-import type { IModerationReport } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { API } from '../api';
 import { deleteReportedMessages } from '../../../../server/lib/moderation/deleteReportedMessages';
+import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
 type ReportMessage = Pick<IModerationReport, '_id' | 'message' | 'ts' | 'room'>;

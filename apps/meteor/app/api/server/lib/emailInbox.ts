@@ -1,6 +1,6 @@
 import type { IEmailInbox } from '@rocket.chat/core-typings';
-import type { Filter, InsertOneResult, Sort, UpdateResult, WithId } from 'mongodb';
 import { EmailInbox, Users } from '@rocket.chat/models';
+import type { Filter, InsertOneResult, Sort, UpdateResult, WithId } from 'mongodb';
 
 export const findEmailInboxes = async ({
 	query = {},

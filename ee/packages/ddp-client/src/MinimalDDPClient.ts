@@ -1,6 +1,11 @@
 import { Emitter } from '@rocket.chat/emitter';
 
+import type { DDPClient } from './types/DDPClient';
+import type { IncomingPayload } from './types/IncomingPayload';
+import type { OutgoingPayload } from './types/OutgoingPayload';
+import type { RemoveListener } from './types/RemoveListener';
 import type { ConnectedPayload, ConnectPayload, FailedPayload } from './types/connectionPayloads';
+import type { PongPayload } from './types/heartbeatsPayloads';
 import type { MethodPayload, ResultPayload, UpdatedPayload } from './types/methodsPayloads';
 import type {
 	AddedPayload,
@@ -13,11 +18,6 @@ import type {
 	SubscribePayload,
 	UnsubscribePayload,
 } from './types/publicationPayloads';
-import type { OutgoingPayload } from './types/OutgoingPayload';
-import type { IncomingPayload } from './types/IncomingPayload';
-import type { DDPClient } from './types/DDPClient';
-import type { RemoveListener } from './types/RemoveListener';
-import type { PongPayload } from './types/heartbeatsPayloads';
 
 /**
  * Creates a unique id for a DDP client.

@@ -1,6 +1,5 @@
 import type { UrlWithParsedQuery } from 'url';
 
-import type { FilterOperators } from 'mongodb';
 import type {
 	IMessage,
 	IRoom,
@@ -21,9 +20,10 @@ import type {
 	InquiryWithAgentInfo,
 	ILivechatTagRecord,
 } from '@rocket.chat/core-typings';
+import type { FilterOperators } from 'mongodb';
 
-import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
+import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped';
 import { Callbacks } from './callbacks/callbacksBase';
 

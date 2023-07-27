@@ -1,6 +1,6 @@
-import React from 'react';
-import { OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 import type { IRoom } from '@rocket.chat/core-typings';
+import { OptionColumn, OptionContent } from '@rocket.chat/fuselage';
+import React from 'react';
 
 import { RoomIcon } from '../../../../../../client/components/RoomIcon';
 
