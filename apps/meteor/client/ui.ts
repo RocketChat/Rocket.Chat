@@ -12,6 +12,7 @@ import { useExportMessagesRoomAction } from './hooks/roomActions/useExportMessag
 import { useKeyboardShortcutListRoomAction } from './hooks/roomActions/useKeyboardShortcutListRoomAction';
 import { useMembersListRoomAction } from './hooks/roomActions/useMembersListRoomAction';
 import { useMentionsRoomAction } from './hooks/roomActions/useMentionsRoomAction';
+import { useOTRRoomAction } from './hooks/roomActions/useOTRRoomAction';
 import { useStartCallRoomAction } from './hooks/roomActions/useStartCallRoomAction';
 import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroupRoomAction';
 import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction';
@@ -32,6 +33,7 @@ export const roomActionHooks = [
 	useKeyboardShortcutListRoomAction,
 	useMembersListRoomAction,
 	useMentionsRoomAction,
+	useOTRRoomAction,
 	useStartCallRoomAction,
 	useUserInfoGroupRoomAction,
 	useUserInfoRoomAction,
