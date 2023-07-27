@@ -31,7 +31,7 @@ export class AppsEngineService extends ServiceClass implements IAppsEngineServic
 		return this.apps.load();
 	}
 
-	isInitialized(): boolean {
+	async isInitialized(): Promise<boolean> {
 		return Apps.isInitialized();
 	}
 
