@@ -3,7 +3,7 @@ import { WebApp } from 'meteor/webapp';
 import { isRunningMs } from '../lib/isRunningMs';
 import { SystemLogger } from '../lib/logger/system';
 
-WebApp.rawConnectHandlers.use('/health', async function (_req, res) {
+WebApp.rawConnectHandlers.use('/health', async (_req, res) => {
 	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
 	res.setHeader('Pragma', 'no-cache');
 	res.setHeader('Expires', 0);

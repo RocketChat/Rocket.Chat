@@ -1,10 +1,10 @@
 import { Settings } from '@rocket.chat/models';
 
-import { SettingsRegistry } from './SettingsRegistry';
-import { initializeSettings } from './startup';
-import { settings } from './cached';
-import './applyMiddlewares';
 import { use } from './Middleware';
+import { SettingsRegistry } from './SettingsRegistry';
+import { settings } from './cached';
+import { initializeSettings } from './startup';
+import './applyMiddlewares';
 
 export { SettingsEvents } from './SettingsRegistry';
 

@@ -1,5 +1,7 @@
 import type { ILivechatDepartment, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
+import { LivechatDepartmentAgents, LivechatUnitMonitors } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	Collection,
 	FindCursor,
@@ -12,8 +14,6 @@ import type {
 	DeleteResult,
 	UpdateFilter,
 } from 'mongodb';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { LivechatDepartmentAgents, LivechatUnitMonitors } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 

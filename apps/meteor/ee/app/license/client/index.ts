@@ -1,5 +1,5 @@
-import { fetchFeatures } from '../../../client/lib/fetchFeatures';
 import { queryClient } from '../../../../client/lib/queryClient';
+import { fetchFeatures } from '../../../client/lib/fetchFeatures';
 
 export async function hasLicense(feature: string): Promise<boolean> {
 	try {
