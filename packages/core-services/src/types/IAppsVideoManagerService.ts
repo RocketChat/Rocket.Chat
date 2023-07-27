@@ -1,6 +1,6 @@
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
-import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
 import type { VideoConfData, VideoConfDataExtended, IVideoConferenceOptions } from '@rocket.chat/apps-engine/definition/videoConfProviders';
+import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
 
 export interface IAppsVideoManagerService {
 	isFullyConfigured(providerName: string): Promise<boolean>;
