@@ -1,6 +1,6 @@
+import type { FileProp } from './Files';
 import type { FileAttachmentProps } from './Files/FileAttachmentProps';
 import type { MessageAttachmentAction } from './MessageAttachmentAction';
-import type { FileProp } from './Files';
 import type { MessageAttachmentDefault } from './MessageAttachmentDefault';
 import type { MessageQuoteAttachment } from './MessageQuoteAttachment';
 
