@@ -1,8 +1,8 @@
 import moment from 'moment';
 
+import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { OmnichannelQueueInactivityMonitor } from '../lib/QueueInactivityMonitor';
-import { settings } from '../../../../../app/settings/server';
 import { cbLogger } from '../lib/logger';
 
 let timer = 0;

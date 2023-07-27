@@ -1,12 +1,12 @@
-import filesize from 'filesize';
 import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
+import filesize from 'filesize';
 
-import { settings } from '../../../../settings/server';
-import { FileUpload } from '../../../../file-upload/server';
 import { API } from '../../../../api/server';
 import { getUploadFormData } from '../../../../api/server/lib/getUploadFormData';
-import { sendFileLivechatMessage } from '../../../server/methods/sendFileLivechatMessage';
+import { FileUpload } from '../../../../file-upload/server';
+import { settings } from '../../../../settings/server';
 import { fileUploadIsValidContentType } from '../../../../utils/server/restrictions';
+import { sendFileLivechatMessage } from '../../../server/methods/sendFileLivechatMessage';
 
 API.v1.addRoute('livechat/upload/:rid', {
 	async post() {

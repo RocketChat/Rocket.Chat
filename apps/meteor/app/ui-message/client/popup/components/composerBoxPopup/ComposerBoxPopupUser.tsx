@@ -1,9 +1,9 @@
-import React from 'react';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { OptionAvatar, OptionColumn, OptionContent, OptionInput } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React from 'react';
 
-import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
 import ReactiveUserStatus from '../../../../../../client/components/UserStatus/ReactiveUserStatus';
+import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
 
 export type ComposerBoxPopupUserProps = {
 	_id: string;

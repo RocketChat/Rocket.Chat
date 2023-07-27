@@ -4,8 +4,8 @@ import { expect } from 'chai';
 import type { MutableRefObject } from 'react';
 import React from 'react';
 
-import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 import NotFoundPage from '../../../../../client/views/notFound/NotFoundPage';
+import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 
 describe('views/notFound/NotFoundPage', () => {
 	it('should look good', async () => {

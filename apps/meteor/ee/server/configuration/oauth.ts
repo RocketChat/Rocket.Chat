@@ -1,6 +1,6 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 import { capitalize } from '@rocket.chat/string-helpers';
-import type { IUser } from '@rocket.chat/core-typings';
 
 import { Logger } from '../../../app/logger/server';
 import { settings } from '../../../app/settings/server';

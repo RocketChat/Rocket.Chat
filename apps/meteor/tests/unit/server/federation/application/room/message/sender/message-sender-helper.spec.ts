@@ -1,4 +1,3 @@
-/* eslint-disable import/first */
 import { expect } from 'chai';
 import sinon from 'sinon';
 

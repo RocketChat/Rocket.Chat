@@ -4,22 +4,22 @@ import { isDeletedMessage, isEditedMessage, isMessageFromMatrixFederation, isQuo
 import { FederatedRoom, DirectMessageFederatedRoom } from '../../../domain/FederatedRoom';
 import { FederatedUser } from '../../../domain/FederatedUser';
 import type { IFederationBridge } from '../../../domain/IFederationBridge';
+import { MATRIX_POWER_LEVELS } from '../../../infrastructure/matrix/definitions/MatrixPowerLevels';
 import type { RocketChatFileAdapter } from '../../../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from '../../../infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatNotificationAdapter } from '../../../infrastructure/rocket-chat/adapters/Notification';
 import type { RocketChatRoomAdapter } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../../infrastructure/rocket-chat/adapters/User';
-import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
-import { getExternalMessageSender } from '../message/sender/message-sender-helper';
-import { MATRIX_POWER_LEVELS } from '../../../infrastructure/matrix/definitions/MatrixPowerLevels';
 import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../infrastructure/rocket-chat/definitions/FederatedRoomInternalRoles';
+import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
 import type {
 	FederationAfterLeaveRoomDto,
 	FederationAfterRemoveUserFromRoomDto,
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,
 } from '../input/RoomSenderDto';
+import { getExternalMessageSender } from '../message/sender/message-sender-helper';
 
 export class FederationRoomServiceSender extends AbstractFederationApplicationService {
 	constructor(

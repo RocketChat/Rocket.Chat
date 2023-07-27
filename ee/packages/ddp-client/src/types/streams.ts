@@ -1,6 +1,6 @@
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
-import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type {
 	IMessage,
 	IRoom,

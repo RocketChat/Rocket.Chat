@@ -1,11 +1,11 @@
+import { Messages, SmarshHistory, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import { Messages, SmarshHistory, Users, Rooms } from '@rocket.chat/models';
+import 'moment-timezone';
 
+import { i18n } from '../../../../server/lib/i18n';
 import { settings } from '../../../settings/server';
 import { MessageTypes } from '../../../ui-utils/server';
-import 'moment-timezone';
-import { i18n } from '../../../../server/lib/i18n';
 import { sendEmail } from './sendEmail';
 
 const start =

@@ -1,8 +1,8 @@
-import type { FilterOperators } from 'mongodb';
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { FilterOperators } from 'mongodb';
 
-import { callbacks } from '../../../../../lib/callbacks';
 import { hasRoleAsync } from '../../../../../app/authorization/server/functions/hasRole';
+import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 import { getUnitsFromUser } from '../lib/units';
 

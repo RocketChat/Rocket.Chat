@@ -1,9 +1,9 @@
 import { Box, Option, OptionSkeleton, Tile } from '@rocket.chat/fuselage';
 import { useUniqueId, useContentBoxSize } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useEffect, memo, useMemo, useRef } from 'react';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 
 export type ComposerBoxPopupProps<
 	T extends {

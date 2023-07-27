@@ -1,9 +1,9 @@
+import { Message } from '@rocket.chat/core-services';
 import type { IRoom, ILivechatVisitor, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
 
-import { callbacks } from '../../../../../lib/callbacks';
 import { forwardRoomToDepartment } from '../../../../../app/livechat/server/lib/Helper';
+import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
 const onTransferFailure = async ({

@@ -1,15 +1,15 @@
-import Queue from 'queue-fifo';
-import moment from 'moment';
 import { Settings } from '@rocket.chat/models';
+import moment from 'moment';
+import Queue from 'queue-fifo';
 
-import * as peerCommandHandlers from './peerHandlers';
-import * as localCommandHandlers from './localHandlers';
 import { callbacks } from '../../../../lib/callbacks';
-import * as servers from '../servers';
-import { Logger } from '../../../logger/server';
-import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterLogoutCleanUpCallback } from '../../../../lib/callbacks/afterLogoutCleanUpCallback';
+import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
+import { Logger } from '../../../logger/server';
+import * as servers from '../servers';
+import * as localCommandHandlers from './localHandlers';
+import * as peerCommandHandlers from './peerHandlers';
 
 const logger = new Logger('IRC Bridge');
 const queueLogger = logger.section('Queue');
