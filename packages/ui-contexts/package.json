@@ -3,7 +3,6 @@
 	"version": "0.0.5",
 	"private": true,
 	"devDependencies": {
-		"@rocket.chat/account-utils": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "next",
 		"@rocket.chat/fuselage-hooks": "next",
@@ -23,6 +22,7 @@
 	},
 	"peerDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/account-utils": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/emitter": "*",
 		"@rocket.chat/fuselage-hooks": "*",
