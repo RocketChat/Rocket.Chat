@@ -40,7 +40,6 @@ import {
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
 import './events.js';
-import './tabbar';
 
 let failedToDecodeKey = false;
 
