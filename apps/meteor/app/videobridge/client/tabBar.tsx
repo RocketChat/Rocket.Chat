@@ -1,39 +1,13 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUser, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
-import { useMemo, lazy } from 'react';
+import { useMemo } from 'react';
 
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../client/contexts/VideoConfContext';
 import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 import { useVideoConfWarning } from '../../../client/views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 import type { ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
-import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
-
-addAction('calls', ({ room }) => {
-	const t = useTranslation();
-	const hasLicense = useHasLicenseModule('videoconference-enterprise');
-	const federated = isRoomFederated(room);
-
-	return useMemo(
-		() =>
-			hasLicense
-				? {
-						groups: ['channel', 'group', 'team'],
-						id: 'calls',
-						icon: 'phone',
-						title: 'Calls',
-						...(federated && {
-							'data-tooltip': t('Video_Call_unavailable_for_this_type_of_room'),
-							'disabled': true,
-						}),
-						template: lazy(() => import('../../../client/views/room/contextualBar/VideoConference/VideoConfList')),
-						order: 999,
-				  }
-				: null,
-		[hasLicense, federated, t],
-	);
-});
 
 addAction('start-call', ({ room }) => {
 	const t = useTranslation();

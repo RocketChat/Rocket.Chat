@@ -25,6 +25,7 @@ export type ToolboxActionConfig = {
 	'icon'?: IconName;
 	'title': TranslationKey;
 	'anonymous'?: boolean;
+	'tooltip'?: string;
 	'data-tooltip'?: string;
 	'disabled'?: boolean;
 	'renderAction'?: (props: ActionRendererProps) => ReactNode;
