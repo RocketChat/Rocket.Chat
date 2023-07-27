@@ -1,2 +1,1 @@
-import './pinnedMessagesTab';
 import './starredMessagesTab';
