@@ -3,7 +3,7 @@ import { isMessageFromMatrixFederation } from '@rocket.chat/core-typings';
 
 import { FederatedUser } from '../../../../domain/FederatedUser';
 import type { IFederationBridge } from '../../../../domain/IFederationBridge';
-import { Federation } from '../../../../Federation';
+import { FederationHelper } from '../../../../FederationHelper';
 import type { RocketChatMessageAdapter } from '../../../../infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatRoomAdapter } from '../../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../../../infrastructure/rocket-chat/adapters/Settings';
@@ -92,7 +92,7 @@ export class FederationMessageServiceSender {
 		if (!externalEventId) {
 			return;
 		}
-		const normalizedEventId = Federation.unescapeExternalFederationEventId(externalEventId);
+		const normalizedEventId = FederationHelper.unescapeExternalFederationEventId(externalEventId);
 		await this.bridge.redactEvent(federatedRoom.getExternalId(), federatedSender.getExternalId(), normalizedEventId);
 		await this.internalMessageAdapter.unsetExternalFederationEventOnMessageReaction(externalEventId, internalMessage, reaction);
 	}

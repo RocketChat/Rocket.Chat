@@ -1,3 +1,4 @@
+import type { IFederationStatistics } from '@rocket.chat/core-services';
 import { MatrixBridgedRoom, Rooms, Users, Settings } from '@rocket.chat/models';
 
 class RocketChatStatisticsAdapter {
@@ -56,24 +57,6 @@ class RocketChatStatisticsAdapter {
 			servers: externalServers,
 		};
 	}
-}
-
-interface IFederationStatistics {
-	enabled: boolean;
-	maximumSizeOfPublicRoomsUsers: number;
-	biggestRoom: {
-		_id: string;
-		name: string;
-		usersCount: number;
-	} | null;
-	smallestRoom: {
-		_id: string;
-		name: string;
-		usersCount: number;
-	} | null;
-	amountOfExternalUsers: number;
-	amountOfFederatedRooms: number;
-	externalConnectedServers: { quantity: number; servers: string[] };
 }
 
 export const getMatrixFederationStatistics = async (): Promise<IFederationStatistics> => {

@@ -1,12 +1,11 @@
 import type { IRoom, IUser, ValueOf } from '@rocket.chat/core-typings';
-import { isRoomFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
+import { RoomMemberActions, RoomSettingsEnum, isRoomFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 
 import {
 	escapeExternalFederationEventId,
 	unescapeExternalFederationEventId,
 } from './infrastructure/rocket-chat/adapters/federation-id-escape-helper';
-import { RoomMemberActions, RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 
 const allowedActionsInFederatedRooms: ValueOf<typeof RoomMemberActions>[] = [
 	RoomMemberActions.REMOVE_USER,
@@ -21,7 +20,7 @@ const allowedActionsForModerators = allowedActionsInFederatedRooms.filter((actio
 
 const allowedRoomSettingsChangesInFederatedRooms: ValueOf<typeof RoomSettingsEnum>[] = [RoomSettingsEnum.NAME, RoomSettingsEnum.TOPIC];
 
-export class Federation {
+export class FederationHelper {
 	public static async actionAllowed(room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']): Promise<boolean> {
 		if (!isRoomFederated(room)) {
 			return false;
@@ -74,5 +73,13 @@ export class Federation {
 			return false;
 		}
 		return allowedRoomSettingsChangesInFederatedRooms.includes(setting);
+	}
+
+	public escapeExternalFederationEventId(externalEventId: string): string {
+		return escapeExternalFederationEventId(externalEventId);
+	}
+
+	public unescapeExternalFederationEventId(externalEventId: string): string {
+		return unescapeExternalFederationEventId(externalEventId);
 	}
 }

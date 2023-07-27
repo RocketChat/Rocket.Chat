@@ -1,20 +1,20 @@
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated, TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
-
+import { FederationHelper } from '@rocket.chat/federation';
+console.log({ FederationHelper });
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
 import { roomCoordinator } from '../roomCoordinator';
-import { Federation } from '../../../services/federation/Federation';
 
 const PublicRoomType = getPublicRoomType(roomCoordinator);
 
 roomCoordinator.add(PublicRoomType, {
 	allowRoomSettingChange(room, setting) {
 		if (isRoomFederated(room)) {
-			return Federation.isRoomSettingAllowed(room, setting);
+			return FederationHelper.isRoomSettingAllowed(room, setting);
 		}
 		switch (setting) {
 			case RoomSettingsEnum.BROADCAST:
@@ -33,7 +33,7 @@ roomCoordinator.add(PublicRoomType, {
 
 	async allowMemberAction(_room, action, userId) {
 		if (isRoomFederated(_room as IRoom)) {
-			return Federation.actionAllowed(_room, action, userId);
+			return FederationHelper.actionAllowed(_room, action, userId);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:

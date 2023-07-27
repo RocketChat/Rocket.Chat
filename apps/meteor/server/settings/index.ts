@@ -78,7 +78,7 @@ async function createSettings() {
 		createUserDataSettings(),
 		createWebDavSettings(),
 		createWebRTCSettings(),
-		// createMatrixFederationSettings(),
+		createMatrixFederationSettings(),
 	]);
 }
 

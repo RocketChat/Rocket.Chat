@@ -72,16 +72,12 @@ interface EventLikeCallbackSignatures {
 	'beforeCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreateRoom': (owner: IUser, room: IRoom) => void;
 	'onValidateLogin': (login: ILoginAttempt) => void;
-	'federation.afterCreateFederatedRoom': (room: IRoom, second: { owner: IUser; originalMemberList: string[] }) => void;
 	'beforeCreateDirectRoom': (members: IUser[]) => void;
-	'federation.beforeCreateDirectMessage': (members: IUser[]) => void;
 	'afterSetReaction': (message: IMessage, { user, reaction }: { user: IUser; reaction: string; shouldReact: boolean }) => void;
 	'afterUnsetReaction': (
 		message: IMessage,
 		{ user, reaction }: { user: IUser; reaction: string; shouldReact: boolean; oldMessage: IMessage },
 	) => void;
-	'federation.beforeAddUserToARoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
-	'federation.onAddUsersToARoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 	'usernameSet': () => void;
 	'beforeLeaveRoom': (user: IUser, room: IRoom) => void;

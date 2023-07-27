@@ -2,13 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import type { IRoom, AtLeast } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
+import { FederationHelper } from '@rocket.chat/federation';
 
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
-import { Federation } from '../../../services/federation/Federation';
 
 const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
@@ -23,7 +23,7 @@ const getCurrentUserId = (): string | undefined => {
 roomCoordinator.add(DirectMessageRoomType, {
 	allowRoomSettingChange(_room, setting) {
 		if (isRoomFederated(_room)) {
-			return Federation.isRoomSettingAllowed(_room, setting);
+			return FederationHelper.isRoomSettingAllowed(_room, setting);
 		}
 		switch (setting) {
 			case RoomSettingsEnum.TYPE:
@@ -44,7 +44,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 
 	async allowMemberAction(room: IRoom, action, userId) {
 		if (isRoomFederated(room)) {
-			return Federation.actionAllowed(room, action, userId);
+			return FederationHelper.actionAllowed(room, action, userId);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:

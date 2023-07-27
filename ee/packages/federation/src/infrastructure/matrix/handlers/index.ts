@@ -13,7 +13,7 @@ export class MatrixEventsHandler {
 		try {
 			await handler.handle(event);
 		} catch (e: any) {
-			throw new Meteor.Error(e.message);
+			throw new Error(e.message);
 		}
 	}
 }

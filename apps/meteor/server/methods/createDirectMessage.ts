@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
-import type { ICreateRoomParams } from '@rocket.chat/core-services';
+import { Federation, type ICreateRoomParams } from '@rocket.chat/core-services';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { settings } from '../../app/settings/server';
@@ -10,7 +10,6 @@ import { hasPermissionAsync } from '../../app/authorization/server/functions/has
 import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
 import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { addUser } from '../../app/federation/server/functions/addUser';
-import { callbacks } from '../../lib/callbacks';
 
 export async function createDirectMessage(
 	usernames: IUser['username'][],
@@ -100,8 +99,7 @@ export async function createDirectMessage(
 		options.subscriptionExtra = { open: true };
 	}
 	try {
-		await callbacks.run('federation.beforeCreateDirectMessage', roomUsers);
-		// await Federation.runFederationChecksBeforeCreateDirectMessageRoom(roomUsers);
+		await Federation.runFederationChecksBeforeCreateDirectMessageRoom(roomUsers);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}

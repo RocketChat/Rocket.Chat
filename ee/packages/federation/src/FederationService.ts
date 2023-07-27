@@ -1,4 +1,4 @@
-import { License, ServiceClassInternal } from '@rocket.chat/core-services';
+import { License, ServiceClass } from '@rocket.chat/core-services';
 import type { IFederationJoinExternalPublicRoomInput, IFederationService } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser, Username } from '@rocket.chat/core-typings';
 import { isEditedMessage, isMessageFromMatrixFederation, isRoomFederated } from '@rocket.chat/core-typings';
@@ -22,8 +22,10 @@ import { FederationSearchPublicRoomsInputDto } from './application/room/input/Ro
 import type { FederationUserService } from './application/user/UserService';
 import type { FederationMessageServiceSender } from './application/room/message/sender/MessageServiceSender';
 import type { FederationRoomInternalValidator } from './application/room/sender/RoomInternalValidator';
+import { IFederationStatistics } from '@rocket.chat/core-services';
+import { getMatrixFederationStatistics } from './infrastructure/rocket-chat/adapters/Statistics';
 
-export class FederationService extends ServiceClassInternal implements IFederationService {
+export class FederationService extends ServiceClass implements IFederationService {
 	protected name = 'federation';
 
 	private internalQueueInstance: InMemoryQueue;
@@ -215,7 +217,7 @@ export class FederationService extends ServiceClassInternal implements IFederati
 				) {
 					return;
 				}
-				await this.internalMessageServiceSender.sendExternalMessageReaction(params.oldMessage, params.user, params.reaction);
+				await this.internalMessageServiceSender.sendExternalMessageReaction(message, params.user, params.reaction);
 			},
 		);
 		this.onEvent(
@@ -602,5 +604,9 @@ export class FederationService extends ServiceClassInternal implements IFederati
 			return;
 		}
 		await this.internalRoomValidator.canCreateDirectMessageFromUI(members);
+	}
+
+	public async getMatrixFederationStatistics(): Promise<IFederationStatistics> {
+		return getMatrixFederationStatistics();
 	}
 }

@@ -24,7 +24,7 @@ import {
 	Subscriptions,
 	Users,
 } from '@rocket.chat/models';
-import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
+import { Analytics, Federation, Team, VideoConf } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
@@ -39,7 +39,6 @@ import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
-import { getMatrixFederationStatistics } from '../../../../server/services/federation/infrastructure/rocket-chat/adapters/Statistics';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -525,7 +524,11 @@ export const statistics = {
 		const defaultLoggedInCustomScript = (await Settings.findOneById('Custom_Script_Logged_In'))?.packageValue;
 		statistics.loggedInCustomScriptChanged = settings.get('Custom_Script_Logged_In') !== defaultLoggedInCustomScript;
 
-		statistics.matrixFederation = await getMatrixFederationStatistics();
+		try {
+			statistics.matrixFederation = await Federation.getMatrixFederationStatistics();
+		} catch (error) {
+			// noop
+		}
 
 		// Omnichannel call stats
 		statistics.webRTCEnabled = settings.get('WebRTC_Enabled');

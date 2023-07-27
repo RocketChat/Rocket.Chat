@@ -1,2 +1,2 @@
 export { FederationService } from './FederationService';
-export { Federation } from './Federation';
+export { FederationHelper } from './FederationHelper';
