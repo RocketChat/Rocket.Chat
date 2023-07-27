@@ -13,6 +13,7 @@ import { useKeyboardShortcutListRoomAction } from './hooks/roomActions/useKeyboa
 import { useMembersListRoomAction } from './hooks/roomActions/useMembersListRoomAction';
 import { useMentionsRoomAction } from './hooks/roomActions/useMentionsRoomAction';
 import { useOTRRoomAction } from './hooks/roomActions/useOTRRoomAction';
+import { useOmnichannelExternalFrameRoomAction } from './hooks/roomActions/useOmnichannelExternalFrameRoomAction';
 import { useStartCallRoomAction } from './hooks/roomActions/useStartCallRoomAction';
 import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroupRoomAction';
 import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction';
@@ -34,6 +35,7 @@ export const roomActionHooks = [
 	useMembersListRoomAction,
 	useMentionsRoomAction,
 	useOTRRoomAction,
+	useOmnichannelExternalFrameRoomAction,
 	useStartCallRoomAction,
 	useUserInfoGroupRoomAction,
 	useUserInfoRoomAction,
