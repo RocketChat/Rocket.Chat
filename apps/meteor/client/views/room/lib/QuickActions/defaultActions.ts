@@ -1,13 +1,5 @@
 import { addAction, QuickActionsEnum } from '.';
 
-addAction(QuickActionsEnum.ChatForward, {
-	groups: ['live'],
-	id: QuickActionsEnum.ChatForward,
-	title: 'Forward_chat',
-	icon: 'balloon-arrow-top-right',
-	order: 2,
-});
-
 addAction(QuickActionsEnum.Transcript, {
 	groups: ['live'],
 	id: QuickActionsEnum.Transcript,
