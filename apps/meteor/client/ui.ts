@@ -19,6 +19,7 @@ import { usePinnedMessagesRoomAction } from './hooks/roomActions/usePinnedMessag
 import { usePushNotificationsRoomAction } from './hooks/roomActions/usePushNotificationsRoomAction';
 import { useRocketSearchRoomAction } from './hooks/roomActions/useRocketSearchRoomAction';
 import { useRoomInfoRoomAction } from './hooks/roomActions/useRoomInfoRoomAction';
+import { useStarredMessagesRoomAction } from './hooks/roomActions/useStarredMessagesRoomAction';
 import { useStartCallRoomAction } from './hooks/roomActions/useStartCallRoomAction';
 import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroupRoomAction';
 import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction';
@@ -46,6 +47,7 @@ export const roomActionHooks = [
 	usePushNotificationsRoomAction,
 	useRocketSearchRoomAction,
 	useRoomInfoRoomAction,
+	useStarredMessagesRoomAction,
 	useStartCallRoomAction,
 	useUserInfoGroupRoomAction,
 	useUserInfoRoomAction,
