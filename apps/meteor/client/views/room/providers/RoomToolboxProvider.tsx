@@ -1,16 +1,21 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useUserId, useSetting, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import React, { useContext, useLayoutEffect, useMemo, useState } from 'react';
 
+import { useRoom } from '../contexts/RoomContext';
 import type { ToolboxContextValue } from '../contexts/ToolboxContext';
 import { ToolboxContext } from '../contexts/ToolboxContext';
-import type { ToolboxAction, ToolboxActionConfig } from '../lib/Toolbox/index';
+import type { ToolboxActionConfig } from '../lib/Toolbox/index';
 import VirtualAction from './VirtualAction';
 import { useAppsRoomActions } from './hooks/useAppsRoomActions';
+import { useCoreRoomActions } from './hooks/useCoreRoomActions';
 
-const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom }) => {
+type RoomToolboxProviderProps = { children: ReactNode };
+
+const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
+	const room = useRoom();
+
 	const [list, setList] = useSafely(useDebouncedState(() => new Map<string, ToolboxActionConfig>(), 5));
 	const handleChange = useMutableCallback((fn) => {
 		fn(list);
@@ -86,14 +91,14 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 	});
 
 	const { listen, actions } = useContext(ToolboxContext);
-	const [coreRoomActions, setState] = useSafely(useState<Array<[string, ToolboxAction]>>(Array.from(actions.entries())));
+	const [legacyCoreRoomActions, updateLegacyCoreRoomActions] = useSafely(useState(() => Array.from(actions.entries())));
 
 	useLayoutEffect(
 		() =>
 			listen((actions) => {
-				setState(Array.from(actions.entries()));
+				updateLegacyCoreRoomActions(Array.from(actions.entries()));
 			}),
-		[listen, room, setState],
+		[listen, updateLegacyCoreRoomActions],
 	);
 
 	const context = useRouteParameter('context');
@@ -111,14 +116,17 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 		[listen, list, activeTabBar, context, open, close, openRoomInfo],
 	);
 
+	const coreRoomActions = useCoreRoomActions();
 	const appsRoomActions = useAppsRoomActions();
 
 	const allowAnonymousRead = useSetting<boolean>('Accounts_AllowAnonymousRead', false);
 	const uid = useUserId();
 
-	const roomActions = [...coreRoomActions, ...appsRoomActions].filter(
-		([, action]) => uid || (allowAnonymousRead && 'anonymous' in action && action.anonymous),
-	);
+	const roomActions = [
+		...legacyCoreRoomActions,
+		...coreRoomActions.map((action) => [action.id, action] as [ToolboxActionConfig['id'], ToolboxActionConfig]),
+		...appsRoomActions.map((action) => [action.id, action] as [ToolboxActionConfig['id'], ToolboxActionConfig]),
+	].filter(([, action]) => uid || (allowAnonymousRead && 'anonymous' in action && action.anonymous));
 
 	return (
 		<ToolboxContext.Provider value={contextValue}>
@@ -130,4 +138,4 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 	);
 };
 
-export default ToolboxProvider;
+export default RoomToolboxProvider;
