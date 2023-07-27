@@ -3,6 +3,7 @@ import { useCannedResponsesRoomAction } from '../ee/client/hooks/roomActions/use
 import { useGameCenterRoomAction } from '../ee/client/hooks/roomActions/useGameCenterRoomAction';
 import { useAutotranslateRoomAction } from './hooks/roomActions/useAutotranslateRoomAction';
 import { useChannelSettingsRoomAction } from './hooks/roomActions/useChannelSettingsRoomAction';
+import { useCleanHistoryRoomAction } from './hooks/roomActions/useCleanHistoryRoomAction';
 import { useStartCallRoomAction } from './hooks/roomActions/useStartCallRoomAction';
 import type { ToolboxActionConfig } from './views/room/lib/Toolbox';
 
@@ -11,6 +12,7 @@ export const roomActionHooks = [
 	useCallsRoomAction,
 	useCannedResponsesRoomAction,
 	useChannelSettingsRoomAction,
+	useCleanHistoryRoomAction,
 	useGameCenterRoomAction,
 	useStartCallRoomAction,
 ] satisfies (() => ToolboxActionConfig | undefined)[];
