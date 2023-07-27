@@ -3,4 +3,4 @@
 "@rocket.chat/uikit-playground": patch
 ---
 
-feat(fuselage-ui-kit): Introduce `ExperimentalTabsNavigationBlock`
+feat(fuselage-ui-kit): Introduce `TabsNavigationBlock`
