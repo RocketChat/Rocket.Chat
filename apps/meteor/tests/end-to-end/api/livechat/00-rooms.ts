@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { expect } from 'chai';
+import { faker } from '@faker-js/faker';
 import type {
 	IOmnichannelRoom,
 	ILivechatVisitor,
@@ -13,10 +13,14 @@ import type {
 	ILivechatDepartment,
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
+import { expect } from 'chai';
 import type { Response } from 'supertest';
-import { faker } from '@faker-js/faker';
 
+import type { SuccessResult } from '../../../../app/api/server/definition';
 import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
+import { createCustomField } from '../../../data/livechat/custom-fields';
+import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
 import {
 	createVisitor,
 	createLivechatRoom,
@@ -28,6 +32,9 @@ import {
 	createManager,
 	closeOmnichannelRoom,
 } from '../../../data/livechat/rooms';
+import { saveTags } from '../../../data/livechat/tags';
+import type { DummyResponse } from '../../../data/livechat/utils';
+import { sleep } from '../../../data/livechat/utils';
 import {
 	restorePermissionToRoles,
 	addPermissions,
@@ -36,17 +43,10 @@ import {
 	updatePermission,
 	updateSetting,
 } from '../../../data/permissions.helper';
-import { createUser, login } from '../../../data/users.helper.js';
-import { adminUsername, password } from '../../../data/user';
-import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
-import type { DummyResponse } from '../../../data/livechat/utils';
-import type { SuccessResult } from '../../../../app/api/server/definition';
-import { sleep } from '../../../data/livechat/utils';
-import { IS_EE } from '../../../e2e/config/constants';
-import { createCustomField } from '../../../data/livechat/custom-fields';
-import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
 import { getSubscriptionForRoom } from '../../../data/subscriptions';
-import { saveTags } from '../../../data/livechat/tags';
+import { adminUsername, password } from '../../../data/user';
+import { createUser, login } from '../../../data/users.helper.js';
+import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - rooms', function () {
 	this.retries(0);

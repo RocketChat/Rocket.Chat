@@ -7,7 +7,7 @@ import { callbackLogger } from '../lib/logger';
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message, room) {
+	async (message, room) => {
 		callbackLogger.debug(`Calculating Omnichannel metrics for room ${room._id}`);
 		// check if room is livechat
 		if (!isOmnichannelRoom(room)) {

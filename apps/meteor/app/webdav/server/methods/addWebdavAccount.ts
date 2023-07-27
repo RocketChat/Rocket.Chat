@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import { WebdavAccounts } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IWebdavAccountPayload } from '@rocket.chat/core-typings';
+import { WebdavAccounts } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';

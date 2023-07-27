@@ -1,7 +1,8 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { userEvent } from '@storybook/testing-library';
+import { render, screen } from '@testing-library/react';
 import { expect, spy } from 'chai';
+import React from 'react';
 
 import TranscriptModal from '../../../../../../client/components/Omnichannel/modals/TranscriptModal';
 
@@ -29,22 +30,22 @@ describe('components/Omnichannel/TranscriptModal', () => {
 		render(<TranscriptModal {...defaultProps} onDiscard={onDiscardMock} />);
 		const undoRequestButton = screen.getByText('Undo_request');
 
-		fireEvent.click(undoRequestButton);
+		userEvent.click(undoRequestButton);
 
 		expect(onDiscardMock).to.have.been.called();
 	});
 
-	it('should show Request button when roomOpen is true and transcriptRequest not exist', () => {
+	it('should show Request button when roomOpen is true and transcriptRequest not exist', async () => {
 		render(<TranscriptModal {...{ ...defaultProps, room: { ...room, transcriptRequest: undefined } }} />);
 
-		const requestBtn = screen.getByRole('button', { name: 'request-button' });
+		const requestBtn = await screen.findByRole('button', { name: 'request-button' });
 		expect(requestBtn).to.be.visible;
 	});
 
-	it('should show Send button when roomOpen is false', () => {
+	it('should show Send button when roomOpen is false', async () => {
 		render(<TranscriptModal {...{ ...defaultProps, room: { ...room, open: false } }} />);
 
-		const sendBtn = screen.getByRole('button', { name: 'send-button' });
+		const sendBtn = await screen.findByRole('button', { name: 'send-button' });
 		expect(sendBtn).to.be.visible;
 	});
 });

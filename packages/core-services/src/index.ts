@@ -1,18 +1,33 @@
 import { proxify, proxifyWithWait } from './lib/proxify';
-import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
+import type { IAccount, ILoginResult } from './types/IAccount';
+import type { IAnalyticsService } from './types/IAnalyticsService';
+import type { IAppsEngineService } from './types/IAppsEngineService';
 import type { IAuthorization, RoomAccessValidator } from './types/IAuthorization';
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
 import type { IAuthorizationVoip } from './types/IAuthorizationVoip';
-import type { IAppsEngineService } from './types/IAppsEngineService';
-import type { IPresence } from './types/IPresence';
-import type { IAccount, ILoginResult } from './types/IAccount';
-import type { ILicense } from './types/ILicense';
-import type { IMeteor, AutoUpdateRecord } from './types/IMeteor';
-import type { IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
-import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IBannerService } from './types/IBannerService';
+import type { ICalendarService } from './types/ICalendarService';
+import type { IDeviceManagementService } from './types/IDeviceManagementService';
+import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
+import type { ILDAPService } from './types/ILDAPService';
+import type { ILicense } from './types/ILicense';
+import type { IMediaService, ResizeResult } from './types/IMediaService';
+import type { IMessageReadsService } from './types/IMessageReadsService';
+import type { IMessageService } from './types/IMessageService';
+import type { IMeteor, AutoUpdateRecord } from './types/IMeteor';
 import type { INPSService, NPSCreatePayload, NPSVotePayload } from './types/INPSService';
+import type { IOmnichannelEEService } from './types/IOmnichannelEEService';
+import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
+import type { IOmnichannelService } from './types/IOmnichannelService';
+import type { IOmnichannelTranscriptService } from './types/IOmnichannelTranscriptService';
+import type { IOmnichannelVoipService, FindVoipRoomsParams } from './types/IOmnichannelVoipService';
+import type { IPresence } from './types/IPresence';
+import type { IPushService } from './types/IPushService';
+import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerService';
+import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData } from './types/IRoomService';
+import type { ISAUMonitorService } from './types/ISAUMonitorService';
+import type { ISettingsService } from './types/ISettingsService';
 import type {
 	ITeamService,
 	ITeamUpdateData,
@@ -23,27 +38,12 @@ import type {
 	ITeamAutocompleteResult,
 	IListRoomsFilter,
 } from './types/ITeamService';
-import type { IMessageReadsService } from './types/IMessageReadsService';
-import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData } from './types/IRoomService';
-import type { IMediaService, ResizeResult } from './types/IMediaService';
-import type { IVoipService } from './types/IVoipService';
-import type { IOmnichannelVoipService, FindVoipRoomsParams } from './types/IOmnichannelVoipService';
-import type { IAnalyticsService } from './types/IAnalyticsService';
-import type { ILDAPService } from './types/ILDAPService';
-import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
-import type { ISAUMonitorService } from './types/ISAUMonitorService';
-import type { IDeviceManagementService } from './types/IDeviceManagementService';
-import type { IPushService } from './types/IPushService';
-import type { IOmnichannelService } from './types/IOmnichannelService';
 import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent';
-import type { ICalendarService } from './types/ICalendarService';
-import type { IOmnichannelTranscriptService } from './types/IOmnichannelTranscriptService';
-import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerService';
 import type { ITranslationService } from './types/ITranslationService';
-import type { IMessageService } from './types/IMessageService';
-import type { ISettingsService } from './types/ISettingsService';
-import type { IOmnichannelEEService } from './types/IOmnichannelEEService';
-import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
+import type { IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
+import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
+import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
+import type { IVoipService } from './types/IVoipService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
