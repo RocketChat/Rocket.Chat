@@ -1,6 +1,5 @@
-/* eslint-disable */
-import proxyquire from 'proxyquire';
 import { expect } from 'chai';
+import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const remove = sinon.stub();
@@ -23,7 +22,10 @@ const { FederationHooksEE } = proxyquire
 			callbacks: {
 				priority: { HIGH: 'high' },
 				remove,
-				add: (_name: string, callback: (...args: any[]) => void, _priority: string, _id: string) => (hooks[_id] = callback),
+				add: (_name: string, callback: (...args: any[]) => void, _priority: string, _id: string) => {
+					hooks[_id] = callback;
+					return callback;
+				},
 			},
 		},
 		'../../../../../../../app/settings/server': {

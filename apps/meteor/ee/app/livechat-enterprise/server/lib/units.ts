@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import mem from 'mem';
 import { LivechatUnit } from '@rocket.chat/models';
+import mem from 'mem';
+import { Meteor } from 'meteor/meteor';
 
 async function hasUnits(): Promise<boolean> {
 	// @ts-expect-error - this prop is injected dynamically on ee license

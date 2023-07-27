@@ -1,5 +1,5 @@
-import gcm from 'node-gcm';
 import EJSON from 'ejson';
+import gcm from 'node-gcm';
 
 import { logger } from './logger';
 
@@ -92,7 +92,7 @@ export const sendGCM = function ({ userTokens, notification, _replaceToken, _rem
 
 	const userToken = userTokens.length === 1 ? userTokens[0] : null;
 
-	sender.send(message, userTokens, 5, function (err, result) {
+	sender.send(message, userTokens, 5, (err, result) => {
 		if (err) {
 			logger.debug({ msg: 'ANDROID ERROR: result of sender', result });
 			return;

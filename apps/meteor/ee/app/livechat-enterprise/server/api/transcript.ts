@@ -1,5 +1,5 @@
-import { LivechatRooms } from '@rocket.chat/models';
 import { OmnichannelTranscript } from '@rocket.chat/core-services';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { API } from '../../../../../app/api/server';
 import { canAccessRoomAsync } from '../../../../../app/authorization/server/functions/canAccessRoom';

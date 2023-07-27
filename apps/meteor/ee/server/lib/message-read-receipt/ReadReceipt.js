@@ -1,5 +1,5 @@
-import { Random } from '@rocket.chat/random';
 import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';

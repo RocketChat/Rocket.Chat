@@ -1,5 +1,5 @@
-import { Accounts } from 'meteor/accounts-base';
 import type { IUser, IPassword } from '@rocket.chat/core-typings';
+import { Accounts } from 'meteor/accounts-base';
 
 /**
  * Check if a given password is the one user by given user or if the user doesn't have a password

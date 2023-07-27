@@ -1,11 +1,11 @@
 import type { ICalendarEvent } from '@rocket.chat/core-typings';
 
 import type { CalendarEventCreateProps } from './CalendarEventCreateProps';
-import type { CalendarEventListProps } from './CalendarEventListProps';
+import type { CalendarEventDeleteProps } from './CalendarEventDeleteProps';
 import type { CalendarEventImportProps } from './CalendarEventImportProps';
 import type { CalendarEventInfoProps } from './CalendarEventInfoProps';
+import type { CalendarEventListProps } from './CalendarEventListProps';
 import type { CalendarEventUpdateProps } from './CalendarEventUpdateProps';
-import type { CalendarEventDeleteProps } from './CalendarEventDeleteProps';
 
 export * from './CalendarEventCreateProps';
 export * from './CalendarEventDeleteProps';

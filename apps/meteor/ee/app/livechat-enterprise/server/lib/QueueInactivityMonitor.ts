@@ -1,15 +1,15 @@
-import type { Db } from 'mongodb';
 import { Agenda } from '@rocket.chat/agenda';
-import { MongoInternals } from 'meteor/mongo';
-import { Meteor } from 'meteor/meteor';
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatInquiry as LivechatInquiryRaw, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
+import type { Db } from 'mongodb';
 
-import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
+import { settings } from '../../../../../app/settings/server';
 import { i18n } from '../../../../../server/lib/i18n';
-import { schedulerLogger } from './logger';
 import type { MainLogger } from '../../../../../server/lib/logger/getPino';
+import { schedulerLogger } from './logger';
 
 const SCHEDULER_NAME = 'omnichannel_queue_inactivity_monitor';
 

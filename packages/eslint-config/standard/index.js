@@ -83,6 +83,7 @@ module.exports = {
 				'jsx-quotes': ['error', 'prefer-single'],
 				'no-dupe-class-members': 'off',
 				'no-empty-function': 'off',
+				'no-extra-parens': 'off',
 				'no-redeclare': 'off',
 				'no-spaced-func': 'off',
 				'no-undef': 'off',

@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { getStatusText } from '../../../lib/server/functions/getStatusText';
 
