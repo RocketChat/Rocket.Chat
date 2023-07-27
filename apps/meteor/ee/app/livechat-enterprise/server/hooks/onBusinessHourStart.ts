@@ -1,8 +1,8 @@
 import { LivechatBusinessHourBehaviors } from '@rocket.chat/core-typings';
 
+import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { MultipleBusinessHoursBehavior } from '../business-hour/Multiple';
-import { settings } from '../../../../../app/settings/server';
 
 callbacks.add(
 	'on-business-hour-start',

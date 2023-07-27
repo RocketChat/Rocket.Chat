@@ -1,8 +1,8 @@
 import type { CloudConfirmationPollData } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../settings/server';
 
 export async function getConfirmationPoll(deviceCode: string): Promise<CloudConfirmationPollData> {
 	const cloudUrl = settings.get('Cloud_Url');

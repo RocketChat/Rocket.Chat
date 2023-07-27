@@ -1,6 +1,6 @@
 import { expect, spy } from 'chai';
-import proxyquire from 'proxyquire';
 import type fastq from 'fastq';
+import proxyquire from 'proxyquire';
 
 const { InMemoryQueue } = proxyquire.noCallThru().load('../../../../../../server/services/federation/infrastructure/queue/InMemoryQueue', {
 	fastq: {

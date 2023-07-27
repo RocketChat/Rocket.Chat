@@ -1,10 +1,10 @@
-import type { Db, DeleteResult, IndexDescription } from 'mongodb';
 import { eventTypes } from '@rocket.chat/core-typings';
 import type { IRoom, ISubscription, IUser, IFederationEvent } from '@rocket.chat/core-typings';
 import type { IFederationRoomEventsModel } from '@rocket.chat/model-typings';
+import type { Db, DeleteResult, IndexDescription } from 'mongodb';
 
-import { FederationEventsModel } from './FederationEvents';
 import { contextDefinitions } from '../../../app/federation/server/lib/context';
+import { FederationEventsModel } from './FederationEvents';
 
 const { type, contextQuery } = contextDefinitions.ROOM;
 

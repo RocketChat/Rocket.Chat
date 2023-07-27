@@ -1,9 +1,9 @@
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
 import { cronJobs } from '@rocket.chat/cron';
+import { Rooms } from '@rocket.chat/models';
 
-import { settings } from '../../settings/server';
 import { cleanRoomHistory } from '../../lib/server/functions/cleanRoomHistory';
+import { settings } from '../../settings/server';
 
 const maxTimes = {
 	c: 0,

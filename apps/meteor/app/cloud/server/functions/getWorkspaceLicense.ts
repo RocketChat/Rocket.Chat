@@ -1,11 +1,11 @@
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
-import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { LICENSE_VERSION } from '../license';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../settings/server';
+import { LICENSE_VERSION } from '../license';
+import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 
 export async function getWorkspaceLicense(): Promise<{ updated: boolean; license: string }> {
 	const currentLicense = await Settings.findOne('Cloud_Workspace_License');

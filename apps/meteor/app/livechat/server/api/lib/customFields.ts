@@ -1,7 +1,7 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { LivechatCustomField } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import type { ILivechatCustomField } from '@rocket.chat/core-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 export async function findLivechatCustomFields({
 	text,

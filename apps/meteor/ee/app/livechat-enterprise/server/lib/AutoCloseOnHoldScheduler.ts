@@ -1,13 +1,13 @@
 import { Agenda } from '@rocket.chat/agenda';
-import { MongoInternals } from 'meteor/mongo';
-import { Meteor } from 'meteor/meteor';
-import moment from 'moment';
-import { LivechatRooms, Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
+import { LivechatRooms, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
+import moment from 'moment';
 
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
-import { schedulerLogger } from './logger';
 import type { MainLogger } from '../../../../../server/lib/logger/getPino';
+import { schedulerLogger } from './logger';
 
 const SCHEDULER_NAME = 'omnichannel_auto_close_on_hold_scheduler';
 

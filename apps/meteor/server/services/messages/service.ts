@@ -1,14 +1,14 @@
-import type { IMessage, MessageTypesValues, IUser, IRoom } from '@rocket.chat/core-typings';
 import type { IMessageService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IMessage, MessageTypesValues, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
-import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
-import { settings } from '../../../app/settings/server';
-import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
+import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
+import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
+import { settings } from '../../../app/settings/server';
 
 export class MessageService extends ServiceClassInternal implements IMessageService {
 	protected name = 'message';
