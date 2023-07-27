@@ -4,11 +4,11 @@ import type { ReactElement } from 'react';
 import { memo, useState } from 'react';
 
 import type { BlockProps } from '../utils/BlockProps';
-import { ExperimentalTabElement } from '../elements/ExperimentalTabElement';
+import { TabElement } from '../elements/TabElement';
 
-type ExperimentalTabNavigationBlockProps = BlockProps<ExperimentalTabNavigationBlock>;
+type TabNavigationBlockProps = BlockProps<ExperimentalTabNavigationBlock>;
 
-const ExperimentalTabNavigationBlock = (blockProps: ExperimentalTabNavigationBlockProps): ReactElement => {
+const TabNavigationBlock = (blockProps: TabNavigationBlockProps): ReactElement => {
 
   const { block: {tabs}, context, surfaceRenderer } = blockProps;
 
@@ -21,10 +21,10 @@ const ExperimentalTabNavigationBlock = (blockProps: ExperimentalTabNavigationBlo
           innerBlock.selected = idx === selected;
         }
 
-        return <ExperimentalTabElement key={`${innerBlock.blockId}_${idx}`} index={idx} context={context} surfaceRenderer={surfaceRenderer} block={innerBlock} select={select} />
+        return <TabElement key={`${innerBlock.blockId}_${idx}`} index={idx} context={context} surfaceRenderer={surfaceRenderer} block={innerBlock} select={select} />
       })
     }
   </Tabs>
 };
 
-export default memo(ExperimentalTabNavigationBlock);
+export default memo(TabNavigationBlock);

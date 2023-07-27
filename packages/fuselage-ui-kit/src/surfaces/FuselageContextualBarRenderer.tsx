@@ -1,6 +1,6 @@
 import * as UiKit from '@rocket.chat/ui-kit';
 
-import ExperimentalTabNavigationBlock from '../blocks/ExperimentalTabNavigationBlock';
+import TabNavigationBlock from '../blocks/TabNavigationBlock';
 import { FuselageSurfaceRenderer } from './FuselageSurfaceRenderer';
 import { ReactElement } from 'react';
 
@@ -26,7 +26,7 @@ export class FuselageContextualBarSurfaceRenderer extends FuselageSurfaceRendere
 
     if (context === UiKit.BlockContext.BLOCK) {
       return (
-        <ExperimentalTabNavigationBlock
+        <TabNavigationBlock
           key={index}
           block={block}
           context={context}

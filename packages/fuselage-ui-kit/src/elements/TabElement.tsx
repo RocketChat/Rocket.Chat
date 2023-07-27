@@ -4,7 +4,7 @@ import * as UiKit from "@rocket.chat/ui-kit";
 import { useUiKitState } from "../hooks/useUiKitState";
 import { BlockProps } from "../utils/BlockProps";
 
-export const ExperimentalTabElement = ({block, context, surfaceRenderer, index, select}: BlockProps<UiKit.ExperimentalTabElement> & {select: Dispatch<number>}): ReactElement => {
+export const TabElement = ({block, context, surfaceRenderer, index, select}: BlockProps<UiKit.ExperimentalTabElement> & {select: Dispatch<number>}): ReactElement => {
     const [{ loading }, action] = useUiKitState(block, context);
 
     const {title, selected, disabled} = block;
