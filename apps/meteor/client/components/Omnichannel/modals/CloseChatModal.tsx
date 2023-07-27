@@ -89,7 +89,7 @@ const CloseChatModal = ({
 
 	const cannotSubmit = useMemo(() => {
 		const cannotSendTag = (tagRequired && !tags?.length) || errors.tags;
-		const cannotSendComment = (commentRequired && !comment) || errors.comment;
+		const cannotSendComment = (commentRequired && !comment?.trim()) || errors.comment;
 		const cannotSendTranscriptEmail = transcriptEmail && (!visitorEmail || !subject);
 
 		return Boolean(cannotSendTag || cannotSendComment || cannotSendTranscriptEmail);
