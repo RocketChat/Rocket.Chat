@@ -27,6 +27,7 @@ import { saveRoomSettings } from '../../../channel-settings/server/methods/saveR
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
+import { callbacks } from '../../../../lib/callbacks';
 
 type IRoom = Record<string, any>;
 type IMessage = Record<string, any>;
@@ -56,6 +57,7 @@ export type IConverterOptions = {
 	skipExistingUsers?: boolean;
 	skipNewUsers?: boolean;
 	bindSkippedUsers?: boolean;
+	skipUserCallbacks?: boolean;
 };
 
 const guessNameFromUsername = (username: string): string =>
@@ -310,9 +312,9 @@ export class ImportDataConverter {
 				skipEmailValidation: true,
 				skipAdminCheck: true,
 				skipAdminEmail: true,
-				skipOnCreateUserCallback: true,
-				skipBeforeCreateUserCallback: true,
-				skipAfterCreateUserCallback: true,
+				skipOnCreateUserCallback: this._options.skipUserCallbacks,
+				skipBeforeCreateUserCallback: this._options.skipUserCallbacks,
+				skipAfterCreateUserCallback: this._options.skipUserCallbacks,
 				skipDefaultAvatar: true,
 				skipAppsEngineEvent: !!process.env.IMPORTER_SKIP_APPS_EVENT,
 				...(userData.roles?.length ? { globalRoles: userData.roles } : {}),
@@ -387,67 +389,90 @@ export class ImportDataConverter {
 
 	public async convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
 		const users = (await this.getUsersToImport()) as IImportUserRecord[];
-		for await (const { data, _id } of users) {
-			if (this.aborted) {
-				return;
-			}
 
-			try {
-				if (beforeImportFn && !(await beforeImportFn(data, 'user'))) {
-					await this.skipRecord(_id);
-					continue;
+		await callbacks.run('beforeUserImport', { usersCount: users.length });
+
+		const insertedIds = new Set<IUser['_id']>();
+		const updatedIds = new Set<IUser['_id']>();
+		let skippedCount = 0;
+		let failedCount = 0;
+
+		try {
+			for await (const { data, _id } of users) {
+				if (this.aborted) {
+					return;
 				}
 
-				const emails = data.emails.filter(Boolean).map((email) => ({ address: email }));
-				data.importIds = data.importIds.filter((item) => item);
+				try {
+					if (beforeImportFn && !(await beforeImportFn(data, 'user'))) {
+						await this.skipRecord(_id);
+						skippedCount++;
+						continue;
+					}
 
-				if (!data.emails.length && !data.username) {
-					throw new Error('importer-user-missing-email-and-username');
-				}
+					const emails = data.emails.filter(Boolean).map((email) => ({ address: email }));
+					data.importIds = data.importIds.filter((item) => item);
 
-				let existingUser = await this.findExistingUser(data);
-				if (existingUser && this._options.skipExistingUsers) {
-					if (this._options.bindSkippedUsers) {
-						const newImportIds = data.importIds.filter((importId) => !(existingUser as IUser).importIds?.includes(importId));
-						if (newImportIds.length) {
-							await Users.addImportIds(existingUser._id, newImportIds);
+					if (!data.emails.length && !data.username) {
+						throw new Error('importer-user-missing-email-and-username');
+					}
+
+					let existingUser = await this.findExistingUser(data);
+					if (existingUser && this._options.skipExistingUsers) {
+						if (this._options.bindSkippedUsers) {
+							const newImportIds = data.importIds.filter((importId) => !(existingUser as IUser).importIds?.includes(importId));
+							if (newImportIds.length) {
+								await Users.addImportIds(existingUser._id, newImportIds);
+							}
 						}
+
+						await this.skipRecord(_id);
+						skippedCount++;
+						continue;
+					}
+					if (!existingUser && this._options.skipNewUsers) {
+						await this.skipRecord(_id);
+						skippedCount++;
+						continue;
 					}
 
-					await this.skipRecord(_id);
-					continue;
-				}
-				if (!existingUser && this._options.skipNewUsers) {
-					await this.skipRecord(_id);
-					continue;
-				}
-
-				if (!data.username && !existingUser?.username) {
-					data.username = await generateUsernameSuggestion({
-						name: data.name,
-						emails,
-					});
-				}
-
-				const isNewUser = !existingUser;
-
-				if (existingUser) {
-					await this.updateUser(existingUser, data);
-				} else {
-					if (!data.name && data.username) {
-						data.name = guessNameFromUsername(data.username);
+					if (!data.username && !existingUser?.username) {
+						data.username = await generateUsernameSuggestion({
+							name: data.name,
+							emails,
+						});
 					}
 
-					existingUser = await this.insertUser(data);
-				}
+					const isNewUser = !existingUser;
 
-				if (afterImportFn) {
-					await afterImportFn(data, 'user', isNewUser);
+					if (existingUser) {
+						await this.updateUser(existingUser, data);
+						updatedIds.add(existingUser._id);
+					} else {
+						if (!data.name && data.username) {
+							data.name = guessNameFromUsername(data.username);
+						}
+
+						existingUser = await this.insertUser(data);
+						insertedIds.add(existingUser._id);
+					}
+
+					if (afterImportFn) {
+						await afterImportFn(data, 'user', isNewUser);
+					}
+				} catch (e) {
+					this._logger.error(e);
+					await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
+					failedCount++;
 				}
-			} catch (e) {
-				this._logger.error(e);
-				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
+		} finally {
+			await callbacks.run('afterUserImport', {
+				inserted: [...insertedIds],
+				updated: [...updatedIds],
+				skipped: skippedCount,
+				failed: failedCount,
+			});
 		}
 	}
 

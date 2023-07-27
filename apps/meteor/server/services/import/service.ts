@@ -150,9 +150,9 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 
 		// eslint-disable-next-line new-cap
 		const instance = new importer.importer(importer, operation, {
+			skipUserCallbacks: true,
 			// Do not update the data of existing users, but add the importId to them if it's missing
 			skipExistingUsers: true,
-			bindImportIds: true,
 			bindSkippedUsers: true,
 		});
 
