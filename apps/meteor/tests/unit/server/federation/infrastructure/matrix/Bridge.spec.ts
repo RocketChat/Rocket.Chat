@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 
+import { VerificationStatus } from '../../../../../../server/services/federation/infrastructure/matrix/helpers/MatrixIdVerificationTypes';
+
 const fetchStub = {
 	serverFetch: () => Promise.resolve({}),
 };
-
-import { VerificationStatus } from '../../../../../../server/services/federation/infrastructure/matrix/helpers/MatrixIdVerificationTypes';
 
 const { MatrixBridge } = proxyquire.noCallThru().load('../../../../../../server/services/federation/infrastructure/matrix/Bridge', {
 	'@rocket.chat/server-fetch': fetchStub,
