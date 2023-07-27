@@ -1,26 +1,26 @@
-import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
-import { Accounts } from 'meteor/accounts-base';
-import _ from 'underscore';
-import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Roles, Settings, Users } from '@rocket.chat/models';
+import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
+import { Accounts } from 'meteor/accounts-base';
+import { Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
-import * as Mailer from '../../../mailer/server/api';
-import { settings } from '../../../settings/server';
-import { callbacks } from '../../../../lib/callbacks';
-import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
-import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
-import { parseCSV } from '../../../../lib/utils/parseCSV';
-import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
-import { getClientAddress } from '../../../../server/lib/getClientAddress';
-import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
-import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
+import { callbacks } from '../../../../lib/callbacks';
+import { beforeCreateUserCallback } from '../../../../lib/callbacks/beforeCreateUserCallback';
+import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
+import { getClientAddress } from '../../../../server/lib/getClientAddress';
+import { i18n } from '../../../../server/lib/i18n';
+import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
+import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
+import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { joinDefaultChannels } from '../../../lib/server/functions/joinDefaultChannels';
 import { setAvatarFromServiceWithValidation } from '../../../lib/server/functions/setUserAvatar';
-import { i18n } from '../../../../server/lib/i18n';
-import { beforeCreateUserCallback } from '../../../../lib/callbacks/beforeCreateUserCallback';
+import * as Mailer from '../../../mailer/server/api';
+import { settings } from '../../../settings/server';
+import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
+import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -276,7 +276,7 @@ const insertUserDocAsync = async function (options, user) {
 		}
 
 		if (user.type !== 'visitor') {
-			setImmediate(function () {
+			setImmediate(() => {
 				return callbacks.run('afterCreateUser', user);
 			});
 		}
@@ -368,7 +368,7 @@ const validateLoginAttemptAsync = async function (login) {
 	login = await callbacks.run('onValidateLogin', login);
 
 	await Users.updateLastLoginById(login.user._id);
-	setImmediate(function () {
+	setImmediate(() => {
 		return callbacks.run('afterValidateLogin', login);
 	});
 
@@ -389,7 +389,7 @@ Accounts.validateLoginAttempt(function (...args) {
 	return Promise.await(validateLoginAttemptAsync.call(this, ...args));
 });
 
-Accounts.validateNewUser(function (user) {
+Accounts.validateNewUser((user) => {
 	if (user.type === 'visitor') {
 		return true;
 	}
@@ -405,7 +405,7 @@ Accounts.validateNewUser(function (user) {
 	return true;
 });
 
-Accounts.validateNewUser(function (user) {
+Accounts.validateNewUser((user) => {
 	if (user.type === 'visitor') {
 		return true;
 	}

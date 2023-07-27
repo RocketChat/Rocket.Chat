@@ -1,13 +1,13 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data.js';
-import { adminUsername, password } from '../../data/user';
-import { createUser, login, deleteUser } from '../../data/users.helper';
+import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
+import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
-import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { testFileUploads } from '../../data/uploads.helper';
-import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
+import { adminUsername, password } from '../../data/user';
+import { createUser, login, deleteUser } from '../../data/users.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve /* , reject*/) => {
@@ -863,7 +863,7 @@ describe('[Groups]', function () {
 		});
 	});
 
-	describe('[/groups.files]', async function () {
+	describe('[/groups.files]', async () => {
 		await testFileUploads('groups.files', group);
 	});
 

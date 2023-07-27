@@ -1,5 +1,5 @@
-import { Avatars, Uploads } from '@rocket.chat/models';
 import type { IMessage, IUpload, IUser } from '@rocket.chat/core-typings';
+import { Avatars, Uploads } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments } from '../../../../../../app/file-upload/server/methods/sendFileMessage';

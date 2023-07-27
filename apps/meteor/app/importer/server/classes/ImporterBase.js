@@ -1,20 +1,20 @@
-import http from 'http';
 import fs from 'fs';
+import http from 'http';
 import https from 'https';
 
 import { Settings, ImportData, Imports, RawImports } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import AdmZip from 'adm-zip';
 import getFileType from 'file-type';
+import { Meteor } from 'meteor/meteor';
 
+import { Selection, SelectionChannel, SelectionUser } from '..';
+import { Logger } from '../../../logger/server';
+import { t } from '../../../utils/lib/i18n';
+import { ImporterInfo } from '../../lib/ImporterInfo';
+import { ProgressStep } from '../../lib/ImporterProgressStep';
+import { ImportDataConverter } from './ImportDataConverter';
 import { Progress } from './ImporterProgress';
 import { ImporterWebsocket } from './ImporterWebsocket';
-import { ProgressStep } from '../../lib/ImporterProgressStep';
-import { ImporterInfo } from '../../lib/ImporterInfo';
-import { Logger } from '../../../logger/server';
-import { ImportDataConverter } from './ImportDataConverter';
-import { t } from '../../../utils/lib/i18n';
-import { Selection, SelectionChannel, SelectionUser } from '..';
 
 /**
  * Base class for all of the importers.

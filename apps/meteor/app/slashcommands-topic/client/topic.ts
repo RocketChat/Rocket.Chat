@@ -1,11 +1,11 @@
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
-import { ChatRoom } from '../../models/client/models/ChatRoom';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 import { callbacks } from '../../../lib/callbacks';
 import { hasPermission } from '../../authorization/client';
-import { dispatchToastMessage } from '../../../client/lib/toast';
+import { ChatRoom } from '../../models/client/models/ChatRoom';
 import { sdk } from '../../utils/client/lib/SDKClient';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'topic',

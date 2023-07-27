@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
 import type { IImportUser, ILDAPEntry, IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
+import { Meteor } from 'meteor/meteor';
 
-import { LDAPEE } from '../sdk';
 import { settings } from '../../../app/settings/server';
+import { callbacks } from '../../../lib/callbacks';
 import type { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import { logger } from '../../../server/lib/ldap/Logger';
-import { LDAPEEManager } from '../lib/ldap/Manager';
-import { callbacks } from '../../../lib/callbacks';
 import { onLicense } from '../../app/license/server';
+import { LDAPEEManager } from '../lib/ldap/Manager';
+import { LDAPEE } from '../sdk';
 import { addSettings, ldapIntervalValuesToCronMap } from '../settings/ldap';
 
 Meteor.startup(async () => {

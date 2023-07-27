@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { LegacyRoomManager, MessageAction } from '../../ui-utils/client';
-import { messageArgs } from '../../../client/lib/utils/messageArgs';
-import { ChatSubscription } from '../../models/client';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../../client/lib/toast';
-import { sdk } from '../../utils/client/lib/SDKClient';
+import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { router } from '../../../client/providers/RouterProvider';
+import { ChatSubscription } from '../../models/client';
+import { LegacyRoomManager, MessageAction } from '../../ui-utils/client';
+import { sdk } from '../../utils/client/lib/SDKClient';
 
 Meteor.startup(() => {
 	MessageAction.addButton({

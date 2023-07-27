@@ -1,5 +1,5 @@
-import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult, Filter } from 'mongodb';
 import type { ILivechatDepartmentAgents, IUser } from '@rocket.chat/core-typings';
+import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult, Filter } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 

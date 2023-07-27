@@ -4,7 +4,7 @@ import MentionsServer from '../../../../app/mentions/server/Mentions';
 
 let mention;
 
-beforeEach(function () {
+beforeEach(() => {
 	mention = new MentionsServer({
 		pattern: '[0-9a-zA-Z-_.]+',
 		messageMaxAll: () => 4, // || RocketChat.settings.get('Message_MaxAll')
