@@ -32,6 +32,6 @@ export type FederationEndpoints = {
 		POST: (params: FederationRemoveServerProps) => void;
 	};
 	'/v1/federation/matrixIds.verify': {
-		GET: (params: FederationVerifyMatrixIdProps) => { result: Map<string, string> };
+		GET: (params: FederationVerifyMatrixIdProps) => { results: Map<string, string> };
 	};
 };

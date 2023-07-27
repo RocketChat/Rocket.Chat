@@ -36,21 +36,21 @@ export const useAddMatrixUsers = () => {
 			}
 		};
 		try {
-			const matrixIdVerificationMap = new Map();
+			let matrixIdVerificationMap = new Map();
 			const matrixIds = users.filter((user) => user.startsWith('@'));
-
-			const matrixIdsVerificationPromises = matrixIds.map((matrixId) => dispatchVerifyEndpoint({ matrixId }));
-
-			const matrixIdsVerificationPromiseResponse = await Promise.allSettled(matrixIdsVerificationPromises);
-			const matrixIdsVerificationFulfilledResults = matrixIdsVerificationPromiseResponse.filter(
-				({ status }) => status === 'fulfilled',
-			) as PromiseFulfilledResult<{ result: string }>[];
-
-			matrixIds.forEach((matrixId, idx) => matrixIdVerificationMap.set(matrixId, matrixIdsVerificationFulfilledResults[idx].value));
+			const matrixIdsVerificationResponse = await dispatchVerifyEndpoint({ matrixIds });
+			const { results: matrixIdsVerificationResults } = matrixIdsVerificationResponse;
+			matrixIdVerificationMap = new Map(Object.entries(matrixIdsVerificationResults));
 
 			handleUsers(users.filter((user) => !(matrixIdVerificationMap.has(user) && matrixIdVerificationMap.get(user) === 'UNVERIFIED')));
 
-			setModal(<ValidateMatrixIdModal onClose={handleClose} onConfirm={handleSave} matrixIdVerifiedStatus={matrixIdVerificationMap} />);
+			setModal(
+				<ValidateMatrixIdModal
+					onClose={handleClose}
+					onConfirm={handleSave}
+					matrixIdVerifiedStatus={matrixIdVerificationMap as Map<string, string>}
+				/>,
+			);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error as Error });
 		}
