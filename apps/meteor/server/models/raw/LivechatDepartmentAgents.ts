@@ -1,5 +1,6 @@
 import type { ILivechatDepartmentAgents, RocketChatRecordDeleted, IUser } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
+import { Users } from '@rocket.chat/models';
 import type {
 	Collection,
 	FindCursor,
@@ -12,7 +13,6 @@ import type {
 	IndexDescription,
 	SortDirection,
 } from 'mongodb';
-import { Users } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 

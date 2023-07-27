@@ -1,11 +1,5 @@
 import type { Readable } from 'stream';
 
-import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
-import { PdfWorker } from '@rocket.chat/pdf-worker';
-import { parse } from '@rocket.chat/message-parser';
-import type { Root } from '@rocket.chat/message-parser';
-import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
-import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 import {
 	ServiceClass,
 	Upload as uploadService,
@@ -17,6 +11,12 @@ import {
 	License as licenseService,
 } from '@rocket.chat/core-services';
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
+import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
+import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
+import { parse } from '@rocket.chat/message-parser';
+import type { Root } from '@rocket.chat/message-parser';
+import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
+import { PdfWorker } from '@rocket.chat/pdf-worker';
 import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
 
 import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';

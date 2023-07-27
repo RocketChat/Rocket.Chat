@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
+import { Subscriptions } from '@rocket.chat/models';
 import {
 	isSubscriptionsGetProps,
 	isSubscriptionsGetOneProps,
 	isSubscriptionsReadProps,
 	isSubscriptionsUnreadProps,
 } from '@rocket.chat/rest-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { API } from '../api';
 import { readMessages } from '../../../../server/lib/readMessages';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'subscriptions.get',

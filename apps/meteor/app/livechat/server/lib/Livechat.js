@@ -4,9 +4,7 @@
 import dns from 'dns';
 import util from 'util';
 
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import UAParser from 'ua-parser-js';
+import { Message, VideoConf, api } from '@rocket.chat/core-services';
 import {
 	LivechatVisitors,
 	LivechatCustomField,
@@ -20,29 +18,31 @@ import {
 	Rooms,
 	Users,
 } from '@rocket.chat/models';
-import { Message, VideoConf, api } from '@rocket.chat/core-services';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import UAParser from 'ua-parser-js';
 
-import { RoutingManager } from './RoutingManager';
-import { Analytics } from './Analytics';
-import { settings } from '../../../settings/server';
-import { callbacks } from '../../../../lib/callbacks';
-import { Logger } from '../../../logger/server';
-import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import * as Mailer from '../../../mailer/server/api';
-import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { updateMessage } from '../../../lib/server/functions/updateMessage';
-import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
-import { FileUpload } from '../../../file-upload/server';
-import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
-import { businessHourManager } from '../business-hour';
+import { callbacks } from '../../../../lib/callbacks';
+import { trim } from '../../../../lib/utils/stringUtils';
+import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
-import { trim } from '../../../../lib/utils/stringUtils';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { FileUpload } from '../../../file-upload/server';
+import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { updateMessage } from '../../../lib/server/functions/updateMessage';
+import { Logger } from '../../../logger/server';
+import * as Mailer from '../../../mailer/server/api';
+import { settings } from '../../../settings/server';
+import { businessHourManager } from '../business-hour';
+import { Analytics } from './Analytics';
+import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { Livechat as LivechatTyped } from './LivechatTyped';
-import { i18n } from '../../../../server/lib/i18n';
+import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('Livechat');
 

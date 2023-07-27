@@ -1,9 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 const logger = new Logger('getFullUserData');
 

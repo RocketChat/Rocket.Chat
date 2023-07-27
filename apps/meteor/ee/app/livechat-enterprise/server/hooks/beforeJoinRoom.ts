@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { getMaxNumberSimultaneousChat } from '../lib/Helper';
 
 callbacks.add(

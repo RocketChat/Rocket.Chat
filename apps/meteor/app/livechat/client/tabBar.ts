@@ -19,13 +19,3 @@ addAction('voip-room-info', {
 	template: lazy(() => import('../../../client/views/omnichannel/directory/calls/contextualBar/CallsContextualBarRoom')),
 	order: 0,
 });
-
-addAction('contact-chat-history', {
-	groups: ['live' /* , 'voip'*/],
-	id: 'contact-chat-history',
-	title: 'Contact_Chat_History',
-	icon: 'clock',
-	// template: 'contactChatHistory',
-	template: lazy(() => import('../../../client/views/omnichannel/contactHistory/ContactHistory')),
-	order: 11,
-});

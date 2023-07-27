@@ -30,7 +30,7 @@
 		"/dist"
 	],
 	"volta": {
-		"extends": "../../package.json"
+		"extends": "../../../package.json"
 	},
 	"dependencies": {
 		"@rocket.chat/api-client": "workspace:^",
