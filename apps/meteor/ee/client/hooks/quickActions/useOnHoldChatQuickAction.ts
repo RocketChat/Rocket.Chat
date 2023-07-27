@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { QuickActionsEnum, type QuickActionsActionConfig } from '../../../../client/views/room/lib/QuickActions';
+import { QuickActionsEnum, type QuickActionsActionConfig } from '../../../../client/views/room/lib/quickActions';
 import { useHasLicenseModule } from '../useHasLicenseModule';
 
 export const useOnHoldChatQuickAction = (): QuickActionsActionConfig | undefined => {

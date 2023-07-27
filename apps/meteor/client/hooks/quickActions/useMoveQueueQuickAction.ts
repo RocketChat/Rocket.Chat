@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { QuickActionsEnum, type QuickActionsActionConfig } from '../../views/room/lib/QuickActions';
+import { QuickActionsEnum, type QuickActionsActionConfig } from '../../views/room/lib/quickActions';
 
 export const useMoveQueueQuickAction = (): QuickActionsActionConfig => {
 	return useMemo(

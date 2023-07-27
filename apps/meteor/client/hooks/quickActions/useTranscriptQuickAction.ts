@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
-import type { QuickActionsActionConfig } from '../../views/room/lib/QuickActions';
-import { QuickActionsEnum } from '../../views/room/lib/QuickActions';
+import type { QuickActionsActionConfig } from '../../views/room/lib/quickActions';
+import { QuickActionsEnum } from '../../views/room/lib/quickActions';
 
 export const useTranscriptQuickAction = (): QuickActionsActionConfig => {
 	return useMemo(

@@ -25,16 +25,14 @@ import TranscriptModal from '../../../../../../components/Omnichannel/modals/Tra
 import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
 import { quickActionHooks } from '../../../../../../ui';
 import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
-import type { QuickActionsActionConfig } from '../../../../lib/QuickActions';
-import { QuickActionsEnum } from '../../../../lib/QuickActions';
-import { useQuickActionsContext } from '../../../../lib/QuickActions/QuickActionsContext';
+import type { QuickActionsActionConfig } from '../../../../lib/quickActions';
+import { QuickActionsEnum } from '../../../../lib/quickActions';
 import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
 import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
 
 export const useQuickActions = (): {
-	visibleActions: QuickActionsActionConfig[];
+	quickActions: QuickActionsActionConfig[];
 	actionDefault: (actionId: string) => void;
-	getAction: (id: string) => void;
 } => {
 	const room = useOmnichannelRoom();
 	const setModal = useSetModal();
@@ -335,27 +333,22 @@ export const useQuickActions = (): {
 		return false;
 	};
 
-	const context = useQuickActionsContext();
 	const quickActions = quickActionHooks
 		.map((quickActionHook) => quickActionHook())
-		.filter((quickAction): quickAction is QuickActionsActionConfig => !!quickAction);
-	const actions = [...quickActions, ...Array.from(context.actions.values())].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+		.filter((quickAction): quickAction is QuickActionsActionConfig => !!quickAction)
+		.filter((action) => {
+			const { options, id } = action;
+			if (options) {
+				action.options = options.filter(({ id }) => hasPermissionButtons(id));
+			}
 
-	const visibleActions = actions.filter((action) => {
-		const { options, id } = action;
-		if (options) {
-			action.options = options.filter(({ id }) => hasPermissionButtons(id));
-		}
-		return hasPermissionButtons(id);
-	});
+			return hasPermissionButtons(id);
+		})
+		.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
 	const actionDefault = useMutableCallback((actionId: string) => {
 		handleAction(actionId);
 	});
 
-	const getAction = useMutableCallback((id) => {
-		handleAction(id);
-	});
-
-	return { visibleActions, actionDefault, getAction };
+	return { quickActions, actionDefault };
 };

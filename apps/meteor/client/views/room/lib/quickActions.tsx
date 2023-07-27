@@ -1,9 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-
-import type { ToolboxActionConfig } from '../Toolbox';
-import type { Events as GeneratorEvents } from '../Toolbox/generator';
-import { generator } from '../Toolbox/generator';
 
 export type QuickActionsActionOptions = Array<{
 	id: string;
@@ -12,18 +9,17 @@ export type QuickActionsActionOptions = Array<{
 	validate?: (room: IRoom) => { value: boolean; tooltip: TranslationKey };
 }>;
 
-export type QuickActionsActionConfig = ToolboxActionConfig & {
+export type QuickActionsActionConfig = {
+	id: string;
+	icon?: IconName;
+	title: TranslationKey;
+	order?: number;
+	featured?: boolean;
 	action?: (id?: QuickActionsActionConfig['id']) => void;
 	groups: Array<'live'>;
 	color?: string;
 	options?: QuickActionsActionOptions;
 };
-
-const { listen, add: addAction, store: actions } = generator<QuickActionsActionConfig>();
-
-export type Events = GeneratorEvents<QuickActionsActionConfig>;
-
-export { listen, addAction, actions };
 
 export enum QuickActionsEnum {
 	MoveQueue = 'rocket-move-to-queue',

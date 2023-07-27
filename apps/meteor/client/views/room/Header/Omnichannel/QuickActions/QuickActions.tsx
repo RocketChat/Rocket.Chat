@@ -5,7 +5,7 @@ import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 
 import { useOmnichannelRoom } from '../../../contexts/RoomContext';
-import ToolBoxActionOptions from './ToolBoxActionOptions';
+import QuickActionOptions from './QuickActionOptions';
 import { useQuickActions } from './hooks/useQuickActions';
 
 type QuickActionsProps = {
@@ -15,11 +15,11 @@ type QuickActionsProps = {
 const QuickActions = ({ className }: QuickActionsProps) => {
 	const t = useTranslation();
 	const room = useOmnichannelRoom();
-	const { visibleActions, actionDefault } = useQuickActions();
+	const { quickActions, actionDefault } = useQuickActions();
 
 	return (
 		<HeaderToolbox aria-label={t('Omnichannel_quick_actions')}>
-			{visibleActions.map(({ id, color, icon, title, action = actionDefault, options }, index) => {
+			{quickActions.map(({ id, color, icon, title, action = actionDefault, options }, index) => {
 				const props = {
 					id,
 					icon,
@@ -33,12 +33,12 @@ const QuickActions = ({ className }: QuickActionsProps) => {
 				};
 
 				if (options) {
-					return <ToolBoxActionOptions options={options} {...props} key={id} />;
+					return <QuickActionOptions options={options} {...props} key={id} />;
 				}
 
 				return <HeaderToolboxAction {...props} key={id} />;
 			})}
-			{visibleActions.length > 0 && <HeaderToolboxDivider />}
+			{quickActions.length > 0 && <HeaderToolboxDivider />}
 		</HeaderToolbox>
 	);
 };
