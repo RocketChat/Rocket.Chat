@@ -80,9 +80,52 @@ jobs:
           echo "DOCKER_TAG: ${DOCKER_TAG}"
           echo "gh-docker-tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
 
-  build:
-    name: 📦 Build
+  packages-build:
+    name: 📦 Build Packages
     needs: [release-versions]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Github Info
+        run: |
+          echo "GITHUB_ACTION: $GITHUB_ACTION"
+          echo "GITHUB_ACTOR: $GITHUB_ACTOR"
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
+          echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
+          echo "github.event_name: ${{ github.event_name }}"
+          cat $GITHUB_EVENT_PATH
+
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 4
+
+      - uses: actions/checkout@v3
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+          cache-modules: true
+          install: true
+
+      - name: Cache vite
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules/.vite
+          key: vite-local-cache-${{ runner.OS }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            vite-local-cache-${{ runner.os }}-
+
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+      - name: Build Rocket.Chat Packages
+        if: startsWith(github.ref, 'refs/pull/') != true
+        run: yarn build
+
+  build:
+    name: 📦 Meteor Build
+    needs: [release-versions, packages-build]
     runs-on: ubuntu-20.04
 
     steps:
@@ -201,7 +244,7 @@ jobs:
           path: /tmp/Rocket.Chat.tar.gz
 
   checks:
-    needs: [release-versions]
+    needs: [release-versions, packages-build]
 
     name: 🔎 Code Check
     uses: ./.github/workflows/ci-code-check.yml
@@ -210,7 +253,7 @@ jobs:
 
   test-unit:
     name: 🔨 Test Unit
-    needs: [checks, build, release-versions]
+    needs: [packages-build, release-versions]
 
     uses: ./.github/workflows/ci-test-unit.yml
     with:

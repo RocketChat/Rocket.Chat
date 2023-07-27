@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
-import { callbacks, Callbacks } from './callbacks';
+import { callbacks } from './callbacks';
+import { Callbacks } from './callbacks/callbacksBase';
 
 describe('callbacks legacy', () => {
 	it("if the callback doesn't return any value should return the original", async () => {
@@ -37,7 +38,7 @@ describe('callbacks legacy', () => {
 
 describe('callbacks', () => {
 	it("if the callback doesn't return any value should return the original", async () => {
-		const test = Callbacks.create<boolean, boolean>('test');
+		const test = Callbacks.create<(data: boolean) => boolean>('test');
 
 		test.add(() => undefined, callbacks.priority.LOW, '1');
 
@@ -47,7 +48,7 @@ describe('callbacks', () => {
 	});
 
 	it('should return the value returned by the callback', async () => {
-		const test = Callbacks.create<boolean, boolean>('test');
+		const test = Callbacks.create<(data: boolean) => boolean>('test');
 
 		test.add(() => false, callbacks.priority.LOW, '1');
 
@@ -57,7 +58,7 @@ describe('callbacks', () => {
 	});
 
 	it('should accumulate the values returned by the callbacks', async () => {
-		const test = Callbacks.create<number, number>('test');
+		const test = Callbacks.create<(data: number) => number>('test');
 
 		test.add((old) => old * 5);
 

@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+import { api } from '@rocket.chat/core-services';
 import {
 	Integrations,
 	FederationServers,
@@ -10,15 +10,15 @@ import {
 	Users,
 	LivechatUnitMonitors,
 } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-services';
+import { Meteor } from 'meteor/meteor';
 
+import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { updateGroupDMsName } from './updateGroupDMsName';
-import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
-import { i18n } from '../../../../server/lib/i18n';
+import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
+import { updateGroupDMsName } from './updateGroupDMsName';
 
 export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
 	const user = await Users.findOneById(userId, {

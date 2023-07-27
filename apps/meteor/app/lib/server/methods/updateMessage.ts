@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import moment from 'moment';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IEditedMessage, IMessage } from '@rocket.chat/core-typings';
 import { Messages, Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import moment from 'moment';
 
-import { settings } from '../../../settings/server';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { updateMessage } from '../functions';
+import { settings } from '../../../settings/server';
+import { updateMessage } from '../functions/updateMessage';
 
 const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg'];
 

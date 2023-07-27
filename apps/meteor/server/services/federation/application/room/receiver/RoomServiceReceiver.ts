@@ -1,16 +1,20 @@
 // TODO: Refactor this file splitting it into smaller files + removing the complexity of the most important method (changeMembership)
-/* eslint-disable complexity */
-import { isDirectMessageRoom, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { isDirectMessageRoom, isQuoteAttachment } from '@rocket.chat/core-typings';
 
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import { FederatedUser } from '../../../domain/FederatedUser';
 import { EVENT_ORIGIN } from '../../../domain/IFederationBridge';
 import type { IFederationBridge } from '../../../domain/IFederationBridge';
+import { removeExternalSpecificCharsFromExternalIdentifier } from '../../../infrastructure/matrix/converters/room/RoomReceiver';
+import type { InMemoryQueue } from '../../../infrastructure/queue/InMemoryQueue';
+import type { RocketChatFileAdapter } from '../../../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from '../../../infrastructure/rocket-chat/adapters/Message';
+import type { RocketChatNotificationAdapter } from '../../../infrastructure/rocket-chat/adapters/Notification';
 import type { RocketChatRoomAdapter } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../../infrastructure/rocket-chat/adapters/User';
+import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
 import type {
 	FederationRoomCreateInputDto,
 	FederationRoomChangeMembershipDto,
@@ -23,12 +27,7 @@ import type {
 	FederationRoomEditExternalMessageDto,
 	FederationRoomRoomChangePowerLevelsEventDto,
 } from '../input/RoomReceiverDto';
-import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
-import type { RocketChatFileAdapter } from '../../../infrastructure/rocket-chat/adapters/File';
-import type { RocketChatNotificationAdapter } from '../../../infrastructure/rocket-chat/adapters/Notification';
-import type { InMemoryQueue } from '../../../infrastructure/queue/InMemoryQueue';
 import { getMessageRedactionHandler } from '../message/receiver/message-redaction-helper';
-import { removeExternalSpecificCharsFromExternalIdentifier } from '../../../infrastructure/matrix/converters/room/RoomReceiver';
 
 export class FederationRoomServiceReceiver extends AbstractFederationApplicationService {
 	constructor(

@@ -1,6 +1,6 @@
-import type { FindCursor, IndexDescription, Collection, Db, UpdateResult } from 'mongodb';
 import type { ICalendarEvent, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ICalendarEventModel } from '@rocket.chat/model-typings';
+import type { FindCursor, IndexDescription, Collection, Db, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
