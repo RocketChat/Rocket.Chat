@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, FieldGroup, IconButton } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldGroup, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, ChangeEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
@@ -170,8 +170,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 					</Button>
 				</ButtonGroup>
 				<ButtonGroup mbs='x8' stretch>
-					<Button danger onClick={handleDeleteButtonClick}>
-						<Icon name='trash' mie='x4' />
+					<Button icon='trash' danger onClick={handleDeleteButtonClick}>
 						{t('Delete')}
 					</Button>
 				</ButtonGroup>

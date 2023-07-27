@@ -4,7 +4,6 @@ import { settingsRegistry } from '../../../../app/settings/server/index';
 
 export const createPermissions = async (): Promise<void> => {
 	await Promise.all([
-		Permissions.create('view-device-management', ['admin']),
 		Permissions.create('logout-device-management', ['admin']),
 		Permissions.create('block-ip-device-management', ['admin']),
 	]);

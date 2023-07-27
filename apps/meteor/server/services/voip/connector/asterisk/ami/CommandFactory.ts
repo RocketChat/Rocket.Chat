@@ -8,12 +8,12 @@
  */
 import type { Db } from 'mongodb';
 
+import { Logger } from '../../../../../lib/logger/Logger';
 import { Command } from '../Command';
 import { Commands } from '../Commands';
 import { ACDQueue } from './ACDQueue';
-import { PJSIPEndpoint } from './PJSIPEndpoint';
-import { Logger } from '../../../../../lib/logger/Logger';
 import { ContinuousMonitor } from './ContinuousMonitor';
+import { PJSIPEndpoint } from './PJSIPEndpoint';
 
 export class CommandFactory {
 	static logger: Logger = new Logger('CommandFactory');

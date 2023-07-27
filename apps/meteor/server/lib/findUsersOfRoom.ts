@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import type { FilterOperators, FindCursor } from 'mongodb';
 import type { FindPaginated } from '@rocket.chat/model-typings';
 import { Users } from '@rocket.chat/models';
+import type { FilterOperators, FindCursor } from 'mongodb';
 
 import { settings } from '../../app/settings/server';
 

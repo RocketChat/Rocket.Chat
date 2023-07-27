@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { DDPCommon } from 'meteor/ddp-common';
 import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { DDPCommon } from 'meteor/ddp-common';
+import { Meteor } from 'meteor/meteor';
 
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
 import { Streamer } from '../../../../server/modules/streamer/streamer.module';

@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { getStatusText } from '../../../lib/server';
+import { getStatusText } from '../../../lib/server/functions/getStatusText';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

@@ -3,10 +3,10 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createCannedResponse } from '../../../data/livechat/canned-responses';
-import { IS_EE } from '../../../e2e/config/constants';
 import { removeTag, saveTags } from '../../../data/livechat/tags';
+import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Canned responses', function () {
 	this.retries(0);

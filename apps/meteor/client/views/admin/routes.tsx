@@ -10,12 +10,12 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin';
 		};
 		'custom-sounds': {
-			pathname: `/admin/custom-sounds${`/${string}` | ''}${`/${string}` | ''}`;
-			pattern: '/admin/custom-sounds/:context?/:id?';
+			pathname: `/admin/sounds${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/sounds/:context?/:id?';
 		};
 		'admin-info': {
-			pathname: '/admin/info';
-			pattern: '/admin/info';
+			pathname: '/admin/workspace';
+			pattern: '/admin/workspace';
 		};
 		'admin-import': {
 			pathname: '/admin/import';
@@ -38,8 +38,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/mailer';
 		};
 		'admin-oauth-apps': {
-			pathname: `/admin/oauth-apps${`/${'new' | 'edit'}` | ''}${`/${string}` | ''}`;
-			pattern: '/admin/oauth-apps/:context?/:id?';
+			pathname: `/admin/third-party-login${`/${'new' | 'edit'}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/third-party-login/:context?/:id?';
 		};
 		'admin-integrations': {
 			pathname: `/admin/integrations${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
@@ -50,8 +50,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/user-status/:context?/:id?';
 		};
 		'emoji-custom': {
-			pathname: `/admin/emoji-custom${`/${string}` | ''}${`/${string}` | ''}`;
-			pattern: '/admin/emoji-custom/:context?/:id?';
+			pathname: `/admin/emoji${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/emoji/:context?/:id?';
 		};
 		'admin-users': {
 			pathname: `/admin/users${`/${string}` | ''}${`/${string}` | ''}`;
@@ -66,16 +66,16 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/invites';
 		};
 		'cloud': {
-			pathname: `/admin/cloud${`/${string}` | ''}`;
-			pattern: '/admin/cloud/:page?';
+			pathname: `/admin/registration${`/${string}` | ''}`;
+			pattern: '/admin/registration/:page?';
 		};
 		'admin-view-logs': {
-			pathname: '/admin/view-logs';
-			pattern: '/admin/view-logs';
+			pathname: '/admin/logs';
+			pattern: '/admin/logs';
 		};
 		'federation-dashboard': {
-			pathname: '/admin/federation-dashboard';
-			pattern: '/admin/federation-dashboard';
+			pathname: '/admin/federation';
+			pattern: '/admin/federation';
 		};
 		'admin-permissions': {
 			pathname: `/admin/permissions${`/${string}` | ''}${`/${string}` | ''}`;
@@ -89,13 +89,21 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/admin/settings${`/${string}` | ''}`;
 			pattern: '/admin/settings/:group?';
 		};
+		'device-management': {
+			pathname: `/admin/device-management${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/device-management/:context?/:id?';
+		};
+		'engagement-dashboard': {
+			pathname: `/admin/engagement${`/${string}` | ''}`;
+			pattern: '/admin/engagement/:tab?';
+		};
 		'upgrade': {
 			pathname: `/admin/upgrade${`/${UpgradeTabVariant}` | ''}`;
 			pattern: '/admin/upgrade/:type?';
 		};
 		'moderation-console': {
-			pathname: `/admin/moderation-console${`/${string}` | ''}${`/${string}` | ''}`;
-			pattern: '/admin/moderation-console/:context?/:id?';
+			pathname: `/admin/moderation${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/moderation/:context?/:id?';
 		};
 	}
 }
@@ -106,12 +114,12 @@ export const registerAdminRoute = createRouteGroup(
 	lazy(() => import('./AdministrationRouter')),
 );
 
-registerAdminRoute('/custom-sounds/:context?/:id?', {
+registerAdminRoute('/sounds/:context?/:id?', {
 	name: 'custom-sounds',
 	component: lazy(() => import('./customSounds/CustomSoundsRoute')),
 });
 
-registerAdminRoute('/info', {
+registerAdminRoute('/workspace', {
 	name: 'admin-info',
 	component: lazy(() => import('./info/InformationRoute')),
 });
@@ -145,7 +153,7 @@ registerAdminRoute('/mailer', {
 	component: lazy(() => import('./mailer/MailerRoute')),
 });
 
-registerAdminRoute('/oauth-apps/:context?/:id?', {
+registerAdminRoute('/third-party-login/:context?/:id?', {
 	name: 'admin-oauth-apps',
 	component: lazy(() => import('./oauthApps/OAuthAppsRoute')),
 });
@@ -160,7 +168,7 @@ registerAdminRoute('/user-status/:context?/:id?', {
 	component: lazy(() => import('./customUserStatus/CustomUserStatusRoute')),
 });
 
-registerAdminRoute('/emoji-custom/:context?/:id?', {
+registerAdminRoute('/emoji/:context?/:id?', {
 	name: 'emoji-custom',
 	component: lazy(() => import('./customEmoji/CustomEmojiRoute')),
 });
@@ -180,17 +188,17 @@ registerAdminRoute('/invites', {
 	component: lazy(() => import('./invites/InvitesRoute')),
 });
 
-registerAdminRoute('/cloud/:page?', {
+registerAdminRoute('/registration/:page?', {
 	name: 'cloud',
 	component: lazy(() => import('./cloud/CloudRoute')),
 });
 
-registerAdminRoute('/view-logs', {
+registerAdminRoute('/logs', {
 	name: 'admin-view-logs',
 	component: lazy(() => import('./viewLogs/ViewLogsRoute')),
 });
 
-registerAdminRoute('/federation-dashboard', {
+registerAdminRoute('/federation', {
 	name: 'federation-dashboard',
 	component: lazy(() => import('./federationDashboard/FederationDashboardRoute')),
 });
@@ -215,7 +223,17 @@ registerAdminRoute('/upgrade/:type?', {
 	component: lazy(() => import('./upgrade/UpgradePage')),
 });
 
-registerAdminRoute('/moderation-console/:context?/:id?', {
+registerAdminRoute('/moderation/:context?/:id?', {
 	name: 'moderation-console',
 	component: lazy(() => import('./moderation/ModerationConsoleRoute')),
+});
+
+registerAdminRoute('/engagement/:tab?', {
+	name: 'engagement-dashboard',
+	component: lazy(() => import('../../../ee/client/views/admin/engagementDashboard/EngagementDashboardRoute')),
+});
+
+registerAdminRoute('/device-management/:context?/:id?', {
+	name: 'device-management',
+	component: lazy(() => import('../../../ee/client/views/admin/deviceManagement/DeviceManagementAdminRoute')),
 });

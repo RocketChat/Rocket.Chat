@@ -1,10 +1,10 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IUpload } from '@rocket.chat/core-typings';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
+import type { IUpload } from '@rocket.chat/core-typings';
 
 import { FileUpload } from '../../../app/file-upload/server';
-import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
 import { sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
+import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
 
 export class UploadService extends ServiceClassInternal implements IUploadService {
 	protected name = 'upload';

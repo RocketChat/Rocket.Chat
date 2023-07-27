@@ -138,7 +138,6 @@ window.addEventListener('beforeunload', () => {
 
 if (process.env.NODE_ENV === 'development') {
 	store.on('change', ([, , partialState]) => {
-		// eslint-disable-next-line no-console
 		console.log('%cstore.setState %c%o', 'color: blue', 'color: initial', partialState);
 	});
 }
