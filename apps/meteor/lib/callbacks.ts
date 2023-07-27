@@ -14,7 +14,6 @@ import type {
 	ParsedUrl,
 	OEmbedMeta,
 	OEmbedUrlContent,
-	Username,
 	IOmnichannelRoom,
 	ILivechatTag,
 	SelectedAgent,

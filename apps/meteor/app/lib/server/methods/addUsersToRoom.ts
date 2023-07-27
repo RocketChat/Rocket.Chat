@@ -9,7 +9,6 @@ import { FederationHelper } from '@rocket.chat/federation';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions/addUserToRoom';
-import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 
 declare module '@rocket.chat/ui-contexts' {

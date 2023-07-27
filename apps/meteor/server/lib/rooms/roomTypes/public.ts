@@ -2,7 +2,7 @@ import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated, TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
 import { FederationHelper } from '@rocket.chat/federation';
-console.log({ FederationHelper });
+
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';

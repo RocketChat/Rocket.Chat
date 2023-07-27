@@ -1,5 +1,5 @@
 import { License, ServiceClass } from '@rocket.chat/core-services';
-import type { IFederationJoinExternalPublicRoomInput, IFederationService } from '@rocket.chat/core-services';
+import type { IFederationJoinExternalPublicRoomInput, IFederationService, IFederationStatistics } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser, Username } from '@rocket.chat/core-typings';
 import { isEditedMessage, isMessageFromMatrixFederation, isRoomFederated } from '@rocket.chat/core-typings';
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
@@ -22,7 +22,6 @@ import { FederationSearchPublicRoomsInputDto } from './application/room/input/Ro
 import type { FederationUserService } from './application/user/UserService';
 import type { FederationMessageServiceSender } from './application/room/message/sender/MessageServiceSender';
 import type { FederationRoomInternalValidator } from './application/room/sender/RoomInternalValidator';
-import { IFederationStatistics } from '@rocket.chat/core-services';
 import { getMatrixFederationStatistics } from './infrastructure/rocket-chat/adapters/Statistics';
 
 export class FederationService extends ServiceClass implements IFederationService {
