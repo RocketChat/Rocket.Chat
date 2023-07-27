@@ -4,7 +4,6 @@ import '../app/apple/client';
 import '../app/authorization/client';
 import '../app/autotranslate/client';
 import '../app/cas/client';
-import '../app/channel-settings/client';
 import '../app/crowd/client';
 import '../app/custom-oauth/client/custom_oauth_client';
 import '../app/custom-sounds/client';
