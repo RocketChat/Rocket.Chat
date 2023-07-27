@@ -25,7 +25,7 @@ export const ChromeScreenShare = {
 
 ChromeScreenShare.init();
 
-window.addEventListener('message', function (e) {
+window.addEventListener('message', (e) => {
 	if (e.origin !== window.location.origin) {
 		return;
 	}

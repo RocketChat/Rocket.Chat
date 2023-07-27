@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import type { IUser, IRole, IPermission } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
 import * as Models from '../../models/client';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';

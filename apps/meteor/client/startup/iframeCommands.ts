@@ -7,7 +7,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import { settings } from '../../app/settings/client';
 import { AccountBox } from '../../app/ui-utils/client/lib/AccountBox';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
-import { callbacks } from '../../lib/callbacks';
+import { afterLogoutCleanUpCallback } from '../../lib/callbacks/afterLogoutCleanUpCallback';
 import { capitalize, ltrim, rtrim } from '../../lib/utils/stringUtils';
 import { baseURI } from '../lib/baseURI';
 import { router } from '../providers/RouterProvider';
@@ -80,7 +80,7 @@ const commands = {
 			if (!user) {
 				return;
 			}
-			void callbacks.run('afterLogoutCleanUp', user);
+			void afterLogoutCleanUpCallback.run(user);
 			sdk.call('logoutCleanUp', user as unknown as IUser);
 			return router.navigate('/home');
 		});

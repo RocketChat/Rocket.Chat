@@ -1,5 +1,5 @@
-import React from 'react';
 import { OptionColumn, OptionContent } from '@rocket.chat/fuselage';
+import React from 'react';
 
 import Emoji from '../../../../../../client/components/Emoji';
 

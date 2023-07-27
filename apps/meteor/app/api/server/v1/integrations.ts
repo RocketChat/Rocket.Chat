@@ -1,6 +1,5 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import type { IIntegration, INewIncomingIntegration, INewOutgoingIntegration } from '@rocket.chat/core-typings';
+import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import {
 	isIntegrationsCreateProps,
 	isIntegrationsHistoryProps,
@@ -8,21 +7,22 @@ import {
 	isIntegrationsGetProps,
 	isIntegrationsUpdateProps,
 } from '@rocket.chat/rest-typings';
-import { Integrations, IntegrationHistory } from '@rocket.chat/models';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { API } from '../api';
 import {
 	mountIntegrationHistoryQueryBasedOnPermissions,
 	mountIntegrationQueryBasedOnPermissions,
 } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
-import { findOneIntegration } from '../lib/integrations';
-import { getPaginationItems } from '../helpers/getPaginationItems';
-import { deleteOutgoingIntegration } from '../../../integrations/server/methods/outgoing/deleteOutgoingIntegration';
+import { addIncomingIntegration } from '../../../integrations/server/methods/incoming/addIncomingIntegration';
 import { deleteIncomingIntegration } from '../../../integrations/server/methods/incoming/deleteIncomingIntegration';
 import { addOutgoingIntegration } from '../../../integrations/server/methods/outgoing/addOutgoingIntegration';
-import { addIncomingIntegration } from '../../../integrations/server/methods/incoming/addIncomingIntegration';
+import { deleteOutgoingIntegration } from '../../../integrations/server/methods/outgoing/deleteOutgoingIntegration';
+import { API } from '../api';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { findOneIntegration } from '../lib/integrations';
 
 API.v1.addRoute(
 	'integrations.create',

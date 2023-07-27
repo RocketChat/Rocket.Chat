@@ -1,13 +1,13 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
-export const useSeatsCap = ():
-	| {
-			maxActiveUsers: number;
-			activeUsers: number;
-			reload: () => void;
-	  }
-	| undefined => {
+export type SeatCapProps = {
+	maxActiveUsers: number;
+	activeUsers: number;
+	reload: () => void;
+};
+
+export const useSeatsCap = (): SeatCapProps | undefined => {
 	const fetch = useEndpoint('GET', '/v1/licenses.maxActiveUsers');
 
 	const result = useQuery(['/v1/licenses.maxActiveUsers'], () => fetch());

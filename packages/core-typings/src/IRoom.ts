@@ -1,10 +1,10 @@
+import type { IVisitor } from './IInquiry';
 import type { ILivechatPriority } from './ILivechatPriority';
+import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
-import type { IVisitor } from './IInquiry';
 
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 

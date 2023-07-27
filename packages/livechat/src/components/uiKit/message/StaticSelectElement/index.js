@@ -1,7 +1,7 @@
 import { memo, useCallback, useMemo } from 'preact/compat';
 
+import { createClassName } from '../../../../helpers/createClassName';
 import { SelectInput } from '../../../Form/SelectInput';
-import { createClassName } from '../../../helpers';
 import { usePerformAction } from '../Block';
 import styles from './styles.scss';
 
