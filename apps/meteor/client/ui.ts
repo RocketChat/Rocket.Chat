@@ -14,6 +14,7 @@ import { useMembersListRoomAction } from './hooks/roomActions/useMembersListRoom
 import { useMentionsRoomAction } from './hooks/roomActions/useMentionsRoomAction';
 import { useOTRRoomAction } from './hooks/roomActions/useOTRRoomAction';
 import { useOmnichannelExternalFrameRoomAction } from './hooks/roomActions/useOmnichannelExternalFrameRoomAction';
+import { useOutlookCalenderRoomAction } from './hooks/roomActions/useOutlookCalenderRoomAction';
 import { useStartCallRoomAction } from './hooks/roomActions/useStartCallRoomAction';
 import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroupRoomAction';
 import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction';
@@ -36,6 +37,7 @@ export const roomActionHooks = [
 	useMentionsRoomAction,
 	useOTRRoomAction,
 	useOmnichannelExternalFrameRoomAction,
+	useOutlookCalenderRoomAction,
 	useStartCallRoomAction,
 	useUserInfoGroupRoomAction,
 	useUserInfoRoomAction,
