@@ -1,11 +1,14 @@
+import type { ComponentChildren } from 'preact';
 import { Component } from 'preact';
+import type { CSSProperties } from 'preact/compat';
 
-import { createClassName, parse } from '../helpers';
+import { createClassName } from '../../helpers/createClassName';
+import { parse } from '../../helpers/parse';
 import styles from './styles.scss';
 
-const findLastTextNode = (node) => {
+const findLastTextNode = (node: Node): Text | null => {
 	if (node.nodeType === Node.TEXT_NODE) {
-		return node;
+		return node as Text;
 	}
 	const children = node.childNodes;
 	for (let i = children.length - 1; i >= 0; i--) {
@@ -14,10 +17,11 @@ const findLastTextNode = (node) => {
 			return textNode;
 		}
 	}
+
 	return null;
 };
 
-const replaceCaret = (el) => {
+const replaceCaret = (el: Element) => {
 	// Place the caret at the end of the element
 	const target = findLastTextNode(el);
 	// do not move caret if element was not focused
@@ -27,36 +31,59 @@ const replaceCaret = (el) => {
 		const sel = window.getSelection();
 		range.setStart(target, target.nodeValue.length);
 		range.collapse(true);
-		sel.removeAllRanges();
-		sel.addRange(range);
+		sel?.removeAllRanges();
+		sel?.addRange(range);
 		if (el instanceof HTMLElement) {
 			el.focus();
 		}
 	}
 };
 
-export class Composer extends Component {
-	handleRef = (el) => {
+type ComposerProps = {
+	className?: string;
+	style?: CSSProperties;
+	value?: string;
+	onChange?: (value: string) => void;
+	onSubmit?: (value: string) => void;
+	onUpload?: (files: (File | null)[]) => void;
+	handleEmojiClick?: () => void;
+	placeholder?: string;
+	pre?: ComponentChildren;
+	post?: ComponentChildren;
+	notifyEmojiSelect?: (cb: (emoji: string) => void) => void;
+	limitTextLength?: number;
+};
+
+type ComposerState = {
+	inputLock: boolean;
+};
+
+export class Composer extends Component<ComposerProps, ComposerState> {
+	private el: HTMLElement | null = null;
+
+	handleRef = (el: HTMLDivElement | null) => {
 		this.el = el;
 	};
 
-	handleInput = (onChange) => () => {
+	handleInput = (onChange?: (value: string) => void) => () => {
 		if (this.state.inputLock) {
 			return;
 		}
-		onChange && onChange(this.el.innerText);
+		onChange?.(this.el?.innerText ?? '');
 	};
 
-	handleKeypress = (onSubmit) => (event) => {
+	handleKeypress = (onSubmit?: (value: string) => void) => (event: KeyboardEvent) => {
 		if (event.which === 13 && !event.shiftKey) {
 			event.preventDefault();
-			onSubmit && onSubmit(this.el.innerText);
-			this.el.innerText = '';
+			if (this.el) {
+				onSubmit?.(this.el.innerText);
+				this.el.innerText = '';
+			}
 		}
 	};
 
-	handlePaste = (onUpload) => async (event) => {
-		if (!event.clipboardData || !event.clipboardData.items) {
+	handlePaste = (onUpload?: (files: (File | null)[]) => void) => async (event: ClipboardEvent) => {
+		if (!event.clipboardData?.items) {
 			return;
 		}
 
@@ -66,21 +93,21 @@ export class Composer extends Component {
 
 		const files = items.filter((item) => item.kind === 'file' && /^image\//.test(item.type)).map((item) => item.getAsFile());
 		if (files.length) {
-			onUpload && onUpload(files);
+			onUpload?.(files);
 			return;
 		}
 
 		const texts = await Promise.all(
 			items
 				.filter((item) => item.kind === 'string' && /^text\/plain/.test(item.type))
-				.map((item) => new Promise((resolve) => item.getAsString(resolve))),
+				.map((item) => new Promise<string>((resolve) => item.getAsString(resolve))),
 		);
 
 		texts.forEach((text) => this.pasteText(parse(text)));
 	};
 
-	handleDrop = (onUpload) => async (event) => {
-		if (!event.dataTransfer || !event.dataTransfer.items) {
+	handleDrop = (onUpload?: (files: (File | null)[]) => void) => async (event: DragEvent) => {
+		if (!event.dataTransfer?.items) {
 			return;
 		}
 
@@ -90,32 +117,36 @@ export class Composer extends Component {
 
 		const files = items.filter((item) => item.kind === 'file' && /^image\//.test(item.type)).map((item) => item.getAsFile());
 		if (files.length) {
-			onUpload && onUpload(files);
+			onUpload?.(files);
 			return;
 		}
 
 		const texts = await Promise.all(
 			items
 				.filter((item) => item.kind === 'string' && /^text\/plain/.test(item.type))
-				.map((item) => new Promise((resolve) => item.getAsString(resolve))),
+				.map((item) => new Promise<string>((resolve) => item.getAsString(resolve))),
 		);
 		texts.forEach((text) => this.pasteText(parse(text)));
 	};
 
 	handleClick = () => {
 		const { handleEmojiClick } = this.props;
-		handleEmojiClick && handleEmojiClick();
+		handleEmojiClick?.();
 	};
 
-	pasteText = (plainText) => {
-		this.el.focus();
+	pasteText = (plainText: string) => {
+		this.el?.focus();
 
 		if (document.queryCommandSupported('insertText')) {
 			document.execCommand('insertText', false, plainText);
 			return;
 		}
 
-		const range = document.getSelection().getRangeAt(0);
+		const range = document.getSelection()?.getRangeAt(0);
+		if (!range) {
+			return;
+		}
+
 		range.deleteContents();
 		const textNode = document.createTextNode(plainText);
 		range.insertNode(textNode);
@@ -123,11 +154,13 @@ export class Composer extends Component {
 		range.collapse(false);
 
 		const selection = window.getSelection();
-		selection.removeAllRanges();
-		selection.addRange(range);
+		selection?.removeAllRanges();
+		selection?.addRange(range);
 	};
 
-	constructor(props) {
+	private value: string | undefined;
+
+	constructor(props: ComposerProps) {
 		super(props);
 		this.state = {
 			inputLock: false,
@@ -142,8 +175,8 @@ export class Composer extends Component {
 
 	// we only update composer if value length changed from 0 to 1 or 1 to 0
 	// everything else is managed by this.el
-	shouldComponentUpdate({ value: nextValue }) {
-		const { value, limitTextLength } = this.props;
+	shouldComponentUpdate({ value: nextValue = '' }: ComposerProps) {
+		const { value = '', limitTextLength } = this.props;
 
 		const nextValueEmpty = !nextValue || nextValue.length === 0;
 		const valueEmpty = !value || value.length === 0;
@@ -166,36 +199,49 @@ export class Composer extends Component {
 		}
 
 		if (this.props.value !== el.innerHTML) {
-			this.value = this.props.value;
+			this.value = this.props.value ?? '';
 			el.innerHTML = this.value;
 		}
 		replaceCaret(el);
 	}
 
-	handleNotifyEmojiSelect(emoji) {
+	handleNotifyEmojiSelect(emoji: string) {
+		if (!this.el) {
+			throw new Error('Composer: handleNotifyEmojiSelect called but el is not defined');
+		}
+
 		const { onChange } = this.props;
 		const caretPosition = this.getCaretPosition(this.el);
-		const oldText = this.el.innerText;
-		const newText = `${oldText.substr(0, caretPosition)}${emoji}&nbsp;${oldText.substr(caretPosition)}`;
+		const oldText = this.el?.innerText ?? '';
+		const newText = `${oldText.slice(0, caretPosition)}${emoji}&nbsp;${oldText.slice(caretPosition)}`;
 		this.el.innerHTML = newText;
 		this.moveCursorToEndAndFocus(caretPosition + emoji.length + 1);
-		onChange && onChange(this.el.innerText);
+		onChange?.(this.el.innerText);
 	}
 
-	moveCursorToEndAndFocus(endIndex) {
+	moveCursorToEndAndFocus(endIndex: number) {
+		if (!this.el) {
+			throw new Error('Composer: moveCursorToEndAndFocus called but el is not defined');
+		}
+
 		const setPos = document.createRange();
 		const set = window.getSelection();
 		setPos.setStart(this.el.childNodes[0], endIndex);
 		setPos.collapse(true);
-		set.removeAllRanges();
-		set.addRange(setPos);
+		set?.removeAllRanges();
+		set?.addRange(setPos);
 	}
 
-	getCaretPosition(element) {
+	getCaretPosition(element: HTMLElement) {
 		const doc = element.ownerDocument || element.document;
 		const win = doc.defaultView || doc.parentWindow;
-		if (typeof win.getSelection !== 'undefined' && win.getSelection().rangeCount > 0) {
-			const range = win.getSelection().getRangeAt(0);
+
+		if (!win) {
+			throw new Error('Composer: getCaretPosition called but win is not defined');
+		}
+
+		if (typeof win.getSelection !== 'undefined' && (win.getSelection()?.rangeCount ?? 0) > 0) {
+			const range = win.getSelection()!.getRangeAt(0);
 			const preCaretRange = range.cloneRange();
 			preCaretRange.selectNodeContents(element);
 			preCaretRange.setEnd(range.endContainer, range.endOffset);
@@ -203,41 +249,39 @@ export class Composer extends Component {
 		}
 
 		if (doc.selection && doc.selection.type !== 'Control') {
-			const textRange = doc.selection.createRange();
-			const preCaretTextRange = doc.body.createTextRange();
-			preCaretTextRange.moveToElementText(element);
-			preCaretTextRange.setEndPoint('EndToEnd', textRange);
-			return preCaretTextRange.text.length;
+			const textRange = doc.selection.createRange!();
+			const preCaretTextRange = doc.body.createTextRange?.();
+			preCaretTextRange?.moveToElementText?.(element);
+			preCaretTextRange?.setEndPoint?.('EndToEnd', textRange);
+			return preCaretTextRange?.text?.length ?? 0;
 		}
 
 		return 0;
 	}
 
-	handleInputLock(locked) {
+	handleInputLock(locked: boolean) {
 		this.setState({ inputLock: locked });
 		return 0;
 	}
 
-	render = ({ pre, post, value, placeholder, onChange, onSubmit, onUpload, className, style }) => (
+	render = ({ pre, post, value, placeholder, onChange, onSubmit, onUpload, className, style }: ComposerProps) => (
 		<div className={createClassName(styles, 'composer', {}, [className])} style={style}>
 			{pre}
 			<div
 				ref={this.handleRef}
-				{...{
-					'contentEditable': true,
-					'data-placeholder': placeholder,
-					'onInput': this.handleInput(onChange),
-					'onKeypress': this.handleKeypress(onSubmit),
-					'onPaste': this.handlePaste(onUpload),
-					'onDrop': this.handleDrop(onUpload),
-					'onClick': this.handleClick,
-				}}
+				contentEditable
+				data-placeholder={placeholder}
+				onInput={this.handleInput(onChange)}
+				onKeyPress={this.handleKeypress(onSubmit)}
+				onPaste={this.handlePaste(onUpload)}
+				onDrop={this.handleDrop(onUpload)}
+				onClick={this.handleClick}
 				onCompositionStart={() => {
 					this.handleInputLock(true);
 				}}
 				onCompositionEnd={() => {
 					this.handleInputLock(false);
-					onChange && onChange(this.el.innerText);
+					onChange?.(this.el?.innerText ?? '');
 				}}
 				className={createClassName(styles, 'composer__input')}
 			>

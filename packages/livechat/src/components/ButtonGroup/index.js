@@ -1,6 +1,7 @@
 import { cloneElement, toChildArray } from 'preact';
+import { memo } from 'preact/compat';
 
-import { createClassName, memo } from '../helpers';
+import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
 
 export const ButtonGroup = memo(({ children }) => (

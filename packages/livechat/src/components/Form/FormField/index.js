@@ -1,6 +1,6 @@
 import { cloneElement } from 'preact';
 
-import { createClassName } from '../../helpers';
+import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
 
 export const FormField = ({ required = false, label = '', description = '', error = '', className = undefined, style = {}, children }) => (
