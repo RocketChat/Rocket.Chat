@@ -9,6 +9,7 @@ import { useContactProfileRoomAction } from './hooks/roomActions/useContactProfi
 import { useDiscussionsRoomAction } from './hooks/roomActions/useDiscussionsRoomAction';
 import { useE2EERoomAction } from './hooks/roomActions/useE2EERoomAction';
 import { useExportMessagesRoomAction } from './hooks/roomActions/useExportMessagesRoomAction';
+import { useKeyboardShortcutListRoomAction } from './hooks/roomActions/useKeyboardShortcutListRoomAction';
 import { useStartCallRoomAction } from './hooks/roomActions/useStartCallRoomAction';
 import type { ToolboxActionConfig } from './views/room/lib/Toolbox';
 
@@ -24,5 +25,6 @@ export const roomActionHooks = [
 	useE2EERoomAction,
 	useExportMessagesRoomAction,
 	useGameCenterRoomAction,
+	useKeyboardShortcutListRoomAction,
 	useStartCallRoomAction,
 ] satisfies (() => ToolboxActionConfig | undefined)[];

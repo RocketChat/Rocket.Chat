@@ -56,12 +56,3 @@ addAction('uploaded-files-list', {
 	template: lazy(() => import('../../contextualBar/RoomFiles')),
 	order: 7,
 });
-
-addAction('keyboard-shortcut-list', {
-	groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
-	id: 'keyboard-shortcut-list',
-	title: 'Keyboard_Shortcuts_Title',
-	icon: 'keyboard',
-	template: lazy(() => import('../../contextualBar/KeyboardShortcuts')),
-	order: 99,
-});
