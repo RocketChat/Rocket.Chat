@@ -5,8 +5,6 @@ import type { ToolboxActionConfig } from '../Toolbox';
 import type { Events as GeneratorEvents } from '../Toolbox/generator';
 import { generator } from '../Toolbox/generator';
 
-type QuickActionsHook = ({ room }: { room: IRoom }) => QuickActionsActionConfig | null;
-
 export type QuickActionsActionOptions = Array<{
 	id: string;
 	label: TranslationKey;
@@ -21,13 +19,11 @@ export type QuickActionsActionConfig = ToolboxActionConfig & {
 	options?: QuickActionsActionOptions;
 };
 
-export type QuickActionsAction = QuickActionsHook | QuickActionsActionConfig;
+const { listen, add: addAction, store: actions } = generator<QuickActionsActionConfig>();
 
-const { listen, add: addAction, remove: deleteAction, store: actions } = generator<QuickActionsAction>();
+export type Events = GeneratorEvents<QuickActionsActionConfig>;
 
-export type Events = GeneratorEvents<QuickActionsAction>;
-
-export { listen, addAction, deleteAction, actions };
+export { listen, addAction, actions };
 
 export enum QuickActionsEnum {
 	MoveQueue = 'rocket-move-to-queue',

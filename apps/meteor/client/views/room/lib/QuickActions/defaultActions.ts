@@ -1,13 +1,5 @@
 import { addAction, QuickActionsEnum } from '.';
 
-addAction(QuickActionsEnum.MoveQueue, {
-	groups: ['live'],
-	id: QuickActionsEnum.MoveQueue,
-	title: 'Move_queue',
-	icon: 'burger-arrow-left',
-	order: 1,
-});
-
 addAction(QuickActionsEnum.ChatForward, {
 	groups: ['live'],
 	id: QuickActionsEnum.ChatForward,

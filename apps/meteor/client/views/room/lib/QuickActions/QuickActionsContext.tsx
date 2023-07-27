@@ -1,7 +1,7 @@
 import type { EventHandlerOf } from '@rocket.chat/emitter';
 import { createContext, useContext } from 'react';
 
-import type { QuickActionsActionConfig, QuickActionsAction, Events } from '.';
+import type { QuickActionsActionConfig, Events } from '.';
 import { actions, listen } from '.';
 
 import './defaultActions';
@@ -9,7 +9,7 @@ import './defaultActions';
 type QuickActionsEventHandler = (handler: EventHandlerOf<Events, 'change'>) => unknown;
 
 type QuickActionsContextValue = {
-	actions: Map<QuickActionsActionConfig['id'], QuickActionsAction>;
+	actions: Map<QuickActionsActionConfig['id'], QuickActionsActionConfig>;
 	listen: QuickActionsEventHandler;
 };
 

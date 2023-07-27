@@ -23,6 +23,7 @@ import ForwardChatModal from '../../../../../../components/Omnichannel/modals/Fo
 import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
 import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
+import { quickActionHooks } from '../../../../../../ui';
 import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
 import type { QuickActionsActionConfig } from '../../../../lib/QuickActions';
 import { QuickActionsEnum } from '../../../../lib/QuickActions';
@@ -32,7 +33,7 @@ import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
 
 export const useQuickActions = (): {
 	visibleActions: QuickActionsActionConfig[];
-	actionDefault: (e: unknown) => void;
+	actionDefault: (actionId: string) => void;
 	getAction: (id: string) => void;
 } => {
 	const room = useOmnichannelRoom();
@@ -41,8 +42,6 @@ export const useQuickActions = (): {
 
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const context = useQuickActionsContext();
-	const actions = (Array.from(context.actions.values()) as QuickActionsActionConfig[]).sort((a, b) => (a.order || 0) - (b.order || 0));
 
 	const [onHoldModalActive, setOnHoldModalActive] = useState(false);
 
@@ -336,6 +335,12 @@ export const useQuickActions = (): {
 		return false;
 	};
 
+	const context = useQuickActionsContext();
+	const quickActions = quickActionHooks
+		.map((quickActionHook) => quickActionHook())
+		.filter((quickAction): quickAction is QuickActionsActionConfig => !!quickAction);
+	const actions = [...quickActions, ...Array.from(context.actions.values())].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
 	const visibleActions = actions.filter((action) => {
 		const { options, id } = action;
 		if (options) {
@@ -344,7 +349,7 @@ export const useQuickActions = (): {
 		return hasPermissionButtons(id);
 	});
 
-	const actionDefault = useMutableCallback((actionId) => {
+	const actionDefault = useMutableCallback((actionId: string) => {
 		handleAction(actionId);
 	});
 
