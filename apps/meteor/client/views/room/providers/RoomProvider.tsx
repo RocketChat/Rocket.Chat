@@ -18,7 +18,7 @@ import { useRoomRolesManagement } from '../components/body/hooks/useRoomRolesMan
 import { RoomAPIContext } from '../contexts/RoomAPIContext';
 import { RoomContext } from '../contexts/RoomContext';
 import ComposerPopupProvider from './ComposerPopupProvider';
-import ToolboxProvider from './ToolboxProvider';
+import RoomToolboxProvider from './RoomToolboxProvider';
 import { useRoomQuery } from './hooks/useRoomQuery';
 
 type RoomProviderProps = {
@@ -145,9 +145,9 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	return (
 		<RoomAPIContext.Provider value={api}>
 			<RoomContext.Provider value={context}>
-				<ToolboxProvider room={pseudoRoom}>
+				<RoomToolboxProvider>
 					<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
-				</ToolboxProvider>
+				</RoomToolboxProvider>
 			</RoomContext.Provider>
 		</RoomAPIContext.Provider>
 	);

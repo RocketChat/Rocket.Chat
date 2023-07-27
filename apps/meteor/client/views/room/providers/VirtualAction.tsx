@@ -1,55 +1,54 @@
 import type { IRoom, RoomType } from '@rocket.chat/core-typings';
 import { useLayoutEffect, memo } from 'react';
 
-import type { Store } from '../lib/Toolbox/generator';
-import type { ToolboxAction } from '../lib/Toolbox/index';
+import { useRoom } from '../contexts/RoomContext';
+import type { ToolboxAction, ToolboxActionConfig } from '../lib/Toolbox/index';
 
-const groupsDict: Record<RoomType, string> = {
+const groupsDict = {
 	l: 'live',
 	v: 'voip',
 	d: 'direct',
 	p: 'group',
 	c: 'channel',
-};
+} as const satisfies Record<RoomType, string>;
 
-const getGroup = (room: IRoom): string => {
-	const group = groupsDict[room.t];
+const getGroup = (room: IRoom) => {
 	if (room.teamMain) {
 		return 'team';
 	}
 
-	if (group === groupsDict.d && (room.uids?.length ?? 0) > 2) {
+	if (room.t === 'd' && (room.uids?.length ?? 0) > 2) {
 		return 'direct_multiple';
 	}
 
-	return group;
+	return groupsDict[room.t];
 };
 
-const VirtualAction = ({
-	handleChange,
-	room,
-	action,
-	id,
-}: {
-	id: string;
+type VirtualActionProps = {
 	action: ToolboxAction;
-	room: IRoom;
-	handleChange: (callback: (list: Store<ToolboxAction>) => void) => void;
-}): null => {
+	handleChange: (callback: (list: Map<ToolboxActionConfig['id'], ToolboxAction>) => void) => void;
+};
+
+const VirtualAction = ({ action, handleChange }: VirtualActionProps) => {
+	const room = useRoom();
+
 	const config = typeof action === 'function' ? action({ room }) : action;
 
 	const group = getGroup(room);
 
-	const visible = config && (!config.groups || (groupsDict[room.t] && config.groups.includes(group as any)));
+	const visible = !!config && (!config.groups || (groupsDict[room.t] && config.groups.includes(group)));
 
 	useLayoutEffect(() => {
-		handleChange((list: Store<ToolboxAction>) => {
-			visible && config ? list.get(id) !== config && list.set(id, config) : list.delete(id);
-		});
-		return (): void => {
-			handleChange((list: Store<ToolboxAction>) => list.delete(id));
+		if (!visible) {
+			return;
+		}
+
+		handleChange((list) => list.set(config.id, config));
+
+		return () => {
+			handleChange((list) => list.delete(config.id));
 		};
-	}, [config, visible, handleChange, id]);
+	}, [config, visible, handleChange]);
 
 	return null;
 };
