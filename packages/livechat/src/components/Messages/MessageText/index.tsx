@@ -1,10 +1,11 @@
 import { Markup } from '@rocket.chat/gazzodown';
 import { parse } from '@rocket.chat/message-parser';
+import { memo } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
 
+import { createClassName } from '../../../helpers/createClassName';
 import isBigEmoji from '../../Emoji/isBigEmoji';
 import shortnameToUnicode from '../../Emoji/shortnameToUnicode';
-import { createClassName, memo } from '../../helpers';
 import styles from './styles.scss';
 
 type MessageTextProps = {
