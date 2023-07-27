@@ -9,7 +9,7 @@ import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
  */
 callbacks.add(
 	'afterSaveMessage',
-	async function (message, { _id, prid }) {
+	async (message, { _id, prid }) => {
 		if (!prid) {
 			return message;
 		}
@@ -35,7 +35,7 @@ callbacks.add(
 
 callbacks.add(
 	'afterDeleteMessage',
-	async function (message, { _id, prid }) {
+	async (message, { _id, prid }) => {
 		if (prid) {
 			const room = await Rooms.findOneById(_id, {
 				projection: {

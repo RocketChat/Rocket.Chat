@@ -2,8 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderSubtitle, HeaderToolbox } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
@@ -11,7 +10,7 @@ import FederatedRoomOriginServer from './FederatedRoomOriginServer';
 import ParentRoomWithData from './ParentRoomWithData';
 import ParentTeam from './ParentTeam';
 import RoomTitle from './RoomTitle';
-import ToolBox from './ToolBox';
+import RoomToolbox from './RoomToolbox';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
@@ -33,7 +32,7 @@ export type RoomHeaderProps = {
 	};
 };
 
-const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => {
+const RoomHeader = ({ room, topic = '', slots = {} }: RoomHeaderProps) => {
 	const t = useTranslation();
 
 	return (
@@ -63,11 +62,13 @@ const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => {
 				)}
 			</HeaderContent>
 			{slots?.posContent}
-			<HeaderToolbox aria-label={t('Toolbox_room_actions')}>
-				{slots?.toolbox?.pre}
-				{slots?.toolbox?.content || <ToolBox room={room} />}
-				{slots?.toolbox?.pos}
-			</HeaderToolbox>
+			<Suspense fallback={null}>
+				<HeaderToolbox aria-label={t('Toolbox_room_actions')}>
+					{slots?.toolbox?.pre}
+					{slots?.toolbox?.content || <RoomToolbox />}
+					{slots?.toolbox?.pos}
+				</HeaderToolbox>
+			</Suspense>
 			{slots?.end}
 		</Header>
 	);

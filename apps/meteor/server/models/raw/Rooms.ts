@@ -182,7 +182,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		const query: Filter<IRoom> = {
 			$and: [
 				name ? nameCondition : {},
-				(types && types.length) || discussion || teams
+				types?.length || discussion || teams
 					? {
 							$or: [
 								{

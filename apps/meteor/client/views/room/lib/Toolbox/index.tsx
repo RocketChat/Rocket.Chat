@@ -16,8 +16,6 @@ type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups' |
 	title: string;
 };
 
-type ActionRenderer = (props: ActionRendererProps) => ReactNode;
-
 type OptionRendererProps = ComponentProps<typeof Option>;
 
 export type OptionRenderer = (props: OptionRendererProps) => ReactNode;
@@ -27,9 +25,10 @@ export type ToolboxActionConfig = {
 	'icon'?: IconName;
 	'title': TranslationKey;
 	'anonymous'?: boolean;
+	'tooltip'?: string;
 	'data-tooltip'?: string;
 	'disabled'?: boolean;
-	'renderAction'?: ActionRenderer;
+	'renderAction'?: (props: ActionRendererProps) => ReactNode;
 	'full'?: true;
 	'renderOption'?: OptionRenderer;
 	'order'?: number;
@@ -47,8 +46,8 @@ export type ToolboxActionConfig = {
 
 export type ToolboxAction = ToolboxHook | ToolboxActionConfig;
 
-const { listen, add: addAction, remove: deleteAction, store: actions } = generator<ToolboxAction>();
+const { listen, add: addAction, store: actions } = generator<ToolboxAction>();
 
 export type Events = GeneratorEvents<ToolboxAction>;
 
-export { listen, addAction, deleteAction, actions };
+export { listen, addAction, actions };

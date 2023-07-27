@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { deleteMessageValidatingPermission } from '../functions/deleteMessage';
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';

@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import { Subscriptions, Users } from '@rocket.chat/models';
 import type { IUser, DeepWritable } from '@rocket.chat/core-typings';
+import { Subscriptions, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 import type { UpdateFilter } from 'mongodb';
 
-import { settings } from '../../../settings/server';
 import { trim } from '../../../../lib/utils/stringUtils';
+import { settings } from '../../../settings/server';
 
 export const saveCustomFieldsWithoutValidation = async function (userId: string, formData: Record<string, any>): Promise<void> {
 	if (trim(settings.get('Accounts_CustomFields')) !== '') {
