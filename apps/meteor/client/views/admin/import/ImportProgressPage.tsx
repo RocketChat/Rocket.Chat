@@ -135,8 +135,18 @@ const ImportProgressPage = function ImportProgressPage() {
 	);
 
 	useEffect(() => {
-		return streamer('progress', ({ count, key, step, ...rest }) => {
-			handleProgressUpdated({ ...rest, key: key!, step: step!, completed: count!.completed, total: count!.total });
+		return streamer('progress', (progress) => {
+			// There shouldn't be any progress update sending only the rate at this point of the process
+			if ('rate' in progress) {
+				return;
+			}
+
+			handleProgressUpdated({
+				key: progress.key,
+				step: progress.step,
+				completed: progress.count.completed,
+				total: progress.count.total,
+			});
 		});
 	}, [handleProgressUpdated, streamer]);
 

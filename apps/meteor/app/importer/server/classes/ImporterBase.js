@@ -1,8 +1,4 @@
-import http from 'http';
-import https from 'https';
-
 import { Settings, ImportData, Imports } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import AdmZip from 'adm-zip';
 
 import { Progress } from './ImporterProgress';
@@ -18,13 +14,13 @@ import { Selection, SelectionChannel, SelectionUser } from '..';
  * Base class for all of the importers.
  */
 export class Base {
-	constructor(info, importRecord) {
+	constructor(info, importRecord, converterOptions = {}) {
 		if (!(info instanceof ImporterInfo)) {
 			throw new Error('Information passed in must be a valid ImporterInfo instance.');
 		}
 
 		this.AdmZip = AdmZip;
-		this.converter = new ImportDataConverter();
+		this.converter = new ImportDataConverter(converterOptions);
 
 		this.startImport = this.startImport.bind(this);
 		this.getProgress = this.getProgress.bind(this);
@@ -182,14 +178,12 @@ export class Base {
 	}
 
 	async backupSettingValues() {
-		const allowedDomainList = await Settings.findOneById('Accounts_AllowedDomainsList').value;
 		const allowUsernameChange = await Settings.findOneById('Accounts_AllowUsernameChange').value;
 		const maxFileSize = await Settings.findOneById('FileUpload_MaxFileSize').value;
 		const mediaTypeWhiteList = await Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
 		const mediaTypeBlackList = await Settings.findOneById('FileUpload_MediaTypeBlackList').value;
 
 		this.oldSettings = {
-			allowedDomainList,
 			allowUsernameChange,
 			maxFileSize,
 			mediaTypeWhiteList,
@@ -198,7 +192,6 @@ export class Base {
 	}
 
 	async applySettingValues(settingValues) {
-		await Settings.updateValueById('Accounts_AllowedDomainsList', settingValues.allowedDomainList ?? '');
 		await Settings.updateValueById('Accounts_AllowUsernameChange', settingValues.allowUsernameChange ?? true);
 		await Settings.updateValueById('FileUpload_MaxFileSize', settingValues.maxFileSize ?? -1);
 		await Settings.updateValueById('FileUpload_MediaTypeWhiteList', settingValues.mediaTypeWhiteList ?? '*');

@@ -114,6 +114,12 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 
 		this.assertsValidStateForNewData(operation);
 
+		for await (const user of users) {
+			if (!user.emails?.some((value) => value) || !user.importIds?.some((value) => value)) {
+				throw new Error('Users are missing required data.');
+			}
+		}
+
 		await ImportData.col.insertMany(
 			users.map((data) => ({
 				_id: new ObjectId().toHexString(),
@@ -142,7 +148,14 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 			throw new Error('error-importer-not-defined');
 		}
 
-		const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+		// eslint-disable-next-line new-cap
+		const instance = new importer.importer(importer, operation, {
+			// Do not update the data of existing users, but add the importId to them if it's missing
+			skipExistingUsers: true,
+			bindImportIds: true,
+			bindSkippedUsers: true,
+		});
+
 		const selection = new Selection(importer.name, [], [], 0);
 		await instance.startImport(selection, userId);
 	}

@@ -15,6 +15,8 @@ import type {
 	IMessage as IDBMessage,
 } from '@rocket.chat/core-typings';
 import { ImportData, Rooms, Users, Subscriptions } from '@rocket.chat/models';
+import { hash as bcryptHash } from 'bcrypt';
+import { SHA256 } from '@rocket.chat/sha256';
 
 import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
 import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
@@ -53,6 +55,7 @@ export type IConverterOptions = {
 	flagEmailsAsVerified?: boolean;
 	skipExistingUsers?: boolean;
 	skipNewUsers?: boolean;
+	bindSkippedUsers?: boolean;
 };
 
 const guessNameFromUsername = (username: string): string =>
@@ -87,6 +90,7 @@ export class ImportDataConverter {
 			flagEmailsAsVerified: false,
 			skipExistingUsers: false,
 			skipNewUsers: false,
+			bindSkippedUsers: false,
 		};
 		this._userCache = new Map();
 		this._userDisplayNameCache = new Map();
@@ -248,7 +252,6 @@ export class ImportDataConverter {
 			userData.type = 'user';
 		}
 
-		// #ToDo: #TODO: Move this to the model class
 		const updateData: Record<string, any> = Object.assign(Object.create(null), {
 			$set: Object.assign(Object.create(null), {
 				...(userData.roles && { roles: userData.roles }),
@@ -283,28 +286,69 @@ export class ImportDataConverter {
 		if (userData.importIds.length) {
 			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username || userData.username);
 		}
+
+		// Deleted users are 'inactive' users in Rocket.Chat
+		if (userData.deleted && existingUser?.active) {
+			userData._id && (await setUserActiveStatus(userData._id, false, true));
+		} else if (userData.deleted === false && existingUser?.active === false) {
+			userData._id && (await setUserActiveStatus(userData._id, true));
+		}
 	}
 
-	// TODO
+	private async hashPassword(password: string): Promise<string> {
+		return bcryptHash(SHA256(password), Accounts._bcryptRounds());
+	}
+
+	private generateTempPassword(userData: IImportUser): string {
+		return `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
+	}
+
 	async insertUser(userData: IImportUser): Promise<IUser> {
-		const password =
-			userData.password || `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
-		const userId = userData.emails.length
-			? await Accounts.createUserAsync({
-					email: userData.emails[0],
-					password,
-			  })
-			: await Accounts.createUserAsync({
-					username: userData.username,
-					password,
-					joinDefaultChannelsSilenced: true,
-			  } as any);
+		const userId = Accounts.insertUserDoc(
+			{
+				joinDefaultChannels: false,
+				skipEmailValidation: true,
+				skipAdminCheck: true,
+				skipAdminEmail: true,
+				skipOnCreateUserCallback: true,
+				skipBeforeCreateUserCallback: true,
+				skipAfterCreateUserCallback: true,
+				skipDefaultAvatar: true,
+				skipAppsEngineEvent: !!process.env.IMPORTER_SKIP_APPS_EVENT,
+				...(userData.roles?.length ? { globalRoles: userData.roles } : {}),
+			},
+			{
+				type: userData.type || 'user',
+				...(userData.username && { username: userData.username }),
+				...(userData.emails.length && {
+					emails: userData.emails.map((email) => ({ address: email, verified: !!this._options.flagEmailsAsVerified })),
+				}),
+
+				...(userData.statusText && { statusText: userData.statusText }),
+				...(userData.name && { name: userData.name }),
+				...(userData.bio && { bio: userData.bio }),
+				...(userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl }),
+				...(userData.utcOffset !== undefined && { utcOffset: userData.utcOffset }),
+				...{
+					services: {
+						// Add a password service if there's a password string, or if there's no service at all
+						...((!!userData.password || !userData.services || !Object.keys(userData.services).length) && {
+							password: { bcrypt: await this.hashPassword(userData.password || this.generateTempPassword(userData)) },
+						}),
+						...(userData.services || {}),
+					},
+				},
+				...(userData.services?.ldap && { ldap: true }),
+				...(userData.importIds?.length && { importIds: userData.importIds }),
+				...(!!userData.customFields && { customFields: userData.customFields }),
+				...(userData.deleted !== undefined && { active: !userData.deleted }),
+			},
+		);
 
 		const user = await Users.findOneById(userId, {});
 		if (!user) {
 			throw new Error(`User not found: ${userId}`);
 		}
-		await this.updateUser(user, userData);
 
 		await addUserToDefaultChannels(user, true);
 		return user;
@@ -315,6 +359,18 @@ export class ImportDataConverter {
 	}
 
 	async findExistingUser(data: IImportUser): Promise<IUser | undefined> {
+		// If we're gonna force-bind importIds, we search for them first to ensure they are unique
+		if (this._options.bindSkippedUsers) {
+			// #TODO: Use a single operation for multiple IDs
+			// (Currently there's no existing use case with multiple IDs being passed to this function)
+			for await (const importId of data.importIds) {
+				const importedUser = await Users.findOneByImportId(importId, {});
+				if (importedUser) {
+					return importedUser;
+				}
+			}
+		}
+
 		if (data.emails.length) {
 			const emailUser = await Users.findOneByEmailAddress(data.emails[0], {});
 
@@ -351,6 +407,13 @@ export class ImportDataConverter {
 
 				let existingUser = await this.findExistingUser(data);
 				if (existingUser && this._options.skipExistingUsers) {
+					if (this._options.bindSkippedUsers) {
+						const newImportIds = data.importIds.filter((importId) => !(existingUser as IUser).importIds?.includes(importId));
+						if (newImportIds.length) {
+							await Users.addImportIds(existingUser._id, newImportIds);
+						}
+					}
+
 					await this.skipRecord(_id);
 					continue;
 				}
@@ -359,7 +422,7 @@ export class ImportDataConverter {
 					continue;
 				}
 
-				if (!data.username) {
+				if (!data.username && !existingUser?.username) {
 					data.username = await generateUsernameSuggestion({
 						name: data.name,
 						emails,
@@ -376,14 +439,6 @@ export class ImportDataConverter {
 					}
 
 					existingUser = await this.insertUser(data);
-				}
-
-				// Deleted users are 'inactive' users in Rocket.Chat
-				// TODO: Check data._id if exists/required or not
-				if (data.deleted && existingUser?.active) {
-					data._id && (await setUserActiveStatus(data._id, false, true));
-				} else if (data.deleted === false && existingUser?.active === false) {
-					data._id && (await setUserActiveStatus(data._id, true));
 				}
 
 				if (afterImportFn) {

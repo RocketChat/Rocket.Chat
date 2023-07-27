@@ -4,8 +4,8 @@ import { Random } from '@rocket.chat/random';
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
 
 export class CsvImporter extends Base {
-	constructor(info, importRecord) {
-		super(info, importRecord);
+	constructor(info, importRecord, converterOptions = {}) {
+		super(info, importRecord, converterOptions);
 
 		const { parse } = require('csv-parse/lib/sync');
 
