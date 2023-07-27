@@ -21,6 +21,7 @@ export class TriggerMessageContainer extends Component {
 	};
 }
 
+/** @type {function({ ref?: any; path?: string }): any} */
 export const TriggerMessageConnector = ({ ref, ...props }) => (
 	<Consumer>
 		{({

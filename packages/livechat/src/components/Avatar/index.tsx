@@ -1,10 +1,25 @@
 import { Component } from 'preact';
+import type { CSSProperties } from 'preact/compat';
 
 import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
 
-export class Avatar extends Component {
-	static getDerivedStateFromProps(props) {
+type AvatarProps = {
+	small?: boolean;
+	large?: boolean;
+	src?: string;
+	description?: string;
+	status?: string;
+	className?: string;
+	style?: CSSProperties;
+};
+
+type AvatarState = {
+	errored: boolean;
+};
+
+export class Avatar extends Component<AvatarProps, AvatarState> {
+	static getDerivedStateFromProps(props: AvatarProps) {
 		if (props.src) {
 			return { errored: false };
 		}
@@ -20,7 +35,7 @@ export class Avatar extends Component {
 		this.setState({ errored: true });
 	};
 
-	render = ({ small, large, src, description, status, className, style }, { errored }) => (
+	render = ({ small, large, src, description, status, className, style }: AvatarProps, { errored }: AvatarState) => (
 		<div
 			aria-label='User picture'
 			className={createClassName(styles, 'avatar', { small, large, nobg: src && !errored }, [className])}

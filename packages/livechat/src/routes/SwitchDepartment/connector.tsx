@@ -1,10 +1,17 @@
+import type { ComponentProps } from 'preact';
+
 import { Consumer } from '../../store';
 import SwitchDepartmentContainer from './container';
 
-const SwitchDepartmentConnector = ({ ref, ...props }) => (
+type SwitchDepartmentConnectorProps = Omit<
+	ComponentProps<typeof SwitchDepartmentContainer>,
+	'theme' | 'loading' | 'iframe' | 'departments' | 'dispatch' | 'room' | 'alerts' | 'token'
+>;
+
+const SwitchDepartmentConnector = ({ ref, ...props }: SwitchDepartmentConnectorProps) => (
 	<Consumer>
 		{({
-			config: { departments = {}, theme: { color } = {} } = {},
+			config: { departments = [], theme: { color } = {} } = {},
 			iframe: { theme: { color: customColor, fontColor: customFontColor, iconColor: customIconColor } = {}, guest } = {},
 			iframe,
 			room,

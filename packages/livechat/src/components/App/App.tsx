@@ -1,11 +1,12 @@
 import i18next from 'i18next';
 import { Component } from 'preact';
-import { Router, route } from 'preact-router';
+import Router, { route } from 'preact-router';
 import { parse } from 'query-string';
 import { withTranslation } from 'react-i18next';
 
 import { setInitCookies } from '../../helpers/cookies';
 import { isActiveSession } from '../../helpers/isActiveSession';
+import { isRTL } from '../../helpers/isRTL';
 import { visibility } from '../../helpers/visibility';
 import history from '../../history';
 import Connection from '../../lib/connection';
@@ -21,22 +22,66 @@ import LeaveMessage from '../../routes/LeaveMessage';
 import Register from '../../routes/Register';
 import SwitchDepartment from '../../routes/SwitchDepartment';
 import TriggerMessage from '../../routes/TriggerMessage';
-import { store } from '../../store';
+import type { Dispatch } from '../../store';
+import store from '../../store';
 
-function isRTL(s) {
-	const rtlChars = '\u0591-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC';
-	const rtlDirCheck = new RegExp(`^[^${rtlChars}]*?[${rtlChars}]`);
+type AppProps = {
+	config: {
+		settings: {
+			registrationForm?: boolean;
+			nameFieldRegistrationForm?: boolean;
+			emailFieldRegistrationForm?: boolean;
+			forceAcceptDataProcessingConsent?: boolean;
+		};
+		online?: boolean;
+		departments: {
+			showOnRegistration: boolean;
+		}[];
+		enabled?: boolean;
+	};
+	gdpr: {
+		accepted: boolean;
+	};
+	triggered?: boolean;
+	user: {
+		token: string;
+	};
+	dispatch: Dispatch;
+	sound: {
+		enabled: boolean;
+	};
+	minimized: boolean;
+	undocked?: boolean;
+	expanded: boolean;
+	modal: boolean;
+	alerts: {
+		id: string;
+	}[];
+	iframe: {
+		visible: boolean;
+		guest?: {
+			token: string;
+			department: string;
+			name: string;
+			email: string;
+		};
+	};
+	i18n: typeof i18next;
+};
 
-	return rtlDirCheck.test(s);
-}
+type AppState = {
+	initialized: boolean;
+	poppedOut: boolean;
+};
 
-export class App extends Component {
+// eslint-disable-next-line react/prefer-stateless-function
+export class App extends Component<AppProps, AppState> {
 	state = {
 		initialized: false,
 		poppedOut: false,
 	};
 
-	handleRoute = async () => {
+	protected handleRoute = async () => {
 		setTimeout(() => {
 			const {
 				config: {
@@ -68,17 +113,14 @@ export class App extends Component {
 			const showDepartment = departments.filter((dept) => dept.showOnRegistration).length > 0;
 
 			const showRegistrationForm =
-				registrationForm &&
-				(nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment) &&
-				!triggered &&
-				!(user && user.token);
+				registrationForm && (nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment) && !triggered && !user?.token;
 			if (showRegistrationForm) {
 				return route('/register');
 			}
 		}, 100);
 	};
 
-	handleTriggers() {
+	protected handleTriggers() {
 		const {
 			config: { online, enabled },
 		} = this.props;
@@ -89,23 +131,23 @@ export class App extends Component {
 		Triggers.processTriggers();
 	}
 
-	handleEnableNotifications = () => {
+	protected handleEnableNotifications = () => {
 		const { dispatch, sound = {} } = this.props;
 		dispatch({ sound: { ...sound, enabled: true } });
 	};
 
-	handleDisableNotifications = () => {
+	protected handleDisableNotifications = () => {
 		const { dispatch, sound = {} } = this.props;
 		dispatch({ sound: { ...sound, enabled: false } });
 	};
 
-	handleMinimize = () => {
+	protected handleMinimize = () => {
 		parentCall('minimizeWindow');
 		const { dispatch } = this.props;
 		dispatch({ minimized: true });
 	};
 
-	handleRestore = () => {
+	protected handleRestore = () => {
 		parentCall('restoreWindow');
 		const { dispatch, undocked } = this.props;
 		const dispatchRestore = () => dispatch({ minimized: false, undocked: false });
@@ -118,32 +160,32 @@ export class App extends Component {
 		} else {
 			dispatchRestore();
 		}
-		Triggers.callbacks.emit('chat-opened-by-visitor');
+		Triggers.callbacks?.emit('chat-opened-by-visitor');
 	};
 
-	handleOpenWindow = () => {
+	protected handleOpenWindow = () => {
 		parentCall('openPopout');
 		const { dispatch } = this.props;
 		dispatch({ undocked: true, minimized: false });
 	};
 
-	handleDismissAlert = (id) => {
+	protected handleDismissAlert = (id: string) => {
 		const { dispatch, alerts = [] } = this.props;
 		dispatch({ alerts: alerts.filter((alert) => alert.id !== id) });
 	};
 
-	handleVisibilityChange = async () => {
+	protected handleVisibilityChange = async () => {
 		const { dispatch } = this.props;
-		await dispatch({ visible: !visibility.hidden });
+		dispatch({ visible: !visibility.hidden });
 	};
 
-	handleLanguageChange = () => {
+	protected handleLanguageChange = () => {
 		this.forceUpdate();
 	};
 
-	dismissNotification = () => !isActiveSession();
+	protected dismissNotification = () => !isActiveSession();
 
-	initWidget() {
+	protected initWidget() {
 		const {
 			minimized,
 			iframe: { visible },
@@ -162,7 +204,7 @@ export class App extends Component {
 		i18next.on('languageChanged', this.handleLanguageChange);
 	}
 
-	checkPoppedOutWindow() {
+	protected checkPoppedOutWindow() {
 		// Checking if the window is poppedOut and setting parent minimized if yes for the restore purpose
 		const { dispatch } = this.props;
 		const poppedOut = parse(window.location.search).mode === 'popout';
@@ -172,7 +214,7 @@ export class App extends Component {
 		}
 	}
 
-	async initialize() {
+	protected async initialize() {
 		// TODO: split these behaviors into composable components
 		await Connection.init();
 		CustomFields.init();
@@ -185,7 +227,7 @@ export class App extends Component {
 		parentCall('ready');
 	}
 
-	async finalize() {
+	protected async finalize() {
 		CustomFields.reset();
 		userPresence.reset();
 		visibility.removeListener(this.handleVisibilityChange);
@@ -207,7 +249,7 @@ export class App extends Component {
 		}
 	}
 
-	render = ({ sound, undocked, minimized, expanded, alerts, modal, iframe }, { initialized, poppedOut }) => {
+	render = ({ sound, undocked, minimized, expanded, alerts, modal, iframe }: AppProps, { initialized, poppedOut }: AppState) => {
 		if (!initialized) {
 			return null;
 		}
@@ -215,7 +257,7 @@ export class App extends Component {
 		const { department, name, email } = iframe.guest || {};
 
 		const screenProps = {
-			notificationsEnabled: sound && sound.enabled,
+			notificationsEnabled: sound?.enabled,
 			minimized: !poppedOut && (minimized || undocked),
 			expanded: !minimized && expanded,
 			windowed: !minimized && poppedOut,
