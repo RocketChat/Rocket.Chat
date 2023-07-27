@@ -1,21 +1,21 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { Box } from '@rocket.chat/fuselage';
 import { HeaderToolbox, HeaderToolboxAction, HeaderToolboxDivider } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 
+import { useOmnichannelRoom } from '../../../contexts/RoomContext';
 import ToolBoxActionOptions from './ToolBoxActionOptions';
 import { useQuickActions } from './hooks/useQuickActions';
 
 type QuickActionsProps = {
-	room: IOmnichannelRoom;
 	className?: ComponentProps<typeof Box>['className'];
 };
 
-const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
+const QuickActions = ({ className }: QuickActionsProps) => {
 	const t = useTranslation();
-	const { visibleActions, actionDefault } = useQuickActions(room);
+	const room = useOmnichannelRoom();
+	const { visibleActions, actionDefault } = useQuickActions();
 
 	return (
 		<HeaderToolbox aria-label={t('Omnichannel_quick_actions')}>

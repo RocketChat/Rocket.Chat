@@ -1,4 +1,3 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	useSetModal,
@@ -24,19 +23,19 @@ import ForwardChatModal from '../../../../../../components/Omnichannel/modals/Fo
 import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
 import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
+import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
 import type { QuickActionsActionConfig } from '../../../../lib/QuickActions';
 import { QuickActionsEnum } from '../../../../lib/QuickActions';
 import { useQuickActionsContext } from '../../../../lib/QuickActions/QuickActionsContext';
 import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
 import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
 
-export const useQuickActions = (
-	room: IOmnichannelRoom,
-): {
+export const useQuickActions = (): {
 	visibleActions: QuickActionsActionConfig[];
 	actionDefault: (e: unknown) => void;
 	getAction: (id: string) => void;
 } => {
+	const room = useOmnichannelRoom();
 	const setModal = useSetModal();
 	const router = useRouter();
 
