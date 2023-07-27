@@ -8,7 +8,7 @@ callbacks.add(
 	async (options) => {
 		const { rid, newDepartmentId } = options;
 
-		const room = await LivechatRooms.findOneById(rid);
+		const room = await LivechatRooms.findOneById(rid, { projection: { departmentAncestors: 1 } });
 		if (!room) {
 			cbLogger.debug('Skipping callback. No room found');
 			return options;

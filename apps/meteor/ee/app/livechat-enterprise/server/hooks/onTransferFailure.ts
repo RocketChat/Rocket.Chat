@@ -17,9 +17,12 @@ const onTransferFailure = async ({
 }) => {
 	cbLogger.debug(`Attempting to transfer room ${room._id} using fallback departments`);
 	const { departmentId } = transferData;
-	const department = (await LivechatDepartment.findOneById(departmentId, {
-		projection: { _id: 1, name: 1, fallbackForwardDepartment: 1 },
-	})) as Partial<ILivechatDepartment>;
+	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'name' | '_id' | 'fallbackForwardDepartment'>>(
+		departmentId,
+		{
+			projection: { _id: 1, name: 1, fallbackForwardDepartment: 1 },
+		},
+	);
 
 	if (!department?.fallbackForwardDepartment?.length) {
 		return false;
@@ -31,7 +34,7 @@ const onTransferFailure = async ({
 		prevDepartment: department.name,
 		departmentId: department.fallbackForwardDepartment,
 		department: await LivechatDepartment.findOneById(department.fallbackForwardDepartment, {
-			fields: { name: 1, _id: 1 },
+			projection: { name: 1, _id: 1 },
 		}),
 	};
 
