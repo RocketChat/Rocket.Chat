@@ -1,10 +1,10 @@
-import path from 'path';
 import { readFile, writeFile } from 'fs/promises';
+import path from 'path';
 
-import unified from 'unified';
+import mdastToString from 'mdast-util-to-string';
 import remarkParse from 'remark-parse';
 import remarkStringify from 'remark-stringify';
-import mdastToString from 'mdast-util-to-string';
+import unified from 'unified';
 
 export const BumpLevels = {
 	dep: 0,

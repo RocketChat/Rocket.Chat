@@ -1,8 +1,9 @@
 import type { UIKitActionEvent, UiKitBannerProps } from '@rocket.chat/core-typings';
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import { kitContext, bannerParser, UiKitBanner as renderUiKitBannerBlocks } from '@rocket.chat/fuselage-ui-kit';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
-import type { FC, ComponentProps, ReactElement, ContextType } from 'react';
+import type { FC, ReactElement, ContextType } from 'react';
 import React, { useMemo } from 'react';
 
 import { useUIKitHandleAction } from '../../UIKit/hooks/useUIKitHandleAction';
@@ -19,7 +20,7 @@ const UiKitBanner: FC<UiKitBannerProps> = ({ payload }) => {
 
 	const icon = useMemo(() => {
 		if (state.icon) {
-			return <Icon name={state.icon as ComponentProps<typeof Icon>['name']} size={20} />;
+			return <Icon name={state.icon as IconName} size={20} />;
 		}
 
 		return null;

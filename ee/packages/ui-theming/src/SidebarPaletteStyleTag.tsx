@@ -2,12 +2,12 @@ import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { createPortal } from 'react-dom';
 
-import { defaultSidebarPalette } from './sidebarPalette';
-import { darkPalette } from './paletteDark';
 import { convertToCss } from './helpers/convertToCss';
 import { useCreateStyleContainer } from './hooks/useCreateStyleContainer';
+import { darkPalette } from './paletteDark';
+import { defaultSidebarPalette } from './sidebarPalette';
 
-export const SidebarPaletteStyleTag = memo((): ReactElement | null => {
+export const SidebarPaletteStyleTag = memo(function SidebarPaletteStyleTag(): ReactElement | null {
 	// Commented code below: sidebar palette currently the same in both themes.
 
 	// const [, , theme] = useThemeMode();

@@ -3,9 +3,9 @@ import type { IIntegration, IIntegrationHistory } from '@rocket.chat/core-typing
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { IntegrationsCreateProps } from './IntegrationsCreateProps';
+import type { IntegrationsGetProps } from './IntegrationsGetProps';
 import type { IntegrationsHistoryProps } from './IntegrationsHistoryProps';
 import type { IntegrationsRemoveProps } from './IntegrationsRemoveProps';
-import type { IntegrationsGetProps } from './IntegrationsGetProps';
 import type { IntegrationsUpdateProps } from './IntegrationsUpdateProps';
 
 export type IntegrationsEndpoints = {

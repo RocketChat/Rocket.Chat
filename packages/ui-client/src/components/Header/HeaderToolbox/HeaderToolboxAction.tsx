@@ -13,7 +13,7 @@ const HeaderToolboxAction = forwardRef<HTMLButtonElement, any>(function HeaderTo
 			data-toolbox={index}
 			key={id}
 			icon={icon}
-			tiny
+			small
 			position='relative'
 			overflow='visible'
 			{...(tooltip ? { 'data-tooltip': tooltip, 'title': '' } : { title })}

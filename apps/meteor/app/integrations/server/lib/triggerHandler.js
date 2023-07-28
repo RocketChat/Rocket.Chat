@@ -1,22 +1,22 @@
-import { VM, VMScript } from 'vm2';
-import { Meteor } from 'meteor/meteor';
-import { Random } from '@rocket.chat/random';
-import _ from 'underscore';
-import moment from 'moment';
 import { Integrations, IntegrationHistory, Users, Rooms, Messages } from '@rocket.chat/models';
 import * as Models from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { Meteor } from 'meteor/meteor';
+import moment from 'moment';
+import _ from 'underscore';
+import { VM, VMScript } from 'vm2';
 
+import { omit } from '../../../../lib/utils/omit';
 import * as s from '../../../../lib/utils/stringUtils';
-import { settings } from '../../../settings/server';
+import { deasyncPromise } from '../../../../server/deasync/deasync';
+import { httpCall } from '../../../../server/lib/http/call';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
-import { outgoingLogger } from '../logger';
+import { settings } from '../../../settings/server';
 import { outgoingEvents } from '../../lib/outgoingEvents';
-import { omit } from '../../../../lib/utils/omit';
 import { forbiddenModelMethods } from '../api/api';
-import { httpCall } from '../../../../server/lib/http/call';
-import { deasyncPromise } from '../../../../server/deasync/deasync';
+import { outgoingLogger } from '../logger';
 
 class RocketChatIntegrationHandler {
 	constructor() {

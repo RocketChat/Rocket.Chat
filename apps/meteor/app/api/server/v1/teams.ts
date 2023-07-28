@@ -1,6 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Team } from '@rocket.chat/core-services';
+import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { Users, Rooms } from '@rocket.chat/models';
 import {
 	isTeamsConvertToChannelProps,
 	isTeamsRemoveRoomProps,
@@ -11,14 +12,13 @@ import {
 	isTeamsLeaveProps,
 	isTeamsUpdateProps,
 } from '@rocket.chat/rest-typings';
-import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import { Team } from '@rocket.chat/core-services';
-import { Users, Rooms } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 

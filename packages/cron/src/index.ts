@@ -1,7 +1,7 @@
-import type { Db } from 'mongodb';
 import { Agenda } from '@rocket.chat/agenda';
 import { CronHistory } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import type { Db } from 'mongodb';
 
 const runCronJobFunctionAndPersistResult = async (fn: () => Promise<any>, jobName: string): Promise<void> => {
 	const { insertedId } = await CronHistory.insertOne({

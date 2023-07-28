@@ -1,5 +1,4 @@
-import { Random } from '@rocket.chat/random';
-import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/LivechatBridge';
+import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
 import type {
 	ILivechatMessage,
 	IVisitor,
@@ -7,23 +6,23 @@ import type {
 	ILivechatTransferData,
 	IDepartment,
 } from '@rocket.chat/apps-engine/definition/livechat';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/LivechatBridge';
 import type { SelectedAgent } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 
-import { getRoom } from '../../../livechat/server/api/lib/livechat';
-import { Livechat } from '../../../livechat/server/lib/Livechat';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
-import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
 import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
+import { getRoom } from '../../../livechat/server/api/lib/livechat';
+import { Livechat } from '../../../livechat/server/lib/Livechat';
+import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
 import { settings } from '../../../settings/server';
 
 export class AppLivechatBridge extends LivechatBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}

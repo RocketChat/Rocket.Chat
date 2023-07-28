@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
@@ -73,8 +73,7 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 					<Button secondary danger onClick={handleDisconnect}>
 						{t('Disconnect')}
 					</Button>
-					<Button onClick={handleSyncAction} disabled={isSyncing}>
-						<Icon pie={4} name='reload' size='x20' />
+					<Button icon='reload' onClick={handleSyncAction} disabled={isSyncing}>
 						{t('Sync')}
 					</Button>
 				</ButtonGroup>

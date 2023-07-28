@@ -10,14 +10,14 @@ export default {
 	args: {
 		src: gazzoAvatar,
 		description: 'user description',
-		status: null,
+		status: undefined,
 		large: false,
 	},
 	argTypes: {
 		status: {
 			control: {
 				type: 'select',
-				options: [null, 'offline', 'away', 'busy', 'online'],
+				options: [undefined, 'offline', 'away', 'busy', 'online'],
 			},
 		},
 	},
