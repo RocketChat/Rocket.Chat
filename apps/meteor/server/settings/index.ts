@@ -17,6 +17,7 @@ import { createIRCSettings } from './irc';
 import { createLayoutSettings } from './layout';
 import { createLdapSettings } from './ldap';
 import { createLogSettings } from './logs';
+// import { createMatrixFederationSettings } from './matrix-federation';
 import { createMessageSettings } from './message';
 import { createMetaSettings } from './meta';
 import { createMiscSettings } from './misc';
@@ -36,7 +37,6 @@ import { createUserDataSettings } from './userDataDownload';
 import { createVConfSettings } from './video-conference';
 import { createWebDavSettings } from './webdav';
 import { createWebRTCSettings } from './webrtc';
-import { createMatrixFederationSettings } from './matrix-federation';
 
 async function createSettings() {
 	await Promise.all([
