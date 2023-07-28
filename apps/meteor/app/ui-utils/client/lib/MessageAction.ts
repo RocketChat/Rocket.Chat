@@ -2,20 +2,17 @@ import type { IMessage, IUser, ISubscription, IRoom, SettingValue, Serialized, I
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import mem from 'mem';
-import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import type { ContextType } from 'react';
 
-import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import type { AutoTranslateOptions } from '../../../../client/views/room/MessageList/hooks/useAutoTranslate';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
 import type { ToolboxContextValue } from '../../../../client/views/room/contexts/ToolboxContext';
-import { Messages, ChatRoom, Subscriptions } from '../../../models/client';
-import { sdk } from '../../../utils/client/lib/SDKClient';
 
-const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> => {
+export const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> => {
 	try {
+		const { sdk } = await import('../../../utils/client/lib/SDKClient');
 		const { message } = await sdk.rest.get('/v1/chat.getMessage', { msgId });
 		return message;
 	} catch {
@@ -24,6 +21,7 @@ const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> =
 };
 
 type MessageActionGroup = 'message' | 'menu';
+
 export type MessageActionContext =
 	| 'message'
 	| 'threads'
@@ -78,7 +76,7 @@ export type MessageActionConfig = {
 
 type MessageActionConfigList = MessageActionConfig[];
 
-export const MessageAction = new (class {
+class MessageAction {
 	/*
   	config expects the following keys (only id is mandatory):
   		id (mandatory)
@@ -143,7 +141,7 @@ export const MessageAction = new (class {
 
 	async getButtonsByCondition(
 		prop: MessageActionConditionProps,
-		arr: MessageActionConfigList = MessageAction._getButtons(),
+		arr: MessageActionConfigList = this._getButtons(),
 	): Promise<MessageActionConfigList> {
 		return (
 			await Promise.all(
@@ -157,7 +155,7 @@ export const MessageAction = new (class {
 	}
 
 	getButtonsByGroup = mem(
-		(group: MessageActionGroup, arr: MessageActionConfigList = MessageAction._getButtons()): MessageActionConfigList => {
+		(group: MessageActionGroup, arr: MessageActionConfigList = this._getButtons()): MessageActionConfigList => {
 			return arr.filter((button) => !button.group || (Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
 		},
 		{ maxAge: 1000 },
@@ -172,7 +170,7 @@ export const MessageAction = new (class {
 		context: MessageActionContext,
 		group: MessageActionGroup,
 	): Promise<MessageActionConfigList> {
-		const allButtons = group ? this.getButtonsByGroup(group) : MessageAction._getButtons();
+		const allButtons = group ? this.getButtonsByGroup(group) : this._getButtons();
 
 		if (props.message) {
 			return this.getButtonsByCondition({ ...props, context }, this.getButtonsByContext(context, allButtons));
@@ -185,26 +183,8 @@ export const MessageAction = new (class {
 		mem.clear(this.getButtonsByGroup);
 		return this.buttons.set({});
 	}
+}
 
-	async getPermaLink(msgId: string): Promise<string> {
-		if (!msgId) {
-			throw new Error('invalid-parameter');
-		}
+const instance = new MessageAction();
 
-		const msg = Messages.findOne(msgId) || (await getMessage(msgId));
-		if (!msg) {
-			throw new Error('message-not-found');
-		}
-		const roomData = ChatRoom.findOne({
-			_id: msg.rid,
-		});
-
-		if (!roomData) {
-			throw new Error('room-not-found');
-		}
-
-		const subData = Subscriptions.findOne({ 'rid': roomData._id, 'u._id': Meteor.userId() });
-		const roomURL = roomCoordinator.getURL(roomData.t, { ...(subData || roomData), tab: '' });
-		return `${roomURL}?msg=${msgId}`;
-	}
-})();
+export { instance as MessageAction };
