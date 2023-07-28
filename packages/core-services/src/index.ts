@@ -44,7 +44,6 @@ import type { IMessageService } from './types/IMessageService';
 import type { ISettingsService } from './types/ISettingsService';
 import type { IOmnichannelEEService } from './types/IOmnichannelEEService';
 import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
-import type { IModerationService } from './types/IModerationService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
@@ -119,7 +118,6 @@ export {
 	ISettingsService,
 	IOmnichannelEEService,
 	IOmnichannelIntegrationService,
-	IModerationService,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -153,7 +151,6 @@ export const Settings = proxifyWithWait<ISettingsService>('settings');
 export const OmnichannelIntegration = proxifyWithWait<IOmnichannelIntegrationService>('omnichannel-integration');
 export const Federation = proxifyWithWait<IFederationService>('federation');
 export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
-export const Moderation = proxifyWithWait<IModerationService>('moderation');
 export const OmnichannelEEService = proxifyWithWait<IOmnichannelEEService>('omnichannel-ee');
 
 // Calls without wait. Means that the service is optional and the result may be an error

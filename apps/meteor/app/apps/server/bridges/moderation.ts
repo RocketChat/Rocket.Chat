@@ -1,10 +1,12 @@
 import { ModerationBridge } from '@rocket.chat/apps-engine/server/bridges/ModerationBridge';
-import { ModerationReports } from '@rocket.chat/models';
+import { ModerationReports, Permissions } from '@rocket.chat/models';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
+import { explorerPermissions, novicePermissions, trustRoles } from '../../../moderation/lib/permissions';
+import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 
 export class AppModerationBridge extends ModerationBridge {
 	constructor(private readonly orch: AppServerOrchestrator) {
@@ -42,5 +44,37 @@ export class AppModerationBridge extends ModerationBridge {
 			throw new Error('Invalid user id');
 		}
 		await ModerationReports.hideReportsByUserId(userId, appId, reason, action);
+	}
+
+	protected async addRepRoles(appId: string): Promise<void> {
+		this.orch.debugLog(`The App ${appId} is adding rep roles.`);
+
+		await Promise.all(
+			trustRoles.map((id) =>
+				createOrUpdateProtectedRoleAsync(id, {
+					name: id,
+					scope: 'Users',
+				}),
+			),
+		);
+	}
+
+	protected async addRepRolePermissions(appId: string): Promise<void> {
+		this.orch.debugLog(`The App ${appId} is adding rep role permissions.`);
+
+		await Promise.all([
+			Permissions.updateMany(
+				{
+					_id: { $in: novicePermissions },
+				},
+				{ $addToSet: { roles: { $each: trustRoles as unknown as string[] } } },
+			),
+			Permissions.updateMany(
+				{
+					_id: { $in: explorerPermissions },
+				},
+				{ $addToSet: { roles: 'explorer' } },
+			),
+		]);
 	}
 }
