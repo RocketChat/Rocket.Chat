@@ -20,13 +20,13 @@ import UserAutoCompleteMultipleFederated from '../../../../../components/UserAut
 import { useRoom } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../contexts/ToolboxContext';
 
-type AddUsersWithDataProps = {
+type AddUsersProps = {
 	rid: IRoom['_id'];
 	onClickBack: () => void;
 	reload: () => void;
 };
 
-const AddUsers = ({ rid, onClickBack, reload }: AddUsersWithDataProps): ReactElement => {
+const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const room = useRoom();
