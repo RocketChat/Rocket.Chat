@@ -20,6 +20,10 @@ const SidebarRegion = () => {
 		user-select: none;
 		transition: transform 0.3s;
 
+		> .rcx-sidebar:not(:last-child) {
+			visibility: hidden;
+		}
+
 		&.opened {
 			box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
 			transform: translate3d(0px, 0px, 0px);
