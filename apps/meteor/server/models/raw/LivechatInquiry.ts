@@ -40,27 +40,12 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			},
 			{
 				key: {
-					name: 1,
-				},
-			},
-			{
-				key: {
-					message: 1,
-				},
-			},
-			{
-				key: {
 					ts: 1,
 				},
 			},
 			{
 				key: {
 					department: 1,
-				},
-			},
-			{
-				key: {
-					status: 1,
 				},
 			},
 			{
@@ -96,10 +81,11 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			},
 			{
 				key: {
+					status: 1,
+					department: 1,
 					locked: 1,
 					lockedAt: 1,
 				},
-				sparse: true,
 			},
 		];
 	}
@@ -140,7 +126,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		const result = await this.col.findOneAndUpdate(
 			{
 				status: LivechatInquiryStatus.QUEUED,
-				...(department ? { department } : { department: { $exists: false } }),
+				...(department ? { department } : { department: '' }),
 				$or: [
 					{
 						locked: true,
@@ -150,9 +136,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 					},
 					{
 						locked: false,
-					},
-					{
-						locked: { $exists: false },
 					},
 				],
 			},
@@ -172,14 +155,11 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}
 
 	async unlock(inquiryId: string): Promise<UpdateResult> {
-		return this.updateOne({ _id: inquiryId }, { $unset: { locked: 1, lockedAt: 1 } });
+		return this.updateOne({ _id: inquiryId }, { $set: { locked: false, lockedAt: null } });
 	}
 
 	async unlockAll(): Promise<UpdateResult | Document> {
-		return this.updateMany(
-			{ $or: [{ lockedAt: { $exists: true } }, { locked: { $exists: true } }] },
-			{ $unset: { locked: 1, lockedAt: 1 } },
-		);
+		return this.updateMany({ $or: [{ lockedAt: { $ne: null } }, { locked: { $ne: false } }] }, { $set: { locked: false, lockedAt: null } });
 	}
 
 	async getCurrentSortedQueueAsync({
@@ -347,7 +327,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}
 
 	async getStatus(inquiryId: string): Promise<ILivechatInquiryRecord['status'] | undefined> {
-		return (await this.findOne({ _id: inquiryId }))?.status;
+		return (await this.findOne({ _id: inquiryId }, { projection: { status: 1 } }))?.status;
 	}
 
 	updateVisitorStatus(token: string, status: ILivechatInquiryRecord['v']['status']): Promise<UpdateResult> {

@@ -41,8 +41,8 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 
 	department: string;
 	estimatedInactivityCloseTimeAt: Date;
-	locked?: boolean;
-	lockedAt?: Date;
+	locked: boolean;
+	lockedAt: Date | null;
 	lastMessage?: IMessage & { token?: string };
 	defaultAgent?: SelectedAgent;
 	source: {

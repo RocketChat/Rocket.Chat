@@ -47,7 +47,7 @@ export async function findDepartments({
 	pagination: { offset, count, sort },
 }: FindDepartmentParams): Promise<PaginatedResult<{ departments: ILivechatDepartment[] }>> {
 	let query = {
-		$or: [{ type: { $eq: 'd' } }, { type: { $exists: false } }],
+		type: { $eq: 'd' },
 		...(!showArchived && { archived: { $ne: !showArchived } }),
 		...(enabled && { enabled: Boolean(enabled) }),
 		...(text && { name: new RegExp(escapeRegExp(text), 'i') }),
@@ -82,7 +82,7 @@ export async function findArchivedDepartments({
 	pagination: { offset, count, sort },
 }: FindDepartmentParams): Promise<PaginatedResult<{ departments: ILivechatDepartment[] }>> {
 	let query = {
-		$or: [{ type: { $eq: 'd' } }, { type: { $exists: false } }],
+		type: { $eq: 'd' },
 		archived: { $eq: true },
 		...(text && { name: new RegExp(escapeRegExp(text), 'i') }),
 		...(excludeDepartmentId && { _id: { $ne: excludeDepartmentId } }),

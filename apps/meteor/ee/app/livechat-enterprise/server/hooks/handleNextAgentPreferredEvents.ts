@@ -71,7 +71,6 @@ settings.watch<boolean>('Livechat_last_chatted_agent_routing', (value) => {
 			const { _id } = inquiry;
 
 			await LivechatInquiry.removeDefaultAgentById(_id);
-			return LivechatInquiry.findOneById(_id);
 		},
 		callbacks.priority.MEDIUM,
 		'livechat-on-max-number-simultaneous-chats-reached',

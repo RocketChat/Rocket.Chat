@@ -1,12 +1,23 @@
 import type { IPermission, IRole, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IPermissionsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db } from 'mongodb';
+import type { Collection, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class PermissionsRaw extends BaseRaw<IPermission> implements IPermissionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IPermission>>) {
 		super(db, 'permissions', trash);
+	}
+
+	protected modelIndexes(): IndexDescription[] {
+		return [
+			{
+				key: {
+					level: 1,
+					settingId: 1,
+				},
+			},
+		];
 	}
 
 	async createOrUpdate(name: string, roles: IRole['_id'][]): Promise<IPermission['_id']> {

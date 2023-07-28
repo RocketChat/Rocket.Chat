@@ -237,6 +237,9 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 			...data,
 		} as ILivechatDepartment;
 
+		// Type always present
+		record.type = 'd';
+
 		if (_id) {
 			await this.updateOne({ _id }, { $set: record });
 		} else {

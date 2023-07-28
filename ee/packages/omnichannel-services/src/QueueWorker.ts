@@ -70,10 +70,16 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 
 		// Library doesnt create indexes by itself, for some reason
 		// This should create the indexes we need and improve queue perf on reading
-		await this.db.collection(this.queue.collectionName).createIndex({ type: 1 });
 		await this.db.collection(this.queue.collectionName).createIndex({ rejectedTime: 1 }, { sparse: true });
 		await this.db.collection(this.queue.collectionName).createIndex({ nextReceivableTime: 1 }, { sparse: true });
 		await this.db.collection(this.queue.collectionName).createIndex({ receivedTime: 1 }, { sparse: true });
+
+		await this.db.collection(this.queue.collectionName).createIndex({
+			type: 1,
+			rejectedTime: 1,
+			nextReceivableTime: 1,
+			receivedTime: 1,
+		});
 	}
 
 	async stopped(): Promise<void> {

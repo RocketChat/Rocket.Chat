@@ -104,7 +104,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		};
 
 		// TODO remove dependency from another model - this logic should be inside a service/function
-		const livechatCount = await Settings.findOneAndUpdate(query, update, { returnDocument: 'after' });
+		const livechatCount = await Settings.findOneAndUpdate(query, update, { returnDocument: 'after', projection: { value: 1 } });
 
 		if (!livechatCount.value) {
 			throw new Error("Can't find Livechat_guest_count setting");

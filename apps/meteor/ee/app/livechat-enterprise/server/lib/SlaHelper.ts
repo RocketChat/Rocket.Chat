@@ -1,5 +1,6 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IOmnichannelServiceLevelAgreements, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
+import { type IOmnichannelServiceLevelAgreements, type IUser } from '@rocket.chat/core-typings';
 import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -16,7 +17,7 @@ export const removeSLAFromRooms = async (slaId: string) => {
 };
 
 export const updateInquiryQueueSla = async (roomId: string, sla: Pick<IOmnichannelServiceLevelAgreements, 'dueTimeInMinutes' | '_id'>) => {
-	const inquiry = await LivechatInquiry.findOneByRoomId(roomId, { projection: { rid: 1, ts: 1 } });
+	const inquiry = await LivechatInquiry.findOneByRoomId<Pick<ILivechatInquiryRecord, '_id' | 'rid'>>(roomId, { projection: { rid: 1 } });
 	if (!inquiry) {
 		return;
 	}

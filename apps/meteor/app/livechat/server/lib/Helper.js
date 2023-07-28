@@ -124,7 +124,7 @@ export const createLivechatInquiry = async ({ rid, name, guest, message, initial
 
 	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
 
-	const { _id, username, token, department, status = 'online' } = guest;
+	const { _id, username, token, department = '', status = 'online' } = guest;
 	const { msg } = message;
 	const ts = new Date();
 
@@ -146,6 +146,8 @@ export const createLivechatInquiry = async ({ rid, name, guest, message, initial
 		t: 'l',
 		priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
 		estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+		locked: false,
+		lockedAt: null,
 
 		...extraInquiryInfo,
 	};
