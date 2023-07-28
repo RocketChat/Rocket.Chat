@@ -3,7 +3,9 @@ import { route } from 'preact-router';
 
 import { Livechat } from '../api';
 import { CallStatus, isCallOngoing } from '../components/Calls/CallStatus';
-import { setCookies, upsert, canRenderMessage } from '../components/helpers';
+import { canRenderMessage } from '../helpers/canRenderMessage';
+import { setCookies } from '../helpers/cookies';
+import { upsert } from '../helpers/upsert';
 import { store, initialState } from '../store';
 import { normalizeAgent } from './api';
 import Commands from './commands';
@@ -17,6 +19,8 @@ import { handleTranscript } from './transcript';
 const commands = new Commands();
 
 export const closeChat = async ({ transcriptRequested } = {}) => {
+	Livechat.unsubscribeAll();
+
 	if (!transcriptRequested) {
 		await handleTranscript();
 	}

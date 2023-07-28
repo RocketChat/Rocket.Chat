@@ -5,8 +5,11 @@ import { callbacks } from '../../../../lib/callbacks';
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message, room) {
+	async (message, room) => {
 		if (!(isOmnichannelRoom(room) && room.v.token)) {
+			return message;
+		}
+		if (message.t) {
 			return message;
 		}
 		if (message.token) {

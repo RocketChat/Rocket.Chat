@@ -1,19 +1,19 @@
 import { Button, Field, Modal, PasswordInput } from '@rocket.chat/fuselage';
+import { Form } from '@rocket.chat/layout';
+import { PasswordVerifier } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetting,
 	useVerifyPassword,
+	useRouter,
 	useRouteParameter,
-	useRoute,
 	useUser,
 	useMethod,
 	useTranslation,
 	useLoginWithToken,
 } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { Form } from '@rocket.chat/layout';
 import { useForm } from 'react-hook-form';
-import { PasswordVerifier } from '@rocket.chat/ui-client';
 
 import HorizontalTemplate from '../template/HorizontalTemplate';
 
@@ -31,7 +31,7 @@ const ResetPasswordPage = (): ReactElement => {
 
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
 
-	const homeRouter = useRoute('home');
+	const router = useRouter();
 
 	const changePasswordReason = getChangePasswordReason(user || {});
 
@@ -58,7 +58,7 @@ const ResetPasswordPage = (): ReactElement => {
 			if (token) {
 				const result = await resetPassword(token, data.password);
 				await loginWithToken(result.token);
-				homeRouter.push({});
+				router.navigate('/home');
 			} else {
 				await setUserPassword(data.password);
 			}

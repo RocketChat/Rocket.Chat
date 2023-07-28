@@ -1,10 +1,10 @@
-import mem from 'mem';
 import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
-import type { Filter } from 'mongodb';
+import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
+import type { Filter } from 'mongodb';
 
-import { CachedChatSubscription } from './CachedChatSubscription';
 import { isTruthy } from '../../../../lib/isTruthy';
+import { CachedChatSubscription } from './CachedChatSubscription';
 
 /** @deprecated */
 export const ChatSubscription = Object.assign(CachedChatSubscription.collection, {

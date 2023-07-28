@@ -1,5 +1,5 @@
-import { Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 

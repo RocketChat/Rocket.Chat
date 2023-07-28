@@ -1,4 +1,4 @@
-import { useRoutePath, useCurrentRoute, useTranslation, useLayout } from '@rocket.chat/ui-contexts';
+import { useTranslation, useLayout, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { memo } from 'react';
 
@@ -12,9 +12,7 @@ const AdminSidebar: FC = () => {
 
 	const { sidebar } = useLayout();
 
-	const currentRoute = useCurrentRoute();
-	const [currentRouteName, currentRouteParams, currentQueryStringParams] = currentRoute;
-	const currentPath = useRoutePath(currentRouteName || '', currentRouteParams, currentQueryStringParams);
+	const currentPath = useCurrentRoutePath();
 
 	// TODO: uplift this provider
 	return (

@@ -5,7 +5,8 @@ import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
 import { Form, FormField, TextInput, SelectInput, Validations } from '../../components/Form';
 import Screen from '../../components/Screen';
-import { createClassName, sortArrayByColumn } from '../../components/helpers';
+import { createClassName } from '../../helpers/createClassName';
+import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import styles from './styles.scss';
 
 const getDefaultDepartment = (departments = []) => (departments.length === 1 && departments[0]._id) || '';

@@ -1,5 +1,6 @@
 import { Livechat } from '../api';
-import { parse, upsert } from '../components/helpers';
+import { parse } from '../helpers/parse';
+import { upsert } from '../helpers/upsert';
 import { store } from '../store';
 import { createToken } from './random';
 

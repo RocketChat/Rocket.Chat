@@ -1,6 +1,6 @@
-import { Livechat } from '../Livechat';
-import { settings } from '../../../../settings/server';
 import { Logger } from '../../../../logger/server';
+import { settings } from '../../../../settings/server';
+import { Livechat } from '../Livechat';
 
 const logger = new Logger('AgentStatusWatcher');
 

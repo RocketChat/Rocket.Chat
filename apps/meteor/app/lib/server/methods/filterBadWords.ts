@@ -1,10 +1,10 @@
+import type { IMessage } from '@rocket.chat/core-typings';
+import Filter from 'bad-words';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import Filter from 'bad-words';
-import type { IMessage } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
 
 const Dep = new Tracker.Dependency();
 Meteor.startup(() => {

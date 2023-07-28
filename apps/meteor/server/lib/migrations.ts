@@ -1,10 +1,10 @@
-import { Migrations } from '@rocket.chat/models';
 import type { IControl } from '@rocket.chat/core-typings';
+import { Migrations } from '@rocket.chat/models';
 
-import { Info } from '../../app/utils/server';
+import { Info } from '../../app/utils/rocketchat.info';
+import { sleep } from '../../lib/utils/sleep';
 import { Logger } from './logger/Logger';
 import { showErrorBox } from './logger/showBox';
-import { sleep } from '../../lib/utils/sleep';
 
 type IMigration = {
 	name?: string;

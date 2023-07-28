@@ -1,7 +1,7 @@
-import semver from 'semver';
+import * as core from '@actions/core';
 import { exec } from '@actions/exec';
 import * as github from '@actions/github';
-import * as core from '@actions/core';
+import semver from 'semver';
 
 import { setupOctokit } from './setupOctokit';
 import { readPackageJson } from './utils';
@@ -48,7 +48,7 @@ export async function startPatchRelease({
 
 		core.info('creating pull request');
 		await octokit.rest.pulls.create({
-			base: 'master',
+			base: 'release-automation',
 			head: newBranch,
 			title: finalPrTitle,
 			body: '',
