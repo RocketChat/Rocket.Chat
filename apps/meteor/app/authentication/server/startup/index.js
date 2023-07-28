@@ -173,7 +173,7 @@ const validateEmailDomain = (user) => {
 		const email = user.emails[0].address;
 		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${escapeRegExp(domain)}$`));
 
-		if (inWhiteList === false) {
+		if (!inWhiteList) {
 			throw new Meteor.Error('error-invalid-domain');
 		}
 	}
