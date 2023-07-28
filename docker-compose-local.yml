@@ -150,7 +150,7 @@ services:
     build:
       dockerfile: ee/apps/federation-service/Dockerfile
       args:
-        SERVICE: federation
+        SERVICE: federation-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/federation-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
