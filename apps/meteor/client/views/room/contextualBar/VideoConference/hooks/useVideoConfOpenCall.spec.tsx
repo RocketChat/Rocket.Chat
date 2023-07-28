@@ -7,6 +7,7 @@ import { useVideoConfOpenCall } from './useVideoConfOpenCall';
 
 describe('with window.RocketChatDesktop set', () => {
 	const wrapper: React.FC = ({ children }) => (
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
 		<ModalContext.Provider children={children} value={{ modal: { setModal: () => {} }, currentModal: null }} />
 	);
 	beforeEach(() => {
