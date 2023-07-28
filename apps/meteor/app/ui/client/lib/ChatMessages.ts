@@ -1,22 +1,22 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { UIEvent } from 'react';
 
+import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
+import { createDataAPI } from '../../../../client/lib/chats/data';
+import { processMessageEditing } from '../../../../client/lib/chats/flows/processMessageEditing';
+import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
+import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
+import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
+import { replyBroadcast } from '../../../../client/lib/chats/flows/replyBroadcast';
+import { requestMessageDeletion } from '../../../../client/lib/chats/flows/requestMessageDeletion';
+import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
+import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
+import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
-import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
-import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
-import { requestMessageDeletion } from '../../../../client/lib/chats/flows/requestMessageDeletion';
-import { processMessageEditing } from '../../../../client/lib/chats/flows/processMessageEditing';
-import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
-import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
-import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
 import { UserAction } from './UserAction';
-import { replyBroadcast } from '../../../../client/lib/chats/flows/replyBroadcast';
-import { createDataAPI } from '../../../../client/lib/chats/data';
-import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 
 type DeepWritable<T> = T extends (...args: any) => any
 	? T

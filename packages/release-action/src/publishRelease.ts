@@ -1,15 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 
+import * as core from '@actions/core';
 import { exec } from '@actions/exec';
 import * as github from '@actions/github';
-import * as core from '@actions/core';
 
 import { createNpmFile } from './createNpmFile';
-import { setupOctokit } from './setupOctokit';
-import { bumpFileVersions, getChangelogEntry, readPackageJson } from './utils';
 import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
 import { checkoutBranch, commitChanges, createTag, getCurrentBranch, mergeBranch, pushChanges } from './gitUtils';
+import { setupOctokit } from './setupOctokit';
+import { bumpFileVersions, getChangelogEntry, readPackageJson } from './utils';
 
 export async function publishRelease({
 	githubToken,

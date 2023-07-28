@@ -2,6 +2,7 @@ import crypto from 'crypto';
 
 import { expect } from 'chai';
 
+import { sleep } from '../../../lib/utils/sleep';
 import {
 	getCredentials,
 	api,
@@ -14,13 +15,12 @@ import {
 	wait,
 	reservedWords,
 } from '../../data/api-data.js';
-import { adminEmail, preferences, password, adminUsername } from '../../data/user';
-import { imgURL } from '../../data/interactions.js';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
+import { imgURL } from '../../data/interactions.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
 import { createRoom } from '../../data/rooms.helper';
-import { sleep } from '../../../lib/utils/sleep';
+import { adminEmail, preferences, password, adminUsername } from '../../data/user';
+import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
 
 async function createChannel(userCredentials, name) {
 	const res = await request.post(api('channels.create')).set(userCredentials).send({

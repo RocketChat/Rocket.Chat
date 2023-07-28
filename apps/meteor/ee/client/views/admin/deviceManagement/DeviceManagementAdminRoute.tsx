@@ -14,7 +14,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	const canViewDeviceManagement = usePermission('view-device-management');
 
 	const { data } = useIsEnterprise();
-	const hasDeviceManagement = useHasLicenseModule('engagement-dashboard');
+	const hasDeviceManagement = useHasLicenseModule('device-management');
 	const isUpsell = !data?.isEnterprise || !hasDeviceManagement;
 
 	const router = useRouter();

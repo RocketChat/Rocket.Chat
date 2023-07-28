@@ -1,12 +1,12 @@
-import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { RocketChatFile } from '../../../file/server';
-import { RocketChatImportFileInstance } from '../startup/store';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Importers } from '..';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { RocketChatFile } from '../../../file/server';
+import { ProgressStep } from '../../lib/ImporterProgressStep';
+import { RocketChatImportFileInstance } from '../startup/store';
 
 export const executeUploadImportFile = async (
 	userId: IUser['_id'],

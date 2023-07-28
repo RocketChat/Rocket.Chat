@@ -1,11 +1,11 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import type { IUser } from '@rocket.chat/core-typings';
 
-import { settings } from '../../settings/server';
-import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
 import { callbacks } from '../../../lib/callbacks';
 import { beforeCreateUserCallback } from '../../../lib/callbacks/beforeCreateUserCallback';
+import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
+import { settings } from '../../settings/server';
 
 const config = {
 	serverURL: '',

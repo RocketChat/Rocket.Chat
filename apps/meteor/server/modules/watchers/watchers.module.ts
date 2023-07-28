@@ -1,4 +1,4 @@
-import mem from 'mem';
+import type { EventSignatures } from '@rocket.chat/core-services';
 import type {
 	ISubscription,
 	IUser,
@@ -36,7 +36,7 @@ import {
 	Permissions,
 	LivechatPriority,
 } from '@rocket.chat/models';
-import type { EventSignatures } from '@rocket.chat/core-services';
+import mem from 'mem';
 
 import { subscriptionFields, roomFields } from '../../../lib/publishFields';
 import type { DatabaseWatcher } from '../../database/DatabaseWatcher';
