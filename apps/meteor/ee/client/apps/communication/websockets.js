@@ -27,14 +27,23 @@ export class AppWebsocketReceiver extends Emitter {
 	}
 
 	listenStreamerEvents() {
-		Object.values(AppEvents).forEach((eventName) => {
-			sdk.stream('apps', [eventName], this.emit.bind(this, eventName));
+		sdk.stream('apps', ['apps'], (key, args) => {
+			switch (key) {
+				case AppEvents.COMMAND_ADDED:
+					this.onCommandAddedOrUpdated(...args);
+					break;
+				case AppEvents.COMMAND_UPDATED:
+					this.onCommandAddedOrUpdated(...args);
+					break;
+				case AppEvents.COMMAND_REMOVED:
+					this.onCommandRemovedOrDisabled(...args);
+					break;
+				case AppEvents.COMMAND_DISABLED:
+					this.onCommandRemovedOrDisabled(...args);
+					break;
+			}
+			this.emit(key, ...args);
 		});
-
-		sdk.stream('apps', [AppEvents.COMMAND_ADDED], this.onCommandAddedOrUpdated);
-		sdk.stream('apps', [AppEvents.COMMAND_UPDATED], this.onCommandAddedOrUpdated);
-		sdk.stream('apps', [AppEvents.COMMAND_REMOVED], this.onCommandRemovedOrDisabled);
-		sdk.stream('apps', [AppEvents.COMMAND_DISABLED], this.onCommandRemovedOrDisabled);
 	}
 
 	registerListener(event, listener) {

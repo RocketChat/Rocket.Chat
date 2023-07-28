@@ -1,5 +1,5 @@
-import type { UpdateResult } from 'mongodb';
 import type { MessageReads, IUser, IMessage } from '@rocket.chat/core-typings';
+import type { UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 

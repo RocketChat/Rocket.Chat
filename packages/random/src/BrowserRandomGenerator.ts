@@ -1,5 +1,5 @@
-import { RandomGenerator } from './RandomGenerator';
 import { AleaRandomGenerator } from './AleaRandomGenerator';
+import { RandomGenerator } from './RandomGenerator';
 import { createAleaGeneratorWithGeneratedSeed } from './createAleaGenerator';
 
 // cryptographically strong PRNGs available in modern browsers

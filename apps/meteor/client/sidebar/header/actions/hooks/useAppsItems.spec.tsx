@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 import { MockedAuthorizationContext } from '@rocket.chat/mock-providers/src/MockedAuthorizationContext';
 import { MockedServerContext } from '@rocket.chat/mock-providers/src/MockedServerContext';
 import { MockedSettingsContext } from '@rocket.chat/mock-providers/src/MockedSettingsContext';

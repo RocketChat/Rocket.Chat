@@ -1,13 +1,13 @@
-import { Users, Sessions } from '@rocket.chat/models';
 import type { IUser, ISession, DeviceManagementSession, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Users, Sessions } from '@rocket.chat/models';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import Ajv from 'ajv';
 
 import { API } from '../../../app/api/server/api';
-import { hasLicense } from '../../app/license/server/license';
-import { Notifications } from '../../../app/notifications/server';
 import { getPaginationItems } from '../../../app/api/server/helpers/getPaginationItems';
+import { Notifications } from '../../../app/notifications/server';
+import { hasLicense } from '../../app/license/server/license';
 
 const ajv = new Ajv({ coerceTypes: true });
 
