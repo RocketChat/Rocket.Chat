@@ -1,3 +1,4 @@
+import type { ISubscription, IUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	Field,
@@ -10,80 +11,118 @@ import {
 	Icon,
 	Divider,
 	FieldGroup,
+	ContextualbarFooter,
+	ButtonGroup,
+	Button,
 } from '@rocket.chat/fuselage';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
-import { useTranslation, useAccountsCustomFields } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ReactElement } from 'react';
+import { useTranslation, useAccountsCustomFields, useSetting } from '@rocket.chat/ui-contexts';
+import type { UseMutationResult } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
-import type { Control, FieldErrorsImpl, UseFormHandleSubmit, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
-import { Controller } from 'react-hook-form';
+import type { FieldError, FieldErrorsImpl, Merge } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
+import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
-
-type UserFormValues = {
-	name: string;
-	username: string;
-	email: string;
-	verified: boolean;
-	statusText: string;
-	bio: string;
-	nickname: string;
-	password: string;
-	setRandomPassword: boolean;
-	requirePasswordChange: boolean;
-	roles: string[];
-	customFields: object;
-	joinDefaultChannels: boolean;
-	sendWelcomeEmail: boolean;
-};
+import { useSmtpConfig } from './hooks/useSmtpConfig';
 
 type UserFormProps = {
-	errors?: FieldErrorsImpl<UserFormValues>;
-	formValues?: Record<string, unknown>;
-	formHandlers?: Record<string, (eventOrValue: ChangeEvent | unknown) => void>;
 	availableRoles?: SelectOption[];
-	prepend?: ReactElement;
-	append?: ReactElement;
-	isSmtpEnabled?: boolean;
-	control?: Control<UserFormValues>;
-	watch?: UseFormWatch<UserFormValues>;
-	handleSubmit?: UseFormHandleSubmit<UserFormValues>;
-	register?: UseFormRegister<UserFormValues>;
-	setValue?: UseFormSetValue<UserFormValues>;
+	prepend?: (currentUsername: any, username: any, avatarETag: any) => React.JSX.Element;
 	onReload: () => void;
+	canSaveOrReset: boolean;
+	setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
+	onSave: UseMutationResult<any, unknown, any, unknown>;
+	preserveData: boolean;
+	userData: IUser & {
+		rooms?: Pick<ISubscription, 'roles' | 'name' | 'rid' | 't' | 'unread'>[] | undefined;
+	};
+};
+
+const isErrorString = (errorMessage: string | FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined): errorMessage is string => {
+	return typeof errorMessage === 'string';
 };
 
 const UserForm = ({
-	errors,
 	prepend,
-	append,
-	isSmtpEnabled,
-	control,
-	watch,
-	register,
-	setValue,
 	availableRoles,
+	canSaveOrReset,
+	setHasUnsavedChanges,
+	onSave,
+	preserveData,
+	userData,
 	...props
 }: UserFormProps) => {
 	const t = useTranslation();
 
 	const customFieldsMetadata = useAccountsCustomFields();
 
+	const defaultUserRoles = parseCSV(String(useSetting('Accounts_Registration_Users_Default_Roles')));
+	const isSmtpEnabled = useSmtpConfig();
+
+	const getInitialValue = (data: any) => ({
+		roles: data.roles,
+		name: data.name ?? '',
+		password: '',
+		username: data.username,
+		bio: data.bio ?? '',
+		nickname: data.nickname ?? '',
+		email: (data.emails?.length && data.emails[0].address) || '',
+		verified: (data.emails?.length && data.emails[0].verified) || false,
+		setRandomPassword: false,
+		requirePasswordChange: data.setRandomPassword || false,
+		customFields: data.customFields ?? {},
+		statusText: data.statusText ?? '',
+		joinDefaultChannels: true,
+		sendWelcomeEmail: true,
+	});
+
+	const {
+		control,
+		watch,
+		handleSubmit,
+		register,
+		reset,
+		setValue,
+		formState: { errors, isDirty },
+	} = useForm({
+		defaultValues: preserveData
+			? getInitialValue(userData)
+			: {
+					name: '',
+					username: '',
+					email: '',
+					verified: false,
+					statusText: '',
+					bio: '',
+					nickname: '',
+					password: '',
+					setRandomPassword: false,
+					requirePasswordChange: false,
+					roles: defaultUserRoles,
+					customFields: {},
+					joinDefaultChannels: true,
+					sendWelcomeEmail: Boolean(isSmtpEnabled),
+			  },
+		mode: 'all',
+	});
+
 	useEffect(() => {
+		setHasUnsavedChanges(isDirty);
 		// const subscription = watch?.((value) => setValue?.('customFields', { ...value.customFields }));
 		// return () => subscription?.unsubscribe();
-	}, [setValue, watch]);
+	}, [isDirty, setHasUnsavedChanges, setValue, watch]);
 
 	return (
 		<>
 			<ContextualbarScrollableContent {...props} autoComplete='off'>
 				<FieldGroup>
-					{prepend}
+					{prepend?.(userData.username, watch?.('username'), userData.avatarETag)}
 					<Field>
 						<Field.Label>{t('Name')}</Field.Label>
 						<Field.Row>
 							<TextInput
-								error={errors?.name?.message}
+								error={isErrorString(errors?.name?.message) ? errors?.name?.message : ''}
 								flexGrow={1}
 								{...register?.('name', { required: t('The_field_is_required', t('name')) })}
 							/>
@@ -95,7 +134,7 @@ const UserForm = ({
 						<Field.Label>{t('Username')}</Field.Label>
 						<Field.Row>
 							<TextInput
-								error={errors?.username?.message}
+								error={isErrorString(errors?.username?.message) ? errors?.username?.message : ''}
 								flexGrow={1}
 								addon={<Icon name='at' size='x20' />}
 								{...register?.('username', { required: t('The_field_is_required', t('username')) })}
@@ -108,7 +147,7 @@ const UserForm = ({
 						<Field.Label>{t('Email')}</Field.Label>
 						<Field.Row>
 							<TextInput
-								error={errors?.email?.message}
+								error={isErrorString(errors?.email?.message) ? errors?.email?.message : ''}
 								flexGrow={1}
 								addon={<Icon name='mail' size='x20' />}
 								{...register?.('email', { required: t('The_field_is_required', t('email')) })}
@@ -279,7 +318,22 @@ const UserForm = ({
 					)}
 				</FieldGroup>
 			</ContextualbarScrollableContent>
-			{append}
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button type='reset' disabled={!canSaveOrReset} onClick={() => reset(preserveData ? getInitialValue(userData) : {})}>
+						{t('Reset')}
+					</Button>
+					<Button
+						primary
+						disabled={!canSaveOrReset}
+						onClick={handleSubmit(async (data) => {
+							onSave.mutate(data);
+						})}
+					>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
 		</>
 	);
 };

@@ -9,7 +9,7 @@ export interface ILoginToken {
 }
 
 export interface IMeteorLoginToken extends ILoginToken {
-	when: Date;
+	when: Date | string;
 }
 
 export interface IPersonalAccessToken extends ILoginToken {
@@ -23,7 +23,7 @@ export interface IPersonalAccessToken extends ILoginToken {
 export interface IUserEmailVerificationToken {
 	token: string;
 	address: string;
-	when: Date;
+	when: Date | string;
 }
 
 export interface IUserEmailCode {
@@ -121,7 +121,7 @@ export interface IGetRoomRoles {
 
 export interface IUser extends IRocketChatRecord {
 	_id: string;
-	createdAt: Date;
+	createdAt: Date | string;
 	roles: IRole['_id'][];
 	type: string;
 	active: boolean;

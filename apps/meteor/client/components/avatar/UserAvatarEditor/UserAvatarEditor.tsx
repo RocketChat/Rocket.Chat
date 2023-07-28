@@ -26,8 +26,8 @@ type UserAvatarEditorType = {
 	currentUsername: IUser['username'];
 	username: IUser['username'];
 	setAvatarObj: (obj: AvatarObject) => void;
-	suggestions: AvatarSuggestion[] | undefined;
-	disabled: boolean;
+	suggestions?: AvatarSuggestion[] | undefined;
+	disabled?: boolean;
 	etag: IUser['avatarETag'];
 };
 

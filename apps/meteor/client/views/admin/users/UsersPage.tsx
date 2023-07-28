@@ -1,5 +1,7 @@
+import type { SelectOption } from '@rocket.chat/fuselage';
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { usePermission, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission, useRoute, useRouteParameter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useEffect, useRef } from 'react';
 
@@ -7,6 +9,7 @@ import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
+import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 import AddUser from './AddUser';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
 import EditUserWithData from './EditUserWithData';
@@ -15,11 +18,13 @@ import UsersTable from './UsersTable';
 
 const UsersPage = (): ReactElement => {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const seatsCap = useSeatsCap();
 	const reload = useRef(() => null);
 	const usersRoute = useRoute('admin-users');
+	const userData = useUserInfoQuery({ userId: id || '' });
 
 	const canCreateUser = usePermission('create-user');
 	const canBulkCreateUser = usePermission('bulk-register-user');
@@ -50,6 +55,28 @@ const UsersPage = (): ReactElement => {
 		seatsCap?.reload();
 		reload.current();
 	};
+
+	const getRoles = useEndpoint('GET', '/v1/roles.list');
+	const {
+		data: roleData,
+		isLoading: roleState,
+		error: roleError,
+	} = useQuery(
+		['roles'],
+		async () => {
+			const roles = await getRoles();
+			return roles;
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
+
+	const availableRoles: SelectOption[] | undefined = roleData?.roles.map(
+		({ _id, name, description }: { _id: string; name: string; description: string }) => [_id, description || name],
+	);
 
 	return (
 		<Page flexDirection='row'>
@@ -88,8 +115,17 @@ const UsersPage = (): ReactElement => {
 						<ContextualbarClose onClick={handleCloseContextualbar} />
 					</ContextualbarHeader>
 					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
-					{context === 'edit' && id && <EditUserWithData uid={id} onReload={handleReload} />}
-					{context === 'new' && <AddUser onReload={handleReload} />}
+					{context === 'edit' && id && (
+						<EditUserWithData
+							onReload={handleReload}
+							roleData={roleData || {}}
+							roleState={roleState}
+							roleError={roleError}
+							userData={userData}
+							availableRoles={availableRoles || []}
+						/>
+					)}
+					{context === 'new' && <AddUser onReload={handleReload} availableRoles={availableRoles} userData={userData} />}
 					{context === 'invite' && <InviteUsers />}
 				</Contextualbar>
 			)}

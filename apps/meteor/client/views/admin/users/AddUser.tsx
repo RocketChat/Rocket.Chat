@@ -1,63 +1,22 @@
-import type { SelectOption } from '@rocket.chat/fuselage';
-import { Button, ButtonGroup, ContextualbarFooter } from '@rocket.chat/fuselage';
-import { useEndpoint, useRouter, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import React, { useCallback, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import type { UseQueryResult } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
+import React, { useCallback, useState } from 'react';
 
-import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import UserForm from './UserForm';
-import { useSmtpConfig } from './hooks/useSmtpConfig';
 
-const AddUser = ({ onReload, ...props }: { onReload: () => void }) => {
+type AddUserProps = {
+	onReload: () => void;
+	availableRoles: any;
+	userData: UseQueryResult<any, unknown>;
+};
+
+const AddUser = ({ onReload, availableRoles, userData, ...props }: AddUserProps) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const defaultUserRoles = parseCSV(String(useSetting('Accounts_Registration_Users_Default_Roles')));
-	const isSmtpEnabled = useSmtpConfig();
-
-	const {
-		control,
-		watch,
-		handleSubmit,
-		register,
-		reset,
-		setValue,
-		formState: { errors, isDirty },
-	} = useForm({
-		defaultValues: {
-			name: '',
-			username: '',
-			email: '',
-			verified: false,
-			statusText: '',
-			bio: '',
-			nickname: '',
-			password: '',
-			setRandomPassword: false,
-			requirePasswordChange: false,
-			roles: defaultUserRoles,
-			customFields: {},
-			joinDefaultChannels: true,
-			sendWelcomeEmail: Boolean(isSmtpEnabled),
-		},
-		mode: 'all',
-	});
-
-	console.log(errors);
-
-	const getRoleData = useEndpoint('GET', '/v1/roles.list');
-
-	const { data } = useQuery(['roles'], async () => {
-		const roles = await getRoleData();
-		return roles;
-	});
-
-	const availableRoles: SelectOption[] = useMemo(
-		() => data?.roles?.map(({ _id, description, name }) => [_id, description || name]) ?? [],
-		[data],
-	);
+	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 	const router = useRouter();
@@ -82,36 +41,34 @@ const AddUser = ({ onReload, ...props }: { onReload: () => void }) => {
 		},
 	});
 
-	const append = (
-		<ContextualbarFooter>
-			<ButtonGroup stretch>
-				<Button disabled={!isDirty} onClick={() => reset()}>
-					{t('Cancel')}
-				</Button>
-				<Button
-					primary
-					disabled={!isDirty}
-					onClick={handleSubmit(async (data) => {
-						handleSaveUser.mutate(data);
-					})}
-				>
-					{t('Save')}
-				</Button>
-			</ButtonGroup>
-		</ContextualbarFooter>
-	);
+	// const append = (
+	// 	<ContextualbarFooter>
+	// 		<ButtonGroup stretch>
+	// 			<Button disabled={!isDirty} onClick={() => reset()}>
+	// 				{t('Cancel')}
+	// 			</Button>
+	// 			<Button
+	// 				primary
+	// 				disabled={!isDirty}
+	// 				onClick={handleSubmit(async (data) => {
+	// 					handleSaveUser.mutate(data);
+	// 				})}
+	// 			>
+	// 				{t('Save')}
+	// 			</Button>
+	// 		</ButtonGroup>
+	// 	</ContextualbarFooter>
+	// );
 
 	return (
 		<UserForm
 			onReload={onReload}
-			append={append}
-			control={control}
-			watch={watch}
-			handleSubmit={handleSubmit}
-			register={register}
-			setValue={setValue}
-			errors={errors}
 			availableRoles={availableRoles}
+			setHasUnsavedChanges={setHasUnsavedChanges}
+			canSaveOrReset={hasUnsavedChanges}
+			onSave={handleSaveUser}
+			preserveData={false}
+			userData={userData}
 			{...props}
 		/>
 	);

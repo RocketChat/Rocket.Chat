@@ -1,55 +1,36 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Callout } from '@rocket.chat/fuselage';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
 import EditUser from './EditUser';
 
 type EditUserWithDataProps = {
-	uid: IUser['_id'];
 	onReload: () => void;
+	roleData: any;
+	roleState: boolean;
+	roleError: unknown;
+	userData: UseQueryResult<any, unknown>;
+	availableRoles: SelectOption[];
 };
 
-const EditUserWithData = ({ uid, onReload, ...props }: EditUserWithDataProps): ReactElement => {
+const EditUserWithData = ({
+	onReload,
+	roleData,
+	roleState,
+	roleError,
+	availableRoles,
+	userData,
+	...props
+}: EditUserWithDataProps): ReactElement => {
 	const t = useTranslation();
 
-	const getRoles = useEndpoint('GET', '/v1/roles.list');
-
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const query = useMemo(() => ({ userId: uid }), [uid]);
-
-	const {
-		data: roleData,
-		isLoading: roleState,
-		error: roleError,
-	} = useQuery(
-		['roles'],
-		async () => {
-			const roles = await getRoles();
-			return roles;
-		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
-		},
-	);
-
-	const getUsersInfo = useEndpoint('GET', '/v1/users.info');
-
-	const {
-		data,
-		isLoading: state,
-		error,
-	} = useQuery(['users', query, 'admin'], async () => {
-		const usersInfo = await getUsersInfo(query);
-		return usersInfo;
-	});
+	const { data, isLoading: state, error } = userData;
 
 	if (state || roleState) {
 		return (
@@ -75,7 +56,7 @@ const EditUserWithData = ({ uid, onReload, ...props }: EditUserWithDataProps): R
 		);
 	}
 
-	return <EditUser data={data?.user} roles={roleData?.roles} onReload={onReload} {...props} />;
+	return <EditUser data={data?.user || {}} roles={roleData.roles} onReload={onReload} availableRoles={availableRoles} {...props} />;
 };
 
 export default EditUserWithData;
