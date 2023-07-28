@@ -12,5 +12,5 @@ Meteor.startup(async function () {
 		return;
 	}
 
-	await Imports.invalidateOperationsExceptId();
+	await Imports.invalidateAllOperations();
 });
