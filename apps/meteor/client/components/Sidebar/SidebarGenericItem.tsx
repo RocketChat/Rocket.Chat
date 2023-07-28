@@ -16,7 +16,7 @@ type SidebarGenericItemProps = {
 	externalUrl?: boolean;
 };
 
-const SidebarGenericItem = ({ href, active, externalUrl, children, ...props }: SidebarGenericItemProps): ReactElement => (
+export const SidebarGenericItem = ({ href, active, externalUrl, children, ...props }: SidebarGenericItemProps): ReactElement => (
 	<SidebarItem
 		selected={active}
 		clickable
