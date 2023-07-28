@@ -1,7 +1,7 @@
 import type { IUIActionButton, IUActionButtonWhen } from '@rocket.chat/apps-engine/definition/ui/IUIActionButtonDescriptor';
 import type { UserStatus } from '@rocket.chat/core-typings';
-import type { TranslationKey, LocationPathname } from '@rocket.chat/ui-contexts';
 import type { Keys as IconName } from '@rocket.chat/icons';
+import type { TranslationKey, LocationPathname } from '@rocket.chat/ui-contexts';
 
 import { sdk } from '../../../utils/client/lib/SDKClient';
 

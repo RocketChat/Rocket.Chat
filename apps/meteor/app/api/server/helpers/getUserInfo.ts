@@ -1,8 +1,8 @@
 import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
-import { getUserPreference } from '../../../utils/server/lib/getUserPreference';
 import { getURL } from '../../../utils/server/getURL';
+import { getUserPreference } from '../../../utils/server/lib/getUserPreference';
 
 const isVerifiedEmail = (me: IUser): false | IUserEmail | undefined => {
 	if (!me || !Array.isArray(me.emails)) {

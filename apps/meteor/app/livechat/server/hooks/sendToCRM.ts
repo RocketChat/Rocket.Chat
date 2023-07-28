@@ -2,11 +2,11 @@ import type { IOmnichannelRoom, IOmnichannelSystemMessage, IMessage } from '@roc
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Messages } from '@rocket.chat/models';
 
-import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
+import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 import { Livechat } from '../lib/Livechat';
 import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
-import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
 type AdditionalFields =
 	| Record<string, unknown>
@@ -258,7 +258,7 @@ callbacks.add(
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message, room) {
+	async (message, room) => {
 		// only call webhook if it is a livechat room
 		if (!isOmnichannelRoom(room) || !room?.v?.token) {
 			return message;

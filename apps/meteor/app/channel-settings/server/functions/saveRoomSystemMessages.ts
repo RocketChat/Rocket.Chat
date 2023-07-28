@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
 import type { MessageTypesValues } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
+import { Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { MessageTypesValues as messageTypesValues } from '../../../lib/lib/MessageTypes';
 

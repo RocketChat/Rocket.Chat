@@ -1,13 +1,10 @@
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-import { Meteor } from 'meteor/meteor';
 import { AppLogs, Apps as AppsModel, AppsPersistence } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { Logger } from '../../../server/lib/logger/Logger';
-import { settings, settingsRegistry } from '../../../app/settings/server';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
-import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
 import {
 	AppMessagesConverter,
 	AppRoomsConverter,
@@ -18,9 +15,12 @@ import {
 	AppUploadsConverter,
 	AppVisitorsConverter,
 } from '../../../app/apps/server/converters';
-import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
-import { canEnableApp } from '../../app/license/server/license';
 import { AppThreadsConverter } from '../../../app/apps/server/converters/threads';
+import { settings, settingsRegistry } from '../../../app/settings/server';
+import { Logger } from '../../../server/lib/logger/Logger';
+import { canEnableApp } from '../../app/license/server/license';
+import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
+import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';

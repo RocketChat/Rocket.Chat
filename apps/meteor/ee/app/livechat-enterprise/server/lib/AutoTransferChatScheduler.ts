@@ -1,15 +1,15 @@
 import { Agenda } from '@rocket.chat/agenda';
-import { MongoInternals } from 'meteor/mongo';
-import { Meteor } from 'meteor/meteor';
-import { LivechatRooms, Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
+import { LivechatRooms, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
 
 import { Livechat } from '../../../../../app/livechat/server';
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
+import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import { schedulerLogger } from './logger';
 import type { MainLogger } from '../../../../../server/lib/logger/getPino';
+import { schedulerLogger } from './logger';
 
 const SCHEDULER_NAME = 'omnichannel_scheduler';
 
