@@ -4658,6 +4658,8 @@
   "SMS_Default_Omnichannel_Department": "Omnichannel Department (Default)",
   "SMS_Default_Omnichannel_Department_Description": "If set, all new incoming chats initiated by this integration will be routed to this department.  \nThis setting can be overwritten by passing department query param in the request.  \ne.g. `https://{{SERVER_URL}}/api/v1/livechat/sms-incoming/twilio?department={{Department Id or Name}}`.  \nNote: if you're using Department Name, then it should be URL safe.",
   "SMS_Enabled": "SMS Enabled",
+  "SMS_Twilio_NotConfigured": "Twilio SMS is not configured yet. Go to Settings -> SMS to configure it",
+  "SMS_Twilio_InvalidCredentials": "Twilio SMS credentials are invalid, cannot send messages",
   "SMTP": "SMTP",
   "SMTP_Host": "SMTP Host",
   "SMTP_Password": "SMTP Password",
