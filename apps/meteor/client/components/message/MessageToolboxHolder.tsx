@@ -7,14 +7,14 @@ import React, { memo, useRef } from 'react';
 import type { MessageActionContext } from '../../../app/ui-utils/client/lib/MessageAction';
 import { useChat } from '../../views/room/contexts/ChatContext';
 import { useIsVisible } from '../../views/room/hooks/useIsVisible';
-import Toolbox from './toolbox/Toolbox';
+import MessageToolbox from './toolbox/MessageToolbox';
 
-type ToolboxHolderProps = {
+type MessageToolboxHolderProps = {
 	message: IMessage;
 	context?: MessageActionContext;
 };
 
-const ToolboxHolder = ({ message, context }: ToolboxHolderProps): ReactElement => {
+const MessageToolboxHolder = ({ message, context }: MessageToolboxHolderProps): ReactElement => {
 	const ref = useRef(null);
 
 	const [visible] = useIsVisible(ref);
@@ -33,7 +33,7 @@ const ToolboxHolder = ({ message, context }: ToolboxHolderProps): ReactElement =
 	return (
 		<MessageToolboxWrapper ref={ref}>
 			{visible && depsQueryResult.isSuccess && depsQueryResult.data.room && (
-				<Toolbox
+				<MessageToolbox
 					message={message}
 					messageContext={context}
 					room={depsQueryResult.data.room}
@@ -44,4 +44,4 @@ const ToolboxHolder = ({ message, context }: ToolboxHolderProps): ReactElement =
 	);
 };
 
-export default memo(ToolboxHolder);
+export default memo(MessageToolboxHolder);

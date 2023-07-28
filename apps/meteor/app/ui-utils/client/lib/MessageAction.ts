@@ -46,7 +46,8 @@ export type MessageActionConfig = {
 	group?: MessageActionGroup | MessageActionGroup[];
 	context?: MessageActionContext[];
 	action: (
-		e: Pick<Event, 'preventDefault' | 'stopPropagation'>,
+		this: any,
+		e: Pick<Event, 'preventDefault' | 'stopPropagation' | 'currentTarget'>,
 		{
 			message,
 			tabbar,
@@ -65,7 +66,7 @@ export type MessageActionConfig = {
 };
 
 class MessageAction {
-	private buttons = new ReactiveVar<Record<string, MessageActionConfig>>({});
+	public buttons = new ReactiveVar<Record<string, MessageActionConfig>>({});
 
 	public addButton(config: MessageActionConfig): void {
 		if (!config?.id) {
@@ -83,8 +84,6 @@ class MessageAction {
 		return Tracker.nonreactive(() => {
 			const btns = this.buttons.get();
 			btns[config.id] = config;
-			mem.clear(this._getButtons);
-			mem.clear(this.getButtonsByGroup);
 			return this.buttons.set(btns);
 		});
 	}
@@ -97,47 +96,24 @@ class MessageAction {
 		});
 	}
 
-	private _getButtons = mem(
-		(): MessageActionConfig[] => Object.values(this.buttons.get()).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
-		{
-			maxAge: 1000,
-		},
-	);
-
-	private async getButtonsByCondition(
-		prop: MessageActionConditionProps,
-		arr: MessageActionConfig[] = this._getButtons(),
-	): Promise<MessageActionConfig[]> {
-		return (
-			await Promise.all(
-				arr.map(async (button) => {
-					return [button, !button.condition || (await button.condition(prop))] as const;
-				}),
-			)
-		)
-			.filter(([, condition]) => condition)
-			.map(([button]) => button);
-	}
-
-	private getButtonsByGroup = mem(
-		(group: MessageActionGroup): MessageActionConfig[] => {
-			return this._getButtons().filter(
-				(button) => !button.group || (Array.isArray(button.group) ? button.group.includes(group) : button.group === group),
-			);
-		},
-		{ maxAge: 1000 },
-	);
-
-	private getButtonsByContext(context: MessageActionContext, arr: MessageActionConfig[]): MessageActionConfig[] {
-		return arr.filter((button) => !button.context || button.context.includes(context));
-	}
-
-	public async getButtons(
+	public async getAll(
 		props: MessageActionConditionProps,
 		context: MessageActionContext,
 		group: MessageActionGroup,
 	): Promise<MessageActionConfig[]> {
-		return this.getButtonsByCondition({ ...props, context }, this.getButtonsByContext(context, this.getButtonsByGroup(group)));
+		return (
+			await Promise.all(
+				Object.values(this.buttons.get())
+					.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+					.filter((button) => !button.group || (Array.isArray(button.group) ? button.group.includes(group) : button.group === group))
+					.filter((button) => !button.context || button.context.includes(context))
+					.map(async (button) => {
+						return [button, !button.condition || (await button.condition({ ...props, context }))] as const;
+					}),
+			)
+		)
+			.filter(([, condition]) => condition)
+			.map(([button]) => button);
 	}
 }
 

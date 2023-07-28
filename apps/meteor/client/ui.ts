@@ -1,3 +1,4 @@
+import type { MessageActionConfig } from '../app/ui-utils/client/lib/MessageAction';
 import { useOnHoldChatQuickAction } from '../ee/client/hooks/quickActions/useOnHoldChatQuickAction';
 import { useCallsRoomAction } from '../ee/client/hooks/roomActions/useCallsRoomAction';
 import { useCannedResponsesRoomAction } from '../ee/client/hooks/roomActions/useCannedResponsesRoomAction';
@@ -78,3 +79,5 @@ export const quickActionHooks = [
 	useCloseChatQuickAction,
 	useOnHoldChatQuickAction,
 ] satisfies (() => QuickActionsActionConfig | undefined)[];
+
+export const messageActionHooks = [] satisfies (() => MessageActionConfig | undefined)[];
