@@ -2,9 +2,9 @@
 import fs from 'fs';
 import { resolve } from 'path';
 
+import { Settings } from '@rocket.chat/models';
 import yaml from 'js-yaml';
 // import { v4 as uuidv4 } from 'uuid';
-import { Settings } from '@rocket.chat/models';
 
 import type { IFederationBridgeRegistrationFile } from '../../../domain/IFederationBridge';
 // import { settings, settingsRegistry } from '../../../../../../app/settings/server';

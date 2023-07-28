@@ -1,8 +1,8 @@
-import { AbstractFederationApplicationService } from '../AbstractFederationApplicationService';
 import type { IFederationBridge } from '../../domain/IFederationBridge';
-import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
-import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/adapters/File';
+import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
+import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
+import { AbstractFederationApplicationService } from '../AbstractFederationApplicationService';
 
 const DEFAULT_SERVERS = [
 	{

@@ -8,10 +8,10 @@ import { Rooms, Subscriptions, MatrixBridgedRoom, Users } from '@rocket.chat/mod
 // import { settings } from '../../../../../../app/settings/server';
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import type { FederatedUser } from '../../../domain/FederatedUser';
+import { extractServerNameFromExternalIdentifier } from '../../matrix/converters/room/RoomReceiver';
 import type { ROCKET_CHAT_FEDERATION_ROLES } from '../definitions/FederatedRoomInternalRoles';
 import { getFederatedUserByInternalUsername } from './User';
 // import { getValidRoomName } from '../../../../../../app/utils/server';
-import { extractServerNameFromExternalIdentifier } from '../../matrix/converters/room/RoomReceiver';
 
 // type WithRequiredProperty<Type, Key extends keyof Type> = Type & {
 // 	[Property in Key]-?: Type[Property];
