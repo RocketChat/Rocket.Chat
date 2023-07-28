@@ -1,6 +1,6 @@
-import type { Db, IndexDescription } from 'mongodb';
-import type { IPersistentQueueModel } from '@rocket.chat/model-typings';
 import type { IPersistentQueue } from '@rocket.chat/core-typings';
+import type { IPersistentQueueModel } from '@rocket.chat/model-typings';
+import type { Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 

@@ -1,6 +1,6 @@
+import { PersistentQueue } from '@rocket.chat/models';
 import type { ValidResult, Work } from 'mongo-message-queue';
 import MessageQueue from 'mongo-message-queue';
-import { PersistentQueue } from '@rocket.chat/models';
 
 import { Logger } from './logger';
 
