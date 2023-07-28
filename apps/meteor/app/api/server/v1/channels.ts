@@ -1033,7 +1033,15 @@ API.v1.addRoute(
 			});
 
 			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
-
+			members.sort(function(a, b) {
+			      if ( a.username < b.username ){
+				    return -1;
+				  }
+				  if ( a.username > b.username ){
+				    return 1;
+				  }
+				  return 0;
+			});
 			return API.v1.success({
 				members,
 				count: members.length,
