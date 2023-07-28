@@ -351,7 +351,7 @@ export class ImportDataConverter {
 					roles: userData.roles?.length ? userData.roles : ['user'],
 					active: !userData.deleted,
 					services: {
-						...userData.services,
+						...user.services,
 						...(this._options.enableEmail2fa
 							? {
 									email2fa: true,
