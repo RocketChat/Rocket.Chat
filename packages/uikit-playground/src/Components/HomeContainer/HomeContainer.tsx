@@ -27,6 +27,7 @@ const HomeContainer = () => {
         <Label fontScale="h1">Projects</Label>
         <Label fontScale="h3">Start a new project</Label>
         <CreateNewScreenButton
+          name="plus"
           onClick={() => dispatch(createNewProjectAction())}
         />
         <Label fontScale="h4">Existing Projects</Label>

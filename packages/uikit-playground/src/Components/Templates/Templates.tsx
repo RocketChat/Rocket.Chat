@@ -34,7 +34,7 @@ const Templates: FC = () => {
             <Button
               position="fixed"
               className={css`
-                top: 40px;
+                top: 80px;
                 right: 40px;
               `}
               onClick={() => dispatch(templatesToggleAction(false))}

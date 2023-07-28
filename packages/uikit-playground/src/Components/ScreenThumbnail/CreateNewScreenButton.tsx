@@ -4,6 +4,7 @@ import { ComponentProps } from 'react';
 
 const CreateNewScreenButton = ({
   size = '60px',
+  name = 'plus',
   ...props
 }: {
   size?: ComponentProps<typeof Icon>['size'];
@@ -13,7 +14,7 @@ const CreateNewScreenButton = ({
       <Icon
         {...props}
         size={size}
-        name={'plus'}
+        name={name}
         className={css`
           cursor: pointer;
           transition: var(--animation-default);

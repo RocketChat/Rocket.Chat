@@ -15,6 +15,7 @@ import { useMediaQueries } from '@rocket.chat/fuselage-hooks';
 import { Box } from '@rocket.chat/fuselage';
 import FlowDiagram from './Pages/FlowDiagram';
 import { ProjectSpecificLayout } from './Components/Routes/ProjectSpecificLayout';
+import Prototype from './Pages/Prototype';
 
 function App() {
   const { dispatch } = useContext(context);
@@ -51,7 +52,7 @@ function App() {
             <Route path={routes.projectId} element={<ProjectSpecificLayout />}>
               <Route path={routes.flow} element={<FlowDiagram />} />
               <Route path={routes.project} element={<Playground />} />
-              {/* <Route path={routes.prototype} element={<Playground />} /> */}
+              <Route path={routes.prototype} element={<Prototype />} />
             </Route>
             <Route path={`*`} element={<Home />} />
             {/* </Route> */}

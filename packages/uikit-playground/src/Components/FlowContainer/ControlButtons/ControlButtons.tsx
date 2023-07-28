@@ -13,7 +13,9 @@ const ControlButtons = () => {
       >
         <Icon name="home" size={'x16'} />
       </ControlButton>
-      <ControlButton>
+      <ControlButton
+        onClick={() => navigate(`/${projectId}/${routes.prototype}`)}
+      >
         <Icon name="play-unfilled" size={'x16'} />
       </ControlButton>
     </Controls>

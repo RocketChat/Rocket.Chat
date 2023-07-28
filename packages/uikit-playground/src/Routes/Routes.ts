@@ -4,6 +4,7 @@ const routes = {
   projectId: ':projectId',
   login: '/login',
   flow: 'flow',
+  prototype: 'prototype',
   signup: '/createnewworkspace',
 };
 
