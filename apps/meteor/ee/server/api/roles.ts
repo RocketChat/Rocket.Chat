@@ -1,5 +1,5 @@
-import { Roles } from '@rocket.chat/models';
 import type { IRole } from '@rocket.chat/core-typings';
+import { Roles } from '@rocket.chat/models';
 import Ajv from 'ajv';
 
 import { API } from '../../../app/api/server/api';

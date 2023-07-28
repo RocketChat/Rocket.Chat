@@ -1,9 +1,9 @@
+import type { OauthConfig } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import type { OauthConfig } from '@rocket.chat/core-typings';
 
-import { settings } from '../../settings/server';
 import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
+import { settings } from '../../settings/server';
 
 const config: OauthConfig = {
 	serverURL: 'https://gitlab.com',
@@ -19,7 +19,7 @@ const config: OauthConfig = {
 
 const Gitlab = new CustomOAuth('gitlab', config);
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	const updateConfig = _.debounce(() => {
 		config.serverURL = settings.get<string>('API_Gitlab_URL').trim().replace(/\/*$/, '') || config.serverURL;
 		config.identityPath = settings.get('Accounts_OAuth_Gitlab_identity_path') || config.identityPath;

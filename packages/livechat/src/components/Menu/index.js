@@ -1,7 +1,8 @@
 import { Component } from 'preact';
 
+import { createClassName } from '../../helpers/createClassName';
+import { normalizeDOMRect } from '../../helpers/normalizeDOMRect';
 import { PopoverTrigger } from '../Popover';
-import { createClassName, normalizeDOMRect } from '../helpers';
 import styles from './styles.scss';
 
 /** @typedef {{ children: any, hidden?: boolean, placement?: string }} MenuProps */

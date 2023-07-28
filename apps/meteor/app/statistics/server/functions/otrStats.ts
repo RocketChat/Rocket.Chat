@@ -1,7 +1,7 @@
 import { Rooms } from '@rocket.chat/models';
 
-import { updateCounter } from './updateStatsCounter';
 import telemetryEvent from '../lib/telemetryEvents';
+import { updateCounter } from './updateStatsCounter';
 
 type otrDataType = { rid: string };
 

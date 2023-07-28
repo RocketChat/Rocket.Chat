@@ -5,7 +5,7 @@ import { Trans, withTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
 import Screen from '../../components/Screen';
-import { createClassName } from '../../components/helpers';
+import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
 
 const md = new MarkdownIt({

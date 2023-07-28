@@ -1,10 +1,7 @@
 import crypto from 'crypto';
 
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import EJSON from 'ejson';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 import {
 	isShieldSvgProps,
 	isSpotlightProps,
@@ -14,23 +11,26 @@ import {
 	isMeteorCall,
 	validateParamsPwGetPolicyRest,
 } from '@rocket.chat/rest-typings';
-import type { IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import EJSON from 'ejson';
+import { check } from 'meteor/check';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { Meteor } from 'meteor/meteor';
 
+import { i18n } from '../../../../server/lib/i18n';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { getLogs } from '../../../../server/stream/stdout';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { passwordPolicy } from '../../../lib/server';
+import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
-import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/server/getURL';
-import { getLogs } from '../../../../server/stream/stdout';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { passwordPolicy } from '../../../lib/server';
+import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
-import { getUserInfo } from '../helpers/getUserInfo';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
-import { i18n } from '../../../../server/lib/i18n';
-import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { getUserInfo } from '../helpers/getUserInfo';
 
 /**
  * @openapi
@@ -185,7 +185,7 @@ API.v1.addRoute(
 							password: {
 								// The password hash shouldn't be leaked but the client may need to know if it exists.
 								exists: Boolean(services?.password?.bcrypt),
-							} as any,
+							},
 						},
 					}),
 				}),
@@ -232,7 +232,7 @@ API.v1.addRoute(
 				});
 			}
 			const hideIcon = icon === 'false';
-			if (hideIcon && (!name || !name.trim())) {
+			if (hideIcon && !name?.trim()) {
 				return API.v1.failure('Name cannot be empty when icon is hidden');
 			}
 

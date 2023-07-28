@@ -1,4 +1,3 @@
-import type { FindOptions } from 'mongodb';
 import type {
 	IAgentExtensionMap,
 	IRoomCreationResponse,
@@ -11,6 +10,7 @@ import type {
 	IVoipRoom,
 } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { FindOptions } from 'mongodb';
 
 export type FindVoipRoomsParams = {
 	agents?: string[];

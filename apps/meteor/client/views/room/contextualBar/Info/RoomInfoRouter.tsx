@@ -10,9 +10,9 @@ import { useCanEditRoom } from './hooks/useCanEditRoom';
 
 type RoomInfoRouterProps = {
 	rid: IRoom['_id'];
-	onClickBack: () => void;
-	onEnterRoom: (room: IRoom) => void;
-	resetState: () => void;
+	onClickBack?: () => void;
+	onEnterRoom?: (room: IRoom) => void;
+	resetState?: () => void;
 };
 
 const RoomInfoRouter = ({ rid, onClickBack, onEnterRoom, resetState }: RoomInfoRouterProps) => {
@@ -26,7 +26,7 @@ const RoomInfoRouter = ({ rid, onClickBack, onEnterRoom, resetState }: RoomInfoR
 	}
 
 	const canEdit = useCanEditRoom(room);
-	const onClickEnterRoom = useMutableCallback(() => onEnterRoom(room));
+	const onClickEnterRoom = useMutableCallback(() => onEnterRoom?.(room));
 
 	if (isEditing) {
 		return <EditRoomInfoWithData rid={rid} onClickBack={() => setIsEditing(false)} />;

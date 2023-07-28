@@ -1,5 +1,5 @@
-import type { Db, Collection } from 'mongodb';
 import type { RocketChatRecordDeleted, IUser } from '@rocket.chat/core-typings';
+import type { Db, Collection } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { UsersRaw } from '../../../../server/models/raw/Users';

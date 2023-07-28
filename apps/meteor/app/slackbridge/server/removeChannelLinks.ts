@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Rooms } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { settings } from '../../settings/server';

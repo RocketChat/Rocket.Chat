@@ -1,16 +1,16 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Meteor } from 'meteor/meteor';
-import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
+import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { Apps } from '../../../../ee/server/apps/orchestrator';
-import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { callbacks } from '../../../../lib/callbacks';
+import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
+import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { createDirectRoom } from './createDirectRoom';
-import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 
 const isValidName = (name: unknown): name is string => {
 	return typeof name === 'string' && name.trim().length > 0;
@@ -19,7 +19,6 @@ const isValidName = (name: unknown): name is string => {
 const onlyUsernames = (members: unknown): members is string[] =>
 	Array.isArray(members) && members.every((member) => typeof member === 'string');
 
-// eslint-disable-next-line complexity
 export const createRoom = async <T extends RoomType>(
 	type: T,
 	name: T extends 'd' ? undefined : string,
