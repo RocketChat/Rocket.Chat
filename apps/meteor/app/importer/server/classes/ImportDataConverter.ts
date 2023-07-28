@@ -419,7 +419,7 @@ export class ImportDataConverter {
 		}
 	}
 
-	private async insertUserBatch(users: IUser[], insertedIds: Set<string>, { afterBatchFn }: IConversionCallbacks): Promise<void> {
+	private async insertUserBatch(users: IUser[], { afterBatchFn }: IConversionCallbacks): Promise<string[]> {
 		let newIds: string[] | null = null;
 
 		try {
@@ -436,9 +436,7 @@ export class ImportDataConverter {
 			}
 		}
 
-		if (newIds) {
-			newIds.forEach((id) => insertedIds.add(id));
-		}
+		return newIds;
 	}
 
 	public async convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn }: IConversionCallbacks): Promise<void> {
@@ -479,7 +477,8 @@ export class ImportDataConverter {
 						const usersToInsert = await this.buildUserBatch([...batchToInsert]);
 						batchToInsert.clear();
 
-						await this.insertUserBatch(usersToInsert, insertedIds, { afterBatchFn });
+						const newIds = await this.insertUserBatch(usersToInsert, { afterBatchFn });
+						newIds.forEach((id) => insertedIds.add(id));
 					}
 
 					continue;
@@ -550,7 +549,8 @@ export class ImportDataConverter {
 
 		if (batchToInsert.size > 0) {
 			const usersToInsert = await this.buildUserBatch([...batchToInsert]);
-			await this.insertUserBatch(usersToInsert, insertedIds, { afterBatchFn });
+			const newIds = await this.insertUserBatch(usersToInsert, { afterBatchFn });
+			newIds.forEach((id) => insertedIds.add(id));
 		}
 
 		await callbacks.run('afterUserImport', {
