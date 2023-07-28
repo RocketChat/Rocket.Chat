@@ -3,7 +3,6 @@ import { createContext, useContext } from 'react';
 
 import type { ToolboxActionConfig, ToolboxAction, Events } from '../lib/Toolbox';
 import { actions, listen } from '../lib/Toolbox';
-import '../lib/Toolbox/defaultActions';
 
 export type ToolboxEventHandler = (handler: EventHandlerOf<Events, 'change'>) => () => void;
 
