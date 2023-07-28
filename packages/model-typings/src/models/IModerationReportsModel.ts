@@ -46,7 +46,12 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 		options?: FindOptions<IModerationReport>,
 	): FindPaginated<FindCursor<Pick<MessageReport, '_id' | 'message' | 'ts' | 'room'>>>;
 
-	hideMessageReportsByMessageId(messageId: IMessage['_id'], userId: string, reason: string, action: string): Promise<UpdateResult | Document>;
+	hideMessageReportsByMessageId(
+		messageId: IMessage['_id'],
+		userId: string,
+		reason: string,
+		action: string,
+	): Promise<UpdateResult | Document>;
 
 	hideMessageReportsByUserId(userId: string, moderatorId: string, reason: string, action: string): Promise<UpdateResult | Document>;
 }
