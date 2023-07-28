@@ -195,7 +195,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return this.findPaginated(query, opts);
 	}
 
-	async hideReportsByMessageId(messageId: string, userId: string, reason: string, action: string): Promise<UpdateResult | Document> {
+	async hideMessageReportsByMessageId(messageId: string, userId: string, reason: string, action: string): Promise<UpdateResult | Document> {
 		const query = {
 			'message._id': messageId,
 		};
