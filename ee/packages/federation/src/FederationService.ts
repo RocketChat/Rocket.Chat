@@ -1,7 +1,14 @@
 import { License, ServiceClass } from '@rocket.chat/core-services';
 import type { IFederationJoinExternalPublicRoomInput, IFederationService, IFederationStatistics } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, IUser, Username } from '@rocket.chat/core-typings';
-import { isEditedMessage, isMessageFromMatrixFederation, isRoomFederated } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, Username, ValueOf } from '@rocket.chat/core-typings';
+import {
+	isDirectMessageRoom,
+	isEditedMessage,
+	isMessageFromMatrixFederation,
+	isRoomFederated,
+	RoomMemberActions,
+} from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 
 import { FederationSearchPublicRoomsInputDto } from './application/room/input/RoomInputDto';
@@ -24,6 +31,16 @@ import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapter
 import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
 
+const allowedActionsInFederatedRooms: ValueOf<typeof RoomMemberActions>[] = [
+	RoomMemberActions.REMOVE_USER,
+	RoomMemberActions.SET_AS_OWNER,
+	RoomMemberActions.SET_AS_MODERATOR,
+	RoomMemberActions.INVITE,
+	RoomMemberActions.JOIN,
+	RoomMemberActions.LEAVE,
+];
+
+const allowedActionsForModerators = allowedActionsInFederatedRooms.filter((action) => action !== RoomMemberActions.SET_AS_OWNER);
 export class FederationService extends ServiceClass implements IFederationService {
 	protected name = 'federation';
 
@@ -607,5 +624,36 @@ export class FederationService extends ServiceClass implements IFederationServic
 
 	public async getMatrixFederationStatistics(): Promise<IFederationStatistics> {
 		return getMatrixFederationStatistics();
+	}
+
+	public async actionAllowed(room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']): Promise<boolean> {
+		if (!isRoomFederated(room)) {
+			return false;
+		}
+		if (isDirectMessageRoom(room)) {
+			return false;
+		}
+		if (!userId) {
+			return true;
+		}
+
+		const userSubscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, userId);
+		if (!userSubscription) {
+			return true;
+		}
+
+		if (action === RoomMemberActions.LEAVE) {
+			return true;
+		}
+
+		if (userSubscription.roles?.includes('owner')) {
+			return allowedActionsInFederatedRooms.includes(action);
+		}
+
+		if (userSubscription.roles?.includes('moderator')) {
+			return allowedActionsForModerators.includes(action);
+		}
+
+		return false;
 	}
 }

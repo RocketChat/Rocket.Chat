@@ -7,7 +7,7 @@ import type {
 	RocketChatRecordDeleted,
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
-import { FederationHelper } from '@rocket.chat/federation';
+import { escapeExternalFederationEventId } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import { Rooms } from '@rocket.chat/models';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
@@ -496,8 +496,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ _id },
 			{
 				$set: {
-					[`reactions.${reaction}.federationReactionEventIds.${FederationHelper.escapeExternalFederationEventId(federationEventId)}`]:
-						username,
+					[`reactions.${reaction}.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username,
 				} as any,
 			},
 		);
@@ -508,7 +507,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ _id },
 			{
 				$unset: {
-					[`reactions.${reaction}.federationReactionEventIds.${FederationHelper.escapeExternalFederationEventId(federationEventId)}`]: 1,
+					[`reactions.${reaction}.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: 1,
 				},
 			},
 		);
@@ -555,8 +554,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 								$and: [
 									{ 'reactions.v.usernames': { $in: [username] } },
 									{
-										[`reactions.v.federationReactionEventIds.${FederationHelper.escapeExternalFederationEventId(federationEventId)}`]:
-											username,
+										[`reactions.v.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username,
 									},
 								],
 							},

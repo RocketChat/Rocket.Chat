@@ -1,7 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
-import { FederationHelper } from '@rocket.chat/federation';
+import { isAFederatedUsername, isRoomFederated } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match } from 'meteor/check';
@@ -84,7 +83,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 	await Promise.all(
 		data.users.map(async (username) => {
 			const newUser = await Users.findOneByUsernameIgnoringCase(username);
-			if (!newUser && !FederationHelper.isAFederatedUsername(username)) {
+			if (!newUser && !isAFederatedUsername(username)) {
 				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 					method: 'addUsersToRoom',
 				});
