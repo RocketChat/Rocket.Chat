@@ -5534,6 +5534,7 @@
   "Visitor_time_on_site": "Visitor time on site",
   "Visitor_Verification_Process_Completed":"Congratulations! Your verification process is complete. You have been successfully verified.",
   "Visitor_Verification_Process_failed":"Apologies, your recent authentication attempt was unsuccessful. Please try again or contact our support team for assistance.",
+  "Visitor_Verification_Status":"Visitor Verification Status",
   "Voice_Call": "Voice Call",
   "VoIP_Enable_Keep_Alive_For_Unstable_Networks": "Enable SIP Options Keep Alive",
   "VoIP_Enable_Keep_Alive_For_Unstable_Networks_Description": "Monitor the status of multiple external SIP gateways by sending periodic SIP OPTIONS messages. Used for unstable networks.",

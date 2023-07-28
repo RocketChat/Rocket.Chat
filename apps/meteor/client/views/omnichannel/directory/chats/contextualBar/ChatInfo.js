@@ -1,3 +1,4 @@
+import { RoomVerificationState } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
@@ -31,7 +32,7 @@ function ChatInfo({ id, route }) {
 	const formatDuration = useFormatDuration();
 
 	const { data: room } = useOmnichannelRoomInfo(id);
-
+	const [verificationStatus, setVerificationStatus] = useState(room?.verificationStatus);
 	const {
 		ts,
 		closedAt,
@@ -63,7 +64,8 @@ function ChatInfo({ id, route }) {
 			const { customFields: customFieldsAPI } = allCustomFields;
 			setCustomFields(customFieldsAPI);
 		}
-	}, [allCustomFields, stateCustomFields]);
+		setVerificationStatus(room?.verificationStatus);
+	}, [allCustomFields, room?.verificationStatus, stateCustomFields]);
 
 	const checkIsVisibleAndScopeRoom = (key) => {
 		const field = customFields.find(({ _id }) => _id === key);
@@ -168,6 +170,10 @@ function ChatInfo({ id, route }) {
 							<Info>{moment(responseBy.lastMessageTs).fromNow(true)}</Info>
 						</Field>
 					)}
+					<Field>
+						<Label>{t('Visitor_Verification_Status')}</Label>
+						<Info>{verificationStatus === RoomVerificationState.verified ? 'Verified' : 'Unverified'}</Info>
+					</Field>
 					{canViewCustomFields && customFieldEntries.map(([key, value]) => <CustomField key={key} id={key} value={value} />)}
 					{slaId && <SlaField id={slaId} />}
 					{priorityId && <PriorityField id={priorityId} />}
