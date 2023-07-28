@@ -22,6 +22,9 @@ COPY ./packages/model-typings/dist packages/model-typings/dist
 COPY ./packages/models/package.json packages/models/package.json
 COPY ./packages/models/dist packages/models/dist
 
+COPY ./ee/packages/federation/package.json ee/packages/federation/package.json
+COPY ./ee/packages/federation/dist ee/packages/federation/dist
+
 COPY ./ee/apps/${SERVICE}/dist .
 
 COPY ./package.json .
