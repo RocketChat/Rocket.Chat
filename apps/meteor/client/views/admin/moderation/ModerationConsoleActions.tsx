@@ -6,11 +6,14 @@ import type { ModerationConsoleRowProps } from './ModerationConsoleTableRow';
 import useDeactivateUserAction from './hooks/useDeactivateUserAction';
 import useDeleteMessagesAction from './hooks/useDeleteMessagesAction';
 import useDismissUserAction from './hooks/useDismissUserAction';
+import { useIsUserDeleted } from './hooks/useIsUserDeleted';
 import useResetAvatarAction from './hooks/useResetAvatarAction';
 
 const ModerationConsoleActions = ({ report, onClick }: Omit<ModerationConsoleRowProps, 'isDesktopOrLarger'>): JSX.Element => {
 	const t = useTranslation();
 	const { userId: uid, isUserDeleted } = report;
+
+	const isUserDeleted = useIsUserDeleted(uid);
 
 	return (
 		<>
