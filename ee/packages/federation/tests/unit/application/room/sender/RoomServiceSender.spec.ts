@@ -1,13 +1,13 @@
+import { faker } from '@faker-js/faker';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import sinon from 'sinon';
 import proxyquire from 'proxyquire';
-import { faker } from '@faker-js/faker';
+import sinon from 'sinon';
 
 import type * as RoomServiceSenderModule from '../../../../../src/application/room/sender/RoomServiceSender';
-import type * as FederatedUserModule from '../../../../../src/domain/FederatedUser';
 import type * as FederatedRoomModule from '../../../../../src/domain/FederatedRoom';
+import type * as FederatedUserModule from '../../../../../src/domain/FederatedUser';
 import { MATRIX_POWER_LEVELS } from '../../../../../src/infrastructure/matrix/definitions/MatrixPowerLevels';
 
 function createFakeUser(overrides?: Record<string, any>): IUser {

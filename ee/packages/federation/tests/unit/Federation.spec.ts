@@ -1,7 +1,7 @@
+import { RoomMemberActions, RoomSettingsEnum } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
-import { RoomMemberActions, RoomSettingsEnum } from '@rocket.chat/core-typings';
 
 const findOneByRoomIdAndUserIdStub = sinon.stub();
 

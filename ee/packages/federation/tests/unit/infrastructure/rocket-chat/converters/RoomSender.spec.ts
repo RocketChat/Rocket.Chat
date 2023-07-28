@@ -1,13 +1,13 @@
-import { expect } from 'chai';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { expect } from 'chai';
 
-import { FederationRoomSenderConverter } from '../../../../../src/infrastructure/rocket-chat/converters/RoomSender';
 import {
 	FederationAfterLeaveRoomDto,
 	FederationAfterRemoveUserFromRoomDto,
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,
 } from '../../../../../src/application/room/input/RoomSenderDto';
+import { FederationRoomSenderConverter } from '../../../../../src/infrastructure/rocket-chat/converters/RoomSender';
 
 describe('Federation - Infrastructure - RocketChat - FederationRoomSenderConverter', () => {
 	describe('#toCreateDirectMessageRoomDto()', () => {

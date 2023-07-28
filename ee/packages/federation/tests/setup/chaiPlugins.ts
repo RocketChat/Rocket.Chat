@@ -1,7 +1,7 @@
 import chai from 'chai';
-import chaiSpies from 'chai-spies';
-import chaiDatetime from 'chai-datetime';
 import chaiAsPromised from 'chai-as-promised';
+import chaiDatetime from 'chai-datetime';
+import chaiSpies from 'chai-spies';
 
 chai.use(chaiSpies);
 chai.use(chaiDatetime);

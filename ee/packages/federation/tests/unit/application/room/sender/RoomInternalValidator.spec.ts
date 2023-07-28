@@ -3,8 +3,8 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 
 import { FederationRoomInternalValidator } from '../../../../../src/application/room/sender/RoomInternalValidator';
-import { FederatedUser } from '../../../../../src/domain/FederatedUser';
 import { FederatedRoom } from '../../../../../src/domain/FederatedRoom';
+import { FederatedUser } from '../../../../../src/domain/FederatedUser';
 
 describe('Federation - Application - FederationRoomInternalHooksValidator', () => {
 	let service: FederationRoomInternalValidator;

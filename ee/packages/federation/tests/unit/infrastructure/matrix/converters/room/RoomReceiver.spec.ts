@@ -1,7 +1,6 @@
-import { expect } from 'chai';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { expect } from 'chai';
 
-import { MatrixRoomReceiverConverter } from '../../../../../../src/infrastructure/matrix/converters/room/RoomReceiver';
 import {
 	FederationRoomChangeJoinRulesDto,
 	FederationRoomChangeMembershipDto,
@@ -13,11 +12,12 @@ import {
 	FederationRoomRedactEventDto,
 	FederationRoomRoomChangePowerLevelsEventDto,
 } from '../../../../../../src/application/room/input/RoomReceiverDto';
-import { MatrixRoomJoinRules } from '../../../../../../src/infrastructure/matrix/definitions/MatrixRoomJoinRules';
-import { MatrixEventType } from '../../../../../../src/infrastructure/matrix/definitions/MatrixEventType';
-import { RoomMembershipChangedEventType } from '../../../../../../src/infrastructure/matrix/definitions/events/RoomMembershipChanged';
 import { EVENT_ORIGIN } from '../../../../../../src/domain/IFederationBridge';
+import { MatrixRoomReceiverConverter } from '../../../../../../src/infrastructure/matrix/converters/room/RoomReceiver';
+import { MatrixEventType } from '../../../../../../src/infrastructure/matrix/definitions/MatrixEventType';
 import { MATRIX_POWER_LEVELS } from '../../../../../../src/infrastructure/matrix/definitions/MatrixPowerLevels';
+import { MatrixRoomJoinRules } from '../../../../../../src/infrastructure/matrix/definitions/MatrixRoomJoinRules';
+import { RoomMembershipChangedEventType } from '../../../../../../src/infrastructure/matrix/definitions/events/RoomMembershipChanged';
 
 describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', () => {
 	describe('#toRoomCreateDto()', () => {
