@@ -7,7 +7,7 @@ import {
 	isReportsByMsgIdParams,
 } from '@rocket.chat/rest-typings';
 import { ModerationReports, Users } from '@rocket.chat/models';
-import type { IModerationReport } from '@rocket.chat/core-typings';
+import type { IModerationReport, IUser } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { API } from '../api';
@@ -73,7 +73,9 @@ API.v1.addRoute(
 
 			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
 
-			const user = await Users.findOneById(userId, { projection: { _id: 1, username: 1, name: 1 } });
+			const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(userId, {
+				projection: { _id: 1, username: 1, name: 1 },
+			});
 
 			const escapedSelector = escapeRegExp(selector);
 

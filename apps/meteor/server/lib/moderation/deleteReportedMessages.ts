@@ -27,7 +27,7 @@ export async function deleteReportedMessages(messages: IMessage[], user: IUser):
 			for await (const doc of cursor) {
 				await Messages.cloneAndSaveAsHistoryByRecord(
 					doc,
-					user as Required<Pick<IUser, '_id' | 'username' | 'name'>> & { username: NonNullable<IUser['username']> },
+					user as Required<Pick<IUser, '_id' | 'name'>> & { username: NonNullable<IUser['username']> },
 				);
 			}
 		} else {
