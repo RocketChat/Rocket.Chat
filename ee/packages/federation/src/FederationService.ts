@@ -19,11 +19,10 @@ import type { RocketChatMessageAdapter } from './infrastructure/rocket-chat/adap
 import type { RocketChatNotificationAdapter } from './infrastructure/rocket-chat/adapters/Notification';
 import type { RocketChatRoomAdapter } from './infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from './infrastructure/rocket-chat/adapters/Settings';
+import { getMatrixFederationStatistics } from './infrastructure/rocket-chat/adapters/Statistics';
 import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapters/User';
 import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
-
-import { getMatrixFederationStatistics } from './infrastructure/rocket-chat/adapters/Statistics';
 
 export class FederationService extends ServiceClass implements IFederationService {
 	protected name = 'federation';

@@ -1,7 +1,7 @@
 import { log } from 'console';
 import os from 'os';
 
-import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
+import { Analytics, Federation, Team, VideoConf } from '@rocket.chat/core-services';
 import type { IRoom, IStats } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import {
@@ -25,8 +25,6 @@ import {
 	Subscriptions,
 	Users,
 } from '@rocket.chat/models';
-import { Analytics, Federation, Team, VideoConf } from '@rocket.chat/core-services';
-import { UserStatus } from '@rocket.chat/core-typings';
 import { MongoInternals } from 'meteor/mongo';
 
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
@@ -34,7 +32,6 @@ import { readSecondaryPreferred } from '../../../../server/database/readSecondar
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
 import { getControl } from '../../../../server/lib/migrations';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
-import { getMatrixFederationStatistics } from '../../../../server/services/federation/infrastructure/rocket-chat/adapters/Statistics';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';

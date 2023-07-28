@@ -1,10 +1,10 @@
+import { Federation } from '@rocket.chat/core-services';
 import {
 	isFederationAddServerProps,
 	isFederationRemoveServerProps,
 	isFederationSearchPublicRoomsProps,
 	isFederationJoinExternalPublicRoomProps,
 } from '@rocket.chat/rest-typings';
-import { Federation } from '@rocket.chat/core-services';
 
 import { API } from '../../../../app/api/server';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';

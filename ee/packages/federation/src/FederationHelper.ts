@@ -2,7 +2,6 @@ import type { IRoom, IUser, ValueOf } from '@rocket.chat/core-typings';
 import { RoomMemberActions, RoomSettingsEnum, isRoomFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 
-import { RoomMemberActions, RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 import {
 	escapeExternalFederationEventId,
 	unescapeExternalFederationEventId,

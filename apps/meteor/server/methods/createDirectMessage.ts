@@ -1,4 +1,4 @@
-import { Federation} from '@rocket.chat/core-services';
+import { Federation } from '@rocket.chat/core-services';
 import type { ICreateRoomParams } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
@@ -11,7 +11,6 @@ import { addUser } from '../../app/federation/server/functions/addUser';
 import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
 import { settings } from '../../app/settings/server';
-import { callbacks } from '../../lib/callbacks';
 
 export async function createDirectMessage(
 	usernames: IUser['username'][],

@@ -1,7 +1,7 @@
 import type { IRoom, AtLeast } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
 import { FederationHelper } from '@rocket.chat/federation';
+import { Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../app/settings/server';
