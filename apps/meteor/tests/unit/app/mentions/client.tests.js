@@ -10,7 +10,7 @@ beforeEach(() => {
 	});
 });
 
-describe('Mention', function () {
+describe('Mention', () => {
 	describe('get pattern', () => {
 		const regexp = '[0-9a-zA-Z-_.]+';
 		beforeEach(() => {
@@ -206,7 +206,7 @@ const message = {
 	],
 };
 
-describe('replace methods', function () {
+describe('replace methods', () => {
 	describe('replaceUsers', () => {
 		it('should render for @all', () => {
 			const result = mentionsParser.replaceUsers('@all', message, 'me');
