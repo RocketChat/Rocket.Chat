@@ -30,7 +30,7 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 		pagination: PaginationParams<IModerationReport>,
 	): AggregationCursor<IModerationAudit>;
 
-	countReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number>;
+	countMessageReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number>;
 
 	findReportsByMessageId(
 		messageId: IMessage['_id'],
@@ -46,7 +46,7 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 		options?: FindOptions<IModerationReport>,
 	): FindPaginated<FindCursor<Pick<MessageReport, '_id' | 'message' | 'ts' | 'room'>>>;
 
-	hideReportsByMessageId(messageId: IMessage['_id'], userId: string, reason: string, action: string): Promise<UpdateResult | Document>;
+	hideMessageReportsByMessageId(messageId: IMessage['_id'], userId: string, reason: string, action: string): Promise<UpdateResult | Document>;
 
-	hideReportsByUserId(userId: string, moderatorId: string, reason: string, action: string): Promise<UpdateResult | Document>;
+	hideMessageReportsByUserId(userId: string, moderatorId: string, reason: string, action: string): Promise<UpdateResult | Document>;
 }

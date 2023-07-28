@@ -52,7 +52,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const total = await ModerationReports.countReportsInRange(latest, oldest, escapedSelector);
+			const total = await ModerationReports.countMessageReportsInRange(latest, oldest, escapedSelector);
 
 			return API.v1.success({
 				reports,
@@ -154,7 +154,7 @@ API.v1.addRoute(
 				moderator,
 			);
 
-			await ModerationReports.hideReportsByUserId(userId, this.userId, sanitizedReason, 'DELETE Messages');
+			await ModerationReports.hideMessageReportsByUserId(userId, this.userId, sanitizedReason, 'DELETE Messages');
 
 			return API.v1.success();
 		},
@@ -192,9 +192,9 @@ API.v1.addRoute(
 			const { userId: moderatorId } = this;
 
 			if (userId) {
-				await ModerationReports.hideReportsByUserId(userId, moderatorId, sanitizedReason, action);
+				await ModerationReports.hideMessageReportsByUserId(userId, moderatorId, sanitizedReason, action);
 			} else {
-				await ModerationReports.hideReportsByMessageId(msgId as string, moderatorId, sanitizedReason, action);
+				await ModerationReports.hideMessageReportsByMessageId(msgId as string, moderatorId, sanitizedReason, action);
 			}
 
 			return API.v1.success();

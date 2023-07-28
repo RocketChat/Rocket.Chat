@@ -110,7 +110,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return this.col.aggregate(params, { allowDiskUse: true });
 	}
 
-	countReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number> {
+	countMessageReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number> {
 		return this.col.countDocuments({
 			_hidden: { $ne: true },
 			ts: { $lt: latest, $gt: oldest },
@@ -214,7 +214,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return this.updateMany(query, update);
 	}
 
-	async hideReportsByUserId(userId: string, moderatorId: string, reason: string, action: string): Promise<UpdateResult | Document> {
+	async hideMessageReportsByUserId(userId: string, moderatorId: string, reason: string, action: string): Promise<UpdateResult | Document> {
 		const query = {
 			'message.u._id': userId,
 		};
@@ -229,10 +229,12 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 	}
 
 	private getSearchQueryForSelector(selector?: string): any {
+		const messageExistsQuery = { message: { $exists: true } };
 		if (!selector) {
-			return {};
+			return messageExistsQuery;
 		}
 		return {
+			...messageExistsQuery,
 			$or: [
 				{
 					'message.msg': {
