@@ -1,4 +1,3 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRouter, useSetModal, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
@@ -21,27 +20,23 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 
 	const { shouldShowUpsell, isModalOpen, handleGoFullyFeatured, handleTalkToSales } = useUpsellActions(hasDeviceManagement);
 
-	const handleOpenModal = useMutableCallback(() => {
-		setModal(
-			<GenericUpsellModal
-				title={t('Device_Management')}
-				img='images/device-management.png'
-				subtitle={t('Ensure_secure_workspace_access')}
-				description={t('Manage_which_devices')}
-				cancelText={t('Talk_to_an_expert')}
-				confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
-				onClose={() => setModal(null)}
-				onConfirm={handleGoFullyFeatured}
-				onCancel={handleTalkToSales}
-			/>,
-		);
-	});
-
 	useEffect(() => {
 		if (shouldShowUpsell) {
-			handleOpenModal();
+			setModal(
+				<GenericUpsellModal
+					title={t('Device_Management')}
+					img='images/device-management.png'
+					subtitle={t('Ensure_secure_workspace_access')}
+					description={t('Manage_which_devices')}
+					cancelText={t('Talk_to_an_expert')}
+					confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
+					onClose={() => setModal(null)}
+					onConfirm={handleGoFullyFeatured}
+					onCancel={handleTalkToSales}
+				/>,
+			);
 		}
-	}, [shouldShowUpsell, router, handleOpenModal]);
+	}, [shouldShowUpsell, router, setModal, t, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales]);
 
 	if (isModalOpen) {
 		return <PageSkeleton />;

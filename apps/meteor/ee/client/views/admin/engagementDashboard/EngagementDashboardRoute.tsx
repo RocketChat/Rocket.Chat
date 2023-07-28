@@ -1,4 +1,3 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRouter, useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
@@ -28,25 +27,21 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 
 	const { shouldShowUpsell, isModalOpen, handleGoFullyFeatured, handleTalkToSales } = useUpsellActions(hasEngagementDashboard);
 
-	const handleOpenModal = useMutableCallback(() => {
-		setModal(
-			<GenericUpsellModal
-				title={t('Engagement_Dashboard')}
-				img='images/engagement.png'
-				subtitle={t('Analyze_practical_usage')}
-				description={t('Enrich_your_workspace')}
-				onClose={() => setModal(null)}
-				onConfirm={handleGoFullyFeatured}
-				confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
-				onCancel={handleTalkToSales}
-				cancelText={t('Talk_to_an_expert')}
-			/>,
-		);
-	});
-
 	useEffect(() => {
 		if (shouldShowUpsell) {
-			handleOpenModal();
+			setModal(
+				<GenericUpsellModal
+					title={t('Engagement_Dashboard')}
+					img='images/engagement.png'
+					subtitle={t('Analyze_practical_usage')}
+					description={t('Enrich_your_workspace')}
+					onClose={() => setModal(null)}
+					onConfirm={handleGoFullyFeatured}
+					confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
+					onCancel={handleTalkToSales}
+					cancelText={t('Talk_to_an_expert')}
+				/>,
+			);
 		}
 
 		if (!isValidTab(tab)) {
@@ -58,7 +53,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 				{ replace: true },
 			);
 		}
-	}, [handleOpenModal, shouldShowUpsell, router, tab]);
+	}, [shouldShowUpsell, router, tab, setModal, t, handleGoFullyFeatured, cloudWorkspaceHadTrial, handleTalkToSales]);
 
 	if (isModalOpen) {
 		return <PageSkeleton />;
