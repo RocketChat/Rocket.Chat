@@ -1,5 +1,5 @@
-import type { Document, FindCursor, FindOptions } from 'mongodb';
 import type { IBannerDismiss } from '@rocket.chat/core-typings';
+import type { Document, FindCursor, FindOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 

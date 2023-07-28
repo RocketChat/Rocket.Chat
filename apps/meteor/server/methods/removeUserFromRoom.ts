@@ -1,16 +1,17 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import { Message, Team } from '@rocket.chat/core-services';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
-import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
-import { callbacks } from '../../lib/callbacks';
-import { roomCoordinator } from '../lib/rooms/roomCoordinator';
-import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { getUsersInRole } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
+import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
+import { callbacks } from '../../lib/callbacks';
+import { afterRemoveFromRoomCallback } from '../../lib/callbacks/afterRemoveFromRoomCallback';
+import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
+import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -77,8 +78,8 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		await Team.removeMember(room.teamId, removedUser._id);
 	}
 
-	setImmediate(function () {
-		void callbacks.run('afterRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
+	setImmediate(() => {
+		void afterRemoveFromRoomCallback.run({ removedUser, userWhoRemoved: fromUser }, room);
 	});
 
 	return true;

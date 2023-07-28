@@ -24,7 +24,7 @@ const getIdentity = async function (accessToken, appId, appSecret, accessTokenSe
 	}
 };
 
-registerAccessTokenService('twitter', async function (options) {
+registerAccessTokenService('twitter', async (options) => {
 	check(
 		options,
 		Match.ObjectIncluding({

@@ -1,8 +1,8 @@
 import type { Emitter } from '@rocket.chat/emitter';
 
-import type { PublicationPayloads } from './publicationPayloads';
 import type { DDPDispatchOptions } from '../MinimalDDPClient';
 import type { Subscription } from './Subscription';
+import type { PublicationPayloads } from './publicationPayloads';
 
 export interface ClientStream extends Emitter {
 	/**

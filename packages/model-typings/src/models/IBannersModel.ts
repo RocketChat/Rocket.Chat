@@ -1,5 +1,5 @@
-import type { Document, FindCursor, FindOptions, UpdateResult, InsertOneResult } from 'mongodb';
 import type { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
+import type { Document, FindCursor, FindOptions, UpdateResult, InsertOneResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
