@@ -17,10 +17,10 @@ import {
 import type { MouseEventHandler, ReactElement } from 'react';
 import { useContext, memo } from 'react';
 
-import { useSurfaceType } from '../../contexts/SurfaceContext';
+import { useSurfaceType } from '../../hooks/useSurfaceType';
 import type { BlockProps } from '../../utils/BlockProps';
 import { useVideoConfDataStream } from './hooks/useVideoConfDataStream';
-import { kitContext } from '../..';
+import { UiKitContext } from '../..';
 
 type VideoConferenceBlockProps = BlockProps<UiKit.VideoConferenceBlock>;
 
@@ -34,7 +34,7 @@ const VideoConferenceBlock = ({
   const surfaceType = useSurfaceType();
   const userId = useUserId();
 
-  const { action, viewId, rid } = useContext(kitContext);
+  const { action, viewId, rid } = useContext(UiKitContext);
 
   if (surfaceType !== 'message') {
     return <></>;

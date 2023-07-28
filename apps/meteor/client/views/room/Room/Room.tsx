@@ -9,7 +9,7 @@ import MessageHighlightProvider from '../MessageList/providers/MessageHighlightP
 import RoomBody from '../components/body/RoomBody';
 import { useRoom } from '../contexts/RoomContext';
 import { useTab, useToolboxContext } from '../contexts/ToolboxContext';
-import AppsContextualBar from '../contextualBar/Apps';
+import AppsContextualBar from '../contextualBar/uikit/UiKitContextualBar';
 import { useAppsContextualBar } from '../hooks/useAppsContextualBar';
 import RoomLayout from '../layout/RoomLayout';
 import ChatProvider from '../providers/ChatProvider';

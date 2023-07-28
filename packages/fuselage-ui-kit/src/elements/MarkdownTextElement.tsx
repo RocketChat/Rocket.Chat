@@ -3,7 +3,7 @@ import { parse } from '@rocket.chat/message-parser';
 import { Markup } from '@rocket.chat/gazzodown';
 import type { TextObject } from '@rocket.chat/ui-kit';
 
-import { useUiKitContext } from '../contexts/kitContext';
+import { useUiKitContext } from '../hooks/useUiKitContext';
 
 const MarkdownTextElement = ({ textObject }: { textObject: TextObject }) => {
   const t = useTranslation() as (
