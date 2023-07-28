@@ -1,13 +1,13 @@
-import { isGETWebRTCCall, isPUTWebRTCCallId } from '@rocket.chat/rest-typings';
-import { Messages, Settings, Rooms } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
+import { Messages, Settings, Rooms } from '@rocket.chat/models';
+import { isGETWebRTCCall, isPUTWebRTCCallId } from '@rocket.chat/rest-typings';
 
-import { settings as rcSettings } from '../../../../settings/server';
-import { API } from '../../../../api/server';
-import { settings } from '../lib/livechat';
-import { canSendMessageAsync } from '../../../../authorization/server/functions/canSendMessage';
-import { Livechat } from '../../lib/Livechat';
 import { i18n } from '../../../../../server/lib/i18n';
+import { API } from '../../../../api/server';
+import { canSendMessageAsync } from '../../../../authorization/server/functions/canSendMessage';
+import { settings as rcSettings } from '../../../../settings/server';
+import { Livechat } from '../../lib/Livechat';
+import { settings } from '../lib/livechat';
 
 API.v1.addRoute(
 	'livechat/webrtc.call',

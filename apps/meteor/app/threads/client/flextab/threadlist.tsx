@@ -1,10 +1,10 @@
-import type { LazyExoticComponent, FC, ReactNode } from 'react';
-import React, { useMemo, lazy } from 'react';
-import type { BadgeProps } from '@rocket.chat/fuselage';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import type { BadgeProps } from '@rocket.chat/fuselage';
 import { HeaderToolboxAction, HeaderToolboxActionBadge } from '@rocket.chat/ui-client';
+import { useSetting } from '@rocket.chat/ui-contexts';
+import React, { useMemo, lazy } from 'react';
+import type { LazyExoticComponent, FC, ReactNode } from 'react';
 
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
 

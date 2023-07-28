@@ -31,6 +31,7 @@ export const group = {};
 export const message = {};
 export const directMessage = {};
 export const integration = {};
+/** @type {{ 'X-Auth-Token': string | undefined; 'X-User-Id': string | undefined }} */
 export const credentials = {
 	'X-Auth-Token': undefined,
 	'X-User-Id': undefined,

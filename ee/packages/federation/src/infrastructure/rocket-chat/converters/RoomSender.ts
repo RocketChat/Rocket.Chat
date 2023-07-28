@@ -2,13 +2,9 @@ import { isUserFederated } from '@rocket.chat/core-typings';
 import type { IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
 
 import {
-	convertExternalRoomIdToInternalRoomIdFormat,
-	extractServerNameFromExternalIdentifier,
-	formatExternalUserIdToInternalUsernameFormat,
-	isAnExternalIdentifierFormat,
-	isAnExternalUserIdFormat,
-	removeExternalSpecificCharsFromExternalIdentifier,
-} from '../../matrix/converters/room/RoomReceiver';
+	FederationJoinExternalPublicRoomInputDto,
+	FederationJoinInternalPublicRoomInputDto,
+} from '../../../application/room/input/RoomInputDto';
 import {
 	FederationAfterLeaveRoomDto,
 	FederationAfterRemoveUserFromRoomDto,
@@ -25,9 +21,13 @@ import {
 } from '../../../application/room/input/RoomSenderDto';
 import type { IFederationInviteeDto } from '../../../application/room/input/RoomSenderDto';
 import {
-	FederationJoinExternalPublicRoomInputDto,
-	FederationJoinInternalPublicRoomInputDto,
-} from '../../../application/room/input/RoomInputDto';
+	convertExternalRoomIdToInternalRoomIdFormat,
+	extractServerNameFromExternalIdentifier,
+	formatExternalUserIdToInternalUsernameFormat,
+	isAnExternalIdentifierFormat,
+	isAnExternalUserIdFormat,
+	removeExternalSpecificCharsFromExternalIdentifier,
+} from '../../matrix/converters/room/RoomReceiver';
 
 const ensureUserHasAHomeServer = (username: string, localHomeServer: string): string => {
 	return username?.includes(':') ? username : `${username}:${localHomeServer}`;

@@ -1,16 +1,16 @@
 import http from 'http';
 import https from 'https';
 
-import fetch from 'node-fetch';
-import { getProxyForUrl } from 'proxy-from-env';
+import { AbortController } from 'abort-controller';
 import type { HttpProxyAgent } from 'http-proxy-agent';
 import { default as createHttpProxyAgent } from 'http-proxy-agent';
 import type { HttpsProxyAgent } from 'https-proxy-agent';
 import { default as createHttpsProxyAgent } from 'https-proxy-agent';
-import { AbortController } from 'abort-controller';
+import fetch from 'node-fetch';
+import { getProxyForUrl } from 'proxy-from-env';
 
-import type { ExtendedFetchOptions } from './types';
 import { parseRequestOptions } from './parsers';
+import type { ExtendedFetchOptions } from './types';
 
 function getFetchAgent(url: string, allowSelfSignedCerts?: boolean): http.Agent | https.Agent | null | HttpsProxyAgent | HttpProxyAgent {
 	const isHttps = /^https/.test(url);

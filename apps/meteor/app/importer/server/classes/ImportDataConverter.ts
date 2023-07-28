@@ -1,5 +1,3 @@
-import { Accounts } from 'meteor/accounts-base';
-import { ObjectId } from 'mongodb';
 import type {
 	IImportUser,
 	IImportMessage,
@@ -15,19 +13,21 @@ import type {
 	IMessage as IDBMessage,
 } from '@rocket.chat/core-typings';
 import { ImportData, Rooms, Users, Subscriptions } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
+import { ObjectId } from 'mongodb';
 
-import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
+import type { Logger } from '../../../../server/lib/logger/Logger';
+import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
+import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { addUserToDefaultChannels } from '../../../lib/server/functions/addUserToDefaultChannels';
 import { generateUsernameSuggestion } from '../../../lib/server/functions/getUsernameSuggestion';
 import { insertMessage } from '../../../lib/server/functions/insertMessage';
 import { saveUserIdentity } from '../../../lib/server/functions/saveUserIdentity';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
-import type { Logger } from '../../../../server/lib/logger/Logger';
-import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
-import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
-import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
-import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
+import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
+import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
 
 type IRoom = Record<string, any>;
 type IMessage = Record<string, any>;
@@ -476,7 +476,6 @@ export class ImportDataConverter {
 
 		const result: Array<IMentionedUser> = [];
 		for await (const importId of mentions) {
-			// eslint-disable-next-line no-extra-parens
 			if (importId === ('all' as 'string') || importId === 'here') {
 				result.push({
 					_id: importId,
@@ -661,7 +660,6 @@ export class ImportDataConverter {
 	async updateRoom(room: IRoom, roomData: IImportChannel, startedByUserId: string): Promise<void> {
 		roomData._id = room._id;
 
-		// eslint-disable-next-line no-extra-parens
 		if ((roomData._id as string).toUpperCase() === 'GENERAL' && roomData.name !== room.name) {
 			await saveRoomSettings(startedByUserId, 'GENERAL', 'roomName', roomData.name);
 		}

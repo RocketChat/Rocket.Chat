@@ -3,19 +3,19 @@ import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appser
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import type { IExternalUserProfileInformation, IFederationBridge, IFederationBridgeRegistrationFile } from '../../domain/IFederationBridge';
+import type { RocketChatSettingsAdapter } from '../rocket-chat/adapters/Settings';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
-import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './converters/room/to-internal-parser-formatter';
 import { convertEmojisFromRCFormatToMatrixFormat } from './converters/room/MessageReceiver';
+import { formatExternalUserIdToInternalUsernameFormat } from './converters/room/RoomReceiver';
+import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './converters/room/to-internal-parser-formatter';
 import type { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
-import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definitions/events/RoomMessageSent';
 import { MatrixEventType } from './definitions/MatrixEventType';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 import { RoomMembershipChangedEventType } from './definitions/events/RoomMembershipChanged';
+import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definitions/events/RoomMessageSent';
 import type { MatrixEventRoomNameChanged } from './definitions/events/RoomNameChanged';
 import type { MatrixEventRoomTopicChanged } from './definitions/events/RoomTopicChanged';
-import type { RocketChatSettingsAdapter } from '../rocket-chat/adapters/Settings';
-import { formatExternalUserIdToInternalUsernameFormat } from './converters/room/RoomReceiver';
 
 let MatrixUserInstance: any;
 

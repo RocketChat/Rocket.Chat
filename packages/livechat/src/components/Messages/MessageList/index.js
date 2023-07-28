@@ -1,11 +1,13 @@
 import { parseISO } from 'date-fns/fp';
 import isSameDay from 'date-fns/isSameDay';
 
+import { MemoizedComponent } from '../../../helpers/MemoizedComponent';
+import { getAttachmentUrl } from '../../../helpers/baseUrl';
+import { createClassName } from '../../../helpers/createClassName';
 import constants from '../../../lib/constants';
 import store from '../../../store';
 import { isCallOngoing } from '../../Calls/CallStatus';
 import { JoinCallButton } from '../../Calls/JoinCallButton';
-import { createClassName, getAttachmentUrl, MemoizedComponent } from '../../helpers';
 import Message from '../Message';
 import MessageSeparator from '../MessageSeparator';
 import { TypingIndicator } from '../TypingIndicator';

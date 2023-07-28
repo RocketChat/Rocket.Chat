@@ -1,11 +1,11 @@
+import { Message, MeteorService, Room } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
-import { Message, MeteorService, Room } from '@rocket.chat/core-services';
 import { Messages } from '@rocket.chat/models';
 
-import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../converters/to-external-parser-formatter';
-import type { FederatedUser } from '../../../domain/FederatedUser';
 import type { FederatedRoom } from '../../../domain/FederatedRoom';
+import type { FederatedUser } from '../../../domain/FederatedUser';
+import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../converters/to-external-parser-formatter';
 
 const DEFAULT_EMOJI_TO_REACT_WHEN_RECEIVED_EMOJI_DOES_NOT_EXIST = ':grey_question:';
 

@@ -2,9 +2,9 @@ import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 
+import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 import type { IBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { AbstractBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
-import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 
 type IBusinessHoursExtraProperties = {
 	timezoneName: string;
