@@ -21,8 +21,8 @@
 		"use-sync-external-store": "^1.2.0"
 	},
 	"peerDependencies": {
-		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/account-utils": "workspace:^",
+		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/emitter": "*",
 		"@rocket.chat/fuselage-hooks": "*",

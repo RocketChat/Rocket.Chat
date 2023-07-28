@@ -1,31 +1,44 @@
-import { passwordPolicy } from '@rocket.chat/account-utils';
+import PasswordPolicy from '@rocket.chat/account-utils';
 
 import { settings } from '../../../settings/server';
 
+export const passwordPolicy = new PasswordPolicy.PasswordPolicy({
+	enabled: false,
+	minLength: -1,
+	maxLength: -1,
+	forbidRepeatingCharacters: false,
+	forbidRepeatingCharactersCount: 3, // the regex is this number minus one
+	mustContainAtLeastOneLowercase: false, // /[A-Z]{3,}/ could do this instead of at least one
+	mustContainAtLeastOneUppercase: false,
+	mustContainAtLeastOneNumber: false,
+	mustContainAtLeastOneSpecialCharacter: false,
+	throwError: true,
+});
+
 settings.watch('Accounts_Password_Policy_Enabled', (value) => {
-	passwordPolicy.passwordPolicyEnabled = Boolean(value);
+	passwordPolicy.enabled = Boolean(value);
 });
 settings.watch('Accounts_Password_Policy_MinLength', (value) => {
-	passwordPolicy.passwordMinLength = Number(value);
+	passwordPolicy.minLength = Number(value);
 });
 settings.watch('Accounts_Password_Policy_MaxLength', (value) => {
-	passwordPolicy.passwordMaxLength = Number(value);
+	passwordPolicy.maxLength = Number(value);
 });
 settings.watch('Accounts_Password_Policy_ForbidRepeatingCharacters', (value) => {
-	passwordPolicy.passwordForbidRepeatingCharacters = Boolean(value);
+	passwordPolicy.forbidRepeatingCharacters = Boolean(value);
 });
 settings.watch('Accounts_Password_Policy_ForbidRepeatingCharactersCount', (value) => {
-	passwordPolicy.passwordForbidRepeatingCharactersCount = Number(value);
+	passwordPolicy.forbidRepeatingCharactersCount = Number(value);
 });
 settings.watch('Accounts_Password_Policy_AtLeastOneLowercase', (value) => {
-	passwordPolicy.passwordAtLeastOneLowercase = Boolean(value);
+	passwordPolicy.mustContainAtLeastOneLowercase = Boolean(value);
 });
 settings.watch('Accounts_Password_Policy_AtLeastOneUppercase', (value) => {
-	passwordPolicy.passwordAtLeastOneUppercase = Boolean(value);
+	passwordPolicy.mustContainAtLeastOneUppercase = Boolean(value);
 });
 settings.watch('Accounts_Password_Policy_AtLeastOneNumber', (value) => {
-	passwordPolicy.passwordAtLeastOneNumber = Boolean(value);
+	passwordPolicy.mustContainAtLeastOneNumber = Boolean(value);
 });
 settings.watch('Accounts_Password_Policy_AtLeastOneSpecialCharacter', (value) => {
-	passwordPolicy.passwordAtLeastOneSpecialCharacter = Boolean(value);
+	passwordPolicy.mustContainAtLeastOneSpecialCharacter = Boolean(value);
 });
