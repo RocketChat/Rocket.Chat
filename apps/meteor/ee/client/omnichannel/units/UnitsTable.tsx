@@ -57,11 +57,11 @@ const UnitsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	);
 	const headers = (
 		<>
-			<GenericTableHeaderCell key={'name'} direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell
-				key={'visibility'}
+				key='visibility'
 				direction={sortDirection}
 				active={sortBy === 'visibility'}
 				onClick={setSort}
@@ -69,7 +69,7 @@ const UnitsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			>
 				{t('Visibility')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key={'remove'} w='x60'>
+			<GenericTableHeaderCell key='remove' w='x60'>
 				{t('Remove')}
 			</GenericTableHeaderCell>
 		</>

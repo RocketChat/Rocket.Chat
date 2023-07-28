@@ -1,11 +1,11 @@
 import { Users } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../../lib/callbacks';
-import { settings } from '../../../../../app/settings/server';
-import { getMaxNumberSimultaneousChat } from '../lib/Helper';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
-import { cbLogger } from '../lib/logger';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
+import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
+import { getMaxNumberSimultaneousChat } from '../lib/Helper';
+import { cbLogger } from '../lib/logger';
 
 const validateMaxChats = async ({
 	agent,

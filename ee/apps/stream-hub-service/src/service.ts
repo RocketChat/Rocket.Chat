@@ -1,11 +1,11 @@
+import { api } from '@rocket.chat/core-services';
 import type { Document } from 'mongodb';
 import polka from 'polka';
-import { api } from '@rocket.chat/core-services';
 
+import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
+import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 import { DatabaseWatcher } from '../../../../apps/meteor/server/database/DatabaseWatcher';
-import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
-import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 import { StreamHub } from './StreamHub';
 
@@ -33,7 +33,7 @@ const PORT = process.env.PORT || 3035;
 				await api.nodeList();
 
 				if (watcher.isLastDocDelayed()) {
-					throw new Error('not healthy');
+					throw new Error('No real time data received recently');
 				}
 			} catch (err) {
 				console.error('Service not healthy', err);

@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
-import EJSON from 'ejson';
-import { escapeHTML } from '@rocket.chat/string-helpers';
-import type { Filter } from 'mongodb';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import EJSON from 'ejson';
+import { Meteor } from 'meteor/meteor';
+import type { Filter } from 'mongodb';
 
-import { placeholders } from '../../../utils/server';
+import { generatePath } from '../../../../lib/utils/generatePath';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import * as Mailer from '../../../mailer/server/api';
-import { generatePath } from '../../../../lib/utils/generatePath';
+import { placeholders } from '../../../utils/server/placeholders';
 
 export const sendMail = async function ({
 	from,

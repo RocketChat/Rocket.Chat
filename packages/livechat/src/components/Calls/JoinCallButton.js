@@ -1,10 +1,11 @@
 import { withTranslation } from 'react-i18next';
 
+import { getConnectionBaseUrl } from '../../helpers/baseUrl';
+import { createClassName } from '../../helpers/createClassName';
 import VideoIcon from '../../icons/video.svg';
 import constants from '../../lib/constants';
 import store from '../../store';
 import { Button } from '../Button';
-import { createClassName, getConnectionBaseUrl } from '../helpers';
 import { isCallOngoing } from './CallStatus';
 import styles from './styles.scss';
 

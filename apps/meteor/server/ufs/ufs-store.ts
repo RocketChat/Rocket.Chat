@@ -1,15 +1,13 @@
-/* eslint-disable complexity */
-
 import fs from 'fs';
-import type stream from 'stream';
 import type * as http from 'http';
+import type stream from 'stream';
 
-import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
-import type createServer from 'connect';
-import type { OptionalId } from 'mongodb';
 import type { IUpload } from '@rocket.chat/core-typings';
 import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
+import type createServer from 'connect';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import type { OptionalId } from 'mongodb';
 
 import { UploadFS } from '.';
 import { Filter } from './ufs-filter';

@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { Box, Option, Icon } from '@rocket.chat/fuselage';
+import type { Box, Option } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactNode, MouseEvent, ComponentProps, ComponentType } from 'react';
 
@@ -15,20 +16,19 @@ type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups' |
 	title: string;
 };
 
-type ActionRenderer = (props: ActionRendererProps) => ReactNode;
-
 type OptionRendererProps = ComponentProps<typeof Option>;
 
 export type OptionRenderer = (props: OptionRendererProps) => ReactNode;
 
 export type ToolboxActionConfig = {
 	'id': string;
-	'icon'?: ComponentProps<typeof Icon>['name'];
+	'icon'?: IconName;
 	'title': TranslationKey;
 	'anonymous'?: boolean;
+	'tooltip'?: string;
 	'data-tooltip'?: string;
 	'disabled'?: boolean;
-	'renderAction'?: ActionRenderer;
+	'renderAction'?: (props: ActionRendererProps) => ReactNode;
 	'full'?: true;
 	'renderOption'?: OptionRenderer;
 	'order'?: number;
@@ -46,8 +46,8 @@ export type ToolboxActionConfig = {
 
 export type ToolboxAction = ToolboxHook | ToolboxActionConfig;
 
-const { listen, add: addAction, remove: deleteAction, store: actions } = generator<ToolboxAction>();
+const { listen, add: addAction, store: actions } = generator<ToolboxAction>();
 
 export type Events = GeneratorEvents<ToolboxAction>;
 
-export { listen, addAction, deleteAction, actions };
+export { listen, addAction, actions };

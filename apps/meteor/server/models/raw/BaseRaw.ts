@@ -1,3 +1,7 @@
+import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
+import { getCollectionName } from '@rocket.chat/models';
+import { ObjectId } from 'mongodb';
 import type {
 	BulkWriteOptions,
 	ChangeStream,
@@ -22,10 +26,6 @@ import type {
 	DeleteResult,
 	DeleteOptions,
 } from 'mongodb';
-import { ObjectId } from 'mongodb';
-import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
-import { getCollectionName } from '@rocket.chat/models';
 
 import { setUpdatedAt } from './setUpdatedAt';
 

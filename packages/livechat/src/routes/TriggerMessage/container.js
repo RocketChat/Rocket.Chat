@@ -1,7 +1,8 @@
 import { Component } from 'preact';
 import { route } from 'preact-router';
 
-import { canRenderMessage, getAvatarUrl } from '../../components/helpers';
+import { getAvatarUrl } from '../../helpers/baseUrl';
+import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { parentCall } from '../../lib/parentCall';
 import { Consumer } from '../../store';
 import TriggerMessage from './component';

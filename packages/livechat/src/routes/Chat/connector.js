@@ -1,7 +1,8 @@
 import { withTranslation } from 'react-i18next';
 
 import { ChatContainer } from '.';
-import { canRenderMessage, getAvatarUrl } from '../../components/helpers';
+import { getAvatarUrl } from '../../helpers/baseUrl';
+import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { Consumer } from '../../store';
 
 const ChatConnector = ({ ref, ...props }) => (

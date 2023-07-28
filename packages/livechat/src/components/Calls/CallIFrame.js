@@ -1,5 +1,6 @@
+import { getConnectionBaseUrl } from '../../helpers/baseUrl';
+import { createClassName } from '../../helpers/createClassName';
 import store from '../../store';
-import { createClassName, getConnectionBaseUrl } from '../helpers';
 import { CallStatus } from './CallStatus';
 import styles from './styles.scss';
 
