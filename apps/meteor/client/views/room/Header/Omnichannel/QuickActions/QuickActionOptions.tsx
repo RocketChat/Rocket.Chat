@@ -2,19 +2,18 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Box, Dropdown, Option } from '@rocket.chat/fuselage';
 import { HeaderToolboxAction } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React, { memo, useRef } from 'react';
 
 import { useDropdownVisibility } from '../../../../../sidebar/header/hooks/useDropdownVisibility';
-import type { QuickActionsActionOptions } from '../../../lib/QuickActions';
+import type { QuickActionsActionOptions } from '../../../lib/quickActions';
 
-type ToolBoxActionOptionsProps = {
+type QuickActionOptionsProps = {
 	options: QuickActionsActionOptions;
 	action: (id: string) => void;
 	room: IOmnichannelRoom;
 };
 
-const ToolBoxActionOptions: FC<ToolBoxActionOptionsProps> = ({ options, room, action, ...props }) => {
+const QuickActionOptions = ({ options, room, action, ...props }: QuickActionOptionsProps) => {
 	const t = useTranslation();
 	const reference = useRef(null);
 	const target = useRef(null);
@@ -46,4 +45,4 @@ const ToolBoxActionOptions: FC<ToolBoxActionOptionsProps> = ({ options, room, ac
 	);
 };
 
-export default memo(ToolBoxActionOptions);
+export default memo(QuickActionOptions);

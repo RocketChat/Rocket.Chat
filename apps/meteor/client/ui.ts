@@ -1,6 +1,11 @@
+import { useOnHoldChatQuickAction } from '../ee/client/hooks/quickActions/useOnHoldChatQuickAction';
 import { useCallsRoomAction } from '../ee/client/hooks/roomActions/useCallsRoomAction';
 import { useCannedResponsesRoomAction } from '../ee/client/hooks/roomActions/useCannedResponsesRoomAction';
 import { useGameCenterRoomAction } from '../ee/client/hooks/roomActions/useGameCenterRoomAction';
+import { useChatForwardQuickAction } from './hooks/quickActions/useChatForwardQuickAction';
+import { useCloseChatQuickAction } from './hooks/quickActions/useCloseChatQuickAction';
+import { useMoveQueueQuickAction } from './hooks/quickActions/useMoveQueueQuickAction';
+import { useTranscriptQuickAction } from './hooks/quickActions/useTranscriptQuickAction';
 import { useAutotranslateRoomAction } from './hooks/roomActions/useAutotranslateRoomAction';
 import { useChannelSettingsRoomAction } from './hooks/roomActions/useChannelSettingsRoomAction';
 import { useCleanHistoryRoomAction } from './hooks/roomActions/useCleanHistoryRoomAction';
@@ -30,6 +35,7 @@ import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction
 import { useVoIPRoomInfoRoomAction } from './hooks/roomActions/useVoIPRoomInfoRoomAction';
 import { useWebRTCVideoRoomAction } from './hooks/roomActions/useWebRTCVideoRoomAction';
 import type { ToolboxActionConfig } from './views/room/lib/Toolbox';
+import type { QuickActionsActionConfig } from './views/room/lib/quickActions';
 
 export const roomActionHooks = [
 	useAutotranslateRoomAction,
@@ -64,3 +70,11 @@ export const roomActionHooks = [
 	useVoIPRoomInfoRoomAction,
 	useWebRTCVideoRoomAction,
 ] satisfies (() => ToolboxActionConfig | undefined)[];
+
+export const quickActionHooks = [
+	useMoveQueueQuickAction,
+	useChatForwardQuickAction,
+	useTranscriptQuickAction,
+	useCloseChatQuickAction,
+	useOnHoldChatQuickAction,
+] satisfies (() => QuickActionsActionConfig | undefined)[];
