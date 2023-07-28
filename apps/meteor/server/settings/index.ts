@@ -52,7 +52,6 @@ async function createSettings() {
 		createDiscussionsSettings(),
 		createEmailSettings(),
 		createE2ESettings(),
-		createFederationSettings(),
 		createFileUploadSettings(),
 		createGeneralSettings(),
 		createIRCSettings(),
@@ -78,8 +77,10 @@ async function createSettings() {
 		createUserDataSettings(),
 		createWebDavSettings(),
 		createWebRTCSettings(),
-		createMatrixFederationSettings(),
 	]);
+
+	await createFederationSettings();
+	await createMatrixFederationSettings();
 }
 
 await createSettings();
