@@ -1,8 +1,8 @@
 import { memo } from 'preact/compat';
 
+import { createClassName } from '../../../../helpers/createClassName';
 import renderEmojis from '../../../Messages/MessageText/emoji';
 import { renderMarkdown } from '../../../Messages/MessageText/markdown';
-import { createClassName } from '../../../helpers';
 import styles from './styles.scss';
 
 const Mrkdwn = ({ text /* , verbatim = false */ }) => (
