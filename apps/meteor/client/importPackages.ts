@@ -25,7 +25,6 @@ import '../app/lib/client';
 import '../app/message-mark-as-unread/client';
 import '../app/nextcloud/client';
 import '../app/otr/client';
-import '../app/push-notifications/client';
 import '../app/slackbridge/client';
 import '../app/slashcommands-archiveroom/client';
 import '../app/slashcommand-asciiarts/client';

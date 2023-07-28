@@ -14,9 +14,21 @@ import { useMembersListRoomAction } from './hooks/roomActions/useMembersListRoom
 import { useMentionsRoomAction } from './hooks/roomActions/useMentionsRoomAction';
 import { useOTRRoomAction } from './hooks/roomActions/useOTRRoomAction';
 import { useOmnichannelExternalFrameRoomAction } from './hooks/roomActions/useOmnichannelExternalFrameRoomAction';
+import { useOutlookCalenderRoomAction } from './hooks/roomActions/useOutlookCalenderRoomAction';
+import { usePinnedMessagesRoomAction } from './hooks/roomActions/usePinnedMessagesRoomAction';
+import { usePushNotificationsRoomAction } from './hooks/roomActions/usePushNotificationsRoomAction';
+import { useRocketSearchRoomAction } from './hooks/roomActions/useRocketSearchRoomAction';
+import { useRoomInfoRoomAction } from './hooks/roomActions/useRoomInfoRoomAction';
+import { useStarredMessagesRoomAction } from './hooks/roomActions/useStarredMessagesRoomAction';
 import { useStartCallRoomAction } from './hooks/roomActions/useStartCallRoomAction';
+import { useTeamChannelsRoomAction } from './hooks/roomActions/useTeamChannelsRoomAction';
+import { useTeamInfoRoomAction } from './hooks/roomActions/useTeamInfoRoomAction';
+import { useThreadRoomAction } from './hooks/roomActions/useThreadRoomAction';
+import { useUploadedFilesListRoomAction } from './hooks/roomActions/useUploadedFilesListRoomAction';
 import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroupRoomAction';
 import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction';
+import { useVoIPRoomInfoRoomAction } from './hooks/roomActions/useVoIPRoomInfoRoomAction';
+import { useWebRTCVideoRoomAction } from './hooks/roomActions/useWebRTCVideoRoomAction';
 import type { ToolboxActionConfig } from './views/room/lib/Toolbox';
 
 export const roomActionHooks = [
@@ -36,7 +48,19 @@ export const roomActionHooks = [
 	useMentionsRoomAction,
 	useOTRRoomAction,
 	useOmnichannelExternalFrameRoomAction,
+	useOutlookCalenderRoomAction,
+	usePinnedMessagesRoomAction,
+	usePushNotificationsRoomAction,
+	useRocketSearchRoomAction,
+	useRoomInfoRoomAction,
+	useStarredMessagesRoomAction,
 	useStartCallRoomAction,
+	useTeamChannelsRoomAction,
+	useTeamInfoRoomAction,
+	useThreadRoomAction,
+	useUploadedFilesListRoomAction,
 	useUserInfoGroupRoomAction,
 	useUserInfoRoomAction,
+	useVoIPRoomInfoRoomAction,
+	useWebRTCVideoRoomAction,
 ] satisfies (() => ToolboxActionConfig | undefined)[];
