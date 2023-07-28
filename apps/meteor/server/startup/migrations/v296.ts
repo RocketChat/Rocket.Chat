@@ -1,8 +1,8 @@
 import { Settings } from '@rocket.chat/models';
 
-import { addMigration } from '../../lib/migrations';
-import { SystemLogger } from '../../lib/logger/system';
 import { settings } from '../../../app/settings/server';
+import { SystemLogger } from '../../lib/logger/system';
+import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 296,

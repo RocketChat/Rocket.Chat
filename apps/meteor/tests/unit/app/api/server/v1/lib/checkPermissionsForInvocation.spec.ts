@@ -22,7 +22,6 @@ const mocks = {
 	},
 };
 
-// eslint-disable-next-line
 const { checkPermissionsForInvocation } = mock.noCallThru().load('../../../../../../../app/api/server/api.helpers', mocks);
 
 describe('checkPermissionsForInvocation', () => {

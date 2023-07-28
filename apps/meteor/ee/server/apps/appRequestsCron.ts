@@ -1,10 +1,10 @@
 import { cronJobs } from '@rocket.chat/cron';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { settings } from '../../../app/settings/server';
-import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
+import { settings } from '../../../app/settings/server';
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
+import { Apps } from './orchestrator';
 
 const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 	try {

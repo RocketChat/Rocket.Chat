@@ -1,4 +1,6 @@
-import { createClassName, memo } from '../../helpers';
+import { memo } from 'preact/compat';
+
+import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
 
 export const PasswordInput = memo(({ name, value, placeholder, disabled, small, error, onChange, onInput, className, style = {} }) => (

@@ -1,19 +1,19 @@
-import { Tracker } from 'meteor/tracker';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { v4 as uuidv4 } from 'uuid';
-import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
-import { Emitter } from '@rocket.chat/emitter';
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
+import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import type { MutableRefObject } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
-import { waitForElement } from '../../../../client/lib/utils/waitForElement';
-import { readMessage } from './readMessages';
-import { getUserPreference } from '../../../utils/client';
-import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { ChatMessage, ChatSubscription } from '../../../models/client';
-import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
-import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
+import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
+import { getConfig } from '../../../../client/lib/utils/getConfig';
+import { waitForElement } from '../../../../client/lib/utils/waitForElement';
+import { ChatMessage, ChatSubscription } from '../../../models/client';
+import { getUserPreference } from '../../../utils/client';
+import { readMessage } from './readMessages';
 
 export async function upsertMessage(
 	{

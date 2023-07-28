@@ -1,8 +1,9 @@
-/* eslint-disable import/first */
-import { expect } from 'chai';
-import sinon from 'sinon';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { expect } from 'chai';
 import proxyquire from 'proxyquire';
+import sinon from 'sinon';
+
+import { FederationMessageServiceReceiver } from '../../../../../../../../server/services/federation/application/room/message/receiver/MessageServiceReceiver';
 
 const { FederatedUser } = proxyquire.noCallThru().load('../../../../../../../../server/services/federation/domain/FederatedUser', {
 	mongodb: {
@@ -25,8 +26,6 @@ const { FederatedRoom } = proxyquire.noCallThru().load('../../../../../../../../
 		'@global': true,
 	},
 });
-
-import { FederationMessageServiceReceiver } from '../../../../../../../../server/services/federation/application/room/message/receiver/MessageServiceReceiver';
 
 describe('Federation - Application - FederationMessageServiceReceiver', () => {
 	let service: FederationMessageServiceReceiver;
