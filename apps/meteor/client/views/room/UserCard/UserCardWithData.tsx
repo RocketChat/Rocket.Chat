@@ -79,9 +79,9 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 	}, [menuOptions, t]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { content, icon, onClick }]: any): ReactElement => {
-			return <UserCard.Action title={content} key={key} label={content} aria-label={content} onClick={onClick} icon={icon} />;
-		};
+		const mapAction = ([key, { content, icon, onClick }]: any): ReactElement => (
+			<UserCard.Action key={key} label={content} aria-label={content} onClick={onClick} icon={icon} />
+		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
