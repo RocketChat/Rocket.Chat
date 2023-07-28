@@ -20,7 +20,7 @@ export type UserInfoAction = {
 	content: ReactNode;
 	icon?: ComponentProps<typeof Icon>['name'];
 	onClick: () => void;
-	type?: string;
+	type?: 'communication' | 'privileges' | 'management';
 	color?: string;
 };
 
