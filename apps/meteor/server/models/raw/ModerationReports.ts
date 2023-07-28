@@ -99,7 +99,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 					username: '$reports.message.u.username',
 					name: '$reports.message.u.name',
 					userId: '$reports.message.u._id',
-					isUserDeleted: '$user',
+					isUserDeleted: { $cond: ['$user', false, true] },
 					count: 1,
 					rooms: 1,
 				},
