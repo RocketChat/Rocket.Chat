@@ -1,14 +1,12 @@
-import { ModerationBridge } from '@rocket.chat/apps-engine/server/bridges/ModerationBridge';
-import { ModerationReports, Permissions } from '@rocket.chat/models';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { ModerationBridge } from '@rocket.chat/apps-engine/server/bridges/ModerationBridge';
-import { ModerationReports } from '@rocket.chat/models';
+import { ModerationReports, Permissions } from '@rocket.chat/models';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
-import { explorerPermissions, novicePermissions, trustRoles } from '../../../moderation/lib/permissions';
 import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
+import { explorerPermissions, novicePermissions, trustRoles } from '../../../moderation/lib/permissions';
 
 export class AppModerationBridge extends ModerationBridge {
 	constructor(private readonly orch: AppServerOrchestrator) {
