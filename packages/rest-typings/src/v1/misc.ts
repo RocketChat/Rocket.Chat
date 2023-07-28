@@ -210,6 +210,16 @@ export type MiscEndpoints = {
 		};
 	};
 
+	'/v1/pw.getAllPolicies': {
+		GET: () => {
+			enabled: boolean;
+			policy: {
+				name: string;
+				limit?: number;
+			}[];
+		};
+	};
+
 	'/v1/pw.getPolicyReset': {
 		GET: (params: PwGetPolicyReset) => {
 			enabled: boolean;

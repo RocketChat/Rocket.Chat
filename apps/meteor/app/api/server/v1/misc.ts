@@ -403,6 +403,18 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'pw.getAllPolicies',
+	{
+		authRequired: false,
+	},
+	{
+		get() {
+			return API.v1.success(passwordPolicy.getAllPolicies());
+		},
+	},
+);
+
+API.v1.addRoute(
 	'pw.getPolicyReset',
 	{
 		authRequired: false,

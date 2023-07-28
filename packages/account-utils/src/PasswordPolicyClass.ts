@@ -354,6 +354,53 @@ class PasswordPolicy {
 		return data;
 	}
 
+	// TODO: maybe refactor the getPasswordPolicy to a more flexible format
+	// Use the setters name as policy names in order to allow object literals and cleaner code?
+	// Change the setters name to match the Translation Keys?
+	getAllPolicies() {
+		type dataType = {
+			enabled: boolean;
+			policy: {
+				name: string;
+				limit?: number;
+			}[];
+		};
+
+		const data: dataType = {
+			enabled: false,
+			policy: [],
+		};
+
+		if (this.enabled) {
+			data.enabled = true;
+			if (this.minLength >= 1) {
+				data.policy.push({ name: 'get-password-policy-minLength', limit: this.minLength });
+			}
+			if (this.maxLength >= 1) {
+				data.policy.push({ name: 'get-password-policy-maxLength', limit: this.maxLength });
+			}
+			if (this.forbidRepeatingCharacters) {
+				data.policy.push({ name: 'get-password-policy-forbidRepeatingCharacters' });
+			}
+			if (this.forbidRepeatingCharactersCount) {
+				data.policy.push({ name: 'get-password-policy-forbidRepeatingCharactersCount', limit: this.forbidRepeatingCharactersCount });
+			}
+			if (this.mustContainAtLeastOneLowercase) {
+				data.policy.push({ name: 'get-password-policy-mustContainAtLeastOneLowercase' });
+			}
+			if (this.mustContainAtLeastOneUppercase) {
+				data.policy.push({ name: 'get-password-policy-mustContainAtLeastOneUppercase' });
+			}
+			if (this.mustContainAtLeastOneNumber) {
+				data.policy.push({ name: 'get-password-policy-mustContainAtLeastOneNumber' });
+			}
+			if (this.mustContainAtLeastOneSpecialCharacter) {
+				data.policy.push({ name: 'get-password-policy-mustContainAtLeastOneSpecialCharacter' });
+			}
+		}
+		return data;
+	}
+
 	generatePassword() {
 		if (this.enabled) {
 			for (let i = 0; i < 10; i++) {
