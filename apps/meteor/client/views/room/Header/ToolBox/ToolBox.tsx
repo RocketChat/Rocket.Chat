@@ -37,11 +37,10 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 	const visibleActions = isMobile ? [] : filteredActions.slice(0, 6);
 
 	const hiddenActions = (isMobile ? actions : filteredActions.slice(6))
-		.filter((item) => !item.disabled && item.id !== 'start-call')
-		.map(({ ...item }) => ({
+		.filter((item) => !item.disabled && !item.featured)
+		.map((item) => ({
 			key: item.id,
 			content: t(item.title),
-			icon: item.icon,
 			onClick: (): void => {
 				openTabBar(item.id);
 			},
