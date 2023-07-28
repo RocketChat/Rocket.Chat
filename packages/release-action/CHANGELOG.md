@@ -1,5 +1,11 @@
 # @rocket.chat/release-action
 
+## 1.1.0
+
+### Minor Changes
+
+- 63c91f24a9: Use `release-automation` branch to perform the release
+
 ## 1.0.1
 
 ### Patch Changes

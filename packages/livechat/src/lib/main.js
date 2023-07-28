@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 
 import { Livechat } from '../api';
-import { canRenderMessage } from '../components/helpers';
+import { canRenderMessage } from '../helpers/canRenderMessage';
 import store from '../store';
 import constants from './constants';
 

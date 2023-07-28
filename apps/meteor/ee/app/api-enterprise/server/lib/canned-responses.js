@@ -1,9 +1,9 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { CannedResponse } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import { getTagsInformation } from './tags';
 import { getDepartmentsWhichUserCanAccess } from '../../../livechat-enterprise/server/api/lib/departments';
+import { getTagsInformation } from './tags';
 
 export async function findAllCannedResponses({ userId }) {
 	// If the user is an admin or livechat manager, get his own responses and all responses from all departments

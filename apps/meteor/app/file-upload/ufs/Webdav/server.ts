@@ -1,14 +1,14 @@
 import stream from 'stream';
 
-import { check } from 'meteor/check';
-import { Random } from '@rocket.chat/random';
-import type { OptionalId } from 'mongodb';
 import type { IUpload } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
+import { check } from 'meteor/check';
+import type { OptionalId } from 'mongodb';
 
-import { UploadFS } from '../../../../server/ufs';
-import { WebdavClientAdapter } from '../../../webdav/server/lib/webdavClientAdapter';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { UploadFS } from '../../../../server/ufs';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
+import { WebdavClientAdapter } from '../../../webdav/server/lib/webdavClientAdapter';
 
 type WebdavOptions = StoreOptions & {
 	connection: {
@@ -137,7 +137,7 @@ class WebdavStore extends UploadFS.Store {
 					process.nextTick(() => {
 						writeStream.removeListener(event, listener);
 						writeStream.removeListener('newListener', newListenerCallback);
-						writeStream.on(event, function () {
+						writeStream.on(event, () => {
 							setTimeout(listener, 500);
 						});
 					});
