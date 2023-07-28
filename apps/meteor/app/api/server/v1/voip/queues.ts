@@ -1,6 +1,6 @@
-import { Match, check } from 'meteor/check';
-import type { IVoipConnectorResult, IQueueSummary, IQueueMembershipDetails, IQueueMembershipSubscription } from '@rocket.chat/core-typings';
 import { Voip } from '@rocket.chat/core-services';
+import type { IVoipConnectorResult, IQueueSummary, IQueueMembershipDetails, IQueueMembershipSubscription } from '@rocket.chat/core-typings';
+import { Match, check } from 'meteor/check';
 
 import { API } from '../../api';
 

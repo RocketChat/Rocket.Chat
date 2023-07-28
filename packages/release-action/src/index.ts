@@ -3,10 +3,10 @@ import path from 'path';
 
 import * as core from '@actions/core';
 
-import { publishRelease } from './publishRelease';
 import { bumpNextVersion } from './bumpNextVersion';
-import { startPatchRelease } from './startPatchRelease';
 import { setupGitUser } from './gitUtils';
+import { publishRelease } from './publishRelease';
+import { startPatchRelease } from './startPatchRelease';
 
 // const getOptionalInput = (name: string) => core.getInput(name) || undefined;
 
@@ -38,7 +38,7 @@ import { setupGitUser } from './gitUtils';
 	const mainPackagePath = path.join(cwd, 'apps', 'meteor');
 
 	if (action === 'publish-final') {
-		await publishRelease({ githubToken, exitCandidate: true, mainPackagePath });
+		await publishRelease({ githubToken, mergeFinal: true, mainPackagePath });
 	} else if (action === 'publish') {
 		await publishRelease({ githubToken, baseRef, mainPackagePath });
 	} else if (action === 'bump') {

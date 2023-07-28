@@ -1,20 +1,22 @@
 import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
-import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 import { isDeletedMessage, isEditedMessage, isMessageFromMatrixFederation, isQuoteAttachment } from '@rocket.chat/core-typings';
+import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 
 import { FederatedRoom, DirectMessageFederatedRoom } from '../../../domain/FederatedRoom';
 import { FederatedUser } from '../../../domain/FederatedUser';
 import type { IFederationBridge, IFederationPublicRoomsResult } from '../../../domain/IFederationBridge';
+import { MATRIX_POWER_LEVELS } from '../../../infrastructure/matrix/definitions/MatrixPowerLevels';
+import { MatrixRoomJoinRules } from '../../../infrastructure/matrix/definitions/MatrixRoomJoinRules';
 import type { RocketChatFileAdapter } from '../../../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from '../../../infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatNotificationAdapter } from '../../../infrastructure/rocket-chat/adapters/Notification';
+import type { RocketChatQueueAdapter } from '../../../infrastructure/rocket-chat/adapters/Queue';
 import type { RocketChatRoomAdapter } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../../infrastructure/rocket-chat/adapters/User';
-import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
-import { getExternalMessageSender } from '../message/sender/message-sender-helper';
-import { MATRIX_POWER_LEVELS } from '../../../infrastructure/matrix/definitions/MatrixPowerLevels';
 import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../infrastructure/rocket-chat/definitions/FederatedRoomInternalRoles';
+import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
+import type { FederationJoinExternalPublicRoomInputDto, FederationSearchPublicRoomsInputDto } from '../input/RoomInputDto';
 import type {
 	FederationAfterLeaveRoomDto,
 	FederationAfterRemoveUserFromRoomDto,
@@ -27,9 +29,7 @@ import type {
 	FederationSetupRoomDto,
 	IFederationInviteeDto,
 } from '../input/RoomSenderDto';
-import type { FederationJoinExternalPublicRoomInputDto, FederationSearchPublicRoomsInputDto } from '../input/RoomInputDto';
-import { MatrixRoomJoinRules } from '../../../infrastructure/matrix/definitions/MatrixRoomJoinRules';
-import type { RocketChatQueueAdapter } from '../../../infrastructure/rocket-chat/adapters/Queue';
+import { getExternalMessageSender } from '../message/sender/message-sender-helper';
 
 export class FederationRoomServiceSender extends AbstractFederationApplicationService {
 	constructor(

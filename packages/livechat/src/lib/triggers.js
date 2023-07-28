@@ -2,7 +2,8 @@ import mitt from 'mitt';
 import { route } from 'preact-router';
 
 import { Livechat } from '../api';
-import { upsert, asyncForEach } from '../components/helpers';
+import { asyncForEach } from '../helpers/asyncForEach';
+import { upsert } from '../helpers/upsert';
 import store from '../store';
 import { normalizeAgent } from './api';
 import { processUnread } from './main';
@@ -60,6 +61,18 @@ const getAgent = (triggerAction) => {
 const isInIframe = () => window.self !== window.top;
 
 class Triggers {
+	/** @property {Triggers} instance*/
+
+	/** @property {boolean} _started */
+
+	/** @property {Array} _requests */
+
+	/** @property {Array} _triggers */
+
+	/** @property {boolean} _enabled */
+
+	/** @property {import('mitt').Emitter} callbacks */
+
 	constructor() {
 		if (!Triggers.instance) {
 			this._started = false;

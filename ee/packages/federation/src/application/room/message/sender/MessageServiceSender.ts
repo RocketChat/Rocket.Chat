@@ -1,9 +1,9 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isMessageFromMatrixFederation } from '@rocket.chat/core-typings';
 
+import { Federation } from '../../../../Federation';
 import { FederatedUser } from '../../../../domain/FederatedUser';
 import type { IFederationBridge } from '../../../../domain/IFederationBridge';
-import { Federation } from '../../../../Federation';
 import type { RocketChatMessageAdapter } from '../../../../infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatRoomAdapter } from '../../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../../../infrastructure/rocket-chat/adapters/Settings';

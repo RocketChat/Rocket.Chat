@@ -1,7 +1,7 @@
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import type {
 	IExternalUserProfileInformation,
@@ -10,20 +10,20 @@ import type {
 	IFederationPublicRoomsResult,
 	IFederationSearchPublicRoomsParams,
 } from '../../domain/IFederationBridge';
+import type { RocketChatSettingsAdapter } from '../rocket-chat/adapters/Settings';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
-import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './converters/room/to-internal-parser-formatter';
 import { convertEmojisFromRCFormatToMatrixFormat } from './converters/room/MessageReceiver';
+import { formatExternalUserIdToInternalUsernameFormat } from './converters/room/RoomReceiver';
+import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './converters/room/to-internal-parser-formatter';
 import type { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
-import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definitions/events/RoomMessageSent';
 import { MatrixEventType } from './definitions/MatrixEventType';
+import { MATRIX_POWER_LEVELS } from './definitions/MatrixPowerLevels';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 import { RoomMembershipChangedEventType } from './definitions/events/RoomMembershipChanged';
+import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definitions/events/RoomMessageSent';
 import type { MatrixEventRoomNameChanged } from './definitions/events/RoomNameChanged';
 import type { MatrixEventRoomTopicChanged } from './definitions/events/RoomTopicChanged';
-import type { RocketChatSettingsAdapter } from '../rocket-chat/adapters/Settings';
-import { formatExternalUserIdToInternalUsernameFormat } from './converters/room/RoomReceiver';
-import { MATRIX_POWER_LEVELS } from './definitions/MatrixPowerLevels';
 
 let MatrixUserInstance: any;
 

@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import generator from 'generate-password';
+import { Meteor } from 'meteor/meteor';
 
 class PasswordPolicy {
 	constructor({
