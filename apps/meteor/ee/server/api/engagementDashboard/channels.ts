@@ -1,10 +1,10 @@
-import { check, Match } from 'meteor/check';
 import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
+import { check, Match } from 'meteor/check';
 
 import { API } from '../../../../app/api/server';
+import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 import { findAllChannelsWithNumberOfMessages } from '../../lib/engagementDashboard/channels';
 import { isDateISOString, mapDateForAPI } from '../../lib/engagementDashboard/date';
-import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Users } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { RateLimiter, validateEmailDomain } from '../lib';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
+import { RateLimiter, validateEmailDomain } from '../lib';
 import { checkEmailAvailability } from './checkEmailAvailability';
 
 let html = '';

@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { FederationHelper } from '@rocket.chat/federation';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions/addUserToRoom';

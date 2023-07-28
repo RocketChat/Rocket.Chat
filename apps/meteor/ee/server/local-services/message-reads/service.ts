@@ -1,9 +1,9 @@
-import { Messages, MessageReads, Subscriptions } from '@rocket.chat/models';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { Messages, MessageReads, Subscriptions } from '@rocket.chat/models';
 
-import type { IMessageReadsService } from '../../sdk/types/IMessageReadsService';
-import { ReadReceipt } from '../../lib/message-read-receipt/ReadReceipt';
 import { MAX_ROOM_SIZE_CHECK_INDIVIDUAL_READ_RECEIPTS } from '../../lib/constants';
+import { ReadReceipt } from '../../lib/message-read-receipt/ReadReceipt';
+import type { IMessageReadsService } from '../../sdk/types/IMessageReadsService';
 
 export class MessageReadsService extends ServiceClassInternal implements IMessageReadsService {
 	protected name = 'message-reads';

@@ -1,8 +1,8 @@
 import fs from 'fs';
 import { resolve } from 'path';
 
-import yaml from 'js-yaml';
 import { Settings } from '@rocket.chat/models';
+import yaml from 'js-yaml';
 
 import type { IFederationBridgeRegistrationFile } from '../../../domain/IFederationBridge';
 
