@@ -1,4 +1,3 @@
-import type { BulkWriteResult, Document, UpdateResult, FindCursor, OptionalId } from 'mongodb';
 import type {
 	ISession,
 	UserSessionAggregationResult,
@@ -8,6 +7,7 @@ import type {
 	DeviceManagementPopulatedSession,
 	DeviceManagementSession,
 } from '@rocket.chat/core-typings';
+import type { BulkWriteResult, Document, UpdateResult, FindCursor, OptionalId } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 

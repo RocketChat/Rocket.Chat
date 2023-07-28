@@ -1,12 +1,12 @@
-import { Meteor } from 'meteor/meteor';
 import { api } from '@rocket.chat/core-services';
-import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import MentionsServer from './Mentions';
-import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../../server/lib/i18n';
+import { settings } from '../../settings/server';
+import MentionsServer from './Mentions';
 
 export class MentionQueries {
 	async getUsers(usernames: string[]): Promise<(Pick<IUser, '_id' | 'username' | 'name'> & { type: 'user' })[]> {

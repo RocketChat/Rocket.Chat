@@ -8,8 +8,6 @@ import type { MessageActionConfig, MessageActionContext } from '../../app/ui-uti
 import type { MessageBoxAction } from '../../app/ui-utils/client/lib/messageBox';
 import { Utilities } from '../../ee/lib/misc/Utilities';
 import type { GenericMenuItemProps } from '../components/GenericMenu/GenericMenuItem';
-import { useRoom } from '../views/room/contexts/RoomContext';
-import type { ToolboxAction } from '../views/room/lib/Toolbox';
 import { useApplyButtonFilters, useApplyButtonAuthFilter } from './useApplyButtonFilters';
 import { useUiKitActionManager } from './useUiKitActionManager';
 
