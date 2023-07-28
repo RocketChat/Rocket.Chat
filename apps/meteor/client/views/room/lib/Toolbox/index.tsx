@@ -46,8 +46,8 @@ export type ToolboxActionConfig = {
 
 export type ToolboxAction = ToolboxHook | ToolboxActionConfig;
 
-const { listen, add: addAction, store: actions } = generator<ToolboxAction>();
+const { listen, store: actions } = generator<ToolboxAction>();
 
 export type Events = GeneratorEvents<ToolboxAction>;
 
-export { listen, addAction, actions };
+export { listen, actions };

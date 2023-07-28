@@ -1,1 +1,3 @@
-export { default } from './QuickActions';
+import { lazy } from 'react';
+
+export default lazy(() => import('./QuickActions'));
