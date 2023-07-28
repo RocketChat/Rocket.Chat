@@ -58,6 +58,7 @@ export type IConverterOptions = {
 	skipNewUsers?: boolean;
 	bindSkippedUsers?: boolean;
 	skipUserCallbacks?: boolean;
+	skipDefaultChannels?: boolean;
 };
 
 const guessNameFromUsername = (username: string): string =>
@@ -305,8 +306,8 @@ export class ImportDataConverter {
 		return `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 	}
 
-	async insertUser(userData: IImportUser): Promise<IUser> {
-		const userId = Accounts.insertUserDoc(
+	async insertUser(userData: IImportUser): Promise<IUser['_id']> {
+		return Accounts.insertUserDoc(
 			{
 				joinDefaultChannels: false,
 				skipEmailValidation: true,
@@ -346,14 +347,6 @@ export class ImportDataConverter {
 				...(userData.roles?.length ? { globalRoles: userData.roles } : {}),
 			},
 		);
-
-		const user = await Users.findOneById(userId, {});
-		if (!user) {
-			throw new Error(`User not found: ${userId}`);
-		}
-
-		await addUserToDefaultChannels(user, true);
-		return user;
 	}
 
 	protected async getUsersToImport(): Promise<Array<IImportUserRecord>> {
@@ -417,7 +410,7 @@ export class ImportDataConverter {
 						throw new Error('importer-user-missing-email-and-username');
 					}
 
-					let existingUser = await this.findExistingUser(data);
+					const existingUser = await this.findExistingUser(data);
 					if (existingUser && this._options.skipExistingUsers) {
 						if (this._options.bindSkippedUsers) {
 							const newImportIds = data.importIds.filter((importId) => !(existingUser as IUser).importIds?.includes(importId));
@@ -453,8 +446,17 @@ export class ImportDataConverter {
 							data.name = guessNameFromUsername(data.username);
 						}
 
-						existingUser = await this.insertUser(data);
-						insertedIds.add(existingUser._id);
+						const userId = await this.insertUser(data);
+						insertedIds.add(userId);
+
+						if (!this._options.skipDefaultChannels) {
+							const insertedUser = await Users.findOneById(userId, {});
+							if (!insertedUser) {
+								throw new Error(`User not found: ${userId}`);
+							}
+
+							await addUserToDefaultChannels(insertedUser, true);
+						}
 					}
 
 					if (afterImportFn) {
