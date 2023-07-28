@@ -17,6 +17,7 @@ import type {
 import { ImportData, Rooms, Users, Subscriptions } from '@rocket.chat/models';
 import { hash as bcryptHash } from 'bcrypt';
 import { SHA256 } from '@rocket.chat/sha256';
+import { Random } from '@rocket.chat/random';
 
 import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
 import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
@@ -59,6 +60,9 @@ export type IConverterOptions = {
 	bindSkippedUsers?: boolean;
 	skipUserCallbacks?: boolean;
 	skipDefaultChannels?: boolean;
+
+	quickUserInsertion?: boolean;
+	enableEmail2fa?: boolean;
 };
 
 const guessNameFromUsername = (username: string): string =>
@@ -306,7 +310,63 @@ export class ImportDataConverter {
 		return `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 	}
 
+	private async buildNewUserObject(userData: IImportUser): Promise<Partial<IUser>> {
+		return {
+			type: userData.type || 'user',
+			...(userData.username && { username: userData.username }),
+			...(userData.emails.length && {
+				emails: userData.emails.map((email) => ({ address: email, verified: !!this._options.flagEmailsAsVerified })),
+			}),
+			...(userData.statusText && { statusText: userData.statusText }),
+			...(userData.name && { name: userData.name }),
+			...(userData.bio && { bio: userData.bio }),
+			...(userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl }),
+			...(userData.utcOffset !== undefined && { utcOffset: userData.utcOffset }),
+			...{
+				services: {
+					// Add a password service if there's a password string, or if there's no service at all
+					...((!!userData.password || !userData.services || !Object.keys(userData.services).length) && {
+						password: { bcrypt: await this.hashPassword(userData.password || this.generateTempPassword(userData)) },
+					}),
+					...(userData.services || {}),
+				},
+			},
+			...(userData.services?.ldap && { ldap: true }),
+			...(userData.importIds?.length && { importIds: userData.importIds }),
+			...(!!userData.customFields && { customFields: userData.customFields }),
+			...(userData.deleted !== undefined && { active: !userData.deleted }),
+		};
+	}
+
+	private async buildUserBatch(usersData: IImportUser[]): Promise<IUser[]> {
+		return Promise.all(
+			usersData.map(async (userData) => {
+				const user = await this.buildNewUserObject(userData);
+				return {
+					createdAt: new Date(),
+					_id: Random.id(),
+
+					status: 'offline',
+					...user,
+					roles: userData.roles?.length ? userData.roles : ['user'],
+					active: !userData.deleted,
+					services: {
+						...userData.services,
+						...(this._options.enableEmail2fa
+							? {
+									email2fa: true,
+									changedAt: new Date(),
+							  }
+							: {}),
+					},
+				} as IUser;
+			}),
+		);
+	}
+
 	async insertUser(userData: IImportUser): Promise<IUser['_id']> {
+		const user = await this.buildNewUserObject(userData);
+
 		return Accounts.insertUserDoc(
 			{
 				joinDefaultChannels: false,
@@ -320,30 +380,7 @@ export class ImportDataConverter {
 				skipAppsEngineEvent: !!process.env.IMPORTER_SKIP_APPS_EVENT,
 			},
 			{
-				type: userData.type || 'user',
-				...(userData.username && { username: userData.username }),
-				...(userData.emails.length && {
-					emails: userData.emails.map((email) => ({ address: email, verified: !!this._options.flagEmailsAsVerified })),
-				}),
-
-				...(userData.statusText && { statusText: userData.statusText }),
-				...(userData.name && { name: userData.name }),
-				...(userData.bio && { bio: userData.bio }),
-				...(userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl }),
-				...(userData.utcOffset !== undefined && { utcOffset: userData.utcOffset }),
-				...{
-					services: {
-						// Add a password service if there's a password string, or if there's no service at all
-						...((!!userData.password || !userData.services || !Object.keys(userData.services).length) && {
-							password: { bcrypt: await this.hashPassword(userData.password || this.generateTempPassword(userData)) },
-						}),
-						...(userData.services || {}),
-					},
-				},
-				...(userData.services?.ldap && { ldap: true }),
-				...(userData.importIds?.length && { importIds: userData.importIds }),
-				...(!!userData.customFields && { customFields: userData.customFields }),
-				...(userData.deleted !== undefined && { active: !userData.deleted }),
+				...user,
 				...(userData.roles?.length ? { globalRoles: userData.roles } : {}),
 			},
 		);
@@ -380,7 +417,29 @@ export class ImportDataConverter {
 		}
 	}
 
-	public async convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
+	private async insertUserBatch(users: IUser[], insertedIds: Set<string>, { afterBatchFn }: IConversionCallbacks): Promise<void> {
+		let newIds: string[] | null = null;
+
+		try {
+			newIds = Object.values((await Users.insertMany(users, { ordered: false })).insertedIds);
+			if (afterBatchFn) {
+				await afterBatchFn(newIds.length, 0);
+			}
+		} catch (e: any) {
+			newIds = (e.result?.result?.insertedIds || []) as string[];
+			const errorCount = users.length - (e.result?.result?.nInserted || 0);
+
+			if (afterBatchFn) {
+				await afterBatchFn(Math.min(newIds.length, users.length - errorCount), errorCount);
+			}
+		}
+
+		if (newIds) {
+			newIds.forEach((id) => insertedIds.add(id));
+		}
+	}
+
+	public async convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn }: IConversionCallbacks): Promise<void> {
 		const users = (await this.getUsersToImport()) as IImportUserRecord[];
 
 		await callbacks.run('beforeUserImport', { usersCount: users.length });
@@ -390,92 +449,114 @@ export class ImportDataConverter {
 		let skippedCount = 0;
 		let failedCount = 0;
 
-		try {
-			for await (const { data, _id } of users) {
-				if (this.aborted) {
-					return;
+		const batchToInsert = new Set<IImportUser>();
+
+		for await (const { data, _id } of users) {
+			if (this.aborted) {
+				break;
+			}
+
+			try {
+				if (beforeImportFn && !(await beforeImportFn(data, 'user'))) {
+					await this.skipRecord(_id);
+					skippedCount++;
+					continue;
 				}
 
-				try {
-					if (beforeImportFn && !(await beforeImportFn(data, 'user'))) {
-						await this.skipRecord(_id);
-						skippedCount++;
-						continue;
+				const emails = data.emails.filter(Boolean).map((email) => ({ address: email }));
+				data.importIds = data.importIds.filter((item) => item);
+
+				if (!data.emails.length && !data.username) {
+					throw new Error('importer-user-missing-email-and-username');
+				}
+
+				if (this.options.quickUserInsertion) {
+					batchToInsert.add(data);
+
+					if (batchToInsert.size >= 50) {
+						const usersToInsert = await this.buildUserBatch([...batchToInsert]);
+						batchToInsert.clear();
+
+						await this.insertUserBatch(usersToInsert, insertedIds, { afterBatchFn });
 					}
 
-					const emails = data.emails.filter(Boolean).map((email) => ({ address: email }));
-					data.importIds = data.importIds.filter((item) => item);
+					continue;
+				}
 
-					if (!data.emails.length && !data.username) {
-						throw new Error('importer-user-missing-email-and-username');
-					}
-
-					const existingUser = await this.findExistingUser(data);
-					if (existingUser && this._options.skipExistingUsers) {
-						if (this._options.bindSkippedUsers) {
-							const newImportIds = data.importIds.filter((importId) => !(existingUser as IUser).importIds?.includes(importId));
-							if (newImportIds.length) {
-								await Users.addImportIds(existingUser._id, newImportIds);
-							}
-						}
-
-						await this.skipRecord(_id);
-						skippedCount++;
-						continue;
-					}
-					if (!existingUser && this._options.skipNewUsers) {
-						await this.skipRecord(_id);
-						skippedCount++;
-						continue;
-					}
-
-					if (!data.username && !existingUser?.username) {
-						data.username = await generateUsernameSuggestion({
-							name: data.name,
-							emails,
-						});
-					}
-
-					const isNewUser = !existingUser;
-
-					if (existingUser) {
-						await this.updateUser(existingUser, data);
-						updatedIds.add(existingUser._id);
-					} else {
-						if (!data.name && data.username) {
-							data.name = guessNameFromUsername(data.username);
-						}
-
-						const userId = await this.insertUser(data);
-						insertedIds.add(userId);
-
-						if (!this._options.skipDefaultChannels) {
-							const insertedUser = await Users.findOneById(userId, {});
-							if (!insertedUser) {
-								throw new Error(`User not found: ${userId}`);
-							}
-
-							await addUserToDefaultChannels(insertedUser, true);
+				const existingUser = await this.findExistingUser(data);
+				if (existingUser && this._options.skipExistingUsers) {
+					if (this._options.bindSkippedUsers) {
+						const newImportIds = data.importIds.filter((importId) => !(existingUser as IUser).importIds?.includes(importId));
+						if (newImportIds.length) {
+							await Users.addImportIds(existingUser._id, newImportIds);
 						}
 					}
 
-					if (afterImportFn) {
-						await afterImportFn(data, 'user', isNewUser);
+					await this.skipRecord(_id);
+					skippedCount++;
+					continue;
+				}
+				if (!existingUser && this._options.skipNewUsers) {
+					await this.skipRecord(_id);
+					skippedCount++;
+					continue;
+				}
+
+				if (!data.username && !existingUser?.username) {
+					data.username = await generateUsernameSuggestion({
+						name: data.name,
+						emails,
+					});
+				}
+
+				const isNewUser = !existingUser;
+
+				if (existingUser) {
+					await this.updateUser(existingUser, data);
+					updatedIds.add(existingUser._id);
+				} else {
+					if (!data.name && data.username) {
+						data.name = guessNameFromUsername(data.username);
 					}
-				} catch (e) {
-					this._logger.error(e);
-					await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
-					failedCount++;
+
+					const userId = await this.insertUser(data);
+					insertedIds.add(userId);
+
+					if (!this._options.skipDefaultChannels) {
+						const insertedUser = await Users.findOneById(userId, {});
+						if (!insertedUser) {
+							throw new Error(`User not found: ${userId}`);
+						}
+
+						await addUserToDefaultChannels(insertedUser, true);
+					}
+				}
+
+				if (afterImportFn) {
+					await afterImportFn(data, 'user', isNewUser);
+				}
+			} catch (e) {
+				this._logger.error(e);
+				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
+				failedCount++;
+
+				if (onErrorFn) {
+					await onErrorFn();
 				}
 			}
-		} finally {
-			await callbacks.run('afterUserImport', {
-				inserted: [...insertedIds],
-				updated: [...updatedIds],
-				skipped: skippedCount,
-				failed: failedCount,
-			});
 		}
+
+		if (batchToInsert.size > 0) {
+			const usersToInsert = await this.buildUserBatch([...batchToInsert]);
+			await this.insertUserBatch(usersToInsert, insertedIds, { afterBatchFn });
+		}
+
+		await callbacks.run('afterUserImport', {
+			inserted: [...insertedIds],
+			updated: [...updatedIds],
+			skipped: skippedCount,
+			failed: failedCount,
+		});
 	}
 
 	protected async saveError(importId: string, error: Error): Promise<void> {
@@ -652,7 +733,7 @@ export class ImportDataConverter {
 		return ImportData.getAllMessages().toArray();
 	}
 
-	async convertMessages({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
+	async convertMessages({ beforeImportFn, afterImportFn, onErrorFn }: IConversionCallbacks = {}): Promise<void> {
 		const rids: Array<string> = [];
 		const messages = await this.getMessagesToImport();
 
@@ -735,6 +816,9 @@ export class ImportDataConverter {
 				}
 			} catch (e) {
 				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
+				if (onErrorFn) {
+					await onErrorFn();
+				}
 			}
 		}
 
@@ -1027,7 +1111,7 @@ export class ImportDataConverter {
 		return ImportData.getAllChannels().toArray();
 	}
 
-	async convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
+	async convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn, onErrorFn }: IConversionCallbacks = {}): Promise<void> {
 		const channels = await this.getChannelsToImport();
 		for await (const { data, _id } of channels) {
 			if (this.aborted) {
@@ -1068,6 +1152,9 @@ export class ImportDataConverter {
 				}
 			} catch (e) {
 				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
+				if (onErrorFn) {
+					await onErrorFn();
+				}
 			}
 		}
 	}

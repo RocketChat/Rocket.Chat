@@ -42,6 +42,7 @@ export class Base {
 		this.oldSettings = {};
 
 		this.progress.step = this.importRecord.status;
+		this._lastProgressReportTotal = 0;
 		this.reloadCount();
 	}
 
@@ -141,6 +142,24 @@ export class Base {
 			}
 		};
 
+		const afterBatchFn = async (successCount, errorCount) => {
+			if (successCount) {
+				await this.addCountCompleted(successCount);
+			}
+			if (errorCount) {
+				await this.addCountError(errorCount);
+			}
+
+			if (this.importRecord.valid === false) {
+				this.converter.aborted = true;
+				throw new Error('The import operation is no longer valid.');
+			}
+		};
+
+		const onErrorFn = async () => {
+			await this.addCountCompleted(1);
+		};
+
 		process.nextTick(async () => {
 			await this.backupSettingValues();
 
@@ -148,13 +167,13 @@ export class Base {
 				await this.applySettingValues({});
 
 				await this.updateProgress(ProgressStep.IMPORTING_USERS);
-				await this.converter.convertUsers({ beforeImportFn, afterImportFn });
+				await this.converter.convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn });
 
 				await this.updateProgress(ProgressStep.IMPORTING_CHANNELS);
-				await this.converter.convertChannels(startedByUserId, { beforeImportFn, afterImportFn });
+				await this.converter.convertChannels(startedByUserId, { beforeImportFn, afterImportFn, onErrorFn });
 
 				await this.updateProgress(ProgressStep.IMPORTING_MESSAGES);
-				await this.converter.convertMessages({ afterImportFn });
+				await this.converter.convertMessages({ afterImportFn, onErrorFn });
 
 				await this.updateProgress(ProgressStep.FINISHING);
 
@@ -233,10 +252,12 @@ export class Base {
 		if (!this.importRecord.count) {
 			this.progress.count.total = 0;
 			this.progress.count.completed = 0;
+			this.progress.count.error = 0;
 		}
 
 		this.progress.count.total = this.importRecord.count?.total || 0;
 		this.progress.count.completed = this.importRecord.count?.completed || 0;
+		this.progress.count.error = this.importRecord.count?.error || 0;
 	}
 
 	/**
@@ -261,12 +282,24 @@ export class Base {
 	async addCountCompleted(count) {
 		this.progress.count.completed += count;
 
-		const range = [ProgressStep.IMPORTING_USERS, ProgressStep.IMPORTING_CHANNELS].includes(this.progress.step) ? 50 : 500;
+		return this.maybeUpdateRecord();
+	}
 
+	async addCountError(count) {
+		this.progress.count.error += count;
+
+		return this.maybeUpdateRecord();
+	}
+
+	async maybeUpdateRecord() {
 		// Only update the database every 500 messages (or 50 for users/channels)
 		// Or the completed is greater than or equal to the total amount
-		if (this.progress.count.completed % range === 0 || this.progress.count.completed >= this.progress.count.total) {
-			await this.updateRecord({ 'count.completed': this.progress.count.completed });
+		const count = this.progress.count.completed + this.progress.count.error;
+		const range = [ProgressStep.IMPORTING_USERS, ProgressStep.IMPORTING_CHANNELS].includes(this.progress.step) ? 50 : 500;
+
+		if (count % range === 0 || count >= this.progress.count.total || count - this._lastProgressReportTotal > range) {
+			this._lastProgressReportTotal = this.progress.count.completed + this.progress.count.error;
+			await this.updateRecord({ 'count.completed': this.progress.count.completed, 'count.error': this.progress.count.error });
 			this.reportProgress();
 		} else if (!this._reportProgressHandler) {
 			this._reportProgressHandler = setTimeout(() => {
@@ -274,7 +307,7 @@ export class Base {
 			}, 250);
 		}
 
-		this.logger.log(`${this.progress.count.completed} messages imported`);
+		this.logger.log(`${this.progress.count.completed} records imported, ${this.progress.count.error} failed`);
 
 		return this.progress;
 	}

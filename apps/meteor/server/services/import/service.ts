@@ -6,6 +6,9 @@ import { ObjectId } from 'mongodb';
 
 import { Importers } from '../../../app/importer/lib/Importers';
 import { Selection } from '../../../app/importer/server/classes/ImporterSelection';
+import { getNewUserRoles } from '../user/lib/getNewUserRoles';
+import { validateRoleList } from '../../lib/roles/validateRoleList';
+import { settings } from '../../../app/settings/server';
 
 export class ImportService extends ServiceClassInternal implements IImportService {
 	protected name = 'import';
@@ -114,16 +117,31 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 
 		this.assertsValidStateForNewData(operation);
 
+		const defaultRoles = getNewUserRoles();
+		const userRoles = new Set<string>(defaultRoles);
 		for await (const user of users) {
 			if (!user.emails?.some((value) => value) || !user.importIds?.some((value) => value)) {
 				throw new Error('Users are missing required data.');
 			}
+
+			if (user.roles?.length) {
+				for (const roleId of user.roles) {
+					userRoles.add(roleId);
+				}
+			}
+		}
+
+		if (userRoles.size > 0 && !(await validateRoleList([...userRoles]))) {
+			throw new Error('One or more of the users have been assigned invalid roles.');
 		}
 
 		await ImportData.col.insertMany(
 			users.map((data) => ({
 				_id: new ObjectId().toHexString(),
-				data,
+				data: {
+					...data,
+					roles: data.roles ? [...new Set(...data.roles, ...defaultRoles)] : defaultRoles,
+				},
 				dataType: 'user',
 			})),
 		);
@@ -152,6 +170,8 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 		const instance = new importer.importer(importer, operation, {
 			skipUserCallbacks: true,
 			skipDefaultChannels: true,
+			enableEmail2fa: settings.get<boolean>('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In'),
+			quickUserInsertion: true,
 			// Do not update the data of existing users, but add the importId to them if it's missing
 			skipExistingUsers: true,
 			bindSkippedUsers: true,

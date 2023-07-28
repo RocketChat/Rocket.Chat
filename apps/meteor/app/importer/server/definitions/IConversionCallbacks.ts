@@ -11,4 +11,6 @@ export type ImporterAfterImportCallback = {
 export interface IConversionCallbacks {
 	beforeImportFn?: ImporterBeforeImportCallback;
 	afterImportFn?: ImporterAfterImportCallback;
+	onErrorFn?: () => Promise<void>;
+	afterBatchFn?: (successCount: number, errorCount: number) => Promise<void>;
 }
