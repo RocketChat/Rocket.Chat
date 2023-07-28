@@ -4,6 +4,12 @@ ARG SERVICE
 
 WORKDIR /app
 
+COPY ./packages/agenda/package.json packages/agenda/package.json
+COPY ./packages/agenda/dist packages/agenda/dist
+
+COPY ./packages/rest-typings/package.json packages/rest-typings/package.json
+COPY ./packages/rest-typings/dist packages/rest-typings/dist
+
 COPY ./packages/core-services/package.json packages/core-services/package.json
 COPY ./packages/core-services/dist packages/core-services/dist
 
