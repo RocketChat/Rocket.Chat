@@ -6,7 +6,6 @@ export type RoomToolboxContextValue = {
 	actions: ToolboxActionConfig[];
 	tab?: ToolboxActionConfig;
 	context?: string;
-	tabBar?: any;
 	open: (actionId: string, context?: string) => void;
 	openRoomInfo: (username?: string) => void;
 	close: () => void;
