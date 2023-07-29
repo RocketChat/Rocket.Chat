@@ -439,7 +439,7 @@ export class ImportDataConverter {
 		return newIds;
 	}
 
-	public async convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn }: IConversionCallbacks): Promise<void> {
+	public async convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn }: IConversionCallbacks = {}): Promise<void> {
 		const users = (await this.getUsersToImport()) as IImportUserRecord[];
 
 		await callbacks.run('beforeUserImport', { userCount: users.length });
