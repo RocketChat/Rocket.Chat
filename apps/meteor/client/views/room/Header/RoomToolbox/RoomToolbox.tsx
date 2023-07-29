@@ -8,7 +8,7 @@ import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useRef } from 'react';
 
 // used to open the menu option by keyboard
-import { useToolboxContext, useTab, useTabBarOpen } from '../../contexts/ToolboxContext';
+import { useRoomToolbox, useTab, useTabBarOpen } from '../../contexts/RoomToolboxContext';
 import type { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
 
 const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any) => (
@@ -26,7 +26,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const { isMobile } = useLayout();
 	const hiddenActionRenderers = useRef<{ [key: string]: OptionRenderer }>({});
 
-	const { actions: mapActions } = useToolboxContext();
+	const { actions: mapActions } = useRoomToolbox();
 
 	const actions = (Array.from(mapActions.values()) as ToolboxActionConfig[]).sort((a, b) => (a.order || 0) - (b.order || 0));
 	const featuredActions = actions.filter((action) => action.featured);

@@ -2,7 +2,7 @@ import { useUserId } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { useRoom } from './contexts/RoomContext';
-import { useTab, useTabBarClose, useTabContext } from './contexts/ToolboxContext';
+import { useTab, useTabBarClose, useTabContext } from './contexts/RoomToolboxContext';
 import RoomMembers from './contextualBar/RoomMembers';
 import UserInfo from './contextualBar/UserInfo';
 

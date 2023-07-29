@@ -15,7 +15,7 @@ import {
 	ContextualbarFooter,
 } from '../../../../../../client/components/Contextualbar';
 import ScrollableContentWrapper from '../../../../../../client/components/ScrollableContentWrapper';
-import { useTabContext } from '../../../../../../client/views/room/contexts/ToolboxContext';
+import { useTabContext } from '../../../../../../client/views/room/contexts/RoomToolboxContext';
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
 

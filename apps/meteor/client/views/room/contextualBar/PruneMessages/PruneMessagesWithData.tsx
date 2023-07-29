@@ -8,7 +8,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import GenericModal from '../../../../components/GenericModal';
-import type { ToolboxContextValue } from '../../contexts/ToolboxContext';
+import type { RoomToolboxContextValue } from '../../contexts/RoomToolboxContext';
 import PruneMessages from './PruneMessages';
 
 const getTimeZoneOffset = (): string => {
@@ -36,7 +36,7 @@ export const initialValues = {
 
 const DEFAULT_PRUNE_LIMIT = 2000;
 
-const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: ToolboxContextValue['tabBar'] }): ReactElement => {
+const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: RoomToolboxContextValue['tabBar'] }): ReactElement => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const setModal = useSetModal();

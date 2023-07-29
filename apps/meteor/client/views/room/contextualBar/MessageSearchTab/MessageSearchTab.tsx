@@ -9,7 +9,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarIcon,
 } from '../../../../components/Contextualbar';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useTabBarClose } from '../../contexts/RoomToolboxContext';
 import MessageSearch from './components/MessageSearch';
 import MessageSearchForm from './components/MessageSearchForm';
 import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQuery';

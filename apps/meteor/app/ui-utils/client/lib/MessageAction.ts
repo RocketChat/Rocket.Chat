@@ -8,7 +8,7 @@ import type { ContextType } from 'react';
 
 import type { AutoTranslateOptions } from '../../../../client/views/room/MessageList/hooks/useAutoTranslate';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
-import type { ToolboxContextValue } from '../../../../client/views/room/contexts/ToolboxContext';
+import type { RoomToolboxContextValue } from '../../../../client/views/room/contexts/RoomToolboxContext';
 
 type MessageActionGroup = 'message' | 'menu';
 
@@ -56,7 +56,7 @@ export type MessageActionConfig = {
 			autoTranslateOptions,
 		}: {
 			message: IMessage & Partial<ITranslatedMessage>;
-			tabbar: ToolboxContextValue;
+			tabbar: RoomToolboxContextValue;
 			room?: IRoom;
 			chat: ContextType<typeof ChatContext>;
 			autoTranslateOptions?: AutoTranslateOptions;

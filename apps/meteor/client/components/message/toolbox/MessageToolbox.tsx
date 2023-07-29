@@ -15,7 +15,7 @@ import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useChat } from '../../../views/room/contexts/ChatContext';
-import { useToolboxContext } from '../../../views/room/contexts/ToolboxContext';
+import { useRoomToolbox } from '../../../views/room/contexts/RoomToolboxContext';
 import MessageActionMenu from './MessageActionMenu';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
@@ -72,7 +72,7 @@ const MessageToolbox = ({ message, messageContext, room, subscription }: Message
 		return { message: toolboxItems, menu: menuItems };
 	});
 
-	const toolbox = useToolboxContext();
+	const toolbox = useRoomToolbox();
 
 	const selecting = useIsSelecting();
 

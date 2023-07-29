@@ -2,7 +2,7 @@ import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-con
 import React, { useMemo } from 'react';
 
 import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../../components/Contextualbar';
-import { useTabBarClose } from '../../../../room/contexts/ToolboxContext';
+import { useTabBarClose } from '../../../../room/contexts/RoomToolboxContext';
 import ChatInfo from './ChatInfo';
 import { RoomEditWithData } from './RoomEdit';
 

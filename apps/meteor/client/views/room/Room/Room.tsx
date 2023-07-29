@@ -8,7 +8,7 @@ import Header from '../Header';
 import MessageHighlightProvider from '../MessageList/providers/MessageHighlightProvider';
 import RoomBody from '../components/body/RoomBody';
 import { useRoom } from '../contexts/RoomContext';
-import { useTab, useToolboxContext } from '../contexts/ToolboxContext';
+import { useTab, useRoomToolbox } from '../contexts/RoomToolboxContext';
 import AppsContextualBar from '../contextualBar/Apps';
 import { useAppsContextualBar } from '../hooks/useAppsContextualBar';
 import RoomLayout from '../layout/RoomLayout';
@@ -20,7 +20,7 @@ const Room = (): ReactElement => {
 
 	const room = useRoom();
 
-	const toolbox = useToolboxContext();
+	const toolbox = useRoomToolbox();
 
 	const tab = useTab();
 	const appsContextualBarContext = useAppsContextualBar();

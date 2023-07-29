@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useTabContext } from '../../contexts/ToolboxContext';
+import { useTabContext } from '../../contexts/RoomToolboxContext';
 import Thread from './Thread';
 import ThreadList from './ThreadList';
 

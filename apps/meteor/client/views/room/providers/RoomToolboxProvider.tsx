@@ -4,8 +4,8 @@ import type { ReactNode } from 'react';
 import React, { useContext, useLayoutEffect, useMemo, useState } from 'react';
 
 import { useRoom } from '../contexts/RoomContext';
-import type { ToolboxContextValue } from '../contexts/ToolboxContext';
-import { ToolboxContext } from '../contexts/ToolboxContext';
+import type { RoomToolboxContextValue } from '../contexts/RoomToolboxContext';
+import { RoomToolboxContext } from '../contexts/RoomToolboxContext';
 import type { ToolboxActionConfig } from '../lib/Toolbox/index';
 import VirtualAction from './VirtualAction';
 import { useAppsRoomActions } from './hooks/useAppsRoomActions';
@@ -90,7 +90,7 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 		}
 	});
 
-	const { listen, actions } = useContext(ToolboxContext);
+	const { listen, actions } = useContext(RoomToolboxContext);
 	const [legacyCoreRoomActions, updateLegacyCoreRoomActions] = useSafely(useState(() => Array.from(actions.entries())));
 
 	useLayoutEffect(
@@ -104,7 +104,7 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 	const context = useRouteParameter('context');
 
 	const contextValue = useMemo(
-		(): ToolboxContextValue => ({
+		(): RoomToolboxContextValue => ({
 			listen,
 			actions: new Map(list),
 			activeTabBar,
@@ -129,12 +129,12 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 	].filter(([, action]) => uid || (allowAnonymousRead && 'anonymous' in action && action.anonymous));
 
 	return (
-		<ToolboxContext.Provider value={contextValue}>
+		<RoomToolboxContext.Provider value={contextValue}>
 			{roomActions.map(([id, roomAction]) => (
 				<VirtualAction key={id + room._id} action={roomAction} handleChange={handleChange} />
 			))}
 			{children}
-		</ToolboxContext.Provider>
+		</RoomToolboxContext.Provider>
 	);
 };
 
