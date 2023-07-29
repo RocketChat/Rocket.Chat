@@ -6,7 +6,7 @@ import { SurfaceOptions } from '../Preview/Display/Surface/constant';
 import { ILayoutBlock, idType } from '../../Context/initialState';
 import { Edge } from 'reactflow';
 import { css } from '@rocket.chat/css-in-js';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 const PrototypeRender = ({
   payload,
@@ -21,37 +21,47 @@ const PrototypeRender = ({
   activeActions: idType[];
   onSelectAction: (id: idType) => void;
 }) => {
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+
   const [glowActive, setGlowActive] = useState(false);
   const actionClickHandler = (id: idType) => {
     const edge = flowEdges.find((edge) => edge.sourceHandle === id);
     if (edge) return onSelectAction(edge.target);
 
-    setGlowActive(true);
-    setTimeout(() => setGlowActive(false), 1000);
+    clearTimeout(timerRef.current);
+
+    setGlowActive(false);
+    setTimeout(() => {
+      setGlowActive(true);
+    }, 0);
+    timerRef.current = setTimeout(() => {
+      setGlowActive(false);
+    }, 1000);
   };
   return (
-    <Box w="40%" h="max-content" mb={'auto'} className="rc-prototype-renderer">
+    <Box h="max-content" mb={'auto'} className="rc-prototype-renderer">
       <SurfaceRender type={surface}>
         {payload.map((action, id) => (
-          <Box key={id} onClick={() => actionClickHandler(action.actionId)}>
+          <Box
+            key={id}
+            className={css`
+              cursor: pointer;
+            `}
+            onClick={() => actionClickHandler(action.actionId)}
+          >
             <Box
-              className={`${
-                activeActions.includes(action.actionId)
-                  ? 'rc-prototype_action' +
-                    (glowActive ? ' rc-prototype_action-glow' : '')
-                  : ''
-              }`}
+              position="relative"
+              w="100%"
+              h="100%"
+              className={css`
+                pointer-events: none;
+                user-select: none;
+              `}
             >
-              <Box
-                w="100%"
-                h="100%"
-                className={css`
-                  pointer-events: none;
-                  user-select: none;
-                `}
-              >
-                <RenderPayload payload={[action]} surface={surface} />
-              </Box>
+              {glowActive && activeActions.includes(action.actionId) && (
+                <Box className={'rc-prototype_action-glow'} />
+              )}
+              <RenderPayload payload={[action]} surface={surface} />
             </Box>
           </Box>
         ))}

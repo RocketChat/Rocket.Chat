@@ -1,13 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import ScreenThumbnailWrapper from '../../ScreenThumbnail/ScreenThumbnailWrapper';
 import Thumbnail from '../../ScreenThumbnail/Thumbnail';
-import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import RenderPayload from '../../Preview/Display/RenderPayload/RenderPayload';
-import {
-  context,
-  duplicateProjectAction,
-  renameProjectAction,
-} from '../../../Context';
+import { context, renameProjectAction } from '../../../Context';
 import { ChangeEvent, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../../../utils/formatDate';
@@ -17,6 +12,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { deleteProjectAction } from '../../../Context/action/deleteProjectAction';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import routes from '../../../Routes/Routes';
+import { ILayoutBlock } from '../../../Context/initialState';
 
 const ProjectsThumbnail = ({
   id,
@@ -27,7 +23,7 @@ const ProjectsThumbnail = ({
   id: string;
   name: string;
   date: string;
-  payload: readonly LayoutBlock[];
+  payload: ILayoutBlock[];
 }) => {
   const [name, setName] = useState<string>(_name);
   const navigate = useNavigate();
@@ -37,9 +33,6 @@ const ProjectsThumbnail = ({
     navigate(`/${id}/${routes.project}`);
   };
 
-  const duplicateScreenHandler = () => {
-    dispatch(duplicateProjectAction({ id }));
-  };
   const deleteScreenHandler = () => {
     dispatch(deleteProjectAction(id));
   };
@@ -74,18 +67,17 @@ const ProjectsThumbnail = ({
         height="260px"
         padding="30px"
       >
-        <EditMenu
-          name={name}
-          date={date}
-          onChange={onChangeNameHandler}
-          onDuplicate={duplicateScreenHandler}
-          onDelete={deleteScreenHandler}
-          onBlur={nameSaveHandler}
-          labelProps={{ fontScale: 'h5' }}
-        />
         <Thumbnail of={RenderPayload({ payload })} />
         <Box onClick={(e) => e.stopPropagation()}></Box>
       </ScreenThumbnailWrapper>
+      <EditMenu
+        name={name}
+        date={date}
+        onChange={onChangeNameHandler}
+        onDelete={deleteScreenHandler}
+        onBlur={nameSaveHandler}
+        labelProps={{ fontScale: 'h5' }}
+      />
       <EditableLabel
         value={name}
         onChange={onChangeNameHandler}

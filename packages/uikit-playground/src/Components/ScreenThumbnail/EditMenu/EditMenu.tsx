@@ -17,8 +17,8 @@ const EditMenu = ({
   name: string;
   date: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onDuplicate: () => void;
-  onDelete: () => void;
+  onDuplicate?: () => void;
+  onDelete?: () => void;
   onBlur: () => void;
   labelProps?: ComponentProps<typeof EditableLabel>;
 }) => {
@@ -33,13 +33,13 @@ const EditMenu = ({
   const duplicatehandler = (e: { stopPropagation: () => void }) => {
     e.stopPropagation();
     setIsOpen(false);
-    onDuplicate();
+    onDuplicate && onDuplicate();
   };
 
   const deleteHandler = (e: { stopPropagation: () => void }) => {
     e.stopPropagation();
     setIsOpen(false);
-    onDelete();
+    onDelete && onDelete();
   };
   return (
     <Box
@@ -69,8 +69,12 @@ const EditMenu = ({
               </Box>
             </Box>
             <Divider mbs="12px" />
-            <Option onClick={duplicatehandler}>Duplicate</Option>
-            <Option onClick={deleteHandler}>Delete</Option>
+            <Option disabled={!onDuplicate} onClick={duplicatehandler}>
+              Duplicate
+            </Option>
+            <Option disabled={!onDelete} onClick={deleteHandler}>
+              Delete
+            </Option>
           </Box>
         </Box>
       )}

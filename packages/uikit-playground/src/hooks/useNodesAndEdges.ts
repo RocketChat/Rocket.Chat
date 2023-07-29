@@ -1,12 +1,15 @@
-import { MarkerType } from 'reactflow';
-import { useContext, useMemo } from 'react';
+import { MarkerType, useEdgesState, useNodesState } from 'reactflow';
+import { useContext, useEffect } from 'react';
 import { context } from '../Context';
 export function useNodesAndEdges() {
   const {
     state: { screens, projects, activeProject },
   } = useContext(context);
 
-  const nodes = useMemo(() => {
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  useEffect(() => {
     const prevNodes = projects[activeProject].flowNodes;
     const center = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     const activeScreens = projects[activeProject].screens.map(
@@ -17,8 +20,8 @@ export function useNodesAndEdges() {
 
       const degrees = i * (360 / 8);
       const radians = degrees * (Math.PI / 180);
-      const x = 2500 * Math.cos(radians) + center.x;
-      const y = 2500 * Math.sin(radians) + center.y;
+      const x = 250 * activeScreens.length * Math.cos(radians) + center.x;
+      const y = 250 * activeScreens.length * Math.sin(radians) + center.y;
 
       prevNodes.push({
         id: screen.id,
@@ -27,14 +30,24 @@ export function useNodesAndEdges() {
         data: screen.id,
       });
     });
-    return prevNodes;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    setNodes(prevNodes);
+  }, [activeProject, projects, screens, setNodes]);
 
-  const edges = projects[activeProject].flowEdges;
+  useEffect(() => {
+    const _edges = projects[activeProject].flowEdges;
+    setEdges(_edges);
+  }, [activeProject, projects, screens, setEdges]);
   const Viewport = projects[activeProject].viewport;
 
-  return { nodes, edges, Viewport };
+  return {
+    nodes,
+    edges,
+    Viewport,
+    onNodesChange,
+    onEdgesChange,
+    setNodes,
+    setEdges,
+  };
 }
 
 export const FlowParams = {

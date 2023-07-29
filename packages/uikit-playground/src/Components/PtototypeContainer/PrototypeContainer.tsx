@@ -15,7 +15,8 @@ const PrototypeContainer = () => {
 
   const activeActions = useMemo(() => {
     return projects[activeProject]?.flowEdges.map((edge) => edge.sourceHandle);
-  }, [activeProject, projects]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeProject, projects, projects[activeProject].flowEdges]);
   return (
     <Scrollable vertical>
       <Box

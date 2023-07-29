@@ -2,8 +2,6 @@ import { useCallback, useContext, useRef, useState } from 'react';
 import ReactFlow, {
   MiniMap,
   Background,
-  useNodesState,
-  useEdgesState,
   addEdge,
   updateEdge,
   Node,
@@ -28,15 +26,10 @@ const nodeTypes = {
 const FlowContainer = () => {
   const { dispatch } = useContext(context);
 
-  const {
-    nodes: initialNodes,
-    edges: initialEdges,
-    Viewport,
-  } = useNodesAndEdges();
+  const { nodes, edges, Viewport, onNodesChange, onEdgesChange, setEdges } =
+    useNodesAndEdges();
   const { setViewport } = useReactFlow();
 
-  const [nodes, , onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance>();
   const edgeUpdateSuccessful = useRef(true);
 

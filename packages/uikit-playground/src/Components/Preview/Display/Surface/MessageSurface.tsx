@@ -1,9 +1,8 @@
 import { Message, Avatar } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
-import React from 'react';
 
 const MessageSurface = ({ children }: { children: ReactNode }) => (
-  <Message clickable>
+  <Message>
     <Message.LeftContainer>
       <Avatar
         url="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC

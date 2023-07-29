@@ -209,6 +209,8 @@ const reducer = (state: initialStateType, action: IAction) => {
             name: action?.payload || 'Untitled Project',
             screens: [activeScreenId],
             date: getDate(),
+            flowEdges: [],
+            flowNodes: [],
           },
         },
         activeProject: activeProjectId,
@@ -219,6 +221,7 @@ const reducer = (state: initialStateType, action: IAction) => {
             name: 'Untitled Screen',
             date: getDate(),
             payload: [],
+            viewport: undefined,
           },
         },
       };
@@ -248,6 +251,7 @@ const reducer = (state: initialStateType, action: IAction) => {
         projects: {
           ...state.projects,
           [activeProjectId]: {
+            ...state.projects[action.payload.id],
             id: activeProjectId,
             name: action?.payload.name || 'Untitled Project',
             screens: newScreensIds,

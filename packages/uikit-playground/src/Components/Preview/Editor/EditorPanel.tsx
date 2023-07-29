@@ -7,9 +7,23 @@ import { context, editorTabsToggleAction } from '../../../Context';
 import ToggleTabs from '../../ToggleTabs';
 import ActionBlockEditor from './ActionBlockEditor';
 import ActionPreviewEditor from './ActionPreviewEditor';
+import FlowDiagram from '../../../Pages/FlowDiagram';
+import PrototypeContainer from '../../PtototypeContainer/PrototypeContainer';
 
 const EditorPanel: FC = () => {
-  const tabsItem: string[] = ['Action Block', 'Action Preview'];
+  enum TabsItem {
+    ActionBlock,
+    ActionPreview,
+    FlowDiagram,
+    Prototype,
+  }
+
+  const tabsItem = {
+    [TabsItem.ActionBlock]: 'Action Block',
+    [TabsItem.ActionPreview]: 'Action Preview',
+    [TabsItem.FlowDiagram]: 'Flow Diagram',
+    [TabsItem.Prototype]: 'Prototype',
+  };
   const {
     state: { editorTabsToggle },
     dispatch,
@@ -21,15 +35,26 @@ const EditorPanel: FC = () => {
 
   const tabChangeStyle = () => {
     switch (editorTabsToggle) {
-      case 0:
+      case TabsItem.ActionBlock:
         return css`
           transition: 0.5s ease;
           left: 0;
         `;
-      case 1:
+      case TabsItem.ActionPreview:
         return css`
           transition: 0.5s ease;
           left: -100%;
+        `;
+
+      case TabsItem.FlowDiagram:
+        return css`
+          transition: 0.5s ease;
+          left: -200%;
+        `;
+      case TabsItem.Prototype:
+        return css`
+          transition: 0.5s ease;
+          left: -300%;
         `;
     }
   };
@@ -37,10 +62,10 @@ const EditorPanel: FC = () => {
   return (
     <Box width={'100%'} height={'100%'}>
       <Box
-        position='relative'
+        position="relative"
         width={'100%'}
         height={'100%'}
-        overflow='hidden'
+        overflow="hidden"
         className={[
           css`
             user-select: none;
@@ -48,26 +73,28 @@ const EditorPanel: FC = () => {
         ]}
       >
         <ToggleTabs
-          tabsItem={tabsItem}
+          tabsItem={Object.values(tabsItem)}
           onChange={toggleTabsHandler}
           selectedTab={editorTabsToggle}
         />
         <Box
-          position='relative'
-          width='100%'
-          height='calc(100% - 40px)'
-          flexDirection='column'
+          position="relative"
+          width={'100%'}
+          height="calc(100% - 40px)"
+          flexDirection="column"
         >
           <Box
-            position='absolute'
-            width={'200%'}
+            position="absolute"
+            width={`calc(100% * ${Object.values(tabsItem).length})`}
             height={'100%'}
             display={'flex'}
-            borderBlockStart='var(--default-border)'
+            borderBlockStart="var(--default-border)"
             className={tabChangeStyle()}
           >
             <ActionBlockEditor />
             <ActionPreviewEditor />
+            <FlowDiagram />
+            <PrototypeContainer />
           </Box>
         </Box>
       </Box>
