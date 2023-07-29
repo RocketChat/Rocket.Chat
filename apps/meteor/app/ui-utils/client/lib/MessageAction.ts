@@ -2,8 +2,6 @@ import type { IMessage, IUser, ISubscription, IRoom, SettingValue, ITranslatedMe
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import mem from 'mem';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
 import type { ContextType } from 'react';
 
 import type { AutoTranslateOptions } from '../../../../client/views/room/MessageList/hooks/useAutoTranslate';
@@ -66,7 +64,7 @@ export type MessageActionConfig = {
 };
 
 class MessageAction {
-	public buttons = new ReactiveVar<Record<string, MessageActionConfig>>({});
+	public buttons: Record<MessageActionConfig['id'], MessageActionConfig> = {};
 
 	public addButton(config: MessageActionConfig): void {
 		if (!config?.id) {
@@ -81,19 +79,11 @@ class MessageAction {
 			config.condition = mem(config.condition, { maxAge: 1000, cacheKey: JSON.stringify });
 		}
 
-		return Tracker.nonreactive(() => {
-			const btns = this.buttons.get();
-			btns[config.id] = config;
-			return this.buttons.set(btns);
-		});
+		this.buttons[config.id] = config;
 	}
 
 	public removeButton(id: MessageActionConfig['id']): void {
-		return Tracker.nonreactive(() => {
-			const btns = this.buttons.get();
-			delete btns[id];
-			return this.buttons.set(btns);
-		});
+		delete this.buttons[id];
 	}
 
 	public async getAll(
@@ -103,7 +93,7 @@ class MessageAction {
 	): Promise<MessageActionConfig[]> {
 		return (
 			await Promise.all(
-				Object.values(this.buttons.get())
+				Object.values(this.buttons)
 					.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 					.filter((button) => !button.group || (Array.isArray(button.group) ? button.group.includes(group) : button.group === group))
 					.filter((button) => !button.context || button.context.includes(context))
