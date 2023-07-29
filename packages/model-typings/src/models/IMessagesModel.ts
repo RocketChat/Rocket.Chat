@@ -186,6 +186,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findOneBySlackTs(slackTs: Date): Promise<IMessage | null>;
 
 	cloneAndSaveAsHistoryById(_id: string, user: IMessage['u']): Promise<InsertOneResult<IMessage>>;
+	cloneAndSaveAsHistoryByRecord(record: IMessage, user: IMessage['u']): Promise<InsertOneResult<IMessage>>;
 
 	setAsDeletedByIdAndUser(_id: string, user: IMessage['u']): Promise<UpdateResult>;
 	setAsDeletedByIdsAndUser(_ids: string[], user: IMessage['u']): Promise<Document | UpdateResult>;
