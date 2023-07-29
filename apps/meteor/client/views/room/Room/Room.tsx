@@ -8,7 +8,7 @@ import Header from '../Header';
 import MessageHighlightProvider from '../MessageList/providers/MessageHighlightProvider';
 import RoomBody from '../components/body/RoomBody';
 import { useRoom } from '../contexts/RoomContext';
-import { useTab, useRoomToolbox } from '../contexts/RoomToolboxContext';
+import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 import AppsContextualBar from '../contextualBar/Apps';
 import { useAppsContextualBar } from '../hooks/useAppsContextualBar';
 import RoomLayout from '../layout/RoomLayout';
@@ -22,7 +22,6 @@ const Room = (): ReactElement => {
 
 	const toolbox = useRoomToolbox();
 
-	const tab = useTab();
 	const appsContextualBarContext = useAppsContextualBar();
 
 	return (
@@ -34,12 +33,12 @@ const Room = (): ReactElement => {
 					header={<Header room={room} />}
 					body={<RoomBody />}
 					aside={
-						(tab && (
+						(toolbox.tab && (
 							<ErrorBoundary fallback={null}>
 								<SelectedMessagesProvider>
-									{typeof tab.template !== 'string' && typeof tab.template !== 'undefined' && (
+									{typeof toolbox.tab.template !== 'string' && typeof toolbox.tab.template !== 'undefined' && (
 										<Suspense fallback={<ContextualbarSkeleton />}>
-											{createElement(tab.template, { tabBar: toolbox, _id: room._id, rid: room._id, teamId: room.teamId })}
+											{createElement(toolbox.tab.template, { tabBar: toolbox, _id: room._id, rid: room._id, teamId: room.teamId })}
 										</Suspense>
 									)}
 								</SelectedMessagesProvider>
