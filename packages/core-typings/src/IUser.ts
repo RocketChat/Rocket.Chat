@@ -75,7 +75,7 @@ export interface IUserServices {
 		enabled: boolean;
 		changedAt: Date;
 	};
-	emailCode: IUserEmailCode[];
+	emailCode?: IUserEmailCode[];
 	saml?: {
 		inResponseTo?: string;
 		provider?: string;
