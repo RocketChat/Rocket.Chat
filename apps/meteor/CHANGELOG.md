@@ -1,5 +1,35 @@
 # @rocket.chat/meteor
 
+## 6.3.0-rc.9
+
+### Minor Changes
+
+- 48ac55f4ea: Created new endpoints for creating users in bulk
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- 8f5e05cc97: Introduces a fix to let the Admin view reported messages of the deleted users on the Moderation Console
+- Updated dependencies [48ac55f4ea]
+  - @rocket.chat/core-services@0.1.0-rc.9
+  - @rocket.chat/core-typings@6.3.0-rc.9
+  - @rocket.chat/rest-typings@6.3.0-rc.9
+  - @rocket.chat/omnichannel-services@0.0.6-rc.9
+  - @rocket.chat/presence@0.0.6-rc.9
+  - @rocket.chat/api-client@0.1.0-rc.9
+  - @rocket.chat/pdf-worker@0.0.6-rc.9
+  - @rocket.chat/cron@0.0.2-rc.9
+  - @rocket.chat/gazzodown@1.0.0-rc.9
+  - @rocket.chat/model-typings@0.0.6-rc.9
+  - @rocket.chat/ui-contexts@1.0.0-rc.9
+  - @rocket.chat/fuselage-ui-kit@1.0.0-rc.9
+  - @rocket.chat/models@0.0.6-rc.9
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.0-rc.9
+  - @rocket.chat/ui-video-conf@1.0.0-rc.9
+  - @rocket.chat/web-ui-registration@1.0.0-rc.9
+  - @rocket.chat/instance-status@0.0.6-rc.9
+
 ## 6.3.0-rc.8
 
 ### Patch Changes

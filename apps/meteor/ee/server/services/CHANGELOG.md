@@ -1,5 +1,20 @@
 # rocketchat-services
 
+## 1.1.0-rc.9
+
+### Minor Changes
+
+- 48ac55f4ea: Created new endpoints for creating users in bulk
+
+### Patch Changes
+
+- Updated dependencies [48ac55f4ea]
+  - @rocket.chat/core-services@0.1.0-rc.9
+  - @rocket.chat/core-typings@6.3.0-rc.9
+  - @rocket.chat/rest-typings@6.3.0-rc.9
+  - @rocket.chat/model-typings@0.0.6-rc.9
+  - @rocket.chat/models@0.0.6-rc.9
+
 ## 1.0.5-rc.8
 
 ### Patch Changes

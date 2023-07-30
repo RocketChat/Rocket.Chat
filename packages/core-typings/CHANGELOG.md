@@ -1,5 +1,11 @@
 # @rocket.chat/core-typings
 
+## 6.3.0-rc.9
+
+### Minor Changes
+
+- 48ac55f4ea: Created new endpoints for creating users in bulk
+
 ## 6.3.0-rc.8
 
 ## 6.3.0-rc.7
