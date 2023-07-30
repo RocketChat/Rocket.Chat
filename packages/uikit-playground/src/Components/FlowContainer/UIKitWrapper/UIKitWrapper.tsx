@@ -12,6 +12,7 @@ const UIKitWrapper = ({ id, data }: { id: string; data: idType }) => {
   const {
     state: { screens },
   } = useContext(context);
+  if (!screens[data]) return null;
   const { payload, surface } = screens[data];
   return (
     <Box

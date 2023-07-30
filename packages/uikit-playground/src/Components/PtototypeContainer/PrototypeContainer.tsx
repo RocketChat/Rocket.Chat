@@ -7,16 +7,21 @@ const PrototypeContainer = () => {
   const {
     state: { projects, activeProject, screens },
   } = useContext(context);
-  window.console.log(projects[activeProject].flowEdges);
+
   const [currentScreenID, setCurrentScreenID] = useState<string>(
     projects[activeProject].screens[0]
   );
-  const { surface, payload } = screens[currentScreenID];
 
   const activeActions = useMemo(() => {
     return projects[activeProject]?.flowEdges.map((edge) => edge.sourceHandle);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeProject, projects, projects[activeProject].flowEdges]);
+
+  if (!projects[activeProject].screens.length) return null;
+
+  const { surface, payload } =
+    screens[currentScreenID] || screens[projects[activeProject].screens[0]];
+
   return (
     <Scrollable vertical>
       <Box

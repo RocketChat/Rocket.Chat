@@ -31,12 +31,18 @@ export function useNodesAndEdges() {
       });
     });
     setNodes(prevNodes);
-  }, [activeProject, projects, screens, setNodes]);
+  }, [activeProject, projects, screens, JSON.stringify(screens), setNodes]);
 
   useEffect(() => {
     const _edges = projects[activeProject].flowEdges;
     setEdges(_edges);
-  }, [activeProject, projects, screens, setEdges]);
+  }, [
+    activeProject,
+    projects,
+    screens,
+    projects[activeProject].flowEdges,
+    setEdges,
+  ]);
   const Viewport = projects[activeProject].viewport;
 
   return {

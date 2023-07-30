@@ -29,6 +29,7 @@ import {
   UpdateNodesAndViewPortAction,
 } from './action';
 import getDate from '../utils/getDate';
+import { SurfaceOptions } from '../Components/Preview/Display/Surface/constant';
 
 type IAction =
   | IsMobileAction
@@ -132,9 +133,11 @@ const reducer = (state: initialStateType, action: IAction) => {
           ...state.screens,
           [id]: {
             id,
-            name: action?.payload || 'default',
+            name: action?.payload || 'Untitled Screen',
             payload: [],
-            flowParams: {},
+            surface: SurfaceOptions.Message,
+            date: getDate(),
+            actionPreview: {},
           },
         },
         projects: {
@@ -157,10 +160,12 @@ const reducer = (state: initialStateType, action: IAction) => {
         screens: {
           ...state.screens,
           [id]: {
+            ...state.screens[action.payload.id],
             id,
-            name: action?.payload.name || 'default',
+            date: getDate(),
+            actionPreview: {},
+            name: action?.payload.name || 'Untitled Screen',
             payload: state.screens[action.payload.id].payload,
-            flowParams: {},
           },
         },
         projects: {
@@ -194,6 +199,18 @@ const reducer = (state: initialStateType, action: IAction) => {
           state.activeScreen = '';
         }
       }
+
+      state.projects[activeProject].flowEdges = state.projects[
+        activeProject
+      ].flowEdges.filter(
+        (edge) =>
+          edge.source !== action.payload && edge.target !== action.payload
+      );
+
+      state.projects[activeProject].flowNodes = state.projects[
+        activeProject
+      ].flowNodes.filter((node) => node.id !== action.payload);
+
       return { ...state };
     }
 
@@ -221,7 +238,8 @@ const reducer = (state: initialStateType, action: IAction) => {
             name: 'Untitled Screen',
             date: getDate(),
             payload: [],
-            viewport: undefined,
+            surface: SurfaceOptions.Message,
+            actionPreview: {},
           },
         },
       };
