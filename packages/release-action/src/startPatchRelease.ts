@@ -1,7 +1,7 @@
-import semver from 'semver';
+import * as core from '@actions/core';
 import { exec } from '@actions/exec';
 import * as github from '@actions/github';
-import * as core from '@actions/core';
+import semver from 'semver';
 
 import { setupOctokit } from './setupOctokit';
 import { readPackageJson } from './utils';

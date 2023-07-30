@@ -1,10 +1,9 @@
-/* eslint-disable import/order */
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-
 import { MockedSettingsContext } from '@rocket.chat/mock-providers/src/MockedSettingsContext';
 import { MockedUserContext } from '@rocket.chat/mock-providers/src/MockedUserContext';
+import { render, screen } from '@testing-library/react';
+
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from './FeaturePreview';
+import '@testing-library/jest-dom';
 
 test('should renders off if the feature is disabled', async () => {
 	render(

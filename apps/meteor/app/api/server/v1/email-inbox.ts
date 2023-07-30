@@ -1,10 +1,10 @@
-import { check, Match } from 'meteor/check';
 import { EmailInbox, Users } from '@rocket.chat/models';
+import { check, Match } from 'meteor/check';
 
-import { API } from '../api';
-import { insertOneEmailInbox, findEmailInboxes, findOneEmailInbox, updateEmailInbox } from '../lib/emailInbox';
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';
+import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { insertOneEmailInbox, findEmailInboxes, findOneEmailInbox, updateEmailInbox } from '../lib/emailInbox';
 
 API.v1.addRoute(
 	'email-inbox.list',
