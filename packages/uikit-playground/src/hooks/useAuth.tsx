@@ -3,20 +3,20 @@ import type { ReactNode } from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useLocalStorage } from './useLocalStorage';
 import { userType } from '../Context/initialState';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 
 const AuthContext = createContext<{
   user?: userType;
-  login?: (data: unknown) => Promise<void>;
+  login?: (data: userType) => Promise<void>;
   logout?: () => void;
 }>({});
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useLocalStorage('user', null);
+  const [user, setUser] = useLocalStorage<userType>('user', null);
   const navigate = useNavigate();
 
-  const login = async (data: unknown) => {
+  const login = async (data: userType) => {
     setUser(data);
     navigate('/dashboard/profile', { replace: true });
   };

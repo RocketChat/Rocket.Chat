@@ -31,6 +31,7 @@ export function useNodesAndEdges() {
       });
     });
     setNodes(prevNodes);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeProject, projects, screens, JSON.stringify(screens), setNodes]);
 
   useEffect(() => {
@@ -40,10 +41,11 @@ export function useNodesAndEdges() {
     activeProject,
     projects,
     screens,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     projects[activeProject].flowEdges,
     setEdges,
   ]);
-  const Viewport = projects[activeProject].viewport;
+  const Viewport = projects[activeProject]?.viewport;
 
   return {
     nodes,
