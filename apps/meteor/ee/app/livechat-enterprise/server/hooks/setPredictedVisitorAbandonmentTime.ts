@@ -1,12 +1,12 @@
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 
-import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { setPredictedVisitorAbandonmentTime } from '../lib/Helper';
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message, room) {
+	async (message, room) => {
 		if (
 			!settings.get('Livechat_abandoned_rooms_action') ||
 			settings.get('Livechat_abandoned_rooms_action') === 'none' ||

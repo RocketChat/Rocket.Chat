@@ -1,3 +1,4 @@
+import { Message } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
 	IOmnichannelRoomClosingInfo,
@@ -20,25 +21,24 @@ import {
 	Users,
 	LivechatDepartmentAgents,
 } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
+import { Random } from '@rocket.chat/random';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import moment from 'moment-timezone';
 import type { FindCursor, UpdateFilter } from 'mongodb';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { Random } from '@rocket.chat/random';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { Logger } from '../../../logger/server';
-import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
-import { getTimezone } from '../../../utils/server/lib/getTimezone';
-import { settings } from '../../../settings/server';
-import * as Mailer from '../../../mailer/server/api';
-import { RoutingManager } from './RoutingManager';
-import { QueueManager } from './QueueManager';
-import { validateEmail } from './Helper';
-import type { MainLogger } from '../../../../server/lib/logger/getPino';
-import { metrics } from '../../../metrics/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
+import type { MainLogger } from '../../../../server/lib/logger/getPino';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { Logger } from '../../../logger/server';
+import * as Mailer from '../../../mailer/server/api';
+import { metrics } from '../../../metrics/server';
+import { settings } from '../../../settings/server';
+import { getTimezone } from '../../../utils/server/lib/getTimezone';
+import { validateEmail } from './Helper';
+import { QueueManager } from './QueueManager';
+import { RoutingManager } from './RoutingManager';
 
 type GenericCloseRoomParams = {
 	room: IOmnichannelRoom;

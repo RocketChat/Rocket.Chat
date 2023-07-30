@@ -101,6 +101,7 @@ jobs:
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Start httpbin container and wait for it to be ready
+        if: inputs.type == 'api'
         run: |
           docker run -d -p 10000:80 --name httpbin-container kennethreitz/httpbin
           i=0
