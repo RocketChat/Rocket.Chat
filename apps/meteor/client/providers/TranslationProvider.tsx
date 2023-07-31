@@ -107,14 +107,17 @@ const useI18next = (lng: string): typeof i18next => {
 					const params = url.split('/');
 					const lng = params[params.length - 1];
 
-					if (localeCache.get(lng)) {
-						localeCache.get(lng)!.then((res) => callback(null, { data: res, status: 200 }));
-						return;
+					let promise = localeCache.get(lng);
+
+					if (!promise) {
+						promise = fetch(url).then((res) => res.text());
+						localeCache.set(lng, promise);
 					}
 
-					const promise = fetch(url).then((res) => res.text());
-					localeCache.set(lng, promise);
-					promise.then((res) => callback(null, { data: res, status: 200 })).catch(() => callback(null, { data: '', status: 500 }));
+					promise.then(
+						(res) => callback(null, { data: res, status: 200 }),
+						() => callback(null, { data: '', status: 500 }),
+					);
 				},
 			},
 			react: {
