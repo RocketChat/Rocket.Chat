@@ -1,7 +1,7 @@
-import { isEditedMessage, type IMessage } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
 import type { IMessage as AppsEngineMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import { isEditedMessage, type IMessage } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
 
 import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
 

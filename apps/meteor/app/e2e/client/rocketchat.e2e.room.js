@@ -1,9 +1,15 @@
 import { Base64 } from '@rocket.chat/base64';
-import EJSON from 'ejson';
-import { Random } from '@rocket.chat/random';
 import { Emitter } from '@rocket.chat/emitter';
+import { Random } from '@rocket.chat/random';
+import EJSON from 'ejson';
 
-import { e2e } from './rocketchat.e2e';
+import { RoomManager } from '../../../client/lib/RoomManager';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
+import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
+import { ChatRoom, Subscriptions, Messages } from '../../models/client';
+import { Notifications } from '../../notifications/client';
+import { sdk } from '../../utils/client/lib/SDKClient';
+import { E2ERoomState } from './E2ERoomState';
 import {
 	toString,
 	toArrayBuffer,
@@ -19,14 +25,8 @@ import {
 	importRSAKey,
 	readFileAsArrayBuffer,
 } from './helper';
-import { Notifications } from '../../notifications/client';
-import { ChatRoom, Subscriptions, Messages } from '../../models/client';
 import { log, logError } from './logger';
-import { E2ERoomState } from './E2ERoomState';
-import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
-import { RoomManager } from '../../../client/lib/RoomManager';
-import { sdk } from '../../utils/client/lib/SDKClient';
+import { e2e } from './rocketchat.e2e';
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');

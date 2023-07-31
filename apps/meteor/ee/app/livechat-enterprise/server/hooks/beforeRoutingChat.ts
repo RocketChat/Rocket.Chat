@@ -1,14 +1,14 @@
 import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../../lib/callbacks';
-import { settings } from '../../../../../app/settings/server';
-import { dispatchInquiryPosition } from '../lib/Helper';
+import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
-import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
-import { cbLogger } from '../lib/logger';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
+import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
+import { dispatchInquiryPosition } from '../lib/Helper';
+import { cbLogger } from '../lib/logger';
 
 callbacks.add(
 	'livechat.beforeRouteChat',

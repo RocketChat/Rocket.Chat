@@ -4,11 +4,11 @@ import path from 'path';
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { password } from '../../data/user';
-import { closeRoom, createRoom } from '../../data/rooms.helper';
+import { sendSimpleMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions.js';
 import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
-import { sendSimpleMessage } from '../../data/chat.helper';
+import { closeRoom, createRoom } from '../../data/rooms.helper';
+import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
