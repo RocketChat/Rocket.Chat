@@ -36,7 +36,7 @@ const parseToJSON = (customTranslations: string): Record<string, Record<string, 
 	}
 };
 
-const fetchedLanguages: string[] = [];
+const localeCache = new Map();
 
 const useI18next = (lng: string): typeof i18next => {
 	const basePath = useAbsoluteUrl()('/i18n');
@@ -106,14 +106,13 @@ const useI18next = (lng: string): typeof i18next => {
 				request: async (_options, url, _payload, callback) => {
 					try {
 						const [, , , , lng] = url.split('/');
-						console.log('lng - ', lng, fetchedLanguages);
-						if (fetchedLanguages.includes(lng)) {
-							callback(null, { data: '', status: 200});
-							return {};
+						console.log('lng - ', lng, localeCache.get(lng));
+						if (localeCache.get(lng)) {
+							return localeCache.get(lng);
 						}
-						fetchedLanguages.push(lng)
 						const res = await fetch(url).then((res) => res.json());
 						const translations = JSON.stringify(res);
+						localeCache.set(lng, translations);
 						callback(null, { data: res, status: 200 });
 						return translations;
 					} catch (e) {
