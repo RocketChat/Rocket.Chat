@@ -1,30 +1,28 @@
 import { Badge } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { defaultFeaturesPreview, useFeaturePreviewList } from '@rocket.chat/ui-client';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 
 export const useAccountItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
-	const accountRoute = useRoute('account-index');
-	const themesRoute = useRoute('theme');
-	const preferencesRoute = useRoute('preferences');
-	const featurePreviewRoute = useRoute('feature-preview');
+	const router = useRouter();
+
 	const { unseenFeatures, featurePreviewEnabled } = useFeaturePreviewList();
 
 	const handleMyAccount = useMutableCallback(() => {
-		accountRoute.push({});
+		router.navigate('/account');
 	});
 	const handleThemes = useMutableCallback(() => {
-		themesRoute.push({});
+		router.navigate('/account/theme');
 	});
 	const handlePreferences = useMutableCallback(() => {
-		preferencesRoute.push({});
+		router.navigate('/account/preferences');
 	});
 	const handleFeaturePreview = useMutableCallback(() => {
-		featurePreviewRoute.push();
+		router.navigate('/account/feature-preview');
 	});
 
 	const featurePreviewItem = {
