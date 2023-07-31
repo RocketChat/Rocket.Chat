@@ -15,7 +15,7 @@ type GenericUpsellModalProps = {
 	icon?: IconName;
 	img: ComponentProps<typeof Modal.HeroImage>['src'];
 	onCancel?: () => void;
-	onClose?: () => void;
+	onClose: () => void;
 	onConfirm?: () => void;
 	annotation?: ReactNode;
 };
@@ -30,8 +30,8 @@ const GenericUpsellModal = ({
 	icon,
 	description,
 	onCancel,
+	onClose,
 	onConfirm,
-	onClose = onCancel,
 	annotation,
 }: GenericUpsellModalProps) => {
 	const t = useTranslation();
