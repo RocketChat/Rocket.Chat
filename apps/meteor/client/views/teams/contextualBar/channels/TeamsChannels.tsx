@@ -8,7 +8,7 @@ import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import CreateChannelWithData from '../../../../sidebar/header/CreateChannel';
-import { useTabBarClose } from '../../../room/contexts/ToolboxContext';
+import { useTabBarClose } from '../../../room/contexts/RoomToolboxContext';
 import RoomInfo from '../../../room/contextualBar/Info';
 import AddExistingModal from './AddExistingModal';
 import BaseTeamsChannels from './BaseTeamsChannels';

@@ -18,7 +18,7 @@ import {
 import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
 import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useRoom } from '../../../contexts/RoomContext';
-import { useTabBarClose } from '../../../contexts/ToolboxContext';
+import { useTabBarClose } from '../../../contexts/RoomToolboxContext';
 
 type AddUsersProps = {
 	rid: IRoom['_id'];

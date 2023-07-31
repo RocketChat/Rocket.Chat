@@ -12,9 +12,9 @@ Meteor.startup(() => {
 		label: 'Add_Reaction',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(event, props) {
-			event.stopPropagation();
 			const { message = messageArgs(this).msg, chat } = props;
-			chat?.emojiPicker.open(event.currentTarget, (emoji) => sdk.call('setReaction', `:${emoji}:`, message._id));
+			event.stopPropagation();
+			chat?.emojiPicker.open(event.currentTarget! as Element, (emoji) => sdk.call('setReaction', `:${emoji}:`, message._id));
 		},
 		condition({ message, user, room, subscription }) {
 			if (!room) {
@@ -29,7 +29,7 @@ Meteor.startup(() => {
 				return false;
 			}
 
-			if (roomCoordinator.readOnly(room._id, user) && !room.reactWhenReadOnly) {
+			if (roomCoordinator.readOnly(room._id, user!) && !room.reactWhenReadOnly) {
 				return false;
 			}
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);

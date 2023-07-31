@@ -7,7 +7,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import * as Federation from '../../../../lib/federation/Federation';
 import { useMembersList } from '../../../hooks/useMembersList';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useTabBarClose } from '../../contexts/RoomToolboxContext';
 import UserInfoWithData from '../UserInfo';
 import AddUsers from './AddUsers';
 import InviteUsers from './InviteUsers';
