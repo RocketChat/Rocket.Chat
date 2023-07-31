@@ -2,6 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Callout } from '@rocket.chat/fuselage';
+import type { OperationResult } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -15,7 +16,7 @@ type EditUserWithDataProps = {
 	roleData: any;
 	roleState: boolean;
 	roleError: unknown;
-	userData: UseQueryResult<any, unknown>;
+	userData: UseQueryResult<OperationResult<'GET', '/v1/users.info'>>;
 	availableRoles: SelectOption[];
 };
 

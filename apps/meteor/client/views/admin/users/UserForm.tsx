@@ -1,4 +1,4 @@
-import type { ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	Field,
@@ -34,9 +34,7 @@ type UserFormProps = {
 	setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
 	onSave: UseMutationResult<any, unknown, any, unknown>;
 	preserveData: boolean;
-	userData: IUser & {
-		rooms?: Pick<ISubscription, 'roles' | 'name' | 'rid' | 't' | 'unread'>[] | undefined;
-	};
+	userData: IUser | Record<string, never>;
 };
 
 const isErrorString = (errorMessage: string | FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined): errorMessage is string => {
@@ -196,7 +194,7 @@ const UserForm = ({
 							<Field.Label>{t('Password')}</Field.Label>
 							<Field.Row>
 								<PasswordInput
-									{...register?.('password', { required: t('The_field_is_required', { field: t('Password') }) })}
+									{...register?.('password', { required: t('The_field_is_required', t('Password')) })}
 									error={errors?.password?.message}
 									flexGrow={1}
 									addon={<Icon name='key' size='x20' />}
@@ -327,7 +325,7 @@ const UserForm = ({
 						primary
 						disabled={!canSaveOrReset}
 						onClick={handleSubmit(async (data) => {
-							onSave.mutate(data);
+							onSave.mutate(preserveData ? data : userData._id);
 						})}
 					>
 						{t('Save')}

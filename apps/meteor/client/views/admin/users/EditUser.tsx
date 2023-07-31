@@ -1,4 +1,4 @@
-import type { AvatarObject, AvatarUrlObj, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { AvatarObject, AvatarUrlObj, IUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useEndpoint, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -19,7 +19,7 @@ const isFormData = (avatarObj: AvatarObject): avatarObj is FormData => {
 };
 
 type EditUserProps = {
-	data: IUser & { rooms?: Pick<ISubscription, 'rid' | 'name' | 't' | 'roles' | 'unread'>[] };
+	data: IUser | Record<string, never>;
 	onReload: () => void;
 	availableRoles: SelectOption[];
 	roles: any;
@@ -30,31 +30,6 @@ function EditUser({ data, onReload, availableRoles, ...props }: EditUserProps) {
 
 	const [avatarObj, setAvatarObj] = useState<AvatarObject>();
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-	// const [errors, setErrors] = useState({});
-
-	// const validationKeys = {
-	// 	name: (name) =>
-	// 		setErrors((errors) => ({
-	// 			...errors,
-	// 			name: !name.trim().length ? t('The_field_is_required', t('name')) : undefined,
-	// 		})),
-	// 	username: (username) =>
-	// 		setErrors((errors) => ({
-	// 			...errors,
-	// 			username: !username.trim().length ? t('The_field_is_required', t('username')) : undefined,
-	// 		})),
-	// 	email: (email) =>
-	// 		setErrors((errors) => ({
-	// 			...errors,
-	// 			email: !email.trim().length ? t('The_field_is_required', t('email')) : undefined,
-	// 		})),
-	// };
-
-	// const validateForm = ({ key, value }) => {
-	// 	validationKeys[key] && validationKeys[key](value);
-	// };
-
-	// const { values, handlers, reset, hasUnsavedChanges } = useForm(getInitialValue(data), validateForm);
 
 	const router = useRouter();
 
@@ -66,16 +41,6 @@ function EditUser({ data, onReload, availableRoles, ...props }: EditUserProps) {
 			}),
 		[router],
 	);
-
-	// const handleSave = useMutableCallback(async () => {
-	// 	// Object.entries(values).forEach(([key, value]) => {
-	// 	// 	validationKeys[key] && validationKeys[key](value);
-	// 	// });
-	// 	// const { name, username, email } = values;
-	// 	// if (name === '' || username === '' || email === '') {
-	// 	// 	return false;
-	// 	// }
-	// }, [hasUnsavedChanges, avatarObj, data._id, goToUser, saveAction, updateAvatar, values, errors, validationKeys]);
 
 	const saveAvatarAction = useEndpointUpload('/v1/users.setAvatar', t('Avatar_changed_successfully'));
 	const saveAvatarUrlAction = useEndpointAction('POST', '/v1/users.setAvatar', { successMessage: t('Avatar_changed_successfully') });
