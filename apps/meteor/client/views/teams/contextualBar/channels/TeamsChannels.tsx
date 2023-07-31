@@ -8,16 +8,11 @@ import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import CreateChannelWithData from '../../../../sidebar/header/CreateChannel';
-import { useTabBarClose } from '../../../room/contexts/ToolboxContext';
+import { useTabBarClose } from '../../../room/contexts/RoomToolboxContext';
 import RoomInfo from '../../../room/contextualBar/Info';
 import AddExistingModal from './AddExistingModal';
 import BaseTeamsChannels from './BaseTeamsChannels';
 import { useTeamsChannelList } from './hooks/useTeamsChannelList';
-
-type TeamChannelsProps = {
-	teamId: string;
-	rid: string;
-};
 
 const useReactModal = (Component: FC<any>, teamId: string, reload: () => void) => {
 	const setModal = useSetModal();
@@ -34,7 +29,16 @@ const useReactModal = (Component: FC<any>, teamId: string, reload: () => void) =
 	});
 };
 
+type TeamChannelsProps = {
+	teamId?: string;
+	rid: string;
+};
+
 const TeamsChannels = ({ teamId, rid }: TeamChannelsProps) => {
+	if (!teamId) {
+		throw new Error('Invalid teamId');
+	}
+
 	const [state, setState] = useState<{ tab?: string; rid?: string }>({});
 	const onClickClose = useTabBarClose();
 
