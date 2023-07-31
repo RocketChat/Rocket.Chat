@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { MarkerType, useEdgesState, useNodesState } from 'reactflow';
 import { useContext, useEffect } from 'react';
 import { context } from '../Context';
@@ -31,9 +32,14 @@ export function useNodesAndEdges() {
       });
     });
     setNodes(prevNodes);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeProject, projects, screens, JSON.stringify(screens), setNodes]);
-
+  }, [
+    activeProject,
+    projects,
+    screens,
+    JSON.stringify(screens),
+    projects[activeProject].screens,
+    setNodes,
+  ]);
   useEffect(() => {
     const _edges = projects[activeProject].flowEdges;
     setEdges(_edges);
@@ -41,7 +47,6 @@ export function useNodesAndEdges() {
     activeProject,
     projects,
     screens,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     projects[activeProject].flowEdges,
     setEdges,
   ]);

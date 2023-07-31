@@ -2,7 +2,11 @@ import { Box } from '@rocket.chat/fuselage';
 import ScreenThumbnailWrapper from '../../ScreenThumbnail/ScreenThumbnailWrapper';
 import Thumbnail from '../../ScreenThumbnail/Thumbnail';
 import RenderPayload from '../../Preview/Display/RenderPayload/RenderPayload';
-import { context, renameProjectAction } from '../../../Context';
+import {
+  activeProjectAction,
+  context,
+  renameProjectAction,
+} from '../../../Context';
 import { ChangeEvent, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../../../utils/formatDate';
@@ -30,6 +34,7 @@ const ProjectsThumbnail = ({
   const { dispatch } = useContext(context);
   const toast = useToastBarDispatch();
   const activeProjectHandler = () => {
+    dispatch(activeProjectAction(id));
     navigate(`/${id}/${routes.project}`);
   };
 
