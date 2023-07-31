@@ -583,7 +583,6 @@ describe('miscellaneous', function () {
 				})
 				.end(done);
 		});
-
 		it('must return the teamMain property when searching for a valid team that the user is not a member of', (done) => {
 			request
 				.get(api('spotlight'))
@@ -604,7 +603,6 @@ describe('miscellaneous', function () {
 				})
 				.end(done);
 		});
-    
 		it('must return rooms when searching for a valid fname', (done) => {
 			request
 				.get(api('spotlight'))
