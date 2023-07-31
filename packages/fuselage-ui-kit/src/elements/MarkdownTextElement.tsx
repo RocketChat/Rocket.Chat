@@ -1,6 +1,6 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import { parse } from '@rocket.chat/message-parser';
 import { Markup } from '@rocket.chat/gazzodown';
+import { parse } from '@rocket.chat/message-parser';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { TextObject } from '@rocket.chat/ui-kit';
 
 import { useUiKitContext } from '../contexts/kitContext';
