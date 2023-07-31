@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import type { AggregationCursor, FilterOperators } from 'mongodb';
 import { Users } from '@rocket.chat/models';
+import type { AggregationCursor, FilterOperators } from 'mongodb';
 
 import { settings } from '../../app/settings/server';
 
