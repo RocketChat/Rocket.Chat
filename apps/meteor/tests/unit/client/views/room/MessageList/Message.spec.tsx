@@ -47,7 +47,7 @@ const RoomMessage = proxyquire.noCallThru().load('../../../../../../client/compo
 	'./room/RoomMessageContent': () => baseMessage.msg,
 	'../MessageHeader': () => <p>message header</p>,
 	'../StatusIndicators': { MessageIndicators: () => <p>message indicators</p> },
-	'../ToolboxHolder': () => <p>toolbox</p>,
+	'../MessageToolboxHolder': () => <p>toolbox</p>,
 }).default as typeof _RoomMessage;
 
 describe('Message', () => {
