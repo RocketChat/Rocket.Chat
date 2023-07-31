@@ -78,6 +78,18 @@ export class UsersRaw extends BaseRaw {
 				name: 'emails.address_insensitive',
 				collation: { locale: 'en', strength: 2, caseLevel: false },
 			},
+			// Used for case insensitive queries
+			// @deprecated
+			// Should be converted to unique index later within a migration to prevent errors of duplicated
+			// records. Those errors does not helps to identify the duplicated value so we need to find a
+			// way to help the migration in case it happens.
+			{
+				key: { username: 1 },
+				unique: false,
+				sparse: true,
+				name: 'username_insensitive',
+				collation: { locale: 'en', strength: 2, caseLevel: false },
+			},
 		];
 	}
 
@@ -321,13 +333,12 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	findOneByUsernameIgnoringCase(username, options) {
-		if (typeof username === 'string') {
-			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
-		}
-
 		const query = { username };
 
-		return this.findOne(query, options);
+		return this.findOne(query, {
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+			...options,
+		});
 	}
 
 	findOneWithoutLDAPByUsernameIgnoringCase(username, options) {
