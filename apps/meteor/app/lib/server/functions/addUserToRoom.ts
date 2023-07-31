@@ -40,8 +40,10 @@ export const addUserToRoom = async function (
 
 	try {
 		await Federation.runFederationChecksBeforeAddUserToRoom({ user, inviter }, room);
-	} catch (error) {
-		throw new Meteor.Error((error as any)?.message);
+	} catch (error: any) {
+		if (error?.type !== 'SERVICE_NOT_FOUND') {
+			throw new Meteor.Error((error as any)?.message);
+		}
 	}
 
 	await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter: userToBeAdded });

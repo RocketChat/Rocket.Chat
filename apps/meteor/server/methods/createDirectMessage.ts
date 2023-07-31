@@ -101,8 +101,10 @@ export async function createDirectMessage(
 	}
 	try {
 		await Federation.runFederationChecksBeforeCreateDirectMessageRoom(roomUsers);
-	} catch (error) {
-		throw new Meteor.Error((error as any)?.message);
+	} catch (error: any) {
+		if (error?.type !== 'SERVICE_NOT_FOUND') {
+			throw new Meteor.Error((error as any)?.message);
+		}
 	}
 	const { _id: rid, inserted, ...room } = await createRoom('d', undefined, undefined, roomUsers as IUser[], false, undefined, {}, options);
 

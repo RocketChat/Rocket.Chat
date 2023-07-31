@@ -162,8 +162,10 @@ export const createRoom = async <T extends RoomType>(
 			try {
 				await Federation.runFederationChecksBeforeAddUserToRoom({ user: member, inviter: owner }, room);
 				await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
-			} catch (error) {
-				continue;
+			} catch (error: any) {
+				if (error?.type !== 'SERVICE_NOT_FOUND') {
+					continue;
+				}
 			}
 
 			const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
