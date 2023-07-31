@@ -216,7 +216,7 @@ describe('miscellaneous', function () {
 				.end(done);
 			user = undefined;
 		});
-		it('create an channel', (done) => {
+		it('create a channel', (done) => {
 			request
 				.post(api('channels.create'))
 				.set(credentials)
