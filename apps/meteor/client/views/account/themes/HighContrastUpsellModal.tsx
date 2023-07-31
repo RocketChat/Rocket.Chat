@@ -14,7 +14,7 @@ const HighContrastUpsellModal = ({ onClose }: { onClose: () => void }) => {
 		return (
 			<GenericUpsellModal
 				title={t('High_contrast_upsell_title')}
-				img='images/high-contrast-upsell-modal.svg'
+				img='images/high-contrast-upsell-modal.png'
 				subtitle={t('High_contrast_upsell_subtitle')}
 				description={t('High_contrast_upsell_description')}
 				onClose={onClose}
@@ -27,7 +27,7 @@ const HighContrastUpsellModal = ({ onClose }: { onClose: () => void }) => {
 	return (
 		<GenericUpsellModal
 			title={t('High_contrast_upsell_title')}
-			img='images/high-contrast-upsell-modal.svg'
+			img='images/high-contrast-upsell-modal.png'
 			subtitle={t('High_contrast_upsell_subtitle')}
 			description={t('High_contrast_upsell_description')}
 			onClose={onClose}
