@@ -1,7 +1,8 @@
 import i18next from 'i18next';
 
+import { MemoizedComponent } from '../../helpers/MemoizedComponent';
+import { createClassName } from '../../helpers/createClassName';
 import { validateEmail } from '../../lib/email';
-import { createClassName, MemoizedComponent } from '../helpers';
 import styles from './styles.scss';
 
 export class Form extends MemoizedComponent {
