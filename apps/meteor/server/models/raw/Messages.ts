@@ -8,7 +8,9 @@ import type {
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
+import { Rooms } from '@rocket.chat/models';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
 	Collection,
@@ -25,13 +27,11 @@ import type {
 	Document,
 	UpdateFilter,
 } from 'mongodb';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Rooms } from '@rocket.chat/models';
 
-import { BaseRaw } from './BaseRaw';
+import { otrSystemMessages } from '../../../app/otr/lib/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { escapeExternalFederationEventId } from '../../services/federation/infrastructure/rocket-chat/adapters/federation-id-escape-helper';
-import { otrSystemMessages } from '../../../app/otr/lib/constants';
+import { BaseRaw } from './BaseRaw';
 
 type DeepWritable<T> = T extends (...args: any) => any
 	? T

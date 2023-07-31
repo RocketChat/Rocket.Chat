@@ -1,7 +1,7 @@
 import type { ILivechatPriority } from '@rocket.chat/core-typings';
 import type { ILivechatPriorityModel } from '@rocket.chat/model-typings';
-import type { Db, UpdateFilter, ModifyResult, IndexDescription, FindOptions } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Db, UpdateFilter, ModifyResult, IndexDescription, FindOptions } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 

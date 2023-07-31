@@ -1,25 +1,25 @@
 import type { ServerResponse } from 'http';
 
-import { Meteor } from 'meteor/meteor';
-import { Random } from '@rocket.chat/random';
-import { Accounts } from 'meteor/accounts-base';
-import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import type { IUser, IIncomingMessage, IPersonalAccessToken } from '@rocket.chat/core-typings';
 import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../lib/server/functions/createRoom';
 import { generateUsernameSuggestion } from '../../../lib/server/functions/getUsernameSuggestion';
 import { saveUserIdentity } from '../../../lib/server/functions/saveUserIdentity';
-import { SAMLServiceProvider } from './ServiceProvider';
-import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import { settings } from '../../../settings/server';
+import { i18n } from '../../../utils/lib/i18n';
 import type { ISAMLAction } from '../definition/ISAMLAction';
 import type { ISAMLUser } from '../definition/ISAMLUser';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import { SAMLServiceProvider } from './ServiceProvider';
 import { SAMLUtils } from './Utils';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { ensureArray } from '../../../../lib/utils/arrayUtils';
-import { i18n } from '../../../utils/lib/i18n';
 
 const showErrorMessage = function (res: ServerResponse, err: string): void {
 	res.writeHead(200, {

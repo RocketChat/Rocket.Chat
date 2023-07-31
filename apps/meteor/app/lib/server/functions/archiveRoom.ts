@@ -1,6 +1,6 @@
-import { Rooms, Subscriptions } from '@rocket.chat/models';
-import type { IMessage } from '@rocket.chat/core-typings';
 import { Message } from '@rocket.chat/core-services';
+import type { IMessage } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 

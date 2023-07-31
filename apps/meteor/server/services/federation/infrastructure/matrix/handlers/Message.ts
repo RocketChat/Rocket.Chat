@@ -1,7 +1,7 @@
 import type { FederationMessageServiceReceiver } from '../../../application/room/message/receiver/MessageServiceReceiver';
 import { MatrixMessageReceiverConverter } from '../converters/room/MessageReceiver';
-import type { MatrixEventMessageReact } from '../definitions/events/MessageReacted';
 import { MatrixEventType } from '../definitions/MatrixEventType';
+import type { MatrixEventMessageReact } from '../definitions/events/MessageReacted';
 import { MatrixBaseEventHandler } from './BaseEvent';
 
 export class MatrixMessageReactedHandler extends MatrixBaseEventHandler {
