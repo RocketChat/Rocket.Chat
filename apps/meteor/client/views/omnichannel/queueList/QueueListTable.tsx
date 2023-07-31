@@ -89,7 +89,7 @@ const QueueListTable = (): ReactElement => {
 		return query;
 	}, [sortBy, sortDirection, itemsPerPage, current, filters.status, filters.departmentId, filters.servedBy]);
 
-	const getUserStatus = (status?: UserStatus) => {
+	const getUserStatus = (status?: string) => {
 		if (!status) {
 			return t('Offline');
 		}
