@@ -26,7 +26,7 @@ import { isMessageFirstUnread } from '../../MessageList/lib/isMessageFirstUnread
 import { isMessageNewDay } from '../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../MessageList/providers/MessageListProvider';
 import { useRoomSubscription } from '../../contexts/RoomContext';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useTabBarClose } from '../../contexts/RoomToolboxContext';
 
 type MessageListTabProps = {
 	iconName: IconName;

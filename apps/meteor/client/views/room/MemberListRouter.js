@@ -2,7 +2,7 @@ import { useUserId } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { useRoom } from './contexts/RoomContext';
-import { useTab, useTabBarClose, useTabContext } from './contexts/ToolboxContext';
+import { useRoomToolbox, useTabBarClose } from './contexts/RoomToolboxContext';
 import RoomMembers from './contextualBar/RoomMembers';
 import UserInfo from './contextualBar/UserInfo';
 
@@ -19,11 +19,10 @@ const getUid = (room, ownUserId) => {
 };
 
 const MemberListRouter = ({ rid }) => {
-	const username = useTabContext();
+	const { tab, context: username } = useRoomToolbox();
 	const room = useRoom();
 	const onClickClose = useTabBarClose();
 	const ownUserId = useUserId();
-	const tab = useTab();
 
 	const isMembersList = tab.id === 'members-list' || tab.id === 'user-info-group';
 
