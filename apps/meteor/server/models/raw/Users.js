@@ -306,57 +306,60 @@ export class UsersRaw extends BaseRaw {
 				  ]
 				: [];
 
-		return this.col.aggregate([
-			{
-				$match: query,
-			},
-			{
-				$lookup: {
-					from: 'rocketchat_subscription',
-					localField: '_id',
-					foreignField: 'u._id',
-					as: 'sub',
-					pipeline: [
-						{
-							$match: { $expr: { $eq: ['$rid', rid] } },
-						},
-					],
+		return this.col.aggregate(
+			[
+				{
+					$match: query,
 				},
-			},
-			{ $unwind: '$sub' },
-			{
-				$project: {
-					...options.projection,
-					roles: '$sub.roles',
-				},
-			},
-			{
-				$addFields: {
-					highestRole: {
-						$cond: [
-							{ $in: ['owner', '$roles'] },
-							{ role: 'owner', level: 0 },
-							{ $cond: [{ $in: ['moderator', '$roles'] }, { role: 'moderator', level: 1 }, { role: 'member', level: 2 }] },
+				{
+					$lookup: {
+						from: 'rocketchat_subscription',
+						localField: '_id',
+						foreignField: 'u._id',
+						as: 'sub',
+						pipeline: [
+							{
+								$match: { $expr: { $eq: ['$rid', rid] } },
+							},
 						],
 					},
 				},
-			},
-			{
-				$facet: {
-					members: [
-						{
-							$sort: {
-								'highestRole.level': 1,
-								...options.sort,
-							},
-						},
-						...skip,
-						...limit,
-					],
-					totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+				{ $unwind: '$sub' },
+				{
+					$project: {
+						...options.projection,
+						roles: '$sub.roles',
+					},
 				},
-			},
-		]);
+				{
+					$addFields: {
+						highestRole: {
+							$cond: [
+								{ $in: ['owner', '$roles'] },
+								{ role: 'owner', level: 0 },
+								{ $cond: [{ $in: ['moderator', '$roles'] }, { role: 'moderator', level: 1 }, { role: 'member', level: 2 }] },
+							],
+						},
+					},
+				},
+				{
+					$facet: {
+						members: [
+							{
+								$sort: {
+									'highestRole.level': 1,
+									...options.sort,
+								},
+							},
+							...skip,
+							...limit,
+						],
+						totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+					},
+				},
+			],
+			{ allowDiskUse: true },
+		);
 	}
 
 	findPaginatedByActiveLocalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
