@@ -15,7 +15,7 @@ import {
 	ContextualbarBack,
 	ContextualbarInnerContent,
 } from '../../../../components/Contextualbar';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useTabBarClose } from '../../contexts/RoomToolboxContext';
 import { useGoToThreadList } from '../../hooks/useGoToThreadList';
 import ChatProvider from '../../providers/ChatProvider';
 import ThreadChat from './components/ThreadChat';

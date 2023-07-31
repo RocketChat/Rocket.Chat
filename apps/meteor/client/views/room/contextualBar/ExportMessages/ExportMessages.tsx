@@ -12,7 +12,7 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 } from '../../../../components/Contextualbar';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useTabBarClose } from '../../contexts/RoomToolboxContext';
 import FileExport from './FileExport';
 import MailExportForm from './MailExportForm';
 
