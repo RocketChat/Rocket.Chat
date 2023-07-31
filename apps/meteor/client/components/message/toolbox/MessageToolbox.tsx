@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
-import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
+import { MessageToolbox as FuselageMessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useSettings, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -15,7 +15,7 @@ import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useChat } from '../../../views/room/contexts/ChatContext';
-import { useToolboxContext } from '../../../views/room/contexts/ToolboxContext';
+import { useRoomToolbox } from '../../../views/room/contexts/RoomToolboxContext';
 import MessageActionMenu from './MessageActionMenu';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
@@ -38,16 +38,16 @@ const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActi
 	return 'message';
 };
 
-type ToolboxProps = {
+type MessageToolboxProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
 	messageContext?: MessageActionContext;
 	room: IRoom;
 	subscription?: ISubscription;
 };
 
-const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps): ReactElement | null => {
+const MessageToolbox = ({ message, messageContext, room, subscription }: MessageToolboxProps): ReactElement | null => {
 	const t = useTranslation();
-	const user = useUser();
+	const user = useUser() ?? undefined;
 	const settings = useSettings();
 
 	const quickReactionsEnabled = useFeaturePreview('quickReactions');
@@ -64,21 +64,15 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 	const actionButtonApps = useMessageActionAppsActionButtons(context);
 
 	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
-		const messageActions = await MessageAction.getButtons(
-			{ message, room, user: user ?? undefined, subscription, settings: mapSettings, chat },
-			context,
-			'message',
-		);
-		const menuActions = await MessageAction.getButtons(
-			{ message, room, user: user ?? undefined, subscription, settings: mapSettings, chat },
-			context,
-			'menu',
-		);
+		const props = { message, room, user, subscription, settings: mapSettings, chat };
 
-		return { message: messageActions, menu: menuActions };
+		const toolboxItems = await MessageAction.getAll(props, context, 'message');
+		const menuItems = await MessageAction.getAll(props, context, 'menu');
+
+		return { message: toolboxItems, menu: menuItems };
 	});
 
-	const toolbox = useToolboxContext();
+	const toolbox = useRoomToolbox();
 
 	const selecting = useIsSelecting();
 
@@ -96,7 +90,7 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 	};
 
 	return (
-		<MessageToolbox>
+		<FuselageMessageToolbox>
 			{quickReactionsEnabled &&
 				isReactionAllowed &&
 				quickReactions.slice(0, 3).map(({ emoji, image }) => {
@@ -122,8 +116,8 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 					data-qa-type='message-action-menu-options'
 				/>
 			)}
-		</MessageToolbox>
+		</FuselageMessageToolbox>
 	);
 };
 
-export default memo(Toolbox);
+export default memo(MessageToolbox);
