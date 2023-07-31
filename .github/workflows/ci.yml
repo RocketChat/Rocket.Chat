@@ -689,3 +689,11 @@ jobs:
           event-type: new_release
           repository: RocketChat/Release.Distributions
           client-payload: '{"tag": "${{ github.ref_name }}"}'
+
+      - name: Update docs
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.DOCS_PAT }}
+          event-type: new_release
+          repository: RocketChat/docs
+          client-payload: '{"tag": "${{ github.ref_name }}"}'

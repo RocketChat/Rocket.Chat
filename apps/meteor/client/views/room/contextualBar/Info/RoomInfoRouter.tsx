@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
 import { useRoom } from '../../contexts/RoomContext';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useTabBarClose } from '../../contexts/RoomToolboxContext';
 import EditRoomInfoWithData from './EditRoomInfo';
 import RoomInfo from './RoomInfo';
 import { useCanEditRoom } from './hooks/useCanEditRoom';
