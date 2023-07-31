@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 import type { ReactElement, SyntheticEvent } from 'react';
 
-import { useTabBarClose } from '../../../../client/views/room/contexts/ToolboxContext';
+import { useTabBarClose } from '../../../../client/views/room/contexts/RoomToolboxContext';
 import GameCenterContainer from './GameCenterContainer';
 import GameCenterList from './GameCenterList';
 import { useExternalComponentsQuery } from './hooks/useExternalComponentsQuery';

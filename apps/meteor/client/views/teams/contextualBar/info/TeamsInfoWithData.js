@@ -16,7 +16,7 @@ import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { useTabBarClose, useTabBarOpen } from '../../../room/contexts/ToolboxContext';
+import { useTabBarClose, useTabBarOpen } from '../../../room/contexts/RoomToolboxContext';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
 import DeleteTeamModal from './Delete';
 import LeaveTeam from './LeaveTeam';
