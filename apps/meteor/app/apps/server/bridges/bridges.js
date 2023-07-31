@@ -1,27 +1,28 @@
 import { AppBridges } from '@rocket.chat/apps-engine/server/bridges';
 
 import { AppActivationBridge } from './activation';
-import { AppDetailChangesBridge } from './details';
+import { AppApisBridge } from './api';
 import { AppCloudBridge } from './cloud';
 import { AppCommandsBridge } from './commands';
-import { AppApisBridge } from './api';
+import { AppDetailChangesBridge } from './details';
 import { AppEnvironmentalVariableBridge } from './environmental';
 import { AppHttpBridge } from './http';
+import { AppInternalBridge } from './internal';
+import { AppInternalFederationBridge } from './internalFederation';
 import { AppListenerBridge } from './listeners';
+import { AppLivechatBridge } from './livechat';
 import { AppMessageBridge } from './messages';
+import { AppModerationBridge } from './moderation';
+import { AppOAuthAppsBridge } from './oauthApps';
 import { AppPersistenceBridge } from './persistence';
 import { AppRoomBridge } from './rooms';
-import { AppInternalBridge } from './internal';
-import { AppSettingBridge } from './settings';
-import { AppUserBridge } from './users';
-import { AppLivechatBridge } from './livechat';
-import { AppUploadBridge } from './uploads';
-import { UiInteractionBridge } from './uiInteraction';
 import { AppSchedulerBridge } from './scheduler';
+import { AppSettingBridge } from './settings';
+import { AppThreadBridge } from './thread';
+import { UiInteractionBridge } from './uiInteraction';
+import { AppUploadBridge } from './uploads';
+import { AppUserBridge } from './users';
 import { AppVideoConferenceBridge } from './videoConferences';
-import { AppOAuthAppsBridge } from './oauthApps';
-import { AppInternalFederationBridge } from './internalFederation';
-import { AppModerationBridge } from './moderation';
 
 export class RealAppBridges extends AppBridges {
 	constructor(orch) {
@@ -47,8 +48,9 @@ export class RealAppBridges extends AppBridges {
 		this._cloudWorkspaceBridge = new AppCloudBridge(orch);
 		this._videoConfBridge = new AppVideoConferenceBridge(orch);
 		this._oAuthBridge = new AppOAuthAppsBridge(orch);
-		this._internalFedBridge = new AppInternalFederationBridge(orch);
+		this._internalFedBridge = new AppInternalFederationBridge();
 		this._moderationBridge = new AppModerationBridge(orch);
+		this._threadBridge = new AppThreadBridge(orch);
 	}
 
 	getCommandBridge() {
@@ -73,6 +75,10 @@ export class RealAppBridges extends AppBridges {
 
 	getMessageBridge() {
 		return this._msgBridge;
+	}
+
+	getThreadBridge() {
+		return this._threadBridge;
 	}
 
 	getPersistenceBridge() {

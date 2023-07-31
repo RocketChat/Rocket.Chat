@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { Babel } from 'meteor/babel-compiler';
-import _ from 'underscore';
+import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
 import { Integrations, Roles, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
+import { Babel } from 'meteor/babel-compiler';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
@@ -80,7 +80,7 @@ Meteor.methods<ServerMethods>({
 						$set: {
 							scriptCompiled,
 						},
-						$unset: { scriptError: 1 },
+						$unset: { scriptError: 1 as const },
 					},
 				);
 			} catch (e) {
@@ -96,7 +96,7 @@ Meteor.methods<ServerMethods>({
 							scriptError,
 						},
 						$unset: {
-							scriptCompiled: 1,
+							scriptCompiled: 1 as const,
 						},
 					},
 				);
@@ -159,6 +159,7 @@ Meteor.methods<ServerMethods>({
 					channel: channels,
 					script: integration.script,
 					scriptEnabled: integration.scriptEnabled,
+					overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
 					_updatedAt: new Date(),
 					_updatedBy: await Users.findOne({ _id: this.userId }, { projection: { username: 1 } }),
 				},

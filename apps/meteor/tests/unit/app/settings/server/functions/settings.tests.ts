@@ -1,8 +1,8 @@
 import { expect, spy } from 'chai';
 
-import { Settings } from '../../../../../../app/settings/server/functions/settings.mocks';
-import { SettingsRegistry } from '../../../../../../app/settings/server/SettingsRegistry';
 import { CachedSettings } from '../../../../../../app/settings/server/CachedSettings';
+import { SettingsRegistry } from '../../../../../../app/settings/server/SettingsRegistry';
+import { Settings } from '../../../../../../app/settings/server/functions/settings.mocks';
 
 describe('Settings', () => {
 	beforeEach(() => {

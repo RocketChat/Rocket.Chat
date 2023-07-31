@@ -122,6 +122,7 @@ export * from './VideoConferenceCapabilities';
 export * from './VideoConferenceOptions';
 
 export * from './SpotlightUser';
+export * from './ICalendarEvent';
 
 export * from './search';
 export * from './omnichannel';
@@ -133,3 +134,4 @@ export * from './migrations/IControl';
 export * from './ICustomOAuthConfig';
 
 export * from './IModerationReport';
+export * from './CustomFieldMetadata';

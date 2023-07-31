@@ -1,17 +1,17 @@
 import { EventEmitter } from 'events';
 
-import { Apps } from '@rocket.chat/core-services';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import { Apps } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
+import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
+import type { ILicense } from '../definition/ILicense';
+import type { ILicenseTag } from '../definition/ILicenseTag';
 import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
-import type { ILicense } from '../definition/ILicense';
-import type { ILicenseTag } from '../definition/ILicenseTag';
 import { isUnderAppLimits } from './lib/isUnderAppLimits';
-import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -21,6 +21,7 @@ interface IValidLicense {
 }
 
 let maxGuestUsers = 0;
+let maxRoomsPerGuest = 0;
 let maxActiveUsers = 0;
 
 class LicenseClass {
@@ -192,6 +193,10 @@ class LicenseClass {
 				maxGuestUsers = license.maxGuestUsers;
 			}
 
+			if (license.maxRoomsPerGuest > maxRoomsPerGuest) {
+				maxRoomsPerGuest = license.maxRoomsPerGuest;
+			}
+
 			if (license.maxActiveUsers > maxActiveUsers) {
 				maxActiveUsers = license.maxActiveUsers;
 			}
@@ -321,6 +326,10 @@ export function isEnterprise(): boolean {
 
 export function getMaxGuestUsers(): number {
 	return maxGuestUsers;
+}
+
+export function getMaxRoomsPerGuest(): number {
+	return maxRoomsPerGuest;
 }
 
 export function getMaxActiveUsers(): number {

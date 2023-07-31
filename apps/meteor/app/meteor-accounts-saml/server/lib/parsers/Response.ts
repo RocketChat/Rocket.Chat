@@ -1,12 +1,12 @@
 import xmldom from '@xmldom/xmldom';
-import xmlenc from 'xml-encryption';
 import xmlCrypto from 'xml-crypto';
+import xmlenc from 'xml-encryption';
 
-import { SAMLUtils } from '../Utils';
-import { StatusCode } from '../constants';
+import type { ISAMLAssertion } from '../../definition/ISAMLAssertion';
 import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 import type { IResponseValidateCallback } from '../../definition/callbacks';
-import type { ISAMLAssertion } from '../../definition/ISAMLAssertion';
+import { SAMLUtils } from '../Utils';
+import { StatusCode } from '../constants';
 
 type XmlParent = Element | Document;
 
@@ -210,7 +210,7 @@ export class ResponseParser {
 		if (typeof encAssertion !== 'undefined') {
 			const options = { key: this.serviceProviderOptions.privateKey };
 			const encData = encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0];
-			xmlenc.decrypt(encData, options, function (err, result) {
+			xmlenc.decrypt(encData, options, (err, result) => {
 				if (err) {
 					SAMLUtils.error(err);
 				}
@@ -322,7 +322,6 @@ export class ResponseParser {
 		const sig = new xmlCrypto.SignedXml();
 
 		sig.keyInfoProvider = {
-			file: '',
 			getKeyInfo: () => '<X509Data></X509Data>',
 			getKey: () => Buffer.from(SAMLUtils.certToPEM(cert)),
 		};

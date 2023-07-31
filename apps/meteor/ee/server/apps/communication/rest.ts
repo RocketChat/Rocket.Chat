@@ -1,28 +1,28 @@
-import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-import { Meteor } from 'meteor/meteor';
-import { Settings, Users } from '@rocket.chat/models';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import type { IUser, IMessage } from '@rocket.chat/core-typings';
+import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { Meteor } from 'meteor/meteor';
 
-import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
-import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
-import { settings } from '../../../../app/settings/server';
-import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
-import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
-import { apiDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
-import { notifyAppInstall } from '../marketplace/appInstall';
-import { canEnableApp } from '../../../app/license/server/license';
-import { appsCountHandler } from './endpoints/appsCountHandler';
-import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
-import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 import type { APIClass } from '../../../../app/api/server';
 import { API } from '../../../../app/api/server';
-import { Info } from '../../../../app/utils/server';
+import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
+import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
+import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
+import { apiDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
+import { settings } from '../../../../app/settings/server';
+import { Info } from '../../../../app/utils/rocketchat.info';
+import { i18n } from '../../../../server/lib/i18n';
+import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
+import { canEnableApp } from '../../../app/license/server/license';
+import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
+import { notifyAppInstall } from '../marketplace/appInstall';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
-import { i18n } from '../../../../server/lib/i18n';
+import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
+import { appsCountHandler } from './endpoints/appsCountHandler';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -223,9 +223,7 @@ export class AppsRestApi {
 
 					// Gets the Apps from the marketplace
 					if ('marketplace' in this.queryParams && this.queryParams.marketplace) {
-						apiDeprecationLogger.warn(
-							'This endpoint has been deprecated and will be removed in the future. Use /apps/marketplace to get the apps list.',
-						);
+						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/marketplace to get the apps list.');
 
 						const headers = getDefaultHeaders();
 						const token = await getWorkspaceAccessToken();
@@ -249,9 +247,7 @@ export class AppsRestApi {
 					}
 
 					if ('categories' in this.queryParams && this.queryParams.categories) {
-						apiDeprecationLogger.warn(
-							'This endpoint has been deprecated and will be removed in the future. Use /apps/categories to get the categories list.',
-						);
+						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/categories to get the categories list.');
 						const headers = getDefaultHeaders();
 						const token = await getWorkspaceAccessToken();
 						if (token) {
@@ -280,9 +276,7 @@ export class AppsRestApi {
 						this.queryParams.buildExternalUrl &&
 						this.queryParams.appId
 					) {
-						apiDeprecationLogger.warn(
-							'This endpoint has been deprecated and will be removed in the future. Use /apps/buildExternalUrl to get the modal URLs.',
-						);
+						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/buildExternalUrl to get the modal URLs.');
 						const workspaceId = settings.get('Cloud_Workspace_Id');
 
 						if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
@@ -304,10 +298,8 @@ export class AppsRestApi {
 							}?workspaceId=${workspaceId}&token=${token.token}&seats=${seats}`,
 						});
 					}
+					apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
 
-					apiDeprecationLogger.warn(
-						'This endpoint has been deprecated and will be removed in the future. Use /apps/installed to get the installed apps list.',
-					);
 					const apps = manager.get().map(formatAppInstanceForRest);
 
 					return API.v1.success({ apps });
@@ -807,7 +799,7 @@ export class AppsRestApi {
 					let result;
 					let statusCode;
 					try {
-						const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}/versions`, { headers });
+						const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}`, { headers });
 						statusCode = request.status;
 						result = await request.json();
 

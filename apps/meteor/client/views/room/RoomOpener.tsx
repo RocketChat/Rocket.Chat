@@ -29,7 +29,11 @@ const RoomOpener = ({ type, reference }: RoomOpenerProps): ReactElement => {
 	return (
 		<Suspense fallback={<RoomSkeleton />}>
 			{isLoading && <RoomSkeleton />}
-			{isSuccess && <RoomProvider rid={data.rid}>{<Room />}</RoomProvider>}
+			{isSuccess && (
+				<RoomProvider rid={data.rid}>
+					<Room />
+				</RoomProvider>
+			)}
 			{isError &&
 				(() => {
 					if (error instanceof RoomNotFoundError) {

@@ -1,12 +1,13 @@
-import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.chat/rest-typings';
-import { Users } from '@rocket.chat/models';
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
-import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
-import { Livechat } from '../../lib/Livechat';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { Livechat } from '../../lib/Livechat';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
 	async get() {
@@ -42,13 +43,13 @@ API.v1.addRoute(
 
 			let { department } = this.queryParams;
 			if (!department) {
-				const requireDeparment = await Livechat.getRequiredDepartment();
-				if (requireDeparment) {
-					department = requireDeparment._id;
+				const requireDepartment = await LivechatTyped.getRequiredDepartment();
+				if (requireDepartment) {
+					department = requireDepartment._id;
 				}
 			}
 
-			const agentData = await Livechat.getNextAgent(department);
+			const agentData = await LivechatTyped.getNextAgent(department);
 			if (!agentData) {
 				throw new Error('agent-not-found');
 			}

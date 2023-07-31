@@ -1,38 +1,38 @@
-import { Skeleton, Table } from '@rocket.chat/fuselage';
+import { Skeleton, TableRow, TableCell } from '@rocket.chat/fuselage';
 import React from 'react';
 
 function ImportOperationSummarySkeleton({ small }) {
 	return (
-		<Table.Row>
-			<Table.Cell>
+		<TableRow>
+			<TableCell>
 				<Skeleton />
-			</Table.Cell>
-			<Table.Cell>
+			</TableCell>
+			<TableCell>
 				<Skeleton />
-			</Table.Cell>
+			</TableCell>
 			{!small && (
 				<>
-					<Table.Cell>
+					<TableCell>
 						<Skeleton />
-					</Table.Cell>
-					<Table.Cell>
+					</TableCell>
+					<TableCell>
 						<Skeleton />
-					</Table.Cell>
-					<Table.Cell>
+					</TableCell>
+					<TableCell>
 						<Skeleton />
-					</Table.Cell>
-					<Table.Cell>
+					</TableCell>
+					<TableCell>
 						<Skeleton />
-					</Table.Cell>
-					<Table.Cell>
+					</TableCell>
+					<TableCell>
 						<Skeleton />
-					</Table.Cell>
-					<Table.Cell>
+					</TableCell>
+					<TableCell>
 						<Skeleton />
-					</Table.Cell>
+					</TableCell>
 				</>
 			)}
-		</Table.Row>
+		</TableRow>
 	);
 }
 

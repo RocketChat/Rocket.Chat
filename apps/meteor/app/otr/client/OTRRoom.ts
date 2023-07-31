@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
-import { Random } from '@rocket.chat/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
@@ -12,8 +12,11 @@ import { dispatchToastMessage } from '../../../client/lib/toast';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { Notifications } from '../../notifications/client';
-import { otrSystemMessages } from '../lib/constants';
+import { sdk } from '../../utils/client/lib/SDKClient';
+import { t } from '../../utils/lib/i18n';
 import type { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom } from '../lib/IOTR';
+import { OtrRoomState } from '../lib/OtrRoomState';
+import { otrSystemMessages } from '../lib/constants';
 import {
 	decryptAES,
 	deriveBits,
@@ -25,9 +28,6 @@ import {
 	importKeyRaw,
 	joinEncryptedData,
 } from '../lib/functions';
-import { OtrRoomState } from '../lib/OtrRoomState';
-import { t } from '../../utils/lib/i18n';
-import { sdk } from '../../utils/client/lib/SDKClient';
 
 export class OTRRoom implements IOTRRoom {
 	private _userId: string;
@@ -85,7 +85,11 @@ export class OTRRoom implements IOTRRoom {
 					refresh,
 				});
 			if (refresh) {
-				await Meteor.callAsync('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
+				const user = Meteor.user();
+				if (!user) {
+					return;
+				}
+				await sdk.call('sendSystemMessages', this._roomId, user.username, otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
 				this.isFirstOTR = false;
 			}
 		} catch (e) {
@@ -129,7 +133,7 @@ export class OTRRoom implements IOTRRoom {
 		this._keyPair = null;
 		this._exportedPublicKey = {};
 		this._sessionKey = null;
-		Meteor.call('deleteOldOTRMessages', this._roomId);
+		void sdk.call('deleteOldOTRMessages', this._roomId);
 	}
 
 	async generateKeyPair(): Promise<void> {
@@ -159,7 +163,7 @@ export class OTRRoom implements IOTRRoom {
 			this._exportedPublicKey = await exportKey(this._keyPair.publicKey);
 
 			// Once we have generated new keys, it's safe to delete old messages
-			Meteor.call('deleteOldOTRMessages', this._roomId);
+			void sdk.call('deleteOldOTRMessages', this._roomId);
 		} catch (e) {
 			this.setState(OtrRoomState.ERROR);
 			throw e;

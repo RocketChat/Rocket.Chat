@@ -1,5 +1,5 @@
-import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { IUser } from '@rocket.chat/core-typings';
+import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
 import type { Request, Response } from 'express';
 
@@ -95,6 +95,7 @@ export type Options = (
 ) & {
 	validateParams?: ValidateFunction | { [key in Method]?: ValidateFunction };
 	authOrAnonRequired?: true;
+	deprecationVersion?: string;
 };
 
 export type PartialThis = {

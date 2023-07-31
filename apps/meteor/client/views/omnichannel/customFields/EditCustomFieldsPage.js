@@ -1,4 +1,4 @@
-import { Box, Button, Icon, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState } from 'react';
@@ -6,7 +6,7 @@ import React, { useCallback, useState } from 'react';
 import Page from '../../../components/Page';
 import { useForm } from '../../../hooks/useForm';
 import { useFormsSubscription } from '../additionalForms';
-import CustomFieldsForm from './CustomFieldsForm';
+import NewCustomFieldsForm from './NewCustomFieldsForm';
 
 const getInitialValues = (cf) => ({
 	id: cf._id,
@@ -67,8 +67,7 @@ const EditCustomFieldsPage = ({ customField, id, reload }) => {
 		<Page>
 			<Page.Header title={t('Edit_Custom_Field')}>
 				<ButtonGroup align='end'>
-					<Button onClick={handleReturn}>
-						<Icon size='x16' name='back' />
+					<Button icon='back' onClick={handleReturn}>
 						{t('Back')}
 					</Button>
 					<Button data-qa-id='BtnSaveEditCustomFieldsPage' primary onClick={handleSave} disabled={!canSave}>
@@ -79,7 +78,7 @@ const EditCustomFieldsPage = ({ customField, id, reload }) => {
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<FieldGroup>
-						<CustomFieldsForm values={values} handlers={handlers} />
+						<NewCustomFieldsForm values={values} handlers={handlers} />
 						{AdditionalForm && <AdditionalForm onChange={handleAdditionalForm} state={values} data={customField} />}
 					</FieldGroup>
 				</Box>

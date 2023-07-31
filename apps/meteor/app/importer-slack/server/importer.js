@@ -1,9 +1,9 @@
-import _ from 'underscore';
 import { Messages, Settings, ImportData } from '@rocket.chat/models';
+import _ from 'underscore';
 
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
-import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
+import { settings } from '../../settings/server';
 import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
 export class SlackImporter extends Base {
@@ -470,7 +470,7 @@ export class SlackImporter extends Base {
 			const isBotMessage = message.subtype && ['bot_message', 'slackbot_response'].includes(message.subtype);
 
 			if (message.subtype && !regularTypes.includes(message.subtype) && !isBotMessage) {
-				if (this.processMessageSubType(message, slackChannelId, newMessage, missedTypes)) {
+				if (await this.processMessageSubType(message, slackChannelId, newMessage, missedTypes)) {
 					await this.converter.addMessage(newMessage, this._useUpsert);
 				}
 			} else {

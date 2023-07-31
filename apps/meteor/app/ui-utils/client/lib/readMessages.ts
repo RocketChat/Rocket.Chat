@@ -1,12 +1,12 @@
-import { Meteor } from 'meteor/meteor';
-import { Emitter } from '@rocket.chat/emitter';
 import type { IRoom } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
+import { Meteor } from 'meteor/meteor';
 
-import { RoomHistoryManager } from './RoomHistoryManager';
-import { LegacyRoomManager } from './LegacyRoomManager';
-import { ChatSubscription, ChatMessage } from '../../../models/client';
 import { RoomManager } from '../../../../client/lib/RoomManager';
+import { ChatSubscription, ChatMessage } from '../../../models/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
+import { LegacyRoomManager } from './LegacyRoomManager';
+import { RoomHistoryManager } from './RoomHistoryManager';
 
 class ReadMessage extends Emitter {
 	protected enabled: boolean;
@@ -150,7 +150,7 @@ class ReadMessage extends Emitter {
 					$gt: lastReadRecord.ts,
 				},
 				'u._id': {
-					$ne: Meteor.userId(),
+					$ne: Meteor.userId() ?? undefined,
 				},
 			},
 			{

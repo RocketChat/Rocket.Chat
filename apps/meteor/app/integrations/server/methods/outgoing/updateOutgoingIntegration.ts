@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
+import type { IIntegration, INewOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Integrations, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IIntegration, INewOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
@@ -56,7 +56,7 @@ Meteor.methods<ServerMethods>({
 				{ _id: integrationId },
 				{
 					$set: { scriptCompiled: integration.scriptCompiled },
-					$unset: { scriptError: 1 },
+					$unset: { scriptError: 1 as const },
 				},
 			);
 		} else {
@@ -64,7 +64,7 @@ Meteor.methods<ServerMethods>({
 				{ _id: integrationId },
 				{
 					$set: { scriptError: integration.scriptError },
-					$unset: { scriptCompiled: 1 },
+					$unset: { scriptCompiled: 1 as const },
 				},
 			);
 		}

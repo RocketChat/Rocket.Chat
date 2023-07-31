@@ -1,5 +1,6 @@
 import type { ILivechatDepartmentAgents, RocketChatRecordDeleted, IUser } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
+import { Users } from '@rocket.chat/models';
 import type {
 	Collection,
 	FindCursor,
@@ -12,7 +13,6 @@ import type {
 	IndexDescription,
 	SortDirection,
 } from 'mongodb';
-import { Users } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -355,6 +355,18 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 
 	countByDepartmentId(departmentId: string): Promise<number> {
 		return this.col.countDocuments({ departmentId });
+	}
+
+	disableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document> {
+		return this.updateMany({ departmentId }, { $set: { departmentEnabled: false } });
+	}
+
+	enableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document> {
+		return this.updateMany({ departmentId }, { $set: { departmentEnabled: true } });
+	}
+
+	findAllAgentsConnectedToListOfDepartments(departmentIds: string[]): Promise<string[]> {
+		return this.col.distinct('agentId', { departmentId: { $in: departmentIds }, departmentEnabled: true });
 	}
 }
 

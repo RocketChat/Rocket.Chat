@@ -1,4 +1,4 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -19,16 +19,14 @@ const OAuthAppsPage = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('OAuth_Applications')}>
+				<Page.Header title={t('Third_party_login')}>
 					{context && (
-						<Button alignSelf='flex-end' onClick={(): void => router.push({})}>
-							<Icon name='back' />
+						<Button icon='back' alignSelf='flex-end' onClick={(): void => router.push({})}>
 							{t('Back')}
 						</Button>
 					)}
 					{!context && (
 						<Button primary alignSelf='flex-end' onClick={(): void => router.push({ context: 'new' })}>
-							<Icon name='plus' />
 							{t('New_Application')}
 						</Button>
 					)}

@@ -1,18 +1,19 @@
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { FlowRouter } from 'meteor/kadira:flow-router';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
-import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
-import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
-import { mainReady } from './mainReady';
-import { callbacks } from '../../../../lib/callbacks';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models/client';
-import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { RoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
+import { getConfig } from '../../../../client/lib/utils/getConfig';
+import { router } from '../../../../client/providers/RouterProvider';
+import { callbacks } from '../../../../lib/callbacks';
+import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models/client';
 import { Notifications } from '../../../notifications/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
+import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
+import { mainReady } from './mainReady';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
 
@@ -87,15 +88,18 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 
 	void Tracker.nonreactive(async () => {
 		if (msg.t === 'room_changed_privacy') {
-			const type = FlowRouter.current().route?.name === 'channel' ? 'c' : 'p';
-			await close(type + FlowRouter.getParam('name'));
+			const type = router.getRouteName() === 'channel' ? 'c' : 'p';
+			await close(type + router.getRouteParameters().name);
 
 			const subscription = ChatSubscription.findOne({ rid: msg.rid });
 			if (!subscription) {
 				throw new Error('Subscription not found');
 			}
-			const route = subscription.t === 'c' ? 'channel' : 'group';
-			FlowRouter.go(route, { name: subscription.name }, FlowRouter.current().queryParams);
+			router.navigate({
+				pattern: subscription.t === 'c' ? '/channel/:name/:tab?/:context?' : '/group/:name/:tab?/:context?',
+				params: { name: subscription.name },
+				search: router.getSearchParameters(),
+			});
 		}
 
 		if (msg.t === 'r') {
@@ -103,9 +107,9 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 			if (!room) {
 				throw new Error('Room not found');
 			}
-			if (room.name !== FlowRouter.getParam('name')) {
-				await close(room.t + FlowRouter.getParam('name'));
-				roomCoordinator.openRouteLink(room.t, room, FlowRouter.current().queryParams);
+			if (room.name !== router.getRouteParameters().name) {
+				await close(room.t + router.getRouteParameters().name);
+				roomCoordinator.openRouteLink(room.t, room, router.getSearchParameters());
 			}
 		}
 	});
@@ -174,7 +178,7 @@ const computation = Tracker.autorun(() => {
 						ChatMessage.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true });
 					});
 					Notifications.onRoom(record.rid, 'deleteMessageBulk', ({ rid, ts, excludePinned, ignoreDiscussion, users }) => {
-						const query: Mongo.Query<IMessage> = { rid, ts };
+						const query: Mongo.Selector<IMessage> = { rid, ts };
 						if (excludePinned) {
 							query.pinned = { $ne: true };
 						}

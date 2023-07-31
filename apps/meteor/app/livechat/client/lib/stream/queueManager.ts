@@ -1,9 +1,9 @@
 import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent } from '@rocket.chat/core-typings';
 
-import { LivechatInquiry } from '../../collections/LivechatInquiry';
-import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
 import { queryClient } from '../../../../../client/lib/queryClient';
+import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
 import { sdk } from '../../../../utils/client/lib/SDKClient';
+import { LivechatInquiry } from '../../collections/LivechatInquiry';
 
 const departments = new Set();
 
@@ -17,7 +17,7 @@ const events = {
 		}
 
 		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
-		await queryClient.invalidateQueries({ queryKey: ['rooms', inquiry.rid], exact: true });
+		await queryClient.invalidateQueries(['/v1/rooms.info', inquiry.rid]);
 	},
 	removed: (inquiry: ILivechatInquiryRecord) => LivechatInquiry.remove(inquiry._id),
 };

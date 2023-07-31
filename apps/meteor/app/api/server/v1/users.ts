@@ -1,3 +1,6 @@
+import { Team, api } from '@rocket.chat/core-services';
+import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
+import { Users, Subscriptions } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
@@ -14,37 +17,38 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
-import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
-import { Users, Subscriptions } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
-import { Team, api } from '@rocket.chat/core-services';
 
+import { i18n } from '../../../../server/lib/i18n';
+import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
+import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
+import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
+import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { settings } from '../../../settings/server';
-import { validateCustomFields, saveUser, saveCustomFieldsWithoutValidation, setUserAvatar, saveCustomFields } from '../../../lib/server';
 import {
 	checkUsernameAvailability,
 	checkUsernameAvailabilityWithValidation,
 } from '../../../lib/server/functions/checkUsernameAvailability';
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
+import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
+import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
+import { saveUser } from '../../../lib/server/functions/saveUser';
 import { setStatusText } from '../../../lib/server/functions/setStatusText';
+import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
+import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
+import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
+import { settings } from '../../../settings/server';
+import { getURL } from '../../../utils/server/getURL';
 import { API } from '../api';
-import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
-import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
-import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
-import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
-import { isValidQuery } from '../lib/isValidQuery';
-import { getURL } from '../../../utils/server';
-import { getUploadFormData } from '../lib/getUploadFormData';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { isUserFromParams } from '../helpers/isUserFromParams';
-import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
-import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
-import { i18n } from '../../../../server/lib/i18n';
+import { getUploadFormData } from '../lib/getUploadFormData';
+import { isValidQuery } from '../lib/isValidQuery';
+import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -564,6 +568,15 @@ API.v1.addRoute(
 			}
 
 			const { secret: secretURL, ...params } = this.bodyParams;
+
+			if (this.bodyParams.customFields) {
+				try {
+					await validateCustomFields(this.bodyParams.customFields);
+				} catch (e) {
+					return API.v1.failure(e);
+				}
+			}
+
 			// Register the user
 			const userId = await Meteor.callAsync('registerUser', {
 				...params,
@@ -577,6 +590,10 @@ API.v1.addRoute(
 			const user = await Users.findOneById(userId, { projection: fields });
 			if (!user) {
 				return API.v1.failure('User not found');
+			}
+
+			if (this.bodyParams.customFields) {
+				await saveCustomFields(userId, this.bodyParams.customFields);
 			}
 
 			return API.v1.success({ user });
@@ -983,10 +1000,6 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 				}
 
-				if (!settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
-					throw new Meteor.Error('error-not-allowed', 'Not allowed');
-				}
-
 				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-e2ee'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
@@ -1012,10 +1025,6 @@ API.v1.addRoute(
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
 				// reset other user keys
 				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-totp'))) {
-					throw new Meteor.Error('error-not-allowed', 'Not allowed');
-				}
-
-				if (!settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 

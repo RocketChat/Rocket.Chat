@@ -17,7 +17,6 @@ import './hooks/checkAgentBeforeTakeInquiry';
 import './hooks/handleNextAgentPreferredEvents';
 import './hooks/onCheckRoomParamsApi';
 import './hooks/onLoadConfigApi';
-import './hooks/onCloseLivechat';
 import './hooks/onSaveVisitorInfo';
 import './hooks/scheduleAutoTransfer';
 import './hooks/resumeOnHold';
@@ -37,7 +36,7 @@ await onLicense('livechat-enterprise', async () => {
 	const { createPermissions } = await import('./permissions');
 	const { createSettings } = await import('./settings');
 
-	Meteor.startup(function () {
+	Meteor.startup(() => {
 		void createSettings();
 		void createPermissions();
 		void createDefaultPriorities();

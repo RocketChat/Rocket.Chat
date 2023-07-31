@@ -28,7 +28,7 @@ export class RegisterContainer extends Component {
 
 		await dispatch({ loading: true, department });
 		try {
-			const user = await Livechat.grantVisitor({ visitor: { ...fields, token } });
+			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
 			await dispatch({ user });
 			parentCall('callback', ['pre-chat-form-submit', fields]);
 			this.registerCustomFields(customFields);
@@ -56,6 +56,7 @@ export class RegisterContainer extends Component {
 	render = (props) => <Register {...props} onSubmit={this.handleSubmit} departmentDefault={this.getDepartmentDefault()} />;
 }
 
+/** @type {function({ ref?: any; path?: string }): any} */
 export const RegisterConnector = ({ ref, ...props }) => (
 	<Consumer>
 		{({

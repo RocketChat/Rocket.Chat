@@ -1,3 +1,11 @@
+import type {
+	ILivechatInquiryRecord,
+	IMessage,
+	RocketChatRecordDeleted,
+	OmnichannelSortingMechanismSettingType,
+	ILivechatPriority,
+} from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
 import type {
 	Collection,
@@ -13,18 +21,10 @@ import type {
 	FindCursor,
 	UpdateFilter,
 } from 'mongodb';
-import type {
-	ILivechatInquiryRecord,
-	IMessage,
-	RocketChatRecordDeleted,
-	OmnichannelSortingMechanismSettingType,
-	ILivechatPriority,
-} from '@rocket.chat/core-typings';
-import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 
-import { BaseRaw } from './BaseRaw';
-import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { BaseRaw } from './BaseRaw';
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
@@ -140,7 +140,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		const result = await this.col.findOneAndUpdate(
 			{
 				status: LivechatInquiryStatus.QUEUED,
-				...(department && { department }),
+				...(department ? { department } : { department: { $exists: false } }),
 				$or: [
 					{
 						locked: true,
@@ -188,7 +188,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		queueSortBy,
 	}: {
 		inquiryId?: string;
-		department: string;
+		department?: string;
 		queueSortBy: OmnichannelSortingMechanismSettingType;
 	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]> {
 		const filter: Filter<ILivechatInquiryRecord>[] = [

@@ -1,10 +1,10 @@
-import { isUpdateOAuthAppParams, isOauthAppsGetParams, isOauthAppsAddParams, isDeleteOAuthAppParams } from '@rocket.chat/rest-typings';
 import { OAuthApps } from '@rocket.chat/models';
+import { isUpdateOAuthAppParams, isOauthAppsGetParams, isOauthAppsAddParams, isDeleteOAuthAppParams } from '@rocket.chat/rest-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { API } from '../api';
+import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { addOAuthApp } from '../../../oauth2-server-config/server/admin/functions/addOAuthApp';
-import { deprecationWarning } from '../helpers/deprecationWarning';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'oauth-apps.list',
@@ -32,16 +32,11 @@ API.v1.addRoute(
 			if (!oauthApp) {
 				return API.v1.failure('OAuth app not found.');
 			}
+
 			if ('appId' in this.queryParams) {
-				return API.v1.success(
-					deprecationWarning({
-						endpoint: 'oauth-apps.get',
-						warningMessage: ({ versionWillBeRemoved, endpoint }) =>
-							`appId get parameter from "${endpoint}" is deprecated and will be removed after version ${versionWillBeRemoved}. Use _id instead.`,
-						response: { oauthApp },
-					}),
-				);
+				apiDeprecationLogger.parameter(this.request.route, 'appId', '7.0.0', this.response);
 			}
+
 			return API.v1.success({
 				oauthApp,
 			});

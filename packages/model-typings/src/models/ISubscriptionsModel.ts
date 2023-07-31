@@ -1,5 +1,5 @@
-import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Document, AggregateOptions, Filter, InsertOneResult } from 'mongodb';
 import type { ISubscription, IRole, IUser, IRoom, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
+import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Document, AggregateOptions, Filter, InsertOneResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -89,6 +89,9 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setGroupE2ESuggestedKey(_id: string, key: string): Promise<UpdateResult | Document>;
 
 	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document>;
+
+	setOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
+	unsetOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
 
 	updateUnreadAlertById(_id: string, unreadAlert: ISubscription['unreadAlert']): Promise<UpdateResult>;
 	updateNotificationsPrefById(
@@ -229,6 +232,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	removeUnreadThreadsByRoomId(rid: string, tunread: string[]): Promise<UpdateResult | Document>;
 	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number>;
 	countByRoomId(roomId: string): Promise<number>;
+	countByUserId(userId: string): Promise<number>;
 	openByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	countByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number>;

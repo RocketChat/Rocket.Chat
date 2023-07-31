@@ -1,12 +1,12 @@
 import { memo, useCallback } from 'preact/compat';
 
+import { createClassName } from '../../../helpers/createClassName';
 import { triggerAction, UIKitIncomingInteractionType, UIKitIncomingInteractionContainerType } from '../../../lib/uiKit';
-import { createClassName } from '../../helpers';
 import { renderMessageBlocks } from '../../uiKit';
 import Surface from '../../uiKit/message/Surface';
 import styles from './styles.scss';
 
-const MessageBlocks = ({ blocks = [], mid, rid }) => {
+const MessageBlocks = ({ blocks = [], mid = undefined, rid = undefined }) => {
 	const dispatchAction = useCallback(
 		({ appId, actionId, payload }) =>
 			triggerAction({

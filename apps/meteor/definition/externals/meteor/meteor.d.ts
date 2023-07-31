@@ -1,5 +1,5 @@
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
 
 type StringifyBuffers<T extends unknown[]> = {
@@ -121,6 +121,8 @@ declare module 'meteor/meteor' {
 			password: string,
 			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
 		): void;
+
+		function loginWithSamlToken(token: string, cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void): void;
 
 		function methods<TServerMethods extends ServerMethods>(methods: {
 			[TMethodName in keyof TServerMethods]?: (

@@ -87,7 +87,7 @@ export const palette = [
 		category: 'Badge',
 		description: 'Badge Background',
 		list: [
-			{ name: 'badge-background-level-0', token: '', color: '#2F343D' },
+			{ name: 'badge-background-level-0', token: '', color: '#404754' },
 			{ name: 'badge-background-level-1', token: '', color: '#484C51' },
 			{ name: 'badge-background-level-2', token: '', color: '#3070CF' },
 			{ name: 'badge-background-level-3', token: '', color: '#A9642D' },
@@ -110,7 +110,7 @@ export const palette = [
 		category: 'Elevation',
 		description: 'Elevation border and shadow levels',
 		list: [
-			{ name: 'shadow-elevation-border', token: '', color: '#EBECEF' },
+			{ name: 'shadow-elevation-border', token: '', color: '#2F343D' },
 			{ name: 'shadow-elevation-1', token: '', color: 'rgba(9, 9, 9, 0.35)' },
 			{ name: 'shadow-elevation-2x', token: '', color: 'rgba(9, 9, 9, 0.3)' },
 			{ name: 'shadow-elevation-2y', token: '', color: 'rgba(9, 9, 9, 0.45)' },
@@ -131,23 +131,23 @@ export const palette = [
 	{
 		description: 'Secondary Background',
 		list: [
-			{ name: 'button-background-secondary-default', token: 'N800', color: '#2F343D' },
-			{ name: 'button-background-secondary-hover', token: '', color: '#3A404B' },
-			{ name: 'button-background-secondary-press', token: '', color: '#454C59' },
-			{ name: 'button-background-secondary-focus', token: 'N800', color: '#2F343D' },
-			{ name: 'button-background-secondary-keyfocus', token: 'N800', color: '#2F343D' },
-			{ name: 'button-background-secondary-disabled', token: '', color: '#2F343D' },
+			{ name: 'button-background-secondary-default', token: 'N800', color: '#353B45' },
+			{ name: 'button-background-secondary-hover', token: '', color: '#404754' },
+			{ name: 'button-background-secondary-press', token: '', color: '#4C5362' },
+			{ name: 'button-background-secondary-focus', token: 'N800', color: '#353B45' },
+			{ name: 'button-background-secondary-keyfocus', token: 'N800', color: '#353B45' },
+			{ name: 'button-background-secondary-disabled', token: '', color: '#353B45' },
 		],
 	},
 	{
 		description: 'Secondary Danger Background',
 		list: [
-			{ name: 'button-background-secondary-danger-default', token: 'N800', color: '#2F343D' },
-			{ name: 'button-background-secondary-danger-hover', token: '', color: '#3A404B' },
-			{ name: 'button-background-secondary-danger-press', token: '', color: '#454C59' },
-			{ name: 'button-background-secondary-danger-focus', token: 'N800', color: '#2F343D' },
-			{ name: 'button-background-secondary-danger-keyfocus', token: 'N800', color: '#2F343D' },
-			{ name: 'button-background-secondary-danger-disabled', token: '', color: '#2F343D' },
+			{ name: 'button-background-secondary-danger-default', token: 'N800', color: '#353B45' },
+			{ name: 'button-background-secondary-danger-hover', token: '', color: '#404754' },
+			{ name: 'button-background-secondary-danger-press', token: '', color: '#4C5362' },
+			{ name: 'button-background-secondary-danger-focus', token: 'N800', color: '#353B45' },
+			{ name: 'button-background-secondary-danger-keyfocus', token: 'N800', color: '#353B45' },
+			{ name: 'button-background-secondary-danger-disabled', token: '', color: '#353B45' },
 		],
 	},
 	{

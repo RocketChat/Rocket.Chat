@@ -1,7 +1,7 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { generateUsernameSuggestion } from '../functions';
+import { generateUsernameSuggestion } from '../functions/getUsernameSuggestion';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

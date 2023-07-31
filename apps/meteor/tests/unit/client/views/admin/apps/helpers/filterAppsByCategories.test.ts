@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 import { expect } from 'chai';
 
-import type { App } from '../../../../../../../client/views/marketplace/types';
 import { filterAppsByCategories } from '../../../../../../../client/views/marketplace/helpers/filterAppsByCategories';
+import type { App } from '../../../../../../../client/views/marketplace/types';
 
 describe('filterAppsByCategories', () => {
 	it('should return true if the app is in the categories', () => {

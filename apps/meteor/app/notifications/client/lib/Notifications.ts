@@ -1,6 +1,6 @@
+import type { StreamKeys, StreamerCallback } from '@rocket.chat/ddp-client/src/types/streams';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import type { StreamKeys, StreamerCallback } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
 
 import './Presence';
 import { sdk } from '../../../utils/client/lib/SDKClient';

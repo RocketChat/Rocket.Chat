@@ -2,7 +2,6 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import _ from 'underscore';
 import type {
 	IMessage,
 	IProviderMetadata,
@@ -12,11 +11,12 @@ import type {
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import _ from 'underscore';
 
-import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
+import { i18n } from '../../../server/lib/i18n';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
-import { i18n } from '../../../server/lib/i18n';
+import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
 
 /**
  * Represents google translate class
@@ -126,8 +126,6 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 */
 	async _translateMessage(message: IMessage, targetLanguages: string[]): Promise<ITranslationResult> {
 		const translations: { [k: string]: string } = {};
-		let msgs = message.msg.split('\n');
-		msgs = msgs.map((msg) => encodeURIComponent(msg));
 
 		const supportedLanguages = await this.getSupportedLanguages('en');
 
@@ -142,7 +140,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 						key: this.apiKey,
 						target: language,
 						format: 'text',
-						q: msgs,
+						q: message.msg.split('\n'),
 					},
 				});
 				if (!result.ok) {
@@ -189,7 +187,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 						key: this.apiKey,
 						target: language,
 						format: 'text',
-						q: encodeURIComponent(attachment.description || attachment.text || ''),
+						q: attachment.description || attachment.text || '',
 					},
 				});
 				if (!result.ok) {

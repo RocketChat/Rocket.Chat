@@ -14,6 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -94,6 +95,7 @@ const getInitialValues = ({ department, agents, allowedToForwardData }: InitialV
 function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmentProps) {
 	const t = useTranslation();
 	const departmentsRoute = useRoute('omnichannel-departments');
+	const queryClient = useQueryClient();
 
 	const {
 		useEeNumberInput = () => null,
@@ -197,6 +199,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			} else {
 				await saveDepartmentInfo(id ?? null, payload, agentList);
 			}
+			queryClient.invalidateQueries(['/v1/livechat/department/:_id', id]);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			departmentsRoute.push({});
 		} catch (error) {
@@ -217,8 +220,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			<Page>
 				<Page.Header title={title}>
 					<ButtonGroup>
-						<Button onClick={handleReturn}>
-							<Icon name='back' /> {t('Back')}
+						<Button icon='back' onClick={handleReturn}>
+							{t('Back')}
 						</Button>
 						<Button type='submit' form={formId} primary disabled={!isFormValid}>
 							{t('Save')}
@@ -340,7 +343,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										<MaxChats
 											value={value}
 											handler={onChange}
-											label={'Max_number_of_chats_per_agent'}
+											label='Max_number_of_chats_per_agent'
 											placeholder='Max_number_of_chats_per_agent_description'
 										/>
 									)}
@@ -357,7 +360,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										<VisitorInactivity
 											value={value}
 											handler={onChange}
-											label={'How_long_to_wait_to_consider_visitor_abandonment_in_seconds'}
+											label='How_long_to_wait_to_consider_visitor_abandonment_in_seconds'
 											placeholder='Number_in_seconds'
 										/>
 									)}
@@ -374,7 +377,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										<AbandonedMessageInput
 											value={value}
 											handler={onChange}
-											label={'Livechat_abandoned_rooms_closed_custom_message'}
+											label='Livechat_abandoned_rooms_closed_custom_message'
 											placeholder='Enter_a_custom_message'
 										/>
 									)}
@@ -391,8 +394,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										<WaitingQueueMessageInput
 											value={value}
 											handler={onChange}
-											label={'Waiting_queue_message'}
-											placeholder={'Waiting_queue_message'}
+											label='Waiting_queue_message'
+											placeholder='Waiting_queue_message'
 										/>
 									)}
 								/>
@@ -409,7 +412,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 											departmentId={id ?? ''}
 											value={value}
 											handler={onChange}
-											label={'List_of_departments_for_forward'}
+											label='List_of_departments_for_forward'
 										/>
 									)}
 								/>

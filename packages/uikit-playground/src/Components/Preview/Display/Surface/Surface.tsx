@@ -8,6 +8,7 @@ import type { Block } from '../../../Draggable/DraggableList';
 import BannerSurface from './BannerSurface';
 import MessageSurface from './MessageSurface';
 import ModalSurface from './ModalSurface';
+import ContextualBarSurface from './ContextualBarSurface';
 import { reorder } from './Reorder';
 
 const Surface: FC = () => {
@@ -39,6 +40,7 @@ const Surface: FC = () => {
     '1': () => <MessageSurface blocks={uniqueBlocks} onDragEnd={onDragEnd} />,
     '2': () => <BannerSurface blocks={uniqueBlocks} onDragEnd={onDragEnd} />,
     '3': () => <ModalSurface blocks={uniqueBlocks} onDragEnd={onDragEnd} />,
+    '4': () => <ContextualBarSurface blocks={uniqueBlocks} onDragEnd={onDragEnd}/>,
   };
   return (
     <Box pb='40px' pi='x20'>

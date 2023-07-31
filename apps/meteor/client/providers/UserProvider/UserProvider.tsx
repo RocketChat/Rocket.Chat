@@ -8,10 +8,10 @@ import React, { useEffect, useMemo } from 'react';
 
 import { Subscriptions, ChatRoom } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
-import { callbacks } from '../../../lib/callbacks';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
-import { call } from '../../lib/utils/call';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 
@@ -47,8 +47,8 @@ const logout = (): Promise<void> =>
 		}
 
 		Meteor.logout(async () => {
-			await callbacks.run('afterLogoutCleanUp', user);
-			call('logoutCleanUp', user).then(resolve, reject);
+			await afterLogoutCleanUpCallback.run(user);
+			sdk.call('logoutCleanUp', user).then(resolve, reject);
 		});
 	});
 
