@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react';
 
 import { openUserCard, closeUserCard } from '../../../../../app/ui/client/lib/userCard';
 import { useRoom } from '../../contexts/RoomContext';
-import { useTabBarOpenUserInfo } from '../../contexts/ToolboxContext';
+import { useTabBarOpenUserInfo } from '../../contexts/RoomToolboxContext';
 
 export const useUserCard = () => {
 	useEffect(() => {

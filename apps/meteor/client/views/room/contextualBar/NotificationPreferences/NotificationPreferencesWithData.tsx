@@ -5,7 +5,7 @@ import React, { memo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useTabBarClose } from '../../contexts/RoomToolboxContext';
 import NotificationPreferences from './NotificationPreferences';
 
 export type NotificationFormValues = {
