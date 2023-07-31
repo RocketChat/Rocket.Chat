@@ -5,7 +5,7 @@ import React from 'react';
 
 import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../../components/Contextualbar';
 import { useOmnichannelRoom } from '../../../../room/contexts/RoomContext';
-import { useTabBarClose } from '../../../../room/contexts/ToolboxContext';
+import { useTabBarClose } from '../../../../room/contexts/RoomToolboxContext';
 import ContactEditWithData from './ContactEditWithData';
 import ContactInfo from './ContactInfo';
 
