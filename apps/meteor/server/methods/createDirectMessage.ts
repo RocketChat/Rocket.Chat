@@ -99,10 +99,10 @@ export async function createDirectMessage(
 	if (excludeSelf && (await hasPermissionAsync(userId, 'view-room-administration'))) {
 		options.subscriptionExtra = { open: true };
 	}
-	try {
-		await Federation.runFederationChecksBeforeCreateDirectMessageRoom(roomUsers);
-	} catch (error: any) {
-		if (error?.type !== 'SERVICE_NOT_FOUND') {
+	if (settings.get('Federation_Matrix_enabled')) {
+		try {
+			await Federation.runFederationChecksBeforeCreateDirectMessageRoom(roomUsers);
+		} catch (error: any) {
 			throw new Meteor.Error((error as any)?.message);
 		}
 	}

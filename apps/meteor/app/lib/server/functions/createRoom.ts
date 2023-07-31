@@ -9,6 +9,7 @@ import { Apps } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
+import { settings } from '../../../settings/server';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { createDirectRoom } from './createDirectRoom';
 
@@ -159,11 +160,11 @@ export const createRoom = async <T extends RoomType>(
 				continue;
 			}
 
-			try {
-				await Federation.runFederationChecksBeforeAddUserToRoom({ user: member, inviter: owner }, room);
-				await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
-			} catch (error: any) {
-				if (error?.type !== 'SERVICE_NOT_FOUND') {
+			await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
+			if (settings.get('Federation_Matrix_enabled')) {
+				try {
+					await Federation.runFederationChecksBeforeAddUserToRoom({ user: member, inviter: owner }, room);
+				} catch (error: any) {
 					continue;
 				}
 			}

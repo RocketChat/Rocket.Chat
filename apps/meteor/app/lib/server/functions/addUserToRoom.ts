@@ -8,6 +8,7 @@ import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { settings } from '../../../settings/server';
 
 export const addUserToRoom = async function (
 	rid: string,
@@ -38,10 +39,10 @@ export const addUserToRoom = async function (
 		return;
 	}
 
-	try {
-		await Federation.runFederationChecksBeforeAddUserToRoom({ user, inviter }, room);
-	} catch (error: any) {
-		if (error?.type !== 'SERVICE_NOT_FOUND') {
+	if (settings.get('Federation_Matrix_enabled')) {
+		try {
+			await Federation.runFederationChecksBeforeAddUserToRoom({ user, inviter }, room);
+		} catch (error: any) {
 			throw new Meteor.Error((error as any)?.message);
 		}
 	}
