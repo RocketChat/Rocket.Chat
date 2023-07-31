@@ -1,6 +1,6 @@
+import type { SettingValue } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import type { SettingValue } from '@rocket.chat/core-typings';
 
 import { PublicSettingsCachedCollection } from '../../../../client/lib/settings/PublicSettingsCachedCollection';
 import { SettingsBase } from '../../lib/settings';

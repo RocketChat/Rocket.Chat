@@ -1,4 +1,6 @@
 import { Button, Field, Modal, PasswordInput } from '@rocket.chat/fuselage';
+import { Form } from '@rocket.chat/layout';
+import { PasswordVerifier } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetting,
@@ -11,9 +13,7 @@ import {
 	useLoginWithToken,
 } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { Form } from '@rocket.chat/layout';
 import { useForm } from 'react-hook-form';
-import { PasswordVerifier } from '@rocket.chat/ui-client';
 
 import HorizontalTemplate from '../template/HorizontalTemplate';
 

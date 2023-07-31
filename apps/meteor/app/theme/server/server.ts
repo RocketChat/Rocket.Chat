@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
-import { Meteor } from 'meteor/meteor';
 import { Settings } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
 import { settings } from '../../settings/server';

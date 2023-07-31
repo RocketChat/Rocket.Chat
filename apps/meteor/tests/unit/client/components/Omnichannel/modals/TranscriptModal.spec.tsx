@@ -1,7 +1,8 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { userEvent } from '@storybook/testing-library';
+import { render, screen } from '@testing-library/react';
 import { expect, spy } from 'chai';
+import React from 'react';
 
 import TranscriptModal from '../../../../../../client/components/Omnichannel/modals/TranscriptModal';
 
@@ -29,7 +30,7 @@ describe('components/Omnichannel/TranscriptModal', () => {
 		render(<TranscriptModal {...defaultProps} onDiscard={onDiscardMock} />);
 		const undoRequestButton = screen.getByText('Undo_request');
 
-		fireEvent.click(undoRequestButton);
+		userEvent.click(undoRequestButton);
 
 		expect(onDiscardMock).to.have.been.called();
 	});

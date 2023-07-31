@@ -18,7 +18,8 @@ import { useForm } from '../../hooks/useForm';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import AppUpdateModal from './AppUpdateModal';
 import AppInstallModal from './components/AppInstallModal/AppInstallModal';
-import { handleAPIError, handleInstallError } from './helpers';
+import { handleAPIError } from './helpers/handleAPIError';
+import { handleInstallError } from './helpers/handleInstallError';
 import { useAppsCountQuery } from './hooks/useAppsCountQuery';
 import { getManifestFromZippedApp } from './lib/getManifestFromZippedApp';
 

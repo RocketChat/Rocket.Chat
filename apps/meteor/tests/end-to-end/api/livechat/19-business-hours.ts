@@ -4,6 +4,7 @@ import type { ILivechatAgent, ILivechatBusinessHour, ILivechatDepartment } from 
 import { LivechatBusinessHourBehaviors, LivechatBusinessHourTypes, ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
+import { sleep } from '../../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import {
 	getDefaultBusinessHour,
@@ -14,8 +15,6 @@ import {
 	getCustomBusinessHourById,
 	getWorkHours,
 } from '../../../data/livechat/businessHours';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting, updateEESetting } from '../../../data/permissions.helper';
-import { IS_EE } from '../../../e2e/config/constants';
 import {
 	addOrRemoveAgentFromDepartment,
 	archiveDepartment,
@@ -24,12 +23,13 @@ import {
 	getDepartmentById,
 	deleteDepartment,
 } from '../../../data/livechat/department';
-import { sleep } from '../../../../lib/utils/sleep';
-import { createUser, deleteUser, getMe, login } from '../../../data/users.helper';
 import { createAgent, makeAgentAvailable } from '../../../data/livechat/rooms';
+import { removeAgent } from '../../../data/livechat/users';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting, updateEESetting } from '../../../data/permissions.helper';
 import type { IUserCredentialsHeader } from '../../../data/user';
 import { password } from '../../../data/user';
-import { removeAgent } from '../../../data/livechat/users';
+import { createUser, deleteUser, getMe, login } from '../../../data/users.helper';
+import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - business hours', function () {
 	this.retries(0);
@@ -384,7 +384,7 @@ describe('LIVECHAT - business hours', function () {
 			expect(latestCustomBH?.departments?.[0]?._id).to.be.equal(department._id);
 
 			// verify if overlapping agent still has BH within his cache
-			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials as any);
+			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials);
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
 			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(customBusinessHour._id);

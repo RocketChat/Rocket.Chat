@@ -1,7 +1,7 @@
 import type { Root } from '@rocket.chat/message-parser';
 
-import type { MessageAttachmentBase } from './MessageAttachmentBase';
 import type { MessageAttachment } from './MessageAttachment';
+import type { MessageAttachmentBase } from './MessageAttachmentBase';
 
 export type MessageQuoteAttachment = {
 	author_name: string;

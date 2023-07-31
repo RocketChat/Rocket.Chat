@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import { trim } from '../../../../lib/utils/stringUtils';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { validateRoomMessagePermissionsAsync } from '../../../authorization/server/functions/canSendMessage';
 import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
 import { sendMessage } from './sendMessage';
-import { validateRoomMessagePermissionsAsync } from '../../../authorization/server/functions/canSendMessage';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { trim } from '../../../../lib/utils/stringUtils';
 
 export const processWebhookMessage = async function (messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }) {
 	const sentData = [];

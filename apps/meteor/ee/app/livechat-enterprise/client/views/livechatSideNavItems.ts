@@ -1,5 +1,5 @@
-import { registerOmnichannelSidebarItem } from '../../../../../client/views/omnichannel/sidebarItems';
 import { hasPermission, hasAtLeastOnePermission } from '../../../../../app/authorization/client';
+import { registerOmnichannelSidebarItem } from '../../../../../client/views/omnichannel/sidebarItems';
 
 registerOmnichannelSidebarItem({
 	href: '/omnichannel/monitors',

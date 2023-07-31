@@ -1,6 +1,6 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, LivechatDepartment } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 import type { IPaginatedResponse, IPagination } from '../../api/lib/definition';
