@@ -129,6 +129,12 @@ Meteor.methods<ServerMethods>({
 			// throw new Meteor.Error 'error-email-send-failed', 'Error trying to send email: ' + error.message, { method: 'registerUser', message: error.message }
 		}
 
+		const defaultRoles = settings.get('Accounts_Registration_Users_Default_Roles');
+
+		if (!defaultRoles) {
+			await Users.updateOne({ _id: userId }, { $set: { roles: [] } });
+		}
+
 		return userId;
 	},
 });
