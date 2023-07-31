@@ -1,8 +1,7 @@
 import { useDarkMode } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useUserPreference } from '@rocket.chat/ui-contexts';
+import type { ThemePreference as ThemeMode, Themes } from '@rocket.chat/ui-theming/src/types/themes';
 import { useCallback, useState } from 'react';
-
-type ThemeMode = 'light' | 'dark' | 'auto' | 'high-contrast';
 
 /**
  * Returns the current option set by the user, the theme mode resolved given the user configuration and OS (if applies) and a function to set it.
@@ -10,7 +9,7 @@ type ThemeMode = 'light' | 'dark' | 'auto' | 'high-contrast';
  * @returns [currentThemeMode, setThemeMode, resolvedThemeMode]
  */
 
-export const useThemeMode = (): [ThemeMode, (value: ThemeMode) => () => void, 'light' | 'dark' | 'high-contrast'] => {
+export const useThemeMode = (): [ThemeMode, (value: ThemeMode) => () => void, Themes] => {
 	const themeMode = useUserPreference<ThemeMode>('themeAppearence') || 'auto';
 
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');

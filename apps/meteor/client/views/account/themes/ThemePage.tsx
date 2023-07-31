@@ -1,6 +1,7 @@
 import { Accordion, Box, Button, ButtonGroup, Field, RadioButton, Tag } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
+import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -15,7 +16,7 @@ const ThemePage = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { data: license } = useIsEnterprise();
 
-	const themePreference = useUserPreference<'light' | 'dark' | 'auto' | 'high-contrast'>('themeAppearence') || 'auto';
+	const themePreference = useUserPreference<ThemePreference>('themeAppearence') || 'auto';
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
 	const {
@@ -27,7 +28,7 @@ const ThemePage = () => {
 		defaultValues: { themeAppearence: themePreference },
 	});
 
-	const handleSave = async ({ themeAppearence }: { themeAppearence: 'auto' | 'light' | 'dark' | 'high-contrast' }) => {
+	const handleSave = async ({ themeAppearence }: { themeAppearence: ThemePreference }) => {
 		try {
 			await setUserPreferences({ data: { themeAppearence } });
 			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
