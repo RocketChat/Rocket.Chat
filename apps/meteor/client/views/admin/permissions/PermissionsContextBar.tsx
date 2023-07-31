@@ -26,7 +26,7 @@ const PermissionsContextBar = (): ReactElement | null => {
 			return;
 		}
 
-		setModal(<CustomRoleUpsellModal onClose={() => setModal()} />);
+		setModal(<CustomRoleUpsellModal onClose={() => setModal(null)} />);
 		handleCloseContextualbar();
 	}, [context, isEnterprise, handleCloseContextualbar, setModal]);
 
