@@ -36,7 +36,7 @@ const parseToJSON = (customTranslations: string): Record<string, Record<string, 
 	}
 };
 
-const localeCache = new Map();
+const localeCache = new Map<string, Promise<string>>();
 
 const useI18next = (lng: string): typeof i18next => {
 	const basePath = useAbsoluteUrl()('/i18n');
@@ -103,23 +103,19 @@ const useI18next = (lng: string): typeof i18next => {
 				loadPath: `${basePath}/{{lng}}.json`,
 				parse: (data: string, lngs?: string | string[], namespaces: string | string[] = []) =>
 					extractKeys(JSON.parse(data), lngs, namespaces),
-				request: async (_options, url, _payload, callback) => {
-					try {
-						const [, , , , lng] = url.split('/');
-						console.log('lng - ', lng, localeCache.get(lng));
-						if (localeCache.get(lng)) {
-							return localeCache.get(lng);
-						}
-						const res = await fetch(url).then((res) => res.json());
-						const translations = JSON.stringify(res);
-						localeCache.set(lng, translations);
-						callback(null, { data: res, status: 200 });
-						return translations;
-					} catch (e) {
-						callback(null, { data: '', status: 500 });
+				request: (_options, url, _payload, callback) => {
+					const params = url.split('/');
+					const lng = params[params.length - 1];
+
+					if (localeCache.get(lng)) {
+						localeCache.get(lng)!.then((res) => callback(null, { data: res, status: 200 }));
+						return;
 					}
+
+					const promise = fetch(url).then((res) => res.text());
+					localeCache.set(lng, promise);
+					promise.then((res) => callback(null, { data: res, status: 200 })).catch(() => callback(null, { data: '', status: 500 }));
 				},
-				reloadInterval: false,
 			},
 			react: {
 				useSuspense: true,
