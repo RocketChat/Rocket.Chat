@@ -10,6 +10,7 @@ const CustomRoleUpsellModal = ({ onClose }: { onClose: () => void }) => {
 
 	return (
 		<GenericUpsellModal
+			aria-label={t('Custom_roles')}
 			img='images/custom-role-upsell-modal.png'
 			title={t('Custom_roles')}
 			subtitle={t('Custom_roles_upsell_add_custom_roles_workspace')}
@@ -19,7 +20,7 @@ const CustomRoleUpsellModal = ({ onClose }: { onClose: () => void }) => {
 			confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
 			onConfirm={handleGoFullyFeatured}
 			onCancel={handleTalkToSales}
-		></GenericUpsellModal>
+		/>
 	);
 };
 
