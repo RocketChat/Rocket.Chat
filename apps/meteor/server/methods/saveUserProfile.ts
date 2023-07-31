@@ -16,6 +16,9 @@ import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
 
+const MAX_BIO_LENGTH = 260;
+const MAX_NICKNAME_LENGTH = 120;
+
 async function saveUserProfile(
 	this: Meteor.MethodThisType,
 	settings: {
@@ -77,8 +80,13 @@ async function saveUserProfile(
 	}
 
 	if (user && settings.bio) {
-		if (typeof settings.bio !== 'string' || settings.bio.length > 260) {
+		if (typeof settings.bio !== 'string') {
 			throw new Meteor.Error('error-invalid-field', 'bio', {
+				method: 'saveUserProfile',
+			});
+		}
+		if (settings.bio.length > MAX_BIO_LENGTH) {
+			throw new Meteor.Error('error-bio-size-exceeded', `Bio size exceeds ${MAX_BIO_LENGTH} characters`, {
 				method: 'saveUserProfile',
 			});
 		}
@@ -86,8 +94,13 @@ async function saveUserProfile(
 	}
 
 	if (user && settings.nickname) {
-		if (typeof settings.nickname !== 'string' || settings.nickname.length > 120) {
+		if (typeof settings.nickname !== 'string') {
 			throw new Meteor.Error('error-invalid-field', 'nickname', {
+				method: 'saveUserProfile',
+			});
+		}
+		if (settings.nickname.length > MAX_NICKNAME_LENGTH) {
+			throw new Meteor.Error('error-nickname-size-exceeded', `Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters`, {
 				method: 'saveUserProfile',
 			});
 		}
