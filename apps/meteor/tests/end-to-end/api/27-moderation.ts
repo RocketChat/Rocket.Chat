@@ -2,8 +2,8 @@ import type { IMessage, IModerationAudit, IModerationReport, IUser } from '@rock
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { createUser } from '../../data/users.helper.js';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createUser } from '../../data/users.helper.js';
 
 // test for the /moderation.reportsByUsers endpoint
 
