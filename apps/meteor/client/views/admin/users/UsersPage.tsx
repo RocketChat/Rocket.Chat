@@ -9,7 +9,6 @@ import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
-import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 import AddUser from './AddUser';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
 import EditUserWithData from './EditUserWithData';
@@ -24,7 +23,6 @@ const UsersPage = (): ReactElement => {
 	const seatsCap = useSeatsCap();
 	const reload = useRef(() => null);
 	const usersRoute = useRoute('admin-users');
-	const userData = useUserInfoQuery({ userId: id || '' });
 
 	const canCreateUser = usePermission('create-user');
 	const canBulkCreateUser = usePermission('bulk-register-user');
@@ -117,15 +115,15 @@ const UsersPage = (): ReactElement => {
 					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
 					{context === 'edit' && id && (
 						<EditUserWithData
+							userId={id}
 							onReload={handleReload}
 							roleData={roleData || {}}
 							roleState={roleState}
 							roleError={roleError}
-							userData={userData}
 							availableRoles={availableRoles || []}
 						/>
 					)}
-					{context === 'new' && <AddUser onReload={handleReload} availableRoles={availableRoles} userData={userData || {}} />}
+					{context === 'new' && <AddUser onReload={handleReload} availableRoles={availableRoles} />}
 					{context === 'invite' && <InviteUsers />}
 				</Contextualbar>
 			)}

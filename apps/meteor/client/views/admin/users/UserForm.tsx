@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	Field,
@@ -33,7 +33,7 @@ type UserFormProps = {
 	setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
 	onSave: UseMutationResult<any, unknown, any, unknown>;
 	preserveData: boolean;
-	userData: IUser | Record<string, never>;
+	userData?: Serialized<IUser> | Record<string, never>;
 };
 
 const isErrorString = (errorMessage: string | FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined): errorMessage is string => {
@@ -114,7 +114,7 @@ const UserForm = ({
 		<>
 			<ContextualbarScrollableContent {...props} autoComplete='off'>
 				<FieldGroup>
-					{prepend?.(userData.username, watch?.('username'), userData.avatarETag)}
+					{userData ? prepend?.(userData?.username, watch?.('username'), userData?.avatarETag) : null}
 					<Field>
 						<Field.Label>{t('Name')}</Field.Label>
 						<Field.Row>
@@ -320,8 +320,7 @@ const UserForm = ({
 						primary
 						disabled={!canSaveOrReset}
 						onClick={handleSubmit(async (userFormData) => {
-							console.log(userFormData);
-							onSave.mutate(preserveData ? { userId: userData._id, data: userFormData } : userFormData);
+							onSave.mutate(preserveData ? { userId: userData?._id, data: userFormData } : userFormData);
 						})}
 					>
 						{t('Save')}

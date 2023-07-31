@@ -1,4 +1,3 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import React, { useCallback, useState } from 'react';
@@ -9,10 +8,9 @@ import UserForm from './UserForm';
 type AddUserProps = {
 	onReload: () => void;
 	availableRoles: any;
-	userData: IUser | Record<string, never>;
 };
 
-const AddUser = ({ onReload, availableRoles, userData, ...props }: AddUserProps) => {
+const AddUser = ({ onReload, availableRoles, ...props }: AddUserProps) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -31,13 +29,13 @@ const AddUser = ({ onReload, availableRoles, userData, ...props }: AddUserProps)
 	const saveAction = useEndpoint('POST', '/v1/users.create');
 	const handleSaveUser = useMutation({
 		mutationFn: saveAction,
-		onSuccess: ({ user: { _id } }) => {
+		onSuccess: async ({ user: { _id } }) => {
 			dispatchToastMessage({ type: 'success', message: t('User_created_successfully!') });
-			eventStats({
+			await eventStats({
 				params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
 			});
-			goToUser(_id);
 			onReload();
+			goToUser(_id);
 		},
 	});
 
@@ -48,7 +46,6 @@ const AddUser = ({ onReload, availableRoles, userData, ...props }: AddUserProps)
 			canSaveOrReset={hasUnsavedChanges}
 			onSave={handleSaveUser}
 			preserveData={false}
-			userData={userData}
 			{...props}
 		/>
 	);

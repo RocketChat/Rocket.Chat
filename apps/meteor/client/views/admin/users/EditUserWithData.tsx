@@ -2,36 +2,35 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Callout } from '@rocket.chat/fuselage';
-import type { OperationResult } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
+import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 import EditUser from './EditUser';
 
 type EditUserWithDataProps = {
+	userId: string;
 	onReload: () => void;
 	roleData: any;
 	roleState: boolean;
 	roleError: unknown;
-	userData: UseQueryResult<OperationResult<'GET', '/v1/users.info'>>;
 	availableRoles: SelectOption[];
 };
 
 const EditUserWithData = ({
+	userId,
 	onReload,
 	roleData,
 	roleState,
 	roleError,
 	availableRoles,
-	userData,
 	...props
 }: EditUserWithDataProps): ReactElement => {
 	const t = useTranslation();
 
-	const { data, isLoading: state, error } = userData;
+	const { data, isLoading: state, error, isSuccess } = useUserInfoQuery({ userId });
 
 	if (state || roleState) {
 		return (
@@ -57,7 +56,9 @@ const EditUserWithData = ({
 		);
 	}
 
-	return <EditUser data={data?.user || {}} roles={roleData.roles} onReload={onReload} availableRoles={availableRoles} {...props} />;
+	return (
+		<EditUser userData={isSuccess ? data.user : {}} roles={roleData.roles} onReload={onReload} availableRoles={availableRoles} {...props} />
+	);
 };
 
 export default EditUserWithData;

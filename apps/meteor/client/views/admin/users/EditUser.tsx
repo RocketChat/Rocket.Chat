@@ -1,13 +1,12 @@
-import type { AvatarObject, AvatarUrlObj, IUser } from '@rocket.chat/core-typings';
+import type { AvatarObject, AvatarUrlObj, IUser, Serialized } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { useEndpoint, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import React, { useState, useCallback } from 'react';
 
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
-import { dispatchToastMessage } from '../../../lib/toast';
 import UserForm from './UserForm';
 
 const isAvatarObjUrl = (avatarObj: AvatarObject): avatarObj is AvatarUrlObj => {
@@ -19,14 +18,15 @@ const isFormData = (avatarObj: AvatarObject): avatarObj is FormData => {
 };
 
 type EditUserProps = {
-	data: IUser | Record<string, never>;
+	userData: Serialized<IUser> | Record<string, never>;
 	onReload: () => void;
 	availableRoles: SelectOption[];
 	roles: any;
 };
 
-function EditUser({ data, onReload, availableRoles, ...props }: EditUserProps) {
+function EditUser({ userData, onReload, availableRoles, ...props }: EditUserProps) {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [avatarObj, setAvatarObj] = useState<AvatarObject>();
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -51,20 +51,20 @@ function EditUser({ data, onReload, availableRoles, ...props }: EditUserProps) {
 
 		if (avatarObj === 'reset') {
 			return resetAvatarAction({
-				userId: data._id,
+				userId: userData._id,
 			});
 		}
 		if (isAvatarObjUrl(avatarObj)) {
 			return saveAvatarUrlAction({
-				userId: data._id,
+				userId: userData._id,
 				avatarUrl: avatarObj.avatarUrl,
 			});
 		}
 		if (isFormData(avatarObj)) {
-			avatarObj?.set('userId', data._id);
+			avatarObj?.set('userId', userData._id);
 			saveAvatarAction(avatarObj);
 		}
-	}, [avatarObj, resetAvatarAction, saveAvatarAction, saveAvatarUrlAction, data._id]);
+	}, [avatarObj, resetAvatarAction, saveAvatarAction, saveAvatarUrlAction, userData._id]);
 
 	const saveAction = useEndpoint('POST', '/v1/users.update');
 	const handleSaveEditedUser = useMutation({
@@ -72,8 +72,8 @@ function EditUser({ data, onReload, availableRoles, ...props }: EditUserProps) {
 		onSuccess: async ({ user: { _id } }) => {
 			dispatchToastMessage({ type: 'success', message: t('User_updated_successfully') });
 			await updateAvatar();
-			goToUser(_id);
 			onReload();
+			goToUser(_id);
 		},
 	});
 
@@ -88,13 +88,13 @@ function EditUser({ data, onReload, availableRoles, ...props }: EditUserProps) {
 
 	return (
 		<UserForm
+			preserveData
 			availableRoles={availableRoles}
 			prepend={prepend}
 			setHasUnsavedChanges={setHasUnsavedChanges}
 			canSaveOrReset={canSaveOrReset}
 			onSave={handleSaveEditedUser}
-			preserveData
-			userData={data}
+			userData={userData}
 			{...props}
 		/>
 	);
