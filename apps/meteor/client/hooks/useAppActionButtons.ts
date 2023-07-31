@@ -9,7 +9,7 @@ import type { MessageBoxAction } from '../../app/ui-utils/client/lib/messageBox'
 import { Utilities } from '../../ee/lib/misc/Utilities';
 import type { GenericMenuItemProps } from '../components/GenericMenu/GenericMenuItem';
 import { useRoom } from '../views/room/contexts/RoomContext';
-import type { ToolboxAction } from '../views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../views/room/lib/Toolbox';
 import { useApplyButtonFilters, useApplyButtonAuthFilter } from './useApplyButtonFilters';
 import { useUiKitActionManager } from './useUiKitActionManager';
 
@@ -132,7 +132,7 @@ export const useRoomActionAppsActionButtons = (context?: MessageActionContext) =
 					return applyButtonFilters(action);
 				})
 				.map((action) => {
-					const item: [string, ToolboxAction] = [
+					const item: [string, ToolboxActionConfig] = [
 						action.actionId,
 						{
 							id: action.actionId,
@@ -159,7 +159,7 @@ export const useRoomActionAppsActionButtons = (context?: MessageActionContext) =
 	return {
 		...result,
 		data,
-	} as UseQueryResult<[string, ToolboxAction][]>;
+	} as UseQueryResult<[string, ToolboxActionConfig][]>;
 };
 
 export const useMessageActionAppsActionButtons = (context?: MessageActionContext) => {
