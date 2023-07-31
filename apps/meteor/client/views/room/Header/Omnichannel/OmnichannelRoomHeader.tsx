@@ -48,9 +48,9 @@ const OmnichannelRoomHeader: FC<OmnichannelRoomHeaderProps> = ({ slots: parentSl
 					<BackButton routeName={currentRouteName} />
 				</HeaderToolbox>
 			),
-			posContent: <QuickActions room={room} />,
+			posContent: <QuickActions />,
 		}),
-		[isMobile, currentRouteName, parentSlot, room],
+		[isMobile, currentRouteName, parentSlot],
 	);
 
 	return (
