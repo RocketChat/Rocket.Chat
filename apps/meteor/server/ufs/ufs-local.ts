@@ -1,8 +1,8 @@
 import fs from 'fs';
 import { stat, unlink } from 'fs/promises';
 
-import mkdirp from 'mkdirp';
 import type { IUpload } from '@rocket.chat/core-typings';
+import mkdirp from 'mkdirp';
 
 import { UploadFS } from './ufs';
 import type { StoreOptions } from './ufs-store';
@@ -44,7 +44,7 @@ export class LocalStore extends Store {
 		const { path } = options;
 		const { writeMode } = options;
 
-		fs.stat(path, function (err) {
+		fs.stat(path, (err) => {
 			if (err) {
 				// Create the directory
 				mkdirp(path, { mode })
@@ -56,7 +56,7 @@ export class LocalStore extends Store {
 					});
 			} else {
 				// Set directory permissions
-				fs.chmod(path, mode, function (err) {
+				fs.chmod(path, mode, (err) => {
 					err && console.error(`LocalStore: cannot set store permissions ${mode} (${err.message})`);
 				});
 			}

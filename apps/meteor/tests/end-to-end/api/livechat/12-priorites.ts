@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 
+import { faker } from '@faker-js/faker';
 import type {
 	ILivechatInquiryRecord,
 	ILivechatPriority,
@@ -8,9 +9,10 @@ import type {
 } from '@rocket.chat/core-typings';
 import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { faker } from '@faker-js/faker';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 import { createSLA, deleteSLA, bulkCreateSLA, deleteAllSLA } from '../../../data/livechat/priorities';
 import {
 	createAgent,
@@ -21,8 +23,6 @@ import {
 } from '../../../data/livechat/rooms';
 import { addPermissions, removePermissions, updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
-import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
-import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Priorities & SLAs', function () {

@@ -1,7 +1,7 @@
-import type { IRole } from '@rocket.chat/core-typings';
+import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import type { IEmitter } from '@rocket.chat/emitter';
-import { createContext } from 'react';
 import type { ObjectId } from 'mongodb';
+import { createContext } from 'react';
 
 export type IRoles = { [_id: string]: IRole };
 
@@ -27,7 +27,11 @@ export type AuthorizationContextValue = {
 		scope?: string | ObjectId,
 		scopedRoles?: IRole['_id'][],
 	): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean];
-	queryRole(role: string | ObjectId): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean];
+	queryRole(
+		role: string | ObjectId,
+		scope?: IRoom['_id'],
+		ignoreSubscriptions?: boolean,
+	): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean];
 	roleStore: RoleStore;
 };
 

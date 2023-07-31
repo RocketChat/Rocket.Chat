@@ -1,5 +1,5 @@
 import type { AvatarObject, IUser } from '@rocket.chat/core-typings';
-import { ButtonGroup, Button, Box, Icon } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { SHA256 } from '@rocket.chat/sha256';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
@@ -264,8 +264,7 @@ const AccountProfilePage = (): ReactElement => {
 							{t('Logout_Others')}
 						</Button>
 						{allowDeleteOwnAccount && (
-							<Button danger onClick={handleDeleteOwnAccount}>
-								<Icon name='trash' size='x20' mie='x4' />
+							<Button icon='trash' danger onClick={handleDeleteOwnAccount}>
 								{t('Delete_my_account')}
 							</Button>
 						)}

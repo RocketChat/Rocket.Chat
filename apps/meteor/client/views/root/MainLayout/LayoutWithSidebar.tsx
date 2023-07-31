@@ -48,10 +48,10 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 		>
 			<PaletteStyleTag />
 			<SidebarPaletteStyleTag />
-			{!removeSidenav ? <Sidebar /> : null}
-			<div className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}>
+			{!removeSidenav && <Sidebar />}
+			<main className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}>
 				{children}
-			</div>
+			</main>
 		</Box>
 	);
 };

@@ -9,7 +9,7 @@ export const useSearchParameter = (name: string): string | undefined => {
 	const getSnapshot = useCallback(() => {
 		const searchParameters = getSearchParameters();
 		return searchParameters[name];
-	}, [getSearchParameters]);
+	}, [getSearchParameters, name]);
 
 	return useSyncExternalStore(subscribeToRouteChange, getSnapshot);
 };

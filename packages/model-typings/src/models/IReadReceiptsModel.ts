@@ -1,5 +1,5 @@
-import type { FindCursor, DeleteResult, UpdateResult, Document, Filter } from 'mongodb';
 import type { ReadReceipt, IUser, IMessage } from '@rocket.chat/core-typings';
+import type { FindCursor, DeleteResult, UpdateResult, Document, Filter } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
