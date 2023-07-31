@@ -47,7 +47,7 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 
 	const handleAdd = useMutableCallback(() => {
 		if (!isEnterprise) {
-			setModal(<CustomRoleUpsellModal onClose={() => setModal()} />);
+			setModal(<CustomRoleUpsellModal onClose={() => setModal(null)} />);
 			return;
 		}
 		router.push({
