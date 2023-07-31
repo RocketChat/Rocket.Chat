@@ -1,12 +1,12 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import RegisterForm from './RegisterForm';
 import RegisterFormDisabled from './RegisterFormDisabled';
 import RegisterTemplate from './RegisterTemplate';
 import SecretRegisterForm from './SecretRegisterForm';
 import SecretRegisterInvalidForm from './SecretRegisterInvalidForm';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import FormSkeleton from './template/FormSkeleton';
 
 export const RegisterSecretPageRouter = ({

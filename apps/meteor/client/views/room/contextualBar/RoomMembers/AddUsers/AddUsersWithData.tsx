@@ -7,7 +7,7 @@ import React from 'react';
 
 import { useForm } from '../../../../../hooks/useForm';
 import { useRoom } from '../../../contexts/RoomContext';
-import { useTabBarClose } from '../../../contexts/ToolboxContext';
+import { useTabBarClose } from '../../../contexts/RoomToolboxContext';
 import AddUsers from './AddUsers';
 
 type AddUsersWithDataProps = {

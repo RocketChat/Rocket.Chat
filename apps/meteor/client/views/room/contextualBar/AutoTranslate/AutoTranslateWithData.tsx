@@ -6,7 +6,7 @@ import React, { useMemo, useEffect, useState, memo } from 'react';
 
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useTabBarClose } from '../../contexts/RoomToolboxContext';
 import AutoTranslate from './AutoTranslate';
 
 const AutoTranslateWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {

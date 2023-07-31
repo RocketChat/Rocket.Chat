@@ -12,7 +12,7 @@ async function updateServices(/* record*/) {
 		clearTimeout(timer);
 	}
 
-	timer = setTimeout(async function () {
+	timer = setTimeout(async () => {
 		const data = {
 			// These will pe passed to 'node-cas' as options
 			enabled: settings.get('CAS_enabled'),
