@@ -1,4 +1,4 @@
-import { Box, Margins, Tag, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
@@ -174,8 +174,8 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={onEditClick}>
-						<Icon name='pencil' size='x20' /> {t('Edit')}
+					<Button icon='pencil' onClick={onEditClick}>
+						{t('Edit')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>

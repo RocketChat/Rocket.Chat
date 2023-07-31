@@ -1,5 +1,5 @@
-import { assert } from 'chai';
 import { isFederationAddServerProps } from '@rocket.chat/rest-typings';
+import { assert } from 'chai';
 
 describe('FederationAddServerProps (definition/rest/v1)', () => {
 	describe('isFederationAddServerProps', () => {

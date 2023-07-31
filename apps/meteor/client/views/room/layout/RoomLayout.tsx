@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import { Contextualbar } from '../../../components/Contextualbar';
 
@@ -13,15 +13,23 @@ type RoomLayoutProps = {
 
 const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps): ReactElement => (
 	<Box is='main' h='full' display='flex' flexDirection='column' bg='room' {...props}>
-		{header}
+		<Suspense fallback={null}>{header}</Suspense>
 		<Box display='flex' flexGrow={1} overflow='hidden' height='full' position='relative'>
 			<Box display='flex' flexDirection='column' flexGrow={1} minWidth={0}>
 				<Box is='div' display='flex' flexDirection='column' flexGrow={1}>
-					{body}
+					<Suspense fallback={null}>{body}</Suspense>
 				</Box>
-				{footer && <Box is='footer'>{footer}</Box>}
+				{footer && (
+					<Box is='footer'>
+						<Suspense fallback={null}>{footer}</Suspense>
+					</Box>
+				)}
 			</Box>
-			{aside && <Contextualbar is='aside'>{aside}</Contextualbar>}
+			{aside && (
+				<Contextualbar is='aside'>
+					<Suspense fallback={null}>{aside}</Suspense>
+				</Contextualbar>
+			)}
 		</Box>
 	</Box>
 );

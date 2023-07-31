@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import { Settings, Users, Rooms } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
-import { sendMessage } from '../../../lib/server';
 import { throttledCounter } from '../../../../lib/utils/throttledCounter';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { settings } from '../../../settings/server';
 
 const incException = throttledCounter((counter) => {
 	Settings.incrementValueById('Uncaught_Exceptions_Count', counter).catch(console.error);

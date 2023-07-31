@@ -1,5 +1,5 @@
-import { searchProviderService } from '../service';
 import { SearchLogger } from '../logger/logger';
+import { searchProviderService } from '../service';
 
 export class EventService {
 	_pushError(name: string, value: string, _payload?: unknown) {

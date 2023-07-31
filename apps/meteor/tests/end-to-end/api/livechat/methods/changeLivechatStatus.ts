@@ -1,15 +1,15 @@
 /* eslint-env mocha */
 
 import type { ILivechatAgent, IUser } from '@rocket.chat/core-typings';
-import type { Response } from 'supertest';
 import { expect } from 'chai';
+import type { Response } from 'supertest';
 
 import { getCredentials, request, credentials, methodCall } from '../../../../data/api-data';
+import { disableDefaultBusinessHour, makeDefaultBusinessHourActiveAndClosed } from '../../../../data/livechat/businessHours';
 import { createAgent } from '../../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../../data/permissions.helper';
 import { password } from '../../../../data/user';
 import { createUser, getMe, login } from '../../../../data/users.helper';
-import { disableDefaultBusinessHour, makeDefaultBusinessHourActiveAndClosed } from '../../../../data/livechat/businessHours';
 
 describe('livechat:changeLivechatStatus', function () {
 	this.retries(0);

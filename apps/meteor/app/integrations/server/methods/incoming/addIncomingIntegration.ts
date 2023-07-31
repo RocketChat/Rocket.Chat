@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import { Random } from '@rocket.chat/random';
-import { Babel } from 'meteor/babel-compiler';
-import _ from 'underscore';
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
 import { Integrations, Roles, Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Babel } from 'meteor/babel-compiler';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 

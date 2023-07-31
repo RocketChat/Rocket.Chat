@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { Babel } from 'meteor/babel-compiler';
-import _ from 'underscore';
+import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
 import { Integrations, Roles, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
+import { Babel } from 'meteor/babel-compiler';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 

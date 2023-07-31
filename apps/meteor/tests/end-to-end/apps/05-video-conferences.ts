@@ -3,8 +3,8 @@ import type { Response } from 'supertest';
 
 import { getCredentials, request, api, credentials } from '../../data/api-data.js';
 import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
-import { createRoom } from '../../data/rooms.helper';
 import { updateSetting } from '../../data/permissions.helper';
+import { createRoom } from '../../data/rooms.helper';
 import { adminUsername } from '../../data/user';
 
 describe('Apps - Video Conferences', function () {

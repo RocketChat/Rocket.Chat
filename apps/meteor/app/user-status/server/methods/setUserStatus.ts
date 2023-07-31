@@ -1,12 +1,12 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import { Presence } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Presence } from '@rocket.chat/core-services';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
 import { RateLimiter } from '../../../lib/server';
 import { setStatusText } from '../../../lib/server/functions/setStatusText';
+import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
