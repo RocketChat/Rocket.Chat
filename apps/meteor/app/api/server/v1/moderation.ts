@@ -5,6 +5,8 @@ import {
 	isArchiveReportProps,
 	isReportInfoParams,
 	isReportMessageHistoryParams,
+	isModerationReportUserPost,
+	// isUserReportsGet,
 	isModerationDeleteMsgHistoryParams,
 	isReportsByMsgIdParams,
 } from '@rocket.chat/rest-typings';
@@ -35,7 +37,11 @@ API.v1.addRoute(
 
 			const escapedSelector = escapeRegExp(selector);
 
-			const reports = await ModerationReports.findReportsGroupedByUser(latest, oldest, escapedSelector, { offset, count, sort }).toArray();
+			const reports = await ModerationReports.findMessageReportsGroupedByUser(latest, oldest, escapedSelector, {
+				offset,
+				count,
+				sort,
+			}).toArray();
 
 			if (reports.length === 0) {
 				return API.v1.success({
@@ -46,7 +52,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const total = await ModerationReports.countReportsInRange(latest, oldest, escapedSelector);
+			const total = await ModerationReports.countMessageReportsInRange(latest, oldest, escapedSelector);
 
 			return API.v1.success({
 				reports,
@@ -148,7 +154,7 @@ API.v1.addRoute(
 				moderator,
 			);
 
-			await ModerationReports.hideReportsByUserId(userId, this.userId, sanitizedReason, 'DELETE Messages');
+			await ModerationReports.hideMessageReportsByUserId(userId, this.userId, sanitizedReason, 'DELETE Messages');
 
 			return API.v1.success();
 		},
@@ -186,9 +192,9 @@ API.v1.addRoute(
 			const { userId: moderatorId } = this;
 
 			if (userId) {
-				await ModerationReports.hideReportsByUserId(userId, moderatorId, sanitizedReason, action);
+				await ModerationReports.hideMessageReportsByUserId(userId, moderatorId, sanitizedReason, action);
 			} else {
-				await ModerationReports.hideReportsByMessageId(msgId as string, moderatorId, sanitizedReason, action);
+				await ModerationReports.hideMessageReportsByMessageId(msgId as string, moderatorId, sanitizedReason, action);
 			}
 
 			return API.v1.success();
@@ -245,6 +251,33 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({ report });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'moderation.reportUser',
+	{
+		authRequired: true,
+		validateParams: isModerationReportUserPost,
+	},
+	{
+		async post() {
+			const { userId, description } = this.bodyParams;
+
+			const {
+				user: { _id, name, username, createdAt },
+			} = this;
+
+			const reportedUser = await Users.findOneById(userId, { projection: { _id: 1, name: 1, username: 1 } });
+
+			if (!reportedUser) {
+				return API.v1.failure('Invalid user id provided.');
+			}
+
+			const response = await ModerationReports.createWithDescriptionAndUser(reportedUser, description, { _id, name, username, createdAt });
+
+			return API.v1.success(response);
 		},
 	},
 );
