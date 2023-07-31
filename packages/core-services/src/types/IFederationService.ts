@@ -59,7 +59,5 @@ export interface IFederationService {
 
 	createDirectMessageRoomAndInviteUser(internalInviterId: string, internalRoomId: string, externalInviteeId: string): Promise<void>;
 
-	getMatrixFederationStatistics(): Promise<IFederationStatistics>;
-
 	actionAllowed(room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']): Promise<boolean>;
 }

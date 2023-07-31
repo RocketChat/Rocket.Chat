@@ -1,7 +1,7 @@
 import type { IFederationStatistics } from '@rocket.chat/core-services';
 import { MatrixBridgedRoom, Rooms, Users, Settings } from '@rocket.chat/models';
 
-class RocketChatStatisticsAdapter {
+class FederationStatisticsAdapter {
 	async getBiggestRoomAvailable(): Promise<{
 		_id: string;
 		name: string;
@@ -60,7 +60,7 @@ class RocketChatStatisticsAdapter {
 }
 
 export const getMatrixFederationStatistics = async (): Promise<IFederationStatistics> => {
-	const statisticsService = new RocketChatStatisticsAdapter();
+	const statisticsService = new FederationStatisticsAdapter();
 
 	return {
 		enabled: (await Settings.findOneById('Federation_Matrix_enabled'))?.value === true,

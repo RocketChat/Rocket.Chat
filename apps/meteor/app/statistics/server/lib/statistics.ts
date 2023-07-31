@@ -1,7 +1,7 @@
 import { log } from 'console';
 import os from 'os';
 
-import { Analytics, Federation, Team, VideoConf } from '@rocket.chat/core-services';
+import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
 import type { IRoom, IStats } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import {
@@ -39,6 +39,7 @@ import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
+import { getMatrixFederationStatistics } from './matrixFederationStatistics';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -524,11 +525,7 @@ export const statistics = {
 		const defaultLoggedInCustomScript = (await Settings.findOneById('Custom_Script_Logged_In'))?.packageValue;
 		statistics.loggedInCustomScriptChanged = settings.get('Custom_Script_Logged_In') !== defaultLoggedInCustomScript;
 
-		try {
-			statistics.matrixFederation = await Federation.getMatrixFederationStatistics();
-		} catch (error) {
-			// noop
-		}
+		statistics.matrixFederation = await getMatrixFederationStatistics();
 
 		// Omnichannel call stats
 		statistics.webRTCEnabled = settings.get('WebRTC_Enabled');

@@ -1,5 +1,5 @@
 import { License, ServiceClass } from '@rocket.chat/core-services';
-import type { IFederationJoinExternalPublicRoomInput, IFederationService, IFederationStatistics } from '@rocket.chat/core-services';
+import type { IFederationJoinExternalPublicRoomInput, IFederationService } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser, Username, ValueOf } from '@rocket.chat/core-typings';
 import {
 	isDirectMessageRoom,
@@ -26,7 +26,6 @@ import type { RocketChatMessageAdapter } from './infrastructure/rocket-chat/adap
 import type { RocketChatNotificationAdapter } from './infrastructure/rocket-chat/adapters/Notification';
 import type { RocketChatRoomAdapter } from './infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from './infrastructure/rocket-chat/adapters/Settings';
-import { getMatrixFederationStatistics } from './infrastructure/rocket-chat/adapters/Statistics';
 import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapters/User';
 import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
@@ -620,10 +619,6 @@ export class FederationService extends ServiceClass implements IFederationServic
 			return;
 		}
 		await this.internalRoomValidator.canCreateDirectMessageFromUI(members);
-	}
-
-	public async getMatrixFederationStatistics(): Promise<IFederationStatistics> {
-		return getMatrixFederationStatistics();
 	}
 
 	public async actionAllowed(room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']): Promise<boolean> {
