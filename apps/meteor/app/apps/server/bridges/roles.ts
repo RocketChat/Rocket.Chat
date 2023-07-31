@@ -1,9 +1,10 @@
+import { RoleBridge } from '@rocket.chat/apps-engine/server/bridges';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
-export class AppRolesBridge extends RoleBridge {
+export class AppRoleBridge extends RoleBridge {
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}
