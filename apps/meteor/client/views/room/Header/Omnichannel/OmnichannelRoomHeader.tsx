@@ -45,12 +45,12 @@ const OmnichannelRoomHeader: FC<OmnichannelRoomHeaderProps> = ({ slots: parentSl
 			start: (!!isMobile || currentRouteName === 'omnichannel-directory' || currentRouteName === 'omnichannel-current-chats') && (
 				<HeaderToolbox>
 					{isMobile && <BurgerMenu />}
-					{<BackButton routeName={currentRouteName} />}
+					<BackButton routeName={currentRouteName} />
 				</HeaderToolbox>
 			),
-			posContent: <QuickActions room={room} />,
+			posContent: <QuickActions />,
 		}),
-		[isMobile, currentRouteName, parentSlot, room],
+		[isMobile, currentRouteName, parentSlot],
 	);
 
 	return (

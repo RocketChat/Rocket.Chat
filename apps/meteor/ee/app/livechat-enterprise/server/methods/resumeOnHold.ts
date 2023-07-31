@@ -1,13 +1,13 @@
-import { Meteor } from 'meteor/meteor';
+import { Message } from '@rocket.chat/core-services';
 import type { ILivechatVisitor, IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Message } from '@rocket.chat/core-services';
+import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { callbacks } from '../../../../../lib/callbacks';
-import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
 import { i18n } from '../../../../../server/lib/i18n';
 
 async function resolveOnHoldCommentInfo(options: { clientAction: boolean }, room: any, onHoldChatResumedBy: any): Promise<string> {

@@ -38,7 +38,9 @@ export const kitContext = createContext<UiKitContext>(defaultContext);
 
 export const useUiKitContext = () => useContext(kitContext);
 
-export const useUiKitStateValue = <T extends string | number | undefined>(
+export const useUiKitStateValue = <
+  T extends string | string[] | number | undefined
+>(
   actionId: string,
   initialValue: T
 ): {

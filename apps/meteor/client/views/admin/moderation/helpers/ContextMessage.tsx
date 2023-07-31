@@ -1,4 +1,4 @@
-import type { IMessage, IModerationReport } from '@rocket.chat/core-typings';
+import type { IMessage, MessageReport } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Message, MessageName, MessageToolboxItem, MessageToolboxWrapper, MessageUsername } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
@@ -22,7 +22,7 @@ const ContextMessage = ({
 	onChange,
 }: {
 	message: any;
-	room: IModerationReport['room'];
+	room: MessageReport['room'];
 	handleClick: (id: IMessage['_id']) => void;
 	onRedirect: (id: IMessage['_id']) => void;
 	onChange: () => void;

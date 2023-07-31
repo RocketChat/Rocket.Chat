@@ -1,13 +1,13 @@
-import type { IModerationReport, IModerationAudit } from '@rocket.chat/core-typings';
+import type { IModerationReport, IModerationAudit, MessageReport } from '@rocket.chat/core-typings';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ArchiveReportPropsPOST } from './ArchiveReportProps';
-import type { ReportHistoryPropsGET } from './ReportHistoryProps';
-import type { ReportMessageHistoryParamsGET } from './ReportMessageHistoryParams';
 import type { ModerationDeleteMsgHistoryParamsPOST } from './ModerationDeleteMsgHistoryParams';
 import type { ModerationReportUserPOST } from './ModerationReportUserPOST';
-import type { ReportsByMsgIdParamsGET } from './ReportsByMsgIdParams';
+import type { ReportHistoryPropsGET } from './ReportHistoryProps';
 import type { ReportInfoParams } from './ReportInfoParams';
+import type { ReportMessageHistoryParamsGET } from './ReportMessageHistoryParams';
+import type { ReportsByMsgIdParamsGET } from './ReportsByMsgIdParams';
 
 export type ModerationEndpoints = {
 	// API endpoint to fetch the reported messages
@@ -21,7 +21,7 @@ export type ModerationEndpoints = {
 	};
 	'/v1/moderation.user.reportedMessages': {
 		GET: (params: ReportMessageHistoryParamsGET) => PaginatedResult<{
-			messages: Pick<IModerationReport, 'message' | 'ts' | 'room' | '_id'>[];
+			messages: Pick<MessageReport, 'message' | 'ts' | 'room' | '_id'>[];
 		}>;
 	};
 	'/v1/moderation.user.deleteReportedMessages': {

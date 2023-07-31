@@ -1,4 +1,3 @@
-import '../ee/definition';
 import '../ee/client/ecdh';
 import './polyfills';
 
@@ -12,5 +11,3 @@ import './startup';
 import './views/admin';
 import './views/marketplace';
 import './views/account';
-import './views/teams';
-import './views/outlookCalendar';

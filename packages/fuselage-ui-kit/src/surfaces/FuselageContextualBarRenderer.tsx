@@ -10,6 +10,7 @@ export class FuselageContextualBarSurfaceRenderer extends FuselageSurfaceRendere
       'input',
       'section',
       'preview',
+      'callout',
     ]);
   }
 }

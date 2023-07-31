@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { Info } from '../../../app/utils/client';
+import { Info } from '../../../app/utils/rocketchat.info';
 import AppErrorPage from './AppErrorPage';
 
 declare global {

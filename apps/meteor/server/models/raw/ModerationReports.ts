@@ -1,4 +1,4 @@
-import type { IMessage, IModerationAudit, IModerationReport, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IMessage, IModerationAudit, IModerationReport, RocketChatRecordDeleted, MessageReport } from '@rocket.chat/core-typings';
 import type { FindPaginated, IModerationReportsModel, PaginationParams } from '@rocket.chat/model-typings';
 import type { AggregationCursor, Collection, Db, Document, FindCursor, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 
@@ -110,7 +110,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return this.col.aggregate(params, { allowDiskUse: true });
 	}
 
-	countReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number> {
+	countMessageReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number> {
 		return this.col.countDocuments({
 			_hidden: { $ne: true },
 			ts: { $lt: latest, $gt: oldest },
@@ -123,7 +123,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		selector: string,
 		pagination: PaginationParams<IModerationReport>,
 		options: FindOptions<IModerationReport> = {},
-	): FindPaginated<FindCursor<Pick<IModerationReport, '_id' | 'message' | 'ts' | 'room'>>> {
+	): FindPaginated<FindCursor<Pick<MessageReport, '_id' | 'message' | 'ts' | 'room'>>> {
 		const query = {
 			'_hidden': {
 				$ne: true,
@@ -135,14 +135,10 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 
 		const fuzzyQuery = selector
 			? {
-					$or: [
-						{
-							'message.msg': {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-					],
+					'message.msg': {
+						$regex: selector,
+						$options: 'i',
+					},
 			  }
 			: {};
 
@@ -199,7 +195,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return this.findPaginated(query, opts);
 	}
 
-	async hideReportsByMessageId(messageId: string, userId: string, reason: string, action: string): Promise<UpdateResult | Document> {
+	async hideMessageReportsByMessageId(messageId: string, userId: string, reason: string, action: string): Promise<UpdateResult | Document> {
 		const query = {
 			'message._id': messageId,
 		};
@@ -214,7 +210,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return this.updateMany(query, update);
 	}
 
-	async hideReportsByUserId(userId: string, moderatorId: string, reason: string, action: string): Promise<UpdateResult | Document> {
+	async hideMessageReportsByUserId(userId: string, moderatorId: string, reason: string, action: string): Promise<UpdateResult | Document> {
 		const query = {
 			'message.u._id': userId,
 		};
@@ -229,10 +225,12 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 	}
 
 	private getSearchQueryForSelector(selector?: string): any {
+		const messageExistsQuery = { message: { $exists: true } };
 		if (!selector) {
-			return {};
+			return messageExistsQuery;
 		}
 		return {
+			...messageExistsQuery,
 			$or: [
 				{
 					'message.msg': {

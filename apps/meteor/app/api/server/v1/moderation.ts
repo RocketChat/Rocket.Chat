@@ -1,3 +1,5 @@
+import type { IModerationReport } from '@rocket.chat/core-typings';
+import { ModerationReports, Users } from '@rocket.chat/models';
 import {
 	isReportHistoryProps,
 	isArchiveReportProps,
@@ -8,12 +10,10 @@ import {
 	isModerationDeleteMsgHistoryParams,
 	isReportsByMsgIdParams,
 } from '@rocket.chat/rest-typings';
-import { ModerationReports, Users } from '@rocket.chat/models';
-import type { IModerationReport } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { API } from '../api';
 import { deleteReportedMessages } from '../../../../server/lib/moderation/deleteReportedMessages';
+import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
 type ReportMessage = Pick<IModerationReport, '_id' | 'message' | 'ts' | 'room'>;
@@ -52,7 +52,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const total = await ModerationReports.countReportsInRange(latest, oldest, escapedSelector);
+			const total = await ModerationReports.countMessageReportsInRange(latest, oldest, escapedSelector);
 
 			return API.v1.success({
 				reports,
@@ -154,7 +154,7 @@ API.v1.addRoute(
 				moderator,
 			);
 
-			await ModerationReports.hideReportsByUserId(userId, this.userId, sanitizedReason, 'DELETE Messages');
+			await ModerationReports.hideMessageReportsByUserId(userId, this.userId, sanitizedReason, 'DELETE Messages');
 
 			return API.v1.success();
 		},
@@ -192,9 +192,9 @@ API.v1.addRoute(
 			const { userId: moderatorId } = this;
 
 			if (userId) {
-				await ModerationReports.hideReportsByUserId(userId, moderatorId, sanitizedReason, action);
+				await ModerationReports.hideMessageReportsByUserId(userId, moderatorId, sanitizedReason, action);
 			} else {
-				await ModerationReports.hideReportsByMessageId(msgId as string, moderatorId, sanitizedReason, action);
+				await ModerationReports.hideMessageReportsByMessageId(msgId as string, moderatorId, sanitizedReason, action);
 			}
 
 			return API.v1.success();
