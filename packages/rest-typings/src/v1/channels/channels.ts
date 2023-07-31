@@ -15,6 +15,7 @@ import type { ChannelsJoinProps } from './ChannelsJoinProps';
 import type { ChannelsKickProps } from './ChannelsKickProps';
 import type { ChannelsLeaveProps } from './ChannelsLeaveProps';
 import type { ChannelsListProps } from './ChannelsListProps';
+import type { ChannelsMembersByHighestRoleProps } from './ChannelsMembersByHighestRoleProps';
 import type { ChannelsMessagesProps } from './ChannelsMessagesProps';
 import type { ChannelsModeratorsProps } from './ChannelsModeratorsProps';
 import type { ChannelsOnlineProps } from './ChannelsOnlineProps';
@@ -48,11 +49,7 @@ export type ChannelsEndpoints = {
 		}>;
 	};
 	'/v1/channels.membersByHighestRole': {
-		GET: (
-			params: PaginatedRequest<
-				{ roomId: string; filter?: string; status?: string[] } | { roomName: string; filter?: string; status?: string[] }
-			>,
-		) => PaginatedResult<{
+		GET: (params: ChannelsMembersByHighestRoleProps) => PaginatedResult<{
 			members: IUser[];
 		}>;
 	};

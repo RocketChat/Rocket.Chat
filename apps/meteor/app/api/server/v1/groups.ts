@@ -755,16 +755,6 @@ API.v1.addRoute(
 
 			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
 			const { sort = {} } = await this.parseJsonQuery();
-
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					role: Match.Maybe(String),
-					status: Match.Maybe([String]),
-					filter: Match.Maybe(String),
-				}),
-			);
-
 			const { status, filter } = this.queryParams;
 
 			const cursor = await findUsersOfRoomByHighestRole({
