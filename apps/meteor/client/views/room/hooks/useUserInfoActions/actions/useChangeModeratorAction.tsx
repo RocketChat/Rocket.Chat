@@ -11,7 +11,7 @@ import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
-import type { UserInfoAction } from '../useUserInfoActions';
+import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
 const getWarningModalForFederatedRooms = (
 	closeModalFn: () => void,
@@ -125,7 +125,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 						content: t(isModerator ? 'Remove_as_moderator' : 'Set_as_moderator'),
 						icon: 'shield-blank' as const,
 						onClick: changeModeratorAction,
-						type: 'privileges',
+						type: 'privileges' as UserInfoActionType,
 				  }
 				: undefined,
 		[changeModeratorAction, isModerator, roomCanSetModerator, t, userCanSetModerator, room],

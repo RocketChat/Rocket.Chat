@@ -16,11 +16,13 @@ import { useMuteUserAction } from './actions/useMuteUserAction';
 import { useRedirectModerationConsole } from './actions/useRedirectModerationConsole';
 import { useRemoveUserAction } from './actions/useRemoveUserAction';
 
+export type UserInfoActionType = 'communication' | 'privileges' | 'management';
+
 export type UserInfoAction = {
 	content: ReactNode;
 	icon?: ComponentProps<typeof Icon>['name'];
 	onClick: () => void;
-	type?: 'communication' | 'privileges' | 'management';
+	type?: UserInfoActionType;
 	color?: string;
 };
 
@@ -109,7 +111,7 @@ export const useUserInfoActions = (
 				}, [] as UserMenuAction);
 
 		return { actions: options, menuActions };
-	}, [userinfoActions]);
+	}, [size, userinfoActions]);
 
 	return actionSpread;
 };

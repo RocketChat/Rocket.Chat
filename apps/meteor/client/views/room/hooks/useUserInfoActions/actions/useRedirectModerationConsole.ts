@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { usePermission, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 
-import type { UserInfoAction } from '../useUserInfoActions';
+import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
 export const useRedirectModerationConsole = (uid: IUser['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
@@ -21,6 +21,6 @@ export const useRedirectModerationConsole = (uid: IUser['_id']): UserInfoAction 
 		content: t('Moderation_Action_View_reports'),
 		icon: 'warning' as const,
 		onClick: redirectModerationConsoleAction,
-		type: 'privileges',
+		type: 'privileges' as UserInfoActionType,
 	};
 };

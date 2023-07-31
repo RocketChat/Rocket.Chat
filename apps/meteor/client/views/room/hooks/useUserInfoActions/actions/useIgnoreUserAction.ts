@@ -11,7 +11,7 @@ import {
 import { useMemo } from 'react';
 
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
-import type { UserInfoAction } from '../useUserInfoActions';
+import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
 export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
@@ -50,7 +50,7 @@ export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 						content: t(isIgnored ? 'Unignore' : 'Ignore'),
 						icon: 'ban' as const,
 						onClick: ignoreUserAction,
-						type: 'management',
+						type: 'management' as UserInfoActionType,
 				  }
 				: undefined,
 		[ignoreUserAction, isIgnored, ownUserId, roomCanIgnore, t, uid],

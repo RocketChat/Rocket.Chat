@@ -11,7 +11,7 @@ import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
-import type { UserInfoAction } from '../useUserInfoActions';
+import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
 const getWarningModalForFederatedRooms = (
 	closeModalFn: () => void,
@@ -109,7 +109,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 						content: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
 						icon: 'shield-check' as const,
 						onClick: changeOwnerAction,
-						type: 'privileges',
+						type: 'privileges' as UserInfoActionType,
 				  }
 				: undefined,
 		[changeOwnerAction, roomCanSetOwner, userCanSetOwner, isOwner, t, room],

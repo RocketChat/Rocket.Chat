@@ -7,7 +7,7 @@ import { closeUserCard } from '../../../../../../app/ui/client/lib/userCard';
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../../../contexts/VideoConfContext';
 import { VideoConfManager } from '../../../../../lib/VideoConfManager';
 import { useVideoConfWarning } from '../../../contextualBar/VideoConference/hooks/useVideoConfWarning';
-import type { UserInfoAction } from '../useUserInfoActions';
+import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
 export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAction | undefined => {
 	const t = useTranslation();
@@ -40,7 +40,7 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAc
 					content: t('Start_call'),
 					icon: 'phone' as const,
 					onClick: action,
-					type: 'communication',
+					type: 'communication' as UserInfoActionType,
 			  }
 			: undefined;
 	}, [t, room, dispatchPopup, dispatchWarning, isCalling, isRinging, ownUserId, user._id]);

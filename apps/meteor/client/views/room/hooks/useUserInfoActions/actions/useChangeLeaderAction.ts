@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
-import type { UserInfoAction } from '../useUserInfoActions';
+import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
 // TODO: Remove endpoint concatenation
 export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
@@ -37,7 +37,7 @@ export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid
 						content: t(isLeader ? 'Remove_as_leader' : 'Set_as_leader'),
 						icon: 'shield-alt' as const,
 						onClick: changeLeaderAction,
-						type: 'privileges',
+						type: 'privileges' as UserInfoActionType,
 				  }
 				: undefined,
 		[isLeader, roomCanSetLeader, t, userCanSetLeader, changeLeaderAction],
