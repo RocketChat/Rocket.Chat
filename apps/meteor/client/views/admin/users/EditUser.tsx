@@ -92,7 +92,6 @@ function EditUser({ data, onReload, availableRoles, ...props }: EditUserProps) {
 			prepend={prepend}
 			setHasUnsavedChanges={setHasUnsavedChanges}
 			canSaveOrReset={canSaveOrReset}
-			onReload={onReload}
 			onSave={handleSaveEditedUser}
 			preserveData
 			userData={data}

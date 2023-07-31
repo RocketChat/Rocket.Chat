@@ -125,7 +125,7 @@ const UsersPage = (): ReactElement => {
 							availableRoles={availableRoles || []}
 						/>
 					)}
-					{context === 'new' && <AddUser onReload={handleReload} availableRoles={availableRoles} userData={userData} />}
+					{context === 'new' && <AddUser onReload={handleReload} availableRoles={availableRoles} userData={userData || {}} />}
 					{context === 'invite' && <InviteUsers />}
 				</Contextualbar>
 			)}

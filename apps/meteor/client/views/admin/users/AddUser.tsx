@@ -1,5 +1,5 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import type { UseQueryResult } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 import React, { useCallback, useState } from 'react';
 
@@ -9,7 +9,7 @@ import UserForm from './UserForm';
 type AddUserProps = {
 	onReload: () => void;
 	availableRoles: any;
-	userData: UseQueryResult<any, unknown>;
+	userData: IUser | Record<string, never>;
 };
 
 const AddUser = ({ onReload, availableRoles, userData, ...props }: AddUserProps) => {
@@ -41,28 +41,8 @@ const AddUser = ({ onReload, availableRoles, userData, ...props }: AddUserProps)
 		},
 	});
 
-	// const append = (
-	// 	<ContextualbarFooter>
-	// 		<ButtonGroup stretch>
-	// 			<Button disabled={!isDirty} onClick={() => reset()}>
-	// 				{t('Cancel')}
-	// 			</Button>
-	// 			<Button
-	// 				primary
-	// 				disabled={!isDirty}
-	// 				onClick={handleSubmit(async (data) => {
-	// 					handleSaveUser.mutate(data);
-	// 				})}
-	// 			>
-	// 				{t('Save')}
-	// 			</Button>
-	// 		</ButtonGroup>
-	// 	</ContextualbarFooter>
-	// );
-
 	return (
 		<UserForm
-			onReload={onReload}
 			availableRoles={availableRoles}
 			setHasUnsavedChanges={setHasUnsavedChanges}
 			canSaveOrReset={hasUnsavedChanges}

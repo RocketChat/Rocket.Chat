@@ -29,7 +29,6 @@ import { useSmtpConfig } from './hooks/useSmtpConfig';
 type UserFormProps = {
 	availableRoles?: SelectOption[];
 	prepend?: (currentUsername: any, username: any, avatarETag: any) => React.JSX.Element;
-	onReload: () => void;
 	canSaveOrReset: boolean;
 	setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
 	onSave: UseMutationResult<any, unknown, any, unknown>;
@@ -268,7 +267,6 @@ const UserForm = ({
 						{errors?.roles && <Field.Error>{errors.roles.message}</Field.Error>}
 					</Field>
 
-					{/* {handleJoinDefaultChannels && ( */}
 					<Field>
 						<Field.Row>
 							<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
@@ -283,9 +281,7 @@ const UserForm = ({
 							</Box>
 						</Field.Row>
 					</Field>
-					{/* )} */}
 
-					{/* {handleSendWelcomeEmail && ( */}
 					<Field>
 						<Field.Row>
 							<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
@@ -305,7 +301,6 @@ const UserForm = ({
 							<Field.Hint dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }} />
 						)}
 					</Field>
-					{/* )} */}
 
 					{customFieldsMetadata && (
 						<>
@@ -324,8 +319,9 @@ const UserForm = ({
 					<Button
 						primary
 						disabled={!canSaveOrReset}
-						onClick={handleSubmit(async (data) => {
-							onSave.mutate(preserveData ? data : userData._id);
+						onClick={handleSubmit(async (userFormData) => {
+							console.log(userFormData);
+							onSave.mutate(preserveData ? { userId: userData._id, data: userFormData } : userFormData);
 						})}
 					>
 						{t('Save')}
