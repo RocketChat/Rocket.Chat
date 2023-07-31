@@ -1,10 +1,6 @@
 import { api } from '@rocket.chat/core-services';
-<<<<<<< HEAD
-import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
-=======
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
->>>>>>> 817141dcabd12dc7bd671c24f19ad2c34c097c27
+import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
