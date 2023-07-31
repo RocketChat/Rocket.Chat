@@ -19,7 +19,7 @@ import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useTabBarClose } from '../../contexts/RoomToolboxContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
