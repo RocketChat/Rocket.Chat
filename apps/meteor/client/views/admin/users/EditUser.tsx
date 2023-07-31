@@ -29,7 +29,6 @@ function EditUser({ userData, onReload, availableRoles, ...props }: EditUserProp
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [avatarObj, setAvatarObj] = useState<AvatarObject>();
-	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
 	const router = useRouter();
 
@@ -77,10 +76,10 @@ function EditUser({ userData, onReload, availableRoles, ...props }: EditUserProp
 		},
 	});
 
-	const canSaveOrReset = hasUnsavedChanges || Boolean(avatarObj);
+	const hasAvatarObject = Boolean(avatarObj);
 
 	const prepend = useCallback(
-		(currentUsername, username, avatarETag) => (
+		(currentUsername: string, username: string, avatarETag: string) => (
 			<UserAvatarEditor currentUsername={currentUsername} username={username} etag={avatarETag} setAvatarObj={setAvatarObj} />
 		),
 		[],
@@ -91,8 +90,7 @@ function EditUser({ userData, onReload, availableRoles, ...props }: EditUserProp
 			preserveData
 			availableRoles={availableRoles}
 			prepend={prepend}
-			setHasUnsavedChanges={setHasUnsavedChanges}
-			canSaveOrReset={canSaveOrReset}
+			hasAvatarObject={hasAvatarObject}
 			onSave={handleSaveEditedUser}
 			userData={userData}
 			{...props}

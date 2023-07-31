@@ -18,7 +18,7 @@ import {
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import { useTranslation, useAccountsCustomFields, useSetting } from '@rocket.chat/ui-contexts';
 import type { UseMutationResult } from '@tanstack/react-query';
-import React, { useEffect } from 'react';
+import React from 'react';
 import type { FieldError, FieldErrorsImpl, Merge } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -29,8 +29,7 @@ import { useSmtpConfig } from './hooks/useSmtpConfig';
 type UserFormProps = {
 	availableRoles?: SelectOption[];
 	prepend?: (currentUsername: any, username: any, avatarETag: any) => React.JSX.Element;
-	canSaveOrReset: boolean;
-	setHasUnsavedChanges: React.Dispatch<React.SetStateAction<boolean>>;
+	hasAvatarObject: boolean;
 	onSave: UseMutationResult<any, unknown, any, unknown>;
 	preserveData: boolean;
 	userData?: Serialized<IUser> | Record<string, never>;
@@ -40,16 +39,7 @@ const isErrorString = (errorMessage: string | FieldError | Merge<FieldError, Fie
 	return typeof errorMessage === 'string';
 };
 
-const UserForm = ({
-	prepend,
-	availableRoles,
-	canSaveOrReset,
-	setHasUnsavedChanges,
-	onSave,
-	preserveData,
-	userData,
-	...props
-}: UserFormProps) => {
+const UserForm = ({ prepend, availableRoles, onSave, preserveData, userData, hasAvatarObject, ...props }: UserFormProps) => {
 	const t = useTranslation();
 
 	const customFieldsMetadata = useAccountsCustomFields();
@@ -57,7 +47,7 @@ const UserForm = ({
 	const defaultUserRoles = parseCSV(String(useSetting('Accounts_Registration_Users_Default_Roles')));
 	const isSmtpEnabled = useSmtpConfig();
 
-	const getInitialValue = (data: any) => ({
+	const getInitialValue = (data: Serialized<IUser> | Record<string, never>) => ({
 		roles: data.roles,
 		name: data.name ?? '',
 		password: '',
@@ -67,7 +57,7 @@ const UserForm = ({
 		email: (data.emails?.length && data.emails[0].address) || '',
 		verified: (data.emails?.length && data.emails[0].verified) || false,
 		setRandomPassword: false,
-		requirePasswordChange: data.setRandomPassword || false,
+		requirePasswordChange: data.requirePasswordChange || false,
 		customFields: data.customFields ?? {},
 		statusText: data.statusText ?? '',
 		joinDefaultChannels: true,
@@ -80,11 +70,10 @@ const UserForm = ({
 		handleSubmit,
 		register,
 		reset,
-		setValue,
 		formState: { errors, isDirty },
 	} = useForm({
 		defaultValues: preserveData
-			? getInitialValue(userData)
+			? getInitialValue(userData || {})
 			: {
 					name: '',
 					username: '',
@@ -104,17 +93,13 @@ const UserForm = ({
 		mode: 'all',
 	});
 
-	useEffect(() => {
-		setHasUnsavedChanges(isDirty);
-		// const subscription = watch?.((value) => setValue?.('customFields', { ...value.customFields }));
-		// return () => subscription?.unsubscribe();
-	}, [isDirty, setHasUnsavedChanges, setValue, watch]);
+	console.log({ isDirty, hasAvatarObject });
 
 	return (
 		<>
 			<ContextualbarScrollableContent {...props} autoComplete='off'>
 				<FieldGroup>
-					{userData ? prepend?.(userData?.username, watch?.('username'), userData?.avatarETag) : null}
+					{userData ? prepend?.(userData?.username || '', watch?.('username') || '', userData?.avatarETag || '') : null}
 					<Field>
 						<Field.Label>{t('Name')}</Field.Label>
 						<Field.Row>
@@ -313,12 +298,16 @@ const UserForm = ({
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button type='reset' disabled={!canSaveOrReset} onClick={() => reset(preserveData ? getInitialValue(userData) : {})}>
+					<Button
+						type='reset'
+						disabled={!isDirty || !hasAvatarObject}
+						onClick={() => reset(preserveData ? getInitialValue(userData || {}) : {})}
+					>
 						{t('Reset')}
 					</Button>
 					<Button
 						primary
-						disabled={!canSaveOrReset}
+						disabled={!isDirty || !hasAvatarObject}
 						onClick={handleSubmit(async (userFormData) => {
 							onSave.mutate(preserveData ? { userId: userData?._id, data: userFormData } : userFormData);
 						})}

@@ -1,6 +1,6 @@
 import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import UserForm from './UserForm';
@@ -13,8 +13,6 @@ type AddUserProps = {
 const AddUser = ({ onReload, availableRoles, ...props }: AddUserProps) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-
-	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 	const router = useRouter();
@@ -39,16 +37,7 @@ const AddUser = ({ onReload, availableRoles, ...props }: AddUserProps) => {
 		},
 	});
 
-	return (
-		<UserForm
-			availableRoles={availableRoles}
-			setHasUnsavedChanges={setHasUnsavedChanges}
-			canSaveOrReset={hasUnsavedChanges}
-			onSave={handleSaveUser}
-			preserveData={false}
-			{...props}
-		/>
-	);
+	return <UserForm availableRoles={availableRoles} onSave={handleSaveUser} preserveData={false} hasAvatarObject={false} {...props} />;
 };
 
 export default AddUser;
