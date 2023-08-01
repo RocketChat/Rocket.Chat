@@ -248,27 +248,23 @@ export class MatrixBridge implements IFederationBridge {
 				homeServerDomain: this.internalSettings.getHomeServerDomain(),
 			}),
 		);
-		try {
-			const messageId = await this.bridgeInstance
-				.getIntent(externalSenderId)
-				.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
-					'msgtype': 'm.text',
-					'body': this.escapeEmojis(message.msg),
-					'formatted_body': text,
-					'format': 'org.matrix.custom.html',
-					'm.relates_to': {
-						'rel_type': 'm.thread',
-						'event_id': relatesToEventId,
-						'is_falling_back': true,
-						'm.in_reply_to': {
-							event_id: relatesToEventId,
-						},
+		const messageId = await this.bridgeInstance
+			.getIntent(externalSenderId)
+			.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+				'msgtype': 'm.text',
+				'body': this.escapeEmojis(message.msg),
+				'formatted_body': text,
+				'format': 'org.matrix.custom.html',
+				'm.relates_to': {
+					'rel_type': 'm.thread',
+					'event_id': relatesToEventId,
+					'is_falling_back': true,
+					'm.in_reply_to': {
+						event_id: relatesToEventId,
 					},
-				});
-			return messageId;
-		} catch (e) {
-			throw new Error('User is not part of the room.');
-		}
+				},
+			});
+		return messageId;
 	}
 
 	public async sendThreadReplyToMessage(
@@ -341,6 +337,7 @@ export class MatrixBridge implements IFederationBridge {
 
 			return messageId;
 		} catch (e: any) {
+			federationBridgeLogger.error({ msg: 'Error sending file to thread', err: e });
 			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
 				throw new Error('File is too large');
 			}
@@ -384,6 +381,7 @@ export class MatrixBridge implements IFederationBridge {
 
 			return messageId;
 		} catch (e: any) {
+			federationBridgeLogger.error({ msg: 'Error sending file to thread', err: e });
 			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
 				throw new Error('File is too large');
 			}
@@ -560,6 +558,7 @@ export class MatrixBridge implements IFederationBridge {
 
 			return messageId;
 		} catch (e: any) {
+			federationBridgeLogger.error({ msg: 'Error sending file to room', err: e });
 			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
 				throw new Error('File is too large');
 			}
@@ -595,6 +594,7 @@ export class MatrixBridge implements IFederationBridge {
 
 			return messageId;
 		} catch (e: any) {
+			federationBridgeLogger.error({ msg: 'Error sending file to room', err: e });
 			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
 				throw new Error('File is too large');
 			}
@@ -629,6 +629,7 @@ export class MatrixBridge implements IFederationBridge {
 
 			return mxcUrl;
 		} catch (e: any) {
+			federationBridgeLogger.error({ msg: 'Error uploading content to Matrix', err: e });
 			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
 				throw new Error('File is too large');
 			}
