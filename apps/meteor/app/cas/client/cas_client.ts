@@ -46,7 +46,7 @@ const openCenteredPopup = (url: string, width: number, height: number) => {
 			// Fix for #328 - added a second test criteria (popup.closed === undefined)
 			// to humour this Android quirk:
 			// http://code.google.com/p/android/issues/detail?id=21061
-			popupClosed = popup?.closed === undefined;
+			popupClosed = popup?.closed || popup?.closed === undefined;
 		} catch (e) {
 			// For some unknown reason, IE9 (and others?) sometimes (when
 			// the popup closes too quickly?) throws "SCRIPT16386: No such
