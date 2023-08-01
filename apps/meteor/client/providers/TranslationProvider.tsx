@@ -36,6 +36,8 @@ const parseToJSON = (customTranslations: string): Record<string, Record<string, 
 	}
 };
 
+const localeCache = new Map<string, Promise<string>>();
+
 const useI18next = (lng: string): typeof i18next => {
 	const basePath = useAbsoluteUrl()('/i18n');
 
@@ -101,6 +103,22 @@ const useI18next = (lng: string): typeof i18next => {
 				loadPath: `${basePath}/{{lng}}.json`,
 				parse: (data: string, lngs?: string | string[], namespaces: string | string[] = []) =>
 					extractKeys(JSON.parse(data), lngs, namespaces),
+				request: (_options, url, _payload, callback) => {
+					const params = url.split('/');
+					const lng = params[params.length - 1];
+
+					let promise = localeCache.get(lng);
+
+					if (!promise) {
+						promise = fetch(url).then((res) => res.text());
+						localeCache.set(lng, promise);
+					}
+
+					promise.then(
+						(res) => callback(null, { data: res, status: 200 }),
+						() => callback(null, { data: '', status: 500 }),
+					);
+				},
 			},
 			react: {
 				useSuspense: true,
