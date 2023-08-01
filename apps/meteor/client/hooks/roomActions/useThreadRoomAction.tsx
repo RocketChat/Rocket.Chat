@@ -23,7 +23,7 @@ const getVariant = (tunreadUser: number, tunreadGroup: number): BadgeProps['vari
 
 const Threads = lazy(() => import('../../views/room/contextualBar/Threads')) as LazyExoticComponent<FC>;
 
-export const useThreadRoomAction = (): ToolboxActionConfig | undefined => {
+export const useThreadRoomAction = () => {
 	const enabled = useSetting('Threads_enabled', false);
 	const room = useRoom();
 	const federated = isRoomFederated(room);
@@ -36,7 +36,7 @@ export const useThreadRoomAction = (): ToolboxActionConfig | undefined => {
 	const variant = getVariant(tunreadUser, tunreadGroup);
 	const { t } = useTranslation();
 
-	return useMemo(() => {
+	return useMemo((): ToolboxActionConfig | undefined => {
 		if (!enabled) {
 			return undefined;
 		}
@@ -52,12 +52,23 @@ export const useThreadRoomAction = (): ToolboxActionConfig | undefined => {
 				tooltip: t('core.Threads_unavailable_for_federation'),
 				disabled: true,
 			}),
-			renderAction: (props) => (
-				<HeaderToolboxAction key={props.id} {...props}>
+			order: 2,
+			renderToolboxItem: ({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }) => (
+				<HeaderToolboxAction
+					key={id}
+					className={className}
+					index={index}
+					id={id}
+					icon={icon}
+					title={t(title)}
+					pressed={id === tab?.id}
+					action={action}
+					disabled={disabled}
+					tooltip={tooltip}
+				>
 					{!!unread && <HeaderToolboxActionBadge variant={variant}>{unread}</HeaderToolboxActionBadge>}
 				</HeaderToolboxAction>
 			),
-			order: 2,
 		};
 	}, [enabled, federated, t, unread, variant]);
 };

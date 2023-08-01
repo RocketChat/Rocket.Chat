@@ -38,10 +38,16 @@ import type { ToolboxActionConfig } from './views/room/contexts/RoomToolboxConte
 import type { QuickActionsActionConfig } from './views/room/lib/quickActions';
 
 export const roomActionHooks = [
+	useChannelSettingsRoomAction,
+	useTeamInfoRoomAction,
+	useUserInfoGroupRoomAction,
+	useUserInfoRoomAction,
+
+	useThreadRoomAction,
+
 	useAutotranslateRoomAction,
 	useCallsRoomAction,
 	useCannedResponsesRoomAction,
-	useChannelSettingsRoomAction,
 	useCleanHistoryRoomAction,
 	useContactChatHistoryRoomAction,
 	useContactProfileRoomAction,
@@ -62,11 +68,7 @@ export const roomActionHooks = [
 	useStarredMessagesRoomAction,
 	useStartCallRoomAction,
 	useTeamChannelsRoomAction,
-	useTeamInfoRoomAction,
-	useThreadRoomAction,
 	useUploadedFilesListRoomAction,
-	useUserInfoGroupRoomAction,
-	useUserInfoRoomAction,
 	useVoIPRoomInfoRoomAction,
 	useWebRTCVideoRoomAction,
 ] satisfies (() => ToolboxActionConfig | undefined)[];

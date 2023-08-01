@@ -6,7 +6,6 @@ import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useRef } from 'react';
 
-// used to open the menu option by keyboard
 import { useRoomToolbox, useTabBarOpen } from '../../contexts/RoomToolboxContext';
 import type { ToolboxActionConfig, OptionRenderer } from '../../contexts/RoomToolboxContext';
 
@@ -24,7 +23,8 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const { isMobile } = useLayout();
 	const hiddenActionRenderers = useRef<{ [key: string]: OptionRenderer }>({});
 
-	const { actions, tab } = useRoomToolbox();
+	const toolbox = useRoomToolbox();
+	const { actions } = toolbox;
 
 	const featuredActions = actions.filter((action) => action.featured);
 	const filteredActions = actions.filter((action) => !action.featured);
@@ -36,7 +36,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 			.map((item) => {
 				hiddenActionRenderers.current = {
 					...hiddenActionRenderers.current,
-					[item.id]: item.renderOption || renderMenuOption,
+					[item.id]: renderMenuOption,
 				};
 				return [
 					item.id,
@@ -51,47 +51,40 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 			}),
 	);
 
-	const actionDefault = useMutableCallback((actionId) => {
-		openTabBar(actionId);
-	});
+	const renderDefaultToolboxItem: ToolboxActionConfig['renderToolboxItem'] = useMutableCallback(
+		({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }) => {
+			return (
+				<HeaderToolboxAction
+					key={id}
+					className={className}
+					index={index}
+					id={id}
+					icon={icon}
+					title={t(title)}
+					pressed={id === tab?.id}
+					action={action}
+					disabled={disabled}
+					tooltip={tooltip}
+				/>
+			);
+		},
+	);
+
+	const mapToToolboxItem = (action: ToolboxActionConfig, index: number) => {
+		return (action.renderToolboxItem ?? renderDefaultToolboxItem)?.({
+			...action,
+			action: action.action ?? (() => toolbox.open(action.id)),
+			className,
+			index,
+			toolbox,
+		});
+	};
 
 	return (
 		<>
-			{featuredActions.map(({ renderAction, id, icon, title, action = actionDefault, disabled, tooltip }, index) => {
-				const props = {
-					id,
-					icon,
-					title: t(title),
-					className,
-					index,
-					pressed: id === tab?.id,
-					action,
-					disabled,
-					...(tooltip ? { tooltip } : {}),
-				};
-				if (renderAction) {
-					return renderAction(props);
-				}
-				return <HeaderToolboxAction {...props} key={id} />;
-			})}
+			{featuredActions.map(mapToToolboxItem)}
 			{featuredActions.length > 0 && <HeaderToolboxDivider />}
-			{visibleActions.map(({ renderAction, id, icon, title, action = actionDefault, disabled, tooltip }, index) => {
-				const props = {
-					id,
-					icon,
-					title: t(title),
-					className,
-					index,
-					pressed: id === tab?.id,
-					action,
-					disabled,
-					...(tooltip ? { tooltip } : {}),
-				};
-				if (renderAction) {
-					return renderAction(props);
-				}
-				return <HeaderToolboxAction {...props} key={id} />;
-			})}
+			{visibleActions.map(mapToToolboxItem)}
 			{(filteredActions.length > 6 || isMobile) && (
 				<Menu
 					data-qa-id='ToolBox-Menu'
@@ -102,7 +95,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 					aria-keyshortcuts='alt'
 					tabIndex={-1}
 					options={hiddenActions}
-					renderItem={({ value, ...props }): ReactElement | null => value && (hiddenActionRenderers.current[value](props) as ReactElement)}
+					renderItem={({ value, ...props }): ReactElement | null => value && renderMenuOption(props)}
 				/>
 			)}
 		</>

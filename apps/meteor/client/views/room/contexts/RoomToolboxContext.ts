@@ -5,15 +5,15 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { createContext, useContext } from 'react';
 import type { ReactNode, MouseEvent, ComponentProps, ComponentType } from 'react';
 
-type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups' | 'title'> & {
-	className: ComponentProps<typeof Box>['className'];
-	index: number;
-	title: string;
-};
-
 type OptionRendererProps = ComponentProps<typeof Option>;
 
 export type OptionRenderer = (props: OptionRendererProps) => ReactNode;
+
+type RenderToolboxItemParams = ToolboxActionConfig & {
+	className?: ComponentProps<typeof Box>['className'];
+	index: number;
+	toolbox: RoomToolboxContextValue;
+};
 
 export type ToolboxActionConfig = {
 	id: string;
@@ -22,9 +22,7 @@ export type ToolboxActionConfig = {
 	anonymous?: boolean;
 	tooltip?: string;
 	disabled?: boolean;
-	renderAction?: (props: ActionRendererProps) => ReactNode;
 	full?: true;
-	renderOption?: OptionRenderer;
 	order?: number;
 	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple' | 'team' | 'voip'>;
 	hotkey?: string;
@@ -35,6 +33,7 @@ export type ToolboxActionConfig = {
 		teamId: IRoom['teamId'];
 	}>;
 	featured?: boolean;
+	renderToolboxItem?: (params: RenderToolboxItemParams) => ReactNode;
 };
 
 export type RoomToolboxContextValue = {
