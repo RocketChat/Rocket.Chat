@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { useTabBarClose } from '../room/contexts/ToolboxContext';
+import { useTabBarClose } from '../room/contexts/RoomToolboxContext';
 import OutlookEventsList from './OutlookEventsList';
 import OutlookSettingsList from './OutlookSettingsList';
 
