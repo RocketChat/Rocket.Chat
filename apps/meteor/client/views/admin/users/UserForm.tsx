@@ -1,4 +1,4 @@
-import type { IUser, Serialized } from '@rocket.chat/core-typings';
+import type { AvatarObject, IUser, Serialized } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	Field,
@@ -24,22 +24,24 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useSmtpConfig } from './hooks/useSmtpConfig';
 
 type UserFormProps = {
 	availableRoles?: SelectOption[];
-	prepend?: (currentUsername: any, username: any, avatarETag: any) => React.JSX.Element;
-	hasAvatarObject: boolean;
+	// prepend?: (currentUsername: any, username: any, avatarETag: any) => React.JSX.Element;
+	// hasAvatarObject: boolean;
 	onSave: UseMutationResult<any, unknown, any, unknown>;
 	preserveData: boolean;
 	userData?: Serialized<IUser> | Record<string, never>;
+	setAvatarObj?: React.Dispatch<React.SetStateAction<AvatarObject | undefined>>;
 };
 
 const isErrorString = (errorMessage: string | FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined): errorMessage is string => {
 	return typeof errorMessage === 'string';
 };
 
-const UserForm = ({ prepend, availableRoles, onSave, preserveData, userData, hasAvatarObject, ...props }: UserFormProps) => {
+const UserForm = ({ availableRoles, onSave, preserveData, userData, setAvatarObj, ...props }: UserFormProps) => {
 	const t = useTranslation();
 
 	const customFieldsMetadata = useAccountsCustomFields();
@@ -62,6 +64,7 @@ const UserForm = ({ prepend, availableRoles, onSave, preserveData, userData, has
 		statusText: data.statusText ?? '',
 		joinDefaultChannels: true,
 		sendWelcomeEmail: true,
+		avatar: {},
 	});
 
 	const {
@@ -89,17 +92,25 @@ const UserForm = ({ prepend, availableRoles, onSave, preserveData, userData, has
 					customFields: {},
 					joinDefaultChannels: true,
 					sendWelcomeEmail: Boolean(isSmtpEnabled),
+					avatar: {},
 			  },
 		mode: 'all',
 	});
 
-	console.log({ isDirty, hasAvatarObject });
+	const { ref } = register('avatar');
 
 	return (
 		<>
 			<ContextualbarScrollableContent {...props} autoComplete='off'>
 				<FieldGroup>
-					{userData ? prepend?.(userData?.username || '', watch?.('username') || '', userData?.avatarETag || '') : null}
+					{userData ? (
+						<UserAvatarEditor
+							currentUsername={userData?.username || ''}
+							username={watch('username') || ''}
+							etag={userData?.avatarETag || ''}
+							setAvatarObj={setAvatarObj}
+						/>
+					) : null}
 					<Field>
 						<Field.Label>{t('Name')}</Field.Label>
 						<Field.Row>
@@ -298,16 +309,12 @@ const UserForm = ({ prepend, availableRoles, onSave, preserveData, userData, has
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button
-						type='reset'
-						disabled={!isDirty || !hasAvatarObject}
-						onClick={() => reset(preserveData ? getInitialValue(userData || {}) : {})}
-					>
+					<Button type='reset' disabled={!isDirty} onClick={() => reset(preserveData ? getInitialValue(userData || {}) : {})}>
 						{t('Reset')}
 					</Button>
 					<Button
 						primary
-						disabled={!isDirty || !hasAvatarObject}
+						disabled={!isDirty}
 						onClick={handleSubmit(async (userFormData) => {
 							onSave.mutate(preserveData ? { userId: userData?._id, data: userFormData } : userFormData);
 						})}

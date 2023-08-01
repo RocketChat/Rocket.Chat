@@ -37,7 +37,7 @@ const AddUser = ({ onReload, availableRoles, ...props }: AddUserProps) => {
 		},
 	});
 
-	return <UserForm availableRoles={availableRoles} onSave={handleSaveUser} preserveData={false} hasAvatarObject={false} {...props} />;
+	return <UserForm availableRoles={availableRoles} onSave={handleSaveUser} preserveData={false} {...props} />;
 };
 
 export default AddUser;

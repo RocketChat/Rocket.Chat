@@ -4,7 +4,6 @@ import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from 
 import { useMutation } from '@tanstack/react-query';
 import React, { useState, useCallback } from 'react';
 
-import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
 import UserForm from './UserForm';
@@ -29,7 +28,6 @@ function EditUser({ userData, onReload, availableRoles, ...props }: EditUserProp
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [avatarObj, setAvatarObj] = useState<AvatarObject>();
-
 	const router = useRouter();
 
 	const goToUser = useCallback(
@@ -76,23 +74,13 @@ function EditUser({ userData, onReload, availableRoles, ...props }: EditUserProp
 		},
 	});
 
-	const hasAvatarObject = Boolean(avatarObj);
-
-	const prepend = useCallback(
-		(currentUsername: string, username: string, avatarETag: string) => (
-			<UserAvatarEditor currentUsername={currentUsername} username={username} etag={avatarETag} setAvatarObj={setAvatarObj} />
-		),
-		[],
-	);
-
 	return (
 		<UserForm
 			preserveData
 			availableRoles={availableRoles}
-			prepend={prepend}
-			hasAvatarObject={hasAvatarObject}
 			onSave={handleSaveEditedUser}
 			userData={userData}
+			setAvatarObj={setAvatarObj}
 			{...props}
 		/>
 	);

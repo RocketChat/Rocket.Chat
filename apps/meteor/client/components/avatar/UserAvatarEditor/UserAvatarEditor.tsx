@@ -25,7 +25,7 @@ type AvatarSuggestion = {
 type UserAvatarEditorType = {
 	currentUsername: IUser['username'];
 	username: IUser['username'];
-	setAvatarObj: (obj: AvatarObject) => void;
+	setAvatarObj: React.Dispatch<React.SetStateAction<AvatarObject | undefined>> | undefined;
 	suggestions?: AvatarSuggestion[] | undefined;
 	disabled?: boolean;
 	etag: IUser['avatarETag'];
@@ -40,7 +40,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 
 	const setUploadedPreview = useCallback(
 		async (file, avatarObj) => {
-			setAvatarObj(avatarObj);
+			setAvatarObj?.(avatarObj);
 			toDataURL(file, async (dataURL) => {
 				if (typeof dataURL === 'string' && (await isValidImageFormat(dataURL))) {
 					setNewAvatarSource(dataURL);
@@ -57,12 +57,12 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 
 	const clickUrl = (): void => {
 		setNewAvatarSource(avatarFromUrl);
-		setAvatarObj({ avatarUrl: avatarFromUrl });
+		setAvatarObj?.({ avatarUrl: avatarFromUrl });
 	};
 
 	const clickReset = (): void => {
 		setNewAvatarSource(`/avatar/%40${username}`);
-		setAvatarObj('reset');
+		setAvatarObj?.('reset');
 	};
 
 	const url = newAvatarSource;
