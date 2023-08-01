@@ -1,13 +1,12 @@
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useCallback } from 'react';
+
+import { InvalidUrlError } from '../lib/errors/InvalidUrlError';
 
 export const useExternalLink = () => {
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	return (url: string | undefined) => {
+	return useCallback((url: string | undefined) => {
 		if (!url) {
-			dispatchToastMessage({ message: 'Invalid url', type: 'error' });
-			return;
+			throw new InvalidUrlError();
 		}
 		window.open(url, '_blank', 'noopener noreferrer');
-	};
+	}, []);
 };

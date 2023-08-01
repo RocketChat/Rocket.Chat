@@ -160,27 +160,8 @@ const GroupPage: FC<GroupPageProps> = ({
 
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
-			<Page.Header onClickBack={handleBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
-				<ButtonGroup>
-					{changedEditableSettings.length > 0 && (
-						<Button primary type='reset' onClick={handleCancelClick}>
-							{t('Cancel')}
-						</Button>
-					)}
-					<Button
-						children={t('Save_changes')}
-						className='save'
-						disabled={changedEditableSettings.length === 0}
-						primary
-						type='submit'
-						onClick={handleSaveClick}
-					/>
-					{headerButtons}
-				</ButtonGroup>
-			</Page.Header>
-
+			<Page.Header onClickBack={handleBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)} />
 			{tabs}
-
 			{isCustom ? (
 				children
 			) : (
@@ -196,6 +177,24 @@ const GroupPage: FC<GroupPageProps> = ({
 					</Box>
 				</Page.ScrollableContentWithShadow>
 			)}
+			<Page.Footer isDirty={!(changedEditableSettings.length === 0)}>
+				<ButtonGroup>
+					{changedEditableSettings.length > 0 && (
+						<Button type='reset' onClick={handleCancelClick}>
+							{t('Cancel')}
+						</Button>
+					)}
+					<Button
+						children={t('Save_changes')}
+						className='save'
+						disabled={changedEditableSettings.length === 0}
+						primary
+						type='submit'
+						onClick={handleSaveClick}
+					/>
+					{headerButtons}
+				</ButtonGroup>
+			</Page.Footer>
 		</Page>
 	);
 };

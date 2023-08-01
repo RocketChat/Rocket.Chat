@@ -1,12 +1,12 @@
 import { useEffect } from 'preact/hooks';
 
+import { createClassName } from '../../helpers/createClassName';
 import ChatIcon from '../../icons/chat.svg';
 import CloseIcon from '../../icons/close.svg';
 import { Button } from '../Button';
 import { Footer, FooterContent, PoweredBy } from '../Footer';
 import { PopoverContainer } from '../Popover';
 import { Sound } from '../Sound';
-import { createClassName } from '../helpers';
 import ScreenHeader from './Header';
 import styles from './styles.scss';
 
