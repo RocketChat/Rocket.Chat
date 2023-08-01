@@ -2,7 +2,7 @@ import { Component } from 'preact';
 
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
-import { parseOfflineMessage } from '../../components/helpers';
+import { parseOfflineMessage } from '../../helpers/parseOfflineMessage';
 import { parentCall } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { Consumer } from '../../store';
@@ -37,6 +37,7 @@ export class LeaveMessageContainer extends Component {
 	render = (props) => <LeaveMessage {...props} onSubmit={this.handleSubmit} />;
 }
 
+/** @type {function({ ref?: any; path?: string }): any} */
 export const LeaveMessageConnector = ({ ref, ...props }) => (
 	<Consumer>
 		{({

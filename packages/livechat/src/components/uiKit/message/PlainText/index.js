@@ -1,7 +1,7 @@
 import { memo } from 'preact/compat';
 
+import { createClassName } from '../../../../helpers/createClassName';
 import shortnameToUnicode from '../../../Emoji/shortnameToUnicode';
-import { createClassName } from '../../../helpers';
 import styles from './styles.scss';
 
 const escapeHtml = (unsafe) =>
