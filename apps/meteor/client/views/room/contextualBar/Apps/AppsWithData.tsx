@@ -17,7 +17,7 @@ import type { Dispatch, SyntheticEvent, ContextType } from 'react';
 import React, { memo, useState, useEffect, useReducer } from 'react';
 
 import { useUiKitActionManager } from '../../../../hooks/useUiKitActionManager';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useTabBarClose } from '../../contexts/RoomToolboxContext';
 import Apps from './Apps';
 
 type FieldStateValue = string | Array<string> | undefined;
