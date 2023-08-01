@@ -4,7 +4,7 @@ import { ajv } from '../Ajv';
 
 export type ModerationReportUserPOST = {
 	userId: IUser['_id'];
-	description: string;
+	description?: string;
 };
 
 const reportUserPropsSchema = {
@@ -15,10 +15,9 @@ const reportUserPropsSchema = {
 		},
 		description: {
 			type: 'string',
-			nullable: true,
 		},
 	},
-	required: ['userId', 'description'],
+	required: ['userId'],
 	additionalProperties: false,
 };
 
