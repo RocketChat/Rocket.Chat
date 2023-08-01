@@ -124,34 +124,34 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
 			}
 
-            let rid: IRoom["_id"] = roomId;
-            let subscription: ISubscription | null = null;
+			let rid: IRoom['_id'] = roomId;
+			let subscription: ISubscription | null = null;
 
-            const roomExists = !!(await Rooms.findOneById(roomId));
-            if (!roomExists) {
-                // if the room doesnt exists, should check if the user has a subscription to it, and if has, close it
-                subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
-            } else {
-                const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
-                if (!canAccess) {
-                    return API.v1.unauthorized();
-                }
+			const roomExists = !!(await Rooms.findOneById(roomId));
+			if (!roomExists) {
+				// if the room doesnt exists, should check if the user has a subscription to it, and if has, close it
+				subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
+			} else {
+				const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
+				if (!canAccess) {
+					return API.v1.unauthorized();
+				}
 
-                const { room, subscription: subs } = await findDirectMessageRoom({ roomId }, this.userId);
+				const { room, subscription: subs } = await findDirectMessageRoom({ roomId }, this.userId);
 
-                rid = room._id;
-                subscription = subs;
-            }
+				rid = room._id;
+				subscription = subs;
+			}
 
-            if (!subscription) {
-                return API.v1.failure(`The user is not subscribed to the room`);
-            }
+			if (!subscription) {
+				return API.v1.failure(`The user is not subscribed to the room`);
+			}
 
-            if (!subscription.open) {
-                return API.v1.failure(`The direct message room, is already closed to the sender`);
-            }
+			if (!subscription.open) {
+				return API.v1.failure(`The direct message room, is already closed to the sender`);
+			}
 
-            await hideRoomMethod(this.userId, rid);
+			await hideRoomMethod(this.userId, rid);
 
 			return API.v1.success();
 		},
