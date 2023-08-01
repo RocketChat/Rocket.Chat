@@ -1,5 +1,5 @@
 ---
-'@rocket.chat/meteor': minor
+'@rocket.chat/meteor': patch
 ---
 
-Avoid an enterprise app to be enabled in a non-enterprise environment
+Fix validation in app status call that allowed Enterprise apps to be enabled in invalid environments
