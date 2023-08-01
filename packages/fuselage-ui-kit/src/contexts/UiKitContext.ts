@@ -27,8 +27,8 @@ type UiKitContextValue = {
 };
 
 export const UiKitContext = createContext<UiKitContextValue>({
-  action: () => {},
-  state: () => {},
+  action: () => undefined,
+  state: () => undefined,
   appId: 'core',
   errors: {},
   values: {},
