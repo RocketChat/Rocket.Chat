@@ -1,7 +1,5 @@
 # @rocket.chat/core-typings
 
-## 6.2.12
-
 ## 6.2.10
 
 ## 6.2.9
