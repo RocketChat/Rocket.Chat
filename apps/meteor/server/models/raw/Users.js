@@ -57,6 +57,7 @@ export class UsersRaw extends BaseRaw {
 			{ key: { statusConnection: 1 }, sparse: 1 },
 			{ key: { appId: 1 }, sparse: 1 },
 			{ key: { type: 1 } },
+			{ key: { federated: 1 }, sparse: true },
 			{ key: { federation: 1 }, sparse: true },
 			{ key: { isRemote: 1 }, sparse: true },
 			{ key: { 'services.saml.inResponseTo': 1 } },
