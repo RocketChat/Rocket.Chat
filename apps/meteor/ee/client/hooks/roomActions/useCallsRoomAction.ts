@@ -8,13 +8,13 @@ import { useHasLicenseModule } from '../useHasLicenseModule';
 
 const VideoConfList = lazy(() => import('../../../../client/views/room/contextualBar/VideoConference/VideoConfList'));
 
-export const useCallsRoomAction = (): RoomToolboxActionConfig | undefined => {
+export const useCallsRoomAction = () => {
 	const licensed = useHasLicenseModule('videoconference-enterprise') === true;
 	const room = useContext(RoomContext)?.room;
 	const federated = room ? isRoomFederated(room) : false;
 	const { t } = useTranslation();
 
-	return useMemo(() => {
+	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!licensed) {
 			return undefined;
 		}
@@ -28,7 +28,7 @@ export const useCallsRoomAction = (): RoomToolboxActionConfig | undefined => {
 				tooltip: t('core.Video_Call_unavailable_for_this_type_of_room'),
 				disabled: true,
 			}),
-			template: VideoConfList,
+			tabComponent: VideoConfList,
 			order: 999,
 		};
 	}, [licensed, federated, t]);
