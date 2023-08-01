@@ -1,4 +1,4 @@
-import { Box, Button, Modal, TextAreaInput } from '@rocket.chat/fuselage';
+import { Box, Button, FieldGroup, Field, Modal, TextAreaInput } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -15,13 +15,17 @@ type ReportUserModalProps = {
 	name: string | undefined;
 };
 
+type ReportUserModalsFields = {
+	description: string;
+};
+
 const ReportUserModal = ({ username, name, onConfirm, onClose }: ReportUserModalProps) => {
 	const {
 		register,
 		getValues,
 		handleSubmit,
 		formState: { errors },
-	} = useForm({
+	} = useForm<ReportUserModalsFields>({
 		defaultValues: {
 			description: '',
 		},
@@ -43,22 +47,28 @@ const ReportUserModal = ({ username, name, onConfirm, onClose }: ReportUserModal
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
-				<Box mbe='x16' fontWeight='bold' display='flex' alignItems='center'>
-					<UserAvatar username={username} />
-					<Box mis='x12'>{displayName}</Box>
-				</Box>
-				<TextAreaInput
-					rows={3}
-					placeholder={t('Why_do_you_want_to_report_question_mark')}
-					{...register('description', { required: t('Please_fill_out_reason_for_report') })}
-					width='full'
-					mbe='x4'
-				/>
-				{errors.description && (
-					<Box fontScale='p2' color='danger'>
-						{errors.description.message}
-					</Box>
-				)}
+				<FieldGroup>
+					<Field>
+						<Field.Label>
+							<Box mbe='x12' display='flex' alignItems='center'>
+								<UserAvatar username={username} />
+								<Box mis='x12' fontWeight='bold'>
+									{displayName}
+								</Box>
+							</Box>
+						</Field.Label>
+						<Field.Row>
+							<TextAreaInput
+								rows={3}
+								placeholder={t('Why_do_you_want_to_report_question_mark')}
+								{...register('description', { required: t('Please_fill_out_reason_for_report') })}
+								width='full'
+								mbe='x4'
+							/>
+						</Field.Row>
+						{errors.description && <Field.Error>{errors.description.message}</Field.Error>}
+					</Field>
+				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
