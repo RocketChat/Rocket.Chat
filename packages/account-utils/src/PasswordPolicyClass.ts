@@ -30,6 +30,8 @@ class PasswordPolicy {
 
 	throwError: boolean;
 
+	forbidRepeatingCharactersCount: number;
+
 	constructor({
 		enabled = false,
 		minLength = -1,
@@ -73,11 +75,11 @@ class PasswordPolicy {
 		this.throwError = throwError;
 	}
 
-	get forbidRepeatingCharactersCount() {
+	get passwordForbidRepeatingCharactersCount() {
 		return this.forbidRepeatingCharactersCount;
 	}
 
-	set forbidRepeatingCharactersCount(value: number) {
+	set passwordForbidRepeatingCharactersCount(value: number) {
 		this.forbidRepeatingCharactersCount = value;
 		this.regex.forbiddingRepeatingCharacters = new RegExp(`(.)\\1{${this.forbidRepeatingCharactersCount},}`);
 	}
