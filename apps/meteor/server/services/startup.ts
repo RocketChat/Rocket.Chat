@@ -26,7 +26,6 @@ import { TeamService } from './team/service';
 import { TranslationService } from './translation/service';
 import { UiKitCoreApp } from './uikit-core-app/service';
 import { UploadService } from './upload/service';
-import { UserService } from './user/service';
 import { VideoConfService } from './video-conference/service';
 import { VoipService } from './voip/service';
 
@@ -56,7 +55,6 @@ api.registerService(new MessageService());
 api.registerService(new TranslationService());
 api.registerService(new SettingsService());
 api.registerService(new OmnichannelIntegrationService());
-api.registerService(new UserService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {

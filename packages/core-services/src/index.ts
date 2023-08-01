@@ -42,7 +42,6 @@ import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITe
 import type { ITranslationService } from './types/ITranslationService';
 import type { IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
-import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
 import type { IVoipService } from './types/IVoipService';
 
@@ -119,7 +118,6 @@ export {
 	ISettingsService,
 	IOmnichannelEEService,
 	IOmnichannelIntegrationService,
-	IUserService,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -154,7 +152,6 @@ export const OmnichannelIntegration = proxifyWithWait<IOmnichannelIntegrationSer
 export const Federation = proxifyWithWait<IFederationService>('federation');
 export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
 export const OmnichannelEEService = proxifyWithWait<IOmnichannelEEService>('omnichannel-ee');
-export const UserService = proxifyWithWait<IUserService>('user');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
