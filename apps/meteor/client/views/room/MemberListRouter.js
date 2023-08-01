@@ -2,7 +2,7 @@ import { useUserId } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { useRoom } from './contexts/RoomContext';
-import { useRoomToolbox, useTabBarClose } from './contexts/RoomToolboxContext';
+import { useRoomToolbox } from './contexts/RoomToolboxContext';
 import RoomMembers from './contextualBar/RoomMembers';
 import UserInfo from './contextualBar/UserInfo';
 
@@ -21,7 +21,7 @@ const getUid = (room, ownUserId) => {
 const MemberListRouter = ({ rid }) => {
 	const { tab, context: username } = useRoomToolbox();
 	const room = useRoom();
-	const onClickClose = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 	const ownUserId = useUserId();
 
 	const isMembersList = tab.id === 'members-list' || tab.id === 'user-info-group';
@@ -30,7 +30,7 @@ const MemberListRouter = ({ rid }) => {
 		return <RoomMembers rid={rid} />;
 	}
 
-	return <UserInfo width='100%' {...(username ? { username } : { uid: getUid(room, ownUserId) })} onClose={onClickClose} rid={rid} />;
+	return <UserInfo width='100%' {...(username ? { username } : { uid: getUid(room, ownUserId) })} onClose={closeTab} rid={rid} />;
 };
 
 export default MemberListRouter;

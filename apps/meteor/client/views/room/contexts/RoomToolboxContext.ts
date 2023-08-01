@@ -36,20 +36,14 @@ export type RoomToolboxContextValue = {
 	actions: ToolboxActionConfig[];
 	tab?: ToolboxActionConfig;
 	context?: string;
-	open: (actionId: string, context?: string) => void;
-	openRoomInfo: (username?: string) => void;
-	close: () => void;
+	openTab: (actionId: string, context?: string) => void;
+	closeTab: () => void;
 };
 
 export const RoomToolboxContext = createContext<RoomToolboxContextValue>({
 	actions: [],
-	open: () => undefined,
-	openRoomInfo: () => undefined,
-	close: () => undefined,
+	openTab: () => undefined,
+	closeTab: () => undefined,
 });
 
 export const useRoomToolbox = () => useContext(RoomToolboxContext);
-
-export const useTabBarOpen = (): ((actionId: string, context?: string) => void) => useContext(RoomToolboxContext).open;
-export const useTabBarClose = (): (() => void) => useContext(RoomToolboxContext).close;
-export const useTabBarOpenUserInfo = (): ((username: string) => void) => useContext(RoomToolboxContext).openRoomInfo;

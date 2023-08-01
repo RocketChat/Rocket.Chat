@@ -5,7 +5,7 @@ import React from 'react';
 
 import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../../components/Contextualbar';
 import { useOmnichannelRoom } from '../../../../room/contexts/RoomContext';
-import { useTabBarClose } from '../../../../room/contexts/RoomToolboxContext';
+import { useRoomToolbox } from '../../../../room/contexts/RoomToolboxContext';
 import ContactEditWithData from './ContactEditWithData';
 import ContactInfo from './ContactInfo';
 
@@ -14,7 +14,7 @@ const PATH = 'live';
 const ContactsContextualBar: FC<{ rid: IOmnichannelRoom['_id'] }> = ({ rid }) => {
 	const t = useTranslation();
 
-	const closeContextualBar = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 
 	const directoryRoute = useRoute(PATH);
 
@@ -45,7 +45,7 @@ const ContactsContextualBar: FC<{ rid: IOmnichannelRoom['_id'] }> = ({ rid }) =>
 						<ContextualbarTitle>{t('Edit_Contact_Profile')}</ContextualbarTitle>
 					</>
 				)}
-				<ContextualbarClose onClick={closeContextualBar} />
+				<ContextualbarClose onClick={closeTab} />
 			</ContextualbarHeader>
 			{context === 'edit' ? (
 				<ContactEditWithData id={_id} close={handleContactEditBarCloseButtonClick} />

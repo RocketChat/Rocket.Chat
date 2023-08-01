@@ -6,7 +6,7 @@ import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 
-import { useRoomToolbox, useTabBarOpen } from '../../contexts/RoomToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import type { ToolboxActionConfig } from '../../contexts/RoomToolboxContext';
 
 type RoomToolboxProps = {
@@ -15,11 +15,10 @@ type RoomToolboxProps = {
 
 const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const t = useTranslation();
-	const openTabBar = useTabBarOpen();
 	const { isMobile } = useLayout();
 
 	const toolbox = useRoomToolbox();
-	const { actions } = toolbox;
+	const { actions, openTab } = toolbox;
 
 	const featuredActions = actions.filter((action) => action.featured);
 	const normalActions = actions.filter((action) => !action.featured);
@@ -33,7 +32,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 					{
 						label: { title: t(item.title), icon: item.icon },
 						action: (): void => {
-							openTabBar(item.id);
+							openTab(item.id);
 						},
 						...item,
 					},
@@ -63,7 +62,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const mapToToolboxItem = (action: ToolboxActionConfig, index: number) => {
 		return (action.renderToolboxItem ?? renderDefaultToolboxItem)?.({
 			...action,
-			action: action.action ?? (() => toolbox.open(action.id)),
+			action: action.action ?? (() => toolbox.openTab(action.id)),
 			className,
 			index,
 			toolbox,

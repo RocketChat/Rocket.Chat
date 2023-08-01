@@ -5,14 +5,14 @@ import React, { useState, useCallback, useMemo } from 'react';
 import GenericModal from '../../../../components/GenericModal';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useTabBarClose } from '../../contexts/RoomToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import RoomFiles from './RoomFiles';
 import { useFilesList } from './hooks/useFilesList';
 import { useMessageDeletionIsAllowed } from './hooks/useMessageDeletionIsAllowed';
 
 const RoomFilesWithData = ({ rid }) => {
 	const uid = useUserId();
-	const onClickClose = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
@@ -61,7 +61,7 @@ const RoomFilesWithData = ({ rid }) => {
 			setText={handleTextChange}
 			filesItems={filesItems}
 			total={totalItemCount}
-			onClickClose={onClickClose}
+			onClickClose={closeTab}
 			onClickDelete={handleDelete}
 			isDeletionAllowed={isDeletionAllowed}
 		/>

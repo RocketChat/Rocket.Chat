@@ -5,7 +5,7 @@ import React, { memo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
-import { useTabBarClose } from '../../contexts/RoomToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import NotificationPreferences from './NotificationPreferences';
 
 export type NotificationFormValues = {
@@ -21,7 +21,7 @@ export type NotificationFormValues = {
 
 const NotificationPreferencesWithData = ({ rid }: { rid: string }): ReactElement => {
 	const t = useTranslation();
-	const handleClose = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 	const customSound = useCustomSound();
 	const subscription = useUserSubscription(rid);
 
@@ -90,7 +90,7 @@ const NotificationPreferencesWithData = ({ rid }: { rid: string }): ReactElement
 	return (
 		<FormProvider {...methods}>
 			<NotificationPreferences
-				handleClose={handleClose}
+				handleClose={closeTab}
 				handleSave={handleSave}
 				handlePlaySound={handlePlaySound}
 				notificationOptions={notificationOptions}

@@ -16,7 +16,7 @@ import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { useTabBarClose, useTabBarOpen } from '../../../room/contexts/RoomToolboxContext';
+import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
 import DeleteTeamModal from './Delete';
 import LeaveTeam from './LeaveTeam';
@@ -35,8 +35,7 @@ const retentionPolicyAppliesTo = {
 };
 
 const TeamsInfoWithLogic = ({ room, openEditing }) => {
-	const onClickClose = useTabBarClose();
-	const openTabbar = useTabBarOpen();
+	const { openTab, closeTab } = useRoomToolbox();
 	const t = useTranslation();
 	const userId = useUserId();
 
@@ -144,7 +143,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 		);
 	});
 
-	const onClickViewChannels = useCallback(() => openTabbar('team-channels'), [openTabbar]);
+	const onClickViewChannels = useCallback(() => openTab('team-channels'), [openTab]);
 
 	const onClickConvertToChannel = useMutableCallback(() => {
 		const onConfirm = async (roomsToRemove) => {
@@ -172,7 +171,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 			room={room}
 			retentionPolicy={retentionPolicyEnabled && retentionPolicy}
 			onClickEdit={canEdit && openEditing}
-			onClickClose={onClickClose}
+			onClickClose={closeTab}
 			onClickDelete={canDelete && onClickDelete}
 			onClickLeave={/* canLeave && */ onClickLeave}
 			onClickHide={/* joined && */ handleHide}

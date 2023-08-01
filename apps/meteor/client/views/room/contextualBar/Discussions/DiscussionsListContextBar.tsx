@@ -6,13 +6,13 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useTabBarClose } from '../../contexts/RoomToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import DiscussionsList from './DiscussionsList';
 import { useDiscussionsList } from './useDiscussionsList';
 
 const DiscussionListContextBar = ({ rid }: { rid: IRoom['_id'] }): ReactElement | null => {
 	const userId = useUserId();
-	const onClose = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 
 	const [text, setText] = useState('');
 	const debouncedText = useDebouncedValue(text, 400);
@@ -38,7 +38,7 @@ const DiscussionListContextBar = ({ rid }: { rid: IRoom['_id'] }): ReactElement 
 
 	return (
 		<DiscussionsList
-			onClose={onClose}
+			onClose={closeTab}
 			userId={userId}
 			error={error}
 			discussions={discussions}

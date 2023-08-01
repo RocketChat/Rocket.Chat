@@ -37,27 +37,9 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 
 	const router = useRouter();
 
-	const close = useMutableCallback(() => {
-		const routeName = router.getRouteName();
-
-		if (!routeName) {
-			throw new Error('Route name is not defined');
-		}
-
-		router.navigate({
-			name: routeName,
-			params: {
-				...router.getRouteParameters(),
-				tab: '',
-				context: '',
-			},
-			search: router.getSearchParameters(),
-		});
-	});
-
-	const open = useMutableCallback((actionId: string, context?: string) => {
+	const openTab = useMutableCallback((actionId: string, context?: string) => {
 		if (actionId === tab?.id && context === undefined) {
-			return close();
+			return closeTab();
 		}
 
 		const routeName = router.getRouteName();
@@ -79,24 +61,22 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 		});
 	});
 
-	const openRoomInfo = useMutableCallback((username?: string) => {
-		switch (room.t) {
-			case 'l':
-				open('room-info', username);
-				break;
+	const closeTab = useMutableCallback(() => {
+		const routeName = router.getRouteName();
 
-			case 'v':
-				open('voip-room-info', username);
-				break;
-
-			case 'd':
-				(room.uids?.length ?? 0) > 2 ? open('user-info-group', username) : open('user-info', username);
-				break;
-
-			default:
-				open('members-list', username);
-				break;
+		if (!routeName) {
+			throw new Error('Route name is not defined');
 		}
+
+		router.navigate({
+			name: routeName,
+			params: {
+				...router.getRouteParameters(),
+				tab: '',
+				context: '',
+			},
+			search: router.getSearchParameters(),
+		});
 	});
 
 	const context = useRouteParameter('context');
@@ -128,11 +108,10 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 			actions,
 			tab,
 			context,
-			open,
-			close,
-			openRoomInfo,
+			openTab,
+			closeTab,
 		}),
-		[actions, tab, context, open, close, openRoomInfo],
+		[actions, tab, context, openTab, closeTab],
 	);
 
 	return <RoomToolboxContext.Provider value={contextValue}>{children}</RoomToolboxContext.Provider>;

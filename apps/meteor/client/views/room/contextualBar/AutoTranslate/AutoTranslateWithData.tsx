@@ -6,11 +6,11 @@ import React, { useMemo, useEffect, useState, memo } from 'react';
 
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { useTabBarClose } from '../../contexts/RoomToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import AutoTranslate from './AutoTranslate';
 
 const AutoTranslateWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
-	const handleClose = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 	const userLanguage = useLanguage();
 	const subscription = useUserSubscription(rid);
 	const [currentLanguage, setCurrentLanguage] = useState(subscription?.autoTranslateLanguage ?? '');
@@ -55,7 +55,7 @@ const AutoTranslateWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => 
 			handleSwitch={handleSwitch}
 			handleChangeLanguage={handleChangeLanguage}
 			translateEnable={!!subscription?.autoTranslate}
-			handleClose={handleClose}
+			handleClose={closeTab}
 		/>
 	);
 };

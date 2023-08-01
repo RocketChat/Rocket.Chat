@@ -41,7 +41,7 @@ const PruneMessagesWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => 
 	const t = useTranslation();
 	const room = useRoom();
 	const setModal = useSetModal();
-	const { close } = useRoomToolbox();
+	const { closeTab: close } = useRoomToolbox();
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const pruneMessagesAction = useEndpoint('POST', '/v1/rooms.cleanHistory');

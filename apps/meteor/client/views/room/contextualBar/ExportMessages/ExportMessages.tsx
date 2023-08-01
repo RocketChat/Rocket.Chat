@@ -12,7 +12,7 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 } from '../../../../components/Contextualbar';
-import { useTabBarClose } from '../../contexts/RoomToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import FileExport from './FileExport';
 import MailExportForm from './MailExportForm';
 
@@ -21,7 +21,7 @@ type ExportMessagesProps = {
 };
 const ExportMessages: FC<ExportMessagesProps> = ({ rid }) => {
 	const t = useTranslation();
-	const close = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 
 	const [type, setType] = useState('email');
 
@@ -38,7 +38,7 @@ const ExportMessages: FC<ExportMessagesProps> = ({ rid }) => {
 			<ContextualbarHeader>
 				<ContextualbarIcon name='mail' />
 				<ContextualbarTitle>{t('Export_Messages')}</ContextualbarTitle>
-				<ContextualbarClose onClick={close} />
+				<ContextualbarClose onClick={closeTab} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
 				<FieldGroup>
@@ -49,8 +49,8 @@ const ExportMessages: FC<ExportMessagesProps> = ({ rid }) => {
 						</Field.Row>
 					</Field>
 				</FieldGroup>
-				{type && type === 'file' && <FileExport rid={rid} onCancel={close} />}
-				{type && type === 'email' && <MailExportForm rid={rid} onCancel={close} />}
+				{type && type === 'file' && <FileExport rid={rid} onCancel={closeTab} />}
+				{type && type === 'email' && <MailExportForm rid={rid} onCancel={closeTab} />}
 			</ContextualbarScrollableContent>
 		</>
 	);
