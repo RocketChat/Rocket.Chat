@@ -9403,13 +9403,16 @@ __metadata:
     "@rocket.chat/string-helpers": 0.31.24
     "@types/bcrypt": ^5.0.0
     "@types/eslint": ~8.40.2
+    "@types/gc-stats": ^1
     "@types/node": ^14.18.51
     "@types/polka": ^0.5.4
     bcrypt: ^5.0.1
     ejson: ^2.2.3
     eslint: ~8.43.0
+    event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
     fibers: ^5.0.3
+    gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.29
     mongodb: ^4.12.1
@@ -9506,12 +9509,15 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": 0.31.24
     "@types/eslint": ~8.40.2
+    "@types/gc-stats": ^1
     "@types/node": ^14.18.51
     "@types/polka": ^0.5.4
     ejson: ^2.2.3
     eslint: ~8.43.0
+    event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
     fibers: ^5.0.3
+    gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.29
     mongodb: ^4.12.1
@@ -9674,6 +9680,7 @@ __metadata:
     "@rocket.chat/ui-contexts": "workspace:^"
     "@types/ejson": ^2.2.0
     "@types/eslint": ~8.40.2
+    "@types/gc-stats": ^1
     "@types/meteor": ^2.9.2
     "@types/node": ^14.18.51
     "@types/polka": ^0.5.4
@@ -9683,8 +9690,10 @@ __metadata:
     colorette: ^1.4.0
     ejson: ^2.2.3
     eslint: ~8.43.0
+    event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
     fibers: ^5.0.3
+    gc-stats: ^1.4.0
     jaeger-client: ^3.19.0
     mem: ^8.1.1
     moleculer: ^0.14.29
@@ -9889,9 +9898,9 @@ __metadata:
     "@rocket.chat/icons": "*"
     "@rocket.chat/prettier-config": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-contexts": 1.0.0-rc.8
+    "@rocket.chat/ui-contexts": 1.0.0-rc.9
     "@rocket.chat/ui-kit": "*"
-    "@rocket.chat/ui-video-conf": 1.0.0-rc.8
+    "@rocket.chat/ui-video-conf": 1.0.0-rc.9
     "@tanstack/react-query": "*"
     react: "*"
     react-dom: "*"
@@ -9973,14 +9982,14 @@ __metadata:
     ts-jest: ~29.0.5
     typescript: ~5.1.3
   peerDependencies:
-    "@rocket.chat/core-typings": 6.3.0-rc.8
+    "@rocket.chat/core-typings": 6.3.0-rc.9
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-tokens": "*"
     "@rocket.chat/message-parser": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-client": 1.0.0-rc.8
-    "@rocket.chat/ui-contexts": 1.0.0-rc.8
+    "@rocket.chat/ui-client": 1.0.0-rc.9
+    "@rocket.chat/ui-contexts": 1.0.0-rc.9
     katex: "*"
     react: "*"
   languageName: unknown
@@ -10634,13 +10643,16 @@ __metadata:
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@types/eslint": ~8.40.2
+    "@types/gc-stats": ^1
     "@types/node": ^14.18.51
     "@types/polka": ^0.5.4
     ejson: ^2.2.3
     emoji-toolkit: ^7.0.1
     eslint: ~8.43.0
+    event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
     fibers: ^5.0.3
+    gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.29
     moment-timezone: ^0.5.43
@@ -10730,12 +10742,15 @@ __metadata:
     "@rocket.chat/presence": "workspace:^"
     "@rocket.chat/string-helpers": 0.31.24
     "@types/eslint": ~8.40.2
+    "@types/gc-stats": ^1
     "@types/node": ^14.18.51
     "@types/polka": ^0.5.4
     ejson: ^2.2.3
     eslint: ~8.43.0
+    event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
     fibers: ^5.0.3
+    gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.29
     mongodb: ^4.12.1
@@ -10791,13 +10806,16 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/omnichannel-services": "workspace:^"
     "@types/eslint": ~8.40.2
+    "@types/gc-stats": ^1
     "@types/node": ^14.18.51
     "@types/polka": ^0.5.4
     ejson: ^2.2.3
     emoji-toolkit: ^7.0.1
     eslint: ~8.43.0
+    event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
     fibers: ^5.0.3
+    gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.29
     moment-timezone: ^0.5.43
@@ -10930,12 +10948,15 @@ __metadata:
     "@rocket.chat/string-helpers": 0.31.24
     "@types/bcrypt": ^5.0.0
     "@types/eslint": ~8.40.2
+    "@types/gc-stats": ^1
     "@types/node": ^14.18.51
     "@types/polka": ^0.5.4
     ejson: ^2.2.3
     eslint: ~8.43.0
+    event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
     fibers: ^5.0.3
+    gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.29
     mongodb: ^4.12.1
@@ -11027,7 +11048,7 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-contexts": 1.0.0-rc.8
+    "@rocket.chat/ui-contexts": 1.0.0-rc.9
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -11181,7 +11202,7 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-contexts": 1.0.0-rc.8
+    "@rocket.chat/ui-contexts": 1.0.0-rc.9
     react: ^17.0.2
     react-dom: ^17.0.2
   languageName: unknown
@@ -11247,7 +11268,7 @@ __metadata:
     typescript: ~5.1.3
   peerDependencies:
     "@rocket.chat/layout": "*"
-    "@rocket.chat/ui-contexts": 1.0.0-rc.8
+    "@rocket.chat/ui-contexts": 1.0.0-rc.9
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
@@ -13504,6 +13525,13 @@ __metadata:
   version: 3.1.1
   resolution: "@types/fibers@npm:3.1.1"
   checksum: 3bcc53c92dcaabf77cf31274c06ba615a59d21730bdb47214f64d7bf356ab31712f1d9c79707e50d2c9d2f8cda8cca4f7e4c20ddf272b07397d20fb196dbc400
+  languageName: node
+  linkType: hard
+
+"@types/gc-stats@npm:^1":
+  version: 1.4.1
+  resolution: "@types/gc-stats@npm:1.4.1"
+  checksum: 07c08e5452f96e3afbaba259ec0f684f1172b0e1bdb466d8606bc9af0428399bf334b57944ef2762d61be122892619aabab11ff63cd07f2dfc7dd436118d04b6
   languageName: node
   linkType: hard
 
@@ -22606,6 +22634,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"event-loop-stats@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "event-loop-stats@npm:1.4.1"
+  dependencies:
+    nan: ^2.14.0
+    node-gyp: latest
+  checksum: 173243d78f195d61baec371340bbfcb6a5f54a1ba3687d9a8df52a16f23e681c0d146ec844611a617a7d6bc39faca605d562db33bd2cde8ea829e6969f2b3a46
+  languageName: node
+  linkType: hard
+
 "event-stream@npm:=3.3.4":
   version: 3.3.4
   resolution: "event-stream@npm:3.3.4"
@@ -31204,6 +31242,15 @@ __metadata:
   dependencies:
     node-gyp: latest
   checksum: 33e1bb4dfca447fe37d4bb5889be55de154828632c8d38646db67293a21afd61ed9909cdf1b886214a64707d935926c4e60e2b09de9edfc2ad58de31d6ce8f39
+  languageName: node
+  linkType: hard
+
+"nan@npm:^2.14.0":
+  version: 2.17.0
+  resolution: "nan@npm:2.17.0"
+  dependencies:
+    node-gyp: latest
+  checksum: ec609aeaf7e68b76592a3ba96b372aa7f5df5b056c1e37410b0f1deefbab5a57a922061e2c5b369bae9c7c6b5e6eecf4ad2dac8833a1a7d3a751e0a7c7f849ed
   languageName: node
   linkType: hard
 
