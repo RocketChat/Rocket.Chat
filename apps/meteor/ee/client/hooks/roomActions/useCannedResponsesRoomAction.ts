@@ -1,7 +1,7 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
 
-import type { ToolboxActionConfig } from '../../../../client/views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../../../client/views/room/contexts/RoomToolboxContext';
 import { useHasLicenseModule } from '../useHasLicenseModule';
 
 const CannedResponse = lazy(() => import('../../omnichannel/components/contextualBar/CannedResponse'));

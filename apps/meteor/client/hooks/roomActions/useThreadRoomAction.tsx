@@ -7,7 +7,7 @@ import React, { lazy, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const getVariant = (tunreadUser: number, tunreadGroup: number): BadgeProps['variant'] => {
 	if (tunreadUser > 0) {

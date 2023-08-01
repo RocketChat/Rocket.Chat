@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 export const useWebRTCVideoRoomAction = (): ToolboxActionConfig | undefined => {
 	const enabled = useSetting('WebRTC_Enabled', false);

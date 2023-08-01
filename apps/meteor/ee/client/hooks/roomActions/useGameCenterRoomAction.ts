@@ -1,6 +1,6 @@
 import { lazy, useMemo } from 'react';
 
-import type { ToolboxActionConfig } from '../../../../client/views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../../../client/views/room/contexts/RoomToolboxContext';
 import { useExternalComponentsQuery } from '../../apps/gameCenter/hooks/useExternalComponentsQuery';
 
 const GameCenter = lazy(() => import('../../apps/gameCenter/GameCenter'));

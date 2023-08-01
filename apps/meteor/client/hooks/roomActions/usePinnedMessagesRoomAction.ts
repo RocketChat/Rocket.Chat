@@ -4,7 +4,7 @@ import { lazy, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const PinnedMessagesTab = lazy(() => import('../../views/room/contextualBar/PinnedMessagesTab'));
 

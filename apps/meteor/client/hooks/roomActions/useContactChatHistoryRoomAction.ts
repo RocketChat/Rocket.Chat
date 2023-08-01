@@ -1,6 +1,6 @@
 import { lazy, useMemo } from 'react';
 
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const ContactHistory = lazy(() => import('../../views/omnichannel/contactHistory/ContactHistory'));
 

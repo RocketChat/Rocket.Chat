@@ -5,9 +5,8 @@ import type { ReactNode } from 'react';
 import React, { useMemo } from 'react';
 
 import { useRoom } from '../contexts/RoomContext';
-import type { RoomToolboxContextValue } from '../contexts/RoomToolboxContext';
 import { RoomToolboxContext } from '../contexts/RoomToolboxContext';
-import type { ToolboxActionConfig } from '../lib/Toolbox/index';
+import type { RoomToolboxContextValue, ToolboxActionConfig } from '../contexts/RoomToolboxContext';
 import { useAppsRoomActions } from './hooks/useAppsRoomActions';
 import { useCoreRoomActions } from './hooks/useCoreRoomActions';
 

@@ -8,7 +8,7 @@ import React, { memo, useRef } from 'react';
 
 // used to open the menu option by keyboard
 import { useRoomToolbox, useTabBarOpen } from '../../contexts/RoomToolboxContext';
-import type { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
+import type { ToolboxActionConfig, OptionRenderer } from '../../contexts/RoomToolboxContext';
 
 const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any) => (
 	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} gap={!icon} {...props} />

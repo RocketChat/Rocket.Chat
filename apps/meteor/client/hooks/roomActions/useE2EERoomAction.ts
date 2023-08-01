@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { e2e } from '../../../app/e2e/client/rocketchat.e2e';
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 import { useReactiveValue } from '../useReactiveValue';
 
 export const useE2EERoomAction = (): ToolboxActionConfig | undefined => {

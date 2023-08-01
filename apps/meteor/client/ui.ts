@@ -34,7 +34,7 @@ import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroup
 import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction';
 import { useVoIPRoomInfoRoomAction } from './hooks/roomActions/useVoIPRoomInfoRoomAction';
 import { useWebRTCVideoRoomAction } from './hooks/roomActions/useWebRTCVideoRoomAction';
-import type { ToolboxActionConfig } from './views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from './views/room/contexts/RoomToolboxContext';
 import type { QuickActionsActionConfig } from './views/room/lib/quickActions';
 
 export const roomActionHooks = [

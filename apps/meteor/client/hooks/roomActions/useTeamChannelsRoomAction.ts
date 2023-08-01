@@ -1,6 +1,6 @@
 import { lazy, useMemo } from 'react';
 
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const TeamsChannels = lazy(() => import('../../views/teams/contextualBar/channels/TeamsChannels'));
 

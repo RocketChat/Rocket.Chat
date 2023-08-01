@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import { MemberListRouter } from '../../views/room';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 export const useUserInfoGroupRoomAction = (): ToolboxActionConfig => {
 	return useMemo(

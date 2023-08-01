@@ -1,7 +1,7 @@
 import { lazy, useMemo } from 'react';
 
 import { useRoomSubscription } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const NotificationPreferences = lazy(() => import('../../views/room/contextualBar/NotificationPreferences'));
 

@@ -3,7 +3,7 @@ import { lazy, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { RoomContext } from '../../../../client/views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../../../client/views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../../../client/views/room/contexts/RoomToolboxContext';
 import { useHasLicenseModule } from '../useHasLicenseModule';
 
 const VideoConfList = lazy(() => import('../../../../client/views/room/contextualBar/VideoConference/VideoConfList'));

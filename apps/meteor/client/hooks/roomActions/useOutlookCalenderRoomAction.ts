@@ -1,7 +1,7 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
 
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const OutlookEventsRoute = lazy(() => import('../../views/outlookCalendar/OutlookEventsRoute'));
 

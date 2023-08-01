@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 
 import { MemberListRouter } from '../../views/room';
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 export const useMembersListRoomAction = (): ToolboxActionConfig | undefined => {
 	const room = useRoom();

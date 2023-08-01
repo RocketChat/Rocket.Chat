@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import otr from '../../../app/otr/client/OTR';
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const OTR = lazy(() => import('../../views/room/contextualBar/OTR'));
 

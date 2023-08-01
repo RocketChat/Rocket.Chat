@@ -5,7 +5,7 @@ import { useAppActionButtons } from '../../../../hooks/useAppActionButtons';
 import { useApplyButtonFilters } from '../../../../hooks/useApplyButtonFilters';
 import { useUiKitActionManager } from '../../../../hooks/useUiKitActionManager';
 import { useRoom } from '../../contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../lib/Toolbox';
+import type { ToolboxActionConfig } from '../../contexts/RoomToolboxContext';
 
 export const useAppsRoomActions = () => {
 	const result = useAppActionButtons('roomAction');

@@ -2,7 +2,7 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
 
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const ExportMessages = lazy(() => import('../../views/room/contextualBar/ExportMessages'));
 

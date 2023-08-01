@@ -8,7 +8,7 @@ import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRing
 import { VideoConfManager } from '../../lib/VideoConfManager';
 import { useRoom } from '../../views/room/contexts/RoomContext';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { ToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 export const useStartCallRoomAction = (): ToolboxActionConfig | undefined => {
 	const room = useRoom();
