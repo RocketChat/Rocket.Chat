@@ -59,6 +59,11 @@ import {
   sectionWithMenu,
   sectionWithdatePicker,
 } from './section';
+import {
+  disabled,
+  plain,
+  selected,
+} from './tabNavigation';
 
 const BlocksTree: Item = [
   {
@@ -328,6 +333,23 @@ const BlocksTree: Item = [
       },
     ],
   },
+  {
+    label: 'TabNavigation',
+    branches: [
+      {
+        label: 'Plain',
+        payload: plain,
+      },
+      {
+        label: 'Disabled',
+        payload: disabled,
+      },
+      {
+        label: 'Selected',
+        payload: selected,
+      }
+    ],
+  }
 ];
 
 export default BlocksTree;
