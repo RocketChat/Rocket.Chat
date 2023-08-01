@@ -43,8 +43,9 @@ const ReportUserModal = ({ username, name, onConfirm, onClose }: ReportUserModal
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
-				<Box mbe='x16' fontWeight='bold'>
-					<UserAvatar username={username} /> {displayName}
+				<Box mbe='x16' fontWeight='bold' display='flex' alignItems='center'>
+					<UserAvatar username={username} />
+					<Box mis='x12'>{displayName}</Box>
 				</Box>
 				<TextAreaInput
 					rows={3}
