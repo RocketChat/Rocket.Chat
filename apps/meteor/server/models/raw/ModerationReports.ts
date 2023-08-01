@@ -39,15 +39,19 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 
 	createWithDescriptionAndUser(
 		reportedUser: IModerationReport['reportedUser'],
-		description: string,
+		description: IModerationReport['description'],
 		reportedBy: IModerationReport['reportedBy'],
 	): ReturnType<BaseRaw<IModerationReport>['insertOne']> {
-		const record = {
-			description,
+		const record: any = {
 			reportedBy,
 			reportedUser,
 			ts: new Date(),
 		};
+
+		if (description) {
+			record.description = description;
+		}
+
 		return this.insertOne(record);
 	}
 
