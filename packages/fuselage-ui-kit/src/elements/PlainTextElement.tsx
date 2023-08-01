@@ -1,5 +1,5 @@
-import type { TextObject } from '@rocket.chat/ui-kit';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { TextObject } from '@rocket.chat/ui-kit';
 
 import { useUiKitContext } from '../hooks/useUiKitContext';
 

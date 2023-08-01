@@ -27,7 +27,7 @@ import { getURL } from '../../../../../app/utils/client';
 import { ContextualbarClose, ContextualbarScrollableContent } from '../../../../components/Contextualbar';
 import { useUiKitActionManager } from '../../../../hooks/useUiKitActionManager';
 import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useTabBarClose } from '../../contexts/RoomToolboxContext';
 
 type FieldStateValue = string | Array<string> | undefined;
 type FieldState = { value: FieldStateValue; blockId: string };
