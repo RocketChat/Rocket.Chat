@@ -6,7 +6,7 @@ import React, { useMemo } from 'react';
 
 import { useRoom } from '../contexts/RoomContext';
 import { RoomToolboxContext } from '../contexts/RoomToolboxContext';
-import type { RoomToolboxContextValue, ToolboxActionConfig } from '../contexts/RoomToolboxContext';
+import type { RoomToolboxContextValue, RoomToolboxActionConfig } from '../contexts/RoomToolboxContext';
 import { useAppsRoomActions } from './hooks/useAppsRoomActions';
 import { useCoreRoomActions } from './hooks/useCoreRoomActions';
 
@@ -16,7 +16,7 @@ const groupsDict = {
 	d: 'direct',
 	p: 'group',
 	c: 'channel',
-} as const satisfies Record<RoomType, ToolboxActionConfig['groups'][number]>;
+} as const satisfies Record<RoomType, RoomToolboxActionConfig['groups'][number]>;
 
 const getGroup = (room: IRoom) => {
 	if (room.teamMain) {

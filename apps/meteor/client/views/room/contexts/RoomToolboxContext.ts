@@ -1,17 +1,16 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import type { Box } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { createContext, useContext } from 'react';
-import type { ReactNode, MouseEvent, ComponentProps, ComponentType } from 'react';
+import type { ReactNode, ComponentProps, ComponentType, UIEvent } from 'react';
 
-type RenderToolboxItemParams = ToolboxActionConfig & {
+type RenderToolboxItemParams = RoomToolboxActionConfig & {
 	className?: ComponentProps<typeof Box>['className'];
 	index: number;
 	toolbox: RoomToolboxContextValue;
 };
 
-export type ToolboxActionConfig = {
+export type RoomToolboxActionConfig = {
 	id: string;
 	icon?: IconName;
 	title: TranslationKey;
@@ -22,19 +21,17 @@ export type ToolboxActionConfig = {
 	order?: number;
 	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple' | 'team' | 'voip'>;
 	hotkey?: string;
-	action?: (e?: MouseEvent<HTMLElement>) => void;
-	template?: ComponentType<{
-		_id: IRoom['_id'];
-		rid: IRoom['_id'];
-		teamId: IRoom['teamId'];
-	}>;
+	action?: (event?: UIEvent<HTMLElement>) => void;
 	featured?: boolean;
 	renderToolboxItem?: (params: RenderToolboxItemParams) => ReactNode;
+	tabComponent?: ComponentType<{
+		onClickBack?: () => void;
+	}>;
 };
 
 export type RoomToolboxContextValue = {
-	actions: ToolboxActionConfig[];
-	tab?: ToolboxActionConfig;
+	actions: RoomToolboxActionConfig[];
+	tab?: RoomToolboxActionConfig;
 	context?: string;
 	openTab: (actionId: string, context?: string) => void;
 	closeTab: () => void;

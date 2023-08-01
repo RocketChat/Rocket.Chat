@@ -1,11 +1,11 @@
 import { lazy, useMemo } from 'react';
 
-import type { ToolboxActionConfig } from '../../../../client/views/room/contexts/RoomToolboxContext';
+import type { RoomToolboxActionConfig } from '../../../../client/views/room/contexts/RoomToolboxContext';
 import { useExternalComponentsQuery } from '../../apps/gameCenter/hooks/useExternalComponentsQuery';
 
 const GameCenter = lazy(() => import('../../apps/gameCenter/GameCenter'));
 
-export const useGameCenterRoomAction = (): ToolboxActionConfig | undefined => {
+export const useGameCenterRoomAction = (): RoomToolboxActionConfig | undefined => {
 	const result = useExternalComponentsQuery();
 	const enabled = result.isSuccess && result.data.length > 0;
 

@@ -3,12 +3,12 @@ import { lazy, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { RoomContext } from '../../../../client/views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../../../client/views/room/contexts/RoomToolboxContext';
+import type { RoomToolboxActionConfig } from '../../../../client/views/room/contexts/RoomToolboxContext';
 import { useHasLicenseModule } from '../useHasLicenseModule';
 
 const VideoConfList = lazy(() => import('../../../../client/views/room/contextualBar/VideoConference/VideoConfList'));
 
-export const useCallsRoomAction = (): ToolboxActionConfig | undefined => {
+export const useCallsRoomAction = (): RoomToolboxActionConfig | undefined => {
 	const licensed = useHasLicenseModule('videoconference-enterprise') === true;
 	const room = useContext(RoomContext)?.room;
 	const federated = room ? isRoomFederated(room) : false;

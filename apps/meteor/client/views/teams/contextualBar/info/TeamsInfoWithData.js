@@ -16,6 +16,7 @@ import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { useRoom } from '../../../room/contexts/RoomContext';
 import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
 import DeleteTeamModal from './Delete';
@@ -34,7 +35,8 @@ const retentionPolicyAppliesTo = {
 	d: 'RetentionPolicy_AppliesToDMs',
 };
 
-const TeamsInfoWithLogic = ({ room, openEditing }) => {
+const TeamsInfoWithLogic = ({ openEditing }) => {
+	const room = useRoom();
 	const { openTab, closeTab } = useRoomToolbox();
 	const t = useTranslation();
 	const userId = useUserId();

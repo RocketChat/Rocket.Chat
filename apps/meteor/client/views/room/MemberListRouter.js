@@ -18,7 +18,7 @@ const getUid = (room, ownUserId) => {
 	return uid || room.uids[0];
 };
 
-const MemberListRouter = ({ rid }) => {
+const MemberListRouter = () => {
 	const { tab, context: username } = useRoomToolbox();
 	const room = useRoom();
 	const { closeTab } = useRoomToolbox();
@@ -27,10 +27,10 @@ const MemberListRouter = ({ rid }) => {
 	const isMembersList = tab.id === 'members-list' || tab.id === 'user-info-group';
 
 	if (isMembersList && !username) {
-		return <RoomMembers rid={rid} />;
+		return <RoomMembers rid={room._id} />;
 	}
 
-	return <UserInfo width='100%' {...(username ? { username } : { uid: getUid(room, ownUserId) })} onClose={closeTab} rid={rid} />;
+	return <UserInfo width='100%' {...(username ? { username } : { uid: getUid(room, ownUserId) })} onClose={closeTab} rid={room._id} />;
 };
 
 export default MemberListRouter;

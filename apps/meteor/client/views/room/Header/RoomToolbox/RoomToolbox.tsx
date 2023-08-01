@@ -7,7 +7,7 @@ import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
-import type { ToolboxActionConfig } from '../../contexts/RoomToolboxContext';
+import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
 
 type RoomToolboxProps = {
 	className?: ComponentProps<typeof Box>['className'];
@@ -23,7 +23,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const featuredActions = actions.filter((action) => action.featured);
 	const normalActions = actions.filter((action) => !action.featured);
 	const visibleActions = isMobile ? [] : normalActions.slice(0, 6);
-	const hiddenActions: Record<string, ToolboxActionConfig> = Object.fromEntries(
+	const hiddenActions: Record<string, RoomToolboxActionConfig> = Object.fromEntries(
 		(isMobile ? actions : normalActions.slice(6))
 			.filter((item) => !item.disabled)
 			.map((item) => {
@@ -40,7 +40,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 			}),
 	);
 
-	const renderDefaultToolboxItem: ToolboxActionConfig['renderToolboxItem'] = useMutableCallback(
+	const renderDefaultToolboxItem: RoomToolboxActionConfig['renderToolboxItem'] = useMutableCallback(
 		({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }) => {
 			return (
 				<HeaderToolboxAction
@@ -59,7 +59,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 		},
 	);
 
-	const mapToToolboxItem = (action: ToolboxActionConfig, index: number) => {
+	const mapToToolboxItem = (action: RoomToolboxActionConfig, index: number) => {
 		return (action.renderToolboxItem ?? renderDefaultToolboxItem)?.({
 			...action,
 			action: action.action ?? (() => toolbox.openTab(action.id)),
