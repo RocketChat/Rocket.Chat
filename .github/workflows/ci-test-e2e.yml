@@ -115,42 +115,38 @@ jobs:
             exit 1
           fi
 
-      - name: yarn build
-        run: yarn build
+      - run: yarn build
 
-      - name: Start containers
-        if: inputs.release == 'ce' && github.event.pull_request.head.repo.full_name == github.repository
+      - name: Start containers for CE
+        if: inputs.release == 'ce'
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
         run: |
-          docker compose -f docker-compose-ci.yml up -d rocketchat
+          args=()
 
-      # for pull requests from forks, we need to build the containers
-      - name: Start containers
-        if: inputs.release == 'ce' && github.event.pull_request.head.repo.full_name != github.repository
-        env:
-          MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
-        run: |
-          docker compose -f docker-compose-ci.yml up -d rocketchat --build
+          # for pull requests from forks, we need to build the containers
+          if [[ '${{ github.event.pull_request.head.repo.full_name }}' != '${{ github.repository }}' ]]; then
+            args+=(--build)
+          fi
 
-      - name: Start containers
-        if: inputs.release == 'ee' && github.event.pull_request.head.repo.full_name == github.repository
-        env:
-          MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
-          ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
-          TRANSPORTER: ${{ inputs.transporter }}
-        run: |
-          docker compose -f docker-compose-ci.yml up -d
+          # when we are testing CE, we only need to start the rocketchat container
+          docker compose -f docker-compose-ci.yml up -d rocketchat "${args[@]}"
 
-      # for pull requests from forks, we need to build the containers
-      - name: Start containers
-        if: inputs.release == 'ee' && github.event.pull_request.head.repo.full_name != github.repository
+      - name: Start containers for EE
+        if: inputs.release == 'ee'
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
         run: |
-          docker compose -f docker-compose-ci.yml up -d --build
+          args=()
+
+          # for pull requests from forks, we need to build the containers
+          if [[ '${{ github.event.pull_request.head.repo.full_name }}' != '${{ github.repository }}' ]]; then
+            args+=(--build)
+          fi
+
+          docker compose -f docker-compose-ci.yml up -d "${args[@]}"
 
       - name: Cache Playwright binaries
         if: inputs.type == 'ui'
