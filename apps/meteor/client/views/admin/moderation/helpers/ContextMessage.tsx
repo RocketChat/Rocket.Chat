@@ -7,7 +7,7 @@ import React from 'react';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import Attachments from '../../../../components/message/content/Attachments';
-import UiKitMessage from '../../../../components/message/uikit/UiKitMessage';
+import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
@@ -71,7 +71,7 @@ const ContextMessage = ({
 						) : (
 							message.msg
 						)}
-						{message.blocks && <UiKitMessage mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
+						{message.blocks && <UiKitMessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 						{message.attachments && <Attachments attachments={message.attachments} />}
 					</Message.Body>
 				</Message.Container>

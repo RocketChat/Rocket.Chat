@@ -18,7 +18,7 @@ import UrlPreviews from '../../content/UrlPreviews';
 import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
 import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFromMessageQuery';
-import UiKitMessage from '../../uikit/UiKitMessage';
+import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
 type ThreadMessageContentProps = {
 	message: IThreadMessage | IThreadMainMessage;
@@ -49,7 +49,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 			)}
 
 			{normalizedMessage.blocks && (
-				<UiKitMessage mid={normalizedMessage._id} blocks={normalizedMessage.blocks} appId rid={normalizedMessage.rid} />
+				<UiKitMessageBlock mid={normalizedMessage._id} blocks={normalizedMessage.blocks} appId rid={normalizedMessage.rid} />
 			)}
 
 			{normalizedMessage.attachments && <Attachments attachments={normalizedMessage.attachments} />}

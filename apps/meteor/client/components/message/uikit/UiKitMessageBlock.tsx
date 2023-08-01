@@ -28,14 +28,14 @@ const patchMessageParser = () => {
 	patched = true;
 };
 
-type UiKitMessageProps = {
+type UiKitMessageBlockProps = {
 	mid: IMessage['_id'];
 	blocks: MessageSurfaceLayout;
 	rid: IRoom['_id'];
 	appId?: string | boolean; // TODO: this is a hack while the context value is not properly typed
 };
 
-const UiKitMessage = ({ mid: _mid, blocks, rid, appId }: UiKitMessageProps): ReactElement => {
+const UiKitMessageBlock = ({ mid: _mid, blocks, rid, appId }: UiKitMessageBlockProps): ReactElement => {
 	const joinCall = useVideoConfJoinCall();
 	const setPreferences = useVideoConfSetPreferences();
 	const isCalling = useVideoConfIsCalling();
@@ -107,4 +107,4 @@ const UiKitMessage = ({ mid: _mid, blocks, rid, appId }: UiKitMessageProps): Rea
 	);
 };
 
-export default UiKitMessage;
+export default UiKitMessageBlock;
