@@ -243,29 +243,40 @@ jobs:
           name: build
           path: /tmp/Rocket.Chat.tar.gz
 
-  build-docker:
-    name: 🚢 Build Docker Image for Testing
+  build-gh-docker:
+    name: 🚢 Build Docker Images for Testing
     needs: [build, release-versions]
     if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
     runs-on: ubuntu-20.04
+
     env:
       RC_DOCKERFILE: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
       RC_DOCKER_TAG: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+      SERVICES_PUBLISH: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
+
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - alpine
-          - debian
+        platform: ['official', 'alpine']
+
     steps:
       - uses: actions/checkout@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
       - name: Restore build
         uses: actions/download-artifact@v3
         with:
           name: build
           path: /tmp/build
+
       - name: Unpack build
         run: |
           cd /tmp/build
@@ -281,41 +292,37 @@ jobs:
           cache-modules: true
           install: true
 
-      - name: yarn build
-        run: yarn build
-      - name: Build containers
-        if: ${{ matrix.platform == 'alpine' }}
-        run: |
-          docker compose -f docker-compose-ci.yml build \
-            authorization-service \
-            account-service \
-            ddp-streamer-service \
-            presence-service \
-            stream-hub-service
-      - name: Build containers
-        if: ${{ matrix.platform == 'debian' }}
-        run: |
-          docker compose -f docker-compose-ci.yml build rocketchat
+      - run: yarn build
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-      - name: Publish Docker images to GitHub Container Registry
-        if: ${{ matrix.platform == 'alpine' }}
+      - name: Build Docker images
         run: |
-          docker compose -f docker-compose-ci.yml push \
-          authorization-service \
-          account-service \
-          ddp-streamer-service \
-          presence-service \
-          stream-hub-service
+          args=(rocketchat)
+
+          if [[ '${{ matrix.platform }}' = 'alpine' ]]; then
+            args+=($SERVICES_PUBLISH)
+          fi;
+
+          docker compose -f docker-compose-ci.yml build "${args[@]}"
+
       - name: Publish Docker images to GitHub Container Registry
-        if: ${{ matrix.platform == 'debian' }}
         run: |
-          docker compose -f docker-compose-ci.yml push rocketchat
+          args=(rocketchat)
+
+          if [[ '${{ matrix.platform }}' = 'alpine' ]]; then
+            args+=($SERVICES_PUBLISH)
+          fi;
+
+          docker compose -f docker-compose-ci.yml push "${args[@]}"
+
+      - name: Rename official Docker tag to GitHub Container Registry
+        if: matrix.platform == 'official'
+        run: |
+          IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
+
+          echo "Push Docker image: ${IMAGE_NAME_BASE}"
+          docker tag ${IMAGE_NAME_BASE}.official $IMAGE_NAME_BASE
+          docker push $IMAGE_NAME_BASE
+
   checks:
     needs: [release-versions, packages-build]
 
@@ -334,7 +341,7 @@ jobs:
 
   test-api:
     name: 🔨 Test API (CE)
-    needs: [checks, build-docker, release-versions]
+    needs: [checks, build-gh-docker, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -353,7 +360,7 @@ jobs:
 
   test-ui:
     name: 🔨 Test UI (CE)
-    needs: [checks, build-docker, release-versions]
+    needs: [checks, build-gh-docker, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -379,7 +386,7 @@ jobs:
 
   test-api-ee:
     name: 🔨 Test API (EE)
-    needs: [checks, build-docker, release-versions]
+    needs: [checks, build-gh-docker, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -401,7 +408,7 @@ jobs:
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
-    needs: [checks, build-docker, release-versions]
+    needs: [checks, build-gh-docker, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:

@@ -122,15 +122,8 @@ jobs:
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
         run: |
-          args=()
-
-          # for pull requests from forks, we need to build the containers
-          if [[ '${{ github.event.pull_request.head.repo.full_name }}' != '${{ github.repository }}' ]]; then
-            args+=(--build)
-          fi
-
           # when we are testing CE, we only need to start the rocketchat container
-          docker compose -f docker-compose-ci.yml up -d rocketchat "${args[@]}"
+          docker compose -f docker-compose-ci.yml up -d rocketchat
 
       - name: Start containers for EE
         if: inputs.release == 'ee'
@@ -139,14 +132,7 @@ jobs:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
         run: |
-          args=()
-
-          # for pull requests from forks, we need to build the containers
-          if [[ '${{ github.event.pull_request.head.repo.full_name }}' != '${{ github.repository }}' ]]; then
-            args+=(--build)
-          fi
-
-          docker compose -f docker-compose-ci.yml up -d "${args[@]}"
+          docker compose -f docker-compose-ci.yml up -d
 
       - name: Cache Playwright binaries
         if: inputs.type == 'ui'
