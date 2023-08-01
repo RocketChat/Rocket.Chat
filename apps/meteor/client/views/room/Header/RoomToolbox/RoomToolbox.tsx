@@ -3,15 +3,11 @@ import { Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { HeaderToolboxAction, HeaderToolboxDivider } from '@rocket.chat/ui-client';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
-import React, { memo, useRef } from 'react';
+import type { ComponentProps } from 'react';
+import React, { memo } from 'react';
 
 import { useRoomToolbox, useTabBarOpen } from '../../contexts/RoomToolboxContext';
-import type { ToolboxActionConfig, OptionRenderer } from '../../contexts/RoomToolboxContext';
-
-const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any) => (
-	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} gap={!icon} {...props} />
-);
+import type { ToolboxActionConfig } from '../../contexts/RoomToolboxContext';
 
 type RoomToolboxProps = {
 	className?: ComponentProps<typeof Box>['className'];
@@ -21,23 +17,17 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const t = useTranslation();
 	const openTabBar = useTabBarOpen();
 	const { isMobile } = useLayout();
-	const hiddenActionRenderers = useRef<{ [key: string]: OptionRenderer }>({});
 
 	const toolbox = useRoomToolbox();
 	const { actions } = toolbox;
 
 	const featuredActions = actions.filter((action) => action.featured);
-	const filteredActions = actions.filter((action) => !action.featured);
-	const visibleActions = isMobile ? [] : filteredActions.slice(0, 6);
-
+	const normalActions = actions.filter((action) => !action.featured);
+	const visibleActions = isMobile ? [] : normalActions.slice(0, 6);
 	const hiddenActions: Record<string, ToolboxActionConfig> = Object.fromEntries(
-		(isMobile ? actions : filteredActions.slice(6))
+		(isMobile ? actions : normalActions.slice(6))
 			.filter((item) => !item.disabled)
 			.map((item) => {
-				hiddenActionRenderers.current = {
-					...hiddenActionRenderers.current,
-					[item.id]: renderMenuOption,
-				};
 				return [
 					item.id,
 					{
@@ -85,7 +75,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 			{featuredActions.map(mapToToolboxItem)}
 			{featuredActions.length > 0 && <HeaderToolboxDivider />}
 			{visibleActions.map(mapToToolboxItem)}
-			{(filteredActions.length > 6 || isMobile) && (
+			{(normalActions.length > 6 || isMobile) && (
 				<Menu
 					data-qa-id='ToolBox-Menu'
 					tiny={!isMobile}
@@ -95,7 +85,9 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 					aria-keyshortcuts='alt'
 					tabIndex={-1}
 					options={hiddenActions}
-					renderItem={({ value, ...props }): ReactElement | null => value && renderMenuOption(props)}
+					renderItem={({ label: { title, icon }, ...props }) => (
+						<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} gap={!icon} {...props} />
+					)}
 				/>
 			)}
 		</>

@@ -1,13 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { Box, Option } from '@rocket.chat/fuselage';
+import type { Box } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { createContext, useContext } from 'react';
 import type { ReactNode, MouseEvent, ComponentProps, ComponentType } from 'react';
-
-type OptionRendererProps = ComponentProps<typeof Option>;
-
-export type OptionRenderer = (props: OptionRendererProps) => ReactNode;
 
 type RenderToolboxItemParams = ToolboxActionConfig & {
 	className?: ComponentProps<typeof Box>['className'];
