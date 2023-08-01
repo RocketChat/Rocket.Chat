@@ -1,6 +1,7 @@
-import { MeteorError } from '@rocket.chat/core-services';
 import { Random } from '@rocket.chat/random';
 import generator from 'generate-password';
+
+// TODO: change Error to MeteorError from '@rocket.chat/core-services'
 
 class PasswordPolicy {
 	regex: {
@@ -93,7 +94,7 @@ class PasswordPolicy {
 		return this.minLength;
 	}
 
-	set passwordMinLength(value) {
+	set passwordMinLength(value: number) {
 		this.minLength = value;
 	}
 
@@ -101,7 +102,7 @@ class PasswordPolicy {
 		return this.maxLength;
 	}
 
-	set passwordMaxLength(value) {
+	set passwordMaxLength(value: number) {
 		this.maxLength = value;
 	}
 
@@ -111,14 +112,6 @@ class PasswordPolicy {
 
 	set passwordForbidRepeatingCharacters(value: boolean) {
 		this.forbidRepeatingCharacters = value;
-	}
-
-	get passwordForbidRepeatingCharactersCount() {
-		return this.forbidRepeatingCharactersCount;
-	}
-
-	set passwordForbidRepeatingCharactersCount(value: number) {
-		this.forbidRepeatingCharactersCount = value;
 	}
 
 	get passwordAtLeastOneLowercase() {
@@ -162,7 +155,8 @@ class PasswordPolicy {
 		}[],
 	) {
 		if (this.throwError) {
-			throw new MeteorError(error, message, reasons);
+			// TODO: change to MeteorError and remove string concatenation
+			throw new Error(`ERROR: ${error} MESSAGE:${message} REASONS: ${reasons}`);
 		}
 
 		return false;
