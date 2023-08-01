@@ -1000,10 +1000,6 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 				}
 
-				if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
-					throw new Meteor.Error('error-two-factor-not-enabled', 'Two factor authentication is not enabled');
-				}
-
 				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-e2ee'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
