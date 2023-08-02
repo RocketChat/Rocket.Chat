@@ -10,15 +10,24 @@ import type {
 } from '@rocket.chat/apps-engine/definition/uikit';
 import { InputElementDispatchAction } from '@rocket.chat/apps-engine/definition/uikit';
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
+import { Avatar, Box, Button, ButtonGroup, ContextualbarFooter, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { kitContext } from '@rocket.chat/fuselage-ui-kit';
-import type { Block } from '@rocket.chat/ui-kit';
+import {
+	UiKitComponent,
+	UiKitContextualBar as UiKitContextualBarSurfaceRender,
+	contextualBarParser,
+	UiKitContext,
+} from '@rocket.chat/fuselage-ui-kit';
+import type { LayoutBlock } from '@rocket.chat/ui-kit';
+import { BlockContext, type Block } from '@rocket.chat/ui-kit';
 import type { Dispatch, SyntheticEvent, ContextType } from 'react';
 import React, { memo, useState, useEffect, useReducer } from 'react';
 
+import { getURL } from '../../../../../app/utils/client';
+import { ContextualbarClose, ContextualbarScrollableContent } from '../../../../components/Contextualbar';
 import { useUiKitActionManager } from '../../../../hooks/useUiKitActionManager';
+import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
-import Apps from './Apps';
 
 type FieldStateValue = string | Array<string> | undefined;
 type FieldState = { value: FieldStateValue; blockId: string };
@@ -90,7 +99,7 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 	return useReducer(reducer, null, initializer);
 };
 
-const AppsWithData = ({
+const UiKitContextualBar = ({
 	viewId,
 	roomId,
 	payload,
@@ -154,7 +163,7 @@ const AppsWithData = ({
 		});
 	}, 700);
 
-	const context: ContextType<typeof kitContext> = {
+	const context: ContextType<typeof UiKitContext> = {
 		action: async ({ actionId, appId, value, blockId, dispatchActionConfig }: ActionParams): Promise<void> => {
 			if (Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes(InputElementDispatchAction.ON_CHARACTER_ENTERED)) {
 				await debouncedBlockAction({ actionId, appId, value, blockId });
@@ -183,7 +192,7 @@ const AppsWithData = ({
 		},
 		...state,
 		values,
-	} as ContextType<typeof kitContext>;
+	} as ContextType<typeof UiKitContext>;
 
 	const handleSubmit = useMutableCallback((e) => {
 		prevent(e);
@@ -231,10 +240,33 @@ const AppsWithData = ({
 	});
 
 	return (
-		<kitContext.Provider value={context}>
-			<Apps onClose={handleClose} onCancel={handleCancel} onSubmit={handleSubmit} view={view} appId={appId} />
-		</kitContext.Provider>
+		<UiKitContext.Provider value={context}>
+			<ContextualbarHeader>
+				<Avatar url={getURL(`/api/apps/${appId}/icon`)} />
+				<ContextualbarTitle>{contextualBarParser.text(view.title, BlockContext.NONE, 0)}</ContextualbarTitle>
+				{handleClose && <ContextualbarClose onClick={handleClose} />}
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent>
+				<Box is='form' method='post' action='#' onSubmit={handleSubmit}>
+					<UiKitComponent render={UiKitContextualBarSurfaceRender} blocks={view.blocks as LayoutBlock[]} />
+				</Box>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup align='end'>
+					{view.close && (
+						<Button danger={view.close.style === 'danger'} onClick={handleCancel}>
+							{contextualBarParser.text(view.close.text, BlockContext.NONE, 0)}
+						</Button>
+					)}
+					{view.submit && (
+						<Button {...getButtonStyle(view)} onClick={handleSubmit}>
+							{contextualBarParser.text(view.submit.text, BlockContext.NONE, 1)}
+						</Button>
+					)}
+				</ButtonGroup>
+			</ContextualbarFooter>
+		</UiKitContext.Provider>
 	);
 };
 
-export default memo(AppsWithData);
+export default memo(UiKitContextualBar);
