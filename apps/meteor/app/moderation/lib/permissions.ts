@@ -23,4 +23,7 @@ export const explorerPermissions: IPermission['_id'][] = [
 ];
 
 // each successive role adds to the previous one, order matters
-export const trustRoles = ['novice', 'explorer'] as const;
+export enum TrustRoles {
+	NOVICE = 'novice',
+	EXPLORER = 'explorer',
+}
