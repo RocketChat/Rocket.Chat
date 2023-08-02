@@ -1,5 +1,5 @@
-import { HTTP } from 'meteor/http';
 import { Settings } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { settings } from '../../../settings/server';
@@ -10,10 +10,10 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 export async function getWorkspaceLicense(): Promise<{ updated: boolean; license: string }> {
 	const currentLicense = await Settings.findOne('Cloud_Workspace_License');
 
-	const cachedLicenseReturn = () => {
+	const cachedLicenseReturn = async () => {
 		const license = currentLicense?.value as string;
 		if (license) {
-			callbacks.run('workspaceLicenseChanged', license);
+			await callbacks.run('workspaceLicenseChanged', license);
 		}
 
 		return { updated: false, license };
@@ -26,23 +26,31 @@ export async function getWorkspaceLicense(): Promise<{ updated: boolean; license
 
 	let licenseResult;
 	try {
-		licenseResult = HTTP.get(`${settings.get('Cloud_Workspace_Registration_Client_Uri')}/license?version=${LICENSE_VERSION}`, {
+		const request = await fetch(`${settings.get('Cloud_Workspace_Registration_Client_Uri')}/license`, {
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
+			params: {
+				version: LICENSE_VERSION,
+			},
 		});
+
+		if (!request.ok) {
+			throw new Error((await request.json()).error);
+		}
+
+		licenseResult = await request.json();
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to update license from Rocket.Chat Cloud',
 			url: '/license',
-			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});
 
 		return cachedLicenseReturn();
 	}
 
-	const remoteLicense = licenseResult.data;
+	const remoteLicense = licenseResult;
 
 	if (!currentLicense || !currentLicense._updatedAt) {
 		throw new Error('Failed to retrieve current license');
@@ -54,7 +62,7 @@ export async function getWorkspaceLicense(): Promise<{ updated: boolean; license
 
 	await Settings.updateValueById('Cloud_Workspace_License', remoteLicense.license);
 
-	callbacks.run('workspaceLicenseChanged', remoteLicense.license);
+	await callbacks.run('workspaceLicenseChanged', remoteLicense.license);
 
 	return { updated: true, license: remoteLicense.license };
 }

@@ -131,7 +131,7 @@ export interface IMessage extends IRocketChatRecord {
 		type: MentionType;
 	} & Pick<IUser, '_id' | 'username' | 'name'>)[];
 
-	groupable?: false;
+	groupable?: boolean;
 	channels?: Pick<IRoom, '_id' | 'name'>[];
 	u: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>;
 	blocks?: MessageSurfaceLayout;
@@ -365,3 +365,17 @@ export type IVideoConfMessage = IMessage & {
 export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
 export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr' || message.t === 'otr-ack';
 export const isVideoConfMessage = (message: IMessage): message is IVideoConfMessage => message.t === 'videoconf';
+
+export type IMessageWithPendingFileImport = IMessage & {
+	_importFile: {
+		downloadUrl: string;
+		id: string;
+		size: number;
+		name: string;
+		external: boolean;
+		source: 'slack' | 'hipchat-enterprise';
+		original: Record<string, any>;
+		rocketChatUrl?: string;
+		downloaded?: boolean;
+	};
+};

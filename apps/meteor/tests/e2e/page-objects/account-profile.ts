@@ -49,7 +49,7 @@ export class AccountProfile {
 	}
 
 	get tokensTableEmpty(): Locator {
-		return this.page.locator('//div[contains(text(), "No results found")]');
+		return this.page.locator('//h3[contains(text(), "No results found")]');
 	}
 
 	get btnTokensAdd(): Locator {

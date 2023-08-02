@@ -99,7 +99,8 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 					const instance = StreamerCentral.instances[streamName];
 					if (!instance) {
-						return 'stream-not-exists';
+						// return 'stream-not-exists';
+						return;
 					}
 
 					if (instance.serverOnly) {

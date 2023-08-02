@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, MessageAttachment } from '@rocket.chat/core-typings';
 
-import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../../utils/server/getUserAvatarURL';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { settings } from '../../../settings/server/cached';
@@ -27,7 +27,7 @@ export const attachMessage = function (
 	return {
 		text: msg,
 		author_name: getUserDisplayName(name, username, useRealName),
-		author_icon: getUserAvatarURL(username),
+		author_icon: getUserAvatarURL(username) as string,
 		message_link: `${roomCoordinator.getRouteLink(room.t, room)}?msg=${_id}`,
 		attachments,
 		ts,

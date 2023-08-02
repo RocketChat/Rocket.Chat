@@ -17,7 +17,6 @@ import {
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
@@ -26,8 +25,11 @@ import { Team, api } from '@rocket.chat/core-services';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { validateCustomFields, saveUser, saveCustomFieldsWithoutValidation, setUserAvatar, saveCustomFields } from '../../../lib/server';
-import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
-import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
+import {
+	checkUsernameAvailability,
+	checkUsernameAvailabilityWithValidation,
+} from '../../../lib/server/functions/checkUsernameAvailability';
+import { getFullUserDataByIdOrUsernameOrImportId } from '../../../lib/server/functions/getFullUserData';
 import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { API } from '../api';
 import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
@@ -40,6 +42,9 @@ import { getUploadFormData } from '../lib/getUploadFormData';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { isUserFromParams } from '../helpers/isUserFromParams';
+import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
+import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
+import { i18n } from '../../../../server/lib/i18n';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -156,7 +161,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
 			}
 
-			await Meteor.runAsUser(userId, () => Meteor.callAsync('saveUserPreferences', this.bodyParams.data));
+			await saveUserPreferences(this.bodyParams.data, userId);
 			const user = await Users.findOneById(userId, {
 				projection: {
 					'settings.preferences': 1,
@@ -388,10 +393,16 @@ API.v1.addRoute(
 		async get() {
 			const { fields } = await this.parseJsonQuery();
 
-			const user = await getFullUserDataByIdOrUsername(this.userId, {
-				filterId: (this.queryParams as any).userId,
-				filterUsername: (this.queryParams as any).username,
-			});
+			const searchTerms: [string, 'id' | 'username' | 'importId'] | false =
+				('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
+				('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
+				('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']);
+
+			if (!searchTerms) {
+				return API.v1.failure('Invalid search query.');
+			}
+
+			const user = await getFullUserDataByIdOrUsernameOrImportId(this.userId, ...searchTerms);
 
 			if (!user) {
 				return API.v1.failure('User not found.');
@@ -559,6 +570,15 @@ API.v1.addRoute(
 			}
 
 			const { secret: secretURL, ...params } = this.bodyParams;
+
+			if (this.bodyParams.customFields) {
+				try {
+					await validateCustomFields(this.bodyParams.customFields);
+				} catch (e) {
+					return API.v1.failure(e);
+				}
+			}
+
 			// Register the user
 			const userId = await Meteor.callAsync('registerUser', {
 				...params,
@@ -567,11 +587,15 @@ API.v1.addRoute(
 
 			// Now set their username
 			const { fields } = await this.parseJsonQuery();
-			await Meteor.runAsUser(userId, () => Meteor.callAsync('setUsername', this.bodyParams.username));
+			await setUsernameWithValidation(userId, this.bodyParams.username);
 
 			const user = await Users.findOneById(userId, { projection: fields });
 			if (!user) {
 				return API.v1.failure('User not found');
+			}
+
+			if (this.bodyParams.customFields) {
+				await saveCustomFields(userId, this.bodyParams.customFields);
 			}
 
 			return API.v1.success({ user });
@@ -630,7 +654,7 @@ API.v1.addRoute(
 					preferences,
 				});
 			}
-			return API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences_not_available').toUpperCase());
+			return API.v1.failure(i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
 		},
 	},
 );
@@ -672,7 +696,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { username } = this.queryParams;
-			const result = await Meteor.callAsync('checkUsernameAvailability', username);
+
+			const result = await checkUsernameAvailabilityWithValidation(this.userId, username);
 
 			return API.v1.success({ result });
 		},

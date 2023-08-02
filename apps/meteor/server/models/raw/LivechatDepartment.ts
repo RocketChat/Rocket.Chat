@@ -13,7 +13,7 @@ import type {
 	UpdateFilter,
 } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { LivechatDepartmentAgents } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, LivechatUnitMonitors } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -83,6 +83,12 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 				},
 				sparse: true,
 			},
+			{
+				key: {
+					archived: 1,
+				},
+				sparse: true,
+			},
 		];
 	}
 
@@ -123,8 +129,21 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, options);
 	}
 
+	countByBusinessHourIdExcludingDepartmentId(businessHourId: string, departmentId: string): Promise<number> {
+		const query = { businessHourId, _id: { $ne: departmentId } };
+		return this.col.countDocuments(query);
+	}
+
 	findEnabledByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
 		const query = { businessHourId, enabled: true };
+		return this.find(query, options);
+	}
+
+	findActiveDepartmentsWithoutBusinessHour(options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+		const query = {
+			enabled: true,
+			businessHourId: { $exists: false },
+		};
 		return this.find(query, options);
 	}
 
@@ -196,12 +215,27 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.updateOne({ _id }, { $set: { archived: true, enabled: false } });
 	}
 
-	async createOrUpdateDepartment(_id: string, data: ILivechatDepartment): Promise<ILivechatDepartment> {
-		const current = await this.findOneById(_id);
+	async createOrUpdateDepartment(
+		_id: string | null,
+		data: {
+			enabled: boolean;
+			name: string;
+			description?: string;
+			showOnRegistration: boolean;
+			email: string;
+			showOnOfflineForm: boolean;
+			requestTagBeforeClosingChat?: boolean;
+			chatClosingTags?: string[];
+			fallbackForwardDepartment?: string;
+			departmentsAllowedToForward?: string[];
+			type?: string;
+		},
+	): Promise<ILivechatDepartment> {
+		const current = _id ? await this.findOneById(_id) : null;
 
 		const record = {
 			...data,
-		};
+		} as ILivechatDepartment;
 
 		if (_id) {
 			await this.updateOne({ _id }, { $set: record });
@@ -213,7 +247,12 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 			await LivechatDepartmentAgents.setDepartmentEnabledByDepartmentId(_id, data.enabled);
 		}
 
-		return Object.assign(record, { _id });
+		const latestDept = await this.findOneById(_id);
+		if (!latestDept) {
+			throw new Error(`Department ${_id} not found`);
+		}
+
+		return latestDept;
 	}
 
 	unsetFallbackDepartmentByDepartmentId(departmentId: string): Promise<Document | UpdateResult> {
@@ -222,47 +261,6 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 
 	removeDepartmentFromForwardListById(_departmentId: string): Promise<void> {
 		throw new Error('Method not implemented in Community Edition.');
-	}
-
-	async saveDepartmentsByAgent(agent: { _id: string; username: string }, departments: string[] = []): Promise<void> {
-		const { _id: agentId, username } = agent;
-		const savedDepartments = (await LivechatDepartmentAgents.findByAgentId(agentId).toArray()).map((d) => d.departmentId);
-
-		const incNumAgents = (_id: string, numAgents: number) => this.updateOne({ _id }, { $inc: { numAgents } });
-		// remove other departments
-		const deps = difference(savedDepartments, departments).map(async (departmentId) => {
-			// Migrate func
-			await LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
-			await incNumAgents(departmentId, -1);
-		});
-
-		await Promise.all(deps);
-
-		const promises = departments.map(async (departmentId) => {
-			const dep = await this.findOneById(departmentId, {
-				projection: { enabled: 1 },
-			});
-			if (!dep) {
-				return;
-			}
-
-			const { enabled: departmentEnabled } = dep;
-			// Migrate func
-			const saveResult = await LivechatDepartmentAgents.saveAgent({
-				agentId,
-				departmentId,
-				username,
-				departmentEnabled,
-				count: 0,
-				order: 0,
-			});
-
-			if (saveResult.upsertedId) {
-				await incNumAgents(departmentId, 1);
-			}
-		});
-
-		await Promise.all(promises);
 	}
 
 	updateById(_id: string, update: Partial<ILivechatDepartment>): Promise<Document | UpdateResult> {
@@ -330,8 +328,105 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 
 		return this.find(query, options);
 	}
-}
 
-const difference = <T>(arr: T[], arr2: T[]): T[] => {
-	return arr.filter((a) => !arr2.includes(a));
-};
+	findNotArchived(options: FindOptions<ILivechatDepartment> = {}): FindCursor<ILivechatDepartment> {
+		const query = { archived: { $ne: false } };
+
+		return this.find(query, options);
+	}
+
+	getBusinessHoursWithDepartmentStatuses(): Promise<
+		{
+			_id: string;
+			validDepartments: string[];
+			invalidDepartments: string[];
+		}[]
+	> {
+		return this.col
+			.aggregate<{ _id: string; validDepartments: string[]; invalidDepartments: string[] }>([
+				{
+					$match: {
+						businessHourId: {
+							$exists: true,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: '$businessHourId',
+						validDepartments: {
+							$push: {
+								$cond: {
+									if: {
+										$or: [
+											{
+												$eq: ['$enabled', true],
+											},
+											{
+												$ne: ['$archived', true],
+											},
+										],
+									},
+									then: '$_id',
+									else: '$$REMOVE',
+								},
+							},
+						},
+						invalidDepartments: {
+							$push: {
+								$cond: {
+									if: {
+										$or: [{ $eq: ['$enabled', false] }, { $eq: ['$archived', true] }],
+									},
+									then: '$_id',
+									else: '$$REMOVE',
+								},
+							},
+						},
+					},
+				},
+			])
+			.toArray();
+	}
+
+	checkIfMonitorIsMonitoringDepartmentById(monitorId: string, departmentId: string): Promise<boolean> {
+		const aggregation = [
+			{
+				$match: {
+					enabled: true,
+					_id: departmentId,
+				},
+			},
+			{
+				$lookup: {
+					from: LivechatUnitMonitors.getCollectionName(),
+					localField: 'parentId',
+					foreignField: 'unitId',
+					as: 'monitors',
+					pipeline: [
+						{
+							$match: {
+								monitorId,
+							},
+						},
+					],
+				},
+			},
+			{
+				$match: {
+					monitors: {
+						$exists: true,
+						$ne: [],
+					},
+				},
+			},
+			{
+				$project: {
+					_id: 1,
+				},
+			},
+		];
+
+		return this.col.aggregate(aggregation).hasNext();
+	}
+}

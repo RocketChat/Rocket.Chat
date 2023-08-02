@@ -4,8 +4,8 @@ import { Meteor } from 'meteor/meteor';
 import { settings, settingsRegistry } from '../../../../app/settings/server';
 import { addLicense } from './license';
 
-Meteor.startup(function () {
-	void settingsRegistry.addGroup('Enterprise', async function () {
+Meteor.startup(async function () {
+	await settingsRegistry.addGroup('Enterprise', async function () {
 		await this.section('License', async function () {
 			await this.add('Enterprise_License', '', {
 				type: 'string',

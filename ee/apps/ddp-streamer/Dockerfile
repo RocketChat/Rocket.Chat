@@ -7,11 +7,17 @@ WORKDIR /app
 COPY ./packages/core-services/package.json packages/core-services/package.json
 COPY ./packages/core-services/dist packages/core-services/dist
 
+COPY ./packages/agenda/package.json packages/agenda/package.json
+COPY ./packages/agenda/dist packages/agenda/dist
+
 COPY ./packages/core-typings/package.json packages/core-typings/package.json
 COPY ./packages/core-typings/dist packages/core-typings/dist
 
 COPY ./packages/rest-typings/package.json packages/rest-typings/package.json
 COPY ./packages/rest-typings/dist packages/rest-typings/dist
+
+COPY ./packages/ui-contexts/package.json packages/ui-contexts/package.json
+COPY ./packages/ui-contexts/dist packages/ui-contexts/dist
 
 COPY ./packages/model-typings/package.json packages/model-typings/package.json
 COPY ./packages/model-typings/dist packages/model-typings/dist
@@ -36,7 +42,11 @@ ENV NODE_ENV=production \
 
 WORKDIR /app/ee/apps/${SERVICE}
 
-RUN yarn workspaces focus --production
+RUN apk update && \
+    apk --no-cache --virtual build-dependencies add g++ python3 make && \
+    yarn workspaces focus --production && \
+    rm -rf /var/cache/apk/* && \
+    apk del build-dependencies
 
 EXPOSE 3000 9458
 

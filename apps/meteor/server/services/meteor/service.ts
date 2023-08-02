@@ -157,10 +157,10 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 			});
 		}
 
-		this.onEvent('watch.users', async ({ clientAction, id, diff }) => {
+		this.onEvent('watch.users', async (data) => {
 			if (disableOplog) {
-				if (clientAction === 'updated' && diff) {
-					processOnChange(diff, id);
+				if (data.clientAction === 'updated' && data.diff) {
+					processOnChange(data.diff, data.id);
 				}
 			}
 
@@ -168,14 +168,14 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 				return;
 			}
 
-			if (clientAction !== 'removed' && diff && !diff.status && !diff.statusLivechat) {
+			if (data.clientAction !== 'removed' && 'diff' in data && !data.diff.status && !data.diff.statusLivechat) {
 				return;
 			}
 
-			switch (clientAction) {
+			switch (data.clientAction) {
 				case 'updated':
 				case 'inserted':
-					const agent = await Users.findOneAgentById<Pick<ILivechatAgent, 'status' | 'statusLivechat'>>(id, {
+					const agent = await Users.findOneAgentById<Pick<ILivechatAgent, 'status' | 'statusLivechat'>>(data.id, {
 						projection: {
 							status: 1,
 							statusLivechat: 1,
@@ -184,14 +184,14 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 					const serviceOnline = agent && agent.status !== 'offline' && agent.statusLivechat === 'available';
 
 					if (serviceOnline) {
-						return onlineAgents.add(id);
+						return onlineAgents.add(data.id);
 					}
 
-					onlineAgents.remove(id);
+					onlineAgents.remove(data.id);
 
 					break;
 				case 'removed':
-					onlineAgents.remove(id);
+					onlineAgents.remove(data.id);
 					break;
 			}
 		});

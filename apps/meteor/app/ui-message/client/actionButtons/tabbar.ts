@@ -2,7 +2,6 @@ import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 
 import { addAction, deleteAction } from '../../../../client/views/room/lib/Toolbox';
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
-import { t } from '../../../utils/client';
 import { triggerActionButtonAction } from '../ActionManager';
 import { applyButtonFilters } from './lib/applyButtonFilters';
 
@@ -16,7 +15,7 @@ export const onAdded = (button: IUIActionButton): void =>
 					id: button.actionId,
 					icon: undefined, // Apps won't provide icons for now
 					order: 300, // Make sure the button only shows up inside the room toolbox
-					title: t(Utilities.getI18nKeyForApp(button.labelI18n, button.appId)) as any,
+					title: Utilities.getI18nKeyForApp(button.labelI18n, button.appId),
 					// Filters were applied in the applyButtonFilters function
 					// if the code made it this far, the button should be shown
 					groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],

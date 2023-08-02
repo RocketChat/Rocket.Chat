@@ -18,6 +18,7 @@ import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
+import { deleteMessageValidatingPermission } from '../../../lib/server/functions/deleteMessage';
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
 
 API.v1.addRoute(
@@ -52,9 +53,14 @@ API.v1.addRoute(
 				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
 			}
 
-			await Meteor.runAsUser(this.bodyParams.asUser ? msg.u._id : this.userId, async () => {
-				await Meteor.callAsync('deleteMessage', { _id: msg._id });
-			});
+			const userId = this.bodyParams.asUser ? msg.u._id : this.userId;
+			const user = await Users.findOneById(userId, { projection: { _id: 1 } });
+
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
+
+			await deleteMessageValidatingPermission(msg, user._id);
 
 			return API.v1.success({
 				_id: msg._id,
@@ -352,7 +358,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
 			}
 
-			await executeSetReaction(emoji, msg._id, this.bodyParams.shouldReact);
+			await executeSetReaction(this.userId, emoji, msg._id, this.bodyParams.shouldReact);
 
 			return API.v1.success();
 		},

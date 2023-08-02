@@ -35,9 +35,13 @@ export class HomeSidenav {
 		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
 	}
 
+	getSidebarItemByName(name: string): Locator {
+		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
+	}
+
 	async openAdministrationByLabel(text: string): Promise<void> {
 		await this.page.locator('role=button[name="Administration"]').click();
-		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
+		await this.page.locator(`role=menuitem[name="${text}"]`).click();
 	}
 
 	async openInstalledApps(): Promise<void> {
@@ -46,8 +50,8 @@ export class HomeSidenav {
 	}
 
 	async openNewByLabel(text: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-create"]').click();
-		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
+		await this.page.locator('role=button[name="Create new"]').click();
+		await this.page.locator(`role=menuitem[name="${text}"]`).click();
 	}
 
 	async logout(): Promise<void> {
@@ -55,9 +59,9 @@ export class HomeSidenav {
 		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
 	}
 
-	async switchStatus(status: 'offline' | 'online'): Promise<void> {
+	async switchStatus(status: 'Offline offline' | 'Online online'): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
-		await this.page.locator(`//li[@class="rcx-option"]//div[contains(text(), "${status}")]`).click();
+		await this.page.locator(`role=menuitemcheckbox[name="${status}"]`).click();
 	}
 
 	async openChat(name: string): Promise<void> {

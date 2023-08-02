@@ -4,7 +4,7 @@ import { Messages, Settings, ImportData } from '@rocket.chat/models';
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
-import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
 export class SlackImporter extends Base {
 	parseData(data) {
@@ -295,6 +295,8 @@ export class SlackImporter extends Base {
 
 		ImporterWebsocket.progressUpdated({ rate: 100 });
 		await this.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
+
+		return this.progress;
 	}
 
 	parseMentions(newMessage) {
@@ -400,6 +402,8 @@ export class SlackImporter extends Base {
 				}
 				break;
 		}
+
+		return false;
 	}
 
 	makeSlackMessageId(channelId, ts, fileIndex = undefined) {

@@ -1,6 +1,4 @@
-import './settings';
 import './helpers/composeRoomWithLastMessage';
-import './helpers/deprecationWarning';
 import './helpers/getLoggedInUser';
 import './helpers/getPaginationItems';
 import './helpers/getUserFromParams';
@@ -9,6 +7,7 @@ import './helpers/isUserFromParams';
 import './helpers/parseJsonQuery';
 import './default/info';
 import './v1/assets';
+import './v1/calendar';
 import './v1/channels';
 import './v1/chat';
 import './v1/cloud';

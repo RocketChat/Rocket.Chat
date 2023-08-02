@@ -1,5 +1,4 @@
-import { Settings } from '@rocket.chat/models';
-import { MongoInternals } from 'meteor/mongo';
+import { Settings, Messages } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
 import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
@@ -39,10 +38,7 @@ addMigration({
 			_id: { $in: deprecatedSettings },
 		});
 
-		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-		const messages = mongo.db.collection('rocketchat_message');
-
-		await messages.updateMany(
+		await Messages.updateMany(
 			{
 				snippeted: true,
 			},
@@ -57,7 +53,7 @@ addMigration({
 		);
 
 		try {
-			await messages.dropIndex('snippeted_1');
+			await Messages.col.dropIndex('snippeted_1');
 		} catch (error: unknown) {
 			console.error('Error while removing index snippeted_1 from rocketchat_message', error);
 		}

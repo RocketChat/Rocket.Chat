@@ -1,13 +1,13 @@
+import type { ProgressStep } from '@rocket.chat/core-typings';
 import { Box, Margins, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation, useStream } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 
 import { ImportingStartedStates } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 import Page from '../../../components/Page';
-import type { ProgressStep } from './ImportTypes';
 import { useErrorHandler } from './useErrorHandler';
 
 const ImportProgressPage = function ImportProgressPage() {
@@ -17,8 +17,7 @@ const ImportProgressPage = function ImportProgressPage() {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const handleError = useErrorHandler();
 
-	const importHistoryRoute = useRoute('admin-import');
-	const prepareImportRoute = useRoute('admin-import-prepare');
+	const router = useRouter();
 
 	const getCurrentImportOperation = useEndpoint('GET', '/v1/getCurrentImportOperation');
 	const getImportProgress = useEndpoint('GET', '/v1/getImportProgress');
@@ -43,23 +42,23 @@ const ImportProgressPage = function ImportProgressPage() {
 			refetchInterval: 1000,
 			onSuccess: ({ valid, status }) => {
 				if (!valid) {
-					importHistoryRoute.push();
+					router.navigate('/admin/import');
 					return;
 				}
 
 				if (status === 'importer_done') {
 					dispatchToastMessage({ type: 'success', message: t('Importer_done') });
-					importHistoryRoute.push();
+					router.navigate('/admin/import');
 					return;
 				}
 
 				if (!(ImportingStartedStates as string[]).includes(status)) {
-					prepareImportRoute.push();
+					router.navigate('/admin/import/prepare');
 				}
 			},
 			onError: (error) => {
 				handleError(error, t('Failed_To_Load_Import_Data'));
-				importHistoryRoute.push();
+				router.navigate('/admin/import');
 			},
 		},
 	);
@@ -82,13 +81,13 @@ const ImportProgressPage = function ImportProgressPage() {
 							type: 'success',
 							message: t(message),
 						});
-					importHistoryRoute.push();
+					router.navigate('/admin/import');
 					return;
 
 				case 'importer_import_failed':
 				case 'importer_import_cancelled':
 					t.has(message) && handleError(message);
-					importHistoryRoute.push();
+					router.navigate('/admin/import');
 					return;
 
 				default:
@@ -114,7 +113,7 @@ const ImportProgressPage = function ImportProgressPage() {
 			onSuccess: (progress) => {
 				if (!progress) {
 					dispatchToastMessage({ type: 'warning', message: t('Importer_not_in_progress') });
-					prepareImportRoute.push();
+					router.navigate('/admin/import/prepare');
 					return;
 				}
 
@@ -130,14 +129,24 @@ const ImportProgressPage = function ImportProgressPage() {
 			},
 			onError: (error) => {
 				handleError(error, t('Failed_To_Load_Import_Data'));
-				importHistoryRoute.push();
+				router.navigate('/admin/import');
 			},
 		},
 	);
 
 	useEffect(() => {
-		return streamer('progress', ({ count: { completed, total }, ...rest }) => {
-			handleProgressUpdated({ ...rest, completed, total } as any);
+		return streamer('progress', (progress) => {
+			// There shouldn't be any progress update sending only the rate at this point of the process
+			if ('rate' in progress) {
+				return;
+			}
+
+			handleProgressUpdated({
+				key: progress.key,
+				step: progress.step,
+				completed: progress.count.completed,
+				total: progress.count.total,
+			});
 		});
 	}, [handleProgressUpdated, streamer]);
 

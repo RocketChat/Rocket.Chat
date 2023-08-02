@@ -29,7 +29,6 @@ export * from './IIntegrationHistory';
 export * from './ICustomSound';
 export * from './ICloud';
 export * from './IServerEvent';
-export * from './ICronJobs';
 export * from './IRocketChatAssets';
 export * from './IPushToken';
 export * from './IPushNotificationConfig';
@@ -73,6 +72,9 @@ export * from './IMethodThisType';
 export * from './IPassword';
 export * from './IBaseData';
 export * from './IOAuthApps';
+export * from './IOAuthAuthCode';
+export * from './IOAuthAccessToken';
+export * from './IOAuthRefreshToken';
 export * from './ISmarshHistory';
 export * from './IReport';
 
@@ -120,10 +122,16 @@ export * from './VideoConferenceCapabilities';
 export * from './VideoConferenceOptions';
 
 export * from './SpotlightUser';
+export * from './ICalendarEvent';
 
 export * from './search';
 export * from './omnichannel';
 export * from './AppsTokens';
 export * from './ILivechatUnitMonitor';
+export * from './ICronHistoryItem';
+
+export * from './migrations/IControl';
+export * from './ICustomOAuthConfig';
 
 export * from './IModerationReport';
+export * from './CustomFieldMetadata';

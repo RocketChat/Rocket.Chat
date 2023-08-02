@@ -12,11 +12,10 @@ import {
 	createVisitor,
 	createLivechatRoom,
 	getLivechatRoomInfo,
-	deleteDepartment,
 } from '../../../data/livechat/rooms';
-import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../../data/livechat/department';
 import { IS_EE } from '../../../e2e/config/constants';
-import { createUser } from '../../../data/users.helper';
+import { createUser, deleteUser } from '../../../data/users.helper';
 import { createMonitor, createUnit } from '../../../data/livechat/units';
 
 (IS_EE ? describe : describe.skip)('LIVECHAT - Departments', function () {
@@ -219,6 +218,9 @@ import { createMonitor, createUnit } from '../../../data/livechat/units';
 			latestRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(latestRoom.departmentId).to.be.undefined;
 			expect(latestRoom.departmentAncestors).to.be.undefined;
+
+			// cleanup
+			await deleteUser(monitor);
 		});
 
 		(IS_EE ? it : it.skip)(
@@ -259,6 +261,9 @@ import { createMonitor, createUnit } from '../../../data/livechat/units';
 				latestRoom2 = await getLivechatRoomInfo(newRoom2._id);
 				expect(latestRoom2.departmentId).to.be.equal(department2._id);
 				expect(latestRoom2.departmentAncestors).to.be.an('array').that.includes(unit._id);
+
+				// cleanup
+				await deleteUser(monitor);
 			},
 		);
 	});

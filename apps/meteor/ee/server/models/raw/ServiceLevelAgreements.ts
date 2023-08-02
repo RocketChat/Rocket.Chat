@@ -16,8 +16,12 @@ export class ServiceLevelAgreements extends BaseRaw<IOmnichannelServiceLevelAgre
 		];
 	}
 
-	findDuplicate(_id: string, name: string, dueTimeInMinutes: number): Promise<Pick<IOmnichannelServiceLevelAgreements, '_id'> | null> {
-		return this.findOne({ _id: { $ne: _id }, $or: [{ name }, { dueTimeInMinutes }] }, { projection: { _id: 1 } });
+	findDuplicate(
+		_id: string | null,
+		name: string,
+		dueTimeInMinutes: number,
+	): Promise<Pick<IOmnichannelServiceLevelAgreements, '_id'> | null> {
+		return this.findOne({ ...(_id && { _id: { $ne: _id } }), $or: [{ name }, { dueTimeInMinutes }] }, { projection: { _id: 1 } });
 	}
 
 	findOneByIdOrName(_idOrName: string, options = {}): Promise<IOmnichannelServiceLevelAgreements | null> {
@@ -37,7 +41,7 @@ export class ServiceLevelAgreements extends BaseRaw<IOmnichannelServiceLevelAgre
 
 	async createOrUpdatePriority(
 		{ name, description, dueTimeInMinutes }: Pick<IOmnichannelServiceLevelAgreements, 'name' | 'description' | 'dueTimeInMinutes'>,
-		_id?: string,
+		_id: string | null,
 	): Promise<Omit<IOmnichannelServiceLevelAgreements, '_updatedAt'>> {
 		const record = {
 			name,

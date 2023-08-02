@@ -1,4 +1,3 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import semver from 'semver';
 import { Settings, Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
@@ -8,6 +7,7 @@ import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/server';
 import logger from '../logger';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
+import { i18n } from '../../../../server/lib/i18n';
 // import getNewUpdates from '../sampleUpdateData';
 
 const getMessagesToSendToAdmins = async (
@@ -28,10 +28,9 @@ const getMessagesToSendToAdmins = async (
 			continue;
 		}
 		msgs.push({
-			msg: `*${TAPi18n.__('Rocket_Chat_Alert', { ...(adminUser.language && { lng: adminUser.language }) })}:*\n\n*${TAPi18n.__(
-				alert.title,
-				{ ...(adminUser.language && { lng: adminUser.language }) },
-			)}*\n${TAPi18n.__(alert.text, {
+			msg: `*${i18n.t('Rocket_Chat_Alert', { ...(adminUser.language && { lng: adminUser.language }) })}:*\n\n*${i18n.t(alert.title, {
+				...(adminUser.language && { lng: adminUser.language }),
+			})}*\n${i18n.t(alert.text, {
 				...(adminUser.language && { lng: adminUser.language }),
 				...(Array.isArray(alert.textArguments) && {
 					postProcess: 'sprintf',
@@ -68,7 +67,7 @@ export const checkVersionUpdate = async () => {
 		await sendMessagesToAdmins({
 			msgs: async ({ adminUser }) => [
 				{
-					msg: `*${TAPi18n.__('Update_your_RocketChat', { ...(adminUser.language && { lng: adminUser.language }) })}*\n${TAPi18n.__(
+					msg: `*${i18n.t('Update_your_RocketChat', { ...(adminUser.language && { lng: adminUser.language }) })}*\n${i18n.t(
 						'New_version_available_(s)',
 						{
 							postProcess: 'sprintf',

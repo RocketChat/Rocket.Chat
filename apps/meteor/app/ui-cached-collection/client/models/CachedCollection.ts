@@ -7,13 +7,14 @@ import localforage from 'localforage';
 
 import Notifications from '../../../notifications/client/lib/Notifications';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { call } from '../../../../client/lib/utils/call';
 import { CachedCollectionManager } from './CachedCollectionManager';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import { isTruthy } from '../../../../lib/isTruthy';
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
-type EventType = Extract<keyof typeof Notifications, `on${string}`>;
+export type EventType = Extract<keyof typeof Notifications, `on${string}`>;
+
 type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
 
 const hasId = <T>(record: T): record is T & { _id: string } => typeof record === 'object' && record !== null && '_id' in record;
@@ -33,7 +34,7 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 	'_updatedAt' in record &&
 	!((record as unknown as { _updatedAt: unknown })._updatedAt instanceof Date);
 
-export class CachedCollection<T extends object, U = T> extends Emitter<{ changed: T; removed: T }> {
+export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<{ changed: T; removed: T }> {
 	private static MAX_CACHE_TIME = 60 * 60 * 24 * 30;
 
 	public collection: MinimongoCollection<T>;
@@ -79,7 +80,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 		});
 	}
 
-	protected get eventName() {
+	protected get eventName(): `${Name}-changed` {
 		return `${this.name}-changed`;
 	}
 
@@ -151,13 +152,13 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 
 	private async callLoad() {
 		// TODO: workaround for bad function overload
-		const data = await call(`${this.name}/get`);
+		const data = await sdk.call(`${this.name}/get`);
 		return data as unknown as U[];
 	}
 
 	private async callSync(updatedSince: Date) {
 		// TODO: workaround for bad function overload
-		const data = await call(`${this.name}/get`, updatedSince);
+		const data = await sdk.call(`${this.name}/get`, updatedSince);
 		return data as unknown as { update: U[]; remove: U[] };
 	}
 
@@ -226,7 +227,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 	}
 
 	async setupListener() {
-		Notifications[this.eventType](this.eventName, async (action: 'removed' | 'changed', record: any) => {
+		(Notifications[this.eventType] as any)(this.eventName, async (action: 'removed' | 'changed', record: any) => {
 			this.log('record received', action, record);
 			const newRecord = this.handleReceived(record, action);
 
@@ -238,7 +239,10 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 				this.collection.remove(newRecord._id);
 			} else {
 				const { _id } = newRecord;
-				this.collection.upsert({ _id } as Mongo.Selector<T>, newRecord);
+				if (!_id) {
+					return;
+				}
+				this.collection.upsert({ _id } as any, newRecord);
 			}
 			await this.save();
 		});

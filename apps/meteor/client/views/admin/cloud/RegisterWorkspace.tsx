@@ -2,7 +2,6 @@ import { Box, Tag } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactNode } from 'react';
 import React from 'react';
 
 import Page from '../../../components/Page';
@@ -12,7 +11,7 @@ import RegisterWorkspaceMenu from './components/RegisterWorkspaceMenu';
 import ConnectWorkspaceModal from './modals/ConnectWorkspaceModal';
 import RegisterWorkspaceModal from './modals/RegisterWorkspaceModal';
 
-const RegisterWorkspace = (): ReactNode => {
+const RegisterWorkspace = () => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
@@ -77,7 +76,7 @@ const RegisterWorkspace = (): ReactNode => {
 			</Page.Header>
 
 			<Page.ScrollableContentWithShadow>
-				{handleRegistrationTag()}
+				<Box display='flex'>{handleRegistrationTag()}</Box>
 
 				<Box pb={8}>
 					<Box fontSize='h3' fontWeight={700}>

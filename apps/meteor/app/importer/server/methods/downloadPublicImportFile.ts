@@ -3,13 +3,14 @@ import https from 'https';
 import fs from 'fs';
 
 import { Meteor } from 'meteor/meteor';
+import { Import } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { RocketChatImportFileInstance } from '../startup/store';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Importers } from '..';
+import { Importers } from '../../lib/Importers';
 
 function downloadHttpFile(fileUrl: string, writeStream: fs.WriteStream): void {
 	const protocol = fileUrl.startsWith('https') ? https : http;
@@ -40,8 +41,8 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 		}
 	}
 
-	importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
-	await importer.instance.build();
+	const operation = await Import.newOperation(userId, importer.name, importer.key);
+	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
 	const oldFileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1).split('?')[0];
 	const date = new Date();

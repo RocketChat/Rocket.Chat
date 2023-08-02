@@ -1,7 +1,7 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Options, Box, Option, Field, Select } from '@rocket.chat/fuselage';
+import { Options, Box, Option, Field, SelectLegacy } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
@@ -49,7 +49,7 @@ export const PrioritiesSelect = ({ value = '', label, options, onChange }: Prior
 		<Field>
 			<Field.Label>{label}</Field.Label>
 			<Field.Row>
-				<Select
+				<SelectLegacy
 					value={value}
 					onChange={onChange}
 					options={formattedOptions}

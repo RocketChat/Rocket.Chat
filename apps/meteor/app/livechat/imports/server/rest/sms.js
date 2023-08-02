@@ -3,11 +3,12 @@ import { Random } from '@rocket.chat/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import { OmnichannelIntegration } from '@rocket.chat/core-services';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { FileUpload } from '../../../../file-upload/server';
 import { API } from '../../../../api/server';
-import { fetch } from '../../../../../server/lib/http/fetch';
 import { Livechat } from '../../../server/lib/Livechat';
+import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
 import { settings } from '../../../../settings/server';
 
 const getUploadFile = async (details, fileUrl) => {
@@ -54,7 +55,7 @@ const defineVisitor = async (smsNumber, targetDepartment) => {
 		data.department = targetDepartment;
 	}
 
-	const id = await Livechat.registerGuest(data);
+	const id = await LivechatTyped.registerGuest(data);
 	return LivechatVisitors.findOneById(id);
 };
 
@@ -107,7 +108,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		// create an empty room first place, so attachments have a place to live
 		if (!roomExists) {
-			await Livechat.getRoom(visitor, { rid, token, msg: '' }, sendMessage.roomInfo, undefined);
+			await LivechatTyped.getRoom(visitor, { rid, token, msg: '' }, sendMessage.roomInfo, undefined);
 		}
 
 		let file;
@@ -182,7 +183,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		try {
 			const msg = SMSService.response.call(this, await Livechat.sendMessage(sendMessage));
-			Meteor.defer(async () => {
+			setImmediate(async () => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {
 						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'country', sms.extra.fromCountry);

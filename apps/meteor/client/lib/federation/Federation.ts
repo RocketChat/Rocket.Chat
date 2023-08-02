@@ -1,5 +1,5 @@
 import type { IRoom, ISubscription, IUser, ValueOf } from '@rocket.chat/core-typings';
-import { isRoomFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
+import { isRoomFederated, isDirectMessageRoom, isPublicRoom } from '@rocket.chat/core-typings';
 
 import { RoomRoles } from '../../../app/models/client';
 import { RoomMemberActions, RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
@@ -79,7 +79,18 @@ export const isEditableByTheUser = (user?: IUser, room?: IRoom, subscription?: I
 	if (!user || !room || !subscription) {
 		return false;
 	}
-	return Boolean(subscription.roles?.includes('owner') || subscription.roles?.includes('moderator'));
+	return isRoomFederated(room) && Boolean(subscription.roles?.includes('owner') || subscription.roles?.includes('moderator'));
+};
+
+export const canCreateInviteLinks = (user?: IUser, room?: IRoom, subscription?: ISubscription): boolean => {
+	if (!user || !room || !subscription) {
+		return false;
+	}
+	return (
+		isRoomFederated(room) &&
+		isPublicRoom(room) &&
+		Boolean(subscription.roles?.includes('owner') || subscription.roles?.includes('moderator'))
+	);
 };
 
 export const isRoomSettingAllowed = (room: Partial<IRoom>, setting: ValueOf<typeof RoomSettingsEnum>): boolean => {

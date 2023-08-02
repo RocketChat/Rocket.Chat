@@ -116,6 +116,14 @@ jobs:
       #     docker rmi $(docker image ls -aq)
       #     df -h
 
+      - name: Cache vite
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules/.vite
+          key: vite-local-cache-${{ runner.OS }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            vite-local-cache-${{ runner.os }}-
+
       - name: Cache meteor local
         uses: actions/cache@v3
         with:
@@ -251,6 +259,8 @@ jobs:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
       QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+      REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
+      REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
 
   test-api-ee:
     name: 🔨 Test API (EE)
@@ -299,6 +309,8 @@ jobs:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
       QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+      REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
+      REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
 
   tests-done:
     name: ✅ Tests Done

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { IUser } from '@rocket.chat/core-typings';
 import {
 	Integrations,
 	FederationServers,
@@ -10,6 +10,7 @@ import {
 	Subscriptions,
 	Users,
 	LivechatUnitMonitors,
+	ModerationReports,
 } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
@@ -19,8 +20,9 @@ import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
+import { i18n } from '../../../../server/lib/i18n';
 
-export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
+export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<void> {
 	const user = await Users.findOneById(userId, {
 		projection: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
 	});
@@ -54,10 +56,18 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 				}
 
 				await Messages.removeByUserId(userId);
+
+				await ModerationReports.hideReportsByUserId(
+					userId,
+					deletedBy || userId,
+					deletedBy === userId ? 'user deleted own account' : 'user account deleted',
+					'DELETE_USER',
+				);
+
 				break;
 			case 'Unlink':
 				const rocketCat = await Users.findOneById('rocket.cat');
-				const nameAlias = TAPi18n.__('Removed_User');
+				const nameAlias = i18n.t('Removed_User');
 				if (!rocketCat?._id || !rocketCat?.username) {
 					break;
 				}

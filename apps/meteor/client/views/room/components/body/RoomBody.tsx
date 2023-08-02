@@ -1,10 +1,10 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import {
-	useCurrentRoute,
 	usePermission,
-	useQueryStringParameter,
 	useRole,
+	useRouter,
+	useSearchParameter,
 	useSetting,
 	useTranslation,
 	useUser,
@@ -35,17 +35,18 @@ import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/Ro
 import { useToolboxContext } from '../../contexts/ToolboxContext';
 import { useScrollMessageList } from '../../hooks/useScrollMessageList';
 import DropTargetOverlay from './DropTargetOverlay';
-import JumpToRecentMessagesBar from './JumpToRecentMessagesBar';
+import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LeaderBar from './LeaderBar';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
-import NewMessagesButton from './NewMessagesButton';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
 import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import ComposerContainer from './composer/ComposerContainer';
 import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
+import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
+import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
 
@@ -211,6 +212,8 @@ const RoomBody = (): ReactElement => {
 
 	const retentionPolicy = useRetentionPolicy(room);
 
+	useGoToHomeOnRemoved(room, user?._id);
+
 	useEffect(() => {
 		callbacks.add(
 			'streamNewMessage',
@@ -255,7 +258,7 @@ const RoomBody = (): ReactElement => {
 		};
 	}, [sendToBottomIfNecessary]);
 
-	const [routeName] = useCurrentRoute();
+	const router = useRouter();
 
 	const roomRef = useRef(room);
 	roomRef.current = room;
@@ -270,16 +273,21 @@ const RoomBody = (): ReactElement => {
 		[room._id],
 	);
 
-	useEffect(() => {
-		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName)) {
-			return;
-		}
+	useEffect(
+		() =>
+			router.subscribeToRouteChange(() => {
+				const routeName = router.getRouteName();
+				if (!routeName || !roomCoordinator.isRouteNameKnown(routeName)) {
+					return;
+				}
 
-		debouncedReadMessageRead();
-		if (subscribed && (subscription?.alert || subscription?.unread)) {
-			readMessage.refreshUnreadMark(room._id);
-		}
-	}, [debouncedReadMessageRead, room._id, routeName, subscribed, subscription?.alert, subscription?.unread]);
+				debouncedReadMessageRead();
+				if (subscribed && (subscription?.alert || subscription?.unread)) {
+					readMessage.refreshUnreadMark(room._id);
+				}
+			}),
+		[debouncedReadMessageRead, room._id, router, subscribed, subscription?.alert, subscription?.unread],
+	);
 
 	useEffect(() => {
 		if (!subscribed) {
@@ -292,7 +300,7 @@ const RoomBody = (): ReactElement => {
 			ts: { $lte: lastMessageDate, $gt: subscription?.ls },
 		}).count();
 
-		count && setUnreadCount(count);
+		setUnreadCount(count);
 	}, [lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
 
 	useEffect(() => {
@@ -404,9 +412,9 @@ const RoomBody = (): ReactElement => {
 				sendToBottom();
 			}
 			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
-
-			wrapper.addEventListener('scroll', handleWrapperScroll);
 		};
+
+		wrapper.addEventListener('scroll', handleWrapperScroll);
 
 		wrapper.addEventListener('MessageGroup', afterMessageGroup);
 
@@ -415,6 +423,8 @@ const RoomBody = (): ReactElement => {
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
 		};
 	}, [room._id, sendToBottom]);
+
+	useRestoreScrollPosition(room._id, scrollMessageList, sendToBottom);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -476,7 +486,7 @@ const RoomBody = (): ReactElement => {
 		[chat],
 	);
 
-	const replyMID = useQueryStringParameter('reply');
+	const replyMID = useSearchParameter('reply');
 
 	useEffect(() => {
 		if (!replyMID) {
@@ -564,9 +574,16 @@ const RoomBody = (): ReactElement => {
 									/>
 								))}
 							</div>
-							<div ref={messagesBoxRef} className={['messages-box', roomLeader && 'has-leader'].filter(isTruthy).join(' ')}>
-								<NewMessagesButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} />
-								<JumpToRecentMessagesBar visible={hasMoreNextMessages} onClick={handleJumpToRecentButtonClick} />
+							<div
+								ref={messagesBoxRef}
+								className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}
+							>
+								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
+								<JumpToRecentMessageButton
+									visible={hasMoreNextMessages}
+									onClick={handleJumpToRecentButtonClick}
+									text={t('Jump_to_recent_messages')}
+								/>
 								{!canPreview ? (
 									<div className='content room-not-found error-color'>
 										<div>{t('You_must_join_to_view_messages_in_this_channel')}</div>

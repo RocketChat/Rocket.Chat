@@ -16,6 +16,11 @@ export class OmnichannelDepartments {
 		return this.page.locator('[placeholder="Search"]');
 	}
 
+	async search(text: string) {
+		await this.inputSearch.fill(text);
+		await this.page.waitForTimeout(500);
+	}
+
 	get btnNew() {
 		return this.page.locator('button.rcx-button >> text="New"');
 	}
@@ -42,6 +47,14 @@ export class OmnichannelDepartments {
 
 	get invalidInputTags() {
 		return this.page.locator('[data-qa="DepartmentEditTextInput-ConversationClosingTags"]:invalid');
+	}
+
+	get invalidInputName() {
+		return this.page.locator('[data-qa="DepartmentEditTextInput-Name"]:invalid');
+	}
+
+	get invalidInputEmail() {
+		return this.page.locator('[data-qa="DepartmentEditTextInput-Email"]:invalid');
 	}
 
 	get btnTagsAdd() {
@@ -130,5 +143,9 @@ export class OmnichannelDepartments {
 
 	btnTag(tagName: string) {
 		return this.page.locator('button', { hasText: tagName });
+	}
+
+	errorMessage(message: string): Locator {
+		return this.page.locator(`.rcx-field__error >> text="${message}"`);
 	}
 }

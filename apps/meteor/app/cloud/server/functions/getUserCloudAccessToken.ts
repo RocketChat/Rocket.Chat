@@ -1,6 +1,6 @@
-import { HTTP } from 'meteor/http';
 import { Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
@@ -53,32 +53,38 @@ export async function getUserCloudAccessToken(userId: string, forceNew = false, 
 
 	let authTokenResult;
 	try {
-		authTokenResult = HTTP.post(`${cloudUrl}/api/oauth/token`, {
+		const request = await fetch(`${cloudUrl}/api/oauth/token`, {
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			params: {
+			method: 'POST',
+			params: new URLSearchParams({
 				client_id: clientId,
 				client_secret: clientSecret,
 				refresh_token: refreshToken,
 				scope,
 				grant_type: 'refresh_token',
 				redirect_uri: redirectUri,
-			},
+			}),
 		});
+
+		if (!request.ok) {
+			throw new Error((await request.json()).error);
+		}
+
+		authTokenResult = await request.json();
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to get User AccessToken from Rocket.Chat Cloud',
 			url: '/api/oauth/token',
-			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});
 
-		if (err.response?.data?.error) {
-			if (err.response.data.error === 'oauth_invalid_client_credentials') {
+		if (err) {
+			if (err.message.includes('oauth_invalid_client_credentials')) {
 				SystemLogger.error('Server has been unregistered from cloud');
 				await removeWorkspaceRegistrationInfo();
 			}
 
-			if (err.response.data.error === 'unauthorized') {
+			if (err.message.includes('unauthorized')) {
 				await userLoggedOut(userId);
 			}
 		}
@@ -88,14 +94,14 @@ export async function getUserCloudAccessToken(userId: string, forceNew = false, 
 
 	if (save) {
 		const willExpireAt = new Date();
-		willExpireAt.setSeconds(willExpireAt.getSeconds() + authTokenResult.data.expires_in);
+		willExpireAt.setSeconds(willExpireAt.getSeconds() + authTokenResult.expires_in);
 
 		await Users.updateOne(
 			{ _id: user._id },
 			{
 				$set: {
 					'services.cloud': {
-						accessToken: authTokenResult.data.access_token,
+						accessToken: authTokenResult.access_token,
 						expiresAt: willExpireAt,
 					},
 				},
@@ -103,5 +109,5 @@ export async function getUserCloudAccessToken(userId: string, forceNew = false, 
 		);
 	}
 
-	return authTokenResult.data.access_token;
+	return authTokenResult.access_token;
 }

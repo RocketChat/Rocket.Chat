@@ -2,7 +2,6 @@ import { api } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../lib/callbacks';
 
-import './settings';
 import './beforeCreateRoom';
 import './methods/setUserPublicAndPrivateKeys';
 import './methods/getUsersOfRoomWithoutKey';

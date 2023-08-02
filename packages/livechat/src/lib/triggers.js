@@ -57,6 +57,8 @@ const getAgent = (triggerAction) => {
 	return agentPromise;
 };
 
+const isInIframe = () => window.self !== window.top;
+
 class Triggers {
 	constructor() {
 		if (!Triggers.instance) {
@@ -96,6 +98,12 @@ class Triggers {
 					trigger.skip = true;
 				}
 			});
+		});
+
+		store.on('change', ([state, prevState]) => {
+			if (prevState.parentUrl !== state.parentUrl) {
+				this.processPageUrlTriggers();
+			}
 		});
 	}
 
@@ -162,11 +170,12 @@ class Triggers {
 			if (trigger.skip) {
 				return;
 			}
+
 			trigger.conditions.forEach((condition) => {
 				switch (condition.name) {
 					case 'page-url':
 						const hrefRegExp = new RegExp(condition.value, 'g');
-						if (hrefRegExp.test(window.location.href)) {
+						if (this.parentUrl && hrefRegExp.test(this.parentUrl)) {
 							this.fire(trigger);
 						}
 						break;
@@ -188,12 +197,33 @@ class Triggers {
 		this._requests = [];
 	}
 
+	processPageUrlTriggers() {
+		if (!this.parentUrl) return;
+
+		this._triggers.forEach((trigger) => {
+			if (trigger.skip) return;
+
+			trigger.conditions.forEach((condition) => {
+				if (condition.name !== 'page-url') return;
+
+				const hrefRegExp = new RegExp(condition.value, 'g');
+				if (hrefRegExp.test(this.parentUrl)) {
+					this.fire(trigger);
+				}
+			});
+		});
+	}
+
 	set triggers(newTriggers) {
 		this._triggers = [...newTriggers];
 	}
 
 	set enabled(value) {
 		this._enabled = value;
+	}
+
+	get parentUrl() {
+		return isInIframe() ? store.state.parentUrl : window.location.href;
 	}
 }
 

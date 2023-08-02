@@ -7,7 +7,7 @@ onToggledFeature('device-management', {
 		const { createPermissions, createEmailTemplates } = await import('../lib/deviceManagement/startup');
 		const { listenSessionLogin } = await import('../lib/deviceManagement/session');
 
-		addSettings();
+		await addSettings();
 		await createPermissions();
 		await createEmailTemplates();
 		stopListening = await listenSessionLogin();

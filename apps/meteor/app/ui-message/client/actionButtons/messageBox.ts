@@ -1,11 +1,9 @@
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import { ChatRoom } from '../../../models/client';
 import { messageBox } from '../../../ui-utils/client';
 import { applyButtonFilters } from './lib/applyButtonFilters';
 import { triggerActionButtonAction } from '../ActionManager';
-import { t } from '../../../utils/client';
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
 import { RoomManager } from '../../../../client/lib/RoomManager';
 import { asReactiveSource } from '../../../../client/lib/tracker';
@@ -14,7 +12,7 @@ const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `
 
 export const onAdded = (button: IUIActionButton): void =>
 	// eslint-disable-next-line no-void
-	void messageBox.actions.add('Apps', t(Utilities.getI18nKeyForApp(button.labelI18n, button.appId)) as TranslationKey, {
+	void messageBox.actions.add('Apps', Utilities.getI18nKeyForApp(button.labelI18n, button.appId), {
 		id: getIdForActionButton(button),
 		// icon: button.icon || '',
 		condition() {
@@ -28,12 +26,13 @@ export const onAdded = (button: IUIActionButton): void =>
 				),
 			);
 		},
-		action() {
+		action(params) {
 			void triggerActionButtonAction({
-				rid: RoomManager.opened,
+				rid: params.rid,
+				tmid: params.tmid,
 				actionId: button.actionId,
 				appId: button.appId,
-				payload: { context: button.context },
+				payload: { context: button.context, message: params.chat.composer?.text },
 			});
 		},
 	});

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
 import UAParser from 'ua-parser-js';
 import mem from 'mem';
 import type { ISession, ISessionDevice, ISocketConnectionLogged, IUser } from '@rocket.chat/core-typings';
 import { Sessions, Users } from '@rocket.chat/models';
+import { cronJobs } from '@rocket.chat/cron';
 
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 import { aggregates } from '../../../../server/models/raw/Sessions';
@@ -41,6 +41,8 @@ export class SAUMonitorClass {
 
 	private _dailyFinishSessionsJobName: string;
 
+	private scheduler = cronJobs;
+
 	constructor() {
 		this._started = false;
 		this._dailyComputeJobName = 'aggregate-sessions';
@@ -58,15 +60,19 @@ export class SAUMonitorClass {
 		logger.debug('[start]');
 	}
 
-	stop(): void {
+	async stop(): Promise<void> {
 		if (!this.isRunning()) {
 			return;
 		}
 
 		this._started = false;
 
-		SyncedCron.remove(this._dailyComputeJobName);
-		SyncedCron.remove(this._dailyFinishSessionsJobName);
+		if (await this.scheduler.has(this._dailyComputeJobName)) {
+			await this.scheduler.remove(this._dailyComputeJobName);
+		}
+		if (await this.scheduler.has(this._dailyFinishSessionsJobName)) {
+			await this.scheduler.remove(this._dailyFinishSessionsJobName);
+		}
 
 		logger.debug('[stop]');
 	}
@@ -79,7 +85,7 @@ export class SAUMonitorClass {
 		try {
 			this._handleAccountEvents();
 			this._handleOnConnection();
-			this._startCronjobs();
+			await this._startCronjobs();
 		} catch (err: any) {
 			throw new Meteor.Error(err);
 		}
@@ -294,26 +300,16 @@ export class SAUMonitorClass {
 		};
 	}
 
-	private _startCronjobs(): void {
+	private async _startCronjobs(): Promise<void> {
 		logger.info('[aggregate] - Start Cron.');
+		const dailyComputeProcessTime = '0 2 * * *';
+		const dailyFinishSessionProcessTime = '5 1 * * *';
+		await this.scheduler.add(this._dailyComputeJobName, dailyComputeProcessTime, async () => this._aggregate());
+		await this.scheduler.add(this._dailyFinishSessionsJobName, dailyFinishSessionProcessTime, async () => {
+			const yesterday = new Date();
+			yesterday.setDate(yesterday.getDate() - 1);
 
-		SyncedCron.add({
-			name: this._dailyComputeJobName,
-			schedule: (parser: any) => parser.text('at 2:00 am'),
-			job: async () => {
-				await this._aggregate();
-			},
-		});
-
-		SyncedCron.add({
-			name: this._dailyFinishSessionsJobName,
-			schedule: (parser: any) => parser.text('at 1:05 am'),
-			job: async () => {
-				const yesterday = new Date();
-				yesterday.setDate(yesterday.getDate() - 1);
-
-				await this._finishSessionsFromDate(yesterday, new Date());
-			},
+			await this._finishSessionsFromDate(yesterday, new Date());
 		});
 	}
 

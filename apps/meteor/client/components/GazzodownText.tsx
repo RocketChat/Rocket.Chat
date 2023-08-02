@@ -2,9 +2,9 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { RouterContext, useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useLayout, useRouter, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
-import React, { useContext, useCallback, memo, useMemo } from 'react';
+import React, { useCallback, memo, useMemo } from 'react';
 
 import { detectEmoji } from '../lib/utils/detectEmoji';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
@@ -46,6 +46,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 	}, [searchText]);
 
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
+	const useEmoji = Boolean(useUserPreference('useEmojis'));
 
 	const chat = useChat();
 
@@ -78,18 +79,22 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 	);
 
 	const goToRoom = useGoToRoom();
-	const router = useContext(RouterContext);
 
 	const { isEmbedded } = useLayout();
 
 	const resolveChannelMention = useCallback((mention: string) => channels?.find(({ name }) => name === mention), [channels]);
+
+	const router = useRouter();
 
 	const onChannelMentionClick = useCallback(
 		({ _id: rid }: ChannelMention) =>
 			(event: UIEvent): void => {
 				if (isEmbedded) {
 					fireGlobalEvent('click-mention-link', {
-						path: router.getRoutePath('channel', { name: rid }),
+						path: router.buildRoutePath({
+							pattern: '/channel/:name/:tab?/:context?',
+							params: { name: rid },
+						}),
 						channel: rid,
 					});
 				}
@@ -97,7 +102,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				event.stopPropagation();
 				goToRoom(rid);
 			},
-		[isEmbedded, goToRoom, router],
+		[router, isEmbedded, goToRoom],
 	);
 
 	return (
@@ -106,11 +111,12 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				detectEmoji,
 				highlightRegex,
 				markRegex,
-				convertAsciiToEmoji,
 				resolveUserMention,
 				onUserMentionClick,
 				resolveChannelMention,
 				onChannelMentionClick,
+				convertAsciiToEmoji,
+				useEmoji,
 			}}
 		>
 			{children}

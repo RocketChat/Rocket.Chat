@@ -1,5 +1,4 @@
-import type { AtLeast, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import type { AtLeast, IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -11,15 +10,7 @@ import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 import { isLayoutEmbedded } from '../lib/utils/isLayoutEmbedded';
 import { waitUntilFind } from '../lib/utils/waitUntilFind';
-
-const handle = async (roomId: IRoom['_id'], keyId: string): Promise<void> => {
-	const e2eRoom = await e2e.getInstanceByRoomId(roomId);
-	if (!e2eRoom) {
-		return;
-	}
-
-	e2eRoom.provideKeyToUser(keyId);
-};
+import { router } from '../providers/RouterProvider';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
@@ -27,7 +18,7 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const adminEmbedded = isLayoutEmbedded() && FlowRouter.current().path.startsWith('/admin');
+		const adminEmbedded = isLayoutEmbedded() && router.getLocationPathname().startsWith('/admin');
 
 		if (!adminEmbedded && settings.get('E2E_Enable') && window.crypto) {
 			e2e.startClient();
@@ -44,17 +35,24 @@ Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (!e2e.isReady()) {
 			offClientMessageReceived?.();
-			Notifications.unUser('e2ekeyRequest', handle);
+			Notifications.unUser('e2ekeyRequest');
 			observable?.stop();
 			offClientBeforeSendMessage?.();
 			return;
 		}
 
-		Notifications.onUser('e2ekeyRequest', handle);
+		Notifications.onUser('e2ekeyRequest', async (roomId, keyId): Promise<void> => {
+			const e2eRoom = await e2e.getInstanceByRoomId(roomId);
+			if (!e2eRoom) {
+				return;
+			}
+
+			e2eRoom.provideKeyToUser(keyId);
+		});
 
 		observable = Subscriptions.find().observe({
 			changed: async (sub: ISubscription) => {
-				Meteor.defer(async () => {
+				setTimeout(async () => {
 					if (!sub.encrypted && !sub.E2EKey) {
 						e2e.removeInstanceByRoomId(sub.rid);
 						return;
@@ -92,15 +90,15 @@ Meteor.startup(() => {
 					}
 
 					e2eRoom.decryptSubscription();
-				});
+				}, 0);
 			},
 			added: async (sub: ISubscription) => {
-				Meteor.defer(async () => {
+				setTimeout(async () => {
 					if (!sub.encrypted && !sub.E2EKey) {
 						return;
 					}
 					return e2e.getInstanceByRoomId(sub.rid);
-				});
+				}, 0);
 			},
 			removed: (sub: ISubscription) => {
 				e2e.removeInstanceByRoomId(sub.rid);

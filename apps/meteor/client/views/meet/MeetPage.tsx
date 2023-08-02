@@ -1,23 +1,22 @@
 import { Button, Box, Icon, Flex } from '@rocket.chat/fuselage';
-import { useRouteParameter, useQueryStringParameter } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import type { FC } from 'react';
 import React, { useEffect, useState, useCallback } from 'react';
 
-import { APIClient } from '../../../app/utils/client';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
 import CallPage from './CallPage';
 import './styles.css';
 
-const MeetPage: FC = () => {
+const MeetPage = () => {
 	const [isRoomMember, setIsRoomMember] = useState(false);
 	const [status, setStatus] = useState(null);
 	const [visitorId, setVisitorId] = useState(null);
 	const roomId = useRouteParameter('rid');
-	const visitorToken = useQueryStringParameter('token');
-	const layout = useQueryStringParameter('layout');
+	const visitorToken = useSearchParameter('token');
+	const layout = useSearchParameter('layout');
 	const [visitorName, setVisitorName] = useState('');
 	const [agentName, setAgentName] = useState('');
 	const [callStartTime, setCallStartTime] = useState(undefined);
@@ -30,7 +29,7 @@ const MeetPage: FC = () => {
 			throw new Error('Missing parameters');
 		}
 
-		const room = (await APIClient.get('/v1/livechat/room', {
+		const room = (await sdk.rest.get('/v1/livechat/room', {
 			token: visitorToken,
 			rid: roomId,
 		})) as any;
@@ -49,7 +48,7 @@ const MeetPage: FC = () => {
 			throw new Error('Missing parameters');
 		}
 
-		const room = (await APIClient.get('/v1/rooms.info', { roomId })) as any;
+		const room = (await sdk.rest.get('/v1/rooms.info', { roomId })) as any;
 		if (room?.room?.servedBy?._id === Meteor.userId()) {
 			setVisitorName(room.room.fname);
 			room?.room?.responseBy?.username ? setAgentName(room.room.responseBy.username) : setAgentName(room.room.servedBy.username);
@@ -66,12 +65,15 @@ const MeetPage: FC = () => {
 		}
 		setupCallForAgent();
 	}, [setupCallForAgent, setupCallForVisitor, visitorToken]);
+
 	if (status === null) {
-		return <PageLoading></PageLoading>;
+		return <PageLoading />;
 	}
+
 	if (!isRoomMember) {
-		return <NotFoundPage></NotFoundPage>;
+		return <NotFoundPage />;
 	}
+
 	if (status === 'ended') {
 		return (
 			<Flex.Container direction='column' justifyContent='center'>

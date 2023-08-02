@@ -34,9 +34,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:saveInfo'(guestData, roomData) {
-		methodDeprecationLogger.warn(
-			'livechat:saveInfo method will be deprecated in future versions of Rocket.Chat. Use "livechat/room.saveInfo" endpoint instead.',
-		);
+		methodDeprecationLogger.method('livechat:saveInfo', '7.0.0', 'Use "livechat/room.saveInfo" endpoint instead.');
 		const userId = Meteor.userId();
 
 		if (!userId || !(await hasPermissionAsync(userId, 'view-l-room'))) {
@@ -83,8 +81,8 @@ Meteor.methods<ServerMethods>({
 
 		const user = await Users.findOne({ _id: userId }, { projection: { _id: 1, username: 1 } });
 
-		Meteor.defer(async () => {
-			callbacks.run('livechat.saveInfo', await LivechatRooms.findOneById(roomData._id), {
+		setImmediate(async () => {
+			void callbacks.run('livechat.saveInfo', await LivechatRooms.findOneById(roomData._id), {
 				user,
 				oldRoom: room,
 			});

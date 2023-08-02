@@ -75,7 +75,7 @@ export interface IUserServices {
 		enabled: boolean;
 		changedAt: Date;
 	};
-	emailCode: IUserEmailCode[];
+	emailCode?: IUserEmailCode[];
 	saml?: {
 		inResponseTo?: string;
 		provider?: string;
@@ -91,6 +91,9 @@ export interface IUserServices {
 		accessToken: string;
 		refreshToken: string;
 		serverURL: string;
+	};
+	dolphin?: {
+		NickName?: string;
 	};
 }
 
@@ -177,6 +180,7 @@ export interface IUser extends IRocketChatRecord {
 		};
 	};
 	importIds?: string[];
+	_pendingAvatarUrl?: string;
 }
 
 export interface IRegisterUser extends IUser {
@@ -190,16 +194,17 @@ export const isUserFederated = (user: Partial<IUser>) => 'federated' in user && 
 export type IUserDataEvent = {
 	id: unknown;
 } & (
-	| ({
+	| {
 			type: 'inserted';
-	  } & IUser)
+			data: IUser;
+	  }
 	| {
 			type: 'removed';
 	  }
 	| {
 			type: 'updated';
 			diff: Partial<IUser>;
-			unset: Record<keyof IUser, boolean | 0 | 1>;
+			unset: Record<string, number>;
 	  }
 );
 

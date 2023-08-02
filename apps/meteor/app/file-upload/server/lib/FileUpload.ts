@@ -13,7 +13,6 @@ import streamBuffers from 'stream-buffers';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
 import { Match } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
@@ -26,7 +25,7 @@ import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
+import { fileUploadIsValidContentType } from '../../../utils/server/restrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { streamToBuffer } from './streamToBuffer';
@@ -34,6 +33,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
 import { ufsComplete } from '../../../../server/ufs/ufs-methods';
+import { i18n } from '../../../../server/lib/i18n';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -152,29 +152,26 @@ export const FileUpload = {
 		}
 		const language = user?.language || 'en';
 		if (!fileUploadAllowed) {
-			const reason = TAPi18n.__('FileUpload_Disabled', { lng: language });
+			const reason = i18n.t('FileUpload_Disabled', { lng: language });
 			throw new Meteor.Error('error-file-upload-disabled', reason);
 		}
 
 		if (!directMessageAllowed && room.t === 'd') {
-			const reason = TAPi18n.__('File_not_allowed_direct_messages', { lng: language });
+			const reason = i18n.t('File_not_allowed_direct_messages', { lng: language });
 			throw new Meteor.Error('error-direct-message-file-upload-not-allowed', reason);
 		}
 
 		// -1 maxFileSize means there is no limit
 		if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
-			const reason = TAPi18n.__(
-				'File_exceeds_allowed_size_of_bytes',
-				{
-					size: filesize(maxFileSize),
-				},
-				language,
-			);
+			const reason = i18n.t('File_exceeds_allowed_size_of_bytes', {
+				size: filesize(maxFileSize),
+				lng: language,
+			});
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
-		if (!fileUploadIsValidContentType(file.type)) {
-			const reason = TAPi18n.__('File_type_is_not_accepted', { lng: language });
+		if (!fileUploadIsValidContentType(file.type as string, '')) {
+			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
 
@@ -202,19 +199,16 @@ export const FileUpload = {
 
 		// accept only images
 		if (!/^image\//.test(file.type || '')) {
-			const reason = TAPi18n.__('File_type_is_not_accepted', { lng: language });
+			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
 
 		// -1 maxFileSize means there is no limit
 		if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
-			const reason = TAPi18n.__(
-				'File_exceeds_allowed_size_of_bytes',
-				{
-					size: filesize(maxFileSize),
-				},
-				language,
-			);
+			const reason = i18n.t('File_exceeds_allowed_size_of_bytes', {
+				size: filesize(maxFileSize),
+				lng: language,
+			});
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
@@ -290,7 +284,7 @@ export const FileUpload = {
 	},
 
 	async extractMetadata(file: IUpload) {
-		return sharp(FileUpload.getBufferSync(file)).metadata();
+		return sharp(await FileUpload.getBuffer(file)).metadata();
 	},
 
 	async createImageThumbnail(fileParam: IUpload) {
@@ -512,25 +506,29 @@ export const FileUpload = {
 		res.end();
 	},
 
-	getBuffer(file: IUpload, cb: (err?: Error, data?: false | Buffer) => void) {
+	async getBuffer(file: IUpload): Promise<Buffer> {
 		const store = this.getStoreByName(file.store);
 
 		if (!store?.get) {
-			cb(new Error('Store is invalid'), undefined);
+			throw new Error('Store is invalid');
 		}
 
 		const buffer = new streamBuffers.WritableStreamBuffer({
 			initialSize: file.size,
 		});
 
-		buffer.on('finish', () => {
-			cb(undefined, buffer.getContents());
+		return new Promise((resolve, reject) => {
+			buffer.on('finish', () => {
+				const contents = buffer.getContents();
+				if (contents === false) {
+					return reject();
+				}
+				resolve(contents);
+			});
+
+			void store.copy?.(file, buffer);
 		});
-
-		void store.copy?.(file, buffer);
 	},
-
-	getBufferSync: Meteor.wrapAsync((file: IUpload, cb: (err?: Error, data?: false | Buffer) => void) => FileUpload.getBuffer(file, cb)),
 
 	async copy(file: IUpload, targetFile: string) {
 		const store = this.getStoreByName(file.store);
@@ -683,7 +681,6 @@ export class FileUploadClass {
 	async deleteById(fileId: string) {
 		const file = await this.model.findOneById(fileId);
 
-		// eslint-disable-next-line @typescript-eslint/no-misused-promises
 		if (!file) {
 			return;
 		}

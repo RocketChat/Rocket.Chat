@@ -1,17 +1,18 @@
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Random } from '@rocket.chat/random';
 import { Emitter } from '@rocket.chat/emitter';
 import { UIKitInteractionTypes } from '@rocket.chat/core-typings';
 
 import Notifications from '../../notifications/client/lib/Notifications';
 import { CachedCollectionManager } from '../../ui-cached-collection/client';
-import { APIClient, t } from '../../utils/client';
+import { t } from '../../utils/client';
 import * as banners from '../../../client/lib/banners';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import UiKitModal from '../../../client/views/modal/uikit/UiKitModal';
+import { sdk } from '../../utils/client/lib/SDKClient';
+import { router } from '../../../client/providers/RouterProvider';
 
 const events = new Emitter();
 
@@ -123,7 +124,14 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 			},
 		});
 
-		FlowRouter.setParams({ tab: 'app', context: viewId });
+		router.navigate({
+			name: router.getRouteName(),
+			params: {
+				...router.getRouteParameters(),
+				tab: 'app',
+				context: viewId,
+			},
+		});
 
 		return UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN;
 	}
@@ -159,7 +167,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	return UIKitInteractionTypes.MODAL_ClOSE;
 };
 
-export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, container, ...rest }) =>
+export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, container, tmid, ...rest }) =>
 	new Promise(async (resolve, reject) => {
 		const triggerId = generateTriggerId(appId);
 
@@ -169,13 +177,14 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, c
 
 		const { type: interactionType, ...data } = await (async () => {
 			try {
-				return await APIClient.post(`/apps/ui.interaction/${appId}`, {
+				return await sdk.rest.post(`/apps/ui.interaction/${appId}`, {
 					type,
 					actionId,
 					payload,
 					container,
 					mid,
 					rid,
+					tmid,
 					triggerId,
 					viewId,
 				});

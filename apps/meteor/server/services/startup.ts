@@ -6,6 +6,7 @@ import { AnalyticsService } from './analytics/service';
 import { AppsEngineService } from './apps-engine/service';
 import { AuthorizationLivechat } from '../../app/livechat/server/roomAccessValidator.internalService';
 import { BannerService } from './banner/service';
+import { CalendarService } from './calendar/service';
 import { LDAPService } from './ldap/service';
 import { MediaService } from './image/service';
 import { MeteorService } from './meteor/service';
@@ -26,6 +27,7 @@ import { MessageService } from './messages/service';
 import { TranslationService } from './translation/service';
 import { SettingsService } from './settings/service';
 import { OmnichannelIntegrationService } from './omnichannel-integrations/service';
+import { ImportService } from './import/service';
 import { Logger } from '../lib/logger/Logger';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
@@ -34,6 +36,7 @@ api.registerService(new AppsEngineService());
 api.registerService(new AnalyticsService());
 api.registerService(new AuthorizationLivechat());
 api.registerService(new BannerService());
+api.registerService(new CalendarService());
 api.registerService(new LDAPService());
 api.registerService(new MediaService());
 api.registerService(new MeteorService());
@@ -53,6 +56,7 @@ api.registerService(new MessageService());
 api.registerService(new TranslationService());
 api.registerService(new SettingsService());
 api.registerService(new OmnichannelIntegrationService());
+api.registerService(new ImportService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {

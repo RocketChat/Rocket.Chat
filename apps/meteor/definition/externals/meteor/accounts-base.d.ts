@@ -7,6 +7,7 @@ declare module 'meteor/accounts-base' {
 				password?: string;
 				profile?: Record<string, unknown>;
 				joinDefaultChannelsSilenced?: boolean;
+				skipEmailValidation?: boolean;
 			},
 			callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
 		): string;
@@ -30,6 +31,8 @@ declare module 'meteor/accounts-base' {
 		function _unstoreLoginToken(): void;
 
 		function _setAccountData(connectionId: string, key: string, token: string): void;
+
+		function _checkPasswordAsync(user: Meteor.User, password: Password): Promise<{ userId: string; error?: any }>;
 
 		function updateOrCreateUserFromExternalService(
 			serviceName: string,

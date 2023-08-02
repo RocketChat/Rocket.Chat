@@ -133,7 +133,6 @@ describe('LIVECHAT - Integrations', function () {
 			it('should fail if setting Livechat_webhookUrl is not set', async () => {
 				await updateSetting('Livechat_webhookUrl', '');
 				await updatePermission('view-livechat-webhooks', ['admin', 'livechat-manager']);
-				await setTimeout(() => null, 1000);
 				const response = await request.post(api('livechat/webhook.test')).set(credentials).expect(400);
 				expect(response.body).to.have.property('success', false);
 			});

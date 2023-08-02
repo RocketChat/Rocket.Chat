@@ -1,12 +1,18 @@
 import type { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
 import { ButtonGroup, Button, Box, Avatar } from '@rocket.chat/fuselage';
-import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
+import { UiKitComponent, UiKitContextualBar, contextualBarParser } from '@rocket.chat/fuselage-ui-kit';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
 import React from 'react';
 
-import { getURL } from '../../../../../app/utils/lib/getURL';
-import VerticalBar from '../../../../components/VerticalBar';
+import { getURL } from '../../../../../app/utils/client/getURL';
+import {
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+	ContextualbarClose,
+} from '../../../../components/Contextualbar';
 import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
 
 type AppsProps = {
@@ -19,30 +25,30 @@ type AppsProps = {
 
 const Apps = ({ view, onSubmit, onClose, onCancel, appId }: AppsProps): JSX.Element => (
 	<>
-		<VerticalBar.Header>
+		<ContextualbarHeader>
 			<Avatar url={getURL(`/api/apps/${appId}/icon`)} />
-			<VerticalBar.Text>{modalParser.text(view.title, BlockContext.NONE, 0)}</VerticalBar.Text>
-			{onClose && <VerticalBar.Close onClick={onClose} />}
-		</VerticalBar.Header>
-		<VerticalBar.ScrollableContent>
+			<ContextualbarTitle>{contextualBarParser.text(view.title, BlockContext.NONE, 0)}</ContextualbarTitle>
+			{onClose && <ContextualbarClose onClick={onClose} />}
+		</ContextualbarHeader>
+		<ContextualbarScrollableContent>
 			<Box is='form' method='post' action='#' onSubmit={onSubmit}>
-				<UiKitComponent render={UiKitModal} blocks={view.blocks as LayoutBlock[]} />
+				<UiKitComponent render={UiKitContextualBar} blocks={view.blocks as LayoutBlock[]} />
 			</Box>
-		</VerticalBar.ScrollableContent>
-		<VerticalBar.Footer>
+		</ContextualbarScrollableContent>
+		<ContextualbarFooter>
 			<ButtonGroup align='end'>
 				{view.close && (
 					<Button danger={view.close.style === 'danger'} onClick={onCancel}>
-						{modalParser.text(view.close.text, BlockContext.NONE, 0)}
+						{contextualBarParser.text(view.close.text, BlockContext.NONE, 0)}
 					</Button>
 				)}
 				{view.submit && (
 					<Button {...getButtonStyle(view)} onClick={onSubmit}>
-						{modalParser.text(view.submit.text, BlockContext.NONE, 1)}
+						{contextualBarParser.text(view.submit.text, BlockContext.NONE, 1)}
 					</Button>
 				)}
 			</ButtonGroup>
-		</VerticalBar.Footer>
+		</ContextualbarFooter>
 	</>
 );
 

@@ -2,12 +2,12 @@ import type { IUIActionButton, IUActionButtonWhen } from '@rocket.chat/apps-engi
 import type { UserStatus } from '@rocket.chat/core-typings';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { TranslationKey, LocationPathname } from '@rocket.chat/ui-contexts';
 import type { Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
 import { applyDropdownActionButtonFilters } from '../../../ui-message/client/actionButtons/lib/applyButtonFilters';
-import { APIClient } from '../../../utils/client';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 export interface IAppAccountBoxItem extends IUIActionButton {
 	name: string;
@@ -22,7 +22,7 @@ export interface IAppAccountBoxItem extends IUIActionButton {
 export type AccountBoxItem = {
 	name: TranslationKey;
 	icon: ComponentProps<typeof Icon>['name'];
-	href: string;
+	href: LocationPathname;
 	sideNav?: string;
 	condition: () => boolean;
 };
@@ -33,7 +33,7 @@ class AccountBoxBase {
 	private items = new ReactiveVar<IAppAccountBoxItem[]>([]);
 
 	public setStatus(status: UserStatus, statusText?: string): any {
-		return APIClient.post('/v1/users.setStatus', { status, message: statusText });
+		return sdk.rest.post('/v1/users.setStatus', { status, message: statusText });
 	}
 
 	public async addItem(newItem: IAppAccountBoxItem): Promise<void> {

@@ -1,7 +1,7 @@
 import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import VerticalBar from '../../../../../components/VerticalBar';
+import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../../components/Contextualbar';
 import { useTabBarClose } from '../../../../room/contexts/ToolboxContext';
 import ChatInfo from './ChatInfo';
 import { RoomEditWithData } from './RoomEdit';
@@ -32,13 +32,11 @@ const ChatsContextualBar = ({ rid }: ChatsContextualBarProps) => {
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name={icon} />
-				<VerticalBar.Text>{t(title)}</VerticalBar.Text>
-
-				<VerticalBar.Close onClick={closeContextualBar} />
-			</VerticalBar.Header>
-
+			<ContextualbarHeader>
+				<ContextualbarIcon name={icon} />
+				<ContextualbarTitle>{t(title)}</ContextualbarTitle>
+				<ContextualbarClose onClick={closeContextualBar} />
+			</ContextualbarHeader>
 			{context === 'edit' ? <RoomEditWithData id={rid} onClose={handleRoomEditBarCloseButtonClick} /> : <ChatInfo route={PATH} id={rid} />}
 		</>
 	);

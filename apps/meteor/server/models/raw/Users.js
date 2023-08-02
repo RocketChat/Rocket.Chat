@@ -57,6 +57,7 @@ export class UsersRaw extends BaseRaw {
 			{ key: { statusConnection: 1 }, sparse: 1 },
 			{ key: { appId: 1 }, sparse: 1 },
 			{ key: { type: 1 } },
+			{ key: { federated: 1 }, sparse: true },
 			{ key: { federation: 1 }, sparse: true },
 			{ key: { isRemote: 1 }, sparse: true },
 			{ key: { 'services.saml.inResponseTo': 1 } },
@@ -66,6 +67,7 @@ export class UsersRaw extends BaseRaw {
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
 			{ key: { 'active': 1, 'services.totp.enabled': 1 }, sparse: true }, // used by statistics
+			{ key: { importIds: 1 }, sparse: true },
 			// Used for case insensitive queries
 			// @deprecated
 			// Should be converted to unique index later within a migration to prevent errors of duplicated
@@ -76,6 +78,18 @@ export class UsersRaw extends BaseRaw {
 				unique: false,
 				sparse: true,
 				name: 'emails.address_insensitive',
+				collation: { locale: 'en', strength: 2, caseLevel: false },
+			},
+			// Used for case insensitive queries
+			// @deprecated
+			// Should be converted to unique index later within a migration to prevent errors of duplicated
+			// records. Those errors does not helps to identify the duplicated value so we need to find a
+			// way to help the migration in case it happens.
+			{
+				key: { username: 1 },
+				unique: false,
+				sparse: true,
+				name: 'username_insensitive',
 				collation: { locale: 'en', strength: 2, caseLevel: false },
 			},
 		];
@@ -321,11 +335,23 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	findOneByUsernameIgnoringCase(username, options) {
-		if (typeof username === 'string') {
-			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
-		}
-
 		const query = { username };
+
+		return this.findOne(query, {
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+			...options,
+		});
+	}
+
+	findOneWithoutLDAPByUsernameIgnoringCase(username, options) {
+		const expression = new RegExp(`^${escapeRegExp(username)}$`, 'i');
+
+		const query = {
+			'username': expression,
+			'services.ldap': {
+				$exists: false,
+			},
+		};
 
 		return this.findOne(query, options);
 	}
@@ -841,9 +867,6 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: { $each: businessHourIds },
 			},
@@ -859,9 +882,6 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: { $each: businessHourIds },
 			},
@@ -877,11 +897,27 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	makeAgentsWithinBusinessHourAvailable(agentIds) {
+		const query = {
+			...(agentIds && { _id: { $in: agentIds } }),
+			roles: 'livechat-agent',
+			// Exclude away users
+			status: 'online',
+			// Exclude users that are already available, maybe due to other business hour
+			statusLivechat: 'not-available',
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
 			},
 		};
 
@@ -909,9 +945,6 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: businessHourId,
 			},
@@ -952,6 +985,8 @@ export class UsersRaw extends BaseRaw {
 		const query = {
 			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
 			roles: 'livechat-agent',
+			// Avoid unnecessary updates
+			statusLivechat: 'available',
 			...(Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } }),
 		};
 
@@ -967,6 +1002,7 @@ export class UsersRaw extends BaseRaw {
 	setLivechatStatusActiveBasedOnBusinessHours(userId) {
 		const query = {
 			_id: userId,
+			statusDefault: { $ne: 'offline' },
 			openBusinessHours: {
 				$exists: true,
 				$not: { $size: 0 },
@@ -983,15 +1019,14 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	async isAgentWithinBusinessHours(agentId) {
-		return (
-			(await this.find({
-				_id: agentId,
-				openBusinessHours: {
-					$exists: true,
-					$not: { $size: 0 },
-				},
-			}).count()) > 0
-		);
+		const query = {
+			_id: agentId,
+			openBusinessHours: {
+				$exists: true,
+				$not: { $size: 0 },
+			},
+		};
+		return (await this.col.countDocuments(query)) > 0;
 	}
 
 	removeBusinessHoursFromAllUsers() {
@@ -1319,6 +1354,12 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	countFederatedExternalUsers() {
+		return this.col.countDocuments({
+			federated: true,
+		});
+	}
+
 	findOnlineUserFromList(userList, isLivechatEnabledWhenAgentIdle) {
 		// TODO: Create class Agent
 		const username = {
@@ -1643,12 +1684,9 @@ export class UsersRaw extends BaseRaw {
 				customFields: 1,
 				status: 1,
 				livechat: 1,
+				...(showAgentEmail && { emails: 1 }),
 			},
 		};
-
-		if (showAgentEmail) {
-			options.fields.emails = 1;
-		}
 
 		return this.findOne(query, options);
 	}
@@ -1914,6 +1952,17 @@ export class UsersRaw extends BaseRaw {
 			collation: { locale: 'en', strength: 2 }, // Case insensitive
 			...options,
 		});
+	}
+
+	findOneWithoutLDAPByEmailAddress(emailAddress, options) {
+		const query = {
+			'email.address': emailAddress.trim().toLowerCase(),
+			'services.ldap': {
+				$exists: false,
+			},
+		};
+
+		return this.findOne(query, options);
 	}
 
 	findOneAdmin(userId, options) {
@@ -2697,10 +2746,10 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	removeBannerById(_id, banner) {
+	removeBannerById(_id, bannerId) {
 		const update = {
 			$unset: {
-				[`banners.${banner.id}`]: true,
+				[`banners.${bannerId}`]: true,
 			},
 		};
 
@@ -2884,5 +2933,21 @@ export class UsersRaw extends BaseRaw {
 
 	countRoomMembers(roomId) {
 		return this.col.countDocuments({ __rooms: roomId, active: true });
+	}
+
+	removeAgent(_id) {
+		const update = {
+			$set: {
+				operator: false,
+			},
+			$unset: {
+				livechat: 1,
+				statusLivechat: 1,
+				extension: 1,
+				openBusinessHours: 1,
+			},
+		};
+
+		return this.updateOne({ _id }, update);
 	}
 }

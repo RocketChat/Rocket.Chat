@@ -17,12 +17,14 @@ import useDeleteMessage from '../hooks/useDeleteMessage';
 const ContextMessage = ({
 	message,
 	room,
+	deleted,
 	handleClick,
 	onRedirect,
 	onChange,
 }: {
 	message: any;
 	room: IModerationReport['room'];
+	deleted: boolean;
 	handleClick: (id: IMessage['_id']) => void;
 	onRedirect: (id: IMessage['_id']) => void;
 	onChange: () => void;
@@ -79,7 +81,7 @@ const ContextMessage = ({
 					<Message.Toolbox>
 						<MessageToolboxItem icon='document-eye' title={t('Moderation_View_reports')} onClick={() => handleClick(message._id)} />
 						<MessageToolboxItem icon='arrow-forward' title={t('Moderation_Go_to_message')} onClick={() => onRedirect(message._id)} />
-						<MessageToolboxItem icon='trash' title={t('Moderation_Delete_message')} onClick={() => deleteMessage()} />
+						<MessageToolboxItem disabled={deleted} icon='trash' title={t('Moderation_Delete_message')} onClick={() => deleteMessage()} />
 					</Message.Toolbox>
 				</MessageToolboxWrapper>
 			</Message>

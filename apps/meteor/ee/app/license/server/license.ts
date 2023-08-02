@@ -21,6 +21,7 @@ interface IValidLicense {
 }
 
 let maxGuestUsers = 0;
+let maxRoomsPerGuest = 0;
 let maxActiveUsers = 0;
 
 class LicenseClass {
@@ -174,7 +175,7 @@ class LicenseClass {
 					return item;
 				}
 				if (!this._validateURL(license.url, this.url)) {
-					item.valid = false;
+					this.invalidate(item);
 					console.error(`#### License error: invalid url, licensed to ${license.url}, used on ${this.url}`);
 					this._invalidModules(license.modules);
 					return item;
@@ -182,7 +183,7 @@ class LicenseClass {
 			}
 
 			if (license.expiry && this._validateExpiration(license.expiry)) {
-				item.valid = false;
+				this.invalidate(item);
 				console.error(`#### License error: expired, valid until ${license.expiry}`);
 				this._invalidModules(license.modules);
 				return item;
@@ -190,6 +191,10 @@ class LicenseClass {
 
 			if (license.maxGuestUsers > maxGuestUsers) {
 				maxGuestUsers = license.maxGuestUsers;
+			}
+
+			if (license.maxRoomsPerGuest > maxRoomsPerGuest) {
+				maxRoomsPerGuest = license.maxRoomsPerGuest;
 			}
 
 			if (license.maxActiveUsers > maxActiveUsers) {
@@ -212,12 +217,18 @@ class LicenseClass {
 		this.showLicenses();
 	}
 
-	async canAddNewUser(): Promise<boolean> {
+	invalidate(item: IValidLicense): void {
+		item.valid = false;
+
+		EnterpriseLicenses.emit('invalidate');
+	}
+
+	async canAddNewUser(userCount = 1): Promise<boolean> {
 		if (!maxActiveUsers) {
 			return true;
 		}
 
-		return maxActiveUsers > (await Users.getActiveLocalUserCount());
+		return maxActiveUsers > (await Users.getActiveLocalUserCount()) + userCount;
 	}
 
 	async canEnableApp(app: IAppStorageItem): Promise<boolean> {
@@ -317,6 +328,10 @@ export function getMaxGuestUsers(): number {
 	return maxGuestUsers;
 }
 
+export function getMaxRoomsPerGuest(): number {
+	return maxRoomsPerGuest;
+}
+
 export function getMaxActiveUsers(): number {
 	return maxActiveUsers;
 }
@@ -337,8 +352,8 @@ export function getAppsConfig(): NonNullable<ILicense['apps']> {
 	return License.getAppsConfig();
 }
 
-export async function canAddNewUser(): Promise<boolean> {
-	return License.canAddNewUser();
+export async function canAddNewUser(userCount = 1): Promise<boolean> {
+	return License.canAddNewUser(userCount);
 }
 
 export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {
@@ -419,6 +434,10 @@ export function onModule(cb: (...args: any[]) => void): void {
 
 export function onValidateLicenses(cb: (...args: any[]) => void): void {
 	EnterpriseLicenses.on('validate', cb);
+}
+
+export function onInvalidateLicense(cb: (...args: any[]) => void): void {
+	EnterpriseLicenses.on('invalidate', cb);
 }
 
 export function flatModules(modulesAndBundles: string[]): string[] {

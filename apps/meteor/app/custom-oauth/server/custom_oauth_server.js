@@ -2,16 +2,18 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { OAuth } from 'meteor/oauth';
-import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
+import { LDAP } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { Logger } from '../../logger/server';
 import { isURL } from '../../../lib/utils/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { callbacks } from '../../../lib/callbacks';
+import { settings } from '../../settings/server';
 
 const logger = new Logger('CustomOAuth');
 
@@ -79,6 +81,7 @@ export class CustomOAuth {
 		this.nameField = (options.nameField || '').trim();
 		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
+		this.mergeUsersDistinctServices = options.mergeUsersDistinctServices;
 		this.rolesClaim = options.rolesClaim || 'roles';
 		this.accessTokenParam = options.accessTokenParam;
 		this.channelsAdmin = options.channelsAdmin || 'rocket.cat';
@@ -108,50 +111,53 @@ export class CustomOAuth {
 
 		let response = undefined;
 
-		const allOptions = {
-			headers: {
-				'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
-				'Accept': 'application/json',
-			},
-			params: {
-				code: query.code,
-				redirect_uri: OAuth._redirectUri(this.name, config),
-				grant_type: 'authorization_code',
-				state: query.state,
-			},
+		const headers = {
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
+			'Accept': 'application/json',
 		};
+		const params = new URLSearchParams({
+			code: query.code,
+			redirect_uri: OAuth._redirectUri(this.name, config),
+			grant_type: 'authorization_code',
+			state: query.state,
+		});
 
 		// Only send clientID / secret once on header or payload.
 		if (this.tokenSentVia === 'header') {
-			allOptions.auth = `${config.clientId}:${OAuth.openSecret(config.secret)}`;
+			const b64 = Buffer.from(`${config.clientId}:${OAuth.openSecret(config.secret)}`).toString('base64');
+			headers.Authorization = `Basic ${b64}`;
 		} else {
-			allOptions.params.client_secret = OAuth.openSecret(config.secret);
-			allOptions.params.client_id = config.clientId;
+			params.append('client_secret', config.secret);
+			params.append('client_id', config.clientId);
 		}
 
 		try {
-			response = HTTP.post(this.tokenPath, allOptions);
+			const request = await fetch(`${this.tokenPath}`, {
+				method: 'POST',
+				headers,
+				params,
+			});
+
+			if (!request.ok) {
+				throw new Error(request.statusText);
+			}
+
+			response = await request.json();
 		} catch (err) {
 			const error = new Error(`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${err.message}`);
 			throw _.extend(error, { response: err.response });
 		}
 
-		let data;
-		if (response.data) {
-			data = response.data;
-		} else {
-			data = JSON.parse(response.content);
-		}
-
-		if (data.error) {
+		if (response.error) {
 			// if the http response was a json object with an error attribute
-			throw new Error(`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${data.error}`);
+			throw new Error(`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${response.error}`);
 		} else {
-			return data;
+			return response;
 		}
 	}
 
-	getIdentity(accessToken) {
+	async getIdentity(accessToken) {
 		const params = {};
 		const headers = {
 			'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
@@ -165,22 +171,17 @@ export class CustomOAuth {
 		}
 
 		try {
-			const response = HTTP.get(this.identityPath, {
-				headers,
-				params,
-			});
+			const request = await fetch(`${this.identityPath}`, { method: 'GET', headers, params });
 
-			let data;
-
-			if (response.data) {
-				data = response.data;
-			} else {
-				data = JSON.parse(response.content);
+			if (!request.ok) {
+				throw new Error(request.statusText);
 			}
 
-			logger.debug({ msg: 'Identity response', data });
+			const response = await request.json();
 
-			return this.normalizeIdentity(data);
+			logger.debug({ msg: 'Identity response', response });
+
+			return this.normalizeIdentity(response);
 		} catch (err) {
 			const error = new Error(`Failed to fetch identity from ${this.name} at ${this.identityPath}. ${err.message}`);
 			throw _.extend(error, { response: err.response });
@@ -333,16 +334,20 @@ export class CustomOAuth {
 				let user = undefined;
 
 				if (this.keyField === 'username') {
-					user = await Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData._id, serviceName);
+					user = this.mergeUsersDistinctServices
+						? await Users.findOneByUsernameIgnoringCase(serviceData.username)
+						: await Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData.id, serviceName);
 				} else if (this.keyField === 'email') {
-					user = await Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData._id, serviceName);
+					user = this.mergeUsersDistinctServices
+						? await Users.findOneByEmailAddress(serviceData.email)
+						: await Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData.id, serviceName);
 				}
 
 				if (!user) {
 					return;
 				}
 
-				callbacks.run('afterProcessOAuthUser', { serviceName, serviceData, user });
+				await callbacks.run('afterProcessOAuthUser', { serviceName, serviceData, user });
 
 				// User already created or merged and has identical name as before
 				if (
@@ -406,7 +411,7 @@ export class CustomOAuth {
 				}),
 			);
 
-			const identity = self.getIdentity(options.accessToken);
+			const identity = await self.getIdentity(options.accessToken);
 
 			const serviceData = {
 				accessToken: options.accessToken,
@@ -437,11 +442,15 @@ const updateOrCreateUserFromExternalServiceAsync = async function (...args /* se
 	const [serviceName, serviceData] = args;
 
 	const user = updateOrCreateUserFromExternalService.apply(this, args);
+	const fullUser = await Users.findOneById(user.userId);
+	if (settings.get('LDAP_Update_Data_On_OAuth_Login')) {
+		await LDAP.loginAuthenticatedUserRequest(fullUser.username);
+	}
 
-	callbacks.run('afterValidateNewOAuthUser', {
+	await callbacks.run('afterValidateNewOAuthUser', {
 		identity: serviceData,
 		serviceName,
-		user: await Users.findOneById(user.userId),
+		user: fullUser,
 	});
 
 	return user;
