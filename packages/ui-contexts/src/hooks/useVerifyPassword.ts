@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { usePasswordPolicy } from './usePasswordPolicy';
 
@@ -30,25 +30,22 @@ const passwordVerificationsTemplate: Record<string, (password: string, lengthCri
 type PasswordVerifications = { isValid: boolean; limit?: number; name: string }[];
 type PasswordPolicies = [key: string, value?: Record<string, number>][];
 
-export const useVerifyPasswordByPolices = (policies: PasswordPolicies) => {
+export const useVerifyPasswordByPolices = (policies?: PasswordPolicies) => {
 	return useCallback(
 		(password: string): PasswordVerifications => {
+			if (!policies) {
+				return [];
+			}
 			return policies
 				.map(([name, rules]) => {
 					if (name === 'get-password-policy-forbidRepeatingCharacters') return;
 
-					if (rules) {
-						return {
-							name,
-							isValid: password.length === 0 || passwordVerificationsTemplate[name](password, Object.values(rules)[0]),
-							limit: Object.values(rules)[0],
-						};
-					}
+					const limit = rules && Object.values(rules)[0];
 
 					return {
 						name,
-						isValid: password.length === 0 || passwordVerificationsTemplate[name](password),
-						limit: undefined,
+						isValid: password.length !== 0 && passwordVerificationsTemplate[name](password, limit),
+						...(limit && { limit }),
 					};
 				})
 				.filter(Boolean) as PasswordVerifications;
@@ -60,5 +57,7 @@ export const useVerifyPasswordByPolices = (policies: PasswordPolicies) => {
 export const useVerifyPassword = (password: string): PasswordVerifications => {
 	const { data } = usePasswordPolicy();
 
-	return useVerifyPasswordByPolices((data?.enabled && data?.policy) || [])(password);
+	const validator = useVerifyPasswordByPolices((data?.enabled && data?.policy) || undefined);
+
+	return useMemo(() => validator(password), [password, validator]);
 };
