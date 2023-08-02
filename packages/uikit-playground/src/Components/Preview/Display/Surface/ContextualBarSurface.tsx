@@ -49,7 +49,7 @@ const ContextualBarSurface = ({ blocks, onDragEnd }: DraggableListProps) => (
           )}
         >
           <Margins blockEnd='x16'>
-            <DraggableList surface={3} blocks={blocks} onDragEnd={onDragEnd} />
+            <DraggableList surface={4} blocks={blocks} onDragEnd={onDragEnd} />
           </Margins>
         </Scrollbars>
       </Box>

@@ -1,3 +1,4 @@
+import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -40,7 +41,7 @@ export type UsersSetPreferencesParamsPOST = {
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		featuresPreview?: { name: string; value: boolean }[];
-		themeAppearence?: 'auto' | 'light' | 'dark';
+		themeAppearence?: ThemePreference;
 		receiveLoginDetectionEmail?: boolean;
 		notifyCalendarEvents?: boolean;
 		idleTimeLimit?: number;

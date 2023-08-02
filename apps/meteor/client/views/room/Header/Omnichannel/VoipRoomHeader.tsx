@@ -7,8 +7,6 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import BurgerMenu from '../../../../components/BurgerMenu';
-import { ToolboxContext, useToolboxContext } from '../../contexts/ToolboxContext';
-import type { ToolboxActionConfig } from '../../lib/Toolbox';
 import type { RoomHeaderProps } from '../RoomHeader';
 import RoomHeader from '../RoomHeader';
 import { BackButton } from './BackButton';
@@ -26,7 +24,6 @@ const VoipRoomHeader: FC<VoipRoomHeaderProps> = ({ slots: parentSlot, room }) =>
 	);
 
 	const { isMobile } = useLayout();
-	const toolbox = useToolboxContext();
 
 	const slots = useMemo(
 		() => ({
@@ -40,19 +37,7 @@ const VoipRoomHeader: FC<VoipRoomHeaderProps> = ({ slots: parentSlot, room }) =>
 		}),
 		[isMobile, currentRouteName, parentSlot],
 	);
-	return (
-		<ToolboxContext.Provider
-			value={useMemo(
-				() => ({
-					...toolbox,
-					actions: new Map([...(Array.from(toolbox.actions.entries()) as [string, ToolboxActionConfig][])]),
-				}),
-				[toolbox],
-			)}
-		>
-			<RoomHeader slots={slots} room={{ ...room, name: parseOutboundPhoneNumber(room.fname) }} />
-		</ToolboxContext.Provider>
-	);
+	return <RoomHeader slots={slots} room={{ ...room, name: parseOutboundPhoneNumber(room.fname) }} />;
 };
 
 export default VoipRoomHeader;
