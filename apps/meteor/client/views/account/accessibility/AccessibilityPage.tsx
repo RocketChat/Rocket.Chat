@@ -1,7 +1,10 @@
 import { Accordion, Box, Button, ButtonGroup, Field, Select, Tag, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import { useRouter, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter, useSetModal, useTranslation, useToastMessageDispatch, useUserPreference, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
 import React from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
@@ -10,9 +13,36 @@ import { themeItems as themes } from '../themes/themeItems';
 
 const AccessibilityPage = () => {
 	const t = useTranslation();
-	const { data: license } = useIsEnterprise();
+
+	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const router = useRouter();
+	const { data: license } = useIsEnterprise();
+
+	const themePreference = useUserPreference<ThemePreference>('themeAppearence') || 'auto';
+	const [prevTheme, setPrevTheme] = useLocalStorage('prevTheme', themePreference);
+	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
+
+	const {
+		formState: { isDirty },
+		handleSubmit,
+		control,
+		reset,
+	} = useForm({
+		defaultValues: { highContrast: themePreference === 'high-contrast' },
+	});
+
+	const handleSave = async ({ highContrast }: { highContrast: boolean }) => {
+		try {
+			await setUserPreferences({ data: { themeAppearence: highContrast ? 'high-contrast' : prevTheme } });
+			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			setPrevTheme(themePreference);
+			reset({ highContrast });
+		}
+	};
 
 	const highContrastItem = themes.find((theme) => theme.id === 'high-contrast');
 	const communityDisabled = highContrastItem && 'isEEOnly' in highContrastItem && highContrastItem.isEEOnly && !license?.isEnterprise;
@@ -21,7 +51,9 @@ const AccessibilityPage = () => {
 		<Page>
 			<Page.Header title={t('Accessibility')}>
 				<ButtonGroup>
-					<Button primary>{t('Save_changes')}</Button>
+					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
+						{t('Save_changes')}
+					</Button>
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
@@ -62,7 +94,24 @@ const AccessibilityPage = () => {
 										{communityDisabled ? (
 											<ToggleSwitch onClick={() => setModal(<HighContrastUpsellModal onClose={() => setModal(null)} />)} checked={false} />
 										) : (
-											<ToggleSwitch id={highContrastItem.id} /* {...register('themeAppearence')} value={id}  */ />
+											<Controller
+												control={control}
+												name='highContrast'
+												render={({ field: { onChange, value } }) => {
+													console.log(value);
+													return (
+														<ToggleSwitch
+															checked={value}
+															onChange={(e) => {
+																console.log(e);
+																onChange(e);
+															}}
+															aria-describedby='Encrypted_discussion_Description'
+															aria-labelledby='Encrypted_discussion_Label'
+														/>
+													);
+												}}
+											/>
 										)}
 									</Field.Row>
 								</Box>
