@@ -124,7 +124,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
 			}
 
-			let subscription = null;
+			let subscription;
 
 			const roomExists = !!(await Rooms.findOneById(roomId));
 			if (!roomExists) {
