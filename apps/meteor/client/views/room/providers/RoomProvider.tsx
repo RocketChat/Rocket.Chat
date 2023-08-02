@@ -15,7 +15,6 @@ import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
 import { useRoomRolesManagement } from '../components/body/hooks/useRoomRolesManagement';
-import { RoomAPIContext } from '../contexts/RoomAPIContext';
 import { RoomContext } from '../contexts/RoomContext';
 import ComposerPopupProvider from './ComposerPopupProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';
@@ -136,20 +135,16 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		};
 	}, [rid, subscribed]);
 
-	const api = useMemo(() => ({}), []);
-
 	if (!pseudoRoom) {
 		return isSuccess && !room ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (
-		<RoomAPIContext.Provider value={api}>
-			<RoomContext.Provider value={context}>
-				<RoomToolboxProvider>
-					<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
-				</RoomToolboxProvider>
-			</RoomContext.Provider>
-		</RoomAPIContext.Provider>
+		<RoomContext.Provider value={context}>
+			<RoomToolboxProvider>
+				<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+			</RoomToolboxProvider>
+		</RoomContext.Provider>
 	);
 };
 
