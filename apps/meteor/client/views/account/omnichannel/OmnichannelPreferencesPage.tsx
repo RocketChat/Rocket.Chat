@@ -47,13 +47,7 @@ const OmnichannelPreferencesPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Omnichannel')}>
-				<ButtonGroup>
-					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
-						{t('Save_changes')}
-					</Button>
-				</ButtonGroup>
-			</Page.Header>
+			<Page.Header title={t('Omnichannel')} />
 			<Page.ScrollableContentWithShadow is='form' onSubmit={handleSubmit(handleSave)}>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<Accordion>
@@ -61,6 +55,14 @@ const OmnichannelPreferencesPage = (): ReactElement => {
 					</Accordion>
 				</Box>
 			</Page.ScrollableContentWithShadow>
+			<Page.Footer isDirty={isDirty}>
+				<ButtonGroup>
+					<Button onClick={() => reset({ omnichannelTranscriptPDF, omnichannelTranscriptEmail })}>{t('Cancel')}</Button>
+					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
+						{t('Save_changes')}
+					</Button>
+				</ButtonGroup>
+			</Page.Footer>
 		</Page>
 	);
 };

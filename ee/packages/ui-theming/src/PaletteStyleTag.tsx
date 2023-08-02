@@ -7,14 +7,21 @@ import { useCreateStyleContainer } from './hooks/useCreateStyleContainer';
 import { useThemeMode } from './hooks/useThemeMode';
 import { defaultPalette } from './palette';
 import { darkPalette } from './paletteDark';
+import { paletteHighContrast } from './paletteHighContrast';
 
 export const PaletteStyleTag = memo(function PaletteStyleTag() {
 	const [, , theme] = useThemeMode();
 
-	const palette =
-		theme === 'dark'
-			? convertToCss(filterOnlyChangedColors(defaultPalette, darkPalette), '.rcx-content--main')
-			: convertToCss(filterOnlyChangedColors(defaultPalette, {}), '.rcx-content--main');
+	const getPalette = () => {
+		if (theme === 'dark') {
+			return darkPalette;
+		}
+		if (theme === 'high-contrast') {
+			return paletteHighContrast;
+		}
+		return {};
+	};
+	const palette = convertToCss(filterOnlyChangedColors(defaultPalette, getPalette()), '.rcx-content--main');
 
 	return createPortal(palette, useCreateStyleContainer('main-palette'));
 });

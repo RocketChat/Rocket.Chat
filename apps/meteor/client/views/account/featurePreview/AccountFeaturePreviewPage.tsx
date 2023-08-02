@@ -76,13 +76,7 @@ const AccountFeaturePreviewPage = () => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Feature_preview')}>
-				<ButtonGroup>
-					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
-						{t('Save_changes')}
-					</Button>
-				</ButtonGroup>
-			</Page.Header>
+			<Page.Header title={t('Feature_preview')} />
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					{featuresPreview.length === 0 && (
@@ -129,6 +123,14 @@ const AccountFeaturePreviewPage = () => {
 					)}
 				</Box>
 			</Page.ScrollableContentWithShadow>
+			<Page.Footer isDirty={isDirty}>
+				<ButtonGroup>
+					<Button onClick={() => reset({ featuresPreview: features })}>{t('Cancel')}</Button>
+					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
+						{t('Save_changes')}
+					</Button>
+				</ButtonGroup>
+			</Page.Footer>
 		</Page>
 	);
 };
