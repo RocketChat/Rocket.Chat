@@ -145,6 +145,16 @@ export class Twilio implements ISMSProvider {
 			reason = i18n.t('FileUpload_NotAllowed', { lng });
 		}
 
+		// Check if JWT is set for public file uploads when protect_files is on
+		// If it's not, notify user upload won't go to twilio
+		const protectFileUploads = settings.get('FileUpload_ProtectFiles');
+		const jwtEnabled = settings.get('FileUpload_Enable_json_web_token_for_files');
+		const isJWTKeySet = jwtEnabled && !!settings.get('FileUpload_json_web_token_secret_for_files');
+
+		if (protectFileUploads && (!jwtEnabled || !isJWTKeySet)) {
+			reason = i18n.t('FileUpload_ProtectFilesEnabled_JWTNotSet', { lng });
+		}
+
 		if (reason) {
 			await notifyAgent(userId, rid, reason);
 			SystemLogger.error(`(Twilio) -> ${reason}`);
@@ -198,23 +208,31 @@ export class Twilio implements ISMSProvider {
 			body = i18n.t('Location', { lng: defaultLanguage });
 		}
 
-		const result = await client.messages.create({
-			to: toNumber,
-			from: fromNumber,
-			body,
-			...(mediaUrl && { mediaUrl }),
-			...(persistentAction && { persistentAction }),
-		});
+		try {
+			const result = await client.messages.create({
+				to: toNumber,
+				from: fromNumber,
+				body,
+				...(mediaUrl && { mediaUrl }),
+				...(persistentAction && { persistentAction }),
+			});
 
-		if (result.errorCode) {
-			await notifyAgent(userId, rid, result.errorMessage);
-			SystemLogger.error(`(Twilio) -> ${result.errorCode}`);
+			if (result.errorCode) {
+				await notifyAgent(userId, rid, result.errorMessage);
+				SystemLogger.error(`(Twilio) -> ${result.errorCode}`);
+			}
+
+			return {
+				isSuccess: result.status !== 'failed',
+				resultMsg: result.status,
+			};
+		} catch (e: any) {
+			await notifyAgent(userId, rid, e.message);
+			return {
+				isSuccess: false,
+				resultMsg: e.message,
+			};
 		}
-
-		return {
-			isSuccess: result.status !== 'failed',
-			resultMsg: result.status,
-		};
 	}
 
 	response(): SMSProviderResponse {
