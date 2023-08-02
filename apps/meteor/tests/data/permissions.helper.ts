@@ -2,6 +2,7 @@ import type { ISetting } from '@rocket.chat/core-typings';
 import { IS_EE } from '../e2e/config/constants';
 import { api, credentials, request } from './api-data';
 import { permissions } from '../../app/authorization/server/constant/permissions';
+import { omnichannelEEPermissions } from '../../ee/app/livechat-enterprise/server/permissions';
 
 export const updatePermission = (permission:string, roles:string[]):Promise<void|Error> =>
 	new Promise((resolve,reject) => {
@@ -72,7 +73,7 @@ export const removePermissionFromAllRoles = async (permission: Permission) => {
 };
 
 export const restorePermissionToRoles = async (permission: Permission) => {
-    const defaultPermission = permissions.find((p) => p._id === permission);
+    const defaultPermission = getPermissions().find((p) => p._id === permission);
     if (!defaultPermission) {
         throw new Error(`No default roles found for permission ${permission}`);
     }
@@ -90,4 +91,12 @@ export const restorePermissionToRoles = async (permission: Permission) => {
     }
 
     await updatePermission(permission, mutableDefaultRoles);
+}
+
+const getPermissions = () => {
+    if (!IS_EE) {
+        return permissions;
+    }
+
+    return [...permissions, ...omnichannelEEPermissions]
 }
