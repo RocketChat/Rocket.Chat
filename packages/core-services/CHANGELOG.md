@@ -1,5 +1,17 @@
 # @rocket.chat/core-services
 
+## 0.1.0-rc.10
+
+### Minor Changes
+
+- f379336951: Add new event to notify users directly about new banners
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.0-rc.10
+- @rocket.chat/rest-typings@6.3.0-rc.10
+- @rocket.chat/models@0.0.6-rc.10
+
 ## 0.1.0-rc.9
 
 ### Minor Changes

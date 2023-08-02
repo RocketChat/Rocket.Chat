@@ -1,5 +1,16 @@
 # rocketchat-services
 
+## 1.1.0-rc.10
+
+### Patch Changes
+
+- Updated dependencies [f379336951]
+  - @rocket.chat/core-services@0.1.0-rc.10
+  - @rocket.chat/core-typings@6.3.0-rc.10
+  - @rocket.chat/rest-typings@6.3.0-rc.10
+  - @rocket.chat/model-typings@0.0.6-rc.10
+  - @rocket.chat/models@0.0.6-rc.10
+
 ## 1.1.0-rc.9
 
 ### Minor Changes

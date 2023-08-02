@@ -1,5 +1,37 @@
 # @rocket.chat/meteor
 
+## 6.3.0-rc.10
+
+### Minor Changes
+
+- f379336951: Add new event to notify users directly about new banners
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- cc88a6100b: fix: Add index to federated field of Users collection
+- 5743638170: fix: Performance issue on username availability check
+- e5e5742025: fix: cannot invite LDAP users via `/invite-all` slashcommand
+- Updated dependencies [f379336951]
+  - @rocket.chat/core-services@0.1.0-rc.10
+  - @rocket.chat/ui-contexts@1.0.0-rc.10
+  - @rocket.chat/omnichannel-services@0.0.6-rc.10
+  - @rocket.chat/presence@0.0.6-rc.10
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/fuselage-ui-kit@1.0.0-rc.10
+  - @rocket.chat/gazzodown@1.0.0-rc.10
+  - @rocket.chat/ui-client@1.0.0-rc.10
+  - @rocket.chat/ui-video-conf@1.0.0-rc.10
+  - @rocket.chat/web-ui-registration@1.0.0-rc.10
+  - @rocket.chat/core-typings@6.3.0-rc.10
+  - @rocket.chat/rest-typings@6.3.0-rc.10
+  - @rocket.chat/api-client@0.1.0-rc.10
+  - @rocket.chat/pdf-worker@0.0.6-rc.10
+  - @rocket.chat/cron@0.0.2-rc.10
+  - @rocket.chat/model-typings@0.0.6-rc.10
+  - @rocket.chat/models@0.0.6-rc.10
+  - @rocket.chat/instance-status@0.0.6-rc.10
+
 ## 6.3.0-rc.9
 
 ### Minor Changes

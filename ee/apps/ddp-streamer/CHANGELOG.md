@@ -1,5 +1,25 @@
 # @rocket.chat/ddp-streamer
 
+## 0.1.0-rc.10
+
+### Minor Changes
+
+- 2302a40213: Provide more metrics for microservices:
+
+  - GC time
+  - Event loop lag
+
+### Patch Changes
+
+- Updated dependencies [f379336951]
+  - @rocket.chat/core-services@0.1.0-rc.10
+  - @rocket.chat/ui-contexts@1.0.0-rc.10
+  - @rocket.chat/core-typings@6.3.0-rc.10
+  - @rocket.chat/rest-typings@6.3.0-rc.10
+  - @rocket.chat/model-typings@0.0.6-rc.10
+  - @rocket.chat/models@0.0.6-rc.10
+  - @rocket.chat/instance-status@0.0.6-rc.10
+
 ## 0.0.6-rc.9
 
 ### Patch Changes
