@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, PasswordInput, Button } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
-import { useAccountsCustomFields, useVerifyPassword, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useAccountsCustomFields, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { Dispatch, ReactElement, SetStateAction } from 'react';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
@@ -59,8 +59,6 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 
 	const { realname, email, username, password, confirmationPassword, statusText, bio, statusType, customFields, nickname } =
 		values as AccountFormValues;
-
-	const passwordVerifications = useVerifyPassword(password);
 
 	const {
 		handleRealname,
@@ -372,9 +370,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 						</Field.Row>
 						{!allowPasswordChange && <Field.Hint>{t('Password_Change_Disabled')}</Field.Hint>}
 						{passwordError && <Field.Error>{showPasswordError ? passwordError : undefined}</Field.Error>}
-						{passwordVerifications && allowPasswordChange && (
-							<PasswordVerifier password={password} passwordVerifications={passwordVerifications} />
-						)}
+						{allowPasswordChange && <PasswordVerifier password={password} />}
 					</Field>
 				),
 				[
@@ -386,7 +382,6 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 					handlePassword,
 					confirmationPassword,
 					handleConfirmationPassword,
-					passwordVerifications,
 				],
 			)}
 
