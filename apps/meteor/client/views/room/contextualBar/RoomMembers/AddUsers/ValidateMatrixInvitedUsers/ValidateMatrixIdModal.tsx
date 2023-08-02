@@ -26,6 +26,9 @@ const verificationStatusAsIcon = (verificationStatus: string) => {
 const ValidateMatrixIdModal = ({ onClose, onConfirm, matrixIdVerifiedStatus }: ValidateMatrixIdModalProps): ReactElement => {
 	const t = useTranslation();
 
+	const canInvite =
+		Array.from(matrixIdVerifiedStatus.values()).filter((verificationStatus) => !(verificationStatus === 'UNVERIFIED')).length > 0;
+
 	return (
 		<Modal>
 			<Modal.Header>
@@ -49,7 +52,7 @@ const ValidateMatrixIdModal = ({ onClose, onConfirm, matrixIdVerifiedStatus }: V
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					{onConfirm && (
-						<Button primary onClick={onConfirm}>
+						<Button primary onClick={onConfirm} disabled={!canInvite}>
 							{t('Yes_continue')}
 						</Button>
 					)}
