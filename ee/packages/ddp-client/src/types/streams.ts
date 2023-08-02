@@ -21,6 +21,7 @@ import type {
 	ICalendarNotification,
 	IUserStatus,
 	ILivechatInquiryRecord,
+	IBanner,
 } from '@rocket.chat/core-typings';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
@@ -165,6 +166,7 @@ export interface StreamerEvents {
 			];
 		},
 		{ key: `${string}/calendar`; args: [ICalendarNotification] },
+		{ key: `${string}/banners`; args: [IBanner] },
 	];
 
 	'importers': [
