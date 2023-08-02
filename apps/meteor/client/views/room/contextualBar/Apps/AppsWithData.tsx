@@ -17,7 +17,7 @@ import type { Dispatch, SyntheticEvent, ContextType } from 'react';
 import React, { memo, useState, useEffect, useReducer } from 'react';
 
 import { useUiKitActionManager } from '../../../../hooks/useUiKitActionManager';
-import { useTabBarClose } from '../../contexts/RoomToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import Apps from './Apps';
 
 type FieldStateValue = string | Array<string> | undefined;
@@ -102,7 +102,7 @@ const AppsWithData = ({
 	appId: string;
 }): JSX.Element => {
 	const actionManager = useUiKitActionManager();
-	const closeTabBar = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 
 	const [state, setState] = useState<ViewState>(payload);
 	const { view } = state;
@@ -124,7 +124,7 @@ const AppsWithData = ({
 		return (): void => {
 			actionManager.off(viewId, handleUpdate);
 		};
-	}, [state, viewId]);
+	}, [actionManager, state, viewId]);
 
 	const groupStateByBlockId = (obj: InputFieldStateObject): InputFieldStateByBlockId =>
 		Object.entries(obj).reduce((obj: InputFieldStateByBlockId, [key, { blockId, value }]: InputFieldStateTuple) => {
@@ -187,7 +187,7 @@ const AppsWithData = ({
 
 	const handleSubmit = useMutableCallback((e) => {
 		prevent(e);
-		closeTabBar();
+		closeTab();
 		actionManager.triggerSubmitView({
 			viewId,
 			appId,
@@ -203,7 +203,7 @@ const AppsWithData = ({
 
 	const handleCancel = useMutableCallback((e) => {
 		prevent(e);
-		closeTabBar();
+		closeTab();
 		return actionManager.triggerCancel({
 			appId,
 			viewId,
@@ -217,7 +217,7 @@ const AppsWithData = ({
 
 	const handleClose = useMutableCallback((e) => {
 		prevent(e);
-		closeTabBar();
+		closeTab();
 		return actionManager.triggerCancel({
 			appId,
 			viewId,
