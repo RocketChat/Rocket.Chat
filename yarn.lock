@@ -7761,7 +7761,9 @@ __metadata:
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/fuselage-tokens": next
+    "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/logo": next
+    "@rocket.chat/message-parser": next
     "@rocket.chat/sdk": ^1.0.0-alpha.42
     "@rocket.chat/ui-kit": next
     "@storybook/addon-essentials": ~6.5.16
