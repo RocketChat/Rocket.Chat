@@ -6,10 +6,10 @@ import { useTranslation } from 'react-i18next';
 
 import { e2e } from '../../../app/e2e/client/rocketchat.e2e';
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 import { useReactiveValue } from '../useReactiveValue';
 
-export const useE2EERoomAction = (): ToolboxActionConfig | undefined => {
+export const useE2EERoomAction = () => {
 	const enabled = useSetting('E2E_Enable', false);
 	const room = useRoom();
 	const readyToEncrypt = useReactiveValue(useCallback(() => e2e.isReady(), [])) || room.encrypted;
@@ -27,7 +27,7 @@ export const useE2EERoomAction = (): ToolboxActionConfig | undefined => {
 
 	const enabledOnRoom = !!room.encrypted;
 
-	return useMemo(() => {
+	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!enabled || !permitted) {
 			return undefined;
 		}

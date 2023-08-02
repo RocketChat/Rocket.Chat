@@ -18,7 +18,7 @@ import {
 import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
 import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useRoom } from '../../../contexts/RoomContext';
-import { useTabBarClose } from '../../../contexts/RoomToolboxContext';
+import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
 
 type AddUsersProps = {
 	rid: IRoom['_id'];
@@ -31,7 +31,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const room = useRoom();
 
-	const onClickClose = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 	const saveAction = useMethod('addUsersToRoom');
 
 	const {
@@ -56,7 +56,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 			<ContextualbarHeader>
 				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
 				<ContextualbarTitle>{t('Add_users')}</ContextualbarTitle>
-				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+				{closeTab && <ContextualbarClose onClick={closeTab} />}
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
 				<FieldGroup>

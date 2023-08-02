@@ -528,7 +528,7 @@ const RoomBody = (): ReactElement => {
 				return;
 			}
 
-			toolbox.close();
+			toolbox.closeTab();
 		},
 		[toolbox],
 	);
