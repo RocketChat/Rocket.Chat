@@ -5,7 +5,7 @@ import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import KeyboardShortcuts from './KeyboardShortcuts';
 
 const KeyboardShortcutsWithData = (): ReactElement => {
-	const { close: closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolbox();
 	return <KeyboardShortcuts handleClose={closeTab} />;
 };
 
