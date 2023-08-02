@@ -1,5 +1,5 @@
 import type { InputElementDispatchAction } from '@rocket.chat/ui-kit';
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 
 type ActionParams = {
   blockId: string;
@@ -10,7 +10,7 @@ type ActionParams = {
   dispatchActionConfig?: InputElementDispatchAction[];
 };
 
-type UiKitContext = {
+type UiKitContextValue = {
   action: (
     state: ActionParams,
     event: Parameters<React.MouseEventHandler<HTMLElement>>[0]
@@ -26,31 +26,10 @@ type UiKitContext = {
   rid?: string;
 };
 
-export const defaultContext = {
-  action: console.log,
-  state: console.log,
+export const UiKitContext = createContext<UiKitContextValue>({
+  action: () => undefined,
+  state: () => undefined,
   appId: 'core',
   errors: {},
   values: {},
-};
-
-export const kitContext = createContext<UiKitContext>(defaultContext);
-
-export const useUiKitContext = () => useContext(kitContext);
-
-export const useUiKitStateValue = <
-  T extends string | string[] | number | undefined
->(
-  actionId: string,
-  initialValue: T
-): {
-  value: T;
-  error: string | undefined;
-} => {
-  const { values, errors } = useUiKitContext();
-
-  return {
-    value: (values && (values[actionId]?.value as T)) ?? initialValue,
-    error: errors?.[actionId],
-  };
-};
+});
