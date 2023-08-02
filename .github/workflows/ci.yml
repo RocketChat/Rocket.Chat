@@ -120,7 +120,6 @@ jobs:
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Build Rocket.Chat Packages
-        if: startsWith(github.ref, 'refs/pull/') != true
         run: yarn build
 
   build:
