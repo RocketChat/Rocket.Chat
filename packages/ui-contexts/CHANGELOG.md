@@ -1,5 +1,27 @@
 # @rocket.chat/ui-contexts
 
+## 1.0.0
+
+### Patch Changes
+
+- e14ec50816: Added and Improved Custom Fields form to Registration Flow
+- f76d514341: Implemented a visual password verification in the Register User form, My Profile page, and reset password page. With this, the user will know exactly why their password is weak and how to improve it.
+- Updated dependencies [e14ec50816]
+- Updated dependencies [74aa677088]
+- Updated dependencies [e006013e5f]
+- Updated dependencies [e846d873b7]
+- Updated dependencies [eecd9fc99a]
+- Updated dependencies [6a474ff952]
+- Updated dependencies [9da856cc67]
+- Updated dependencies [f76d514341]
+- Updated dependencies [f379336951]
+- Updated dependencies [12d97e16c2]
+- Updated dependencies [0645f42e12]
+- Updated dependencies [48ac55f4ea]
+  - @rocket.chat/core-typings@6.3.0
+  - @rocket.chat/rest-typings@6.3.0
+  - @rocket.chat/ddp-client@0.1.0
+
 ## 1.0.0-rc.10
 
 ### Patch Changes

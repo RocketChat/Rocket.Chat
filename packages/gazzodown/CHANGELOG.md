@@ -1,5 +1,25 @@
 # @rocket.chat/gazzodown
 
+## 1.0.0
+
+### Minor Changes
+
+- 9ea8088f06: fix: respect useEmoji preference for messages
+- e01bbcca54: Fixed mentions and emojis inside inside bold, italic or strikethrough texts
+
+### Patch Changes
+
+- cde2539619: chore(meteor): Update mention style
+- Updated dependencies [e14ec50816]
+- Updated dependencies [9da856cc67]
+- Updated dependencies [baaa38f7f4]
+- Updated dependencies [f76d514341]
+- Updated dependencies [12d97e16c2]
+- Updated dependencies [48ac55f4ea]
+  - @rocket.chat/core-typings@6.3.0
+  - @rocket.chat/ui-client@1.0.0
+  - @rocket.chat/ui-contexts@1.0.0
+
 ## 1.0.0-rc.10
 
 ### Patch Changes

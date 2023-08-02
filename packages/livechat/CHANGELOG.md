@@ -1,5 +1,13 @@
 # @rocket.chat/livechat Change Log
 
+## 1.13.4
+
+### Patch Changes
+
+- e006013e5f: chore: New Livechat SDK Implementation
+- c0cb917f76: Fixes Livechat page-url triggers requiring CORS to access the parent url
+- 33be8f16b9: Storybook adjustments, TypeScript migration, and minor fixes
+
 ## 1.13.4-rc.0
 
 ### Patch Changes
