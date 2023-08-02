@@ -24,11 +24,11 @@ export const PasswordVerifier = ({ password }: PasswordVerifierProps) => {
 				{t('Password_must_have')}
 			</Box>
 			<Box display='flex' flexWrap='wrap'>
-				{[...Object.entries(passwordVerifications)].map(([key, { isValid, limit }]) =>
+				{passwordVerifications.map(({ isValid, limit, name }) =>
 					isValid ? (
-						<PasswordVerifierItemCorrect key={key} text={t(`${key}-label`, { limit })} />
+						<PasswordVerifierItemCorrect key={name} text={t(`${name}-label`, { limit })} />
 					) : (
-						<PasswordVerifierItemInvalid key={key} text={t(`${key}-label`, { limit })} />
+						<PasswordVerifierItemInvalid key={name} text={t(`${name}-label`, { limit })} />
 					),
 				)}
 			</Box>

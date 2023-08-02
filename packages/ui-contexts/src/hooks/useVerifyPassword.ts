@@ -27,36 +27,37 @@ const passwordVerificationsTemplate: Record<string, (password: string, lengthCri
 	'get-password-policy-mustContainAtLeastOneSpecialCharacter': (password: string) => /[^A-Za-z0-9\s]/.test(password),
 };
 
-type PasswordVerifications = Record<string, { isValid: boolean; limit?: number }>;
+type PasswordVerifications = { isValid: boolean; limit?: number; name: string }[];
 type PasswordPolicies = [key: string, value?: Record<string, number>][];
 
 export const useVerifyPasswordByPolices = (policies: PasswordPolicies) => {
 	return useCallback(
-		(password: string) => {
-			return policies.reduce((passwordVerifications, [name, rules]) => {
-				if (name === 'get-password-policy-forbidRepeatingCharacters') return passwordVerifications;
+		(password: string): PasswordVerifications => {
+			return policies
+				.map(([name, rules]) => {
+					if (name === 'get-password-policy-forbidRepeatingCharacters') return;
 
-				if (rules) {
-					passwordVerifications[name] = {
-						isValid: password.length === 0 || passwordVerificationsTemplate[name](password, Object.values(rules)[0]),
-						limit: Object.values(rules)[0],
+					if (rules) {
+						return {
+							name,
+							isValid: password.length === 0 || passwordVerificationsTemplate[name](password, Object.values(rules)[0]),
+							limit: Object.values(rules)[0],
+						};
+					}
+
+					return {
+						name,
+						isValid: password.length === 0 || passwordVerificationsTemplate[name](password),
+						limit: undefined,
 					};
-					return passwordVerifications;
-				}
-
-				passwordVerifications[name] = {
-					isValid: password.length === 0 || passwordVerificationsTemplate[name](password),
-					limit: undefined,
-				};
-
-				return passwordVerifications;
-			}, {} as PasswordVerifications);
+				})
+				.filter(Boolean) as PasswordVerifications;
 		},
 		[policies],
 	);
 };
 
-export const useVerifyPassword = (password: string) => {
+export const useVerifyPassword = (password: string): PasswordVerifications => {
 	const { data } = usePasswordPolicy();
 
 	return useVerifyPasswordByPolices((data?.enabled && data?.policy) || [])(password);
