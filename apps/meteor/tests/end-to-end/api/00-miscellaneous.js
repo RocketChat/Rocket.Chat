@@ -500,15 +500,12 @@ describe('miscellaneous', function () {
 				})
 				.then(done);
 		});
-		after((done) => {
-			request
-				.post(api('users.delete'))
-				.set(credentials)
-				.send({
-					userId: user._id,
-				})
-				.end(done);
+		after(async () => {
+			await request.post(api('users.delete')).set(credentials).send({
+				userId: user._id,
+			});
 			user = undefined;
+			await updateSetting('UI_Allow_room_names_with_special_chars', false);
 		});
 		it('create a channel', (done) => {
 			request
