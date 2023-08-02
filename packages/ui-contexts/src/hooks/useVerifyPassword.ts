@@ -38,14 +38,14 @@ export const useVerifyPasswordByPolices = (policies: PasswordPolicies) => {
 
 				if (rules) {
 					passwordVerifications[name] = {
-						isValid: password.length < 0 || passwordVerificationsTemplate[name](password, Object.values(rules)[0]),
+						isValid: password.length === 0 || passwordVerificationsTemplate[name](password, Object.values(rules)[0]),
 						limit: Object.values(rules)[0],
 					};
 					return passwordVerifications;
 				}
 
 				passwordVerifications[name] = {
-					isValid: password.length < 0 || passwordVerificationsTemplate[name](password),
+					isValid: password.length === 0 || passwordVerificationsTemplate[name](password),
 					limit: undefined,
 				};
 
@@ -59,5 +59,5 @@ export const useVerifyPasswordByPolices = (policies: PasswordPolicies) => {
 export const useVerifyPassword = (password: string) => {
 	const { data } = usePasswordPolicy();
 
-	return useVerifyPasswordByPolices(data?.policy ?? [])(password);
+	return useVerifyPasswordByPolices((data?.enabled && data?.policy) || [])(password);
 };

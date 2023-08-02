@@ -14,7 +14,7 @@ export const PasswordVerifier = ({ password }: PasswordVerifierProps) => {
 
 	const passwordVerifications = useVerifyPassword(password);
 
-	if (!passwordVerifications) {
+	if (!passwordVerifications.length) {
 		return <></>;
 	}
 
