@@ -1,10 +1,11 @@
-const path = require('path');
+import path from 'path';
 
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const webpack = require('webpack');
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+// @ts-ignore
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import webpack from 'webpack';
 
-module.exports = (env, argv) => [
+const config: webpack.MultiConfigurationFactory = (_env, argv) => [
 	{
 		stats: 'errors-warnings',
 		mode: argv.mode,
@@ -166,7 +167,7 @@ module.exports = (env, argv) => [
 				},
 			},
 		},
-	},
+	} as any,
 	{
 		stats: 'errors-warnings',
 		mode: argv.mode,
@@ -226,3 +227,5 @@ module.exports = (env, argv) => [
 		},
 	},
 ];
+
+export default config;
