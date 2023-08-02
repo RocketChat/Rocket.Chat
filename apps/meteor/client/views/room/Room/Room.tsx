@@ -36,10 +36,8 @@ const Room = (): ReactElement => {
 						(toolbox.tab && (
 							<ErrorBoundary fallback={null}>
 								<SelectedMessagesProvider>
-									{typeof toolbox.tab.template !== 'string' && typeof toolbox.tab.template !== 'undefined' && (
-										<Suspense fallback={<ContextualbarSkeleton />}>
-											{createElement(toolbox.tab.template, { _id: room._id, rid: room._id, teamId: room.teamId })}
-										</Suspense>
+									{toolbox.tab.tabComponent && (
+										<Suspense fallback={<ContextualbarSkeleton />}>{createElement(toolbox.tab.tabComponent)}</Suspense>
 									)}
 								</SelectedMessagesProvider>
 							</ErrorBoundary>

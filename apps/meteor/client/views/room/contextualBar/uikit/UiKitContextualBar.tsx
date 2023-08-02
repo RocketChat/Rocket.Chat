@@ -27,7 +27,7 @@ import { getURL } from '../../../../../app/utils/client';
 import { ContextualbarClose, ContextualbarScrollableContent } from '../../../../components/Contextualbar';
 import { useUiKitActionManager } from '../../../../hooks/useUiKitActionManager';
 import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
-import { useTabBarClose } from '../../contexts/RoomToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 type FieldStateValue = string | Array<string> | undefined;
 type FieldState = { value: FieldStateValue; blockId: string };
@@ -111,7 +111,7 @@ const UiKitContextualBar = ({
 	appId: string;
 }): JSX.Element => {
 	const actionManager = useUiKitActionManager();
-	const closeTabBar = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 
 	const [state, setState] = useState<ViewState>(payload);
 	const { view } = state;
@@ -196,7 +196,7 @@ const UiKitContextualBar = ({
 
 	const handleSubmit = useMutableCallback((e) => {
 		prevent(e);
-		closeTabBar();
+		closeTab();
 		actionManager.triggerSubmitView({
 			viewId,
 			appId,
@@ -212,7 +212,7 @@ const UiKitContextualBar = ({
 
 	const handleCancel = useMutableCallback((e) => {
 		prevent(e);
-		closeTabBar();
+		closeTab();
 		return actionManager.triggerCancel({
 			appId,
 			viewId,
@@ -226,7 +226,7 @@ const UiKitContextualBar = ({
 
 	const handleClose = useMutableCallback((e) => {
 		prevent(e);
-		closeTabBar();
+		closeTab();
 		return actionManager.triggerCancel({
 			appId,
 			viewId,

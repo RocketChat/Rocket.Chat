@@ -1,19 +1,19 @@
 import { lazy, useMemo } from 'react';
 
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const TeamsChannels = lazy(() => import('../../views/teams/contextualBar/channels/TeamsChannels'));
 
-export const useTeamChannelsRoomAction = (): ToolboxActionConfig => {
+export const useTeamChannelsRoomAction = () => {
 	return useMemo(
-		() => ({
+		(): RoomToolboxActionConfig => ({
 			id: 'team-channels',
 			groups: ['team'],
 			anonymous: true,
 			full: true,
 			title: 'Team_Channels',
 			icon: 'hash',
-			template: TeamsChannels,
+			tabComponent: TeamsChannels,
 			order: 2,
 		}),
 		[],

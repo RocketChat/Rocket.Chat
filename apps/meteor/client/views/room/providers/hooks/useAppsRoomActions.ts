@@ -5,7 +5,7 @@ import { useAppActionButtons } from '../../../../hooks/useAppActionButtons';
 import { useApplyButtonFilters } from '../../../../hooks/useApplyButtonFilters';
 import { useUiKitActionManager } from '../../../../hooks/useUiKitActionManager';
 import { useRoom } from '../../contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../lib/Toolbox';
+import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
 
 export const useAppsRoomActions = () => {
 	const result = useAppActionButtons('roomAction');
@@ -16,7 +16,7 @@ export const useAppsRoomActions = () => {
 	return useMemo(
 		() =>
 			result.data?.filter(applyButtonFilters).map(
-				(action): ToolboxActionConfig => ({
+				(action): RoomToolboxActionConfig => ({
 					id: action.actionId,
 					icon: undefined,
 					order: 300,
