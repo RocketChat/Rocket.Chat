@@ -39,7 +39,7 @@
 		"testapi": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.api.js",
 		"testunit": "npm run .testunit:definition && npm run .testunit:client && npm run .testunit:server",
 		".testunit:server": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.js",
-		".testunit:client": "jest && TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.client.js --exit",
+		".testunit:client": "jest --silent && TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.client.js --exit",
 		".testunit:definition": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.definition.js",
 		"testunit-watch": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --watch --config ./.mocharc.js",
 		"test": "npm run testapi && npm run testui",
