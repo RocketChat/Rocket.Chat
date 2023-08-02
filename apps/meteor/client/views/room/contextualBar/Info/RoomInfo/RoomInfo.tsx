@@ -23,11 +23,11 @@ import { useRoomActions } from '../hooks/useRoomActions';
 type RoomInfoProps = {
 	room: IRoom;
 	icon: string;
-	onClickBack: () => void;
-	onClickClose: () => void;
+	onClickBack?: () => void;
+	onClickClose?: () => void;
 	onClickEnterRoom?: () => void;
 	onClickEdit?: () => void;
-	resetState: () => void;
+	resetState?: () => void;
 };
 
 const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onClickEdit, resetState }: RoomInfoProps) => {

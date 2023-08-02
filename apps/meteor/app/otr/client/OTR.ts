@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import type { IOTR } from '../lib/IOTR';
 import { Subscriptions } from '../../models/client';
+import type { IOTR } from '../lib/IOTR';
 import { OTRRoom } from './OTRRoom';
 
 class OTR implements IOTR {

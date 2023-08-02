@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import { Match } from 'meteor/check';
+import { HTTP } from 'meteor/http';
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { HTTP } from 'meteor/http';
 
 import { settings } from '../../../settings/client';
 

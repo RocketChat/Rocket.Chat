@@ -4,7 +4,11 @@ import { withTranslation } from 'react-i18next';
 
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
-import { debounce, getAvatarUrl, canRenderMessage, throttle, upsert } from '../../components/helpers';
+import { getAvatarUrl } from '../../helpers/baseUrl';
+import { canRenderMessage } from '../../helpers/canRenderMessage';
+import { debounce } from '../../helpers/debounce';
+import { throttle } from '../../helpers/throttle';
+import { upsert } from '../../helpers/upsert';
 import { normalizeQueueAlert } from '../../lib/api';
 import constants from '../../lib/constants';
 import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } from '../../lib/main';
