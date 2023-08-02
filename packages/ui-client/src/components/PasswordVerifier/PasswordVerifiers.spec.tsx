@@ -13,7 +13,7 @@ jest.mock('react-i18next', () => ({
 	}),
 }));
 
-beforeEach(() => {
+afterEach(() => {
 	queryClient.clear();
 });
 

@@ -22,4 +22,6 @@ export default {
 		'\\.css$': 'identity-obj-proxy',
 		'^react($|/.+)': '<rootDir>/../../node_modules/react$1',
 	},
+	collectCoverage: true,
+	collectCoverageFrom: ['src/**/*.{ts,tsx}'],
 };
