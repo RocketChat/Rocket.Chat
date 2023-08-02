@@ -89,7 +89,7 @@ const UiKitMessageBlock = ({ mid: _mid, blocks, rid, appId }: UiKitMessageBlockP
 				},
 			});
 		},
-		// @ts-ignore
+		// @ts-ignore Type 'string | boolean | undefined' is not assignable to type 'string'.
 		appId,
 		rid,
 	};
