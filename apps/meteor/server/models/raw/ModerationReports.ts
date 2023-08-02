@@ -22,7 +22,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 
 	createWithMessageDescriptionAndUserId(
 		message: IMessage,
-		description: string,
+		description: IModerationReport['description'],
 		room: IModerationReport['room'],
 		reportedBy: IModerationReport['reportedBy'],
 	): ReturnType<BaseRaw<IModerationReport>['insertOne']> {
@@ -42,15 +42,12 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		description: IModerationReport['description'],
 		reportedBy: IModerationReport['reportedBy'],
 	): ReturnType<BaseRaw<IModerationReport>['insertOne']> {
-		const record: any = {
+		const record = {
+			description,
 			reportedBy,
 			reportedUser,
 			ts: new Date(),
 		};
-
-		if (description) {
-			record.description = description;
-		}
 
 		return this.insertOne(record);
 	}
