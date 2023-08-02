@@ -33,7 +33,7 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 				{isAdmin && result.isSuccess && !result.data.hasUnlimitedApps && (
 					<Button
 						onClick={() => {
-							setModal(<UnlimitedAppsUpsellModal />);
+							setModal(<UnlimitedAppsUpsellModal onClose={() => setModal(null)} />);
 						}}
 					>
 						{t('Enable_unlimited_apps')}

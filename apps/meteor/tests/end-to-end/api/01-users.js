@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 
 import { sleep } from '../../../lib/utils/sleep';
@@ -15,6 +16,7 @@ import {
 	wait,
 	reservedWords,
 } from '../../data/api-data.js';
+import { MAX_BIO_LENGTH, MAX_NICKNAME_LENGTH } from '../../data/constants.ts';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { imgURL } from '../../data/interactions.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -1135,6 +1137,87 @@ describe('[Users]', function () {
 					expect(res.body).to.have.nested.property('user.emails[0].address', `edited${apiEmail}`);
 					expect(res.body).to.have.nested.property('user.emails[0].verified', false);
 					expect(res.body).to.not.have.nested.property('user.e2e');
+				})
+				.end(done);
+		});
+
+		it("should update a user's bio by userId", (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						bio: `edited-bio-test`,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.bio', 'edited-bio-test');
+					expect(res.body).to.not.have.nested.property('user.e2e');
+				})
+				.end(done);
+		});
+
+		it("should update a user's nickname by userId", (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						nickname: `edited-nickname-test`,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.nickname', 'edited-nickname-test');
+					expect(res.body).to.not.have.nested.property('user.e2e');
+				})
+				.end(done);
+		});
+
+		it(`should return an error when trying to set a nickname longer than ${MAX_NICKNAME_LENGTH} characters`, (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						nickname: Random.hexString(MAX_NICKNAME_LENGTH + 1),
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property(
+						'error',
+						`Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters [error-nickname-size-exceeded]`,
+					);
+				})
+				.end(done);
+		});
+
+		it(`should return an error when trying to set a bio longer than ${MAX_BIO_LENGTH} characters`, (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						bio: Random.hexString(MAX_BIO_LENGTH + 1),
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', `Bio size exceeds ${MAX_BIO_LENGTH} characters [error-bio-size-exceeded]`);
 				})
 				.end(done);
 		});
