@@ -1,4 +1,5 @@
 import { Box, ButtonGroup, Callout, Chip, Margins } from '@rocket.chat/fuselage';
+import { parse } from '@rocket.chat/message-parser';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -8,6 +9,18 @@ import React from 'react';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
 import AppDetailsAPIs from './AppDetailsAPIs';
+
+const normalizeUrl = (url: string): string => {
+	const parsedUrl = parse(url);
+
+	if (parsedUrl[0].type === 'PARAGRAPH') {
+		if (parsedUrl[0].value[0].type === 'LINK') {
+			return parsedUrl[0].value[0].value.src.value;
+		}
+	}
+
+	return url;
+};
 
 const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 	const t = useTranslation();
@@ -23,7 +36,10 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 
 	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
 	const isCarouselVisible = screenshots && Boolean(screenshots.length);
-	const normalizeDocumentationUrl = documentationUrl?.startsWith('http') ? documentationUrl : `https://${documentationUrl}`;
+
+	const normalizedHomepageUrl = normalizeUrl(homepage);
+	const normalizedSupportUrl = normalizeUrl(support);
+	const normalizedDocumentationUrl = normalizeUrl(documentationUrl);
 
 	return (
 		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>
@@ -76,13 +92,13 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 								<Box fontScale='h4' color='hint'>
 									{t('Author_Site')}
 								</Box>
-								<ExternalLink to={homepage} />
+								<ExternalLink to={normalizedHomepageUrl}>{homepage}</ExternalLink>
 							</Box>
 							<Box display='flex' flexDirection='column' flexGrow={1}>
 								<Box fontScale='h4' color='hint'>
 									{t('Support')}
 								</Box>
-								<ExternalLink to={support} />
+								<ExternalLink to={normalizedSupportUrl}>{support}</ExternalLink>
 							</Box>
 						</Box>
 
@@ -91,7 +107,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 								<Box fontScale='h4' color='hint'>
 									{t('Documentation')}
 								</Box>
-								<ExternalLink to={normalizeDocumentationUrl} />
+								<ExternalLink to={normalizedDocumentationUrl}>{documentationUrl}</ExternalLink>
 							</>
 						)}
 					</Box>
