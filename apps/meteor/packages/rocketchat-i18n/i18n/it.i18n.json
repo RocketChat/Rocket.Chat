@@ -1273,7 +1273,7 @@
   "Helpers": "Helpers",
   "Hex_Color_Preview": "Anteprima colore esadecimale",
   "Hi": "Ciao",
-  "Hi_username": "Ciao {{name}}",
+  "Hi_username": "Ciao [name]",
   "Hidden": "Nascosto",
   "Hide": "Nascondi",
   "Hide_counter": "Nascondi contatore",

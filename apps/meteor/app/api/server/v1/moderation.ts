@@ -1,4 +1,4 @@
-import type { IModerationReport } from '@rocket.chat/core-typings';
+import type { IModerationReport, IUser } from '@rocket.chat/core-typings';
 import { ModerationReports, Users } from '@rocket.chat/models';
 import {
 	isReportHistoryProps,
@@ -73,10 +73,9 @@ API.v1.addRoute(
 
 			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
 
-			const user = await Users.findOneById(userId, { projection: { _id: 1 } });
-			if (!user) {
-				return API.v1.failure('error-invalid-user');
-			}
+			const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(userId, {
+				projection: { _id: 1, username: 1, name: 1 },
+			});
 
 			const escapedSelector = escapeRegExp(selector);
 
@@ -99,6 +98,7 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
+				user,
 				messages: uniqueMessages,
 				count: reports.length,
 				total,
@@ -125,11 +125,6 @@ API.v1.addRoute(
 			const { user: moderator } = this;
 
 			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
-
-			const user = await Users.findOneById(userId, { projection: { _id: 1 } });
-			if (!user) {
-				return API.v1.failure('error-invalid-user');
-			}
 
 			const { cursor, totalCount } = ModerationReports.findReportedMessagesByReportedUserId(userId, '', {
 				offset,
