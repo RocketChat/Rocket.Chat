@@ -19,7 +19,7 @@ test.describe.serial('Omnichannel Triggers', () => {
 			email: faker.internet.email(),
 		};
 		triggersName = faker.string.uuid();
-		triggerMessage = 'Welcome to Rocket.chat';
+		triggerMessage = 'Welcome to Rocket Chat';
 		const requests = await Promise.all([
 			api.post('/livechat/users/agent', { username: 'user1' }),
 			api.post('/livechat/users/manager', { username: 'user1' }),
@@ -59,7 +59,7 @@ test.describe.serial('Omnichannel Triggers', () => {
 	});
 
 	test('trigger condition: chat opened by visitor', async ({ page }) => {
-		await page.goto('/livechat');
+		await page.goto('http://localhost:8080/livechat');
 		await poLiveChat.openLiveChat();
 
 		await test.step('expect send a message as a visitor', async () => {
@@ -79,7 +79,7 @@ test.describe.serial('Omnichannel Triggers', () => {
 	});
 
 	test('trigger condition: after guest registration', async ({ page }) => {
-		await page.goto('/livechat');
+		await page.goto('http://localhost:8080/livechat');
 		await poLiveChat.openLiveChat();
 
 		await test.step('expect update trigger to after guest registration', async () => {
