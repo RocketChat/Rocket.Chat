@@ -22,7 +22,7 @@ export type ModerationEndpoints = {
 	'/v1/moderation.user.reportedMessages': {
 		GET: (params: ReportMessageHistoryParamsGET) => PaginatedResult<{
 			user: Pick<IUser, 'username' | 'name' | '_id'> | null;
-            messages: Pick<MessageReport, 'message' | 'ts' | 'room' | '_id'>[];
+			messages: Pick<MessageReport, 'message' | 'ts' | 'room' | '_id'>[];
 		}>;
 	};
 	'/v1/moderation.user.deleteReportedMessages': {
