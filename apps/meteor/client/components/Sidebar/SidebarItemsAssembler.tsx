@@ -12,7 +12,7 @@ type SidebarItemsAssemblerProps = {
 	currentPath?: string;
 };
 
-export const SidebarItemsAssembler: FC<SidebarItemsAssemblerProps> = ({ items, currentPath }) => {
+const SidebarItemsAssembler: FC<SidebarItemsAssemblerProps> = ({ items, currentPath }) => {
 	const t = useTranslation();
 
 	return (

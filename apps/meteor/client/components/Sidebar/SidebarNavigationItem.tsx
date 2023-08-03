@@ -16,7 +16,7 @@ type SidebarNavigationItemProps = {
 	badge?: () => ReactElement;
 };
 
-export const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
+const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 	permissionGranted,
 	pathSection,
 	icon,

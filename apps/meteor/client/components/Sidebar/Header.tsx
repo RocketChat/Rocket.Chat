@@ -8,7 +8,7 @@ type HeaderProps = {
 	onClose?: () => void;
 };
 
-export const Header: FC<HeaderProps> = ({ title, onClose, children, ...props }) => {
+const Header: FC<HeaderProps> = ({ title, onClose, children, ...props }) => {
 	const t = useTranslation();
 
 	return (

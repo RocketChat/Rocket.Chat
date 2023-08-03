@@ -3,7 +3,7 @@ import type { FC } from 'react';
 import React, { memo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { Sidebar, Content as SidebarContent, Header as SidebarHeader, SidebarItemsAssembler } from '../../components/Sidebar';
+import Sidebar from '../../components/Sidebar';
 import SettingsProvider from '../../providers/SettingsProvider';
 import { getAccountSidebarItems, subscribeToAccountSidebarItems } from './sidebarItems';
 
@@ -20,10 +20,10 @@ const AccountSidebar: FC = () => {
 	return (
 		<SettingsProvider privileged>
 			<Sidebar>
-				<SidebarHeader onClose={sidebar.close} title={t('Account')} />
-				<SidebarContent>
-					<SidebarItemsAssembler items={items} currentPath={currentPath} />
-				</SidebarContent>
+				<Sidebar.Header onClose={sidebar.close} title={t('Account')} />
+				<Sidebar.Content>
+					<Sidebar.ItemsAssembler items={items} currentPath={currentPath} />
+				</Sidebar.Content>
 			</Sidebar>
 		</SettingsProvider>
 	);
