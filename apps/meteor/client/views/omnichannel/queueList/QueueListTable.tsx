@@ -89,9 +89,7 @@ const QueueListTable = (): ReactElement => {
 	}, [sortBy, sortDirection, itemsPerPage, current, filters.status, filters.departmentId, filters.servedBy]);
 
 	const getLivechatQueue = useEndpoint('GET', '/v1/livechat/queue');
-	const { data, isSuccess, isLoading } = useQuery(['livechat-queue', query], async () => getLivechatQueue(query), {
-		refetchOnWindowFocus: false,
-	});
+	const { data, isSuccess, isLoading } = useQuery(['livechat-queue', query], async () => getLivechatQueue(query));
 
 	return (
 		<>

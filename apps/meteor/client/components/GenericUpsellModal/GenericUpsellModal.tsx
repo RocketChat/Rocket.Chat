@@ -15,10 +15,10 @@ type GenericUpsellModalProps = {
 	icon?: IconName;
 	img: ComponentProps<typeof Modal.HeroImage>['src'];
 	onCancel?: () => void;
-	onClose?: () => void;
+	onClose: () => void;
 	onConfirm?: () => void;
 	annotation?: ReactNode;
-};
+} & ComponentProps<typeof Modal>;
 
 const GenericUpsellModal = ({
 	tagline,
@@ -30,14 +30,15 @@ const GenericUpsellModal = ({
 	icon,
 	description,
 	onCancel,
+	onClose,
 	onConfirm,
-	onClose = onCancel,
 	annotation,
+	...props
 }: GenericUpsellModalProps) => {
 	const t = useTranslation();
 
 	return (
-		<Modal>
+		<Modal {...props}>
 			<Modal.Header>
 				{icon && <Modal.Icon name={icon} />}
 				<Modal.HeaderText>

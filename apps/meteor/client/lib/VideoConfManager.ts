@@ -44,6 +44,7 @@ export type ProviderCapabilities = {
 type CurrentCallParams = {
 	callId: string;
 	url: string;
+	providerName?: string;
 };
 
 type VideoConfEvents = {
@@ -349,7 +350,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			},
 		};
 
-		const { url } = await sdk.rest.post('/v1/video-conference.join', params).catch((e) => {
+		const { url, providerName } = await sdk.rest.post('/v1/video-conference.join', params).catch((e) => {
 			debug && console.error(`[VideoConf] Failed to join call ${callId}`);
 			this.emit('join/error', { error: e?.xhr?.responseJSON?.error || 'unknown-error' });
 
@@ -361,7 +362,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		}
 
 		debug && console.log(`[VideoConf] Opening ${url}.`);
-		this.emit('call/join', { url, callId });
+		this.emit('call/join', { url, callId, providerName });
 	}
 
 	public abortCall(): void {

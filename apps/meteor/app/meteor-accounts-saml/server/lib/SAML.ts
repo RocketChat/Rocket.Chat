@@ -429,7 +429,7 @@ export class SAML {
 				};
 
 				await this.storeCredential(credentialToken, loginResult);
-				const url = `${Meteor.absoluteUrl('home')}?saml_idp_credentialToken=${credentialToken}`;
+				const url = `${Meteor.absoluteUrl('saml')}/${credentialToken}`;
 				res.writeHead(302, {
 					Location: url,
 				});

@@ -9,7 +9,6 @@ export const useVideoConfData = ({ callId }: { callId: string }) => {
     () => getVideoConfInfo({ callId }),
     {
       staleTime: Infinity,
-      refetchOnWindowFocus: false,
       refetchOnMount: (query) => {
         if (query.state.data?.endedAt) {
           return false;
