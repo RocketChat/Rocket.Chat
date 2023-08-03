@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useUserDisplayName } from '../../../../../hooks/useUserDisplayName';
 import type { Action } from '../../../../hooks/useActionSpread';
 import ReportUserModal from '../../../contextualBar/UserInfo/ReportUserModal';
 
@@ -15,6 +16,7 @@ export const useReportUser = (user: Pick<IUser, '_id' | 'username' | 'name'>): A
 
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const displayName = useUserDisplayName({ username, name });
 
 	const reportUser = useEndpoint('POST', '/v1/moderation.reportUser');
 	const reportUserMutation = useMutation(
@@ -33,11 +35,10 @@ export const useReportUser = (user: Pick<IUser, '_id' | 'username' | 'name'>): A
 		const action = () =>
 			setModal(
 				<ReportUserModal
-					uid={uid}
-					username={username || ''}
 					onConfirm={reportUserMutation.mutate}
-					name={name}
 					onClose={() => setModal()}
+					displayName={displayName || ''}
+					username={username || ''}
 				/>,
 			);
 
@@ -52,7 +53,7 @@ export const useReportUser = (user: Pick<IUser, '_id' | 'username' | 'name'>): A
 					action,
 			  }
 			: undefined;
-	}, [ownUserId, uid, t, setModal, username, reportUserMutation.mutate, name]);
+	}, [ownUserId, uid, t, setModal, username, reportUserMutation.mutate, displayName]);
 
 	return openReportUserModal;
 };
