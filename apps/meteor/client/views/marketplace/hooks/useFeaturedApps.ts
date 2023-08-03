@@ -9,6 +9,5 @@ export const useFeaturedApps = (): UseQueryResult<OperationResult<'GET', '/apps/
 	return useQuery({
 		queryKey: ['featured-apps'],
 		queryFn: () => featuredApps(),
-		refetchOnWindowFocus: false,
 	});
 };
