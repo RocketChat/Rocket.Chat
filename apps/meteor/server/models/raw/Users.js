@@ -314,12 +314,15 @@ export class UsersRaw extends BaseRaw {
 				{
 					$lookup: {
 						from: 'rocketchat_subscription',
-						localField: '_id',
-						foreignField: 'u._id',
+						let: { id: '$_id' },
 						as: 'sub',
 						pipeline: [
 							{
-								$match: { $expr: { $eq: ['$rid', rid] } },
+								$match: {
+									$expr: {
+										$and: [{ $eq: ['$u._id', '$$id'] }, { $eq: ['$rid', rid] }],
+									},
+								},
 							},
 						],
 					},
