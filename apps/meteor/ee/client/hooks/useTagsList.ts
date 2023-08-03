@@ -44,7 +44,7 @@ export const useTagsList = (options: TagsListOptions): UseTagsListResult => {
 				items: tags.map<any>((tag: any) => ({
 					_id: tag._id,
 					label: tag.name,
-					value: tag._id,
+					value: tag.name,
 					_updatedAt: new Date(tag._updatedAt),
 				})),
 				itemCount: total,

@@ -50,7 +50,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await deleteUser(userId, confirmRelinquish);
+		await deleteUser(userId, confirmRelinquish, uid);
 
 		await callbacks.run('afterDeleteUser', user);
 

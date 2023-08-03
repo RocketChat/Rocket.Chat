@@ -32,7 +32,7 @@ import {
 	checkUsernameAvailability,
 	checkUsernameAvailabilityWithValidation,
 } from '../../../lib/server/functions/checkUsernameAvailability';
-import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
+import { getFullUserDataByIdOrUsernameOrImportId } from '../../../lib/server/functions/getFullUserData';
 import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../../lib/server/functions/saveUser';
@@ -397,10 +397,16 @@ API.v1.addRoute(
 		async get() {
 			const { fields } = await this.parseJsonQuery();
 
-			const user = await getFullUserDataByIdOrUsername(this.userId, {
-				filterId: (this.queryParams as any).userId,
-				filterUsername: (this.queryParams as any).username,
-			});
+			const searchTerms: [string, 'id' | 'username' | 'importId'] | false =
+				('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
+				('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
+				('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']);
+
+			if (!searchTerms) {
+				return API.v1.failure('Invalid search query.');
+			}
+
+			const user = await getFullUserDataByIdOrUsernameOrImportId(this.userId, ...searchTerms);
 
 			if (!user) {
 				return API.v1.failure('User not found.');
