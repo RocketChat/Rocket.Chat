@@ -140,7 +140,7 @@ API.v1.addRoute(
 			}
 
 			const operation = await Import.newOperation(this.userId, importer.name, importer.key);
-			const instance = new PendingFileImporter(importer, operation); // eslint-disable-line new-cap
+			const instance = new PendingFileImporter(importer, operation);
 			const count = await instance.prepareFileCount();
 
 			return API.v1.success({
@@ -165,7 +165,7 @@ API.v1.addRoute(
 			}
 
 			const operation = await Import.newOperation(this.userId, importer.name, importer.key);
-			const instance = new PendingAvatarImporter(importer, operation); // eslint-disable-line new-cap
+			const instance = new PendingAvatarImporter(importer, operation);
 			const count = await instance.prepareFileCount();
 
 			return API.v1.success({
