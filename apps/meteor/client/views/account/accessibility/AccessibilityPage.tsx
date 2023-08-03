@@ -125,7 +125,7 @@ const AccessibilityPage = () => {
 						)}
 
 						<Button mbs='x32' onClick={() => router.navigate('/account/theme')}>
-							See more themes
+							See all themes
 						</Button>
 					</Accordion.Item>
 				</Box>
