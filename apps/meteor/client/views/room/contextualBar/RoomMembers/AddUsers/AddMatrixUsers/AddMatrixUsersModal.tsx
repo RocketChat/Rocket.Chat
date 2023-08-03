@@ -1,10 +1,10 @@
 import { Modal, Button, Box, Icon } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
-type ValidateMatrixIdModalProps = {
+type AddMatrixUsersModalProps = {
 	matrixIdVerifiedStatus: Map<string, string>;
 	completeUserList: string[];
 	onClose: () => void;
@@ -29,7 +29,8 @@ const verificationStatusAsIcon = (verificationStatus: string) => {
 	}
 };
 
-const ValidateMatrixIdModal = ({ onClose, matrixIdVerifiedStatus, onSave, completeUserList }: ValidateMatrixIdModalProps): ReactElement => {
+const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, completeUserList }: AddMatrixUsersModalProps): ReactElement => {
+	const dispatchToastMessage = useToastMessageDispatch();
 	const usersToInvite = completeUserList.filter(
 		(user) => !(matrixIdVerifiedStatus.has(user) && matrixIdVerifiedStatus.get(user) === 'UNVERIFIED'),
 	);
@@ -41,8 +42,9 @@ const ValidateMatrixIdModal = ({ onClose, matrixIdVerifiedStatus, onSave, comple
 	});
 
 	const onSubmit = (data: FormValues) => {
-		onSave({ users: data.usersToInvite });
-		onClose();
+		onSave({ users: data.usersToInvite })
+			.then(onClose)
+			.catch((error) => dispatchToastMessage({ type: 'error', message: error as Error }));
 	};
 
 	const t = useTranslation();
@@ -78,4 +80,4 @@ const ValidateMatrixIdModal = ({ onClose, matrixIdVerifiedStatus, onSave, comple
 	);
 };
 
-export default ValidateMatrixIdModal;
+export default AddMatrixUsersModal;

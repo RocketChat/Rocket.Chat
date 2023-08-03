@@ -3,7 +3,7 @@ import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/
 import { useMutation } from '@tanstack/react-query';
 import React from 'react';
 
-import ValidateMatrixIdModal from './ValidateMatrixIdModal';
+import AddMatrixUsersModal from './AddMatrixUsersModal';
 
 export type useAddMatrixUsersProps = {
 	handleSave: (args_0: any) => Promise<void>;
@@ -25,7 +25,7 @@ export const useAddMatrixUsers = () => {
 			matrixIdVerificationMap = new Map(Object.entries(matrixIdsVerificationResults));
 
 			setModal(
-				<ValidateMatrixIdModal
+				<AddMatrixUsersModal
 					completeUserList={users}
 					onClose={handleClose}
 					onSave={handleSave}
