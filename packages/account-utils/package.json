@@ -9,6 +9,11 @@
 		"ts-jest": "~29.0.5",
 		"typescript": "~5.2.2"
 	},
+	"dependencies": {
+		"generate-password": "^1.7.0",
+		"@rocket.chat/core-services": "workspace:^",
+		"@rocket.chat/random": "workspace:^"
+	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",

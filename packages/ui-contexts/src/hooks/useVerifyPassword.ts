@@ -1,6 +1,7 @@
+import PasswordPolicy from '@rocket.chat/account-utils';
 import { useCallback, useMemo } from 'react';
 
-import { usePasswordPolicy } from './usePasswordPolicy';
+import { useSetting } from './useSetting';
 
 const passwordVerificationsTemplate: Record<string, (password: string, lengthCriteria?: number) => boolean> = {
 	'get-password-policy-minLength': (password: string, minLength?: number) => Boolean(minLength && password.length >= minLength),
@@ -55,9 +56,41 @@ export const useVerifyPasswordByPolices = (policies?: PasswordPolicies) => {
 };
 
 export const useVerifyPassword = (password: string): PasswordVerifications => {
-	const { data } = usePasswordPolicy();
+	const enabled = useSetting('Accounts_Password_Policy_Enabled');
+	const minLength = useSetting('Accounts_Password_Policy_MinLength');
+	const maxLength = useSetting('Accounts_Password_Policy_MaxLength');
+	const forbidRepeatingCharacters = useSetting('Accounts_Password_Policy_ForbidRepeatingCharacters');
+	const forbidRepeatingCharactersCount = useSetting('Accounts_Password_Policy_ForbidRepeatingCharactersCount');
+	const mustContainAtLeastOneLowercase = useSetting('Accounts_Password_Policy_AtLeastOneLowercase');
+	const mustContainAtLeastOneUppercase = useSetting('Accounts_Password_Policy_AtLeastOneUppercase');
+	const mustContainAtLeastOneNumber = useSetting('Accounts_Password_Policy_AtLeastOneNumber');
+	const mustContainAtLeastOneSpecialCharacter = useSetting('Accounts_Password_Policy_AtLeastOneSpecialCharacter');
 
-	const validator = useVerifyPasswordByPolices((data?.enabled && data?.policy) || undefined);
+	const validator = useMemo(
+		() =>
+			new PasswordPolicy.PasswordPolicy({
+				enabled,
+				minLength,
+				maxLength,
+				forbidRepeatingCharacters,
+				forbidRepeatingCharactersCount,
+				mustContainAtLeastOneLowercase,
+				mustContainAtLeastOneUppercase,
+				mustContainAtLeastOneNumber,
+				mustContainAtLeastOneSpecialCharacter,
+			}),
+		[
+			enabled,
+			minLength,
+			maxLength,
+			forbidRepeatingCharacters,
+			forbidRepeatingCharactersCount,
+			mustContainAtLeastOneLowercase,
+			mustContainAtLeastOneUppercase,
+			mustContainAtLeastOneNumber,
+			mustContainAtLeastOneSpecialCharacter,
+		],
+	);
 
-	return useMemo(() => validator(password), [password, validator]);
+	return useMemo(() => validator.validate(password), [password, validator]);
 };

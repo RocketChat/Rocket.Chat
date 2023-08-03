@@ -1,8 +1,36 @@
+import { MeteorError } from '@rocket.chat/core-services';
 import { Random } from '@rocket.chat/random';
 import generator from 'generate-password';
-import { Meteor } from 'meteor/meteor';
 
 class PasswordPolicy {
+	regex: {
+		forbiddingRepeatingCharacters: RegExp;
+		mustContainAtLeastOneLowercase: RegExp;
+		mustContainAtLeastOneUppercase: RegExp;
+		mustContainAtLeastOneNumber: RegExp;
+		mustContainAtLeastOneSpecialCharacter: RegExp;
+	};
+
+	enabled: boolean;
+
+	minLength: number;
+
+	maxLength: number;
+
+	forbidRepeatingCharacters: boolean;
+
+	mustContainAtLeastOneLowercase: boolean;
+
+	mustContainAtLeastOneUppercase: boolean;
+
+	mustContainAtLeastOneNumber: boolean;
+
+	mustContainAtLeastOneSpecialCharacter: boolean;
+
+	throwError: boolean;
+
+	forbidRepeatingCharactersCount: number;
+
 	constructor({
 		enabled = false,
 		minLength = -1,
@@ -14,8 +42,20 @@ class PasswordPolicy {
 		mustContainAtLeastOneNumber = false,
 		mustContainAtLeastOneSpecialCharacter = false,
 		throwError = true,
-	} = {}) {
+	}: {
+		enabled: boolean;
+		minLength: number;
+		maxLength: number;
+		forbidRepeatingCharacters: boolean;
+		forbidRepeatingCharactersCount: number;
+		mustContainAtLeastOneLowercase: boolean;
+		mustContainAtLeastOneUppercase: boolean;
+		mustContainAtLeastOneNumber: boolean;
+		mustContainAtLeastOneSpecialCharacter: boolean;
+		throwError: boolean;
+	}) {
 		this.regex = {
+			forbiddingRepeatingCharacters: new RegExp('.*'), // match everything (with no line breaks) by default
 			mustContainAtLeastOneLowercase: new RegExp('[a-z]'),
 			mustContainAtLeastOneUppercase: new RegExp('[A-Z]'),
 			mustContainAtLeastOneNumber: new RegExp('[0-9]'),
@@ -34,25 +74,172 @@ class PasswordPolicy {
 		this.throwError = throwError;
 	}
 
-	set forbidRepeatingCharactersCount(value) {
-		this._forbidRepeatingCharactersCount = value;
+	get passwordForbidRepeatingCharactersCount() {
+		return this.forbidRepeatingCharactersCount;
+	}
+
+	set passwordForbidRepeatingCharactersCount(value: number) {
+		this.forbidRepeatingCharactersCount = value;
 		this.regex.forbiddingRepeatingCharacters = new RegExp(`(.)\\1{${this.forbidRepeatingCharactersCount},}`);
 	}
 
-	get forbidRepeatingCharactersCount() {
-		return this._forbidRepeatingCharactersCount;
+	get passwordPolicyEnabled() {
+		return this.enabled;
 	}
 
-	error(error, message, reasons) {
+	set passwordPolicyEnabled(value: boolean) {
+		this.enabled = value;
+	}
+
+	get passwordMinLength() {
+		return this.minLength;
+	}
+
+	set passwordMinLength(value: number) {
+		this.minLength = value;
+	}
+
+	get passwordMaxLength() {
+		return this.maxLength;
+	}
+
+	set passwordMaxLength(value: number) {
+		this.maxLength = value;
+	}
+
+	get passwordForbidRepeatingCharacters() {
+		return this.forbidRepeatingCharacters;
+	}
+
+	set passwordForbidRepeatingCharacters(value: boolean) {
+		this.forbidRepeatingCharacters = value;
+	}
+
+	get passwordAtLeastOneLowercase() {
+		return this.mustContainAtLeastOneLowercase;
+	}
+
+	set passwordAtLeastOneLowercase(value: boolean) {
+		this.mustContainAtLeastOneLowercase = value;
+	}
+
+	get passwordAtLeastOneUppercase() {
+		return this.mustContainAtLeastOneUppercase;
+	}
+
+	set passwordAtLeastOneUppercase(value: boolean) {
+		this.mustContainAtLeastOneUppercase = value;
+	}
+
+	get passwordAtLeastOneNumber() {
+		return this.mustContainAtLeastOneNumber;
+	}
+
+	set passwordAtLeastOneNumber(value: boolean) {
+		this.mustContainAtLeastOneNumber = value;
+	}
+
+	get passwordAtLeastOneSpecialCharacter() {
+		return this.mustContainAtLeastOneSpecialCharacter;
+	}
+
+	set passwordAtLeastOneSpecialCharacter(value: boolean) {
+		this.mustContainAtLeastOneSpecialCharacter = value;
+	}
+
+	error(
+		error: string | number,
+		message: string | undefined,
+		reasons?: {
+			error: string;
+			message: string;
+		}[],
+	) {
 		if (this.throwError) {
-			throw new Meteor.Error(error, message, reasons);
+			throw new MeteorError(error, message, reasons);
 		}
 
 		return false;
 	}
 
-	validate(password) {
-		const reasons = [];
+	sendValidationMessage(password: string): {
+		policy: string;
+		isValid: boolean;
+		limit?: number;
+	}[] {
+		type validationMessage = {
+			policy: string;
+			isValid: boolean;
+			limit?: number;
+		};
+
+		const validationReturn: validationMessage[] = [];
+
+		if (!this.enabled) {
+			return [];
+		}
+
+		if (this.minLength >= 1) {
+			validationReturn.push({
+				policy: 'get-password-policy-minLength',
+				isValid: !!((password as string).length < this.minLength),
+				limit: this.minLength,
+			});
+		}
+
+		if (this.maxLength >= 1) {
+			validationReturn.push({
+				policy: 'get-password-policy-maxLength',
+				isValid: !!((password as string).length > this.maxLength),
+				limit: this.maxLength,
+			});
+		}
+
+		if (this.forbidRepeatingCharacters) {
+			validationReturn.push({
+				policy: 'get-password-policy-forbidRepeatingCharactersCount',
+				isValid: this.regex.forbiddingRepeatingCharacters.test(password as string),
+				limit: this.forbidRepeatingCharactersCount,
+			});
+		}
+
+		if (this.mustContainAtLeastOneLowercase) {
+			validationReturn.push({
+				policy: 'get-password-policy-mustContainAtLeastOneLowercase',
+				isValid: this.regex.mustContainAtLeastOneLowercase.test(password as string),
+			});
+		}
+
+		if (this.mustContainAtLeastOneUppercase) {
+			validationReturn.push({
+				policy: 'get-password-policy-mustContainAtLeastOneUppercase',
+				isValid: this.regex.mustContainAtLeastOneUppercase.test(password as string),
+			});
+		}
+
+		if (this.mustContainAtLeastOneNumber) {
+			validationReturn.push({
+				policy: 'get-password-policy-mustContainAtLeastOneNumber',
+				isValid: this.regex.mustContainAtLeastOneNumber.test(password as string),
+			});
+		}
+
+		if (this.mustContainAtLeastOneSpecialCharacter) {
+			validationReturn.push({
+				policy: 'get-password-policy-mustContainAtLeastOneSpecialCharacter',
+				isValid: this.regex.mustContainAtLeastOneSpecialCharacter.test(password as string),
+			});
+		}
+
+		return validationReturn;
+	}
+
+	validate(password: string | unknown) {
+		const reasons: {
+			error: string;
+			message: string;
+		}[] = [];
+
 		if (typeof password !== 'string' || !password.trim().length) {
 			return this.error('error-password-policy-not-met', "The password provided does not meet the server's password policy.");
 		}
@@ -118,10 +305,16 @@ class PasswordPolicy {
 	}
 
 	getPasswordPolicy() {
-		const data = {
+		type dataType = {
+			enabled: boolean;
+			policy: [string, { [key: string]: number }?][];
+		};
+
+		const data: dataType = {
 			enabled: false,
 			policy: [],
 		};
+
 		if (this.enabled) {
 			data.enabled = true;
 			if (this.minLength >= 1) {
