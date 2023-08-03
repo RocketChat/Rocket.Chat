@@ -1,4 +1,4 @@
-import { Box, ButtonGroup, Callout, Chip, Margins } from '@rocket.chat/fuselage';
+import { Box, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -58,13 +58,13 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 						<Box fontScale='h4' mbe='x8' color='titles-labels'>
 							{t('Categories')}
 						</Box>
-						<ButtonGroup flexWrap='wrap'>
+						<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='start' alignItems='center'>
 							{categories?.map((current) => (
-								<Chip key={current} textTransform='uppercase'>
+								<Chip key={current} textTransform='uppercase' mi='4px' mb='4px'>
 									{current}
 								</Chip>
 							))}
-						</ButtonGroup>
+						</Box>
 					</Box>
 
 					<Box is='section'>
