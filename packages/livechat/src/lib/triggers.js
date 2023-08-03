@@ -174,13 +174,29 @@ class Triggers {
 
 		if (trigger.runOnce) {
 			trigger.skip = true;
-			firedTriggers.push(trigger._id);
-			store.setState({ firedTriggers });
+			store.setState({ firedTriggers: [...firedTriggers, trigger._id] });
 		}
 	}
 
 	processRequest(request) {
 		this._requests.push(request);
+	}
+
+	ready(triggerId, condition) {
+		const { activeTriggers = [] } = store.state;
+		store.setState({ activeTriggers: { ...activeTriggers, [triggerId]: condition } });
+	}
+
+	showTriggerMessages() {
+		const { activeTriggers = [] } = store.state;
+
+		const triggers = Object.entries(activeTriggers);
+
+		if (!triggers.length) {
+			return false;
+		}
+
+		return triggers.some(([, condition]) => condition.name !== 'after-guest-registration');
 	}
 
 	processTriggers() {
@@ -194,22 +210,23 @@ class Triggers {
 					case 'page-url':
 						const hrefRegExp = new RegExp(condition.value, 'g');
 						if (this.parentUrl && hrefRegExp.test(this.parentUrl)) {
+							this.ready(trigger._id, condition);
 							this.fire(trigger);
 						}
 						break;
 					case 'time-on-site':
+						this.ready(trigger._id, condition);
 						trigger.timeout = setTimeout(() => {
 							this.fire(trigger);
 						}, parseInt(condition.value, 10) * 1000);
 						break;
 					case 'chat-opened-by-visitor':
 					case 'after-guest-registration':
-						store.setState({ ignoreTriggerMessages: condition.name === 'after-guest-registration' });
-
 						const openFunc = () => {
 							this.fire(trigger);
 							this.callbacks.off('chat-opened-by-visitor', openFunc);
 						};
+						this.ready(trigger._id, condition);
 						this.callbacks.on('chat-opened-by-visitor', openFunc);
 						break;
 				}

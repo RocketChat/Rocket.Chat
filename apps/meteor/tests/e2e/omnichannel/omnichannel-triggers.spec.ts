@@ -59,7 +59,7 @@ test.describe.serial('Omnichannel Triggers', () => {
 	});
 
 	test('trigger condition: chat opened by visitor', async ({ page }) => {
-		await page.goto('http://localhost:8080/livechat');
+		await page.goto('/livechat');
 		await poLiveChat.openLiveChat();
 
 		await test.step('expect send a message as a visitor', async () => {
@@ -79,9 +79,6 @@ test.describe.serial('Omnichannel Triggers', () => {
 	});
 
 	test('trigger condition: after guest registration', async ({ page }) => {
-		await page.goto('http://localhost:8080/livechat');
-		await poLiveChat.openLiveChat();
-
 		await test.step('expect update trigger to after guest registration', async () => {
 			await agent.poHomeOmnichannel.triggers.firstRowInTriggerTable(`edited-${triggersName}`).click();
 			await agent.poHomeOmnichannel.triggers.fillTriggerForm({ condition: 'after-guest-registration' });
@@ -90,7 +87,7 @@ test.describe.serial('Omnichannel Triggers', () => {
 		});
 
 		await test.step('expect trigger message to be displayed after guest registration', async () => {
-			await page.reload();
+			await page.goto('/livechat');
 			await poLiveChat.openLiveChat();
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).not.toBeVisible();
 			await expect(poLiveChat.btnChatNow).not.toBeVisible();

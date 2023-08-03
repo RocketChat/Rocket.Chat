@@ -83,7 +83,6 @@ export class App extends Component<AppProps, AppState> {
 	};
 
 	protected handleRoute = async ({ url }: { url: string }) => {
-		const { ignoreTriggerMessages } = store.state as any; // TODO: properly type store
 		setTimeout(() => {
 			const {
 				config: {
@@ -113,7 +112,7 @@ export class App extends Component<AppProps, AppState> {
 
 			const showDepartment = departments.filter((dept) => dept.showOnRegistration).length > 0;
 			const isAnyFieldVisible = nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment;
-			const showRegistrationForm = !user?.token && registrationForm && isAnyFieldVisible && ignoreTriggerMessages;
+			const showRegistrationForm = !user?.token && registrationForm && isAnyFieldVisible && !Triggers.showTriggerMessages();
 
 			if (url === '/' && showRegistrationForm) {
 				return route('/register');
