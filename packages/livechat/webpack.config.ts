@@ -3,35 +3,43 @@ import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import webpack from 'webpack';
+import 'webpack-dev-server';
 
-const config: webpack.MultiConfigurationFactory = (_env, argv) => [
+// Helper to use absolute paths in the webpack config
+const _ = (p: string) => path.resolve(__dirname, p);
+
+const common = (args: webpack.CliConfigOptions): Partial<webpack.Configuration> => ({
+	stats: 'errors-warnings',
+	mode: args.mode,
+	devtool: args.mode === 'production' ? 'source-map' : 'eval',
+	resolve: {
+		extensions: ['.js', '.jsx', '.ts', '.tsx'],
+		alias: {
+			'react': 'preact/compat',
+			'react-dom': 'preact/compat',
+		},
+	},
+	node: {
+		console: false,
+		process: false,
+		Buffer: false,
+		__filename: false,
+		__dirname: false,
+		setImmediate: false,
+	},
+});
+
+const config: webpack.MultiConfigurationFactory = (_env, args) => [
 	{
-		stats: 'errors-warnings',
-		mode: argv.mode,
-		devtool: argv.mode === 'production' ? 'source-map' : 'eval',
-		resolve: {
-			extensions: ['.js', '.jsx', '.ts', '.tsx'],
-			alias: {
-				'react': 'preact/compat',
-				'react-dom': 'preact/compat',
-			},
-		},
-		node: {
-			console: false,
-			process: false,
-			Buffer: false,
-			__filename: false,
-			__dirname: false,
-			setImmediate: false,
-		},
+		...common(args),
 		entry: {
-			bundle: ['core-js', 'regenerator-runtime/runtime', path.resolve(__dirname, './src/entry')],
-			polyfills: path.resolve(__dirname, './src/polyfills'),
+			bundle: ['core-js', 'regenerator-runtime/runtime', _('./src/entry')],
+			polyfills: _('./src/polyfills'),
 		} as webpack.Entry,
 		output: {
-			path: path.resolve(__dirname, './dist'),
-			publicPath: argv.mode === 'production' ? 'livechat/' : '/',
-			filename: argv.mode === 'production' ? '[name].[chunkhash:5].js' : '[name].js',
+			path: _('./dist'),
+			publicPath: args.mode === 'production' ? 'livechat/' : '/',
+			filename: args.mode === 'production' ? '[name].[chunkhash:5].js' : '[name].js',
 			chunkFilename: '[name].chunk.[chunkhash:5].js',
 		},
 		module: {
@@ -53,9 +61,9 @@ const config: webpack.MultiConfigurationFactory = (_env, argv) => [
 				},
 				{
 					test: /\.s?css$/,
-					exclude: [path.resolve(__dirname, './src/components'), path.resolve(__dirname, './src/routes')],
+					exclude: [_('./src/components'), _('./src/routes')],
 					use: [
-						argv.mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
+						args.mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
 						{
 							loader: 'css-loader',
 							options: {
@@ -74,9 +82,9 @@ const config: webpack.MultiConfigurationFactory = (_env, argv) => [
 				},
 				{
 					test: /\.s?css$/,
-					include: [path.resolve(__dirname, './src/components'), path.resolve(__dirname, './src/routes')],
+					include: [_('./src/components'), _('./src/routes')],
 					use: [
-						argv.mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
+						args.mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
 						{
 							loader: 'css-loader',
 							options: {
@@ -112,18 +120,17 @@ const config: webpack.MultiConfigurationFactory = (_env, argv) => [
 				},
 				{
 					test: /\.(woff2?|ttf|eot|jpe?g|png|webp|gif|mp4|mov|ogg|webm)(\?.*)?$/i,
-					loader: argv.mode === 'production' ? 'file-loader' : 'url-loader',
+					loader: args.mode === 'production' ? 'file-loader' : 'url-loader',
 				},
 			],
 		},
 		plugins: [
 			new MiniCssExtractPlugin({
-				filename: argv.mode === 'production' ? '[name].[contenthash:5].css' : '[name].css',
-				chunkFilename: argv.mode === 'production' ? '[name].chunk.[contenthash:5].css' : '[name].chunk.css',
+				filename: args.mode === 'production' ? '[name].[contenthash:5].css' : '[name].css',
+				chunkFilename: args.mode === 'production' ? '[name].chunk.[contenthash:5].css' : '[name].chunk.css',
 			}) as unknown as webpack.Plugin,
-			new webpack.NoEmitOnErrorsPlugin(),
 			new webpack.DefinePlugin({
-				'process.env.NODE_ENV': JSON.stringify(argv.mode === 'production' ? 'production' : 'development'),
+				'process.env.NODE_ENV': JSON.stringify(args.mode === 'production' ? 'production' : 'development'),
 			}),
 			new HtmlWebpackPlugin({
 				title: 'Rocket.Chat.Livechat',
@@ -142,6 +149,7 @@ const config: webpack.MultiConfigurationFactory = (_env, argv) => [
 				minSize: 20000,
 				maxSize: 0,
 			},
+			noEmitOnErrors: true,
 		},
 		devServer: {
 			hot: true,
@@ -151,46 +159,29 @@ const config: webpack.MultiConfigurationFactory = (_env, argv) => [
 			open: true,
 			historyApiFallback: true,
 			devMiddleware: {
-				publicPath: argv.mode === 'production' ? 'livechat/' : '/',
+				publicPath: args.mode === 'production' ? 'livechat/' : '/',
 				stats: 'normal',
 			},
 			client: {
 				logging: 'verbose',
 			},
 			static: {
-				directory: path.resolve(__dirname, './src'),
-				publicPath: argv.mode === 'production' ? 'livechat/' : '/',
+				directory: _('./src'),
+				publicPath: args.mode === 'production' ? 'livechat/' : '/',
 				watch: {
-					ignored: [path.resolve(__dirname, './dist'), path.resolve(__dirname, './node_modules')],
+					ignored: [_('./dist'), _('./node_modules')],
 				},
 			},
 		},
 	},
 	{
-		stats: 'errors-warnings',
-		mode: argv.mode,
-		devtool: argv.mode === 'production' ? 'source-map' : 'eval',
-		resolve: {
-			extensions: ['.js', '.jsx', '.ts', '.tsx'],
-			alias: {
-				'react': 'preact/compat',
-				'react-dom': 'preact/compat',
-			},
-		},
-		node: {
-			console: false,
-			process: false,
-			Buffer: false,
-			__filename: false,
-			__dirname: false,
-			setImmediate: false,
-		},
+		...common(args),
 		entry: {
-			script: path.resolve(__dirname, './src/widget.js'),
+			script: _('./src/widget.js'),
 		} as webpack.Entry,
 		output: {
-			path: path.resolve(__dirname, './dist'),
-			publicPath: argv.mode === 'production' ? 'livechat/' : '/',
+			path: _('./dist'),
+			publicPath: args.mode === 'production' ? 'livechat/' : '/',
 			filename: 'rocketchat-livechat.min.js',
 		},
 		module: {
@@ -222,6 +213,9 @@ const config: webpack.MultiConfigurationFactory = (_env, argv) => [
 					exclude: ['/node_modules/'],
 				},
 			],
+		},
+		optimization: {
+			noEmitOnErrors: true,
 		},
 	},
 ];

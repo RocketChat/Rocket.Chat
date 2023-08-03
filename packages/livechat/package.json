@@ -38,6 +38,7 @@
 		"@storybook/theming": "~6.5.16",
 		"@types/crypto-js": "~4.1.1",
 		"@types/mini-css-extract-plugin": "~1.4.3",
+		"@types/webpack": "~4.41.33",
 		"@types/webpack-dev-server": "~4.7.2",
 		"@types/whatwg-fetch": "~0.0.33",
 		"@typescript-eslint/eslint-plugin": "~5.60.1",
