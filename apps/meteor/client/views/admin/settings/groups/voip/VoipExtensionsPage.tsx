@@ -35,9 +35,7 @@ const VoipExtensionsPage = () => {
 	);
 
 	const getExtensions = useEndpoint('GET', '/v1/omnichannel/extensions');
-	const { data, isSuccess, isLoading, refetch } = useQuery(['omnichannel-extensions', query], async () => getExtensions(query), {
-		refetchOnWindowFocus: false,
-	});
+	const { data, isSuccess, isLoading, refetch } = useQuery(['omnichannel-extensions', query], async () => getExtensions(query));
 
 	const headers = (
 		<>
@@ -89,7 +87,7 @@ const VoipExtensionsPage = () => {
 									<GenericTableCell withTruncatedText>
 										{username ? (
 											<Box display='flex' alignItems='center'>
-												<UserAvatar size={'x28'} username={username} />
+												<UserAvatar size='x28' username={username} />
 												<Box display='flex' mi='x8'>
 													<Box display='flex' flexDirection='column' alignSelf='center'>
 														<Box fontScale='p2m' color='default'>

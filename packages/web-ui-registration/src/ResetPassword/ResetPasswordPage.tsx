@@ -1,19 +1,10 @@
 import { Button, Field, Modal, PasswordInput } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import {
-	useSetting,
-	useVerifyPassword,
-	useRouter,
-	useRouteParameter,
-	useUser,
-	useMethod,
-	useTranslation,
-	useLoginWithToken,
-} from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { Form } from '@rocket.chat/layout';
-import { useForm } from 'react-hook-form';
 import { PasswordVerifier } from '@rocket.chat/ui-client';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetting, useRouter, useRouteParameter, useUser, useMethod, useTranslation, useLoginWithToken } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import { useForm } from 'react-hook-form';
 
 import HorizontalTemplate from '../template/HorizontalTemplate';
 
@@ -50,8 +41,6 @@ const ResetPasswordPage = (): ReactElement => {
 	}>({
 		mode: 'onChange',
 	});
-
-	const passwordVerifications = useVerifyPassword(watch('password'));
 
 	const submit = handleSubmit(async (data) => {
 		try {
@@ -106,7 +95,7 @@ const ResetPasswordPage = (): ReactElement => {
 							</Field.Row>
 						)}
 						{errors && <Field.Error>{errors.password?.message}</Field.Error>}
-						{passwordVerifications && <PasswordVerifier password={watch('password')} passwordVerifications={passwordVerifications} />}
+						<PasswordVerifier password={watch('password')} />
 					</Field>
 				</Form.Container>
 				<Form.Footer>

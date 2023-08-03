@@ -1,11 +1,11 @@
-import { Match } from 'meteor/check';
-import { Random } from '@rocket.chat/random';
 import { Rooms, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { Match } from 'meteor/check';
 
-import { SlackBridge } from './slackbridge';
-import { msgStream } from '../../lib/server';
-import { slashCommands } from '../../utils/server';
 import { i18n } from '../../../server/lib/i18n';
+import { msgStream } from '../../lib/server';
+import { slashCommands } from '../../utils/server/slashCommand';
+import { SlackBridge } from './slackbridge';
 
 async function SlackBridgeImport({ command, params, message, userId }) {
 	if (command !== 'slackbridge-import' || !Match.test(params, String)) {

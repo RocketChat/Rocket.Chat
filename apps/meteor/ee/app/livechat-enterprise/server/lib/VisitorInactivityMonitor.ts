@@ -1,14 +1,14 @@
-import type { ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
-import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 import { OmnichannelEEService } from '@rocket.chat/core-services';
+import type { ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
+import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 
-import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
-import { i18n } from '../../../../../server/lib/i18n';
+import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import { schedulerLogger } from './logger';
+import { i18n } from '../../../../../server/lib/i18n';
 import type { MainLogger } from '../../../../../server/lib/logger/getPino';
+import { schedulerLogger } from './logger';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
 

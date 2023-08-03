@@ -1,14 +1,14 @@
+import type { IOmnichannelRoom, IRoom, RoomType } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import type { IOmnichannelRoom, IRoom, RoomType } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Rooms } from '@rocket.chat/models';
 
-import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { canAccessRoomAsync } from '../../../app/authorization/server';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../../app/settings/server';
 import { roomFields } from '../../../lib/publishFields';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 type PublicRoomField = keyof typeof roomFields;
 type PublicRoom = Pick<IRoom, PublicRoomField & keyof IRoom> & Pick<IOmnichannelRoom, PublicRoomField & keyof IOmnichannelRoom>;

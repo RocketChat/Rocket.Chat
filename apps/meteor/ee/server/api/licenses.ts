@@ -1,10 +1,10 @@
-import { check } from 'meteor/check';
 import { Settings, Users } from '@rocket.chat/models';
+import { check } from 'meteor/check';
 
-import { getLicenses, validateFormat, flatModules, getMaxActiveUsers, isEnterprise } from '../../app/license/server/license';
 import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import type { ILicense } from '../../app/license/definition/ILicense';
+import { getLicenses, validateFormat, flatModules, getMaxActiveUsers, isEnterprise } from '../../app/license/server/license';
 
 function licenseTransform(license: ILicense): ILicense {
 	return {

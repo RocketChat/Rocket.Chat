@@ -39,9 +39,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	);
 
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
-	const { data, isSuccess, isLoading, refetch } = useQuery(['/v1/livechat/sla', query], () => getSlaData(query), {
-		refetchOnWindowFocus: false,
-	});
+	const { data, isSuccess, isLoading, refetch } = useQuery(['/v1/livechat/sla', query], () => getSlaData(query));
 
 	useEffect(() => {
 		reload.current = refetch;
@@ -78,7 +76,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			>
 				{t('Estimated_wait_time')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key={'remove'} w='x60'>
+			<GenericTableHeaderCell key='remove' w='x60'>
 				{t('Remove')}
 			</GenericTableHeaderCell>
 		</>

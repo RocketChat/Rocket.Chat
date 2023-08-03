@@ -1,9 +1,9 @@
 import type { ILivechatPriority } from './ILivechatPriority';
-import type { IOmnichannelRoom, OmnichannelSourceType } from './IRoom';
-import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
-import type { SelectedAgent } from './omnichannel/routing';
 import type { IMessage } from './IMessage';
+import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IOmnichannelRoom, OmnichannelSourceType } from './IRoom';
+import type { SelectedAgent } from './omnichannel/routing';
 
 export interface IInquiry {
 	_id: string;

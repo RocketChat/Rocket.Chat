@@ -1,10 +1,10 @@
-import moment from 'moment';
-import { LivechatBusinessHours, LivechatDepartment, Messages, LivechatRooms } from '@rocket.chat/models';
 import type { IOmnichannelRoom, IMessage, IBusinessHourWorkHour } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatBusinessHours, LivechatDepartment, Messages, LivechatRooms } from '@rocket.chat/models';
+import moment from 'moment';
 
-import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 
 const getSecondsWhenOfficeHoursIsDisabled = (room: IOmnichannelRoom, agentLastMessage: IMessage) =>
@@ -72,7 +72,7 @@ const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, agentLas
 
 callbacks.add(
 	'livechat.closeRoom',
-	async function (params) {
+	async (params) => {
 		const { room } = params;
 
 		if (!isOmnichannelRoom(room)) {

@@ -1,5 +1,5 @@
-import type { FindCursor } from 'mongodb';
 import type { ReadReceipt } from '@rocket.chat/core-typings';
+import type { FindCursor } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 

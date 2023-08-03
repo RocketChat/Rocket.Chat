@@ -1,3 +1,4 @@
+import type { ProgressStep } from '@rocket.chat/core-typings';
 import { Box, Margins, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
@@ -7,7 +8,6 @@ import React, { useEffect } from 'react';
 import { ImportingStartedStates } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 import Page from '../../../components/Page';
-import type { ProgressStep } from './ImportTypes';
 import { useErrorHandler } from './useErrorHandler';
 
 const ImportProgressPage = function ImportProgressPage() {
@@ -135,8 +135,18 @@ const ImportProgressPage = function ImportProgressPage() {
 	);
 
 	useEffect(() => {
-		return streamer('progress', ({ count, key, step, ...rest }) => {
-			handleProgressUpdated({ ...rest, key: key!, step: step!, completed: count!.completed, total: count!.total });
+		return streamer('progress', (progress) => {
+			// There shouldn't be any progress update sending only the rate at this point of the process
+			if ('rate' in progress) {
+				return;
+			}
+
+			handleProgressUpdated({
+				key: progress.key,
+				step: progress.step,
+				completed: progress.count.completed,
+				total: progress.count.total,
+			});
 		});
 	}, [handleProgressUpdated, streamer]);
 

@@ -1,7 +1,7 @@
+import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 import formatDistance from 'date-fns/formatDistance';
 import moment from 'moment';
-import { escapeHTML } from '@rocket.chat/string-helpers';
-import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 import { t } from '../../utils/lib/i18n';
