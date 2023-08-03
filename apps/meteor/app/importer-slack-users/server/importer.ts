@@ -5,13 +5,14 @@ import { Settings } from '@rocket.chat/models';
 
 import { RocketChatFile } from '../../file/server';
 import { Importer, ProgressStep } from '../../importer/server';
+import type { IConverterOptions } from '../../importer/server/classes/ImportDataConverter';
 import type { Progress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
 
 export class SlackUsersImporter extends Importer {
 	private csvParser: (csv: string) => string[];
 
-	constructor(info: ImporterInfo, importRecord: IImport, converterOptions = {}) {
+	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: IConverterOptions = {}) {
 		super(info, importRecord, converterOptions);
 
 		const { parse } = require('csv-parse/lib/sync');

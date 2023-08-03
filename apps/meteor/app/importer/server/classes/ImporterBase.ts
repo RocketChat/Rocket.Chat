@@ -9,6 +9,7 @@ import { t } from '../../../utils/lib/i18n';
 import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterProgressStep';
 import type { ImporterInfo } from '../definitions/ImporterInfo';
 import { ImportDataConverter } from './ImportDataConverter';
+import type { IConverterOptions } from './ImportDataConverter';
 import { Progress } from './ImporterProgress';
 import { ImporterWebsocket } from './ImporterWebsocket';
 
@@ -46,7 +47,7 @@ export class Importer {
 
 	public progress: Progress;
 
-	constructor(info: ImporterInfo, importRecord: IImport, converterOptions = {}) {
+	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: IConverterOptions = {}) {
 		if (!info.key || !info.importer) {
 			throw new Error('Information passed in must be a valid ImporterInfo instance.');
 		}

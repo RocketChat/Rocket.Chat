@@ -7,12 +7,13 @@ import { Random } from '@rocket.chat/random';
 
 import { FileUpload } from '../../file-upload/server';
 import { Importer, ProgressStep, Selection } from '../../importer/server';
+import type { IConverterOptions } from '../../importer/server/classes/ImportDataConverter';
 import type { Progress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
 
 export class PendingFileImporter extends Importer {
-	constructor(info: ImporterInfo, importRecord: IImport) {
-		super(info, importRecord);
+	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: IConverterOptions = {}) {
+		super(info, importRecord, converterOptions);
 	}
 
 	async prepareFileCount() {

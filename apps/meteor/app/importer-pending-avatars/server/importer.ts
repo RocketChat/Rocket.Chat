@@ -1,8 +1,8 @@
 import { Users } from '@rocket.chat/models';
 
 import { Importer, ProgressStep, Selection } from '../../importer/server';
-import { setAvatarFromServiceWithValidation } from '../../lib/server/functions/setUserAvatar';
 import type { Progress } from '../../importer/server/classes/ImporterProgress';
+import { setAvatarFromServiceWithValidation } from '../../lib/server/functions/setUserAvatar';
 
 export class PendingAvatarImporter extends Importer {
 	async prepareFileCount() {
