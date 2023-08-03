@@ -1,7 +1,12 @@
 import { proxify, proxifyWithWait } from './lib/proxify';
 import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
-import type { IAppsEngineService } from './types/IAppsEngineService';
+import { AppsApiServiceResponse, IAppsApiService, IRequestWithPrivateHash } from './types/IAppsApiService';
+import { IAppsConverterService } from './types/IAppsConverterService';
+import type { AppsEngineAppResult, IAppsEngineService } from './types/IAppsEngineService';
+import { AppFabricationFulfillment, IAppsManagerService } from './types/IAppsManagerService';
+import { IAppsStatisticsService, AppsStatisticsResult } from './types/IAppsStatisticsService';
+import { IAppsVideoManagerService } from './types/IAppsVideoManagerService';
 import type { IAuthorization, RoomAccessValidator } from './types/IAuthorization';
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
 import type { IAuthorizationVoip } from './types/IAuthorizationVoip';
@@ -59,10 +64,19 @@ export { IFederationService, IFederationServiceEE, IFederationJoinExternalPublic
 
 export {
 	AutoUpdateRecord,
+	AppsApiServiceResponse,
+	AppsStatisticsResult,
+	AppFabricationFulfillment,
 	FindVoipRoomsParams,
 	IAccount,
 	IAnalyticsService,
+	IAppsApiService,
+	IAppsConverterService,
 	IAppsEngineService,
+	AppsEngineAppResult,
+	IAppsManagerService,
+	IAppsStatisticsService,
+	IAppsVideoManagerService,
 	IAuthorization,
 	IAuthorizationLivechat,
 	IAuthorizationVoip,
@@ -118,11 +132,17 @@ export {
 	ISettingsService,
 	IOmnichannelEEService,
 	IOmnichannelIntegrationService,
+	IRequestWithPrivateHash,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
 export const Apps = proxifyWithWait<IAppsEngineService>('apps-engine');
+export const AppsStatistics = proxifyWithWait<IAppsStatisticsService>('apps-statistics');
+export const AppsConverter = proxifyWithWait<IAppsConverterService>('apps-converter');
+export const AppsManager = proxifyWithWait<IAppsManagerService>('apps-manager');
+export const AppsVideoManager = proxifyWithWait<IAppsVideoManagerService>('apps-video-manager');
+export const AppsApiService = proxifyWithWait<IAppsApiService>('apps-api');
 export const Presence = proxifyWithWait<IPresence>('presence');
 export const Account = proxifyWithWait<IAccount>('accounts');
 export const License = proxifyWithWait<ILicense>('license');

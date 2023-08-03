@@ -118,6 +118,10 @@ export class AppServerOrchestrator {
 	}
 
 	getProvidedComponents() {
+		if (!this.isLoaded()) {
+			return [];
+		}
+
 		return this._manager.getExternalComponentManager().getProvidedComponents();
 	}
 
@@ -130,7 +134,7 @@ export class AppServerOrchestrator {
 	}
 
 	isLoaded() {
-		return this.getManager().areAppsLoaded();
+		return this.isInitialized() && this.getManager().areAppsLoaded();
 	}
 
 	isDebugging() {
@@ -157,7 +161,7 @@ export class AppServerOrchestrator {
 	async load() {
 		// Don't try to load it again if it has
 		// already been loaded
-		if (this.isLoaded()) {
+		if (!this.isInitialized() || this.isLoaded()) {
 			return;
 		}
 

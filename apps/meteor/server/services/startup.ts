@@ -6,7 +6,6 @@ import { AuthorizationLivechat } from '../../app/livechat/server/roomAccessValid
 import { isRunningMs } from '../lib/isRunningMs';
 import { Logger } from '../lib/logger/Logger';
 import { AnalyticsService } from './analytics/service';
-import { AppsEngineService } from './apps-engine/service';
 import { BannerService } from './banner/service';
 import { CalendarService } from './calendar/service';
 import { DeviceManagementService } from './device-management/service';
@@ -31,7 +30,6 @@ import { VoipService } from './voip/service';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
-api.registerService(new AppsEngineService());
 api.registerService(new AnalyticsService());
 api.registerService(new AuthorizationLivechat());
 api.registerService(new BannerService());

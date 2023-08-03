@@ -1,5 +1,10 @@
+// We need to use the `Function` type directly here
+/* eslint-disable @typescript-eslint/ban-types */
+
 export type Serialized<T> = T extends Date
 	? Exclude<T, Date> | string
+	: T extends Function
+	? never
 	: T extends boolean | number | string | null | undefined
 	? T
 	: T extends {}
