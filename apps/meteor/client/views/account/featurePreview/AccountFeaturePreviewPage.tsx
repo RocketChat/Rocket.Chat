@@ -111,16 +111,7 @@ const AccountFeaturePreviewPage = () => {
 														</Box>
 														{feature.description && <Field.Hint mbs='x12'>{t(feature.description)}</Field.Hint>}
 													</Field>
-													{feature.imageUrl && (
-														<Box
-															is='img'
-															width='100%'
-															height='auto'
-															mbs='x16'
-															src={feature.imageUrl}
-															alt={`${t(feature.i18n)} feature image`}
-														/>
-													)}
+													{feature.imageUrl && <Box is='img' width='100%' height='auto' mbs='x16' src={feature.imageUrl} alt='' />}
 												</Fragment>
 											))}
 										</FieldGroup>

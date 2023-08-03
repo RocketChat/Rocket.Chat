@@ -3,7 +3,7 @@ import { ExternalLink } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
@@ -22,8 +22,8 @@ const ThemePage = () => {
 	const {
 		formState: { isDirty },
 		handleSubmit,
-		register,
 		reset,
+		control,
 	} = useForm({
 		defaultValues: { themeAppearence: themePreference },
 	});
@@ -41,13 +41,7 @@ const ThemePage = () => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Theme')}>
-				<ButtonGroup>
-					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
-						{t('Save_changes')}
-					</Button>
-				</ButtonGroup>
-			</Page.Header>
+			<Page.Header title={t('Theme')} />
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center' mb='x40' mi='x36'>
 					<Box fontScale='p1' mbe='x24'>
@@ -71,14 +65,23 @@ const ThemePage = () => {
 												)}
 											</Field.Label>
 											<Field.Row>
-												{communityDisabled ? (
-													<RadioButton
-														onClick={() => setModal(<HighContrastUpsellModal onClose={() => setModal(null)} />)}
-														checked={false}
-													/>
-												) : (
-													<RadioButton id={id} {...register('themeAppearence')} value={id} />
-												)}
+												<Controller
+													control={control}
+													name='themeAppearence'
+													render={({ field: { onChange, value, ref } }) => {
+														if (communityDisabled) {
+															return (
+																<RadioButton
+																	id={id}
+																	ref={ref}
+																	onChange={() => setModal(<HighContrastUpsellModal onClose={() => setModal(null)} />)}
+																	checked={false}
+																/>
+															);
+														}
+														return <RadioButton id={id} ref={ref} onChange={() => onChange(id)} checked={value === id} />;
+													}}
+												/>
 											</Field.Row>
 										</Box>
 										<Field.Hint mbs='x12' style={{ whiteSpace: 'break-spaces' }}>
@@ -96,6 +99,14 @@ const ThemePage = () => {
 					</Accordion>
 				</Box>
 			</Page.ScrollableContentWithShadow>
+			<Page.Footer isDirty={isDirty}>
+				<ButtonGroup>
+					<Button onClick={() => reset({ themeAppearence: themePreference })}>{t('Cancel')}</Button>
+					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
+						{t('Save_changes')}
+					</Button>
+				</ButtonGroup>
+			</Page.Footer>
 		</Page>
 	);
 };

@@ -20,22 +20,14 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 
 	return (
 		<Box
+			is='header'
 			borderBlockEndWidth='default'
 			minHeight='x64'
 			pb='x8'
 			borderBlockEndColor={borderBlockEndColor ?? border ? 'extra-light' : 'transparent'}
 			{...props}
 		>
-			<Box
-				height='100%'
-				marginInline='x24'
-				display='flex'
-				flexDirection='row'
-				flexWrap='wrap'
-				alignItems='center'
-				color='default'
-				{...props}
-			>
+			<Box height='100%' marginInline='x24' display='flex' flexDirection='row' flexWrap='wrap' alignItems='center' color='default'>
 				{isMobile && (
 					<HeaderToolbox>
 						<BurgerMenu />
