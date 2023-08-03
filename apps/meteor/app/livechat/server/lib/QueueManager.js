@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
+import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('QueueManager');

@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { Meteor } from 'meteor/meteor';
 
 import { Spotlight } from '../lib/spotlight';
 

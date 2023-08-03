@@ -1,17 +1,17 @@
-import type { UseMutationResult } from '@tanstack/react-query';
-import { useMutation } from '@tanstack/react-query';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
+import type { UseMutationResult } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import EmailConfirmationForm from './EmailConfirmationForm';
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import LoginServices from './LoginServices';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 
 export type LoginErrors =
 	| 'error-user-is-not-activated'

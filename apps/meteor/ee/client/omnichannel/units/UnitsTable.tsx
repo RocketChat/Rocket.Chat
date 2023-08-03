@@ -41,9 +41,7 @@ const UnitsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	);
 
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
-	const { isSuccess, isLoading, data, refetch } = useQuery(['livechat-units', query], async () => getUnits(query), {
-		refetchOnWindowFocus: false,
-	});
+	const { isSuccess, isLoading, data, refetch } = useQuery(['livechat-units', query], async () => getUnits(query));
 
 	const [defaultQuery] = useState(hashQueryKey([query]));
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);

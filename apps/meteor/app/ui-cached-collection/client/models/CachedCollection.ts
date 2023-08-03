@@ -1,17 +1,17 @@
-import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
-import { Accounts } from 'meteor/accounts-base';
-import { ReactiveVar } from 'meteor/reactive-var';
 import { Emitter } from '@rocket.chat/emitter';
 import localforage from 'localforage';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
+import { ReactiveVar } from 'meteor/reactive-var';
 
-import Notifications from '../../../notifications/client/lib/Notifications';
-import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { CachedCollectionManager } from './CachedCollectionManager';
-import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
-import { isTruthy } from '../../../../lib/isTruthy';
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
+import { getConfig } from '../../../../client/lib/utils/getConfig';
+import { isTruthy } from '../../../../lib/isTruthy';
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
+import Notifications from '../../../notifications/client/lib/Notifications';
 import { sdk } from '../../../utils/client/lib/SDKClient';
+import { CachedCollectionManager } from './CachedCollectionManager';
 
 export type EventType = Extract<keyof typeof Notifications, `on${string}`>;
 
