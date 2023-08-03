@@ -2,12 +2,11 @@ import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageBlock } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { UiKitComponent, UiKitMessage, kitContext } from '@rocket.chat/fuselage-ui-kit';
+import { UiKitComponent, UiKitMessage as UiKitMessageSurfaceRender, UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import type { ContextType, ReactElement } from 'react';
 import React from 'react';
 
-import { useActionManager } from '../../../contexts/ActionManagerContext';
 import {
 	useVideoConfDispatchOutgoing,
 	useVideoConfIsCalling,
@@ -16,6 +15,7 @@ import {
 	useVideoConfManager,
 	useVideoConfSetPreferences,
 } from '../../../contexts/VideoConfContext';
+import { useUiKitActionManager } from '../../../hooks/useUiKitActionManager';
 import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 import GazzodownText from '../../GazzodownText';
 
@@ -28,14 +28,14 @@ const patchMessageParser = () => {
 	patched = true;
 };
 
-type UiKitSurfaceProps = {
+type UiKitMessageBlockProps = {
 	mid: IMessage['_id'];
 	blocks: MessageSurfaceLayout;
 	rid: IRoom['_id'];
 	appId?: string | boolean; // TODO: this is a hack while the context value is not properly typed
 };
 
-const UiKitSurface = ({ mid: _mid, blocks, rid, appId }: UiKitSurfaceProps): ReactElement => {
+const UiKitMessageBlock = ({ mid: _mid, blocks, rid, appId }: UiKitMessageBlockProps): ReactElement => {
 	const joinCall = useVideoConfJoinCall();
 	const setPreferences = useVideoConfSetPreferences();
 	const isCalling = useVideoConfIsCalling();
@@ -58,11 +58,11 @@ const UiKitSurface = ({ mid: _mid, blocks, rid, appId }: UiKitSurfaceProps): Rea
 		}
 	});
 
-	const actionManager = useActionManager();
+	const actionManager = useUiKitActionManager();
 
 	// TODO: this structure is attrociously wrong; we should revisit this
-	const context: ContextType<typeof kitContext> = {
-		// @ts-expect-error Property 'mid' does not exist on type 'ActionParams'.
+	const context: ContextType<typeof UiKitContext> = {
+		// @ts-ignore Property 'mid' does not exist on type 'ActionParams'.
 		action: ({ actionId, value, blockId, mid = _mid, appId }, event) => {
 			if (appId === 'videoconf-core') {
 				event.preventDefault();
@@ -89,7 +89,7 @@ const UiKitSurface = ({ mid: _mid, blocks, rid, appId }: UiKitSurfaceProps): Rea
 				},
 			});
 		},
-		// @ts-expect-error Type 'string | boolean | undefined' is not assignable to type 'string'.
+		// @ts-ignore Type 'string | boolean | undefined' is not assignable to type 'string'.
 		appId,
 		rid,
 	};
@@ -98,13 +98,13 @@ const UiKitSurface = ({ mid: _mid, blocks, rid, appId }: UiKitSurfaceProps): Rea
 
 	return (
 		<MessageBlock fixedWidth>
-			<kitContext.Provider value={context}>
+			<UiKitContext.Provider value={context}>
 				<GazzodownText>
-					<UiKitComponent render={UiKitMessage} blocks={blocks} />
+					<UiKitComponent render={UiKitMessageSurfaceRender} blocks={blocks} />
 				</GazzodownText>
-			</kitContext.Provider>
+			</UiKitContext.Provider>
 		</MessageBlock>
 	);
 };
 
-export default UiKitSurface;
+export default UiKitMessageBlock;

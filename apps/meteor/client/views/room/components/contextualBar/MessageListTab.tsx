@@ -26,7 +26,7 @@ import { isMessageFirstUnread } from '../../MessageList/lib/isMessageFirstUnread
 import { isMessageNewDay } from '../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../MessageList/providers/MessageListProvider';
 import { useRoomSubscription } from '../../contexts/RoomContext';
-import { useTabBarClose } from '../../contexts/RoomToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 type MessageListTabProps = {
 	iconName: IconName;
@@ -41,10 +41,10 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 	const formatDate = useFormatDate();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
-	const closeTabBar = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 	const handleTabBarCloseButtonClick = useCallback(() => {
-		closeTabBar();
-	}, [closeTabBar]);
+		closeTab();
+	}, [closeTab]);
 
 	const subscription = useRoomSubscription();
 

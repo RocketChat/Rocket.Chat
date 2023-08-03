@@ -5,10 +5,10 @@ import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 
-// used to open the menu option by keyboard
 import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
-import { useRoomToolbox, useTabBarOpen } from '../../contexts/RoomToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
+import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
 
 type RoomToolboxProps = {
 	className?: ComponentProps<typeof Box>['className'];
@@ -21,22 +21,22 @@ type MenuActionsProps = {
 
 const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const t = useTranslation();
-	const openTabBar = useTabBarOpen();
 	const { isMobile } = useLayout();
 
-	const { actions, tab } = useRoomToolbox();
+	const toolbox = useRoomToolbox();
+	const { actions, openTab } = toolbox;
 
 	const featuredActions = actions.filter((action) => action.featured);
-	const filteredActions = actions.filter((action) => !action.featured);
-	const visibleActions = isMobile ? [] : filteredActions.slice(0, 6);
+	const normalActions = actions.filter((action) => !action.featured);
+	const visibleActions = isMobile ? [] : normalActions.slice(0, 6);
 
-	const hiddenActions = (isMobile ? actions : filteredActions.slice(6))
+	const hiddenActions = (isMobile ? actions : normalActions.slice(6))
 		.filter((item) => !item.disabled && !item.featured)
 		.map((item) => ({
 			key: item.id,
 			content: t(item.title),
 			onClick: (): void => {
-				openTabBar(item.id);
+				openTab(item.id);
 			},
 			...item,
 		}))
@@ -54,48 +54,41 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 			return acc;
 		}, [] as MenuActionsProps);
 
-	const actionDefault = useMutableCallback((actionId) => {
-		openTabBar(actionId);
-	});
+	const renderDefaultToolboxItem: RoomToolboxActionConfig['renderToolboxItem'] = useMutableCallback(
+		({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }) => {
+			return (
+				<HeaderToolboxAction
+					key={id}
+					className={className}
+					index={index}
+					id={id}
+					icon={icon}
+					title={t(title)}
+					pressed={id === tab?.id}
+					action={action}
+					disabled={disabled}
+					tooltip={tooltip}
+				/>
+			);
+		},
+	);
+
+	const mapToToolboxItem = (action: RoomToolboxActionConfig, index: number) => {
+		return (action.renderToolboxItem ?? renderDefaultToolboxItem)?.({
+			...action,
+			action: action.action ?? (() => toolbox.openTab(action.id)),
+			className,
+			index,
+			toolbox,
+		});
+	};
 
 	return (
 		<>
-			{featuredActions.map(({ renderAction, id, icon, title, action = actionDefault, disabled, tooltip }, index) => {
-				const props = {
-					id,
-					icon,
-					title: t(title),
-					className,
-					index,
-					pressed: id === tab?.id,
-					action,
-					disabled,
-					...(tooltip ? { tooltip } : {}),
-				};
-				if (renderAction) {
-					return renderAction(props);
-				}
-				return <HeaderToolboxAction {...props} key={id} />;
-			})}
+			{featuredActions.map(mapToToolboxItem)}
 			{featuredActions.length > 0 && <HeaderToolboxDivider />}
-			{visibleActions.map(({ renderAction, id, icon, title, action = actionDefault, disabled, tooltip }, index) => {
-				const props = {
-					id,
-					icon,
-					title: t(title),
-					className,
-					index,
-					pressed: id === tab?.id,
-					action,
-					disabled,
-					...(tooltip ? { tooltip } : {}),
-				};
-				if (renderAction) {
-					return renderAction(props);
-				}
-				return <HeaderToolboxAction {...props} key={id} />;
-			})}
-			{(filteredActions.length > 6 || isMobile) && (
+			{visibleActions.map(mapToToolboxItem)}
+			{(normalActions.length > 6 || isMobile) && (
 				<GenericMenu title={t('Options')} data-qa-id='ToolBox-Menu' sections={hiddenActions} placement='bottom-end' />
 			)}
 		</>
