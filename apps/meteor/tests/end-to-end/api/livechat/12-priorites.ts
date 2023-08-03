@@ -21,7 +21,15 @@ import {
 	bulkCreateLivechatRooms,
 	startANewLivechatRoomAndTakeIt,
 } from '../../../data/livechat/rooms';
-import { addPermissions, removePermissions, updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
+import {
+	addPermissions,
+	removePermissionFromAllRoles,
+	removePermissions,
+	restorePermissionToRoles,
+	updateEESetting,
+	updatePermission,
+	updateSetting,
+} from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 
@@ -80,7 +88,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should create a new sla', async () => {
-			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
+			await restorePermissionToRoles('manage-livechat-sla');
 
 			const sla = generateRandomSLAData();
 
@@ -100,20 +108,77 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 
 			await deleteSLA(response.body.sla._id);
 		});
+		it('should throw an error when trying to create a duplicate sla with same dueTimeInMinutes', async () => {
+			const firstSla = generateRandomSLAData();
+
+			const response = await request
+				.post(api('livechat/sla'))
+				.set(credentials)
+				.send(firstSla)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(response.body).to.have.property('success', true);
+
+			const secondSla = generateRandomSLAData();
+
+			secondSla.dueTimeInMinutes = firstSla.dueTimeInMinutes;
+
+			const secondResponse = await request
+				.post(api('livechat/sla'))
+				.set(credentials)
+				.send(secondSla)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(secondResponse.body).to.have.property('success', false);
+			expect(secondResponse.body).to.have.property('error');
+			expect(secondResponse.body?.error).to.contain('error-duplicated-sla');
+
+			await deleteSLA(response.body.sla._id);
+		});
+		it('should throw an error when trying to create a duplicate sla with same name', async () => {
+			const firstSla = generateRandomSLAData();
+
+			const response = await request
+				.post(api('livechat/sla'))
+				.set(credentials)
+				.send(firstSla)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(response.body).to.have.property('success', true);
+
+			const secondSla = generateRandomSLAData();
+
+			secondSla.name = firstSla.name;
+
+			const secondResponse = await request
+				.post(api('livechat/sla'))
+				.set(credentials)
+				.send(secondSla)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(secondResponse.body).to.have.property('success', false);
+			expect(secondResponse.body).to.have.property('error');
+			expect(secondResponse.body?.error).to.contain('error-duplicated-sla');
+
+			await deleteSLA(response.body.sla._id);
+		});
 	});
 
 	describe('livechat/sla/:slaId', () => {
 		// GET
 		it('should return an "unauthorized error" when the user does not have the necessary permission for [GET] livechat/sla/:slaId endpoint', async () => {
-			await removePermissions(['manage-livechat-sla', 'view-l-room']);
+			await Promise.all([removePermissionFromAllRoles('manage-livechat-sla'), removePermissionFromAllRoles('view-l-room')]);
+
 			const response = await request.get(api('livechat/sla/123')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should create, find and delete an sla', async () => {
-			await addPermissions({
-				'manage-livechat-sla': ['admin', 'livechat-manager'],
-				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
-			});
+			await Promise.all([restorePermissionToRoles('manage-livechat-sla'), restorePermissionToRoles('view-l-room')]);
+
 			const sla = await createSLA();
 			const response = await request
 				.get(api(`livechat/sla/${sla._id}`))
@@ -127,7 +192,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 		});
 		// PUT
 		it('should return an "unauthorized error" when the user does not have the necessary permission for [PUT] livechat/sla/:slaId endpoint', async () => {
-			await updatePermission('manage-livechat-sla', []);
+			await removePermissionFromAllRoles('manage-livechat-sla');
 
 			const response = await request
 				.put(api('livechat/sla/123'))
@@ -139,7 +204,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should update an sla', async () => {
-			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
+			await restorePermissionToRoles('manage-livechat-sla');
 
 			const sla = await createSLA();
 			const newSlaData = generateRandomSLAData();
@@ -159,6 +224,55 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 
 			await deleteSLA(response.body.sla._id);
 		});
+		it('should throw an error when trying to update a sla with a duplicate name', async () => {
+			const firstSla = await createSLA();
+			const secondSla = await createSLA();
+
+			secondSla.name = firstSla.name;
+
+			const response = await request
+				.put(api(`livechat/sla/${secondSla._id}`))
+				.set(credentials)
+				.send({
+					name: secondSla.name,
+					description: secondSla.description,
+					dueTimeInMinutes: secondSla.dueTimeInMinutes,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error');
+			expect(response.body?.error).to.contain('error-duplicated-sla');
+
+			await deleteSLA(firstSla._id);
+			await deleteSLA(secondSla._id);
+		});
+		it('should throw an error when trying to update a sla with a duplicate dueTimeInMinutes', async () => {
+			const firstSla = await createSLA();
+			const secondSla = await createSLA();
+
+			secondSla.dueTimeInMinutes = firstSla.dueTimeInMinutes;
+
+			const response = await request
+				.put(api(`livechat/sla/${secondSla._id}`))
+				.set(credentials)
+				.send({
+					name: secondSla.name,
+					description: secondSla.description,
+					dueTimeInMinutes: secondSla.dueTimeInMinutes,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error');
+			expect(response.body?.error).to.contain('error-duplicated-sla');
+
+			await deleteSLA(firstSla._id);
+			await deleteSLA(secondSla._id);
+		});
+
 		// DELETE
 		it('should return an "unauthorized error" when the user does not have the necessary permission for [DELETE] livechat/sla/:slaId endpoint', async () => {
 			await updatePermission('manage-livechat-sla', []);

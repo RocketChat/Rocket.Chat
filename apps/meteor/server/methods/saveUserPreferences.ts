@@ -1,5 +1,6 @@
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -34,7 +35,7 @@ type UserPreferences = {
 	sidebarGroupByType: boolean;
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
-	themeAppearence: 'auto' | 'light' | 'dark';
+	themeAppearence: ThemePreference;
 	receiveLoginDetectionEmail: boolean;
 	notifyCalendarEvents: boolean;
 };

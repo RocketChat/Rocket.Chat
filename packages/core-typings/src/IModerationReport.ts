@@ -45,4 +45,5 @@ export interface IModerationAudit {
 	ts: IModerationReport['ts'];
 	rooms: MessageReport['room'][];
 	count: number;
+	isUserDeleted: boolean;
 }

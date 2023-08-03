@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/livechat",
-	"version": "1.13.3",
+	"version": "1.13.4",
 	"files": [
 		"/build"
 	],
@@ -87,6 +87,8 @@
 		"@rocket.chat/logo": "*"
 	},
 	"dependencies": {
+		"@rocket.chat/gazzodown": "workspace:^",
+		"@rocket.chat/message-parser": "next",
 		"@rocket.chat/sdk": "^1.0.0-alpha.42",
 		"@rocket.chat/ui-kit": "next",
 		"crypto-js": "^4.1.1",

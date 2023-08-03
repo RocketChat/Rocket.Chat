@@ -1,4 +1,4 @@
-import type { IModerationReport, IModerationAudit, MessageReport } from '@rocket.chat/core-typings';
+import type { IModerationAudit, IModerationReport, IUser, MessageReport } from '@rocket.chat/core-typings';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ArchiveReportPropsPOST } from './ArchiveReportProps';
@@ -21,6 +21,7 @@ export type ModerationEndpoints = {
 	};
 	'/v1/moderation.user.reportedMessages': {
 		GET: (params: ReportMessageHistoryParamsGET) => PaginatedResult<{
+			user: Pick<IUser, 'username' | 'name' | '_id'> | null;
 			messages: Pick<MessageReport, 'message' | 'ts' | 'room' | '_id'>[];
 		}>;
 	};
