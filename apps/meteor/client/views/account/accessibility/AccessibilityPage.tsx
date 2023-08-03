@@ -1,5 +1,6 @@
 import { Accordion, Box, Button, ButtonGroup, Field, Select, Tag, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import type { FontSize } from '@rocket.chat/rest-typings';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useRouter, useSetModal, useTranslation, useToastMessageDispatch, useUserPreference, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
@@ -10,6 +11,8 @@ import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import HighContrastUpsellModal from '../themes/HighContrastUpsellModal';
 import { themeItems as themes } from '../themes/themeItems';
+import { fontSizes } from './fontSizes';
+import { useAdjustableFontSize } from './hooks/useAdsjustableFontSize';
 
 const AccessibilityPage = () => {
 	const t = useTranslation();
@@ -19,28 +22,37 @@ const AccessibilityPage = () => {
 	const router = useRouter();
 	const { data: license } = useIsEnterprise();
 
+	const [fontSize, setFontSize] = useAdjustableFontSize();
+
 	const themePreference = useUserPreference<ThemePreference>('themeAppearence') || 'auto';
 	const [prevTheme, setPrevTheme] = useLocalStorage('prevTheme', themePreference);
+
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
 	const {
-		formState: { isDirty },
+		formState: { isDirty, dirtyFields },
 		handleSubmit,
 		control,
 		reset,
 	} = useForm({
-		defaultValues: { highContrast: themePreference === 'high-contrast' },
+		defaultValues: { highContrast: themePreference === 'high-contrast', fontSize },
 	});
 
-	const handleSave = async ({ highContrast }: { highContrast: boolean }) => {
+	const handleSave = async ({ highContrast, fontSize }: { highContrast: boolean; fontSize: FontSize }) => {
 		try {
-			await setUserPreferences({ data: { themeAppearence: highContrast ? 'high-contrast' : prevTheme } });
+			dirtyFields.highContrast && (await setUserPreferences({ data: { themeAppearence: highContrast ? 'high-contrast' : prevTheme } }));
+			dirtyFields.fontSize && (await setUserPreferences({ data: { fontSize } }));
 			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
-			setPrevTheme(themePreference);
-			reset({ highContrast });
+			if (dirtyFields.highContrast) {
+				setPrevTheme(themePreference);
+			}
+			if (dirtyFields.fontSize) {
+				setFontSize(fontSize);
+			}
+			reset({ highContrast, fontSize });
 		}
 	};
 
@@ -68,11 +80,10 @@ const AccessibilityPage = () => {
 							</Box>
 							<Field.Label>{t('Font_size')}</Field.Label>
 							<Field.Row>
-								<Select
-									options={[
-										['100', '100%'],
-										['80', '80%'],
-									]}
+								<Controller
+									control={control}
+									name='fontSize'
+									render={({ field: { onChange, value } }) => <Select value={value} onChange={onChange} options={fontSizes} />}
 								/>
 							</Field.Row>
 							<Field.Description mb='x12'>{t('Adjustable_font_size_description')}</Field.Description>
@@ -82,7 +93,7 @@ const AccessibilityPage = () => {
 						{highContrastItem && (
 							<Field>
 								<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-									<Field.Label display='flex' alignItems='center' htmlFor={highContrastItem.id}>
+									<Field.Label fontScale='p2b' display='flex' alignItems='center' htmlFor={highContrastItem.id}>
 										{t.has(highContrastItem.title) ? t(highContrastItem.title) : highContrastItem.title}
 										{communityDisabled && (
 											<Box is='span' mis='x8'>
@@ -97,20 +108,7 @@ const AccessibilityPage = () => {
 											<Controller
 												control={control}
 												name='highContrast'
-												render={({ field: { onChange, value } }) => {
-													console.log(value);
-													return (
-														<ToggleSwitch
-															checked={value}
-															onChange={(e) => {
-																console.log(e);
-																onChange(e);
-															}}
-															aria-describedby='Encrypted_discussion_Description'
-															aria-labelledby='Encrypted_discussion_Label'
-														/>
-													);
-												}}
+												render={({ field: { onChange, value } }) => <ToggleSwitch checked={value} onChange={onChange} />}
 											/>
 										)}
 									</Field.Row>
@@ -126,7 +124,7 @@ const AccessibilityPage = () => {
 							</Field>
 						)}
 
-						<Button mb='x12' onClick={() => router.navigate('/account/theme')}>
+						<Button mbs='x32' onClick={() => router.navigate('/account/theme')}>
 							See more themes
 						</Button>
 					</Accordion.Item>

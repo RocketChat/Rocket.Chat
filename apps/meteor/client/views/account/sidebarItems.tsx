@@ -62,6 +62,6 @@ export const {
 	{
 		href: '/account/accessibility',
 		i18nLabel: 'Accessibility',
-		icon: 'headset',
+		icon: 'person-arms-spread',
 	},
 ]);
