@@ -105,9 +105,9 @@ class Triggers {
 		this._started = true;
 		this._triggers = [...triggers];
 
-		firedTriggers.forEach(({ _id }) => {
+		firedTriggers.forEach((id) => {
 			this._triggers.forEach((trigger) => {
-				if (trigger._id === _id) {
+				if (trigger._id === id) {
 					trigger.skip = true;
 				}
 			});
@@ -122,9 +122,11 @@ class Triggers {
 
 	async fire(trigger) {
 		const { token, firedTriggers = [], user } = store.state;
+
 		if (!this._enabled || user) {
 			return;
 		}
+
 		const { actions, conditions } = trigger;
 		await asyncForEach(actions, (action) => {
 			if (action.name === 'send-message') {
@@ -172,7 +174,7 @@ class Triggers {
 
 		if (trigger.runOnce) {
 			trigger.skip = true;
-			firedTriggers.push(trigger);
+			firedTriggers.push(trigger._id);
 			store.setState({ firedTriggers });
 		}
 	}
@@ -202,6 +204,8 @@ class Triggers {
 						break;
 					case 'chat-opened-by-visitor':
 					case 'after-guest-registration':
+						store.setState({ ignoreTriggerMessages: condition.name === 'after-guest-registration' });
+
 						const openFunc = () => {
 							this.fire(trigger);
 							this.callbacks.off('chat-opened-by-visitor', openFunc);

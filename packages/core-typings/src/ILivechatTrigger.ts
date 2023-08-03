@@ -4,6 +4,7 @@ export enum ILivechatTriggerType {
 	TIME_ON_SITE = 'time-on-site',
 	PAGE_URL = 'page-url',
 	CHAT_OPENED_BY_VISITOR = 'chat-opened-by-visitor',
+	AFTER_GUEST_REGISTRATION = 'after-guest-registration',
 }
 
 export interface ILivechatTriggerCondition {
