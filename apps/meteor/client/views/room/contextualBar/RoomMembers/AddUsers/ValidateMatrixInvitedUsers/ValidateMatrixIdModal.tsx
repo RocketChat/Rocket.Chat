@@ -2,11 +2,17 @@ import { Modal, Button, Box, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
+import { useForm } from 'react-hook-form';
 
 type ValidateMatrixIdModalProps = {
 	matrixIdVerifiedStatus: Map<string, string>;
+	completeUserList: string[];
 	onClose: () => void;
-	onConfirm?: () => void;
+	onSave: (args_0: any) => Promise<void>;
+};
+
+type FormValues = {
+	usersToInvite: string[];
 };
 
 const verificationStatusAsIcon = (verificationStatus: string) => {
@@ -23,11 +29,23 @@ const verificationStatusAsIcon = (verificationStatus: string) => {
 	}
 };
 
-const ValidateMatrixIdModal = ({ onClose, onConfirm, matrixIdVerifiedStatus }: ValidateMatrixIdModalProps): ReactElement => {
-	const t = useTranslation();
+const ValidateMatrixIdModal = ({ onClose, matrixIdVerifiedStatus, onSave, completeUserList }: ValidateMatrixIdModalProps): ReactElement => {
+	const usersToInvite = completeUserList.filter(
+		(user) => !(matrixIdVerifiedStatus.has(user) && matrixIdVerifiedStatus.get(user) === 'UNVERIFIED'),
+	);
 
-	const canInvite =
-		Array.from(matrixIdVerifiedStatus.values()).filter((verificationStatus) => !(verificationStatus === 'UNVERIFIED')).length > 0;
+	const { handleSubmit } = useForm<FormValues>({
+		defaultValues: {
+			usersToInvite,
+		},
+	});
+
+	const onSubmit = (data: FormValues) => {
+		onSave({ users: data.usersToInvite });
+		onClose();
+	};
+
+	const t = useTranslation();
 
 	return (
 		<Modal>
@@ -51,11 +69,9 @@ const ValidateMatrixIdModal = ({ onClose, onConfirm, matrixIdVerifiedStatus }: V
 			<Modal.Footer justifyContent='center'>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					{onConfirm && (
-						<Button primary onClick={onConfirm} disabled={!canInvite}>
-							{t('Yes_continue')}
-						</Button>
-					)}
+					<Button primary onClick={handleSubmit(onSubmit)} disabled={!(usersToInvite.length > 0)}>
+						{t('Yes_continue')}
+					</Button>
 				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
