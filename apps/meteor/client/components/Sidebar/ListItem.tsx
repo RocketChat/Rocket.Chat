@@ -21,7 +21,7 @@ type ListItemConditionalProps =
 
 type ListItemProps = ListItemCommonProps & ListItemConditionalProps;
 
-export const ListItem = ({ icon, text, input, children, gap, ...props }: ListItemProps): ReactElement => (
+const ListItem = ({ icon, text, input, children, gap, ...props }: ListItemProps): ReactElement => (
 	<Option {...props}>
 		{icon && <OptionIcon name={icon} />}
 		{gap && <OptionColumn />}
