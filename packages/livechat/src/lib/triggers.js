@@ -140,7 +140,7 @@ class Triggers {
 						ts: ts.toISOString(),
 						_id: createToken(),
 						trigger: true,
-						triggerAfterRegistration: conditions.some((c) => c.name === 'after-guest-registration');,
+						triggerAfterRegistration: conditions.some((c) => c.name === 'after-guest-registration'),
 					};
 
 					await store.setState({
