@@ -151,6 +151,7 @@ export class LDAPManager {
 		return {
 			flagEmailsAsVerified: settings.get<boolean>('Accounts_Verify_Email_For_External_Accounts') ?? false,
 			skipExistingUsers: false,
+			skipUserCallbacks: false,
 		};
 	}
 

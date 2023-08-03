@@ -1,15 +1,16 @@
 import * as core from '@actions/core';
-import { exec } from '@actions/exec';
 import * as github from '@actions/github';
 import semver from 'semver';
 
+import { checkoutBranch, commitChanges, createBranch, pushNewBranch } from './gitUtils';
 import { setupOctokit } from './setupOctokit';
-import { readPackageJson } from './utils';
+import { createBumpFile, readPackageJson } from './utils';
 
 export async function startPatchRelease({
 	githubToken,
 	baseRef,
 	mainPackagePath,
+	cwd = process.cwd(),
 }: {
 	baseRef: string;
 	mainPackagePath: string;
@@ -18,10 +19,10 @@ export async function startPatchRelease({
 }) {
 	const octokit = setupOctokit(githubToken);
 
-	await exec('git', ['checkout', baseRef]);
+	await checkoutBranch(baseRef);
 
 	// get version from main package
-	const { version } = await readPackageJson(mainPackagePath);
+	const { version, name: mainPkgName } = await readPackageJson(mainPackagePath);
 
 	const newVersion = semver.inc(version, 'patch');
 	if (!newVersion) {
@@ -31,16 +32,15 @@ export async function startPatchRelease({
 	const newBranch = `release-${newVersion}`;
 
 	// TODO check if branch exists
-	await exec('git', ['checkout', '-b', newBranch]);
+	await createBranch(newBranch);
 
-	// create empty changeset to have something to commit. the changeset file will be removed later in the process
-	core.info('create empty changeset');
-	await exec('yarn', ['changeset', 'add', '--empty']);
+	// by creating a changeset we make sure we'll always bump the version
+	core.info('create a changeset for main package');
+	await createBumpFile(cwd, mainPkgName);
 
-	await exec('git', ['add', '.']);
-	await exec('git', ['commit', '-m', newVersion]);
+	await commitChanges(`Bump ${newVersion}`);
 
-	await exec('git', ['push', 'origin', `HEAD:refs/heads/${newBranch}`]);
+	await pushNewBranch(newBranch);
 
 	// create a pull request only if the patch is for current version
 	if (baseRef === 'master') {
@@ -48,7 +48,7 @@ export async function startPatchRelease({
 
 		core.info('creating pull request');
 		await octokit.rest.pulls.create({
-			base: 'release-automation',
+			base: 'master',
 			head: newBranch,
 			title: finalPrTitle,
 			body: '',

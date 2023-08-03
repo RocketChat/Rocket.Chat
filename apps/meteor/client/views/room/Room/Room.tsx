@@ -34,21 +34,27 @@ const Room = (): ReactElement => {
 					header={<Header room={room} />}
 					body={<RoomBody />}
 					aside={
-						<ErrorBoundary fallback={null}>
-							<SelectedMessagesProvider>
-								<Suspense fallback={<ContextualbarSkeleton />}>
-									{(toolbox.tab?.tabComponent && createElement(toolbox.tab.tabComponent)) ||
-										(appsContextualBarContext && (
-											<UiKitContextualBar
-												viewId={appsContextualBarContext.viewId}
-												roomId={appsContextualBarContext.roomId}
-												payload={appsContextualBarContext.payload}
-												appId={appsContextualBarContext.appId}
-											/>
-										))}
-								</Suspense>
-							</SelectedMessagesProvider>
-						</ErrorBoundary>
+						(toolbox.tab?.tabComponent && (
+							<ErrorBoundary fallback={null}>
+								<SelectedMessagesProvider>
+									<Suspense fallback={<ContextualbarSkeleton />}>{createElement(toolbox.tab.tabComponent)}</Suspense>
+								</SelectedMessagesProvider>
+							</ErrorBoundary>
+						)) ||
+						(appsContextualBarContext && (
+							<ErrorBoundary fallback={null}>
+								<SelectedMessagesProvider>
+									<Suspense fallback={<ContextualbarSkeleton />}>
+										<UiKitContextualBar
+											viewId={appsContextualBarContext.viewId}
+											roomId={appsContextualBarContext.roomId}
+											payload={appsContextualBarContext.payload}
+											appId={appsContextualBarContext.appId}
+										/>
+									</Suspense>
+								</SelectedMessagesProvider>
+							</ErrorBoundary>
+						))
 					}
 				/>
 			</MessageHighlightProvider>
