@@ -10,9 +10,9 @@
 		"typescript": "~5.2.2"
 	},
 	"dependencies": {
-		"generate-password": "^1.7.0",
 		"@rocket.chat/core-services": "workspace:^",
-		"@rocket.chat/random": "workspace:^"
+		"@rocket.chat/random": "workspace:^",
+		"generate-password": "^1.7.0"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
