@@ -1,5 +1,5 @@
-import { PendingAvatarImporter } from './importer';
 import { Importers } from '../../importer/server';
+import { PendingAvatarImporter } from './importer';
 
 Importers.add({
 	key: 'pending-avatars',

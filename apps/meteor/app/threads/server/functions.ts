@@ -1,6 +1,6 @@
-import { Messages, Subscriptions } from '@rocket.chat/models';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import { Messages, Subscriptions } from '@rocket.chat/models';
 
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
 

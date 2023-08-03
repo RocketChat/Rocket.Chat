@@ -13,6 +13,8 @@ export const useLoadSurroundingMessages = (msgId?: IMessage['_id']) => {
 		if (!msgId) {
 			return;
 		}
+		const abort = new AbortController();
+
 		queryClient
 			.fetchQuery({
 				queryKey: ['chat.getMessage', msgId],
@@ -21,11 +23,17 @@ export const useLoadSurroundingMessages = (msgId?: IMessage['_id']) => {
 				},
 			})
 			.then(({ message }) => {
+				if (abort.signal.aborted) {
+					return;
+				}
 				// Serialized IMessage dates are strings. For this function, only ts is needed
 				legacyJumpToMessage({ ...message, ts: new Date(message.ts) } as any as IMessage);
 			})
 			.catch((error) => {
 				console.warn(error);
 			});
+		return () => {
+			abort.abort();
+		};
 	}, [msgId, queryClient, getMessage]);
 };

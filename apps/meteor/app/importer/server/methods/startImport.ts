@@ -1,12 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-import type { StartImportParamsPOST } from '@rocket.chat/rest-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Imports } from '@rocket.chat/models';
+import type { StartImportParamsPOST } from '@rocket.chat/rest-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Importers, Selection, SelectionChannel, SelectionUser } from '..';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
-export const executeStartImport = async ({ input }: StartImportParamsPOST, userId: string) => {
+export const executeStartImport = async ({ input }: StartImportParamsPOST, startedByUserId: IUser['_id']) => {
 	const operation = await Imports.findLastImport();
 	if (!operation) {
 		throw new Meteor.Error('error-operation-not-found', 'Import Operation Not Found', 'startImport');
@@ -28,7 +29,7 @@ export const executeStartImport = async ({ input }: StartImportParamsPOST, userI
 			new SelectionChannel(channel.channel_id, channel.name, channel.is_archived, channel.do_import, channel.is_private, channel.is_direct),
 	);
 	const selection = new Selection(importer.name, usersSelection, channelsSelection, 0);
-	await instance.startImport(selection, userId);
+	await instance.startImport(selection, startedByUserId);
 };
 
 declare module '@rocket.chat/ui-contexts' {

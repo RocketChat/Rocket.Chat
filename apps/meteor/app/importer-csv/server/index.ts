@@ -1,5 +1,5 @@
-import { CsvImporter } from './importer';
 import { Importers } from '../../importer/server';
+import { CsvImporter } from './importer';
 
 Importers.add({
 	key: 'csv',

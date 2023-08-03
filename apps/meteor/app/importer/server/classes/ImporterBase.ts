@@ -1,16 +1,16 @@
-import type { MatchKeysAndValues } from 'mongodb';
-import { Settings, ImportData, Imports } from '@rocket.chat/models';
 import type { IImport, IImportRecordType, IImportData, IImportChannel, IImportUser, IImportProgress } from '@rocket.chat/core-typings';
+import { Settings, ImportData, Imports } from '@rocket.chat/models';
 import AdmZip from 'adm-zip';
+import type { MatchKeysAndValues } from 'mongodb';
 
+import { Selection, SelectionChannel, SelectionUser } from '..';
+import { Logger } from '../../../logger/server';
+import { t } from '../../../utils/lib/i18n';
+import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterProgressStep';
+import type { ImporterInfo } from '../definitions/ImporterInfo';
+import { ImportDataConverter } from './ImportDataConverter';
 import { Progress } from './ImporterProgress';
 import { ImporterWebsocket } from './ImporterWebsocket';
-import type { ImporterInfo } from '../definitions/ImporterInfo';
-import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterProgressStep';
-import { Logger } from '../../../logger/server';
-import { ImportDataConverter } from './ImportDataConverter';
-import { t } from '../../../utils/lib/i18n';
-import { Selection, SelectionChannel, SelectionUser } from '..';
 
 type OldSettings = {
 	allowedDomainList?: string | null;
@@ -46,12 +46,12 @@ export class Importer {
 
 	public progress: Progress;
 
-	constructor(info: ImporterInfo, importRecord: IImport) {
+	constructor(info: ImporterInfo, importRecord: IImport, converterOptions = {}) {
 		if (!info.key || !info.importer) {
 			throw new Error('Information passed in must be a valid ImporterInfo instance.');
 		}
 
-		this.converter = new ImportDataConverter();
+		this.converter = new ImportDataConverter(converterOptions);
 
 		this.startImport = this.startImport.bind(this);
 		this.getProgress = this.getProgress.bind(this);
@@ -65,14 +65,15 @@ export class Importer {
 		this.logger = new Logger(`${this.info.name} Importer`);
 		this.converter.setLogger(this.logger);
 
-		this.progress = new Progress(this.info.key, this.info.name);
 		this.importRecord = importRecord;
+		this.progress = new Progress(this.info.key, this.info.name);
 		this.users = {};
 		this.channels = {};
 		this.messages = {};
 		this.oldSettings = {};
 
 		this.progress.step = this.importRecord.status;
+		this._lastProgressReportTotal = 0;
 		this.reloadCount();
 
 		this.logger.debug(`Constructed a new ${this.info.name} Importer.`);
@@ -119,6 +120,10 @@ export class Importer {
 			throw new Error('You must be logged in to do this.');
 		}
 
+		if (!startedByUserId) {
+			throw new Error('You must be logged in to do this.');
+		}
+
 		await this.updateProgress(ProgressStep.IMPORTING_STARTED);
 		this.reloadCount();
 		const started = Date.now();
@@ -147,9 +152,7 @@ export class Importer {
 					return false;
 				}
 				case 'user': {
-					if (!importSelection.users) {
-						return true;
-					}
+					// #TODO: Replace this workaround
 					if (importSelection.users.length === 0 && this.info.key === 'api') {
 						return true;
 					}
@@ -179,6 +182,24 @@ export class Importer {
 			}
 		};
 
+		const afterBatchFn = async (successCount, errorCount) => {
+			if (successCount) {
+				await this.addCountCompleted(successCount);
+			}
+			if (errorCount) {
+				await this.addCountError(errorCount);
+			}
+
+			if (this.importRecord.valid === false) {
+				this.converter.aborted = true;
+				throw new Error('The import operation is no longer valid.');
+			}
+		};
+
+		const onErrorFn = async () => {
+			await this.addCountCompleted(1);
+		};
+
 		process.nextTick(async () => {
 			await this.backupSettingValues();
 
@@ -186,13 +207,13 @@ export class Importer {
 				await this.applySettingValues({});
 
 				await this.updateProgress(ProgressStep.IMPORTING_USERS);
-				await this.converter.convertUsers({ beforeImportFn, afterImportFn });
+				await this.converter.convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn });
 
 				await this.updateProgress(ProgressStep.IMPORTING_CHANNELS);
-				await this.converter.convertChannels(startedByUserId, { beforeImportFn, afterImportFn });
+				await this.converter.convertChannels(startedByUserId, { beforeImportFn, afterImportFn, onErrorFn });
 
 				await this.updateProgress(ProgressStep.IMPORTING_MESSAGES);
-				await this.converter.convertMessages({ afterImportFn });
+				await this.converter.convertMessages({ afterImportFn, onErrorFn });
 
 				await this.updateProgress(ProgressStep.FINISHING);
 
@@ -216,14 +237,12 @@ export class Importer {
 	}
 
 	async backupSettingValues() {
-		const allowedDomainList = (await Settings.findOneById('Accounts_AllowedDomainsList'))?.value as string | null;
 		const allowUsernameChange = (await Settings.findOneById('Accounts_AllowUsernameChange'))?.value as boolean | null;
 		const maxFileSize = (await Settings.findOneById('FileUpload_MaxFileSize'))?.value as number | null;
 		const mediaTypeWhiteList = (await Settings.findOneById('FileUpload_MediaTypeWhiteList'))?.value as string | null;
 		const mediaTypeBlackList = (await Settings.findOneById('FileUpload_MediaTypeBlackList'))?.value as string | null;
 
 		this.oldSettings = {
-			allowedDomainList,
 			allowUsernameChange,
 			maxFileSize,
 			mediaTypeWhiteList,
@@ -232,7 +251,6 @@ export class Importer {
 	}
 
 	async applySettingValues(settingValues: OldSettings) {
-		await Settings.updateValueById('Accounts_AllowedDomainsList', settingValues.allowedDomainList ?? '');
 		await Settings.updateValueById('Accounts_AllowUsernameChange', settingValues.allowUsernameChange ?? true);
 		await Settings.updateValueById('FileUpload_MaxFileSize', settingValues.maxFileSize ?? -1);
 		await Settings.updateValueById('FileUpload_MediaTypeWhiteList', settingValues.mediaTypeWhiteList ?? '*');
@@ -268,6 +286,7 @@ export class Importer {
 	reloadCount() {
 		this.progress.count.total = this.importRecord.count?.total || 0;
 		this.progress.count.completed = this.importRecord.count?.completed || 0;
+		this.progress.count.error = this.importRecord.count?.error || 0;
 	}
 
 	/**
@@ -292,12 +311,24 @@ export class Importer {
 	async addCountCompleted(count: number): Promise<Progress> {
 		this.progress.count.completed += count;
 
+		return this.maybeUpdateRecord();
+	}
+
+	async addCountError(count) {
+		this.progress.count.error += count;
+
+		return this.maybeUpdateRecord();
+	}
+
+	async maybeUpdateRecord() {
+		// Only update the database every 500 messages (or 50 for users/channels)
+		// Or the completed is greater than or equal to the total amount
+		const count = this.progress.count.completed + this.progress.count.error;
 		const range = [ProgressStep.IMPORTING_USERS, ProgressStep.IMPORTING_CHANNELS].includes(this.progress.step) ? 50 : 500;
 
-		// Only update the database every 500 messages (or 50 users/channels)
-		// Or the completed is greater than or equal to the total amount
-		if (this.progress.count.completed % range === 0 || this.progress.count.completed >= this.progress.count.total) {
-			await this.updateRecord({ 'count.completed': this.progress.count.completed });
+		if (count % range === 0 || count >= this.progress.count.total || count - this._lastProgressReportTotal > range) {
+			this._lastProgressReportTotal = this.progress.count.completed + this.progress.count.error;
+			await this.updateRecord({ 'count.completed': this.progress.count.completed, 'count.error': this.progress.count.error });
 			this.reportProgress();
 		} else if (!this.reportProgressHandler) {
 			this.reportProgressHandler = setTimeout(() => {
@@ -305,7 +336,7 @@ export class Importer {
 			}, 250);
 		}
 
-		this.logger.log(`${this.progress.count.completed} messages imported`);
+		this.logger.log(`${this.progress.count.completed} records imported, ${this.progress.count.error} failed`);
 
 		return this.progress;
 	}

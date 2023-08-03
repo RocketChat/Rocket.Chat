@@ -1,4 +1,5 @@
-import { Meteor } from 'meteor/meteor';
+import { Import } from '@rocket.chat/core-services';
+import { Imports } from '@rocket.chat/models';
 import {
 	isUploadImportFileParamsPOST,
 	isDownloadPublicImportFileParamsPOST,
@@ -12,10 +13,8 @@ import {
 	isImportersListParamsGET,
 	isImportAddUsersParamsPOST,
 } from '@rocket.chat/rest-typings';
-import { Imports } from '@rocket.chat/models';
-import { Import } from '@rocket.chat/core-services';
+import { Meteor } from 'meteor/meteor';
 
-import { API } from '../api';
 import { Importers } from '../../../importer/server';
 import { startImportOperation } from '../../../importer/server/startImportOperation';
 import { PendingFileImporter } from '../../../importer-pending-files/server/importer';
@@ -29,6 +28,7 @@ import {
 	executeGetLatestImportOperations,
 } from '../../../importer/server/methods';
 import { translateForUserId } from '../../../../server/lib/translateForUser';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'uploadImportFile',
@@ -140,7 +140,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', 'downloadPendingFiles');
 			}
 
-			const operation = await startImportOperation(importer, this.userId);
+			const operation = await Import.newOperation(this.userId, importer.name, importer.key);
 			const instance = new PendingFileImporter(importer, operation); // eslint-disable-line new-cap
 			const count = await instance.prepareFileCount();
 
@@ -165,7 +165,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', 'downloadPendingAvatars');
 			}
 
-			const operation = await startImportOperation(importer, this.userId);
+			const operation = await Import.newOperation(this.userId, importer.name, importer.key);
 			const instance = new PendingAvatarImporter(importer, operation); // eslint-disable-line new-cap
 			const count = await instance.prepareFileCount();
 

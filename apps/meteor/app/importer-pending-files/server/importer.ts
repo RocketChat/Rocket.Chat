@@ -1,14 +1,14 @@
-import https from 'https';
 import http from 'http';
+import https from 'https';
 
-import { Random } from '@rocket.chat/random';
-import { Messages } from '@rocket.chat/models';
 import type { IImport, MessageAttachment, IUpload } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 
-import { Importer, ProgressStep, Selection } from '../../importer/server';
-import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
-import type { Progress } from '../../importer/server/classes/ImporterProgress';
 import { FileUpload } from '../../file-upload/server';
+import { Importer, ProgressStep, Selection } from '../../importer/server';
+import type { Progress } from '../../importer/server/classes/ImporterProgress';
+import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
 
 export class PendingFileImporter extends Importer {
 	constructor(info: ImporterInfo, importRecord: IImport) {
@@ -113,7 +113,7 @@ export class PendingFileImporter extends Importer {
 					currentSize += nextSize;
 					downloadedFileIds.push(_importFile.id);
 
-					requestModule.get(url, function (res) {
+					requestModule.get(url, (res) => {
 						const contentType = res.headers['content-type'];
 						if (!details.type && contentType) {
 							details.type = contentType;

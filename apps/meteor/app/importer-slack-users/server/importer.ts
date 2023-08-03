@@ -3,16 +3,16 @@ import fs from 'fs';
 import type { IImport, IImportUser } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
-import { Importer, ProgressStep } from '../../importer/server';
-import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
-import type { Progress } from '../../importer/server/classes/ImporterProgress';
 import { RocketChatFile } from '../../file/server';
+import { Importer, ProgressStep } from '../../importer/server';
+import type { Progress } from '../../importer/server/classes/ImporterProgress';
+import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
 
 export class SlackUsersImporter extends Importer {
 	private csvParser: (csv: string) => string[];
 
-	constructor(info: ImporterInfo, importRecord: IImport) {
-		super(info, importRecord);
+	constructor(info: ImporterInfo, importRecord: IImport, converterOptions = {}) {
+		super(info, importRecord, converterOptions);
 
 		const { parse } = require('csv-parse/lib/sync');
 
@@ -20,6 +20,7 @@ export class SlackUsersImporter extends Importer {
 	}
 
 	async prepareUsingLocalFile(fullFilePath: string): Promise<Progress> {
+		this.logger.debug('start preparing import operation');
 		await this.converter.clearImportData();
 
 		const file = fs.readFileSync(fullFilePath);

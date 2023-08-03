@@ -1,16 +1,16 @@
+import type { IImport } from '@rocket.chat/core-typings';
 import { Settings, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import type { IImport } from '@rocket.chat/core-typings';
 
 import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server';
-import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
 import type { Progress } from '../../importer/server/classes/ImporterProgress';
+import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
 
 export class CsvImporter extends Importer {
 	private csvParser: (csv: string) => string[];
 
-	constructor(info: ImporterInfo, importRecord: IImport) {
-		super(info, importRecord);
+	constructor(info: ImporterInfo, importRecord: IImport, converterOptions = {}) {
+		super(info, importRecord, converterOptions);
 
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const { parse } = require('csv-parse/lib/sync');

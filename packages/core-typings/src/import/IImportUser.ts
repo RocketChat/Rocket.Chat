@@ -17,6 +17,5 @@ export interface IImportUser {
 	services?: Record<string, Record<string, any>>;
 	customFields?: Record<string, any>;
 
-	// Password is available only for bulk-creating users through the import API - regular importers don't use it
 	password?: string;
 }

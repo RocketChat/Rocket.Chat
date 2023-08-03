@@ -1,13 +1,12 @@
-import _ from 'underscore';
-import { Messages, Settings, ImportData } from '@rocket.chat/models';
 import type { IImportUser, IImportMessage, IImportPendingFile } from '@rocket.chat/core-typings';
+import { Messages, Settings, ImportData } from '@rocket.chat/models';
 import type { IZipEntry } from 'adm-zip';
 
 import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server';
-import { settings } from '../../settings/server';
-import { MentionsParser } from '../../mentions/lib/MentionsParser';
-import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 import type { Progress } from '../../importer/server/classes/ImporterProgress';
+import { MentionsParser } from '../../mentions/lib/MentionsParser';
+import { settings } from '../../settings/server';
+import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
 export class SlackImporter extends Importer {
 	private _useUpsert = false;
@@ -285,7 +284,7 @@ export class SlackImporter extends Importer {
 				increaseProgress();
 			}
 
-			if (!_.isEmpty(missedTypes)) {
+			if (Object.keys(missedTypes).length > 0) {
 				this.logger.info('Missed import types:', missedTypes);
 			}
 		} catch (e) {

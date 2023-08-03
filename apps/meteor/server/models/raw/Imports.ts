@@ -2,6 +2,7 @@ import type { Db, Document, FindCursor, FindOptions, UpdateResult, IndexDescript
 import type { IImportsModel } from '@rocket.chat/model-typings';
 import type { IImport } from '@rocket.chat/core-typings';
 
+import { ensureArray } from '../../../lib/utils/arrayUtils';
 import { BaseRaw } from './BaseRaw';
 
 export class ImportsModel extends BaseRaw<IImport> implements IImportsModel {
@@ -13,10 +14,10 @@ export class ImportsModel extends BaseRaw<IImport> implements IImportsModel {
 		return [{ key: { ts: -1 } }, { key: { valid: 1 } }];
 	}
 
-	async findLastImport(): Promise<IImport | null> {
+	async findLastImport(): Promise<IImport | undefined> {
 		const imports = await this.find({}, { sort: { ts: -1 }, limit: 1 }).toArray();
 
-		return imports.shift() || null;
+		return imports.shift();
 	}
 
 	async hasValidOperationInStatus(allowedStatus: IImport['status'][]): Promise<boolean> {
@@ -40,9 +41,7 @@ export class ImportsModel extends BaseRaw<IImport> implements IImportsModel {
 	}
 
 	invalidateOperationsNotInStatus(status: IImport['status'] | IImport['status'][]): Promise<UpdateResult | Document> {
-		const statusList = ([] as IImport['status'][]).concat(status);
-
-		return this.updateMany({ valid: { $ne: false }, status: { $nin: statusList } }, { $set: { valid: false } });
+		return this.updateMany({ valid: { $ne: false }, status: { $nin: ensureArray(status) } }, { $set: { valid: false } });
 	}
 
 	findAllPendingOperations(options: FindOptions<IImport> = {}): FindCursor<IImport> {

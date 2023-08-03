@@ -1,6 +1,6 @@
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
-import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type {
 	IMessage,
 	IRoom,
@@ -22,6 +22,7 @@ import type {
 	IUserStatus,
 	ILivechatInquiryRecord,
 	IImportProgress,
+	IBanner,
 } from '@rocket.chat/core-typings';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
@@ -56,6 +57,14 @@ export interface StreamerEvents {
 	'room-messages': [{ key: '__my_messages__'; args: [IMessage] }, { key: string; args: [IMessage] }];
 
 	'notify-all': [
+		{
+			key: 'public-info';
+			args: [
+				| [key: 'public-settings-changed', args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting]]
+				| [key: 'deleteCustomSound', args: [{ soundData: ICustomSound }]]
+				| [key: 'updateCustomSound', args: [{ soundData: ICustomSound }]],
+			];
+		},
 		{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'deleteCustomSound'; args: [{ soundData: ICustomSound }] },
 		{ key: 'updateCustomSound'; args: [{ soundData: ICustomSound }] },
@@ -158,6 +167,7 @@ export interface StreamerEvents {
 			];
 		},
 		{ key: `${string}/calendar`; args: [ICalendarNotification] },
+		{ key: `${string}/banners`; args: [IBanner] },
 	];
 
 	'importers': [
@@ -207,8 +217,6 @@ export interface StreamerEvents {
 			];
 		},
 		{ key: 'Users:NameChanged'; args: [Pick<IUser, '_id' | 'name'>] },
-		{ key: 'voip.statuschanged'; args: [boolean] },
-		{ key: 'omnichannel.priority-changed'; args: [{ id: string; clientAction: ClientAction; name?: string }] },
 		{ key: 'private-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'deleteCustomUserStatus'; args: [{ userStatusData: unknown }] },
 		{ key: 'user-status'; args: [[IUser['_id'], IUser['username'], 0 | 1 | 2 | 3, IUser['statusText'], IUser['name'], IUser['roles']]] },
@@ -224,6 +232,9 @@ export interface StreamerEvents {
 			key: 'updateAvatar';
 			args: [{ username: IUser['username']; etag: IUser['avatarETag'] } | { rid: IRoom['_id']; etag: IRoom['avatarETag'] }];
 		},
+
+		{ key: 'voip.statuschanged'; args: [boolean] },
+		{ key: 'omnichannel.priority-changed'; args: [{ id: string; clientAction: ClientAction; name?: string }] },
 	];
 
 	'stdout': [{ key: 'stdout'; args: [{ id: string; string: string; ts: Date }] }];
@@ -366,6 +377,37 @@ export interface StreamerEvents {
 		{ key: 'command/updated'; args: [string] },
 		{ key: 'command/removed'; args: [string] },
 		{ key: 'actions/changed'; args: [] },
+		{
+			key: 'apps';
+			args: [
+				| [key: 'app/added', args: [string]]
+				| [key: 'app/removed', args: [string]]
+				| [key: 'app/updated', args: [string]]
+				| [
+						key: 'app/statusUpdate',
+						args: [
+							{
+								appId: string;
+								status: AppStatus;
+							},
+						],
+				  ]
+				| [
+						key: 'app/settingUpdated',
+						args: [
+							{
+								appId: string;
+								setting: AppsSetting;
+							},
+						],
+				  ]
+				| [key: 'command/added', args: [string]]
+				| [key: 'command/disabled', args: [string]]
+				| [key: 'command/updated', args: [string]]
+				| [key: 'command/removed', args: [string]]
+				| [key: 'actions/changed', args: []],
+			];
+		},
 	];
 
 	'apps-engine': [

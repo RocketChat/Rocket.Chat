@@ -4,5 +4,6 @@ export interface IImporterSelectionChannel {
 	is_archived: boolean;
 	do_import: boolean;
 	is_private: boolean;
+	creator: undefined;
 	is_direct: boolean;
 }

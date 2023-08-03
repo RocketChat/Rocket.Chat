@@ -1,5 +1,5 @@
-import { PendingFileImporter } from './importer';
 import { Importers } from '../../importer/server';
+import { PendingFileImporter } from './importer';
 
 Importers.add({
 	key: 'pending-files',

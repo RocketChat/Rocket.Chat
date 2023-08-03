@@ -1,17 +1,17 @@
 import type { UrlWithStringQuery } from 'url';
 
 import type Icons from '@rocket.chat/icons';
-import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import type { Root } from '@rocket.chat/message-parser';
+import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 
-import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { IUser } from '../IUser';
-import type { IRoom, RoomID } from '../IRoom';
-import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
-import type { FileProp } from './MessageAttachment/Files/FileProp';
+import type { ILivechatPriority } from '../ILivechatPriority';
 import type { ILivechatVisitor } from '../ILivechatVisitor';
 import type { IOmnichannelServiceLevelAgreements } from '../IOmnichannelServiceLevelAgreements';
-import type { ILivechatPriority } from '../ILivechatPriority';
+import type { IRocketChatRecord } from '../IRocketChatRecord';
+import type { IRoom, RoomID } from '../IRoom';
+import type { IUser } from '../IUser';
+import type { FileProp } from './MessageAttachment/Files/FileProp';
+import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 
 type MentionType = 'user' | 'team';
 

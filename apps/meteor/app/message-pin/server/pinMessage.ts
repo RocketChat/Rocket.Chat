@@ -1,19 +1,19 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IMessage, IUser, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
-import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Message } from '@rocket.chat/core-services';
+import { isQuoteAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings/server';
+import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../lib/callbacks';
-import { isTheLastMessage } from '../../lib/server';
-import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
+import { isTruthy } from '../../../lib/isTruthy';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
-import { isTruthy } from '../../../lib/isTruthy';
+import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { settings } from '../../settings/server';
+import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
 const recursiveRemove = (msg: MessageAttachment, deep = 1) => {
 	if (!msg || !isQuoteAttachment(msg)) {

@@ -1,12 +1,12 @@
-import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
+import { Authorization, VideoConf } from '@rocket.chat/core-services';
 import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
-import { Authorization, VideoConf } from '@rocket.chat/core-services';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ui-contexts';
+import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
 
+import type { Progress } from '../../../app/importer/server/classes/ImporterProgress';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
-import type { Progress } from '../../../app/importer/server/classes/ImporterProgress';
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer<'notify-logged'>;
@@ -364,7 +364,7 @@ export class NotificationsModule {
 			return Authorization.hasAtLeastOnePermission(this.userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations']);
 		});
 
-		this.streamLivechatRoom.allowRead(async function (roomId, extraData) {
+		this.streamLivechatRoom.allowRead(async (roomId, extraData) => {
 			const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't' | 'v'>>(roomId, {
 				projection: { _id: 0, t: 1, v: 1 },
 			});
@@ -483,9 +483,9 @@ export class NotificationsModule {
 		this.streamPresence.allowWrite('none');
 	}
 
-	notifyAll<E extends StreamKeys<'notify-all'>>(eventName: E, ...args: StreamerCallbackArgs<'notify-all', E>): void {
-		return this.streamAll.emit(eventName, ...args);
-	}
+	// notifyAll<E extends StreamKeys<'notify-all'>>(eventName: E, ...args: StreamerCallbackArgs<'notify-all', E>): void {
+	// 	return this.streamAll.emit(eventName, ...args);
+	// }
 
 	notifyLogged<E extends StreamKeys<'notify-logged'>>(eventName: E, ...args: StreamerCallbackArgs<'notify-logged', E>): void {
 		return this.streamLogged.emit(eventName, ...args);

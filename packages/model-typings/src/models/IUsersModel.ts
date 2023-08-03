@@ -1,4 +1,3 @@
-import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult } from 'mongodb';
 import type {
 	IUser,
 	IRole,
@@ -10,6 +9,7 @@ import type {
 	AtLeast,
 	ILivechatAgentStatus,
 } from '@rocket.chat/core-typings';
+import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 

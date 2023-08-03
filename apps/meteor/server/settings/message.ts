@@ -329,7 +329,7 @@ export const createMessageSettings = () =>
 			public: true,
 		});
 
-		await this.section('Katex', async function () {
+		await this.section('Katex', async () => {
 			const enableQuery = {
 				_id: 'Katex_Enabled',
 				value: true,
@@ -353,7 +353,7 @@ export const createMessageSettings = () =>
 			});
 		});
 
-		await this.section('Google Maps', async function () {
+		await this.section('Google Maps', async () => {
 			await settingsRegistry.add('MapView_Enabled', false, {
 				type: 'boolean',
 				public: true,

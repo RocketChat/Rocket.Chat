@@ -15,5 +15,9 @@ export interface IImport extends IRocketChatRecord {
 	count?: {
 		total?: number;
 		completed?: number;
+		error?: number;
+		users?: number;
+		messages?: number;
+		channels?: number;
 	};
 }
