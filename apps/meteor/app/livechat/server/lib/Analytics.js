@@ -1,11 +1,11 @@
-import moment from 'moment-timezone';
 import { LivechatRooms } from '@rocket.chat/models';
+import moment from 'moment-timezone';
 
-import { secondsToHHMMSS } from '../../../utils/server';
-import { getTimezone } from '../../../utils/server/lib/getTimezone';
-import { Logger } from '../../../logger/server';
-import { i18n } from '../../../../server/lib/i18n';
 import { callbacks } from '../../../../lib/callbacks';
+import { secondsToHHMMSS } from '../../../../lib/utils/secondsToHHMMSS';
+import { i18n } from '../../../../server/lib/i18n';
+import { Logger } from '../../../logger/server';
+import { getTimezone } from '../../../utils/server/lib/getTimezone';
 
 const HOURS_IN_DAY = 24;
 const logger = new Logger('OmnichannelAnalytics');
@@ -477,7 +477,7 @@ export const Analytics = {
 		 * @param  {Boolean} [inv=false] reverse sort
 		 */
 		sortByValue(data, inv = false) {
-			data.sort(function (a, b) {
+			data.sort((a, b) => {
 				// sort array
 				if (parseFloat(a.value) > parseFloat(b.value)) {
 					return inv ? -1 : 1; // if inv, reverse sort

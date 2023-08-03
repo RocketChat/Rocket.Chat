@@ -1,7 +1,7 @@
-import type { IServerEventsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, IndexDescription } from 'mongodb';
 import type { IServerEvent, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { ServerEventType } from '@rocket.chat/core-typings';
+import type { IServerEventsModel } from '@rocket.chat/model-typings';
+import type { Collection, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 

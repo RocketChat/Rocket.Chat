@@ -1,5 +1,5 @@
-import mem from 'mem';
 import { isGETLivechatConfigParams } from '@rocket.chat/rest-typings';
+import mem from 'mem';
 
 import { API } from '../../../../api/server';
 import { Livechat } from '../../lib/LivechatTyped';

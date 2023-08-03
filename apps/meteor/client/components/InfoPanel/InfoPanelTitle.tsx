@@ -1,5 +1,6 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps, FC, ReactNode } from 'react';
+import type { Keys as IconName } from '@rocket.chat/icons';
+import type { FC, ReactNode } from 'react';
 import React from 'react';
 
 type InfoPanelTitleProps = {
@@ -7,7 +8,7 @@ type InfoPanelTitleProps = {
 	icon: ReactNode;
 };
 
-const isValidIcon = (icon: ReactNode): icon is ComponentProps<typeof Icon>['name'] => typeof icon === 'string';
+const isValidIcon = (icon: ReactNode): icon is IconName => typeof icon === 'string';
 
 const InfoPanelTitle: FC<InfoPanelTitleProps> = ({ title, icon }) => (
 	<Box display='flex' flexShrink={0} alignItems='center' fontScale='h4' color='default' withTruncatedText>

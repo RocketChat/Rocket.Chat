@@ -27,10 +27,11 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 
 	const { data: tagsResult, isInitialLoading } = useLivechatTags({
 		department,
+		viewAll: !department,
 	});
 
 	const customTags = useMemo(() => {
-		return tags.filter((tag) => !tagsResult?.tags.find((rtag) => rtag._id === tag));
+		return tags.filter((tag) => !tagsResult?.tags.find((rtag) => rtag.name === tag));
 	}, [tags, tagsResult?.tags]);
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -56,7 +57,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 			return;
 		}
 
-		if (tags.some((tag) => tag === tagValue)) {
+		if (tags.includes(tagValue)) {
 			dispatchToastMessage({ type: 'error', message: t('Tag_already_exists') });
 			return;
 		}
@@ -79,9 +80,10 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 					<EETagsComponent
 						value={paginatedTagValue}
 						handler={(tags: { label: string; value: string }[]): void => {
-							handler(tags.map((tag) => tag.value));
+							handler(tags.map((tag) => tag.label));
 						}}
 						department={department}
+						viewAll={!department}
 					/>
 				</Field.Row>
 			) : (
