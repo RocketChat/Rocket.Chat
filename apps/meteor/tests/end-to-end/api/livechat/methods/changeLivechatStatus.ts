@@ -9,7 +9,7 @@ import { disableDefaultBusinessHour, makeDefaultBusinessHourActiveAndClosed } fr
 import { createAgent } from '../../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../../data/permissions.helper';
 import { password } from '../../../../data/user';
-import { createUser, getMe, login } from '../../../../data/users.helper';
+import { createUser, deleteUser, getMe, login } from '../../../../data/users.helper';
 
 describe('livechat:changeLivechatStatus', function () {
 	this.retries(0);
@@ -29,6 +29,10 @@ describe('livechat:changeLivechatStatus', function () {
 			user,
 			credentials: userCredentials,
 		};
+	});
+
+	after(async () => {
+		await deleteUser(agent.user);
 	});
 
 	describe('changeLivechatStatus', () => {
@@ -78,6 +82,9 @@ describe('livechat:changeLivechatStatus', function () {
 					expect(parsedBody.error).to.have.property('error', 'error-not-allowed');
 					expect(parsedBody.error).to.have.property('reason', 'Invalid Agent Id');
 				});
+
+			// cleanup
+			await deleteUser(user);
 		});
 		it('should return an error if status is not valid', async () => {
 			await request

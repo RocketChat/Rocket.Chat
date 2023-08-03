@@ -1222,7 +1222,7 @@
   "Header_and_Footer": "Kopf-und Fußzeile",
   "Helpers": "Helfer",
   "Hex_Color_Preview": "Hex-Farbvorschau",
-  "Hi_username": "Servus {{name}}",
+  "Hi_username": "Servus [name]",
   "Hidden": "Versteckt",
   "Hide": "Chatraum verstecken",
   "Hide_counter": "Zähler ausblenden",
