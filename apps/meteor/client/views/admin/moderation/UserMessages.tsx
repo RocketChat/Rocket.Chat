@@ -18,7 +18,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 	const getUserMessages = useEndpoint('GET', '/v1/moderation.user.reportedMessages');
 
 	const {
-		data: userMessages,
+		data: report,
 		refetch: reloadUserMessages,
 		isLoading: isLoadingUserMessages,
 		isSuccess: isSuccessUserMessages,
@@ -47,19 +47,15 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 		reloadUserMessages();
 	});
 
-	const username = useMemo(() => {
-		if (userMessages?.messages[0]?.message?.u?.username) {
-			return userMessages?.messages[0].message.u.username;
-		}
-		return '';
-	}, [userMessages?.messages]);
-
-	const name = useMemo(() => {
-		if (userMessages?.messages[0]?.message?.u?.name) {
-			return userMessages?.messages[0].message.u.name;
-		}
-		return '';
-	}, [userMessages?.messages]);
+	const { username, name } = useMemo(() => {
+		return (
+			report?.user ??
+			report?.messages?.[0]?.message?.u ?? {
+				username: t('Deleted_user'),
+				name: t('Deleted_user'),
+			}
+		);
+	}, [report?.messages, report?.user, t]);
 
 	const displayName =
 		useUserDisplayName({
@@ -74,15 +70,27 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 				<ContextualbarClose onClick={() => moderationRoute.push({})} />
 			</ContextualbarHeader>
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
-				{isSuccessUserMessages && userMessages.messages.length > 0 && (
-					<Callout margin={15} title={t('Moderation_Duplicate_messages')} type='warning' icon='warning'>
-						{t('Moderation_Duplicate_messages_warning')}
-					</Callout>
-				)}{' '}
 				{isLoadingUserMessages && <Message>{t('Loading')}</Message>}
+
+				{isSuccessUserMessages && (
+					<Box padding='x15'>
+						{report.messages.length > 0 && (
+							<Callout title={t('Moderation_Duplicate_messages')} type='warning' icon='warning'>
+								{t('Moderation_Duplicate_messages_warning')}
+							</Callout>
+						)}
+
+						{!report.user && (
+							<Callout mbs='x8' type='warning' icon='warning'>
+								{t('Moderation_User_deleted_warning')}
+							</Callout>
+						)}
+					</Box>
+				)}
+
 				{isSuccessUserMessages &&
-					userMessages.messages.length > 0 &&
-					userMessages.messages.map((message) => (
+					report.messages.length > 0 &&
+					report.messages.map((message) => (
 						<Box key={message._id}>
 							<ContextMessage
 								message={message.message}
@@ -90,13 +98,14 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 								handleClick={handleClick}
 								onRedirect={onRedirect}
 								onChange={handleChange}
+								deleted={!report.user}
 							/>
 						</Box>
 					))}
-				{isSuccessUserMessages && userMessages.messages.length === 0 && <GenericNoResults />}
+				{isSuccessUserMessages && report.messages.length === 0 && <GenericNoResults />}
 			</Box>
 			<ContextualbarFooter display='flex'>
-				{isSuccessUserMessages && userMessages.messages.length > 0 && <MessageContextFooter userId={userId} />}
+				{isSuccessUserMessages && report.messages.length > 0 && <MessageContextFooter userId={userId} deleted={!report.user} />}
 			</ContextualbarFooter>
 		</>
 	);

@@ -6,7 +6,6 @@ import { useQuery } from '@tanstack/react-query';
 export const useUserInfoQuery = (params: UsersInfoParamsGet) => {
 	const getUserInfo = useEndpoint('GET', '/v1/users.info');
 	const result = useQuery(['users.info', params], () => getUserInfo({ ...params }), {
-		refetchOnWindowFocus: false,
 		keepPreviousData: true,
 	});
 
