@@ -4,6 +4,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 // @ts-ignore
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import webpack from 'webpack';
+import 'webpack-dev-server';
 
 const config: webpack.MultiConfigurationFactory = (_env, argv) => [
 	{
@@ -28,7 +29,7 @@ const config: webpack.MultiConfigurationFactory = (_env, argv) => [
 		entry: {
 			bundle: ['core-js', 'regenerator-runtime/runtime', path.resolve(__dirname, './src/entry')],
 			polyfills: path.resolve(__dirname, './src/polyfills'),
-		},
+		} as webpack.Entry,
 		output: {
 			path: path.resolve(__dirname, './dist'),
 			publicPath: argv.mode === 'production' ? 'livechat/' : '/',
@@ -141,7 +142,6 @@ const config: webpack.MultiConfigurationFactory = (_env, argv) => [
 				maxInitialRequests: 30,
 				minChunks: 1,
 				minSize: 20000,
-				enforceSizeThreshold: 500000,
 				maxSize: 0,
 			},
 		},
@@ -167,7 +167,7 @@ const config: webpack.MultiConfigurationFactory = (_env, argv) => [
 				},
 			},
 		},
-	} as any,
+	},
 	{
 		stats: 'errors-warnings',
 		mode: argv.mode,
@@ -189,7 +189,7 @@ const config: webpack.MultiConfigurationFactory = (_env, argv) => [
 		},
 		entry: {
 			script: path.resolve(__dirname, './src/widget.js'),
-		},
+		} as webpack.Entry,
 		output: {
 			path: path.resolve(__dirname, './dist'),
 			publicPath: argv.mode === 'production' ? 'livechat/' : '/',
