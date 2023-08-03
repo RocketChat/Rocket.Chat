@@ -1,14 +1,11 @@
-import type { IImporterSelection } from '@rocket.chat/core-typings';
-
-import type { SelectionUser } from './ImporterSelectionUser';
-import type { SelectionChannel } from './ImporterSelectionChannel';
+import type { IImporterSelection, IImporterSelectionChannel, IImporterSelectionUser } from '@rocket.chat/core-typings';
 
 export class Selection implements IImporterSelection {
 	public name: string;
 
-	public users: SelectionUser[];
+	public users: IImporterSelectionUser[];
 
-	public channels: SelectionChannel[];
+	public channels: IImporterSelectionChannel[];
 
 	public message_count: number;
 
@@ -21,7 +18,7 @@ export class Selection implements IImporterSelection {
 	 * @param message_count the number of messages
 	 */
 	/* eslint-disable-next-line @typescript-eslint/naming-convention */
-	constructor(name: string, users: SelectionUser[], channels: SelectionChannel[], message_count: number) {
+	constructor(name: string, users: IImporterSelectionUser[], channels: IImporterSelectionChannel[], message_count: number) {
 		this.name = name;
 		this.users = users;
 		this.channels = channels;

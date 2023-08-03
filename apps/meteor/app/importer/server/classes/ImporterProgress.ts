@@ -12,6 +12,7 @@ export class Progress implements IImportProgress {
 	public count: {
 		completed: number;
 		total: number;
+		error: number;
 	};
 
 	/**
@@ -24,6 +25,6 @@ export class Progress implements IImportProgress {
 		this.key = key;
 		this.name = name;
 		this.step = ProgressStep.NEW;
-		this.count = { completed: 0, total: 0 };
+		this.count = { completed: 0, total: 0, error: 0 };
 	}
 }

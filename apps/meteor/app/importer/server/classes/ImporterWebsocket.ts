@@ -1,5 +1,5 @@
-import type { IStreamer } from 'meteor/rocketchat:streamer';
 import type { IImportProgress } from '@rocket.chat/core-typings';
+import type { IStreamer } from 'meteor/rocketchat:streamer';
 
 import notifications from '../../../notifications/server/lib/Notifications';
 

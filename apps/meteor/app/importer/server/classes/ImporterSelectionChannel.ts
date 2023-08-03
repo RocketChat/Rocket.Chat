@@ -13,6 +13,8 @@ export class SelectionChannel implements IImporterSelectionChannel {
 
 	public is_direct: boolean;
 
+	public creator: undefined;
+
 	/**
 	 * Constructs a new selection channel.
 	 *
