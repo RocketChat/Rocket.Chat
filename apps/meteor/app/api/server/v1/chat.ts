@@ -215,7 +215,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
 			}
 
-			const sent = await executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>);
+			const sent = await executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, this.bodyParams.previewUrls);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
 			return API.v1.success({

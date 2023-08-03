@@ -11,7 +11,7 @@ import { settings } from '../../../settings/client';
 import { t } from '../../../utils/lib/i18n';
 
 Meteor.methods<ServerMethods>({
-	async sendMessage(message) {
+	async sendMessage(message, previewUrls) {
 		const uid = Meteor.userId();
 		if (!uid || trim(message.msg) === '') {
 			return false;

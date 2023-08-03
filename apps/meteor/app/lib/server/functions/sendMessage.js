@@ -203,7 +203,7 @@ function cleanupMessageObject(message) {
 	['customClass'].forEach((field) => delete message[field]);
 }
 
-export const sendMessage = async function (user, message, room, upsert = false) {
+export const sendMessage = async function (user, message, room, upsert = false, previewUrls) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
@@ -236,7 +236,7 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 
 	cleanupMessageObject(message);
 
-	parseUrlsInMessage(message);
+	parseUrlsInMessage(message, previewUrls);
 
 	message = await callbacks.run('beforeSaveMessage', message, room);
 	if (message) {
