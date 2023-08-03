@@ -66,7 +66,7 @@ const queryClient = new QueryClient({
 	},
 });
 
-it('should render policy if its enabled and not empty', async () => {
+it("should render policy as invalid if password doesn't match the requirements", async () => {
 	const { getByText } = render(
 		<QueryClientProvider client={queryClient}>
 			<MockedServerContext
@@ -86,6 +86,30 @@ it('should render policy if its enabled and not empty', async () => {
 	);
 
 	await waitFor(() => {
-		expect(getByText('get-password-policy-minLength-label'));
+		expect(getByText('get-password-policy-minLength-label').dataset.invalid).toBe('true');
+	});
+});
+
+it('should render policy as valid if password match the requirements', async () => {
+	const { getByText } = render(
+		<QueryClientProvider client={queryClient}>
+			<MockedServerContext
+				handleRequest={(request) => {
+					if (request.method === 'GET' && request.pathPattern === '/v1/pw.getPolicy') {
+						return {
+							enabled: true,
+							policy: [['get-password-policy-minLength', { minLength: 2 }]],
+						} as any;
+					}
+					throw new Error('Not implemented');
+				}}
+			>
+				<PasswordVerifier password='asd' />
+			</MockedServerContext>
+		</QueryClientProvider>,
+	);
+
+	await waitFor(() => {
+		expect(getByText('get-password-policy-minLength-label').dataset.invalid).toBe(undefined);
 	});
 });
