@@ -14,7 +14,7 @@ export const useCreateFontStyleElement = (fontSize: string) => {
 	const styleElement = createStyleElement('rcx-font-size');
 
 	const css = `* {
-		font-size: ${fontSize}%;
+		font-size: ${fontSize}px;
 		}`;
 
 	useEffect(() => {
