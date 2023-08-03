@@ -2,8 +2,8 @@ import type { IUser, IMessage, ReadReceipt, RocketChatRecordDeleted } from '@roc
 import type { IReadReceiptsModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, IndexDescription, DeleteResult, Filter, UpdateResult, Document } from 'mongodb';
 
-import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 import { otrSystemMessages } from '../../../../app/otr/lib/constants';
+import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
 export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceiptsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ReadReceipt>>) {
