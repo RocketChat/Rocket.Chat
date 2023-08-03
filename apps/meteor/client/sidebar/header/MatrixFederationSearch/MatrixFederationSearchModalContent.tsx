@@ -45,7 +45,7 @@ const MatrixFederationSearchModalContent: VFC<MatrixFederationSearchModalContent
 		<>
 			<Box display='flex' flexDirection='row'>
 				<Box mie={4} flexGrow={0} flexShrink={4}>
-					<Select options={serverOptions} value={serverName} onChange={(value) => setServerName(String(value))} />
+					<Select options={serverOptions} value={serverName} onChange={setServerName} />
 				</Box>
 				<TextInput
 					placeholder={t('Search_rooms')}

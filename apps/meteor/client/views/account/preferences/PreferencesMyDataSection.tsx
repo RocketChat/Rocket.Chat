@@ -1,15 +1,20 @@
 import { Accordion, Field, FieldGroup, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
 import MyDataModal from './MyDataModal';
 
-const PreferencesMyDataSection = () => {
+const PreferencesMyDataSection = ({ ...props }): ReactElement => {
 	const t = useTranslation();
+
 	const setModal = useSetModal();
-	const dispatchToastMessage = useToastMessageDispatch();
 
 	const requestDataDownload = useMethod('requestDataDownload');
+
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const closeModal = useCallback(() => setModal(null), [setModal]);
 
 	const downloadData = useCallback(
 		async (fullExport) => {
@@ -23,7 +28,7 @@ const PreferencesMyDataSection = () => {
 						<MyDataModal
 							title={t('UserDataDownload_Requested')}
 							text={<Box dangerouslySetInnerHTML={{ __html: text }} />}
-							onCancel={() => setModal(null)}
+							onCancel={closeModal}
 						/>,
 					);
 					return;
@@ -41,7 +46,7 @@ const PreferencesMyDataSection = () => {
 							<MyDataModal
 								title={t('UserDataDownload_Requested')}
 								text={<Box dangerouslySetInnerHTML={{ __html: text }} />}
-								onCancel={() => setModal(null)}
+								onCancel={closeModal}
 							/>,
 						);
 
@@ -55,26 +60,26 @@ const PreferencesMyDataSection = () => {
 						<MyDataModal
 							title={t('UserDataDownload_Requested')}
 							text={<Box dangerouslySetInnerHTML={{ __html: text }} />}
-							onCancel={() => setModal(null)}
+							onCancel={closeModal}
 						/>,
 					);
 
 					return;
 				}
 
-				setModal(<MyDataModal title={t('UserDataDownload_Requested')} onCancel={() => setModal(null)} />);
+				setModal(<MyDataModal title={t('UserDataDownload_Requested')} onCancel={closeModal} />);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[dispatchToastMessage, requestDataDownload, setModal, t],
+		[closeModal, dispatchToastMessage, requestDataDownload, setModal, t],
 	);
 
 	const handleClickDownload = useCallback(() => downloadData(false), [downloadData]);
 	const handleClickExport = useCallback(() => downloadData(true), [downloadData]);
 
 	return (
-		<Accordion.Item title={t('My Data')}>
+		<Accordion.Item title={t('My Data')} {...props}>
 			<FieldGroup>
 				<Field>
 					<Field.Row>

@@ -46,7 +46,7 @@ export const useReportUser = (user: Pick<IUser, '_id' | 'username' | 'name'>): U
 					icon: 'warning' as const,
 					content: t('Report'),
 					onClick: action,
-					type: 'moderation' as const,
+					type: 'management' as const,
 					variant: 'danger' as const,
 			  }
 			: undefined;

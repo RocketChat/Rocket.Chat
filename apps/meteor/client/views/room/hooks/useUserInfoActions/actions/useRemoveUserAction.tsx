@@ -94,7 +94,7 @@ export const useRemoveUserAction = (
 						content: room?.teamMain ? t('Remove_from_team') : t('Remove_from_room'),
 						icon: 'cross' as const,
 						onClick: removeUserOptionAction,
-						type: 'moderation' as const,
+						type: 'management' as const,
 						variant: 'danger' as const,
 				  }
 				: undefined,

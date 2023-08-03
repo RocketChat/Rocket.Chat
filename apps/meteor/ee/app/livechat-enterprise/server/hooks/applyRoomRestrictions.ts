@@ -1,5 +1,4 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatDepartment } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -13,11 +12,10 @@ export const restrictQuery = async (originalQuery: FilterOperators<IOmnichannelR
 	if (!Array.isArray(units)) {
 		return query;
 	}
-	const departments = await LivechatDepartment.find({ ancestors: { $in: units } }, { projection: { _id: 1 } }).toArray();
 
 	const expressions = query.$and || [];
 	const condition = {
-		$or: [{ departmentAncestors: { $in: units } }, { departmentId: { $in: departments.map(({ _id }) => _id) } }],
+		$or: [{ departmentAncestors: { $in: units } }, { departmentId: { $in: units } }],
 	};
 	query.$and = [condition, ...expressions];
 

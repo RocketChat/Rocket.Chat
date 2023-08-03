@@ -1,15 +1,20 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Accordion, Field, Select, FieldGroup } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useLanguages, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
-import { useFormContext, Controller } from 'react-hook-form';
+import { useUserPreference, useLanguages, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
-const PreferencesLocalizationSection = () => {
+import { useForm } from '../../../hooks/useForm';
+import type { FormSectionProps } from './AccountPreferencesPage';
+
+const PreferencesLocalizationSection = ({
+	onChange,
+	commitRef,
+	...props
+}: { defaultExpanded?: boolean } & FormSectionProps): ReactElement => {
 	const t = useTranslation();
+	const userLanguage = useUserPreference('language') || '';
 	const languages = useLanguages();
-
-	const { control } = useFormContext();
 
 	const languageOptions = useMemo(() => {
 		const mapOptions: SelectOption[] = languages.map(({ key, name }) => [key, name]);
@@ -17,21 +22,24 @@ const PreferencesLocalizationSection = () => {
 		return mapOptions;
 	}, [languages]);
 
-	const languageId = useUniqueId();
+	const { values, handlers, commit } = useForm({ language: userLanguage }, onChange);
+
+	const { language } = values as { language: string };
+	const { handleLanguage } = handlers;
+
+	useEffect(() => {
+		if (commitRef) {
+			commitRef.current.localization = commit;
+		}
+	}, [commit, commitRef]);
 
 	return (
-		<Accordion.Item title={t('Localization')} defaultExpanded>
+		<Accordion.Item title={t('Localization')} {...props}>
 			<FieldGroup>
 				<Field>
-					<Field.Label htmlFor={languageId}>{t('Language')}</Field.Label>
+					<Field.Label>{t('Language')}</Field.Label>
 					<Field.Row>
-						<Controller
-							control={control}
-							name='language'
-							render={({ field: { value, onChange } }) => (
-								<Select id={languageId} value={value} onChange={onChange} options={languageOptions} />
-							)}
-						/>
+						<Select value={language} onChange={handleLanguage} options={languageOptions} />
 					</Field.Row>
 				</Field>
 			</FieldGroup>

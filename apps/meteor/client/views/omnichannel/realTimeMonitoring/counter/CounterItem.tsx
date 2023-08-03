@@ -7,7 +7,7 @@ const CounterItem = ({
 	...props
 }: {
 	title: string | JSX.Element;
-	count: string | number;
+	count: string;
 	flexShrink?: number;
 	pb?: number;
 	flexBasis?: string;

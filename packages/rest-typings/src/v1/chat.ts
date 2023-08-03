@@ -9,7 +9,6 @@ const ajv = new Ajv({
 
 type ChatSendMessage = {
 	message: Partial<IMessage>;
-	previewUrls?: string[];
 };
 
 const chatSendMessageSchema = {
@@ -64,13 +63,6 @@ const chatSendMessageSchema = {
 					nullable: true,
 				},
 			},
-		},
-		previewUrls: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			nullable: true,
 		},
 	},
 	required: ['message'],
@@ -438,7 +430,6 @@ type ChatUpdate = {
 	roomId: IRoom['_id'];
 	msgId: string;
 	text: string;
-	previewUrls?: string[];
 };
 
 const ChatUpdateSchema = {
@@ -452,13 +443,6 @@ const ChatUpdateSchema = {
 		},
 		text: {
 			type: 'string',
-		},
-		previewUrls: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			nullable: true,
 		},
 	},
 	required: ['roomId', 'msgId', 'text'],

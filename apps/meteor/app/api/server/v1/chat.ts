@@ -14,7 +14,6 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { deleteMessageValidatingPermission } from '../../../lib/server/functions/deleteMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
-import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -216,7 +215,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
 			}
 
-			const sent = await executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, this.bodyParams.previewUrls);
+			const sent = await executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
 			return API.v1.success({
@@ -311,7 +310,6 @@ API.v1.addRoute(
 					roomId: String,
 					msgId: String,
 					text: String, // Using text to be consistant with chat.postMessage
-					previewUrls: Match.Maybe([String]),
 				}),
 			);
 
@@ -327,7 +325,7 @@ API.v1.addRoute(
 			}
 
 			// Permission checks are already done in the updateMessage method, so no need to duplicate them
-			await executeUpdateMessage(this.userId, { _id: msg._id, msg: this.bodyParams.text, rid: msg.rid }, this.bodyParams.previewUrls);
+			await Meteor.callAsync('updateMessage', { _id: msg._id, msg: this.bodyParams.text, rid: msg.rid });
 
 			const updatedMessage = await Messages.findOneById(msg._id);
 			const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);

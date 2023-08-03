@@ -70,7 +70,7 @@ export const MultiSelectCustom = ({
 	customSetSelected,
 	searchBarText,
 }: DropDownProps): ReactElement => {
-	const reference = useRef<HTMLButtonElement>(null);
+	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
 	const onClose = useCallback(

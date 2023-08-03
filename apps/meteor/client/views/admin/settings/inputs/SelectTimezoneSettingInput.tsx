@@ -53,7 +53,7 @@ function SelectTimezoneSettingInput({
 					disabled={disabled}
 					readOnly={readonly}
 					autoComplete={autocomplete === false ? 'off' : undefined}
-					onChange={(value) => handleChange(String(value))}
+					onChange={handleChange}
 					options={moment.tz.names().map((key) => [key, key])}
 				/>
 			</Field.Row>

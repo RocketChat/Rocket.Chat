@@ -14,7 +14,6 @@ Meteor.startup(() => {
 		id: 'pin-message',
 		icon: 'pin',
 		label: 'Pin',
-		type: 'interaction',
 		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct', 'videoconf', 'videoconf-threads'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
@@ -36,7 +35,7 @@ Meteor.startup(() => {
 			}
 			return hasAtLeastOnePermission('pin-message', message.rid);
 		},
-		order: 2,
+		order: 7,
 		group: 'menu',
 	});
 });

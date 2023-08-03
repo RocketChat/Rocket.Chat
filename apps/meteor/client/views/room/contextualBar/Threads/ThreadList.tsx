@@ -144,7 +144,7 @@ const ThreadList: VFC = () => {
 								onChange={handleSearchTextChange}
 							/>
 							<Box w='x144'>
-								<Select options={typeOptions} value={type} onChange={(value) => handleTypeChange(String(value))} />
+								<Select options={typeOptions} value={type} onChange={handleTypeChange} />
 							</Box>
 						</Margins>
 					</Box>

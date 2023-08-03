@@ -81,7 +81,7 @@ type MessageBoxProps = {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
 	readOnly: boolean;
-	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[] }) => Promise<void>;
+	onSend?: (params: { value: string; tshow?: boolean }) => Promise<void>;
 	onJoin?: () => Promise<void>;
 	onResize?: () => void;
 	onTyping?: () => void;
@@ -90,7 +90,6 @@ type MessageBoxProps = {
 	onNavigateToNextMessage?: () => void;
 	onUploadFiles?: (files: readonly File[]) => void;
 	tshow?: IMessage['tshow'];
-	previewUrls?: string[];
 	subscription?: ISubscription;
 	showFormattingTips: boolean;
 	isEmbedded?: boolean;
@@ -108,7 +107,6 @@ const MessageBox = ({
 	onTyping,
 	readOnly,
 	tshow,
-	previewUrls,
 }: MessageBoxProps): ReactElement => {
 	const chat = useChat();
 	const t = useTranslation();
@@ -165,7 +163,6 @@ const MessageBox = ({
 		onSend?.({
 			value: text,
 			tshow,
-			previewUrls,
 		});
 	});
 

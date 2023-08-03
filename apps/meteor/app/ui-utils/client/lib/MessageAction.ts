@@ -23,8 +23,6 @@ export type MessageActionContext =
 	| 'search'
 	| 'videoconf-threads';
 
-type MessageActionType = 'communication' | 'interaction' | 'duplication' | 'apps' | 'management';
-
 type MessageActionConditionProps = {
 	message: IMessage;
 	user: IUser | undefined;
@@ -64,7 +62,6 @@ export type MessageActionConfig = {
 		},
 	) => any;
 	condition?: (props: MessageActionConditionProps) => Promise<boolean> | boolean;
-	type?: MessageActionType;
 };
 
 class MessageAction {

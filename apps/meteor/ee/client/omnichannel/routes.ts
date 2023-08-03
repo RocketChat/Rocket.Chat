@@ -20,10 +20,6 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/omnichannel/canned-responses/:context?/:id?';
 			pathname: `/omnichannel/canned-responses${`/${string}` | ''}${`/${string}` | ''}`;
 		};
-		'omnichannel-reports': {
-			pattern: '/omnichannel/reports';
-			pathname: `/omnichannel/reports`;
-		};
 	}
 }
 
@@ -45,9 +41,4 @@ registerOmnichannelRoute('/priorities/:context?/:id?', {
 registerOmnichannelRoute('/canned-responses/:context?/:id?', {
 	name: 'omnichannel-canned-responses',
 	component: lazy(() => import('./cannedResponses/CannedResponsesRoute')),
-});
-
-registerOmnichannelRoute('/reports', {
-	name: 'omnichannel-reports',
-	component: lazy(() => import('./reports/ReportsPage')),
 });

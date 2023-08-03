@@ -9,7 +9,7 @@ import { Button } from '../../components/Button';
 import { Form, FormField, SelectInput, TextInput } from '../../components/Form';
 import { FormScrollShadow } from '../../components/Form/FormScrollShadow';
 import { MultilineTextInput } from '../../components/Form/MultilineTextInput';
-import MarkdownBlock from '../../components/MarkdownBlock';
+import { renderMarkdown } from '../../components/Messages/MessageText/markdown';
 import { ModalManager } from '../../components/Modal';
 import Screen from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
@@ -93,11 +93,16 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 				<Screen.Content full>
 					<div id='top' ref={topRef} style={{ height: '1px', width: '100%' }} />
 
-					<div className={createClassName(styles, 'leave-message__main-message')}>
-						<MarkdownBlock
-							text={displayOfflineForm ? offlineMessage || defaultMessage : offlineUnavailableMessage || defaultUnavailableMessage}
-						/>
-					</div>
+					<div
+						className={createClassName(styles, 'leave-message__main-message')}
+						// TODO: Implement Gazzodown and remove dangerouslySetInnerHTML from Livechat
+						// eslint-disable-next-line react/no-danger
+						dangerouslySetInnerHTML={{
+							__html: renderMarkdown(
+								displayOfflineForm ? offlineMessage || defaultMessage : offlineUnavailableMessage || defaultUnavailableMessage,
+							),
+						}}
+					/>
 
 					<Form
 						// The price of using react-hook-form on a preact project ¯\_(ツ)_/¯

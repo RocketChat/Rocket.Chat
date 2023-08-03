@@ -7,7 +7,7 @@ import CardDivider from './CardDivider';
 import CardFooter from './CardFooter';
 import CardFooterWrapper from './CardFooterWrapper';
 import CardIcon from './CardIcon';
-import CardTitle from './CardTitle';
+import Title from './CardTitle';
 
 export const DOUBLE_COLUMN_CARD_WIDTH = 552;
 
@@ -15,7 +15,7 @@ export const DOUBLE_COLUMN_CARD_WIDTH = 552;
  * @deprecated Avoid default usage, use named imports instead
  */
 export default Object.assign(Card, {
-	Title: CardTitle,
+	Title,
 	Body: CardBody,
 	Col: Object.assign(CardCol, {
 		Title: CardColTitle,
@@ -26,5 +26,3 @@ export default Object.assign(Card, {
 	Divider: CardDivider,
 	Icon: CardIcon,
 });
-
-export { Card, CardBody, CardCol, CardColSection, CardColTitle, CardDivider, CardFooter, CardFooterWrapper, CardIcon, CardTitle };

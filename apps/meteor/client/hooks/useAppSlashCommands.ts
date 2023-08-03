@@ -38,7 +38,6 @@ export const useAppSlashCommands = () => {
 	const getSlashCommands = useEndpoint('GET', '/v1/commands.list');
 
 	useQuery(['apps', 'slashCommands'], () => getSlashCommands(), {
-		enabled: !!uid,
 		onSuccess(data) {
 			data.commands.forEach((command) => slashCommands.add(command));
 		},

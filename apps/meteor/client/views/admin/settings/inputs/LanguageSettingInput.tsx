@@ -55,7 +55,7 @@ function LanguageSettingInput({
 					disabled={disabled}
 					readOnly={readonly}
 					autoComplete={autocomplete === false ? 'off' : undefined}
-					onChange={(value) => handleChange(String(value))}
+					onChange={handleChange}
 					options={languages.map(({ key, name }) => [key, name])}
 				/>
 			</Field.Row>

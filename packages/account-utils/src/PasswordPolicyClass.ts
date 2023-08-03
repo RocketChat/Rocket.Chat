@@ -55,7 +55,7 @@ export class PasswordPolicy {
 		throwError: boolean;
 	}) {
 		this.regex = {
-			forbiddingRepeatingCharacters: new RegExp('.*'), // match everything (with no line breaks) by default
+			forbiddingRepeatingCharacters: new RegExp('.*'),
 			mustContainAtLeastOneLowercase: new RegExp('[a-z]'),
 			mustContainAtLeastOneUppercase: new RegExp('[A-Z]'),
 			mustContainAtLeastOneNumber: new RegExp('[0-9]'),

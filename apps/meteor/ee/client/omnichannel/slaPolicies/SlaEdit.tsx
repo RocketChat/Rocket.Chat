@@ -102,22 +102,20 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 				</Field.Row>
 				<Field.Error>{errors.dueTimeInMinutes?.message}</Field.Error>
 			</Field>
-			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-						<Margins inlineEnd={4}>
-							{!isNew && (
-								<Button flexGrow={1} type='reset' disabled={!isDirty} onClick={(): void => reset()}>
-									{t('Reset')}
-								</Button>
-							)}
-							<Button primary mie='none' flexGrow={1} disabled={!isDirty || !isValid} onClick={handleSave}>
-								{t('Save')}
+			<Field.Row>
+				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
+					<Margins inlineEnd={4}>
+						{!isNew && (
+							<Button flexGrow={1} type='reset' disabled={!isDirty} onClick={(): void => reset()}>
+								{t('Reset')}
 							</Button>
-						</Margins>
-					</Box>
-				</Field.Row>
-			</Field>
+						)}
+						<Button primary mie='none' flexGrow={1} disabled={!isDirty || !isValid} onClick={handleSave}>
+							{t('Save')}
+						</Button>
+					</Margins>
+				</Box>
+			</Field.Row>
 		</ContextualbarScrollableContent>
 	);
 }

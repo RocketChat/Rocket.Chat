@@ -45,7 +45,7 @@ const BusiestChatTimesSection = ({ timezone }: BusiestChatTimesSectionProps): Re
 	return (
 		<>
 			<EngagementDashboardCardFilter>
-				<Select options={timeUnitOptions} value={timeUnit} onChange={(value) => handleTimeUnitChange(String(value))} />
+				<Select options={timeUnitOptions} value={timeUnit} onChange={handleTimeUnitChange} />
 			</EngagementDashboardCardFilter>
 			<Content
 				displacement={displacement}

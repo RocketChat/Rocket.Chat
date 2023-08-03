@@ -175,8 +175,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		Messages.upsert({ _id: message._id }, { $set: { ...message, rid, ...(tmid && { tmid }) } });
 	};
 
-	const updateMessage = async (message: IEditedMessage, previewUrls?: string[]): Promise<void> =>
-		sdk.call('updateMessage', message, previewUrls);
+	const updateMessage = async (message: IEditedMessage): Promise<void> => sdk.call('updateMessage', message);
 
 	const canDeleteMessage = async (message: IMessage): Promise<boolean> => {
 		const uid = Meteor.userId();

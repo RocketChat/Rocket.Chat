@@ -207,7 +207,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label htmlFor='privateCheckBox'>{t('Private')}</Field.Label>
+								<Field.Label>{t('Private')}</Field.Label>
 								<Field.Description>
 									{isPrivate ? t('Only_invited_users_can_acess_this_channel') : t('Everyone_can_access_this_channel')}
 								</Field.Description>
@@ -216,7 +216,13 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 								control={control}
 								name='isPrivate'
 								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch id='privateCheckBox' ref={ref} checked={value} disabled={!!canOnlyCreateOneType} onChange={onChange} />
+									<ToggleSwitch
+										ref={ref}
+										checked={value}
+										disabled={!!canOnlyCreateOneType}
+										onChange={onChange}
+										data-qa-type='channel-private-toggle'
+									/>
 								)}
 							/>
 						</Box>

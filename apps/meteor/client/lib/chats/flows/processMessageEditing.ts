@@ -7,7 +7,6 @@ import type { ChatAPI } from '../ChatAPI';
 export const processMessageEditing = async (
 	chat: ChatAPI,
 	message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>,
-	previewUrls?: string[],
 ): Promise<boolean> => {
 	if (!chat.currentEditing) {
 		return false;
@@ -22,7 +21,7 @@ export const processMessageEditing = async (
 	}
 
 	try {
-		await chat.data.updateMessage({ ...message, _id: chat.currentEditing.mid }, previewUrls);
+		await chat.data.updateMessage({ ...message, _id: chat.currentEditing.mid });
 	} catch (error) {
 		dispatchToastMessage({ type: 'error', message: error });
 	}

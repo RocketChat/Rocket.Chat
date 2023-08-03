@@ -203,16 +203,7 @@ function cleanupMessageObject(message) {
 	['customClass'].forEach((field) => delete message[field]);
 }
 
-/**
- * Validates and sends the message object.
- * @param {IUser} user
- * @param {AtLeast<IMessage, 'rid'>} message
- * @param {IRoom} room
- * @param {boolean} [upsert=false]
- * @param {string[]} [previewUrls]
- * @returns {Promise<IMessage>}
- */
-export const sendMessage = async function (user, message, room, upsert = false, previewUrls = undefined) {
+export const sendMessage = async function (user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
@@ -245,7 +236,7 @@ export const sendMessage = async function (user, message, room, upsert = false, 
 
 	cleanupMessageObject(message);
 
-	parseUrlsInMessage(message, previewUrls);
+	parseUrlsInMessage(message);
 
 	message = await callbacks.run('beforeSaveMessage', message, room);
 	if (message) {
