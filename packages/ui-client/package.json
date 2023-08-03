@@ -46,6 +46,7 @@
 		"test": "jest",
 		"testunit": "jest",
 		"build": "rm -rf dist && tsc -p tsconfig-build.json",
+		"typecheck": "tsc -p tsconfig.json --noEmit",
 		"storybook": "start-storybook -p 6006",
 		"dev": "tsc -p tsconfig-build.json --watch --preserveWatchOutput"
 	},
