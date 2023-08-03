@@ -1,7 +1,7 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { TextObject } from '@rocket.chat/ui-kit';
 
-import { useUiKitContext } from '../contexts/kitContext';
+import { useUiKitContext } from '../hooks/useUiKitContext';
 
 const PlainTextElement = ({ textObject }: { textObject: TextObject }) => {
   const t = useTranslation() as (

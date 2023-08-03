@@ -11,7 +11,6 @@ import { afterLogoutCleanUpCallback } from '../../lib/callbacks/afterLogoutClean
 import { capitalize, ltrim, rtrim } from '../../lib/utils/stringUtils';
 import { baseURI } from '../lib/baseURI';
 import { router } from '../providers/RouterProvider';
-import { add, remove } from '../views/room/lib/Toolbox/IframeButtons';
 
 const commands = {
 	'go'(data: { path: string }) {
@@ -84,13 +83,6 @@ const commands = {
 			sdk.call('logoutCleanUp', user as unknown as IUser);
 			return router.navigate('/home');
 		});
-	},
-
-	'set-toolbar-button'({ id, icon, label }: { id: string; icon: string; label: string }) {
-		add(id, { id, icon, label });
-	},
-	'remove-toolbar-button'({ id }: { id: string }) {
-		remove(id);
 	},
 } as const;
 
