@@ -1,10 +1,8 @@
 import path from 'path';
 
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-// @ts-ignore
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import webpack from 'webpack';
-import 'webpack-dev-server';
 
 const config: webpack.MultiConfigurationFactory = (_env, argv) => [
 	{
@@ -122,7 +120,7 @@ const config: webpack.MultiConfigurationFactory = (_env, argv) => [
 			new MiniCssExtractPlugin({
 				filename: argv.mode === 'production' ? '[name].[contenthash:5].css' : '[name].css',
 				chunkFilename: argv.mode === 'production' ? '[name].chunk.[contenthash:5].css' : '[name].chunk.css',
-			}),
+			}) as unknown as webpack.Plugin,
 			new webpack.NoEmitOnErrorsPlugin(),
 			new webpack.DefinePlugin({
 				'process.env.NODE_ENV': JSON.stringify(argv.mode === 'production' ? 'production' : 'development'),
