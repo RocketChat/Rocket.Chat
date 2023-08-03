@@ -15,10 +15,10 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { Importers } from '../../../importer/server';
-import { startImportOperation } from '../../../importer/server/startImportOperation';
-import { PendingFileImporter } from '../../../importer-pending-files/server/importer';
+import { translateForUserId } from '../../../../server/lib/translateForUser';
 import { PendingAvatarImporter } from '../../../importer-pending-avatars/server/importer';
+import { PendingFileImporter } from '../../../importer-pending-files/server/importer';
+import { Importers } from '../../../importer/server';
 import {
 	executeUploadImportFile,
 	executeDownloadPublicImportFile,
@@ -27,7 +27,6 @@ import {
 	executeStartImport,
 	executeGetLatestImportOperations,
 } from '../../../importer/server/methods';
-import { translateForUserId } from '../../../../server/lib/translateForUser';
 import { API } from '../api';
 
 API.v1.addRoute(
