@@ -1,4 +1,4 @@
-import { usePermission, useRouter, useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
@@ -23,9 +23,9 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 
 	const hasEngagementDashboard = useHasLicenseModule('engagement-dashboard') as boolean;
-	const cloudWorkspaceHadTrial = useSetting<boolean>('Cloud_Workspace_Had_Trial');
 
-	const { shouldShowUpsell, isModalOpen, handleGoFullyFeatured, handleTalkToSales } = useUpsellActions(hasEngagementDashboard);
+	const { shouldShowUpsell, isModalOpen, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales } =
+		useUpsellActions(hasEngagementDashboard);
 
 	useEffect(() => {
 		if (shouldShowUpsell) {

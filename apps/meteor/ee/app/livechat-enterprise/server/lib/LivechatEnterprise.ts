@@ -129,7 +129,7 @@ export const LivechatEnterprise = {
 	async removeTag(_id: string) {
 		check(_id, String);
 
-		const tag = await LivechatTag.findOneById(_id, { projection: { _id: 1 } });
+		const tag = await LivechatTag.findOneById(_id, { projection: { _id: 1, name: 1 } });
 
 		if (!tag) {
 			throw new Meteor.Error('tag-not-found', 'Tag not found', { method: 'livechat:removeTag' });
@@ -154,7 +154,7 @@ export const LivechatEnterprise = {
 
 	async saveSLA(_id: string | null, slaData: Pick<IOmnichannelServiceLevelAgreements, 'name' | 'description' | 'dueTimeInMinutes'>) {
 		const oldSLA = _id && (await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
-		const exists = _id && (await OmnichannelServiceLevelAgreements.findDuplicate(_id, slaData.name, slaData.dueTimeInMinutes));
+		const exists = await OmnichannelServiceLevelAgreements.findDuplicate(_id, slaData.name, slaData.dueTimeInMinutes);
 		if (exists) {
 			throw new Error('error-duplicated-sla');
 		}

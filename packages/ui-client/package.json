@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-client",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.9",
@@ -46,6 +46,7 @@
 		"test": "jest",
 		"testunit": "jest",
 		"build": "rm -rf dist && tsc -p tsconfig-build.json",
+		"typecheck": "tsc -p tsconfig.json --noEmit",
 		"storybook": "start-storybook -p 6006",
 		"dev": "tsc -p tsconfig-build.json --watch --preserveWatchOutput"
 	},
@@ -59,7 +60,7 @@
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"@rocket.chat/ui-contexts": "*",
+		"@rocket.chat/ui-contexts": "1.0.0",
 		"react": "~17.0.2"
 	},
 	"volta": {

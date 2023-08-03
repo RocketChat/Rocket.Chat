@@ -8,7 +8,7 @@ import useDeleteMessagesAction from './hooks/useDeleteMessagesAction';
 import useDismissUserAction from './hooks/useDismissUserAction';
 import useResetAvatarAction from './hooks/useResetAvatarAction';
 
-const MessageContextFooter: FC<{ userId: string }> = ({ userId }) => {
+const MessageContextFooter: FC<{ userId: string; deleted: boolean }> = ({ userId, deleted }) => {
 	const t = useTranslation();
 	const { action } = useDeleteMessagesAction(userId);
 
@@ -28,8 +28,8 @@ const MessageContextFooter: FC<{ userId: string }> = ({ userId }) => {
 			<Menu
 				options={{
 					approve: useDismissUserAction(userId),
-					deactivate: useDeactivateUserAction(userId),
-					resetAvatar: useResetAvatarAction(userId),
+					deactivate: { ...useDeactivateUserAction(userId), ...(deleted && { disabled: true }) },
+					resetAvatar: { ...useResetAvatarAction(userId), ...(deleted && { disabled: true }) },
 				}}
 				renderItem={({ label: { label, icon }, ...props }): JSX.Element => (
 					<Option aria-label={label} label={label} icon={icon} {...props} />
