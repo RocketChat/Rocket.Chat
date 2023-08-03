@@ -1073,6 +1073,9 @@ API.v1.addRoute(
 			});
 
 			const result = await cursor.toArray();
+			if (!result?.[0]) {
+				return API.v1.failure('No user info could be found for the channel provided');
+			}
 			const {
 				members,
 				totalCount: [{ total } = { total: 0 }],
