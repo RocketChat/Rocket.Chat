@@ -1,7 +1,10 @@
+import type { Base } from '../server';
 import { ImporterInfo } from './ImporterInfo';
 
 /** Container class which holds all of the importer details. */
 class ImportersContainer {
+	importers: Map<string, ImporterInfo>;
+
 	constructor() {
 		this.importers = new Map();
 	}
@@ -13,7 +16,7 @@ class ImportersContainer {
 	 * @param {ImporterInfo} info The information related to the importer.
 	 * @param {*} [importer] The class for the importer, will be undefined on the client.
 	 */
-	add(info, importer) {
+	add(info: ImporterInfo, importer: Base | undefined) {
 		if (!(info instanceof ImporterInfo)) {
 			throw new Error('The importer must be a valid ImporterInfo instance.');
 		}
@@ -30,7 +33,7 @@ class ImportersContainer {
 	 *
 	 * @param {string} key The key of the importer.
 	 */
-	get(key) {
+	get(key: string) {
 		return this.importers.get(key);
 	}
 
