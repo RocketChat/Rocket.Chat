@@ -1,6 +1,5 @@
 import type { UrlWithParsedQuery } from 'url';
 
-import type { FilterOperators } from 'mongodb';
 import type {
 	IMessage,
 	IRoom,
@@ -21,19 +20,12 @@ import type {
 	InquiryWithAgentInfo,
 	ILivechatTagRecord,
 } from '@rocket.chat/core-typings';
-import { Random } from '@rocket.chat/random';
+import type { FilterOperators } from 'mongodb';
 
-import type { Logger } from '../app/logger/server';
-import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
-import { compareByRanking } from './utils/comparisons';
+import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped';
-
-enum CallbackPriority {
-	HIGH = -1000,
-	MEDIUM = 0,
-	LOW = 1000,
-}
+import { Callbacks } from './callbacks/callbacksBase';
 
 /**
  * Callbacks returning void, like event listeners.
@@ -84,7 +76,6 @@ interface EventLikeCallbackSignatures {
 	'federation.onAddUsersToARoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 	'usernameSet': () => void;
-	'beforeLeaveRoom': (user: IUser, room: IRoom) => void;
 	'beforeJoinRoom': (user: IUser, room: IRoom) => void;
 	'beforeMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
 	'afterMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
@@ -92,11 +83,12 @@ interface EventLikeCallbackSignatures {
 	'afterUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
 	'afterValidateLogin': (login: { user: IUser }) => void;
 	'afterJoinRoom': (user: IUser, room: IRoom) => void;
-	'beforeCreateRoom': (data: { type: IRoom['t']; extraData: { encrypted: boolean } }) => void;
 	'livechat.afterDepartmentDisabled': (department: ILivechatDepartmentRecord) => void;
 	'livechat.afterDepartmentArchived': (department: Pick<ILivechatDepartmentRecord, '_id'>) => void;
 	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser: IUser | null }) => void;
 	'livechat.afterTagRemoved': (tag: ILivechatTagRecord) => void;
+	'beforeUserImport': (data: { userCount: number }) => void;
+	'afterUserImport': (data: { inserted: IUser['_id'][]; updated: IUser['_id']; skipped: number; failed: number }) => void;
 }
 
 /**
@@ -220,16 +212,12 @@ type ChainedCallbackSignatures = {
 export type Hook =
 	| keyof EventLikeCallbackSignatures
 	| keyof ChainedCallbackSignatures
-	| 'afterLeaveRoom'
-	| 'afterLogoutCleanUp'
 	| 'afterProcessOAuthUser'
-	| 'afterRemoveFromRoom'
 	| 'afterRoomArchived'
 	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
 	| 'afterValidateNewOAuthUser'
 	| 'beforeActivateUser'
-	| 'beforeCreateUser'
 	| 'beforeGetMentions'
 	| 'beforeReadMessages'
 	| 'beforeRemoveFromRoom'
@@ -265,218 +253,17 @@ export type Hook =
 	| 'userStatusManuallySet'
 	| 'test';
 
-type Callback = {
-	(item: unknown, constant?: unknown): Promise<unknown>;
-	hook: Hook;
-	id: string;
-	priority: CallbackPriority;
-	stack: string;
-};
-
-type CallbackTracker = (callback: Callback) => () => void;
-
-type HookTracker = (params: { hook: Hook; length: number }) => () => void;
-
-export class Callbacks {
-	private logger: Logger | undefined = undefined;
-
-	private trackCallback: CallbackTracker | undefined = undefined;
-
-	private trackHook: HookTracker | undefined = undefined;
-
-	private callbacks = new Map<Hook, Callback[]>();
-
-	private sequentialRunners = new Map<Hook, (item: unknown, constant?: unknown) => Promise<unknown>>();
-
-	private asyncRunners = new Map<Hook, (item: unknown, constant?: unknown) => unknown>();
-
-	readonly priority = CallbackPriority;
-
-	setLogger(logger: Logger): void {
-		this.logger = logger;
-	}
-
-	setMetricsTrackers({ trackCallback, trackHook }: { trackCallback?: CallbackTracker; trackHook?: HookTracker }): void {
-		this.trackCallback = trackCallback;
-		this.trackHook = trackHook;
-	}
-
-	private runOne(callback: Callback, item: unknown, constant: unknown): Promise<unknown> {
-		const stopTracking = this.trackCallback?.(callback);
-
-		return Promise.resolve(callback(item, constant)).finally(stopTracking);
-	}
-
-	private createSequentialRunner(hook: Hook, callbacks: Callback[]): (item: unknown, constant?: unknown) => Promise<unknown> {
-		const wrapCallback =
-			(callback: Callback) =>
-			async (item: unknown, constant?: unknown): Promise<unknown> => {
-				this.logger?.debug(`Executing callback with id ${callback.id} for hook ${callback.hook}`);
-
-				return (await this.runOne(callback, item, constant)) ?? item;
-			};
-
-		const identity = <TItem>(item: TItem): Promise<TItem> => Promise.resolve(item);
-
-		const pipe =
-			(curr: (item: unknown, constant?: unknown) => Promise<unknown>, next: (item: unknown, constant?: unknown) => Promise<unknown>) =>
-			async (item: unknown, constant?: unknown): Promise<unknown> =>
-				next(await curr(item, constant), constant);
-
-		const fn = callbacks.map(wrapCallback).reduce(pipe, identity);
-
-		return async (item: unknown, constant?: unknown): Promise<unknown> => {
-			const stopTracking = this.trackHook?.({ hook, length: callbacks.length });
-
-			return fn(item, constant).finally(() => stopTracking?.());
-		};
-	}
-
-	private createAsyncRunner(_: Hook, callbacks: Callback[]) {
-		return (item: unknown, constant?: unknown): unknown => {
-			if (typeof window !== 'undefined') {
-				throw new Error('callbacks.runAsync on client server not allowed');
-			}
-
-			for (const callback of callbacks) {
-				setTimeout(() => {
-					void this.runOne(callback, item, constant);
-				}, 0);
-			}
-
-			return item;
-		};
-	}
-
-	getCallbacks(hook: Hook): Callback[] {
-		return this.callbacks.get(hook) ?? [];
-	}
-
-	setCallbacks(hook: Hook, callbacks: Callback[]): void {
-		this.callbacks.set(hook, callbacks);
-		this.sequentialRunners.set(hook, this.createSequentialRunner(hook, callbacks));
-		this.asyncRunners.set(hook, this.createAsyncRunner(hook, callbacks));
-	}
-
-	/**
-	 * Add a callback function to a hook
-	 *
-	 * @param hook the name of the hook
-	 * @param callback the callback function
-	 * @param priority the callback run priority (order)
-	 * @param id human friendly name for this callback
-	 */
-	add<THook extends keyof EventLikeCallbackSignatures>(
-		hook: THook,
-		callback: EventLikeCallbackSignatures[THook],
-		priority?: CallbackPriority,
-		id?: string,
-	): void;
-
-	add<THook extends keyof ChainedCallbackSignatures>(
-		hook: THook,
-		callback: ChainedCallbackSignatures[THook],
-		priority?: CallbackPriority,
-		id?: string,
-	): void;
-
-	add<TItem, TConstant, TNextItem = TItem>(
-		hook: Hook,
-		callback: (item: TItem, constant?: TConstant) => TNextItem,
-		priority?: CallbackPriority,
-		id?: string,
-	): void;
-
-	add(hook: Hook, callback: (item: unknown, constant?: unknown) => unknown, priority = this.priority.MEDIUM, id = Random.id()): void {
-		const callbacks = this.getCallbacks(hook);
-
-		if (callbacks.some((cb) => cb.id === id)) {
-			return;
-		}
-
-		callbacks.push(
-			Object.assign(callback as Callback, {
-				hook,
-				priority,
-				id,
-				stack: new Error().stack,
-			}),
-		);
-		callbacks.sort(compareByRanking((callback: Callback): number => callback.priority ?? this.priority.MEDIUM));
-
-		this.setCallbacks(hook, callbacks);
-	}
-
-	/**
-	 * Remove a callback from a hook
-	 *
-	 * @param hook the name of the hook
-	 * @param id the callback's id
-	 */
-	remove(hook: Hook, id: string): void {
-		const hooks = this.getCallbacks(hook).filter((callback) => callback.id !== id);
-		this.setCallbacks(hook, hooks);
-	}
-
-	run<THook extends keyof EventLikeCallbackSignatures>(hook: THook, ...args: Parameters<EventLikeCallbackSignatures[THook]>): void;
-
-	run<THook extends keyof ChainedCallbackSignatures>(
-		hook: THook,
-		...args: Parameters<ChainedCallbackSignatures[THook]>
-	): Promise<ReturnType<ChainedCallbackSignatures[THook]>>;
-
-	run<TItem, TConstant, TNextItem = TItem>(hook: Hook, item: TItem, constant?: TConstant): Promise<TNextItem>;
-
-	/**
-	 * Successively run all of a hook's callbacks on an item
-	 *
-	 * @param hook the name of the hook
-	 * @param item the post, comment, modifier, etc. on which to run the callbacks
-	 * @param constant an optional constant that will be passed along to each callback
-	 * @returns returns the item after it's been through all the callbacks for this hook
-	 */
-	run(hook: Hook, item: unknown, constant?: unknown): Promise<unknown> {
-		const runner = this.sequentialRunners.get(hook) ?? (async (item: unknown, _constant?: unknown): Promise<unknown> => item);
-		return runner(item, constant);
-	}
-
-	runAsync<THook extends keyof EventLikeCallbackSignatures>(hook: THook, ...args: Parameters<EventLikeCallbackSignatures[THook]>): void;
-
-	/**
-	 * Successively run all of a hook's callbacks on an item, in async mode (only works on server)
-	 *
-	 * @param hook the name of the hook
-	 * @param item the post, comment, modifier, etc. on which to run the callbacks
-	 * @param constant an optional constant that will be passed along to each callback
-	 * @returns the post, comment, modifier, etc. on which to run the callbacks
-	 */
-	runAsync(hook: Hook, item: unknown, constant?: unknown): unknown {
-		const runner = this.asyncRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
-		return runner(item, constant);
-	}
-
-	static create<I, R, C = undefined>(hook: string): Cb<I, R, C> {
-		const callbacks = new Callbacks();
-
-		return {
-			add: (callback, priority, id) => callbacks.add(hook as any, callback, priority, id),
-			remove: (id) => callbacks.remove(hook as any, id),
-			run: (item, constant) => callbacks.run(hook as any, item, constant) as any,
-		};
-	}
-}
-
 /**
  * Callback hooks provide an easy way to add extra steps to common operations.
  * @deprecated
  */
-type Cb<I, R, C = undefined> = {
-	add: (callback: (item: I, constant?: C) => R | undefined, priority?: CallbackPriority, id?: string) => void;
-	remove: (id: string) => void;
-	run: (item: I, constant?: C) => Promise<R>;
-};
-/**
- * Callback hooks provide an easy way to add extra steps to common operations.
- * @deprecated
- */
-export const callbacks = new Callbacks();
+
+export const callbacks = new Callbacks<
+	{
+		[key in keyof ChainedCallbackSignatures]: ChainedCallbackSignatures[key];
+	},
+	{
+		[key in keyof EventLikeCallbackSignatures]: EventLikeCallbackSignatures[key];
+	},
+	Hook
+>();

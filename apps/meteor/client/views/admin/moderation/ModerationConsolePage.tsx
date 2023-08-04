@@ -1,9 +1,9 @@
 import { useTranslation, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { MessageAction } from '../../../../app/ui-utils/client';
 import { Contextualbar } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
+import { getPermaLink } from '../../../lib/getPermaLink';
 import MessageReportInfo from './MessageReportInfo';
 import ModerationConsoleTable from './ModerationConsoleTable';
 import UserMessages from './UserMessages';
@@ -16,7 +16,7 @@ const ModerationConsolePage = () => {
 
 	const handleRedirect = async (mid: string) => {
 		try {
-			const permalink = await MessageAction.getPermaLink(mid);
+			const permalink = await getPermaLink(mid);
 			// open the permalink in same tab
 			window.open(permalink, '_self');
 		} catch (error) {

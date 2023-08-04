@@ -1,7 +1,7 @@
 import { log } from 'console';
 
-import { CannedResponse, OmnichannelServiceLevelAgreements, LivechatRooms, LivechatTag, LivechatUnit, Users } from '@rocket.chat/models';
 import { Analytics } from '@rocket.chat/core-services';
+import { CannedResponse, OmnichannelServiceLevelAgreements, LivechatRooms, LivechatTag, LivechatUnit, Users } from '@rocket.chat/models';
 
 import { getModules, getTags, hasLicense } from './license';
 

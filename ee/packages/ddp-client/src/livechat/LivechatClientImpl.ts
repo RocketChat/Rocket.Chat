@@ -1,19 +1,19 @@
-import { Emitter } from '@rocket.chat/emitter';
 import { RestClient } from '@rocket.chat/api-client';
 import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
-import type { DDPDispatchOptions } from '../types/DDPClient';
-import { DDPSDK } from '../DDPSDK';
-import type { LivechatEndpoints, LivechatRoomEvents, LivechatStream } from './types/LivechatSDK';
-import { DDPDispatcher } from '../DDPDispatcher';
 import { ClientStreamImpl } from '../ClientStream';
 import { ConnectionImpl } from '../Connection';
-import { AccountImpl } from '../types/Account';
+import { DDPDispatcher } from '../DDPDispatcher';
+import { DDPSDK } from '../DDPSDK';
 import { TimeoutControl } from '../TimeoutControl';
+import { AccountImpl } from '../types/Account';
 import type { ClientStream } from '../types/ClientStream';
+import type { DDPDispatchOptions } from '../types/DDPClient';
 import type { ServerMethodReturn, ServerMethods } from '../types/methods';
 import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '../types/streams';
+import type { LivechatEndpoints, LivechatRoomEvents, LivechatStream } from './types/LivechatSDK';
 
 declare module '../ClientStream' {
 	interface ClientStream {

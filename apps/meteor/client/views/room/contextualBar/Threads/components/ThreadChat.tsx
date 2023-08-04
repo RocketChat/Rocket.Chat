@@ -13,7 +13,7 @@ import ComposerContainer from '../../../components/body/composer/ComposerContain
 import { useFileUploadDropTarget } from '../../../components/body/hooks/useFileUploadDropTarget';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
-import { useTabBarClose } from '../../../contexts/ToolboxContext';
+import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
 import ThreadMessageList from './ThreadMessageList';
 
 type ThreadChatProps = {
@@ -42,10 +42,11 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 		}
 	}, [sendToChannelPreference]);
 
-	const closeTabBar = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
+
 	const handleComposerEscape = useCallback((): void => {
-		closeTabBar();
-	}, [closeTabBar]);
+		closeTab();
+	}, [closeTab]);
 
 	const chat = useChat();
 

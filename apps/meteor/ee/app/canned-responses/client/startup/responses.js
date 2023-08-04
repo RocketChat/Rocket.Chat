@@ -3,8 +3,8 @@ import { Tracker } from 'meteor/tracker';
 
 import { hasPermission } from '../../../../../app/authorization/client';
 import { settings } from '../../../../../app/settings/client';
-import { CannedResponse } from '../collections/CannedResponse';
 import { sdk } from '../../../../../app/utils/client/lib/SDKClient';
+import { CannedResponse } from '../collections/CannedResponse';
 
 const events = {
 	changed: ({ type, ...response }) => {

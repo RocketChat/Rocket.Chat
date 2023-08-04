@@ -1,10 +1,10 @@
-import path from 'path';
 import { readFile, writeFile } from 'fs/promises';
+import path from 'path';
 
-import unified from 'unified';
+import mdastToString from 'mdast-util-to-string';
 import remarkParse from 'remark-parse';
 import remarkStringify from 'remark-stringify';
-import mdastToString from 'mdast-util-to-string';
+import unified from 'unified';
 
 export const BumpLevels = {
 	dep: 0,
@@ -89,4 +89,17 @@ export async function bumpFileVersions(cwd: string, oldVersion: string, newVersi
 			await writeFile(filePath, data.replace(oldVersion, newVersion), 'utf8');
 		}),
 	);
+}
+
+export async function createBumpFile(cwd: string, pkgName: string) {
+	const filePath = path.join(cwd, '.changeset', `bump-patch-${Date.now()}.md`);
+
+	const data = `---
+'${pkgName}': patch
+---
+
+Bump ${pkgName} version.
+`;
+
+	await writeFile(filePath, data, 'utf8');
 }

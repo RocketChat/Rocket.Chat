@@ -1,13 +1,13 @@
-import zlib from 'zlib';
 import { EventEmitter } from 'events';
+import zlib from 'zlib';
 
-import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
-import type { ISAMLUser } from '../definition/ISAMLUser';
-import type { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
-import type { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
-import { StatusCode } from './constants';
-import type { Logger } from '../../../../server/lib/logger/Logger';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
+import type { Logger } from '../../../../server/lib/logger/Logger';
+import type { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
+import type { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
+import type { ISAMLUser } from '../definition/ISAMLUser';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import { StatusCode } from './constants';
 
 let providerList: Array<IServiceProviderOptions> = [];
 let debug = false;
