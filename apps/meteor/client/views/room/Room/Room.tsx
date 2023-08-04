@@ -1,6 +1,6 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { createElement, memo, Suspense } from 'react';
+import React, { createElement, lazy, memo, Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { ContextualbarSkeleton } from '../../../components/Contextualbar';
@@ -9,11 +9,12 @@ import MessageHighlightProvider from '../MessageList/providers/MessageHighlightP
 import RoomBody from '../components/body/RoomBody';
 import { useRoom } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
-import AppsContextualBar from '../contextualBar/Apps';
 import { useAppsContextualBar } from '../hooks/useAppsContextualBar';
 import RoomLayout from '../layout/RoomLayout';
 import ChatProvider from '../providers/ChatProvider';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
+
+const UiKitContextualBar = lazy(() => import('../contextualBar/uikit/UiKitContextualBar'));
 
 const Room = (): ReactElement => {
 	const t = useTranslation();
@@ -33,12 +34,10 @@ const Room = (): ReactElement => {
 					header={<Header room={room} />}
 					body={<RoomBody />}
 					aside={
-						(toolbox.tab && (
+						(toolbox.tab?.tabComponent && (
 							<ErrorBoundary fallback={null}>
 								<SelectedMessagesProvider>
-									{toolbox.tab.tabComponent && (
-										<Suspense fallback={<ContextualbarSkeleton />}>{createElement(toolbox.tab.tabComponent)}</Suspense>
-									)}
+									<Suspense fallback={<ContextualbarSkeleton />}>{createElement(toolbox.tab.tabComponent)}</Suspense>
 								</SelectedMessagesProvider>
 							</ErrorBoundary>
 						)) ||
@@ -46,7 +45,7 @@ const Room = (): ReactElement => {
 							<ErrorBoundary fallback={null}>
 								<SelectedMessagesProvider>
 									<Suspense fallback={<ContextualbarSkeleton />}>
-										<AppsContextualBar
+										<UiKitContextualBar
 											viewId={appsContextualBarContext.viewId}
 											roomId={appsContextualBarContext.roomId}
 											payload={appsContextualBarContext.payload}

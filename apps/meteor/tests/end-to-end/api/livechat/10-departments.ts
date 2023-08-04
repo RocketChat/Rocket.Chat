@@ -15,7 +15,7 @@ import {
 } from '../../../data/livechat/rooms';
 import { createMonitor, createUnit } from '../../../data/livechat/units';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { createUser } from '../../../data/users.helper';
+import { createUser, deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('LIVECHAT - Departments', () => {
@@ -218,6 +218,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 			latestRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(latestRoom.departmentId).to.be.undefined;
 			expect(latestRoom.departmentAncestors).to.be.undefined;
+
+			// cleanup
+			await deleteUser(monitor);
 		});
 
 		(IS_EE ? it : it.skip)(
@@ -258,6 +261,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 				latestRoom2 = await getLivechatRoomInfo(newRoom2._id);
 				expect(latestRoom2.departmentId).to.be.equal(department2._id);
 				expect(latestRoom2.departmentAncestors).to.be.an('array').that.includes(unit._id);
+
+				// cleanup
+				await deleteUser(monitor);
 			},
 		);
 	});
