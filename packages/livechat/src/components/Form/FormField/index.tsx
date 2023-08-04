@@ -2,7 +2,7 @@ import type { ComponentChildren } from 'preact';
 import { cloneElement } from 'preact';
 import type { JSXInternal } from 'preact/src/jsx';
 
-import { createClassName } from '../../helpers';
+import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
 
 type FormFieldProps = {

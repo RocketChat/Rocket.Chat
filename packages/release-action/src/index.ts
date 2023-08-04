@@ -3,10 +3,10 @@ import path from 'path';
 
 import * as core from '@actions/core';
 
-import { publishRelease } from './publishRelease';
 import { bumpNextVersion } from './bumpNextVersion';
-import { startPatchRelease } from './startPatchRelease';
 import { setupGitUser } from './gitUtils';
+import { publishRelease } from './publishRelease';
+import { startPatchRelease } from './startPatchRelease';
 
 // const getOptionalInput = (name: string) => core.getInput(name) || undefined;
 
@@ -39,9 +39,9 @@ import { setupGitUser } from './gitUtils';
 
 	if (action === 'publish-final') {
 		await publishRelease({ githubToken, mergeFinal: true, mainPackagePath });
-	} else if (action === 'publish') {
+	} else if (action === 'cut') {
 		await publishRelease({ githubToken, baseRef, mainPackagePath });
-	} else if (action === 'bump') {
+	} else if (action === 'next') {
 		await bumpNextVersion({ githubToken, mainPackagePath });
 	} else if (action === 'patch') {
 		await startPatchRelease({ baseRef, githubToken, mainPackagePath });

@@ -1,20 +1,20 @@
-import { VM, VMScript } from 'vm2';
-import { Random } from '@rocket.chat/random';
-import { Livechat } from 'meteor/rocketchat:livechat';
-import _ from 'underscore';
-import moment from 'moment';
 import { Integrations, Users } from '@rocket.chat/models';
 import * as Models from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { Livechat } from 'meteor/rocketchat:livechat';
+import moment from 'moment';
+import _ from 'underscore';
+import { VM, VMScript } from 'vm2';
 
 import * as s from '../../../../lib/utils/stringUtils';
-import { incomingLogger } from '../logger';
-import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
-import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
-import { settings } from '../../../settings/server';
-import { httpCall } from '../../../../server/lib/http/call';
-import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
+import { httpCall } from '../../../../server/lib/http/call';
+import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
+import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
+import { settings } from '../../../settings/server';
+import { incomingLogger } from '../logger';
 import { addOutgoingIntegration } from '../methods/outgoing/addOutgoingIntegration';
+import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
 
 export const forbiddenModelMethods = ['registerModel', 'getCollectionName'];
 

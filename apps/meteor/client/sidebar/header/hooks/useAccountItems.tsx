@@ -1,29 +1,28 @@
 import { Badge } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { defaultFeaturesPreview, useFeaturePreviewList } from '@rocket.chat/ui-client';
-import { useLogout, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 
 export const useAccountItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
-	const accountRoute = useRoute('account-index');
-	const featurePreviewRoute = useRoute('feature-preview');
+	const router = useRouter();
+
 	const { unseenFeatures, featurePreviewEnabled } = useFeaturePreviewList();
 
-	const logout = useLogout();
-
 	const handleMyAccount = useMutableCallback(() => {
-		accountRoute.push({});
+		router.navigate('/account');
 	});
-
+	const handleThemes = useMutableCallback(() => {
+		router.navigate('/account/theme');
+	});
+	const handlePreferences = useMutableCallback(() => {
+		router.navigate('/account/preferences');
+	});
 	const handleFeaturePreview = useMutableCallback(() => {
-		featurePreviewRoute.push();
-	});
-
-	const handleLogout = useMutableCallback(() => {
-		logout();
+		router.navigate('/account/feature-preview');
 	});
 
 	const featurePreviewItem = {
@@ -42,17 +41,23 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 
 	return [
 		{
-			id: 'my-account',
+			id: 'profile',
 			icon: 'user',
-			content: t('My_Account'),
+			content: t('Profile'),
 			onClick: handleMyAccount,
 		},
-		...(featurePreviewEnabled && defaultFeaturesPreview.length > 0 ? [featurePreviewItem] : []),
 		{
-			id: 'logout',
-			icon: 'sign-out',
-			content: t('Logout'),
-			onClick: handleLogout,
+			id: 'theme',
+			icon: 'palette',
+			content: t('Theme'),
+			onClick: handleThemes,
 		},
+		{
+			id: 'preferences',
+			icon: 'customize',
+			content: t('Preferences'),
+			onClick: handlePreferences,
+		},
+		...(featurePreviewEnabled && defaultFeaturesPreview.length > 0 ? [featurePreviewItem] : []),
 	];
 };

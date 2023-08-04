@@ -1,6 +1,5 @@
 import type { UrlWithParsedQuery } from 'url';
 
-import type { FilterOperators } from 'mongodb';
 import type {
 	IMessage,
 	IRoom,
@@ -21,9 +20,10 @@ import type {
 	InquiryWithAgentInfo,
 	ILivechatTagRecord,
 } from '@rocket.chat/core-typings';
+import type { FilterOperators } from 'mongodb';
 
-import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
+import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped';
 import { Callbacks } from './callbacks/callbacksBase';
 
@@ -87,6 +87,8 @@ interface EventLikeCallbackSignatures {
 	'livechat.afterDepartmentArchived': (department: Pick<ILivechatDepartmentRecord, '_id'>) => void;
 	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser: IUser | null }) => void;
 	'livechat.afterTagRemoved': (tag: ILivechatTagRecord) => void;
+	'beforeUserImport': (data: { userCount: number }) => void;
+	'afterUserImport': (data: { inserted: IUser['_id'][]; updated: IUser['_id']; skipped: number; failed: number }) => void;
 }
 
 /**

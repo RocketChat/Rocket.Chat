@@ -14,36 +14,40 @@ import {
 } from '../../../../application/room/input/RoomReceiverDto';
 import type { IExternalRolesChangesToApplyInputDto } from '../../../../application/room/input/RoomReceiverDto';
 import { EVENT_ORIGIN } from '../../../../domain/IFederationBridge';
+import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../rocket-chat/definitions/FederatedRoomInternalRoles';
+import type { AbstractMatrixEvent } from '../../definitions/AbstractMatrixEvent';
+import { MatrixEventType } from '../../definitions/MatrixEventType';
+import { MATRIX_POWER_LEVELS } from '../../definitions/MatrixPowerLevels';
+import { MatrixRoomJoinRules } from '../../definitions/MatrixRoomJoinRules';
+import type { MatrixEventRoomCreated } from '../../definitions/events/RoomCreated';
+import type { MatrixEventRoomRedacted } from '../../definitions/events/RoomEventRedacted';
+import type { MatrixEventRoomJoinRulesChanged } from '../../definitions/events/RoomJoinRulesChanged';
 import type { MatrixEventRoomMembershipChanged } from '../../definitions/events/RoomMembershipChanged';
 import { RoomMembershipChangedEventType } from '../../definitions/events/RoomMembershipChanged';
-import { MatrixRoomJoinRules } from '../../definitions/MatrixRoomJoinRules';
-import { MatrixEventType } from '../../definitions/MatrixEventType';
-import type { MatrixEventRoomCreated } from '../../definitions/events/RoomCreated';
 import type { MatrixEventRoomMessageSent } from '../../definitions/events/RoomMessageSent';
-import type { MatrixEventRoomJoinRulesChanged } from '../../definitions/events/RoomJoinRulesChanged';
 import type { MatrixEventRoomNameChanged } from '../../definitions/events/RoomNameChanged';
-import type { MatrixEventRoomTopicChanged } from '../../definitions/events/RoomTopicChanged';
-import type { AbstractMatrixEvent } from '../../definitions/AbstractMatrixEvent';
-import type { MatrixEventRoomRedacted } from '../../definitions/events/RoomEventRedacted';
 import type {
 	IMatrixEventContentRoomPowerLevelsChanged,
 	MatrixEventRoomRoomPowerLevelsChanged,
 } from '../../definitions/events/RoomPowerLevelsChanged';
-import { MATRIX_POWER_LEVELS } from '../../definitions/MatrixPowerLevels';
-import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../rocket-chat/definitions/FederatedRoomInternalRoles';
+import type { MatrixEventRoomTopicChanged } from '../../definitions/events/RoomTopicChanged';
 
+/** @deprecated export from {@link ../../helpers/MatrixIdStringTools} instead */
 export const removeExternalSpecificCharsFromExternalIdentifier = (matrixIdentifier = ''): string => {
 	return matrixIdentifier.replace('@', '').replace('!', '').replace('#', '');
 };
 
+/** @deprecated export from {@link ../../helpers/MatrixIdStringTools} instead */
 export const formatExternalUserIdToInternalUsernameFormat = (matrixUserId = ''): string => {
 	return matrixUserId.split(':')[0]?.replace('@', '');
 };
 
 export const isAnExternalIdentifierFormat = (identifier: string): boolean => identifier.includes(':');
 
+/** @deprecated export from {@link ../../helpers/MatrixIdStringTools} instead */
 export const isAnExternalUserIdFormat = (userId: string): boolean => isAnExternalIdentifierFormat(userId) && userId.includes('@');
 
+/** @deprecated export from {@link ../../helpers/MatrixIdStringTools} instead */
 export const extractServerNameFromExternalIdentifier = (identifier = ''): string => {
 	const splitted = identifier.split(':');
 

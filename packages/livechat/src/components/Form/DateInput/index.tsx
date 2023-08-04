@@ -1,8 +1,8 @@
 import type { Ref } from 'preact';
-import type { TargetedEvent } from 'preact/compat';
+import { memo, type TargetedEvent } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
 
-import { createClassName, memo } from '../../helpers';
+import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
 
 type DateInputProps = {

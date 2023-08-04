@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Meteor } from 'meteor/meteor';
-import type { IUser } from '@rocket.chat/core-typings';
 import { Message, Team } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
