@@ -20,6 +20,28 @@ const common = (args: webpack.CliConfigOptions): Partial<webpack.Configuration> 
 			'react-dom': 'preact/compat',
 		},
 	},
+	optimization: {
+		sideEffects: false,
+		splitChunks: {
+			automaticNameDelimiter: '~',
+			chunks: 'all',
+			maxAsyncRequests: 30,
+			maxInitialRequests: 30,
+			minChunks: 1,
+			minSize: 20000,
+			maxSize: 0,
+		},
+		noEmitOnErrors: true,
+		...(args.mode === 'production' && {
+			minimizer: [
+				new TerserPlugin({
+					terserOptions: {
+						mangle: true,
+					},
+				}),
+			],
+		}),
+	},
 });
 
 const config: webpack.MultiConfigurationFactory = (_env, args) => [
@@ -131,28 +153,6 @@ const config: webpack.MultiConfigurationFactory = (_env, args) => [
 				chunksSortMode: 'manual',
 			}),
 		],
-		optimization: {
-			sideEffects: false,
-			splitChunks: {
-				automaticNameDelimiter: '~',
-				chunks: 'all',
-				maxAsyncRequests: 30,
-				maxInitialRequests: 30,
-				minChunks: 1,
-				minSize: 20000,
-				maxSize: 0,
-			},
-			noEmitOnErrors: true,
-			...(args.mode === 'production' && {
-				minimizer: [
-					new TerserPlugin({
-						terserOptions: {
-							mangle: true,
-						},
-					}),
-				],
-			}),
-		},
 		devServer: {
 			hot: true,
 			port: 8080,
@@ -188,35 +188,11 @@ const config: webpack.MultiConfigurationFactory = (_env, args) => [
 		module: {
 			rules: [
 				{
-					test: /\.js$/,
-					type: 'javascript/auto',
-					use: [
-						{
-							loader: 'babel-loader',
-							options: {
-								babelrc: false,
-								presets: [
-									[
-										'@babel/preset-env',
-										{
-											useBuiltIns: 'entry',
-											corejs: 3,
-										},
-									],
-								],
-							},
-						},
-					],
-				},
-				{
 					test: /\.tsx?$/,
 					use: 'babel-loader',
 					exclude: ['/node_modules/'],
 				},
 			],
-		},
-		optimization: {
-			noEmitOnErrors: true,
 		},
 	},
 ];
