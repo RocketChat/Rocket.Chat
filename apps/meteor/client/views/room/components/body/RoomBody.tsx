@@ -634,6 +634,8 @@ const RoomBody = (): ReactElement => {
 								onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 								onNavigateToNextMessage={handleNavigateToNextMessage}
 								onUploadFiles={handleUploadFiles}
+								// TODO: send previewUrls param
+								// previewUrls={}
 							/>
 						</div>
 					</div>

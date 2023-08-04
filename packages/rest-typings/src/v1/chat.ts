@@ -64,6 +64,13 @@ const chatSendMessageSchema = {
 				},
 			},
 		},
+		previewUrls: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
+		},
 	},
 	required: ['message'],
 	additionalProperties: false,

@@ -16,6 +16,7 @@ export type ComposerMessageProps = {
 	subscription?: ISubscription;
 	readOnly?: boolean;
 	tshow?: boolean;
+	previewUrls?: string[];
 	onResize?: () => void;
 	onEscape?: () => void;
 	onSend?: () => void;
@@ -39,12 +40,13 @@ const ComposerMessage = ({ rid, tmid, readOnly, onSend, ...props }: ComposerMess
 				}
 			},
 
-			onSend: async ({ value: text, tshow }: { value: string; tshow?: boolean }): Promise<void> => {
+			onSend: async ({ value: text, tshow, previewUrls }: { value: string; tshow?: boolean; previewUrls?: string[] }): Promise<void> => {
 				try {
 					await chat?.action.stop('typing');
 					const newMessageSent = await chat?.flows.sendMessage({
 						text,
 						tshow,
+						previewUrls,
 					});
 					if (newMessageSent) onSend?.();
 				} catch (error) {
