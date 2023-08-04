@@ -36,7 +36,6 @@
 		"@storybook/addon-postcss": "~2.0.0",
 		"@storybook/preact": "~6.5.16",
 		"@storybook/theming": "~6.5.16",
-		"@types/crypto-js": "~4.1.1",
 		"@types/whatwg-fetch": "~0.0.33",
 		"@typescript-eslint/eslint-plugin": "~5.60.1",
 		"@typescript-eslint/parser": "~5.60.1",
@@ -89,9 +88,9 @@
 	"dependencies": {
 		"@rocket.chat/gazzodown": "workspace:^",
 		"@rocket.chat/message-parser": "next",
+		"@rocket.chat/random": "workspace:~",
 		"@rocket.chat/sdk": "^1.0.0-alpha.42",
 		"@rocket.chat/ui-kit": "next",
-		"crypto-js": "^4.1.1",
 		"css-vars-ponyfill": "^2.4.8",
 		"date-fns": "^2.15.0",
 		"emoji-mart": "^3.0.1",
