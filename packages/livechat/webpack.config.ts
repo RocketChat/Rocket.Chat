@@ -19,14 +19,6 @@ const common = (args: webpack.CliConfigOptions): Partial<webpack.Configuration> 
 			'react-dom': 'preact/compat',
 		},
 	},
-	node: {
-		console: false,
-		process: false,
-		Buffer: false,
-		__filename: false,
-		__dirname: false,
-		setImmediate: false,
-	},
 });
 
 const config: webpack.MultiConfigurationFactory = (_env, args) => [
