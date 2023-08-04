@@ -21,7 +21,6 @@ type ReportUserModalsFields = {
 const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUserModalProps) => {
 	const {
 		register,
-		getValues,
 		handleSubmit,
 		formState: { errors },
 	} = useForm<ReportUserModalsFields>({
@@ -30,16 +29,13 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 		},
 	});
 
-	const onClickConfirm = () => {
-		const { description } = getValues();
-		onConfirm(description);
-	};
-
 	const { t } = useTranslation();
 
 	return (
 		<GenericModal
-			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(onClickConfirm)} {...props} />}
+			wrapperFunction={(props: ComponentProps<typeof Box>) => (
+				<Box is='form' onSubmit={handleSubmit(({ description }) => onConfirm(description))} {...props} />
+			)}
 			variant='danger'
 			title={t('Report_User')}
 			onClose={onClose}
