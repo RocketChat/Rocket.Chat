@@ -1,3 +1,4 @@
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
 
 import { useRoomSubscription } from '../../views/room/contexts/RoomContext';
@@ -8,9 +9,10 @@ const NotificationPreferences = lazy(() => import('../../views/room/contextualBa
 export const usePushNotificationsRoomAction = () => {
 	const subscription = useRoomSubscription();
 	const capable = !!subscription;
+	const enabled = useSetting('Menu_Notification_Preferences');
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
-		if (!capable) {
+		if (!capable || !enabled) {
 			return undefined;
 		}
 
@@ -22,5 +24,5 @@ export const usePushNotificationsRoomAction = () => {
 			tabComponent: NotificationPreferences,
 			order: 8,
 		};
-	}, [capable]);
+	}, [capable, enabled]);
 };

@@ -1,4 +1,4 @@
-import { usePermission } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { MemberListRouter } from '../../views/room';
@@ -10,9 +10,10 @@ export const useMembersListRoomAction = () => {
 	const broadcast = !!room.broadcast;
 	const team = !!room.teamMain;
 	const permittedToViewBroadcastMemberList = usePermission('view-broadcast-member-list', room._id);
+	const enabled = useSetting('Menu_Room_Members', true);
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
-		if (broadcast && !permittedToViewBroadcastMemberList) {
+		if (!enabled || (broadcast && !permittedToViewBroadcastMemberList)) {
 			return undefined;
 		}
 
@@ -24,5 +25,5 @@ export const useMembersListRoomAction = () => {
 			tabComponent: MemberListRouter,
 			order: 5,
 		};
-	}, [broadcast, permittedToViewBroadcastMemberList, team]);
+	}, [broadcast, permittedToViewBroadcastMemberList, team, enabled]);
 };

@@ -1,4 +1,5 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { lazy, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,9 +14,10 @@ export const useCallsRoomAction = () => {
 	const room = useContext(RoomContext)?.room;
 	const federated = room ? isRoomFederated(room) : false;
 	const { t } = useTranslation();
+	const enabled = useSetting('Menu_Calls', true);
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
-		if (!licensed) {
+		if (!licensed || !enabled) {
 			return undefined;
 		}
 
@@ -31,5 +33,5 @@ export const useCallsRoomAction = () => {
 			tabComponent: VideoConfList,
 			order: 999,
 		};
-	}, [licensed, federated, t]);
+	}, [licensed, federated, t, enabled]);
 };

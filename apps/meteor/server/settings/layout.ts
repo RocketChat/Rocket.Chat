@@ -271,6 +271,7 @@ export const createLayoutSettings = () =>
 				public: true,
 			});
 			await this.add('Menu_Threads', true, {
+				// has a setting to enable/disable threads
 				type: 'boolean',
 				public: true,
 			});
@@ -279,10 +280,12 @@ export const createLayoutSettings = () =>
 				public: true,
 			});
 			await this.add('Menu_Prune_Messages', true, {
+				// can be done using perm - clean-room-history
 				type: 'boolean',
 				public: true,
 			});
 			await this.add('Menu_Export_Messages', true, {
+				// can be done using perm - mail-message
 				type: 'boolean',
 				public: true,
 			});
