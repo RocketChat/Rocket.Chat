@@ -2,25 +2,23 @@ import i18next from 'i18next';
 import type { ComponentChildren } from 'preact';
 import type { JSXInternal } from 'preact/src/jsx';
 
+import { createClassName } from '../../helpers/createClassName';
 import { validateEmail } from '../../lib/email';
-import { createClassName, MemoizedComponent } from '../helpers';
 import styles from './styles.scss';
 
 type FormProps = {
-	onSubmit: (event: Event) => void;
+	onSubmit?: JSXInternal.GenericEventHandler<HTMLFormElement>;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
 	id?: string;
-	children: ComponentChildren;
+	children?: ComponentChildren;
 };
 
-export class Form extends MemoizedComponent {
-	render = ({ onSubmit, className, style = {}, id, children }: FormProps) => (
-		<form noValidate id={id} onSubmit={onSubmit} className={createClassName(styles, 'form', {}, [className])} style={style}>
-			{children}
-		</form>
-	);
-}
+export const Form = ({ onSubmit, className, style = {}, id, children }: FormProps) => (
+	<form noValidate id={id} onSubmit={onSubmit} className={createClassName(styles, 'form', {}, [className])} style={style}>
+		{children}
+	</form>
+);
 
 export const Validations = {
 	nonEmpty: ({ value }: { value: string }) => (!value.trim() ? i18next.t('field_required') : undefined),

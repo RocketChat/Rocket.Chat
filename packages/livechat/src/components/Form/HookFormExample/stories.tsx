@@ -1,6 +1,7 @@
 import { action } from '@storybook/addon-actions';
 import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
+import type { JSXInternal } from 'preact/src/jsx';
 import { Controller, useForm } from 'react-hook-form';
 
 import { Form, PasswordInput, SelectInput, TextInput, FormField } from '..';
@@ -11,7 +12,7 @@ export default {
 	title: 'Forms/HookFormExample',
 	component: Form,
 	args: {
-		onSubmit: (event: Event) => {
+		onSubmit: (event) => {
 			action('submit')(event);
 		},
 	},
@@ -29,7 +30,7 @@ export const Default: Story<ComponentProps<typeof Form>> = (args) => {
 	} = useForm();
 
 	return (
-		<Form onSubmit={handleSubmit(args.onSubmit)}>
+		<Form onSubmit={handleSubmit(args.onSubmit as any) as unknown as JSXInternal.GenericEventHandler<HTMLFormElement>}>
 			<FormField label='Text' description='Input field for plain text' error={errors?.text?.message?.toString()}>
 				<Controller name='text' control={control} rules={{ required: true }} render={({ field }) => <TextInput {...field} />} />
 			</FormField>

@@ -1,5 +1,6 @@
 import { route } from 'preact-router';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
+import type { JSXInternal } from 'preact/src/jsx';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -7,10 +8,9 @@ import { useTranslation } from 'react-i18next';
 import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
 import { Form, FormField, TextInput, SelectInput, CustomFields as CustomFieldsForm } from '../../components/Form';
-import type { CustomField } from '../../components/Form/CustomFields';
 import Screen from '../../components/Screen';
-import { createClassName, sortArrayByColumn } from '../../components/helpers';
-import type { department } from '../../definitions/departments';
+import { createClassName } from '../../helpers/createClassName';
+import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import CustomFields from '../../lib/customFields';
 import { validateEmail } from '../../lib/email';
 import { parentCall } from '../../lib/parentCall';
@@ -20,41 +20,7 @@ import styles from './styles.scss';
 // Custom field as in the form payload
 type FormPayloadCustomField = { [key: string]: string };
 
-type ContextReturn = {
-	config: {
-		departments?: department[];
-		messages: {
-			registrationFormMessage?: string;
-		};
-		settings: {
-			nameFieldRegistrationForm?: boolean;
-			emailFieldRegistrationForm?: boolean;
-		};
-		theme: {
-			title?: string;
-			color?: string;
-		};
-		customFields?: CustomField[];
-	};
-	iframe: {
-		guest: {
-			department?: string;
-			name?: string;
-			email?: string;
-		};
-		theme: {
-			color?: string;
-			fontColor?: string;
-			iconColor?: string;
-			title?: string;
-		};
-	};
-	loading: boolean;
-	token: string;
-	dispatch: (args: unknown) => void;
-	user?: { _id: string; [key: string]: unknown };
-};
-export const Register = ({ screenProps }: { screenProps: { [key: string]: unknown } }) => {
+export const Register = ({ screenProps }: { screenProps: { [key: string]: unknown }; path: string }) => {
 	const { t } = useTranslation();
 
 	const topRef = useRef<HTMLDivElement>(null);
@@ -85,7 +51,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 		token,
 		dispatch,
 		user,
-	}: ContextReturn = useContext(StoreContext);
+	} = useContext(StoreContext);
 
 	const defaultTitle = t('need_help');
 	const defaultMessage = t('please_tell_us_some_information_to_start_the_chat');
@@ -179,7 +145,11 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 		>
 			<div id='scrollShadow' className={createClassName(styles, 'scrollShadow', { atTop, atBottom })}>
 				<Screen.Content full>
-					<Form id='register' onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}>
+					<Form
+						id='register'
+						// The price of using react-hook-form on a preact project ¯\_(ツ)_/¯
+						onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>) as unknown as JSXInternal.GenericEventHandler<HTMLFormElement>}
+					>
 						<div id='top' ref={topRef} style={{ height: '1px', width: '100%' }} />
 						<p className={createClassName(styles, 'register__message')}>{message || defaultMessage}</p>
 

@@ -1,4 +1,5 @@
 import { useContext } from 'preact/hooks';
+import type { JSXInternal } from 'preact/src/jsx';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -10,42 +11,16 @@ import { MultilineTextInput } from '../../components/Form/MultilineTextInput';
 import { renderMarkdown } from '../../components/Messages/MessageText/markdown';
 import { ModalManager } from '../../components/Modal';
 import Screen from '../../components/Screen';
-import { parseOfflineMessage, createClassName, sortArrayByColumn } from '../../components/helpers';
-import type { department } from '../../definitions/departments';
+import { createClassName } from '../../helpers/createClassName';
+import { parseOfflineMessage } from '../../helpers/parseOfflineMessage';
+import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import { validateEmail } from '../../lib/email';
 import { parentCall } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { StoreContext } from '../../store';
 import styles from './styles.scss';
 
-type ContextReturn = {
-	config: {
-		departments?: department[];
-		messages: {
-			offlineMessage?: string;
-			offlineUnavailableMessage?: string;
-			offlineSuccessMessage?: string;
-		};
-		settings: {
-			displayOfflineForm?: boolean;
-		};
-		theme: {
-			offlineTitle?: string;
-			offlineColor?: string;
-		};
-	};
-	iframe?: {
-		theme: {
-			offlineTitle?: string;
-		};
-	};
-	loading: boolean;
-	dispatch: (args: unknown) => void;
-	user?: { _id: string; [key: string]: unknown };
-	alerts: unknown[];
-};
-
-const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown } }) => {
+const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }; path: string }) => {
 	const {
 		config: {
 			departments = [],
@@ -57,7 +32,7 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 		loading,
 		dispatch,
 		alerts,
-	}: ContextReturn = useContext(StoreContext);
+	} = useContext(StoreContext);
 	const { t } = useTranslation();
 
 	const {
@@ -122,7 +97,11 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 					}}
 				/>
 
-				<Form onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)} id='leaveMessage'>
+				<Form
+					// The price of using react-hook-form on a preact project ¯\_(ツ)_/¯
+					onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>) as unknown as JSXInternal.GenericEventHandler<HTMLFormElement>}
+					id='leaveMessage'
+				>
 					<FormField required label={t('name')} error={errors.name?.message?.toString()}>
 						<Controller
 							name='name'

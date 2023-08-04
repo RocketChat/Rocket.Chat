@@ -4,6 +4,7 @@ import Router, { route } from 'preact-router';
 import { parse } from 'query-string';
 import { withTranslation } from 'react-i18next';
 
+import type { Department } from '../../definitions/departments';
 import { setInitCookies } from '../../helpers/cookies';
 import { isActiveSession } from '../../helpers/isActiveSession';
 import { isRTL } from '../../helpers/isRTL';
@@ -34,9 +35,7 @@ type AppProps = {
 			forceAcceptDataProcessingConsent?: boolean;
 		};
 		online?: boolean;
-		departments: {
-			showOnRegistration: boolean;
-		}[];
+		departments: Department[];
 		enabled?: boolean;
 	};
 	gdpr: {

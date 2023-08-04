@@ -3,8 +3,8 @@ import type { TargetedEvent } from 'preact/compat';
 import { useState } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
 
+import { createClassName } from '../../../helpers/createClassName';
 import ArrowIcon from '../../../icons/arrowDown.svg';
-import { createClassName } from '../../helpers';
 import styles from './styles.scss';
 
 type SelectInputProps = {

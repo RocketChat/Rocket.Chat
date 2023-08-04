@@ -2,6 +2,7 @@ import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
 import type { Deprecated } from '@rocket.chat/rest-typings/dist/helpers/Deprecated';
 import { route } from 'preact-router';
 import { useContext } from 'preact/hooks';
+import type { JSXInternal } from 'preact/src/jsx';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -12,43 +13,13 @@ import { ButtonGroup } from '../../components/ButtonGroup';
 import { Form, FormField, SelectInput } from '../../components/Form';
 import { ModalManager } from '../../components/Modal';
 import Screen from '../../components/Screen';
-import { createClassName } from '../../components/helpers';
-import type { department } from '../../definitions/departments';
+import { createClassName } from '../../helpers/createClassName';
 import { loadConfig } from '../../lib/main';
 import { createToken } from '../../lib/random';
 import { StoreContext } from '../../store';
 import styles from './styles.scss';
 
-type ContextReturn = {
-	config: {
-		departments?: department[];
-		messages: {
-			switchDepartmentMessage?: string;
-		};
-		settings: {
-			nameFieldRegistrationForm?: boolean;
-			emailFieldRegistrationForm?: boolean;
-		};
-		theme: {
-			color?: string;
-		};
-	};
-	iframe: {
-		guest: {
-			department?: string;
-			name?: string;
-			email?: string;
-		};
-	};
-	loading: boolean;
-	token: string;
-	room?: { _id: string; [key: string]: unknown };
-	dispatch: (args: unknown) => void;
-	alerts: unknown[];
-	user?: { _id: string; [key: string]: unknown };
-};
-
-const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unknown } }) => {
+const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unknown }; path: string }) => {
 	const { t } = useTranslation();
 
 	const {
@@ -64,7 +35,7 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 		dispatch,
 		alerts,
 		token,
-	}: ContextReturn = useContext(StoreContext);
+	} = useContext(StoreContext);
 
 	const {
 		handleSubmit,
@@ -139,7 +110,11 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 			<Screen.Content>
 				<p className={createClassName(styles, 'switch-department__message')}>{switchDepartmentMessage || defaultMessage}</p>
 
-				<Form id='switchDepartment' onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}>
+				<Form
+					id='switchDepartment'
+					// The price of using react-hook-form on a preact project ¯\_(ツ)_/¯
+					onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>) as unknown as JSXInternal.GenericEventHandler<HTMLFormElement>}
+				>
 					<FormField label={t('i_need_help_with')} error={errors.department?.message?.toString()}>
 						<Controller
 							name='department'
