@@ -8,7 +8,6 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { isTruthy } from '../../../../../lib/isTruthy';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 
 type LeaderBarProps = {
@@ -21,8 +20,6 @@ type LeaderBarProps = {
 
 const LeaderBar = ({ _id, name, username, visible, onAvatarClick }: LeaderBarProps): ReactElement => {
 	const t = useTranslation();
-
-	const handleLinkClick = useExternalLink();
 
 	const chatNowLink = useMemo(() => roomCoordinator.getRouteLink('d', { name: username }) || undefined, [username]);
 
@@ -77,7 +74,7 @@ const LeaderBar = ({ _id, name, username, visible, onAvatarClick }: LeaderBarPro
 					</Box>
 				</Box>
 			</Box>
-			<Button role='link' onClick={() => handleLinkClick(chatNowLink)}>
+			<Button role='link' is='a' href={chatNowLink}>
 				{t('Chat_Now')}
 			</Button>
 		</Box>
