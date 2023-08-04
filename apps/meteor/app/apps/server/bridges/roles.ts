@@ -13,7 +13,7 @@ export class AppRoleBridge extends RoleBridge {
 		this.orch.debugLog(`The App ${appId} is getting the roleByIdOrName: "${idOrName}"`);
 
 		const role = await Roles.findOneByIdOrName(idOrName);
-		return role;
+		return this.orch.getConverters()?.get('roles').convertRole(role);
 	}
 
 	protected async getCustomRoles(appId: string): Promise<Array<IRole>> {
@@ -21,7 +21,15 @@ export class AppRoleBridge extends RoleBridge {
 
 		const cursor = Roles.findCustomRoles();
 
-		const roles = await cursor.toArray();
+		const roles: IRole[] = [];
+
+		for await (const role of cursor) {
+			const convRole = await this.orch.getConverters()?.get('roles').convertRole(role);
+			if (convRole) {
+				roles.push(convRole);
+			}
+		}
+
 		return roles;
 	}
 }
