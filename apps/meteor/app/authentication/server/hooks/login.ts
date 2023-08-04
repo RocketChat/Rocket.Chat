@@ -7,7 +7,8 @@ import { logFailedLoginAttempts } from '../lib/logLoginAttempts';
 import { saveFailedLoginAttempts, saveSuccessfulLogin } from '../lib/restrictLoginAttempts';
 
 Accounts.onLoginFailure(async (login: ILoginAttempt) => {
-	if (settings.get('Block_Multiple_Failed_Logins_Enabled')) {
+	// do not save failed login attempts if the user is already blocked
+	if (settings.get('Block_Multiple_Failed_Logins_Enabled') && login.error.error !== 'error-login-blocked-for-user') {
 		await saveFailedLoginAttempts(login);
 	}
 
