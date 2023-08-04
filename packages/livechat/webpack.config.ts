@@ -2,6 +2,7 @@ import path from 'path';
 
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 import webpack from 'webpack';
 import 'webpack-dev-server';
 
@@ -125,7 +126,7 @@ const config: webpack.MultiConfigurationFactory = (_env, args) => [
 				'process.env.NODE_ENV': JSON.stringify(args.mode === 'production' ? 'production' : 'development'),
 			}),
 			new HtmlWebpackPlugin({
-				title: 'Rocket.Chat.Livechat',
+				title: 'Livechat - Rocket.Chat',
 				chunks: ['polyfills', 'vendor', 'bundle'],
 				chunksSortMode: 'manual',
 			}),
@@ -142,6 +143,15 @@ const config: webpack.MultiConfigurationFactory = (_env, args) => [
 				maxSize: 0,
 			},
 			noEmitOnErrors: true,
+			...(args.mode === 'production' && {
+				minimizer: [
+					new TerserPlugin({
+						terserOptions: {
+							mangle: true,
+						},
+					}),
+				],
+			}),
 		},
 		devServer: {
 			hot: true,
@@ -149,7 +159,6 @@ const config: webpack.MultiConfigurationFactory = (_env, args) => [
 			host: '0.0.0.0',
 			allowedHosts: 'all',
 			open: true,
-			historyApiFallback: true,
 			devMiddleware: {
 				publicPath: args.mode === 'production' ? 'livechat/' : '/',
 				stats: 'normal',
