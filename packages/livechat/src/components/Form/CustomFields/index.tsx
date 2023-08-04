@@ -55,7 +55,7 @@ export const CustomFields = ({ customFields, loading, control, errors }: RenderC
 								return (
 									<SelectInput
 										placeholder={t('choose_an_option')}
-										options={(options as string[])?.map((option: string) => ({ value: option, label: option }))}
+										options={options?.map((option: string) => ({ value: option, label: option })) ?? []}
 										disabled={loading}
 										{...field}
 									/>
