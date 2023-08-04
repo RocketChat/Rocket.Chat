@@ -9,6 +9,7 @@ const ajv = new Ajv({
 
 type ChatSendMessage = {
 	message: Partial<IMessage>;
+	previewUrls?: string[];
 };
 
 const chatSendMessageSchema = {
