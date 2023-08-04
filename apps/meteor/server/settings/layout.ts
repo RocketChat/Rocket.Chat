@@ -214,4 +214,109 @@ export const createLayoutSettings = () =>
 				public: true,
 			});
 		});
+		await this.section('Menu', async function () {
+			// Message Menu items
+			await this.add('Menu_Add_Reaction', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Quote', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Reply_In_Thread', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Share_Message', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Follow_Message', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Get_Link', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Copy', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Edit', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Star', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Mark_Message_As_Unread', true, {
+				type: 'boolean',
+				public: true,
+			});
+
+			// Room Menu items
+			await this.add('Menu_Room_Info', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Room_Members', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_User_Info', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Threads', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Calls', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Prune_Messages', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Export_Messages', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Keyboard_Shortcut_List', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Mentions_List', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Pinned_Messages', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Starred_Messages', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Notification_Preferences', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Search', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Team_Channels', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Uploaded_Files', true, {
+				type: 'boolean',
+				public: true,
+			});
+		});
 	});
