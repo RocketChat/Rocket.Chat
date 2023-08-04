@@ -14,7 +14,7 @@ jobs:
           JIRA_URL: https://rocketchat.atlassian.net/
           JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
           GITHUB_TOKEN: ${{ secrets._GITHUB_TOKEN }}
-          JIRA_EMAIL: igor.rincon@rocket.chat
+          JIRA_EMAIL: bruno.cestari@rocket.chat
           JIRA_PROJECT_ID: GJIT
           UID_CUSTOMFIELD_ID: customfield_10059
           JIRA_COMPLETE_PHASE_ID: 31
