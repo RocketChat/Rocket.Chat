@@ -12,7 +12,7 @@ export const useMentionsRoomAction = () => {
 			title: 'Mentions',
 			icon: 'at',
 			tabComponent: MentionsTab,
-			order: 9,
+			order: 6,
 			type: 'organization',
 		}),
 		[],
