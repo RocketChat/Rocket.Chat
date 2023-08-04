@@ -1,4 +1,3 @@
-import { MeteorError } from '@rocket.chat/core-services';
 import { Random } from '@rocket.chat/random';
 import generator from 'generate-password';
 
@@ -156,7 +155,7 @@ class PasswordPolicy {
 		}[],
 	) {
 		if (this.throwError) {
-			throw new MeteorError(error, message, reasons);
+			throw new Error(`ERROR: ${error} -- MESSAGE: ${message} -- REASON: ${reasons}`);
 		}
 
 		return false;
