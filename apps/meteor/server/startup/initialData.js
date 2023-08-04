@@ -12,7 +12,7 @@ import { addUserToDefaultChannels } from '../../app/lib/server/functions/addUser
 import { checkUsernameAvailability } from '../../app/lib/server/functions/checkUsernameAvailability';
 import { validateEmail } from '../../lib/emailValidator';
 
-Meteor.startup(async function () {
+Meteor.startup(async function() {
 	if (!settings.get('Initial_Channel_Created')) {
 		const exists = await Rooms.findOneById('GENERAL', { projection: { _id: 1 } });
 		if (!exists) {
@@ -115,11 +115,11 @@ Meteor.startup(async function () {
 
 			adminUser.type = 'user';
 
-			const id = await Users.create(adminUser);
+			const { insertedId: userId } = await Users.create(adminUser);
 
-			await Accounts.setPasswordAsync(id, process.env.ADMIN_PASS);
+			await Accounts.setPasswordAsync(userId, process.env.ADMIN_PASS);
 
-			await addUserRolesAsync(id, ['admin']);
+			await addUserRolesAsync(userId, ['admin']);
 		} else {
 			console.log(colors.red('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'));
 		}
