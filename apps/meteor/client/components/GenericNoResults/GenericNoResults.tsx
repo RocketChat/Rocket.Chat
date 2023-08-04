@@ -1,19 +1,19 @@
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { Box, States, StatesIcon, StatesLink, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+
+type LinkProps = { linkText: string; linkHref: string } | { linkText?: never; linkHref?: never };
+type ButtonProps = { buttonTitle: string; buttonAction: () => void } | { buttonTitle?: never; buttonAction?: never };
 
 type GenericNoResultsProps = {
 	icon?: IconName;
 	title?: string;
 	description?: string;
 	buttonTitle?: string;
-	buttonAction?: () => void;
-	linkText?: string;
-	linkHref?: string;
-};
+} & LinkProps &
+	ButtonProps;
 
-// TODO: Create `StatesLink`
 const GenericNoResults = ({
 	icon = 'magnifier',
 	title,
@@ -37,9 +37,9 @@ const GenericNoResults = ({
 					</StatesActions>
 				)}
 				{linkText && linkHref && (
-					<Box is='a' mbs='x16' target='_blank' href={linkHref}>
+					<StatesLink href={linkHref} target='_blank'>
 						{linkText}
-					</Box>
+					</StatesLink>
 				)}
 			</States>
 		</Box>
