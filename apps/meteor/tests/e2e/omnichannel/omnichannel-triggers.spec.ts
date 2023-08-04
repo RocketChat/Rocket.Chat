@@ -45,6 +45,27 @@ test.describe.serial('Omnichannel Triggers', () => {
 		await page.close();
 	});
 
+	test('trigger baseline', async ({ page }) => {
+		await page.goto('/livechat');
+		await poLiveChat.openLiveChat();
+
+		await test.step('expect to register visitor', async () => {
+			await expect(poLiveChat.btnChatNow).not.toBeVisible();
+			await poLiveChat.sendMessage(newUser, false);
+		});
+
+		await test.step('expect send a message as a visitor', async () => {
+			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
+			await poLiveChat.btnSendMessageToOnlineAgent.click();
+			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_user')).toBeVisible();
+		});
+
+		await test.step('expect to finish this chat', async () => {
+			await poLiveChat.closeChat();
+			await expect(poLiveChat.txtHeaderTitle).toBeVisible();
+		});
+	});
+
 	test('create and edit trigger', async () => {
 		await test.step('expect create new trigger', async () => {
 			await agent.poHomeOmnichannel.triggers.createTrigger(triggersName, triggerMessage);
@@ -62,17 +83,26 @@ test.describe.serial('Omnichannel Triggers', () => {
 		await page.goto('/livechat');
 		await poLiveChat.openLiveChat();
 
-		await test.step('expect send a message as a visitor', async () => {
+		await test.step('expect trigger message before registration', async () => {
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
+		});
+
+		await test.step('expect to register visitor', async () => {
 			await poLiveChat.btnChatNow.click();
 			await poLiveChat.sendMessage(newUser, false);
+		});
+
+		await test.step('expect trigger message after registration', async () => {
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).not.toBeVisible();
 		});
 
-		await test.step('expect to finish this chat', async () => {
+		await test.step('expect send a message as a visitor', async () => {
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_user')).toBeVisible();
+		});
+
+		await test.step('expect to finish this chat', async () => {
 			await poLiveChat.closeChat();
 			await expect(poLiveChat.txtHeaderTitle).toBeVisible();
 		});
@@ -86,19 +116,29 @@ test.describe.serial('Omnichannel Triggers', () => {
 			await expect(agent.poHomeOmnichannel.triggers.toastMessage).toBeVisible();
 		});
 
-		await test.step('expect trigger message to be displayed after guest registration', async () => {
-			await page.goto('/livechat');
-			await poLiveChat.openLiveChat();
+		await page.goto('/livechat');
+		await poLiveChat.openLiveChat();
+
+		await test.step('expect not to have trigger message before registration', async () => {
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).not.toBeVisible();
 			await expect(poLiveChat.btnChatNow).not.toBeVisible();
+		});
+
+		await test.step('expect to register visitor', async () => {
 			await poLiveChat.sendMessage(newUser, false);
+		});
+
+		await test.step('expect trigger message after registration', async () => {
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 		});
 
-		await test.step('expect to finish this chat', async () => {
+		await test.step('expect send a message as a visitor', async () => {
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_user')).toBeVisible();
+		});
+
+		await test.step('expect to finish this chat', async () => {
 			await poLiveChat.closeChat();
 			await expect(poLiveChat.txtHeaderTitle).toBeVisible();
 		});
