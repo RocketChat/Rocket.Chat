@@ -30,6 +30,7 @@ import {
 } from './action';
 import getDate from '../utils/getDate';
 import { SurfaceOptions } from '../Components/Preview/Display/Surface/constant';
+import { filterEdges } from '../utils/filterEdges';
 
 type IAction =
   | IsMobileAction
@@ -111,6 +112,11 @@ const reducer = (state: initialStateType, action: IAction) => {
       state.screens[activeScreen].payload = action?.payload?.payload;
       state.screens[activeScreen].changedByEditor =
         action?.payload?.changedByEditor === undefined;
+      state.projects[activeProject].flowEdges = filterEdges(
+        state.projects[activeProject].flowEdges,
+        action?.payload?.payload.map((node) => node.actionId),
+        activeScreen
+      );
       return { ...state };
     }
     case ActionTypes.ActionPreview:
@@ -295,9 +301,7 @@ const reducer = (state: initialStateType, action: IAction) => {
     }
 
     case ActionTypes.UpdateFlowEdges: {
-      let prevEdges = state.projects[activeProject].flowEdges;
-      prevEdges = [...prevEdges, action.payload];
-      state.projects[activeProject].flowEdges = prevEdges;
+      state.projects[activeProject].flowEdges = action.payload;
       return { ...state };
     }
     case ActionTypes.UpdateNodesAndViewPort: {

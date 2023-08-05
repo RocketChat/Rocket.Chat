@@ -1,14 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { MarkerType, useEdgesState, useNodesState } from 'reactflow';
+import { Edge, MarkerType, useEdgesState, useNodesState } from 'reactflow';
 import { useContext, useEffect } from 'react';
-import { context } from '../Context';
+import { context, updateFlowEdgesAction } from '../Context';
 export function useNodesAndEdges() {
   const {
     state: { screens, projects, activeProject },
+    dispatch,
   } = useContext(context);
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [edges, _setEdges, onEdgesChange] = useEdgesState([]);
+
+  const setEdges = (callback: (e: Edge[]) => Edge[]) => {
+    const _edges = callback(edges);
+    _setEdges(_edges);
+    dispatch(updateFlowEdgesAction(_edges));
+  };
 
   useEffect(() => {
     const prevNodes = projects[activeProject].flowNodes;
@@ -42,13 +49,13 @@ export function useNodesAndEdges() {
   ]);
   useEffect(() => {
     const _edges = projects[activeProject].flowEdges;
-    setEdges(_edges);
+    _setEdges(_edges);
   }, [
     activeProject,
     projects,
     screens,
     projects[activeProject].flowEdges,
-    setEdges,
+    _setEdges,
   ]);
   const Viewport = projects[activeProject]?.viewport;
 

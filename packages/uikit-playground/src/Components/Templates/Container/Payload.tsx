@@ -1,16 +1,30 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Message, Avatar, Button } from '@rocket.chat/fuselage';
-import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import React, { useContext } from 'react';
 
-import { context, templatesToggleAction, updatePayloadAction } from '../../../Context';
+import {
+  context,
+  templatesToggleAction,
+  updatePayloadAction,
+} from '../../../Context';
 import RenderPayload from '../../Preview/Display/RenderPayload/RenderPayload';
+import { ILayoutBlock } from '../../../Context/initialState';
+import getUniqueId from '../../../utils/getUniqueId';
 
-const Payload = ({ payload }: { payload: readonly LayoutBlock[] }) => {
+const Payload = ({ payload }: { payload: ILayoutBlock[] }) => {
   const { dispatch } = useContext(context);
   const clickHandler = () => {
     dispatch(templatesToggleAction(false));
-    dispatch(updatePayloadAction({ payload, changedByEditor: false }));
+    const payloadWithUniqueIds = payload.map((block) => {
+      block.actionId = getUniqueId();
+      return block;
+    });
+    dispatch(
+      updatePayloadAction({
+        payload: payloadWithUniqueIds,
+        changedByEditor: false,
+      })
+    );
   };
   return (
     <>
