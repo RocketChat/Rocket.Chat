@@ -18,7 +18,7 @@ type UsageGraphProps = {
 	total: number;
 	label: ReactNode;
 	color?: string;
-	size: number;
+	size: `x${number}`;
 };
 
 type GraphData = Array<{
