@@ -17,7 +17,7 @@ import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQ
 const MessageSearchTab = () => {
 	const providerQuery = useMessageSearchProviderQuery();
 
-	const { close: closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolbox();
 
 	const [{ searchText, globalSearch }, handleSearch] = useState({ searchText: '', globalSearch: false });
 

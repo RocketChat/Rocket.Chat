@@ -1,11 +1,11 @@
 import type { BadgeProps } from '@rocket.chat/fuselage';
 import { HeaderToolboxAction, HeaderToolboxActionBadge } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import type { LazyExoticComponent, FC } from 'react';
 import React, { lazy, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useRoomSubscription } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const getVariant = (tunreadUser: number, tunreadGroup: number): BadgeProps['variant'] => {
 	if (tunreadUser > 0) {
@@ -19,9 +19,9 @@ const getVariant = (tunreadUser: number, tunreadGroup: number): BadgeProps['vari
 	return 'primary';
 };
 
-const Threads = lazy(() => import('../../views/room/contextualBar/Threads')) as LazyExoticComponent<FC>;
+const Threads = lazy(() => import('../../views/room/contextualBar/Threads'));
 
-export const useThreadRoomAction = (): ToolboxActionConfig | undefined => {
+export const useThreadRoomAction = () => {
 	const enabled = useSetting('Threads_enabled', false);
 	const subscription = useRoomSubscription();
 
@@ -30,8 +30,9 @@ export const useThreadRoomAction = (): ToolboxActionConfig | undefined => {
 	const tunreadGroup = subscription?.tunreadGroup?.length ?? 0;
 	const unread = tunread > 99 ? '99+' : tunread;
 	const variant = getVariant(tunreadUser, tunreadGroup);
+	const { t } = useTranslation();
 
-	return useMemo(() => {
+	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!enabled) {
 			return undefined;
 		}
@@ -42,13 +43,24 @@ export const useThreadRoomAction = (): ToolboxActionConfig | undefined => {
 			full: true,
 			title: 'Threads',
 			icon: 'thread',
-			template: Threads,
-			renderAction: (props) => (
-				<HeaderToolboxAction key={props.id} {...props}>
+			tabComponent: Threads,
+			order: 2,
+			renderToolboxItem: ({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }) => (
+				<HeaderToolboxAction
+					key={id}
+					className={className}
+					index={index}
+					id={id}
+					icon={icon}
+					title={t(title)}
+					pressed={id === tab?.id}
+					action={action}
+					disabled={disabled}
+					tooltip={tooltip}
+				>
 					{!!unread && <HeaderToolboxActionBadge variant={variant}>{unread}</HeaderToolboxActionBadge>}
 				</HeaderToolboxAction>
 			),
-			order: 2,
 		};
-	}, [enabled, unread, variant]);
+	}, [enabled, t, unread, variant]);
 };

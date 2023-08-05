@@ -1620,7 +1620,7 @@
   "Here_is_your_authentication_code": "Ось ваш код автентифікації:",
   "Hex_Color_Preview": "Hex Color Preview",
   "Hi": "Привіт",
-  "Hi_username": "Привіт {{name}}",
+  "Hi_username": "Привіт [name]",
   "Hidden": "Прихований",
   "Hide": "Сховати",
   "Hide_counter": "Сховати лічильник",

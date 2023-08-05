@@ -17,7 +17,7 @@ export class OmnichannelContacts {
 	}
 
 	get btnNewContact(): Locator {
-		return this.page.locator('button >> text="New Contact"');
+		return this.page.locator('button >> text="New contact"');
 	}
 
 	get inputSearch(): Locator {
