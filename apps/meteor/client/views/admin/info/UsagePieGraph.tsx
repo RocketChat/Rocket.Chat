@@ -91,7 +91,7 @@ const UsageGraph = ({ used = 0, total = 0, label, color, size }: UsageGraphProps
 				</Box>{' '}
 				/ {unlimited ? '∞' : total}
 			</span>
-			<Box is='span' mbs='x4'>
+			<Box is='span' mbs={4}>
 				{label}
 			</Box>
 		</Box>

@@ -101,7 +101,7 @@ const ForwardChatModal = ({
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
-				<Field mbe='x30'>
+				<Field mbe={30}>
 					<Field.Label>{t('Forward_to_department')}</Field.Label>
 					<Field.Row>
 						<PaginatedSelectFiltered
@@ -133,7 +133,7 @@ const ForwardChatModal = ({
 						/>
 					</Field.Row>
 				</Field>
-				<Field marginBlock='x15'>
+				<Field marginBlock={15}>
 					<Field.Label>
 						{t('Leave_a_comment')}{' '}
 						<Box is='span' color='annotation'>

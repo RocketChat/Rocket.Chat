@@ -76,7 +76,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
 				{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
-				<Field marginBlock='x15'>
+				<Field marginBlock={15}>
 					<Field.Label>{t('Email')}*</Field.Label>
 					<Field.Row>
 						<TextInput
@@ -88,7 +88,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 					</Field.Row>
 					<Field.Error>{errors.email?.message}</Field.Error>
 				</Field>
-				<Field marginBlock='x15'>
+				<Field marginBlock={15}>
 					<Field.Label>{t('Subject')}*</Field.Label>
 					<Field.Row>
 						<TextInput

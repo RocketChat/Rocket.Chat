@@ -24,7 +24,7 @@ const AppReleasesItem = ({ release, ...props }: ReleaseItemProps): ReactElement 
 
 	const title = (
 		<Box display='flex' flexDirection='row'>
-			<Box is='h4' fontWeight='700' fontSize='x16' lineHeight='x24' color='default' mie='x24'>
+			<Box is='h4' fontWeight='700' fontSize='x16' lineHeight='x24' color='default' mie={24}>
 				{release.version}
 			</Box>
 			<Box is='p' fontWeight='400' fontSize='x16' lineHeight='x24' color='hint'>

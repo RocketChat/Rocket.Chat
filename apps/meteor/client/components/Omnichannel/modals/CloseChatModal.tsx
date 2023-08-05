@@ -132,7 +132,7 @@ const CloseChatModal = ({
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
 				<Box color='annotation'>{t('Close_room_description')}</Box>
-				<Field marginBlock='x15'>
+				<Field marginBlock={15}>
 					<Field.Label required={commentRequired}>{t('Comment')}</Field.Label>
 					<Field.Row>
 						<TextInput
@@ -157,10 +157,10 @@ const CloseChatModal = ({
 					<>
 						<Field>
 							<Divider />
-							<Field.Label marginBlockStart='x8'>{t('Chat_transcript')}</Field.Label>
+							<Field.Label marginBlockStart={8}>{t('Chat_transcript')}</Field.Label>
 						</Field>
 						{canSendTranscriptPDF && (
-							<Field marginBlockStart='x10'>
+							<Field marginBlockStart={10}>
 								<Field.Row>
 									<CheckBox id='transcript-pdf' {...register('transcriptPDF', { value: userTranscriptPDF })} />
 									<Field.Label htmlFor='transcript-pdf' color='default' fontScale='c1'>
@@ -171,7 +171,7 @@ const CloseChatModal = ({
 						)}
 						{canSendTranscriptEmail && (
 							<>
-								<Field marginBlockStart='x10'>
+								<Field marginBlockStart={10}>
 									<Field.Row>
 										<CheckBox id='transcript-email' {...register('transcriptEmail', { value: userTranscriptEmail })} />
 										<Field.Label htmlFor='transcript-email' color='default' fontScale='c1'>
@@ -181,13 +181,13 @@ const CloseChatModal = ({
 								</Field>
 								{transcriptEmail && (
 									<>
-										<Field marginBlockStart='x14'>
+										<Field marginBlockStart={14}>
 											<Field.Label required>{t('Contact_email')}</Field.Label>
 											<Field.Row>
 												<EmailInput value={visitorEmail} required disabled flexGrow={1} />
 											</Field.Row>
 										</Field>
-										<Field marginBlockStart='x12'>
+										<Field marginBlockStart={12}>
 											<Field.Label required>{t('Subject')}</Field.Label>
 											<Field.Row>
 												<TextInput
@@ -208,7 +208,7 @@ const CloseChatModal = ({
 								)}
 							</>
 						)}
-						<Field marginBlockStart='x16'>
+						<Field marginBlockStart={16}>
 							<Field.Label color='annotation' fontScale='c1'>
 								{canSendTranscriptPDF && canSendTranscriptEmail
 									? t('These_options_affect_this_conversation_only_To_set_default_selections_go_to_My_Account_Omnichannel')
