@@ -63,25 +63,22 @@ const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 		}
 	});
 
-	const handleResetButtonClick = (): void => {
-		reset();
-	};
-
 	return (
 		<Page>
-			<Page.Header title={t('Appearance')}>
-				<ButtonGroup align='end'>
-					<Button onClick={handleResetButtonClick}>{t('Reset')}</Button>
-					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
-						{t('Save')}
-					</Button>
-				</ButtonGroup>
-			</Page.Header>
+			<Page.Header title={t('Appearance')}></Page.Header>
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<AppearanceForm values={values} handlers={handlers} />
 				</Box>
 			</Page.ScrollableContentWithShadow>
+			<Page.Footer isDirty={hasUnsavedChanges}>
+				<ButtonGroup>
+					<Button onClick={() => reset()}>{t('Cancel')}</Button>
+					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
+						{t('Save_changes')}
+					</Button>
+				</ButtonGroup>
+			</Page.Footer>
 		</Page>
 	);
 };

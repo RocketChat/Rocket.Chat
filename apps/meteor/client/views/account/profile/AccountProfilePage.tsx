@@ -246,16 +246,7 @@ const AccountProfilePage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Profile')}>
-				<ButtonGroup>
-					<Button disabled={!hasUnsavedChanges} onClick={reset}>
-						{t('Reset')}
-					</Button>
-					<Button data-qa='AccountProfilePageSaveButton' primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
-						{t('Save_changes')}
-					</Button>
-				</ButtonGroup>
-			</Page.Header>
+			<Page.Header title={t('Profile')} />
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='600px' w='full' alignSelf='center'>
 					<AccountProfileForm values={values} handlers={handlers} user={user} settings={settings} onSaveStateChange={setCanSave} />
@@ -271,6 +262,16 @@ const AccountProfilePage = (): ReactElement => {
 					</ButtonGroup>
 				</Box>
 			</Page.ScrollableContentWithShadow>
+			<Page.Footer isDirty={hasUnsavedChanges}>
+				<ButtonGroup>
+					<Button disabled={!hasUnsavedChanges} onClick={reset}>
+						{t('Cancel')}
+					</Button>
+					<Button data-qa='AccountProfilePageSaveButton' primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
+						{t('Save_changes')}
+					</Button>
+				</ButtonGroup>
+			</Page.Footer>
 		</Page>
 	);
 };

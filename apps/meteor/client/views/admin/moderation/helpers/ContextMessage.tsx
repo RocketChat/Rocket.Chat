@@ -7,7 +7,7 @@ import React from 'react';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import Attachments from '../../../../components/message/content/Attachments';
-import UiKitSurface from '../../../../components/message/content/UiKitSurface';
+import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
@@ -20,11 +20,13 @@ import ReportReasonCollapsible from './ReportReasonCollapsible';
 const ContextMessage = ({
 	message,
 	room,
+	deleted,
 	onRedirect,
 	onChange,
 }: {
 	message: any;
 	room: IModerationReport['room'];
+	deleted: boolean;
 	onRedirect: (id: IMessage['_id']) => void;
 	onChange: () => void;
 }): JSX.Element => {
@@ -73,7 +75,7 @@ const ContextMessage = ({
 						) : (
 							message.msg
 						)}
-						{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
+						{message.blocks && <UiKitMessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 						{message.attachments && <Attachments attachments={message.attachments} />}
 					</Message.Body>
 					<ReportReasonCollapsible>
@@ -88,7 +90,7 @@ const ContextMessage = ({
 							onClick={() => dismissMsgReport.action()}
 						/>
 						<MessageToolboxItem icon='arrow-forward' title={t('Moderation_Go_to_message')} onClick={() => onRedirect(message._id)} />
-						<MessageToolboxItem icon='trash' title={t('Moderation_Delete_message')} onClick={() => deleteMessage()} />
+						<MessageToolboxItem disabled={deleted} icon='trash' title={t('Moderation_Delete_message')} onClick={() => deleteMessage()} />
 					</Message.Toolbox>
 				</MessageToolboxWrapper>
 			</Message>
