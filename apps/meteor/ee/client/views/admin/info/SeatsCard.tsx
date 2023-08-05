@@ -38,7 +38,7 @@ const SeatsCard = ({ seatsCap }: SeatsCardProps): ReactElement => {
 								label={<Box color={color}>{t('Seats_Available', { seatsLeft })}</Box>}
 								used={seatsCap.activeUsers}
 								total={seatsCap.maxActiveUsers}
-								size={140}
+								size='x140'
 								color={color}
 							/>
 						)}
