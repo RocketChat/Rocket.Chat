@@ -10,24 +10,20 @@ import useResetAvatarAction from './hooks/useResetAvatarAction';
 
 const MessageContextFooter: FC<{ userId: string; deleted: boolean }> = ({ userId, deleted }) => {
 	const t = useTranslation();
+	const { action: dismissReportAction } = useDismissUserAction(userId);
 	const { action } = useDeleteMessagesAction(userId);
 
 	return (
-		<ButtonGroup flexGrow={1}>
-			<Button
-				icon='trash'
-				flexGrow={1}
-				onClick={action}
-				title={t('delete-message')}
-				aria-label={t('Moderation_Delete_all_messages')}
-				danger
-			>
+		<ButtonGroup width='full' stretch>
+			<Button onClick={dismissReportAction} title={t('Moderation_Dismiss_all_reports')} aria-label={t('Moderation_Dismiss_reports')}>
+				{t('Moderation_Dismiss_all_reports')}
+			</Button>
+			<Button onClick={action} title={t('delete-message')} aria-label={t('Moderation_Delete_all_messages')} secondary danger>
 				{t('Moderation_Delete_all_messages')}
 			</Button>
 
 			<Menu
 				options={{
-					approve: useDismissUserAction(userId),
 					deactivate: { ...useDeactivateUserAction(userId), ...(deleted && { disabled: true }) },
 					resetAvatar: { ...useResetAvatarAction(userId), ...(deleted && { disabled: true }) },
 				}}
