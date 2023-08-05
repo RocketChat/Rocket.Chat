@@ -90,3 +90,16 @@ export async function bumpFileVersions(cwd: string, oldVersion: string, newVersi
 		}),
 	);
 }
+
+export async function createBumpFile(cwd: string, pkgName: string) {
+	const filePath = path.join(cwd, '.changeset', `bump-patch-${Date.now()}.md`);
+
+	const data = `---
+'${pkgName}': patch
+---
+
+Bump ${pkgName} version.
+`;
+
+	await writeFile(filePath, data, 'utf8');
+}

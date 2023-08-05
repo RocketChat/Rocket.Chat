@@ -37,6 +37,7 @@ export class LeaveMessageContainer extends Component {
 	render = (props) => <LeaveMessage {...props} onSubmit={this.handleSubmit} />;
 }
 
+/** @type {function({ ref?: any; path?: string }): any} */
 export const LeaveMessageConnector = ({ ref, ...props }) => (
 	<Consumer>
 		{({
