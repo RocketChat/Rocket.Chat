@@ -18,7 +18,7 @@ type UsageGraphProps = {
 	total: number;
 	label: ReactNode;
 	color?: string;
-	size: `x${number}`;
+	size: number;
 };
 
 type GraphData = Array<{
@@ -60,7 +60,7 @@ const UsageGraph = ({ used = 0, total = 0, label, color, size }: UsageGraphProps
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='center'>
-			<Box size={size}>
+			<Box size={`x${size}`}>
 				<Box position='relative'>
 					<Pie
 						data={parsedData}
