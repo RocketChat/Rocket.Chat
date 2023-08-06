@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Icon, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Scrollable } from '@rocket.chat/fuselage';
 import { useOutsideClick, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useContext, useRef } from 'react';
 
@@ -17,7 +17,11 @@ const CreateNewScreenContainer = () => {
     dispatch,
   } = useContext(context);
   const ref = useRef(null);
-  useOutsideClick([ref], () => dispatch(openCreateNewScreenAction(false)));
+
+  const onClosehandler = () => {
+    dispatch(openCreateNewScreenAction(false));
+  };
+  useOutsideClick([ref], onClosehandler);
 
   const scrollRef = useHorizontalScroll();
 
@@ -48,41 +52,55 @@ const CreateNewScreenContainer = () => {
           transition: var(--animation-default);
         `}
       >
-        <Box
-          width="max-content"
-          display="flex"
+        <Button
+          position="fixed"
+          square
+          tiny
           className={css`
-            gap: 50px;
-            align-items: center;
+            top: 20px;
+            right: 20px;
           `}
+          onClick={onClosehandler}
         >
-          {projects[activeProject]?.screens
-            .map((id) => screens[id])
-            .map((screen, i) => (
-              <ScreenThumbnail
-                screen={screen}
-                key={i}
-                disableDelete={
-                  projects[activeProject]?.screens.map((id) => screens[id])
-                    .length <= 1
-                }
-              />
-            ))}
-          <Icon
-            onClick={createNewScreenhandler}
-            size="60px"
-            height={'60px'}
-            name={'plus'}
+          <Icon name="cross" size="x15" />
+        </Button>
+        {openCreateNewScreen && (
+          <Box
+            width="max-content"
+            display="flex"
             className={css`
-              cursor: pointer;
-              transition: var(--animation-default);
-              &:hover {
-                scale: 1.1;
-                transition: var(--animation-default);
-              }
+              gap: 50px;
+              align-items: center;
             `}
-          />
-        </Box>
+          >
+            {projects[activeProject]?.screens
+              .map((id) => screens[id])
+              .map((screen, i) => (
+                <ScreenThumbnail
+                  screen={screen}
+                  key={i}
+                  disableDelete={
+                    projects[activeProject]?.screens.map((id) => screens[id])
+                      .length <= 1
+                  }
+                />
+              ))}
+            <Icon
+              onClick={createNewScreenhandler}
+              size="60px"
+              height={'60px'}
+              name={'plus'}
+              className={css`
+                cursor: pointer;
+                transition: var(--animation-default);
+                &:hover {
+                  scale: 1.1;
+                  transition: var(--animation-default);
+                }
+              `}
+            />
+          </Box>
+        )}
       </Box>
     </Scrollable>
   );

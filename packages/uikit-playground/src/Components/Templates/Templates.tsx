@@ -33,6 +33,7 @@ const Templates: FC = () => {
           >
             <Button
               position="fixed"
+              square
               className={css`
                 top: 80px;
                 right: 40px;

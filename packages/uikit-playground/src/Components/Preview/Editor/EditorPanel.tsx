@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import { context, editorTabsToggleAction } from '../../../Context';
 import ToggleTabs from '../../ToggleTabs';
@@ -10,20 +10,30 @@ import ActionPreviewEditor from './ActionPreviewEditor';
 import FlowDiagram from '../../../Pages/FlowDiagram';
 import PrototypeContainer from '../../PtototypeContainer/PrototypeContainer';
 
-const EditorPanel: FC = () => {
-  enum TabsItem {
-    ActionBlock,
-    ActionPreview,
-    FlowDiagram,
-    Prototype,
-  }
+enum TabsItem {
+  ActionBlock,
+  ActionPreview,
+  FlowDiagram,
+  Prototype,
+}
 
-  const tabsItem = {
-    [TabsItem.ActionBlock]: 'Action Block',
-    [TabsItem.ActionPreview]: 'Action Preview',
-    [TabsItem.FlowDiagram]: 'Flow Diagram',
-    [TabsItem.Prototype]: 'Prototype',
-  };
+const tabsItem = {
+  [TabsItem.ActionBlock]: {
+    name: 'Action Block',
+    Container: ActionBlockEditor,
+  },
+  [TabsItem.ActionPreview]: {
+    name: 'Action Preview',
+    Container: ActionPreviewEditor,
+  },
+  [TabsItem.FlowDiagram]: {
+    name: 'Flow Diagram',
+    Container: FlowDiagram,
+  },
+  [TabsItem.Prototype]: { name: 'Prototype', Container: PrototypeContainer },
+} as const;
+
+const EditorPanel: FC = () => {
   const {
     state: { editorTabsToggle },
     dispatch,
@@ -33,30 +43,11 @@ const EditorPanel: FC = () => {
     dispatch(editorTabsToggleAction(index));
   };
 
-  const tabChangeStyle = () => {
-    switch (editorTabsToggle) {
-      case TabsItem.ActionBlock:
-        return css`
-          transition: 0.5s ease;
-          left: 0;
-        `;
-      case TabsItem.ActionPreview:
-        return css`
-          transition: 0.5s ease;
-          left: -100%;
-        `;
-
-      case TabsItem.FlowDiagram:
-        return css`
-          transition: 0.5s ease;
-          left: -200%;
-        `;
-      case TabsItem.Prototype:
-        return css`
-          transition: 0.5s ease;
-          left: -300%;
-        `;
-    }
+  const tabChangeStyle = (index: number) => {
+    return css`
+      transition: 0.5s ease;
+      left: calc(-100% * ${index});
+    `;
   };
 
   return (
@@ -73,7 +64,7 @@ const EditorPanel: FC = () => {
         ]}
       >
         <ToggleTabs
-          tabsItem={Object.values(tabsItem)}
+          tabsItem={Object.values(tabsItem).map((item) => item.name)}
           onChange={toggleTabsHandler}
           selectedTab={editorTabsToggle}
         />
@@ -89,12 +80,17 @@ const EditorPanel: FC = () => {
             height={'100%'}
             display={'flex'}
             borderBlockStart="var(--default-border)"
-            className={tabChangeStyle()}
+            className={tabChangeStyle(editorTabsToggle)}
           >
-            <ActionBlockEditor />
-            <ActionPreviewEditor />
-            <FlowDiagram />
-            <PrototypeContainer />
+            {Object.values(tabsItem).map(({ Container }, index) => (
+              <>
+                {index === editorTabsToggle ? (
+                  <Container />
+                ) : (
+                  <Box w="100%" h="100%" />
+                )}
+              </>
+            ))}
           </Box>
         </Box>
       </Box>

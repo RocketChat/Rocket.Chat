@@ -19,7 +19,7 @@ import RightNavBtn from './RightNavBtn';
 
 const NabBar: FC = () => {
   const {
-    state: { isMobile, activeProject, screens, activeScreen },
+    state: { isMobile, screens, activeScreen },
     dispatch,
   } = useContext(context);
   const toast = useToastBarDispatch();
@@ -39,9 +39,27 @@ const NabBar: FC = () => {
           user-select: none;
         `}
       >
-        <Button onClick={() => navigate(routes.home)} mis="20px" small square>
+        <Button
+          primary
+          onClick={() => navigate(routes.home)}
+          mis="20px"
+          small
+          square
+        >
           <Icon name="home" size="x24" />
         </Button>
+        {!isMobile && (
+          <Button
+            mis="12px"
+            small
+            success
+            onClick={() => {
+              dispatch(openCreateNewScreenAction(true));
+            }}
+          >
+            Screens
+          </Button>
+        )}
         <Box
           flexGrow={1}
           minWidth="15px"
@@ -57,23 +75,24 @@ const NabBar: FC = () => {
                 `}
               >
                 <Button
+                  secondary
+                  success
                   small
                   onClick={() => {
-                    navigate(`/${activeProject}/${routes.flow}`);
+                    navigator.clipboard.writeText(
+                      JSON.stringify(screens[activeScreen]?.payload)
+                    );
+                    toast({
+                      type: 'success',
+                      message: 'Payload Copied',
+                    });
                   }}
                 >
-                  Flow
+                  Copy Payload
                 </Button>
                 <Button
                   small
-                  onClick={() => {
-                    dispatch(openCreateNewScreenAction(true));
-                  }}
-                >
-                  Screens
-                </Button>
-                <Button
-                  small
+                  danger
                   onClick={() => {
                     dispatch(
                       updatePayloadAction({
@@ -88,20 +107,6 @@ const NabBar: FC = () => {
                   }}
                 >
                   Clear Blocks
-                </Button>
-                <Button
-                  small
-                  onClick={() => {
-                    navigator.clipboard.writeText(
-                      JSON.stringify(screens[activeScreen]?.payload)
-                    );
-                    toast({
-                      type: 'success',
-                      message: 'Payload Copied',
-                    });
-                  }}
-                >
-                  Copy Payload
                 </Button>
               </ButtonGroup>
             )}

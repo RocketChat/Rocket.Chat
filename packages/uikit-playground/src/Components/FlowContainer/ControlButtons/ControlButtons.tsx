@@ -1,25 +1,7 @@
-import { Icon } from '@rocket.chat/fuselage';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Controls, ControlButton } from 'reactflow';
-import routes from '../../../Routes/Routes';
+import { Controls } from 'reactflow';
 
 const ControlButtons = () => {
-  const navigate = useNavigate();
-  const { projectId } = useParams();
-  return (
-    <Controls>
-      <ControlButton
-        onClick={() => navigate(`/${projectId}/${routes.project}`)}
-      >
-        <Icon name="home" size={'x16'} />
-      </ControlButton>
-      <ControlButton
-        onClick={() => navigate(`/${projectId}/${routes.prototype}`)}
-      >
-        <Icon name="play-unfilled" size={'x16'} />
-      </ControlButton>
-    </Controls>
-  );
+  return <Controls></Controls>;
 };
 
 export default ControlButtons;

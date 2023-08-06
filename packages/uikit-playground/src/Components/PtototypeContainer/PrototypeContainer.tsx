@@ -24,13 +24,7 @@ const PrototypeContainer = () => {
 
   return (
     <Scrollable vertical>
-      <Box
-        w="100%"
-        h="100%"
-        paddingBlock={'40px'}
-        display="flex"
-        justifyContent="center"
-      >
+      <Box w="100%" h="100%">
         <PrototypeRender
           surface={surface}
           payload={payload}

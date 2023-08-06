@@ -93,7 +93,7 @@ const reducer = (state: initialStateType, action: IAction) => {
     case ActionTypes.IsTablet:
       return { ...state, isTablet: action.payload };
     case ActionTypes.SidebarToggle:
-      return { ...state, sidebarToggle: action.payload };
+      return { ...state, sideBarToggle: action.payload };
     case ActionTypes.PreviewToggle:
       return { ...state, previewTabsToggle: action.payload };
     case ActionTypes.EditorToggle:
