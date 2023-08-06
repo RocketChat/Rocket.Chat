@@ -60,7 +60,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 						</Box>
 						<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='start' alignItems='center'>
 							{categories?.map((current) => (
-								<Chip key={current} textTransform='uppercase' mi='4px' mb='4px'>
+								<Chip key={current} textTransform='uppercase' m={4}>
 									{current}
 								</Chip>
 							))}
