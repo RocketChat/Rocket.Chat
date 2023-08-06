@@ -13,13 +13,15 @@ import AppDetailsAPIs from './AppDetailsAPIs';
 const normalizeUrl = (url: string): string => {
 	const parsedUrl = parse(url);
 
-	if (parsedUrl[0].type === 'PARAGRAPH') {
-		if (parsedUrl[0].value[0].type === 'LINK') {
-			return parsedUrl[0].value[0].value.src.value;
-		}
+	if (parsedUrl[0].type !== 'PARAGRAPH') {
+		return url;
 	}
-
-	return url;
+	
+	if (parsedUrl[0].value[0].type !== 'LINK') {
+		return url;
+	}
+	
+	return parsedUrl[0].value[0].value.src.value;
 };
 
 const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
