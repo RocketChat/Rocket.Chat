@@ -7,6 +7,7 @@ import { useEffect, useContext } from 'react';
 import { updatePayloadAction, context } from '../../Context';
 import useCodeMirror from '../../hooks/useCodeMirror';
 import codePrettier from '../../utils/codePrettier';
+import intendCode from '../../utils/intendCode';
 
 type CodeMirrorProps = {
   extensions?: Extension[];
@@ -20,7 +21,7 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
 
   const { editor, changes, setValue } = useCodeMirror(
     extensions,
-    JSON.stringify(screens[activeScreen]?.payload, undefined, 4)
+    intendCode(screens[activeScreen]?.payload)
   );
   const debounceValue = useDebouncedValue(changes?.value, 1500);
 
@@ -39,7 +40,7 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
   useEffect(() => {
     if (!changes?.isDispatch) {
       try {
-        const prettierCode = codePrettier(changes.value, changes.cursor);
+        const prettierCode = codePrettier(changes.value, changes.cursor || 0);
         setValue(prettierCode.formatted, {
           cursor: prettierCode.cursorOffset,
         });
@@ -52,16 +53,13 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
 
   useEffect(() => {
     if (!screens[activeScreen]?.changedByEditor) {
-      setValue(
-        JSON.stringify(screens[activeScreen]?.payload, undefined, 4),
-        {}
-      );
+      setValue(intendCode(screens[activeScreen]?.payload), {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screens[activeScreen]?.payload, activeScreen]);
 
   useEffect(() => {
-    setValue(JSON.stringify(screens[activeScreen]?.payload, undefined, 4), {});
+    setValue(intendCode(screens[activeScreen]?.payload), {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeScreen]);
 

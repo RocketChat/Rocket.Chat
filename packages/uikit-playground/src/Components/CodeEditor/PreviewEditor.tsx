@@ -4,6 +4,7 @@ import { useEffect, useContext } from 'react';
 
 import { context } from '../../Context';
 import useCodeMirror from '../../hooks/useCodeMirror';
+import intendCode from '../../utils/intendCode';
 
 type CodeMirrorProps = {
   extensions?: Extension[];
@@ -13,13 +14,13 @@ const PreviewEditor = ({ extensions }: CodeMirrorProps) => {
   const {
     state: { screens, activeScreen },
   } = useContext(context);
-  const { editor, setValue } = useCodeMirror(extensions, `{}`);
+  const { editor, setValue } = useCodeMirror(
+    extensions,
+    intendCode(screens[activeScreen]?.actionPreview)
+  );
 
   useEffect(() => {
-    setValue(
-      JSON.stringify(screens[activeScreen]?.actionPreview, undefined, 4),
-      {}
-    );
+    setValue(intendCode(screens[activeScreen]?.actionPreview), {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screens[activeScreen]?.actionPreview]);
 

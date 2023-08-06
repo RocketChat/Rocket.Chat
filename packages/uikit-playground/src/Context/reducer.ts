@@ -119,8 +119,10 @@ const reducer = (state: initialStateType, action: IAction) => {
       );
       return { ...state };
     }
-    case ActionTypes.ActionPreview:
-      return { ...state, actionPreview: action.payload };
+    case ActionTypes.ActionPreview: {
+      state.screens[activeScreen].actionPreview = action.payload;
+      return { ...state };
+    }
     case ActionTypes.User:
       return { ...state, user: action.payload };
     case ActionTypes.OpenCreateNewScreen:
