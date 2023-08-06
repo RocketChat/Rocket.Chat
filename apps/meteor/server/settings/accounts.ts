@@ -390,6 +390,7 @@ export const createAccountSettings = () =>
 			});
 			await this.add('Accounts_Registration_Users_Default_Roles', 'user', {
 				type: 'string',
+				public: true,
 			});
 			await this.add('Accounts_PasswordReset', true, {
 				type: 'boolean',

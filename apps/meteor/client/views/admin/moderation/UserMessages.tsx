@@ -1,12 +1,11 @@
-import { Box, Callout, Message } from '@rocket.chat/fuselage';
+import { Box, Callout, Message, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericNoResults from '../../../components/GenericNoResults';
-import { useUserDisplayName } from '../../../hooks/useUserDisplayName';
 import MessageContextFooter from './MessageContextFooter';
 import ContextMessage from './helpers/ContextMessage';
 
@@ -14,7 +13,7 @@ import ContextMessage from './helpers/ContextMessage';
 const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid: string) => void }): JSX.Element => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const moderationRoute = useRoute('moderation-console');
+	const moderationRoute = useRouter();
 	const getUserMessages = useEndpoint('GET', '/v1/moderation.user.reportedMessages');
 
 	const {
@@ -22,6 +21,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 		refetch: reloadUserMessages,
 		isLoading: isLoadingUserMessages,
 		isSuccess: isSuccessUserMessages,
+		isError,
 	} = useQuery(
 		['moderation.userMessages', { userId }],
 		async () => {
@@ -35,39 +35,15 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 		},
 	);
 
-	// opens up the 'reports' tab when the user clicks on a user in the 'users' tab
-	const handleClick = useMutableCallback((id): void => {
-		moderationRoute.push({
-			context: 'reports',
-			id,
-		});
-	});
-
 	const handleChange = useMutableCallback(() => {
 		reloadUserMessages();
 	});
 
-	const { username, name } = useMemo(() => {
-		return (
-			report?.user ??
-			report?.messages?.[0]?.message?.u ?? {
-				username: t('Deleted_user'),
-				name: t('Deleted_user'),
-			}
-		);
-	}, [report?.messages, report?.user, t]);
-
-	const displayName =
-		useUserDisplayName({
-			name,
-			username,
-		}) || userId;
-
 	return (
 		<>
 			<ContextualbarHeader>
-				<ContextualbarTitle>{t('Moderation_Message_context_header', { displayName })}</ContextualbarTitle>
-				<ContextualbarClose onClick={() => moderationRoute.push({})} />
+				<ContextualbarTitle>{t('Moderation_Message_context_header')}</ContextualbarTitle>
+				<ContextualbarClose onClick={() => moderationRoute.navigate('/admin/moderation', { replace: true })} />
 			</ContextualbarHeader>
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
 				{isLoadingUserMessages && <Message>{t('Loading')}</Message>}
@@ -95,7 +71,6 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 							<ContextMessage
 								message={message.message}
 								room={message.room}
-								handleClick={handleClick}
 								onRedirect={onRedirect}
 								onChange={handleChange}
 								deleted={!report.user}
@@ -103,6 +78,15 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 						</Box>
 					))}
 				{isSuccessUserMessages && report.messages.length === 0 && <GenericNoResults />}
+				{isError && (
+					<Box display='flex' flexDirection='column' alignItems='center' pb='x20' color='default'>
+						<StatesIcon name='warning' variation='danger' />
+						<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+						<StatesActions>
+							<StatesAction onClick={handleChange}>{t('Reload_page')}</StatesAction>
+						</StatesActions>
+					</Box>
+				)}
 			</Box>
 			<ContextualbarFooter display='flex'>
 				{isSuccessUserMessages && report.messages.length > 0 && <MessageContextFooter userId={userId} deleted={!report.user} />}

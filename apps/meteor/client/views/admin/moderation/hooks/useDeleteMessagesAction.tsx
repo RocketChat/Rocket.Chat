@@ -18,7 +18,7 @@ const useDeleteMessagesAction = (userId: string) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Deleted') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_Messages_deleted') });
 		},
 	});
 

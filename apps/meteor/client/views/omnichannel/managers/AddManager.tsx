@@ -1,6 +1,6 @@
 import { Button, Box, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 
@@ -10,19 +10,19 @@ import { useEndpointAction } from '../../../hooks/useEndpointAction';
 const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
 	const t = useTranslation();
 	const [username, setUsername] = useState('');
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const saveAction = useEndpointAction('POST', '/v1/livechat/users/manager');
 
 	const handleSave = useMutableCallback(async () => {
-		if (!username) {
-			return;
+		try {
+			await saveAction({ username });
+			dispatchToastMessage({ type: 'success', message: t('Manager_added') });
+			reload();
+			setUsername('');
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
-		const result = await saveAction({ username });
-		if (!result?.success) {
-			return;
-		}
-		reload();
-		setUsername('');
 	});
 
 	const handleChange = (value: unknown): void => {
@@ -38,7 +38,7 @@ const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
 				<Field.Row>
 					<UserAutoComplete value={username} onChange={handleChange} />
 					<Button disabled={!username} onClick={handleSave} mis='x8' primary>
-						{t('Add')}
+						{t('Add_manager')}
 					</Button>
 				</Field.Row>
 			</Field>
