@@ -24,7 +24,7 @@ const AppStatusPriceDisplay: FC<AppStatusPriceDisplayProps> = ({ purchaseType, p
 	);
 
 	return (
-		<Margins inline='4px'>
+		<Margins inline={4}>
 			<Tag>
 				{showType && <Box color='default'>{t(type as TranslationKey)}</Box>}
 				<Box>{!showType && type === 'Free' ? t(type) : formattedPrice}</Box>
