@@ -7154,6 +7154,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/apps-engine@npm:1.41.0-alpha.295":
+  version: 1.41.0-alpha.295
+  resolution: "@rocket.chat/apps-engine@npm:1.41.0-alpha.295"
+  dependencies:
+    adm-zip: ^0.5.9
+    cryptiles: ^4.1.3
+    jose: ^4.11.1
+    lodash.clonedeep: ^4.5.0
+    semver: ^5.7.1
+    stack-trace: 0.0.10
+    uuid: ^3.4.0
+    vm2: ^3.9.19
+  peerDependencies:
+    "@rocket.chat/ui-kit": "*"
+  checksum: 14a7deb978460c5e615fa0103001ebee04b9db0823b4c8bbe1447ee94195233e8cfbb09ef42405249a978a2418f38ce2f55a546138735a69e2ecafc36a866ea7
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/authorization-service@workspace:ee/apps/authorization-service":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/authorization-service@workspace:ee/apps/authorization-service"
@@ -7277,7 +7295,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/css-in-js@npm:^0.31.24, @rocket.chat/css-in-js@npm:~0.31.23-dev.174":
+"@rocket.chat/css-in-js@npm:^0.31.24, @rocket.chat/css-in-js@npm:~0.31.23-dev.174, @rocket.chat/css-in-js@npm:~0.31.23-dev.177":
   version: 0.31.24
   resolution: "@rocket.chat/css-in-js@npm:0.31.24"
   dependencies:
@@ -7303,7 +7321,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-supports@npm:^0.31.24, @rocket.chat/css-supports@npm:~0.31.23-dev.174":
+"@rocket.chat/css-supports@npm:^0.31.24, @rocket.chat/css-supports@npm:~0.31.23-dev.174, @rocket.chat/css-supports@npm:~0.31.23-dev.177":
   version: 0.31.24
   resolution: "@rocket.chat/css-supports@npm:0.31.24"
   dependencies:
@@ -7515,10 +7533,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-tokens@npm:next, @rocket.chat/fuselage-tokens@npm:~0.32.0-dev.350":
+"@rocket.chat/fuselage-tokens@npm:next":
   version: 0.32.0-dev.350
   resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.350"
   checksum: 2ebc0c892088377eacc6140657cc5859e6af3742a8c914922a1d95bed9f9f53dd6215f0f4abc854e74b51ff42e4d30b192b5698b9608f6828d32de7460733006
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.353":
+  version: 0.32.0-dev.353
+  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.353"
+  checksum: bb4afc1342e6d9c30f2f25c82de31e9f8f03dba2a81967ca634747b1fddd4b411743c202a72512b713e96205c16bf6e4192d258db75990171001e10ceeea1e7a
   languageName: node
   linkType: hard
 
@@ -7578,14 +7603,14 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/fuselage@npm:next":
-  version: 0.32.0-dev.400
-  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.400"
+  version: 0.32.0-dev.403
+  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.403"
   dependencies:
-    "@rocket.chat/css-in-js": ~0.31.23-dev.174
-    "@rocket.chat/css-supports": ~0.31.23-dev.174
-    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.350
-    "@rocket.chat/memo": ~0.31.23-dev.174
-    "@rocket.chat/styled": ~0.31.23-dev.174
+    "@rocket.chat/css-in-js": ~0.31.23-dev.177
+    "@rocket.chat/css-supports": ~0.31.23-dev.177
+    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.353
+    "@rocket.chat/memo": ~0.31.23-dev.177
+    "@rocket.chat/styled": ~0.31.23-dev.177
     invariant: ^2.2.4
     react-aria: ~3.23.1
     react-keyed-flatten-children: ^1.3.0
@@ -7597,7 +7622,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: 1a9fd0f653ba43da3c13091682b9f4e3ff74ecd12fe30b0ee01a2d3e583a84fb736a4c0c9cc505d19ab96dff3a96c03525446badeeca99fdb52f86fa0424f92d
+  checksum: dc21d8c28031e6fbf623def836b84d636cfc778d8a585eb2dca7af05e1b6fb8cb3aeed251f4cc0571bfa8e98e0b6c379d7b6857e5dce424b9e85ccb25a44343c
   languageName: node
   linkType: hard
 
@@ -7730,6 +7755,7 @@ __metadata:
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/logo": next
     "@rocket.chat/message-parser": next
+    "@rocket.chat/random": "workspace:~"
     "@rocket.chat/sdk": ^1.0.0-alpha.42
     "@rocket.chat/ui-kit": next
     "@storybook/addon-essentials": ~6.5.16
@@ -7737,13 +7763,16 @@ __metadata:
     "@storybook/preact": ~6.5.16
     "@storybook/theming": ~6.5.16
     "@types/crypto-js": ~4.1.1
+    "@types/mini-css-extract-plugin": ~1.4.3
+    "@types/terser-webpack-plugin": ~4.2.2
+    "@types/webpack": ~4.41.33
+    "@types/webpack-dev-server": ~4.7.2
     "@types/whatwg-fetch": ~0.0.33
     "@typescript-eslint/eslint-plugin": ~5.60.1
     "@typescript-eslint/parser": ~5.60.1
     autoprefixer: ^9.8.8
     babel-loader: ^8.3.0
     cross-env: ^7.0.3
-    crypto-js: ^4.1.1
     css-loader: ^4.3.0
     css-vars-ponyfill: ^2.4.8
     cssnano: ^4.1.11
@@ -7765,7 +7794,7 @@ __metadata:
     lorem-ipsum: ^2.0.8
     markdown-it: ^11.0.1
     mem: ^6.1.1
-    mini-css-extract-plugin: ^0.11.3
+    mini-css-extract-plugin: ~1.6.2
     mitt: ^2.1.0
     npm-run-all: ^4.1.5
     postcss-css-variables: ^0.17.0
@@ -7789,6 +7818,7 @@ __metadata:
     stylelint: ^14.9.1
     stylelint-order: ^5.0.0
     svg-loader: ^0.0.2
+    terser-webpack-plugin: ~4.2.3
     typescript: ~5.1.6
     url-loader: ^4.1.1
     webpack: ~4.46.0
@@ -7830,7 +7860,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/memo@npm:^0.31.24, @rocket.chat/memo@npm:~0.31.23-dev.174":
+"@rocket.chat/memo@npm:^0.31.24, @rocket.chat/memo@npm:~0.31.23-dev.174, @rocket.chat/memo@npm:~0.31.23-dev.177":
   version: 0.31.24
   resolution: "@rocket.chat/memo@npm:0.31.24"
   checksum: f63baeac39f50f67ced26c0770334b7e6fa35c81e227b813b7e49015bcd7f102aafff3b6a1fef3e2720ee483e729882dd5734ea339dcfdc30e6f193681a02487
@@ -7881,7 +7911,7 @@ __metadata:
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.40.0
+    "@rocket.chat/apps-engine": 1.41.0-alpha.295
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
@@ -8510,7 +8540,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/random@workspace:^, @rocket.chat/random@workspace:packages/random":
+"@rocket.chat/random@workspace:^, @rocket.chat/random@workspace:packages/random, @rocket.chat/random@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/random@workspace:packages/random"
   dependencies:
@@ -8663,7 +8693,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/styled@npm:~0.31.23-dev.174":
+"@rocket.chat/styled@npm:~0.31.23-dev.174, @rocket.chat/styled@npm:~0.31.23-dev.177":
   version: 0.31.24
   resolution: "@rocket.chat/styled@npm:0.31.24"
   dependencies:
@@ -11556,6 +11586,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/mini-css-extract-plugin@npm:~1.4.3":
+  version: 1.4.3
+  resolution: "@types/mini-css-extract-plugin@npm:1.4.3"
+  dependencies:
+    "@types/node": "*"
+    tapable: ^2.2.0
+    webpack: ^5
+  checksum: 809ffb750926c8f66112fcff82e2c4773dd54bde9fadcfee70303b256fbac7d3833d99453044449f49633ce78b1a55bbbbeca9cc1fc86dc446bb77e25ccd5a20
+  languageName: node
+  linkType: hard
+
 "@types/minimatch@npm:*":
   version: 3.0.5
   resolution: "@types/minimatch@npm:3.0.5"
@@ -12091,6 +12132,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/terser-webpack-plugin@npm:~4.2.2":
+  version: 4.2.2
+  resolution: "@types/terser-webpack-plugin@npm:4.2.2"
+  dependencies:
+    "@types/webpack": ^4
+    terser: ^4.6.13
+  checksum: 9e31abd59cacd8d60e3e16b65317b4bba56b66c564c089956b63aee27f0a00367c10f734151ebb4a7f6285ba1c600165a56fa2ba4ec83faa67aec6a5e4eb8e49
+  languageName: node
+  linkType: hard
+
 "@types/testing-library__jest-dom@npm:^5.9.1, @types/testing-library__jest-dom@npm:~5.14.6":
   version: 5.14.6
   resolution: "@types/testing-library__jest-dom@npm:5.14.6"
@@ -12193,6 +12244,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/webpack-dev-server@npm:~4.7.2":
+  version: 4.7.2
+  resolution: "@types/webpack-dev-server@npm:4.7.2"
+  dependencies:
+    webpack-dev-server: "*"
+  checksum: 81b0d368b85f33759a3859c23d09c8a2af47997621c6350120ff80e20e9124568e4a30e15abead36e7992abe4e18ce2137785aa677d2041adfcd7e8fff9b2312
+  languageName: node
+  linkType: hard
+
 "@types/webpack-env@npm:^1.16.0":
   version: 1.16.3
   resolution: "@types/webpack-env@npm:1.16.3"
@@ -12211,9 +12271,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/webpack@npm:^4.41.26, @types/webpack@npm:^4.41.8":
-  version: 4.41.32
-  resolution: "@types/webpack@npm:4.41.32"
+"@types/webpack@npm:^4, @types/webpack@npm:~4.41.33":
+  version: 4.41.33
+  resolution: "@types/webpack@npm:4.41.33"
   dependencies:
     "@types/node": "*"
     "@types/tapable": ^1
@@ -12221,7 +12281,21 @@ __metadata:
     "@types/webpack-sources": "*"
     anymatch: ^3.0.0
     source-map: ^0.6.0
-  checksum: e594a1357cbbc2f7c6ca47785c5a11adb5591a774a69afaeab07cd6f6bff6c6aea2030bd37b32bdd19d0ec2336a346db754e8d8d236ba8effeab542716fb32b7
+  checksum: 5f64818128c94026be0e43e77d687e2d90f0da526a3a7c308c6a0bb12e93a35c9243be427bbf6865f64fd71dc5b32715af9b9da0cd6ae8335081b6db995bad2b
+  languageName: node
+  linkType: hard
+
+"@types/webpack@npm:^4.41.26, @types/webpack@npm:^4.41.8":
+  version: 4.41.33
+  resolution: "@types/webpack@npm:4.41.33"
+  dependencies:
+    "@types/node": "*"
+    "@types/tapable": ^1
+    "@types/uglify-js": "*"
+    "@types/webpack-sources": "*"
+    anymatch: ^3.0.0
+    source-map: ^0.6.0
+  checksum: 5f64818128c94026be0e43e77d687e2d90f0da526a3a7c308c6a0bb12e93a35c9243be427bbf6865f64fd71dc5b32715af9b9da0cd6ae8335081b6db995bad2b
   languageName: node
   linkType: hard
 
@@ -16970,7 +17044,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-js@npm:^4.0.0, crypto-js@npm:^4.1.1":
+"crypto-js@npm:^4.0.0":
   version: 4.1.1
   resolution: "crypto-js@npm:4.1.1"
   checksum: b3747c12ee3a7632fab3b3e171ea50f78b182545f0714f6d3e7e2858385f0f4101a15f2517e033802ce9d12ba50a391575ff4638c9de3dd9b2c4bc47768d5425
@@ -27038,17 +27112,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mini-css-extract-plugin@npm:^0.11.3":
-  version: 0.11.3
-  resolution: "mini-css-extract-plugin@npm:0.11.3"
+"mini-css-extract-plugin@npm:~1.6.2":
+  version: 1.6.2
+  resolution: "mini-css-extract-plugin@npm:1.6.2"
   dependencies:
-    loader-utils: ^1.1.0
-    normalize-url: 1.9.1
-    schema-utils: ^1.0.0
+    loader-utils: ^2.0.0
+    schema-utils: ^3.0.0
     webpack-sources: ^1.1.0
   peerDependencies:
     webpack: ^4.4.0 || ^5.0.0
-  checksum: 14fbdf1338fe0264a2f7f87b3fc640809b7443f6434c6532bdbec1c5ab113502325fec958e9cf0667c3790087dc1e83c02e1f4d7463c10c956b0d6ebe56ea99e
+  checksum: c2c1f3d7e5bc206b5bece0f37b65467ee58e0bb0b61d5e031bb818682b02db2552b296f5018af9058b18eb7127e00f6462fb718712a3d4432079dfa848b510cc
   languageName: node
   linkType: hard
 
@@ -27671,16 +27744,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nan@npm:^2.12.1, nan@npm:^2.13.2":
-  version: 2.15.0
-  resolution: "nan@npm:2.15.0"
-  dependencies:
-    node-gyp: latest
-  checksum: 33e1bb4dfca447fe37d4bb5889be55de154828632c8d38646db67293a21afd61ed9909cdf1b886214a64707d935926c4e60e2b09de9edfc2ad58de31d6ce8f39
-  languageName: node
-  linkType: hard
-
-"nan@npm:^2.14.0":
+"nan@npm:^2.12.1, nan@npm:^2.13.2, nan@npm:^2.14.0":
   version: 2.17.0
   resolution: "nan@npm:2.17.0"
   dependencies:
@@ -28218,18 +28282,6 @@ __metadata:
   dependencies:
     svg-arc-to-cubic-bezier: ^3.0.0
   checksum: 106e108b2f99e9e222a1c6edfc859523c6c3c2b0a6ba64743ed08af120b23b9bc2c16682bc2ae043a24c011c34c8252376c68525cf11735c6f110b571740eb2e
-  languageName: node
-  linkType: hard
-
-"normalize-url@npm:1.9.1":
-  version: 1.9.1
-  resolution: "normalize-url@npm:1.9.1"
-  dependencies:
-    object-assign: ^4.0.1
-    prepend-http: ^1.0.0
-    query-string: ^4.1.0
-    sort-keys: ^1.0.0
-  checksum: 4b03c22bebbb822874ce3b9204367ad1f27c314ae09b13aa201de730b3cf95f00dadf378277a56062322968c95c06e5764d01474d26af8b43d20bc4c8c491f84
   languageName: node
   linkType: hard
 
@@ -30826,7 +30878,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prepend-http@npm:^1.0.0, prepend-http@npm:^1.0.1":
+"prepend-http@npm:^1.0.1":
   version: 1.0.4
   resolution: "prepend-http@npm:1.0.4"
   checksum: 01e7baf4ad38af02257b99098543469332fc42ae50df33d97a124bf8172295907352fa6138c9b1610c10c6dd0847ca736e53fda736387cc5cf8fcffe96b47f29
@@ -31330,16 +31382,6 @@ __metadata:
   version: 6.5.3
   resolution: "qs@npm:6.5.3"
   checksum: 6f20bf08cabd90c458e50855559539a28d00b2f2e7dddcb66082b16a43188418cb3cb77cbd09268bcef6022935650f0534357b8af9eeb29bf0f27ccb17655692
-  languageName: node
-  linkType: hard
-
-"query-string@npm:^4.1.0":
-  version: 4.3.4
-  resolution: "query-string@npm:4.3.4"
-  dependencies:
-    object-assign: ^4.1.0
-    strict-uri-encode: ^1.0.0
-  checksum: 3b2bae6a8454cf0edf11cf1aa4d1f920398bbdabc1c39222b9bb92147e746fcd97faf00e56f494728fb66b2961b495ba0fde699d5d3bd06b11472d664b36c6cf
   languageName: node
   linkType: hard
 
@@ -35621,7 +35663,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:^4.2.3":
+"terser-webpack-plugin@npm:^4.2.3, terser-webpack-plugin@npm:~4.2.3":
   version: 4.2.3
   resolution: "terser-webpack-plugin@npm:4.2.3"
   dependencies:
@@ -35672,6 +35714,19 @@ __metadata:
   bin:
     terser: bin/terser
   checksum: f980789097d4f856c1ef4b9a7ada37beb0bb022fb8aa3057968862b5864ad7c244253b3e269c9eb0ab7d0caf97b9521273f2d1cf1e0e942ff0016e0583859c71
+  languageName: node
+  linkType: hard
+
+"terser@npm:^4.6.13":
+  version: 4.8.1
+  resolution: "terser@npm:4.8.1"
+  dependencies:
+    commander: ^2.20.0
+    source-map: ~0.6.1
+    source-map-support: ~0.5.12
+  bin:
+    terser: bin/terser
+  checksum: b342819bf7e82283059aaa3f22bb74deb1862d07573ba5a8947882190ad525fd9b44a15074986be083fd379c58b9a879457a330b66dcdb77b485c44267f9a55a
   languageName: node
   linkType: hard
 
@@ -36392,58 +36447,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:1.10.9":
-  version: 1.10.9
-  resolution: "turbo-darwin-64@npm:1.10.9"
+"turbo-darwin-64@npm:1.10.12":
+  version: 1.10.12
+  resolution: "turbo-darwin-64@npm:1.10.12"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:1.10.9":
-  version: 1.10.9
-  resolution: "turbo-darwin-arm64@npm:1.10.9"
+"turbo-darwin-arm64@npm:1.10.12":
+  version: 1.10.12
+  resolution: "turbo-darwin-arm64@npm:1.10.12"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:1.10.9":
-  version: 1.10.9
-  resolution: "turbo-linux-64@npm:1.10.9"
+"turbo-linux-64@npm:1.10.12":
+  version: 1.10.12
+  resolution: "turbo-linux-64@npm:1.10.12"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:1.10.9":
-  version: 1.10.9
-  resolution: "turbo-linux-arm64@npm:1.10.9"
+"turbo-linux-arm64@npm:1.10.12":
+  version: 1.10.12
+  resolution: "turbo-linux-arm64@npm:1.10.12"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:1.10.9":
-  version: 1.10.9
-  resolution: "turbo-windows-64@npm:1.10.9"
+"turbo-windows-64@npm:1.10.12":
+  version: 1.10.12
+  resolution: "turbo-windows-64@npm:1.10.12"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:1.10.9":
-  version: 1.10.9
-  resolution: "turbo-windows-arm64@npm:1.10.9"
+"turbo-windows-arm64@npm:1.10.12":
+  version: 1.10.12
+  resolution: "turbo-windows-arm64@npm:1.10.12"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
 "turbo@npm:latest":
-  version: 1.10.9
-  resolution: "turbo@npm:1.10.9"
+  version: 1.10.12
+  resolution: "turbo@npm:1.10.12"
   dependencies:
-    turbo-darwin-64: 1.10.9
-    turbo-darwin-arm64: 1.10.9
-    turbo-linux-64: 1.10.9
-    turbo-linux-arm64: 1.10.9
-    turbo-windows-64: 1.10.9
-    turbo-windows-arm64: 1.10.9
+    turbo-darwin-64: 1.10.12
+    turbo-darwin-arm64: 1.10.12
+    turbo-linux-64: 1.10.12
+    turbo-linux-arm64: 1.10.12
+    turbo-windows-64: 1.10.12
+    turbo-windows-arm64: 1.10.12
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -36459,7 +36514,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 667867c3ea6ecf59cafe494e1bd4da8564bdae4ea735a14813656b2784a909fb69f12f8c6cdb140ca490c602fd11dc186b5d426af6a451ba51a487e73b742731
+  checksum: 266b70404e149b92cd64051fcdd03c56b474ed22f6bd11cf4cf1b70f55c72f9a2aaa90109b19b95e43d68e53a6be54485f0cc0135c8d5b505db09fd126a34052
   languageName: node
   linkType: hard
 
@@ -37912,6 +37967,53 @@ __metadata:
   languageName: node
   linkType: hard
 
+"webpack-dev-server@npm:*":
+  version: 4.15.1
+  resolution: "webpack-dev-server@npm:4.15.1"
+  dependencies:
+    "@types/bonjour": ^3.5.9
+    "@types/connect-history-api-fallback": ^1.3.5
+    "@types/express": ^4.17.13
+    "@types/serve-index": ^1.9.1
+    "@types/serve-static": ^1.13.10
+    "@types/sockjs": ^0.3.33
+    "@types/ws": ^8.5.5
+    ansi-html-community: ^0.0.8
+    bonjour-service: ^1.0.11
+    chokidar: ^3.5.3
+    colorette: ^2.0.10
+    compression: ^1.7.4
+    connect-history-api-fallback: ^2.0.0
+    default-gateway: ^6.0.3
+    express: ^4.17.3
+    graceful-fs: ^4.2.6
+    html-entities: ^2.3.2
+    http-proxy-middleware: ^2.0.3
+    ipaddr.js: ^2.0.1
+    launch-editor: ^2.6.0
+    open: ^8.0.9
+    p-retry: ^4.5.0
+    rimraf: ^3.0.2
+    schema-utils: ^4.0.0
+    selfsigned: ^2.1.1
+    serve-index: ^1.9.1
+    sockjs: ^0.3.24
+    spdy: ^4.0.2
+    webpack-dev-middleware: ^5.3.1
+    ws: ^8.13.0
+  peerDependencies:
+    webpack: ^4.37.0 || ^5.0.0
+  peerDependenciesMeta:
+    webpack:
+      optional: true
+    webpack-cli:
+      optional: true
+  bin:
+    webpack-dev-server: bin/webpack-dev-server.js
+  checksum: cd0063b068d2b938fd76c412d555374186ac2fa84bbae098265212ed50a5c15d6f03aa12a5a310c544a242943eb58c0bfde4c296d5c36765c182f53799e1bc71
+  languageName: node
+  linkType: hard
+
 "webpack-dev-server@npm:~4.13.3":
   version: 4.13.3
   resolution: "webpack-dev-server@npm:4.13.3"
@@ -38105,6 +38207,43 @@ __metadata:
   bin:
     webpack: bin/webpack.js
   checksum: 9fd1568b34ec2e99ba97c8509a15ab2576ec80c396e7015551ec814b24cfc11de173acba3e114dafe95f1a6d460781b09d6201e6a1fb15110e1d01a09f61a283
+  languageName: node
+  linkType: hard
+
+"webpack@npm:^5":
+  version: 5.88.2
+  resolution: "webpack@npm:5.88.2"
+  dependencies:
+    "@types/eslint-scope": ^3.7.3
+    "@types/estree": ^1.0.0
+    "@webassemblyjs/ast": ^1.11.5
+    "@webassemblyjs/wasm-edit": ^1.11.5
+    "@webassemblyjs/wasm-parser": ^1.11.5
+    acorn: ^8.7.1
+    acorn-import-assertions: ^1.9.0
+    browserslist: ^4.14.5
+    chrome-trace-event: ^1.0.2
+    enhanced-resolve: ^5.15.0
+    es-module-lexer: ^1.2.1
+    eslint-scope: 5.1.1
+    events: ^3.2.0
+    glob-to-regexp: ^0.4.1
+    graceful-fs: ^4.2.9
+    json-parse-even-better-errors: ^2.3.1
+    loader-runner: ^4.2.0
+    mime-types: ^2.1.27
+    neo-async: ^2.6.2
+    schema-utils: ^3.2.0
+    tapable: ^2.1.1
+    terser-webpack-plugin: ^5.3.7
+    watchpack: ^2.4.0
+    webpack-sources: ^3.2.3
+  peerDependenciesMeta:
+    webpack-cli:
+      optional: true
+  bin:
+    webpack: bin/webpack.js
+  checksum: 79476a782da31a21f6dd38fbbd06b68da93baf6a62f0d08ca99222367f3b8668f5a1f2086b7bb78e23172e31fa6df6fa7ab09b25e827866c4fc4dc2b30443ce2
   languageName: node
   linkType: hard
 

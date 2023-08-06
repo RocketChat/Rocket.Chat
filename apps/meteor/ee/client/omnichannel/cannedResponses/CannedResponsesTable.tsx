@@ -1,8 +1,8 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, usePermission, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQuery, hashQueryKey } from '@tanstack/react-query';
+import React, { useMemo, useState } from 'react';
 
 import GenericNoResults from '../../../../client/components/GenericNoResults';
 import {
@@ -34,8 +34,10 @@ type Scope = 'global' | 'department' | 'user';
 
 const CannedResponsesTable = () => {
 	const t = useTranslation();
-	const cannedResponseRoute = useRoute('omnichannel-canned-responses');
+	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const getTime = useFormatDateAndTime();
+
 	const isMonitor = usePermission('save-department-canned-responses');
 	const isManager = usePermission('save-all-canned-responses');
 
@@ -66,30 +68,25 @@ const CannedResponsesTable = () => {
 		[createdBy, current, debouncedText, itemsPerPage, sharing, sortBy, sortDirection],
 	);
 
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
-	const { data, isLoading, isSuccess, refetch } = useQuery(['/v1/canned-responses', query], () => getCannedResponses(query));
+	const { data, isLoading, isSuccess, refetch } = useQuery(['/v1/canned-responses', query], () => getCannedResponses(query), {
+		refetchOnWindowFocus: false,
+	});
 
-	const getTime = useFormatDateAndTime();
-
-	const handleClick = useMutableCallback(() =>
-		cannedResponseRoute.push({
-			context: 'new',
-		}),
-	);
+	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/canned-responses/new'));
 
 	const onRowClick = useMutableCallback((id, scope) => (): void => {
 		if (scope === 'global' && isMonitor && !isManager) {
-			dispatchToastMessage({
+			return dispatchToastMessage({
 				type: 'error',
 				message: t('Not_authorized'),
 			});
-			return;
 		}
 
-		cannedResponseRoute.push({
-			context: 'edit',
-			id,
-		});
+		router.navigate(`/omnichannel/canned-responses/edit/${id}`);
 	});
 
 	const defaultOptions = useMemo(
@@ -132,14 +129,16 @@ const CannedResponsesTable = () => {
 
 	return (
 		<>
-			<CannedResponseFilter
-				sharingValue={sharing}
-				createdByValue={createdBy}
-				shortcutValue={text}
-				setSharing={handleSharing}
-				setCreatedBy={handleCreatedBy}
-				setShortcut={handleText}
-			/>
+			{((isSuccess && data?.cannedResponses.length > 0) || queryHasChanged) && (
+				<CannedResponseFilter
+					sharingValue={sharing}
+					createdByValue={createdBy}
+					shortcutValue={text}
+					setSharing={handleSharing}
+					setCreatedBy={handleCreatedBy}
+					setShortcut={handleText}
+				/>
+			)}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -148,13 +147,16 @@ const CannedResponsesTable = () => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data?.cannedResponses.length === 0 && (
+			{isSuccess && data?.cannedResponses.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data?.cannedResponses.length === 0 && !queryHasChanged && (
 				<GenericNoResults
 					icon='baloon-exclamation'
 					title={t('No_Canned_Responses_Yet')}
 					description={t('No_Canned_Responses_Yet-description')}
-					buttonTitle={t('Create_your_First_Canned_Response')}
-					buttonAction={handleClick}
+					buttonTitle={t('Create_canned_response')}
+					buttonAction={handleAddNew}
+					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkText={t('Learn_more_about_canned_responses')}
 				/>
 			)}
 			{isSuccess && data?.cannedResponses.length > 0 && (
