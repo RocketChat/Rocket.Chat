@@ -4,7 +4,6 @@ import React from 'react';
 import { Contextualbar } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
 import { getPermaLink } from '../../../lib/getPermaLink';
-import MessageReportInfo from './MessageReportInfo';
 import ModerationConsoleTable from './ModerationConsoleTable';
 import UserMessages from './UserMessages';
 
@@ -32,12 +31,7 @@ const ModerationConsolePage = () => {
 					<ModerationConsoleTable />
 				</Page.Content>
 			</Page>
-			{context && (
-				<Contextualbar>
-					{context === 'info' && id && <UserMessages userId={id} onRedirect={handleRedirect} />}
-					{context === 'reports' && id && <MessageReportInfo msgId={id} />}
-				</Contextualbar>
-			)}
+			{context && <Contextualbar>{context === 'info' && id && <UserMessages userId={id} onRedirect={handleRedirect} />}</Contextualbar>}
 		</Page>
 	);
 };
