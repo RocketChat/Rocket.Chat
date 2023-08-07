@@ -32,13 +32,17 @@ Meteor.startup(() => {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		condition({ message, user, room }) {
+		condition({ message, user, room, settings }) {
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
 				return false;
 			}
 
 			if (!user) {
+				return false;
+			}
+
+			if (!settings.Menu_Mark_Message_As_Unread) {
 				return false;
 			}
 

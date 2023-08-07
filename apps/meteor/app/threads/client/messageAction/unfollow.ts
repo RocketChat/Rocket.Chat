@@ -29,7 +29,11 @@ Meteor.startup(() => {
 					message: t('You_unfollowed_this_message'),
 				});
 			},
-			condition({ message: { _id, tmid, replies = [] }, user, context }) {
+			condition({ message: { _id, tmid, replies = [] }, user, context, settings }) {
+				if (!settings.Menu_Follow_Message) {
+					return false;
+				}
+
 				if (tmid || context) {
 					const parentMessage = Messages.findOne({ _id: tmid || _id }, { fields: { replies: 1 } });
 					if (parentMessage) {

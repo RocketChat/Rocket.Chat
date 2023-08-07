@@ -42,8 +42,8 @@ Meteor.startup(async () => {
 				},
 			);
 		},
-		condition({ subscription, room, message, user }) {
-			if (subscription == null) {
+		condition({ subscription, room, message, user, settings }) {
+			if (subscription == null || !settings.Menu_Reply_Directly) {
 				return false;
 			}
 			if (room.t === 'd' || room.t === 'l') {
@@ -83,6 +83,13 @@ Meteor.startup(async () => {
 				},
 			});
 		},
+		condition({ subscription, settings }) {
+			if (subscription == null || !settings.Menu_Share_Message) {
+				return false;
+			}
+
+			return true;
+		},
 		order: 0,
 		group: ['message', 'menu'],
 	});
@@ -104,8 +111,8 @@ Meteor.startup(async () => {
 
 			await chat?.composer?.quoteMessage(message);
 		},
-		condition({ subscription }) {
-			if (subscription == null) {
+		condition({ subscription, settings }) {
+			if (subscription == null || !settings.Menu_Quote) {
 				return false;
 			}
 
@@ -131,8 +138,8 @@ Meteor.startup(async () => {
 				dispatchToastMessage({ type: 'error', message: e });
 			}
 		},
-		condition({ subscription }) {
-			return !!subscription;
+		condition({ subscription, settings }) {
+			return !!subscription && !!settings.Menu_Get_Link;
 		},
 		order: 4,
 		group: 'menu',
@@ -150,8 +157,8 @@ Meteor.startup(async () => {
 			await navigator.clipboard.writeText(msgText);
 			dispatchToastMessage({ type: 'success', message: t('Copied') });
 		},
-		condition({ subscription }) {
-			return !!subscription;
+		condition({ subscription, settings }) {
+			return !!subscription || !!settings.Menu_Copy;
 		},
 		order: 5,
 		group: 'menu',
@@ -241,12 +248,12 @@ Meteor.startup(async () => {
 				},
 			});
 		},
-		condition({ subscription, room }) {
+		condition({ subscription, room, settings }) {
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
 				return false;
 			}
-			return Boolean(subscription);
+			return Boolean(subscription && settings.Menu_Report_Message);
 		},
 		order: 17,
 		group: 'menu',
@@ -263,8 +270,8 @@ Meteor.startup(async () => {
 				props: { reactions, onClose: imperativeModal.close },
 			});
 		},
-		condition({ message: { reactions } }) {
-			return !!reactions;
+		condition({ message: { reactions }, settings }) {
+			return !!reactions && !!settings.Menu_Reactions_List;
 		},
 		order: 18,
 		group: 'menu',

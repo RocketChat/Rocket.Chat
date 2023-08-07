@@ -29,11 +29,16 @@ Meteor.startup(() => {
 					},
 				});
 			},
-			condition({ subscription, room }) {
+			condition({ subscription, room, settings }) {
 				const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 				if (isLivechatRoom) {
 					return false;
 				}
+
+				if (!settings.Menu_Reply_In_Thread) {
+					return false;
+				}
+
 				return Boolean(subscription);
 			},
 			order: -1,

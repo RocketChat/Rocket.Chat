@@ -14,6 +14,9 @@ Meteor.startup(() => {
 			const { message = messageArgs(this).msg } = props;
 			setMessageJumpQueryStringParameter(message._id);
 		},
+		condition({ subscription, settings }) {
+			return !!subscription || !!settings.Menu_Jump_To_Message;
+		},
 		order: 100,
 		group: ['message', 'menu'],
 	});

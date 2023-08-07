@@ -16,12 +16,16 @@ Meteor.startup(() => {
 			event.stopPropagation();
 			chat?.emojiPicker.open(event.currentTarget! as Element, (emoji) => sdk.call('setReaction', `:${emoji}:`, message._id));
 		},
-		condition({ message, user, room, subscription }) {
+		condition({ message, user, room, subscription, settings }) {
 			if (!room) {
 				return false;
 			}
 
 			if (!subscription) {
+				return false;
+			}
+
+			if (settings.Menu_Add_Reaction) {
 				return false;
 			}
 

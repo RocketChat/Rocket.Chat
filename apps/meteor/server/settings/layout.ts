@@ -228,6 +228,10 @@ export const createLayoutSettings = () =>
 				type: 'boolean',
 				public: true,
 			});
+			await this.add('Menu_Reply_Directly', true, {
+				type: 'boolean',
+				public: true,
+			});
 			await this.add('Menu_Share_Message', true, {
 				type: 'boolean',
 				public: true,
@@ -253,6 +257,18 @@ export const createLayoutSettings = () =>
 				public: true,
 			});
 			await this.add('Menu_Mark_Message_As_Unread', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Reactions_List', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Report_Message', true, {
+				type: 'boolean',
+				public: true,
+			});
+			await this.add('Menu_Jump_To_Message', true, {
 				type: 'boolean',
 				public: true,
 			});
