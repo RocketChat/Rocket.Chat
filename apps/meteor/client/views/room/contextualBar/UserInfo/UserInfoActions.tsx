@@ -36,6 +36,12 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 				data-qa-id='UserUserInfo-menu'
 				sections={menuOptions}
 				placement='bottom-end'
+				mi={4}
+				secondary
+				small={false}
+				maxHeight='initial'
+				flexShrink={0}
+				data-qa='UserUserInfo-menu'
 			/>
 		);
 	}, [menuOptions, t]);
