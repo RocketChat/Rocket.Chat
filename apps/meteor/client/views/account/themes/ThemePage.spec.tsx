@@ -2,8 +2,8 @@ import { render } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import React from 'react';
 
+import { queryClient, ProviderMockProvider } from './ProviderMock';
 import ThemePage from './ThemePage';
-import { queryClient, ProviderMockProvider } from './__ProviderMock__.spec';
 
 expect.extend(toHaveNoViolations);
 
