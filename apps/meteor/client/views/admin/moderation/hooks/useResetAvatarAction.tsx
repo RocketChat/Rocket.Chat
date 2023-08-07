@@ -18,7 +18,7 @@ const useResetAvatarAction = (userId: string) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Moderation_Avatar_reset_successfully') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_Avatar_reset_success') });
 		},
 	});
 

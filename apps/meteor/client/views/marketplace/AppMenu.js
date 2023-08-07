@@ -12,6 +12,7 @@ import React, { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
 import WarningModal from '../../components/WarningModal';
+import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import IframeModal from './IframeModal';
 import UninstallGrandfatheredAppModal from './components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
 import { appEnabledStatuses, appButtonProps } from './helpers';
@@ -36,6 +37,9 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const buildExternalUrl = useEndpoint('GET', '/apps');
 	const syncApp = useEndpoint('POST', `/apps/${app.id}/sync`);
 	const uninstallApp = useEndpoint('DELETE', `/apps/${app.id}`);
+	const { data } = useIsEnterprise();
+
+	const isEnterpriseLicense = !!data?.isEnterprise;
 
 	const [loading, setLoading] = useState(false);
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
@@ -290,19 +294,25 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		};
 
 		const nonInstalledAppOptions = {
-			...(!app.installed && {
-				acquire: {
-					label: (
-						<>
-							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' mie='x4' />}
-							{t(button.label.replace(' ', '_'))}
-						</>
-					),
-					action: handleAcquireApp,
-					disabled: requestedEndUser,
-				},
-			}),
+			...(!app.installed &&
+				button && {
+					acquire: {
+						label: (
+							<>
+								{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' mie='x4' />}
+								{t(button.label.replace(' ', '_'))}
+							</>
+						),
+						action: handleAcquireApp,
+						disabled: requestedEndUser,
+					},
+				}),
 		};
+
+		const isEnterpriseOrNot = (app.isEnterpriseOnly && isEnterpriseLicense) || !app.isEnterpriseOnly;
+		const isPossibleToEnableApp = app.installed && isAdminUser && !isAppEnabled && isEnterpriseOrNot;
+		const doesItReachedTheLimit =
+			!app.migrated && !appCountQuery?.data?.hasUnlimitedApps && appCountQuery?.data?.enabled >= appCountQuery?.data?.limit;
 
 		const installedAppOptions = {
 			...(context !== 'details' &&
@@ -344,20 +354,18 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 						action: handleDisable,
 					},
 				}),
-			...(app.installed &&
-				isAdminUser &&
-				!isAppEnabled && {
-					enable: {
-						label: (
-							<>
-								<Icon name='check' size='x16' mie='x4' />
-								{t('Enable')}
-							</>
-						),
-						disabled: !app.migrated && !appCountQuery?.data?.hasUnlimitedApps && appCountQuery?.data?.enabled >= appCountQuery?.data?.limit,
-						action: handleEnable,
-					},
-				}),
+			...(isPossibleToEnableApp && {
+				enable: {
+					label: (
+						<>
+							<Icon name='check' size='x16' marginInlineEnd='x4' />
+							{t('Enable')}
+						</>
+					),
+					disabled: doesItReachedTheLimit,
+					action: handleEnable,
+				},
+			}),
 			...(app.installed &&
 				isAdminUser && {
 					divider: {
@@ -391,19 +399,20 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		app,
 		t,
 		handleSubscription,
-		requestedEndUser,
-		button?.label,
+		button,
 		handleAcquireApp,
+		requestedEndUser,
+		isEnterpriseLicense,
+		isAppEnabled,
+		appCountQuery?.data?.hasUnlimitedApps,
+		appCountQuery?.data?.enabled,
+		appCountQuery?.data?.limit,
 		context,
 		handleViewLogs,
 		canUpdate,
 		isAppDetailsPage,
 		handleUpdate,
-		isAppEnabled,
 		handleDisable,
-		appCountQuery?.data?.hasUnlimitedApps,
-		appCountQuery?.data?.enabled,
-		appCountQuery?.data?.limit,
 		handleEnable,
 		handleUninstall,
 	]);
