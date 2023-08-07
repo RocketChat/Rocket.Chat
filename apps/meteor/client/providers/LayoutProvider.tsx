@@ -10,8 +10,6 @@ const LayoutProvider: FC = ({ children }) => {
 	const isEmbedded = layout === 'embedded';
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
 
-	console.log('breakpoints', breakpoints);
-
 	const isMobile = !breakpoints.includes('lg');
 
 	useEffect(() => {
