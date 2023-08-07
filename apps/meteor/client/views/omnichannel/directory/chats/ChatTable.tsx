@@ -1,6 +1,7 @@
 import { Tag, Box, Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { hashQueryKey } from '@tanstack/react-query';
 import moment from 'moment';
 import React, { useState, useMemo, useCallback } from 'react';
 
@@ -91,6 +92,9 @@ const ChatTable = () => {
 
 	const { data, isLoading, isSuccess, isError, refetch } = useCurrentChats(query);
 
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+
 	const renderRow = useCallback(
 		({ _id, fname, ts, closedAt, department, tags }) => (
 			<GenericTableRow key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id)} action qa-user-id={_id}>
@@ -130,7 +134,7 @@ const ChatTable = () => {
 
 	return (
 		<>
-			<FilterByText onChange={({ text }) => setText(text)} />
+			{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }) => setText(text)} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -139,7 +143,16 @@ const ChatTable = () => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data?.rooms.length === 0 && <GenericNoResults />}
+			{isSuccess && data?.rooms.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data?.rooms.length === 0 && !queryHasChanged && (
+				<GenericNoResults
+					icon='message'
+					title={t('No_chats_yet')}
+					description={t('No_chats_yet_description')}
+					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkText={t('Learn_more_about_conversations')}
+				/>
+			)}
 			{isSuccess && data?.rooms.length > 0 && (
 				<>
 					<GenericTable>

@@ -1034,6 +1034,10 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 
+				if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
+					throw new Meteor.Error('error-two-factor-not-enabled', 'Two factor authentication is not enabled');
+				}
+
 				const user = await getUserFromParams(this.bodyParams);
 				if (!user) {
 					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');

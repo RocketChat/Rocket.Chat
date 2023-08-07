@@ -1,8 +1,8 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQuery, hashQueryKey } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
@@ -28,12 +28,15 @@ const DEPARTMENTS_ENDPOINTS = {
 const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
+	const router = useRouter();
 	const debouncedText = useDebouncedValue(text, 500);
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description' | 'numAgents' | 'enabled' | 'showOnRegistration'>('name');
 
 	const getDepartments = useEndpoint('GET', archived ? DEPARTMENTS_ENDPOINTS.archived : DEPARTMENTS_ENDPOINTS.department);
+
+	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/departments/new'));
 
 	const query = useMemo(
 		() => ({
@@ -49,6 +52,9 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 	const { data, isSuccess, isLoading } = useQuery(['livechat-departments', query, archived], async () => getDepartments(query), {
 		keepPreviousData: true,
 	});
+
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
 
 	const headers = (
 		<>
@@ -85,7 +91,7 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 
 	return (
 		<>
-			<FilterByText onChange={({ text }): void => setText(text)} />
+			{((isSuccess && data?.departments.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setText(text)} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -94,7 +100,18 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data?.departments.length === 0 && <GenericNoResults />}
+			{isSuccess && data?.departments.length === 0 && (queryHasChanged || archived) && <GenericNoResults />}
+			{isSuccess && data?.departments.length === 0 && !queryHasChanged && !archived && (
+				<GenericNoResults
+					icon='folder'
+					title={t('No_departments_yet')}
+					description={t('No_departments_yet_description')}
+					buttonAction={handleAddNew}
+					buttonTitle={t('Create_department')}
+					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkText={t('Learn_more_about_departments')}
+				/>
+			)}
 			{isSuccess && data?.departments.length > 0 && (
 				<>
 					<GenericTable aria-busy={text !== debouncedText} aria-live='assertive'>
