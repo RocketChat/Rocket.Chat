@@ -15,13 +15,14 @@ const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji',
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		updateMessage(message: IEditedMessage): void;
+		updateMessage(message: IEditedMessage, previewUrls?: string[]): void;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	async updateMessage(message: IEditedMessage) {
+	async updateMessage(message: IEditedMessage, previewUrls?: string[]) {
 		check(message, Match.ObjectIncluding({ _id: String }));
+		check(previewUrls, Match.Maybe([String]));
 
 		const uid = Meteor.userId();
 
@@ -103,6 +104,6 @@ Meteor.methods<ServerMethods>({
 
 		message.u = originalMessage.u;
 
-		return updateMessage(message, user, originalMessage);
+		return updateMessage(message, user, originalMessage, previewUrls);
 	},
 });

@@ -7,7 +7,12 @@ import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
-export const updateMessage = async function (message: IMessage, user: IUser, originalMsg?: IMessage): Promise<void> {
+export const updateMessage = async function (
+	message: IMessage,
+	user: IUser,
+	originalMsg?: IMessage,
+	previewUrls?: string[],
+): Promise<void> {
 	const originalMessage = originalMsg || (await Messages.findOneById(message._id));
 
 	// For the Rocket.Chat Apps :)
@@ -41,7 +46,7 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 		},
 	});
 
-	parseUrlsInMessage(message);
+	parseUrlsInMessage(message, previewUrls);
 
 	message = await callbacks.run('beforeSaveMessage', message);
 

@@ -310,6 +310,7 @@ API.v1.addRoute(
 					roomId: String,
 					msgId: String,
 					text: String, // Using text to be consistant with chat.postMessage
+					previewUrls: Match.Maybe([String]),
 				}),
 			);
 
@@ -325,7 +326,7 @@ API.v1.addRoute(
 			}
 
 			// Permission checks are already done in the updateMessage method, so no need to duplicate them
-			await Meteor.callAsync('updateMessage', { _id: msg._id, msg: this.bodyParams.text, rid: msg.rid });
+			await Meteor.callAsync('updateMessage', { _id: msg._id, msg: this.bodyParams.text, rid: msg.rid }, this.bodyParams.previewUrls);
 
 			const updatedMessage = await Messages.findOneById(msg._id);
 			const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);

@@ -438,6 +438,7 @@ type ChatUpdate = {
 	roomId: IRoom['_id'];
 	msgId: string;
 	text: string;
+	previewUrls?: string[];
 };
 
 const ChatUpdateSchema = {
@@ -451,6 +452,13 @@ const ChatUpdateSchema = {
 		},
 		text: {
 			type: 'string',
+		},
+		previewUrls: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
 		},
 	},
 	required: ['roomId', 'msgId', 'text'],

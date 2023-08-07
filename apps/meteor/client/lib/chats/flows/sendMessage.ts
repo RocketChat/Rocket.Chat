@@ -21,7 +21,7 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[])
 		return;
 	}
 
-	if (await processMessageEditing(chat, message)) {
+	if (await processMessageEditing(chat, message, previewUrls)) {
 		return;
 	}
 
@@ -79,7 +79,7 @@ export const sendMessage = async (
 		}
 
 		try {
-			if (await chat.flows.processMessageEditing({ ...originalMessage, msg: '' })) {
+			if (await chat.flows.processMessageEditing({ ...originalMessage, msg: '' }, previewUrls)) {
 				chat.currentEditing.stop();
 				return false;
 			}
