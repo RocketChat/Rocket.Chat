@@ -49,7 +49,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 				{isLoadingUserMessages && <Message>{t('Loading')}</Message>}
 
 				{isSuccessUserMessages && (
-					<Box padding={15}>
+					<Box padding={16}>
 						{report.messages.length > 0 && (
 							<Callout title={t('Moderation_Duplicate_messages')} type='warning' icon='warning'>
 								{t('Moderation_Duplicate_messages_warning')}
