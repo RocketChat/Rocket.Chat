@@ -5,9 +5,9 @@ import { callbacks } from '../../../../../lib/callbacks';
 callbacks.add(
 	'livechat.afterTagRemoved',
 	async (tag) => {
-		const { _id } = tag;
+		const { name } = tag;
 
-		await CannedResponse.removeTagFromCannedResponses(_id);
+		await CannedResponse.removeTagFromCannedResponses(name);
 	},
 	callbacks.priority.MEDIUM,
 	'on-tag-removed-remove-references',

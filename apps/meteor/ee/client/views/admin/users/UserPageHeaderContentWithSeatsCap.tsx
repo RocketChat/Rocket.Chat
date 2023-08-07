@@ -1,9 +1,9 @@
 import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
 import { useSetModal, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import { useExternalLink } from '../../../../../client/hooks/useExternalLink';
 import CloseToSeatsCapModal from './CloseToSeatsCapModal';
 import ReachedSeatsCapModal from './ReachedSeatsCapModal';
 import SeatsCapUsage from './SeatsCapUsage';
@@ -16,6 +16,7 @@ type UserPageHeaderContentWithSeatsCapProps = {
 
 const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: UserPageHeaderContentWithSeatsCapProps): ReactElement => {
 	const seatsLinkUrl = useRequestSeatsLink();
+	const handleExternalLink = useExternalLink();
 
 	const t = useTranslation();
 	const usersRoute = useRoute('admin-users');
@@ -105,9 +106,9 @@ const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: User
 				<Button icon='mail' onClick={handleInviteButtonClick}>
 					{t('Invite')}
 				</Button>
-				<ExternalLink to={seatsLinkUrl || ''}>
-					<Button icon='new-window'>{t('Request_seats')}</Button>
-				</ExternalLink>
+				<Button icon='new-window' onClick={() => handleExternalLink(seatsLinkUrl)}>
+					{t('Request_seats')}
+				</Button>
 			</ButtonGroup>
 		</>
 	);

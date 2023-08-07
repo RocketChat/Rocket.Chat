@@ -30,7 +30,6 @@ const ManagersTable = () => {
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
-				// text,
 				fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
@@ -42,9 +41,7 @@ const ManagersTable = () => {
 	);
 
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
-	const { data, isLoading, isSuccess, refetch } = useQuery(['livechat-manager', query], async () => getManagers(query), {
-		refetchOnWindowFocus: false,
-	});
+	const { data, isLoading, isSuccess, refetch } = useQuery(['livechat-manager', query], async () => getManagers(query));
 
 	const headers = (
 		<>
@@ -80,7 +77,15 @@ const ManagersTable = () => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data.users.length === 0 && <GenericNoResults />}
+			{isSuccess && data.users.length === 0 && (
+				<GenericNoResults
+					icon='shield'
+					title={t('No_managers_yet')}
+					description={t('No_managers_yet_description')}
+					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkText={t('Learn_more_about_managers')}
+				/>
+			)}
 			{isSuccess && data.users.length > 0 && (
 				<>
 					<GenericTable>

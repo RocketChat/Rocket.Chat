@@ -18,7 +18,8 @@ import {
 import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
 import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useRoom } from '../../../contexts/RoomContext';
-import { useTabBarClose } from '../../../contexts/RoomToolboxContext';
+import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
+import { useAddMatrixUsers } from './AddMatrixUsers/useAddMatrixUsers';
 
 type AddUsersProps = {
 	rid: IRoom['_id'];
@@ -31,12 +32,13 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const room = useRoom();
 
-	const onClickClose = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 	const saveAction = useMethod('addUsersToRoom');
 
 	const {
 		handleSubmit,
 		control,
+		getValues,
 		formState: { isDirty },
 	} = useForm({ defaultValues: { users: [] } });
 
@@ -51,12 +53,14 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 		}
 	});
 
+	const addClickHandler = useAddMatrixUsers();
+
 	return (
 		<>
 			<ContextualbarHeader>
 				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
 				<ContextualbarTitle>{t('Add_users')}</ContextualbarTitle>
-				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+				{closeTab && <ContextualbarClose onClick={closeTab} />}
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
 				<FieldGroup>
@@ -80,9 +84,24 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
-						{t('Add_users')}
-					</Button>
+					{isRoomFederated(room) ? (
+						<Button
+							primary
+							disabled={addClickHandler.isLoading}
+							onClick={() =>
+								addClickHandler.mutate({
+									users: getValues('users'),
+									handleSave,
+								})
+							}
+						>
+							{t('Add_users')}
+						</Button>
+					) : (
+						<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
+							{t('Add_users')}
+						</Button>
+					)}
 				</ButtonGroup>
 			</ContextualbarFooter>
 		</>
