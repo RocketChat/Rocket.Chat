@@ -158,7 +158,7 @@ export const useRoomActionAppsActionButtons = (context?: MessageActionContext) =
 	return {
 		...result,
 		data,
-	} as UseQueryResult<[string, ToolboxActionConfig][]>;
+	} as UseQueryResult<[string, RoomToolboxActionConfig][]>;
 };
 
 export const useMessageActionAppsActionButtons = (context?: MessageActionContext) => {
