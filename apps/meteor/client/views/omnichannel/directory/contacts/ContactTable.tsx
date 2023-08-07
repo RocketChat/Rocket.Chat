@@ -170,7 +170,7 @@ function ContactTable(): ReactElement {
 				</>
 			)}
 			{isError && (
-				<Box mbs='x20'>
+				<Box mbs={20}>
 					<States>
 						<StatesIcon variation='danger' name='circle-exclamation' />
 						<StatesTitle>{t('Connection_error')}</StatesTitle>

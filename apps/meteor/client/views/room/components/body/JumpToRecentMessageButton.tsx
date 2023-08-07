@@ -53,7 +53,7 @@ const JumpToRecentMessageButton = ({ visible, onClick, text }: JumpToRecentMessa
 			minWidth='x130'
 			bg='status-background-info'
 			h='x30'
-			pi='x16'
+			pi={16}
 			className={[buttonStyle, !visible && 'not', clicked && 'clicked'].filter(isTruthy)}
 			onClick={(e) => {
 				onClick(e);
