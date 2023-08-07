@@ -285,9 +285,7 @@ const MessageBox = ({
 
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
-	const hideTextArea = isRecordingAudio || showMarkdownPreview;
-
-	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef, hideTextArea);
+	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef, isRecordingAudio, showMarkdownPreview);
 
 	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid), [rid]));
 

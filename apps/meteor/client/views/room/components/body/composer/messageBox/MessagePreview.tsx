@@ -51,16 +51,14 @@ export const MessagePreview = ({ md, channels, mentions }: MessagePreviewProps):
 	`;
 
 	return (
-		<div style={{ border: '1px solid black', width: '100%', height: '100%', padding: '12px' }}>
-			<article>
-				<MessageBody data-qa-type='message-body'>
-					<Box className={messageBodyAdditionalStyles}>
-						<GazzodownText channels={channels} mentions={mentions}>
-							<Markup tokens={md} />
-						</GazzodownText>
-					</Box>
-				</MessageBody>
-			</article>
-		</div>
+		<Box style={{ padding: '12px' }}>
+			<MessageBody data-qa-type='message-body'>
+				<Box className={messageBodyAdditionalStyles}>
+					<GazzodownText channels={channels} mentions={mentions}>
+						<Markup tokens={md} />
+					</GazzodownText>
+				</Box>
+			</MessageBody>
+		</Box>
 	);
 };
