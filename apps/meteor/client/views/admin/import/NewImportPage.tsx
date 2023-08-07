@@ -13,7 +13,7 @@ import {
 	UrlInput,
 } from '@rocket.chat/fuselage';
 import { useUniqueId, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint, useTranslation, To } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo, useEffect } from 'react';
 
 import { Importers } from '../../../../app/importer/client/index';
@@ -28,7 +28,7 @@ function NewImportPage() {
 
 	const [isLoading, setLoading] = useSafely(useState(false));
 	const [fileType, setFileType] = useSafely(useState('upload'));
-	const importerKey = useRouteParameter('importerKey');
+	const importerKey = useRouteParameter('importerKey') as string;
 	const importer = useMemo(() => Importers.get(importerKey), [importerKey]);
 
 	const maxFileSize = useSetting('FileUpload_MaxFileSize');
@@ -50,12 +50,12 @@ function NewImportPage() {
 		router.navigate('/admin/import');
 	};
 
-	const handleImporterKeyChange = (importerKey) => {
+	const handleImporterKeyChange = (importerKey: string) => {
 		router.navigate(
 			router.buildRoutePath({
-				pattern: '/admin/import/new/:importerKey',
+				pattern: '/admin/import/new/:importerKey?',
 				params: { importerKey },
-			}),
+			}) as To,
 			{ replace: true },
 		);
 	};
