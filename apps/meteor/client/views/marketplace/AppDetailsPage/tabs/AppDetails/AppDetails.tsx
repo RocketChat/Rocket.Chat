@@ -1,5 +1,4 @@
 import { Box, ButtonGroup, Callout, Chip, Margins } from '@rocket.chat/fuselage';
-import { parse } from '@rocket.chat/message-parser';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -9,24 +8,7 @@ import React from 'react';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
 import AppDetailsAPIs from './AppDetailsAPIs';
-
-const normalizeUrl = (url: string): string => {
-	const parsedUrl = parse(url);
-
-	if (!parsedUrl?.length) {
-		return '';
-	}
-
-	if (parsedUrl[0].type !== 'PARAGRAPH') {
-		return url;
-	}
-
-	if (parsedUrl[0].value[0].type !== 'LINK') {
-		return url;
-	}
-
-	return parsedUrl[0].value[0].value.src.value;
-};
+import { normalizeUrl } from './normalizeUrl';
 
 const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 	const t = useTranslation();
