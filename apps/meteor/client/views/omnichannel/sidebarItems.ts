@@ -14,6 +14,13 @@ export const {
 		permissionGranted: (): boolean => hasPermission('view-livechat-current-chats'),
 	},
 	{
+		href: '/omnichannel/reports',
+		icon: 'file',
+		i18nLabel: 'Reports',
+		// TODO: Define necessary permissions
+		// permissionGranted: (): boolean => hasPermission('?'),
+	},
+	{
 		href: '/omnichannel/analytics',
 		icon: 'dashboard',
 		i18nLabel: 'Analytics',
