@@ -1,6 +1,6 @@
-import type { Db, Document, FindCursor, FindOptions, UpdateResult, IndexDescription } from 'mongodb';
-import type { IImportsModel } from '@rocket.chat/model-typings';
 import type { IImport } from '@rocket.chat/core-typings';
+import type { IImportsModel } from '@rocket.chat/model-typings';
+import type { Db, Document, FindCursor, FindOptions, UpdateResult, IndexDescription } from 'mongodb';
 
 import { ensureArray } from '../../../lib/utils/arrayUtils';
 import { BaseRaw } from './BaseRaw';
