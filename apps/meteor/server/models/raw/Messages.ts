@@ -1327,7 +1327,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	async removeByIdPinnedTimestampLimitAndUsers(
+	async findByIdPinnedTimestampLimitAndUsers(
 		rid: string,
 		pinned: boolean,
 		ignoreDiscussion = true,
@@ -1335,7 +1335,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		limit: number,
 		users: string[] = [],
 		ignoreThreads = true,
-	): Promise<{ count: number; selectedMessageIds?: string[] }> {
+	): Promise<string[]> {
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
@@ -1355,18 +1355,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			query.tcount = { $exists: false };
 		}
 
-		if (!limit) {
-			const count = (await this.deleteMany(query)).deletedCount;
-
-			if (count) {
-				// decrease message count
-				await Rooms.decreaseMessageCountById(rid, count);
-			}
-
-			return { count };
-		}
-
-		const selectedMessageIds = (
+		return (
 			await this.find(query, {
 				projection: {
 					_id: 1,
@@ -1374,21 +1363,61 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				limit,
 			}).toArray()
 		).map(({ _id }) => _id);
+	}
 
-		const count = (
-			await this.deleteMany({
-				_id: {
-					$in: selectedMessageIds,
-				},
-			})
-		).deletedCount;
+	async removeByIdPinnedTimestampLimitAndUsers(
+		rid: string,
+		pinned: boolean,
+		ignoreDiscussion = true,
+		ts: Filter<IMessage>['ts'],
+		limit: number,
+		users: string[] = [],
+		ignoreThreads = true,
+		selectedMessageIds: string[] = [],
+	): Promise<number> {
+		if (limit) {
+			const count = (
+				await this.deleteMany({
+					_id: {
+						$in: selectedMessageIds,
+					},
+				})
+			).deletedCount;
 
+			if (count) {
+				// decrease message count
+				await Rooms.decreaseMessageCountById(rid, count);
+			}
+
+			return count;
+		}
+
+		const query: Filter<IMessage> = {
+			rid,
+			ts,
+			...(users.length > 0 && { 'u.username': { $in: users } }),
+		};
+
+		if (pinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (ignoreDiscussion) {
+			query.drid = { $exists: false };
+		}
+
+		if (ignoreThreads) {
+			query.tmid = { $exists: false };
+			query.tcount = { $exists: false };
+		}
+
+		const count = (await this.deleteMany(query)).deletedCount;
 		if (count) {
 			// decrease message count
 			await Rooms.decreaseMessageCountById(rid, count);
 		}
 
-		return { count, selectedMessageIds };
+		return count;
 	}
 
 	removeByUserId(userId: string): Promise<DeleteResult> {

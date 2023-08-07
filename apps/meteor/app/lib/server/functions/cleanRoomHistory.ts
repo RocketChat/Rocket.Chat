@@ -86,7 +86,10 @@ export async function cleanRoomHistory({
 		}
 	}
 
-	const { count, selectedMessageIds } = await Messages.removeByIdPinnedTimestampLimitAndUsers(
+	const selectedMessageIds = limit
+		? await Messages.findByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads)
+		: undefined;
+	const count = await Messages.removeByIdPinnedTimestampLimitAndUsers(
 		rid,
 		excludePinned,
 		ignoreDiscussion,
@@ -94,6 +97,7 @@ export async function cleanRoomHistory({
 		limit,
 		fromUsers,
 		ignoreThreads,
+		selectedMessageIds,
 	);
 
 	if (!limit) {

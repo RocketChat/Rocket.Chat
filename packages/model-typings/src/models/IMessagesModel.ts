@@ -234,7 +234,17 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		limit: number,
 		users: string[],
 		ignoreThreads: boolean,
-	): Promise<{ count: number; selectedMessageIds?: string[] }>;
+		selectedMessageIds?: string[],
+	): Promise<number>;
+	findByIdPinnedTimestampLimitAndUsers(
+		rid: string,
+		pinned: boolean,
+		ignoreDiscussion: boolean,
+		ts: Filter<IMessage>['ts'],
+		limit: number,
+		users: string[],
+		ignoreThreads: boolean,
+	): Promise<string[]>;
 	removeByUserId(userId: string): Promise<DeleteResult>;
 	getThreadFollowsByThreadId(tmid: string): Promise<string[] | undefined>;
 	setVisibleMessagesAsRead(rid: string, until: Date): Promise<UpdateResult | Document>;
