@@ -24,10 +24,10 @@ const ReachedSeatsCapModal = ({ members, limit, onClose, requestSeatsLink }: Rea
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
-				<Box is='p' mbe='x16'>
+				<Box is='p' mbe={16}>
 					{t('Request_more_seats_out_of_seats')}
 				</Box>
-				<Box is='p' mbe='x24'>
+				<Box is='p' mbe={24}>
 					{t('Request_more_seats_sales_team')}
 				</Box>
 				<SeatsCapUsage members={members} limit={limit} />

@@ -154,7 +154,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 						</Field.Label>
 						{newEmojiPreview && (
 							<Box display='flex' flexDirection='row' mbs='none' justifyContent='center'>
-								<Margins inline='x4'>
+								<Margins inline={4}>
 									<Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview} />
 								</Margins>
 							</Box>
@@ -169,7 +169,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup mbs='x8' stretch>
+				<ButtonGroup mbs={8} stretch>
 					<Button icon='trash' danger onClick={handleDeleteButtonClick}>
 						{t('Delete')}
 					</Button>

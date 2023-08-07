@@ -49,7 +49,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 				{isLoadingUserMessages && <Message>{t('Loading')}</Message>}
 
 				{isSuccessUserMessages && (
-					<Box padding='x15'>
+					<Box padding={16}>
 						{report.messages.length > 0 && (
 							<Callout title={t('Moderation_Duplicate_messages')} type='warning' icon='warning'>
 								{t('Moderation_Duplicate_messages_warning')}
@@ -57,7 +57,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 						)}
 
 						{!report.user && (
-							<Callout mbs='x8' type='warning' icon='warning'>
+							<Callout mbs={8} type='warning' icon='warning'>
 								{t('Moderation_User_deleted_warning')}
 							</Callout>
 						)}
@@ -79,7 +79,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 					))}
 				{isSuccessUserMessages && report.messages.length === 0 && <GenericNoResults />}
 				{isError && (
-					<Box display='flex' flexDirection='column' alignItems='center' pb='x20' color='default'>
+					<Box display='flex' flexDirection='column' alignItems='center' pb={20} color='default'>
 						<StatesIcon name='warning' variation='danger' />
 						<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 						<StatesActions>

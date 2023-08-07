@@ -26,8 +26,8 @@ const UpgradeTab = ({ type, currentPath, trialEndDate }: UpgradeTabProps): React
 
 	return (
 		<Sidebar.GenericItem active={currentPath === path} href={path} featured>
-			<Icon name='arrow-stack-up' size='x20' mi='x4' />
-			<Box withTruncatedText fontScale='p2' mi='x4'>
+			<Icon name='arrow-stack-up' size='x20' mi={4} />
+			<Box withTruncatedText fontScale='p2' mi={4}>
 				{t(label)} {displayEmoji && <Emoji emojiHandle=':zap:' />}
 			</Box>
 		</Sidebar.GenericItem>
