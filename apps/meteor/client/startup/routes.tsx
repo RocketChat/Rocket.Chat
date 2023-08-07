@@ -17,6 +17,7 @@ const ConferenceRoute = lazy(() => import('../views/conference/ConferenceRoute')
 const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
 const LoginTokenRoute = lazy(() => import('../views/root/LoginTokenRoute'));
+const SAMLLoginRoute = lazy(() => import('../views/root/SAMLLoginRoute'));
 const ResetPasswordPage = lazy(() =>
 	import('@rocket.chat/web-ui-registration').then(({ ResetPasswordPage }) => ({ default: ResetPasswordPage })),
 );
@@ -103,6 +104,10 @@ declare module '@rocket.chat/ui-contexts' {
 		'oauth/error': {
 			pathname: `/oauth/error/${string}`;
 			pattern: '/oauth/error/:error';
+		};
+		'saml': {
+			pathname: `/saml/${string}`;
+			pattern: '/saml/:token';
 		};
 	}
 }
@@ -224,6 +229,11 @@ router.defineRoutes([
 		path: '/oauth/error/:error',
 		id: 'oauth/error',
 		element: appLayout.wrap(<OAuthErrorPage />),
+	},
+	{
+		path: '/saml/:token',
+		id: 'saml',
+		element: appLayout.wrap(<SAMLLoginRoute />),
 	},
 	{
 		path: '*',

@@ -17,7 +17,7 @@ const jsonParser = (options: ExtendedFetchOptions) => {
 
 	if (isPostOrPutOrDeleteWithBody(options)) {
 		try {
-			if (options && typeof options.body === 'object') {
+			if (options && typeof options.body === 'object' && !Buffer.isBuffer(options.body)) {
 				options.body = JSON.stringify(options.body);
 				options.headers = {
 					'Content-Type': 'application/json',

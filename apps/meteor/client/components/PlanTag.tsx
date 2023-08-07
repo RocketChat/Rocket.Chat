@@ -20,7 +20,7 @@ function PlanTag(): ReactElement {
 	return (
 		<>
 			{plans.map((name) => (
-				<Box marginInline='x4' display='inline-block' verticalAlign='middle' key={name}>
+				<Box marginInline={4} display='inline-block' verticalAlign='middle' key={name}>
 					<Tag variant='primary'>{name}</Tag>
 				</Box>
 			))}

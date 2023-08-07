@@ -295,6 +295,8 @@ export class SlackImporter extends Base {
 
 		ImporterWebsocket.progressUpdated({ rate: 100 });
 		await this.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
+
+		return this.progress;
 	}
 
 	parseMentions(newMessage) {
@@ -400,6 +402,8 @@ export class SlackImporter extends Base {
 				}
 				break;
 		}
+
+		return false;
 	}
 
 	makeSlackMessageId(channelId, ts, fileIndex = undefined) {

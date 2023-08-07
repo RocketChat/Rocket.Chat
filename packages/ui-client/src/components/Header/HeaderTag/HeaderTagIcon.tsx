@@ -1,4 +1,4 @@
-import { Icon } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps, FC, ReactElement } from 'react';
 import { isValidElement } from 'react';
 
@@ -11,7 +11,13 @@ const HeaderTagIcon: FC<HeaderIconProps> = ({ icon }) => {
 		return null;
 	}
 
-	return isValidElement<any>(icon) ? icon : <Icon size='x12' mie='x4' {...icon} />;
+	return isValidElement<any>(icon) ? (
+		<Box marginInlineEnd={4} display='inline-block' verticalAlign='middle'>
+			{icon}
+		</Box>
+	) : (
+		<Icon size='x12' mie={4} {...icon} />
+	);
 };
 
 export default HeaderTagIcon;
