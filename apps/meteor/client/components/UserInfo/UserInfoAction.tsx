@@ -8,7 +8,7 @@ type UserInfoActionProps = {
 } & ComponentProps<typeof Button>;
 
 const UserInfoAction = ({ icon, label, ...props }: UserInfoActionProps): ReactElement => (
-	<Button icon={icon} title={label} {...props} mi='x4'>
+	<Button icon={icon} title={label} {...props} mi={4}>
 		{label}
 	</Button>
 );

@@ -23,17 +23,17 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 			is='header'
 			borderBlockEndWidth='default'
 			minHeight='x64'
-			pb='x8'
+			pb={8}
 			borderBlockEndColor={borderBlockEndColor ?? border ? 'extra-light' : 'transparent'}
 			{...props}
 		>
-			<Box height='100%' marginInline='x24' display='flex' flexDirection='row' flexWrap='wrap' alignItems='center' color='default'>
+			<Box height='100%' marginInline={24} display='flex' flexDirection='row' flexWrap='wrap' alignItems='center' color='default'>
 				{isMobile && (
 					<HeaderToolbox>
 						<BurgerMenu />
 					</HeaderToolbox>
 				)}
-				{onClickBack && <IconButton small mie='x8' icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
+				{onClickBack && <IconButton small mie={8} icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
 				<Box is='h1' fontScale='h2' flexGrow={1} id='PageHeader-title' data-qa-type='PageHeader-title'>
 					{title}
 				</Box>

@@ -33,7 +33,7 @@ export default function NewZapier({ ...props }) {
 
 	return (
 		<>
-			<Callout type='warning' icon='warning' title={t('Zapier_integration_has_been_deprecated')} mbs='x16' mbe='x4'>
+			<Callout type='warning' icon='warning' title={t('Zapier_integration_has_been_deprecated')} mbs={16} mbe={4}>
 				{t('Install_Zapier_from_marketplace')}
 			</Callout>
 			{!script && (

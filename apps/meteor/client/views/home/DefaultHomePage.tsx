@@ -30,10 +30,10 @@ const DefaultHomePage = (): ReactElement => {
 		<Page color='default' data-qa='page-home' data-qa-type='default' background='tint'>
 			<HomePageHeader />
 			<PageScrollableContent>
-				<Box is='h2' fontScale='h1' mb='x20' data-qa-id='homepage-welcome-text'>
+				<Box is='h2' fontScale='h1' mb={20} data-qa-id='homepage-welcome-text'>
 					{t('Welcome_to_workspace', { Site_Name: workspaceName || 'Rocket.Chat' })}
 				</Box>
-				<Box is='h3' fontScale='h3' mb='x16'>
+				<Box is='h3' fontScale='h3' mb={16}>
 					{t('Some_ideas_to_get_you_started')}
 				</Box>
 				<Grid margin='neg-x8'>
@@ -61,7 +61,7 @@ const DefaultHomePage = (): ReactElement => {
 					</HomepageGridItem>
 				</Grid>
 				{(isAdmin || (isCustomContentVisible && !isCustomContentBodyEmpty)) && (
-					<Box pbs='x16' mbe='x32'>
+					<Box pbs={16} mbe={32}>
 						<CustomContentCard />
 					</Box>
 				)}
