@@ -13,7 +13,7 @@ import {
 import { useTranslation, useUserPreference, useLayout, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
-import React, { memo, useRef, useReducer, useCallback } from 'react';
+import React, { memo, useRef, useReducer, useCallback, useEffect } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
@@ -147,6 +147,37 @@ const MessageBox = ({
 
 	const { md, channels, mentions, setShowMarkdownPreview, showMarkdownPreview, handleViewPreview } = useMarkdownPreview(rid);
 
+	const handleKeyDown = (e: any) => {
+		if (e.key === 'Enter' && !e.shiftKey) {
+			e.preventDefault();
+			handleSendMessage();
+		}
+	};
+
+	const handlePreviewShortcut = (e: any) => {
+		// Preview on "Alt + Shift + M"
+		if (e.altKey && e.shiftKey && e.key === 'M') {
+			e.preventDefault();
+			handleViewPreview(chat.composer?.text as any);
+		}
+	};
+
+	useEffect(() => {
+		document.addEventListener('keydown', handlePreviewShortcut);
+
+		return () => {
+			document.removeEventListener('keydown', handlePreviewShortcut);
+		};
+	});
+
+	useEffect(() => {
+		document.addEventListener('keydown', handleKeyDown);
+
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown);
+		};
+	});
+
 	const handleOpenEmojiPicker: MouseEventHandler<HTMLElement> = useMutableCallback((e) => {
 		e.stopPropagation();
 		e.preventDefault();
@@ -179,12 +210,6 @@ const MessageBox = ({
 		const input = event.target as HTMLTextAreaElement;
 
 		const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
-
-		if (isSubmitKey && showMarkdownPreview) {
-			event.preventDefault();
-			handleSendMessage();
-			return false;
-		}
 
 		if (isSubmitKey) {
 			const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
