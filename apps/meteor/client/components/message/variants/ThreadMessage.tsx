@@ -32,7 +32,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 	const messageRef = useRef(null);
 
 	// Checks if is videoconf message to limit toolbox actions
-	const messageContext: MessageActionContext = message.t === 'videoconf' ? 'videoconf-threads' : 'threads';
+	const messageContext: MessageActionContext = isVideoConfMessage(message) ? 'videoconf-threads' : 'threads';
 
 	useJumpToMessage(message._id, messageRef);
 
