@@ -62,7 +62,7 @@ const ThemePage = () => {
 								return (
 									<Field key={id} pbe={themes.length - 1 ? undefined : 'x28'} pbs={index === 0 ? undefined : 'x28'}>
 										<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-											<Field.Label display='flex' alignItems='center' htmlFor={id}>
+											<Field.Label display='flex' alignItems='center' fontScale='p2b' htmlFor={id}>
 												{t.has(title) ? t(title) : title}
 												{communityDisabled && (
 													<Box is='span' mis={8}>
