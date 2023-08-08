@@ -1,4 +1,5 @@
 import type { Item } from '../../Components/DropDown/types';
+import { callout } from '../callout';
 import {
   actionWithButtonDefault,
   actionWithButtonPrimary,
@@ -9,17 +10,10 @@ import {
   actionWithButtonSuccess,
   actionWithButtonSecondaryWithVariant,
   actionWithMenu,
-  // actionWithImage,
-  // actionWithSingleLineInput,
-  // actionWithMultiLineInput,
   actionWithSingleStaticSelect,
   actionWithMultiStaticSelect,
   actionWithDatePicker,
   actionWithLinearScale,
-  actionWithToggleSwitch,
-  actionWithRadioButton,
-  actionWithCheckbox,
-  actionWithTimePicker,
 } from './action';
 import {
   contextWithPlainText,
@@ -28,7 +22,6 @@ import {
   contextWithAllElements,
 } from './context';
 import { divider } from './divider';
-import { callout } from './callout';
 import { imageWithTitle, imageWithoutTitle } from './image';
 import {
   inputWithSingleLineInput,
@@ -59,11 +52,11 @@ import {
   sectionWithMenu,
   sectionWithdatePicker,
 } from './section';
-import {
-  disabled,
-  plain,
-  selected,
-} from './tabNavigation';
+import { disabled, plain, selected } from '../tabNavigation';
+import { actionWithToggleSwitch } from '../action/toggleSwitch';
+import { actionWithTimePicker } from '../action/timePicker';
+import { actionWithRadioButton } from '../action/radioButton';
+import { actionWithCheckbox } from '../action/checkbox';
 
 const BlocksTree: Item = [
   {
@@ -347,9 +340,9 @@ const BlocksTree: Item = [
       {
         label: 'Selected',
         payload: selected,
-      }
+      },
     ],
-  }
+  },
 ];
 
 export default BlocksTree;
