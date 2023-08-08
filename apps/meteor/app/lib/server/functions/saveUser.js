@@ -16,7 +16,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { validateEmailDomain } from '../lib';
-import { passwordPolicy } from '../lib/passwordPolicy';
+import { passwordPolicy, PasswordPolicyError } from '../lib/passwordPolicy';
 import { checkEmailAvailability } from './checkEmailAvailability';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { saveUserIdentity } from './saveUserIdentity';
