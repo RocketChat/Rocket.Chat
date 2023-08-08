@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
+import { kitContext } from '@rocket.chat/fuselage-ui-kit';
 import type { FC } from 'react';
 import { useContext, useState, useEffect } from 'react';
 import type { DropResult } from 'react-beautiful-dnd';
@@ -75,7 +75,7 @@ const Surface: FC = () => {
 
   return (
     <Box w="100%" h="100%" padding="20px">
-      <UiKitContext.Provider
+      <kitContext.Provider
         value={{
           action: (a) => {
             preview.action = a;
@@ -96,7 +96,7 @@ const Surface: FC = () => {
             onDragEnd={onDragEnd}
           />
         </SurfaceRender>
-      </UiKitContext.Provider>
+      </kitContext.Provider>
     </Box>
   );
 };
