@@ -293,16 +293,16 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 		for await (const item of message.urls) {
 			if (item.ignoreParse === true) {
 				log.debug('URL ignored', item.url);
-				break;
+				continue;
 			}
 			if (!isURL(item.url)) {
-				break;
+				continue;
 			}
 			const data = await getUrlMetaWithCache(item.url);
 			if (data != null) {
 				if (isOEmbedUrlContentResult(data) && data.attachments) {
 					attachments.push(...data.attachments);
-					break;
+					continue;
 				}
 				if (isOEmbedUrlWithMetadata(data) && data.meta != null) {
 					item.meta = getRelevantMetaTags(data.meta) || {};
