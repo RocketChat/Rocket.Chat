@@ -29,7 +29,7 @@ const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: 
 		>
 			<>
 				<Box dangerouslySetInnerHTML={{ __html: t('E2E_password_reveal_text', { randomPassword }) }} />
-				<Button disabled={hasCopied} small mbs='x24' onClick={() => copy()}>
+				<Button disabled={hasCopied} small mbs={24} onClick={() => copy()}>
 					{hasCopied ? t('Copied') : t('Copy_password')}
 				</Button>
 			</>
