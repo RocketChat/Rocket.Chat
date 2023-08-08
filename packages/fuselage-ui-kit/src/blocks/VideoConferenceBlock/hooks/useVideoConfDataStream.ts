@@ -1,6 +1,7 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useSingleStream } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 import { useVideoConfData } from './useVideoConfData';
 
@@ -8,7 +9,7 @@ export const useVideoConfDataStream = ({
   rid,
   callId,
 }: {
-  rid: string;
+  rid: IRoom['_id'];
   callId: string;
 }) => {
   const queryClient = useQueryClient();
@@ -22,7 +23,7 @@ export const useVideoConfDataStream = ({
         id === callId &&
         queryClient.invalidateQueries(['video-conference', callId])
     );
-  }, [rid, callId]);
+  }, [rid, callId, subscribeNotifyRoom, queryClient]);
 
   return useVideoConfData({ callId });
 };

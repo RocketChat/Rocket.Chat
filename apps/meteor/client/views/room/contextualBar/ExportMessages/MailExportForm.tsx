@@ -139,9 +139,9 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 				</Field.Row>
 			</Field>
 
-			{errorMessage && <Callout type={'danger'}>{errorMessage}</Callout>}
+			{errorMessage && <Callout type='danger'>{errorMessage}</Callout>}
 
-			<ButtonGroup stretch mb='x12'>
+			<ButtonGroup stretch mb={12}>
 				<Button onClick={onCancel}>{t('Cancel')}</Button>
 				<Button primary onClick={(): Promise<void> => handleSubmit()}>
 					{t('Send')}

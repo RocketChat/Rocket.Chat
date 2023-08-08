@@ -34,7 +34,7 @@ const RoleCell = ({ _id, name, description, onChange, lineHovered, permissionId,
 
 	return (
 		<GenericTableCell withTruncatedText>
-			<Margins inline='x2'>
+			<Margins inline={2}>
 				<CheckBox checked={granted} onChange={handleChange} disabled={isDisabled} />
 				{!loading && (
 					<Box display='inline' color='hint' invisible={!lineHovered}>

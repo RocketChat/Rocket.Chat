@@ -26,7 +26,11 @@ export default {
 const Template: ComponentStory<typeof Medium> = (args) => (
 	<Medium
 		{...args}
-		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
+		titleIcon={
+			<Box mi={4}>
+				<Status.Online />
+			</Box>
+		}
 		avatar={<UserAvatar username='john.doe' size='x16' url='https://via.placeholder.com/16' />}
 	/>
 );

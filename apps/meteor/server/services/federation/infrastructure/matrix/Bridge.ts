@@ -3,19 +3,22 @@ import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appser
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import type { IExternalUserProfileInformation, IFederationBridge, IFederationBridgeRegistrationFile } from '../../domain/IFederationBridge';
+import type { RocketChatSettingsAdapter } from '../rocket-chat/adapters/Settings';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
-import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './converters/room/to-internal-parser-formatter';
 import { convertEmojisFromRCFormatToMatrixFormat } from './converters/room/MessageReceiver';
+import { formatExternalUserIdToInternalUsernameFormat } from './converters/room/RoomReceiver';
+import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './converters/room/to-internal-parser-formatter';
 import type { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
-import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definitions/events/RoomMessageSent';
 import { MatrixEventType } from './definitions/MatrixEventType';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 import { RoomMembershipChangedEventType } from './definitions/events/RoomMembershipChanged';
+import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definitions/events/RoomMessageSent';
 import type { MatrixEventRoomNameChanged } from './definitions/events/RoomNameChanged';
 import type { MatrixEventRoomTopicChanged } from './definitions/events/RoomTopicChanged';
-import type { RocketChatSettingsAdapter } from '../rocket-chat/adapters/Settings';
-import { formatExternalUserIdToInternalUsernameFormat } from './converters/room/RoomReceiver';
+import { HttpStatusCodes } from './helpers/HtttpStatusCodes';
+import { extractUserIdAndHomeserverFromMatrixId } from './helpers/MatrixIdStringTools';
+import { VerificationStatus, MATRIX_USER_IN_USE } from './helpers/MatrixIdVerificationTypes';
 
 let MatrixUserInstance: any;
 
@@ -164,6 +167,41 @@ export class MatrixBridge implements IFederationBridge {
 		} catch (e) {
 			// no-op
 		}
+	}
+
+	public async verifyInviteeIds(matrixIds: string[]): Promise<Map<string, string>> {
+		const matrixIdVerificationMap = new Map();
+		const matrixIdsVerificationPromises = matrixIds.map((matrixId) => this.verifyInviteeId(matrixId));
+		const matrixIdsVerificationPromiseResponse = await Promise.allSettled(matrixIdsVerificationPromises);
+		const matrixIdsVerificationFulfilledResults = matrixIdsVerificationPromiseResponse
+			.filter((result): result is PromiseFulfilledResult<VerificationStatus> => result.status === 'fulfilled')
+			.map((result) => result.value);
+
+		matrixIds.forEach((matrixId, idx) => matrixIdVerificationMap.set(matrixId, matrixIdsVerificationFulfilledResults[idx]));
+		return matrixIdVerificationMap;
+	}
+
+	private async verifyInviteeId(externalInviteeId: string): Promise<VerificationStatus> {
+		const [userId, homeserverUrl] = extractUserIdAndHomeserverFromMatrixId(externalInviteeId);
+		try {
+			const response = await fetch(`https://${homeserverUrl}/_matrix/client/v3/register/available`, { params: { username: userId } });
+
+			if (response.status === HttpStatusCodes.BAD_REQUEST) {
+				const responseBody = await response.json();
+
+				if (responseBody.errcode === MATRIX_USER_IN_USE) {
+					return VerificationStatus.VERIFIED;
+				}
+			}
+
+			if (response.status === HttpStatusCodes.OK) {
+				return VerificationStatus.UNVERIFIED;
+			}
+		} catch (e) {
+			return VerificationStatus.UNABLE_TO_VERIFY;
+		}
+
+		return VerificationStatus.UNABLE_TO_VERIFY;
 	}
 
 	public async createUser(username: string, name: string, domain: string, avatarUrl?: string): Promise<string> {

@@ -1,5 +1,5 @@
-import { Mongo } from 'meteor/mongo';
 import type { IRole, IUser } from '@rocket.chat/core-typings';
+import { Mongo } from 'meteor/mongo';
 
 class UsersCollection extends Mongo.Collection<IUser> {
 	constructor() {

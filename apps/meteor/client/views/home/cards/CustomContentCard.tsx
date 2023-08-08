@@ -54,13 +54,13 @@ const CustomContentCard = (): ReactElement | null => {
 	if (isAdmin) {
 		return (
 			<Card data-qa-id='homepage-custom-card'>
-				<Box display='flex' mbe='x12'>
+				<Box display='flex' mbe={12}>
 					<Tag role='status' aria-label={willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}>
-						<Icon mie='x4' name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x12' />
+						<Icon mie={4} name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x12' />
 						{willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
 				</Box>
-				<Box mb='x8' role='status' aria-label={isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : customContentBody}>
+				<Box mb={8} role='status' aria-label={isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : customContentBody}>
 					{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}
 				</Box>
 				<Card.FooterWrapper>
@@ -69,21 +69,22 @@ const CustomContentCard = (): ReactElement | null => {
 							{t('Customize_Content')}
 						</Button>
 						<Button
+							icon={willNotShowCustomContent ? 'eye' : 'eye-off'}
 							disabled={isCustomContentBodyEmpty || (isCustomContentVisible && isCustomContentOnly)}
 							title={isCustomContentBodyEmpty ? t('Action_Available_After_Custom_Content_Added') : userVisibilityTooltipText}
 							onClick={handleChangeCustomContentVisibility}
 							role='button'
 						>
-							<Icon mie='x4' name={willNotShowCustomContent ? 'eye' : 'eye-off'} size='x16' />
 							{willNotShowCustomContent ? t('Show_To_Workspace') : t('Hide_On_Workspace')}
 						</Button>
 						<Button
+							icon='lightning'
 							disabled={willNotShowCustomContent || !isEnterprise}
 							title={!isEnterprise ? t('Enterprise_Only') : customContentOnlyTooltipText}
 							onClick={handleOnlyShowCustomContent}
 							role='button'
 						>
-							<Icon name='lightning' size='x16' /> {!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
+							{!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
 						</Button>
 					</Card.Footer>
 				</Card.FooterWrapper>
@@ -94,7 +95,7 @@ const CustomContentCard = (): ReactElement | null => {
 	if (!willNotShowCustomContent && !isCustomContentOnly) {
 		return (
 			<Card>
-				<Box mb='x8'>
+				<Box mb={8}>
 					<CustomHomepageContent role='status' aria-label={customContentBody} />
 				</Box>
 			</Card>

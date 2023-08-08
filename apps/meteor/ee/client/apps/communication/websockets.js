@@ -1,8 +1,8 @@
 import { Emitter } from '@rocket.chat/emitter';
 
 import { CachedCollectionManager } from '../../../../app/ui-cached-collection/client';
-import { slashCommands } from '../../../../app/utils/client';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
+import { slashCommands } from '../../../../app/utils/lib/slashCommand';
 
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
@@ -27,15 +27,23 @@ export class AppWebsocketReceiver extends Emitter {
 	}
 
 	listenStreamerEvents() {
-		Object.values(AppEvents).forEach((eventName) => {
-			sdk.stream('apps', [eventName], this.emit.bind(this, eventName));
+		sdk.stream('apps', ['apps'], (key, args) => {
+			switch (key) {
+				case AppEvents.COMMAND_ADDED:
+					this.onCommandAddedOrUpdated(...args);
+					break;
+				case AppEvents.COMMAND_UPDATED:
+					this.onCommandAddedOrUpdated(...args);
+					break;
+				case AppEvents.COMMAND_REMOVED:
+					this.onCommandRemovedOrDisabled(...args);
+					break;
+				case AppEvents.COMMAND_DISABLED:
+					this.onCommandRemovedOrDisabled(...args);
+					break;
+			}
+			this.emit(key, ...args);
 		});
-
-		sdk.stream('apps', [AppEvents.COMMAND_ADDED], this.onCommandAddedOrUpdated);
-		sdk.stream('apps', [AppEvents.COMMAND_UPDATED], this.onCommandAddedOrUpdated);
-		sdk.stream('apps', [AppEvents.COMMAND_REMOVED], this.onCommandRemovedOrDisabled);
-		sdk.stream('apps', [AppEvents.COMMAND_DISABLED], this.onCommandRemovedOrDisabled);
-		sdk.stream('apps', [AppEvents.ACTIONS_CHANGED], this.onActionsChanged);
 	}
 
 	registerListener(event, listener) {
@@ -70,6 +78,4 @@ export class AppWebsocketReceiver extends Emitter {
 	onCommandRemovedOrDisabled = (command) => {
 		delete slashCommands.commands[command];
 	};
-
-	// onActionsChanged = () => loadButtons();
 }

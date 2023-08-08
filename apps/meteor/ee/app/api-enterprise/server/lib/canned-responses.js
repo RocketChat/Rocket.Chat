@@ -1,8 +1,7 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { CannedResponse } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import { getTagsInformation } from './tags';
 import { getDepartmentsWhichUserCanAccess } from '../../../livechat-enterprise/server/api/lib/departments';
 
 export async function findAllCannedResponses({ userId }) {
@@ -22,20 +21,11 @@ export async function findAllCannedResponses({ userId }) {
 				},
 			],
 		}).toArray();
-		return getTagsInformation(cannedResponses);
-	}
-
-	// If the user it not any of the previous roles nor an agent, then get only his own responses
-	if (!(await hasPermissionAsync(userId, 'view-agent-canned-responses'))) {
-		const cannedResponses = await CannedResponse.find({
-			scope: 'user',
-			userId,
-		}).toArray();
-		return getTagsInformation(cannedResponses);
+		return cannedResponses;
 	}
 
 	// Last scenario: user is an agent, so get his own responses and those from the departments he is in
-	const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId);
+	const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId, true);
 
 	const cannedResponses = await CannedResponse.find({
 		$or: [
@@ -55,15 +45,14 @@ export async function findAllCannedResponses({ userId }) {
 		],
 	}).toArray();
 
-	return getTagsInformation(cannedResponses);
+	return cannedResponses;
 }
 
 export async function findAllCannedResponsesFilter({ userId, shortcut, text, departmentId, scope, createdBy, tags = [], options = {} }) {
 	let extraFilter = [];
 	// if user cannot see all, filter to private + public + departments user is in
 	if (!(await hasPermissionAsync(userId, 'view-all-canned-responses'))) {
-		const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId);
-
+		const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId, true);
 		const isDepartmentInScope = (departmentId) => !!accessibleDepartments.includes(departmentId);
 
 		const departmentIds = departmentId && isDepartmentInScope(departmentId) ? [departmentId] : accessibleDepartments;
@@ -129,7 +118,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 	});
 	const [cannedResponses, total] = await Promise.all([cursor.toArray(), totalCount]);
 	return {
-		cannedResponses: await getTagsInformation(cannedResponses),
+		cannedResponses,
 		total,
 	};
 }
@@ -139,7 +128,7 @@ export async function findOneCannedResponse({ userId, _id }) {
 		return CannedResponse.findOneById(_id);
 	}
 
-	const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId);
+	const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId, true);
 
 	const filter = {
 		_id,

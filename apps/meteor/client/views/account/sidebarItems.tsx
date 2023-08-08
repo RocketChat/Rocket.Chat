@@ -13,15 +13,20 @@ export const {
 	subscribeToSidebarItems: subscribeToAccountSidebarItems,
 } = createSidebarItems([
 	{
-		href: '/account/preferences',
-		i18nLabel: 'Preferences',
-		icon: 'customize',
-	},
-	{
 		href: '/account/profile',
 		i18nLabel: 'Profile',
 		icon: 'user',
 		permissionGranted: (): boolean => settings.get('Accounts_AllowUserProfileChange'),
+	},
+	{
+		href: '/account/theme',
+		i18nLabel: 'Theme',
+		icon: 'palette',
+	},
+	{
+		href: '/account/preferences',
+		i18nLabel: 'Preferences',
+		icon: 'customize',
 	},
 	{
 		href: '/account/security',

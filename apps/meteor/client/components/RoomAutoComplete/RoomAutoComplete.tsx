@@ -45,10 +45,10 @@ const RoomAutoComplete = ({ value, onChange, ...props }: RoomAutoCompleteProps):
 			setFilter={setFilter}
 			renderSelected={({ selected: { value, label } }): ReactElement => (
 				<>
-					<Box margin='none' mi='x2'>
+					<Box margin='none' mi={2}>
 						<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />
 					</Box>
-					<Box margin='none' mi='x2'>
+					<Box margin='none' mi={2}>
 						{label?.name}
 					</Box>
 				</>

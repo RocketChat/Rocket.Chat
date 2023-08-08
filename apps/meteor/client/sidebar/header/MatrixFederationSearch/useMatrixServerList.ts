@@ -6,6 +6,5 @@ export const useMatrixServerList = () => {
 	return useQuery(['federation/listServersByUsers'], async () => fetchServerList(), {
 		useErrorBoundary: true,
 		staleTime: Infinity,
-		refetchOnWindowFocus: false,
 	});
 };
