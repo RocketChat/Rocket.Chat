@@ -1,4 +1,4 @@
-import type { IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import { type IThreadMessage, type IThreadMainMessage, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useUserId } from '@rocket.chat/ui-contexts';
