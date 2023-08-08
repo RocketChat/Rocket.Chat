@@ -115,11 +115,11 @@ Meteor.startup(async () => {
 
 			adminUser.type = 'user';
 
-			const id = await Users.create(adminUser);
+			const { insertedId: userId } = await Users.create(adminUser);
 
-			await Accounts.setPasswordAsync(id, process.env.ADMIN_PASS);
+			await Accounts.setPasswordAsync(userId, process.env.ADMIN_PASS);
 
-			await addUserRolesAsync(id, ['admin']);
+			await addUserRolesAsync(userId, ['admin']);
 		} else {
 			console.log(colors.red('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'));
 		}
