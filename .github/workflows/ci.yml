@@ -282,6 +282,7 @@ jobs:
           cd /tmp/build
           tar xzf Rocket.Chat.tar.gz
           rm Rocket.Chat.tar.gz
+          mv coverage-entrypoint.sh bundle/coverage-entrypoint.sh
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
