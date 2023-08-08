@@ -17,7 +17,7 @@ export class OmnichannelManager {
 	}
 
 	get btnAdd(): Locator {
-		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add"');
+		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add manager"');
 	}
 
 	firstRowInTable(userId: string) {
