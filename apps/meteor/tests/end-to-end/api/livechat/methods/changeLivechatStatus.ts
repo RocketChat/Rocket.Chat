@@ -1,7 +1,6 @@
-/* eslint-env mocha */
-
 import type { ILivechatAgent, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, request, credentials, methodCall } from '../../../../data/api-data';
