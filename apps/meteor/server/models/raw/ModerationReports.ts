@@ -1,4 +1,11 @@
-import type { IMessage, IModerationAudit, IModerationReport, RocketChatRecordDeleted, MessageReport } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IModerationAudit,
+	IModerationReport,
+	RocketChatRecordDeleted,
+	MessageReport,
+	UserReport,
+} from '@rocket.chat/core-typings';
 import type { FindPaginated, IModerationReportsModel, PaginationParams } from '@rocket.chat/model-typings';
 import type { AggregationCursor, Collection, Db, Document, FindCursor, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 
@@ -38,9 +45,9 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 	}
 
 	createWithDescriptionAndUser(
-		reportedUser: IModerationReport['reportedUser'],
-		description: IModerationReport['description'],
-		reportedBy: IModerationReport['reportedBy'],
+		reportedUser: UserReport['reportedUser'],
+		description: UserReport['description'],
+		reportedBy: UserReport['reportedBy'],
 	): ReturnType<BaseRaw<IModerationReport>['insertOne']> {
 		const record = {
 			description,
