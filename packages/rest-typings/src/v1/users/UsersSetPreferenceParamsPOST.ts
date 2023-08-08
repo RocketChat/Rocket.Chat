@@ -4,7 +4,7 @@ import Ajv from 'ajv';
 const ajv = new Ajv({
 	coerceTypes: true,
 });
-export type FontSize = '100%' | '14px' | '18px' | '20px' | '24px' | '28px' | '32px' | '36px' | '40px' | '44px' | '48px';
+export type FontSize = '100%' | '14px' | '18px' | '20px' | '24px';
 
 export type UsersSetPreferencesParamsPOST = {
 	userId?: string;
