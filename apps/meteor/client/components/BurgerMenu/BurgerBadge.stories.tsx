@@ -13,7 +13,7 @@ export default {
 	},
 	decorators: [
 		(fn): ReactElement => (
-			<Box size={24} backgroundColor='neutral' position='relative'>
+			<Box size='x24' backgroundColor='neutral' position='relative'>
 				{fn()}
 			</Box>
 		),

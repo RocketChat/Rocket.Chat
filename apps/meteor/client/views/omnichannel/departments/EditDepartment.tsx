@@ -473,9 +473,9 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							</Field>
 						)}
 
-						<Divider mb='x16' />
+						<Divider mb={16} />
 						<Field>
-							<Field.Label mb='x4'>{t('Agents')}:</Field.Label>
+							<Field.Label mb={4}>{t('Agents')}:</Field.Label>
 							<Box display='flex' flexDirection='column' height='50vh'>
 								<DepartmentsAgentsTable control={control} register={register} />
 							</Box>

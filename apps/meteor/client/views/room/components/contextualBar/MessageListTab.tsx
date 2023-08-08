@@ -58,7 +58,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 			<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0}>
 				{queryResult.isLoading && (
 					<Box paddingInline={24} paddingBlock={12}>
-						<Throbber size={12} />
+						<Throbber size='x12' />
 					</Box>
 				)}
 				{queryResult.isSuccess && (
