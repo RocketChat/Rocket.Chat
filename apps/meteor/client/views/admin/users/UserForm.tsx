@@ -148,7 +148,7 @@ const UserForm = ({ availableRoles, onSave, preserveData, userData, setAvatarObj
 						</Field.Row>
 						{errors?.email && <Field.Error>{errors.email.message}</Field.Error>}
 						<Field.Row>
-							<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' mbs='x4'>
+							<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' mbs={4}>
 								<Box color='default' fontScale='p2m'>
 									{t('Verified')}
 								</Box>
