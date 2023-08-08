@@ -228,7 +228,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 					_id: {
 						rid: '$rid',
 						date: {
-							$dateToString: { format: "%Y%m%d", date: "$ts" }
+							$dateToString: { format: '%Y%m%d', date: '$ts' },
 						},
 					},
 					messages: { $sum: 1 },
@@ -240,9 +240,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 					data: {
 						$push: {
 							date: '$_id.date',
-							messages: '$messages'
-						}
-					}
+							messages: '$messages',
+						},
+					},
 				},
 			},
 			{
