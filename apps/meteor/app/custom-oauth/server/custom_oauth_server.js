@@ -136,7 +136,7 @@ export class CustomOAuth {
 			const request = await fetch(`${this.tokenPath}`, {
 				method: 'POST',
 				headers,
-				params,
+				body: params,
 			});
 
 			if (!request.ok) {
