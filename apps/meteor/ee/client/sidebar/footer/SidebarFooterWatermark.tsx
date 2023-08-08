@@ -15,12 +15,12 @@ export const SidebarFooterWatermark = (): ReactElement | null => {
 	}
 
 	return (
-		<Box pi='x16' pbe='x8'>
+		<Box pi={16} pbe={8}>
 			<Box is='a' href='https://rocket.chat/' target='_blank' rel='noopener noreferrer'>
-				<Box fontScale='micro' color='hint' pbe='x4'>
+				<Box fontScale='micro' color='hint' pbe={4}>
 					{t('Powered_by_RocketChat')}
 				</Box>
-				<Box fontScale='micro' color='pure-white' pbe='x4'>
+				<Box fontScale='micro' color='pure-white' pbe={4}>
 					{t('Free_Edition')}
 				</Box>
 			</Box>

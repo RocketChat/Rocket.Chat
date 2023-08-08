@@ -91,7 +91,7 @@ const AccountFeaturePreviewPage = () => {
 								className={css`
 									white-space: break-spaces;
 								`}
-								pbe='x24'
+								pbe={24}
 								fontScale='p1'
 							>
 								{t('Feature_preview_page_description')}
@@ -106,13 +106,13 @@ const AccountFeaturePreviewPage = () => {
 														<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 															<Field.Label>{t(feature.i18n)}</Field.Label>
 															<Field.Row>
-																<Box mie='x12'>{t('Enabled')}</Box>
+																<Box mie={12}>{t('Enabled')}</Box>
 																<ToggleSwitch checked={feature.value} name={feature.name} onChange={handleFeatures} />
 															</Field.Row>
 														</Box>
-														{feature.description && <Field.Hint mbs='x12'>{t(feature.description)}</Field.Hint>}
+														{feature.description && <Field.Hint mbs={12}>{t(feature.description)}</Field.Hint>}
 													</Field>
-													{feature.imageUrl && <Box is='img' width='100%' height='auto' mbs='x16' src={feature.imageUrl} />}
+													{feature.imageUrl && <Box is='img' width='100%' height='auto' mbs={16} src={feature.imageUrl} />}
 												</Fragment>
 											))}
 										</FieldGroup>
