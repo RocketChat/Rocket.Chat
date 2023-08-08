@@ -246,6 +246,7 @@ const UserForm = ({ availableRoles, onSave, preserveData, userData, setAvatarObj
 							<Controller
 								control={control}
 								name='roles'
+								rules={{ required: t('The_field_is_required', t('roles')) }}
 								render={({ field: { onChange, value } }) => (
 									<MultiSelectFiltered
 										value={value}
