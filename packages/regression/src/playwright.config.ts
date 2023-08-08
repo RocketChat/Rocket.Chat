@@ -59,7 +59,7 @@ export default defineConfig({
 						styleMap: 'font-weight:normal;',
 						formatter: (v: any, rowItem: any, columnItem: any) => {
 							const key = rowItem[columnItem.id];
-							return `<a href="https://rocketchat.atlassian.net/${key}" target="_blank">${v}</a>`;
+							return `<a href="https://rocketchat.atlassian.net/browse/${key}" target="_blank">${v}</a>`;
 						},
 					});
 					defaultColumns.push({

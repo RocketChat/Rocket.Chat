@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
-		"@playwright/test": "^1.35.1",
+		"@playwright/test": "^1.36.2",
 		"@types/jest": "^27.4.1",
 		"dotenv": "^16.3.1",
 		"eslint": "^8.12.0",
