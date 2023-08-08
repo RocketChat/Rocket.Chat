@@ -1,3 +1,4 @@
+import { PasswordPolicyError } from '@rocket.chat/account-utils';
 import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
@@ -46,7 +47,14 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		passwordPolicy.validate(password);
+		try {
+			passwordPolicy.validate(password);
+		} catch (err) {
+			if (err instanceof PasswordPolicyError) {
+				throw new Meteor.Error(err.error, err.message, err.reasons);
+			}
+			throw err;
+		}
 
 		await Accounts.setPasswordAsync(userId, password, {
 			logout: false,

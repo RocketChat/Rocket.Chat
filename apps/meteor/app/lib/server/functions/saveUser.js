@@ -1,3 +1,4 @@
+import { PasswordPolicyError } from '@rocket.chat/account-utils';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import Gravatar from 'gravatar';
@@ -15,7 +16,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { validateEmailDomain } from '../lib';
-import { passwordPolicy, PasswordPolicyError } from '../lib/passwordPolicy';
+import { passwordPolicy } from '../lib/passwordPolicy';
 import { checkEmailAvailability } from './checkEmailAvailability';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { saveUserIdentity } from './saveUserIdentity';
@@ -382,21 +383,18 @@ export const saveUser = async function (userId, userData) {
 		await setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser);
 	}
 
-	if (
-		userData.password &&
-		userData.password.trim() &&
-		(await hasPermissionAsync(userId, 'edit-other-user-password')) &&
-
+	const validPassword = () => {
 		try {
-			passwordPolicy.validate(userData.password)
+			passwordPolicy.validate(userData.password);
 		} catch (err) {
-			if (err instanceof PasswordValidationError) {
-				throw new Meteor.Error(err.error, err.message, err.reasons)
+			if (err instanceof PasswordPolicyError) {
+				throw new Meteor.Error(err.error, err.message, err.reasons);
 			}
 			throw err;
 		}
-		
-	) {
+	};
+
+	if (userData.password && userData.password.trim() && (await hasPermissionAsync(userId, 'edit-other-user-password')) && validPassword) {
 		await Accounts.setPasswordAsync(userData._id, userData.password.trim());
 	} else {
 		sendPassword = false;
