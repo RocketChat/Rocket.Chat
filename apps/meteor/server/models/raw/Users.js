@@ -57,6 +57,7 @@ export class UsersRaw extends BaseRaw {
 			{ key: { statusConnection: 1 }, sparse: 1 },
 			{ key: { appId: 1 }, sparse: 1 },
 			{ key: { type: 1 } },
+			{ key: { federated: 1 }, sparse: true },
 			{ key: { federation: 1 }, sparse: true },
 			{ key: { isRemote: 1 }, sparse: true },
 			{ key: { 'services.saml.inResponseTo': 1 } },
@@ -76,6 +77,18 @@ export class UsersRaw extends BaseRaw {
 				unique: false,
 				sparse: true,
 				name: 'emails.address_insensitive',
+				collation: { locale: 'en', strength: 2, caseLevel: false },
+			},
+			// Used for case insensitive queries
+			// @deprecated
+			// Should be converted to unique index later within a migration to prevent errors of duplicated
+			// records. Those errors does not helps to identify the duplicated value so we need to find a
+			// way to help the migration in case it happens.
+			{
+				key: { username: 1 },
+				unique: false,
+				sparse: true,
+				name: 'username_insensitive',
 				collation: { locale: 'en', strength: 2, caseLevel: false },
 			},
 		];
@@ -321,13 +334,12 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	findOneByUsernameIgnoringCase(username, options) {
-		if (typeof username === 'string') {
-			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
-		}
-
 		const query = { username };
 
-		return this.findOne(query, options);
+		return this.findOne(query, {
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+			...options,
+		});
 	}
 
 	async findOneByLDAPId(id, attribute = undefined) {
