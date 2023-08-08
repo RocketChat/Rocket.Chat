@@ -3121,6 +3121,27 @@ const POSTLivechatAppearanceParamsSchema = {
 
 export const isPOSTLivechatAppearanceParams = ajv.compile<POSTLivechatAppearanceParams>(POSTLivechatAppearanceParamsSchema);
 
+type GETDashboardConversationsByType = {
+	start: string;
+	end: string;
+};
+
+const GETDashboardConversationsByTypeSchema = {
+	type: 'object',
+	properties: {
+		start: {
+			type: 'string',
+		},
+		end: {
+			type: 'string',
+		},
+	},
+	required: ['start', 'end'],
+	additionalProperties: false,
+};
+
+export const isGETDashboardConversationsByType = ajv.compile<GETDashboardConversationsByType>(GETDashboardConversationsByTypeSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -3687,5 +3708,20 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/inquiry.setSLA': {
 		PUT: (params: { roomId: string; sla: string }) => void;
+	};
+	'/v1/livechat/analytics/dashboards/conversations-by-source': {
+		GET: (params: GETDashboardConversationsByType) => { data: Record<string, number> };
+	};
+	'/v1/livechat/analytics/dashboards/conversations-by-status': {
+		GET: (params: GETDashboardConversationsByType) => { data: Record<string, number> };
+	};
+	'/v1/livechat/analytics/dashboards/conversations-by-department': {
+		GET: (params: GETDashboardConversationsByType) => { data: Record<string, number> };
+	};
+	'/v1/livechat/analytics/dashboards/conversations-by-tags': {
+		GET: (params: GETDashboardConversationsByType) => { data: Record<string, number> };
+	};
+	'/v1/livechat/analytics/dashboards/conversations-by-agent': {
+		GET: (params: GETDashboardConversationsByType) => { data: Record<string, number> };
 	};
 };
