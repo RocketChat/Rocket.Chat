@@ -211,6 +211,18 @@ jobs:
         working-directory: ./apps/meteor
         run: yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
 
+      - name: Copy coverage from containers
+        if: inputs.type == 'ui' && inputs.release == 'ee'
+        run: |
+          docker cp rocketchat:/app/.nyc_output ./.nyc_output
+
+      - name: Store e2e-ee-coverage
+        if: inputs.type == 'ui' && inputs.release == 'ee'
+        uses: actions/upload-artifact@v3
+        with:
+          name: e2e-ee-coverage
+          path: ./.nyc_output
+
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
         uses: actions/upload-artifact@v3

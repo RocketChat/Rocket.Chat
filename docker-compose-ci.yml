@@ -24,6 +24,7 @@ services:
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat.service: rocketchat
       traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
+    command: ['sh', './coverage-entrypoint.sh']
 
   authorization-service:
     platform: linux/amd64
