@@ -2747,7 +2747,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			},
 			{
 				$group: {
-					_id: { $ifNull: ['$tags', ['No_Tag']] },
+					_id: { $ifNull: ['$tags', 'No_Tag'] },
 					Chats: {
 						$sum: 1,
 					},
@@ -2772,7 +2772,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			},
 			{
 				$addFields: {
-					tagName: { $ifNull: ['$tag.name', '$_id', 'No_Tag'] },
+					tagName: { $ifNull: ['$tag.name', '$_id'] },
 				},
 			},
 			{
@@ -2824,7 +2824,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{
 				$project: {
 					_id: 0,
-					agentName: { $ifNull: ['$agent.name', '$_id', 'Unspecified'] },
+					agentName: { $ifNull: ['$agent.name', '$_id'] },
 					count: '$total',
 				},
 			},

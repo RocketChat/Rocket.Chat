@@ -67,7 +67,9 @@ describe('LIVECHAT - reports', () => {
 				.expect(200);
 
 			expect(body).to.have.property('data').and.to.be.an('object');
-			console.log('----------------------------------------------------');
+			expect(body.data).to.have.property('twilio').and.to.be.greaterThanOrEqual(1);
+			expect(body.data).to.have.property('api').and.to.be.greaterThanOrEqual(1);
+			expect(body.data).to.have.property('widget').and.to.be.greaterThanOrEqual(1);
 			console.log(body.data);
 		});
 	});
@@ -128,8 +130,9 @@ describe('LIVECHAT - reports', () => {
 				.expect(200);
 
 			expect(body).to.have.property('data').and.to.be.an('object');
-			console.log('----------------------------------------------------');
-			console.log(body.data);
+			expect(body.data).to.have.property('open').and.to.be.greaterThanOrEqual(1);
+			expect(body.data).to.have.property('closed').and.to.be.greaterThanOrEqual(1);
+			expect(body.data).to.have.property('queued').and.to.be.greaterThanOrEqual(1);
 		});
 	});
 	describe('livechat/analytics/dashboards/conversations-by-department', () => {
@@ -197,8 +200,9 @@ describe('LIVECHAT - reports', () => {
 				.expect(200);
 
 			expect(body).to.have.property('data').and.to.be.an('object');
-			console.log('----------------------------------------------------');
-			console.log(body.data);
+			const data = Object.keys(body.data);
+			expect(data).to.have.lengthOf.greaterThan(0);
+			expect(data.every((key) => body.data[key] > 0)).to.be.true;
 		});
 	});
 	describe('livechat/analytics/dashboards/conversations-by-tags', () => {
@@ -258,8 +262,9 @@ describe('LIVECHAT - reports', () => {
 				.expect(200);
 
 			expect(body).to.have.property('data').and.to.be.an('object');
-			console.log('----------------------------------------------------');
-			console.log(body.data);
+			const data = Object.keys(body.data);
+			expect(data).to.have.lengthOf.greaterThan(0);
+			expect(data.every((key) => body.data[key] > 0)).to.be.true;
 		});
 	});
 	describe('livechat/analytics/dashboards/conversations-by-agent', () => {
@@ -319,8 +324,8 @@ describe('LIVECHAT - reports', () => {
 				.expect(200);
 
 			expect(body).to.have.property('data').and.to.be.an('object');
-			console.log('----------------------------------------------------');
-			console.log(body.data);
+			expect(body.data['RocketChat Internal Admin Test']).to.be.greaterThanOrEqual(1);
+			expect(body.data.Unspecified).to.be.greaterThanOrEqual(1);
 		});
 	});
 });
