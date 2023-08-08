@@ -95,7 +95,7 @@ function NewImportPage() {
 				Array.from(
 					files,
 					(file) =>
-						new Promise((resolve) => {
+						new Promise((resolve: (value?: unknown) => void) => {
 							const reader = new FileReader();
 							reader.readAsDataURL(file);
 							reader.onloadend = async () => {
@@ -165,10 +165,16 @@ function NewImportPage() {
 	const importerKeySelectId = useUniqueId();
 	const fileTypeSelectId = useUniqueId();
 	const fileSourceInputId = useUniqueId();
-	const handleImportButtonClick =
-		(fileType === 'upload' && handleFileUploadImportButtonClick) ||
-		(fileType === 'url' && handleFileUrlImportButtonClick) ||
-		(fileType === 'path' && handleFilePathImportButtonClick);
+
+	const handleImportFunctions: Record<string, () => Promise<void>> = {
+		upload: handleFileUploadImportButtonClick,
+		url: handleFileUrlImportButtonClick,
+		path: handleFilePathImportButtonClick,
+	};
+
+	const handleImportButtonClick = () => {
+		handleImportFunctions[fileType];
+	};
 
 	return (
 		<Page className='page-settings'>
