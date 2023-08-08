@@ -69,16 +69,15 @@ const AccessibilityPage = () => {
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center' mb='x40' mi='x36'>
-					<Box fontScale='p1' mbe='x24'>
-						<Box pb='x16'>{t('Accessibility_activation')}</Box>
+				<Box maxWidth='x600' w='full' alignSelf='center' mb={40} mi={36}>
+					<Box fontScale='p1' mbe={24}>
+						<Box pb={16}>{t('Accessibility_activation')}</Box>
 					</Box>
 					<Accordion.Item defaultExpanded={true} title={t('Readability')}>
 						<Field>
-							<Box fontScale='p2b' mbe='x12'>
-								{t('Adjustable_font_size')}
-							</Box>
-							<Field.Label>{t('Font_size')}</Field.Label>
+							<Field.Label fontScale='p2b' mbe={12}>
+								{t('Font_size')}
+							</Field.Label>
 							<Field.Row>
 								<Controller
 									control={control}
@@ -86,7 +85,7 @@ const AccessibilityPage = () => {
 									render={({ field: { onChange, value } }) => <Select value={value} onChange={onChange} options={fontSizes} />}
 								/>
 							</Field.Row>
-							<Field.Description mb='x12'>{t('Adjustable_font_size_description')}</Field.Description>
+							<Field.Description mb={12}>{t('Adjustable_font_size_description')}</Field.Description>
 						</Field>
 					</Accordion.Item>
 					<Accordion.Item defaultExpanded={true} title={t('Theme')}>
@@ -96,7 +95,7 @@ const AccessibilityPage = () => {
 									<Field.Label fontScale='p2b' display='flex' alignItems='center' htmlFor={highContrastItem.id}>
 										{t.has(highContrastItem.title) ? t(highContrastItem.title) : highContrastItem.title}
 										{communityDisabled && (
-											<Box is='span' mis='x8'>
+											<Box is='span' mis={8}>
 												<Tag variant='featured'>{t('Enterprise')}</Tag>
 											</Box>
 										)}
@@ -113,10 +112,10 @@ const AccessibilityPage = () => {
 										)}
 									</Field.Row>
 								</Box>
-								<Field.Hint mbs='x12' style={{ whiteSpace: 'break-spaces' }}>
+								<Field.Hint mbs={12} style={{ whiteSpace: 'break-spaces' }}>
 									{t.has(highContrastItem.description) ? t(highContrastItem.description) : highContrastItem.description}
 									{highContrastItem.externalLink && communityDisabled && (
-										<Box mbs='x12'>
+										<Box mbs={12}>
 											<ExternalLink to={highContrastItem.externalLink}>{t('Talk_to_an_expert')}</ExternalLink>
 										</Box>
 									)}
@@ -124,7 +123,7 @@ const AccessibilityPage = () => {
 							</Field>
 						)}
 
-						<Button mbs='x32' onClick={() => router.navigate('/account/theme')}>
+						<Button mbs={32} onClick={() => router.navigate('/account/theme')}>
 							See all themes
 						</Button>
 					</Accordion.Item>
