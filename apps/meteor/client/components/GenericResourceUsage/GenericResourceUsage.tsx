@@ -21,7 +21,7 @@ const GenericResourceUsage = ({
 	variant?: 'warning' | 'danger' | 'success';
 }) => {
 	return (
-		<Box w='x180' h='x40' mi='x8' fontScale='c1' display='flex' flexDirection='column' justifyContent='space-around' {...props}>
+		<Box w='x180' h='x40' mi={8} fontScale='c1' display='flex' flexDirection='column' justifyContent='space-around' {...props}>
 			<Box display='flex' justifyContent='space-between'>
 				<Box color='default'>{title}</Box>
 				{subTitle && <Box color='hint'>{subTitle}</Box>}

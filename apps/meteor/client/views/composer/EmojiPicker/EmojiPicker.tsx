@@ -206,7 +206,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						/>
 					))}
 				</EmojiPickerCategoryHeader>
-				<Divider mb='x12' />
+				<Divider mb={12} />
 				<EmojiPickerListArea role='tabpanel'>
 					{searching && <SearchingResult searchResults={searchResults} handleSelectEmoji={handleSelectEmoji} />}
 					{!searching && (

@@ -103,9 +103,9 @@ const UserAutoCompleteMultipleFederated = ({
 					const currentCachedOption = selectedCache[value] || {};
 
 					return (
-						<Chip key={value} {...props} height='x20' onMouseDown={onMouseDown} mie='x4' mb='x2'>
+						<Chip key={value} {...props} height='x20' onMouseDown={onMouseDown} mie={4} mb={2}>
 							{currentCachedOption._federated ? <Icon size='x20' name='globe' /> : <UserAvatar size='x20' username={value} />}
-							<Box is='span' margin='none' mis='x4'>
+							<Box is='span' margin='none' mis={4}>
 								{currentCachedOption.name || currentCachedOption.username || value}
 							</Box>
 						</Chip>

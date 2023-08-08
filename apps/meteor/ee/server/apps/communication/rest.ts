@@ -1,6 +1,7 @@
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import { AppInstallationSource } from '@rocket.chat/apps-engine/server/storage';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -16,8 +17,9 @@ import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
 import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
-import { canEnableApp } from '../../../app/license/server/license';
+import { canEnableApp, isEnterprise } from '../../../app/license/server/license';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
+import { appEnableCheck } from '../marketplace/appEnableCheck';
 import { notifyAppInstall } from '../marketplace/appInstall';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
@@ -1120,24 +1122,46 @@ export class AppsRestApi {
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},
 				async post() {
-					if (!this.bodyParams.status || typeof this.bodyParams.status !== 'string') {
+					const { id: appId } = this.urlParams;
+					const { status } = this.bodyParams;
+
+					if (!status || typeof status !== 'string') {
 						return API.v1.failure('Invalid status provided, it must be "status" field and a string.');
 					}
 
-					const prl = manager.getOneById(this.urlParams.id);
-
+					const prl = manager.getOneById(appId);
 					if (!prl) {
-						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
+						return API.v1.notFound(`No App found by the id of: ${appId}`);
 					}
 
-					if (AppStatusUtils.isEnabled(this.bodyParams.status)) {
-						if (!(await canEnableApp(prl.getStorageItem()))) {
-							return API.v1.failure('Enabled apps have been maxed out');
+					const storedApp = prl.getStorageItem();
+					const { installationSource, marketplaceInfo } = storedApp;
+
+					if (!isEnterprise() && installationSource === AppInstallationSource.MARKETPLACE) {
+						try {
+							const baseUrl = orchestrator.getMarketplaceUrl() as string;
+							const headers = getDefaultHeaders();
+							const { version } = prl.getInfo();
+
+							await appEnableCheck({
+								baseUrl,
+								headers,
+								appId,
+								version,
+								marketplaceInfo,
+								status,
+								logger: orchestrator.getRocketChatLogger(),
+							});
+						} catch (error: any) {
+							return API.v1.failure(error.message);
 						}
 					}
 
-					const result = await manager.changeStatus(prl.getID(), this.bodyParams.status);
+					if (AppStatusUtils.isEnabled(status) && !(await canEnableApp(storedApp))) {
+						return API.v1.failure('Enabled apps have been maxed out');
+					}
 
+					const result = await manager.changeStatus(prl.getID(), status);
 					return API.v1.success({ status: result.getStatus() });
 				},
 			},

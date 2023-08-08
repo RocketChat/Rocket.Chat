@@ -222,7 +222,7 @@
 		"@rocket.chat/account-utils": "workspace:^",
 		"@rocket.chat/agenda": "workspace:^",
 		"@rocket.chat/api-client": "workspace:^",
-		"@rocket.chat/apps-engine": "1.40.0",
+		"@rocket.chat/apps-engine": "1.41.0-alpha.295",
 		"@rocket.chat/base64": "workspace:^",
 		"@rocket.chat/cas-validate": "workspace:^",
 		"@rocket.chat/core-services": "workspace:^",

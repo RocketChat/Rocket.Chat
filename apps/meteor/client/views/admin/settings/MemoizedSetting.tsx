@@ -97,7 +97,7 @@ const MemoizedSetting = ({
 				/>
 				{hint && type !== 'code' && <Field.Hint>{hint}</Field.Hint>}
 				{callout && (
-					<Margins block='x16'>
+					<Margins block={16}>
 						<Callout type='warning'>{callout}</Callout>
 					</Margins>
 				)}

@@ -48,7 +48,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 			<Menu
 				small={false}
 				flexShrink={0}
-				mi='x2'
+				mi={2}
 				key='menu'
 				maxHeight='initial'
 				secondary
@@ -74,7 +74,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 
-			<ContextualbarScrollableContent p='x24'>
+			<ContextualbarScrollableContent p={24}>
 				<InfoPanel>
 					<InfoPanel.Avatar>
 						<RoomAvatar size='x332' room={room} />
@@ -84,7 +84,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 
 					{archived && (
 						<InfoPanel.Section>
-							<Box mb='x16'>
+							<Box mb={16}>
 								<Callout type='warning'>{t('Room_archived')}</Callout>
 							</Box>
 						</InfoPanel.Section>
