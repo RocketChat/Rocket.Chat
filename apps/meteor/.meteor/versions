@@ -13,7 +13,6 @@ babel-runtime@1.5.1
 base64@1.0.12
 binary-heap@1.0.11
 boilerplate-generator@1.7.1
-bundle-visualizer@1.2.3
 caching-compiler@1.2.2
 callback-hook@1.5.1
 check@1.3.2
