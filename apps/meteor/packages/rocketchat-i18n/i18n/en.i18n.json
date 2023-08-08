@@ -5870,7 +5870,7 @@
   "Disable_at_least_more_apps": "You will need to disable at least {{numberOfExceededApps}} other apps or upgrade to Enterprise to enable this app.",
   "Community_Private_apps_limit_exceeded": "Community edition app limit has been exceeded.",
   "Theme_match_system": "Match system",
-  "Theme_match_system_description": "Automatically match the theme to your system preferences. This option is only available if your browser supports the prefers-color-scheme media query.",
+  "Theme_match_system_description": "Automatically match the appearance of your system.",
   "Theme_high_contrast": "High contrast",
   "Theme_high_contrast_description": "Maximum tonal differentiation with bold colors and sharp contrasts provide enhanced accessibility.",
   "High_contrast_upsell_title": "Enable high contrast theme",

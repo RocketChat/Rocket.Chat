@@ -21,7 +21,7 @@ const SlaField = ({ id }: SlaFieldProps) => {
 	}
 
 	if (isError || !data) {
-		return <Box mbs='x16'>{t('Custom_Field_Not_Found')}</Box>;
+		return <Box mbs={16}>{t('Custom_Field_Not_Found')}</Box>;
 	}
 
 	const { name } = data;
