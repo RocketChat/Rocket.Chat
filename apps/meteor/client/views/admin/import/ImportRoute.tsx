@@ -7,7 +7,7 @@ import ImportProgressPage from './ImportProgressPage';
 import NewImportPage from './NewImportPage';
 import PrepareImportPage from './PrepareImportPage';
 
-function ImportHistoryRoute({ page }) {
+function ImportHistoryRoute({ page }: { page: string }) {
 	const canRunImport = usePermission('run-import');
 
 	if (!canRunImport) {

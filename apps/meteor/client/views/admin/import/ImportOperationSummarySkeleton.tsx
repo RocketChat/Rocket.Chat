@@ -1,7 +1,7 @@
 import { Skeleton, TableRow, TableCell } from '@rocket.chat/fuselage';
 import React from 'react';
 
-function ImportOperationSummarySkeleton({ small }) {
+function ImportOperationSummarySkeleton({ small }: { small: unknown }) {
 	return (
 		<TableRow>
 			<TableCell>
