@@ -1,5 +1,5 @@
 import type { ILivechatVisitor, Serialized } from '@rocket.chat/core-typings';
-import { Field, TextInput, ButtonGroup, Button, Box, ContextualBarContent } from '@rocket.chat/fuselage';
+import { Field, TextInput, ButtonGroup, Button, ContextualbarContent } from '@rocket.chat/fuselage';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -179,7 +179,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 
 	if (isLoadingCustomFields) {
 		return (
-			<ContextualbarContent p='x24'>
+			<ContextualbarContent>
 				<FormSkeleton />
 			</ContextualbarContent>
 		);
