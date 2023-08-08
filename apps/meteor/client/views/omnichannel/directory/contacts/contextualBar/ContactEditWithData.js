@@ -1,4 +1,4 @@
-import { Box, ContextualBarContent } from '@rocket.chat/fuselage';
+import { Box, ContextualbarContent } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
