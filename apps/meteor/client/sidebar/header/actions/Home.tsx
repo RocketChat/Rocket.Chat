@@ -13,7 +13,9 @@ const SidebarHeaderActionHome: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (p
 		router.navigate('/home');
 	});
 
-	return showHome ? <Sidebar.TopBar.Action {...props} icon='home' onClick={handleHome} /> : null;
+	return showHome ? (
+		<Sidebar.TopBar.Action {...props} icon='home' onClick={handleHome} pressed={router.getLocationPathname().includes('/home')} />
+	) : null;
 };
 
 export default SidebarHeaderActionHome;

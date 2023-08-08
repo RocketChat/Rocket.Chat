@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { createUser, login } from '../../data/users.helper';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { password } from '../../data/user';
+import { createUser, login } from '../../data/users.helper';
 
 describe('[Calendar Events]', function () {
 	this.retries(0);
@@ -19,7 +19,7 @@ describe('[Calendar Events]', function () {
 	});
 
 	describe('[/calendar-events.create]', () => {
-		it('should successfully create an event in the calendar', async function () {
+		it('should successfully create an event in the calendar', async () => {
 			let eventId: string | undefined;
 
 			await request
@@ -38,12 +38,12 @@ describe('[Calendar Events]', function () {
 					eventId = res.body.id;
 				});
 
-			after(async function () {
+			after(async () => {
 				await request.post(api('calendar-events.delete')).set(credentials).send({ eventId });
 			});
 		});
 
-		it('should fail to create an event without a start time', async function () {
+		it('should fail to create an event without a start time', async () => {
 			await request
 				.post(api('calendar-events.create'))
 				.set(credentials)
@@ -56,7 +56,7 @@ describe('[Calendar Events]', function () {
 				.expect(400);
 		});
 
-		it('should fail to create an event without a subject', async function () {
+		it('should fail to create an event without a subject', async () => {
 			await request
 				.post(api('calendar-events.create'))
 				.set(credentials)
@@ -69,7 +69,7 @@ describe('[Calendar Events]', function () {
 				.expect(400);
 		});
 
-		it('should fail to create an event without a description', async function () {
+		it('should fail to create an event without a description', async () => {
 			await request
 				.post(api('calendar-events.create'))
 				.set(credentials)
@@ -82,7 +82,7 @@ describe('[Calendar Events]', function () {
 				.expect(400);
 		});
 
-		it('should successfully create an event without reminder information', async function () {
+		it('should successfully create an event without reminder information', async () => {
 			let eventId: string | undefined;
 
 			await request
@@ -100,7 +100,7 @@ describe('[Calendar Events]', function () {
 					eventId = res.body.id;
 				});
 
-			after(async function () {
+			after(async () => {
 				await request.post(api('calendar-events.delete')).set(credentials).send({ eventId });
 			});
 		});
@@ -154,13 +154,13 @@ describe('[Calendar Events]', function () {
 				});
 		});
 
-		after(async function () {
+		after(async () => {
 			await request.post(api('calendar-events.delete')).set(credentials).send({ eventId });
 			await request.post(api('calendar-events.delete')).set(credentials).send({ eventId: eventId2 });
 			await request.post(api('calendar-events.delete')).set(userCredentials).send({ eventId: eventId3 });
 		});
 
-		it('should list only the events with the same date', async function () {
+		it('should list only the events with the same date', async () => {
 			await request
 				.get(api('calendar-events.list'))
 				.set(credentials)
@@ -179,7 +179,7 @@ describe('[Calendar Events]', function () {
 				});
 		});
 
-		it('should nost list events from other users', async function () {
+		it('should nost list events from other users', async () => {
 			await request
 				.get(api('calendar-events.list'))
 				.set(userCredentials)
@@ -232,12 +232,12 @@ describe('[Calendar Events]', function () {
 				});
 		});
 
-		after(async function () {
+		after(async () => {
 			await request.post(api('calendar-events.delete')).set(credentials).send({ eventId });
 			await request.post(api('calendar-events.delete')).set(userCredentials).send({ eventId: eventId2 });
 		});
 
-		it('should return the event information', async function () {
+		it('should return the event information', async () => {
 			await request
 				.get(api('calendar-events.info'))
 				.set(credentials)
@@ -252,7 +252,7 @@ describe('[Calendar Events]', function () {
 				});
 		});
 
-		it('should return the event information - regular user', async function () {
+		it('should return the event information - regular user', async () => {
 			await request
 				.get(api('calendar-events.info'))
 				.set(userCredentials)
@@ -267,7 +267,7 @@ describe('[Calendar Events]', function () {
 				});
 		});
 
-		it('should fail when querying an invalid event', async function () {
+		it('should fail when querying an invalid event', async () => {
 			await request
 				.get(api('calendar-events.info'))
 				.set(credentials)
@@ -278,7 +278,7 @@ describe('[Calendar Events]', function () {
 				.expect(400);
 		});
 
-		it('should fail when querying an event from another user', async function () {
+		it('should fail when querying an event from another user', async () => {
 			await request
 				.get(api('calendar-events.info'))
 				.set(credentials)
@@ -291,7 +291,7 @@ describe('[Calendar Events]', function () {
 	});
 
 	describe('[/calendar-events.import]', () => {
-		it('should successfully import an event to the calendar', async function () {
+		it('should successfully import an event to the calendar', async () => {
 			let eventId: string | undefined;
 			const externalId = `calendar-events.import-${Date.now()}`;
 
@@ -312,12 +312,12 @@ describe('[Calendar Events]', function () {
 					eventId = res.body.id;
 				});
 
-			after(async function () {
+			after(async () => {
 				await request.post(api('calendar-events.delete')).set(credentials).send({ eventId });
 			});
 		});
 
-		it('should fail to import an event without an external id', async function () {
+		it('should fail to import an event without an external id', async () => {
 			await request
 				.post(api('calendar-events.import'))
 				.set(credentials)
@@ -331,7 +331,7 @@ describe('[Calendar Events]', function () {
 				.expect(400);
 		});
 
-		it('should fail to import an event without a start time', async function () {
+		it('should fail to import an event without a start time', async () => {
 			await request
 				.post(api('calendar-events.import'))
 				.set(credentials)
@@ -344,7 +344,7 @@ describe('[Calendar Events]', function () {
 				.expect(400);
 		});
 
-		it('should fail to import an event without a subject', async function () {
+		it('should fail to import an event without a subject', async () => {
 			await request
 				.post(api('calendar-events.import'))
 				.set(credentials)
@@ -357,7 +357,7 @@ describe('[Calendar Events]', function () {
 				.expect(400);
 		});
 
-		it('should fail to import an event without a description', async function () {
+		it('should fail to import an event without a description', async () => {
 			await request
 				.post(api('calendar-events.import'))
 				.set(credentials)
@@ -370,7 +370,7 @@ describe('[Calendar Events]', function () {
 				.expect(400);
 		});
 
-		it('should successfully import an event without reminder information', async function () {
+		it('should successfully import an event without reminder information', async () => {
 			let eventId: string | undefined;
 
 			await request
@@ -389,17 +389,17 @@ describe('[Calendar Events]', function () {
 					eventId = res.body.id;
 				});
 
-			after(async function () {
+			after(async () => {
 				await request.post(api('calendar-events.delete')).set(credentials).send({ eventId });
 			});
 		});
 
-		it('should import a new event even if it was already imported by another user', async function () {
+		it('should import a new event even if it was already imported by another user', async () => {
 			let eventId: string | undefined;
 			let eventId2: string | undefined;
 			const externalId = `calendar-events.import-${Date.now()}`;
 
-			after(async function () {
+			after(async () => {
 				await request.post(api('calendar-events.delete')).set(userCredentials).send({ eventId });
 				await request.post(api('calendar-events.delete')).set(credentials).send({ eventId: eventId2 });
 			});
@@ -459,11 +459,11 @@ describe('[Calendar Events]', function () {
 				});
 		});
 
-		it('should update an event that has the same external id', async function () {
+		it('should update an event that has the same external id', async () => {
 			let eventId: string | undefined;
 			const externalId = `calendar-events.import-twice-${Date.now()}`;
 
-			after(async function () {
+			after(async () => {
 				await request.post(api('calendar-events.delete')).set(credentials).send({ eventId });
 			});
 
@@ -530,11 +530,11 @@ describe('[Calendar Events]', function () {
 				});
 		});
 
-		after(async function () {
+		after(async () => {
 			await request.post(api('calendar-events.delete')).set(userCredentials).send({ eventId });
 		});
 
-		it('should update the event with the new data', async function () {
+		it('should update the event with the new data', async () => {
 			await request
 				.post(api('calendar-events.update'))
 				.set(userCredentials)
@@ -565,7 +565,7 @@ describe('[Calendar Events]', function () {
 				});
 		});
 
-		it('should fail to update an event that doesnt exist', async function () {
+		it('should fail to update an event that doesnt exist', async () => {
 			await request
 				.post(api('calendar-events.update'))
 				.set(userCredentials)
@@ -580,7 +580,7 @@ describe('[Calendar Events]', function () {
 				.expect(400);
 		});
 
-		it('should fail to update an event from another user', async function () {
+		it('should fail to update an event from another user', async () => {
 			await request
 				.post(api('calendar-events.update'))
 				.set(credentials)
@@ -614,7 +614,7 @@ describe('[Calendar Events]', function () {
 				});
 		});
 
-		it('should fail to delete an event from another user', async function () {
+		it('should fail to delete an event from another user', async () => {
 			await request
 				.post(api('calendar-events.delete'))
 				.set(credentials)
@@ -625,7 +625,7 @@ describe('[Calendar Events]', function () {
 				.expect(400);
 		});
 
-		it('should delete the specified event', async function () {
+		it('should delete the specified event', async () => {
 			await request
 				.post(api('calendar-events.delete'))
 				.set(userCredentials)
@@ -646,7 +646,7 @@ describe('[Calendar Events]', function () {
 				.expect(400);
 		});
 
-		it('should fail to delete an event that doesnt exist', async function () {
+		it('should fail to delete an event that doesnt exist', async () => {
 			await request
 				.post(api('calendar-events.delete'))
 				.set(userCredentials)

@@ -13,7 +13,7 @@ Meteor.startup(() => {
 		id: 'star-message',
 		icon: 'star',
 		label: 'Star',
-		context: ['starred', 'message', 'message-mobile', 'threads', 'federated'],
+		context: ['starred', 'message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 

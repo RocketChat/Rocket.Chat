@@ -1,8 +1,8 @@
-import { Settings } from '@rocket.chat/models';
-import type { IUser } from '@rocket.chat/core-typings';
-import mem from 'mem';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ITranslationService } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
+import mem from 'mem';
 
 import { i18n } from '../../lib/i18n';
 

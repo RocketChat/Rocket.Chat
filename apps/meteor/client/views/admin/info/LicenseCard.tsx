@@ -1,4 +1,4 @@
-import { ButtonGroup, Button, Skeleton, Margins } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Skeleton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Card } from '@rocket.chat/ui-client';
 import { useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
@@ -51,29 +51,27 @@ const LicenseCard = (): ReactElement => {
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('Features')}</Card.Col.Title>
-						<Margins block='x4'>
-							{isLoading ? (
-								<>
-									<Skeleton width='40x' />
-									<Skeleton width='40x' />
-									<Skeleton width='40x' />
-									<Skeleton width='40x' />
-								</>
-							) : (
-								<>
-									<Feature label={t('Omnichannel')} enabled={hasOmnichannel} />
-									<Feature label={t('Auditing')} enabled={hasAuditing} />
-									<Feature label={t('Canned_Responses')} enabled={hasCannedResponses} />
-									<Feature label={t('Engagement_Dashboard')} enabled={hasEngagement} />
-									<Feature label={t('Read_Receipts')} enabled={hasReadReceipts} />
-								</>
-							)}
-						</Margins>
+						{isLoading ? (
+							<>
+								<Skeleton width='40x' />
+								<Skeleton width='40x' />
+								<Skeleton width='40x' />
+								<Skeleton width='40x' />
+							</>
+						) : (
+							<>
+								<Feature label={t('Omnichannel')} enabled={hasOmnichannel} />
+								<Feature label={t('Auditing')} enabled={hasAuditing} />
+								<Feature label={t('Canned_Responses')} enabled={hasCannedResponses} />
+								<Feature label={t('Engagement_Dashboard')} enabled={hasEngagement} />
+								<Feature label={t('Read_Receipts')} enabled={hasReadReceipts} />
+							</>
+						)}
 					</Card.Col.Section>
 				</Card.Col>
 			</Card.Body>
 			<Card.Footer>
-				<ButtonGroup align='end'>
+				<ButtonGroup>
 					{isAirGapped ? (
 						<Button small onClick={handleApplyLicense}>
 							{t(currentLicense ? 'Cloud_Change_Offline_License' : 'Cloud_Apply_Offline_License')}

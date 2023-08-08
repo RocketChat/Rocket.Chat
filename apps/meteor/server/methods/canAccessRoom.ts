@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../app/authorization/server';
 import { settings } from '../../app/settings/server';

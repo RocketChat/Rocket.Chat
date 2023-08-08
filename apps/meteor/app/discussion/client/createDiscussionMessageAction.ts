@@ -1,15 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { settings } from '../../settings/client';
-import { hasPermission } from '../../authorization/client';
-import { MessageAction } from '../../ui-utils/client';
-import { messageArgs } from '../../../client/lib/utils/messageArgs';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
 import CreateDiscussion from '../../../client/components/CreateDiscussion/CreateDiscussion';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
+import { messageArgs } from '../../../client/lib/utils/messageArgs';
+import { hasPermission } from '../../authorization/client';
+import { settings } from '../../settings/client';
+import { MessageAction } from '../../ui-utils/client';
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (!settings.get('Discussion_enabled')) {
 			return MessageAction.removeButton('start-discussion');
@@ -19,7 +19,7 @@ Meteor.startup(function () {
 			id: 'start-discussion',
 			icon: 'discussion',
 			label: 'Discussion_start',
-			context: ['message', 'message-mobile'],
+			context: ['message', 'message-mobile', 'videoconf'],
 			async action(_, props) {
 				const { message = messageArgs(this).msg, room } = props;
 
