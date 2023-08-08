@@ -7,7 +7,7 @@ const ComposerSkeleton: FC = () => (
 	<Box padding={24} display='flex'>
 		<MessageComposer>
 			<>
-				<Box width='100%' display='flex' alignItems='center' height={52} pi='x12'>
+				<Box width='100%' display='flex' alignItems='center' height='x52' pi={12}>
 					<Skeleton width='100%' height={36} />
 				</Box>
 				<MessageComposerToolbar height={36} />

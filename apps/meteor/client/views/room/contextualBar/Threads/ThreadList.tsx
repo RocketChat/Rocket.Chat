@@ -152,7 +152,7 @@ const ThreadList: VFC = () => {
 
 				{phase === AsyncStatePhase.LOADING && (
 					<Box pi={24} pb={12}>
-						<Throbber size={12} />
+						<Throbber size='x12' />
 					</Box>
 				)}
 

@@ -112,7 +112,7 @@ const ChatTable = () => {
 											textOverflow: 'ellipsis',
 										}}
 										key={tag}
-										mie='x4'
+										mie={4}
 									>
 										<Tag style={{ display: 'inline' }} disabled>
 											{tag}

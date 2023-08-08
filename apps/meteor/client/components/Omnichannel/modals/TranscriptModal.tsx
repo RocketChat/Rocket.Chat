@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Field, Button, TextInput, Modal, Box } from '@rocket.chat/fuselage';
+import { Field, Button, TextInput, Modal, Box, FieldGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useCallback, useEffect } from 'react';
@@ -76,30 +76,32 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
 				{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
-				<Field marginBlock='x15'>
-					<Field.Label>{t('Email')}*</Field.Label>
-					<Field.Row>
-						<TextInput
-							disabled={!!emailDefault || !!transcriptRequest}
-							error={errors.email?.message}
-							flexGrow={1}
-							{...register('email', { required: t('The_field_is_required', t('Email')) })}
-						/>
-					</Field.Row>
-					<Field.Error>{errors.email?.message}</Field.Error>
-				</Field>
-				<Field marginBlock='x15'>
-					<Field.Label>{t('Subject')}*</Field.Label>
-					<Field.Row>
-						<TextInput
-							disabled={!!transcriptRequest}
-							error={errors.subject?.message}
-							flexGrow={1}
-							{...register('subject', { required: t('The_field_is_required', t('Subject')) })}
-						/>
-					</Field.Row>
-					<Field.Error>{errors.subject?.message}</Field.Error>
-				</Field>
+				<FieldGroup>
+					<Field>
+						<Field.Label>{t('Email')}*</Field.Label>
+						<Field.Row>
+							<TextInput
+								disabled={!!emailDefault || !!transcriptRequest}
+								error={errors.email?.message}
+								flexGrow={1}
+								{...register('email', { required: t('The_field_is_required', t('Email')) })}
+							/>
+						</Field.Row>
+						<Field.Error>{errors.email?.message}</Field.Error>
+					</Field>
+					<Field>
+						<Field.Label>{t('Subject')}*</Field.Label>
+						<Field.Row>
+							<TextInput
+								disabled={!!transcriptRequest}
+								error={errors.subject?.message}
+								flexGrow={1}
+								{...register('subject', { required: t('The_field_is_required', t('Subject')) })}
+							/>
+						</Field.Row>
+						<Field.Error>{errors.subject?.message}</Field.Error>
+					</Field>
+				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
