@@ -1,7 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
 
 import GenericModal from '../../../client/components/GenericModal';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
@@ -965,19 +964,5 @@ const WebRTC = new (class {
 		return this.instancesByRoomId[rid];
 	}
 })();
-
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		if (Meteor.userId()) {
-			Notifications.onUser(WEB_RTC_EVENTS.WEB_RTC, (type, data) => {
-				if (data.room == null) {
-					return;
-				}
-				const webrtc = WebRTC.getInstanceByRoomId(data.room);
-				webrtc.onUserStream(type, data);
-			});
-		}
-	});
-});
 
 export { WebRTC };

@@ -1,11 +1,9 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import $ from 'jquery';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
 import { emoji, updateRecent } from '../../../emoji/client';
 import { CachedCollectionManager } from '../../../ui-cached-collection/client';
-import { LegacyRoomManager } from '../../../ui-utils/client';
 import { getURL } from '../../../utils/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 import { isSetNotNull } from './function-isSet';
@@ -41,94 +39,6 @@ export const deleteEmojiCustom = function (emojiData) {
 			}
 		}
 	}
-	updateRecent('rocket');
-};
-
-export const updateEmojiCustom = function (emojiData) {
-	let key = `emoji_random_${emojiData.name}`;
-	Session.set(key, Math.round(Math.random() * 1000));
-
-	const previousExists = isSetNotNull(() => emojiData.previousName);
-	const currentAliases = isSetNotNull(() => emojiData.aliases);
-
-	if (previousExists && isSetNotNull(() => emoji.list[`:${emojiData.previousName}:`].aliases)) {
-		for (const alias of emoji.list[`:${emojiData.previousName}:`].aliases) {
-			delete emoji.list[`:${alias}:`];
-			const aliasIndex = emoji.packages.emojiCustom.list.indexOf(`:${alias}:`);
-			if (aliasIndex !== -1) {
-				emoji.packages.emojiCustom.list.splice(aliasIndex, 1);
-			}
-		}
-	}
-
-	if (previousExists && emojiData.name !== emojiData.previousName) {
-		const arrayIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(emojiData.previousName);
-		if (arrayIndex !== -1) {
-			emoji.packages.emojiCustom.emojisByCategory.rocket.splice(arrayIndex, 1);
-		}
-		const arrayIndexList = emoji.packages.emojiCustom.list.indexOf(`:${emojiData.previousName}:`);
-		if (arrayIndexList !== -1) {
-			emoji.packages.emojiCustom.list.splice(arrayIndexList, 1);
-		}
-		delete emoji.list[`:${emojiData.previousName}:`];
-	}
-
-	const categoryIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(`${emojiData.name}`);
-	if (categoryIndex === -1) {
-		emoji.packages.emojiCustom.emojisByCategory.rocket.push(`${emojiData.name}`);
-		emoji.packages.emojiCustom.list.push(`:${emojiData.name}:`);
-	}
-	emoji.list[`:${emojiData.name}:`] = Object.assign({ emojiPackage: 'emojiCustom' }, emoji.list[`:${emojiData.name}:`], emojiData);
-	if (currentAliases) {
-		for (const alias of emojiData.aliases) {
-			emoji.packages.emojiCustom.list.push(`:${alias}:`);
-			emoji.list[`:${alias}:`] = {};
-			emoji.list[`:${alias}:`].emojiPackage = 'emojiCustom';
-			emoji.list[`:${alias}:`].aliasOf = emojiData.name;
-		}
-	}
-
-	const url = getEmojiUrlFromName(emojiData.name, emojiData.extension);
-
-	// update in admin interface
-	if (previousExists && emojiData.name !== emojiData.previousName) {
-		$(document)
-			.find(`.emojiAdminPreview-image[data-emoji='${emojiData.previousName}']`)
-			.css('background-image', `url('${url})'`)
-			.attr('data-emoji', `${emojiData.name}`);
-	} else {
-		$(document).find(`.emojiAdminPreview-image[data-emoji='${emojiData.name}']`).css('background-image', `url('${url}')`);
-	}
-
-	// update in picker
-	if (previousExists && emojiData.name !== emojiData.previousName) {
-		$(document)
-			.find(`li[data-emoji='${emojiData.previousName}'] span`)
-			.css('background-image', `url('${url}')`)
-			.attr('data-emoji', `${emojiData.name}`);
-		$(document)
-			.find(`li[data-emoji='${emojiData.previousName}']`)
-			.attr('data-emoji', `${emojiData.name}`)
-			.attr('class', `emoji-${emojiData.name}`);
-	} else {
-		$(document).find(`li[data-emoji='${emojiData.name}'] span`).css('background-image', `url('${url}')`);
-	}
-
-	// update in picker and opened rooms
-	for (key in LegacyRoomManager.openedRooms) {
-		if (LegacyRoomManager.openedRooms.hasOwnProperty(key)) {
-			const room = LegacyRoomManager.openedRooms[key];
-			if (previousExists && emojiData.name !== emojiData.previousName) {
-				$(room.dom)
-					.find(`span[data-emoji='${emojiData.previousName}']`)
-					.css('background-image', `url('${url}')`)
-					.attr('data-emoji', `${emojiData.name}`);
-			} else {
-				$(room.dom).find(`span[data-emoji='${emojiData.name}']`).css('background-image', `url('${url}')`);
-			}
-		}
-	}
-
 	updateRecent('rocket');
 };
 

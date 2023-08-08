@@ -1,8 +1,6 @@
-import Bugsnag from '@bugsnag/js';
 import type { BugsnagErrorBoundary as BugsnagErrorBoundaryComponent } from '@bugsnag/plugin-react';
-import BugsnagPluginReact from '@bugsnag/plugin-react';
 import type { ReactNode } from 'react';
-import React from 'react';
+import React, { lazy } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { Info } from '../../../app/utils/rocketchat.info';
@@ -15,24 +13,25 @@ declare global {
 	}
 }
 
-let BugsnagErrorBoundary: BugsnagErrorBoundaryComponent | undefined;
-
-if (window.__BUGSNAG_KEY__) {
+const BugsnagErrorBoundary = lazy(async () => {
+	const { default: Bugsnag } = await import('@bugsnag/js');
+	const { default: BugsnagPluginReact } = await import('@bugsnag/plugin-react');
 	Bugsnag.start({
 		apiKey: window.__BUGSNAG_KEY__,
 		appVersion: Info.version,
 		plugins: [new BugsnagPluginReact()],
 	});
-
-	BugsnagErrorBoundary = Bugsnag.getPlugin('react')?.createErrorBoundary(React);
-}
+	return {
+		default: Bugsnag.getPlugin('react')?.createErrorBoundary(React) as BugsnagErrorBoundaryComponent,
+	};
+});
 
 type OutermostErrorBoundaryProps = {
 	children: ReactNode;
 };
 
 const OutermostErrorBoundary = ({ children }: OutermostErrorBoundaryProps) => {
-	if (BugsnagErrorBoundary) {
+	if (window.__BUGSNAG_KEY__) {
 		return <BugsnagErrorBoundary FallbackComponent={AppErrorPage}>{children}</BugsnagErrorBoundary>;
 	}
 

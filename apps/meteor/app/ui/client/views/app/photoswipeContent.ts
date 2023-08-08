@@ -1,7 +1,6 @@
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import type PhotoSwipe from 'photoswipe';
-import PhotoSwipeUIDefault from 'photoswipe/dist/photoswipe-ui-default';
 
 import { createAnchor } from '../../../../../client/lib/utils/createAnchor';
 
@@ -110,7 +109,11 @@ const initGallery = async (items: Slide[], options: PhotoSwipe.Options): Promise
 		</div>
 	</div>
 </div>`;
-	const [{ default: PhotoSwipe }] = await Promise.all([import('photoswipe'), import('photoswipe/dist/photoswipe.css')]);
+	const [{ default: PhotoSwipe }, { default: PhotoSwipeUIDefault }] = await Promise.all([
+		import('photoswipe'),
+		import('photoswipe/dist/photoswipe.css'),
+		import('photoswipe/dist/photoswipe-ui-default'),
+	]);
 
 	if (!currentGallery) {
 		const container = document.getElementById('pswp');
@@ -199,5 +202,9 @@ const createEventListenerFor =
 	};
 
 Meteor.startup(() => {
-	$(document).on('click', '.gallery-item', createEventListenerFor('.gallery-item'));
+	document.addEventListener('click', (event) => {
+		if (event.target instanceof HTMLAnchorElement && event.target.classList.contains('gallery-item')) {
+			createEventListenerFor('.gallery-item');
+		}
+	});
 });
