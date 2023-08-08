@@ -8,7 +8,7 @@ import type { BlockProps } from '../utils/BlockProps';
 type DividerBlockProps = BlockProps<UiKit.DividerBlock>;
 
 const DividerBlock = ({ className }: DividerBlockProps): ReactElement => (
-  <Divider className={className} marginBlock='x24' />
+  <Divider className={className} marginBlock={24} />
 );
 
 export default memo(DividerBlock);

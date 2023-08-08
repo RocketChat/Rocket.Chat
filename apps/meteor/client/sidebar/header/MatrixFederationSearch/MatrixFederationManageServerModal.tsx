@@ -74,7 +74,7 @@ const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> =
 									setErrorKey(undefined);
 								}
 							}}
-							mie='x4'
+							mie={4}
 						/>
 						<Button onClick={() => addServer()} primary disabled={isLoading}>
 							{!isLoading && t('Add')}
@@ -84,7 +84,7 @@ const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> =
 					{isError && errorKey && <Field.Error>{t(errorKey)}</Field.Error>}
 					<Field.Hint>{t('Federation_Example_matrix_server')}</Field.Hint>
 				</Field>
-				<Divider mb='x16' />
+				<Divider mb={16} />
 				{!isLoadingServerList && data?.servers && <MatrixFederationRemoveServerList servers={data.servers} />}
 			</Modal.Content>
 			<Modal.Footer>

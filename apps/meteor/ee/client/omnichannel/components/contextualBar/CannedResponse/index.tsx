@@ -15,7 +15,7 @@ import CannedResponseList from './CannedResponseList';
 
 export const WrapCannedResponseList = () => {
 	const room = useRoom();
-	const { close: closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolbox();
 	const router = useRouter();
 	const setModal = useSetModal();
 

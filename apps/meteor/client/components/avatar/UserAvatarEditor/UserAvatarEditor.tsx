@@ -74,7 +74,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 	return (
 		<Box display='flex' flexDirection='column' fontScale='p2m' color='default'>
 			{t('Profile_picture')}
-			<Box display='flex' flexDirection='row' mbs='x4'>
+			<Box display='flex' flexDirection='row' mbs={4}>
 				<UserAvatar
 					size='x124'
 					url={url}
@@ -85,10 +85,10 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 						imageOrientation: rotateImages ? 'from-image' : 'none',
 					}}
 				/>
-				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis='x4'>
+				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis={4}>
 					<Box display='flex' flexDirection='row' mbs='none'>
-						<Margins inline='x4'>
-							<Button square mis='none' onClick={clickReset} disabled={disabled} mie='x4' title={t('Accounts_SetDefaultAvatar')}>
+						<Margins inline={4}>
+							<Button square mis='none' onClick={clickReset} disabled={disabled} mie={4} title={t('Accounts_SetDefaultAvatar')}>
 								<Avatar url={`/avatar/%40${username}`} />
 							</Button>
 							<IconButton icon='upload' secondary onClick={clickUpload} disabled={disabled} title={t('Upload')} />
@@ -110,7 +110,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 							)}
 						</Margins>
 					</Box>
-					<Margins inlineStart='x4'>
+					<Margins inlineStart={4}>
 						<Box>{t('Use_url_for_avatar')}</Box>
 						<TextInput
 							data-qa-id='UserAvatarEditorLink'

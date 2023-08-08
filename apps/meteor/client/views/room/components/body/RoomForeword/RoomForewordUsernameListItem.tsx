@@ -16,7 +16,7 @@ const RoomForewordUsernameListItem: VFC<RoomForewordUsernameListItemProps> = ({ 
 	const { data, isLoading, isError } = useUserInfoQuery({ username });
 
 	return (
-		<Box mi='x4' is='a' href={href}>
+		<Box mi={4} is='a' href={href}>
 			<Tag icon={<Icon name='user' size='x20' />} className='mention-link' data-username={username} large>
 				{isLoading && <Skeleton variant='rect' />}
 				{!isLoading && isError && username}

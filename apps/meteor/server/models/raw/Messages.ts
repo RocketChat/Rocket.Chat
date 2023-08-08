@@ -6,6 +6,7 @@ import type {
 	MessageTypesValues,
 	RocketChatRecordDeleted,
 	MessageAttachment,
+	IMessageWithPendingFileImport,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import { Rooms } from '@rocket.chat/models';
@@ -1006,25 +1007,28 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query, options);
 	}
 
+	async cloneAndSaveAsHistoryByRecord(record: IMessage, user: IMessage['u']): Promise<InsertOneResult<IMessage>> {
+		const { _id: _, ...nRecord } = record;
+		return this.insertOne({
+			...nRecord,
+			_hidden: true,
+			// @ts-expect-error - mongo allows it, but types don't :(
+			parent: record._id,
+			editedAt: new Date(),
+			editedBy: {
+				_id: user._id,
+				username: user.username,
+			},
+		});
+	}
+
 	async cloneAndSaveAsHistoryById(_id: string, user: IMessage['u']): Promise<InsertOneResult<IMessage>> {
 		const record = await this.findOneById(_id);
 		if (!record) {
 			throw new Error('Record not found');
 		}
 
-		record._hidden = true;
-		// @ts-expect-error - :)
-		record.parent = record._id;
-		// @ts-expect-error - :)
-		record.editedAt = new Date();
-		// @ts-expect-error - :)
-		record.editedBy = {
-			_id: user._id,
-			username: user.username,
-		};
-
-		const { _id: ignoreId, ...nRecord } = record;
-		return this.insertOne(nRecord);
+		return this.cloneAndSaveAsHistoryByRecord(record, user);
 	}
 
 	// UPDATE
@@ -1602,7 +1606,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query, { sort: { ts: 1 } });
 	}
 
-	findAllImportedMessagesWithFilesToDownload(): FindCursor<IMessage> {
+	findAllImportedMessagesWithFilesToDownload(): FindCursor<IMessageWithPendingFileImport> {
 		const query = {
 			'_importFile.downloadUrl': {
 				$exists: true,
@@ -1618,7 +1622,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.find(query);
+		return this.find<IMessageWithPendingFileImport>(query);
 	}
 
 	countAllImportedMessagesWithFilesToDownload(): Promise<number> {

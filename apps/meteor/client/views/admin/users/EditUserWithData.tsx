@@ -34,7 +34,7 @@ const EditUserWithData = ({
 
 	if (state || roleState) {
 		return (
-			<Box p='x24'>
+			<Box p={24}>
 				<FormSkeleton />
 			</Box>
 		);
@@ -42,7 +42,7 @@ const EditUserWithData = ({
 
 	if (error || roleError) {
 		return (
-			<Callout m='x16' type='danger'>
+			<Callout m={16} type='danger'>
 				{t('User_not_found')}
 			</Callout>
 		);
@@ -50,7 +50,7 @@ const EditUserWithData = ({
 
 	if (data?.user && isUserFederated(data?.user as unknown as IUser)) {
 		return (
-			<Callout m='x16' type='danger'>
+			<Callout m={16} type='danger'>
 				{t('Edit_Federated_User_Not_Allowed')}
 			</Callout>
 		);
