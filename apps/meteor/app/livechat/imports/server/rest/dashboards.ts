@@ -1,5 +1,9 @@
 import { Users } from '@rocket.chat/models';
-import { isGETDashboardTotalizerParams, isGETDashboardsAgentStatusParams } from '@rocket.chat/rest-typings';
+import {
+	isGETDashboardTotalizerParams,
+	isGETDashboardsAgentStatusParams,
+	isGETDashboardConversationsByType,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
 import {
@@ -12,6 +16,11 @@ import {
 	findAllResponseTimeMetricsAsync,
 	getAgentsProductivityMetricsAsync,
 	getChatsMetricsAsync,
+	findAllConversationsBySource,
+	findAllConversationsByStatus,
+	findAllConversationsByDepartment,
+	findAllConversationsByTags,
+	findAllConversationsByAgents,
 } from '../../../server/lib/analytics/dashboards';
 
 API.v1.addRoute(
@@ -243,6 +252,131 @@ API.v1.addRoute(
 			const result = await findAllResponseTimeMetricsAsync({ start: startDate, end: endDate, departmentId });
 
 			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/analytics/dashboards/conversations-by-source',
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardConversationsByType },
+	{
+		async get() {
+			const { start, end } = this.queryParams;
+
+			if (isNaN(Date.parse(start))) {
+				return API.v1.failure('The "start" query parameter must be a valid date.');
+			}
+
+			if (isNaN(Date.parse(end))) {
+				return API.v1.failure('The "end" query parameter must be a valid date.');
+			}
+
+			const startDate = new Date(start);
+			const endDate = new Date(end);
+
+			const result = await findAllConversationsBySource({ start: startDate, end: endDate });
+
+			return API.v1.success({ data: result });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/analytics/dashboards/conversations-by-status',
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardConversationsByType },
+	{
+		async get() {
+			const { start, end } = this.queryParams;
+
+			if (isNaN(Date.parse(start))) {
+				return API.v1.failure('The "start" query parameter must be a valid date.');
+			}
+
+			if (isNaN(Date.parse(end))) {
+				return API.v1.failure('The "end" query parameter must be a valid date.');
+			}
+
+			const startDate = new Date(start);
+			const endDate = new Date(end);
+
+			const result = await findAllConversationsByStatus({ start: startDate, end: endDate });
+
+			return API.v1.success({ data: result });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/analytics/dashboards/conversations-by-department',
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardConversationsByType },
+	{
+		async get() {
+			const { start, end } = this.queryParams;
+
+			if (isNaN(Date.parse(start))) {
+				return API.v1.failure('The "start" query parameter must be a valid date.');
+			}
+
+			if (isNaN(Date.parse(end))) {
+				return API.v1.failure('The "end" query parameter must be a valid date.');
+			}
+
+			const startDate = new Date(start);
+			const endDate = new Date(end);
+
+			const result = await findAllConversationsByDepartment({ start: startDate, end: endDate });
+
+			return API.v1.success({ data: result });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/analytics/dashboards/conversations-by-tags',
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardConversationsByType },
+	{
+		async get() {
+			const { start, end } = this.queryParams;
+
+			if (isNaN(Date.parse(start))) {
+				return API.v1.failure('The "start" query parameter must be a valid date.');
+			}
+
+			if (isNaN(Date.parse(end))) {
+				return API.v1.failure('The "end" query parameter must be a valid date.');
+			}
+
+			const startDate = new Date(start);
+			const endDate = new Date(end);
+
+			const result = await findAllConversationsByTags({ start: startDate, end: endDate });
+
+			return API.v1.success({ data: result });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/analytics/dashboards/conversations-by-agent',
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardConversationsByType },
+	{
+		async get() {
+			const { start, end } = this.queryParams;
+
+			if (isNaN(Date.parse(start))) {
+				return API.v1.failure('The "start" query parameter must be a valid date.');
+			}
+
+			if (isNaN(Date.parse(end))) {
+				return API.v1.failure('The "end" query parameter must be a valid date.');
+			}
+
+			const startDate = new Date(start);
+			const endDate = new Date(end);
+
+			const result = await findAllConversationsByAgents({ start: startDate, end: endDate });
+
+			return API.v1.success({ data: result });
 		},
 	},
 );

@@ -22,6 +22,7 @@ import type {
 	SortDirection,
 	FindCursor,
 	UpdateResult,
+	AggregationCursor,
 } from 'mongodb';
 
 import { getValue } from '../../../app/settings/server/raw';
@@ -2514,5 +2515,318 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 	async updateDepartmentAncestorsById(_rid: string, _departmentAncestors?: string[]): Promise<UpdateResult> {
 		throw new Error('Method not implemented.');
+	}
+
+	getConversationsBySource(start: Date, end: Date): AggregationCursor<Record<string, number>> {
+		return this.col.aggregate([
+			{
+				$match: {
+					source: {
+						$exists: true,
+					},
+					ts: {
+						$gte: start,
+						$lt: end,
+					},
+					t: 'l',
+				},
+			},
+			{
+				$group: {
+					_id: '$source',
+					count: { $sum: 1 },
+				},
+			},
+			{
+				$group: {
+					_id: null,
+					data: {
+						$push: {
+							k: {
+								$ifNull: ['$_id.alias', '$_id.type'],
+							},
+							v: '$count',
+						},
+					},
+				},
+			},
+			{
+				$replaceRoot: {
+					newRoot: { $arrayToObject: '$data' },
+				},
+			},
+		]);
+	}
+
+	getConversationsByStatus(start: Date, end: Date): AggregationCursor<Record<string, number>> {
+		return this.col.aggregate([
+			{
+				$match: {
+					t: 'l',
+					ts: {
+						$gte: start,
+						$lt: end,
+					},
+				},
+			},
+			{
+				$group: {
+					_id: null,
+					open: {
+						$sum: {
+							$cond: [
+								{
+									$and: [
+										{ $eq: ['$open', true] },
+										{
+											$or: [{ $not: ['$onHold'] }, { $eq: ['$onHold', false] }],
+										},
+										{ $ifNull: ['$servedBy', false] },
+									],
+								},
+								1,
+								0,
+							],
+						},
+					},
+					closed: {
+						$sum: {
+							$cond: [
+								{
+									$and: [
+										{
+											$ifNull: ['$metrics.chatDuration', false],
+										},
+									],
+								},
+								1,
+								0,
+							],
+						},
+					},
+					queued: {
+						$sum: {
+							$cond: [
+								{
+									$and: [
+										{ $eq: ['$open', true] },
+										{
+											$eq: [
+												{
+													$ifNull: ['$servedBy', null],
+												},
+												null,
+											],
+										},
+									],
+								},
+								1,
+								0,
+							],
+						},
+					},
+					onhold: {
+						$sum: {
+							$cond: [{ $eq: ['$onHold', true] }, 1, 0],
+						},
+					},
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					open: 1,
+					closed: 1,
+					queued: 1,
+					onhold: 1,
+				},
+			},
+		]);
+	}
+
+	getConversationsByDepartment(start: Date, end: Date): AggregationCursor<Record<string, number>> {
+		return this.col.aggregate([
+			{
+				$match: {
+					t: 'l',
+					departmentId: {
+						$exists: true,
+					},
+					ts: {
+						$gte: start,
+						$lt: end,
+					},
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_livechat_department',
+					localField: 'departmentId',
+					foreignField: '_id',
+					as: 'department',
+				},
+			},
+			{
+				$group: {
+					_id: { $arrayElemAt: ['$department.name', 0] },
+					Chats: {
+						$sum: 1,
+					},
+				},
+			},
+			{
+				$group: {
+					_id: null,
+					sum: {
+						$sum: '$Chats',
+					},
+					chat: {
+						$push: {
+							department: '$_id',
+							Chats: '$Chats',
+						},
+					},
+				},
+			},
+			{
+				$unwind: {
+					path: '$chat',
+				},
+			},
+			{
+				$project: {
+					Department: '$chat.department',
+					Chats: '$chat.Chats',
+				},
+			},
+			{
+				$set: {
+					dynamicKey: [
+						{
+							k: '$Department',
+							v: '$Chats',
+						},
+					],
+				},
+			},
+			{
+				$replaceWith: {
+					$arrayToObject: '$dynamicKey',
+				},
+			},
+		]);
+	}
+
+	getConversationsByTags(start: Date, end: Date): AggregationCursor<Record<string, number>> {
+		return this.col.aggregate([
+			{
+				$match: {
+					t: 'l',
+					ts: {
+						$gte: start,
+						$lt: end,
+					},
+				},
+			},
+			{
+				$group: {
+					_id: { $ifNull: ['$tags', ['No_Tag']] },
+					Chats: {
+						$sum: 1,
+					},
+				},
+			},
+			{
+				$unwind: '$_id',
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_livechat_tag',
+					localField: '_id',
+					foreignField: '_id',
+					as: 'tag',
+				},
+			},
+			{
+				$project: {
+					count: '$Chats',
+					tag: { $first: '$tag' },
+				},
+			},
+			{
+				$addFields: {
+					tagName: { $ifNull: ['$tag.name', '$_id', 'No_Tag'] },
+				},
+			},
+			{
+				$group: {
+					_id: null,
+					tagCounts: {
+						$push: { k: '$tagName', v: '$count' },
+					},
+				},
+			},
+			{
+				$replaceWith: {
+					$arrayToObject: '$tagCounts',
+				},
+			},
+		]);
+	}
+
+	getConversationsByAgents(start: Date, end: Date): AggregationCursor<Record<string, number>> {
+		return this.col.aggregate([
+			{
+				$match: {
+					t: 'l',
+					ts: {
+						$gte: start,
+						$lt: end,
+					},
+				},
+			},
+			{
+				$group: {
+					_id: { $ifNull: ['$servedBy._id', 'Unspecified'] },
+					total: { $sum: 1 },
+				},
+			},
+			{
+				$lookup: {
+					from: 'users',
+					localField: '_id',
+					foreignField: '_id',
+					as: 'agent',
+				},
+			},
+			{
+				$set: {
+					agent: { $first: '$agent' },
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					agentName: { $ifNull: ['$agent.name', '$_id', 'Unspecified'] },
+					count: '$total',
+				},
+			},
+			{
+				$group: {
+					_id: null,
+					agents: {
+						$push: {
+							k: '$agentName',
+							v: '$count',
+						},
+					},
+				},
+			},
+			{
+				$replaceWith: {
+					$arrayToObject: '$agents',
+				},
+			},
+		]);
 	}
 }
