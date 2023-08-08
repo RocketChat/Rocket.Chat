@@ -250,7 +250,7 @@ const AccountProfilePage = (): ReactElement => {
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='600px' w='full' alignSelf='center'>
 					<AccountProfileForm values={values} handlers={handlers} user={user} settings={settings} onSaveStateChange={setCanSave} />
-					<ButtonGroup stretch mb='x12'>
+					<ButtonGroup stretch mb={12}>
 						<Button onClick={handleLogoutOtherLocations} flexGrow={0} disabled={loggingOut}>
 							{t('Logout_Others')}
 						</Button>

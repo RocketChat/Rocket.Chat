@@ -26,13 +26,13 @@ const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onR
 
 	if (isLoading) {
 		return (
-			<Box w='full' p='x24'>
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
+			<Box w='full' p={24}>
+				<Skeleton mbe={4} />
+				<Skeleton mbe={8} />
+				<Skeleton mbe={4} />
+				<Skeleton mbe={8} />
+				<Skeleton mbe={4} />
+				<Skeleton mbe={8} />
 			</Box>
 		);
 	}

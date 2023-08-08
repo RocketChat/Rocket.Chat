@@ -63,12 +63,12 @@ const ConfirmOwnerChangeModal: FC<ConfirmOwnerChangeModalProps> = ({
 			{contentTitle}
 
 			{changeOwnerRooms && (
-				<Box marginBlock='x16'>
+				<Box marginBlock={16}>
 					<RawText>{changeOwnerRooms}</RawText>
 				</Box>
 			)}
 			{removedRooms && (
-				<Box marginBlock='x16'>
+				<Box marginBlock={16}>
 					<RawText>{removedRooms}</RawText>
 				</Box>
 			)}

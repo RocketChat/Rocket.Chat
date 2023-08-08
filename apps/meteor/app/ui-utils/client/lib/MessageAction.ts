@@ -20,7 +20,8 @@ export type MessageActionContext =
 	| 'mentions'
 	| 'federated'
 	| 'videoconf'
-	| 'search';
+	| 'search'
+	| 'videoconf-threads';
 
 type MessageActionConditionProps = {
 	message: IMessage;

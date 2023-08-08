@@ -15,7 +15,7 @@ const PruneMessagesDateTimeRow = ({ label, field }: PruneMessagesDateTimeRowProp
 		<Field>
 			<Field.Label flexGrow={0}>{label}</Field.Label>
 			<Box display='flex' mi='neg-x4'>
-				<Margins inline='x4'>
+				<Margins inline={4}>
 					<InputBox type='date' flexGrow={1} h='x20' {...register(`${field}.date`)} />
 					<InputBox type='time' flexGrow={1} h='x20' {...register(`${field}.time`)} />
 				</Margins>
