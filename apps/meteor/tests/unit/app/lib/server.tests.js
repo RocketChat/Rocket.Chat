@@ -9,11 +9,6 @@ const { default: PasswordPolicyClass } = proxyquire.noCallThru().load('../../../
 			},
 		},
 	},
-	'@rocket.chat/random': {
-		Random: {
-			id: () => 1,
-		},
-	},
 });
 
 describe('PasswordPolicyClass', () => {
@@ -223,6 +218,14 @@ describe('PasswordPolicyClass', () => {
 			});
 
 			expect(passwordPolice.generatePassword()).to.not.be.undefined;
+		});
+
+		it('should return a random password with 17 characters if the policy is disabled', () => {
+			const passwordPolice = new PasswordPolicyClass({
+				enabled: false,
+			});
+
+			expect((passwordPolice.generatePassword().match(/./) || []).length).to.equal(17);
 		});
 	});
 
