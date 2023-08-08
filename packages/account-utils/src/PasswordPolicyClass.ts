@@ -1,5 +1,6 @@
-import { Random } from '@rocket.chat/random';
 import generator from 'generate-password';
+
+import { PasswordPolicyError } from './PasswordPolicyError';
 
 class PasswordPolicy {
 	regex: {
@@ -82,80 +83,16 @@ class PasswordPolicy {
 		this.regex.forbiddingRepeatingCharacters = new RegExp(`(.)\\1{${this.forbidRepeatingCharactersCount},}`);
 	}
 
-	get passwordPolicyEnabled() {
-		return this.enabled;
-	}
-
-	set passwordPolicyEnabled(value: boolean) {
-		this.enabled = value;
-	}
-
-	get passwordMinLength() {
-		return this.minLength;
-	}
-
-	set passwordMinLength(value: number) {
-		this.minLength = value;
-	}
-
-	get passwordMaxLength() {
-		return this.maxLength;
-	}
-
-	set passwordMaxLength(value: number) {
-		this.maxLength = value;
-	}
-
-	get passwordForbidRepeatingCharacters() {
-		return this.forbidRepeatingCharacters;
-	}
-
-	set passwordForbidRepeatingCharacters(value: boolean) {
-		this.forbidRepeatingCharacters = value;
-	}
-
-	get passwordAtLeastOneLowercase() {
-		return this.mustContainAtLeastOneLowercase;
-	}
-
-	set passwordAtLeastOneLowercase(value: boolean) {
-		this.mustContainAtLeastOneLowercase = value;
-	}
-
-	get passwordAtLeastOneUppercase() {
-		return this.mustContainAtLeastOneUppercase;
-	}
-
-	set passwordAtLeastOneUppercase(value: boolean) {
-		this.mustContainAtLeastOneUppercase = value;
-	}
-
-	get passwordAtLeastOneNumber() {
-		return this.mustContainAtLeastOneNumber;
-	}
-
-	set passwordAtLeastOneNumber(value: boolean) {
-		this.mustContainAtLeastOneNumber = value;
-	}
-
-	get passwordAtLeastOneSpecialCharacter() {
-		return this.mustContainAtLeastOneSpecialCharacter;
-	}
-
-	set passwordAtLeastOneSpecialCharacter(value: boolean) {
-		this.mustContainAtLeastOneSpecialCharacter = value;
-	}
-
 	error(
-		error: string | number,
-		message: string | undefined,
+		error: string,
+		message: string,
 		reasons?: {
 			error: string;
 			message: string;
 		}[],
 	) {
 		if (this.throwError) {
-			throw new Error(`ERROR: ${error} -- MESSAGE: ${message} -- REASON: ${reasons}`);
+			throw new PasswordPolicyError(message, error, reasons);
 		}
 
 		return false;
@@ -357,7 +294,7 @@ class PasswordPolicy {
 			}
 		}
 
-		return Random.id();
+		return generator.generate({ length: 17 });
 	}
 
 	_generatePassword() {

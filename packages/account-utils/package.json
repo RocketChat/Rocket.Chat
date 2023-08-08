@@ -10,8 +10,6 @@
 		"typescript": "~5.2.2"
 	},
 	"dependencies": {
-		"@rocket.chat/core-services": "workspace:^",
-		"@rocket.chat/random": "workspace:^",
 		"generate-password": "^1.7.0"
 	},
 	"scripts": {

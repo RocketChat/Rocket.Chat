@@ -15,7 +15,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { validateEmailDomain } from '../lib';
-import { passwordPolicy } from '../lib/passwordPolicy';
+import { passwordPolicy, PasswordPolicyError } from '../lib/passwordPolicy';
 import { checkEmailAvailability } from './checkEmailAvailability';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { saveUserIdentity } from './saveUserIdentity';
@@ -386,7 +386,16 @@ export const saveUser = async function (userId, userData) {
 		userData.password &&
 		userData.password.trim() &&
 		(await hasPermissionAsync(userId, 'edit-other-user-password')) &&
-		passwordPolicy.validate(userData.password)
+
+		try {
+			passwordPolicy.validate(userData.password)
+		} catch (err) {
+			if (err instanceof PasswordValidationError) {
+				throw new Meteor.Error(err.error, err.message, err.reasons)
+			}
+			throw err;
+		}
+		
 	) {
 		await Accounts.setPasswordAsync(userData._id, userData.password.trim());
 	} else {
