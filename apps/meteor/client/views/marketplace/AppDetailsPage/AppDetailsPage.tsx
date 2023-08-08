@@ -83,7 +83,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 					)}
 				</ButtonGroup>
 			</Page.Header>
-			<Page.ScrollableContentWithShadow pi='x24' pbs='x24' pbe='0' h='full'>
+			<Page.ScrollableContentWithShadow pi={24} pbs={24} pbe={0} h='full'>
 				<Box w='full' alignSelf='center' h='full' display='flex' flexDirection='column'>
 					{!appData && <AppDetailsPageLoading />}
 					{appData && (

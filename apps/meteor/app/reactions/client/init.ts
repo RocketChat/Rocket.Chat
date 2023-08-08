@@ -10,7 +10,7 @@ Meteor.startup(() => {
 		id: 'reaction-message',
 		icon: 'add-reaction',
 		label: 'Add_Reaction',
-		context: ['message', 'message-mobile', 'threads', 'federated'],
+		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		action(event, props) {
 			const { message = messageArgs(this).msg, chat } = props;
 			event.stopPropagation();

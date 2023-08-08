@@ -37,9 +37,7 @@ const CannedResponsesPage = () => {
 		<Page>
 			<Page.Header title={t('Canned_Responses')}>
 				<ButtonGroup>
-					<Button onClick={handleClick} title={t('New_Canned_Response')}>
-						{t('New')}
-					</Button>
+					<Button onClick={handleClick}>{t('Create_canned_response')}</Button>
 				</ButtonGroup>
 			</Page.Header>
 			<Page.Content>

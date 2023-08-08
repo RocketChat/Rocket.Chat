@@ -1,9 +1,7 @@
 import i18next from 'i18next';
 
 import { MemoizedComponent } from '../../helpers/MemoizedComponent';
-import { createClassName } from '../../helpers/createClassName';
 import { validateEmail } from '../../lib/email';
-import styles from './styles.scss';
 
 export class Form extends MemoizedComponent {
 	static defaultHandleSubmit = (event) => {
@@ -11,12 +9,7 @@ export class Form extends MemoizedComponent {
 	};
 
 	render = ({ onSubmit, className, style = {}, children }) => (
-		<form
-			noValidate
-			onSubmit={onSubmit || Form.defaultHandleSubmit}
-			className={createClassName(styles, 'form', {}, [className])}
-			style={style}
-		>
+		<form noValidate onSubmit={onSubmit || Form.defaultHandleSubmit} className={className} style={style}>
 			{children}
 		</form>
 	);

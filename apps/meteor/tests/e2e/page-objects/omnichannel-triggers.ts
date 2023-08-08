@@ -13,7 +13,7 @@ export class OmnichannelTriggers {
 	}
 
 	get btnNew(): Locator {
-		return this.page.locator('role=button[name="New"]');
+		return this.page.locator('role=button[name="Create trigger"]');
 	}
 
 	get Name(): Locator {

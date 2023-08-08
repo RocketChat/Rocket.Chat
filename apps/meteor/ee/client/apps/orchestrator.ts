@@ -1,5 +1,4 @@
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
-import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
@@ -169,15 +168,6 @@ class AppClientOrchestrator {
 			return result.app;
 		}
 		throw new Error('App not found');
-	}
-
-	public async setAppStatus(appId: string, status: AppStatus): Promise<string> {
-		const { status: effectiveStatus } = await sdk.rest.post(`/apps/${appId}/status`, { status });
-		return effectiveStatus;
-	}
-
-	public disableApp(appId: string): Promise<string> {
-		return this.setAppStatus(appId, AppStatus.MANUALLY_ENABLED);
 	}
 
 	public async buildExternalUrl(appId: string, purchaseType: 'buy' | 'subscription' = 'buy', details = false): Promise<IAppExternalURL> {

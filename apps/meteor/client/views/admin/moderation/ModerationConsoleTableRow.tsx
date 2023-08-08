@@ -36,7 +36,7 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 							<UserAvatar size={isDesktopOrLarger ? 'x20' : 'x40'} username={username} />
 						</Box>
 					)}
-					<Box display='flex' mi='x8' withTruncatedText>
+					<Box display='flex' mi={8} withTruncatedText>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' color='default' withTruncatedText>
 								{name || username}

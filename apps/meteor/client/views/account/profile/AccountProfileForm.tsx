@@ -227,7 +227,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 			<Box display='flex' flexDirection='row' justifyContent='space-between'>
 				{useMemo(
 					() => (
-						<Field mie='x8' flexShrink={1}>
+						<Field mie={8} flexShrink={1}>
 							<Field.Label flexGrow={0}>{t('Name')}</Field.Label>
 							<Field.Row>
 								<TextInput error={nameError} disabled={!allowRealNameChange} flexGrow={1} value={realname} onChange={handleRealname} />
@@ -240,7 +240,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 				)}
 				{useMemo(
 					() => (
-						<Field mis='x8' flexShrink={1}>
+						<Field mis={8} flexShrink={1}>
 							<Field.Label flexGrow={0}>{t('Username')}</Field.Label>
 							<Field.Row>
 								<TextInput
@@ -329,7 +329,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 								disabled={!allowEmailChange}
 							/>
 							{!verified && (
-								<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail} mis='x24'>
+								<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail} mis={24}>
 									{t('Resend_verification_email')}
 								</Button>
 							)}
@@ -344,7 +344,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 				() => (
 					<Field>
 						<Field.Label>{t('New_password')}</Field.Label>
-						<Field.Row mbe='x4'>
+						<Field.Row mbe={4}>
 							<PasswordInput
 								autoComplete='off'
 								disabled={!allowPasswordChange}
@@ -356,7 +356,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 								placeholder={t('Create_a_password')}
 							/>
 						</Field.Row>
-						<Field.Row mbs='x4'>
+						<Field.Row mbs={4}>
 							<PasswordInput
 								autoComplete='off'
 								error={showPasswordError ? passwordError : undefined}
