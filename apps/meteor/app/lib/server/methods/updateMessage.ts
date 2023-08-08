@@ -44,7 +44,7 @@ Meteor.methods<ServerMethods>({
 		});
 
 		const msgText = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
-		if (msgText === message.msg) {
+		if (msgText === message.msg && !previewUrls) {
 			return;
 		}
 
