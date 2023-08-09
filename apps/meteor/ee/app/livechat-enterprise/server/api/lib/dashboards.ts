@@ -1,5 +1,6 @@
 import type { ReportResult } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
+import mem from 'mem';
 
 export const findAllConversationsBySource = async ({ start, end }: { start: Date; end: Date }): Promise<ReportResult | undefined> => {
 	return (await LivechatRooms.getConversationsBySource(start, end).toArray())[0];
@@ -20,3 +21,9 @@ export const findAllConversationsByTags = async ({ start, end }: { start: Date; 
 export const findAllConversationsByAgents = async ({ start, end }: { start: Date; end: Date }): Promise<ReportResult | undefined> => {
 	return (await LivechatRooms.getConversationsByAgents(start, end).toArray())[0];
 };
+
+export const findAllConversationsBySourceCached = mem(findAllConversationsBySource, { maxAge: 10000 });
+export const findAllConversationsByStatusCached = mem(findAllConversationsByStatus, { maxAge: 10000 });
+export const findAllConversationsByDepartmentCached = mem(findAllConversationsByDepartment, { maxAge: 10000 });
+export const findAllConversationsByTagsCached = mem(findAllConversationsByTags, { maxAge: 10000 });
+export const findAllConversationsByAgentsCached = mem(findAllConversationsByAgents, { maxAge: 10000 });

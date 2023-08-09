@@ -35,6 +35,26 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.query({ start: 'test', end: 'test' })
 				.expect(400);
 		});
+		it('should fail if dates are more than 1 year apart', async () => {
+			const oneYearAgo = new Date(Date.now() - 380 * 24 * 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+
+			await request
+				.get(api('livechat/analytics/dashboards/conversations-by-source'))
+				.set(credentials)
+				.query({ start: oneYearAgo, end: now })
+				.expect(400);
+		});
+		it('should return an error when start is after end', async () => {
+			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+
+			await request
+				.get(api('livechat/analytics/dashboards/conversations-by-source'))
+				.set(credentials)
+				.query({ start: now, end: oneHourAgo })
+				.expect(400);
+		});
 		it('should return an error when the end parameter is not a valid date', async () => {
 			await request
 				.get(api('livechat/analytics/dashboards/conversations-by-source'))
@@ -101,6 +121,26 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-status'))
 				.set(credentials)
 				.query({ start: '2020-01-01', end: 'test' })
+				.expect(400);
+		});
+		it('should return an error if dates are more than 1 year apart', async () => {
+			const oneYearAgo = new Date(Date.now() - 380 * 24 * 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+
+			await request
+				.get(api('livechat/analytics/dashboards/conversations-by-status'))
+				.set(credentials)
+				.query({ start: oneYearAgo, end: now })
+				.expect(400);
+		});
+		it('should return an error when start is after end', async () => {
+			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+
+			await request
+				.get(api('livechat/analytics/dashboards/conversations-by-status'))
+				.set(credentials)
+				.query({ start: now, end: oneHourAgo })
 				.expect(400);
 		});
 		it('should return the proper data when the parameters are valid', async () => {
@@ -172,6 +212,26 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.query({ start: '2020-01-01', end: 'test' })
 				.expect(400);
 		});
+		it('should return an error if dates are more than 1 year apart', async () => {
+			const oneYearAgo = new Date(Date.now() - 380 * 24 * 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+
+			await request
+				.get(api('livechat/analytics/dashboards/conversations-by-department'))
+				.set(credentials)
+				.query({ start: oneYearAgo, end: now })
+				.expect(400);
+		});
+		it('should return an error when start is after end', async () => {
+			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+
+			await request
+				.get(api('livechat/analytics/dashboards/conversations-by-department'))
+				.set(credentials)
+				.query({ start: now, end: oneHourAgo })
+				.expect(400);
+		});
 		it('should return the proper data when the parameters are valid', async () => {
 			// Note: this way all data will come as 0
 			const now = new Date().toISOString();
@@ -233,6 +293,26 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.query({ start: '2020-01-01', end: 'test' })
 				.expect(400);
 		});
+		it('should return an error if dates are more than 1 year apart', async () => {
+			const oneYearAgo = new Date(Date.now() - 380 * 24 * 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+
+			await request
+				.get(api('livechat/analytics/dashboards/conversations-by-tags'))
+				.set(credentials)
+				.query({ start: oneYearAgo, end: now })
+				.expect(400);
+		});
+		it('should return an error when start is after end', async () => {
+			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+
+			await request
+				.get(api('livechat/analytics/dashboards/conversations-by-tags'))
+				.set(credentials)
+				.query({ start: now, end: oneHourAgo })
+				.expect(400);
+		});
 		it('should return the proper data when the parameters are valid', async () => {
 			// Note: this way all data will come as 0
 			const now = new Date().toISOString();
@@ -292,6 +372,26 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/analytics/dashboards/conversations-by-agent'))
 				.set(credentials)
 				.query({ start: '2020-01-01', end: 'test' })
+				.expect(400);
+		});
+		it('should return an error if dates are more than 1 year apart', async () => {
+			const oneYearAgo = new Date(Date.now() - 380 * 24 * 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+
+			await request
+				.get(api('livechat/analytics/dashboards/conversations-by-agent'))
+				.set(credentials)
+				.query({ start: oneYearAgo, end: now })
+				.expect(400);
+		});
+		it('should return an error when start is after end', async () => {
+			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+
+			await request
+				.get(api('livechat/analytics/dashboards/conversations-by-agent'))
+				.set(credentials)
+				.query({ start: now, end: oneHourAgo })
 				.expect(400);
 		});
 		it('should return the proper data when the parameters are valid', async () => {
