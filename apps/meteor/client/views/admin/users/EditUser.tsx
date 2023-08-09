@@ -69,8 +69,8 @@ function EditUser({ userData, onReload, availableRoles, ...props }: EditUserProp
 		onSuccess: async ({ user: { _id } }) => {
 			dispatchToastMessage({ type: 'success', message: t('User_updated_successfully') });
 			await updateAvatar();
-			onReload();
 			goToUser(_id);
+			onReload();
 		},
 	});
 

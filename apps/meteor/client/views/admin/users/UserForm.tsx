@@ -64,7 +64,6 @@ const UserForm = ({ availableRoles, onSave, preserveData, userData, setAvatarObj
 		statusText: data.statusText ?? '',
 		joinDefaultChannels: true,
 		sendWelcomeEmail: true,
-		avatar: {},
 	});
 
 	const {
@@ -92,7 +91,6 @@ const UserForm = ({ availableRoles, onSave, preserveData, userData, setAvatarObj
 					customFields: {},
 					joinDefaultChannels: true,
 					sendWelcomeEmail: Boolean(isSmtpEnabled),
-					avatar: {},
 			  },
 		mode: 'all',
 	});
@@ -228,7 +226,6 @@ const UserForm = ({ availableRoles, onSave, preserveData, userData, setAvatarObj
 								<Controller
 									control={control}
 									name='setRandomPassword'
-									// rules={{ required: t('The_field_is_required', t('password')) }}
 									render={({ field: { onChange, value } }) => (
 										<ToggleSwitch checked={value} onChange={onChange} disabled={!isSmtpEnabled} />
 									)}

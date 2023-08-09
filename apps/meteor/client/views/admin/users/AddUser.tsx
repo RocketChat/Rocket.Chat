@@ -27,13 +27,14 @@ const AddUser = ({ onReload, availableRoles, ...props }: AddUserProps) => {
 	const saveAction = useEndpoint('POST', '/v1/users.create');
 	const handleSaveUser = useMutation({
 		mutationFn: saveAction,
-		onSuccess: async ({ user: { _id } }) => {
+		onSuccess: async (data) => {
+			console.log(data);
 			dispatchToastMessage({ type: 'success', message: t('User_created_successfully!') });
 			await eventStats({
 				params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
 			});
+			goToUser(data.user._id);
 			onReload();
-			goToUser(_id);
 		},
 	});
 
