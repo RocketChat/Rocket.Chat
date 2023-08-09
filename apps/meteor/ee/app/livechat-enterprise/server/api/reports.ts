@@ -1,5 +1,6 @@
 import { isGETDashboardConversationsByType } from '@rocket.chat/rest-typings';
 
+import { API } from '../../../../../app/api/server';
 import {
 	findAllConversationsBySource,
 	findAllConversationsByStatus,
