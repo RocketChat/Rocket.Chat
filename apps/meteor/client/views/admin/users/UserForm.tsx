@@ -29,8 +29,6 @@ import { useSmtpConfig } from './hooks/useSmtpConfig';
 
 type UserFormProps = {
 	availableRoles?: SelectOption[];
-	// prepend?: (currentUsername: any, username: any, avatarETag: any) => React.JSX.Element;
-	// hasAvatarObject: boolean;
 	onSave: UseMutationResult<any, unknown, any, unknown>;
 	preserveData: boolean;
 	userData?: Serialized<IUser> | Record<string, never>;
