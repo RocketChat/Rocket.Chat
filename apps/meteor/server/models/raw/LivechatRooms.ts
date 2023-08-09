@@ -2614,11 +2614,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 							$sum: {
 								$cond: [
 									{
-										$and: [
-											{
-												$ifNull: ['$metrics.chatDuration', false],
-											},
-										],
+										$ifNull: ['$metrics.chatDuration', false],
 									},
 									1,
 									0,
@@ -2749,7 +2745,9 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				},
 				{
 					$group: {
-						_id: { $ifNull: ['$tags', 'Unspecified'] },
+						_id: {
+							$ifNull: ['$tags', 'Tag_Unspecified'],
+						},
 						Chats: {
 							$sum: 1,
 						},
@@ -2759,31 +2757,12 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					$unwind: '$_id',
 				},
 				{
-					$lookup: {
-						from: 'rocketchat_livechat_tag',
-						localField: '_id',
-						foreignField: '_id',
-						as: 'tag',
-					},
-				},
-				{
-					$project: {
-						count: '$Chats',
-						tag: { $first: '$tag' },
-					},
-				},
-				{
-					$addFields: {
-						tagName: { $ifNull: ['$tag.name', '$_id'] },
-					},
-				},
-				{
 					$group: {
 						_id: null,
 						data: {
 							$push: {
-								label: '$tagName',
-								value: '$count',
+								label: '$_id',
+								value: '$Chats',
 							},
 						},
 					},
@@ -2813,7 +2792,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				{
 					$group: {
 						_id: {
-							$ifNull: ['$servedBy._id', 'Unassigned'],
+							$ifNull: ['$servedBy._id', 'Agent_Unassigned'],
 						},
 						total: { $sum: 1 },
 					},

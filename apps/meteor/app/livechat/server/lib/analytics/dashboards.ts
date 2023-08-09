@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, ReportResult } from '@rocket.chat/core-typings';
 import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '@rocket.chat/models';
 import moment from 'moment';
 
@@ -381,22 +381,22 @@ export const findAllResponseTimeMetricsAsync = async ({
 	};
 };
 
-export const findAllConversationsBySource = async ({ start, end }: { start: Date; end: Date }): Promise<Record<string, number>> => {
+export const findAllConversationsBySource = async ({ start, end }: { start: Date; end: Date }): Promise<ReportResult> => {
 	return (await LivechatRooms.getConversationsBySource(start, end).toArray())[0];
 };
 
-export const findAllConversationsByStatus = async ({ start, end }: { start: Date; end: Date }): Promise<Record<string, number>> => {
+export const findAllConversationsByStatus = async ({ start, end }: { start: Date; end: Date }): Promise<ReportResult> => {
 	return (await LivechatRooms.getConversationsByStatus(start, end).toArray())[0];
 };
 
-export const findAllConversationsByDepartment = async ({ start, end }: { start: Date; end: Date }): Promise<Record<string, number>> => {
+export const findAllConversationsByDepartment = async ({ start, end }: { start: Date; end: Date }): Promise<ReportResult> => {
 	return (await LivechatRooms.getConversationsByDepartment(start, end).toArray())[0];
 };
 
-export const findAllConversationsByTags = async ({ start, end }: { start: Date; end: Date }): Promise<Record<string, number>> => {
+export const findAllConversationsByTags = async ({ start, end }: { start: Date; end: Date }): Promise<ReportResult> => {
 	return (await LivechatRooms.getConversationsByTags(start, end).toArray())[0];
 };
 
-export const findAllConversationsByAgents = async ({ start, end }: { start: Date; end: Date }): Promise<Record<string, number>> => {
+export const findAllConversationsByAgents = async ({ start, end }: { start: Date; end: Date }): Promise<ReportResult> => {
 	return (await LivechatRooms.getConversationsByAgents(start, end).toArray())[0];
 };
