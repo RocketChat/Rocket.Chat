@@ -224,9 +224,31 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const params: Exclude<Parameters<Collection<IMessage>['aggregate']>[0], undefined> = [
 			{ $match: { t: { $exists: false }, ts: { $gte: start, $lte: end } } },
 			{
+				$group: {
+					_id: {
+						rid: '$rid',
+						date: {
+							$dateToString: { format: '%Y%m%d', date: '$ts' },
+						},
+					},
+					messages: { $sum: 1 },
+				},
+			},
+			{
+				$group: {
+					_id: '$_id.rid',
+					data: {
+						$push: {
+							date: '$_id.date',
+							messages: '$messages',
+						},
+					},
+				},
+			},
+			{
 				$lookup: {
 					from: 'rocketchat_room',
-					localField: 'rid',
+					localField: '_id',
 					foreignField: '_id',
 					as: 'room',
 				},
@@ -237,8 +259,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				},
 			},
 			{
-				$group: {
-					_id: {
+				$project: {
+					data: '$data',
+					room: {
 						_id: '$room._id',
 						name: {
 							$cond: [{ $ifNull: ['$room.fname', false] }, '$room.fname', '$room.name'],
@@ -247,25 +270,22 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 						usernames: {
 							$cond: [{ $ifNull: ['$room.usernames', false] }, '$room.usernames', []],
 						},
-						date: {
-							$concat: [{ $substr: ['$ts', 0, 4] }, { $substr: ['$ts', 5, 2] }, { $substr: ['$ts', 8, 2] }],
-						},
 					},
-					messages: { $sum: 1 },
+					type: 'messages',
+				},
+			},
+			{
+				$unwind: {
+					path: '$data',
 				},
 			},
 			{
 				$project: {
 					_id: 0,
-					date: '$_id.date',
-					room: {
-						_id: '$_id._id',
-						name: '$_id.name',
-						t: '$_id.t',
-						usernames: '$_id.usernames',
-					},
-					type: 'messages',
-					messages: 1,
+					date: '$data.date',
+					room: 1,
+					type: 1,
+					messages: '$data.messages',
 				},
 			},
 		];
