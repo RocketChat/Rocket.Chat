@@ -12,8 +12,8 @@ import type {
 	IVoipRoomClosingInfo,
 } from '@rocket.chat/core-typings';
 import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents, UserStatus } from '@rocket.chat/core-typings';
-import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VoipRoom, PbxEvents } from '@rocket.chat/models';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
