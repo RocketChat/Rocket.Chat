@@ -104,7 +104,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 
 	if (error || !user || !data?.user) {
 		return (
-			<ContextualbarContent pb='x16'>
+			<ContextualbarContent pb={16}>
 				<Callout type='danger'>{t('User_not_found')}</Callout>
 			</ContextualbarContent>
 		);

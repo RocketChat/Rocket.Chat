@@ -33,7 +33,7 @@ export const useActionManagerState = (initialState: ActionManagerState) => {
 		return () => {
 			actionManager.off(viewId, handleUpdate);
 		};
-	}, [viewId]);
+	}, [actionManager, viewId]);
 
 	return state;
 };

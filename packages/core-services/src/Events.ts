@@ -31,6 +31,7 @@ import type {
 	AtLeast,
 	ILivechatInquiryRecord,
 	ILivechatAgent,
+	IBanner,
 } from '@rocket.chat/core-typings';
 
 import type { AutoUpdateRecord } from './types/IMeteor';
@@ -49,6 +50,7 @@ export type EventSignatures = {
 	'banner.new'(bannerId: string): void;
 	'banner.enabled'(bannerId: string): void;
 	'banner.disabled'(bannerId: string): void;
+	'banner.user'(userId: string, banner: IBanner): void;
 	'emoji.deleteCustom'(emoji: IEmoji): void;
 	'emoji.updateCustom'(emoji: IEmoji): void;
 	'license.module'(data: { module: string; valid: boolean }): void;

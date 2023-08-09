@@ -1,19 +1,21 @@
-import type ldapjs from 'ldapjs';
+import { Team } from '@rocket.chat/core-services';
 import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
-import { Team } from '@rocket.chat/core-services';
+import type ldapjs from 'ldapjs';
 
 import type { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
+import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
+import { createRoom } from '../../../../app/lib/server/functions/createRoom';
+import { removeUserFromRoom } from '../../../../app/lib/server/functions/removeUserFromRoom';
 import { settings } from '../../../../app/settings/server';
-import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
-import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
-import { LDAPManager } from '../../../../server/lib/ldap/Manager';
-import { logger, searchLogger, mapLogger } from '../../../../server/lib/ldap/Logger';
-import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/lib/server/functions';
-import { syncUserRoles } from '../syncUserRoles';
+import { getValidRoomName } from '../../../../app/utils/server/lib/getValidRoomName';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
+import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
+import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
+import { logger, searchLogger, mapLogger } from '../../../../server/lib/ldap/Logger';
+import { LDAPManager } from '../../../../server/lib/ldap/Manager';
+import { syncUserRoles } from '../syncUserRoles';
 import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
-import { getValidRoomName } from '../../../../app/utils/server';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {

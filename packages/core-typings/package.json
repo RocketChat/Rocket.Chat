@@ -1,12 +1,12 @@
 {
 	"name": "@rocket.chat/core-typings",
-	"version": "6.2.9",
+	"version": "6.3.0",
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
-		"eslint": "~8.43.0",
+		"eslint": "~8.45.0",
 		"mongodb": "^4.12.1",
 		"prettier": "~2.8.8",
-		"typescript": "~5.1.3"
+		"typescript": "~5.1.6"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -21,7 +21,7 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.39.1",
+		"@rocket.chat/apps-engine": "1.40.0",
 		"@rocket.chat/icons": "next",
 		"@rocket.chat/message-parser": "next",
 		"@rocket.chat/ui-kit": "next"

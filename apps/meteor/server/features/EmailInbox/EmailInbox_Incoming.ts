@@ -1,6 +1,3 @@
-import stripHtml from 'string-strip-html';
-import { Random } from '@rocket.chat/random';
-import type { ParsedMail, Attachment } from 'mailparser';
 import type {
 	ILivechatVisitor,
 	IOmnichannelRoom,
@@ -10,14 +7,17 @@ import type {
 } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Messages } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import type { ParsedMail, Attachment } from 'mailparser';
+import stripHtml from 'string-strip-html';
 
+import { FileUpload } from '../../../app/file-upload/server';
 import { Livechat } from '../../../app/livechat/server/lib/Livechat';
 import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
-import { FileUpload } from '../../../app/file-upload/server';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';
-import { logger } from './logger';
 import { i18n } from '../../lib/i18n';
+import { logger } from './logger';
 
 type FileAttachment = VideoAttachmentProps & ImageAttachmentProps & AudioAttachmentProps;
 

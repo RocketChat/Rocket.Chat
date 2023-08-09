@@ -1,4 +1,3 @@
-import ldapjs from 'ldapjs';
 import type {
 	ILDAPConnectionOptions,
 	LDAPEncryptionType,
@@ -7,6 +6,7 @@ import type {
 	ILDAPCallback,
 	ILDAPPageCallback,
 } from '@rocket.chat/core-typings';
+import ldapjs from 'ldapjs';
 
 import { settings } from '../../../app/settings/server';
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';

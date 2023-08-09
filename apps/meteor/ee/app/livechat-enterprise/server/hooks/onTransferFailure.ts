@@ -1,10 +1,10 @@
-import type { IRoom, ILivechatVisitor, ILivechatDepartment, TransferData } from '@rocket.chat/core-typings';
-import { LivechatDepartment } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IRoom, ILivechatVisitor, ILivechatDepartment, TransferData } from '@rocket.chat/core-typings';
+import { LivechatDepartment } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../../lib/callbacks';
 import { forwardRoomToDepartment } from '../../../../../app/livechat/server/lib/Helper';
+import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
 const onTransferFailure = async ({ room, guest, transferData }: { room: IRoom; guest: ILivechatVisitor; transferData: TransferData }) => {

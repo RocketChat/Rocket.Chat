@@ -1,6 +1,6 @@
-import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
 import type { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges';
+import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
@@ -8,7 +8,6 @@ import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestra
 const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
 
 export class AppHttpBridge extends HttpBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}

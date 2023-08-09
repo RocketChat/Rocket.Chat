@@ -7,7 +7,6 @@ export const useRegistrationStatus = (): UseQueryResult<OperationResult<'GET', '
 	const getRegistrationStatus = useEndpoint('GET', '/v1/cloud.registrationStatus');
 
 	return useQuery(['getRegistrationStatus'], () => getRegistrationStatus(), {
-		refetchOnWindowFocus: false,
 		keepPreviousData: true,
 		staleTime: Infinity,
 	});

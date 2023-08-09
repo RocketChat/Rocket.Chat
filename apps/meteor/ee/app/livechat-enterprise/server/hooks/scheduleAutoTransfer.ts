@@ -2,11 +2,11 @@ import type { IMessage, IOmnichannelRoom, IRoom } from '@rocket.chat/core-typing
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
-import { AutoTransferChatScheduler } from '../lib/AutoTransferChatScheduler';
-import { callbacks } from '../../../../../lib/callbacks';
-import { settings } from '../../../../../app/settings/server';
-import { cbLogger } from '../lib/logger';
 import type { CloseRoomParams } from '../../../../../app/livechat/server/lib/LivechatTyped';
+import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
+import { AutoTransferChatScheduler } from '../lib/AutoTransferChatScheduler';
+import { cbLogger } from '../lib/logger';
 
 type LivechatCloseCallbackParams = {
 	room: IOmnichannelRoom;
@@ -99,7 +99,7 @@ const handleAfterCloseRoom = async (params: LivechatCloseCallbackParams): Promis
 	return params;
 };
 
-settings.watch('Livechat_auto_transfer_chat_timeout', function (value) {
+settings.watch('Livechat_auto_transfer_chat_timeout', (value) => {
 	autoTransferTimeout = value as number;
 	if (!autoTransferTimeout || autoTransferTimeout === 0) {
 		callbacks.remove('livechat.afterTakeInquiry', 'livechat-auto-transfer-job-inquiry');

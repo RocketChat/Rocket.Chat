@@ -1,13 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import _ from 'underscore';
 import { AppsTokens } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
+import { settings } from '../../settings/server';
 import { initAPN, sendAPN } from './apn';
 import { sendGCM } from './gcm';
 import { logger } from './logger';
-import { settings } from '../../settings/server';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 

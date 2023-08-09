@@ -1,6 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 import type {
 	ILivechatInquiryRecord,
@@ -13,7 +10,13 @@ import type {
 	InquiryWithAgentInfo,
 	TransferData,
 } from '@rocket.chat/core-typings';
+import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
+import { Apps, AppEvents } from '../../../../ee/server/apps';
+import { callbacks } from '../../../../lib/callbacks';
+import { Logger } from '../../../../server/lib/logger/Logger';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
@@ -24,9 +27,6 @@ import {
 	updateChatDepartment,
 	allowAgentSkipQueue,
 } from './Helper';
-import { callbacks } from '../../../../lib/callbacks';
-import { Logger } from '../../../../server/lib/logger/Logger';
-import { Apps, AppEvents } from '../../../../ee/server/apps';
 
 const logger = new Logger('RoutingManager');
 

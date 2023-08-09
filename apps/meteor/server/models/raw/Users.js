@@ -1,5 +1,5 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Subscriptions } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -57,6 +57,7 @@ export class UsersRaw extends BaseRaw {
 			{ key: { statusConnection: 1 }, sparse: 1 },
 			{ key: { appId: 1 }, sparse: 1 },
 			{ key: { type: 1 } },
+			{ key: { federated: 1 }, sparse: true },
 			{ key: { federation: 1 }, sparse: true },
 			{ key: { isRemote: 1 }, sparse: true },
 			{ key: { 'services.saml.inResponseTo': 1 } },
@@ -66,6 +67,31 @@ export class UsersRaw extends BaseRaw {
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
 			{ key: { 'active': 1, 'services.totp.enabled': 1 }, sparse: true }, // used by statistics
+			{ key: { importIds: 1 }, sparse: true },
+			// Used for case insensitive queries
+			// @deprecated
+			// Should be converted to unique index later within a migration to prevent errors of duplicated
+			// records. Those errors does not helps to identify the duplicated value so we need to find a
+			// way to help the migration in case it happens.
+			{
+				key: { 'emails.address': 1 },
+				unique: false,
+				sparse: true,
+				name: 'emails.address_insensitive',
+				collation: { locale: 'en', strength: 2, caseLevel: false },
+			},
+			// Used for case insensitive queries
+			// @deprecated
+			// Should be converted to unique index later within a migration to prevent errors of duplicated
+			// records. Those errors does not helps to identify the duplicated value so we need to find a
+			// way to help the migration in case it happens.
+			{
+				key: { username: 1 },
+				unique: false,
+				sparse: true,
+				name: 'username_insensitive',
+				collation: { locale: 'en', strength: 2, caseLevel: false },
+			},
 		];
 	}
 
@@ -192,7 +218,7 @@ export class UsersRaw extends BaseRaw {
 
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
-		const orStmt = (searchFields || []).reduce(function (acc, el) {
+		const orStmt = (searchFields || []).reduce((acc, el) => {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
@@ -235,7 +261,7 @@ export class UsersRaw extends BaseRaw {
 
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
-		const orStmt = (searchFields || []).reduce(function (acc, el) {
+		const orStmt = (searchFields || []).reduce((acc, el) => {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
@@ -309,13 +335,12 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	findOneByUsernameIgnoringCase(username, options) {
-		if (typeof username === 'string') {
-			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
-		}
-
 		const query = { username };
 
-		return this.findOne(query, options);
+		return this.findOne(query, {
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+			...options,
+		});
 	}
 
 	findOneWithoutLDAPByUsernameIgnoringCase(username, options) {
@@ -1910,17 +1935,23 @@ export class UsersRaw extends BaseRaw {
 
 	findOneByEmailAddressAndServiceNameIgnoringCase(emailAddress, userId, serviceName, options) {
 		const query = {
-			'emails.address': new RegExp(`^${escapeRegExp(String(emailAddress).trim())}$`, 'i'),
+			'emails.address': String(emailAddress).trim(),
 			[`services.${serviceName}.id`]: userId,
 		};
 
-		return this.findOne(query, options);
+		return this.findOne(query, {
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+			...options,
+		});
 	}
 
 	findOneByEmailAddress(emailAddress, options) {
-		const query = { 'emails.address': String(emailAddress).trim().toLowerCase() };
+		const query = { 'emails.address': String(emailAddress).trim() };
 
-		return this.findOne(query, options);
+		return this.findOne(query, {
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+			...options,
+		});
 	}
 
 	findOneWithoutLDAPByEmailAddress(emailAddress, options) {

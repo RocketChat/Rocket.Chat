@@ -1,4 +1,4 @@
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction, Icon } from '@rocket.chat/fuselage';
+import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -7,14 +7,13 @@ const AppsPageContentError = ({ onButtonClick }: { onButtonClick: () => void }):
 	const t = useTranslation();
 
 	return (
-		<Box mbs='x20'>
+		<Box mbs={20}>
 			<States>
 				<StatesIcon variation='danger' name='circle-exclamation' />
 				<StatesTitle>{t('Connection_error')}</StatesTitle>
 				<StatesSubtitle>{t('Marketplace_error')}</StatesSubtitle>
 				<StatesActions>
-					<StatesAction onClick={onButtonClick}>
-						<Icon mie='x4' size='x20' name='reload' />
+					<StatesAction icon='reload' onClick={onButtonClick}>
 						{t('Reload_page')}
 					</StatesAction>
 				</StatesActions>

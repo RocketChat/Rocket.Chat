@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { IUser } from '@rocket.chat/core-typings';
 import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, PasswordInput, Button } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
-import { useAccountsCustomFields, useVerifyPassword, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useAccountsCustomFields, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { Dispatch, ReactElement, SetStateAction } from 'react';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
@@ -60,8 +59,6 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 
 	const { realname, email, username, password, confirmationPassword, statusText, bio, statusType, customFields, nickname } =
 		values as AccountFormValues;
-
-	const passwordVerifications = useVerifyPassword(password);
 
 	const {
 		handleRealname,
@@ -230,7 +227,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 			<Box display='flex' flexDirection='row' justifyContent='space-between'>
 				{useMemo(
 					() => (
-						<Field mie='x8' flexShrink={1}>
+						<Field mie={8} flexShrink={1}>
 							<Field.Label flexGrow={0}>{t('Name')}</Field.Label>
 							<Field.Row>
 								<TextInput error={nameError} disabled={!allowRealNameChange} flexGrow={1} value={realname} onChange={handleRealname} />
@@ -243,7 +240,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 				)}
 				{useMemo(
 					() => (
-						<Field mis='x8' flexShrink={1}>
+						<Field mis={8} flexShrink={1}>
 							<Field.Label flexGrow={0}>{t('Username')}</Field.Label>
 							<Field.Row>
 								<TextInput
@@ -332,7 +329,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 								disabled={!allowEmailChange}
 							/>
 							{!verified && (
-								<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail} mis='x24'>
+								<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail} mis={24}>
 									{t('Resend_verification_email')}
 								</Button>
 							)}
@@ -347,7 +344,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 				() => (
 					<Field>
 						<Field.Label>{t('New_password')}</Field.Label>
-						<Field.Row mbe='x4'>
+						<Field.Row mbe={4}>
 							<PasswordInput
 								autoComplete='off'
 								disabled={!allowPasswordChange}
@@ -359,7 +356,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 								placeholder={t('Create_a_password')}
 							/>
 						</Field.Row>
-						<Field.Row mbs='x4'>
+						<Field.Row mbs={4}>
 							<PasswordInput
 								autoComplete='off'
 								error={showPasswordError ? passwordError : undefined}
@@ -373,9 +370,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 						</Field.Row>
 						{!allowPasswordChange && <Field.Hint>{t('Password_Change_Disabled')}</Field.Hint>}
 						{passwordError && <Field.Error>{showPasswordError ? passwordError : undefined}</Field.Error>}
-						{passwordVerifications && allowPasswordChange && (
-							<PasswordVerifier password={password} passwordVerifications={passwordVerifications} />
-						)}
+						{allowPasswordChange && <PasswordVerifier password={password} />}
 					</Field>
 				),
 				[
@@ -387,7 +382,6 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 					handlePassword,
 					confirmationPassword,
 					handleConfirmationPassword,
-					passwordVerifications,
 				],
 			)}
 

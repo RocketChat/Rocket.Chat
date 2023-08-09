@@ -1,7 +1,7 @@
 import type { IWebdavNode } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ReactElement } from 'react';
 import React from 'react';
 
 import GenericNoResults from '../../../../components/GenericNoResults';
@@ -78,7 +78,7 @@ const WebdavFilePickerTable = ({
 								return (
 									<GenericTableRow key={index} onClick={(): void => onNodeClick(webdavNode)} tabIndex={index} role='link' action>
 										<GenericTableCell fontScale='p2' color='default' w='x200' display='flex' alignItems='center'>
-											<Icon mie='x4' size='x20' name={icon as ComponentProps<typeof Icon>['name']} />
+											<Icon mie={4} size='x20' name={icon} />
 											<Box withTruncatedText>{webdavNode.basename}</Box>
 										</GenericTableCell>
 										<GenericTableCell fontScale='p2' color='default'>

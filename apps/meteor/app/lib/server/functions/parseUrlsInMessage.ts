@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { Markdown } from '../../../markdown/server';
 import { getMessageUrlRegex } from '../../../../lib/getMessageUrlRegex';
+import { Markdown } from '../../../markdown/server';
 
 export const parseUrlsInMessage = (message: IMessage & { parseUrls?: boolean }): IMessage => {
 	if (message.parseUrls === false) {

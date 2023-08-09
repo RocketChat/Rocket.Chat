@@ -4,11 +4,11 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IOmnichannelRoom, IUser, ILivechatInquiryRecord, IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 import { LivechatRooms, Subscriptions, LivechatInquiry } from '@rocket.chat/models';
 
-import { Logger } from '../../../../../app/logger/server';
-import { callbacks } from '../../../../../lib/callbacks';
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
+import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { Logger } from '../../../../../app/logger/server';
+import { callbacks } from '../../../../../lib/callbacks';
 
 export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelEEService {
 	protected name = 'omnichannel-ee';
