@@ -2585,6 +2585,7 @@
   "Integration_History_Cleared": "Integration History Successfully Cleared",
   "Integration_Incoming_WebHook": "Incoming WebHook Integration",
   "Integration_New": "New Integration",
+  "integration-scripts-disabled": "Integration Scripts are Disabled",
   "Integration_Outgoing_WebHook": "Outgoing WebHook Integration",
   "Integration_Outgoing_WebHook_History": "Outgoing WebHook Integration History",
   "Integration_Outgoing_WebHook_History_Data_Passed_To_Trigger": "Data Passed to Integration",
