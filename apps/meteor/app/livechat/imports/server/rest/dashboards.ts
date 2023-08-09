@@ -277,7 +277,8 @@ API.v1.addRoute(
 			const result = await findAllConversationsBySource({ start: startDate, end: endDate });
 
 			// Agg when no match returns empty, so we return a default value on that case
-			return API.v1.success({ data: result || { open: 0, closed: 0, queued: 0 } });
+			const defaultValue = { data: [] };
+			return API.v1.success(result || defaultValue);
 		},
 	},
 );
@@ -302,7 +303,8 @@ API.v1.addRoute(
 
 			const result = await findAllConversationsByStatus({ start: startDate, end: endDate });
 
-			return API.v1.success({ data: result || {} });
+			const defaultValue = { data: [] };
+			return API.v1.success(result || defaultValue);
 		},
 	},
 );
@@ -327,7 +329,8 @@ API.v1.addRoute(
 
 			const result = await findAllConversationsByDepartment({ start: startDate, end: endDate });
 
-			return API.v1.success({ data: result || {} });
+			const defaultValue = { data: [] };
+			return API.v1.success(result || defaultValue);
 		},
 	},
 );
@@ -352,7 +355,8 @@ API.v1.addRoute(
 
 			const result = await findAllConversationsByTags({ start: startDate, end: endDate });
 
-			return API.v1.success({ data: result || {} });
+			const defaultValue = { data: [] };
+			return API.v1.success(result || defaultValue);
 		},
 	},
 );
@@ -377,7 +381,8 @@ API.v1.addRoute(
 
 			const result = await findAllConversationsByAgents({ start: startDate, end: endDate });
 
-			return API.v1.success({ data: result || {} });
+			const defaultValue = { data: [] };
+			return API.v1.success(result || defaultValue);
 		},
 	},
 );

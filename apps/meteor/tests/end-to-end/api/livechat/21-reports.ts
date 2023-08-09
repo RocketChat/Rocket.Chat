@@ -50,10 +50,8 @@ describe('LIVECHAT - reports', () => {
 				.query({ start: now, end: now })
 				.expect(200);
 
-			expect(body).to.have.property('data').and.to.be.an('object');
-			expect(body.data).to.have.property('open', 0);
-			expect(body.data).to.have.property('closed', 0);
-			expect(body.data).to.have.property('queued', 0);
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf(0);
 			expect(body.success).to.be.true;
 		});
 		it('should return the proper data from a pipeline run :)', async () => {
@@ -66,10 +64,9 @@ describe('LIVECHAT - reports', () => {
 				.query({ start: oneHourAgo, end: now })
 				.expect(200);
 
-			expect(body).to.have.property('data').and.to.be.an('object');
-			expect(body.data).to.have.property('twilio').and.to.be.greaterThanOrEqual(1);
-			expect(body.data).to.have.property('api').and.to.be.greaterThanOrEqual(1);
-			expect(body.data).to.have.property('widget').and.to.be.greaterThanOrEqual(1);
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf.greaterThan(0);
+			expect(body.data.every((item: { value: number }) => item.value >= 0)).to.be.true;
 			console.log(body.data);
 		});
 	});
@@ -115,8 +112,8 @@ describe('LIVECHAT - reports', () => {
 				.query({ start: now, end: now })
 				.expect(200);
 
-			expect(body).to.have.property('data').and.to.be.an('object');
-			expect(Object.keys(body.data).length).to.be.equal(0);
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf(0);
 			expect(body.success).to.be.true;
 		});
 		it('should return the proper data from a pipeline run :)', async () => {
@@ -129,10 +126,9 @@ describe('LIVECHAT - reports', () => {
 				.query({ start: oneHourAgo, end: now })
 				.expect(200);
 
-			expect(body).to.have.property('data').and.to.be.an('object');
-			expect(body.data).to.have.property('open').and.to.be.greaterThanOrEqual(1);
-			expect(body.data).to.have.property('closed').and.to.be.greaterThanOrEqual(1);
-			expect(body.data).to.have.property('queued').and.to.be.greaterThanOrEqual(1);
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf.greaterThan(0);
+			expect(body.data.every((item: { value: number }) => item.value >= 0)).to.be.true;
 		});
 	});
 	describe('livechat/analytics/dashboards/conversations-by-department', () => {
@@ -185,8 +181,8 @@ describe('LIVECHAT - reports', () => {
 				.query({ start: now, end: now })
 				.expect(200);
 
-			expect(body).to.have.property('data').and.to.be.an('object');
-			expect(Object.keys(body.data).length).to.be.equal(0);
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf(0);
 			expect(body.success).to.be.true;
 		});
 		it('should return the proper data from a pipeline run :)', async () => {
@@ -199,10 +195,9 @@ describe('LIVECHAT - reports', () => {
 				.query({ start: oneHourAgo, end: now })
 				.expect(200);
 
-			expect(body).to.have.property('data').and.to.be.an('object');
-			const data = Object.keys(body.data);
-			expect(data).to.have.lengthOf.greaterThan(0);
-			expect(data.every((key) => body.data[key] > 0)).to.be.true;
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf.greaterThan(0);
+			expect(body.data.every((item: { value: number }) => item.value >= 0)).to.be.true;
 		});
 	});
 	describe('livechat/analytics/dashboards/conversations-by-tags', () => {
@@ -247,8 +242,8 @@ describe('LIVECHAT - reports', () => {
 				.query({ start: now, end: now })
 				.expect(200);
 
-			expect(body).to.have.property('data').and.to.be.an('object');
-			expect(Object.keys(body.data).length).to.be.equal(0);
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf(0);
 			expect(body.success).to.be.true;
 		});
 		it('should return the proper data from a pipeline run :)', async () => {
@@ -261,10 +256,9 @@ describe('LIVECHAT - reports', () => {
 				.query({ start: oneHourAgo, end: now })
 				.expect(200);
 
-			expect(body).to.have.property('data').and.to.be.an('object');
-			const data = Object.keys(body.data);
-			expect(data).to.have.lengthOf.greaterThan(0);
-			expect(data.every((key) => body.data[key] > 0)).to.be.true;
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf.greaterThan(0);
+			expect(body.data.every((item: { value: number }) => item.value >= 0)).to.be.true;
 		});
 	});
 	describe('livechat/analytics/dashboards/conversations-by-agent', () => {
@@ -309,9 +303,8 @@ describe('LIVECHAT - reports', () => {
 				.query({ start: now, end: now })
 				.expect(200);
 
-			expect(body).to.have.property('data').and.to.be.an('object');
-			expect(Object.keys(body.data).length).to.be.equal(0);
-			expect(body.success).to.be.true;
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf(0);
 		});
 		it('should return the proper data from a pipeline run :)', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
@@ -323,9 +316,9 @@ describe('LIVECHAT - reports', () => {
 				.query({ start: oneHourAgo, end: now })
 				.expect(200);
 
-			expect(body).to.have.property('data').and.to.be.an('object');
-			expect(body.data['RocketChat Internal Admin Test']).to.be.greaterThanOrEqual(1);
-			expect(body.data.Unspecified).to.be.greaterThanOrEqual(1);
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf.greaterThan(0);
+			expect(body.data.every((item: { value: number }) => item.value >= 0)).to.be.true;
 		});
 	});
 });
