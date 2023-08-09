@@ -3710,18 +3710,18 @@ export type OmnichannelEndpoints = {
 		PUT: (params: { roomId: string; sla: string }) => void;
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-source': {
-		GET: (params: GETDashboardConversationsByType) => { data: Record<string, number> };
+		GET: (params: GETDashboardConversationsByType) => { data: { label: string; value: number }[] };
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-status': {
-		GET: (params: GETDashboardConversationsByType) => { data: Record<string, number> };
+		GET: (params: GETDashboardConversationsByType) => { data: { label: string; value: number }[] };
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-department': {
-		GET: (params: GETDashboardConversationsByType) => { data: Record<string, number> };
+		GET: (params: GETDashboardConversationsByType) => { data: { label: string; value: number }[] };
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-tags': {
-		GET: (params: GETDashboardConversationsByType) => { data: Record<string, number> };
+		GET: (params: GETDashboardConversationsByType) => { data: { label: string; value: number }[] };
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-agent': {
-		GET: (params: GETDashboardConversationsByType) => { data: Record<string, number> };
+		GET: (params: GETDashboardConversationsByType) => { data: { label: string; value: number }[] };
 	};
 };

@@ -234,9 +234,9 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	setVisitorInactivityInSecondsById(roomId: string, visitorInactivity: any): Promise<UpdateResult>;
 	changeVisitorByRoomId(roomId: string, visitor: { _id: string; username: string; token: string }): Promise<UpdateResult>;
 	unarchiveOneById(roomId: string): Promise<UpdateResult>;
-	getConversationsBySource(start: Date, end: Date): AggregationCursor<Record<string, number>>;
-	getConversationsByStatus(start: Date, end: Date): AggregationCursor<Record<string, number>>;
-	getConversationsByDepartment(start: Date, end: Date): AggregationCursor<Record<string, number>>;
-	getConversationsByTags(start: Date, end: Date): AggregationCursor<Record<string, number>>;
-	getConversationsByAgents(start: Date, end: Date): AggregationCursor<Record<string, number>>;
+	getConversationsBySource(start: Date, end: Date): AggregationCursor<{ data: { label: string; value: number }[] }>;
+	getConversationsByStatus(start: Date, end: Date): AggregationCursor<{ data: { label: string; value: number }[] }>;
+	getConversationsByDepartment(start: Date, end: Date): AggregationCursor<{ data: { label: string; value: number }[] }>;
+	getConversationsByTags(start: Date, end: Date): AggregationCursor<{ data: { label: string; value: number }[] }>;
+	getConversationsByAgents(start: Date, end: Date): AggregationCursor<{ data: { label: string; value: number }[] }>;
 }
