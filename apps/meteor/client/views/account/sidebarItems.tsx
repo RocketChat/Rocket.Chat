@@ -59,4 +59,9 @@ export const {
 		badge: () => <AccountFeaturePreviewBadge />,
 		permissionGranted: () => settings.get('Accounts_AllowFeaturePreview') && defaultFeaturesPreview?.length > 0,
 	},
+	{
+		href: '/account/accessibility',
+		i18nLabel: 'Accessibility',
+		icon: 'person-arms-spread',
+	},
 ]);
