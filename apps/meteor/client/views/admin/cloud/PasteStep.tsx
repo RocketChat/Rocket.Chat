@@ -44,7 +44,7 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 				<Box withRichContent>
 					<p>{t('Cloud_register_offline_finish_helper')}</p>
 				</Box>
-				<Box display='flex' flexDirection='column' alignItems='stretch' padding='x16' flexGrow={1} backgroundColor='dark'>
+				<Box display='flex' flexDirection='column' alignItems='stretch' padding={16} flexGrow={1} backgroundColor='dark'>
 					<Scrollable vertical>
 						<Box
 							is='textarea'

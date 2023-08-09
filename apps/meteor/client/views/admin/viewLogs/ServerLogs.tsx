@@ -166,13 +166,13 @@ const ServerLogs = (): ReactElement => {
 	}, [sendToBottomIfNecessary]);
 
 	return (
-		<Box width='full' height='full' overflow='hidden' position='relative' display='flex' marginBlock='x8'>
+		<Box width='full' height='full' overflow='hidden' position='relative' display='flex' marginBlock={8}>
 			<Scrollable vertical>
 				<Box
 					ref={wrapperRef}
 					display='flex'
 					flexDirection='column'
-					padding='x8'
+					padding={8}
 					flexGrow={1}
 					fontFamily='mono'
 					color='white'
@@ -190,12 +190,12 @@ const ServerLogs = (): ReactElement => {
 			</Scrollable>
 			<Box
 				position='absolute'
-				insetBlockEnd='x8'
+				insetBlockEnd={8}
 				insetInlineStart='50%'
 				width='x132'
 				height='x32'
 				marginInline='neg-x64'
-				paddingBlock='x8'
+				paddingBlock={8}
 				fontScale='c1'
 				borderRadius='full'
 				color='info'

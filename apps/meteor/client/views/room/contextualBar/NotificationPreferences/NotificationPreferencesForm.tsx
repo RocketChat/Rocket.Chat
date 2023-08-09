@@ -78,7 +78,7 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 							/>
 						)}
 					/>
-					<Margins blockStart='x16'>
+					<Margins blockStart={16}>
 						<Controller
 							control={control}
 							name='desktopSound'
@@ -90,7 +90,7 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 									optionValue={value}
 									onChange={onChange}
 								>
-									<IconButton icon='play' mis='x4' onClick={handlePlaySound} />
+									<IconButton icon='play' mis={4} onClick={handlePlaySound} />
 								</NotificationPreference>
 							)}
 						/>

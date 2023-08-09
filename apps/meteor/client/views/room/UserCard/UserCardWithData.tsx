@@ -76,7 +76,7 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 			<Menu
 				flexShrink={0}
 				maxHeight='initial'
-				mi='x2'
+				mi={2}
 				key='menu'
 				renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option {...props} label={label} icon={icon} />}
 				options={menuOptions}
