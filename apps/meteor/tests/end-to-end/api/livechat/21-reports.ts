@@ -4,8 +4,9 @@ import { expect } from 'chai';
 
 import { api, request, credentials, getCredentials } from '../../../data/api-data';
 import { restorePermissionToRoles, updatePermission } from '../../../data/permissions.helper';
+import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - reports', () => {
+(IS_EE ? describe : describe.skip)('LIVECHAT - reports', () => {
 	before((done) => getCredentials(done));
 
 	describe('livechat/analytics/dashboards/conversations-by-source', () => {
