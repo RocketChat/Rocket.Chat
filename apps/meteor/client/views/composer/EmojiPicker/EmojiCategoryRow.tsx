@@ -39,11 +39,11 @@ const EmojiCategoryRow = ({
 	`;
 
 	return (
-		<Box mbe='x12'>
+		<Box mbe={12}>
 			<Box
 				is='h4'
 				fontScale='c1'
-				mbe='x12'
+				mbe={12}
 				id={`emoji-list-category-${categoryKey}`}
 				ref={(element) => {
 					categoriesPosition.current.push({ el: element, top: element?.offsetTop });

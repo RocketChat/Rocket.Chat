@@ -1,10 +1,11 @@
 import { render, waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { expect, spy } from 'chai';
+import { expect } from 'chai';
+import type { MutableRefObject } from 'react';
 import React from 'react';
 
-import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 import NotFoundPage from '../../../../../client/views/notFound/NotFoundPage';
+import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 
 describe('views/notFound/NotFoundPage', () => {
 	it('should look good', async () => {
@@ -28,16 +29,18 @@ describe('views/notFound/NotFoundPage', () => {
 	context('"Return to home" button', () => {
 		context('when clicked', () => {
 			it('should go back on history', async () => {
-				const pushRoute = spy();
+				const currentPath: MutableRefObject<string | undefined> = { current: undefined };
+
 				render(
-					<RouterContextMock pushRoute={pushRoute}>
+					<RouterContextMock currentPath={currentPath}>
 						<NotFoundPage />
 					</RouterContextMock>,
 				);
 				const button = screen.getByRole('button', { name: 'Homepage' });
 
 				userEvent.click(button);
-				await waitFor(() => expect(pushRoute).to.have.been.called.with('home'));
+
+				await waitFor(() => expect(currentPath.current).to.be.equal('/home'));
 			});
 		});
 	});

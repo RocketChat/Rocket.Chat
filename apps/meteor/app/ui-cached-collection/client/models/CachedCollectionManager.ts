@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { Accounts } from 'meteor/accounts-base';
-import { Tracker } from 'meteor/tracker';
 import { Emitter } from '@rocket.chat/emitter';
+import { Accounts } from 'meteor/accounts-base';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
 import type { CachedCollection } from './CachedCollection';
 

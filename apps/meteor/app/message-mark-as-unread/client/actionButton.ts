@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { LegacyRoomManager, MessageAction } from '../../ui-utils/client';
-import { messageArgs } from '../../../client/lib/utils/messageArgs';
-import { ChatSubscription } from '../../models/client';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../../client/lib/toast';
+import { messageArgs } from '../../../client/lib/utils/messageArgs';
+import { router } from '../../../client/providers/RouterProvider';
+import { ChatSubscription } from '../../models/client';
+import { LegacyRoomManager, MessageAction } from '../../ui-utils/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 
 Meteor.startup(() => {
@@ -28,7 +28,7 @@ Meteor.startup(() => {
 					return;
 				}
 				await LegacyRoomManager.close(subscription.t + subscription.name);
-				return FlowRouter.go('home');
+				return router.navigate('/home');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import { Rooms, Uploads } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { UploadFS } from '../../../../server/ufs';
-import { settings } from '../../../settings/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
+import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

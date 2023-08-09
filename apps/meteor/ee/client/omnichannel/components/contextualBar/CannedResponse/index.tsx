@@ -1,21 +1,22 @@
 import { useDebouncedValue, useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
-import type { FC, MouseEvent } from 'react';
+import { useSetModal, useRouter } from '@rocket.chat/ui-contexts';
+import type { MouseEvent } from 'react';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 
 import { useRecordList } from '../../../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../../../client/lib/asyncState';
 import { useChat } from '../../../../../../client/views/room/contexts/ChatContext';
 import { useRoom } from '../../../../../../client/views/room/contexts/RoomContext';
+import { useRoomToolbox } from '../../../../../../client/views/room/contexts/RoomToolboxContext';
 import { useCannedResponseFilterOptions } from '../../../hooks/useCannedResponseFilterOptions';
 import { useCannedResponseList } from '../../../hooks/useCannedResponseList';
 import CreateCannedResponse from '../../CannedResponse/modals';
 import CannedResponseList from './CannedResponseList';
 
-export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
+export const WrapCannedResponseList = () => {
 	const room = useRoom();
-	const [name] = useCurrentRoute();
-	const channelRoute = useRoute(name || '');
+	const { closeTab } = useRoomToolbox();
+	const router = useRouter();
 	const setModal = useSetModal();
 
 	const options = useCannedResponseFilterOptions() as [string, string][];
@@ -37,10 +38,13 @@ export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
 	const onClickItem = useMutableCallback((data) => {
 		const { _id: context } = data;
 
-		channelRoute?.push({
-			id: room._id,
-			tab: 'canned-responses',
-			context,
+		router.navigate({
+			name: router.getRouteName() ?? 'live',
+			params: {
+				id: room._id,
+				tab: 'canned-responses',
+				context,
+			},
 		});
 	});
 
@@ -63,7 +67,7 @@ export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
 			loadMoreItems={loadMoreItems}
 			cannedItems={items}
 			itemCount={itemCount}
-			onClose={tabBar.close}
+			onClose={closeTab}
 			loading={phase === AsyncStatePhase.LOADING}
 			options={options}
 			text={text}

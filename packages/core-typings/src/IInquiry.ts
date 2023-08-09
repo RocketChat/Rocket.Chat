@@ -1,9 +1,9 @@
 import type { ILivechatPriority } from './ILivechatPriority';
-import type { IOmnichannelRoom, OmnichannelSourceType } from './IRoom';
-import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
-import type { SelectedAgent } from './omnichannel/routing';
 import type { IMessage } from './IMessage';
+import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IOmnichannelRoom, OmnichannelSourceType } from './IRoom';
+import type { SelectedAgent } from './omnichannel/routing';
 
 export interface IInquiry {
 	_id: string;
@@ -18,6 +18,9 @@ export enum LivechatInquiryStatus {
 	OPEN = 'open',
 }
 
+// This is a subset of the IVisitor interface + channel related fields
+// IMPORTANT: If you're adding a new field here, make sure to update the
+// apps-engine's room converter to include it too
 export interface IVisitor {
 	_id: string;
 	username: string;

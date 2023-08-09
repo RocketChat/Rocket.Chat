@@ -1,8 +1,8 @@
-import moment from 'moment-timezone';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/model-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
+import moment from 'moment-timezone';
 import type { UpdateFilter } from 'mongodb';
 
 import type { IWorkHoursCronJobsWrapper } from '../../../../server/models/raw/LivechatBusinessHours';
@@ -16,7 +16,9 @@ export interface IBusinessHourBehavior {
 	onDisableBusinessHours(): Promise<void>;
 	onAddAgentToDepartment(options?: { departmentId: string; agentsId: string[] }): Promise<any>;
 	onRemoveAgentFromDepartment(options?: Record<string, any>): Promise<any>;
-	onRemoveDepartment(department?: ILivechatDepartment): Promise<any>;
+	onRemoveDepartment(options: { department: ILivechatDepartment; agentsIds: string[] }): Promise<any>;
+	onDepartmentDisabled(department?: ILivechatDepartment): Promise<any>;
+	onDepartmentArchived(department: Pick<ILivechatDepartment, '_id'>): Promise<void>;
 	onStartBusinessHours(): Promise<void>;
 	afterSaveBusinessHours(businessHourData: ILivechatBusinessHour): Promise<void>;
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;

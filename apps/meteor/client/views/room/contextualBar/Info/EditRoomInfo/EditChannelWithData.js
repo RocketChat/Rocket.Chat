@@ -1,14 +1,14 @@
-import { useUserRoom } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useTabBarClose } from '../../../contexts/ToolboxContext';
+import { useRoom } from '../../../contexts/RoomContext';
+import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
 import EditChannel from './EditChannel';
 
-function EditChannelWithData({ rid, onClickBack }) {
-	const room = useUserRoom(rid);
-	const onClickClose = useTabBarClose();
+function EditChannelWithData({ onClickBack }) {
+	const room = useRoom();
+	const { closeTab } = useRoomToolbox();
 
-	return <EditChannel onClickClose={onClickClose} onClickBack={onClickBack} room={{ type: room?.t, ...room }} />;
+	return <EditChannel onClickClose={closeTab} onClickBack={onClickBack} room={{ type: room?.t, ...room }} />;
 }
 
 export default EditChannelWithData;

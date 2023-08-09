@@ -14,6 +14,12 @@ const anon = {
 	avatarETag: undefined,
 } as const;
 
+/**
+ * @deprecated Feature preview
+ * @description Should be moved to the core when the feature is ready
+ * @memberof navigationBar
+ */
+
 const UserAvatarWithStatus = () => {
 	const user = useUser();
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
@@ -39,7 +45,7 @@ const UserAvatarWithStatus = () => {
 				alignItems='center'
 				display='flex'
 				overflow='hidden'
-				size={12}
+				size='x12'
 				borderWidth='default'
 				position='absolute'
 				bg='surface-tint'

@@ -2,6 +2,47 @@ import { lazy } from 'react';
 
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
+declare module '@rocket.chat/ui-contexts' {
+	interface IRouterPaths {
+		'account-index': {
+			pathname: '/account';
+			pattern: '/account';
+		};
+		'preferences': {
+			pathname: '/account/preferences';
+			pattern: '/account/preferences';
+		};
+		'profile': {
+			pathname: '/account/profile';
+			pattern: '/account/profile';
+		};
+		'security': {
+			pathname: '/account/security';
+			pattern: '/account/security';
+		};
+		'integrations': {
+			pathname: '/account/integrations';
+			pattern: '/account/integrations';
+		};
+		'tokens': {
+			pathname: '/account/tokens';
+			pattern: '/account/tokens';
+		};
+		'omnichannel': {
+			pathname: '/account/omnichannel';
+			pattern: '/account/omnichannel';
+		};
+		'feature-preview': {
+			pathname: '/account/feature-preview';
+			pattern: '/account/feature-preview';
+		};
+		'theme': {
+			pathname: '/account/theme';
+			pattern: '/account/theme';
+		};
+	}
+}
+
 export const registerAccountRoute = createRouteGroup(
 	'account',
 	'/account',
@@ -36,4 +77,13 @@ registerAccountRoute('/tokens', {
 registerAccountRoute('/omnichannel', {
 	name: 'omnichannel',
 	component: lazy(() => import('./omnichannel/OmnichannelPreferencesPage')),
+});
+
+registerAccountRoute('/feature-preview', {
+	name: 'feature-preview',
+	component: lazy(() => import('./featurePreview/AccountFeaturePreviewPage')),
+});
+registerAccountRoute('/theme', {
+	name: 'theme',
+	component: lazy(() => import('./themes/ThemePage')),
 });

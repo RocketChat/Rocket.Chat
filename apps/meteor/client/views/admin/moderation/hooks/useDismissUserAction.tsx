@@ -1,4 +1,4 @@
-import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
@@ -8,7 +8,7 @@ const useDismissUserAction = (userId: string) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const moderationRoute = useRoute('moderation-console');
+	const moderationRoute = useRouter();
 	const queryClient = useQueryClient();
 
 	const dismissUser = useEndpoint('POST', '/v1/moderation.dismissReports');
@@ -19,7 +19,7 @@ const useDismissUserAction = (userId: string) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Moderation_Reports_dismissed') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_Reports_dismissed_plural') });
 		},
 	});
 
@@ -27,19 +27,19 @@ const useDismissUserAction = (userId: string) => {
 		await handleDismissUser.mutateAsync({ userId });
 		queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
 		setModal();
-		moderationRoute.push({});
+		moderationRoute.navigate('/admin/moderation', { replace: true });
 	};
 
 	const confirmDismissUser = (): void => {
 		setModal(
 			<GenericModal
-				title={t('Moderation_Dismiss_and_delete')}
-				confirmText={t('Moderation_Dismiss_and_delete')}
+				title={t('Moderation_Dismiss_all_reports')}
+				confirmText={t('Moderation_Dismiss_all_reports')}
 				variant='danger'
 				onConfirm={() => onDismissUser()}
 				onCancel={() => setModal()}
 			>
-				{t('Moderation_Are_you_sure_dismiss_and_delete_reports')}
+				{t('Moderation_Dismiss_all_reports_confirm')}
 			</GenericModal>,
 		);
 	};

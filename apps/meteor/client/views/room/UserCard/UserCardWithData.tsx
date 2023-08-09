@@ -8,7 +8,6 @@ import React, { useMemo, useRef } from 'react';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { Backdrop } from '../../../components/Backdrop';
 import GenericMenu from '../../../components/GenericMenu/GenericMenu';
-import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 import LocalTime from '../../../components/LocalTime';
 import UserCard from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
@@ -23,20 +22,6 @@ type UserCardWithDataProps = {
 	open: (e: UIEvent) => void;
 	onClose: () => void;
 };
-
-// type MenuActionProps = {
-// 	key: React.ReactNode;
-// 	id: string;
-// 	title: string;
-// 	items: {
-// 		id: string;
-// 		key: React.ReactNode;
-// 		content: React.ReactNode;
-// 		icon: string | undefined;
-// 		onClick: () => void;
-// 		type: string | undefined;
-// 	}[];
-// }[];
 
 const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWithDataProps): ReactElement => {
 	const t = useTranslation();

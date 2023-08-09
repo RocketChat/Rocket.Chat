@@ -1,12 +1,18 @@
-import type { Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactNode } from 'react';
+import type { Keys as IconName } from '@rocket.chat/icons';
+import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
 export type Action = {
+<<<<<<< HEAD
 	content: ReactNode;
 	icon?: ComponentProps<typeof Icon>['name'];
 	onClick: () => void;
 	type?: string;
+=======
+	label: ReactNode;
+	icon?: IconName;
+	action: () => void;
+>>>>>>> develop
 };
 
 type MenuOption = {

@@ -1,4 +1,3 @@
-import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult } from 'mongodb';
 import type {
 	IUser,
 	IRole,
@@ -10,6 +9,7 @@ import type {
 	AtLeast,
 	ILivechatAgentStatus,
 } from '@rocket.chat/core-typings';
+import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -128,9 +128,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	openAgentsBusinessHoursByBusinessHourId(businessHourIds: any): any;
 
-	openAgentBusinessHoursByBusinessHourIdsAndAgentId(businessHourIds: any, agentId: any): any;
+	openAgentBusinessHoursByBusinessHourIdsAndAgentId(businessHourIds: string[], agentId: string): Promise<UpdateResult | Document>;
 
 	addBusinessHourByAgentIds(agentIds: string[], businessHourId: string): any;
+
+	makeAgentsWithinBusinessHourAvailable(agentIds?: string[]): Promise<UpdateResult | Document>;
 
 	removeBusinessHourByAgentIds(agentIds: any, businessHourId: any): any;
 
@@ -324,7 +326,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	getSAMLByIdAndSAMLProvider(userId: string, samlProvider: string): Promise<IUser | null>;
 	findBySAMLNameIdOrIdpSession(samlNameId: string, idpSession: string): FindCursor<IUser>;
 	findBySAMLInResponseTo(inResponseTo: string): FindCursor<IUser>;
-	addImportIds(userId: string, importIds: Array<{ service: string; id: string }>): Promise<UpdateResult>;
+	addImportIds(userId: string, importIds: string | string[]): Promise<UpdateResult>;
 	updateInviteToken(userId: string, token: string): Promise<UpdateResult>;
 	updateLastLoginById(userId: string): Promise<UpdateResult>;
 	addPasswordToHistory(userId: string, password: string, passwordHistoryAmount: number): Promise<UpdateResult>;

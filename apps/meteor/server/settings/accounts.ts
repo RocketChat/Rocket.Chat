@@ -205,6 +205,10 @@ export const createAccountSettings = () =>
 			type: 'boolean',
 			public: true,
 		});
+		await this.add('Accounts_AllowFeaturePreview', false, {
+			type: 'boolean',
+			public: true,
+		});
 		await this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
 			type: 'string',
 			public: true,
@@ -386,6 +390,7 @@ export const createAccountSettings = () =>
 			});
 			await this.add('Accounts_Registration_Users_Default_Roles', 'user', {
 				type: 'string',
+				public: true,
 			});
 			await this.add('Accounts_PasswordReset', true, {
 				type: 'boolean',

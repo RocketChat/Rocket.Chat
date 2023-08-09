@@ -1,5 +1,5 @@
-import type { FindOptions, FindCursor, Filter, UpdateResult, Document } from 'mongodb';
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { FindOptions, FindCursor, Filter, UpdateResult, Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -14,6 +14,7 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	): FindCursor<ILivechatDepartment>;
 
 	findByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+	countByBusinessHourIdExcludingDepartmentId(businessHourId: string, departmentId: string): Promise<number>;
 
 	findEnabledByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
 
@@ -48,7 +49,6 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 
 	unsetFallbackDepartmentByDepartmentId(departmentId: string): Promise<Document | UpdateResult>;
 	removeDepartmentFromForwardListById(_departmentId: string): Promise<void>;
-	saveDepartmentsByAgent(agent: { _id: string; username: string }, departments: string[]): Promise<void>;
 	updateById(_id: string, update: Partial<ILivechatDepartment>): Promise<Document | UpdateResult>;
 	updateNumAgentsById(_id: string, numAgents: number): Promise<Document | UpdateResult>;
 	findEnabledWithAgents(projection?: FindOptions<ILivechatDepartment>['projection']): FindCursor<ILivechatDepartment>;
@@ -59,5 +59,13 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null>;
 	findByUnitIds(unitIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
 	findActiveByUnitIds(unitIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+	findNotArchived(options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+	getBusinessHoursWithDepartmentStatuses(): Promise<
+		{
+			_id: string;
+			validDepartments: string[];
+			invalidDepartments: string[];
+		}[]
+	>;
 	checkIfMonitorIsMonitoringDepartmentById(monitorId: string, departmentId: string): Promise<boolean>;
 }

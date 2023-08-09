@@ -6,7 +6,7 @@ import type { Action } from '../../../../hooks/useActionSpread';
 export const useRedirectModerationConsole = (uid: IUser['_id']): Action | undefined => {
 	const t = useTranslation();
 	const hasPermissionToView = usePermission('view-moderation-console');
-	const router = useRoute('/admin/moderation-console/info/:uid');
+	const router = useRoute('moderation-console');
 
 	// only rediret if user has permission else return undefined
 	if (!hasPermissionToView) {
