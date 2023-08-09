@@ -64,6 +64,10 @@ function buildSandbox(store = {}) {
 }
 
 function getIntegrationScript(integration) {
+	if (process.env.DISABLE_INTEGRATION_SCRIPTS) {
+		throw API.v1.failure('integration-scripts-disabled');
+	}
+
 	const compiledScript = compiledScripts[integration._id];
 	if (compiledScript && +compiledScript._updatedAt === +integration._updatedAt) {
 		return compiledScript.script;
@@ -172,7 +176,12 @@ async function executeIntegrationRest() {
 		emoji: this.integration.emoji,
 	};
 
-	if (this.integration.scriptEnabled && this.integration.scriptCompiled && this.integration.scriptCompiled.trim() !== '') {
+	if (
+		!process.env.DISABLE_INTEGRATION_SCRIPTS &&
+		this.integration.scriptEnabled &&
+		this.integration.scriptCompiled &&
+		this.integration.scriptCompiled.trim() !== ''
+	) {
 		let script;
 		try {
 			script = getIntegrationScript(this.integration);

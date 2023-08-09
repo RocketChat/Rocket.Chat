@@ -270,6 +270,10 @@ class RocketChatIntegrationHandler {
 	}
 
 	getIntegrationScript(integration) {
+		if (process.env.DISABLE_INTEGRATION_SCRIPTS) {
+			throw new Meteor.Error('integration-scripts-disabled');
+		}
+
 		const compiledScript = this.compiledScripts[integration._id];
 		if (compiledScript && +compiledScript._updatedAt === +integration._updatedAt) {
 			return compiledScript.script;
@@ -313,7 +317,12 @@ class RocketChatIntegrationHandler {
 	}
 
 	hasScriptAndMethod(integration, method) {
-		if (integration.scriptEnabled !== true || !integration.scriptCompiled || integration.scriptCompiled.trim() === '') {
+		if (
+			process.env.DISABLE_INTEGRATION_SCRIPTS ||
+			integration.scriptEnabled !== true ||
+			!integration.scriptCompiled ||
+			integration.scriptCompiled.trim() === ''
+		) {
 			return false;
 		}
 
@@ -328,6 +337,10 @@ class RocketChatIntegrationHandler {
 	}
 
 	async executeScript(integration, method, params, historyId) {
+		if (process.env.DISABLE_INTEGRATION_SCRIPTS) {
+			return;
+		}
+
 		let script;
 		try {
 			script = this.getIntegrationScript(integration);

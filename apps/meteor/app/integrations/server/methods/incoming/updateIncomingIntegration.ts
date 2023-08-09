@@ -64,42 +64,48 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		let scriptCompiled: string | undefined;
-		let scriptError: Pick<Error, 'name' | 'message' | 'stack'> | undefined;
+		if (process.env.FREEZE_INTEGRATION_SCRIPTS) {
+			if (currentIntegration.script?.trim() !== integration.script?.trim()) {
+				throw new Meteor.Error('integration-scripts-disabled');
+			}
+		} else {
+			let scriptCompiled: string | undefined;
+			let scriptError: Pick<Error, 'name' | 'message' | 'stack'> | undefined;
 
-		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
-			try {
-				let babelOptions = Babel.getDefaultOptions({ runtime: false });
-				babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
+			if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
+				try {
+					let babelOptions = Babel.getDefaultOptions({ runtime: false });
+					babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
 
-				scriptCompiled = Babel.compile(integration.script, babelOptions).code;
-				scriptError = undefined;
-				await Integrations.updateOne(
-					{ _id: integrationId },
-					{
-						$set: {
-							scriptCompiled,
+					scriptCompiled = Babel.compile(integration.script, babelOptions).code;
+					scriptError = undefined;
+					await Integrations.updateOne(
+						{ _id: integrationId },
+						{
+							$set: {
+								scriptCompiled,
+							},
+							$unset: { scriptError: 1 as const },
 						},
-						$unset: { scriptError: 1 as const },
-					},
-				);
-			} catch (e) {
-				scriptCompiled = undefined;
-				if (e instanceof Error) {
-					const { name, message, stack } = e;
-					scriptError = { name, message, stack };
+					);
+				} catch (e) {
+					scriptCompiled = undefined;
+					if (e instanceof Error) {
+						const { name, message, stack } = e;
+						scriptError = { name, message, stack };
+					}
+					await Integrations.updateOne(
+						{ _id: integrationId },
+						{
+							$set: {
+								scriptError,
+							},
+							$unset: {
+								scriptCompiled: 1 as const,
+							},
+						},
+					);
 				}
-				await Integrations.updateOne(
-					{ _id: integrationId },
-					{
-						$set: {
-							scriptError,
-						},
-						$unset: {
-							scriptCompiled: 1 as const,
-						},
-					},
-				);
 			}
 		}
 
@@ -157,8 +163,12 @@ Meteor.methods<ServerMethods>({
 					emoji: integration.emoji,
 					alias: integration.alias,
 					channel: channels,
-					script: integration.script,
-					scriptEnabled: integration.scriptEnabled,
+					...(process.env.FREEZE_INTEGRATION_SCRIPTS
+						? {}
+						: {
+								script: integration.script,
+								scriptEnabled: integration.scriptEnabled,
+						  }),
 					overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
 					_updatedAt: new Date(),
 					_updatedBy: await Users.findOne({ _id: this.userId }, { projection: { username: 1 } }),

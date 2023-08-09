@@ -74,6 +74,10 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		});
 	}
 
+	if (process.env.FREEZE_INTEGRATION_SCRIPTS && integration.script?.trim() !== '') {
+		throw new Meteor.Error('integration-scripts-disabled');
+	}
+
 	const user = await Users.findOne({ username: integration.username });
 
 	if (!user) {

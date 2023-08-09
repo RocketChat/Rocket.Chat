@@ -169,7 +169,12 @@ export const validateOutgoingIntegration = async function (
 		delete integrationData.triggerWords;
 	}
 
-	if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
+	if (
+		!process.env.FREEZE_INTEGRATION_SCRIPTS &&
+		integration.scriptEnabled === true &&
+		integration.script &&
+		integration.script.trim() !== ''
+	) {
 		try {
 			const babelOptions = Object.assign(Babel.getDefaultOptions({ runtime: false }), {
 				compact: true,
