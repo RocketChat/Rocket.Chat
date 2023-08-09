@@ -160,7 +160,9 @@ const GroupPage: FC<GroupPageProps> = ({
 
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
-			<Page.Header onClickBack={handleBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)} />
+			<Page.Header onClickBack={handleBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
+				<ButtonGroup>{headerButtons}</ButtonGroup>
+			</Page.Header>
 			{tabs}
 			{isCustom ? (
 				children
@@ -192,7 +194,6 @@ const GroupPage: FC<GroupPageProps> = ({
 						type='submit'
 						onClick={handleSaveClick}
 					/>
-					{headerButtons}
 				</ButtonGroup>
 			</Page.Footer>
 		</Page>

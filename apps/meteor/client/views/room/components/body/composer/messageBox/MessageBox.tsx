@@ -370,7 +370,7 @@ const MessageBox = ({
 			)}
 
 			{readOnly && (
-				<Box mbe='x4' display='flex'>
+				<Box mbe={4} display='flex'>
 					<Tag title={t('Only_people_with_permission_can_send_messages_here')}>{t('This_room_is_read_only')}</Tag>
 				</Box>
 			)}

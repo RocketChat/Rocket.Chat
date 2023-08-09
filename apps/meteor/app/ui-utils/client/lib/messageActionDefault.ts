@@ -29,7 +29,7 @@ Meteor.startup(async () => {
 		id: 'reply-directly',
 		icon: 'reply-directly',
 		label: 'Reply_in_direct_message',
-		context: ['message', 'message-mobile', 'threads', 'federated'],
+		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		role: 'link',
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
