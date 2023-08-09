@@ -1,5 +1,7 @@
 import { TableRow, TableCell } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import type { MomentInput } from 'moment';
 import React, { useMemo } from 'react';
 
 import {
@@ -12,6 +14,25 @@ import {
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import ImportOperationSummarySkeleton from './ImportOperationSummarySkeleton';
 
+type statusType =
+	| 'importer_new'
+	| 'importer_uploading'
+	| 'importer_downloading_file'
+	| 'importer_file_loaded'
+	| 'importer_preparing_started'
+	| 'importer_preparing_users'
+	| 'importer_preparing_channels'
+	| 'importer_preparing_messages'
+	| 'importer_user_selection';
+
+type statusTypeCanCheckProgress =
+	| 'importer_importing_started'
+	| 'importer_importing_users'
+	| 'importer_importing_channels'
+	| 'importer_importing_messages'
+	| 'importer_importing_files'
+	| 'importer_finishing';
+
 function ImportOperationSummary({
 	type,
 	_updatedAt,
@@ -21,6 +42,15 @@ function ImportOperationSummary({
 	small,
 	count: { users = 0, channels = 0, messages = 0, total = 0 } = {},
 	valid,
+}: {
+	type: string;
+	_updatedAt: MomentInput;
+	status: statusType;
+	file: string;
+	user: string;
+	small: boolean;
+	count: { users: number; channels: number; messages: number; total: number } | Record<string, unknown>;
+	valid: boolean;
 }) {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
@@ -37,7 +67,6 @@ function ImportOperationSummary({
 		if (idx >= 0) {
 			return fileName.slice(idx + userPattern.length);
 		}
-
 		return fileName;
 	}, [file, user]);
 
@@ -48,7 +77,7 @@ function ImportOperationSummary({
 		[valid, status],
 	);
 
-	const canCheckProgress = useMemo(() => valid && ImportingStartedStates.includes(status), [valid, status]);
+	const canCheckProgress = useMemo(() => valid && ImportingStartedStates.includes(status as statusTypeCanCheckProgress), [valid, status]);
 
 	const router = useRouter();
 
@@ -80,7 +109,7 @@ function ImportOperationSummary({
 			<TableCell>{formatDateAndTime(_updatedAt)}</TableCell>
 			{!small && (
 				<>
-					<TableCell>{status && t(status.replace('importer_', 'importer_status_'))}</TableCell>
+					<TableCell>{status && t(status.replace('importer_', 'importer_status_') as TranslationKey)}</TableCell>
 					<TableCell>{fileName}</TableCell>
 					<TableCell align='center'>{users}</TableCell>
 					<TableCell align='center'>{channels}</TableCell>
