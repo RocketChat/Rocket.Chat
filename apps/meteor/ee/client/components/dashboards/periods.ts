@@ -25,9 +25,29 @@ const lastNDays =
 
 const periods = [
 	{
+		key: 'today',
+		label: label('Today'),
+		range: lastNDays(1),
+	},
+	{
+		key: 'this week',
+		label: label('This_week'),
+		range: lastNDays(7),
+	},
+	{
 		key: 'last 7 days',
 		label: label('Last_7_days'),
 		range: lastNDays(7),
+	},
+	{
+		key: 'last 15 days',
+		label: label('Last_15_days'),
+		range: lastNDays(15),
+	},
+	{
+		key: 'this month',
+		label: label('This_month'),
+		range: lastNDays(30),
 	},
 	{
 		key: 'last 30 days',
@@ -38,6 +58,16 @@ const periods = [
 		key: 'last 90 days',
 		label: label('Last_90_days'),
 		range: lastNDays(90),
+	},
+	{
+		key: 'last 6 months',
+		label: label('Last_6_months'),
+		range: lastNDays(180),
+	},
+	{
+		key: 'last year',
+		label: label('Last_year'),
+		range: lastNDays(365),
 	},
 ] as const;
 

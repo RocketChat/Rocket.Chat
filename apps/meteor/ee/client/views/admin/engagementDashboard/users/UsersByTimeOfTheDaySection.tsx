@@ -6,10 +6,10 @@ import moment from 'moment';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
+import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
+import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import DownloadDataButton from '../dataView/DownloadDataButton';
-import PeriodSelector from '../dataView/PeriodSelector';
-import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useUsersByTimeOfTheDay } from './useUsersByTimeOfTheDay';
 
 type UsersByTimeOfTheDaySectionProps = {

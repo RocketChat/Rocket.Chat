@@ -1,8 +1,8 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
-import type { Period } from '../dataView/periods';
-import { getPeriodRange } from '../dataView/periods';
+import type { Period } from '../../../../components/dashboards/periods';
+import { getPeriodRange } from '../../../../components/dashboards/periods';
 
 export const useNewUsers = ({ period, utc }: { period: Period['key']; utc: boolean }) => {
 	const getNewUsers = useEndpoint('GET', '/v1/engagement-dashboard/users/new-users');

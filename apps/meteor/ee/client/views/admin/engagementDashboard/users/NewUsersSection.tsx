@@ -9,11 +9,11 @@ import React, { useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/dataView/CounterSet';
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
+import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
+import { usePeriodLabel } from '../../../../components/dashboards/usePeriodLabel';
+import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import DownloadDataButton from '../dataView/DownloadDataButton';
-import PeriodSelector from '../dataView/PeriodSelector';
-import { usePeriodLabel } from '../dataView/usePeriodLabel';
-import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useNewUsers } from './useNewUsers';
 
 const TICK_WIDTH = 45;

@@ -7,11 +7,11 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/dataView/CounterSet';
+import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
+import { usePeriodLabel } from '../../../../components/dashboards/usePeriodLabel';
+import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import DownloadDataButton from '../dataView/DownloadDataButton';
-import PeriodSelector from '../dataView/PeriodSelector';
-import { usePeriodLabel } from '../dataView/usePeriodLabel';
-import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useMessagesSent } from './useMessagesSent';
 
 const MessagesSentSection = (): ReactElement => {
