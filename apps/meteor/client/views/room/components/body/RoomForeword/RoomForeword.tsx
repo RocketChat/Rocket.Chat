@@ -37,13 +37,13 @@ const RoomForeword = ({ user, room }: RoomForewordProps): ReactElement | null =>
 			<Flex.Item grow={1}>
 				<Box display='flex' alignItems='center' justifyContent='center'>
 					{usernames.map((username, index) => (
-						<Box is='span' mi='x4' key={index}>
+						<Box is='span' mi={4} key={index}>
 							<UserAvatar size='x48' username={username} />
 						</Box>
 					))}
 				</Box>
 			</Flex.Item>
-			<Box display='flex' color='default' fontScale='h4' flexGrow={1} justifyContent='center' mb='x16'>
+			<Box display='flex' color='default' fontScale='h4' flexGrow={1} justifyContent='center' mb={16}>
 				{t('Direct_message_you_have_joined')}
 			</Box>
 			<Box is='div' flexGrow={1} display='flex' justifyContent='center'>

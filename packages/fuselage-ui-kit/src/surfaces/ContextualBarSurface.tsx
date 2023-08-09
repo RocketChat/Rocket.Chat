@@ -11,7 +11,7 @@ const ContextualBarSurface = ({
   children,
 }: ContextualBarSurfaceProps): ReactElement => (
   <Surface type='contextualBar'>
-    <Margins blockEnd='x16'>{children}</Margins>
+    <Margins blockEnd={16}>{children}</Margins>
   </Surface>
 );
 

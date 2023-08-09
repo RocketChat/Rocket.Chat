@@ -68,9 +68,9 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 			</Page.Header>
 			<Page.Content>
 				<Box display='flex' flexDirection='column' w='full' mi='neg-x4'>
-					<Margins inline='x4'>
+					<Margins inline={4}>
 						{role.scope !== 'Users' && (
-							<Field mbe='x4'>
+							<Field mbe={4}>
 								<Field.Label>{t('Choose_a_room')}</Field.Label>
 								<Field.Row>
 									<Controller
@@ -93,7 +93,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 										<UserAutoCompleteMultiple value={value} placeholder={t('User')} onChange={onChange} />
 									)}
 								/>
-								<ButtonGroup mis='x8' align='end'>
+								<ButtonGroup mis={8} align='end'>
 									<Button primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
 										{t('Add')}
 									</Button>
@@ -102,7 +102,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 						</Field>
 					</Margins>
 				</Box>
-				<Margins blockStart='x8'>
+				<Margins blockStart={8}>
 					{(role.scope === 'Users' || rid) && (
 						<UsersInRoleTable reloadRef={reload} rid={rid} roleId={_id} roleName={name} description={description} />
 					)}

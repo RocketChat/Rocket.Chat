@@ -117,7 +117,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	};
 
 	return (
-		<Box {...props} display='flex' alignItems='center' mie='x8'>
+		<Box {...props} display='flex' alignItems='center' mie={8}>
 			{button && isAppDetailsPage && (!installed || canUpdate) && (
 				<Box
 					display='flex'
@@ -133,7 +133,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 						small
 						disabled={loading || (action === 'request' && (app?.requestedEndUser || endUserRequested))}
 						onClick={handleAcquireApp}
-						mie='x8'
+						mie={8}
 					>
 						{loading && <Throbber inheritColor />}
 						{!loading && t(button.label.replace(' ', '_') as TranslationKey)}
@@ -146,7 +146,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			)}
 
 			{statuses?.map((status, index) => (
-				<Margins inlineEnd='x8' key={index}>
+				<Margins inlineEnd={8} key={index}>
 					<Tag variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
 						{handleAppRequestsNumber(status)} {t(`${status.label}` as TranslationKey)}
 					</Tag>
