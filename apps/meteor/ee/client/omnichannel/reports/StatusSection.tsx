@@ -11,7 +11,7 @@ export const StatusSection = () => {
 
 	return (
 		<ReportCard title={t('Status')} onFilter={onFilter}>
-			<PieChart data={data} width={200} height={200} />
+			<PieChart data={data} width={300} height={200} />
 		</ReportCard>
 	);
 };
