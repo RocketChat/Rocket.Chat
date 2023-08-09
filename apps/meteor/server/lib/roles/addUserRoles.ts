@@ -5,13 +5,18 @@ import { Users, Roles } from '@rocket.chat/models';
 import { validateRoleList } from './validateRoleList';
 
 export const addUserRolesAsync = async (userId: IUser['_id'], roleIds: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> => {
-	if (!userId || !roleIds?.length) {
+	if (!userId) {
 		return false;
 	}
 
 	const user = await Users.findOneById(userId, { projection: { _id: 1 } });
 	if (!user) {
 		throw new MeteorError('error-invalid-user', 'Invalid user');
+	}
+
+	if (!roleIds?.length) {
+		await Users.updateOne({ _id: userId }, { $set: { roles: [] } });
+		return true;
 	}
 
 	if (!(await validateRoleList(roleIds))) {
