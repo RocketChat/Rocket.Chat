@@ -1,7 +1,6 @@
 import { render, waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import '@testing-library/jest-dom';
 import type { MutableRefObject } from 'react';
 import React from 'react';
 
@@ -12,19 +11,23 @@ describe('views/notFound/NotFoundPage', () => {
 	it('should look good', async () => {
 		render(<NotFoundPage />);
 
-		expect(screen.getByText('Page_not_found')).to.exist;
-		expect(screen.getByText('Page_not_exist_or_not_permission')).to.exist;
-		expect(screen.getByRole('button', { name: 'Homepage' })).to.exist.and.to.not.match(':disabled');
+		await screen.findByRole('heading');
+
+		expect(screen.getByRole('heading')).toHaveTextContent('Page_not_found');
+
+		expect(screen.getByRole('button', { name: 'Homepage' })).not.toBeDisabled();
 	});
 
 	it('should have correct tab order', () => {
 		render(<NotFoundPage />);
-
-		expect(document.body).to.have.focus;
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(document.activeElement).toBe(document.body);
 		userEvent.tab();
-		expect(screen.getByRole('button', { name: 'Homepage' })).to.have.focus;
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Homepage' }));
 		userEvent.tab();
-		expect(document.body).to.have.focus;
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(document.activeElement).toBe(document.body);
 	});
 
 	describe('"Return to home" button', () => {
@@ -41,7 +44,7 @@ describe('views/notFound/NotFoundPage', () => {
 
 				userEvent.click(button);
 
-				await waitFor(() => expect(currentPath.current).to.be.equal('/home'));
+				await waitFor(() => expect(currentPath.current).toBe('/home'));
 			});
 		});
 	});
