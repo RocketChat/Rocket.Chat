@@ -1719,7 +1719,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	unmuteReadOnlyUsernameByRoomId(rid: string, username: string): Promise<UpdateResult> {
+	unmuteReadOnlyUsernameByRoomId(_id: string, username: string): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
 		const update: UpdateFilter<IRoom> = {
