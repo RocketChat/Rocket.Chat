@@ -38,6 +38,8 @@ const SidebarRegion = () => {
 		height: 100%;
 		user-select: none;
 		transition: transform 0.3s;
+		width: var(--sidebar-width);
+		min-width: var(--sidebar-width);
 
 		> .rcx-sidebar:not(:last-child) {
 			visibility: hidden;
@@ -54,9 +56,9 @@ const SidebarRegion = () => {
 			width: 80%;
 			min-width: 80%;
 		}
+
 		// 1600px to 1919px
 		// using em unit base 16
-
 		@media (min-width: 100em) {
 			width: var(--sidebar-md-width);
 			min-width: var(--sidebar-md-width);
