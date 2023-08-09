@@ -1,5 +1,5 @@
 import { Users } from '@rocket.chat/models';
-import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -11,7 +11,7 @@ declare module '@rocket.chat/ui-contexts' {
 	interface ServerMethods {
 		getPasswordPolicy(params: { token: string }): {
 			enabled: boolean;
-			policy: [name: TranslationKey, options?: Record<string, unknown>][];
+			policy: [name: string, options?: Record<string, unknown>][];
 		};
 	}
 }

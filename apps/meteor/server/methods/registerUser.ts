@@ -7,7 +7,7 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { validateInviteToken } from '../../app/invites/server/functions/validateInviteToken';
-import { validateEmailDomain, passwordPolicy, RateLimiter } from '../../app/lib/server';
+import { validateEmailDomain, RateLimiter } from '../../app/lib/server';
 import { settings } from '../../app/settings/server';
 import { trim } from '../../lib/utils/stringUtils';
 

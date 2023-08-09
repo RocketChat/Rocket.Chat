@@ -5,7 +5,7 @@ export const useErrorHandler = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	return useMutableCallback((error, defaultMessage) => {
+	return useMutableCallback((error, defaultMessage?: string) => {
 		console.error(error);
 
 		if (typeof error === 'string') {
