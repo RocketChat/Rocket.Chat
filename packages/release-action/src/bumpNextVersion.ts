@@ -71,14 +71,14 @@ export async function bumpNextVersion({
 
 	await createTag(newVersion);
 
-	await pushNewBranch(newBranch);
+	await pushNewBranch(newBranch, true);
 
 	if (newVersion.includes('rc.0')) {
 		const finalPrTitle = `Release ${finalVersion}`;
 
 		core.info('creating pull request');
 		await octokit.rest.pulls.create({
-			base: 'release-automation',
+			base: 'master',
 			head: newBranch,
 			title: finalPrTitle,
 			body: prBody,

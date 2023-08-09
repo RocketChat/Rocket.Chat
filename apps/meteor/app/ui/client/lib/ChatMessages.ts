@@ -1,4 +1,5 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { isVideoConfMessage } from '@rocket.chat/core-typings';
 import type { UIEvent } from 'react';
 
 import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
@@ -60,7 +61,12 @@ export class ChatMessages implements ChatAPI {
 			}
 
 			if (!this.currentEditing) {
-				const lastMessage = await this.data.findLastOwnMessage();
+				let lastMessage = await this.data.findLastOwnMessage();
+
+				// Videoconf messages should not be edited
+				if (lastMessage && isVideoConfMessage(lastMessage)) {
+					lastMessage = await this.data.findPreviousOwnMessage(lastMessage);
+				}
 
 				if (lastMessage) {
 					await this.data.saveDraft(undefined, this.composer.text);
@@ -71,7 +77,12 @@ export class ChatMessages implements ChatAPI {
 			}
 
 			const currentMessage = await this.data.findMessageByID(this.currentEditing.mid);
-			const previousMessage = currentMessage ? await this.data.findPreviousOwnMessage(currentMessage) : undefined;
+			let previousMessage = currentMessage ? await this.data.findPreviousOwnMessage(currentMessage) : undefined;
+
+			// Videoconf messages should not be edited
+			if (previousMessage && isVideoConfMessage(previousMessage)) {
+				previousMessage = await this.data.findPreviousOwnMessage(previousMessage);
+			}
 
 			if (previousMessage) {
 				await this.messageEditing.editMessage(previousMessage);
@@ -86,7 +97,12 @@ export class ChatMessages implements ChatAPI {
 			}
 
 			const currentMessage = await this.data.findMessageByID(this.currentEditing.mid);
-			const nextMessage = currentMessage ? await this.data.findNextOwnMessage(currentMessage) : undefined;
+			let nextMessage = currentMessage ? await this.data.findNextOwnMessage(currentMessage) : undefined;
+
+			// Videoconf messages should not be edited
+			if (nextMessage && isVideoConfMessage(nextMessage)) {
+				nextMessage = await this.data.findNextOwnMessage(nextMessage);
+			}
 
 			if (nextMessage) {
 				await this.messageEditing.editMessage(nextMessage, { cursorAtStart: true });

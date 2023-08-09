@@ -22,7 +22,7 @@ export class OmnichannelDepartments {
 	}
 
 	get btnNew() {
-		return this.page.locator('button.rcx-button >> text="New"');
+		return this.page.locator('button.rcx-button >> text="Create department"');
 	}
 
 	get btnEnabled() {
