@@ -26,7 +26,7 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 		return (
 			<Menu
 				key='menu'
-				mi='x4'
+				mi={4}
 				secondary
 				small={false}
 				maxHeight='initial'

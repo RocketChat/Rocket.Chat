@@ -161,8 +161,8 @@ function generateEmojiPicker(data) {
 	display: inline-block;
 	overflow: hidden;
 
-	width: 22px;
-	height: 22px;
+	width: 1.375rem;
+	height: 1.375rem;
 	margin: 0 0.15em;
 
 	vertical-align: middle;
