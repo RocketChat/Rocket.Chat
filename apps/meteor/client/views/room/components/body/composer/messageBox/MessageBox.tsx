@@ -147,17 +147,17 @@ const MessageBox = ({
 
 	const { md, channels, mentions, setShowMarkdownPreview, showMarkdownPreview, handleViewPreview } = useMarkdownPreview(rid);
 
-	const handleKeyDown = (e: any) => {
-		if (e.key === 'Enter' && !e.shiftKey) {
-			e.preventDefault();
+	const handleEnterKeyDown = (event: any) => {
+		if (event.key === 'Enter' && !event.shiftKey) {
+			event.preventDefault();
 			handleSendMessage();
 		}
 	};
 
-	const handlePreviewShortcut = (e: any) => {
+	const handlePreviewShortcut = (event: any) => {
 		// Preview on "Alt + Shift + M"
-		if (e.altKey && e.shiftKey && e.key === 'M') {
-			e.preventDefault();
+		if (event.altKey && event.shiftKey && event.key === 'M') {
+			event.preventDefault();
 			handleViewPreview(chat.composer?.text as any);
 		}
 	};
@@ -171,10 +171,10 @@ const MessageBox = ({
 	});
 
 	useEffect(() => {
-		document.addEventListener('keydown', handleKeyDown);
+		document.addEventListener('keydown', handleEnterKeyDown);
 
 		return () => {
-			document.removeEventListener('keydown', handleKeyDown);
+			document.removeEventListener('keydown', handleEnterKeyDown);
 		};
 	});
 
