@@ -18,3 +18,10 @@ export const REPORTS_CHARTS_THEME = {
 		},
 	},
 };
+
+export const COLORS = {
+	warning: Palette.statusColor['status-font-on-warning'].toString(),
+	danger: Palette.statusColor['status-font-on-danger'].toString(),
+	success: Palette.statusColor['status-font-on-success'].toString(),
+	info: Palette.statusColor['status-font-on-info'].toString(),
+};

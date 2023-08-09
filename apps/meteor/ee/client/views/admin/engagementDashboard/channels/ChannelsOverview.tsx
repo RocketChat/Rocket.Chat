@@ -5,10 +5,10 @@ import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 
 import Growth from '../../../../../../client/components/dataView/Growth';
+import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
+import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import DownloadDataButton from '../dataView/DownloadDataButton';
-import PeriodSelector from '../dataView/PeriodSelector';
-import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useChannelsList } from './useChannelsList';
 
 const ChannelsOverview = (): ReactElement => {

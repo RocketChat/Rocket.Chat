@@ -6,7 +6,7 @@ import React, { useMemo } from 'react';
 import type { Period } from './periods';
 import { getPeriod } from './periods';
 
-type PeriodSelectorProps<TPeriod extends Period['key']> = {
+export type PeriodSelectorProps<TPeriod extends Period['key']> = {
 	periods: TPeriod[];
 	value: TPeriod;
 	onChange: (value: TPeriod) => void;
