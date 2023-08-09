@@ -1,6 +1,7 @@
 import { render, waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect } from 'chai';
+import { describe, it } from 'mocha';
 import type { MutableRefObject } from 'react';
 import React from 'react';
 
@@ -26,8 +27,8 @@ describe('views/notFound/NotFoundPage', () => {
 		expect(document.body).to.have.focus;
 	});
 
-	context('"Return to home" button', () => {
-		context('when clicked', () => {
+	describe('"Return to home" button', () => {
+		describe('when clicked', () => {
 			it('should go back on history', async () => {
 				const currentPath: MutableRefObject<string | undefined> = { current: undefined };
 
