@@ -8011,7 +8011,7 @@ __metadata:
     "@types/marked": ^4.0.8
     "@types/meteor-collection-hooks": ^0.8.6
     "@types/mkdirp": ^1.0.2
-    "@types/mocha": ^8.2.3
+    "@types/mocha": "github:whitecolor/mocha-types"
     "@types/moment-timezone": ^0.5.30
     "@types/node": ^14.18.51
     "@types/node-rsa": ^1.1.1
@@ -11613,10 +11613,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mocha@npm:^8.2.3":
-  version: 8.2.3
-  resolution: "@types/mocha@npm:8.2.3"
-  checksum: b43ed1b642a2ee62bf10792a07d5d21d66ab8b4d2cf5d822c8a7643e77b90009aecc000eefab5f6ddc9eb69004192f84119a6f97a8499e1a13ea082e7a5e71bf
+"@types/mocha@github:whitecolor/mocha-types":
+  version: 8.0.0
+  resolution: "@types/mocha@https://github.com/whitecolor/mocha-types.git#commit=da22474cf43f48a56c86f8c23a5a0ea36e295768"
+  checksum: 7764cc52fb09efeb48edce9bb3927948896e38600edaae8800e0116b46fb7c2e4b7d2331ccfed982a205d7a3729fa3963f7c4313d624d6ff3febcef0d60c1a28
   languageName: node
   linkType: hard
 
