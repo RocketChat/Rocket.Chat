@@ -74,7 +74,7 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		});
 	}
 
-	if (process.env.FREEZE_INTEGRATION_SCRIPTS && integration.script?.trim() !== '') {
+	if (process.env.FREEZE_INTEGRATION_SCRIPTS && integration.script?.trim()) {
 		throw new Meteor.Error('integration-scripts-disabled');
 	}
 

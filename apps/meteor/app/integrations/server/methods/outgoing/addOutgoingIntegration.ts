@@ -50,7 +50,7 @@ export const addOutgoingIntegration = async (userId: string, integration: INewOu
 		throw new Meteor.Error('not_authorized');
 	}
 
-	if (process.env.FREEZE_INTEGRATION_SCRIPTS && integration.script?.trim() !== '') {
+	if (process.env.FREEZE_INTEGRATION_SCRIPTS && integration.script?.trim()) {
 		throw new Meteor.Error('integration-scripts-disabled');
 	}
 
