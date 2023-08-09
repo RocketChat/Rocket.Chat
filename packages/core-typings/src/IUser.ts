@@ -1,6 +1,6 @@
-import type { UserStatus } from './UserStatus';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
+import type { UserStatus } from './UserStatus';
 
 export interface ILoginToken {
 	hashedToken: string;
@@ -75,7 +75,7 @@ export interface IUserServices {
 		enabled: boolean;
 		changedAt: Date;
 	};
-	emailCode: IUserEmailCode[];
+	emailCode?: IUserEmailCode[];
 	saml?: {
 		inResponseTo?: string;
 		provider?: string;
@@ -180,6 +180,7 @@ export interface IUser extends IRocketChatRecord {
 		};
 	};
 	importIds?: string[];
+	_pendingAvatarUrl?: string;
 }
 
 export interface IRegisterUser extends IUser {

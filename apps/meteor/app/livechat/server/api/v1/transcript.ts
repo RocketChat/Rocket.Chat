@@ -1,11 +1,11 @@
-import { isPOSTLivechatTranscriptParams, isPOSTLivechatTranscriptRequestParams } from '@rocket.chat/rest-typings';
-import { LivechatRooms, Users } from '@rocket.chat/models';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms, Users } from '@rocket.chat/models';
+import { isPOSTLivechatTranscriptParams, isPOSTLivechatTranscriptRequestParams } from '@rocket.chat/rest-typings';
 
-import { API } from '../../../../api/server';
-import { Livechat } from '../../lib/LivechatTyped';
-import { Livechat as LivechatJS } from '../../lib/Livechat';
 import { i18n } from '../../../../../server/lib/i18n';
+import { API } from '../../../../api/server';
+import { Livechat as LivechatJS } from '../../lib/Livechat';
+import { Livechat } from '../../lib/LivechatTyped';
 
 API.v1.addRoute(
 	'livechat/transcript',

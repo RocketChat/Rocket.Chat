@@ -8,7 +8,6 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { isTruthy } from '../../../../../lib/isTruthy';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 
 type LeaderBarProps = {
@@ -21,8 +20,6 @@ type LeaderBarProps = {
 
 const LeaderBar = ({ _id, name, username, visible, onAvatarClick }: LeaderBarProps): ReactElement => {
 	const t = useTranslation();
-
-	const handleLinkClick = useExternalLink();
 
 	const chatNowLink = useMemo(() => roomCoordinator.getRouteLink('d', { name: username }) || undefined, [username]);
 
@@ -59,25 +56,25 @@ const LeaderBar = ({ _id, name, username, visible, onAvatarClick }: LeaderBarPro
 			display='flex'
 			backgroundColor='light'
 			color='default'
-			pi='x24'
-			pb='x8'
+			pi={24}
+			pb={8}
 			justifyContent='space-between'
 			borderBlockEndWidth={2}
 			borderBlockEndColor='extra-light'
 			className={[roomLeaderStyle, 'room-leader', !visible && 'animated-hidden'].filter(isTruthy)}
 		>
 			<Box display='flex' alignItems='center'>
-				<Box is='button' mie='x4' onClick={handleAvatarClick}>
+				<Box is='button' mie={4} onClick={handleAvatarClick}>
 					<UserAvatar username={username} />
 				</Box>
-				<Box fontScale='p2' mi='x4' display='flex' alignItems='center'>
+				<Box fontScale='p2' mi={4} display='flex' alignItems='center'>
 					<ReactiveUserStatus uid={_id} />
-					<Box fontWeight={700} mis='x8'>
+					<Box fontWeight={700} mis={8}>
 						{name}
 					</Box>
 				</Box>
 			</Box>
-			<Button role='link' onClick={() => handleLinkClick(chatNowLink)}>
+			<Button role='link' is='a' href={chatNowLink}>
 				{t('Chat_Now')}
 			</Button>
 		</Box>

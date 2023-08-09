@@ -1,14 +1,14 @@
-import { Settings } from '@rocket.chat/models';
 import { NPS, Banner } from '@rocket.chat/core-services';
+import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { getAndCreateNpsSurvey } from '../../../../server/services/nps/getAndCreateNpsSurvey';
+import { settings } from '../../../settings/server';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
-import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
-import { settings } from '../../../settings/server';
-import { getAndCreateNpsSurvey } from '../../../../server/services/nps/getAndCreateNpsSurvey';
-import { SystemLogger } from '../../../../server/lib/logger/system';
+import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
 export async function syncWorkspace(reconnectCheck = false) {
 	const { workspaceRegistered, connectToCloud } = await retrieveRegistrationStatus();

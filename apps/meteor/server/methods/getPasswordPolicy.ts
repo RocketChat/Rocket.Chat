@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
 import { Users } from '@rocket.chat/models';
+import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { passwordPolicy } from '../../app/lib/server';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';

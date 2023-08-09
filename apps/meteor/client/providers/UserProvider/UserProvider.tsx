@@ -1,6 +1,6 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { UserContext, useSetting } from '@rocket.chat/ui-contexts';
+import { UserContext, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import type { LoginService, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
@@ -9,7 +9,8 @@ import React, { useEffect, useMemo } from 'react';
 import { Subscriptions, ChatRoom } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { callbacks } from '../../../lib/callbacks';
+import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
+import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
@@ -47,7 +48,7 @@ const logout = (): Promise<void> =>
 		}
 
 		Meteor.logout(async () => {
-			await callbacks.run('afterLogoutCleanUp', user);
+			await afterLogoutCleanUpCallback.run(user);
 			sdk.call('logoutCleanUp', user).then(resolve, reject);
 		});
 	});
@@ -65,6 +66,9 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	const userId = useReactiveValue(getUserId);
 	const user = useReactiveValue(getUser);
 	const [language, setLanguage] = useLocalStorage('userLanguage', user?.language ?? 'en');
+
+	const { data: license } = useIsEnterprise();
+	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
 	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
 
@@ -165,6 +169,12 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			setLanguage(user.language);
 		}
 	}, [user?.language, language, setLanguage]);
+
+	useEffect(() => {
+		if (!license?.isEnterprise && user?.settings?.preferences?.themeAppearence === 'high-contrast') {
+			setUserPreferences({ data: { themeAppearence: 'light' } });
+		}
+	}, [license?.isEnterprise, setUserPreferences, user?.settings?.preferences?.themeAppearence]);
 
 	return <UserContext.Provider children={children} value={contextValue} />;
 };

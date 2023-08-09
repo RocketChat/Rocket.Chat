@@ -1,8 +1,9 @@
 import type { UIKitActionEvent, UiKitBannerProps } from '@rocket.chat/core-typings';
 import { Banner, Icon } from '@rocket.chat/fuselage';
-import { kitContext, bannerParser, UiKitBanner as renderUiKitBannerBlocks } from '@rocket.chat/fuselage-ui-kit';
+import { UiKitContext, bannerParser, UiKitBanner as UiKitBannerSurfaceRender, UiKitComponent } from '@rocket.chat/fuselage-ui-kit';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
-import type { FC, ComponentProps, ReactElement, ContextType } from 'react';
+import type { FC, ReactElement, ContextType } from 'react';
 import React, { useMemo } from 'react';
 
 import { useUIKitHandleAction } from '../../UIKit/hooks/useUIKitHandleAction';
@@ -19,7 +20,7 @@ const UiKitBanner: FC<UiKitBannerProps> = ({ payload }) => {
 
 	const icon = useMemo(() => {
 		if (state.icon) {
-			return <Icon name={state.icon as ComponentProps<typeof Icon>['name']} size={20} />;
+			return <Icon name={state.icon as IconName} size='x20' />;
 		}
 
 		return null;
@@ -29,7 +30,7 @@ const UiKitBanner: FC<UiKitBannerProps> = ({ payload }) => {
 
 	const action = useUIKitHandleAction(state);
 
-	const contextValue = useMemo<ContextType<typeof kitContext>>(
+	const contextValue = useMemo<ContextType<typeof UiKitContext>>(
 		() => ({
 			action: async (event): Promise<void> => {
 				if (!event.viewId) {
@@ -47,9 +48,9 @@ const UiKitBanner: FC<UiKitBannerProps> = ({ payload }) => {
 
 	return (
 		<Banner closeable icon={icon} inline={state.inline} title={state.title} variant={state.variant} onClose={handleClose}>
-			<kitContext.Provider value={contextValue}>
-				{renderUiKitBannerBlocks(state.blocks as LayoutBlock[], { engine: 'rocket.chat' })}
-			</kitContext.Provider>
+			<UiKitContext.Provider value={contextValue}>
+				<UiKitComponent render={UiKitBannerSurfaceRender} blocks={state.blocks as LayoutBlock[]} />
+			</UiKitContext.Provider>
 		</Banner>
 	);
 };
