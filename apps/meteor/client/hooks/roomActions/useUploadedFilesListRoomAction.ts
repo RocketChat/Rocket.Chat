@@ -13,6 +13,7 @@ export const useUploadedFilesListRoomAction = () => {
 			icon: 'clip',
 			tabComponent: RoomFiles,
 			order: 7,
+			type: 'organization',
 		};
 	}, []);
 };
