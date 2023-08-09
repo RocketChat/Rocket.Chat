@@ -5,7 +5,6 @@ settings.watchMultiple(['SMTP_Host', 'SMTP_Port', 'SMTP_Username', 'SMTP_Passwor
 	SystemLogger.info('Updating process.env.MAIL_URL');
 
 	if (!settings.get('SMTP_Host')) {
-		process.env.MAIL_URL = undefined;
 		return;
 	}
 
