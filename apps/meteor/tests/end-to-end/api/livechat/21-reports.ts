@@ -67,7 +67,6 @@ describe('LIVECHAT - reports', () => {
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf.greaterThan(0);
 			expect(body.data.every((item: { value: number }) => item.value >= 0)).to.be.true;
-			console.log(body.data);
 		});
 	});
 	describe('livechat/analytics/dashboards/conversations-by-status', () => {
