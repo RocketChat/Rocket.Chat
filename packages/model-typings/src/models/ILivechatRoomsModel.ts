@@ -1,4 +1,4 @@
-import type { IMessage, IOmnichannelRoom, IOmnichannelRoomClosingInfo, ISetting, IVisitor, ReportResult } from '@rocket.chat/core-typings';
+import type { IMessage, IOmnichannelRoom, IOmnichannelRoomClosingInfo, ISetting, IVisitor } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter } from 'mongodb';
 
 import type { FindPaginated } from '..';
@@ -234,9 +234,4 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	setVisitorInactivityInSecondsById(roomId: string, visitorInactivity: any): Promise<UpdateResult>;
 	changeVisitorByRoomId(roomId: string, visitor: { _id: string; username: string; token: string }): Promise<UpdateResult>;
 	unarchiveOneById(roomId: string): Promise<UpdateResult>;
-	getConversationsBySource(start: Date, end: Date): AggregationCursor<ReportResult>;
-	getConversationsByStatus(start: Date, end: Date): AggregationCursor<ReportResult>;
-	getConversationsByDepartment(start: Date, end: Date): AggregationCursor<ReportResult>;
-	getConversationsByTags(start: Date, end: Date): AggregationCursor<ReportResult>;
-	getConversationsByAgents(start: Date, end: Date): AggregationCursor<ReportResult>;
 }

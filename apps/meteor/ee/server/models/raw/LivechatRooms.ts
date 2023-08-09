@@ -3,11 +3,13 @@ import type {
 	IOmnichannelRoom,
 	IOmnichannelServiceLevelAgreements,
 	RocketChatRecordDeleted,
+	ReportResult,
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
-import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, Filter } from 'mongodb';
+import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, Filter, AggregationCursor } from 'mongodb';
 
+import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
 import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
 import { addQueryRestrictionsToRoomsModel } from '../../../app/livechat-enterprise/server/lib/query.helper';
@@ -37,6 +39,11 @@ declare module '@rocket.chat/model-typings' {
 		): FindCursor<IOmnichannelRoom>;
 		setPriorityByRoomId(roomId: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<UpdateResult>;
 		unsetPriorityByRoomId(roomId: string): Promise<UpdateResult>;
+		getConversationsBySource(start: Date, end: Date): AggregationCursor<ReportResult>;
+		getConversationsByStatus(start: Date, end: Date): AggregationCursor<ReportResult>;
+		getConversationsByDepartment(start: Date, end: Date): AggregationCursor<ReportResult>;
+		getConversationsByTags(start: Date, end: Date): AggregationCursor<ReportResult>;
+		getConversationsByAgents(start: Date, end: Date): AggregationCursor<ReportResult>;
 	}
 }
 
@@ -292,5 +299,309 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		const restrictedQuery = await addQueryRestrictionsToRoomsModel(query);
 		queriesLogger.debug({ msg: 'LivechatRoomsRawEE.updateMany', query: restrictedQuery });
 		return super.updateMany(restrictedQuery, ...restArgs);
+	}
+
+	getConversationsBySource(start: Date, end: Date): AggregationCursor<{ data: { label: string; value: number }[] }> {
+		return this.col.aggregate(
+			[
+				{
+					$match: {
+						source: {
+							$exists: true,
+						},
+						t: 'l',
+						ts: {
+							$gte: start,
+							$lt: end,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: '$source',
+						value: { $sum: 1 },
+					},
+				},
+				{
+					$group: {
+						_id: null,
+						data: {
+							$push: {
+								label: {
+									$ifNull: ['$_id.alias', '$_id.type'],
+								},
+								value: '$value',
+							},
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+					},
+				},
+			],
+			{ readPreference: readSecondaryPreferred() },
+		);
+	}
+
+	getConversationsByStatus(start: Date, end: Date): AggregationCursor<{ data: { label: string; value: number }[] }> {
+		return this.col.aggregate(
+			[
+				{
+					$match: {
+						t: 'l',
+						ts: {
+							$gte: start,
+							$lt: end,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: null,
+						open: {
+							$sum: {
+								$cond: [
+									{
+										$and: [
+											{ $eq: ['$open', true] },
+											{
+												$or: [{ $not: ['$onHold'] }, { $eq: ['$onHold', false] }],
+											},
+											{ $ifNull: ['$servedBy', false] },
+										],
+									},
+									1,
+									0,
+								],
+							},
+						},
+						closed: {
+							$sum: {
+								$cond: [
+									{
+										$ifNull: ['$metrics.chatDuration', false],
+									},
+									1,
+									0,
+								],
+							},
+						},
+						queued: {
+							$sum: {
+								$cond: [
+									{
+										$and: [
+											{ $eq: ['$open', true] },
+											{
+												$eq: [
+													{
+														$ifNull: ['$servedBy', null],
+													},
+													null,
+												],
+											},
+										],
+									},
+									1,
+									0,
+								],
+							},
+						},
+						onhold: {
+							$sum: {
+								$cond: [{ $eq: ['$onHold', true] }, 1, 0],
+							},
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						data: [
+							{
+								label: 'Closed',
+								value: '$closed',
+							},
+							{
+								label: 'Open',
+								value: '$open',
+							},
+							{
+								label: 'Queued',
+								value: '$queued',
+							},
+							{
+								label: 'On_hold',
+								value: '$onhold',
+							},
+						],
+					},
+				},
+			],
+			{ readPreference: readSecondaryPreferred() },
+		);
+	}
+
+	getConversationsByDepartment(start: Date, end: Date): AggregationCursor<{ data: { label: string; value: number }[] }> {
+		return this.col.aggregate(
+			[
+				{
+					$match: {
+						t: 'l',
+						departmentId: {
+							$exists: true,
+						},
+						ts: {
+							$gte: start,
+							$lt: end,
+						},
+					},
+				},
+				{
+					$lookup: {
+						from: 'rocketchat_livechat_department',
+						localField: 'departmentId',
+						foreignField: '_id',
+						as: 'department',
+					},
+				},
+				{
+					$group: {
+						_id: {
+							$arrayElemAt: ['$department.name', 0],
+						},
+						Chats: {
+							$sum: 1,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: null,
+						data: {
+							$push: {
+								label: '$_id',
+								value: '$Chats',
+							},
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+					},
+				},
+			],
+			{ readPreference: readSecondaryPreferred() },
+		);
+	}
+
+	getConversationsByTags(start: Date, end: Date): AggregationCursor<{ data: { label: string; value: number }[] }> {
+		return this.col.aggregate(
+			[
+				{
+					$match: {
+						t: 'l',
+						ts: {
+							$gte: start,
+							$lt: end,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: {
+							$ifNull: ['$tags', 'Tag_Unspecified'],
+						},
+						Chats: {
+							$sum: 1,
+						},
+					},
+				},
+				{
+					$unwind: '$_id',
+				},
+				{
+					$group: {
+						_id: null,
+						data: {
+							$push: {
+								label: '$_id',
+								value: '$Chats',
+							},
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+					},
+				},
+			],
+			{ readPreference: readSecondaryPreferred() },
+		);
+	}
+
+	getConversationsByAgents(start: Date, end: Date): AggregationCursor<{ data: { label: string; value: number }[] }> {
+		return this.col.aggregate(
+			[
+				{
+					$match: {
+						t: 'l',
+						ts: {
+							$gte: start,
+							$lt: end,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: {
+							$ifNull: ['$servedBy._id', 'Agent_Unassigned'],
+						},
+						total: { $sum: 1 },
+					},
+				},
+				{
+					$lookup: {
+						from: 'users',
+						localField: '_id',
+						foreignField: '_id',
+						as: 'agent',
+					},
+				},
+				{
+					$set: {
+						agent: { $first: '$agent' },
+					},
+				},
+				{
+					$addFields: {
+						agentName: {
+							$ifNull: ['$agent.name', '$_id'],
+						},
+					},
+				},
+				{
+					$group: {
+						_id: null,
+						data: {
+							$push: {
+								label: '$agentName',
+								value: '$total',
+							},
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+					},
+				},
+			],
+			{ readPreference: readSecondaryPreferred() },
+		);
 	}
 }
