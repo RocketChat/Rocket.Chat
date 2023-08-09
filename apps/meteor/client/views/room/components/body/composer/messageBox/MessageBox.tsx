@@ -438,6 +438,8 @@ const MessageBox = ({
 					small
 					icon={showMarkdownPreview ? 'eye-off' : 'eye'}
 					onClick={() => handleViewPreview(chat.composer?.text as any)}
+					data-id='Preview'
+					title='Preview'
 				/>
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
