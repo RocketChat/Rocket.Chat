@@ -1,10 +1,14 @@
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 
+import { VerificationStatus } from '../../../../../../server/services/federation/infrastructure/matrix/helpers/MatrixIdVerificationTypes';
+
+const fetchStub = {
+	serverFetch: () => Promise.resolve({}),
+};
+
 const { MatrixBridge } = proxyquire.noCallThru().load('../../../../../../server/services/federation/infrastructure/matrix/Bridge', {
-	'meteor/fetch': {
-		'@global': true,
-	},
+	'@rocket.chat/server-fetch': fetchStub,
 });
 
 describe('Federation - Infrastructure - Matrix - Bridge', () => {
@@ -47,6 +51,40 @@ describe('Federation - Infrastructure - Matrix - Bridge', () => {
 
 		it('should return false if the room is from a different homeserver', () => {
 			expect(bridge.isRoomFromTheSameHomeserver('!room:server2.com', 'server.com')).to.be.false;
+		});
+	});
+
+	describe('#verifyInviteeId()', () => {
+		it('should return `VERIFIED` when the matrixId exists', async () => {
+			fetchStub.serverFetch = () => Promise.resolve({ status: 400, json: () => Promise.resolve({ errcode: 'M_USER_IN_USE' }) });
+
+			const verificationStatus = await bridge.verifyInviteeId('@user:server.com');
+
+			expect(verificationStatus).to.be.equal(VerificationStatus.VERIFIED);
+		});
+
+		it('should return `UNVERIFIED` when the matrixId does not exists', async () => {
+			fetchStub.serverFetch = () => Promise.resolve({ status: 200, json: () => Promise.resolve({}) });
+
+			const verificationStatus = await bridge.verifyInviteeId('@user:server.com');
+
+			expect(verificationStatus).to.be.equal(VerificationStatus.UNVERIFIED);
+		});
+
+		it('should return `UNABLE_TO_VERIFY` when the fetch() call fails', async () => {
+			fetchStub.serverFetch = () => Promise.reject(new Error('Error'));
+
+			const verificationStatus = await bridge.verifyInviteeId('@user:server.com');
+
+			expect(verificationStatus).to.be.equal(VerificationStatus.UNABLE_TO_VERIFY);
+		});
+
+		it('should return `UNABLE_TO_VERIFY` when an unexepected status comes', async () => {
+			fetchStub.serverFetch = () => Promise.resolve({ status: 500 });
+
+			const verificationStatus = await bridge.verifyInviteeId('@user:server.com');
+
+			expect(verificationStatus).to.be.equal(VerificationStatus.UNABLE_TO_VERIFY);
 		});
 	});
 });
