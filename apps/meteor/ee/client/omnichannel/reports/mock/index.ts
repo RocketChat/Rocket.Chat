@@ -1,3 +1,5 @@
+import { faker } from '@faker-js/faker';
+
 export type StatusData = {
 	data: {
 		open: number;
@@ -19,8 +21,8 @@ export const MOCK_STATUS_DATA: StatusData = {
 };
 
 export const MOCK_DEPARTMENTS_DATA = {
-	data: Array.from({ length: 50 }, (_, i) => ({
-		label: String(i),
+	data: Array.from({ length: 5 }, (_, i) => ({
+		label: faker.person.fullName(),
 		value: Math.max(i * 10, 5),
 	})),
 	success: true,

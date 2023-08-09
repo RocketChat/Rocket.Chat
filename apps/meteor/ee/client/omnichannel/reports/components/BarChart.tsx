@@ -3,16 +3,27 @@ import { Box, Tooltip } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
+import { ellipsis } from '../utils/ellipsis';
 import { REPORTS_CHARTS_THEME } from './constants';
 
-export const BarChart = ({ data, height, direction = 'vertical' }) => {
+type BarChartProps = {
+	data: {
+		label: string;
+		value: number;
+		color: string;
+	}[];
+	height: number;
+	direction?: 'vertical' | 'horizontal';
+};
+
+export const BarChart = ({ data, height, direction = 'vertical' }: BarChartProps) => {
 	const t = useTranslation();
 
 	const minHeight = useMemo(() => data.length * 22, [data.length]);
 
 	return (
 		<Box height={height} overflowY='auto'>
-			<Box position='relative' height={minHeight > height ? minHeight : null}>
+			<Box position='relative' height={Math.max(minHeight, height)} overflow='hidden'>
 				<ResponsiveBar
 					animate
 					data={data}
@@ -22,19 +33,17 @@ export const BarChart = ({ data, height, direction = 'vertical' }) => {
 					groupMode='grouped'
 					padding={0.25}
 					colors={data.map((d) => d.color)}
-					// enableLabel={false}
 					enableGridY={false}
 					axisTop={null}
 					axisRight={null}
 					axisBottom={null}
 					axisLeft={{
-						tickSize: 5,
-						tickPadding: 5,
+						tickSize: 0,
 						tickRotation: 0,
-						legend: 'food',
-						legendPosition: 'middle',
-						legendOffset: -40,
+						format: (v) => ellipsis(v, 10),
 					}}
+					borderRadius={2}
+					labelTextColor='white'
 					margin={{ top: 0, right: 0, bottom: 0, left: 90 }}
 					motionConfig='stiff'
 					theme={REPORTS_CHARTS_THEME}

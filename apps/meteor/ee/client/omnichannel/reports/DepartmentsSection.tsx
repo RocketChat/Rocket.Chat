@@ -11,7 +11,7 @@ export const DepartmentsSection = () => {
 
 	return (
 		<ReportCard title={t('Departments')} onFilter={onFilter}>
-			<BarChart data={data} direction='horizontal' height={200} />
+			<BarChart data={data} direction='horizontal' height={360} />
 		</ReportCard>
 	);
 };
