@@ -5,33 +5,37 @@ import type { ReactElement, ReactNode } from 'react';
 const ElementWrapper = ({
   children,
 }: {
-  children: ReactNode;
+  children: ReactNode,
 }): ReactElement => (
   <Box
     children={children}
     className={css`
       position: relative;
       box-sizing: border-box;
-      border: 1px solid transparent;
+      outline: 1px solid transparent;
+      height: fit-content;
       align-items: center;
-      padding: 7px;
       transition: var(--animation-fast);
+      padding: 0px 8px;
+
       &:hover {
         border-radius: 4px;
-        border: var(--elements-border);
+        padding: 8px;
+        outline: var(--elements-border);
         transition: var(--animation-fast);
         box-shadow: 0px 0px 8px 1px #ddd;
+
         > .closeBtn {
           visibility: visible !important;
         }
       }
+
       &:active {
         background-color: #fff;
-        border: var(--elements-border);
+        padding: 8px;
+        transition: var(--animation-fast);
+        outline: var(--elements-border);
         box-shadow: 0px 0px 8px 1px #ddd;
-      }
-      & > div > div {
-        margin: 0 !important;
       }
     `}
   />

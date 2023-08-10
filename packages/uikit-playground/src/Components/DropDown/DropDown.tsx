@@ -1,11 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
-import { Fragment } from 'react';
+import React, { Fragment } from 'react';
 
 import Items from './Items';
 import type { Item, ItemBranch } from './types';
 
 interface DropDownProps {
-  readonly BlocksTree: Item;
+  readonly BlocksTree: Item,
 }
 
 const DropDown = ({ BlocksTree }: DropDownProps) => {

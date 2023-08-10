@@ -5,12 +5,15 @@ import '@rocket.chat/icons/dist/rocketchat.css';
 import './index.css';
 import App from './App';
 import { Provider } from './Context';
+import PersistStore from './Components/PersistStore/PersistStore';
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider>
-      <App />
+      <PersistStore>
+        <App />
+      </PersistStore>
     </Provider>
   </React.StrictMode>,
-  document.getElementById('root'),
+  document.getElementById('root')
 );

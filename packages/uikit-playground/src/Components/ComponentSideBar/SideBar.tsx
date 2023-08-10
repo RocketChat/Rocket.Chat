@@ -1,10 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import { useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 
-import { context } from '../../Context';
-import { sidebarToggleAction } from '../../Context/action';
+import { context, sidebarToggleAction } from '../../Context';
 import ScrollableSideBar from './ScrollableSideBar';
 import SliderBtn from './SliderBtn';
 
