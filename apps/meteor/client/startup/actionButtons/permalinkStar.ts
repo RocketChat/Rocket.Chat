@@ -12,7 +12,7 @@ Meteor.startup(() => {
 		icon: 'permalink',
 		label: 'Get_link',
 		// classes: 'clipboard',
-		context: ['starred', 'threads'],
+		context: ['starred', 'threads', 'videoconf-threads'],
 		async action(_, props) {
 			try {
 				const { message = messageArgs(this).msg } = props;

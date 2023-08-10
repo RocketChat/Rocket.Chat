@@ -11,6 +11,25 @@ const Navbar = lazy(() => import('../navbar/Navbar'));
 const SidebarRegion = () => {
 	const { isMobile, sidebar } = useLayout();
 
+	const sidebarMobileClass = css`
+		position: absolute;
+		user-select: none;
+		transform: translate3d(-100%, 0, 0);
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+		-webkit-user-drag: none;
+		touch-action: pan-y;
+		will-change: transform;
+
+		.rtl & {
+			transform: translate3d(200%, 0, 0);
+
+			&.opened {
+				box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
+				transform: translate3d(0px, 0px, 0px);
+			}
+		}
+	`;
+
 	const sideBarStyle = css`
 		position: relative;
 		z-index: 2;
@@ -19,40 +38,31 @@ const SidebarRegion = () => {
 		height: 100%;
 		user-select: none;
 		transition: transform 0.3s;
+		width: var(--sidebar-width);
+		min-width: var(--sidebar-width);
 
 		&.opened {
 			box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
 			transform: translate3d(0px, 0px, 0px);
 		}
 
-		@media (max-width: 767px) {
-			position: absolute;
-			user-select: none;
-			transform: translate3d(-100%, 0, 0);
-			-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-			touch-action: pan-y;
-			-webkit-user-drag: none;
-			will-change: transform;
-
-			.rtl & {
-				transform: translate3d(200%, 0, 0);
-
-				&.opened {
-					box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
-					transform: translate3d(0px, 0px, 0px);
-				}
-			}
+		// 768px to 1599px
+		// using em unit base 16
+		@media (max-width: 48em) {
+			width: 80%;
+			min-width: 80%;
 		}
 
-		@media (min-width: 768px) and (max-width: 1599px) {
-			width: var(--sidebar-width);
-			min-width: var(--sidebar-width);
-		}
-		@media (min-width: 1600px) and (max-width: 1919px) {
+		// 1600px to 1919px
+		// using em unit base 16
+		@media (min-width: 100em) {
 			width: var(--sidebar-md-width);
 			min-width: var(--sidebar-md-width);
 		}
-		@media (min-width: 1920px) {
+
+		// 1920px and up
+		// using em unit base 16
+		@media (min-width: 120em) {
 			width: var(--sidebar-lg-width);
 			min-width: var(--sidebar-lg-width);
 		}
@@ -87,7 +97,12 @@ const SidebarRegion = () => {
 					<></>
 				</FeaturePreviewOff>
 			</FeaturePreview>
-			<Box id='sidebar-region' className={['rcx-sidebar', !sidebar.isCollapsed && isMobile && 'opened', sideBarStyle].filter(Boolean)}>
+			<Box
+				id='sidebar-region'
+				className={['rcx-sidebar', !sidebar.isCollapsed && isMobile && 'opened', sideBarStyle, isMobile && sidebarMobileClass].filter(
+					Boolean,
+				)}
+			>
 				<Sidebar />
 			</Box>
 			{isMobile && (
