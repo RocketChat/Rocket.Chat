@@ -68,8 +68,8 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
 
 	const getUserNameCached = mem(
-		async (userId: string): Promise<string | undefined> => {
-			const user = await Users.findOne<Pick<IUser, 'name'>>(userId, { projection: { name: 1 } });
+		async (username: string): Promise<string | undefined> => {
+			const user = await Users.findOneByUsername<Pick<IUser, 'name'>>(username, { projection: { name: 1 } });
 			return user?.name;
 		},
 		{ maxAge: 10000 },
@@ -88,8 +88,8 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 					const UseRealName = (await getSettingCached('UI_Use_Real_Name')) === true;
 
 					if (UseRealName) {
-						if (message.u?._id) {
-							const name = await getUserNameCached(message.u._id);
+						if (message.u?.username) {
+							const name = await getUserNameCached(message.u.username);
 							if (name) {
 								message.u.name = name;
 							}
@@ -97,9 +97,30 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 
 						if (message.mentions?.length) {
 							for await (const mention of message.mentions) {
-								const name = await getUserNameCached(mention._id);
+								if (!mention.username) {
+									return;
+								}
+
+								const name = await getUserNameCached(mention.username);
 								if (name) {
 									mention.name = name;
+								}
+							}
+						}
+
+						if (message.reactions) {
+							for await (const reaction of Object.keys(message.reactions)) {
+								const { usernames } = message.reactions[reaction];
+
+								if (!usernames) {
+									return;
+								}
+
+								const namesPromises = usernames.map((username) => getUserNameCached(username));
+								const names = await Promise.all(namesPromises);
+
+								if (names) {
+									message.reactions[reaction].names = names;
 								}
 							}
 						}
