@@ -98,7 +98,7 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 						if (message.mentions?.length) {
 							for await (const mention of message.mentions) {
 								if (!mention.username) {
-									return;
+									continue;
 								}
 
 								const name = await getUserNameCached(mention.username);
@@ -113,7 +113,7 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 								const { usernames } = message.reactions[reaction];
 
 								if (!usernames) {
-									return;
+									continue;
 								}
 
 								const namesPromises = usernames.map((username) => getUserNameCached(username));
