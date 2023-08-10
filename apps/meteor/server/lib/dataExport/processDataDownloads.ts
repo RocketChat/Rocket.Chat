@@ -250,12 +250,10 @@ export async function processDataDownloads(): Promise<void> {
 		return;
 	}
 
-	// no
 	if (operation.status === 'completed') {
 		return;
 	}
 
-	// no
 	if (operation.status !== 'pending') {
 		// If the operation has started but was not updated in over a day, then skip it
 		if (operation._updatedAt && moment().diff(moment(operation._updatedAt), 'days') > 1) {
@@ -265,7 +263,6 @@ export async function processDataDownloads(): Promise<void> {
 		}
 	}
 
-	// yes
 	await continueExportOperation(operation);
 	await ExportOperations.updateOperation(operation);
 
