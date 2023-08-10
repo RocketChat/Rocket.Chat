@@ -5,6 +5,12 @@ export const REPORTS_CHARTS_THEME = {
 		text: { fontSize: 12 },
 	},
 	axis: {
+		domain: {
+			line: {
+				stroke: Palette.text['font-annotation'].toString(),
+				strokeWidth: 1,
+			},
+		},
 		ticks: {
 			text: {
 				fill: Palette.text['font-annotation'].toString(),
