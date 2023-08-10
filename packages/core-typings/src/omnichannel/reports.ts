@@ -1,1 +1,1 @@
-export type ReportResult = { data: { label: string; value: number }[] };
+export type ReportResult = { total: number; data: { label: string; value: number }[] };
