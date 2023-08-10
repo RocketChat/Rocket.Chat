@@ -68,7 +68,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 	const canSubmit = isValid && Boolean(watch('subject'));
 
 	return (
-		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(submit)} {...props} />} {...props}>
+		<Modal open wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(submit)} {...props} />} {...props}>
 			<Modal.Header>
 				<Modal.Icon name='mail-arrow-top-right' />
 				<Modal.Title>{t('Transcript')}</Modal.Title>

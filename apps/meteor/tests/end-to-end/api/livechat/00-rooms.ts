@@ -1,5 +1,3 @@
-/* eslint-env mocha */
-
 import fs from 'fs';
 import path from 'path';
 
@@ -14,6 +12,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import type { SuccessResult } from '../../../../app/api/server/definition';
