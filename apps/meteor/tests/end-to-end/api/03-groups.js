@@ -4,7 +4,7 @@ import { getCredentials, api, request, credentials, group, apiPrivateChannelName
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { testFileUploads } from '../../data/uploads.helper';
 import { adminUsername, password } from '../../data/user';
 import { createUser, login, deleteUser } from '../../data/users.helper';
@@ -885,6 +885,10 @@ describe('[Groups]', function () {
 				userId: 'rocket.cat',
 			});
 		});
+		after(async () => {
+			await deleteUser(testUser);
+			await deleteRoom(testGroup);
+		});
 
 		it('should return an array of members by channel when roomId is provided', (done) => {
 			request
@@ -969,6 +973,7 @@ describe('[Groups]', function () {
 					expect(member).to.have.property('name');
 					expect(member).to.have.property('status');
 					expect(member).to.have.property('highestRole');
+					expect(member).to.have.property('statusConnection');
 				})
 				.end(done);
 		});
@@ -999,7 +1004,7 @@ describe('[Groups]', function () {
 				.end(done);
 		});
 
-		it('should return the correct highest role when searching for a moderator user', (done) => {
+		it('should return the correct highest role when searching for an owner user', (done) => {
 			request
 				.get(api('groups.membersByHighestRole'))
 				.set(credentials)
