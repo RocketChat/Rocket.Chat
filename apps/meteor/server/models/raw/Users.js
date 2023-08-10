@@ -345,16 +345,16 @@ export class UsersRaw extends BaseRaw {
 				{
 					$project: {
 						...options.projection,
-						roles: '$sub.roles',
+						roomRoles: '$sub.roles',
 					},
 				},
 				{
 					$addFields: {
 						highestRole: {
 							$cond: [
-								{ $in: ['owner', '$roles'] },
+								{ $in: ['owner', '$roomRoles'] },
 								{ role: 'owner', level: 0 },
-								{ $cond: [{ $in: ['moderator', '$roles'] }, { role: 'moderator', level: 1 }, { role: 'member', level: 2 }] },
+								{ $cond: [{ $in: ['moderator', '$roomRoles'] }, { role: 'moderator', level: 1 }, { role: 'member', level: 2 }] },
 							],
 						},
 					},
