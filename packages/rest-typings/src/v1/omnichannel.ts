@@ -21,6 +21,7 @@ import type {
 	IOmnichannelServiceLevelAgreements,
 	ILivechatPriority,
 	LivechatDepartmentDTO,
+	ReportResult,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
@@ -3564,18 +3565,18 @@ export type OmnichannelEndpoints = {
 		PUT: (params: { roomId: string; sla: string }) => void;
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-source': {
-		GET: (params: GETDashboardConversationsByType) => { data: { label: string; value: number }[] };
+		GET: (params: GETDashboardConversationsByType) => ReportResult;
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-status': {
-		GET: (params: GETDashboardConversationsByType) => { data: { label: string; value: number }[] };
+		GET: (params: GETDashboardConversationsByType) => ReportResult;
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-department': {
-		GET: (params: GETDashboardConversationsByType) => { data: { label: string; value: number }[] };
+		GET: (params: GETDashboardConversationsByType) => ReportResult;
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-tags': {
-		GET: (params: GETDashboardConversationsByType) => { data: { label: string; value: number }[] };
+		GET: (params: GETDashboardConversationsByType) => ReportResult;
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-agent': {
-		GET: (params: GETDashboardConversationsByType) => { data: { label: string; value: number }[] };
+		GET: (params: GETDashboardConversationsByType) => ReportResult;
 	};
 };

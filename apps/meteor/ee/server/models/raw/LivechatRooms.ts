@@ -301,7 +301,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return super.updateMany(restrictedQuery, ...restArgs);
 	}
 
-	getConversationsBySource(start: Date, end: Date): AggregationCursor<{ data: { label: string; value: number }[] }> {
+	getConversationsBySource(start: Date, end: Date): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
 				{
@@ -325,6 +325,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 				{
 					$group: {
 						_id: null,
+						total: { $sum: '$value' },
 						data: {
 							$push: {
 								label: {
@@ -345,7 +346,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getConversationsByStatus(start: Date, end: Date): AggregationCursor<{ data: { label: string; value: number }[] }> {
+	getConversationsByStatus(start: Date, end: Date): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
 				{
@@ -360,6 +361,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 				{
 					$group: {
 						_id: null,
+						total: { $sum: 1 },
 						open: {
 							$sum: {
 								$cond: [
@@ -419,6 +421,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 				{
 					$project: {
 						_id: 0,
+						total: 1,
 						data: [
 							{
 								label: 'Closed',
@@ -444,7 +447,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getConversationsByDepartment(start: Date, end: Date): AggregationCursor<{ data: { label: string; value: number }[] }> {
+	getConversationsByDepartment(start: Date, end: Date): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
 				{
@@ -480,6 +483,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 				{
 					$group: {
 						_id: null,
+						total: { $sum: '$Chats' },
 						data: {
 							$push: {
 								label: '$_id',
@@ -498,7 +502,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getConversationsByTags(start: Date, end: Date): AggregationCursor<{ data: { label: string; value: number }[] }> {
+	getConversationsByTags(start: Date, end: Date): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
 				{
@@ -526,6 +530,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 				{
 					$group: {
 						_id: null,
+						total: { $sum: '$Chats' },
 						data: {
 							$push: {
 								label: '$_id',
@@ -544,7 +549,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getConversationsByAgents(start: Date, end: Date): AggregationCursor<{ data: { label: string; value: number }[] }> {
+	getConversationsByAgents(start: Date, end: Date): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
 				{
@@ -587,6 +592,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 				{
 					$group: {
 						_id: null,
+						total: { $sum: '$total' },
 						data: {
 							$push: {
 								label: '$agentName',
