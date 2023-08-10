@@ -132,7 +132,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				<Field>
 					<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
 					<Box display='flex' flexDirection='row' mbs='none'>
-						<Margins inline='x4'>
+						<Margins inline={4}>
 							<IconButton icon='upload' secondary onClick={clickUpload} />
 							{sound?.name || 'none'}
 						</Margins>
@@ -146,7 +146,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup mbs='x8' stretch>
+				<ButtonGroup mbs={8} stretch>
 					<Button icon='trash' danger onClick={handleDeleteButtonClick}>
 						{t('Delete')}
 					</Button>
