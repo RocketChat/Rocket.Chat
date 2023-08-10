@@ -94,7 +94,7 @@ function ChatInfo({ id, route }) {
 
 	return (
 		<>
-			<ContextualbarScrollableContent p='x24'>
+			<ContextualbarScrollableContent p={24}>
 				<Margins block='x4'>
 					{source && <SourceField room={room} />}
 					{room && v && <ContactField contact={v} room={room} />}
@@ -106,7 +106,7 @@ function ChatInfo({ id, route }) {
 							<Label>{t('Tags')}</Label>
 							<Info>
 								{tags.map((tag) => (
-									<Box key={tag} mie='x4' display='inline'>
+									<Box key={tag} mie={4} display='inline'>
 										<Tag style={{ display: 'inline' }} disabled>
 											{tag}
 										</Tag>

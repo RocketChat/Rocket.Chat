@@ -90,7 +90,7 @@ export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 				? {
 						label: (
 							<Box color='status-font-on-danger'>
-								<Icon mie='x4' name='cross' size='x20' />
+								<Icon mie={4} name='cross' size='x20' />
 								{room?.teamMain ? t('Remove_from_team') : t('Remove_from_room')}
 							</Box>
 						),

@@ -15,7 +15,13 @@ export default async function injectInitialData() {
 		),
 	);
 
-	await connection.db().collection('users').updateOne({ username: Users.admin.data.username }, { $addToSet: {'services.resume.loginTokens': {when: Users.admin.data.loginExpire, hashedToken: Users.admin.data.hashedToken}} });
+	await connection
+		.db()
+		.collection('users')
+		.updateOne(
+			{ username: Users.admin.data.username },
+			{ $addToSet: { 'services.resume.loginTokens': { when: Users.admin.data.loginExpire, hashedToken: Users.admin.data.hashedToken } } },
+		);
 
 	await Promise.all(
 		[
