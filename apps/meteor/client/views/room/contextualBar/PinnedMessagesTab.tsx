@@ -5,7 +5,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
-import MessageListTab from '../components/contextualBar/MessageListTab';
+import MessageListTab from './MessageListTab';
 import { useRoom } from '../contexts/RoomContext';
 
 const PinnedMessagesTab = (): ReactElement => {
