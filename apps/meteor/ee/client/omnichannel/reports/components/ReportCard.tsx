@@ -1,17 +1,18 @@
 import { Box } from '@rocket.chat/fuselage';
 import { Card, CardTitle, CardBody, CardCol } from '@rocket.chat/ui-client';
-import type { ReactNode } from 'react';
+import type { ReactNode, ComponentProps } from 'react';
 import React from 'react';
 
+import DownloadDataButton from '../../../components/dashboards/DownloadDataButton';
 import type { PeriodSelectorProps } from '../../../components/dashboards/PeriodSelector';
 import PeriodSelector from '../../../components/dashboards/PeriodSelector';
 import { CardErrorBoundary } from './CardErrorBoundary';
-import DownloadDataButton from './DownloadDataButton';
 
 type ReportCardProps = {
 	title: string;
 	children: ReactNode;
 	periodSelectorProps: PeriodSelectorProps<any>;
+	downloadProps: ComponentProps<typeof DownloadDataButton>;
 	data?: {
 		id: string;
 		label: string;
@@ -20,7 +21,7 @@ type ReportCardProps = {
 	}[];
 };
 
-export const ReportCard = ({ title, children, periodSelectorProps, data }: ReportCardProps) => {
+export const ReportCard = ({ title, children, periodSelectorProps, downloadProps }: ReportCardProps) => {
 	return (
 		<Card overflow='hidden'>
 			<Card.Title>
@@ -28,14 +29,8 @@ export const ReportCard = ({ title, children, periodSelectorProps, data }: Repor
 					{title}
 					<Box flexGrow={0} display='flex'>
 						<PeriodSelector {...periodSelectorProps} />
-						<DownloadDataButton
-							// attachmentName={`${title}_start_${data?.start}_end_${data?.end}`}
-							attachmentName={`${title}`}
-							headers={['Date', 'Messages']}
-							dataAvailable={!!data}
-							dataExtractor={(): unknown[][] | undefined => data?.map(({ label, value }) => [label, value])}
-							size={32}
-						/>
+
+						<DownloadDataButton {...downloadProps} size={32} />
 					</Box>
 				</Box>
 			</Card.Title>

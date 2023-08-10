@@ -7,10 +7,10 @@ import { useAgentsSection } from '../hooks';
 
 export const AgentsSection = () => {
 	const t = useTranslation();
-	const { data, periodSelectorProps } = useAgentsSection();
+	const { data, config } = useAgentsSection();
 
 	return (
-		<ReportCard title={t('Conversations_by_agents')} periodSelectorProps={periodSelectorProps} data={data}>
+		<ReportCard title={t('Conversations_by_agents')} {...config}>
 			<Box display='flex' style={{ gap: '16px' }}>
 				<Flex.Item grow={1}>
 					<BarChart

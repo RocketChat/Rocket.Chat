@@ -25,3 +25,5 @@ export const COLORS = {
 	success: Palette.statusColor['status-font-on-success'].toString(),
 	info: Palette.statusColor['status-font-on-info'].toString(),
 };
+
+export const PERIOD_OPTIONS = ['today', 'this week', 'last 15 days', 'this month', 'last 6 months', 'last year'] as const;
