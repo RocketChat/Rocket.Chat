@@ -145,12 +145,10 @@ const isExportComplete = (exportOperation: IExportOperation) => {
 };
 
 const continueExportOperation = async function (exportOperation: IExportOperation): Promise<void> {
-	// no
 	if (exportOperation.status === 'completed') {
 		return;
 	}
 
-	// html
 	const exportType = exportOperation.fullExport ? 'json' : 'html';
 
 	if (!exportOperation.roomList) {
