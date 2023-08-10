@@ -7,10 +7,10 @@ import { ellipsis } from '../utils/ellipsis';
 
 export const TagsSection = () => {
 	const t = useTranslation();
-	const { data, config } = useTagsSection();
+	const { data, ...config } = useTagsSection();
 
 	return (
-		<ReportCard title={t('Conversations_by_tags')} {...config}>
+		<ReportCard title={t('Conversations_by_tags')} height={360} {...config}>
 			<BarChart
 				data={data}
 				direction='horizontal'

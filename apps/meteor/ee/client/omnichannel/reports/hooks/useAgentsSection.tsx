@@ -20,6 +20,7 @@ export const useAgentsSection = () => {
 		data = [],
 		isLoading,
 		isError,
+		isSuccess,
 	} = useQuery(
 		['omnichannel-reports', 'conversations-by-agent', period],
 		async () => {
@@ -27,14 +28,17 @@ export const useAgentsSection = () => {
 			const { data } = await getConversationsBySource({ start: start.toISOString(), end: end.toISOString() });
 			return formatChartData(data);
 		},
-		{ useErrorBoundary: true },
+		{
+			refetchInterval: 5 * 60 * 1000,
+			useErrorBoundary: true,
+		},
 	);
 
 	const downloadProps = useMemo(
 		() => ({
 			attachmentName: 'Conversations_by_agents',
 			headers: ['Date', 'Messages'],
-			dataAvailable: !!data,
+			dataAvailable: data.length > 0,
 			dataExtractor(): unknown[][] | undefined {
 				return data?.map(({ label, value }) => [label, value]);
 			},
@@ -47,11 +51,10 @@ export const useAgentsSection = () => {
 			data,
 			isLoading,
 			isError,
-			config: {
-				periodSelectorProps,
-				downloadProps,
-			},
+			isDataFound: isSuccess && data.length > 0,
+			periodSelectorProps,
+			downloadProps,
 		}),
-		[data, isLoading, isError, periodSelectorProps, downloadProps],
+		[data, isLoading, isError, isSuccess, periodSelectorProps, downloadProps],
 	);
 };

@@ -7,10 +7,10 @@ import { ellipsis } from '../utils/ellipsis';
 
 export const DepartmentsSection = () => {
 	const t = useTranslation();
-	const { data, config } = useDepartmentsSection();
+	const { data, ...config } = useDepartmentsSection();
 
 	return (
-		<ReportCard title={t('Conversations_by_departments')} {...config}>
+		<ReportCard title={t('Conversations_by_departments')} height={360} {...config}>
 			<BarChart
 				data={data}
 				direction='horizontal'

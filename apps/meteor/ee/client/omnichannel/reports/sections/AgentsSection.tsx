@@ -1,4 +1,5 @@
-import { Box, Flex } from '@rocket.chat/fuselage';
+/* eslint-disable react/no-multi-comp */
+import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -6,12 +7,27 @@ import { AgentsTable, BarChart, ReportCard } from '../components';
 import { useAgentsSection } from '../hooks';
 import { ellipsis } from '../utils/ellipsis';
 
+const LoadingSkeleton = () => (
+	<Box display='flex' height='100%' width='100%'>
+		<Box flexGrow={1}>
+			<Skeleton style={{ transform: 'none' }} height='100%' mb={8} mie={16} />
+		</Box>
+		<Box flexGrow={1}>
+			<Skeleton height={28} />
+			<Skeleton height={28} />
+			<Skeleton height={28} />
+			<Skeleton height={28} />
+			<Skeleton height={28} />
+		</Box>
+	</Box>
+);
+
 export const AgentsSection = () => {
 	const t = useTranslation();
-	const { data, config } = useAgentsSection();
+	const { data, ...config } = useAgentsSection();
 
 	return (
-		<ReportCard title={t('Conversations_by_agents')} {...config}>
+		<ReportCard title={t('Conversations_by_agents')} height={360} {...config} loadingSkeleton={<LoadingSkeleton />}>
 			<Box display='flex' style={{ gap: '16px' }}>
 				<Flex.Item grow={1}>
 					<BarChart

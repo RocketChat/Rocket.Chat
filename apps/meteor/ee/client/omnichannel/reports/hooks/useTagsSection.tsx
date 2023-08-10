@@ -28,6 +28,7 @@ export const useTagsSection = () => {
 		data = [],
 		isLoading,
 		isError,
+		isSuccess,
 	} = useQuery(
 		['omnichannel-reports', 'conversations-by-tags', period],
 		async () => {
@@ -35,14 +36,17 @@ export const useTagsSection = () => {
 			const { data } = await getConversationsByTags({ start: start.toISOString(), end: end.toISOString() });
 			return formatChartData(data);
 		},
-		{ useErrorBoundary: true },
+		{
+			refetchInterval: 5 * 60 * 1000,
+			useErrorBoundary: true,
+		},
 	);
 
 	const downloadProps = useMemo(
 		() => ({
 			attachmentName: 'Conversations_by_tags',
 			headers: ['Date', 'Messages'],
-			dataAvailable: !!data,
+			dataAvailable: data.length > 0,
 			dataExtractor(): unknown[][] | undefined {
 				return data?.map(({ label, value }) => [label, value]);
 			},
@@ -53,13 +57,12 @@ export const useTagsSection = () => {
 	return useMemo(
 		() => ({
 			data,
-			isLoading,
 			isError,
-			config: {
-				periodSelectorProps,
-				downloadProps,
-			},
+			isLoading,
+			isDataFound: isSuccess && data.length > 0,
+			periodSelectorProps,
+			downloadProps,
 		}),
-		[data, isLoading, isError, periodSelectorProps, downloadProps],
+		[data, isError, isLoading, isSuccess, periodSelectorProps, downloadProps],
 	);
 };
