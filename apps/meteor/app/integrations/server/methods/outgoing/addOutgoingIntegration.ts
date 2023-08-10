@@ -14,6 +14,8 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
+const FREEZE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.FREEZE_INTEGRATION_SCRIPTS).toLowerCase());
+
 export const addOutgoingIntegration = async (userId: string, integration: INewOutgoingIntegration): Promise<IOutgoingIntegration> => {
 	check(
 		integration,
@@ -50,7 +52,7 @@ export const addOutgoingIntegration = async (userId: string, integration: INewOu
 		throw new Meteor.Error('not_authorized');
 	}
 
-	if (process.env.FREEZE_INTEGRATION_SCRIPTS && integration.script?.trim()) {
+	if (FREEZE_INTEGRATION_SCRIPTS && integration.script?.trim()) {
 		throw new Meteor.Error('integration-scripts-disabled');
 	}
 

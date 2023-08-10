@@ -9,6 +9,8 @@ import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authoriza
 
 const validChannelChars = ['@', '#'];
 
+const FREEZE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.FREEZE_INTEGRATION_SCRIPTS).toLowerCase());
+
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
@@ -64,7 +66,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (process.env.FREEZE_INTEGRATION_SCRIPTS) {
+		if (FREEZE_INTEGRATION_SCRIPTS) {
 			if (currentIntegration.script?.trim() !== integration.script?.trim()) {
 				throw new Meteor.Error('integration-scripts-disabled');
 			}
@@ -163,7 +165,7 @@ Meteor.methods<ServerMethods>({
 					emoji: integration.emoji,
 					alias: integration.alias,
 					channel: channels,
-					...(process.env.FREEZE_INTEGRATION_SCRIPTS
+					...(FREEZE_INTEGRATION_SCRIPTS
 						? {}
 						: {
 								script: integration.script,

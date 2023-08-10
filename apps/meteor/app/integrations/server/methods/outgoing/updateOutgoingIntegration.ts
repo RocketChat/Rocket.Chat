@@ -16,6 +16,8 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
+const FREEZE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.FREEZE_INTEGRATION_SCRIPTS).toLowerCase());
+
 Meteor.methods<ServerMethods>({
 	async updateOutgoingIntegration(integrationId, _integration) {
 		if (!this.userId) {
@@ -51,7 +53,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('invalid_integration', '[methods] updateOutgoingIntegration -> integration not found');
 		}
 
-		if (process.env.FREEZE_INTEGRATION_SCRIPTS && integration.script?.trim() !== currentIntegration.script?.trim()) {
+		if (FREEZE_INTEGRATION_SCRIPTS && integration.script?.trim() !== currentIntegration.script?.trim()) {
 			throw new Meteor.Error('integration-scripts-disabled');
 		}
 
@@ -72,7 +74,7 @@ Meteor.methods<ServerMethods>({
 					userId: integration.userId,
 					urls: integration.urls,
 					token: integration.token,
-					...(process.env.FREEZE_INTEGRATION_SCRIPTS
+					...(FREEZE_INTEGRATION_SCRIPTS
 						? {}
 						: {
 								script: integration.script,
@@ -88,7 +90,7 @@ Meteor.methods<ServerMethods>({
 					_updatedAt: new Date(),
 					_updatedBy: await Users.findOne({ _id: this.userId }, { projection: { username: 1 } }),
 				},
-				...(process.env.FREEZE_INTEGRATION_SCRIPTS
+				...(FREEZE_INTEGRATION_SCRIPTS
 					? {}
 					: {
 							$unset: {
