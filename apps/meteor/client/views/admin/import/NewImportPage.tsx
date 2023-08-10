@@ -166,15 +166,10 @@ function NewImportPage() {
 	const fileTypeSelectId = useUniqueId();
 	const fileSourceInputId = useUniqueId();
 
-	const handleImportFunctions: Record<string, () => Promise<void>> = {
-		upload: handleFileUploadImportButtonClick,
-		url: handleFileUrlImportButtonClick,
-		path: handleFilePathImportButtonClick,
-	};
-
-	const handleImportButtonClick = () => {
-		handleImportFunctions[fileType];
-	};
+	const handleImportButtonClick =
+		(fileType === 'upload' && handleFileUploadImportButtonClick) ||
+		(fileType === 'url' && handleFileUrlImportButtonClick) ||
+		(fileType === 'path' && handleFilePathImportButtonClick);
 
 	return (
 		<Page className='page-settings'>
@@ -184,7 +179,7 @@ function NewImportPage() {
 						{t('Back_to_imports')}
 					</Button>
 					{importer && (
-						<Button primary minHeight='x40' disabled={isLoading} onClick={handleImportButtonClick}>
+						<Button primary minHeight='x40' disabled={isLoading} onClick={handleImportButtonClick as () => void}>
 							{isLoading ? <Throbber inheritColor /> : t('Import')}
 						</Button>
 					)}

@@ -1,9 +1,9 @@
-import type { ProgressStep } from '@rocket.chat/core-typings';
-import { Box, Margins, Throbber } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { IImportProgress, ProgressStep } from '@rocket.chat/core-typings';
+import { Box, Margins, Throbber, ProgressBar } from '@rocket.chat/fuselage';
+import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { ImportingStartedStates } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
@@ -97,6 +97,18 @@ const ImportProgressPage = function ImportProgressPage() {
 		},
 	);
 
+	const [progressRate, setProgressRate] = useSafely(useState<number>(0));
+
+	const isImportProgress = (element: any): element is IImportProgress => true;
+
+	useEffect(
+		() =>
+			streamer('progress', (rate) => {
+				isImportProgress(rate) ? setProgressRate(rate.count.completed) : setProgressRate(rate.rate);
+			}),
+		[streamer, setProgressRate],
+	);
+
 	const progress = useQuery(
 		['importers', 'progress'],
 		async () => {
@@ -167,7 +179,8 @@ const ImportProgressPage = function ImportProgressPage() {
 									{t((progress.data.step[0].toUpperCase() + progress.data.step.slice(1)) as any)}
 								</Box>
 								<Box display='flex' justifyContent='center'>
-									<Box is='progress' value={progress.data.completed} max={progress.data.total} marginInlineEnd={24} />
+									<Box is={ProgressBar} animated percentage={(progressRate / 100).toFixed(0)} mie='x24' />
+									{/* <Box is={ProgressBar} animated percentage={(progress.data.completed * 100) / progress.data.total} mie='x24' /> */}
 									<Box is='span' fontScale='p2'>
 										{progress.data.completed}/{progress.data.total} (
 										{numberFormat((progress.data.completed / progress.data.total) * 100, 0)}

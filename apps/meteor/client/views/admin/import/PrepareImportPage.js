@@ -1,4 +1,4 @@
-import { Badge, Box, Button, ButtonGroup, Margins, Throbber, Tabs } from '@rocket.chat/fuselage';
+import { Badge, Box, Button, ButtonGroup, Margins, Throbber, Tabs, ProgressBar } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
@@ -204,7 +204,7 @@ function PrepareImportPage() {
 							<>
 								{progressRate ? (
 									<Box display='flex' justifyContent='center' fontScale='p2'>
-										<Box is='progress' value={(progressRate * 10).toFixed(0)} max='1000' marginInlineEnd='x24' />
+										<Box is={ProgressBar} animated percentage={(progressRate * 10).toFixed(0)} mie='x24' />
 										<Box is='span'>{numberFormat(progressRate, 0)}%</Box>
 									</Box>
 								) : (
