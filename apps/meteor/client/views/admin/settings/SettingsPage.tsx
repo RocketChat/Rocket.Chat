@@ -29,7 +29,7 @@ const SettingsPage = (): ReactElement => {
 
 			<Page.ScrollableContentWithShadow p='0'>
 				{isLoadingGroups && <Skeleton />}
-				<Grid mi='x16' mbe='x18'>
+				<Grid mi={16} mbe={18}>
 					{!isLoadingGroups &&
 						!!groups.length &&
 						groups.map((group) => (

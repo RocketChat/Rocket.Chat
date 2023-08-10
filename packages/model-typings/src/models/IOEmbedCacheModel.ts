@@ -1,5 +1,5 @@
-import type { DeleteResult } from 'mongodb';
 import type { IOEmbedCache } from '@rocket.chat/core-typings';
+import type { DeleteResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 

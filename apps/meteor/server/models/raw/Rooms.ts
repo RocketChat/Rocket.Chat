@@ -182,7 +182,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		const query: Filter<IRoom> = {
 			$and: [
 				name ? nameCondition : {},
-				(types && types.length) || discussion || teams
+				types?.length || discussion || teams
 					? {
 							$or: [
 								{
@@ -1287,13 +1287,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	// 3
-	findByNameAndTypesNotInIds(
+	findByNameOrFNameAndTypesNotInIds(
 		name: IRoom['name'] | RegExp,
 		types: Array<IRoom['t']>,
 		ids: Array<IRoom['_id']>,
 		options: FindOptions<IRoom> = {},
 		includeFederatedRooms = false,
 	): FindCursor<IRoom> {
+		const nameCondition: Filter<IRoom> = {
+			$or: [{ name }, { fname: name }],
+		};
 		const query: Filter<IRoom> = {
 			_id: {
 				$nin: ids,
@@ -1327,9 +1330,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 				includeFederatedRooms
 					? {
-							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
+							$or: [
+								{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }, nameCondition] },
+								{ federated: true, fname: name },
+							],
 					  }
-					: { $or: [{ federated: { $exists: false } }, { federated: false }], name },
+					: { $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }, nameCondition] },
 			],
 		};
 

@@ -1,4 +1,4 @@
-export type IImportedId = 'string';
+export type IImportedId = string;
 
 export interface IImportMessageReaction {
 	name: string;
@@ -16,9 +16,9 @@ export interface IImportPendingFile {
 }
 
 export interface IImportAttachment extends Record<string, any> {
-	text: string;
-	title: string;
-	fallback: string;
+	text?: string;
+	title?: string;
+	fallback?: string;
 }
 
 export interface IImportMessage {
@@ -44,7 +44,7 @@ export interface IImportMessage {
 	editedBy?: IImportedId;
 	mentions?: Array<IImportedId>;
 	channels?: Array<string>;
-	attachments?: IImportAttachment;
+	attachments?: IImportAttachment[];
 	bot?: boolean;
 	emoji?: string;
 

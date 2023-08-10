@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
-import * as Mailer from '../../../mailer/server/api';
-import { isUserIdFederated } from '../../../../server/lib/isUserIdFederated';
 import { i18n } from '../../../../server/lib/i18n';
+import { isUserIdFederated } from '../../../../server/lib/isUserIdFederated';
+import * as Mailer from '../../../mailer/server/api';
+import { settings } from '../../../settings/server';
 
 const sendResetNotification = async function (uid: string): Promise<void> {
 	const user = await Users.findOneById<Pick<IUser, 'language' | 'emails'>>(uid, {

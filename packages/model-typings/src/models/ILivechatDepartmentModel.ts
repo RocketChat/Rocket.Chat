@@ -1,5 +1,5 @@
-import type { FindOptions, FindCursor, Filter, UpdateResult, Document } from 'mongodb';
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { FindOptions, FindCursor, Filter, UpdateResult, Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -49,7 +49,6 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 
 	unsetFallbackDepartmentByDepartmentId(departmentId: string): Promise<Document | UpdateResult>;
 	removeDepartmentFromForwardListById(_departmentId: string): Promise<void>;
-	saveDepartmentsByAgent(agent: { _id: string; username: string }, departments: string[]): Promise<void>;
 	updateById(_id: string, update: Partial<ILivechatDepartment>): Promise<Document | UpdateResult>;
 	updateNumAgentsById(_id: string, numAgents: number): Promise<Document | UpdateResult>;
 	findEnabledWithAgents(projection?: FindOptions<ILivechatDepartment>['projection']): FindCursor<ILivechatDepartment>;

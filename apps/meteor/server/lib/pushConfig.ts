@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { AppsTokens } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { settings } from '../../app/settings/server';
+import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { Push } from '../../app/push/server';
+import { settings } from '../../app/settings/server';
 import { i18n } from './i18n';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -85,7 +85,7 @@ Meteor.methods<ServerMethods>({
 	},
 });
 
-settings.watch<boolean>('Push_enable', async function (enabled) {
+settings.watch<boolean>('Push_enable', async (enabled) => {
 	if (!enabled) {
 		return;
 	}

@@ -10,7 +10,7 @@ import useResetAvatarAction from './hooks/useResetAvatarAction';
 
 const ModerationConsoleActions = ({ report, onClick }: Omit<ModerationConsoleRowProps, 'isDesktopOrLarger'>): JSX.Element => {
 	const t = useTranslation();
-	const { userId: uid } = report;
+	const { userId: uid, isUserDeleted } = report;
 
 	return (
 		<>
@@ -25,8 +25,8 @@ const ModerationConsoleActions = ({ report, onClick }: Omit<ModerationConsoleRow
 					},
 					approve: useDismissUserAction(uid),
 					deleteAll: useDeleteMessagesAction(uid),
-					deactiveUser: useDeactivateUserAction(uid),
-					resetAvatar: useResetAvatarAction(uid),
+					deactiveUser: { ...useDeactivateUserAction(uid), ...(isUserDeleted && { disabled: true }) },
+					resetAvatar: { ...useResetAvatarAction(uid), ...(isUserDeleted && { disabled: true }) },
 				}}
 				renderItem={({ label: { label, icon }, ...props }) => <Option label={label} icon={icon} {...props} />}
 			/>

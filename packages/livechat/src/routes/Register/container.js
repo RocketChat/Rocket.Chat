@@ -56,6 +56,7 @@ export class RegisterContainer extends Component {
 	render = (props) => <Register {...props} onSubmit={this.handleSubmit} departmentDefault={this.getDepartmentDefault()} />;
 }
 
+/** @type {function({ ref?: any; path?: string }): any} */
 export const RegisterConnector = ({ ref, ...props }) => (
 	<Consumer>
 		{({

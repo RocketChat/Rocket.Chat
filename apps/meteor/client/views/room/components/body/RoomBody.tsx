@@ -32,7 +32,7 @@ import { MessageList } from '../../MessageList/MessageList';
 import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/RoomContext';
-import { useToolboxContext } from '../../contexts/ToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import { useScrollMessageList } from '../../hooks/useScrollMessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -55,7 +55,7 @@ const RoomBody = (): ReactElement => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const room = useRoom();
 	const user = useUser();
-	const toolbox = useToolboxContext();
+	const toolbox = useRoomToolbox();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 
@@ -259,11 +259,6 @@ const RoomBody = (): ReactElement => {
 	}, [sendToBottomIfNecessary]);
 
 	const router = useRouter();
-
-	const roomRef = useRef(room);
-	roomRef.current = room;
-	const tabBarRef = useRef(toolbox);
-	tabBarRef.current = toolbox;
 
 	const debouncedReadMessageRead = useMemo(
 		() =>
@@ -533,7 +528,7 @@ const RoomBody = (): ReactElement => {
 				return;
 			}
 
-			toolbox.close();
+			toolbox.closeTab();
 		},
 		[toolbox],
 	);

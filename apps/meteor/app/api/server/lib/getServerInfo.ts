@@ -1,5 +1,5 @@
-import { Info } from '../../../utils/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { Info } from '../../../utils/rocketchat.info';
 
 type ServerInfo =
 	| {

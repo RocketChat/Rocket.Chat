@@ -4,13 +4,11 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useMemo } from 'react';
 
-import { applyButtonFilters } from '../../app/ui-message/client/actionButtons/lib/applyButtonFilters';
 import type { MessageActionConfig, MessageActionContext } from '../../app/ui-utils/client/lib/MessageAction';
 import type { MessageBoxAction } from '../../app/ui-utils/client/lib/messageBox';
 import { Utilities } from '../../ee/lib/misc/Utilities';
 import type { GenericMenuItemProps } from '../components/GenericMenu/GenericMenuItem';
-import { useRoom } from '../views/room/contexts/RoomContext';
-import type { ToolboxAction } from '../views/room/lib/Toolbox';
+import { useApplyButtonFilters, useApplyButtonAuthFilter } from './useApplyButtonFilters';
 import { useUiKitActionManager } from './useUiKitActionManager';
 
 const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
@@ -49,13 +47,14 @@ export const useAppActionButtons = (context?: `${UIActionButtonContext}`) => {
 export const useMessageboxAppsActionButtons = () => {
 	const result = useAppActionButtons('messageBoxAction');
 	const actionManager = useUiKitActionManager();
-	const room = useRoom();
+
+	const applyButtonFilters = useApplyButtonFilters();
 
 	const data = useMemo(
 		() =>
 			result.data
 				?.filter((action) => {
-					return applyButtonFilters(action, room);
+					return applyButtonFilters(action);
 				})
 				.map((action) => {
 					const item: MessageBoxAction = {
@@ -74,7 +73,7 @@ export const useMessageboxAppsActionButtons = () => {
 
 					return item;
 				}),
-		[actionManager, result.data, room],
+		[actionManager, applyButtonFilters, result.data],
 	);
 	return {
 		...result,
@@ -86,15 +85,17 @@ export const useUserDropdownAppsActionButtons = () => {
 	const result = useAppActionButtons('userDropdownAction');
 	const actionManager = useUiKitActionManager();
 
+	const applyButtonFilters = useApplyButtonAuthFilter();
+
 	const data = useMemo(
 		() =>
 			result.data
 				?.filter((action) => {
 					return applyButtonFilters(action);
 				})
-				.map((action, key) => {
+				.map((action) => {
 					return {
-						id: action.actionId + key,
+						id: `${action.appId}_${action.actionId}`,
 						// icon: action.icon as GenericMenuItemProps['icon'],
 						content: action.labelI18n,
 						onClick: () => {
@@ -106,7 +107,7 @@ export const useUserDropdownAppsActionButtons = () => {
 						},
 					};
 				}),
-		[actionManager, result.data],
+		[actionManager, applyButtonFilters, result.data],
 	);
 	return {
 		...result,
@@ -114,54 +115,10 @@ export const useUserDropdownAppsActionButtons = () => {
 	} as UseQueryResult<GenericMenuItemProps[]>;
 };
 
-export const useRoomActionAppsActionButtons = (context?: MessageActionContext) => {
-	const result = useAppActionButtons('roomAction');
-	const actionManager = useUiKitActionManager();
-	const room = useRoom();
-	const data = useMemo(
-		() =>
-			result.data
-				?.filter((action) => {
-					if (context && ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'].includes(context)) {
-						return false;
-					}
-					return applyButtonFilters(action, room);
-				})
-				.map((action) => {
-					const item: [string, ToolboxAction] = [
-						action.actionId,
-						{
-							id: action.actionId,
-							icon: undefined as any, // Apps won't provide icons for now
-							order: 300, // Make sure the button only shows up inside the room toolbox
-							title: Utilities.getI18nKeyForApp(action.labelI18n, action.appId),
-							groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],
-							// Filters were applied in the applyButtonFilters function
-							// if the code made it this far, the button should be shown
-							action: () =>
-								void actionManager.triggerActionButtonAction({
-									rid: room._id,
-									actionId: action.actionId,
-									appId: action.appId,
-									payload: { context: action.context },
-								}),
-						},
-					];
-					return item;
-				}),
-		[actionManager, context, result.data, room],
-	);
-	return {
-		...result,
-		data,
-	} as UseQueryResult<[string, ToolboxAction][]>;
-};
-
 export const useMessageActionAppsActionButtons = (context?: MessageActionContext) => {
 	const result = useAppActionButtons('messageAction');
 	const actionManager = useUiKitActionManager();
-	const room = useRoom();
-
+	const applyButtonFilters = useApplyButtonFilters();
 	const data = useMemo(
 		() =>
 			result.data
@@ -172,7 +129,7 @@ export const useMessageActionAppsActionButtons = (context?: MessageActionContext
 					) {
 						return false;
 					}
-					return applyButtonFilters(action, room);
+					return applyButtonFilters(action);
 				})
 				.map((action) => {
 					const item: MessageActionConfig = {
@@ -192,7 +149,7 @@ export const useMessageActionAppsActionButtons = (context?: MessageActionContext
 
 					return item;
 				}),
-		[actionManager, context, result.data, room],
+		[actionManager, applyButtonFilters, context, result.data],
 	);
 	return {
 		...result,

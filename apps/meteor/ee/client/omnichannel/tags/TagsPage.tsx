@@ -22,9 +22,7 @@ const TagsPage = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			<Page>
 				<Page.Header title={t('Tags')}>
 					<ButtonGroup>
-						<Button onClick={handleClick} title={t('New_Tag')}>
-							{t('New')}
-						</Button>
+						<Button onClick={handleClick}>{t('Create_tag')}</Button>
 					</ButtonGroup>
 				</Page.Header>
 				<Page.Content>

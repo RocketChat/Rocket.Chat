@@ -1,9 +1,10 @@
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UIEvent } from 'react';
 import { useCallback, useEffect } from 'react';
 
 import { openUserCard, closeUserCard } from '../../../../../app/ui/client/lib/userCard';
 import { useRoom } from '../../contexts/RoomContext';
-import { useTabBarOpenUserInfo } from '../../contexts/ToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 export const useUserCard = () => {
 	useEffect(() => {
@@ -13,7 +14,27 @@ export const useUserCard = () => {
 	}, []);
 
 	const room = useRoom();
-	const openUserInfo = useTabBarOpenUserInfo();
+	const { openTab } = useRoomToolbox();
+
+	const openUserInfo = useMutableCallback((username?: string) => {
+		switch (room.t) {
+			case 'l':
+				openTab('room-info', username);
+				break;
+
+			case 'v':
+				openTab('voip-room-info', username);
+				break;
+
+			case 'd':
+				(room.uids?.length ?? 0) > 2 ? openTab('user-info-group', username) : openTab('user-info', username);
+				break;
+
+			default:
+				openTab('members-list', username);
+				break;
+		}
+	});
 
 	const open = useCallback(
 		(username: string) => (event: UIEvent) => {

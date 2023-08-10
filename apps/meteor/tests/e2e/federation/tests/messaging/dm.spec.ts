@@ -199,15 +199,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2)');
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2) message 2');
 
-					await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText(
-						'hello world from server A (user 2) message 2',
-					);
-					await expect(poFederationChannel1ForUser2.content.lastUserMessageBody).toHaveText(
-						'hello world from server A (user 2) message 2',
-					);
-					await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText(
-						'hello world from server A (user 2) message 2',
-					);
+					await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('hello world from server A (user 2) message 2');
+					await expect(poFederationChannel1ForUser2.content.lastUserMessageBody).toHaveText('hello world from server A (user 2) message 2');
+					await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('hello world from server A (user 2) message 2');
 
 					await page2.close();
 					await pageForServer2.close();
@@ -480,12 +474,20 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`, { delay: 100 });
-				await poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`).waitFor();
-				await expect(poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)).toBeVisible();
+				await poFederationChannelServer1.content.messagePopUpItems
+					.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)
+					.waitFor();
+				await expect(
+					poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`),
+				).toBeVisible();
 
 				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`, { delay: 100 });
-				await poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`).waitFor();
-				await expect(poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)).toBeVisible();
+				await poFederationChannelServer2.content.messagePopUpItems
+					.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)
+					.waitFor();
+				await expect(
+					poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`),
+				).toBeVisible();
 
 				await poFederationChannelServer1.content.inputMessage.fill('');
 				await poFederationChannelServer2.content.inputMessage.fill('');
@@ -511,12 +513,20 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
 
 				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`, { delay: 100 });
-				await poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`).waitFor();
-				await expect(poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)).toBeVisible();
+				await poFederationChannelServer2.content.messagePopUpItems
+					.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)
+					.waitFor();
+				await expect(
+					poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`),
+				).toBeVisible();
 
 				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`, { delay: 100 });
-				await poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`).waitFor();
-				await expect(poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)).toBeVisible();
+				await poFederationChannelServer1.content.messagePopUpItems
+					.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)
+					.waitFor();
+				await expect(
+					poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`),
+				).toBeVisible();
 
 				await poFederationChannelServer1.content.inputMessage.fill('');
 				await poFederationChannelServer2.content.inputMessage.fill('');

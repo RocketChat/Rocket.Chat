@@ -1,20 +1,21 @@
-/* eslint-disable */
-import proxyquire from 'proxyquire';
-import { expect } from 'chai';
-import sinon from 'sinon';
 import type { IUser } from '@rocket.chat/core-typings';
+import { expect } from 'chai';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
-const { executeSlashCommand } = proxyquire.noCallThru().load('../../../../../../../../server/local-services/federation/infrastructure/rocket-chat/slash-commands/action', {
-	'@rocket.chat/models': {
-		Users: {
-			findOneById: async (invitee: string): Promise<IUser | undefined> => {
-				if (invitee.includes('normalUser')) {
-					return { username: 'username' } as any;
-				}
+const { executeSlashCommand } = proxyquire
+	.noCallThru()
+	.load('../../../../../../../../server/local-services/federation/infrastructure/rocket-chat/slash-commands/action', {
+		'@rocket.chat/models': {
+			Users: {
+				findOneById: async (invitee: string): Promise<IUser | undefined> => {
+					if (invitee.includes('normalUser')) {
+						return { username: 'username' } as any;
+					}
+				},
 			},
 		},
-	}
-});
+	});
 
 describe('FederationEE - Infrastructure - RocketChat - Server Slash command', () => {
 	const command = sinon.stub();

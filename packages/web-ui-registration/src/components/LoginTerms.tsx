@@ -1,7 +1,7 @@
-import type { ReactElement } from 'react';
+import { Box } from '@rocket.chat/fuselage';
 import { HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import { Box } from '@rocket.chat/fuselage';
+import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const LoginTerms = (): ReactElement => {

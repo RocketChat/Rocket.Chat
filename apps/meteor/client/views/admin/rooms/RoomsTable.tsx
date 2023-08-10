@@ -90,7 +90,6 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 			return { ...adminRooms, rooms: adminRooms.rooms as IRoom[] };
 		},
 		{
-			refetchOnWindowFocus: false,
 			onError: (error) => {
 				dispatchToastMessage({ type: 'error', message: error });
 			},
@@ -119,14 +118,14 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const headers = useMemo(
 		() =>
 			[
-				<GenericTableHeaderCell key={'name'} direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
+				<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
 					{t('Name')}
 				</GenericTableHeaderCell>,
-				<GenericTableHeaderCell key={'type'} direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' w='x100'>
+				<GenericTableHeaderCell key='type' direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' w='x100'>
 					{t('Type')}
 				</GenericTableHeaderCell>,
 				<GenericTableHeaderCell
-					key={'users'}
+					key='users'
 					direction={sortDirection}
 					active={sortBy === 'usersCount'}
 					onClick={setSort}
@@ -136,20 +135,13 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					{t('Users')}
 				</GenericTableHeaderCell>,
 				mediaQuery && (
-					<GenericTableHeaderCell
-						key={'messages'}
-						direction={sortDirection}
-						active={sortBy === 'msgs'}
-						onClick={setSort}
-						sort='msgs'
-						w='x80'
-					>
+					<GenericTableHeaderCell key='messages' direction={sortDirection} active={sortBy === 'msgs'} onClick={setSort} sort='msgs' w='x80'>
 						{t('Msgs')}
 					</GenericTableHeaderCell>
 				),
 				mediaQuery && (
 					<GenericTableHeaderCell
-						key={'default'}
+						key='default'
 						direction={sortDirection}
 						active={sortBy === 'default'}
 						onClick={setSort}
@@ -161,7 +153,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				),
 				mediaQuery && (
 					<GenericTableHeaderCell
-						key={'featured'}
+						key='featured'
 						direction={sortDirection}
 						active={sortBy === 'featured'}
 						onClick={setSort}
@@ -186,9 +178,9 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					<GenericTableCell style={style}>
 						<Box display='flex' alignContent='center'>
 							<RoomAvatar size={mediaQuery ? 'x28' : 'x40'} room={{ type, name: roomName, _id, ...args }} />
-							<Box display='flex' style={style} mi='x8'>
+							<Box display='flex' style={style} mi={8}>
 								<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
-									{icon && <Icon mi='x2' name={icon} fontScale='p2m' color='hint' />}
+									{icon && <Icon mi={2} name={icon} fontScale='p2m' color='hint' />}
 									<Box fontScale='p2m' style={style} color='default' qa-room-name={roomName}>
 										{roomName}
 									</Box>
@@ -200,7 +192,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 						<Box color='hint' fontScale='p2m' style={style}>
 							{t(getRoomType(room))}
 						</Box>
-						<Box mi='x4' />
+						<Box mi={4} />
 					</GenericTableCell>
 					<GenericTableCell style={style}>{usersCount}</GenericTableCell>
 					{mediaQuery && <GenericTableCell style={style}>{msgs}</GenericTableCell>}
