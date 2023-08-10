@@ -44,12 +44,15 @@ const EditMenu = ({
   return (
     <Box
       position="absolute"
-      insetBlockStart="0px"
-      insetInlineEnd="0px"
+      insetBlockStart="10px"
+      insetInlineEnd="10px"
       zIndex={100}
       ref={containerRef}
       className="rc-edit-menu"
-      onClick={() => setIsOpen(true)}
+      onClick={(e) => {
+        e.stopPropagation();
+        setIsOpen(true);
+      }}
     >
       <Button ref={buttonRef} square mini>
         <Icon name="cog" size="x16" />
