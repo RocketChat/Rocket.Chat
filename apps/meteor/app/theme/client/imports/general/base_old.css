@@ -1106,9 +1106,9 @@
 }
 
 .rc-old .code-colors {
-	color: var(--rcx-color-font-default, #1F2329);
-	border-color: var(--rcx-color-stroke-extra-light, #EBECEF);
-	background-color: var(--rcx-color-surface-neutral, #E4E7EA);
+	color: var(--rcx-color-font-default, #1f2329);
+	border-color: var(--rcx-color-stroke-extra-light, #ebecef);
+	background-color: var(--rcx-color-surface-neutral, #e4e7ea);
 }
 
 .rc-old .powered-by {
