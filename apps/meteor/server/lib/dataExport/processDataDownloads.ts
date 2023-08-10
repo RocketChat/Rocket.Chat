@@ -49,6 +49,8 @@ const generateUserFile = async (exportOperation: IExportOperation, userData?: IU
 		return;
 	}
 
+	await mkdir(exportOperation.exportPath, { recursive: true });
+
 	const { username, name, statusText, emails, roles, services } = userData;
 
 	const dataToSave = {
@@ -101,6 +103,8 @@ const generateUserAvatarFile = async (exportOperation: IExportOperation, userDat
 		return;
 	}
 
+	await mkdir(exportOperation.exportPath, { recursive: true });
+
 	const file = await Avatars.findOneByName(userData.username);
 	if (!file) {
 		return;
@@ -116,6 +120,8 @@ const generateChannelsFile = async (type: 'json' | 'html', exportPath: string, e
 	if (type !== 'json') {
 		return;
 	}
+
+	await mkdir(exportOperation.exportPath, { recursive: true });
 
 	const fileName = joinPath(exportPath, 'channels.json');
 	await writeFile(
@@ -139,10 +145,12 @@ const isExportComplete = (exportOperation: IExportOperation) => {
 };
 
 const continueExportOperation = async function (exportOperation: IExportOperation): Promise<void> {
+	// no
 	if (exportOperation.status === 'completed') {
 		return;
 	}
 
+	// html
 	const exportType = exportOperation.fullExport ? 'json' : 'html';
 
 	if (!exportOperation.roomList) {
@@ -242,10 +250,12 @@ export async function processDataDownloads(): Promise<void> {
 		return;
 	}
 
+	// no
 	if (operation.status === 'completed') {
 		return;
 	}
 
+	// no
 	if (operation.status !== 'pending') {
 		// If the operation has started but was not updated in over a day, then skip it
 		if (operation._updatedAt && moment().diff(moment(operation._updatedAt), 'days') > 1) {
@@ -255,6 +265,7 @@ export async function processDataDownloads(): Promise<void> {
 		}
 	}
 
+	// yes
 	await continueExportOperation(operation);
 	await ExportOperations.updateOperation(operation);
 
