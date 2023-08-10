@@ -7,6 +7,7 @@ import type {
 	IMessage,
 	ILivechatPriority,
 	IOmnichannelServiceLevelAgreements,
+	ReportResult,
 } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import { Settings } from '@rocket.chat/models';
@@ -2517,23 +2518,23 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		throw new Error('Method not implemented.');
 	}
 
-	getConversationsBySource(_start: Date, _end: Date): AggregationCursor<{ data: { label: string; value: number }[] }> {
+	getConversationsBySource(_start: Date, _end: Date): AggregationCursor<ReportResult> {
 		throw new Error('Method not implemented.');
 	}
 
-	getConversationsByStatus(_start: Date, _end: Date): AggregationCursor<{ data: { label: string; value: number }[] }> {
+	getConversationsByStatus(_start: Date, _end: Date): AggregationCursor<ReportResult> {
 		throw new Error('Method not implemented.');
 	}
 
-	getConversationsByDepartment(_start: Date, _end: Date): AggregationCursor<{ data: { label: string; value: number }[] }> {
+	getConversationsByDepartment(_start: Date, _end: Date): AggregationCursor<ReportResult> {
 		throw new Error('Method not implemented.');
 	}
 
-	getConversationsByTags(_start: Date, _end: Date): AggregationCursor<{ data: { label: string; value: number }[] }> {
+	getConversationsByTags(_start: Date, _end: Date): AggregationCursor<ReportResult> {
 		throw new Error('Method not implemented.');
 	}
 
-	getConversationsByAgents(_start: Date, _end: Date): AggregationCursor<{ data: { label: string; value: number }[] }> {
+	getConversationsByAgents(_start: Date, _end: Date): AggregationCursor<ReportResult> {
 		throw new Error('Method not implemented.');
 	}
 }
