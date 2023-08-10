@@ -6,15 +6,16 @@ import { forwardRoomToDepartment } from '../../../../../app/livechat/server/lib/
 import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
-const onTransferFailure = async ({
-	room,
-	guest,
-	transferData,
-}: {
-	room: IRoom;
-	guest: ILivechatVisitor;
-	transferData: { [k: string]: string | any };
-}) => {
+const onTransferFailure = async (
+	room: IRoom,
+	{
+		guest,
+		transferData,
+	}: {
+		guest: ILivechatVisitor;
+		transferData: { [k: string]: string | any };
+	},
+) => {
 	cbLogger.debug(`Attempting to transfer room ${room._id} using fallback departments`);
 	const { departmentId } = transferData;
 	const department = (await LivechatDepartment.findOneById(departmentId, {
@@ -31,7 +32,7 @@ const onTransferFailure = async ({
 		prevDepartment: department.name,
 		departmentId: department.fallbackForwardDepartment,
 		department: await LivechatDepartment.findOneById(department.fallbackForwardDepartment, {
-			fields: { name: 1, _id: 1 },
+			projection: { name: 1, _id: 1 },
 		}),
 	};
 
