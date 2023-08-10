@@ -118,6 +118,7 @@ const MessageBox = ({
 	const [typing, setTyping] = useReducer(reducer, false);
 
 	const { isMobile } = useLayout();
+	const IsMessagePreviewAllowed = useUserPreference<boolean>('showMessagePreview', true);
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
 	const sendOnEnter = sendOnEnterBehavior == null || sendOnEnterBehavior === 'normal' || (sendOnEnterBehavior === 'desktop' && !isMobile);
 
@@ -155,8 +156,9 @@ const MessageBox = ({
 	};
 
 	const handlePreviewShortcut = (event: any) => {
-		// Preview on "Alt + Shift + M"
+		if (!IsMessagePreviewAllowed) return;
 		if (event.altKey && event.shiftKey && event.key === 'M') {
+			// Preview on "Alt + Shift + M"
 			event.preventDefault();
 			handleViewPreview(chat.composer?.text as any);
 		}
@@ -431,16 +433,18 @@ const MessageBox = ({
 				<div ref={shadowRef} style={shadowStyle} />
 				{showMarkdownPreview && <MessagePreview md={md} channels={channels} mentions={mentions} />}
 
-				<IconButton
-					info={typing || isEditing}
-					disabled={!canSend || (!typing && !isEditing)}
-					style={{ position: 'absolute', right: 0, marginTop: '10px', marginRight: '5px', zIndex: 100 }}
-					small
-					icon={showMarkdownPreview ? 'eye-off' : 'eye'}
-					onClick={() => handleViewPreview(chat.composer?.text as any)}
-					data-id='Preview'
-					title='Preview'
-				/>
+				{IsMessagePreviewAllowed && (
+					<IconButton
+						info={typing || isEditing}
+						disabled={!canSend || (!typing && !isEditing)}
+						style={{ position: 'absolute', right: 0, marginTop: '10px', marginRight: '5px', zIndex: 100 }}
+						small
+						icon={showMarkdownPreview ? 'eye-off' : 'eye'}
+						onClick={() => handleViewPreview(chat.composer?.text as any)}
+						data-id='Preview'
+						title='Preview'
+					/>
+				)}
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction

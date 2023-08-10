@@ -42,6 +42,7 @@ type CurrentData = {
 	sidebarSortby: string;
 	sidebarViewMode: string;
 	sidebarDisplayAvatar: boolean;
+	showMessagePreview: boolean;
 	sidebarGroupByType: boolean;
 	muteFocusedConversations: boolean;
 	receiveLoginDetectionEmail: boolean;

@@ -554,6 +554,11 @@ export const createAccountSettings = () =>
 				public: true,
 				i18nLabel: 'Display_Avatars_Sidebar',
 			});
+			await this.add('Accounts_Default_User_Preferences_showMessagePreview', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Display_Message_Preview',
+			});
 
 			await this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
 				type: 'boolean',

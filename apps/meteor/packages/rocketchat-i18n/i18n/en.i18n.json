@@ -1659,6 +1659,7 @@
   "Display": "Display",
   "Display_avatars": "Display Avatars",
   "Display_Avatars_Sidebar": "Display Avatars in Sidebar",
+  "Display_Message_Preview": "Display Markdown Preview in Message Composer",
   "Display_chat_permissions": "Display chat permissions",
   "Display_mentions_counter": "Display badge for direct mentions only",
   "Display_offline_form": "Display Offline Form",

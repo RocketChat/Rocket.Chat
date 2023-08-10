@@ -32,6 +32,7 @@ type UserPreferences = {
 	sidebarSortby: string;
 	sidebarViewMode: string;
 	sidebarDisplayAvatar: boolean;
+	showMessagePreview: boolean;
 	sidebarGroupByType: boolean;
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
@@ -76,6 +77,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		sidebarSortby: Match.Optional(String),
 		sidebarViewMode: Match.Optional(String),
 		sidebarDisplayAvatar: Match.Optional(Boolean),
+		showMessagePreview: Match.Optional(Boolean),
 		sidebarGroupByType: Match.Optional(Boolean),
 		muteFocusedConversations: Match.Optional(Boolean),
 		omnichannelTranscriptEmail: Match.Optional(Boolean),
