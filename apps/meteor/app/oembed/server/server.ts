@@ -17,7 +17,7 @@ import { isURL } from '../../../lib/utils/isURL';
 import { Logger } from '../../logger/server';
 import { settings } from '../../settings/server';
 import { Info } from '../../utils/rocketchat.info';
-import { MAX_URL_PREVIEWS } from './constants';
+import { MAX_EXTERNAL_URL_PREVIEWS } from './constants';
 
 const log = new Logger('OEmbed');
 //  Detect encoding
@@ -289,7 +289,7 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	if (Array.isArray(message.urls)) {
 		log.debug('URLs found', message.urls.length);
 
-		if (message.urls.filter((item) => !item.url.includes(Meteor.absoluteUrl())).length > MAX_URL_PREVIEWS) {
+		if (message.urls.filter((item) => !item.url.includes(Meteor.absoluteUrl())).length > MAX_EXTERNAL_URL_PREVIEWS) {
 			log.debug('All URL ignored');
 			return message;
 		}
