@@ -12,26 +12,16 @@ const ReportsPage = () => {
 		<Page background='tint'>
 			<Page.Header title={t('Reports')}></Page.Header>
 			<Page.ScrollableContentWithShadow>
-				<Box display='flex' flexWrap='wrap'>
-					<Flex.Item grow={1} shrink={0} basis='50%'>
-						<StatusSection />
-					</Flex.Item>
+				<Box display='flex' flexWrap='wrap' margin={-8}>
+					<StatusSection />
 
-					<Flex.Item grow={1} shrink={0} basis='50%'>
-						<ChannelsSection />
-					</Flex.Item>
+					<ChannelsSection />
 
-					<Flex.Item grow={1} shrink={0} basis='50%'>
-						<DepartmentsSection />
-					</Flex.Item>
+					<DepartmentsSection />
 
-					<Flex.Item grow={1} shrink={0} basis='50%'>
-						<TagsSection />
-					</Flex.Item>
+					<TagsSection />
 
-					<Flex.Item grow={1} shrink={0}>
-						<AgentsSection />
-					</Flex.Item>
+					<AgentsSection />
 				</Box>
 			</Page.ScrollableContentWithShadow>
 		</Page>

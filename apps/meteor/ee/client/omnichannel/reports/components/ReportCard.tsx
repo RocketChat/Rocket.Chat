@@ -23,10 +23,11 @@ type ReportCardProps = {
 
 export const ReportCard = ({ title, children, periodSelectorProps, downloadProps }: ReportCardProps) => {
 	return (
-		<Card overflow='hidden'>
+		<Box is={Card} minWidth='calc(50% - 16px)' flexGrow={1} overflow='hidden' margin={8}>
 			<Card.Title>
 				<Box display='flex' justifyContent='space-between' alignItems='center' wrap='no-wrap'>
 					{title}
+
 					<Box flexGrow={0} display='flex' alignItems='center'>
 						<PeriodSelector {...periodSelectorProps} />
 						<DownloadDataButton {...downloadProps} size={32} />
@@ -38,6 +39,6 @@ export const ReportCard = ({ title, children, periodSelectorProps, downloadProps
 					<CardErrorBoundary>{children}</CardErrorBoundary>
 				</Card.Col>
 			</Card.Body>
-		</Card>
+		</Box>
 	);
 };
