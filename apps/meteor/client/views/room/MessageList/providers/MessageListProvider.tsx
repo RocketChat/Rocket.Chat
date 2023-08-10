@@ -70,7 +70,15 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 								return [];
 							}
 							if (!isMessageReactionsNormalized(message)) {
-								return message.reactions?.[reaction]?.usernames.filter((user) => user !== username).map((username) => `@${username}`) || [];
+								if (reactions?.[reaction]?.names) {
+									return (
+										(reactions?.[reaction]
+											?.names!.filter((_user, i) => reactions?.[reaction]?.usernames[i] !== username)
+											.filter((name) => name !== undefined) as string[]) || []
+									);
+								}
+
+								return reactions?.[reaction]?.usernames.filter((user) => user !== username).map((username) => `@${username}`) || [];
 							}
 							if (!username) {
 								return message.reactions[reaction].names;
