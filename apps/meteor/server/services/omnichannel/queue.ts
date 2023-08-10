@@ -1,11 +1,11 @@
 import type { InquiryWithAgentInfo, IOmnichannelQueue } from '@rocket.chat/core-typings';
 import { LivechatInquiry } from '@rocket.chat/models';
 
+import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { getInquirySortMechanismSetting } from '../../../app/livechat/server/lib/settings';
 import { settings } from '../../../app/settings/server';
 import { queueLogger } from './logger';
-import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
 
 const DEFAULT_RACE_TIMEOUT = 5000;
 
