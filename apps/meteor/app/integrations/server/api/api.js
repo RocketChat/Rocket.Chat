@@ -16,6 +16,8 @@ import { processWebhookMessage } from '../../../lib/server/functions/processWebh
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import { settings } from '../../../settings/server';
 
+const DISABLE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.DISABLE_INTEGRATION_SCRIPTS).toLowerCase());
+
 export const forbiddenModelMethods = ['registerModel', 'getCollectionName'];
 
 const compiledScripts = {};
@@ -61,6 +63,10 @@ function buildSandbox(store = {}) {
 }
 
 function getIntegrationScript(integration) {
+	if (DISABLE_INTEGRATION_SCRIPTS) {
+		throw API.v1.failure('integration-scripts-disabled');
+	}
+
 	const compiledScript = compiledScripts[integration._id];
 	if (compiledScript && +compiledScript._updatedAt === +integration._updatedAt) {
 		return compiledScript.script;
@@ -171,7 +177,12 @@ async function executeIntegrationRest() {
 		emoji: this.integration.emoji,
 	};
 
-	if (this.integration.scriptEnabled && this.integration.scriptCompiled && this.integration.scriptCompiled.trim() !== '') {
+	if (
+		!DISABLE_INTEGRATION_SCRIPTS &&
+		this.integration.scriptEnabled &&
+		this.integration.scriptCompiled &&
+		this.integration.scriptCompiled.trim() !== ''
+	) {
 		let script;
 		try {
 			script = getIntegrationScript(this.integration);
