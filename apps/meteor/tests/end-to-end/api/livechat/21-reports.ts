@@ -1,6 +1,5 @@
-/* eslint-env mocha */
-
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
 import { api, request, credentials, getCredentials } from '../../../data/api-data';
 import { restorePermissionToRoles, updatePermission } from '../../../data/permissions.helper';
