@@ -212,11 +212,10 @@ export class ConnectionImpl
 
 	static create(
 		url: string,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		WebSocketImpl: WebSocketConstructor,
+		webSocketImpl: WebSocketConstructor,
 		client: DDPClient,
 		retryOptions: RetryOptions = { retryCount: 0, retryTime: 1000 },
 	): ConnectionImpl {
-		return new ConnectionImpl(url, WebSocketImpl, client, retryOptions);
+		return new ConnectionImpl(url, webSocketImpl, client, retryOptions);
 	}
 }

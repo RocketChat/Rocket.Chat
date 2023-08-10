@@ -21,7 +21,7 @@ export class OmnichannelAgents {
 	}
 
 	get btnAdd(): Locator {
-		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add"');
+		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add agent"');
 	}
 
 	get firstRowInTable() {

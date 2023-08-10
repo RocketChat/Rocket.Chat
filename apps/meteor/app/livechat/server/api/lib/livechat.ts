@@ -1,6 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-import { Random } from '@rocket.chat/random';
-import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import type {
 	ILivechatAgent,
 	ILivechatDepartment,
@@ -9,12 +6,15 @@ import type {
 	IOmnichannelRoom,
 	SelectedAgent,
 } from '@rocket.chat/core-typings';
+import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { Meteor } from 'meteor/meteor';
 
+import { callbacks } from '../../../../../lib/callbacks';
+import { i18n } from '../../../../../server/lib/i18n';
+import { normalizeAgent } from '../../lib/Helper';
 import { Livechat } from '../../lib/Livechat';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { callbacks } from '../../../../../lib/callbacks';
-import { normalizeAgent } from '../../lib/Helper';
-import { i18n } from '../../../../../server/lib/i18n';
 
 export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): Promise<boolean> {
 	return LivechatTyped.online(department, skipSettingCheck, skipFallbackCheck);

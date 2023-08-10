@@ -72,14 +72,14 @@ const MessagesPerChannelSection = (): ReactElement => {
 			<Flex.Container>
 				<Margins inline='neg-x12'>
 					<Box>
-						<Margins inline='x12'>
+						<Margins inline={12}>
 							<Flex.Item grow={1} shrink={0} basis='0'>
 								<Box>
 									<Flex.Container alignItems='center' wrap='no-wrap'>
 										{pie ? (
 											<Box>
 												<Flex.Item grow={1} shrink={1}>
-													<Margins inline='x24'>
+													<Margins inline={24}>
 														<Box
 															style={{
 																position: 'relative',
@@ -144,7 +144,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 												<Flex.Item basis='auto'>
 													<Margins block='neg-x4'>
 														<Box>
-															<Margins block='x4'>
+															<Margins block={4}>
 																<Box color='hint' fontScale='p1'>
 																	<LegendSymbol color={colors.warning} />
 																	{t('Private_Chats')}
@@ -170,7 +170,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 							</Flex.Item>
 							<Flex.Item grow={1} shrink={0} basis='0'>
 								<Box>
-									<Margins blockEnd='x16'>
+									<Margins blockEnd={16}>
 										{table ? <Box fontScale='p1'>{t('Most_popular_channels_top_5')}</Box> : <Skeleton width='50%' />}
 									</Margins>
 									{table && !table.length && (
@@ -192,7 +192,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 													<TableRow key={i}>
 														<TableCell>{i + 1}.</TableCell>
 														<TableCell>
-															<Margins inlineEnd='x4'>
+															<Margins inlineEnd={4}>
 																{(t === 'd' && <Icon name='at' />) ||
 																	(t === 'p' && <Icon name='lock' />) ||
 																	(t === 'c' && <Icon name='hashtag' />)}

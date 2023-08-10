@@ -60,7 +60,7 @@ const UsageGraph = ({ used = 0, total = 0, label, color, size }: UsageGraphProps
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='center'>
-			<Box size={size}>
+			<Box size={`x${size}`}>
 				<Box position='relative'>
 					<Pie
 						data={parsedData}
@@ -91,7 +91,7 @@ const UsageGraph = ({ used = 0, total = 0, label, color, size }: UsageGraphProps
 				</Box>{' '}
 				/ {unlimited ? '∞' : total}
 			</span>
-			<Box is='span' mbs='x4'>
+			<Box is='span' mbs={4}>
 				{label}
 			</Box>
 		</Box>

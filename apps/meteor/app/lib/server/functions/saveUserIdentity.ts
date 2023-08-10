@@ -1,8 +1,8 @@
 import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { _setUsername } from './setUsername';
-import { _setRealName } from './setRealName';
 import { FileUpload } from '../../../file-upload/server';
+import { _setRealName } from './setRealName';
+import { _setUsername } from './setUsername';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
 

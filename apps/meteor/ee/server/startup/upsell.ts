@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { Settings } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { onValidateLicenses, getLicenses } from '../../app/license/server/license';
 

@@ -40,7 +40,7 @@ const FilterByTypeAndText = ({ setFilter, ...props }: { setFilter?: Dispatch<Set
 	const idTeam = useUniqueId();
 
 	return (
-		<Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
+		<Box mb={16} is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
 			<TextInput
 				flexShrink={0}
 				placeholder={t('Search_Rooms')}
@@ -49,8 +49,8 @@ const FilterByTypeAndText = ({ setFilter, ...props }: { setFilter?: Dispatch<Set
 				value={text}
 			/>
 			<Field>
-				<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='flex-start' mbs='x8' mi='neg-x8'>
-					<Margins inline='x8'>
+				<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='flex-start' mbs={8} mi='neg-x8'>
+					<Margins inline={8}>
 						<Field.Row>
 							<CheckBox checked={types.d} id={idDirect} onChange={(): void => handleCheckBox('d')} />
 							<Field.Label htmlFor={idDirect}>{t('Direct')}</Field.Label>
