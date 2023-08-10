@@ -4,21 +4,14 @@ import React from 'react';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import GenericMenu from '../../GenericMenu/GenericMenu';
-import type { GenericMenuItemProps } from '../../GenericMenu/GenericMenuItem';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
-	action: () => void;
+	action: (event: UIEvent) => void;
 };
 
 type MessageActionMenuProps = {
 	options: MessageActionConfigOption[];
 };
-
-type MessageMenuActionProps = {
-	id: string;
-	title: string;
-	items: GenericMenuItemProps[];
-}[];
 
 const MessageActionMenu = ({ options }: MessageActionMenuProps): ReactElement => {
 	const t = useTranslation();
@@ -43,7 +36,7 @@ const MessageActionMenu = ({ options }: MessageActionMenuProps): ReactElement =>
 			acc.push(newSection);
 
 			return acc;
-		}, [] as MessageMenuActionProps);
+		}, [] as any);
 
 	return (
 		<GenericMenu title={t('More')} data-qa-id='menu' data-qa-type='message-action-menu' sections={groupOptions} placement='bottom-end' />
