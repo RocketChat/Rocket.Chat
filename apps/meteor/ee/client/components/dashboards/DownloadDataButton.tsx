@@ -4,7 +4,7 @@ import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-context
 import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
-import { downloadCsvAs } from '../../../../../client/lib/download';
+import { downloadCsvAs } from '../../../../client/lib/download';
 
 type RowFor<THeaders extends readonly string[]> = readonly unknown[] & {
 	length: THeaders['length'];
