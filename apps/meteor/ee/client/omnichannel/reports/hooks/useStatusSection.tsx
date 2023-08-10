@@ -1,8 +1,9 @@
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
+import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorState } from '../../../components/dashboards/usePeriodSelectorState';
 import { COLORS } from '../components/constants';
-import { MOCK_STATUS_DATA } from '../mock';
 
 const STATUS_COLORS: Record<string, string> = {
 	'Open': COLORS.success,
@@ -24,12 +25,17 @@ export const useStatusSection = () => {
 		'last year',
 	);
 
+	const { start, end } = getPeriodRange(period);
+
+	const getConversationsByStatus = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-status');
+
 	const {
 		data = [],
 		isLoading,
 		isError,
-	} = useQuery(['reports', 'status', period], () => {
-		return Promise.resolve(formatChartData(MOCK_STATUS_DATA.data));
+	} = useQuery(['reports', 'status', 'livechat/analytics/dashboards/conversations-by-status', period], async () => {
+		const { data } = await getConversationsByStatus({ start: start.toISOString(), end: end.toISOString() });
+		return formatChartData(data);
 	});
 
 	return {

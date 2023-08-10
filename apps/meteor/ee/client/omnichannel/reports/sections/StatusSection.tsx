@@ -9,7 +9,7 @@ export const StatusSection = () => {
 	const { data, periodSelectorProps } = useStatusSection();
 
 	return (
-		<ReportCard title={t('Conversations_by_status')} periodSelectorProps={periodSelectorProps}>
+		<ReportCard title={t('Conversations_by_status')} periodSelectorProps={periodSelectorProps} data={data}>
 			<PieChart data={data} width={300} height={200} />
 		</ReportCard>
 	);

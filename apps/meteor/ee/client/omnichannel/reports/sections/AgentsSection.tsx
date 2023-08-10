@@ -10,7 +10,7 @@ export const AgentsSection = () => {
 	const { data, periodSelectorProps } = useAgentsSection();
 
 	return (
-		<ReportCard title={t('Conversations_by_agents')} periodSelectorProps={periodSelectorProps}>
+		<ReportCard title={t('Conversations_by_agents')} periodSelectorProps={periodSelectorProps} data={data}>
 			<Box display='flex' style={{ gap: '16px' }}>
 				<Flex.Item grow={1}>
 					<BarChart

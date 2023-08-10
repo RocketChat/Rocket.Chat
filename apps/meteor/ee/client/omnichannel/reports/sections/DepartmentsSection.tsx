@@ -9,7 +9,7 @@ export const DepartmentsSection = () => {
 	const { data, periodSelectorProps } = useDepartmentsSection();
 
 	return (
-		<ReportCard title={t('Conversations_by_departments')} periodSelectorProps={periodSelectorProps}>
+		<ReportCard title={t('Conversations_by_departments')} periodSelectorProps={periodSelectorProps} data={data}>
 			<BarChart data={data} direction='horizontal' height={360} margins={{ top: 0, right: 0, bottom: 0, left: 90 }} />
 		</ReportCard>
 	);

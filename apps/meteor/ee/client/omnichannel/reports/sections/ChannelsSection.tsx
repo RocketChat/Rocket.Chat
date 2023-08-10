@@ -9,7 +9,7 @@ export const ChannelsSection = () => {
 	const { data, periodSelectorProps } = useChannelsSection();
 
 	return (
-		<ReportCard title={t('Conversations_by_channel')} periodSelectorProps={periodSelectorProps}>
+		<ReportCard title={t('Conversations_by_channel')} periodSelectorProps={periodSelectorProps} data={data}>
 			<PieChart data={data} width={300} height={200} />
 		</ReportCard>
 	);
