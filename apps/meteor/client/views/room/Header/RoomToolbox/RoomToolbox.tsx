@@ -33,11 +33,14 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const hiddenActions = (isMobile ? actions : normalActions.slice(6))
 		.filter((item) => !item.disabled && !item.featured)
 		.map((item) => ({
-			key: item.id,
-			content: t(item.title),
-			onClick: (): void => {
-				openTab(item.id);
-			},
+			'key': item.id,
+			'content': t(item.title),
+			'onClick':
+				item.action ??
+				((): void => {
+					openTab(item.id);
+				}),
+			'data-qa-id': `ToolBoxAction-${item.icon}`,
 			...item,
 		}))
 		.reduce((acc, item) => {
