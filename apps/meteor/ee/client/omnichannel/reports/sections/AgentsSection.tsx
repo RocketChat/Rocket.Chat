@@ -15,7 +15,7 @@ export const AgentsSection = () => {
 			<Box display='flex' style={{ gap: '16px' }}>
 				<Flex.Item grow={1}>
 					<BarChart
-						data={data.reverse()}
+						data={data.slice(0, 5)}
 						maxWidth='50%'
 						height={360}
 						indexBy='label'
