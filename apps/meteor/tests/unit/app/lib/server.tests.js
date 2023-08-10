@@ -1,15 +1,5 @@
+import PasswordPolicyClass from '@rocket.chat/account-utils';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-
-const { default: PasswordPolicyClass } = proxyquire.noCallThru().load('../../../../app/lib/server/lib/PasswordPolicyClass', {
-	'meteor/meteor': {
-		Meteor: {
-			absoluteUrl() {
-				return 'http://localhost:3000/';
-			},
-		},
-	},
-});
 
 describe('PasswordPolicyClass', () => {
 	describe('Default options', () => {
