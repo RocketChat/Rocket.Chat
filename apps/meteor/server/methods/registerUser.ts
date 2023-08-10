@@ -80,7 +80,7 @@ Meteor.methods<ServerMethods>({
 					method: 'registerUser',
 				});
 			}
-		}	
+		}
 
 		await validateEmailDomain(formData.email);
 
