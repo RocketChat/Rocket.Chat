@@ -8,8 +8,19 @@ import type {
 	IPersonalAccessToken,
 	AtLeast,
 	ILivechatAgentStatus,
+	IUserWithRoleInfo,
 } from '@rocket.chat/core-typings';
-import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult, AggregationCursor } from 'mongodb';
+import type {
+	Document,
+	UpdateResult,
+	FindCursor,
+	FindOptions,
+	Filter,
+	FilterOperators,
+	InsertOneResult,
+	DeleteResult,
+	AggregationCursor,
+} from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -44,12 +55,12 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		extraQuery?: any,
 		params?: { startsWith?: boolean; endsWith?: boolean },
 	): FindPaginated<FindCursor<T>>;
-	findPaginatedActiveUsersByRoomIdWithHighestRole<T = IUser>(
-		searchTerm: any,
-		rid: any,
-		searchFields: any,
-		options?: any,
-		extraQuery?: any,
+	findPaginatedActiveUsersByRoomIdWithHighestRole<T = IUserWithRoleInfo>(
+		searchTerm: string,
+		rid: string,
+		searchFields: string[],
+		options?: FindOptions<IUser>,
+		extraQuery?: FilterOperators<string>[],
 		params?: { startsWith?: boolean; endsWith?: boolean },
 	): Promise<AggregationCursor<{ members: T[]; totalCount: { total: number }[] }>>;
 
