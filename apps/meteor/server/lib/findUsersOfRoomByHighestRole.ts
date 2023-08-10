@@ -1,13 +1,8 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUserWithRoleInfo } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { AggregationCursor, FilterOperators } from 'mongodb';
 
 import { settings } from '../../app/settings/server';
-
-type UserWithRoleInfo = IUser & {
-	highestRole: string;
-	roleLevel: number;
-};
 
 type FindUsersParam = {
 	rid: string;
@@ -25,7 +20,7 @@ export async function findUsersOfRoomByHighestRole({
 	limit = 0,
 	filter = '',
 	sort,
-}: FindUsersParam): Promise<AggregationCursor<{ members: UserWithRoleInfo[]; totalCount: { total: number }[] }>> {
+}: FindUsersParam): Promise<AggregationCursor<{ members: IUserWithRoleInfo[]; totalCount: { total: number }[] }>> {
 	const options = {
 		projection: {
 			name: 1,
@@ -38,7 +33,7 @@ export async function findUsersOfRoomByHighestRole({
 			statusConnection: 1,
 		},
 		sort: {
-			statusConnection: -1,
+			statusConnection: -1 as const,
 			...(sort || { ...(settings.get('UI_Use_Real_Name') && { name: 1 }), username: 1 }),
 		},
 		skip,
