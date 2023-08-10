@@ -1,5 +1,6 @@
-import PasswordPolicyClass from '@rocket.chat/account-utils';
 import { expect } from 'chai';
+
+import PasswordPolicyClass from '../src/PasswordPolicyClass';
 
 describe('PasswordPolicyClass', () => {
 	describe('Default options', () => {
