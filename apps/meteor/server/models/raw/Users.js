@@ -10,7 +10,6 @@ const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdl
 		$or: [
 			{
 				status: {
-					$exists: true,
 					$ne: 'offline',
 				},
 				roles: {
