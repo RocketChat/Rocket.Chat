@@ -120,8 +120,8 @@ export const palette = [
 		category: 'Button',
 		description: 'Primary Background',
 		list: [
-			{ name: 'button-background-primary-default', token: '', color: '#095AD2' },
-			{ name: 'button-background-primary-hover', token: '', color: '#10529E' },
+			{ name: 'button-background-primary-default', token: '', color: '#10529E' },
+			{ name: 'button-background-primary-hover', token: '', color: '#01336B' },
 			{ name: 'button-background-primary-press', token: '', color: '#012247' },
 			{ name: 'button-background-primary-focus', token: '', color: '#10529E' },
 			{ name: 'button-background-primary-keyfocus', token: '', color: '#10529E' },
