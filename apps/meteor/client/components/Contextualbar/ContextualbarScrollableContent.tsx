@@ -7,8 +7,8 @@ import Page from '../Page';
 const ContextualbarScrollableContent = forwardRef<HTMLElement, ComponentProps<typeof Page.ScrollableContent>>(
 	function ContextualbarScrollableContent({ children, ...props }, ref) {
 		return (
-			<Page.ScrollableContent p='x24' {...props} ref={ref}>
-				<Margins blockEnd='x16'>{children}</Margins>
+			<Page.ScrollableContent p={24} {...props} ref={ref}>
+				<Margins blockEnd={16}>{children}</Margins>
 			</Page.ScrollableContent>
 		);
 	},

@@ -1,14 +1,14 @@
 import type { RequestOptions } from 'http';
 import http from 'http';
-import url from 'url';
 import type { Readable } from 'stream';
+import url from 'url';
 
-import WebSocket from 'ws';
 import cookie from 'cookie';
+import cookieParser from 'cookie-parser';
 import type { Request, Response } from 'express';
 import express from 'express';
-import cookieParser from 'cookie-parser';
 import mem from 'mem';
+import WebSocket from 'ws';
 
 import { ServerSession } from '../../../../app/ecdh/server/ServerSession';
 
@@ -63,7 +63,7 @@ const proxy = async function (
 		delete options.headers['content-length'];
 	}
 
-	const connector = http.request(options, async function (serverResponse) {
+	const connector = http.request(options, async (serverResponse) => {
 		serverResponse.pause();
 		if (serverResponse.statusCode) {
 			res.writeHead(serverResponse.statusCode, serverResponse.headers);

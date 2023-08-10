@@ -1,20 +1,21 @@
-import moment from 'moment';
-import { Meteor } from 'meteor/meteor';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
+import moment from 'moment';
 
-import ShareMessageModal from '../../../../client/views/room/modals/ShareMessageModal';
-import { messageArgs } from '../../../../client/lib/utils/messageArgs';
-import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
-import { ChatRoom, Subscriptions } from '../../../models/client';
-import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
-import { MessageAction } from './MessageAction';
+import { getPermaLink } from '../../../../client/lib/getPermaLink';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { messageArgs } from '../../../../client/lib/utils/messageArgs';
+import { router } from '../../../../client/providers/RouterProvider';
 import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
 import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
-import { dispatchToastMessage } from '../../../../client/lib/toast';
+import ShareMessageModal from '../../../../client/views/room/modals/ShareMessageModal';
+import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
+import { ChatRoom, Subscriptions } from '../../../models/client';
 import { t } from '../../../utils/lib/i18n';
-import { router } from '../../../../client/providers/RouterProvider';
+import { MessageAction } from './MessageAction';
 
 const getMainMessageText = (message: IMessage): IMessage => {
 	const newMessage = { ...message };
@@ -23,12 +24,12 @@ const getMainMessageText = (message: IMessage): IMessage => {
 	return { ...newMessage };
 };
 
-Meteor.startup(async function () {
+Meteor.startup(async () => {
 	MessageAction.addButton({
 		id: 'reply-directly',
 		icon: 'reply-directly',
 		label: 'Reply_in_direct_message',
-		context: ['message', 'message-mobile', 'threads', 'federated'],
+		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		role: 'link',
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
@@ -70,7 +71,7 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile', 'threads'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			const permalink = await MessageAction.getPermaLink(message._id);
+			const permalink = await getPermaLink(message._id);
 			imperativeModal.open({
 				component: ShareMessageModal,
 				props: {
@@ -123,7 +124,7 @@ Meteor.startup(async function () {
 		async action(_, props) {
 			try {
 				const { message = messageArgs(this).msg } = props;
-				const permalink = await MessageAction.getPermaLink(message._id);
+				const permalink = await getPermaLink(message._id);
 				await navigator.clipboard.writeText(permalink);
 				dispatchToastMessage({ type: 'success', message: t('Copied') });
 			} catch (e) {

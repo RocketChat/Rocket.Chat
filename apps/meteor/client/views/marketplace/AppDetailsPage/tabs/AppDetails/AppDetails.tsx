@@ -1,4 +1,4 @@
-import { Box, ButtonGroup, Callout, Chip, Margins } from '@rocket.chat/fuselage';
+import { Box, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -44,35 +44,35 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 			)}
 
 			<Box display='flex' flexDirection='column'>
-				<Margins block='x17'>
+				<Margins block={16}>
 					{isCarouselVisible && <ScreenshotCarouselAnchor screenshots={screenshots} />}
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8' color='titles-labels'>
+						<Box fontScale='h4' mbe={8} color='titles-labels'>
 							{t('Description')}
 						</Box>
 						<Box dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }} withRichContent />
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8' color='titles-labels'>
+						<Box fontScale='h4' mbe={8} color='titles-labels'>
 							{t('Categories')}
 						</Box>
-						<ButtonGroup flexWrap='wrap'>
+						<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='start' alignItems='center'>
 							{categories?.map((current) => (
-								<Chip key={current} textTransform='uppercase'>
+								<Chip key={current} textTransform='uppercase' m={4}>
 									{current}
 								</Chip>
 							))}
-						</ButtonGroup>
+						</Box>
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8'>
+						<Box fontScale='h4' mbe={8}>
 							{t('Contact')}
 						</Box>
-						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap' mbe='x24'>
-							<Box display='flex' flexDirection='column' mie='x12' flexGrow={1}>
+						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap' mbe={24}>
+							<Box display='flex' flexDirection='column' mie={12} flexGrow={1}>
 								<Box fontScale='h4' color='hint'>
 									{t('Author_Site')}
 								</Box>
