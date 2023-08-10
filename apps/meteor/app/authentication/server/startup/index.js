@@ -298,6 +298,11 @@ const insertUserDocAsync = async function (options, user) {
 		};
 	}
 
+	// Make sure that the user has the field 'roles'
+	if (!user.roles) {
+		user.roles = [];
+	}
+
 	const _id = insertUserDoc.call(Accounts, options, user);
 
 	user = await Users.findOne({
@@ -322,11 +327,6 @@ const insertUserDocAsync = async function (options, user) {
 	}
 
 	await addUserRolesAsync(_id, roles);
-
-	// Make sure that the user has the field 'roles'
-	if (!user.roles && !roles.length) {
-		await Users.updateOne({ _id }, { $set: { roles: [] } });
-	}
 
 	// Make user's roles to be present on callback
 	user = await Users.findOneById(_id, { projection: { username: 1, type: 1 } });
