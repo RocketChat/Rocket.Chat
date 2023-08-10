@@ -34,10 +34,9 @@ export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid
 		() =>
 			roomCanSetLeader && userCanSetLeader
 				? {
-						content: t(isLeader ? 'Remove_as_leader' : 'Set_as_leader'),
+						label: t(isLeader ? 'Remove_as_leader' : 'Set_as_leader'),
 						icon: 'shield-alt' as const,
-						onClick: changeLeaderAction,
-						type: 'privileges',
+						action: changeLeaderAction,
 				  }
 				: undefined,
 		[isLeader, roomCanSetLeader, t, userCanSetLeader, changeLeaderAction],

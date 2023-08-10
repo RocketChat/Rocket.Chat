@@ -18,9 +18,8 @@ export const useRedirectModerationConsole = (uid: IUser['_id']): Action | undefi
 	};
 
 	return {
-		content: t('Moderation_Action_View_reports'),
+		label: t('Moderation_Action_View_reports'),
 		icon: 'warning' as const,
-		onClick: redirectModerationConsoleAction,
-		type: 'privileges',
+		action: redirectModerationConsoleAction,
 	};
 };

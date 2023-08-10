@@ -22,7 +22,6 @@ export const useAutotranslateRoomAction = () => {
 			tabComponent: AutoTranslate,
 			order: 20,
 			full: true,
-			type: 'organization',
 		};
 	}, [enabled, permitted]);
 };

@@ -106,10 +106,9 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 		() =>
 			(isRoomFederated(room) && roomCanSetOwner) || (!isRoomFederated(room) && roomCanSetOwner && userCanSetOwner)
 				? {
-						content: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
+						label: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
 						icon: 'shield-check' as const,
-						onClick: changeOwnerAction,
-						type: 'privileges',
+						action: changeOwnerAction,
 				  }
 				: undefined,
 		[changeOwnerAction, roomCanSetOwner, userCanSetOwner, isOwner, t, room],

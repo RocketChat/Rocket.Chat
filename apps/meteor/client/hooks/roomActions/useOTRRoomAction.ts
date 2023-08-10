@@ -37,7 +37,6 @@ export const useOTRRoomAction = () => {
 				tooltip: t('core.OTR_unavailable_for_federation'),
 				disabled: true,
 			}),
-			type: 'communication',
 		};
 	}, [enabled, capable, federated, t]);
 };

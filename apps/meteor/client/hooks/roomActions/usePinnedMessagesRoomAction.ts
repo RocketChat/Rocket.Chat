@@ -30,7 +30,6 @@ export const usePinnedMessagesRoomAction = () => {
 				disabled: true,
 			}),
 			order: 11,
-			type: 'organization',
 		};
 	}, [enabled, federated, t]);
 };

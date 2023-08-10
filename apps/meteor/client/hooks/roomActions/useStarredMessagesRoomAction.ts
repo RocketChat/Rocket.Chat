@@ -13,7 +13,6 @@ export const useStarredMessagesRoomAction = () => {
 			icon: 'star',
 			tabComponent: StarredMessagesTab,
 			order: 10,
-			type: 'organization',
 		}),
 		[],
 	);

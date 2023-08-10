@@ -21,7 +21,6 @@ export const usePushNotificationsRoomAction = () => {
 			icon: 'bell',
 			tabComponent: NotificationPreferences,
 			order: 8,
-			type: 'customization',
 		};
 	}, [capable]);
 };
