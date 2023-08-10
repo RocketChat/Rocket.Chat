@@ -136,7 +136,7 @@ export class CustomOAuth {
 			const request = await fetch(`${this.tokenPath}`, {
 				method: 'POST',
 				headers,
-				params,
+				body: params,
 			});
 
 			if (!request.ok) {
@@ -355,7 +355,7 @@ export class CustomOAuth {
 					user.services[serviceName] &&
 					user.services[serviceName].id === serviceData.id &&
 					user.name === serviceData.name &&
-					(this.keyField === 'email' || user.emails?.find(({ address }) => address === serviceData.email))
+					(this.keyField === 'email' || !serviceData.email || user.emails?.find(({ address }) => address === serviceData.email))
 				) {
 					return;
 				}
