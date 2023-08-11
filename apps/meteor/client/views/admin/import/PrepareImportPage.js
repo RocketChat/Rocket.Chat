@@ -1,38 +1,26 @@
-import type {
-	IImport,
-	IImportProgress,
-	IImporterSelection,
-	IImporterSelectionChannel,
-	IImporterSelectionUser,
-} from '@rocket.chat/core-typings';
-// import { ProgressStep } from '@rocket.chat/core-typings';
 import { Badge, Box, Button, ButtonGroup, Margins, Throbber, Tabs, ProgressBar } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
-import type { Dispatch, SetStateAction } from 'react';
 import React, { useEffect, useState, useMemo } from 'react';
 
 import {
+	ProgressStep,
 	ImportWaitingStates,
 	ImportFileReadyStates,
 	ImportPreparingStartedStates,
 	ImportingStartedStates,
 	ImportingErrorStates,
-	ProgressStep,
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 import Page from '../../../components/Page';
-import type { ChannelDescriptor } from './PrepareChannels';
 import PrepareChannels from './PrepareChannels';
-import type { UserDescriptor } from './PrepareUsers';
 import PrepareUsers from './PrepareUsers';
 import { useErrorHandler } from './useErrorHandler';
 
-const waitFor = (fn: any, predicate: (result: any) => boolean) =>
+const waitFor = (fn, predicate) =>
 	new Promise((resolve, reject) => {
 		const callPromise = () => {
-			fn().then((result: unknown) => {
+			fn().then((result) => {
 				if (predicate(result)) {
 					resolve(result);
 					return;
@@ -50,12 +38,11 @@ function PrepareImportPage() {
 	const handleError = useErrorHandler();
 
 	const [isPreparing, setPreparing] = useSafely(useState(true));
-	const [progressRate, setProgressRate] = useSafely(useState<number>(0));
-	const [importProgress, setImportProgress] = useSafely(useState<IImportProgress>(null as unknown as IImportProgress));
-	const [status, setStatus] = useSafely(useState<string>());
+	const [progressRate, setProgressRate] = useSafely(useState(null));
+	const [status, setStatus] = useSafely(useState(null));
 	const [messageCount, setMessageCount] = useSafely(useState(0));
-	const [users, setUsers] = useState<IImporterSelectionUser[]>([]);
-	const [channels, setChannels] = useState<IImporterSelectionChannel[]>([]);
+	const [users, setUsers] = useState([]);
+	const [channels, setChannels] = useState([]);
 	const [isImporting, setImporting] = useSafely(useState(false));
 
 	const usersCount = useMemo(() => users.filter(({ do_import }) => do_import).length, [users]);
@@ -69,16 +56,18 @@ function PrepareImportPage() {
 
 	const streamer = useStream('importers');
 
-	useEffect(() =>
-		streamer('progress', (event: { rate: number } | IImportProgress) =>
-			typeof event === 'number' ? setProgressRate(event) : setImportProgress(event as IImportProgress),
-		),
+	useEffect(
+		() =>
+			streamer('progress', ({ rate }) => {
+				setProgressRate(rate);
+			}),
+		[streamer, setProgressRate],
 	);
 
 	useEffect(() => {
 		const loadImportFileData = async () => {
 			try {
-				const data = (await waitFor(getImportFileData, (data) => data && !data.waiting)) as IImporterSelection;
+				const data = await waitFor(getImportFileData, (data) => data && !data.waiting);
 
 				if (!data) {
 					handleError(t('Importer_not_setup'));
@@ -96,7 +85,7 @@ function PrepareImportPage() {
 				setUsers(data.users.map((user) => ({ ...user, do_import: true })));
 				setChannels(data.channels.map((channel) => ({ ...channel, do_import: true })));
 				setPreparing(false);
-				setProgressRate(0);
+				setProgressRate(null);
 			} catch (error) {
 				handleError(error, t('Failed_To_Load_Import_Data'));
 				router.navigate('/admin/import');
@@ -105,10 +94,10 @@ function PrepareImportPage() {
 
 		const loadCurrentOperation = async () => {
 			try {
-				const operation = (await waitFor(
+				const { operation } = await waitFor(
 					getCurrentImportOperation,
 					({ operation }) => operation.valid && !ImportWaitingStates.includes(operation.status),
-				)) as IImport;
+				);
 
 				if (!operation.valid) {
 					router.navigate('/admin/import/new');
@@ -131,7 +120,7 @@ function PrepareImportPage() {
 				}
 
 				if (ImportingErrorStates.includes(operation.status)) {
-					handleError(t('Import_Operation_Failed' as TranslationKey));
+					handleError(t('Import_Operation_Failed'));
 					router.navigate('/admin/import');
 					return;
 				}
@@ -169,7 +158,7 @@ function PrepareImportPage() {
 	};
 
 	const [tab, setTab] = useState('users');
-	const handleTabClick = useMemo(() => (tab: React.SetStateAction<string>) => () => setTab(tab), []);
+	const handleTabClick = useMemo(() => (tab) => () => setTab(tab), []);
 
 	const statusDebounced = useDebouncedValue(status, 100);
 
@@ -194,7 +183,7 @@ function PrepareImportPage() {
 			<Page.ScrollableContentWithShadow>
 				<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
 					<Box is='h2' fontScale='p2m'>
-						{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_') as TranslationKey)}
+						{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_'))}
 					</Box>
 					{!isPreparing && (
 						<Tabs flexShrink={0}>
@@ -223,19 +212,9 @@ function PrepareImportPage() {
 								)}
 							</>
 						)}
-						{!isPreparing && tab === 'users' && (
-							<PrepareUsers
-								usersCount={usersCount}
-								users={users as UserDescriptor[]}
-								setUsers={setUsers as Dispatch<SetStateAction<UserDescriptor[]>>}
-							/>
-						)}
+						{!isPreparing && tab === 'users' && <PrepareUsers usersCount={usersCount} users={users} setUsers={setUsers} />}
 						{!isPreparing && tab === 'channels' && (
-							<PrepareChannels
-								channels={channels as ChannelDescriptor[]}
-								channelsCount={channelsCount}
-								setChannels={setChannels as Dispatch<SetStateAction<ChannelDescriptor[]>>}
-							/>
+							<PrepareChannels channels={channels} channelsCount={channelsCount} setChannels={setChannels} />
 						)}
 					</Margins>
 				</Box>
