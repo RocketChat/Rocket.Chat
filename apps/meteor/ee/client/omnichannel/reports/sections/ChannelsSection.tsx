@@ -9,7 +9,7 @@ export const ChannelsSection = () => {
 	const { data, total, period, ...config } = useChannelsSection();
 
 	const subtitle = t('__count__conversations__period__', {
-		count: total,
+		count: total ?? 0,
 		period,
 	});
 

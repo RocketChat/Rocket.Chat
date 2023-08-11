@@ -10,8 +10,8 @@ export const DepartmentsSection = () => {
 	const { data, total, period, ...config } = useDepartmentsSection();
 
 	const subtitle = t('__departments__departments_and__count__conversations__period__', {
-		departments: data.length,
-		count: total,
+		departments: data.length ?? 0,
+		count: total ?? 0,
 		period,
 	});
 

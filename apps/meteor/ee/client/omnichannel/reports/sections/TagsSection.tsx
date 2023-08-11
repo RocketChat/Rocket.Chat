@@ -10,7 +10,7 @@ export const TagsSection = () => {
 	const { data, total, period, ...config } = useTagsSection();
 
 	const subtitle = t('__count__tags__period__', {
-		count: total,
+		count: total ?? 0,
 		period,
 	});
 

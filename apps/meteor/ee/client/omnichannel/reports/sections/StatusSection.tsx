@@ -9,7 +9,7 @@ export const StatusSection = () => {
 	const { data, total, ...config } = useStatusSection();
 
 	const subtitle = t('__count__conversations__period__', {
-		count: total,
+		count: total ?? 0,
 		period: config.period,
 	});
 

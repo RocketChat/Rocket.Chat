@@ -27,8 +27,8 @@ export const AgentsSection = () => {
 	const { data, total, period, ...config } = useAgentsSection();
 
 	const subtitle = t('__agents__agents_and__count__conversations__period__', {
-		agents: data.length,
-		count: total,
+		agents: data.length ?? 0,
+		count: total ?? 0,
 		period,
 	});
 
