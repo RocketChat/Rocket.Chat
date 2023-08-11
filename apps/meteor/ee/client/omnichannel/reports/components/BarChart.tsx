@@ -52,7 +52,11 @@ export const BarChart = ({
 }: BarChartProps) => {
 	const t = useTranslation();
 
-	const minHeight = useMemo(() => data.length * 22, [data.length]);
+	const { minHeight, padding } = useMemo(() => {
+		const minHeight = data.length * 22;
+		const padding = data.length <= 4 ? 0.5 : 0.05;
+		return { minHeight, padding };
+	}, [data.length]);
 
 	return (
 		<Box maxWidth={maxWidth} height={height} overflowY='auto'>
@@ -64,7 +68,7 @@ export const BarChart = ({
 					layout={direction}
 					keys={keys}
 					groupMode='grouped'
-					padding={0.5}
+					padding={padding}
 					colors={data.map((d) => d.color)}
 					enableGridY={enableGridY}
 					enableGridX={enableGridX}
