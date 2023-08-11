@@ -63,6 +63,7 @@ export const BarChart = ({
 					data={data}
 					indexBy={indexBy}
 					layout={direction}
+					indexScale={{ type: 'band', round: false }}
 					keys={keys}
 					groupMode='grouped'
 					padding={padding}
@@ -79,6 +80,8 @@ export const BarChart = ({
 					margin={margins}
 					motionConfig='stiff'
 					theme={REPORTS_CHARTS_THEME}
+					// TODO: Create a switch to change the scale type
+					// valueScale={{ type: 'symlog' }}
 					valueScale={{ type: 'linear' }}
 					tooltip={({ data }) => <Tooltip>{`${data.label}: ${data.value}`}</Tooltip>}
 				/>
