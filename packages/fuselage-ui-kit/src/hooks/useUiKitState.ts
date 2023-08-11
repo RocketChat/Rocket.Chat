@@ -52,9 +52,8 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
   const { blockId, actionId, appId, dispatchActionConfig } = rest;
   const {
     action,
-    appId: appIdFromContext,
-    viewId,
-    state,
+    payload: { appId: appIdFromContext, viewId },
+    updateState,
   } = useContext(UiKitContext);
 
   const initialValue =
@@ -88,7 +87,9 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
       setValue(elValue);
     }
 
-    state && (await state({ blockId, appId, actionId, value, viewId }, e));
+    updateState &&
+      (await updateState({ blockId, appId, actionId, value, viewId }, e));
+
     await action(
       {
         blockId,
@@ -109,7 +110,10 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
       target: { value },
     } = e;
     setValue(value);
-    state && (await state({ blockId, appId, actionId, value, viewId }, e));
+
+    updateState &&
+      (await updateState({ blockId, appId, actionId, value, viewId }, e));
+
     await action(
       {
         blockId,
@@ -127,17 +131,14 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
     const {
       target: { value },
     } = e;
+
     setValue(value);
-    await state(
-      {
-        blockId,
-        appId: appId || appIdFromContext,
-        actionId,
-        value,
-        viewId,
-      },
-      e
-    );
+
+    updateState &&
+      (await updateState(
+        { blockId, appId: appId || appIdFromContext, actionId, value, viewId },
+        e
+      ));
   });
 
   const result: UiKitState = useMemo(

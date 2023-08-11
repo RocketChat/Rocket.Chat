@@ -8,6 +8,7 @@ type ActionParams = {
   value: unknown;
   viewId?: string;
   dispatchActionConfig?: InputElementDispatchAction[];
+  mid?: string;
 };
 
 type UiKitContextValue = {
@@ -15,21 +16,25 @@ type UiKitContextValue = {
     state: ActionParams,
     event: Parameters<React.MouseEventHandler<HTMLElement>>[0]
   ) => Promise<void> | void;
-  state: (
+  updateState?: (
     state: ActionParams,
     event: Parameters<React.MouseEventHandler<HTMLElement>>[0]
   ) => Promise<void> | void;
-  appId: string;
+  payload: {
+    appId: string;
+    viewId: string;
+  };
+  values?: Record<string, { value: string } | undefined>;
   errors?: Record<string, string>;
-  values: Record<string, { value: string } | undefined>;
-  viewId?: string;
   rid?: string;
 };
 
 export const UiKitContext = createContext<UiKitContextValue>({
   action: () => undefined,
-  state: () => undefined,
-  appId: 'core',
+  updateState: () => undefined,
   errors: {},
-  values: {},
+  payload: {
+    appId: 'core',
+    viewId: 'default',
+  },
 });
