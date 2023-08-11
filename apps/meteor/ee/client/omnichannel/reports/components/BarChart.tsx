@@ -1,6 +1,5 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Tooltip } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import { REPORTS_CHARTS_THEME } from './constants';
@@ -50,8 +49,6 @@ export const BarChart = ({
 	enableGridY = false,
 	axis: { axisTop, axisLeft, axisRight, axisBottom } = {},
 }: BarChartProps) => {
-	const t = useTranslation();
-
 	const { minHeight, padding } = useMemo(() => {
 		const minHeight = data.length * 22;
 		const padding = data.length <= 4 ? 0.5 : 0.05;
@@ -83,7 +80,7 @@ export const BarChart = ({
 					motionConfig='stiff'
 					theme={REPORTS_CHARTS_THEME}
 					valueScale={{ type: 'linear' }}
-					tooltip={({ value }) => <Tooltip>{t('Value_users', { value })}</Tooltip>}
+					tooltip={({ data }) => <Tooltip>{`${data.label}: ${data.value}`}</Tooltip>}
 				/>
 			</Box>
 		</Box>

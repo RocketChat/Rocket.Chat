@@ -1,15 +1,12 @@
 import { Pie } from '@nivo/pie';
 import { Tooltip } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { REPORTS_CHARTS_THEME } from './constants';
 
 export const PieChart = ({ data, width, height }: { data: unknown; width: number; height: number }) => {
-	const t = useTranslation();
 	return (
 		<Pie
-			// animate
 			width={width}
 			height={height}
 			data={data}
@@ -20,7 +17,7 @@ export const PieChart = ({ data, width, height }: { data: unknown; width: number
 			enableArcLinkLabels={false}
 			enableArcLabels={false}
 			margin={{ right: 100 }}
-			tooltip={({ datum }) => <Tooltip>{t('Value_messages', { value: datum.value })}</Tooltip>}
+			tooltip={({ datum }) => <Tooltip>{`${datum.label}: ${datum.value}`}</Tooltip>}
 			legends={[
 				{
 					anchor: 'right',
