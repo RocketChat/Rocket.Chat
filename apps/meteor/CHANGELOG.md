@@ -1,5 +1,33 @@
 # @rocket.chat/meteor
 
+## 6.2.12
+
+### Patch Changes
+
+- a27023d937: fix: Performance issue on `Messages.countByType` aggregation caused by unindexed property on messages collection
+- 5e47423a52: Added ability to freeze or completely disable integration scripts through envvars
+- 6437cdfbe0: fix: Performance issue when using api to create users
+- 65cb49643d: Fix performance issue on Engagement Dashboard aggregation
+- 9b5da10e33: Fixed unable to create admin user using ADMIN\_\* environment variables
+- 0fc7303905: Fix performance issue on username availability check
+  - @rocket.chat/core-typings@6.2.12
+  - @rocket.chat/rest-typings@6.2.12
+  - @rocket.chat/omnichannel-services@0.0.6
+  - @rocket.chat/pdf-worker@0.0.6
+  - @rocket.chat/presence@0.0.6
+  - @rocket.chat/api-client@0.0.6
+  - @rocket.chat/core-services@0.0.6
+  - @rocket.chat/gazzodown@0.0.1
+  - @rocket.chat/model-typings@0.0.6
+  - @rocket.chat/ui-contexts@0.0.6
+  - @rocket.chat/models@0.0.6
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/fuselage-ui-kit@0.31.16
+  - @rocket.chat/ui-client@0.0.1
+  - @rocket.chat/ui-video-conf@0.0.1
+  - @rocket.chat/web-ui-registration@0.0.1
+  - @rocket.chat/instance-status@0.0.6
+
 ## 6.2.10
 
 ### Patch Changes
