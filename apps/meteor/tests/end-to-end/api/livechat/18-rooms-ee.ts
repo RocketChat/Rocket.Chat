@@ -254,4 +254,39 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(updatedRoom).to.not.have.property('onHold');
 		});
 	});
+
+	describe('visitor abandonment feature', () => {
+		before(async () => {
+			await updateSetting('Livechat_abandoned_rooms_action', 'Livechat_close_chat');
+			await updateSetting('Livechat_visitor_inactivity_timeout', 60);
+		});
+
+		it('should set predictedVisitorAbandonmentAt when agent sends a message', async () => {
+			const { room } = await startANewLivechatRoomAndTakeIt();
+
+			await sendAgentMessage(room._id);
+
+			const updatedRoom = await getLivechatRoomInfo(room._id);
+
+			const lastMessageTs = updatedRoom.responseBy?.lastMessageTs;
+			const predictedVisitorAbandonmentAt = updatedRoom.omnichannel?.predictedVisitorAbandonmentAt;
+
+			expect(predictedVisitorAbandonmentAt).to.not.be.undefined;
+			expect(lastMessageTs).to.not.be.undefined;
+
+			if (!lastMessageTs || !predictedVisitorAbandonmentAt) {
+				throw new Error('lastMessageTs or predictedVisitorAbandonmentAt is undefined');
+			}
+
+			// expect predictedVisitorAbandonmentAt to be 60 seconds after lastMessageTs
+			const lastMessageTsDate = new Date(lastMessageTs);
+			const predictedVisitorAbandonmentAtDate = new Date(predictedVisitorAbandonmentAt);
+			expect(predictedVisitorAbandonmentAtDate.getTime()).to.be.equal(lastMessageTsDate.getTime() + 60000);
+		});
+
+		after(async () => {
+			await updateSetting('Livechat_abandoned_rooms_action', 'none');
+			await updateSetting('Livechat_visitor_inactivity_timeout', 3600);
+		});
+	});
 });
