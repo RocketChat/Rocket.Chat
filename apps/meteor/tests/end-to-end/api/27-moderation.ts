@@ -4,7 +4,7 @@ import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { createUser } from '../../data/users.helper.js';
+import { createUser, deleteUser } from '../../data/users.helper.js';
 
 // test for the /moderation.reportsByUsers endpoint
 
@@ -607,6 +607,10 @@ describe('[Moderation]', function () {
 			userToBeReported = await createUser();
 		});
 
+		after(async () => {
+			await deleteUser(userToBeReported);
+		});
+
 		it('should report an user', async () => {
 			await request
 				.post(api('moderation.reportUser'))
@@ -634,6 +638,7 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
 				});
 		});
 	});

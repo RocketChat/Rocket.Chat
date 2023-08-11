@@ -37,7 +37,6 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			message,
 			description,
 			reportedBy,
-			// reportedUser: message.u,
 			room,
 			ts: new Date(),
 		};
