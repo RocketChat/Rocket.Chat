@@ -7,10 +7,15 @@ import { ellipsis } from '../utils/ellipsis';
 
 export const TagsSection = () => {
 	const t = useTranslation();
-	const { data, ...config } = useTagsSection();
+	const { data, total, period, ...config } = useTagsSection();
+
+	const subtitle = t('__count__tags__period__', {
+		count: total,
+		period,
+	});
 
 	return (
-		<ReportCard title={t('Conversations_by_tags')} height={360} {...config}>
+		<ReportCard title={t('Conversations_by_tags')} height={360} subtitle={subtitle} {...config}>
 			<BarChart
 				data={data}
 				direction='horizontal'

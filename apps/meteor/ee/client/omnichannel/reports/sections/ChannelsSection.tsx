@@ -6,10 +6,15 @@ import { useChannelsSection } from '../hooks';
 
 export const ChannelsSection = () => {
 	const t = useTranslation();
-	const { data, ...config } = useChannelsSection();
+	const { data, total, period, ...config } = useChannelsSection();
+
+	const subtitle = t('__count__conversations__period__', {
+		count: total,
+		period,
+	});
 
 	return (
-		<ReportCard title={t('Conversations_by_channel')} height={200} {...config}>
+		<ReportCard title={t('Conversations_by_channel')} height={200} subtitle={subtitle} {...config}>
 			<PieChart data={data} width={300} height={200} />
 		</ReportCard>
 	);

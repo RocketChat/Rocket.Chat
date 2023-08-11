@@ -21,7 +21,7 @@ export const useStatusSection = () => {
 	const getConversationsByStatus = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-status');
 
 	const {
-		data = [],
+		data: endpointRes = { data: [], total: 0 },
 		isLoading,
 		isError,
 		isSuccess,
@@ -29,7 +29,9 @@ export const useStatusSection = () => {
 		['omnichannel-reports', 'conversations-by-status', period],
 		async () => {
 			const { start, end } = getPeriodRange(period);
-			return getConversationsByStatus({ start: start.toISOString(), end: end.toISOString() });
+			const result = await getConversationsByStatus({ start: start.toISOString(), end: end.toISOString() });
+
+			return { ...result, data: formatChartData(result.data) };
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
@@ -41,25 +43,25 @@ export const useStatusSection = () => {
 		() => ({
 			attachmentName: 'Conversations_by_status',
 			headers: ['Date', 'Messages'],
-			dataAvailable: data.length > 0,
+			dataAvailable: endpointRes.data.length > 0,
 			dataExtractor(): unknown[][] | undefined {
-				return data?.map(({ label, value }) => [label, value]);
+				return endpointRes.data?.map(({ label, value }) => [label, value]);
 			},
 		}),
-		[data],
+		[endpointRes.data],
 	);
 
-	return useMemo(
-		() => ({
-			data: formatChartData(data?.data),
-			total: data?.total,
+	return useMemo(() => {
+		const { data: resData, total } = endpointRes;
+		return {
+			data: resData,
+			total,
 			isLoading,
 			isError,
-			isDataFound: isSuccess && data.length > 0,
+			isDataFound: isSuccess && resData.length > 0,
 			periodSelectorProps,
 			downloadProps,
 			period,
-		}),
-		[data?.data, data?.total, data.length, isLoading, isError, isSuccess, periodSelectorProps, downloadProps, period],
-	);
+		};
+	}, [endpointRes, isLoading, isError, isSuccess, periodSelectorProps, downloadProps, period]);
 };

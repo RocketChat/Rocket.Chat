@@ -19,7 +19,7 @@ type ReportCardProps = {
 	isDataFound?: boolean;
 	height?: number;
 	loadingSkeleton?: ReactElement;
-	subTitle?: string;
+	subtitle?: string;
 };
 
 export const ReportCard = ({
@@ -30,7 +30,7 @@ export const ReportCard = ({
 	isLoading,
 	isDataFound,
 	height,
-	subTitle,
+	subtitle,
 	loadingSkeleton: LoadingSkeleton = <Skeleton style={{ transform: 'none' }} height='100%' />,
 }: ReportCardProps) => {
 	const t = useTranslation();
@@ -41,7 +41,7 @@ export const ReportCard = ({
 					<Box display='flex' flexDirection='column'>
 						<Box>{title}</Box>
 						<Box color='hint' fontScale='p2' withTruncatedText>
-							{subTitle}
+							{subtitle}
 						</Box>
 					</Box>
 					<Box flexGrow={0} display='flex' alignItems='center'>

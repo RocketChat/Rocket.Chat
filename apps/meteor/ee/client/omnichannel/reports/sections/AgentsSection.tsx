@@ -24,10 +24,16 @@ const LoadingSkeleton = () => (
 
 export const AgentsSection = () => {
 	const t = useTranslation();
-	const { data, ...config } = useAgentsSection();
+	const { data, total, period, ...config } = useAgentsSection();
+
+	const subtitle = t('__agents__agents_and__count__conversations__period__', {
+		agents: data.length,
+		count: total,
+		period,
+	});
 
 	return (
-		<ReportCard title={t('Conversations_by_agents')} height={360} {...config} loadingSkeleton={<LoadingSkeleton />}>
+		<ReportCard title={t('Conversations_by_agents')} height={360} {...config} subtitle={subtitle} loadingSkeleton={<LoadingSkeleton />}>
 			<Box display='flex' style={{ gap: '16px' }}>
 				<Flex.Item grow={1}>
 					<BarChart
