@@ -1,4 +1,19 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 export class SelectionChannel {
+	channel_id: string;
+
+	name: string;
+
+	is_archived: boolean;
+
+	do_import: boolean;
+
+	is_private: boolean;
+
+	creator: string;
+
+	is_direct: boolean;
+
 	/**
 	 * Constructs a new selection channel.
 	 *
@@ -10,7 +25,15 @@ export class SelectionChannel {
 	 * @param {int} creator the id of the channel owner
 	 * @param {boolean} is_direct whether the channel represents direct messages
 	 */
-	constructor(channel_id, name, is_archived, do_import, is_private, creator, is_direct) {
+	constructor(
+		channel_id: string,
+		name: string,
+		is_archived: boolean,
+		do_import: boolean,
+		is_private: boolean,
+		creator: string,
+		is_direct: boolean,
+	) {
 		this.channel_id = channel_id;
 		this.name = name;
 		this.is_archived = is_archived;

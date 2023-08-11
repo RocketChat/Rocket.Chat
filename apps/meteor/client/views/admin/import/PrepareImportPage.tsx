@@ -1,4 +1,4 @@
-import type { IImportProgress } from '@rocket.chat/core-typings';
+import type { IImportProgress, IImporterSelection } from '@rocket.chat/core-typings';
 import { ProgressStep } from '@rocket.chat/core-typings';
 import { Badge, Box, Button, ButtonGroup, Margins, Throbber, Tabs, ProgressBar } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
@@ -14,65 +14,13 @@ import {
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 import Page from '../../../components/Page';
+import type { ChannelDescriptor } from './PrepareChannels';
 import PrepareChannels from './PrepareChannels';
+import type { UserDescriptor } from './PrepareUsers';
 import PrepareUsers from './PrepareUsers';
 import { useErrorHandler } from './useErrorHandler';
 
-const waitFor = (
-	fn: {
-		(params?: unknown): Promise<
-			| {
-					name: string;
-					users: {
-						user_id: string;
-						username: string | undefined;
-						email: string;
-						is_deleted: boolean;
-						is_bot: boolean;
-						do_import: boolean;
-						is_email_taken: boolean;
-					}[];
-					channels: {
-						channel_id: string;
-						name: string | undefined;
-						is_archived: boolean;
-						do_import: boolean;
-						is_private: boolean;
-						creator: undefined;
-						is_direct: boolean;
-					}[];
-					message_count: number;
-			  }
-			| { waiting: true }
-		>;
-		(params?: unknown): Promise<{
-			operation: {
-				type: string;
-				importerKey: string;
-				ts: string;
-				status: ProgressStep;
-				valid: boolean;
-				user: string;
-				_updatedAt: string;
-				contentType?: string | undefined;
-				file?: string | undefined;
-				count?:
-					| {
-							total?: number | undefined;
-							completed?: number | undefined;
-							error?: number | undefined;
-							users?: number | undefined;
-							messages?: number | undefined;
-							channels?: number | undefined;
-					  }
-					| undefined;
-				_id: string;
-			};
-		}>;
-		(): Promise<unknown>;
-	},
-	predicate: (result: unknown) => boolean,
-) =>
+const waitFor = (fn: any, predicate: (result: any) => boolean) =>
 	new Promise((resolve, reject) => {
 		const callPromise = () => {
 			fn().then((result: unknown) => {
@@ -96,8 +44,8 @@ function PrepareImportPage() {
 	const [progressRate, setProgressRate] = useSafely(useState<{ rate: number } | IImportProgress>());
 	const [status, setStatus] = useSafely(useState(null));
 	const [messageCount, setMessageCount] = useSafely(useState(0));
-	const [users, setUsers] = useState([]);
-	const [channels, setChannels] = useState([]);
+	const [users, setUsers] = useState<UserDescriptor[]>([]);
+	const [channels, setChannels] = useState<ChannelDescriptor[]>([]);
 	const [isImporting, setImporting] = useSafely(useState(false));
 
 	const usersCount = useMemo(() => users.filter(({ do_import }) => do_import).length, [users]);
@@ -116,7 +64,7 @@ function PrepareImportPage() {
 	useEffect(() => {
 		const loadImportFileData = async () => {
 			try {
-				const data = await waitFor(getImportFileData, (data) => data && !data.waiting);
+				const data = await waitFor(getImportFileData, (data: IImporterSelection) => data && !data.waiting);
 
 				if (!data) {
 					handleError(t('Importer_not_setup'));

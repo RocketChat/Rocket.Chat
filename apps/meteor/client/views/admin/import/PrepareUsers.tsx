@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, Dispatch, SetStateAction, ChangeEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
-type UserDescriptor = {
+export type UserDescriptor = {
 	user_id: string;
 	username: string;
 	email: string;
