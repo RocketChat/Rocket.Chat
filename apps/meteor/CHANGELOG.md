@@ -1,5 +1,39 @@
 # @rocket.chat/meteor
 
+## 6.3.1
+
+### Patch Changes
+
+- a874d5b305: Translation files are requested multiple times
+- cf9f16b17c: fix: Performance issue on `Messages.countByType` aggregation caused by unindexed property on messages collection
+- be2b5c66cf: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- ce2f2eaad3: Added ability to freeze or completely disable integration scripts through envvars
+- f29c3268ee: fixed an issue where 2fa was not working after an OAuth redirect
+- 09a24e59ef: Fix performance issue on Engagement Dashboard aggregation
+- f29c3268ee: fixed an issue where oauth login was not working with some providers
+- 25d5e3cd9e: Fixed unable to create admin user using ADMIN\_\* environment variables
+- 34f08e7c95: Fixed failing user data exports
+- f29c3268ee: fixed an issue on oauth login that caused missing emails to be detected as changed data
+  - @rocket.chat/core-typings@6.3.1
+  - @rocket.chat/rest-typings@6.3.1
+  - @rocket.chat/api-client@0.1.1
+  - @rocket.chat/omnichannel-services@0.0.7
+  - @rocket.chat/pdf-worker@0.0.7
+  - @rocket.chat/presence@0.0.7
+  - @rocket.chat/core-services@0.1.1
+  - @rocket.chat/cron@0.0.3
+  - @rocket.chat/gazzodown@1.0.1
+  - @rocket.chat/model-typings@0.0.7
+  - @rocket.chat/ui-contexts@1.0.1
+  - @rocket.chat/fuselage-ui-kit@1.0.1
+  - @rocket.chat/models@0.0.7
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.1
+  - @rocket.chat/ui-video-conf@1.0.1
+  - @rocket.chat/web-ui-registration@1.0.1
+  - @rocket.chat/instance-status@0.0.7
+
 ## 6.3.0
 
 ### Minor Changes
