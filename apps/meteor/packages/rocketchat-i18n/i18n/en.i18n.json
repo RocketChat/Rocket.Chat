@@ -5975,5 +5975,6 @@
   "Uninstall_grandfathered_app": "Uninstall {{appName}}?",
   "App_will_lose_grandfathered_status": "**This {{context}} app will lose its grandfathered status.**  \n  \nWorkspaces on Community Edition can have up to {{limit}} {{context}} apps enabled. Grandfathered apps count towards the limit but the limit is not applied to them.",
   "Failed_To_upload_Import_File": "Failed to upload import file",
+  "Import_Operation_Failed": "Import operation failed",
   "Theme_Appearence": "Theme Appearence"
 }

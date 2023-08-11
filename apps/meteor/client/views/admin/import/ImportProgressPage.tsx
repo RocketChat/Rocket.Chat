@@ -99,7 +99,7 @@ const ImportProgressPage = function ImportProgressPage() {
 
 	const [progressRate, setProgressRate] = useSafely(useState<number>(0));
 
-	const isImportProgress = (element: any): element is IImportProgress => true;
+	const isImportProgress = (_element: any): _element is IImportProgress => true;
 
 	useEffect(
 		() =>
