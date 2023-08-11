@@ -1329,7 +1329,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	async findByIdPinnedTimestampLimitAndUsers(
 		rid: string,
-		pinned: boolean,
+		ignorePinned: boolean,
 		ignoreDiscussion = true,
 		ts: Filter<IMessage>['ts'],
 		limit: number,
@@ -1342,7 +1342,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			...(users.length > 0 && { 'u.username': { $in: users } }),
 		};
 
-		if (pinned) {
+		if (ignorePinned) {
 			query.pinned = { $ne: true };
 		}
 
@@ -1367,7 +1367,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	async removeByIdPinnedTimestampLimitAndUsers(
 		rid: string,
-		pinned: boolean,
+		ignorePinned: boolean,
 		ignoreDiscussion = true,
 		ts: Filter<IMessage>['ts'],
 		limit: number,
@@ -1398,7 +1398,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			...(users.length > 0 && { 'u.username': { $in: users } }),
 		};
 
-		if (pinned) {
+		if (ignorePinned) {
 			query.pinned = { $ne: true };
 		}
 

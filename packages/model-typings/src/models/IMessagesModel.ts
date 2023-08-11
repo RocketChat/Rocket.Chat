@@ -228,7 +228,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	removeByIdPinnedTimestampLimitAndUsers(
 		rid: string,
-		pinned: boolean,
+		ignorePinned: boolean,
 		ignoreDiscussion: boolean,
 		ts: Filter<IMessage>['ts'],
 		limit: number,
@@ -238,7 +238,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	): Promise<number>;
 	findByIdPinnedTimestampLimitAndUsers(
 		rid: string,
-		pinned: boolean,
+		ignorePinned: boolean,
 		ignoreDiscussion: boolean,
 		ts: Filter<IMessage>['ts'],
 		limit: number,
