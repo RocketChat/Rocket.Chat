@@ -512,8 +512,8 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 					$match: {
 						t: 'l',
 						ts: {
-							$gte: start,
 							$lt: end,
+							$gte: start,
 						},
 					},
 				},
@@ -531,16 +531,22 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 					$unwind: '$_id',
 				},
 				{
-					$sort: sort || { Chats: -1 },
+					$group: {
+						_id: '$_id',
+						total: { $sum: '$Chats' },
+					},
+				},
+				{
+					$sort: sort || { total: -1 },
 				},
 				{
 					$group: {
 						_id: null,
-						total: { $sum: '$Chats' },
+						total: { $sum: '$total' },
 						data: {
 							$push: {
 								label: '$_id',
-								value: '$Chats',
+								value: '$total',
 							},
 						},
 					},
