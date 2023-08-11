@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { getPeriodRange } from '../../../components/dashboards/periods';
-import { usePeriodSelectorState } from '../../../components/dashboards/usePeriodSelectorState';
+import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { COLORS, PERIOD_OPTIONS } from '../components/constants';
 
 const formatChartData = (data: { label: string; value: number }[] | undefined = []) =>
@@ -13,7 +13,7 @@ const formatChartData = (data: { label: string; value: number }[] | undefined = 
 	}));
 
 export const useAgentsSection = () => {
-	const [period, periodSelectorProps] = usePeriodSelectorState(...PERIOD_OPTIONS);
+	const [period, periodSelectorProps] = usePeriodSelectorStorage('reports-agents-period', PERIOD_OPTIONS);
 	const getConversationsBySource = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-agent');
 
 	const {

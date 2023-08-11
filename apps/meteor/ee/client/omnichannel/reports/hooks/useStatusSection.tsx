@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { getPeriodRange } from '../../../components/dashboards/periods';
-import { usePeriodSelectorState } from '../../../components/dashboards/usePeriodSelectorState';
+import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { COLORS, PERIOD_OPTIONS } from '../components/constants';
 
 const STATUS_COLORS: Record<string, string> = {
@@ -17,7 +17,7 @@ const formatChartData = (data: { label: string; value: number }[] | undefined = 
 	data.map((item) => ({ ...item, id: item.label, color: STATUS_COLORS[item.label] }));
 
 export const useStatusSection = () => {
-	const [period, periodSelectorProps] = usePeriodSelectorState(...PERIOD_OPTIONS);
+	const [period, periodSelectorProps] = usePeriodSelectorStorage('reports-status-period', PERIOD_OPTIONS);
 	const getConversationsByStatus = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-status');
 
 	const {

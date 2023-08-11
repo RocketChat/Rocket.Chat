@@ -1,5 +1,7 @@
 import { Palette } from '@rocket.chat/fuselage';
 
+import type { Period } from '../../../components/dashboards/periods';
+
 export const REPORTS_CHARTS_THEME = {
 	labels: {
 		text: { fontSize: 12 },
@@ -37,4 +39,4 @@ export const COLORS = {
 	info: Palette.statusColor['status-font-on-info'].toString(),
 };
 
-export const PERIOD_OPTIONS = ['today', 'this week', 'last 15 days', 'this month', 'last 6 months', 'last year'] as const;
+export const PERIOD_OPTIONS: Period['key'][] = ['today', 'this week', 'last 15 days', 'this month', 'last 6 months', 'last year'];
