@@ -23,8 +23,8 @@ export const findAllConversationsByAgents = async ({ start, end, sort }: AggPara
 	return (await LivechatRooms.getConversationsByAgents(start, end, sort).toArray())[0];
 };
 
-export const findAllConversationsBySourceCached = mem(findAllConversationsBySource, { maxAge: 10000 });
-export const findAllConversationsByStatusCached = mem(findAllConversationsByStatus, { maxAge: 10000 });
-export const findAllConversationsByDepartmentCached = mem(findAllConversationsByDepartment, { maxAge: 10000 });
-export const findAllConversationsByTagsCached = mem(findAllConversationsByTags, { maxAge: 10000 });
-export const findAllConversationsByAgentsCached = mem(findAllConversationsByAgents, { maxAge: 10000 });
+export const findAllConversationsBySourceCached = mem(findAllConversationsBySource, { maxAge: 10000, cacheKey: JSON.stringify });
+export const findAllConversationsByStatusCached = mem(findAllConversationsByStatus, { maxAge: 10000, cacheKey: JSON.stringify });
+export const findAllConversationsByDepartmentCached = mem(findAllConversationsByDepartment, { maxAge: 10000, cacheKey: JSON.stringify });
+export const findAllConversationsByTagsCached = mem(findAllConversationsByTags, { maxAge: 10000, cacheKey: JSON.stringify });
+export const findAllConversationsByAgentsCached = mem(findAllConversationsByAgents, { maxAge: 10000, cacheKey: JSON.stringify });
