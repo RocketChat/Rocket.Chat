@@ -3125,6 +3125,7 @@ export const isPOSTLivechatAppearanceParams = ajv.compile<POSTLivechatAppearance
 type GETDashboardConversationsByType = {
 	start: string;
 	end: string;
+	sort?: string;
 };
 
 const GETDashboardConversationsByTypeSchema = {
@@ -3134,6 +3135,9 @@ const GETDashboardConversationsByTypeSchema = {
 			type: 'string',
 		},
 		end: {
+			type: 'string',
+		},
+		sort: {
 			type: 'string',
 		},
 	},

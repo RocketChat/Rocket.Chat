@@ -74,12 +74,13 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { start, end } = this.queryParams;
+			const { sort } = await this.parseJsonQuery();
 
 			const startDate = moment(start);
 			const endDate = moment(end);
 
 			checkDates(startDate, endDate);
-			const result = await findAllConversationsByDepartmentCached({ start: startDate.toDate(), end: endDate.toDate() });
+			const result = await findAllConversationsByDepartmentCached({ start: startDate.toDate(), end: endDate.toDate(), sort });
 
 			return API.v1.success(result || defaultValue);
 		},
@@ -92,12 +93,13 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { start, end } = this.queryParams;
+			const { sort } = await this.parseJsonQuery();
 
 			const startDate = moment(start);
 			const endDate = moment(end);
 
 			checkDates(startDate, endDate);
-			const result = await findAllConversationsByTagsCached({ start: startDate.toDate(), end: endDate.toDate() });
+			const result = await findAllConversationsByTagsCached({ start: startDate.toDate(), end: endDate.toDate(), sort });
 
 			return API.v1.success(result || defaultValue);
 		},
@@ -110,12 +112,13 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { start, end } = this.queryParams;
+			const { sort } = await this.parseJsonQuery();
 
 			const startDate = moment(start);
 			const endDate = moment(end);
 
 			checkDates(startDate, endDate);
-			const result = await findAllConversationsByAgentsCached({ start: startDate.toDate(), end: endDate.toDate() });
+			const result = await findAllConversationsByAgentsCached({ start: startDate.toDate(), end: endDate.toDate(), sort });
 
 			return API.v1.success(result || defaultValue);
 		},

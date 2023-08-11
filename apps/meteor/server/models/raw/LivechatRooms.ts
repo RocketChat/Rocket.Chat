@@ -2543,15 +2543,15 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		throw new Error('Method not implemented.');
 	}
 
-	getConversationsByDepartment(_start: Date, _end: Date): AggregationCursor<ReportResult> {
+	getConversationsByDepartment(_start: Date, _end: Date, _sort: Record<string, 1 | -1>): AggregationCursor<ReportResult> {
 		throw new Error('Method not implemented.');
 	}
 
-	getConversationsByTags(_start: Date, _end: Date): AggregationCursor<ReportResult> {
+	getConversationsByTags(_start: Date, _end: Date, _sort: Record<string, 1 | -1>): AggregationCursor<ReportResult> {
 		throw new Error('Method not implemented.');
 	}
 
-	getConversationsByAgents(_start: Date, _end: Date): AggregationCursor<ReportResult> {
+	getConversationsByAgents(_start: Date, _end: Date, _sort: Record<string, 1 | -1>): AggregationCursor<ReportResult> {
 		throw new Error('Method not implemented.');
 	}
 }

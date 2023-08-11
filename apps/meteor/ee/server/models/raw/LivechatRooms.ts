@@ -45,9 +45,9 @@ declare module '@rocket.chat/model-typings' {
 		countRoomsWithTranscriptSent(): Promise<number>;
 		getConversationsBySource(start: Date, end: Date): AggregationCursor<ReportResult>;
 		getConversationsByStatus(start: Date, end: Date): AggregationCursor<ReportResult>;
-		getConversationsByDepartment(start: Date, end: Date): AggregationCursor<ReportResult>;
-		getConversationsByTags(start: Date, end: Date): AggregationCursor<ReportResult>;
-		getConversationsByAgents(start: Date, end: Date): AggregationCursor<ReportResult>;
+		getConversationsByDepartment(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult>;
+		getConversationsByTags(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult>;
+		getConversationsByAgents(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult>;
 	}
 }
 
@@ -467,7 +467,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getConversationsByDepartment(start: Date, end: Date): AggregationCursor<ReportResult> {
+	getConversationsByDepartment(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
 				{
@@ -501,6 +501,9 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 					},
 				},
 				{
+					$sort: sort || { Chats: -1 },
+				},
+				{
 					$group: {
 						_id: null,
 						total: { $sum: '$Chats' },
@@ -522,7 +525,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getConversationsByTags(start: Date, end: Date): AggregationCursor<ReportResult> {
+	getConversationsByTags(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
 				{
@@ -548,6 +551,9 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 					$unwind: '$_id',
 				},
 				{
+					$sort: sort || { Chats: -1 },
+				},
+				{
 					$group: {
 						_id: null,
 						total: { $sum: '$Chats' },
@@ -569,7 +575,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getConversationsByAgents(start: Date, end: Date): AggregationCursor<ReportResult> {
+	getConversationsByAgents(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
 				{
@@ -608,6 +614,9 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 							$ifNull: ['$agent.name', '$_id'],
 						},
 					},
+				},
+				{
+					$sort: sort || { agentName: 1 },
 				},
 				{
 					$group: {
