@@ -28,7 +28,7 @@ const MessageAction = ({ icon, methodId, i18nLabel, label, runAction, danger }: 
 	const resolvedIcon = resolveLegacyIcon(icon);
 
 	return (
-		<Button icon={resolvedIcon} data-method-id={methodId} onClick={runAction(methodId)} marginInline='x4' small danger={danger}>
+		<Button icon={resolvedIcon} data-method-id={methodId} onClick={runAction(methodId)} marginInline={4} small danger={danger}>
 			{i18nLabel ? t(i18nLabel) : label}
 		</Button>
 	);

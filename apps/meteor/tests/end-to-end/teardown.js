@@ -1,3 +1,5 @@
+import { afterEach } from 'mocha';
+
 import { request } from '../data/api-data.js';
 
 const methods = ['get', 'post', 'put', 'del'];

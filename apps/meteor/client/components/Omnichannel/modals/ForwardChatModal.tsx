@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Field, Button, TextAreaInput, Modal, Box, PaginatedSelectFiltered, Divider } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, Button, TextAreaInput, Modal, Box, PaginatedSelectFiltered, Divider } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -41,7 +41,6 @@ const ForwardChatModal = ({
 		useMemo(() => ({ filter: debouncedDepartmentsFilter as string, enabled: true }), [debouncedDepartmentsFilter]),
 	);
 	const { phase: departmentsPhase, items: departments, itemCount: departmentsTotal } = useRecordList(departmentsList);
-	const hasDepartments = useMemo(() => departments && departments.length > 0, [departments]);
 
 	const _id = { $ne: room.servedBy?._id };
 	const conditions = {
@@ -101,49 +100,51 @@ const ForwardChatModal = ({
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
-				<Field mbe='x30'>
-					<Field.Label>{t('Forward_to_department')}</Field.Label>
-					<Field.Row>
-						<PaginatedSelectFiltered
-							withTitle
-							filter={departmentsFilter as string}
-							setFilter={setDepartmentsFilter}
-							options={departments}
-							maxWidth='100%'
-							placeholder={t('Select_an_option')}
-							onChange={(value: string): void => {
-								setValue('department', value);
-							}}
-							flexGrow={1}
-							endReached={endReached}
-						/>
-					</Field.Row>
-				</Field>
-				<Divider children={t('or')} />
-				<Field {...(hasDepartments && { mbs: 'x30' })}>
-					<Field.Label>{t('Forward_to_user')}</Field.Label>
-					<Field.Row>
-						<UserAutoComplete
-							conditions={conditions}
-							placeholder={t('Username')}
-							onChange={(value) => {
-								setValue('username', value);
-							}}
-							value={getValues().username}
-						/>
-					</Field.Row>
-				</Field>
-				<Field marginBlock='x15'>
-					<Field.Label>
-						{t('Leave_a_comment')}{' '}
-						<Box is='span' color='annotation'>
-							({t('Optional')})
-						</Box>
-					</Field.Label>
-					<Field.Row>
-						<TextAreaInput data-qa-id='ForwardChatModalTextAreaInputComment' {...register('comment')} rows={8} flexGrow={1} />
-					</Field.Row>
-				</Field>
+				<FieldGroup>
+					<Field>
+						<Field.Label>{t('Forward_to_department')}</Field.Label>
+						<Field.Row>
+							<PaginatedSelectFiltered
+								withTitle
+								filter={departmentsFilter as string}
+								setFilter={setDepartmentsFilter}
+								options={departments}
+								maxWidth='100%'
+								placeholder={t('Select_an_option')}
+								onChange={(value: string): void => {
+									setValue('department', value);
+								}}
+								flexGrow={1}
+								endReached={endReached}
+							/>
+						</Field.Row>
+					</Field>
+					<Divider p={0} children={t('or')} />
+					<Field>
+						<Field.Label>{t('Forward_to_user')}</Field.Label>
+						<Field.Row>
+							<UserAutoComplete
+								conditions={conditions}
+								placeholder={t('Username')}
+								onChange={(value) => {
+									setValue('username', value);
+								}}
+								value={getValues().username}
+							/>
+						</Field.Row>
+					</Field>
+					<Field marginBlock={15}>
+						<Field.Label>
+							{t('Leave_a_comment')}{' '}
+							<Box is='span' color='annotation'>
+								({t('Optional')})
+							</Box>
+						</Field.Label>
+						<Field.Row>
+							<TextAreaInput data-qa-id='ForwardChatModalTextAreaInputComment' {...register('comment')} rows={8} flexGrow={1} />
+						</Field.Row>
+					</Field>
+				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
