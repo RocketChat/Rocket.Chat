@@ -1,5 +1,6 @@
-import type { IRoom, IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
 import { RoomVerificationState } from '@rocket.chat/core-typings';
+import type { IRoom, IMessage, IOmnichannelGenericRoom, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import { check } from 'meteor/check';
 import type { IOmnichannelVerification, ISetVisitorEmailResult } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
@@ -9,6 +10,7 @@ import { Accounts } from 'meteor/accounts-base';
 import bcrypt from 'bcrypt';
 
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
 import { i18n } from '../../lib/i18n';
 import { settings } from '../../../app/settings/server';
 import { Logger } from '../../../app/logger/server';
@@ -63,30 +65,37 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		});
 	}
 
-	private async wrongInput(room: IOmnichannelGenericRoom, _isWrongOTP: boolean): Promise<boolean> {
+	private async wrongInput(room: IOmnichannelRoom, _isWrongOTP: boolean): Promise<boolean> {
 		const limitWrongAttempts: number = settings?.get('Livechat_LimitWrongAttempts') ?? 3;
 		if (!room?.wrongMessageCount) {
 			await LivechatRooms.updateWrongMessageCount(room._id, 1);
-		} else if (room.wrongMessageCount + 1 >= limitWrongAttempts) {
+			return true;
+		}
+		if (room.wrongMessageCount + 1 >= limitWrongAttempts) {
+			const { emailCode } = room.services || {};
 			await Promise.all([
 				LivechatRooms.updateWrongMessageCount(room._id, 0),
 				LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.verifiedFalse),
+				emailCode && _isWrongOTP
+					? Promise.all(emailCode.map(({ code }) => LivechatRooms.removeEmailCodeByRoomIdAndCode(room._id, code)))
+					: Promise.resolve(),
+				// eslint-disable-next-line no-constant-condition
+				room?.servedBy?._id || 'rocket.cat'
+					? sendMessage(
+							await Users.findOneById('rocket.cat'),
+							{ msg: i18n.t('Visitor_Verification_Process_failed'), groupable: false },
+							room,
+					  )
+					: Promise.resolve(),
 			]);
-			const bot = await Users.findOneById('rocket.cat');
-			const message = {
-				msg: i18n.t('Visitor_Verification_Process_failed'),
-				groupable: false,
-			};
-			await sendMessage(bot, message, room);
-			if (_isWrongOTP && room?.services?.emailCode) {
-				for await (const { code } of room.services.emailCode) {
-					await LivechatRooms.removeEmailCodeByRoomIdAndCode(room._id, code);
-				}
-			}
+
+			const comment = 'Chat closed due to multiple invalid input';
+			const userId = room?.servedBy?._id || 'rocket.cat';
+			const user = await Users.findOneById(userId);
+			await LivechatTyped.closeRoom({ user, room, comment });
 			return false;
-		} else {
-			await LivechatRooms.updateWrongMessageCount(room._id, room.wrongMessageCount + 1);
 		}
+		await LivechatRooms.updateWrongMessageCount(room._id, room.wrongMessageCount + 1);
 		return true;
 	}
 
@@ -99,7 +108,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		return { random, encryptedRandom, expire };
 	}
 
-	private async sendVerificationCodeToVisitor(visitorId: string, room: IOmnichannelGenericRoom): Promise<void> {
+	async sendVerificationCodeToVisitor(visitorId: string, room: IOmnichannelGenericRoom): Promise<void> {
 		if (!visitorId) {
 			throw new Error('error-invalid-user');
 		}
@@ -123,7 +132,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		await this.send2FAEmail(visitorEmail, random);
 	}
 
-	async verifyVisitorCode(room: IOmnichannelGenericRoom, _codeFromVisitor: string): Promise<boolean> {
+	async verifyVisitorCode(room: IOmnichannelRoom, _codeFromVisitor: string): Promise<boolean> {
 		if (!room.services || !Array.isArray(room.services?.emailCode)) {
 			return false;
 		}
@@ -149,47 +158,91 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		}
 		const result = await this.wrongInput(room, true);
 		if (result) {
-			const bot = await Users.findOneById('rocket.cat');
-			const message = {
-				msg: i18n.t('Wrong_OTP_Input_Message'),
-				groupable: false,
-			};
-			await sendMessage(bot, message, room);
+			const text = i18n.t('Wrong_OTP_Input_Message');
+			await this.createLivechatMessage(room, text);
 		}
 		return false;
 	}
 
-	async initiateVerificationProcess(rid: IRoom['_id']) {
-		check(rid, String);
-		const room = await LivechatRooms.findOneById(rid);
-		if (room?.verificationStatus !== 'unVerified') {
-			return;
-		}
-		const visitorRoomId = room?.v._id;
-		if (!visitorRoomId) {
-			throw new Error('error-invalid-user');
-		}
-		const visitor = await LivechatVisitors.findOneById(visitorRoomId, { projection: { visitorEmails: 1 } });
+	private async createMessage(room: IOmnichannelRoom, customBlocks?: IMessage['blocks']): Promise<IMessage['_id']> {
+		const record = {
+			msg: '',
+			groupable: false,
+			blocks: customBlocks,
+		};
 		const user = await Users.findOneById('rocket.cat');
-		if (visitor?.visitorEmails?.length && visitor.visitorEmails[0].address) {
-			const message = {
-				msg: i18n.t('OTP_Entry_Instructions_for_Visitor_Verification_Process'),
-				groupable: false,
-			};
-			await sendMessage(user, message, room);
-			await this.sendVerificationCodeToVisitor(visitorRoomId, room);
-			await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.isListeningToOTP);
-		} else {
-			const message = {
-				msg: i18n.t('Email_Entry_Instructions_for_Visitor_Verification_Process'),
-				groupable: false,
-			};
-			await sendMessage(user, message, room);
-			await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.isListeningToEmail);
+		const message = await sendMessage(user, record, room, false);
+		return message._id;
+	}
+
+	private async createLivechatMessage(room: IOmnichannelRoom, text: string): Promise<IMessage['_id']> {
+		return this.createMessage(room, [
+			this.buildMessageBlock(text),
+			{
+				type: 'actions',
+				appId: 'visitor_verification_OTP',
+				blockId: room._id,
+				elements: [
+					{
+						appId: 'visitor_verification_OTP',
+						blockId: room._id,
+						actionId: 'joinLivechat',
+						type: 'button',
+						text: {
+							type: 'plain_text',
+							text: 'Resend OTP',
+							emoji: true,
+						},
+						style: 'primary',
+					},
+				],
+			},
+		]);
+	}
+
+	private buildMessageBlock(text: string): MessageSurfaceLayout[number] {
+		return {
+			type: 'section',
+			appId: 'visitor_verification_OTP',
+			text: {
+				type: 'mrkdwn',
+				text: `${text}`,
+			},
+		};
+	}
+
+	async initiateVerificationProcess(rid: IRoom['_id']) {
+		try {
+			check(rid, String);
+			const room = await LivechatRooms.findOneById(rid);
+			if (room?.verificationStatus !== 'unVerified') {
+				return;
+			}
+			const { _id: visitorRoomId } = room.v;
+			if (!visitorRoomId) {
+				throw new Error('error-invalid-user');
+			}
+			const visitor = await LivechatVisitors.findOneById(visitorRoomId, { projection: { visitorEmails: 1 } });
+			const user = await Users.findOneById('rocket.cat');
+			if (visitor?.visitorEmails?.length && visitor.visitorEmails[0].address) {
+				const otpInstructionsText = i18n.t('OTP_Entry_Instructions_for_Visitor_Verification_Process');
+				await this.createLivechatMessage(room, otpInstructionsText);
+				await this.sendVerificationCodeToVisitor(visitorRoomId, room);
+				await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.isListeningToOTP);
+			} else {
+				const emailInstructionsMessage = {
+					msg: i18n.t('Email_Entry_Instructions_for_Visitor_Verification_Process'),
+					groupable: false,
+				};
+				await sendMessage(user, emailInstructionsMessage, room);
+				await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.isListeningToEmail);
+			}
+		} catch (error) {
+			this.logger.error({ msg: 'Failed to initiate verification process:', error });
 		}
 	}
 
-	async setVisitorEmail(room: IOmnichannelGenericRoom, email: string): Promise<ISetVisitorEmailResult> {
+	async setVisitorEmail(room: IOmnichannelRoom, email: string): Promise<ISetVisitorEmailResult> {
 		try {
 			const userId = room.v._id;
 			const bot = await Users.findOneById('rocket.cat');
@@ -246,11 +299,8 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 				},
 			};
 			await LivechatVisitors.updateById(userId, updateVisitor);
-			const result = {
-				success: true,
-			};
 			await LivechatRooms.updateWrongMessageCount(room._id, 0);
-			return result;
+			return { success: true };
 		} catch (error) {
 			this.logger.error({ msg: 'Failed to update email :', error });
 			return { success: false, error: error as Error };

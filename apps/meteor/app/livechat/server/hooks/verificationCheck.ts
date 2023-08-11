@@ -28,12 +28,22 @@ callbacks.add(
 				break;
 			}
 			case RoomVerificationState.isListeningToOTP: {
+				const bot = await Users.findOneById('rocket.cat');
+				if (message.msg === 'Resend OTP') {
+					const completionMessage = {
+						msg: i18n.t("Sure! We've sent a new OTP to your registered email"),
+						groupable: false,
+					};
+					await sendMessage(bot, completionMessage, room);
+					await OmnichannelVerification.sendVerificationCodeToVisitor(room.v._id, room);
+					await LivechatRooms.updateWrongMessageCount(room._id, 0);
+					return;
+				}
 				const result = await OmnichannelVerification.verifyVisitorCode(room, message.msg);
 				if (!result) {
 					return;
 				}
 				await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.verified);
-				const bot = await Users.findOneById('rocket.cat');
 				const completionMessage = {
 					msg: i18n.t('Visitor_Verification_Process_Completed'),
 					groupable: false,
