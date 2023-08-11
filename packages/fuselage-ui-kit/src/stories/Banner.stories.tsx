@@ -34,9 +34,12 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[], errors = {}) => {
     <UiKitContext.Provider
       value={{
         action: action('action'),
-        state: action('state'),
+        updateState: action('updateState'),
+        payload: {
+          appId: 'appId',
+          viewId: 'viewId',
+        },
         values: {},
-        appId: 'core',
         errors,
       }}
     >

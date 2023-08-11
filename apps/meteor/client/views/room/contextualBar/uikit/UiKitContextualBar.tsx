@@ -7,8 +7,8 @@ import type {
 	IBlock,
 	IBlockElement,
 	IActionsBlock,
+	InputElementDispatchAction,
 } from '@rocket.chat/apps-engine/definition/uikit';
-import { InputElementDispatchAction } from '@rocket.chat/apps-engine/definition/uikit';
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { Avatar, Box, Button, ButtonGroup, ContextualbarFooter, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -149,50 +149,6 @@ const UiKitContextualBar = ({
 			e.preventDefault();
 		}
 	};
-
-	const debouncedBlockAction = useDebouncedCallback(({ actionId, appId, value, blockId }: ActionParams) => {
-		actionManager.triggerBlockAction({
-			container: {
-				type: UIKitIncomingInteractionContainerType.VIEW,
-				id: viewId,
-			},
-			actionId,
-			appId,
-			value,
-			blockId,
-		});
-	}, 700);
-
-	const context: ContextType<typeof UiKitContext> = {
-		action: async ({ actionId, appId, value, blockId, dispatchActionConfig }: ActionParams): Promise<void> => {
-			if (Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes(InputElementDispatchAction.ON_CHARACTER_ENTERED)) {
-				await debouncedBlockAction({ actionId, appId, value, blockId });
-			} else {
-				await actionManager.triggerBlockAction({
-					container: {
-						type: UIKitIncomingInteractionContainerType.VIEW,
-						id: viewId,
-					},
-					actionId,
-					appId,
-					rid: roomId,
-					value,
-					blockId,
-				});
-			}
-		},
-		state: ({ actionId, value, blockId = 'default' }: ActionParams): void => {
-			updateValues({
-				actionId,
-				payload: {
-					blockId,
-					value,
-				},
-			});
-		},
-		...state,
-		values,
-	} as ContextType<typeof UiKitContext>;
 
 	const handleSubmit = useMutableCallback((e) => {
 		prevent(e);

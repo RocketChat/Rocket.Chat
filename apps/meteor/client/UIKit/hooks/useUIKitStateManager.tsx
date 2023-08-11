@@ -28,7 +28,7 @@ const useUIKitStateManager = <S extends UiKitPayload>(initialState: S): S => {
 		return (): void => {
 			actionManager.off(viewId, handleUpdate);
 		};
-	}, [setState, viewId]);
+	}, [actionManager, setState, viewId]);
 
 	return state;
 };

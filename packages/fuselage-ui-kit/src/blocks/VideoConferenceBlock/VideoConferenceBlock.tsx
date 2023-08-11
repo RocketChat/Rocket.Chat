@@ -34,7 +34,11 @@ const VideoConferenceBlock = ({
   const surfaceType = useSurfaceType();
   const userId = useUserId();
 
-  const { action, viewId, rid } = useContext(UiKitContext);
+  const {
+    action,
+    payload: { viewId },
+    rid,
+  } = useContext(UiKitContext);
 
   if (surfaceType !== 'message') {
     throw new Error('VideoConferenceBlock cannot be rendered outside message');
