@@ -70,6 +70,9 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { callStatus: 1 }, sparse: true }, // used on statistics
 			{ key: { priorityId: 1 }, sparse: true },
 			{ key: { slaId: 1 }, sparse: true },
+			{ key: { ts: 1, tags: 1 } },
+			{ key: { ts: 1, departmentId: 1 } },
+			{ key: { ts: 1, servedBy: 1 } },
 		];
 	}
 
@@ -2552,6 +2555,17 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	getConversationsByAgents(_start: Date, _end: Date, _sort: Record<string, 1 | -1>): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsWithoutTagsBetweenDate(_start: Date, _end: Date): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+	getTotalConversationsWithoutAgentsBetweenDate(_start: Date, _end: Date): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	getTotalConversationsWithoutDepartmentBetweenDates(_start: Date, _end: Date): Promise<number> {
 		throw new Error('Method not implemented.');
 	}
 }

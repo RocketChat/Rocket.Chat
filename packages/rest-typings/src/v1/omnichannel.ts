@@ -24,6 +24,7 @@ import type {
 	ILivechatTriggerCondition,
 	ILivechatTriggerAction,
 	ReportResult,
+	ReportWithUnmatchingElements,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
@@ -3721,12 +3722,12 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETDashboardConversationsByType) => ReportResult;
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-department': {
-		GET: (params: GETDashboardConversationsByType) => ReportResult;
+		GET: (params: GETDashboardConversationsByType) => ReportWithUnmatchingElements;
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-tags': {
-		GET: (params: GETDashboardConversationsByType) => ReportResult;
+		GET: (params: GETDashboardConversationsByType) => ReportWithUnmatchingElements;
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-agent': {
-		GET: (params: GETDashboardConversationsByType) => ReportResult;
+		GET: (params: GETDashboardConversationsByType) => ReportWithUnmatchingElements;
 	};
 };

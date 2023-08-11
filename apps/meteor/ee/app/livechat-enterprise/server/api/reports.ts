@@ -11,8 +11,6 @@ import {
 	findAllConversationsByAgentsCached,
 } from './lib/dashboards';
 
-const defaultValue = { data: [] };
-
 const checkDates = (start: Moment, end: Moment) => {
 	if (!start.isValid()) {
 		throw new Error('The "start" query parameter must be a valid date.');
@@ -45,7 +43,7 @@ API.v1.addRoute(
 
 			const result = await findAllConversationsBySourceCached({ start: startDate.toDate(), end: endDate.toDate() });
 
-			return API.v1.success(result || defaultValue);
+			return API.v1.success(result);
 		},
 	},
 );
@@ -63,7 +61,7 @@ API.v1.addRoute(
 			checkDates(startDate, endDate);
 			const result = await findAllConversationsByStatusCached({ start: startDate.toDate(), end: endDate.toDate() });
 
-			return API.v1.success(result || defaultValue);
+			return API.v1.success(result);
 		},
 	},
 );
@@ -82,7 +80,7 @@ API.v1.addRoute(
 			checkDates(startDate, endDate);
 			const result = await findAllConversationsByDepartmentCached({ start: startDate.toDate(), end: endDate.toDate(), sort });
 
-			return API.v1.success(result || defaultValue);
+			return API.v1.success(result);
 		},
 	},
 );
@@ -101,7 +99,7 @@ API.v1.addRoute(
 			checkDates(startDate, endDate);
 			const result = await findAllConversationsByTagsCached({ start: startDate.toDate(), end: endDate.toDate(), sort });
 
-			return API.v1.success(result || defaultValue);
+			return API.v1.success(result);
 		},
 	},
 );
@@ -120,7 +118,7 @@ API.v1.addRoute(
 			checkDates(startDate, endDate);
 			const result = await findAllConversationsByAgentsCached({ start: startDate.toDate(), end: endDate.toDate(), sort });
 
-			return API.v1.success(result || defaultValue);
+			return API.v1.success(result);
 		},
 	},
 );

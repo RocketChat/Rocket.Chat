@@ -48,6 +48,9 @@ declare module '@rocket.chat/model-typings' {
 		getConversationsByDepartment(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult>;
 		getConversationsByTags(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult>;
 		getConversationsByAgents(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult>;
+		getConversationsWithoutTagsBetweenDate(start: Date, end: Date): Promise<number>;
+		getTotalConversationsWithoutAgentsBetweenDate(start: Date, end: Date): Promise<number>;
+		getTotalConversationsWithoutDepartmentBetweenDates(start: Date, end: Date): Promise<number>;
 	}
 }
 
@@ -525,6 +528,19 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
+	getTotalConversationsWithoutDepartmentBetweenDates(start: Date, end: Date): Promise<number> {
+		return this.col.countDocuments({
+			t: 'l',
+			departmentId: {
+				$exists: false,
+			},
+			ts: {
+				$gte: start,
+				$lt: end,
+			},
+		});
+	}
+
 	getConversationsByTags(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
@@ -535,13 +551,15 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 							$lt: end,
 							$gte: start,
 						},
+						tags: {
+							$exists: true,
+							$ne: [],
+						},
 					},
 				},
 				{
 					$group: {
-						_id: {
-							$ifNull: ['$tags', 'Tag_Unspecified'],
-						},
+						_id: '$tags',
 						Chats: {
 							$sum: 1,
 						},
@@ -581,6 +599,28 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
+	getConversationsWithoutTagsBetweenDate(start: Date, end: Date): Promise<number> {
+		return this.col.countDocuments({
+			t: 'l',
+			ts: {
+				$gte: start,
+				$lt: end,
+			},
+			$or: [
+				{
+					tags: {
+						$exists: false,
+					},
+				},
+				{
+					tags: {
+						$eq: [],
+					},
+				},
+			],
+		});
+	}
+
 	getConversationsByAgents(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
@@ -591,13 +631,14 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 							$gte: start,
 							$lt: end,
 						},
+						servedBy: {
+							$exists: true,
+						},
 					},
 				},
 				{
 					$group: {
-						_id: {
-							$ifNull: ['$servedBy._id', 'Agent_Unassigned'],
-						},
+						_id: '$servedBy._id',
 						total: { $sum: 1 },
 					},
 				},
@@ -644,5 +685,18 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			],
 			{ readPreference: readSecondaryPreferred() },
 		);
+	}
+
+	getTotalConversationsWithoutAgentsBetweenDate(start: Date, end: Date): Promise<number> {
+		return this.col.countDocuments({
+			t: 'l',
+			ts: {
+				$gte: start,
+				$lt: end,
+			},
+			servedBy: {
+				$exists: false,
+			},
+		});
 	}
 }
