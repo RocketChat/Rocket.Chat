@@ -1,6 +1,6 @@
 import type { Serialized } from '@rocket.chat/core-typings';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn, TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	AuthorizationContext,
 	ConnectionStatusContext,
@@ -10,6 +10,7 @@ import {
 	TranslationContext,
 	UserContext,
 	ActionManagerContext,
+	ModalContext,
 } from '@rocket.chat/ui-contexts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { WrapperComponent } from '@testing-library/react-hooks';
@@ -95,6 +96,13 @@ class MockedAppRootBuilder {
 		userId: null,
 	};
 
+	private modal: ContextType<typeof ModalContext> = {
+		currentModal: null,
+		modal: {
+			setModal: () => undefined,
+		},
+	};
+
 	private authorization: ContextType<typeof AuthorizationContext> = {
 		queryPermission: () => [() => () => undefined, () => false],
 		queryAtLeastOnePermission: () => [() => () => undefined, () => false],
@@ -119,9 +127,12 @@ class MockedAppRootBuilder {
 	withEndpoint<TMethod extends Method, TPathPattern extends PathPattern>(
 		method: TMethod,
 		pathPattern: TPathPattern,
-		response: () => Serialized<OperationResult<TMethod, TPathPattern>> | Promise<Serialized<OperationResult<TMethod, TPathPattern>>>,
+		response: (
+			params: OperationParams<TMethod, TPathPattern>,
+		) => Serialized<OperationResult<TMethod, TPathPattern>> | Promise<Serialized<OperationResult<TMethod, TPathPattern>>>,
 	): this {
 		const innerFn = this.server.callEndpoint;
+
 		const outerFn = <TMethod extends Method, TPathPattern extends PathPattern>(args: {
 			method: TMethod;
 			pathPattern: TPathPattern;
@@ -129,13 +140,36 @@ class MockedAppRootBuilder {
 			params: OperationParams<TMethod, TPathPattern>;
 		}): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
 			if (args.method === String(method) && args.pathPattern === String(pathPattern)) {
-				return Promise.resolve(response()) as Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
+				return Promise.resolve(response(args.params)) as Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
 			}
 
 			return innerFn(args);
 		};
 
 		this.server.callEndpoint = outerFn;
+
+		return this;
+	}
+
+	withMethod<TMethodName extends ServerMethodName>(methodName: TMethodName, response: () => ServerMethodReturn<TMethodName>): this {
+		const innerFn = this.server.callMethod;
+
+		const outerFn = <TMethodName extends ServerMethodName>(
+			innerMethodName: TMethodName,
+			...innerArgs: ServerMethodParameters<TMethodName>
+		): Promise<ServerMethodReturn<TMethodName>> => {
+			if (innerMethodName === String(methodName)) {
+				return Promise.resolve(response()) as Promise<ServerMethodReturn<TMethodName>>;
+			}
+
+			if (!innerFn) {
+				throw new Error('not implemented');
+			}
+
+			return innerFn(innerMethodName, ...innerArgs);
+		};
+
+		this.server.callMethod = outerFn;
 
 		return this;
 	}
@@ -250,7 +284,7 @@ class MockedAppRootBuilder {
 			},
 		});
 
-		const { connectionStatus, server, router, settings, translation, user, authorization, wrappers } = this;
+		const { connectionStatus, server, router, settings, translation, user, modal, authorization, wrappers } = this;
 
 		return function MockedAppRoot({ children }) {
 			return (
@@ -267,40 +301,40 @@ class MockedAppRootBuilder {
                                 <AvatarUrlProvider>
                                     <CustomSoundProvider> */}
 										<UserContext.Provider value={user}>
-											{/* <DeviceProvider>
-                            <ModalProvider>*/}
-											<AuthorizationContext.Provider value={authorization}>
-												{/* <EmojiPickerProvider>
+											{/* <DeviceProvider>*/}
+											<ModalContext.Provider value={modal}>
+												<AuthorizationContext.Provider value={authorization}>
+													{/* <EmojiPickerProvider>
                                     <OmnichannelRoomIconProvider>
                                         <UserPresenceProvider>*/}
-												<ActionManagerContext.Provider
-													value={{
-														triggerAction: () => Promise.reject(new Error('not implemented')),
-														generateTriggerId: () => '',
-														getUserInteractionPayloadByViewId: () => undefined,
-														handlePayloadUserInteraction: () => undefined,
-														off: () => undefined,
-														on: () => undefined,
-														triggerActionButtonAction: () => Promise.reject(new Error('not implemented')),
-														triggerBlockAction: () => Promise.reject(new Error('not implemented')),
-														triggerCancel: () => Promise.reject(new Error('not implemented')),
-														triggerSubmitView: () => Promise.reject(new Error('not implemented')),
-													}}
-												>
-													{/* <VideoConfProvider>
+													<ActionManagerContext.Provider
+														value={{
+															triggerAction: () => Promise.reject(new Error('not implemented')),
+															generateTriggerId: () => '',
+															getUserInteractionPayloadByViewId: () => undefined,
+															handlePayloadUserInteraction: () => undefined,
+															off: () => undefined,
+															on: () => undefined,
+															triggerActionButtonAction: () => Promise.reject(new Error('not implemented')),
+															triggerBlockAction: () => Promise.reject(new Error('not implemented')),
+															triggerCancel: () => Promise.reject(new Error('not implemented')),
+															triggerSubmitView: () => Promise.reject(new Error('not implemented')),
+														}}
+													>
+														{/* <VideoConfProvider>
                         <CallProvider>
                             <OmnichannelProvider> */}
-													{wrappers.reduce((children, wrapper) => wrapper(children), children)}
-													{/* 		</OmnichannelProvider>
+														{wrappers.reduce((children, wrapper) => wrapper(children), children)}
+														{/* 		</OmnichannelProvider>
                         </CallProvider>
                     </VideoConfProvider>*/}
-												</ActionManagerContext.Provider>
-												{/* </UserPresenceProvider>
+													</ActionManagerContext.Provider>
+													{/* </UserPresenceProvider>
                                         </OmnichannelRoomIconProvider>
                     </EmojiPickerProvider>*/}
-											</AuthorizationContext.Provider>
-											{/* </ModalProvider>
-                            </DeviceProvider>*/}
+												</AuthorizationContext.Provider>
+											</ModalContext.Provider>
+											{/* </DeviceProvider>*/}
 										</UserContext.Provider>
 										{/* 			</CustomSoundProvider>
                                 </AvatarUrlProvider>
