@@ -15,7 +15,7 @@ export const StatusSection = () => {
 
 	return (
 		<ReportCard title={t('Conversations_by_status')} height={200} subtitle={subtitle} {...config}>
-			<PieChart data={data} width={300} height={200} />
+			<PieChart data={data} width={350} height={200} />
 		</ReportCard>
 	);
 };

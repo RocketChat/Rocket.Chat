@@ -23,13 +23,14 @@ export const PieChart = ({ data, width, height }: { data: unknown; width: number
 					anchor: 'right',
 					direction: 'column',
 					justify: false,
-					translateX: 100,
+					translateX: 150,
 					translateY: 0,
-					itemWidth: 84,
+					itemWidth: 150,
 					itemHeight: 20,
 					itemsSpacing: 8,
-					symbolSize: 20,
+					symbolSize: 12,
 					itemDirection: 'left-to-right',
+					symbolShape: 'circle',
 				},
 			]}
 		/>

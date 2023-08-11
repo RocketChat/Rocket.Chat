@@ -4,6 +4,11 @@ export const REPORTS_CHARTS_THEME = {
 	labels: {
 		text: { fontSize: 12 },
 	},
+	legends: {
+		text: {
+			fill: Palette.text['font-annotation'].toString(),
+		},
+	},
 	axis: {
 		domain: {
 			line: {
