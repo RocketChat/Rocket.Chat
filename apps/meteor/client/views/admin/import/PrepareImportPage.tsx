@@ -1,10 +1,11 @@
+import type { IImportProgress } from '@rocket.chat/core-typings';
+import { ProgressStep } from '@rocket.chat/core-typings';
 import { Badge, Box, Button, ButtonGroup, Margins, Throbber, Tabs, ProgressBar } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
 
 import {
-	ProgressStep,
 	ImportWaitingStates,
 	ImportFileReadyStates,
 	ImportPreparingStartedStates,
@@ -17,10 +18,64 @@ import PrepareChannels from './PrepareChannels';
 import PrepareUsers from './PrepareUsers';
 import { useErrorHandler } from './useErrorHandler';
 
-const waitFor = (fn, predicate) =>
+const waitFor = (
+	fn: {
+		(params?: unknown): Promise<
+			| {
+					name: string;
+					users: {
+						user_id: string;
+						username: string | undefined;
+						email: string;
+						is_deleted: boolean;
+						is_bot: boolean;
+						do_import: boolean;
+						is_email_taken: boolean;
+					}[];
+					channels: {
+						channel_id: string;
+						name: string | undefined;
+						is_archived: boolean;
+						do_import: boolean;
+						is_private: boolean;
+						creator: undefined;
+						is_direct: boolean;
+					}[];
+					message_count: number;
+			  }
+			| { waiting: true }
+		>;
+		(params?: unknown): Promise<{
+			operation: {
+				type: string;
+				importerKey: string;
+				ts: string;
+				status: ProgressStep;
+				valid: boolean;
+				user: string;
+				_updatedAt: string;
+				contentType?: string | undefined;
+				file?: string | undefined;
+				count?:
+					| {
+							total?: number | undefined;
+							completed?: number | undefined;
+							error?: number | undefined;
+							users?: number | undefined;
+							messages?: number | undefined;
+							channels?: number | undefined;
+					  }
+					| undefined;
+				_id: string;
+			};
+		}>;
+		(): Promise<unknown>;
+	},
+	predicate: (result: unknown) => boolean,
+) =>
 	new Promise((resolve, reject) => {
 		const callPromise = () => {
-			fn().then((result) => {
+			fn().then((result: unknown) => {
 				if (predicate(result)) {
 					resolve(result);
 					return;
@@ -38,7 +93,7 @@ function PrepareImportPage() {
 	const handleError = useErrorHandler();
 
 	const [isPreparing, setPreparing] = useSafely(useState(true));
-	const [progressRate, setProgressRate] = useSafely(useState(null));
+	const [progressRate, setProgressRate] = useSafely(useState<{ rate: number } | IImportProgress>());
 	const [status, setStatus] = useSafely(useState(null));
 	const [messageCount, setMessageCount] = useSafely(useState(0));
 	const [users, setUsers] = useState([]);
@@ -56,13 +111,7 @@ function PrepareImportPage() {
 
 	const streamer = useStream('importers');
 
-	useEffect(
-		() =>
-			streamer('progress', ({ rate }) => {
-				setProgressRate(rate);
-			}),
-		[streamer, setProgressRate],
-	);
+	useEffect(() => streamer('progress', (event: { rate: number } | IImportProgress) => setProgressRate(event)), [streamer, setProgressRate]);
 
 	useEffect(() => {
 		const loadImportFileData = async () => {
