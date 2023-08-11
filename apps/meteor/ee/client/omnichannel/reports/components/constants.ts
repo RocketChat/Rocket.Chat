@@ -33,10 +33,13 @@ export const REPORTS_CHARTS_THEME = {
 };
 
 export const COLORS = {
-	warning: Palette.statusColor['status-font-on-warning'].toString(),
 	danger: Palette.statusColor['status-font-on-danger'].toString(),
 	success: Palette.statusColor['status-font-on-success'].toString(),
 	info: Palette.statusColor['status-font-on-info'].toString(),
+	service1: Palette.statusColor['status-font-on-service-1'].toString(),
+	service2: Palette.statusColor['status-font-on-service-2'].toString(),
+	warning2: Palette.statusColor['status-font-on-warning-2'].toString(),
+	warning: Palette.statusColor['status-font-on-warning'].toString(),
 };
 
 export const PERIOD_OPTIONS: Period['key'][] = ['today', 'this week', 'last 15 days', 'this month', 'last 6 months', 'last year'];

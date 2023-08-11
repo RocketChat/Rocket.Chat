@@ -7,10 +7,10 @@ import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeri
 import { COLORS, PERIOD_OPTIONS } from '../components/constants';
 
 const formatChartData = (data: { label: string; value: number }[] | undefined = []) =>
-	data.map((item) => ({
+	data.map((item, i) => ({
 		...item,
 		id: item.label,
-		color: COLORS.info,
+		color: Object.values(COLORS)[i],
 	}));
 
 export const useChannelsSection = () => {
