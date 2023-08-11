@@ -1,4 +1,4 @@
-import { mockAppRoot } from '@rocket.chat/mock-providers/src';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from './FeaturePreview';
