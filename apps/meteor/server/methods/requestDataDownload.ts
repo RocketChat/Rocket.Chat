@@ -1,5 +1,5 @@
 import path, { join } from 'path';
-import { mkdir, mkdtemp } from 'fs/promises';
+import { mkdtemp } from 'fs/promises';
 import { tmpdir } from 'os';
 
 import { Meteor } from 'meteor/meteor';
@@ -65,7 +65,6 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const tempFolder = settings.get<string | undefined>('UserData_FileSystemPath')?.trim() || (await mkdtemp(join(tmpdir(), 'userData')));
-		await mkdir(tempFolder, { recursive: true });
 
 		const exportOperation = {
 			status: 'preparing',
@@ -81,10 +80,8 @@ Meteor.methods<ServerMethods>({
 		exportOperation._id = id;
 
 		const folderName = path.join(tempFolder, id);
-		await mkdir(folderName, { recursive: true });
 
 		const assetsFolder = path.join(folderName, 'assets');
-		await mkdir(assetsFolder, { recursive: true });
 
 		exportOperation.exportPath = folderName;
 		exportOperation.assetsPath = assetsFolder;
