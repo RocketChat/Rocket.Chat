@@ -2561,6 +2561,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	getConversationsWithoutTagsBetweenDate(_start: Date, _end: Date): Promise<number> {
 		throw new Error('Method not implemented.');
 	}
+
 	getTotalConversationsWithoutAgentsBetweenDate(_start: Date, _end: Date): Promise<number> {
 		throw new Error('Method not implemented.');
 	}
