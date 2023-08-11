@@ -9,14 +9,13 @@ import {
 	SettingsContext,
 	TranslationContext,
 	UserContext,
+	ActionManagerContext,
 } from '@rocket.chat/ui-contexts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { WrapperComponent } from '@testing-library/react-hooks';
 import type { ObjectId } from 'mongodb';
 import type { ContextType, ReactNode } from 'react';
 import React from 'react';
-
-import { ActionManagerContext } from '../../../../contexts/ActionManagerContext';
 
 class MockedAppRootBuilder {
 	private wrappers: Array<(children: ReactNode) => ReactNode> = [];
