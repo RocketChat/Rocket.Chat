@@ -38,9 +38,11 @@ export const ReportCard = ({
 		<Box is={Card} minWidth='calc(50% - 16px)' flexGrow={1} overflow='hidden' margin={8}>
 			<Card.Title>
 				<Box display='flex' justifyContent='space-between' alignItems='center' wrap='no-wrap'>
-					<Box display='flex' flexDirection='column'>
-						<Box>{title}</Box>
-						<Box color='hint' fontScale='p2' withTruncatedText>
+					<Box display='flex' flexDirection='column' flexShrink={1} mie={16}>
+						<Box is='span' withTruncatedText>
+							{title}
+						</Box>
+						<Box is='span' color='hint' fontScale='p2' withTruncatedText>
 							{subtitle}
 						</Box>
 					</Box>
