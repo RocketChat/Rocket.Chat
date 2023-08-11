@@ -1,6 +1,6 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react-hooks';
 
-import { mockAppRoot } from './mockAppRoot';
 import { useAuditItems } from './useAuditItems';
 
 it('should return an empty array if doesn`t have license', async () => {

@@ -1,6 +1,6 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, act } from '@testing-library/react-hooks';
 
-import { mockAppRoot } from '../../../../sidebar/header/actions/hooks/mockAppRoot';
 import { useToggleReactionMutation } from './useToggleReactionMutation';
 
 it('should be call rest `POST /v1/chat.react` method', async () => {

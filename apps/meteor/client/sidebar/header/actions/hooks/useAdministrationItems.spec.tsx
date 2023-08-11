@@ -1,6 +1,6 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react-hooks';
 
-import { mockAppRoot } from './mockAppRoot';
 import { useAdministrationItems } from './useAdministrationItems';
 
 it('should not show upgrade item if has license and not have trial', async () => {

@@ -1,7 +1,7 @@
 import { UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react-hooks';
 
-import { mockAppRoot } from './mockAppRoot';
 import { useAppsItems } from './useAppsItems';
 
 it('should return and empty array if the user does not have `manage-apps` and `access-marketplace` permission', () => {
