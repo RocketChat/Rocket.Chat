@@ -19,6 +19,7 @@ type ReportCardProps = {
 	isDataFound?: boolean;
 	height?: number;
 	loadingSkeleton?: ReactElement;
+	subTitle?: string;
 };
 
 export const ReportCard = ({
@@ -29,6 +30,7 @@ export const ReportCard = ({
 	isLoading,
 	isDataFound,
 	height,
+	subTitle,
 	loadingSkeleton: LoadingSkeleton = <Skeleton style={{ transform: 'none' }} height='100%' />,
 }: ReportCardProps) => {
 	const t = useTranslation();
@@ -36,8 +38,12 @@ export const ReportCard = ({
 		<Box is={Card} minWidth='calc(50% - 16px)' flexGrow={1} overflow='hidden' margin={8}>
 			<Card.Title>
 				<Box display='flex' justifyContent='space-between' alignItems='center' wrap='no-wrap'>
-					{title}
-
+					<Box display='flex' flexDirection='column'>
+						<Box>{title}</Box>
+						<Box color='hint' fontScale='p2' withTruncatedText>
+							{subTitle}
+						</Box>
+					</Box>
 					<Box flexGrow={0} display='flex' alignItems='center'>
 						<PeriodSelector {...periodSelectorProps} />
 						<DownloadDataButton {...downloadProps} size={32} />

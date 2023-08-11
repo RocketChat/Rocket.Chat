@@ -29,8 +29,7 @@ export const useStatusSection = () => {
 		['omnichannel-reports', 'conversations-by-status', period],
 		async () => {
 			const { start, end } = getPeriodRange(period);
-			const { data } = await getConversationsByStatus({ start: start.toISOString(), end: end.toISOString() });
-			return formatChartData(data);
+			return getConversationsByStatus({ start: start.toISOString(), end: end.toISOString() });
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
@@ -52,13 +51,15 @@ export const useStatusSection = () => {
 
 	return useMemo(
 		() => ({
-			data,
+			data: formatChartData(data?.data),
+			total: data?.total,
 			isLoading,
 			isError,
 			isDataFound: isSuccess && data.length > 0,
 			periodSelectorProps,
 			downloadProps,
+			period,
 		}),
-		[data, isLoading, isError, isSuccess, periodSelectorProps, downloadProps],
+		[data?.data, data?.total, data.length, isLoading, isError, isSuccess, periodSelectorProps, downloadProps, period],
 	);
 };

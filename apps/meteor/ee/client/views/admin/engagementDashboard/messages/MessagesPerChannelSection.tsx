@@ -18,10 +18,10 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
+import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
 import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
-import DownloadDataButton from '../dataView/DownloadDataButton';
 import LegendSymbol from '../dataView/LegendSymbol';
 import { useMessageOrigins } from './useMessageOrigins';
 import { useTopFivePopularChannels } from './useTopFivePopularChannels';

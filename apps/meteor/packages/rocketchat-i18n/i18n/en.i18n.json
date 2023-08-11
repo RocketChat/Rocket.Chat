@@ -4,6 +4,7 @@
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} empty rooms will be removed automatically:<br/> {{rooms}}.",
   "__count__message_pruned": "{{count}} message pruned",
   "__count__message_pruned_plural": "{{count}} messages pruned",
+  "__count__conversations__period__": "{{count}} conversations {{period}}",
   "__usersCount__member_joined": "+ {{usersCount}} member joined",
   "__usersCount__member_joined_plural": "+ {{usersCount}} members joined",
   "__usersCount__people_will_be_invited": "{{usersCount}} people will be invited",
