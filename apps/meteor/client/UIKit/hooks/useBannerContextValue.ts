@@ -1,17 +1,55 @@
-import type { UIKitActionEvent, UiKitPayload } from '@rocket.chat/core-typings';
+import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
+import { type UIKitUserInteractionResult, type UiKitBannerPayload, type UiKitPayload, isErrorType } from '@rocket.chat/core-typings';
+import { useSafely, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
-import type { ContextType } from 'react';
+import { useEffect, type ContextType, useState } from 'react';
 
+import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
 import * as banners from '../../lib/banners';
-import { useUIKitHandleAction } from './useUIKitHandleAction';
-import { useUIKitStateManager } from './useUIKitStateManager';
 
-type VariantType = 'neutral' | 'info' | 'success' | 'warning' | 'danger';
-type StateType = { title?: string; inline?: boolean; variant?: VariantType } & UiKitPayload;
+type UseBannerContextValueReturn = ContextType<typeof UiKitContext> & {
+	payload: UiKitBannerPayload;
+};
 
-export const useBannerContextValue = (payload: UiKitPayload): ContextType<typeof UiKitContext> => {
-	const state = useUIKitStateManager<StateType>(payload);
-	const action = useUIKitHandleAction(state);
+export const useBannerContextValue = (payload: UiKitPayload): UseBannerContextValueReturn => {
+	const [state, setState] = useSafely(useState(payload));
+	const actionManager = useUiKitActionManager();
+	const { viewId } = payload;
+
+	const action = useMutableCallback(async ({ blockId, value, appId, actionId }) => {
+		if (!appId) {
+			throw new Error('useUIKitHandleAction - invalid appId');
+		}
+		return actionManager.triggerBlockAction({
+			container: {
+				type: UIKitIncomingInteractionContainerType.VIEW,
+				id: state.viewId || state.appId,
+			},
+			actionId,
+			appId,
+			value,
+			blockId,
+		});
+	});
+
+	useEffect(() => {
+		const handleUpdate = ({ ...data }: UIKitUserInteractionResult): void => {
+			if (isErrorType(data)) {
+				const { errors } = data;
+				setState((state) => ({ ...state, errors }));
+				return;
+			}
+
+			const { type, ...rest } = data;
+			setState(rest as any);
+		};
+
+		actionManager.on(viewId, handleUpdate);
+
+		return (): void => {
+			actionManager.off(viewId, handleUpdate);
+		};
+	}, [actionManager, setState, viewId]);
 
 	return {
 		action: async (event): Promise<void> => {
@@ -19,9 +57,9 @@ export const useBannerContextValue = (payload: UiKitPayload): ContextType<typeof
 				return;
 			}
 
-			await action(event as UIKitActionEvent);
+			await action(event);
 			banners.closeById(state.viewId);
 		},
-		state,
+		payload: state,
 	};
 };
