@@ -171,7 +171,7 @@ const CannedResponsesTable = () => {
 									<GenericTableCell withTruncatedText>
 										<Box display='flex' alignItems='center'>
 											<UserAvatar size='x24' username={createdBy.username} />
-											<Box display='flex' withTruncatedText mi='x8'>
+											<Box display='flex' withTruncatedText mi={8}>
 												<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 													<Box fontScale='p2m' withTruncatedText color='default'>
 														{createdBy.username}

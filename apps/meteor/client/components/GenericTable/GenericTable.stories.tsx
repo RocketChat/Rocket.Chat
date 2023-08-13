@@ -40,7 +40,7 @@ const results = Array.from({ length: 10 }, (_, i) => ({
 
 const filter = (
 	<>
-		<Box mb='x16' is='form' display='flex' flexDirection='column'>
+		<Box mb={16} is='form' display='flex' flexDirection='column'>
 			<TextInput flexShrink={0} placeholder='Search...' addon={<Icon name='magnifier' size='x20' />} />
 		</Box>
 	</>

@@ -44,7 +44,7 @@ const ComposerAnonymous = (): ReactElement => {
 	const t = useTranslation();
 
 	return (
-		<ButtonGroup marginBlock='x16'>
+		<ButtonGroup marginBlock={16}>
 			<Button small primary onClick={() => setForceLogin(true)}>
 				{t('Sign_in_to_start_talking')}
 			</Button>
