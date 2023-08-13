@@ -8,8 +8,8 @@ const Section = ({
   template,
   index,
 }: {
-  template: templateType,
-  index: number,
+  template: templateType;
+  index: number;
 }) => (
   <Box mbs="25px" width="100%" key={index}>
     <Box mbe="5px">
@@ -21,7 +21,7 @@ const Section = ({
       <Label>{template.description}</Label>
     </Box>
     {template.payloads.map((payload) => (
-      <Payload payload={payload} />
+      <Payload blocks={payload.blocks} surface={payload.surface} />
     ))}
   </Box>
 );
