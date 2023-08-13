@@ -57,7 +57,7 @@ it('should be call rest `POST /v1/chat.react` method', async () => {
 		),
 	});
 
-	act(async () => {
+	await act(async () => {
 		await result.current.mutateAsync({ mid: 'MID', reaction: 'smile' });
 	});
 
