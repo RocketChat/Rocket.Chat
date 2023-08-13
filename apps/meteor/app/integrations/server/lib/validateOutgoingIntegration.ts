@@ -12,6 +12,8 @@ import { outgoingEvents } from '../../lib/outgoingEvents';
 const scopedChannels = ['all_public_channels', 'all_private_groups', 'all_direct_messages'];
 const validChannelChars = ['@', '#'];
 
+const FREEZE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.FREEZE_INTEGRATION_SCRIPTS).toLowerCase());
+
 function _verifyRequiredFields(integration: INewOutgoingIntegration | IUpdateOutgoingIntegration): void {
 	if (
 		!integration.event ||
@@ -169,7 +171,7 @@ export const validateOutgoingIntegration = async function (
 		delete integrationData.triggerWords;
 	}
 
-	if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
+	if (!FREEZE_INTEGRATION_SCRIPTS && integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
 		try {
 			const babelOptions = Object.assign(Babel.getDefaultOptions({ runtime: false }), {
 				compact: true,
