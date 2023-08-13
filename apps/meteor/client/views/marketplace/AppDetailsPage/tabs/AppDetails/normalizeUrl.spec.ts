@@ -6,7 +6,8 @@ it.each([
 	['https://rocket.chat', 'https://rocket.chat'],
 	['//rocket.chat', 'https://rocket.chat'],
 	['rocket.chat', 'https://rocket.chat'],
-	['rocket@chat', 'mailto:rocket@chat'],
+	['rocketchat@rocket.chat', 'mailto:rocketchat@rocket.chat'],
+	['plain_text', ''],
 ])('should normalize %o as %o', (input, output) => {
 	expect(normalizeUrl(input)).toBe(output);
 });
