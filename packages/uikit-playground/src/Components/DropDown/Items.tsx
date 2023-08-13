@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Label, Chevron } from '@rocket.chat/fuselage';
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 
 import { context, updatePayloadAction } from '../../Context';
 import ItemsIcon from './ItemsIcon';
@@ -18,8 +18,8 @@ const Items = ({ label, children, layer, payload }: ItemProps) => {
     payload &&
       dispatch(
         updatePayloadAction({
-          payload: [
-            ...state.screens[state.activeScreen].payload,
+          blocks: [
+            ...state.screens[state.activeScreen].payload.blocks,
             { actionId: getUniqueId(), ...payload[0] },
           ],
           changedByEditor: false,

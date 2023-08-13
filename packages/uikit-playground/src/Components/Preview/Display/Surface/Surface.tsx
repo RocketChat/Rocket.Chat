@@ -25,7 +25,7 @@ const Surface: FC = () => {
     block: Block[];
     isChangeByDnd: boolean;
   }>({
-    block: screens[activeScreen]?.payload.map((block, i) => ({
+    block: screens[activeScreen]?.payload?.blocks?.map((block, i) => ({
       id: `${i}`,
       payload: block,
     })),
@@ -34,26 +34,26 @@ const Surface: FC = () => {
   const preview = generateActionPreview({
     type: 'Action Block',
     data: {},
-    surface: screens[activeScreen]?.surface,
-    payload: screens[activeScreen]?.payload,
+    surface: screens[activeScreen]?.payload.surface,
+    blocks: screens[activeScreen]?.payload.blocks,
     user: user,
   });
   useEffect(() => {
     setUniqueBlocks({
-      block: screens[activeScreen]?.payload.map((block, i) => ({
+      block: screens[activeScreen]?.payload?.blocks?.map((block, i) => ({
         id: `${i}`,
         payload: block,
       })),
       isChangeByDnd: false,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [screens[activeScreen]?.payload]);
+  }, [screens[activeScreen]?.payload.blocks]);
 
   useEffect(() => {
     if (uniqueBlocks.isChangeByDnd) {
       dispatch(
         updatePayloadAction({
-          payload: uniqueBlocks.block.map((block) => block.payload),
+          blocks: uniqueBlocks.block.map((block) => block.payload),
           changedByEditor: false,
         })
       );
@@ -89,7 +89,7 @@ const Surface: FC = () => {
           appId: 'core',
         }}
       >
-        <SurfaceRender type={screens[activeScreen]?.surface}>
+        <SurfaceRender type={screens[activeScreen]?.payload.surface}>
           <DraggableList
             surface={SurfaceOptions.Modal}
             blocks={uniqueBlocks.block || []}

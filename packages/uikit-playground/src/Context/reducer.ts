@@ -103,18 +103,18 @@ const reducer = (state: initialStateType, action: IAction) => {
     case ActionTypes.NavMenuToggle:
       return { ...state, navMenuToggle: action.payload };
     case ActionTypes.Surface: {
-      state.screens[activeScreen].surface = action.payload;
+      state.screens[activeScreen].payload.surface = action.payload;
       state.screens[activeScreen].changedByEditor = false;
 
       return { ...state };
     }
     case ActionTypes.UpdatePayload: {
-      state.screens[activeScreen].payload = action?.payload?.payload;
+      state.screens[activeScreen].payload.blocks = action?.payload?.blocks;
       state.screens[activeScreen].changedByEditor =
         action?.payload?.changedByEditor === undefined;
       state.projects[activeProject].flowEdges = filterEdges(
         state.projects[activeProject].flowEdges,
-        action?.payload?.payload.map((node) => node.actionId),
+        action?.payload?.blocks.map((node) => node.actionId),
         activeScreen
       );
       return { ...state };
@@ -142,8 +142,10 @@ const reducer = (state: initialStateType, action: IAction) => {
           [id]: {
             id,
             name: action?.payload || 'Untitled Screen',
-            payload: [],
-            surface: SurfaceOptions.Message,
+            payload: {
+              blocks: [],
+              surface: SurfaceOptions.Message,
+            },
             date: getDate(),
             actionPreview: {},
           },
@@ -245,8 +247,10 @@ const reducer = (state: initialStateType, action: IAction) => {
             id: activeScreenId,
             name: 'Untitled Screen',
             date: getDate(),
-            payload: [],
-            surface: SurfaceOptions.Message,
+            payload: {
+              blocks: [],
+              surface: SurfaceOptions.Message,
+            },
             actionPreview: {},
           },
         },

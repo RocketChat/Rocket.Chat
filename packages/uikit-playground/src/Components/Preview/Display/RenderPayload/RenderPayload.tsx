@@ -9,18 +9,18 @@ import { SurfaceOptions } from '../Surface/constant';
 import { ILayoutBlock } from '../../../../Context/initialState';
 
 const RenderPayload = ({
-  payload,
-  surface = 1,
+  blocks,
+  surface = SurfaceOptions.Message,
 }: {
   index?: number;
-  payload: ILayoutBlock[];
+  blocks: ILayoutBlock[];
   surface?: number;
 }) => (
   <>
-    {SurfaceOptions.Message === surface && uiKitMessage(payload)}
-    {SurfaceOptions.Banner === surface && uiKitBanner(payload)}
-    {SurfaceOptions.Modal === surface && uiKitModal(payload)}
-    {SurfaceOptions.ContextualBar === surface && uiKitContextualBar(payload)}
+    {SurfaceOptions.Message === surface && uiKitMessage(blocks)}
+    {SurfaceOptions.Banner === surface && uiKitBanner(blocks)}
+    {SurfaceOptions.Modal === surface && uiKitModal(blocks)}
+    {SurfaceOptions.ContextualBar === surface && uiKitContextualBar(blocks)}
   </>
 );
 

@@ -13,7 +13,7 @@ const SurfaceSelect: FC = () => {
   return (
     <Select
       options={options}
-      value={`${screens[activeScreen]?.surface}`}
+      value={`${screens[activeScreen].payload.surface}`}
       placeholder={'Surface'}
       onChange={(e) => {
         dispatch(surfaceAction(parseInt(e)));

@@ -24,7 +24,7 @@ const ProjectsList = () => {
           id={project.id}
           name={project.name}
           date={project.date}
-          payload={screens[project.screens[0]].payload}
+          blocks={screens[project.screens[0]].payload.blocks}
         />
       ))}
     </Box>

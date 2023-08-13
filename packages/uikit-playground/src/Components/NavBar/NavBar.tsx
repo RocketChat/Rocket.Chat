@@ -96,7 +96,7 @@ const NabBar: FC = () => {
                   onClick={() => {
                     dispatch(
                       updatePayloadAction({
-                        payload: [],
+                        blocks: [],
                         changedByEditor: false,
                       })
                     );

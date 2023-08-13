@@ -58,7 +58,7 @@ const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
           onClick={() => {
             dispatch(
               updatePayloadAction({
-                payload: [],
+                blocks: [],
                 changedByEditor: false,
               })
             );

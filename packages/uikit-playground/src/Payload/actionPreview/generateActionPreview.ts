@@ -1,6 +1,6 @@
 import { SurfaceOptions } from '../../Components/Preview/Display/Surface/constant';
-import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import type {
+  ILayoutBlock,
   actionPreviewType,
   initialStateType,
 } from '../../Context/initialState';
@@ -10,13 +10,13 @@ const generateActionPreview = ({
   type,
   data,
   surface,
-  payload,
+  blocks,
   user,
 }: {
   type: string;
   data: actionPreviewType;
   surface: SurfaceOptions;
-  payload: readonly LayoutBlock[];
+  blocks: ILayoutBlock[];
   user: initialStateType['user'];
 }) => {
   const actionPreview: actionPreviewType = {
@@ -33,7 +33,7 @@ const generateActionPreview = ({
     ...data,
   };
   if (type === 'View Submission') {
-    actionPreview.view = payload;
+    actionPreview.view = blocks;
   }
   return actionPreview;
 };

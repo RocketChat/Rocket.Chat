@@ -33,7 +33,7 @@ const Payload = ({
     dispatch(templatesToggleAction(false));
     dispatch(
       updatePayloadAction({
-        payload: blocksWithUniqueIds,
+        blocks: blocksWithUniqueIds,
         changedByEditor: false,
       })
     );
@@ -58,7 +58,7 @@ const Payload = ({
           `}
         >
           <SurfaceRender type={surface}>
-            <RenderPayload payload={blocksWithUniqueIds} surface={surface} />
+            <RenderPayload blocks={blocksWithUniqueIds} surface={surface} />
           </SurfaceRender>
         </Box>
       </Box>

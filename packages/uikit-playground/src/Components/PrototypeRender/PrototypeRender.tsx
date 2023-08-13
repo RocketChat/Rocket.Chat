@@ -9,13 +9,13 @@ import { css } from '@rocket.chat/css-in-js';
 import { useRef, useState } from 'react';
 
 const PrototypeRender = ({
-  payload,
+  blocks,
   surface,
   flowEdges,
   activeActions,
   onSelectAction,
 }: {
-  payload: ILayoutBlock[];
+  blocks: ILayoutBlock[];
   surface: SurfaceOptions;
   flowEdges: Edge[];
   activeActions: idType[];
@@ -41,7 +41,7 @@ const PrototypeRender = ({
   return (
     <Box h="max-content" mb={'auto'} className="rc-prototype-renderer">
       <SurfaceRender type={surface}>
-        {payload.map((action, id) => (
+        {blocks.map((action, id) => (
           <Box
             key={id}
             className={css`
@@ -61,7 +61,7 @@ const PrototypeRender = ({
               {glowActive && activeActions.includes(action.actionId) && (
                 <Box className={'rc-prototype_action-glow'} />
               )}
-              <RenderPayload payload={[action]} surface={surface} />
+              <RenderPayload blocks={[action]} surface={surface} />
             </Box>
           </Box>
         ))}

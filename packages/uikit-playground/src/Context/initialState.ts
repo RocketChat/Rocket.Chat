@@ -38,11 +38,15 @@ export type actionPreviewType = {
 
 export type ILayoutBlock = { actionId: string } & LayoutBlock;
 
+export interface IPayload {
+  surface: SurfaceOptions;
+  blocks: ILayoutBlock[];
+}
+
 export type ScreenType = {
-  payload: ILayoutBlock[];
+  payload: IPayload;
   id: idType;
   name: string;
-  surface: SurfaceOptions;
   actionPreview: actionPreviewType;
   date: string;
   changedByEditor?: boolean;
@@ -109,10 +113,12 @@ export const initialState: initialStateType = {
   },
   screens: {
     [initialScreenId]: {
-      payload: [],
+      payload: {
+        blocks: [],
+        surface: SurfaceOptions.Message,
+      },
       id: initialScreenId,
       name: 'Untitled Screen',
-      surface: SurfaceOptions.Message,
       date: getDate(),
       actionPreview: {},
     },

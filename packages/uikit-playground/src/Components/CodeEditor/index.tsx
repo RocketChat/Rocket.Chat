@@ -7,6 +7,7 @@ import { useEffect, useContext } from 'react';
 import { updatePayloadAction, context } from '../../Context';
 import useCodeMirror from '../../hooks/useCodeMirror';
 import codePrettier from '../../utils/codePrettier';
+import { ILayoutBlock } from '../../Context/initialState';
 
 type CodeMirrorProps = {
   extensions?: Extension[];
@@ -26,15 +27,15 @@ const CodeEditor = ({ extensions }: CodeMirrorProps) => {
   useEffect(() => {
     if (!changes?.isDispatch) {
       try {
-        const parsedCode = json5.parse(changes.value);
+        const parsedCode: ILayoutBlock[] = json5.parse(changes.value);
         dispatch(
           updatePayloadAction({
-            payload: parsedCode,
+            blocks: parsedCode,
             changedByEditor: false,
           })
         );
 
-        dispatch(updatePayloadAction({ payload: parsedCode }));
+        dispatch(updatePayloadAction({ blocks: parsedCode }));
       } catch (e) {
         // do nothing
       }
@@ -45,7 +46,7 @@ const CodeEditor = ({ extensions }: CodeMirrorProps) => {
   useEffect(() => {
     if (!changes?.isDispatch) {
       try {
-        const prettierCode = codePrettier(changes.value, changes.cursor);
+        const prettierCode = codePrettier(changes.value, changes.cursor || 0);
         setValue(prettierCode.formatted, {
           cursor: prettierCode.cursorOffset,
         });

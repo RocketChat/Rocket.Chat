@@ -13,7 +13,7 @@ const UIKitWrapper = ({ id, data }: { id: string; data: idType }) => {
     state: { screens },
   } = useContext(context);
   if (!screens[data]) return null;
-  const { payload, surface } = screens[data];
+  const { blocks, surface } = screens[data].payload;
   return (
     <Box
       padding="10px"
@@ -28,19 +28,19 @@ const UIKitWrapper = ({ id, data }: { id: string; data: idType }) => {
         id={`${id}`}
       />
       <SurfaceRender type={surface}>
-        {payload.map((payload, index) => (
+        {blocks.map((block, index) => (
           <Box key={index} pie="6px" className="uiKitWrapper">
             <Box
               position="relative"
               border="var(--default-border)"
               padding="10px"
             >
-              <RenderPayload payload={[payload]} surface={surface} />
+              <RenderPayload blocks={[block]} surface={surface} />
               <Handle
                 type="source"
                 className="react-flow-sourceHandle"
                 position={Position.Right}
-                id={payload.actionId}
+                id={block.actionId}
               />
             </Box>
           </Box>

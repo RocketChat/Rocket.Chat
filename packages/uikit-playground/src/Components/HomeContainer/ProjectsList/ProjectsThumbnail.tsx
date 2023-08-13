@@ -22,12 +22,12 @@ const ProjectsThumbnail = ({
   id,
   name: _name,
   date,
-  payload,
+  blocks,
 }: {
   id: string;
   name: string;
   date: string;
-  payload: ILayoutBlock[];
+  blocks: ILayoutBlock[];
 }) => {
   const [name, setName] = useState<string>(_name);
   const navigate = useNavigate();
@@ -80,7 +80,7 @@ const ProjectsThumbnail = ({
         height="260px"
         padding="30px"
       >
-        <Thumbnail of={RenderPayload({ payload })} />
+        <Thumbnail of={RenderPayload({ blocks })} />
         <Box onClick={(e) => e.stopPropagation()}></Box>
       </ScreenThumbnailWrapper>
       <EditableLabel

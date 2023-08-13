@@ -8,6 +8,7 @@ import { updatePayloadAction, context } from '../../Context';
 import useCodeMirror from '../../hooks/useCodeMirror';
 import codePrettier from '../../utils/codePrettier';
 import intendCode from '../../utils/intendCode';
+import { ILayoutBlock } from '../../Context/initialState';
 
 type CodeMirrorProps = {
   extensions?: Extension[];
@@ -28,8 +29,8 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
   useEffect(() => {
     if (!changes?.isDispatch) {
       try {
-        const parsedCode = json5.parse(changes.value);
-        dispatch(updatePayloadAction({ payload: parsedCode }));
+        const parsedCode: ILayoutBlock[] = json5.parse(changes.value);
+        dispatch(updatePayloadAction({ blocks: parsedCode }));
       } catch (e) {
         // do nothing
       }
@@ -56,7 +57,7 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
       setValue(intendCode(screens[activeScreen]?.payload), {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [screens[activeScreen]?.payload, activeScreen]);
+  }, [screens[activeScreen]?.payload.blocks, activeScreen]);
 
   useEffect(() => {
     setValue(intendCode(screens[activeScreen]?.payload), {});

@@ -11,7 +11,7 @@ type PreviewSizeType = {
   blockSize: number;
   inlineSize: number;
 };
-const SplitPlaneContainer: FC<{ PreviewSize: PreviewSizeType }> = ({
+const SplitPlaneContainer: FC<{ PreviewSize: Partial<PreviewSizeType> }> = ({
   PreviewSize,
 }) => {
   const {

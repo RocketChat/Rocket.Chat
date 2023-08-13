@@ -68,7 +68,7 @@ const ScreenThumbnail = ({
         labelProps={{ fontScale: 'h5' }}
       />
       <ScreenThumbnailWrapper onClick={activateScreenHandler}>
-        <Thumbnail of={renderPayload({ payload: screen.payload })} />
+        <Thumbnail of={renderPayload({ blocks: screen.payload.blocks })} />
       </ScreenThumbnailWrapper>
     </Box>
   );

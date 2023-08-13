@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Icon } from '@rocket.chat/fuselage';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import { context, updatePayloadAction } from '../../../../Context';
 
@@ -9,11 +8,10 @@ const Display = ({ elementIndex }: { elementIndex: number }) => {
 
   const deleteElement = () => {
     const { screens, activeScreen } = state;
-    // @ts-ignore
-    const payload = [...screens[activeScreen].payload];
-    payload.splice(elementIndex, 1);
+    const blocks = [...screens[activeScreen].payload.blocks];
+    blocks.splice(elementIndex, 1);
     dispatch(
-      updatePayloadAction({ payload: [...payload], changedByEditor: false })
+      updatePayloadAction({ blocks: [...blocks], changedByEditor: false })
     );
   };
   return (

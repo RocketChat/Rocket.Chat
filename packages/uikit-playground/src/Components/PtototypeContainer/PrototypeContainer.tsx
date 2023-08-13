@@ -19,15 +19,16 @@ const PrototypeContainer = () => {
 
   if (!projects[activeProject].screens.length) return null;
 
-  const { surface, payload } =
-    screens[currentScreenID] || screens[projects[activeProject].screens[0]];
+  const { surface, blocks } =
+    screens[currentScreenID]?.payload ||
+    screens[projects[activeProject].screens[0]].payload;
 
   return (
     <Scrollable vertical>
       <Box w="100%" h="100%">
         <PrototypeRender
           surface={surface}
-          payload={payload}
+          blocks={blocks}
           activeActions={activeActions as string[]}
           flowEdges={projects[activeProject].flowEdges}
           onSelectAction={setCurrentScreenID}
