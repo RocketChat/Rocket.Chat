@@ -14,9 +14,9 @@ test.describe.parallel('administration', () => {
 		poAdmin = new Admin(page);
 	});
 
-	test.describe('Info', () => {
+	test.describe('Workspace', () => {
 		test.beforeEach(async ({ page }) => {
-			await page.goto('/admin/info');
+			await page.goto('/admin/workspace');
 		});
 
 		test('expect download info as JSON', async ({ page }) => {
@@ -68,7 +68,7 @@ test.describe.parallel('administration', () => {
 		test('expect open upsell modal if not enterprise', async ({ page }) => {
 			test.skip(IS_EE);
 			await poAdmin.btnCreateRole.click();
-			await page.waitForSelector('dialog[id="custom-roles"]');
+			await page.waitForSelector('role=dialog[name="Custom roles"]');
 		});
 	});
 

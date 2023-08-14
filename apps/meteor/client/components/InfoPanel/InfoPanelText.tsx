@@ -8,7 +8,7 @@ const wordBreak = css`
 `;
 
 const InfoPanelText: FC<ComponentProps<typeof Box>> = (props) => (
-	<Box mb='x8' fontScale='p2' color='hint' className={wordBreak} {...props} />
+	<Box mb={8} fontScale='p2' color='hint' className={wordBreak} {...props} />
 );
 
 export default InfoPanelText;

@@ -1,5 +1,5 @@
-import type NodeRSA from 'node-rsa';
 import type { FederationKey } from '@rocket.chat/core-typings';
+import type NodeRSA from 'node-rsa';
 
 import type { IBaseModel } from './IBaseModel';
 

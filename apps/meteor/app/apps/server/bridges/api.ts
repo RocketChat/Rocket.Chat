@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
+import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
+import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
+import { ApiBridge } from '@rocket.chat/apps-engine/server/bridges/ApiBridge';
+import type { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
 import type { Response, Request, IRouter, RequestHandler } from 'express';
 import express from 'express';
+import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { ApiBridge } from '@rocket.chat/apps-engine/server/bridges/ApiBridge';
-import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
-import type { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
-import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';

@@ -1,7 +1,7 @@
-import type { RoomType } from './RoomType';
-import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { FileProp } from './IMessage/MessageAttachment/Files/FileProp';
+import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
+import type { RoomType } from './RoomType';
 
 export interface IExportOperation extends IRocketChatRecord {
 	roomList?: (

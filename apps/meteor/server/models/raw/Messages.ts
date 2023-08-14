@@ -6,9 +6,12 @@ import type {
 	MessageTypesValues,
 	RocketChatRecordDeleted,
 	MessageAttachment,
+	IMessageWithPendingFileImport,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
+import { Rooms } from '@rocket.chat/models';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
 	Collection,
@@ -25,13 +28,11 @@ import type {
 	Document,
 	UpdateFilter,
 } from 'mongodb';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Rooms } from '@rocket.chat/models';
 
-import { BaseRaw } from './BaseRaw';
+import { otrSystemMessages } from '../../../app/otr/lib/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { escapeExternalFederationEventId } from '../../services/federation/infrastructure/rocket-chat/adapters/federation-id-escape-helper';
-import { otrSystemMessages } from '../../../app/otr/lib/constants';
+import { BaseRaw } from './BaseRaw';
 
 type DeepWritable<T> = T extends (...args: any) => any
 	? T
@@ -76,6 +77,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { 'navigation.token': 1 }, sparse: true },
 
 			{ key: { 'federation.eventId': 1 }, sparse: true },
+			{ key: { t: 1 }, sparse: true },
 		];
 	}
 
@@ -223,9 +225,31 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const params: Exclude<Parameters<Collection<IMessage>['aggregate']>[0], undefined> = [
 			{ $match: { t: { $exists: false }, ts: { $gte: start, $lte: end } } },
 			{
+				$group: {
+					_id: {
+						rid: '$rid',
+						date: {
+							$dateToString: { format: '%Y%m%d', date: '$ts' },
+						},
+					},
+					messages: { $sum: 1 },
+				},
+			},
+			{
+				$group: {
+					_id: '$_id.rid',
+					data: {
+						$push: {
+							date: '$_id.date',
+							messages: '$messages',
+						},
+					},
+				},
+			},
+			{
 				$lookup: {
 					from: 'rocketchat_room',
-					localField: 'rid',
+					localField: '_id',
 					foreignField: '_id',
 					as: 'room',
 				},
@@ -236,8 +260,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				},
 			},
 			{
-				$group: {
-					_id: {
+				$project: {
+					data: '$data',
+					room: {
 						_id: '$room._id',
 						name: {
 							$cond: [{ $ifNull: ['$room.fname', false] }, '$room.fname', '$room.name'],
@@ -246,25 +271,22 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 						usernames: {
 							$cond: [{ $ifNull: ['$room.usernames', false] }, '$room.usernames', []],
 						},
-						date: {
-							$concat: [{ $substr: ['$ts', 0, 4] }, { $substr: ['$ts', 5, 2] }, { $substr: ['$ts', 8, 2] }],
-						},
 					},
-					messages: { $sum: 1 },
+					type: 'messages',
+				},
+			},
+			{
+				$unwind: {
+					path: '$data',
 				},
 			},
 			{
 				$project: {
 					_id: 0,
-					date: '$_id.date',
-					room: {
-						_id: '$_id._id',
-						name: '$_id.name',
-						t: '$_id.t',
-						usernames: '$_id.usernames',
-					},
-					type: 'messages',
-					messages: 1,
+					date: '$data.date',
+					room: 1,
+					type: 1,
+					messages: '$data.messages',
 				},
 			},
 		];
@@ -1006,25 +1028,28 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query, options);
 	}
 
+	async cloneAndSaveAsHistoryByRecord(record: IMessage, user: IMessage['u']): Promise<InsertOneResult<IMessage>> {
+		const { _id: _, ...nRecord } = record;
+		return this.insertOne({
+			...nRecord,
+			_hidden: true,
+			// @ts-expect-error - mongo allows it, but types don't :(
+			parent: record._id,
+			editedAt: new Date(),
+			editedBy: {
+				_id: user._id,
+				username: user.username,
+			},
+		});
+	}
+
 	async cloneAndSaveAsHistoryById(_id: string, user: IMessage['u']): Promise<InsertOneResult<IMessage>> {
 		const record = await this.findOneById(_id);
 		if (!record) {
 			throw new Error('Record not found');
 		}
 
-		record._hidden = true;
-		// @ts-expect-error - :)
-		record.parent = record._id;
-		// @ts-expect-error - :)
-		record.editedAt = new Date();
-		// @ts-expect-error - :)
-		record.editedBy = {
-			_id: user._id,
-			username: user.username,
-		};
-
-		const { _id: ignoreId, ...nRecord } = record;
-		return this.insertOne(nRecord);
+		return this.cloneAndSaveAsHistoryByRecord(record, user);
 	}
 
 	// UPDATE
@@ -1602,7 +1627,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query, { sort: { ts: 1 } });
 	}
 
-	findAllImportedMessagesWithFilesToDownload(): FindCursor<IMessage> {
+	findAllImportedMessagesWithFilesToDownload(): FindCursor<IMessageWithPendingFileImport> {
 		const query = {
 			'_importFile.downloadUrl': {
 				$exists: true,
@@ -1618,7 +1643,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.find(query);
+		return this.find<IMessageWithPendingFileImport>(query);
 	}
 
 	countAllImportedMessagesWithFilesToDownload(): Promise<number> {

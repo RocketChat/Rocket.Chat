@@ -29,7 +29,7 @@ const LoginSwitchLanguageFooter = (): ReactElement | null => {
 		return Array.from(potentialSuggestions).filter(
 			(language) => language && language !== currentLanguage && Boolean(languages.find(({ key }) => key === language)),
 		);
-	}, [serverLanguage, browserLanguage, currentLanguage]);
+	}, [serverLanguage, currentLanguage, languages]);
 
 	const handleSwitchLanguageClick = (language: string) => (): void => {
 		loadLanguage(language);

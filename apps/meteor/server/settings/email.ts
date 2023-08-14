@@ -409,13 +409,13 @@ export const createEmailSettings = () =>
 		});
 
 		await this.section('Registration', async function () {
-			await this.add('Accounts_Enrollment_Email_Subject', '{Welcome_to Site_name}', {
+			await this.add('Accounts_Enrollment_Email_Subject', '{Welcome_to}', {
 				type: 'string',
 				i18nLabel: 'Subject',
 			});
 			await this.add(
 				'Accounts_Enrollment_Email',
-				'<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>',
+				'<h2>{Welcome_to}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>',
 				{
 					type: 'code',
 					code: 'text/html',
@@ -426,13 +426,13 @@ export const createEmailSettings = () =>
 		});
 
 		await this.section('Registration_via_Admin', async function () {
-			await this.add('Accounts_UserAddedEmail_Subject', '{Welcome_to Site_Name}', {
+			await this.add('Accounts_UserAddedEmail_Subject', '{Welcome_to}', {
 				type: 'string',
 				i18nLabel: 'Subject',
 			});
 			await this.add(
 				'Accounts_UserAddedEmail_Email',
-				'<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>',
+				'<h2>{Welcome_to}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>',
 				{
 					type: 'code',
 					code: 'text/html',
@@ -475,7 +475,7 @@ export const createEmailSettings = () =>
 			});
 			await this.add(
 				'Invitation_Email',
-				'<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" href="[Site_URL]">{Join_Chat}</a>',
+				'<h2>{Welcome_to}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" href="[Site_URL]">{Join_Chat}</a>',
 				{
 					type: 'code',
 					code: 'text/html',

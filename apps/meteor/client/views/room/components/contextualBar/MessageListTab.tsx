@@ -1,9 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { Icon } from '@rocket.chat/fuselage';
 import { Box, MessageDivider, Throbber } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import { useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
-import type { ReactElement, ComponentProps, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -26,10 +26,10 @@ import { isMessageFirstUnread } from '../../MessageList/lib/isMessageFirstUnread
 import { isMessageNewDay } from '../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../MessageList/providers/MessageListProvider';
 import { useRoomSubscription } from '../../contexts/RoomContext';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 type MessageListTabProps = {
-	iconName: ComponentProps<typeof Icon>['name'];
+	iconName: IconName;
 	title: ReactNode;
 	emptyResultMessage: string;
 	context: MessageActionContext;
@@ -41,10 +41,10 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 	const formatDate = useFormatDate();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
-	const closeTabBar = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 	const handleTabBarCloseButtonClick = useCallback(() => {
-		closeTabBar();
-	}, [closeTabBar]);
+		closeTab();
+	}, [closeTab]);
 
 	const subscription = useRoomSubscription();
 
@@ -58,7 +58,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 			<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0}>
 				{queryResult.isLoading && (
 					<Box paddingInline={24} paddingBlock={12}>
-						<Throbber size={12} />
+						<Throbber size='x12' />
 					</Box>
 				)}
 				{queryResult.isSuccess && (
