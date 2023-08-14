@@ -1,6 +1,5 @@
 /* eslint-disable react/no-multi-comp */
 import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { AgentsTable, BarChart, ReportCard } from '../components';
@@ -23,17 +22,10 @@ const LoadingSkeleton = () => (
 );
 
 export const AgentsSection = () => {
-	const t = useTranslation();
-	const { data, total, period, ...config } = useAgentsSection();
-
-	const subtitle = t('__agents__agents_and__count__conversations__period__', {
-		agents: data.length ?? 0,
-		count: total ?? 0,
-		period,
-	});
+	const { data, ...config } = useAgentsSection();
 
 	return (
-		<ReportCard title={t('Conversations_by_agents')} height={360} {...config} subtitle={subtitle} loadingSkeleton={<LoadingSkeleton />}>
+		<ReportCard {...config} height={360} loadingSkeleton={<LoadingSkeleton />}>
 			<Box display='flex' style={{ gap: '16px' }}>
 				<Flex.Item grow={1}>
 					<BarChart

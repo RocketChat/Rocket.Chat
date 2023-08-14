@@ -1,10 +1,11 @@
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { COLORS, PERIOD_OPTIONS } from '../components/constants';
+import { useDefaultDownload } from './useDefaultDownload';
 
 const formatChartData = (data: { label: string; value: number }[] | undefined = []) =>
 	data.map((item) => ({
@@ -13,6 +14,7 @@ const formatChartData = (data: { label: string; value: number }[] | undefined = 
 	}));
 
 export const useAgentsSection = () => {
+	const t = useTranslation();
 	const [period, periodSelectorProps] = usePeriodSelectorStorage('reports-agents-period', PERIOD_OPTIONS);
 	const getConversationsBySource = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-agent');
 
@@ -34,20 +36,19 @@ export const useAgentsSection = () => {
 		},
 	);
 
-	const downloadProps = useMemo(
-		() => ({
-			attachmentName: 'Conversations_by_agents',
-			headers: ['Date', 'Messages'],
-			dataAvailable: data.length > 0,
-			dataExtractor(): unknown[][] | undefined {
-				return data?.map(({ label, value }) => [label, value]);
-			},
-		}),
-		[data],
-	);
+	const title = t('Conversations_by_agents');
+	const subtitle = t('__agents__agents_and__count__conversations__period__', {
+		agents: data.length ?? 0,
+		count: total ?? 0,
+		period,
+	});
+
+	const downloadProps = useDefaultDownload({ columnName: t('Agents'), title, data, period });
 
 	return useMemo(
 		() => ({
+			title,
+			subtitle,
 			data,
 			total,
 			isLoading,
@@ -57,6 +58,6 @@ export const useAgentsSection = () => {
 			period,
 			downloadProps,
 		}),
-		[data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps],
+		[title, subtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps],
 	);
 };

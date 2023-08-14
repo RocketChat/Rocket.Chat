@@ -1,10 +1,11 @@
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { COLORS, PERIOD_OPTIONS } from '../components/constants';
+import { useDefaultDownload } from './useDefaultDownload';
 
 const formatChartData = (data: { label: string; value: number }[] | undefined = []) =>
 	data.map((item, i) => ({
@@ -14,6 +15,7 @@ const formatChartData = (data: { label: string; value: number }[] | undefined = 
 	}));
 
 export const useChannelsSection = () => {
+	const t = useTranslation();
 	const [period, periodSelectorProps] = usePeriodSelectorStorage('reports-channels-period', PERIOD_OPTIONS);
 	const getConversationsBySource = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-source');
 
@@ -35,20 +37,18 @@ export const useChannelsSection = () => {
 		},
 	);
 
-	const downloadProps = useMemo(
-		() => ({
-			attachmentName: 'Conversations_by_channel',
-			headers: ['Date', 'Messages'],
-			dataAvailable: data.length > 0,
-			dataExtractor(): unknown[][] | undefined {
-				return data?.map(({ label, value }) => [label, value]);
-			},
-		}),
-		[data],
-	);
+	const title = t('Conversations_by_channel');
+	const subtitle = t('__count__conversations__period__', {
+		count: total ?? 0,
+		period,
+	});
+
+	const downloadProps = useDefaultDownload({ columnName: t('Channel'), title, data, period });
 
 	return useMemo(
 		() => ({
+			title,
+			subtitle,
 			data,
 			total,
 			isLoading,
@@ -58,6 +58,6 @@ export const useChannelsSection = () => {
 			period,
 			downloadProps,
 		}),
-		[data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps],
+		[title, subtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps],
 	);
 };

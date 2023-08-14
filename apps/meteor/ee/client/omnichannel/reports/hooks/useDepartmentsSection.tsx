@@ -1,10 +1,11 @@
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { COLORS, PERIOD_OPTIONS } from '../components/constants';
+import { useDefaultDownload } from './useDefaultDownload';
 
 const formatChartData = (data: { label: string; value: number }[] | undefined = []) =>
 	data.map((item) => ({
@@ -13,6 +14,7 @@ const formatChartData = (data: { label: string; value: number }[] | undefined = 
 	}));
 
 export const useDepartmentsSection = () => {
+	const t = useTranslation();
 	const [period, periodSelectorProps] = usePeriodSelectorStorage('reports-department-period', PERIOD_OPTIONS);
 	const getConversationsByDepartment = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-department');
 
@@ -34,20 +36,19 @@ export const useDepartmentsSection = () => {
 		},
 	);
 
-	const downloadProps = useMemo(
-		() => ({
-			attachmentName: 'Conversations_by_departments',
-			headers: ['Date', 'Messages'],
-			dataAvailable: data.length > 0,
-			dataExtractor(): unknown[][] | undefined {
-				return data?.map(({ label, value }) => [label, value]);
-			},
-		}),
-		[data],
-	);
+	const title = t('Conversations_by_department');
+	const subtitle = t('__departments__departments_and__count__conversations__period__', {
+		departments: data.length ?? 0,
+		count: total ?? 0,
+		period,
+	});
+
+	const downloadProps = useDefaultDownload({ column: t('Departments'), title, data, period });
 
 	return useMemo(
 		() => ({
+			title,
+			subtitle,
 			data,
 			total,
 			isLoading,
@@ -57,6 +58,6 @@ export const useDepartmentsSection = () => {
 			period,
 			downloadProps,
 		}),
-		[data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps],
+		[title, subtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps],
 	);
 };

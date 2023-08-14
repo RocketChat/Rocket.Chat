@@ -1,11 +1,12 @@
 import { Palette } from '@rocket.chat/fuselage';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { PERIOD_OPTIONS } from '../components/constants';
+import { useDefaultDownload } from './useDefaultDownload';
 
 const colors = {
 	warning: Palette.statusColor['status-font-on-warning'].toString(),
@@ -21,6 +22,7 @@ const formatChartData = (data: { label: string; value: number }[] | undefined = 
 	}));
 
 export const useTagsSection = () => {
+	const t = useTranslation();
 	const [period, periodSelectorProps] = usePeriodSelectorStorage('reports-tags-period', PERIOD_OPTIONS);
 	const getConversationsByTags = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-tags');
 
@@ -42,20 +44,18 @@ export const useTagsSection = () => {
 		},
 	);
 
-	const downloadProps = useMemo(
-		() => ({
-			attachmentName: 'Conversations_by_tags',
-			headers: ['Date', 'Messages'],
-			dataAvailable: data.length > 0,
-			dataExtractor(): unknown[][] | undefined {
-				return data?.map(({ label, value }) => [label, value]);
-			},
-		}),
-		[data],
-	);
+	const title = t('Conversations_by_tag');
+	const subtitle = t('__count__tags__period__', {
+		count: total ?? 0,
+		period,
+	});
+
+	const downloadProps = useDefaultDownload({ columnName: t('Tags'), title, data, period });
 
 	return useMemo(
 		() => ({
+			title,
+			subtitle,
 			data,
 			total,
 			isError,
@@ -65,6 +65,6 @@ export const useTagsSection = () => {
 			period,
 			downloadProps,
 		}),
-		[data, total, isError, isLoading, isSuccess, periodSelectorProps, period, downloadProps],
+		[title, subtitle, data, total, isError, isLoading, isSuccess, periodSelectorProps, period, downloadProps],
 	);
 };
