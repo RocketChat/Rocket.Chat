@@ -18,13 +18,13 @@ export const DepartmentsSection = () => {
 					axisLeft: {
 						tickSize: 0,
 						tickRotation: 0,
-						format: (v) => ellipsis(v, 20),
+						format: (v) => ellipsis(v, 10),
 					},
 					axisTop: {
 						tickSize: 0,
 						tickRotation: 0,
 						tickValues: 4,
-						format: (v) => ellipsis(v, 20),
+						format: (v) => ellipsis(v, 10),
 					},
 				}}
 			/>

@@ -39,7 +39,7 @@ export const AgentsSection = () => {
 							axisBottom: {
 								tickSize: 0,
 								tickRotation: 0,
-								format: (v) => ellipsis(v, 20),
+								format: (v) => ellipsis(v, 10),
 							},
 							axisLeft: {
 								tickSize: 0,
