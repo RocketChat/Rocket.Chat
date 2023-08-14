@@ -19,7 +19,7 @@ export const useAgentsSection = () => {
 	const getConversationsBySource = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-agent');
 
 	const {
-		data: { data, total } = { data: [], total: 0 },
+		data: { data, total = 0, unspecified = 0 } = { data: [], total: 0 },
 		isLoading,
 		isError,
 		isSuccess,
@@ -37,11 +37,10 @@ export const useAgentsSection = () => {
 	);
 
 	const title = t('Conversations_by_agents');
-	const subtitle = t('__agents__agents_and__count__conversations__period__', {
-		agents: data.length ?? 0,
-		count: total ?? 0,
-		period,
-	});
+
+	const subtitleTotals = t('__agents__agents_and__count__conversations__period__', { agents: data.length ?? 0, count: total, period });
+	const subtitleUnspecified = unspecified > 0 ? `(${t('__count__without__assignee__', { count: unspecified })})` : '';
+	const subtitle = `${subtitleTotals} ${subtitleUnspecified}`;
 
 	const downloadProps = useDefaultDownload({ columnName: t('Agents'), title, data, period });
 

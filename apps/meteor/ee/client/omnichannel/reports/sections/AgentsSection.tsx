@@ -25,7 +25,7 @@ export const AgentsSection = () => {
 	const { data, ...config } = useAgentsSection();
 
 	return (
-		<ReportCard {...config} height={360} loadingSkeleton={<LoadingSkeleton />}>
+		<ReportCard {...config} full height={360} loadingSkeleton={<LoadingSkeleton />}>
 			<Box display='flex' style={{ gap: '16px' }}>
 				<Flex.Item grow={1}>
 					<BarChart

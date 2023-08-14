@@ -20,6 +20,7 @@ type ReportCardProps = {
 	height?: number;
 	loadingSkeleton?: ReactElement;
 	subtitle?: string;
+	full?: boolean;
 };
 
 export const ReportCard = ({
@@ -31,11 +32,12 @@ export const ReportCard = ({
 	isDataFound,
 	height,
 	subtitle,
+	full,
 	loadingSkeleton: LoadingSkeleton = <Skeleton style={{ transform: 'none' }} height='100%' />,
 }: ReportCardProps) => {
 	const t = useTranslation();
 	return (
-		<Box is={Card} minWidth='calc(50% - 16px)' flexGrow={1} overflow='hidden' margin={8}>
+		<Box is={Card} maxWidth={full ? '100%' : 'calc(50% - 16px)'} flexGrow={1} overflow='hidden' margin={8}>
 			<Card.Title>
 				<Box display='flex' justifyContent='space-between' alignItems='center' wrap='no-wrap'>
 					<Box display='flex' flexDirection='column' flexShrink={1} mie={16}>

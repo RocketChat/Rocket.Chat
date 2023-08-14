@@ -19,7 +19,7 @@ export const useDepartmentsSection = () => {
 	const getConversationsByDepartment = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-department');
 
 	const {
-		data: { data, total } = { data: [], total: 0 },
+		data: { data, total = 0, unspecified = 0 } = { data: [], total: 0 },
 		isLoading,
 		isError,
 		isSuccess,
@@ -37,11 +37,13 @@ export const useDepartmentsSection = () => {
 	);
 
 	const title = t('Conversations_by_department');
-	const subtitle = t('__departments__departments_and__count__conversations__period__', {
+	const subtitleTotals = t('__departments__departments_and__count__conversations__period__', {
 		departments: data.length ?? 0,
-		count: total ?? 0,
+		count: total,
 		period,
 	});
+	const subtitleUnspecified = unspecified > 0 ? `(${t('__count__without__department__', { count: unspecified })})` : '';
+	const subtitle = `${subtitleTotals} ${subtitleUnspecified}`;
 
 	const downloadProps = useDefaultDownload({ columnName: t('Departments'), title, data, period });
 

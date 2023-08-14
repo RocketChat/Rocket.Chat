@@ -27,7 +27,7 @@ export const useTagsSection = () => {
 	const getConversationsByTags = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-tags');
 
 	const {
-		data: { data, total } = { data: [], total: 0 },
+		data: { data, total = 0, unspecified = 0 } = { data: [], total: 0 },
 		isLoading,
 		isError,
 		isSuccess,
@@ -45,10 +45,9 @@ export const useTagsSection = () => {
 	);
 
 	const title = t('Conversations_by_tag');
-	const subtitle = t('__count__tags__period__', {
-		count: total ?? 0,
-		period,
-	});
+	const subtitleTotals = t('__count__tags__period__', { count: total, period });
+	const subtitleUnspecified = unspecified > 0 ? `(${t('__count__without__tags__', { count: unspecified })})` : '';
+	const subtitle = `${subtitleTotals} ${subtitleUnspecified}`;
 
 	const downloadProps = useDefaultDownload({ columnName: t('Tags'), title, data, period });
 
