@@ -235,7 +235,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 			const now = new Date().toISOString();
 			const { body } = await request
-				.get(api('livechat/analytics/dashboards/conversations-by-source'))
+				.get(api('livechat/analytics/dashboards/conversations-by-status'))
 				.set(agent2.credentials)
 				.query({ start: oneHourAgo, end: now })
 				.expect(200);
@@ -337,7 +337,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 			const now = new Date().toISOString();
 			const { body } = await request
-				.get(api('livechat/analytics/dashboards/conversations-by-source'))
+				.get(api('livechat/analytics/dashboards/conversations-by-department'))
 				.set(agent2.credentials)
 				.query({ start: oneHourAgo, end: now })
 				.expect(200);
@@ -431,7 +431,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 			const now = new Date().toISOString();
 			const { body } = await request
-				.get(api('livechat/analytics/dashboards/conversations-by-source'))
+				.get(api('livechat/analytics/dashboards/conversations-by-tags'))
 				.set(agent2.credentials)
 				.query({ start: oneHourAgo, end: now })
 				.expect(200);
@@ -524,7 +524,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 			const now = new Date().toISOString();
 			const { body } = await request
-				.get(api('livechat/analytics/dashboards/conversations-by-source'))
+				.get(api('livechat/analytics/dashboards/conversations-by-agent'))
 				.set(agent2.credentials)
 				.query({ start: oneHourAgo, end: now })
 				.expect(200);
