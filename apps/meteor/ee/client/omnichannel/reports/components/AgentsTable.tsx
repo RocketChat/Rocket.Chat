@@ -10,18 +10,19 @@ import {
 	GenericTableHeaderCell,
 	GenericTableRow,
 } from '../../../../../client/components/GenericTable';
-import { useSort } from '../../../../../client/components/GenericTable/hooks/useSort';
 
 type AgentsTableProps = {
 	data: {
 		label: string;
 		value: number;
 	}[];
+	sortBy: string;
+	sortDirection: 'asc' | 'desc';
+	setSort: (sortBy: 'name' | 'total', sortDirection: 'asc' | 'desc') => void;
 };
 
-export const AgentsTable = memo(({ data }: AgentsTableProps) => {
+export const AgentsTable = memo(({ data, sortBy, sortDirection, setSort }: AgentsTableProps) => {
 	const t = useTranslation();
-	const { sortBy, sortDirection, setSort } = useSort<'name' | 'total'>('name');
 
 	const onHeaderClick = useMutableCallback((id) => {
 		setSort(id, sortDirection === 'asc' ? 'desc' : 'asc');

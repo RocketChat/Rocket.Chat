@@ -22,7 +22,7 @@ const LoadingSkeleton = () => (
 );
 
 export const AgentsSection = () => {
-	const { data, ...config } = useAgentsSection();
+	const { data, sortBy, sortDirection, setSort, ...config } = useAgentsSection();
 
 	return (
 		<ReportCard {...config} full height={360} loadingSkeleton={<LoadingSkeleton />}>
@@ -50,7 +50,7 @@ export const AgentsSection = () => {
 					/>
 				</Flex.Item>
 				<Flex.Item grow={1}>
-					<AgentsTable data={data} />
+					<AgentsTable data={data} sortBy={sortBy} sortDirection={sortDirection} setSort={setSort} />
 				</Flex.Item>
 			</Box>
 		</ReportCard>
