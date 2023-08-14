@@ -3,7 +3,10 @@ import type { IOmnichannelBusinessUnit } from "@rocket.chat/core-typings";
 import { methodCall, credentials, request } from "../api-data";
 import type { DummyResponse } from "./utils";
 
-export const createMonitor = async (username: string): Promise<{ _id: string; username: string }> => {
+export const createMonitor = async (username?: string): Promise<{ _id: string; username: string }> => {
+    if (!username) {
+        throw new Error('username is required');
+    }
     return new Promise((resolve, reject) => {
 		request
 			.post(methodCall(`livechat:addMonitor`))
@@ -25,7 +28,11 @@ export const createMonitor = async (username: string): Promise<{ _id: string; us
 	});
 };
 
-export const createUnit = async (monitorId: string, username: string, departmentIds: string[]): Promise<IOmnichannelBusinessUnit> => {
+export const createUnit = async (monitorId: string, username?: string, departmentIds: string[]): Promise<IOmnichannelBusinessUnit> => {
+    if (!username) {
+        throw new Error('username is required');
+    }
+
     return new Promise((resolve, reject) => {
         request
             .post(methodCall(`livechat:saveUnit`))
