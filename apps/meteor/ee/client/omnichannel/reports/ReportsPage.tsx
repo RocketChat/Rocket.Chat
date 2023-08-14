@@ -1,4 +1,4 @@
-import { Box, Flex } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
