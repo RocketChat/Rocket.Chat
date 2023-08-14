@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
-import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
+import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight, RoomVerificationState } from '@rocket.chat/core-typings';
 
 import { ChatSubscription } from './ChatSubscription';
 import { CachedCollection } from '../../../ui-cached-collection/client';
@@ -69,6 +69,7 @@ class CachedChatRoom extends CachedCollection<IRoom> {
 					ts: room.ts,
 					source: (room as IOmnichannelRoom | undefined)?.source,
 					queuedAt: (room as IOmnichannelRoom | undefined)?.queuedAt,
+					verificationStatus: (room as IOmnichannelRoom | undefined)?.verificationStatus || RoomVerificationState.unVerified,
 					federated: room.federated,
 					...(() => {
 						const name = room.name || sub.name;

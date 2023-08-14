@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
-import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
+import { OmnichannelSourceType, DEFAULT_SLA_CONFIG, RoomVerificationState } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
 import { api, Message } from '@rocket.chat/core-services';
 import {
@@ -86,6 +86,7 @@ export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraD
 				alias: 'unknown',
 			},
 			queuedAt: newRoomAt,
+			verificationStatus: RoomVerificationState.unVerified,
 
 			priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
 			estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,

@@ -34,6 +34,7 @@ export type SubscriptionWithRoom = ISubscription &
 		| 'livechatData'
 		| 'departmentId'
 		| 'queuedAt'
+		| 'verificationStatus'
 	> & {
 		source?: IOmnichannelRoom['source'];
 	} & Pick<Partial<IRoomWithRetentionPolicy>, 'retention'>;

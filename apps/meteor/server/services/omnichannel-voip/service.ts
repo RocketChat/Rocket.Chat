@@ -11,7 +11,7 @@ import type {
 	IVoipRoom,
 	IVoipRoomClosingInfo,
 } from '@rocket.chat/core-typings';
-import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents } from '@rocket.chat/core-typings';
+import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents, RoomVerificationState } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VoipRoom, PbxEvents } from '@rocket.chat/models';
 import type { IOmnichannelVoipService, FindVoipRoomsParams } from '@rocket.chat/core-services';
@@ -181,6 +181,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			},
 			direction,
 			_updatedAt: newRoomAt,
+			verificationStatus: RoomVerificationState.unVerified,
 		};
 
 		this.logger.debug(`Room created for visitor ${_id}`);

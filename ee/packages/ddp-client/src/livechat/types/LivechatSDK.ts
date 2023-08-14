@@ -1,4 +1,4 @@
-import type { Serialized } from '@rocket.chat/core-typings';
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
 import type { StreamerCallbackArgs } from '../../types/streams';
@@ -53,6 +53,7 @@ export interface LivechatEndpoints {
 	// videoCall(args: OperationParams<'GET', '/v1/livechat/video.call/:token'>): Promise<void>;
 
 	// POST
+	verifyUser(rid: IRoom['_id']): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor.verify'>>>;
 	transferChat(
 		args: OperationParams<'POST', '/v1/livechat/room.transfer'>,
 	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/room.transfer'>>>;

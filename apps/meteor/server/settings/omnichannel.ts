@@ -465,6 +465,15 @@ export const createOmniSettings = () =>
 			i18nLabel: 'Channel_name',
 		});
 
+		await this.add('Livechat_LimitWrongAttempts', 3, {
+			type: 'int',
+			group: 'Omnichannel',
+			section: 'Livechat',
+			public: true,
+			enableQuery: omnichannelEnabledQuery,
+			i18nLabel: 'Maximum_Wrong_Messages_Allowed_during_Verification',
+		});
+
 		await this.add('Livechat_Routing_Method', 'Auto_Selection', {
 			type: 'select',
 			group: 'Omnichannel',

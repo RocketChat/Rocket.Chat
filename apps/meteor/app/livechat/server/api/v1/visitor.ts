@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms } from '@rocket.chat/models';
+import { OmnichannelVerification } from '@rocket.chat/core-services';
 
 import { API } from '../../../../api/server';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
@@ -198,3 +199,16 @@ API.v1.addRoute('livechat/visitor.status', {
 		return API.v1.success({ token, status });
 	},
 });
+
+API.v1.addRoute(
+	'livechat/visitor.verify',
+	{ authRequired: true, permissionsRequired: ['initiate-livechat-verification-process'] },
+	{
+		async post() {
+			const { rid } = this.bodyParams;
+			await OmnichannelVerification.initiateVerificationProcess(rid);
+
+			return API.v1.success({ rid });
+		},
+	},
+);

@@ -43,3 +43,11 @@ addAction(QuickActionsEnum.CloseChat, {
 	order: 5,
 	color: 'danger',
 });
+
+addAction(QuickActionsEnum.VerifyUser, {
+	groups: ['live'],
+	id: QuickActionsEnum.VerifyUser,
+	title: 'Verify_User',
+	icon: 'shield-alt',
+	order: 6,
+});
