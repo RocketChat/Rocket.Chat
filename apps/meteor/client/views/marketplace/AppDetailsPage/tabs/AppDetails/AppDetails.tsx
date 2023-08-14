@@ -19,7 +19,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 		categories = [],
 		screenshots,
 		apis,
-		documentationUrl,
+		documentationUrl: documentation,
 	} = app;
 
 	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
@@ -27,7 +27,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 
 	const normalizedHomepageUrl = normalizeUrl(homepage);
 	const normalizedSupportUrl = normalizeUrl(support);
-	const normalizedDocumentationUrl = normalizeUrl(documentationUrl);
+	const normalizedDocumentationUrl = normalizeUrl(documentation);
 
 	return (
 		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>
@@ -80,24 +80,21 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 								<Box fontScale='h4' color='hint'>
 									{t('Author_Site')}
 								</Box>
-								<ExternalLink to={normalizedHomepageUrl}>{homepage}</ExternalLink>
+								{normalizedHomepageUrl ? <ExternalLink to={normalizedHomepageUrl}>{homepage}</ExternalLink> : homepage}
 							</Box>
 							<Box display='flex' flexDirection='column' flexGrow={1}>
 								<Box fontScale='h4' color='hint'>
 									{t('Support')}
 								</Box>
-								<ExternalLink to={normalizedSupportUrl}>{support}</ExternalLink>
+								{normalizedSupportUrl ? <ExternalLink to={normalizedSupportUrl}>{support}</ExternalLink> : support}
 							</Box>
 						</Box>
-
-						{documentationUrl && (
-							<>
-								<Box fontScale='h4' color='hint'>
-									{t('Documentation')}
-								</Box>
-								<ExternalLink to={normalizedDocumentationUrl}>{documentationUrl}</ExternalLink>
-							</>
-						)}
+						<>
+							<Box fontScale='h4' color='hint'>
+								{t('Documentation')}
+							</Box>
+							{normalizedDocumentationUrl ? <ExternalLink to={normalizedDocumentationUrl}>{documentation}</ExternalLink> : documentation}
+						</>
 					</Box>
 
 					{apis?.length ? (
