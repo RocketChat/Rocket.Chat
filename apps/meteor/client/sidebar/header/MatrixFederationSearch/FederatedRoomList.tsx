@@ -1,4 +1,4 @@
-import { Throbber, Box, Margins } from '@rocket.chat/fuselage';
+import { Throbber, Box } from '@rocket.chat/fuselage';
 import type { IFederationPublicRooms } from '@rocket.chat/rest-typings';
 import { useSetModal, useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -60,25 +60,23 @@ const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, 
 
 	const flattenedData = data?.pages.flatMap((page) => page.rooms);
 	return (
-		<Margins inline={-24}>
-			<Box is='ul' overflow='hidden' height='356px' flexGrow={1} flexShrink={0}>
-				<Virtuoso
-					data={flattenedData || []}
-					computeItemKey={(index, room) => room?.id || index}
-					overscan={4}
-					components={{
-						// eslint-disable-next-line react/no-multi-comp
-						Footer: () => (isFetchingNextPage ? <Throbber /> : null),
-						Scroller: ScrollableContentWrapper,
-						EmptyPlaceholder: FederatedRoomListEmptyPlaceholder,
-					}}
-					endReached={isLoading || isFetchingNextPage ? () => undefined : () => fetchNextPage()}
-					itemContent={(_, room) => (
-						<FederatedRoomListItem onClickJoin={() => onClickJoin(room)} {...room} disabled={isLoadingMutation} key={room.id} />
-					)}
-				/>
-			</Box>
-		</Margins>
+		<Box is='ul' overflow='hidden' height='356px' flexGrow={1} flexShrink={0} mi={-24}>
+			<Virtuoso
+				data={flattenedData || []}
+				computeItemKey={(index, room) => room?.id || index}
+				overscan={4}
+				components={{
+					// eslint-disable-next-line react/no-multi-comp
+					Footer: () => (isFetchingNextPage ? <Throbber /> : null),
+					Scroller: ScrollableContentWrapper,
+					EmptyPlaceholder: FederatedRoomListEmptyPlaceholder,
+				}}
+				endReached={isLoading || isFetchingNextPage ? () => undefined : () => fetchNextPage()}
+				itemContent={(_, room) => (
+					<FederatedRoomListItem onClickJoin={() => onClickJoin(room)} {...room} disabled={isLoadingMutation} key={room.id} />
+				)}
+			/>
+		</Box>
 	);
 };
 
