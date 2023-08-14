@@ -11,7 +11,7 @@ import * as Federation from '../../../../../lib/federation/Federation';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import RemoveUsersModal from '../../../../teams/contextualBar/members/RemoveUsersModal';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
-import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
+import type { UserInfoAction } from '../useUserInfoActions';
 
 // TODO: Remove endpoint concatenation
 export const useRemoveUserAction = (
@@ -94,8 +94,8 @@ export const useRemoveUserAction = (
 						content: room?.teamMain ? t('Remove_from_team') : t('Remove_from_room'),
 						icon: 'cross' as const,
 						onClick: removeUserOptionAction,
-						type: 'management' as UserInfoActionType,
-						color: 'alert',
+						type: 'management' as const,
+						variant: 'danger' as const,
 				  }
 				: undefined,
 		[room, roomCanRemove, userCanRemove, removeUserOptionAction, t],

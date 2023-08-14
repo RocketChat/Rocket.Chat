@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
@@ -19,11 +19,11 @@ import { useRemoveUserAction } from './actions/useRemoveUserAction';
 export type UserInfoActionType = 'communication' | 'privileges' | 'management';
 
 export type UserInfoAction = {
-	content: ReactNode;
+	content: string;
 	icon?: ComponentProps<typeof Icon>['name'];
 	onClick: () => void;
 	type?: UserInfoActionType;
-	color?: string;
+	variant?: 'danger';
 };
 
 type UserMenuAction = {
@@ -83,32 +83,22 @@ export const useUserInfoActions = (
 
 		const options = entries.slice(0, size);
 		const slicedOptions = entries.slice(size, entries.length);
-		const menu = slicedOptions.length ? Object.fromEntries(slicedOptions) : undefined;
 
-		const menuActions =
-			menu !== undefined &&
-			Object.values(menu)
-				.map((item) => ({
-					variant: item.color === 'alert' && ('danger' as const),
-					id: item.content as string,
-					content: item.content,
-					icon: item.icon,
-					onClick: item.onClick,
-					type: item.type,
-				}))
-				.reduce((acc, item) => {
-					const group = item.type ? item.type : '';
-					const section = acc.find((section: { id: string }) => section.id === group);
-					if (section) {
-						section.items.push(item);
-						return acc;
-					}
+		const menuActions = slicedOptions.reduce((acc, [_key, item]) => {
+			const group = item.type ? item.type : '';
+			const section = acc.find((section: { id: string }) => section.id === group);
 
-					const newSection = { id: group, title: '', items: [item] };
-					acc.push(newSection);
+			const newItem = { ...item, id: item.content };
+			if (section) {
+				section.items.push(newItem);
+				return acc;
+			}
 
-					return acc;
-				}, [] as UserMenuAction);
+			const newSection = { id: group, title: '', items: [newItem] };
+			acc.push(newSection);
+
+			return acc;
+		}, [] as UserMenuAction);
 
 		return { actions: options, menuActions };
 	}, [size, userinfoActions]);
