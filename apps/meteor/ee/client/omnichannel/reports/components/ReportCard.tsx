@@ -48,7 +48,7 @@ export const ReportCard = ({
 							{subtitle}
 						</Box>
 					</Box>
-					<Box flexGrow={0} display='flex' alignItems='center'>
+					<Box flexGrow={0} flexShrink={0} display='flex' alignItems='center'>
 						<PeriodSelector {...periodSelectorProps} />
 						<DownloadDataButton {...downloadProps} size={32} />
 					</Box>
