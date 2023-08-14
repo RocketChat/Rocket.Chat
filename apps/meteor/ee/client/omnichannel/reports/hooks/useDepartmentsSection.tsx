@@ -43,7 +43,7 @@ export const useDepartmentsSection = () => {
 		period,
 	});
 
-	const downloadProps = useDefaultDownload({ column: t('Departments'), title, data, period });
+	const downloadProps = useDefaultDownload({ columnName: t('Departments'), title, data, period });
 
 	return useMemo(
 		() => ({
