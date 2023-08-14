@@ -4,7 +4,7 @@ import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 303,
-	name: 'Add roles field for users without it',
+	name: 'Add roles field and set empty for users without it',
 	async up() {
 		await Users.updateMany(
 			{
