@@ -14,7 +14,7 @@ Meteor.startup(() => {
 		id: 'pin-message',
 		icon: 'pin',
 		label: 'Pin',
-		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct'],
+		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct', 'videoconf', 'videoconf-threads'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			message.pinned = true;

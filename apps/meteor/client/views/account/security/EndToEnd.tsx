@@ -65,8 +65,8 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	}, [password, resetField]);
 
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs='x16' {...props}>
-			<Margins blockEnd='x8'>
+		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs={16} {...props}>
+			<Margins blockEnd={8}>
 				<Box fontScale='h4'>{t('E2E_Encryption_Password_Change')}</Box>
 				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Encryption_Password_Explanation') }} />
 				<FieldGroup w='full'>
@@ -106,7 +106,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 				>
 					{t('Save_changes')}
 				</Button>
-				<Box fontScale='h4' mbs='x16'>
+				<Box fontScale='h4' mbs={16}>
 					{t('Reset_E2E_Key')}
 				</Box>
 				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Reset_Key_Explanation') }} />
