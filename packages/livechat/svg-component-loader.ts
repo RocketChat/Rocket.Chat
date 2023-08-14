@@ -1,7 +1,9 @@
-module.exports = (content) => `
+import type webpack from 'webpack';
+
+const SvgComponentLoader: webpack.loader.Loader = (content) => `
 var preact = require('preact');
 var hooks = require('preact/hooks');
-${content}
+${typeof content === 'string' ? content : content.toString('utf-8')}
 var attributes = module.exports.attributes;
 var content = module.exports.content;
 
@@ -23,3 +25,5 @@ module.exports = function (props) {
 	return preact.h('svg', Object.assign({ ref: ref }, attributes, props));
 };
 `;
+
+export default SvgComponentLoader;

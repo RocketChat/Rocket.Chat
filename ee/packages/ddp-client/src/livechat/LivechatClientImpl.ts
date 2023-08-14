@@ -45,7 +45,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	public readonly credentials: { token?: string } = { token: this.token };
 
 	private ev = new Emitter<{
-		typing: StreamerCallbackArgs<'notify-room', `${string}/typing`>;
+		userActivity: StreamerCallbackArgs<'notify-room', `${string}/user-activity`>;
 		message: StreamerCallbackArgs<'room-messages', string>;
 		delete: StreamerCallbackArgs<'notify-room', `${string}/deleteMessage`>;
 	}>();
@@ -53,7 +53,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	subscribeRoom(rid: string) {
 		return Promise.all([
 			this.onRoomMessage(rid, (...args) => this.ev.emit('message', args)),
-			this.onRoomTyping(rid, (...args) => this.ev.emit('typing', args)),
+			this.onRoomUserActivity(rid, (...args) => this.ev.emit('userActivity', args)),
 			this.onRoomDeleteMessage(rid, (...args) => this.ev.emit('delete', args)),
 		]);
 	}
@@ -62,16 +62,16 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return this.ev.on('message', (args) => cb(...args));
 	}
 
-	onTyping(cb: (username: string, typing: boolean) => void): () => void {
-		return this.ev.on('typing', (args) => args[1] && cb(args[0], args[1]));
+	onUserActivity(cb: (username: string, events: string[]) => void): () => void {
+		return this.ev.on('userActivity', (args) => args[1] && cb(args[0], args[1]));
 	}
 
 	onRoomMessage(rid: string, cb: (...args: StreamerCallbackArgs<'room-messages', string>) => void) {
 		return this.stream('room-messages', [rid, { token: this.token, visitorToken: this.token }], cb).stop;
 	}
 
-	onRoomTyping(rid: string, cb: (...args: StreamerCallbackArgs<'notify-room', `${string}/typing`>) => void) {
-		return this.stream('notify-room', [`${rid}/typing`, { token: this.token, visitorToken: this.token }], cb).stop;
+	onRoomUserActivity(rid: string, cb: (...args: StreamerCallbackArgs<'notify-room', `${string}/user-activity`>) => void) {
+		return this.stream('notify-room', [`${rid}/user-activity`, { token: this.token, visitorToken: this.token }], cb).stop;
 	}
 
 	onRoomDeleteMessage(rid: string, cb: (...args: StreamerCallbackArgs<'notify-room', `${string}/deleteMessage`>) => void) {
@@ -110,8 +110,8 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		}).stop;
 	}
 
-	notifyVisitorTyping(rid: string, username: string, typing: boolean) {
-		return this.client.callAsync('stream-notify-room', `${rid}/typing`, username, typing);
+	notifyVisitorActivity(rid: string, username: string, activity: string[]) {
+		return this.client.callAsync('stream-notify-room', `${rid}/user-activity`, username, activity, { token: this.token });
 	}
 
 	notifyCallDeclined(rid: string) {
