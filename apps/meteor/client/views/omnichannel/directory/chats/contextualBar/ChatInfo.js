@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
@@ -16,6 +16,7 @@ import Label from '../../../components/Label';
 import { AgentField, SlaField, ContactField, SourceField } from '../../components';
 import PriorityField from '../../components/PriorityField';
 import { useOmnichannelRoomInfo } from '../../hooks/useOmnichannelRoomInfo';
+import { formatQueuedAt } from '../../utils/formatQueuedAt';
 import { useTagsLabels } from '../hooks/useTagsLabels';
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
@@ -58,20 +59,7 @@ function ChatInfo({ id, route }) {
 	const visitorId = v?._id;
 	const queueStartedAt = queuedAt || ts;
 
-	const queueTime = () => {
-		// Room served
-		if (servedBy) {
-			return moment(servedBy.ts).from(moment(queueStartedAt), true);
-		}
-
-		// Room open and not served
-		if (room.open) {
-			return moment(queueStartedAt).fromNow(true);
-		}
-
-		// Room closed and not served
-		return moment(room.closedAt).from(moment(queueStartedAt), true);
-	};
+	const queueTime = useMemo(() => formatQueuedAt(room), [room]);
 
 	useEffect(() => {
 		if (allCustomFields) {
@@ -140,7 +128,7 @@ function ChatInfo({ id, route }) {
 					{queueStartedAt && (
 						<Field>
 							<Label>{t('Queue_Time')}</Label>
-							<Info>{queueTime()}</Info>
+							<Info>{queueTime}</Info>
 						</Field>
 					)}
 					{closedAt && (
