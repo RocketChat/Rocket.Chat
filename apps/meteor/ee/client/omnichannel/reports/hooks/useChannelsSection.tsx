@@ -7,12 +7,26 @@ import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeri
 import { COLORS, PERIOD_OPTIONS } from '../components/constants';
 import { useDefaultDownload } from './useDefaultDownload';
 
-const formatChartData = (data: { label: string; value: number }[] | undefined = []) =>
-	data.map((item, i) => ({
+const getTop5 = (data: { label: string; value: number }[] | undefined = []) => {
+	const top5Channels = data.slice(0, 5);
+	const otherChannels = data.slice(5).reduce(
+		(acc, item) => {
+			acc.value += item.value;
+			return acc;
+		},
+		{ label: 'Others', value: 0 },
+	);
+	return [...top5Channels, otherChannels];
+};
+
+const formatChartData = (data: { label: string; value: number }[] | undefined = []) => {
+	const displayedData = data.length > 5 ? getTop5(data) : data;
+	return displayedData.map((item, i) => ({
 		...item,
 		id: item.label,
-		color: Object.values(COLORS)[i],
+		color: Object.values(COLORS)[i] ?? '#2F343D',
 	}));
+};
 
 export const useChannelsSection = () => {
 	const t = useTranslation();
