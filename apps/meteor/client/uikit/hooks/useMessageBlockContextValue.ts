@@ -16,7 +16,7 @@ import {
 import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 
-export const useMessageBlockContextValue = (rid: IRoom['_id'], _mid: IMessage['id'], appId: string): ContextType<typeof UiKitContext> => {
+export const useMessageBlockContextValue = (rid: IRoom['_id'], _mid: IMessage['id']): ContextType<typeof UiKitContext> => {
 	const joinCall = useVideoConfJoinCall();
 	const setPreferences = useVideoConfSetPreferences();
 	const isCalling = useVideoConfIsCalling();
@@ -67,10 +67,6 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], _mid: IMessage['i
 					id: mid,
 				},
 			});
-		},
-		payload: {
-			appId,
-			viewId: 'default',
 		},
 		rid,
 	};

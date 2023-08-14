@@ -61,7 +61,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 			)}
 
 			{normalizedMessage.blocks && (
-				<UiKitMessageBlock mid={normalizedMessage._id} blocks={normalizedMessage.blocks} appId rid={normalizedMessage.rid} />
+				<UiKitMessageBlock mid={normalizedMessage._id} blocks={normalizedMessage.blocks} rid={normalizedMessage.rid} />
 			)}
 
 			{!!normalizedMessage?.attachments?.length && <Attachments attachments={normalizedMessage.attachments} />}

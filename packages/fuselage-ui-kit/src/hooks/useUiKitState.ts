@@ -52,7 +52,7 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
   const { blockId, actionId, appId, dispatchActionConfig } = rest;
   const {
     action,
-    payload: { appId: appIdFromContext, viewId },
+    payload: { appId: appIdFromContext = undefined, viewId = undefined } = {},
     updateState,
   } = useContext(UiKitContext);
 

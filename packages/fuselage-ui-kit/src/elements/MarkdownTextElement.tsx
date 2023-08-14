@@ -10,9 +10,7 @@ const MarkdownTextElement = ({ textObject }: { textObject: TextObject }) => {
     key: string,
     args: { [key: string]: string | number }
   ) => string;
-  const {
-    payload: { appId },
-  } = useUiKitContext();
+  const { payload: { appId = undefined } = {} } = useUiKitContext();
 
   const { i18n } = textObject;
 

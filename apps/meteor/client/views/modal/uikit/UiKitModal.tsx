@@ -1,17 +1,25 @@
+import type { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import type { Block } from '@rocket.chat/ui-kit';
-import type { ReactElement, ReactEventHandler } from 'react';
-import React from 'react';
+import type { ReactEventHandler } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { useModalContextValue } from '../../../UiKit/hooks/useModalContextValue';
 import { useUiKitActionManager } from '../../../hooks/useUiKitActionManager';
 import { detectEmoji } from '../../../lib/utils/detectEmoji';
+import { useModalContextValue } from '../../../uikit/hooks/useModalContextValue';
 import ModalBlock from './ModalBlock';
-import type { ActionManagerState } from './hooks/useActionManagerState';
-import { useActionManagerState } from './hooks/useActionManagerState';
 import { useValues } from './hooks/useValues';
+
+export type ActionManagerState = {
+	viewId: string;
+	type: 'errors' | string;
+	appId: string;
+	mid: string;
+	errors: Record<string, string>;
+	view: IUIKitSurface;
+};
 
 const groupStateByBlockId = (values: { value: unknown; blockId: string }[]) =>
 	Object.entries(values).reduce<any>((obj, [key, { blockId, value }]) => {
@@ -29,12 +37,31 @@ const prevent: ReactEventHandler = (e) => {
 	}
 };
 
-const UiKitModal = (props: ActionManagerState): ReactElement => {
+const UiKitModal = (props: ActionManagerState) => {
 	const actionManager = useUiKitActionManager();
-	const state = useActionManagerState(props);
+	const [state, setState] = useState(props);
+
 	const { appId, viewId, errors, view } = state;
+
 	const [values, updateValues] = useValues(view.blocks as Block[]);
 	const contextValue = useModalContextValue(state, { values, updateValues });
+
+	useEffect(() => {
+		const handleUpdate = ({ type, errors, ...data }: ActionManagerState) => {
+			if (type === 'errors') {
+				setState((state) => ({ ...state, errors, type }));
+				return;
+			}
+
+			setState({ ...data, type, errors });
+		};
+
+		actionManager.on(viewId, handleUpdate);
+
+		return () => {
+			actionManager.off(viewId, handleUpdate);
+		};
+	}, [actionManager, viewId]);
 
 	const handleSubmit = useMutableCallback((e) => {
 		prevent(e);

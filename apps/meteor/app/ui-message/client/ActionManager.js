@@ -44,7 +44,7 @@ export const generateTriggerId = (appId) => {
 	return triggerId;
 };
 
-export const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) => {
+export const handlePayloadUserInteraction = (type, { triggerId, ...data }) => {
 	if (!triggersId.has(triggerId)) {
 		return;
 	}
