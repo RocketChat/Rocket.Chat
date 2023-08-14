@@ -1,15 +1,15 @@
-import type { IRoom, IMessage } from '@rocket.chat/core-typings';
-import { LivechatRooms, Users } from '@rocket.chat/models';
-import { RoomVerificationState, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { OmnichannelVerification } from '@rocket.chat/core-services';
+import type { IRoom, IMessage } from '@rocket.chat/core-typings';
+import { RoomVerificationState, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms, Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
-import { sendMessage } from '../../../lib/server';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message: IMessage, room: IRoom) {
+	async (message: IMessage, room: IRoom) => {
 		if (!isOmnichannelRoom(room)) {
 			return;
 		}
