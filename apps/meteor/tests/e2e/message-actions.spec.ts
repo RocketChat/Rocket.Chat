@@ -25,15 +25,15 @@ test.describe.serial('message-actions', () => {
 	test('expect reply the message in direct', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply in direct');
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('li', { hasText: 'Reply in Direct Message' }).click();
+		await page.locator('role=menuitem[name="Reply in Direct Message"]').click();
 
 		await expect(page).toHaveURL(/.*reply/);
 	});
 
 	test('expect reply the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply');
-		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('[data-qa-id="reply-in-thread"]').click();
+		await page.locator('[data-qa-type="message"]').last().hover();
+		await page.locator('role=button[name="Reply in Thread"]').click();
 		await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('this is a reply message');
 		await page.keyboard.press('Enter');
 
@@ -43,7 +43,7 @@ test.describe.serial('message-actions', () => {
 	test('expect edit the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('This is a message to edit');
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('[data-qa-id="edit-message"]').click();
+		await page.locator('role=menuitem[name="Edit"]').click();
 		await page.locator('[name="msg"]').fill('this message was edited');
 		await page.keyboard.press('Enter');
 	});
@@ -51,7 +51,7 @@ test.describe.serial('message-actions', () => {
 	test('expect message is deleted', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('Message to delete');
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('[data-qa-id="delete-message"]').click();
+		await page.locator('role=menuitem[name="Delete"]').click();
 		await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
 	});
 
@@ -59,8 +59,8 @@ test.describe.serial('message-actions', () => {
 		const message = `Message for quote - ${Date.now()}`;
 
 		await poHomeChannel.content.sendMessage(message);
-		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('[data-qa-id="quote-message"]').click();
+		await page.locator('[data-qa-type="message"]').last().hover();
+		await page.locator('role=button[name="Quote"]').click();
 		await page.locator('[name="msg"]').fill('this is a quote message');
 		await page.keyboard.press('Enter');
 
@@ -70,19 +70,19 @@ test.describe.serial('message-actions', () => {
 	test('expect star the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('Message to star');
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('[data-qa-id="star-message"]').click();
+		await page.locator('role=menuitem[name="Star"]').click();
 	});
 
 	test('expect copy the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('Message to copy');
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('[data-qa-id="copy"]').click();
+		await page.locator('role=menuitem[name="Copy"]').click();
 	});
 
 	test('expect permalink the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('Message to permalink');
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('[data-qa-id="permalink"]').click();
+		await page.locator('role=menuitem[name="Get Link"]').click();
 	});
 
 	test.describe('Preference Hide Contextual Bar by clicking outside of it Enabled', () => {
@@ -119,7 +119,7 @@ test.describe.serial('message-actions', () => {
 		test('expect reply the message in direct', async ({ page }) => {
 			await poHomeChannel.content.sendMessage('this is a message for reply in direct');
 			await poHomeChannel.content.openLastMessageMenu();
-			await page.locator('li', { hasText: 'Reply in Direct Message' }).click();
+			await page.locator('role=menuitem[name="Reply in Direct Message"]').click();
 
 			await expect(page).toHaveURL(/.*reply/);
 		});
