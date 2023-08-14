@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data.js';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
@@ -1879,7 +1880,7 @@ describe('[Groups]', function () {
 		});
 	});
 
-	context("Setting: 'Use Real Name': true", () => {
+	describe("Setting: 'Use Real Name': true", () => {
 		let realNameGroup;
 
 		before(async () => {

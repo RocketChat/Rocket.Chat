@@ -23,7 +23,7 @@ const BannerEnterpriseTrialEnded = (): ReactElement => {
 			{showTrialBanner && (
 				<Banner
 					closeable
-					icon={<Icon name='store' size={24} />}
+					icon={<Icon name='store' size='x24' />}
 					variant='warning'
 					title={t('Apps_disabled_when_Enterprise_trial_ended')}
 					onClose={() => setShowTrialBanner(false)}
