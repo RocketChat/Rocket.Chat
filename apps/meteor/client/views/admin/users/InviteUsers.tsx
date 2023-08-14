@@ -1,10 +1,20 @@
-import { Box, Button, Icon, States, StatesAction, StatesActions, StatesSubtitle, StatesTitle, TextAreaInput } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Button,
+	ButtonGroup,
+	States,
+	StatesAction,
+	StatesActions,
+	StatesSubtitle,
+	StatesTitle,
+	TextAreaInput,
+} from '@rocket.chat/fuselage';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, ComponentProps } from 'react';
 import React, { useCallback, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useSendInvitationEmailMutation } from './hooks/useSendInvitationEmailMutation';
 import { useSmtpConfig } from './hooks/useSmtpConfig';
 
@@ -39,18 +49,24 @@ const InviteUsers = (props: InviteUsersProps): ReactElement => {
 	}
 
 	return (
-		<ContextualbarScrollableContent {...props} color='default'>
-			<Box is='h2' fontScale='h2' mb='x8'>
-				{t('Send_invitation_email')}
-			</Box>
-			<Box fontScale='p2' mb='x8'>
-				{t('Send_invitation_email_info')}
-			</Box>
-			<TextAreaInput rows={5} flexGrow={0} onChange={(e: ChangeEvent<HTMLInputElement>): void => setText(e.currentTarget.value)} />
-			<Button primary onClick={handleClick} disabled={!getEmails(text).length} alignItems='stretch' mb='x8'>
-				<Icon name='send' size='x16' /> {t('Send')}
-			</Button>
-		</ContextualbarScrollableContent>
+		<>
+			<ContextualbarScrollableContent {...props} color='default'>
+				<Box is='h2' fontScale='h2' mb={8}>
+					{t('Send_invitation_email')}
+				</Box>
+				<Box fontScale='p2' mb={8}>
+					{t('Send_invitation_email_info')}
+				</Box>
+				<TextAreaInput rows={5} flexGrow={0} onChange={(e: ChangeEvent<HTMLInputElement>): void => setText(e.currentTarget.value)} />
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button icon='send' primary onClick={handleClick} disabled={!getEmails(text).length} alignItems='stretch' mb={8}>
+						{t('Send')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
+		</>
 	);
 };
 

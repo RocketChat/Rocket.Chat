@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
-import { sendMessage } from '../../../lib/server/functions';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
 import type { ILoginAttempt } from '../ILoginAttempt';

@@ -10,7 +10,6 @@ import { MessageListContext } from '../../../../components/message/list/MessageL
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
-import ToolboxProvider from '../../providers/ToolboxProvider';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useKatex } from '../hooks/useKatex';
 import { useLoadSurroundingMessages } from '../hooks/useLoadSurroundingMessages';
@@ -150,11 +149,9 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 	);
 
 	return (
-		<ToolboxProvider room={room}>
-			<AttachmentProvider width={attachmentDimension?.width} height={attachmentDimension?.height}>
-				<MessageListContext.Provider value={context}>{children}</MessageListContext.Provider>
-			</AttachmentProvider>
-		</ToolboxProvider>
+		<AttachmentProvider width={attachmentDimension?.width} height={attachmentDimension?.height}>
+			<MessageListContext.Provider value={context}>{children}</MessageListContext.Provider>
+		</AttachmentProvider>
 	);
 };
 

@@ -1,10 +1,10 @@
-import moment from 'moment';
-import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
+import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '@rocket.chat/models';
+import moment from 'moment';
 
+import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
 import { settings } from '../../../../settings/server';
 import { Livechat } from '../Livechat';
-import { secondsToHHMMSS } from '../../../../utils/server';
 import {
 	findPercentageOfAbandonedRoomsAsync,
 	findAllAverageOfChatDurationTimeAsync,

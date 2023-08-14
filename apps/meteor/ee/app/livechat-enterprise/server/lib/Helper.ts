@@ -1,4 +1,5 @@
-import moment from 'moment';
+import { api } from '@rocket.chat/core-services';
+import type { IOmnichannelRoom, IOmnichannelServiceLevelAgreements, InquiryWithAgentInfo } from '@rocket.chat/core-typings';
 import {
 	Rooms as RoomRaw,
 	LivechatRooms,
@@ -7,19 +8,18 @@ import {
 	LivechatInquiry,
 	Users,
 } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-services';
+import moment from 'moment';
 import type { Document } from 'mongodb';
-import type { IOmnichannelRoom, IOmnichannelServiceLevelAgreements, InquiryWithAgentInfo } from '@rocket.chat/core-typings';
 
-import { memoizeDebounce } from './debounceByParams';
-import { settings } from '../../../../../app/settings/server';
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
-import { logger, helperLogger } from './logger';
-import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
+import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
-import { updateInquiryQueueSla } from './SlaHelper';
+import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
+import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
+import { updateInquiryQueueSla } from './SlaHelper';
+import { memoizeDebounce } from './debounceByParams';
+import { logger, helperLogger } from './logger';
 
 type QueueInfo = {
 	message: {

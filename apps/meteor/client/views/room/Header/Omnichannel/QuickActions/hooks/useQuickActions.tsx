@@ -1,4 +1,3 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	useSetModal,
@@ -24,26 +23,23 @@ import ForwardChatModal from '../../../../../../components/Omnichannel/modals/Fo
 import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
 import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
-import type { QuickActionsActionConfig } from '../../../../lib/QuickActions';
-import { QuickActionsEnum } from '../../../../lib/QuickActions';
-import { useQuickActionsContext } from '../../../../lib/QuickActions/QuickActionsContext';
+import { quickActionHooks } from '../../../../../../ui';
+import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
+import type { QuickActionsActionConfig } from '../../../../lib/quickActions';
+import { QuickActionsEnum } from '../../../../lib/quickActions';
 import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
 import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
 
-export const useQuickActions = (
-	room: IOmnichannelRoom,
-): {
-	visibleActions: QuickActionsActionConfig[];
-	actionDefault: (e: unknown) => void;
-	getAction: (id: string) => void;
+export const useQuickActions = (): {
+	quickActions: QuickActionsActionConfig[];
+	actionDefault: (actionId: string) => void;
 } => {
+	const room = useOmnichannelRoom();
 	const setModal = useSetModal();
 	const router = useRouter();
 
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const context = useQuickActionsContext();
-	const actions = (Array.from(context.actions.values()) as QuickActionsActionConfig[]).sort((a, b) => (a.order || 0) - (b.order || 0));
 
 	const [onHoldModalActive, setOnHoldModalActive] = useState(false);
 
@@ -353,21 +349,22 @@ export const useQuickActions = (
 		return false;
 	};
 
-	const visibleActions = actions.filter((action) => {
-		const { options, id } = action;
-		if (options) {
-			action.options = options.filter(({ id }) => hasPermissionButtons(id));
-		}
-		return hasPermissionButtons(id);
-	});
+	const quickActions = quickActionHooks
+		.map((quickActionHook) => quickActionHook())
+		.filter((quickAction): quickAction is QuickActionsActionConfig => !!quickAction)
+		.filter((action) => {
+			const { options, id } = action;
+			if (options) {
+				action.options = options.filter(({ id }) => hasPermissionButtons(id));
+			}
 
-	const actionDefault = useMutableCallback((actionId) => {
+			return hasPermissionButtons(id);
+		})
+		.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+	const actionDefault = useMutableCallback((actionId: string) => {
 		handleAction(actionId);
 	});
 
-	const getAction = useMutableCallback((id) => {
-		handleAction(id);
-	});
-
-	return { visibleActions, actionDefault, getAction };
+	return { quickActions, actionDefault };
 };

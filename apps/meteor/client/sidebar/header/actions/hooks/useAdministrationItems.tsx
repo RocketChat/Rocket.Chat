@@ -65,11 +65,6 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 	const isAdmin = useRole('admin');
 	const setModal = useSetModal();
 
-	// TODO: DEPRECATE IT
-	// const checkCloudRegisterStatus = useMethod('cloud:checkRegisterStatus');
-	// const result = useQuery(['admin/cloud/register-status'], async () => checkCloudRegisterStatus());
-	// const { workspaceRegistered } = result.data || {};
-
 	const { data: registrationStatusData } = useRegistrationStatus();
 	const workspaceRegistered = registrationStatusData?.registrationStatus?.workspaceRegistered ?? false;
 

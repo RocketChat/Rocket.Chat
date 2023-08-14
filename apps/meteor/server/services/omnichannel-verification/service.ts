@@ -1,20 +1,20 @@
-import type { IRoom, IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
-import { RoomVerificationState } from '@rocket.chat/core-typings';
-import { check } from 'meteor/check';
 import type { IOmnichannelVerification, ISetVisitorEmailResult } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { RoomVerificationState } from '@rocket.chat/core-typings';
+import type { IRoom, IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Accounts } from 'meteor/accounts-base';
 import bcrypt from 'bcrypt';
+import { Accounts } from 'meteor/accounts-base';
+import { check } from 'meteor/check';
 
+import { checkEmailAvailability } from '../../../app/lib/server/functions/checkEmailAvailability';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { i18n } from '../../lib/i18n';
-import { settings } from '../../../app/settings/server';
+import { validateEmailDomain } from '../../../app/lib/server/lib';
 import { Logger } from '../../../app/logger/server';
 import * as Mailer from '../../../app/mailer/server/api';
-import { validateEmailDomain } from '../../../app/lib/server/lib';
-import { checkEmailAvailability } from '../../../app/lib/server/functions';
+import { settings } from '../../../app/settings/server';
+import { i18n } from '../../lib/i18n';
 
 interface IRandomOTP {
 	random: string;

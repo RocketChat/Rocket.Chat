@@ -1,7 +1,7 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IMessage } from './IMessage/IMessage';
-import type { IUser } from './IUser';
+import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRoom } from './IRoom';
+import type { IUser } from './IUser';
 
 export interface IModerationInfo {
 	moderatedBy: IUser['_id'];
@@ -30,4 +30,5 @@ export interface IModerationAudit {
 	ts: IModerationReport['ts'];
 	rooms: IModerationReport['room'][];
 	count: number;
+	isUserDeleted: boolean;
 }

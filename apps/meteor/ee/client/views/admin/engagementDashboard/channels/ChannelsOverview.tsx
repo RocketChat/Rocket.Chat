@@ -69,7 +69,7 @@ const ChannelsOverview = (): ReactElement => {
 					<Table>
 						<TableHead>
 							<TableRow>
-								<TableCell>{'#'}</TableCell>
+								<TableCell>#</TableCell>
 								<TableCell>{t('Channel')}</TableCell>
 								<TableCell>{t('Created')}</TableCell>
 								<TableCell>{t('Last_active')}</TableCell>
@@ -81,7 +81,7 @@ const ChannelsOverview = (): ReactElement => {
 								<TableRow key={i}>
 									<TableCell>{i + 1}.</TableCell>
 									<TableCell>
-										<Margins inlineEnd='x4'>
+										<Margins inlineEnd={4}>
 											{(t === 'd' && <Icon name='at' />) || (t === 'p' && <Icon name='lock' />) || (t === 'c' && <Icon name='hashtag' />)}
 										</Margins>
 										{name}

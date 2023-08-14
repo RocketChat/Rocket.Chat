@@ -14,7 +14,7 @@ function UserAvatarSuggestions({ suggestions, setAvatarObj, setNewAvatarSource, 
 		<Margins inline='x4' {...props}>
 			{Object.values(suggestions).map((suggestion) => (
 				<Button key={suggestion.service} disabled={disabled} square onClick={handleClick(suggestion)}>
-					<Box mie='x4'>
+					<Box mie={4}>
 						<Avatar title={suggestion.service} url={suggestion.blob} />
 					</Box>
 				</Button>

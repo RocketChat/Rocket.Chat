@@ -87,9 +87,7 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 		page,
 		apiServer2,
 	}) => {
-		const before = parseInt(
-			(await page.locator('role=status').textContent())?.replace('Seats Available', '').trim() || '0',
-		);
+		const before = parseInt((await page.locator('role=status').textContent())?.replace('Seats Available', '').trim() || '0');
 		const newUserFromServer2 = await registerUser(apiServer2);
 		const page2 = await browser.newPage();
 		const poFederationChannelServer1ForUser2 = new FederationChannel(page2);
@@ -100,9 +98,7 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 			fullUsernameFromServer: fullUsernameFromServer2,
 			server: constants.RC_SERVER_1,
 		});
-		const after = parseInt(
-			(await page.locator('role=status').textContent())?.replace('Seats Available', '').trim() || '0',
-		);
+		const after = parseInt((await page.locator('role=status').textContent())?.replace('Seats Available', '').trim() || '0');
 		expect(before).toEqual(after);
 		await page2.close();
 	});
@@ -112,9 +108,7 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 		page,
 		apiServer1,
 	}) => {
-		const before = parseInt(
-			(await page.locator('role=status').textContent())?.replace('Seats Available', '').trim() || '0',
-		);
+		const before = parseInt((await page.locator('role=status').textContent())?.replace('Seats Available', '').trim() || '0');
 		const newUserFromServer1 = await registerUser(apiServer1);
 		const page2 = await browser.newPage();
 		const poFederationChannelServer1ForUser2 = new FederationChannel(page2);
@@ -126,9 +120,7 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 			server: constants.RC_SERVER_1,
 		});
 		await page.reload();
-		const after = parseInt(
-			(await page.locator('role=status').textContent())?.replace('Seats Available', '').trim() || '0',
-		);
+		const after = parseInt((await page.locator('role=status').textContent())?.replace('Seats Available', '').trim() || '0');
 		expect(before).not.toEqual(after);
 		expect(before - 1).toEqual(after);
 		await page2.close();

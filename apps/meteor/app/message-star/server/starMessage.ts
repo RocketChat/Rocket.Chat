@@ -1,12 +1,12 @@
-import { Meteor } from 'meteor/meteor';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions, Rooms } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings/server';
-import { isTheLastMessage } from '../../lib/server';
-import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
+import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { settings } from '../../settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

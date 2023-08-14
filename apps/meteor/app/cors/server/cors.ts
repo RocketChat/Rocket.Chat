@@ -1,13 +1,13 @@
-import url from 'url';
 import type http from 'http';
+import url from 'url';
 
 import { Meteor } from 'meteor/meteor';
 import type { StaticFiles } from 'meteor/webapp';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import _ from 'underscore';
 
-import { settings } from '../../settings/server';
 import { Logger } from '../../logger/server';
+import { settings } from '../../settings/server';
 
 // Taken from 'connect' types
 type NextFunction = (err?: any) => void;
@@ -21,7 +21,7 @@ settings.watch<boolean>(
 	}),
 );
 
-WebApp.rawConnectHandlers.use(function (_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) {
+WebApp.rawConnectHandlers.use((_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
 	// XSS Protection for old browsers (IE)
 	res.setHeader('X-XSS-Protection', '1');
 
@@ -93,7 +93,7 @@ const oldHttpServerListeners = WebApp.httpServer.listeners('request').slice(0);
 
 WebApp.httpServer.removeAllListeners('request');
 
-WebApp.httpServer.addListener('request', function (req, res, ...args) {
+WebApp.httpServer.addListener('request', (req, res, ...args) => {
 	const next = () => {
 		for (const oldListener of oldHttpServerListeners) {
 			oldListener.apply(WebApp.httpServer, [req, res, ...args]);

@@ -1,8 +1,8 @@
 import { Subscriptions } from '@rocket.chat/models';
 
-import { settings } from '../../../../settings/server';
-import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 import { i18n } from '../../../../../server/lib/i18n';
+import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
+import { settings } from '../../../../settings/server';
 
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
