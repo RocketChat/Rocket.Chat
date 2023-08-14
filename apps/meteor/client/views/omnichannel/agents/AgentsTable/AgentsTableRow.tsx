@@ -47,7 +47,7 @@ const AgentsTableRow = ({
 			<GenericTableCell>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />}
-					<Box display='flex' withTruncatedText mi='x8'>
+					<Box display='flex' withTruncatedText mi={8}>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' withTruncatedText color='default'>
 								{name || username}
@@ -66,7 +66,7 @@ const AgentsTableRow = ({
 					<Box fontScale='p2m' withTruncatedText color='hint'>
 						{username}
 					</Box>
-					<Box mi='x4' />
+					<Box mi={4} />
 				</GenericTableCell>
 			)}
 			<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>

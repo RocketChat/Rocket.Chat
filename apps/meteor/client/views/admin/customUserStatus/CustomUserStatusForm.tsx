@@ -1,6 +1,6 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { FieldGroup, Button, ButtonGroup, TextInput, Field, Select, Icon } from '@rocket.chat/fuselage';
+import { FieldGroup, Button, ButtonGroup, TextInput, Field, Select } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -120,9 +120,8 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 					</Button>
 				</ButtonGroup>
 				{_id && (
-					<ButtonGroup mbs='x8' stretch>
-						<Button danger onClick={handleDeleteStatus}>
-							<Icon name='trash' mie='x4' />
+					<ButtonGroup mbs={8} stretch>
+						<Button icon='trash' danger onClick={handleDeleteStatus}>
 							{t('Delete')}
 						</Button>
 					</ButtonGroup>

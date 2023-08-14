@@ -26,7 +26,7 @@ const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps): Reac
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					<UserAvatar size='x40' username={username ?? ''} etag={avatarETag} />
-					<Box display='flex' withTruncatedText mi='x8'>
+					<Box display='flex' withTruncatedText mi={8}>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' withTruncatedText color='default'>
 								{name || username}
@@ -43,6 +43,7 @@ const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps): Reac
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{email}</GenericTableCell>
 			<GenericTableCell withTruncatedText>
+				{/* FIXME: Replace to IconButton */}
 				<Button small square secondary danger onClick={handleRemove}>
 					<Icon name='trash' size='x20' />
 				</Button>

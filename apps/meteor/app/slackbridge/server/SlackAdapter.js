@@ -1,21 +1,26 @@
-import url from 'url';
 import http from 'http';
 import https from 'https';
+import url from 'url';
 
+import { Message } from '@rocket.chat/core-services';
+import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
-import { Messages, Rooms, Users } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
 
-import { slackLogger } from './logger';
-import { SlackAPI } from './SlackAPI';
-import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
-import { settings } from '../../settings/server';
-import { deleteMessage, updateMessage, addUserToRoom, removeUserFromRoom, unarchiveRoom, sendMessage } from '../../lib/server';
-import { archiveRoom } from '../../lib/server/functions/archiveRoom';
 import { saveRoomName, saveRoomTopic } from '../../channel-settings/server';
 import { FileUpload } from '../../file-upload/server';
+import { addUserToRoom } from '../../lib/server/functions/addUserToRoom';
+import { archiveRoom } from '../../lib/server/functions/archiveRoom';
+import { deleteMessage } from '../../lib/server/functions/deleteMessage';
+import { removeUserFromRoom } from '../../lib/server/functions/removeUserFromRoom';
+import { sendMessage } from '../../lib/server/functions/sendMessage';
+import { unarchiveRoom } from '../../lib/server/functions/unarchiveRoom';
+import { updateMessage } from '../../lib/server/functions/updateMessage';
 import { executeSetReaction } from '../../reactions/server/setReaction';
+import { settings } from '../../settings/server';
+import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
+import { SlackAPI } from './SlackAPI';
+import { slackLogger } from './logger';
 
 export default class SlackAdapter {
 	constructor(slackBridge) {

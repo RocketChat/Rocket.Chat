@@ -19,7 +19,7 @@ export default {
 export const ListWithIcon: ComponentStory<typeof Tile> = () => {
 	return (
 		<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-			<Box flexShrink={1} pb='x12'>
+			<Box flexShrink={1} pb={12}>
 				<OptionTitle>Title</OptionTitle>
 				<ListItem text='Item 1' icon='info' />
 				<ListItem text='Item 2' icon='star' />
@@ -32,7 +32,7 @@ export const ListWithIcon: ComponentStory<typeof Tile> = () => {
 export const NoIcon: ComponentStory<typeof Tile> = () => {
 	return (
 		<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-			<Box flexShrink={1} pb='x12'>
+			<Box flexShrink={1} pb={12}>
 				<OptionTitle>Title</OptionTitle>
 				<ListItem text='Item 1' />
 				<ListItem text='Item 2' />
@@ -46,7 +46,7 @@ export const NoIcon: ComponentStory<typeof Tile> = () => {
 export const MixedWithGap: ComponentStory<typeof Tile> = () => {
 	return (
 		<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-			<Box flexShrink={1} pb='x12'>
+			<Box flexShrink={1} pb={12}>
 				<OptionTitle>Title</OptionTitle>
 				<ListItem text='Item 1' icon='hashtag' />
 				<ListItem text='Item 2' icon='team' />
@@ -67,7 +67,7 @@ MixedWithGap.parameters = {
 export const MixedWithoutGap: ComponentStory<typeof Tile> = () => {
 	return (
 		<Tile elevation='2' p='0' display='flex' flexDirection='column' overflow='auto' w='x240'>
-			<Box flexShrink={1} pb='x12'>
+			<Box flexShrink={1} pb={12}>
 				<OptionTitle>Title</OptionTitle>
 				<ListItem text='Item 1' icon='hashtag' />
 				<ListItem text='Item 2' icon='team' />

@@ -1,21 +1,21 @@
-import EJSON from 'ejson';
-import { FederationServers, FederationRoomEvents, Rooms, Messages, Subscriptions, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import { eventTypes } from '@rocket.chat/core-typings';
+import { FederationServers, FederationRoomEvents, Rooms, Messages, Subscriptions, Users } from '@rocket.chat/models';
+import EJSON from 'ejson';
 
 import { API } from '../../../api/server';
-import { serverLogger } from '../lib/logger';
-import { contextDefinitions } from '../lib/context';
-import { normalizers } from '../normalizers';
-import { deleteRoom } from '../../../lib/server/functions';
 import { FileUpload } from '../../../file-upload/server';
-import { getFederationDomain } from '../lib/getFederationDomain';
-import { decryptIfNeeded } from '../lib/crypt';
-import { isFederationEnabled } from '../lib/isFederationEnabled';
-import { getUpload, requestEventsFromLatest } from '../handler';
+import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 import { notifyUsersOnMessage } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendAllNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 import { processThreads } from '../../../threads/server/hooks/aftersavemessage';
+import { getUpload, requestEventsFromLatest } from '../handler';
+import { contextDefinitions } from '../lib/context';
+import { decryptIfNeeded } from '../lib/crypt';
+import { getFederationDomain } from '../lib/getFederationDomain';
+import { isFederationEnabled } from '../lib/isFederationEnabled';
+import { serverLogger } from '../lib/logger';
+import { normalizers } from '../normalizers';
 
 const eventHandlers = {
 	//

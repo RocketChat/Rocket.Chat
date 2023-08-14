@@ -2,7 +2,6 @@ import {
 	Box,
 	Button,
 	ButtonGroup,
-	Icon,
 	States,
 	StatesAction,
 	StatesActions,
@@ -52,18 +51,18 @@ const InviteUsers = (props: InviteUsersProps): ReactElement => {
 	return (
 		<>
 			<ContextualbarScrollableContent {...props} color='default'>
-				<Box is='h2' fontScale='h2' mb='x8'>
+				<Box is='h2' fontScale='h2' mb={8}>
 					{t('Send_invitation_email')}
 				</Box>
-				<Box fontScale='p2' mb='x8'>
+				<Box fontScale='p2' mb={8}>
 					{t('Send_invitation_email_info')}
 				</Box>
 				<TextAreaInput rows={5} flexGrow={0} onChange={(e: ChangeEvent<HTMLInputElement>): void => setText(e.currentTarget.value)} />
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary onClick={handleClick} disabled={!getEmails(text).length} alignItems='stretch' mb='x8'>
-						<Icon name='send' size='x16' /> {t('Send')}
+					<Button icon='send' primary onClick={handleClick} disabled={!getEmails(text).length} alignItems='stretch' mb={8}>
+						{t('Send')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>

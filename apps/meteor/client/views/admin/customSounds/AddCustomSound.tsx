@@ -72,7 +72,9 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const handleSave = useCallback(async () => {
 		try {
 			const result = await saveAction(name, sound);
-			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
+			if (result) {
+				dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
+			}
 			result && goToNew(result);
 			onChange();
 		} catch (error) {
@@ -96,7 +98,8 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 				<Field>
 					<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
 					<Box display='flex' flexDirection='row' mbs='none'>
-						<Margins inline='x4'>
+						<Margins inline={4}>
+							{/* FIXME: replace to IconButton */}
 							<Button square onClick={clickUpload}>
 								<Icon name='upload' size='x20' />
 							</Button>
@@ -107,7 +110,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button mie='x4' onClick={close}>
+					<Button mie={4} onClick={close}>
 						{t('Cancel')}
 					</Button>
 					<Button primary onClick={handleSave} disabled={name === ''}>

@@ -24,6 +24,13 @@ const handleAgentUpdated = async (userData: IAfterSaveUserProps) => {
 	}
 };
 
+const handleAgentCreated = async (user: IUser) => {
+	// created === no prev roles :)
+	if (isAgent(user)) {
+		await Livechat.afterAgentAdded(user);
+	}
+};
+
 const handleDeactivateUser = async (user: IUser) => {
 	if (wasAgent(user)) {
 		callbackLogger.debug('Removing agent', user._id);
@@ -37,6 +44,8 @@ const handleActivateUser = async (user: IUser) => {
 		await Livechat.addAgent(user.username);
 	}
 };
+
+callbacks.add('afterCreateUser', handleAgentCreated, callbacks.priority.LOW, 'livechat-after-create-user-update-agent');
 
 callbacks.add('afterSaveUser', handleAgentUpdated, callbacks.priority.LOW, 'livechat-after-save-user-update-agent');
 

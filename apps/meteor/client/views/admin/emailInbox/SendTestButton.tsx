@@ -1,5 +1,5 @@
 import type { IEmailInboxPayload } from '@rocket.chat/core-typings';
-import { Box, Button, Icon } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -31,11 +31,8 @@ const SendTestButton = ({ id }: { id: IEmailInboxPayload['_id'] }): ReactElement
 
 	return (
 		<GenericTableCell withTruncatedText>
-			<Button small onClick={handleOnClick}>
-				<Box display='flex' alignItems='center'>
-					<Icon mie='x4' size='x16' name='send' />
-					{t('Send_Test_Email')}
-				</Box>
+			<Button icon='send' small onClick={handleOnClick}>
+				{t('Send_Test_Email')}
 			</Button>
 		</GenericTableCell>
 	);

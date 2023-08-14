@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { cronJobs } from '@rocket.chat/cron';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { Meteor } from 'meteor/meteor';
 
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
-import { statistics } from '../../app/statistics/server';
 import { settings } from '../../app/settings/server';
+import { statistics } from '../../app/statistics/server';
 import type { Logger } from '../lib/logger/Logger';
 
 async function generateStatistics(logger: Logger): Promise<void> {

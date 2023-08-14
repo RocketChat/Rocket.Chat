@@ -45,7 +45,7 @@ const RemoveAgentButton = ({ _id, reload, onAgentRemoved }: RemoveAgentButtonPro
 
 	return (
 		<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-			<IconButton icon='trash' mini small title={t('Remove')} onClick={handleDelete} />
+			<IconButton icon='trash' small title={t('Remove')} onClick={handleDelete} />
 		</GenericTableCell>
 	);
 };

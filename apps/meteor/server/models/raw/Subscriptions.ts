@@ -1,6 +1,9 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
+import { Rooms, Users } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { compact } from 'lodash';
+import mem from 'mem';
 import type {
 	Collection,
 	FindCursor,
@@ -15,12 +18,9 @@ import type {
 	UpdateFilter,
 	InsertOneResult,
 } from 'mongodb';
-import { Rooms, Users } from '@rocket.chat/models';
-import { compact } from 'lodash';
-import mem from 'mem';
 
-import { BaseRaw } from './BaseRaw';
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
+import { BaseRaw } from './BaseRaw';
 
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {
@@ -344,7 +344,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		options: AggregateOptions = {},
 	): Promise<SpotlightUser[]> {
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
-		const orStatement = searchFields.reduce(function (acc, el) {
+		const orStatement = searchFields.reduce((acc, el) => {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, [] as { [x: string]: RegExp }[]);
