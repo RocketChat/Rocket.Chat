@@ -22,8 +22,8 @@ test.describe.serial('Threads', () => {
 
 	test('expect thread message preview if alsoSendToChannel checkbox is checked', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply');
-		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('[data-qa-id="reply-in-thread"]').click();
+		await page.locator('[data-qa-type="message"]').last().hover();
+		await page.locator('role=button[name="Reply in Thread"]').click();
 
 		await expect(page).toHaveURL(/.*thread/);
 
@@ -78,7 +78,7 @@ test.describe.serial('Threads', () => {
 			await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
 
 			await poHomeChannel.content.openLastMessageMenu();
-			await page.locator('[data-qa-id="copy"]').click();
+			await page.locator('role=menuitem[name="Copy"]').click();
 
 			await expect(page).toHaveURL(/.*thread/);
 			await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
@@ -92,15 +92,15 @@ test.describe.serial('Threads', () => {
 			await page.goto('/home');
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('this is a message for reply');
-			await poHomeChannel.content.openLastMessageMenu();
-			await page.locator('[data-qa-id="reply-in-thread"]').click();
+			await page.locator('[data-qa-type="message"]').last().hover();
+			await page.locator('role=button[name="Reply in Thread"]').click();
 		});
 
 		test('expect delete the thread message and close thread if has only one message', async ({ page }) => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await expect(page).toHaveURL(/.*thread/);
 
-			await page.locator('[data-qa-id="delete-message"]').click();
+			await page.locator('role=menuitem[name="Delete"]').click();
 			await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
 
 			await expect(page).not.toHaveURL(/.*thread/);
@@ -113,7 +113,7 @@ test.describe.serial('Threads', () => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await expect(page).toHaveURL(/.*thread/);
 
-			await page.locator('[data-qa-id="delete-message"]').click();
+			await page.locator('role=menuitem[name="Delete"]').click();
 			await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
 
 			await expect(page).toHaveURL(/.*thread/);
@@ -121,14 +121,14 @@ test.describe.serial('Threads', () => {
 
 		test('expect edit the thread message', async ({ page }) => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
-			await page.locator('[data-qa-id="edit-message"]').click();
+			await page.locator('role=menuitem[name="Edit"]').click();
 			await page.locator('[name="msg"]').last().fill('this message was edited');
 			await page.keyboard.press('Enter');
 		});
 
 		test('expect quote the thread message', async ({ page }) => {
-			await poHomeChannel.content.openLastThreadMessageMenu();
-			await page.locator('[data-qa-id="quote-message"]').click();
+			await page.locator('//main//aside >> [data-qa-type="message"]').last().hover();
+			await page.locator('role=button[name="Quote"]').click();
 			await page.locator('[name="msg"]').last().fill('this is a quote message');
 			await page.keyboard.press('Enter');
 
@@ -137,17 +137,17 @@ test.describe.serial('Threads', () => {
 
 		test('expect star the thread message', async ({ page }) => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
-			await page.locator('[data-qa-id="star-message"]').click();
+			await page.locator('role=menuitem[name="Star"]').click();
 		});
 
 		test('expect copy the message', async ({ page }) => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
-			await page.locator('[data-qa-id="copy"]').click();
+			await page.locator('role=menuitem[name="Copy"]').click();
 		});
 
 		test('expect permalink the thread message', async ({ page }) => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
-			await page.locator('[data-qa-id="permalink"]').click();
+			await page.locator('role=menuitem[name="Get Link"]').click();
 		});
 
 		test('expect close thread if has only one message and user press escape', async ({ page }) => {
