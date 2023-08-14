@@ -1,12 +1,58 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 
 import { api, request, credentials, getCredentials } from '../../../data/api-data';
+import { createDepartment, addOrRemoveAgentFromDepartment } from '../../../data/livechat/department';
+import { startANewLivechatRoomAndTakeIt, createAgent } from '../../../data/livechat/rooms';
+import { createMonitor, createUnit } from '../../../data/livechat/units';
 import { restorePermissionToRoles, updatePermission } from '../../../data/permissions.helper';
+import { password } from '../../../data/user';
+import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('LIVECHAT - reports', () => {
 	before((done) => getCredentials(done));
+
+	let agent2: { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
+	let agent3: { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
+
+	before(async () => {
+		const user: IUser = await createUser();
+		const userCredentials = await login(user.username, password);
+		await createMonitor(user.username);
+
+		agent2 = {
+			user,
+			credentials: userCredentials,
+		};
+	});
+
+	before(async () => {
+		const user: IUser = await createUser();
+		const userCredentials = await login(user.username, password);
+		await createAgent();
+		await createMonitor(user.username);
+		const dep1 = await createDepartment();
+		await addOrRemoveAgentFromDepartment(
+			dep1._id,
+			{ agentId: 'rocketchat.internal.admin.test', username: 'rocketchat.internal.admin.test', count: 0, order: 0 },
+			true,
+		);
+		await startANewLivechatRoomAndTakeIt({ departmentId: dep1._id });
+
+		await createUnit(user._id, user.username, [dep1._id]);
+
+		agent3 = {
+			user,
+			credentials: userCredentials,
+		};
+	});
+
+	after(async () => {
+		await deleteUser(agent2.user);
+		await deleteUser(agent3.user);
+	});
 
 	describe('livechat/analytics/dashboards/conversations-by-source', () => {
 		it('should return an error when the user does not have the necessary permission', async () => {
@@ -72,9 +118,38 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf(0);
+			expect(body.total).to.be.equal(0);
 			expect(body.success).to.be.true;
 		});
-		it('should return the proper data from a pipeline run :)', async () => {
+		it('should return empty set for a monitor with no units', async () => {
+			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+			const { body } = await request
+				.get(api('livechat/analytics/dashboards/conversations-by-source'))
+				.set(agent2.credentials)
+				.query({ start: oneHourAgo, end: now })
+				.expect(200);
+
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf(0);
+			expect(body.success).to.be.true;
+		});
+		it('should return only the data from the unit the monitor belongs to', async () => {
+			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+			const { body } = await request
+				.get(api('livechat/analytics/dashboards/conversations-by-source'))
+				.set(agent3.credentials)
+				.query({ start: oneHourAgo, end: now })
+				.expect(200);
+
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf.greaterThan(0);
+			expect(body.data.every((item: { value: number }) => item.value >= 0)).to.be.true;
+			expect(body.total).to.be.greaterThan(0);
+			expect(body.success).to.be.true;
+		});
+		it('should return valid data when login as a manager', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 			const now = new Date().toISOString();
 
@@ -87,6 +162,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf.greaterThan(0);
 			expect(body.data.every((item: { value: number }) => item.value >= 0)).to.be.true;
+			expect(body.total).to.be.greaterThan(0);
 		});
 	});
 	describe('livechat/analytics/dashboards/conversations-by-status', () => {
@@ -155,7 +231,20 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.data).to.have.lengthOf(0);
 			expect(body.success).to.be.true;
 		});
-		it('should return the proper data from a pipeline run :)', async () => {
+		it('should return empty set for a monitor with no units', async () => {
+			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+			const { body } = await request
+				.get(api('livechat/analytics/dashboards/conversations-by-source'))
+				.set(agent2.credentials)
+				.query({ start: oneHourAgo, end: now })
+				.expect(200);
+
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf(0);
+			expect(body.success).to.be.true;
+		});
+		it('should return the proper data when login as a manager', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 			const now = new Date().toISOString();
 
@@ -244,7 +333,20 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.data).to.have.lengthOf(0);
 			expect(body.success).to.be.true;
 		});
-		it('should return the proper data from a pipeline run :)', async () => {
+		it('should return empty set for a monitor with no units', async () => {
+			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+			const { body } = await request
+				.get(api('livechat/analytics/dashboards/conversations-by-source'))
+				.set(agent2.credentials)
+				.query({ start: oneHourAgo, end: now })
+				.expect(200);
+
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf(0);
+			expect(body.success).to.be.true;
+		});
+		it('should return the proper data when login as a manager', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 			const now = new Date().toISOString();
 
@@ -325,7 +427,20 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.data).to.have.lengthOf(0);
 			expect(body.success).to.be.true;
 		});
-		it('should return the proper data from a pipeline run :)', async () => {
+		it('should return empty set for a monitor with no units', async () => {
+			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+			const { body } = await request
+				.get(api('livechat/analytics/dashboards/conversations-by-source'))
+				.set(agent2.credentials)
+				.query({ start: oneHourAgo, end: now })
+				.expect(200);
+
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf(0);
+			expect(body.success).to.be.true;
+		});
+		it('should return the proper data when login as a manager', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 			const now = new Date().toISOString();
 
@@ -405,7 +520,20 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf(0);
 		});
-		it('should return the proper data from a pipeline run :)', async () => {
+		it('should return empty set for a monitor with no units', async () => {
+			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+			const now = new Date().toISOString();
+			const { body } = await request
+				.get(api('livechat/analytics/dashboards/conversations-by-source'))
+				.set(agent2.credentials)
+				.query({ start: oneHourAgo, end: now })
+				.expect(200);
+
+			expect(body).to.have.property('data').and.to.be.an('array');
+			expect(body.data).to.have.lengthOf(0);
+			expect(body.success).to.be.true;
+		});
+		it('should return the proper data when login as a manager', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 			const now = new Date().toISOString();
 
