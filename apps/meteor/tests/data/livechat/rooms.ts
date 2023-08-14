@@ -8,7 +8,7 @@ import type {
 	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
-import { getSettingValueById, updatePermission, updateSetting } from '../permissions.helper';
+import { getSettingValueById, restorePermissionToRoles, updateSetting } from '../permissions.helper';
 import { IUserCredentialsHeader, adminUsername } from '../user';
 import { getRandomVisitorToken } from './users';
 import { DummyResponse, sleep } from './utils';
@@ -82,7 +82,7 @@ export const fetchInquiry = (roomId: string): Promise<IInquiry> => {
 	});
 };
 
-export const createDepartment = (agents?: { agentId: string }[], name?: string): Promise<ILivechatDepartment> => {
+export const createDepartment = (agents?: { agentId: string }[], name?: string, enabled = true): Promise<ILivechatDepartment> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/department'))
@@ -90,7 +90,7 @@ export const createDepartment = (agents?: { agentId: string }[], name?: string):
 			.send({
 				department: {
 					name: name || `Department ${Date.now()}`,
-					enabled: true,
+					enabled,
 					showOnOfflineForm: true,
 					showOnRegistration: true,
 					email: 'a@b.com',
@@ -139,7 +139,7 @@ export const createManager = (overrideUsername?: string): Promise<ILivechatAgent
 	});
 
 export const makeAgentAvailable = async (overrideCredentials?: { 'X-Auth-Token': string | undefined; 'X-User-Id': string | undefined }): Promise<Response> => {
-	await updatePermission('view-l-room', ['livechat-agent', 'livechat-manager', 'admin']);
+	await restorePermissionToRoles('view-l-room');
 	await request
 		.post(api('users.setStatus'))
 		.set(overrideCredentials || credentials)

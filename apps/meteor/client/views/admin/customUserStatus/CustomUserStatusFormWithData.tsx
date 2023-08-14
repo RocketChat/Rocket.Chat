@@ -35,12 +35,12 @@ const CustomUserStatusFormWithData = ({ _id, onReload, onClose }: CustomUserStat
 
 	if (isLoading) {
 		return (
-			<Box p='x20'>
-				<Skeleton mbs='x8' />
+			<Box p={20}>
+				<Skeleton mbs={8} />
 				<InputBox.Skeleton w='full' />
-				<Skeleton mbs='x8' />
+				<Skeleton mbs={8} />
 				<InputBox.Skeleton w='full' />
-				<ButtonGroup stretch w='full' mbs='x8'>
+				<ButtonGroup stretch w='full' mbs={8}>
 					<Button disabled>
 						<Throbber inheritColor />
 					</Button>
@@ -48,7 +48,7 @@ const CustomUserStatusFormWithData = ({ _id, onReload, onClose }: CustomUserStat
 						<Throbber inheritColor />
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup stretch w='full' mbs='x8'>
+				<ButtonGroup stretch w='full' mbs={8}>
 					<Button danger disabled>
 						<Throbber inheritColor />
 					</Button>
@@ -59,7 +59,7 @@ const CustomUserStatusFormWithData = ({ _id, onReload, onClose }: CustomUserStat
 
 	if (error || !data || data.count < 1) {
 		return (
-			<Box p='x20'>
+			<Box p={20}>
 				<Callout type='danger'>{t('Custom_User_Status_Error_Invalid_User_Status')}</Callout>
 			</Box>
 		);

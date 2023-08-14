@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
-import { setEmail } from '../functions';
+import { setEmail } from '../functions/setEmail';
 import { RateLimiter } from '../lib';
 
 declare module '@rocket.chat/ui-contexts' {

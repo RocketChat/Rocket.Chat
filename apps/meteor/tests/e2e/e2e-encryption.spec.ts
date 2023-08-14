@@ -106,7 +106,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await injectInitialData();
 
-		await restoreState(page, Users.admin, {except: ['public_key', 'private_key']});
+		await restoreState(page, Users.admin, { except: ['public_key', 'private_key'] });
 
 		await page.locator('role=banner >> text="Enter your E2E password"').click();
 

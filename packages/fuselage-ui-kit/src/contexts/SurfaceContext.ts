@@ -1,6 +1,6 @@
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 
-type SurfaceContextValue =
+export type SurfaceContextValue =
   | 'attachment'
   | 'banner'
   | 'message'
@@ -8,6 +8,3 @@ type SurfaceContextValue =
   | 'contextualBar';
 
 export const SurfaceContext = createContext<SurfaceContextValue>('message');
-
-export const useSurfaceType = (): SurfaceContextValue =>
-  useContext(SurfaceContext);

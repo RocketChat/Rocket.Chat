@@ -94,6 +94,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 				<Field>
 					<Field.Label alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
 						{t('Custom_Emoji')}
+						{/* FIXME: replace to IconButton */}
 						<Button square onClick={clickUpload}>
 							<Icon name='upload' size='x20' />
 						</Button>
@@ -101,7 +102,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 					{errors.emoji && <Field.Error>{t('error-the-field-is-required', { field: t('Custom_Emoji') })}</Field.Error>}
 					{newEmojiPreview && (
 						<Box display='flex' flexDirection='row' mi='neg-x4' justifyContent='center'>
-							<Margins inline='x4'>
+							<Margins inline={4}>
 								<Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview} />
 							</Margins>
 						</Box>

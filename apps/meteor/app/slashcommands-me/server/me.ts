@@ -1,7 +1,7 @@
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
 import { executeSendMessage } from '../../lib/server/methods/sendMessage';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 /*
  * Me is a named function that will replace /me commands

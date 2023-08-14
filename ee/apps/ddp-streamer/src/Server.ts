@@ -1,15 +1,15 @@
 import { EventEmitter } from 'events';
 
-import WebSocket from 'ws';
+import { MeteorService, isMeteorError, MeteorError } from '@rocket.chat/core-services';
 import ejson from 'ejson';
 import { v1 as uuidv1 } from 'uuid';
-import { MeteorService, isMeteorError, MeteorError } from '@rocket.chat/core-services';
+import WebSocket from 'ws';
 
-import { DDP_EVENTS } from './constants';
-import { Publication } from './Publication';
-import type { Client } from './Client';
-import type { IPacket } from './types/IPacket';
 import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
+import type { Client } from './Client';
+import { Publication } from './Publication';
+import { DDP_EVENTS } from './constants';
+import type { IPacket } from './types/IPacket';
 
 const logger = new Logger('DDP-Streamer');
 

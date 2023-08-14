@@ -4,10 +4,9 @@ export default {
 	testEnvironment: 'jsdom',
 	modulePathIgnorePatterns: ['<rootDir>/dist/'],
 	testMatch: [
-		'<rootDir>/client/hooks/**.spec.[jt]s?(x)',
-		'<rootDir>/client/components/**.spec.[jt]s?(x)',
-		'<rootDir>client/components/message/content/reactions/**.spec.[jt]s?(x)',
-		'<rootDir>/client/sidebar/header/actions/hooks/**/**.spec.[jt]s?(x)',
+		'<rootDir>/client/**/**.spec.[jt]s?(x)',
+		'<rootDir>/tests/unit/client/views/**/*.spec.{ts,tsx}',
+		'<rootDir>/tests/unit/client/providers/**/*.spec.{ts,tsx}',
 	],
 	transform: {
 		'^.+\\.(t|j)sx?$': '@swc/jest',

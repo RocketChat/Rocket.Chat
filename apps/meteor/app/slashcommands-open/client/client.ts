@@ -2,10 +2,10 @@ import type { RoomType, ISubscription, SlashCommandCallbackParams } from '@rocke
 import type { Mongo } from 'meteor/mongo';
 
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { router } from '../../../client/providers/RouterProvider';
 import { Subscriptions, ChatSubscription } from '../../models/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
-import { router } from '../../../client/providers/RouterProvider';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'open',

@@ -2,11 +2,9 @@ import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.cha
 
 import CreateDiscussion from '../../../../components/CreateDiscussion';
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
-import { useIsEnterprise } from '../../../../hooks/useIsEnterprise';
 import CreateChannelWithData from '../../CreateChannel';
 import CreateDirectMessage from '../../CreateDirectMessage';
 import CreateTeam from '../../CreateTeam';
-import MatrixFederationSearch from '../../MatrixFederationSearch';
 import { useCreateRoomModal } from '../../hooks/useCreateRoomModal';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
@@ -27,10 +25,6 @@ export const useCreateRoomItems = (): GenericMenuItemProps[] => {
 	const createTeam = useCreateRoomModal(CreateTeam);
 	const createDiscussion = useCreateRoomModal(CreateDiscussion);
 	const createDirectMessage = useCreateRoomModal(CreateDirectMessage);
-	const searchFederatedRooms = useCreateRoomModal(MatrixFederationSearch);
-
-	const { data } = useIsEnterprise();
-	const isMatrixEnabled = useSetting('Federation_Matrix_enabled') && data?.isEnterprise;
 
 	const createChannelItem: GenericMenuItemProps = {
 		id: 'channel',
@@ -64,20 +58,11 @@ export const useCreateRoomItems = (): GenericMenuItemProps[] => {
 			createDiscussion();
 		},
 	};
-	const matrixFederationSearchItem: GenericMenuItemProps = {
-		id: 'matrix-federation-search',
-		content: t('Federation_Search_federated_rooms'),
-		icon: 'magnifier',
-		onClick: () => {
-			searchFederatedRooms();
-		},
-	};
 
 	return [
 		...(canCreateChannel ? [createChannelItem] : []),
 		...(canCreateTeam ? [createTeamItem] : []),
 		...(canCreateDirectMessages ? [createDirectMessageItem] : []),
 		...(canCreateDiscussion && discussionEnabled ? [createDiscussionItem] : []),
-		...(isMatrixEnabled ? [matrixFederationSearchItem] : []),
 	];
 };

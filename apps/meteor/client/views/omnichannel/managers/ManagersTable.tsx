@@ -30,7 +30,6 @@ const ManagersTable = () => {
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
-				// text,
 				fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
@@ -42,9 +41,7 @@ const ManagersTable = () => {
 	);
 
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
-	const { data, isLoading, isSuccess, refetch } = useQuery(['livechat-manager', query], async () => getManagers(query), {
-		refetchOnWindowFocus: false,
-	});
+	const { data, isLoading, isSuccess, refetch } = useQuery(['livechat-manager', query], async () => getManagers(query));
 
 	const headers = (
 		<>
@@ -80,7 +77,15 @@ const ManagersTable = () => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data.users.length === 0 && <GenericNoResults />}
+			{isSuccess && data.users.length === 0 && (
+				<GenericNoResults
+					icon='shield'
+					title={t('No_managers_yet')}
+					description={t('No_managers_yet_description')}
+					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkText={t('Learn_more_about_managers')}
+				/>
+			)}
 			{isSuccess && data.users.length > 0 && (
 				<>
 					<GenericTable>
@@ -91,7 +96,7 @@ const ManagersTable = () => {
 									<GenericTableCell withTruncatedText>
 										<Box display='flex' alignItems='center'>
 											<UserAvatar size='x28' username={user.username || ''} etag={user.avatarETag} />
-											<Box display='flex' withTruncatedText mi='x8'>
+											<Box display='flex' withTruncatedText mi={8}>
 												<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 													<Box fontScale='p2m' withTruncatedText color='default'>
 														{user.name || user.username}
@@ -104,7 +109,7 @@ const ManagersTable = () => {
 										<Box fontScale='p2m' withTruncatedText color='hint'>
 											{user.username}
 										</Box>
-										<Box mi='x4' />
+										<Box mi={4} />
 									</GenericTableCell>
 									<GenericTableCell withTruncatedText>{user.emails?.length && user.emails[0].address}</GenericTableCell>
 									<RemoveManagerButton _id={user._id} reload={refetch} />

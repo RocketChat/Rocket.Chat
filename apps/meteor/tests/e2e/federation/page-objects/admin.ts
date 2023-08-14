@@ -13,7 +13,7 @@ export class FederationAdmin {
 	}
 
 	get inputSearchRooms(): Locator {
-		return this.page.locator('input[placeholder ="Search Rooms"]');
+		return this.page.locator('input[placeholder ="Search rooms"]');
 	}
 
 	get inputSearchUsers(): Locator {

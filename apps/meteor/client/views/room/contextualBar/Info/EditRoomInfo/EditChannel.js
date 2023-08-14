@@ -12,7 +12,6 @@ import {
 	Button,
 	ButtonGroup,
 	Box,
-	Icon,
 	TextAreaInput,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -305,7 +304,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 				<ContextualbarTitle>{room.teamId ? t('edit-team') : t('edit-room')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent p='x24' is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
+			<ContextualbarScrollableContent p={24} is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
 				<Box display='flex' justifyContent='center'>
 					<RoomAvatarEditor room={room} roomAvatar={roomAvatar} onChangeAvatar={handleRoomAvatar} />
 				</Box>
@@ -499,9 +498,8 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup stretch mbs='x8'>
-					<Button danger disabled={!canDelete || isFederated} onClick={handleDelete}>
-						<Icon name='trash' size='x16' />
+				<ButtonGroup stretch mbs={8}>
+					<Button icon='trash' danger disabled={!canDelete || isFederated} onClick={handleDelete}>
 						{t('Delete')}
 					</Button>
 				</ButtonGroup>

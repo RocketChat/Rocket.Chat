@@ -1,8 +1,7 @@
 import type { IUIActionButton, IUActionButtonWhen } from '@rocket.chat/apps-engine/definition/ui/IUIActionButtonDescriptor';
 import type { UserStatus } from '@rocket.chat/core-typings';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey, LocationPathname } from '@rocket.chat/ui-contexts';
-import type { Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
 
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
@@ -18,7 +17,7 @@ export interface IAppAccountBoxItem extends IUIActionButton {
 
 export type AccountBoxItem = {
 	name: TranslationKey;
-	icon: ComponentProps<typeof Icon>['name'];
+	icon: IconName;
 	href: LocationPathname;
 	sideNav?: string;
 	condition: () => boolean;

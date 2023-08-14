@@ -1,6 +1,6 @@
 import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, TextAreaInput } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -211,7 +211,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		<>
 			<ContextualbarScrollableContent is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
 				{room.t !== 'd' && (
-					<Box pbe='x24' display='flex' justifyContent='center'>
+					<Box pbe={24} display='flex' justifyContent='center'>
 						<RoomAvatarEditor disabled={isRoomFederated(room)} roomAvatar={roomAvatar} room={room} onChangeAvatar={handleRoomAvatar} />
 					</Box>
 				)}
@@ -346,9 +346,8 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup mbs='x8' stretch>
-					<Button danger disabled={deleting || !canDelete || isRoomFederated(room)} onClick={handleDelete}>
-						<Icon name='trash' size='x16' />
+				<ButtonGroup mbs={8} stretch>
+					<Button icon='trash' danger disabled={deleting || !canDelete || isRoomFederated(room)} onClick={handleDelete}>
 						{t('Delete')}
 					</Button>
 				</ButtonGroup>

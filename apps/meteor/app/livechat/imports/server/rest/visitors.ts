@@ -1,4 +1,4 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Messages, LivechatRooms } from '@rocket.chat/models';
 import {
 	isLivechatVisitorsInfoProps,
 	isGETLivechatVisitorsPagesVisitedRoomIdParams,
@@ -8,9 +8,12 @@ import {
 	isLivechatRidMessagesProps,
 	isGETLivechatVisitorsSearch,
 } from '@rocket.chat/rest-typings';
-import { Messages, LivechatRooms } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { API } from '../../../../api/server';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { canAccessRoomAsync } from '../../../../authorization/server';
+import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
 import {
 	findVisitorInfo,
 	findVisitedPages,
@@ -19,9 +22,6 @@ import {
 	findVisitorsToAutocomplete,
 	findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField,
 } from '../../../server/api/lib/visitors';
-import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
-import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { canAccessRoomAsync } from '../../../../authorization/server';
 
 API.v1.addRoute(
 	'livechat/visitors.info',
