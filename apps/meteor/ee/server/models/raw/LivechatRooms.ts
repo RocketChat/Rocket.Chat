@@ -43,14 +43,29 @@ declare module '@rocket.chat/model-typings' {
 		countRoomsWithSla(): Promise<number>;
 		countRoomsWithPdfTranscriptRequested(): Promise<number>;
 		countRoomsWithTranscriptSent(): Promise<number>;
-		getConversationsBySource(start: Date, end: Date): AggregationCursor<ReportResult>;
-		getConversationsByStatus(start: Date, end: Date): AggregationCursor<ReportResult>;
-		getConversationsByDepartment(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult>;
-		getConversationsByTags(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult>;
-		getConversationsByAgents(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult>;
-		getConversationsWithoutTagsBetweenDate(start: Date, end: Date): Promise<number>;
-		getTotalConversationsWithoutAgentsBetweenDate(start: Date, end: Date): Promise<number>;
-		getTotalConversationsWithoutDepartmentBetweenDates(start: Date, end: Date): Promise<number>;
+		getConversationsBySource(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult>;
+		getConversationsByStatus(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult>;
+		getConversationsByDepartment(
+			start: Date,
+			end: Date,
+			sort: Record<string, 1 | -1>,
+			extraQuery: Filter<IOmnichannelRoom>,
+		): AggregationCursor<ReportResult>;
+		getConversationsByTags(
+			start: Date,
+			end: Date,
+			sort: Record<string, 1 | -1>,
+			extraQuery: Filter<IOmnichannelRoom>,
+		): AggregationCursor<ReportResult>;
+		getConversationsByAgents(
+			start: Date,
+			end: Date,
+			sort: Record<string, 1 | -1>,
+			extraQuery: Filter<IOmnichannelRoom>,
+		): AggregationCursor<ReportResult>;
+		getConversationsWithoutTagsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number>;
+		getTotalConversationsWithoutAgentsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number>;
+		getTotalConversationsWithoutDepartmentBetweenDates(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number>;
 	}
 }
 
@@ -324,7 +339,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return super.updateMany(restrictedQuery, ...restArgs);
 	}
 
-	getConversationsBySource(start: Date, end: Date): AggregationCursor<ReportResult> {
+	getConversationsBySource(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
 				{
@@ -337,6 +352,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 							$gte: start,
 							$lt: end,
 						},
+						...extraQuery,
 					},
 				},
 				{
@@ -369,7 +385,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getConversationsByStatus(start: Date, end: Date): AggregationCursor<ReportResult> {
+	getConversationsByStatus(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
 				{
@@ -379,6 +395,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 							$gte: start,
 							$lt: end,
 						},
+						...extraQuery,
 					},
 				},
 				{
@@ -470,7 +487,12 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getConversationsByDepartment(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult> {
+	getConversationsByDepartment(
+		start: Date,
+		end: Date,
+		sort: Record<string, 1 | -1>,
+		extraQuery: Filter<IOmnichannelRoom>,
+	): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
 				{
@@ -483,6 +505,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 							$gte: start,
 							$lt: end,
 						},
+						...extraQuery,
 					},
 				},
 				{
@@ -528,7 +551,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getTotalConversationsWithoutDepartmentBetweenDates(start: Date, end: Date): Promise<number> {
+	getTotalConversationsWithoutDepartmentBetweenDates(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
 		return this.col.countDocuments({
 			t: 'l',
 			departmentId: {
@@ -538,10 +561,16 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 				$gte: start,
 				$lt: end,
 			},
+			...extraQuery,
 		});
 	}
 
-	getConversationsByTags(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult> {
+	getConversationsByTags(
+		start: Date,
+		end: Date,
+		sort: Record<string, 1 | -1>,
+		extraQuery: Filter<IOmnichannelRoom>,
+	): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
 				{
@@ -555,6 +584,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 							$exists: true,
 							$ne: [],
 						},
+						...extraQuery,
 					},
 				},
 				{
@@ -599,7 +629,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getConversationsWithoutTagsBetweenDate(start: Date, end: Date): Promise<number> {
+	getConversationsWithoutTagsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
 		return this.col.countDocuments({
 			t: 'l',
 			ts: {
@@ -618,10 +648,16 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 					},
 				},
 			],
+			...extraQuery,
 		});
 	}
 
-	getConversationsByAgents(start: Date, end: Date, sort: Record<string, 1 | -1>): AggregationCursor<ReportResult> {
+	getConversationsByAgents(
+		start: Date,
+		end: Date,
+		sort: Record<string, 1 | -1>,
+		extraQuery: Filter<IOmnichannelRoom>,
+	): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
 				{
@@ -634,6 +670,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 						servedBy: {
 							$exists: true,
 						},
+						...extraQuery,
 					},
 				},
 				{
@@ -687,7 +724,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getTotalConversationsWithoutAgentsBetweenDate(start: Date, end: Date): Promise<number> {
+	getTotalConversationsWithoutAgentsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
 		return this.col.countDocuments({
 			t: 'l',
 			ts: {
@@ -697,6 +734,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			servedBy: {
 				$exists: false,
 			},
+			...extraQuery,
 		});
 	}
 }
