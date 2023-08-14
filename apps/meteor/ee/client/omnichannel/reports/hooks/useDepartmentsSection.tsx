@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { COLORS, PERIOD_OPTIONS } from '../components/constants';
+import { formatPeriodDescription } from '../utils/formatPeriodDescription';
 import { useDefaultDownload } from './useDefaultDownload';
 
 const formatChartData = (data: { label: string; value: number }[] | undefined = []) =>
@@ -40,7 +41,7 @@ export const useDepartmentsSection = () => {
 	const subtitleTotals = t('__departments__departments_and__count__conversations__period__', {
 		departments: data.length ?? 0,
 		count: total,
-		period,
+		period: formatPeriodDescription(period, t),
 	});
 	const subtitleUnspecified = unspecified > 0 ? `(${t('__count__without__department__', { count: unspecified })})` : '';
 	const subtitle = `${subtitleTotals} ${subtitleUnspecified}`;

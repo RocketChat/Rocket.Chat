@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { PERIOD_OPTIONS } from '../components/constants';
+import { formatPeriodDescription } from '../utils/formatPeriodDescription';
 import { useDefaultDownload } from './useDefaultDownload';
 
 const colors = {
@@ -45,7 +46,7 @@ export const useTagsSection = () => {
 	);
 
 	const title = t('Conversations_by_tag');
-	const subtitleTotals = t('__count__tags__period__', { count: total, period });
+	const subtitleTotals = t('__count__tags__period__', { count: total, period: formatPeriodDescription(period, t) });
 	const subtitleUnspecified = unspecified > 0 ? `(${t('__count__without__tags__', { count: unspecified })})` : '';
 	const subtitle = `${subtitleTotals} ${subtitleUnspecified}`;
 

@@ -6,6 +6,7 @@ import { useSort } from '../../../../../client/components/GenericTable/hooks/use
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { COLORS, PERIOD_OPTIONS } from '../components/constants';
+import { formatPeriodDescription } from '../utils/formatPeriodDescription';
 import { useDefaultDownload } from './useDefaultDownload';
 
 const formatChartData = (data: { label: string; value: number }[] | undefined = []) =>
@@ -44,7 +45,11 @@ export const useAgentsSection = () => {
 
 	const title = t('Conversations_by_agents');
 
-	const subtitleTotals = t('__agents__agents_and__count__conversations__period__', { agents: data.length ?? 0, count: total, period });
+	const subtitleTotals = t('__agents__agents_and__count__conversations__period__', {
+		agents: data.length ?? 0,
+		count: total,
+		period: formatPeriodDescription(period, t),
+	});
 	const subtitleUnspecified = unspecified > 0 ? `(${t('__count__without__assignee__', { count: unspecified })})` : '';
 	const subtitle = `${subtitleTotals} ${subtitleUnspecified}`;
 

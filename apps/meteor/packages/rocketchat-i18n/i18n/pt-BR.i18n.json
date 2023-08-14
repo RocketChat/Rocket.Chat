@@ -1,5 +1,6 @@
 {
   "500": "Erro interno do servidor",
+  "__agents__agents_and__count__conversations__period__": "{{agents}} agentes e {{count}} conversas, {{period}}",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} salas vazias serão removidas automaticamente.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} salas vazias serão removidas automaticamente:<br/> {{rooms}}.",
   "__count__message_pruned": "{{count}} mensagem apagada",
@@ -8,6 +9,9 @@
   "__usersCount__people_will_be_invited": "{{usersCount}} usuários vão ser convidados",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} não pertence mais a {{role}}, por {{user_by}}",
   "__username__was_set__role__by__user_by_": "{{username}} foi definido como {{role}} por {{user_by}}",
+  "__count__conversations__period__": "{{count}} conversas, {{period}}",
+  "__count__tags__period__": "{{count}} tags, {{period}}",
+  "__departments__departments_and__count__conversations__period__": "{{departments}} departmentos e {{count}} conversas, {{period}}",
   "__count__without__department__": "{{count}} sem departamento",
   "__count__without__tags__": "{{count}} sem tags",
   "__count__without__assignee__": "{{count}} sem responsável",

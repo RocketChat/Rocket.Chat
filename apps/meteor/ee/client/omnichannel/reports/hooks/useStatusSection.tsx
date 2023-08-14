@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { COLORS, PERIOD_OPTIONS } from '../components/constants';
+import { formatPeriodDescription } from '../utils/formatPeriodDescription';
 import { useDefaultDownload } from './useDefaultDownload';
 
 const STATUS_COLORS: Record<string, string> = {
@@ -45,7 +46,7 @@ export const useStatusSection = () => {
 	const title = t('Conversations_by_status');
 	const subtitle = t('__count__conversations__period__', {
 		count: total ?? 0,
-		period,
+		period: formatPeriodDescription(period, t),
 	});
 
 	const downloadProps = useDefaultDownload({ columnName: t('Status'), title, data, period });

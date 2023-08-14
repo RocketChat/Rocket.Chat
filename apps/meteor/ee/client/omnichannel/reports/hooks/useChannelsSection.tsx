@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { COLORS, PERIOD_OPTIONS } from '../components/constants';
+import { formatPeriodDescription } from '../utils/formatPeriodDescription';
 import { useDefaultDownload } from './useDefaultDownload';
 
 const getTop5 = (data: { label: string; value: number }[] | undefined = []) => {
@@ -54,7 +55,7 @@ export const useChannelsSection = () => {
 	const title = t('Conversations_by_channel');
 	const subtitle = t('__count__conversations__period__', {
 		count: total ?? 0,
-		period,
+		period: formatPeriodDescription(period, t),
 	});
 
 	const downloadProps = useDefaultDownload({ columnName: t('Channel'), title, data, period });
