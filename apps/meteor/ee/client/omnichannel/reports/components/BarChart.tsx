@@ -1,3 +1,4 @@
+import type { BarCustomLayer, BarLayer } from '@nivo/bar';
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Tooltip } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
@@ -36,6 +37,36 @@ type BarChartProps = {
 	enableGridY?: boolean;
 };
 
+const sideLabel: BarLayer<{
+	size: '3' | '4' | '5' | '6' | '7' | '8';
+	count: number;
+}> = ({ bars, labelSkipWidth }) => (
+	<g>
+		{bars.map(({ width, height, y, data }) => {
+			if (width >= labelSkipWidth) {
+				return null;
+			}
+
+			return (
+				<text
+					key={data.id}
+					transform={`translate(${width + 10}, ${y + height / 2})`}
+					text-anchor='left'
+					dominant-baseline='central'
+					style={{
+						fontFamily: 'sans-serif',
+						fontSize: '11px',
+						fill: 'rgb(51, 51, 51)',
+						pointerEvents: 'none',
+					}}
+				>
+					{data.formattedValue}
+				</text>
+			);
+		})}
+	</g>
+);
+
 export const BarChart = ({
 	data,
 	maxWidth,
@@ -63,6 +94,7 @@ export const BarChart = ({
 					data={data}
 					indexBy={indexBy}
 					layout={direction}
+					layers={['grid', 'axes', 'bars', 'markers', 'legends', 'annotations', sideLabel]}
 					indexScale={{ type: 'band', round: false }}
 					keys={keys}
 					groupMode='grouped'
@@ -80,6 +112,7 @@ export const BarChart = ({
 					margin={margins}
 					motionConfig='stiff'
 					theme={REPORTS_CHARTS_THEME}
+					labelSkipWidth={6}
 					// TODO: Create a switch to change the scale type
 					// valueScale={{ type: 'symlog' }}
 					valueScale={{ type: 'linear' }}
