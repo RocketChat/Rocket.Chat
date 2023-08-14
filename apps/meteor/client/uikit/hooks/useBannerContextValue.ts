@@ -1,6 +1,6 @@
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { type UIKitUserInteractionResult, type UiKitBannerPayload, type UiKitPayload, isErrorType } from '@rocket.chat/core-typings';
-import { useSafely, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { useEffect, type ContextType, useState } from 'react';
 
@@ -15,22 +15,6 @@ export const useBannerContextValue = (payload: UiKitPayload): UseBannerContextVa
 	const [state, setState] = useSafely(useState(payload));
 	const actionManager = useUiKitActionManager();
 	const { viewId } = payload;
-
-	const action = useMutableCallback(async ({ blockId, value, appId, actionId }) => {
-		if (!appId) {
-			throw new Error('useUIKitHandleAction - invalid appId');
-		}
-		return actionManager.triggerBlockAction({
-			container: {
-				type: UIKitIncomingInteractionContainerType.VIEW,
-				id: state.viewId || state.appId,
-			},
-			actionId,
-			appId,
-			value,
-			blockId,
-		});
-	});
 
 	useEffect(() => {
 		const handleUpdate = ({ ...data }: UIKitUserInteractionResult): void => {
@@ -52,12 +36,26 @@ export const useBannerContextValue = (payload: UiKitPayload): UseBannerContextVa
 	}, [actionManager, setState, viewId]);
 
 	return {
-		action: async (event): Promise<void> => {
-			if (!event.viewId) {
+		action: async ({ actionId, appId, blockId, value, viewId }): Promise<void> => {
+			if (!viewId) {
 				return;
 			}
 
-			await action(event);
+			if (!appId) {
+				throw new Error('useUIKitHandleAction - invalid appId');
+			}
+
+			actionManager.triggerBlockAction({
+				container: {
+					type: UIKitIncomingInteractionContainerType.VIEW,
+					id: state.viewId || state.appId,
+				},
+				actionId,
+				appId,
+				value,
+				blockId,
+			});
+
 			banners.closeById(state.viewId);
 		},
 		payload: state,
