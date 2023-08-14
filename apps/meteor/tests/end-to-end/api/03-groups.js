@@ -887,7 +887,7 @@ describe('[Groups]', function () {
 		});
 		after(async () => {
 			await deleteUser(testUser);
-			await deleteRoom(testGroup);
+			await deleteRoom({ type: 'p', roomId: testGroup._id });
 		});
 
 		it('should return an array of members by channel when roomId is provided', (done) => {
