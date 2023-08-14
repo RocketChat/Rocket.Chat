@@ -60,7 +60,7 @@ const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, 
 
 	const flattenedData = data?.pages.flatMap((page) => page.rooms);
 	return (
-		<Margins inline={-26}>
+		<Margins inline={-24}>
 			<Box is='ul' overflow='hidden' height='356px' flexGrow={1} flexShrink={0}>
 				<Virtuoso
 					data={flattenedData || []}
