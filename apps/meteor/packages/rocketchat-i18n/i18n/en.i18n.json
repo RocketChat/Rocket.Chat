@@ -2586,6 +2586,7 @@
   "Integration_History_Cleared": "Integration History Successfully Cleared",
   "Integration_Incoming_WebHook": "Incoming WebHook Integration",
   "Integration_New": "New Integration",
+  "integration-scripts-disabled": "Integration Scripts are Disabled",
   "Integration_Outgoing_WebHook": "Outgoing WebHook Integration",
   "Integration_Outgoing_WebHook_History": "Outgoing WebHook Integration History",
   "Integration_Outgoing_WebHook_History_Data_Passed_To_Trigger": "Data Passed to Integration",
@@ -5975,5 +5976,9 @@
   "multiple_instance_solutions": "multiple instance solutions",
   "Uninstall_grandfathered_app": "Uninstall {{appName}}?",
   "App_will_lose_grandfathered_status": "**This {{context}} app will lose its grandfathered status.**  \n  \nWorkspaces on Community Edition can have up to {{limit}} {{context}} apps enabled. Grandfathered apps count towards the limit but the limit is not applied to them.",
+  "All_rooms": "All rooms",
+  "All_visible": "All visible",
+  "Filter_by_room": "Filter by room type",
+  "Filter_by_visibility": "Filter by visibility",
   "Theme_Appearence": "Theme Appearence"
 }

@@ -77,6 +77,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { 'navigation.token': 1 }, sparse: true },
 
 			{ key: { 'federation.eventId': 1 }, sparse: true },
+			{ key: { t: 1 }, sparse: true },
 		];
 	}
 
