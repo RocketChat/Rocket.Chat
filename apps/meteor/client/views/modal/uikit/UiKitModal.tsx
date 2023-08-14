@@ -12,13 +12,17 @@ import { useModalContextValue } from '../../../uikit/hooks/useModalContextValue'
 import ModalBlock from './ModalBlock';
 import { useValues } from './hooks/useValues';
 
-export type ActionManagerState = {
-	viewId: string;
-	type: 'errors' | string;
+type UiKitModalProps = {
+	initialState: ModalState;
+};
+
+export type ModalState = {
 	appId: string;
-	mid: string;
 	errors: Record<string, string>;
+	mid: string;
+	type: 'errors' | string;
 	view: IUIKitSurface;
+	viewId: string;
 };
 
 const groupStateByBlockId = (values: { value: unknown; blockId: string }[]) =>
@@ -37,17 +41,17 @@ const prevent: ReactEventHandler = (e) => {
 	}
 };
 
-const UiKitModal = (props: ActionManagerState) => {
+const UiKitModal = ({ initialState }: UiKitModalProps) => {
 	const actionManager = useUiKitActionManager();
-	const [state, setState] = useState(props);
+	const [state, setState] = useState(initialState);
 
 	const { appId, viewId, errors, view } = state;
 
 	const [values, updateValues] = useValues(view.blocks as Block[]);
-	const contextValue = useModalContextValue(state, { values, updateValues });
+	const contextValue = useModalContextValue({ values, updateValues, ...state });
 
 	useEffect(() => {
-		const handleUpdate = ({ type, errors, ...data }: ActionManagerState) => {
+		const handleUpdate = ({ type, errors, ...data }: ModalState) => {
 			if (type === 'errors') {
 				setState((state) => ({ ...state, errors, type }));
 				return;

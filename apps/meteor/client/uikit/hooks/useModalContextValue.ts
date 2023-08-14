@@ -4,15 +4,17 @@ import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import type { ContextType } from 'react';
 
 import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
-import type { ActionManagerState } from '../../views/modal/uikit/UiKitModal';
+import type { ModalState } from '../../views/modal/uikit/UiKitModal';
 
-export const useModalContextValue = (
-	state: ActionManagerState,
-	{ values, updateValues }: { values: any; updateValues: (value: any) => void },
-): ContextType<typeof UiKitContext> => {
+type UseModalContextValueProps = ModalState & {
+	values: any;
+	updateValues: (value: any) => void;
+};
+
+export const useModalContextValue = (props: UseModalContextValueProps): ContextType<typeof UiKitContext> => {
 	const actionManager = useUiKitActionManager();
 
-	const { viewId, mid: _mid } = state;
+	const { viewId, mid: _mid, values, updateValues } = props;
 
 	const debouncedBlockAction = useDebouncedCallback((actionId, appId, value, blockId, mid) => {
 		actionManager.triggerBlockAction({
@@ -56,7 +58,7 @@ export const useModalContextValue = (
 				},
 			});
 		},
-		payload: state,
+		payload: props,
 		values,
 	};
 };

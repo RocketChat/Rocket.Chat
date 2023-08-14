@@ -1,3 +1,4 @@
+import type { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Avatar, Box, Button, ButtonGroup, ContextualbarFooter, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -16,12 +17,19 @@ import { getURL } from '../../../../../app/utils/client';
 import { ContextualbarClose, ContextualbarScrollableContent } from '../../../../components/Contextualbar';
 import { useUiKitActionManager } from '../../../../hooks/useUiKitActionManager';
 import { useContextualBarContextValue } from '../../../../uikit/hooks/useContextualBarContextValue';
-import type { ActionManagerState } from '../../../modal/uikit/UiKitModal';
 import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
 import { useValues } from '../../../modal/uikit/hooks/useValues';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
-type UiKitContextualBarProps = ActionManagerState & { roomId: IRoom['_id'] };
+type UiKitContextualBarProps = {
+	viewId: string;
+	type: 'errors' | string;
+	appId: string;
+	mid: string;
+	errors: Record<string, string>;
+	view: IUIKitSurface;
+	roomId: IRoom['_id'];
+};
 
 const groupStateByBlockId = (obj: { value: unknown; blockId: string }[]) =>
 	Object.entries(obj).reduce<any>((obj, [key, { blockId, value }]) => {
