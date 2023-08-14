@@ -1,20 +1,32 @@
+import type { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import type { ContextType } from 'react';
 
 import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
-import type { ActionManagerState } from '../../views/modal/uikit/hooks/useActionManagerState';
 
-export const useContextualBarContextValue = (
-	state: ActionManagerState,
-	{ values, updateValues }: { values: any; updateValues: (value: any) => void },
-): ContextType<typeof UiKitContext> => {
+type ActionParams = {
+	viewId: string;
+	type: 'errors' | string;
+	appId: string;
+	errors: Record<string, string>;
+	view: IUIKitSurface;
+};
+
+type useContextualBarContextValueProps = ActionParams & {
+	roomId: IRoom['_id'];
+	values: any;
+	updateValues: (value: any) => void;
+};
+
+export const useContextualBarContextValue = (props: useContextualBarContextValueProps): ContextType<typeof UiKitContext> => {
 	const actionManager = useUiKitActionManager();
 
-	const { viewId } = state;
+	const { roomId, viewId, updateValues } = props;
 
-	const debouncedBlockAction = useDebouncedCallback(({ actionId, appId, value, blockId }: ActionParams) => {
+	const debouncedBlockAction = useDebouncedCallback(({ actionId, appId, value, blockId }) => {
 		actionManager.triggerBlockAction({
 			container: {
 				type: UIKitIncomingInteractionContainerType.VIEW,
@@ -28,11 +40,11 @@ export const useContextualBarContextValue = (
 	}, 700);
 
 	return {
-		action: async ({ actionId, appId, value, blockId, dispatchActionConfig }: ActionParams): Promise<void> => {
-			if (Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes(InputElementDispatchAction.ON_CHARACTER_ENTERED)) {
-				await debouncedBlockAction({ actionId, appId, value, blockId });
+		action: ({ actionId, appId, value, blockId, dispatchActionConfig }) => {
+			if (Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes('on_character_entered')) {
+				debouncedBlockAction({ actionId, appId, value, blockId });
 			} else {
-				await actionManager.triggerBlockAction({
+				actionManager.triggerBlockAction({
 					container: {
 						type: UIKitIncomingInteractionContainerType.VIEW,
 						id: viewId,
@@ -45,7 +57,7 @@ export const useContextualBarContextValue = (
 				});
 			}
 		},
-		state: ({ actionId, value, blockId = 'default' }: ActionParams): void => {
+		updateState: ({ actionId, value, blockId = 'default' }: { actionId: string; value: any; blockId: string }) => {
 			updateValues({
 				actionId,
 				payload: {
@@ -54,7 +66,6 @@ export const useContextualBarContextValue = (
 				},
 			});
 		},
-		...state,
-		values,
+		...props,
 	};
 };

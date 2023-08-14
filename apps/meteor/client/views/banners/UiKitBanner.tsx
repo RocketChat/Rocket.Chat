@@ -8,10 +8,10 @@ import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
-import { useBannerContextValue } from '../../UIKit/hooks/useBannerContextValue';
 import MarkdownText from '../../components/MarkdownText';
 import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
 import * as banners from '../../lib/banners';
+import { useBannerContextValue } from '../../uikit/hooks/useBannerContextValue';
 
 // TODO: move this to fuselage-ui-kit itself
 bannerParser.mrkdwn = ({ text }): ReactElement => <MarkdownText variant='inline' content={text} />;

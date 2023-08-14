@@ -36,7 +36,7 @@ const VideoConferenceBlock = ({
 
   const {
     action,
-    payload: { viewId },
+    payload: { viewId = undefined } = {},
     rid,
   } = useContext(UiKitContext);
 

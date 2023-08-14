@@ -3,7 +3,7 @@ import { createContext } from 'react';
 
 type ActionParams = {
   blockId: string;
-  appId: string;
+  appId?: string;
   actionId: string;
   value: unknown;
   viewId?: string;
@@ -20,9 +20,9 @@ type UiKitContextValue = {
     state: ActionParams,
     event: Parameters<React.MouseEventHandler<HTMLElement>>[0]
   ) => Promise<void> | void;
-  payload: {
-    appId: string;
-    viewId: string;
+  payload?: {
+    appId?: string;
+    viewId?: string;
   };
   values?: Record<string, { value: string } | undefined>;
   errors?: Record<string, string>;
@@ -32,7 +32,6 @@ type UiKitContextValue = {
 export const UiKitContext = createContext<UiKitContextValue>({
   action: () => undefined,
   updateState: () => undefined,
-  errors: {},
   payload: {
     appId: 'core',
     viewId: 'default',

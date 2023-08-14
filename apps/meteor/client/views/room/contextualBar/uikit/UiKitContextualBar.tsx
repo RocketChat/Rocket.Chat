@@ -1,17 +1,6 @@
-import type {
-	IUIKitContextualBarInteraction,
-	IUIKitErrorInteraction,
-	IUIKitSurface,
-	IInputElement,
-	IInputBlock,
-	IBlock,
-	IBlockElement,
-	IActionsBlock,
-	InputElementDispatchAction,
-} from '@rocket.chat/apps-engine/definition/uikit';
-import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Avatar, Box, Button, ButtonGroup, ContextualbarFooter, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
-import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	UiKitComponent,
 	UiKitContextualBar as UiKitContextualBarSurfaceRender,
@@ -20,112 +9,53 @@ import {
 } from '@rocket.chat/fuselage-ui-kit';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import { BlockContext, type Block } from '@rocket.chat/ui-kit';
-import type { Dispatch, SyntheticEvent, ContextType } from 'react';
-import React, { memo, useState, useEffect, useReducer } from 'react';
+import type { ReactEventHandler } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 
 import { getURL } from '../../../../../app/utils/client';
 import { ContextualbarClose, ContextualbarScrollableContent } from '../../../../components/Contextualbar';
 import { useUiKitActionManager } from '../../../../hooks/useUiKitActionManager';
+import { useContextualBarContextValue } from '../../../../uikit/hooks/useContextualBarContextValue';
+import type { ActionManagerState } from '../../../modal/uikit/UiKitModal';
 import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
+import { useValues } from '../../../modal/uikit/hooks/useValues';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
-type FieldStateValue = string | Array<string> | undefined;
-type FieldState = { value: FieldStateValue; blockId: string };
-type InputFieldStateTuple = [string, FieldState];
-type InputFieldStateObject = { [key: string]: FieldState };
-type InputFieldStateByBlockId = { [blockId: string]: { [actionId: string]: FieldStateValue } };
-type ActionParams = {
-	blockId: string;
-	appId: string;
-	actionId: string;
-	value: unknown;
-	viewId?: string;
-	dispatchActionConfig?: InputElementDispatchAction[];
+type UiKitContextualBarProps = ActionManagerState & { roomId: IRoom['_id'] };
+
+const groupStateByBlockId = (obj: { value: unknown; blockId: string }[]) =>
+	Object.entries(obj).reduce<any>((obj, [key, { blockId, value }]) => {
+		obj[blockId] = obj[blockId] || {};
+		obj[blockId][key] = value;
+		return obj;
+	}, {});
+
+const prevent: ReactEventHandler = (e) => {
+	if (e) {
+		(e.nativeEvent || e).stopImmediatePropagation();
+		e.stopPropagation();
+		e.preventDefault();
+	}
 };
 
-type ViewState = IUIKitContextualBarInteraction & {
-	errors?: { [field: string]: string };
-};
-
-const isInputBlock = (block: any): block is IInputBlock => block?.element?.initialValue;
-
-const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
-	const reducer = useMutableCallback((values, { actionId, payload }) => ({
-		...values,
-		[actionId]: payload,
-	}));
-
-	const initializer = useMutableCallback(() => {
-		const filterInputFields = (block: IBlock | Block): boolean => {
-			if (isInputBlock(block)) {
-				return true;
-			}
-
-			if (
-				((block as IActionsBlock).elements as IInputElement[])?.filter((element) => filterInputFields({ element } as IInputBlock)).length
-			) {
-				return true;
-			}
-
-			return false;
-		};
-
-		const mapElementToState = (block: IBlock | Block): InputFieldStateTuple | InputFieldStateTuple[] => {
-			if (isInputBlock(block)) {
-				const { element, blockId } = block;
-				return [element.actionId, { value: element.initialValue, blockId } as FieldState];
-			}
-
-			const { elements, blockId }: { elements: IBlockElement[]; blockId?: string } = block as IActionsBlock;
-
-			return elements
-				.filter((element) => filterInputFields({ element } as IInputBlock))
-				.map((element) => mapElementToState({ element, blockId } as IInputBlock)) as InputFieldStateTuple[];
-		};
-
-		return view.blocks
-			.filter(filterInputFields)
-			.map(mapElementToState)
-			.reduce((obj: InputFieldStateObject, el: InputFieldStateTuple | InputFieldStateTuple[]) => {
-				if (Array.isArray(el[0])) {
-					return { ...obj, ...Object.fromEntries(el as InputFieldStateTuple[]) };
-				}
-
-				const [key, value] = el as InputFieldStateTuple;
-				return { ...obj, [key]: value };
-			}, {} as InputFieldStateObject);
-	});
-
-	return useReducer(reducer, null, initializer);
-};
-
-const UiKitContextualBar = ({
-	viewId,
-	roomId,
-	payload,
-	appId,
-}: {
-	viewId: string;
-	roomId: string;
-	payload: IUIKitContextualBarInteraction;
-	appId: string;
-}): JSX.Element => {
-	const actionManager = useUiKitActionManager();
+const UiKitContextualBar = (props: UiKitContextualBarProps) => {
 	const { closeTab } = useRoomToolbox();
+	const actionManager = useUiKitActionManager();
+	const [state, setState] = useState(props);
 
-	const [state, setState] = useState<ViewState>(payload);
-	const { view } = state;
-	const [values, updateValues] = useValues(view);
+	const { appId, viewId, view } = state;
+
+	const [values, updateValues] = useValues(view.blocks as Block[]);
+	const contextValue = useContextualBarContextValue({ values, updateValues, ...state });
 
 	useEffect(() => {
-		const handleUpdate = ({ type, ...data }: IUIKitContextualBarInteraction | IUIKitErrorInteraction): void => {
+		const handleUpdate = ({ type, errors, ...data }: UiKitContextualBarProps) => {
 			if (type === 'errors') {
-				const { errors } = data as Omit<IUIKitErrorInteraction, 'type'>;
-				setState((state: ViewState) => ({ ...state, errors }));
+				setState((state) => ({ ...state, errors, type }));
 				return;
 			}
 
-			setState(data as IUIKitContextualBarInteraction);
+			setState({ ...data, type, errors });
 		};
 
 		actionManager.on(viewId, handleUpdate);
@@ -135,27 +65,12 @@ const UiKitContextualBar = ({
 		};
 	}, [actionManager, state, viewId]);
 
-	const groupStateByBlockId = (obj: InputFieldStateObject): InputFieldStateByBlockId =>
-		Object.entries(obj).reduce((obj: InputFieldStateByBlockId, [key, { blockId, value }]: InputFieldStateTuple) => {
-			obj[blockId] = obj[blockId] || {};
-			obj[blockId][key] = value;
-			return obj;
-		}, {} as InputFieldStateByBlockId);
-
-	const prevent = (e: SyntheticEvent): void => {
-		if (e) {
-			(e.nativeEvent || e).stopImmediatePropagation();
-			e.stopPropagation();
-			e.preventDefault();
-		}
-	};
-
 	const handleSubmit = useMutableCallback((e) => {
 		prevent(e);
 		closeTab();
 		actionManager.triggerSubmitView({
-			viewId,
 			appId,
+			viewId,
 			payload: {
 				view: {
 					...view,
@@ -196,7 +111,7 @@ const UiKitContextualBar = ({
 	});
 
 	return (
-		<UiKitContext.Provider value={context}>
+		<UiKitContext.Provider value={contextValue}>
 			<ContextualbarHeader>
 				<Avatar url={getURL(`/api/apps/${appId}/icon`)} />
 				<ContextualbarTitle>{contextualBarParser.text(view.title, BlockContext.NONE, 0)}</ContextualbarTitle>

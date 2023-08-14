@@ -4,7 +4,7 @@ import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import type { ContextType } from 'react';
 
 import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
-import type { ActionManagerState } from '../../views/modal/uikit/hooks/useActionManagerState';
+import type { ActionManagerState } from '../../views/modal/uikit/UiKitModal';
 
 export const useModalContextValue = (
 	state: ActionManagerState,
@@ -56,7 +56,7 @@ export const useModalContextValue = (
 				},
 			});
 		},
-		state,
+		payload: state,
 		values,
 	};
 };
