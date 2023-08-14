@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 
-import DeleteElementBtn from '../Preview/Display/RenderPayload/DeleteElementBtn';
-import ElementWrapper from '../Preview/Display/RenderPayload/ElementWrapper';
-import RenderPayload from '../Preview/Display/RenderPayload/RenderPayload';
+import DeleteElementBtn from '../Preview/Display/UiKitElementWrapper/DeleteElementBtn';
+import UiKitElementWrapper from '../Preview/Display/UiKitElementWrapper/UiKitElementWrapper';
+import RenderPayload from '../RenderPayload/RenderPayload';
 import type { Block } from './DraggableList';
 
 export type DraggableListItemProps = {
@@ -24,10 +24,10 @@ const DraggableListItem = ({
         {...provided.draggableProps}
         {...provided.dragHandleProps}
       >
-        <ElementWrapper key={index}>
+        <UiKitElementWrapper key={index}>
           <DeleteElementBtn elementIndex={index} />
           <RenderPayload surface={surface} blocks={[block.payload]} />
-        </ElementWrapper>
+        </UiKitElementWrapper>
       </div>
     )}
   </Draggable>

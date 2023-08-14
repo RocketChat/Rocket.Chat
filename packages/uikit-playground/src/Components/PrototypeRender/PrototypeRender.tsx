@@ -1,6 +1,6 @@
 import './PrototypeRender.scss';
 import { Box } from '@rocket.chat/fuselage';
-import RenderPayload from '../Preview/Display/RenderPayload/RenderPayload';
+import RenderPayload from '../RenderPayload/RenderPayload';
 import SurfaceRender from '../Preview/Display/Surface/SurfaceRender';
 import { SurfaceOptions } from '../Preview/Display/Surface/constant';
 import { ILayoutBlock, idType } from '../../Context/initialState';

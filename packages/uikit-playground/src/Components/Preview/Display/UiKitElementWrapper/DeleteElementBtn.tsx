@@ -1,3 +1,4 @@
+import './UiKitElementWrapper.scss';
 import { Icon } from '@rocket.chat/fuselage';
 import { useContext } from 'react';
 
@@ -15,25 +16,7 @@ const Display = ({ elementIndex }: { elementIndex: number }) => {
     );
   };
   return (
-    <div
-      style={{
-        position: 'absolute',
-        width: '20px',
-        height: '20px',
-        top: '6px',
-        right: '6px',
-        visibility: 'hidden',
-        cursor: 'pointer',
-        zIndex: 1,
-        backgroundColor: 'white',
-        borderRadius: '4px',
-        border: 'var(--elements-border)',
-        display: 'grid',
-        placeItems: 'center',
-      }}
-      className={'closeBtn'}
-      onClick={deleteElement}
-    >
+    <div className={'uikit-element-delete-btn'} onClick={deleteElement}>
       <Icon name="cross" size="x20" />
     </div>
   );

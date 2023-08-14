@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { Handle, Position } from 'reactflow';
 import './UIKitWrapper.scss';
 
-import RenderPayload from '../../Preview/Display/RenderPayload/RenderPayload';
+import RenderPayload from '../../RenderPayload/RenderPayload';
 import SurfaceRender from '../../Preview/Display/Surface/SurfaceRender';
 import { idType } from '../../../Context/initialState';
 import { context } from '../../../Context';

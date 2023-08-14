@@ -9,7 +9,7 @@ import { context, renameScreenAction } from '../../Context';
 import { activeScreenAction } from '../../Context/action/activeScreenAction';
 import { deleteScreenAction } from '../../Context/action/deleteScreenAction';
 import { duplicateScreenAction } from '../../Context/action/duplicateScreenAction';
-import renderPayload from '../Preview/Display/RenderPayload/RenderPayload';
+import renderPayload from '../RenderPayload/RenderPayload';
 import { ScreenType } from '../../Context/initialState';
 import EditMenu from '../ScreenThumbnail/EditMenu/EditMenu';
 

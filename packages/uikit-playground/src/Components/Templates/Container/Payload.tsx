@@ -8,7 +8,7 @@ import {
   templatesToggleAction,
   updatePayloadAction,
 } from '../../../Context';
-import RenderPayload from '../../Preview/Display/RenderPayload/RenderPayload';
+import RenderPayload from '../../RenderPayload/RenderPayload';
 import getUniqueId from '../../../utils/getUniqueId';
 import SurfaceRender from '../../Preview/Display/Surface/SurfaceRender';
 import { ILayoutBlock } from '../../../Context/initialState';

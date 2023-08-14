@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import ScreenThumbnailWrapper from '../../ScreenThumbnail/ScreenThumbnailWrapper';
 import Thumbnail from '../../ScreenThumbnail/Thumbnail';
-import RenderPayload from '../../Preview/Display/RenderPayload/RenderPayload';
+import RenderPayload from '../../RenderPayload/RenderPayload';
 import {
   activeProjectAction,
   context,
