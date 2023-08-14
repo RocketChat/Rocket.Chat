@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { useTabBarClose } from '../room/contexts/ToolboxContext';
+import { useRoomToolbox } from '../room/contexts/RoomToolboxContext';
 import OutlookEventsList from './OutlookEventsList';
 import OutlookSettingsList from './OutlookSettingsList';
 
@@ -12,14 +12,14 @@ const CALENDAR_ROUTES: { [key: string]: OutlookCalendarRoutes } = {
 };
 
 const OutlookEventsRoute = () => {
-	const closeTabBar = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 	const [calendarRoute, setCalendarRoute] = useState<OutlookCalendarRoutes>('list');
 
 	if (calendarRoute === CALENDAR_ROUTES.SETTINGS) {
-		return <OutlookSettingsList onClose={closeTabBar} changeRoute={() => setCalendarRoute(CALENDAR_ROUTES.LIST)} />;
+		return <OutlookSettingsList onClose={closeTab} changeRoute={() => setCalendarRoute(CALENDAR_ROUTES.LIST)} />;
 	}
 
-	return <OutlookEventsList onClose={closeTabBar} changeRoute={() => setCalendarRoute(CALENDAR_ROUTES.SETTINGS)} />;
+	return <OutlookEventsList onClose={closeTab} changeRoute={() => setCalendarRoute(CALENDAR_ROUTES.SETTINGS)} />;
 };
 
 export default OutlookEventsRoute;

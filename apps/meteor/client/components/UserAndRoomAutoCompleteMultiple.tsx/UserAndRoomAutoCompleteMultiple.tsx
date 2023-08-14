@@ -49,13 +49,13 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, ...props }: UserAndR
 			setFilter={setFilter}
 			multiple
 			renderSelected={({ selected: { value, label }, onRemove, ...props }): ReactElement => (
-				<Chip {...props} height='x20' value={value} onClick={onRemove} mie='x4'>
+				<Chip {...props} height='x20' value={value} onClick={onRemove} mie={4}>
 					{label.t === 'd' ? (
 						<UserAvatar size='x20' username={value} />
 					) : (
 						<RoomAvatar size='x20' room={{ type: label?.type, _id: value, ...label }} />
 					)}
-					<Box is='span' margin='none' mis='x4'>
+					<Box is='span' margin='none' mis={4}>
 						{label.name}
 					</Box>
 				</Chip>

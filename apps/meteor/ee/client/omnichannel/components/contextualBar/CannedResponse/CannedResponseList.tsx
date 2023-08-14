@@ -15,7 +15,7 @@ import {
 	ContextualbarFooter,
 } from '../../../../../../client/components/Contextualbar';
 import ScrollableContentWrapper from '../../../../../../client/components/ScrollableContentWrapper';
-import { useTabContext } from '../../../../../../client/views/room/contexts/ToolboxContext';
+import { useRoomToolbox } from '../../../../../../client/views/room/contexts/RoomToolboxContext';
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
 
@@ -53,7 +53,7 @@ const CannedResponseList: FC<{
 	const t = useTranslation();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
-	const cannedId = useTabContext();
+	const { context: cannedId } = useRoomToolbox();
 
 	const { ref, contentBoxSize: { inlineSize = 378 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
@@ -67,9 +67,9 @@ const CannedResponseList: FC<{
 			</ContextualbarHeader>
 
 			<ContextualbarContent paddingInline={0} ref={ref}>
-				<Box display='flex' flexDirection='row' p='x24' flexShrink={0}>
+				<Box display='flex' flexDirection='row' p={24} flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
-						<Margins inline='x4'>
+						<Margins inline={4}>
 							<TextInput
 								placeholder={t('Search')}
 								value={text}
