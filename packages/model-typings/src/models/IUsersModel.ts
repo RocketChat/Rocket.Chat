@@ -380,7 +380,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneByImportId(importId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	removeAgent(_id: string): Promise<UpdateResult>;
 	findAgentsWithDepartments<T = ILivechatAgent>(
-		roles: string,
+		role: string,
 		query: Filter<IUser>,
 		options: FindOptions<IUser>,
 	): Promise<{ sortedResults: (T & { departments: string[] })[]; totalCount: { total: number }[] }[]>;

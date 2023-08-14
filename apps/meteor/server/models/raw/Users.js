@@ -183,8 +183,8 @@ export class UsersRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findAgentsWithDepartments(roles, query, options) {
-		roles = [].concat(roles);
+	findAgentsWithDepartments(role, query, options) {
+		const roles = [].concat(role);
 
 		Object.assign(query, { roles: { $in: roles } });
 
