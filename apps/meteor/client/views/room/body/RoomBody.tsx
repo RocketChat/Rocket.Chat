@@ -30,9 +30,12 @@ import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessag
 import Announcement from '../Announcement';
 import { MessageList } from '../MessageList/MessageList';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
+import ComposerContainer from '../composer/ComposerContainer';
+import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
+import { useScrollMessageList } from '../hooks/useScrollMessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LeaderBar from './LeaderBar';
@@ -46,7 +49,6 @@ import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
-import { useSendToBottom } from './hooks/useSendToBottom';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
@@ -60,14 +62,15 @@ const RoomBody = (): ReactElement => {
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
+	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
-	const { hasNewMessages, setHasNewMessages, scrollMessageList, sendToBottom, sendToBottomIfNecessary, wrapperRef, atBottomRef } =
-		useSendToBottom();
 
+	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
+	const atBottomRef = useRef(true);
 	const lastScrollTopRef = useRef(0);
 
 	const chat = useChat();
@@ -91,6 +94,22 @@ const RoomBody = (): ReactElement => {
 		}
 		return false;
 	}, []);
+
+	const scrollMessageList = useScrollMessageList(wrapperRef);
+
+	const sendToBottom = useCallback(() => {
+		scrollMessageList((wrapper) => {
+			return { left: 30, top: wrapper?.scrollHeight };
+		});
+
+		setHasNewMessages(false);
+	}, [scrollMessageList]);
+
+	const sendToBottomIfNecessary = useCallback(() => {
+		if (atBottomRef.current === true) {
+			sendToBottom();
+		}
+	}, [sendToBottom]);
 
 	const checkIfScrollIsAtBottom = useCallback(() => {
 		atBottomRef.current = _isAtBottom(100);
@@ -444,6 +463,25 @@ const RoomBody = (): ReactElement => {
 		};
 	}, [checkIfScrollIsAtBottom]);
 
+	const handleComposerResize = useCallback((): void => {
+		sendToBottomIfNecessary();
+	}, [sendToBottomIfNecessary]);
+
+	const handleNavigateToPreviousMessage = useCallback((): void => {
+		chat.messageEditing.toPreviousMessage();
+	}, [chat.messageEditing]);
+
+	const handleNavigateToNextMessage = useCallback((): void => {
+		chat.messageEditing.toNextMessage();
+	}, [chat.messageEditing]);
+
+	const handleUploadFiles = useCallback(
+		(files: readonly File[]): void => {
+			chat.flows.uploadFiles(files);
+		},
+		[chat],
+	);
+
 	const replyMID = useSearchParameter('reply');
 
 	useEffect(() => {
@@ -590,6 +628,16 @@ const RoomBody = (): ReactElement => {
 									</MessageListErrorBoundary>
 								</div>
 							</div>
+							<RoomComposer>
+								<ComposerContainer
+									rid={room._id}
+									subscription={subscription}
+									onResize={handleComposerResize}
+									onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
+									onNavigateToNextMessage={handleNavigateToNextMessage}
+									onUploadFiles={handleUploadFiles}
+								/>
+							</RoomComposer>
 						</div>
 					</div>
 				</section>

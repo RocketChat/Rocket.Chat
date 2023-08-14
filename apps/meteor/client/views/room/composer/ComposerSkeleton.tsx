@@ -6,7 +6,7 @@ const ComposerSkeleton = () => {
 	return (
 		<>
 			<MessageComposerSkeleton />
-			<Box height='24px' />
+			<Box height='x24' />
 		</>
 	);
 };

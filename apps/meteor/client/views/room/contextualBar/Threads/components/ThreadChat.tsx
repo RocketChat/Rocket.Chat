@@ -11,10 +11,10 @@ import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBound
 import DropTargetOverlay from '../../../body/DropTargetOverlay';
 import { useFileUploadDropTarget } from '../../../body/hooks/useFileUploadDropTarget';
 import ComposerContainer from '../../../composer/ComposerContainer';
+import RoomComposer from '../../../composer/RoomComposer/RoomComposer';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
-import RoomFooter from '../../../footer/RoomFooter';
 import ThreadMessageList from './ThreadMessageList';
 
 type ThreadChatProps = {
@@ -99,7 +99,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 					<ThreadMessageList mainMessage={mainMessage} />
 				</MessageListErrorBoundary>
 
-				<RoomFooter>
+				<RoomComposer>
 					<ComposerContainer
 						rid={mainMessage.rid}
 						tmid={mainMessage._id}
@@ -125,7 +125,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 							</Field.Row>
 						</Field>
 					</ComposerContainer>
-				</RoomFooter>
+				</RoomComposer>
 			</Box>
 		</ContextualbarContent>
 	);

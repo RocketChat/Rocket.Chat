@@ -5,8 +5,8 @@ import React, { memo, useCallback, useMemo } from 'react';
 
 import { LegacyRoomManager } from '../../../../app/ui-utils/client';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import ComposerSkeleton from './ComposerSkeleton';
 import { useChat } from '../contexts/ChatContext';
+import ComposerSkeleton from './ComposerSkeleton';
 import MessageBox from './messageBox/MessageBox';
 
 export type ComposerMessageProps = {

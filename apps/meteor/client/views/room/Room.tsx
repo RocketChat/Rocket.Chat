@@ -9,7 +9,6 @@ import MessageHighlightProvider from './MessageList/providers/MessageHighlightPr
 import RoomBody from './body/RoomBody';
 import { useRoom } from './contexts/RoomContext';
 import { useRoomToolbox } from './contexts/RoomToolboxContext';
-import RoomFooter from './footer/RoomFooter';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
 import RoomLayout from './layout/RoomLayout';
 import ChatProvider from './providers/ChatProvider';
@@ -34,7 +33,6 @@ const Room = (): ReactElement => {
 					data-qa-rc-room={room._id}
 					header={<Header room={room} />}
 					body={<RoomBody />}
-					footer={<RoomFooter />}
 					aside={
 						(toolbox.tab?.tabComponent && (
 							<ErrorBoundary fallback={null}>
