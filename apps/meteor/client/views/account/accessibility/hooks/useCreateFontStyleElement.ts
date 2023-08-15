@@ -10,15 +10,14 @@ const createStyleElement = (id: string) => {
 	return newStyleElement;
 };
 
-export const useCreateFontStyleElement = (fontSize: string) => {
-	const styleElement = createStyleElement('rcx-font-size');
-
-	const css = `* {
-		font-size: ${fontSize};
-		}`;
-
+export const useCreateFontStyleElement = (fontSize: string): void => {
 	useEffect(() => {
+		const styleElement = createStyleElement('rcx-font-size');
+		const css = `html { font-size: ${fontSize}; }`;
 		styleElement.innerHTML = css;
 		document.head.appendChild(styleElement);
-	}, [css, styleElement]);
+		return () => {
+			document.head.removeChild(styleElement);
+		};
+	}, [fontSize]);
 };
