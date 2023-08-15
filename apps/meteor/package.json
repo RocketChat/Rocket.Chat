@@ -245,6 +245,7 @@
 		"@rocket.chat/instance-status": "workspace:^",
 		"@rocket.chat/layout": "next",
 		"@rocket.chat/log-format": "workspace:^",
+		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/logo": "next",
 		"@rocket.chat/memo": "next",
 		"@rocket.chat/message-parser": "next",

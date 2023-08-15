@@ -2,13 +2,13 @@ import type { ICalendarService } from '@rocket.chat/core-services';
 import { ServiceClassInternal, api } from '@rocket.chat/core-services';
 import type { IUser, ICalendarEvent } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
+import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CalendarEvent } from '@rocket.chat/models';
 import type { UpdateResult, DeleteResult } from 'mongodb';
 
 import { settings } from '../../../app/settings/server';
 import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
-import { Logger } from '../../lib/logger/Logger';
 
 const logger = new Logger('Calendar');
 

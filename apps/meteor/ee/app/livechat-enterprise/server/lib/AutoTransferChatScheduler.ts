@@ -1,5 +1,6 @@
 import { Agenda } from '@rocket.chat/agenda';
 import type { IUser } from '@rocket.chat/core-typings';
+import type { MainLogger } from '@rocket.chat/logger';
 import { LivechatRooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
@@ -8,7 +9,6 @@ import { Livechat } from '../../../../../app/livechat/server';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import type { MainLogger } from '../../../../../server/lib/logger/getPino';
 import { schedulerLogger } from './logger';
 
 const SCHEDULER_NAME = 'omnichannel_scheduler';

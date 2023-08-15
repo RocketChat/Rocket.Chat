@@ -1,12 +1,12 @@
 import type { IServerEvent } from '@rocket.chat/core-typings';
 import { ServerEventType } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Rooms, ServerEvents, Sessions, Users } from '@rocket.chat/models';
 import moment from 'moment';
 
 import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
 import type { ILoginAttempt } from '../ILoginAttempt';
 

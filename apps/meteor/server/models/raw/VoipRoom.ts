@@ -1,9 +1,9 @@
 import type { IVoipRoomClosingInfo, IVoipRoom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import type { FindPaginated, IVoipRoomModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 
-import { Logger } from '../../lib/logger/Logger';
 import { BaseRaw } from './BaseRaw';
 
 export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {

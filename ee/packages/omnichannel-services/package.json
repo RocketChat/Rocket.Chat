@@ -14,6 +14,7 @@
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "next",
+		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/pdf-worker": "workspace:^",
@@ -38,8 +39,8 @@
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},
-	"main": "./dist/ee/packages/omnichannel-services/src/index.js",
-	"typings": "./dist/ee/packages/omnichannel-services/src/index.d.ts",
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	]

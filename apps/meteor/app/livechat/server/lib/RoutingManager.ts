@@ -9,13 +9,13 @@ import type {
 	SelectedAgent,
 	InquiryWithAgentInfo,
 } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
-import { Logger } from '../../../../server/lib/logger/Logger';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
