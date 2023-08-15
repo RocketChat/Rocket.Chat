@@ -11,8 +11,8 @@ const ReportsPage = () => {
 	return (
 		<Page background='tint'>
 			<Page.Header title={t('Reports')}></Page.Header>
-			<Page.ScrollableContentWithShadow>
-				<Box display='flex' flexWrap='wrap' margin={-8}>
+			<Page.ScrollableContentWithShadow alignItems='center'>
+				<Box display='flex' flexWrap='wrap' maxWidth='1600px' m={-8}>
 					<StatusSection />
 
 					<ChannelsSection />
