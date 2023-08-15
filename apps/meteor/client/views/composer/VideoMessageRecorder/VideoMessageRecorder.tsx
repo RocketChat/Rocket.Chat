@@ -1,6 +1,7 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, Button, Icon, PositionAnimated } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, RefObject } from 'react';
 import React, { useRef, useEffect, useState } from 'react';
@@ -94,24 +95,24 @@ const VideoMessageRecorder = ({ rid, tmid, chatContext, reference }: VideoMessag
 		stopVideoRecording(rid, tmid);
 	};
 
-	const handleCancel = () => {
+	const handleCancel = useMutableCallback(() => {
 		VideoRecorder.stop();
 		chat?.composer?.setRecordingVideo(false);
 		setTime(undefined);
 		stopVideoRecording(rid, tmid);
-	};
+	});
 
 	useEffect(() => {
 		if (!VideoRecorder.getSupportedMimeTypes()) {
 			return dispatchToastMessage({ type: 'error', message: t('Browser_does_not_support_recording_video') });
 		}
 
-		VideoRecorder.start(videoRef.current ?? undefined);
+		VideoRecorder.start(videoRef.current ?? undefined, (success) => (!success ? handleCancel() : undefined));
 
 		return () => {
 			VideoRecorder.stop();
 		};
-	}, [dispatchToastMessage, t]);
+	}, [dispatchToastMessage, handleCancel, t]);
 
 	return (
 		<PositionAnimated visible='visible' anchor={reference} placement='top-end'>
