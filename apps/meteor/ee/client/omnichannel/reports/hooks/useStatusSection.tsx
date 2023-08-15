@@ -9,15 +9,19 @@ import { COLORS, PERIOD_OPTIONS } from '../components/constants';
 import { formatPeriodDescription } from '../utils/formatPeriodDescription';
 import { useDefaultDownload } from './useDefaultDownload';
 
-const STATUS_COLORS: Record<string, string> = {
-	Open: COLORS.success,
-	Queued: COLORS.info,
-	On_hold: COLORS.warning,
-	Closed: COLORS.danger,
+const STATUSES: Record<string, { label: TranslationKey; color: string }> = {
+	Open: { label: 'Report_Status_Open', color: COLORS.success },
+	Queued: { label: 'Queued', color: COLORS.info },
+	On_Hold: { label: 'On_Hold', color: COLORS.warning },
+	Closed: { label: 'Report_Status_Closed', color: COLORS.danger },
 };
 
-const formatChartData = (data: { label: string; value: number }[] | undefined = [], t: TranslationContextValue['translate']) =>
-	data.map((item) => ({ ...item, id: t(item.label as TranslationKey), color: STATUS_COLORS[item.label] }));
+const formatChartData = (data: { label: string; value: number }[] | undefined = [], t: TranslationContextValue['translate']) => {
+	return data.map((item) => {
+		const status = STATUSES[item.label];
+		return { ...item, id: item.label, label: t(status.label), color: status.color };
+	});
+};
 
 export const useStatusSection = () => {
 	const t = useTranslation();
