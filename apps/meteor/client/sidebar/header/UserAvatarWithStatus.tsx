@@ -33,6 +33,7 @@ const UserAvatarWithStatus = () => {
 				cursor: pointer;
 			`}
 			aria-label={t('User_menu')}
+			role='button'
 			data-qa='sidebar-avatar-button'
 		>
 			{username && <UserAvatar size='x24' username={username} etag={avatarETag} />}
