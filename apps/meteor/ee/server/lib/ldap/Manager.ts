@@ -3,7 +3,10 @@ import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser } from '@rocket.chat/
 import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 import type ldapjs from 'ldapjs';
 
-import type { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
+import type {
+	ImporterAfterImportCallback,
+	ImporterBeforeImportCallback,
+} from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../../app/lib/server/functions/createRoom';
 import { removeUserFromRoom } from '../../../../app/lib/server/functions/removeUserFromRoom';
@@ -43,7 +46,15 @@ export class LDAPEEManager extends LDAPManager {
 				await this.updateExistingUsers(ldap, converter);
 			}
 
+			const membersOfGroupFilter = await ldap.searchMembersOfGroupFilter();
+
 			await converter.convertUsers({
+				beforeImportFn: (async (data: IImportUser): Promise<boolean> => {
+					if (!ldap.options.groupFilterEnabled) {
+						return true;
+					}
+					return membersOfGroupFilter.includes(data.importIds[0]);
+				}) as ImporterBeforeImportCallback,
 				afterImportFn: (async (data: IImportUser, _type: string, isNewRecord: boolean): Promise<void> =>
 					this.advancedSync(ldap, data, converter, isNewRecord)) as ImporterAfterImportCallback,
 			});

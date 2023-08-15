@@ -1,6 +1,6 @@
 import type { IImportUser, IImportMessage, IImportChannel, IImportRecordType } from '@rocket.chat/core-typings';
 
-type ImporterBeforeImportCallback = {
+export type ImporterBeforeImportCallback = {
 	(data: IImportUser | IImportChannel | IImportMessage, type: IImportRecordType): Promise<boolean>;
 };
 

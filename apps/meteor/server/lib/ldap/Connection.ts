@@ -391,6 +391,44 @@ export class LDAPConnection {
 		return `(&${filter.join('')})`;
 	}
 
+	public async searchMembersOfGroupFilter(): Promise<string[]> {
+		if (!this.options.groupFilterEnabled) {
+			return [];
+		}
+
+		if (!this.options.groupFilterGroupMemberAttribute) {
+			return [];
+		}
+
+		const filter = ['(&'];
+
+		if (this.options.groupFilterObjectClass) {
+			filter.push(`(objectclass=${this.options.groupFilterObjectClass})`);
+		}
+
+		if (this.options.groupFilterGroupIdAttribute) {
+			filter.push(`(${this.options.groupFilterGroupIdAttribute}=${this.options.groupFilterGroupName})`);
+		}
+		filter.push(')');
+		const searchOptions: ldapjs.SearchOptions = {
+			filter: filter.join(''),
+			scope: 'sub',
+		};
+
+		searchLogger.debug({ msg: 'Group filter LDAP:', filter: searchOptions.filter });
+
+		const result = await this.searchRaw(this.options.baseDN, searchOptions);
+
+		if (!Array.isArray(result) || result.length === 0) {
+			searchLogger.debug({ msg: 'No groups found', result });
+			return [];
+		}
+
+		const membersBuffer: Buffer[] = result[0].raw[this.options.groupFilterGroupMemberAttribute] as Buffer[];
+
+		return membersBuffer.map((member) => member.toString());
+	}
+
 	public async isUserAcceptedByGroupFilter(username: string, userdn: string): Promise<boolean> {
 		if (!this.options.groupFilterEnabled) {
 			return true;
