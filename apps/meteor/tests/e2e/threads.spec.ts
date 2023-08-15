@@ -29,13 +29,12 @@ test.describe.serial('Threads', () => {
 
 		await poHomeChannel.content.toggleAlsoSendThreadToChannel(true);
 
-		await page.locator('//main//aside >> [name="msg"]').last().fill('This is a thread message also sent in channel')
+		await page.locator('//main//aside >> [name="msg"]').last().fill('This is a thread message also sent in channel');
 		await page.keyboard.press('Enter');
 
 		await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('This is a thread message also sent in channel');
 	});
-
 
 	test('expect open threads contextual bar when clicked on thread preview', async ({ page }) => {
 		await poHomeChannel.content.lastThreadMessagePreviewText.click();
@@ -45,13 +44,16 @@ test.describe.serial('Threads', () => {
 	});
 
 	test.describe('hideFlexTab Preference enabled for threads', () => {
-
 		test.beforeAll(async ({ api }) => {
-			await expect((await api.post('/users.setPreferences', { userId: 'rocketchat.internal.admin.test', data: { hideFlexTab: true } })).status()).toBe(200);
+			await expect(
+				(await api.post('/users.setPreferences', { userId: 'rocketchat.internal.admin.test', data: { hideFlexTab: true } })).status(),
+			).toBe(200);
 		});
 
 		test.afterAll(async ({ api }) => {
-			await expect((await api.post('/users.setPreferences', { userId: 'rocketchat.internal.admin.test', data: { hideFlexTab: false } })).status()).toBe(200);
+			await expect(
+				(await api.post('/users.setPreferences', { userId: 'rocketchat.internal.admin.test', data: { hideFlexTab: false } })).status(),
+			).toBe(200);
 		});
 
 		test('expect to close thread contextual bar on clicking outside', async ({ page }) => {
@@ -84,7 +86,6 @@ test.describe.serial('Threads', () => {
 	});
 
 	test.describe('thread message actions', () => {
-
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
 

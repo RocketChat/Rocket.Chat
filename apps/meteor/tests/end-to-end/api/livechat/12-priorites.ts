@@ -1,5 +1,3 @@
-/* eslint-env mocha */
-
 import { faker } from '@faker-js/faker';
 import type {
 	ILivechatInquiryRecord,
@@ -9,6 +7,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
