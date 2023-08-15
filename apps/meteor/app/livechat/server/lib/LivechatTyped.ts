@@ -11,6 +11,7 @@ import type {
 	IMessage,
 } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Logger, type MainLogger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
 	LivechatInquiry,
@@ -29,10 +30,8 @@ import type { FindCursor, UpdateFilter } from 'mongodb';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
-import type { MainLogger } from '../../../../server/lib/logger/getPino';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { Logger } from '../../../logger/server';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';

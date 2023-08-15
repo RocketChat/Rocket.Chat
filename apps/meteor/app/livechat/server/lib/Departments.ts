@@ -1,7 +1,7 @@
+import { Logger } from '@rocket.chat/logger';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { Logger } from '../../../logger/server';
 
 class DepartmentHelperClass {
 	logger = new Logger('Omnichannel:DepartmentHelper');

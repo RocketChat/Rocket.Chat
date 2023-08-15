@@ -12,13 +12,13 @@ import type {
 	IVoipRoomClosingInfo,
 } from '@rocket.chat/core-typings';
 import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users, VoipRoom, PbxEvents } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { Logger } from '../../lib/logger/Logger';
 import type { IOmniRoomClosingMessage } from './internalTypes';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {

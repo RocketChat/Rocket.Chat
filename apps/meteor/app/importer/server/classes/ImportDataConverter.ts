@@ -12,6 +12,7 @@ import type {
 	IImportRecordType,
 	IMessage as IDBMessage,
 } from '@rocket.chat/core-typings';
+import type { Logger } from '@rocket.chat/logger';
 import { ImportData, Rooms, Users, Subscriptions } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { SHA256 } from '@rocket.chat/sha256';
@@ -20,7 +21,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { ObjectId } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
-import type { Logger } from '../../../../server/lib/logger/Logger';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { addUserToDefaultChannels } from '../../../lib/server/functions/addUserToDefaultChannels';

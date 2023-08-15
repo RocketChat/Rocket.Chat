@@ -2,6 +2,7 @@ import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/l
 import { api, Message } from '@rocket.chat/core-services';
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
+import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatDepartmentAgents,
 	LivechatInquiry,
@@ -21,7 +22,6 @@ import { i18n } from '../../../../server/lib/i18n';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
 import { Livechat } from './Livechat';
 import { Livechat as LivechatTyped } from './LivechatTyped';
