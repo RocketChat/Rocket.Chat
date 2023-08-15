@@ -10,10 +10,10 @@ import { formatPeriodDescription } from '../utils/formatPeriodDescription';
 import { useDefaultDownload } from './useDefaultDownload';
 
 const STATUSES: Record<string, { label: TranslationKey; color: string }> = {
-	Open: { label: 'Report_Status_Open', color: COLORS.success },
+	Open: { label: 'Omnichannel_Reports_Status_Open', color: COLORS.success },
 	Queued: { label: 'Queued', color: COLORS.info },
 	On_Hold: { label: 'On_Hold', color: COLORS.warning },
-	Closed: { label: 'Report_Status_Closed', color: COLORS.danger },
+	Closed: { label: 'Omnichannel_Reports_Status_Closed', color: COLORS.danger },
 };
 
 const formatChartData = (data: { label: string; value: number }[] | undefined = [], t: TranslationContextValue['translate']) => {
