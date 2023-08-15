@@ -1,4 +1,4 @@
-import PasswordPolicy from '@rocket.chat/account-utils';
+import { PasswordPolicy } from '@rocket.chat/account-utils';
 import { useMemo } from 'react';
 
 import { useSetting } from './useSetting';
@@ -18,7 +18,7 @@ export const useVerifyPassword = (password: string): PasswordVerifications => {
 
 	const validator = useMemo(
 		() =>
-			new PasswordPolicy.PasswordPolicy({
+			new PasswordPolicy({
 				enabled,
 				minLength,
 				maxLength,

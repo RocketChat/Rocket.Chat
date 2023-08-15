@@ -10,6 +10,7 @@ import { validateInviteToken } from '../../app/invites/server/functions/validate
 import { validateEmailDomain, RateLimiter } from '../../app/lib/server';
 import { settings } from '../../app/settings/server';
 import { trim } from '../../lib/utils/stringUtils';
+import { passwordPolicyValidate } from './passwordPolicyValidate';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -82,6 +83,7 @@ Meteor.methods<ServerMethods>({
 			}
 		}
 
+		passwordPolicyValidate(formData.pass);
 		await validateEmailDomain(formData.email);
 
 		const userData = {

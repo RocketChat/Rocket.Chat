@@ -1,4 +1,3 @@
-import { PasswordPolicyError } from '@rocket.chat/account-utils';
 import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
@@ -6,8 +5,8 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { UpdateResult } from 'mongodb';
 
-import { passwordPolicy } from '../../app/lib/server';
 import { compareUserPassword } from '../lib/compareUserPassword';
+import { passwordPolicyValidate } from './passwordPolicyValidate';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -47,14 +46,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		try {
-			passwordPolicy.validate(password);
-		} catch (err) {
-			if (err instanceof PasswordPolicyError) {
-				throw new Meteor.Error(err.error, err.message, err.reasons);
-			}
-			throw err;
-		}
+		passwordPolicyValidate(password);
 
 		await Accounts.setPasswordAsync(userId, password, {
 			logout: false,

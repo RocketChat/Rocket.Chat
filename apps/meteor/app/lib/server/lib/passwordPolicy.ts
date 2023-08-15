@@ -1,8 +1,8 @@
-import PasswordPolicy from '@rocket.chat/account-utils';
+import { PasswordPolicy } from '@rocket.chat/account-utils';
 
 import { settings } from '../../../settings/server';
 
-export const passwordPolicy = new PasswordPolicy.PasswordPolicy({
+export const passwordPolicy = new PasswordPolicy({
 	enabled: false,
 	minLength: -1,
 	maxLength: -1,

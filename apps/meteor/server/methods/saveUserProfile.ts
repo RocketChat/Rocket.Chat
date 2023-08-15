@@ -1,4 +1,3 @@
-import { PasswordPolicyError } from '@rocket.chat/account-utils';
 import type { UserStatus } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
@@ -10,17 +9,16 @@ import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
 import { saveCustomFields } from '../../app/lib/server/functions/saveCustomFields';
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
-import { passwordPolicy } from '../../app/lib/server/lib/passwordPolicy';
 import { settings as rcSettings } from '../../app/settings/server';
 import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
 import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
+import { passwordPolicyValidate } from './passwordPolicyValidate';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
 
-// eslint-disable-next-line complexity
 async function saveUserProfile(
 	this: Meteor.MethodThisType,
 	settings: {
@@ -130,14 +128,7 @@ async function saveUserProfile(
 				});
 			}
 
-			try {
-				passwordPolicy.validate(settings.newPassword);
-			} catch (err) {
-				if (err instanceof PasswordPolicyError) {
-					throw new Meteor.Error(err.error, err.message, err.reasons);
-				}
-				throw err;
-			}
+			passwordPolicyValidate(settings.newPassword);
 
 			await Accounts.setPasswordAsync(this.userId, settings.newPassword, {
 				logout: false,

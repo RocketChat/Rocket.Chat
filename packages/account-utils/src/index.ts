@@ -1,4 +1,4 @@
-import PasswordPolicy from './PasswordPolicyClass';
+import { PasswordPolicy } from './PasswordPolicyClass';
 import { PasswordPolicyError } from './PasswordPolicyError';
 import { hashLoginToken } from './hashLoginToken';
 

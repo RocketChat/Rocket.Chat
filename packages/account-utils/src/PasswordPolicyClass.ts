@@ -2,7 +2,7 @@ import generator from 'generate-password';
 
 import { PasswordPolicyError } from './PasswordPolicyError';
 
-class PasswordPolicy {
+export class PasswordPolicy {
 	regex: {
 		forbiddingRepeatingCharacters: RegExp;
 		mustContainAtLeastOneLowercase: RegExp;
@@ -67,6 +67,7 @@ class PasswordPolicy {
 		this.maxLength = maxLength;
 		this.forbidRepeatingCharacters = forbidRepeatingCharacters;
 		this.forbidRepeatingCharactersCount = forbidRepeatingCharactersCount;
+		this.regex.forbiddingRepeatingCharacters = new RegExp(`(.)\\1{${this.forbidRepeatingCharactersCount},}`);
 		this.mustContainAtLeastOneLowercase = mustContainAtLeastOneLowercase;
 		this.mustContainAtLeastOneUppercase = mustContainAtLeastOneUppercase;
 		this.mustContainAtLeastOneNumber = mustContainAtLeastOneNumber;
@@ -76,11 +77,6 @@ class PasswordPolicy {
 
 	get passwordForbidRepeatingCharactersCount() {
 		return this.forbidRepeatingCharactersCount;
-	}
-
-	set passwordForbidRepeatingCharactersCount(value: number) {
-		this.forbidRepeatingCharactersCount = value;
-		this.regex.forbiddingRepeatingCharacters = new RegExp(`(.)\\1{${this.forbidRepeatingCharactersCount},}`);
 	}
 
 	error(
@@ -309,5 +305,3 @@ class PasswordPolicy {
 		});
 	}
 }
-
-export default PasswordPolicy;
