@@ -6,8 +6,8 @@ import React, { useMemo, useState, useEffect } from 'react';
 const LayoutProvider: FC = ({ children }) => {
 	const showTopNavbarEmbeddedLayout = Boolean(useSetting('UI_Show_top_navbar_embedded_layout'));
 	const [isCollapsed, setIsCollapsed] = useState(false);
+	const [isEmbedded, setIsEmbedded] = useState(false);
 	const layout = useSearchParameter('layout');
-	const isEmbedded = layout === 'embedded';
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
 
 	const isMobile = !breakpoints.includes('lg');
@@ -15,6 +15,13 @@ const LayoutProvider: FC = ({ children }) => {
 	useEffect(() => {
 		setIsCollapsed(isMobile);
 	}, [isMobile]);
+
+	// Once set, embedded layout should not be changed
+	useEffect(() => {
+		if (layout === 'embedded') {
+			setIsEmbedded(true);
+		}
+	}, [layout]);
 
 	const router = useRouter();
 
