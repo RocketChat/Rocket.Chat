@@ -9,7 +9,7 @@ type DefaultDownloadHookProps = {
 	columnName: string;
 	title: string;
 	period: Period['key'];
-	data: { label: string; value: number }[];
+	data: { rawLabel?: string; label: string; value: number }[];
 };
 
 export const useDefaultDownload = ({ columnName, title, period, data }: DefaultDownloadHookProps) => {
@@ -22,7 +22,7 @@ export const useDefaultDownload = ({ columnName, title, period, data }: DefaultD
 			headers: [t('From'), t('To'), columnName, t('Total')],
 			dataAvailable: data.length > 0,
 			dataExtractor() {
-				return data?.map(({ label, value }) => [start, end, label, value]);
+				return data?.map(({ label, rawLabel, value }) => [start, end, rawLabel || label, value]);
 			},
 		};
 	}, [columnName, data, period, t, title]);

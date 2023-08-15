@@ -21,7 +21,8 @@ const formatChartData = (data: { label: string; value: number }[] | undefined = 
 	return data.map((item) => {
 		const status = STATUSES[item.label];
 		const percentage = round((item.value / total) * 100);
-		return { ...item, id: item.label, label: `${t(status.label)} (${percentage}%)`, color: status.color };
+		const label = t(status.label);
+		return { ...item, id: item.label, label: `${label} (${percentage}%)`, rawLabel: label, color: status.color };
 	});
 };
 
