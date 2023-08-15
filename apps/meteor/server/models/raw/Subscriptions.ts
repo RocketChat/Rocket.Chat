@@ -1123,6 +1123,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				open: true,
 				alert: true,
 				ls: firstMessageUnreadTimestamp,
+				unread: 1,
 			},
 		};
 
