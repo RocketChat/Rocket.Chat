@@ -2,7 +2,7 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 
 // The above to a ts interface
 export interface IAppsTokens extends IRocketChatRecord {
-	token: string;
+	token: { apn: string } | { gcm: string };
 	authToken: string;
 	appName: string;
 	userId: string | null;
