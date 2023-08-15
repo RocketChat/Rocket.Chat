@@ -14,7 +14,6 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 		return [
 			{ key: { roomId: 1, userId: 1, messageId: 1 }, unique: true },
 			{ key: { messageId: 1 } },
-			{ key: { roomId: 1 } },
 			{ key: { userId: 1 } },
 		];
 	}
