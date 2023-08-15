@@ -27,6 +27,7 @@ const AccessibilityPage = () => {
 
 	const themePreference = useUserPreference<ThemePreference>('themeAppearence') || 'auto';
 	const [prevTheme, setPrevTheme] = useLocalStorage('prevTheme', themePreference);
+	const isHighContrast = themePreference === 'high-contrast';
 
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
@@ -36,7 +37,7 @@ const AccessibilityPage = () => {
 		control,
 		reset,
 	} = useForm({
-		defaultValues: { highContrast: themePreference === 'high-contrast', fontSize },
+		defaultValues: { highContrast: isHighContrast, fontSize },
 	});
 
 	const handleSave = async ({ highContrast, fontSize }: { highContrast: boolean; fontSize: FontSize }) => {
@@ -138,6 +139,7 @@ const AccessibilityPage = () => {
 			</Page.ScrollableContentWithShadow>
 			<Page.Footer isDirty={isDirty}>
 				<ButtonGroup>
+					<Button onClick={() => reset({ highContrast: isHighContrast, fontSize })}>{t('Cancel')}</Button>
 					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
 						{t('Save_changes')}
 					</Button>
