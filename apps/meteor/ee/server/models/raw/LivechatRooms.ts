@@ -463,26 +463,31 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 				},
 				{
 					$project: {
-						_id: 0,
 						total: 1,
 						data: [
-							{
-								label: 'Closed',
-								value: '$closed',
-							},
-							{
-								label: 'Open',
-								value: '$open',
-							},
-							{
-								label: 'Queued',
-								value: '$queued',
-							},
-							{
-								label: 'On_Hold',
-								value: '$onhold',
-							},
+							{ label: 'Open', value: '$open' },
+							{ label: 'Closed', value: '$closed' },
+							{ label: 'Queued', value: '$queued' },
+							{ label: 'On_Hold', value: '$onhold' },
 						],
+					},
+				},
+				{
+					$unwind: '$data',
+				},
+				{
+					$sort: { 'data.value': -1 },
+				},
+				{
+					$group: {
+						_id: '$_id',
+						total: { $first: '$total' },
+						data: { $push: '$data' },
+					},
+				},
+				{
+					$project: {
+						_id: 0,
 					},
 				},
 			],
