@@ -41,7 +41,17 @@ export const ReportCard = ({
 }: ReportCardProps) => {
 	const t = useTranslation();
 	return (
-		<Box is={Card} width={full ? '100%' : 'calc(50% - 16px)'} height='initial' flexGrow={1} flexShrink={0} overflow='hidden' margin={8}>
+		<Box
+			is={Card}
+			minWidth={500}
+			maxWidth='100%'
+			width={full ? '100%' : 'calc(50% - 16px)'}
+			height='initial'
+			flexGrow={1}
+			flexShrink={0}
+			overflow='hidden'
+			margin={8}
+		>
 			<Card.Title>
 				<Box display='flex' justifyContent='space-between' alignItems='center' wrap='no-wrap'>
 					<Box display='flex' flexDirection='column' flexShrink={1} mie={16}>
