@@ -37,7 +37,7 @@ const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
 				<Field.Label>{t('Username')}</Field.Label>
 				<Field.Row>
 					<UserAutoComplete value={username} onChange={handleChange} />
-					<Button disabled={!username} onClick={handleSave} mis='x8' primary>
+					<Button disabled={!username} onClick={handleSave} mis={8} primary>
 						{t('Add_manager')}
 					</Button>
 				</Field.Row>
