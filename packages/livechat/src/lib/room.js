@@ -181,7 +181,8 @@ const transformAgentInformationOnMessage = (message) => {
 	return message;
 };
 
-Livechat.onTyping((username, isTyping) => {
+Livechat.onUserActivity((username, activities) => {
+	const isTyping = activities.includes('user-typing');
 	const { typing, user, agent } = store.state;
 
 	if (user && user.username && user.username === username) {

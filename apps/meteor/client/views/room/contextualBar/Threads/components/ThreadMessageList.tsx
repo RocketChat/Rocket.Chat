@@ -15,7 +15,7 @@ import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { isMessageFirstUnread } from '../../../MessageList/lib/isMessageFirstUnread';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
-import LoadingMessagesIndicator from '../../../components/body/LoadingMessagesIndicator';
+import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
 import { useRoomSubscription } from '../../../contexts/RoomContext';
 import { useScrollMessageList } from '../../../hooks/useScrollMessageList';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
