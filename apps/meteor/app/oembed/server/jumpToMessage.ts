@@ -4,7 +4,6 @@ import URL from 'url';
 import type { MessageAttachment, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../lib/callbacks';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
