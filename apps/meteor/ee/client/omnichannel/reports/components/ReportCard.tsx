@@ -40,12 +40,13 @@ export const ReportCard = ({
 	loadingSkeleton: LoadingSkeleton = <Skeleton style={{ transform: 'none' }} height='100%' />,
 }: ReportCardProps) => {
 	const t = useTranslation();
+	const width = full ? '100%' : '50%';
 	return (
 		<Box
 			is={Card}
 			minWidth={500}
-			maxWidth='100%'
-			width={full ? '100%' : 'calc(50% - 16px)'}
+			maxWidth='calc(100% - 16px)'
+			width={`calc(${width} - 16px)`}
 			height='initial'
 			flexGrow={1}
 			flexShrink={0}
