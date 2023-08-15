@@ -289,7 +289,7 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	if (Array.isArray(message.urls)) {
 		log.debug('URLs found', message.urls.length);
 
-		if (message.urls.filter((item) => !item.url.includes(Meteor.absoluteUrl())).length > MAX_EXTERNAL_URL_PREVIEWS) {
+		if (message.attachments || message.urls.filter((item) => !item.url.includes(Meteor.absoluteUrl())).length > MAX_EXTERNAL_URL_PREVIEWS) {
 			log.debug('All URL ignored');
 			return message;
 		}
@@ -309,7 +309,7 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 			if (data != null) {
 				if (isOEmbedUrlContentResult(data) && data.attachments) {
 					attachments.push(...data.attachments);
-					continue;
+					break;
 				}
 				if (isOEmbedUrlWithMetadata(data) && data.meta != null) {
 					item.meta = getRelevantMetaTags(data.meta) || {};
