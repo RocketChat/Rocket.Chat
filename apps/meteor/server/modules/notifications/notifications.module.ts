@@ -1,10 +1,9 @@
 import { Authorization, VideoConf } from '@rocket.chat/core-services';
-import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { ISubscription, IOmnichannelRoom, IUser, IImportProgress } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ui-contexts';
 import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
 
-import type { Progress } from '../../../app/importer/server/classes/ImporterProgress';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
 
@@ -536,7 +535,7 @@ export class NotificationsModule {
 		return this.streamPresence.emitWithoutBroadcast(uid, args);
 	}
 
-	progressUpdated(progress: { rate: number } | Progress): void {
+	progressUpdated(progress: { rate: number } | IImportProgress): void {
 		this.streamImporters.emit('progress', progress);
 	}
 }

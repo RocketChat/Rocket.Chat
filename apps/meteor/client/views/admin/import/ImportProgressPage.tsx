@@ -180,11 +180,11 @@ const ImportProgressPage = function ImportProgressPage() {
 								</Box>
 								<Box display='flex' justifyContent='center'>
 									<Box is={ProgressBar} animated percentage={(progressRate / 100).toFixed(0)} mie='x24' />
-									{/* <Box is={ProgressBar} animated percentage={(progress.data.completed * 100) / progress.data.total} mie='x24' /> */}
 									<Box is='span' fontScale='p2'>
 										{progress.data.completed}/{progress.data.total} (
 										{numberFormat((progress.data.completed / progress.data.total) * 100, 0)}
 										%)
+										{/* TODO: use selected channels, users and messages count instead of progressRate*/}
 									</Box>
 								</Box>
 							</>

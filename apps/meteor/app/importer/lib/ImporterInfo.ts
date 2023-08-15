@@ -11,7 +11,7 @@ export class ImporterInfo {
 
 	importer: Base | undefined;
 
-	instance: undefined;
+	instance: Base | undefined;
 
 	/**
 	 * Creates a new class which contains information about the importer.
