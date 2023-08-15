@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { PieChart, ReportCard } from '../components';
+import { COLORS } from '../components/constants';
 import { useChannelsSection } from '../hooks';
 
 export const ChannelsSection = () => {
 	const { data, ...config } = useChannelsSection();
+	const colors = useMemo(() => Object.values(COLORS), []);
 
 	return (
 		<ReportCard {...config} height={200}>
-			<PieChart data={data} width={350} height={200} />
+			<PieChart data={data} width={350} height={200} colors={colors} />
 		</ReportCard>
 	);
 };

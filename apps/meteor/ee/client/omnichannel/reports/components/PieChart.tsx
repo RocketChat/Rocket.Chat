@@ -1,5 +1,6 @@
 import { Pie } from '@nivo/pie';
 import { Tooltip } from '@rocket.chat/fuselage';
+import type { ComponentProps } from 'react';
 import React from 'react';
 
 import { REPORTS_CHARTS_THEME } from './constants';
@@ -8,10 +9,12 @@ export const PieChart = ({
 	data,
 	width,
 	height,
+	colors,
 }: {
-	data: { label: string; value: number; id: string; color: string }[];
+	data: { label: string; value: number; id: string; color?: string }[];
 	width: number;
 	height: number;
+	colors?: ComponentProps<typeof Pie>['colors'];
 }) => {
 	return (
 		<Pie
@@ -19,7 +22,7 @@ export const PieChart = ({
 			height={height}
 			data={data}
 			innerRadius={0.6}
-			colors={data.map((d) => d.color)}
+			colors={colors ?? { datum: 'data.color' }}
 			motionConfig='stiff'
 			theme={REPORTS_CHARTS_THEME}
 			enableArcLinkLabels={false}

@@ -1,6 +1,7 @@
-import type { BarCustomLayer, BarLayer } from '@nivo/bar';
+import type { BarLayer } from '@nivo/bar';
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Tooltip } from '@rocket.chat/fuselage';
+import type { ComponentProps } from 'react';
 import React, { useMemo } from 'react';
 
 import { REPORTS_CHARTS_THEME } from './constants';
@@ -35,6 +36,7 @@ type BarChartProps = {
 	axis: { axisTop?: axisItem; axisLeft?: axisItem; axisRight?: axisItem; axisBottom?: axisItem };
 	enableGridX?: boolean;
 	enableGridY?: boolean;
+	colors?: ComponentProps<typeof ResponsiveBar>['colors'];
 };
 
 const sideLabel: BarLayer<{
@@ -79,6 +81,7 @@ export const BarChart = ({
 	enableGridX = false,
 	enableGridY = false,
 	axis: { axisTop, axisLeft, axisRight, axisBottom } = {},
+	colors,
 }: BarChartProps) => {
 	const { minHeight, padding } = useMemo(() => {
 		const minHeight = data.length * 22;
@@ -99,7 +102,7 @@ export const BarChart = ({
 					keys={keys}
 					groupMode='grouped'
 					padding={padding}
-					colors={data.map((d) => d.color)}
+					colors={colors ?? { datum: 'data.color' }}
 					enableGridY={enableGridY}
 					enableGridX={enableGridX}
 					axisTop={axisTop || null}
