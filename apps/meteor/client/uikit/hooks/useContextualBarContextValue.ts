@@ -1,6 +1,5 @@
-import type { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
+import type { IUIKitContextualBarInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
-import type { IRoom } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import type { ContextType } from 'react';
@@ -9,14 +8,12 @@ import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
 
 type ActionParams = {
 	viewId: string;
-	type: 'errors' | string;
+	rid: string;
+	payload: IUIKitContextualBarInteraction;
 	appId: string;
-	errors: Record<string, string>;
-	view: IUIKitSurface;
 };
 
 type useContextualBarContextValueProps = ActionParams & {
-	roomId: IRoom['_id'];
 	values: any;
 	updateValues: (value: any) => void;
 };
@@ -24,7 +21,7 @@ type useContextualBarContextValueProps = ActionParams & {
 export const useContextualBarContextValue = (props: useContextualBarContextValueProps): ContextType<typeof UiKitContext> => {
 	const actionManager = useUiKitActionManager();
 
-	const { roomId, viewId, updateValues } = props;
+	const { rid, viewId, updateValues } = props;
 
 	const debouncedBlockAction = useDebouncedCallback(({ actionId, appId, value, blockId }) => {
 		actionManager.triggerBlockAction({
@@ -51,7 +48,7 @@ export const useContextualBarContextValue = (props: useContextualBarContextValue
 					},
 					actionId,
 					appId,
-					rid: roomId,
+					rid,
 					value,
 					blockId,
 				});

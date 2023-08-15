@@ -1,5 +1,4 @@
-import type { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IUIKitContextualBarInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import { Avatar, Box, Button, ButtonGroup, ContextualbarFooter, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -11,7 +10,7 @@ import {
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import { BlockContext, type Block } from '@rocket.chat/ui-kit';
 import type { ReactEventHandler } from 'react';
-import React, { memo, useState, useEffect } from 'react';
+import React, { memo } from 'react';
 
 import { getURL } from '../../../../../app/utils/client';
 import { ContextualbarClose, ContextualbarScrollableContent } from '../../../../components/Contextualbar';
@@ -23,12 +22,9 @@ import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 type UiKitContextualBarProps = {
 	viewId: string;
-	type: 'errors' | string;
+	rid: string;
+	payload: IUIKitContextualBarInteraction;
 	appId: string;
-	mid: string;
-	errors: Record<string, string>;
-	view: IUIKitSurface;
-	roomId: IRoom['_id'];
 };
 
 const groupStateByBlockId = (obj: { value: unknown; blockId: string }[]) =>
@@ -49,29 +45,12 @@ const prevent: ReactEventHandler = (e) => {
 const UiKitContextualBar = (props: UiKitContextualBarProps) => {
 	const { closeTab } = useRoomToolbox();
 	const actionManager = useUiKitActionManager();
-	const [state, setState] = useState(props);
 
-	const { appId, viewId, view } = state;
+	const { appId, payload, viewId } = props;
+	const { view } = payload;
 
 	const [values, updateValues] = useValues(view.blocks as Block[]);
-	const contextValue = useContextualBarContextValue({ values, updateValues, ...state });
-
-	useEffect(() => {
-		const handleUpdate = ({ type, errors, ...data }: UiKitContextualBarProps) => {
-			if (type === 'errors') {
-				setState((state) => ({ ...state, errors, type }));
-				return;
-			}
-
-			setState({ ...data, type, errors });
-		};
-
-		actionManager.on(viewId, handleUpdate);
-
-		return (): void => {
-			actionManager.off(viewId, handleUpdate);
-		};
-	}, [actionManager, state, viewId]);
+	const contextValue = useContextualBarContextValue({ values, updateValues, ...props });
 
 	const handleSubmit = useMutableCallback((e) => {
 		prevent(e);
