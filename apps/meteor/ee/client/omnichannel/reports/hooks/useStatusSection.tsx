@@ -7,6 +7,7 @@ import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { COLORS, PERIOD_OPTIONS } from '../components/constants';
 import { formatPeriodDescription } from '../utils/formatPeriodDescription';
+import { round } from '../utils/round';
 import { useDefaultDownload } from './useDefaultDownload';
 
 const STATUSES: Record<string, { label: TranslationKey; color: string }> = {
@@ -16,10 +17,11 @@ const STATUSES: Record<string, { label: TranslationKey; color: string }> = {
 	Closed: { label: 'Omnichannel_Reports_Status_Closed', color: COLORS.danger },
 };
 
-const formatChartData = (data: { label: string; value: number }[] | undefined = [], t: TranslationContextValue['translate']) => {
+const formatChartData = (data: { label: string; value: number }[] | undefined = [], total = 0, t: TranslationContextValue['translate']) => {
 	return data.map((item) => {
 		const status = STATUSES[item.label];
-		return { ...item, id: item.label, label: t(status.label), color: status.color };
+		const percentage = round((item.value / total) * 100);
+		return { ...item, id: item.label, label: `${t(status.label)} (${percentage}%)`, color: status.color };
 	});
 };
 
@@ -40,7 +42,7 @@ export const useStatusSection = () => {
 		async () => {
 			const response = await getConversationsByStatus({ start: start.toISOString(), end: end.toISOString() });
 
-			return { ...response, data: formatChartData(response.data, t) };
+			return { ...response, data: formatChartData(response.data, response.total, t) };
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,

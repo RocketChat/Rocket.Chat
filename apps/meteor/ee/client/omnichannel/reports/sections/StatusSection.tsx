@@ -8,7 +8,7 @@ export const StatusSection = () => {
 
 	return (
 		<ReportCard {...config} height={200}>
-			<PieChart data={data} width={350} height={200} />
+			<PieChart data={data} width={400} height={200} />
 		</ReportCard>
 	);
 };

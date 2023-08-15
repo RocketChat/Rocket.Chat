@@ -27,16 +27,16 @@ export const PieChart = ({
 			theme={REPORTS_CHARTS_THEME}
 			enableArcLinkLabels={false}
 			enableArcLabels={false}
-			margin={{ right: 100 }}
+			margin={{ right: 200 }}
 			tooltip={({ datum }) => <Tooltip>{`${datum.label}: ${datum.value}`}</Tooltip>}
 			legends={[
 				{
 					anchor: 'right',
 					direction: 'column',
 					justify: false,
-					translateX: 150,
+					translateX: 200,
 					translateY: 0,
-					itemWidth: 150,
+					itemWidth: 175,
 					itemHeight: 20,
 					itemsSpacing: 8,
 					symbolSize: 12,

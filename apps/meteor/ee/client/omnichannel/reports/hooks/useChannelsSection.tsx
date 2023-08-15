@@ -6,6 +6,7 @@ import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { PERIOD_OPTIONS } from '../components/constants';
 import { formatPeriodDescription } from '../utils/formatPeriodDescription';
+import { round } from '../utils/round';
 import { useDefaultDownload } from './useDefaultDownload';
 
 const getTop5 = (data: { label: string; value: number }[] | undefined = []) => {
@@ -20,12 +21,16 @@ const getTop5 = (data: { label: string; value: number }[] | undefined = []) => {
 	return [...top5Channels, otherChannels];
 };
 
-const formatChartData = (data: { label: string; value: number }[] | undefined = []) => {
+const formatChartData = (data: { label: string; value: number }[] | undefined = [], total = 0) => {
 	const displayedData = data.length > 5 ? getTop5(data) : data;
-	return displayedData.map((item, i) => ({
-		...item,
-		id: `${item.label}_${i}`,
-	}));
+	return displayedData.map((item, i) => {
+		const percentage = round((item.value / total) * 100);
+		return {
+			...item,
+			label: `${item.label} (${percentage}%)`,
+			id: `${item.label}_${i}`,
+		};
+	});
 };
 
 export const useChannelsSection = () => {
@@ -44,7 +49,7 @@ export const useChannelsSection = () => {
 		async () => {
 			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsBySource({ start: start.toISOString(), end: end.toISOString() });
-			return { ...response, data: formatChartData(response.data) };
+			return { ...response, data: formatChartData(response.data, response.total) };
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
