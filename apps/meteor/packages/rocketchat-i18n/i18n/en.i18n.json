@@ -2585,6 +2585,7 @@
   "Integration_History_Cleared": "Integration History Successfully Cleared",
   "Integration_Incoming_WebHook": "Incoming WebHook Integration",
   "Integration_New": "New Integration",
+  "integration-scripts-disabled": "Integration Scripts are Disabled",
   "Integration_Outgoing_WebHook": "Outgoing WebHook Integration",
   "Integration_Outgoing_WebHook_History": "Outgoing WebHook Integration History",
   "Integration_Outgoing_WebHook_History_Data_Passed_To_Trigger": "Data Passed to Integration",
@@ -5870,7 +5871,7 @@
   "Disable_at_least_more_apps": "You will need to disable at least {{numberOfExceededApps}} other apps or upgrade to Enterprise to enable this app.",
   "Community_Private_apps_limit_exceeded": "Community edition app limit has been exceeded.",
   "Theme_match_system": "Match system",
-  "Theme_match_system_description": "Automatically match the theme to your system preferences. This option is only available if your browser supports the prefers-color-scheme media query.",
+  "Theme_match_system_description": "Automatically match the appearance of your system.",
   "Theme_high_contrast": "High contrast",
   "Theme_high_contrast_description": "Maximum tonal differentiation with bold colors and sharp contrasts provide enhanced accessibility.",
   "High_contrast_upsell_title": "Enable high contrast theme",
@@ -5976,5 +5977,9 @@
   "App_will_lose_grandfathered_status": "**This {{context}} app will lose its grandfathered status.**  \n  \nWorkspaces on Community Edition can have up to {{limit}} {{context}} apps enabled. Grandfathered apps count towards the limit but the limit is not applied to them.",
   "Failed_To_upload_Import_File": "Failed to upload import file",
   "Import_Operation_Failed": "Import operation failed",
+  "All_rooms": "All rooms",
+  "All_visible": "All visible",
+  "Filter_by_room": "Filter by room type",
+  "Filter_by_visibility": "Filter by visibility",
   "Theme_Appearence": "Theme Appearence"
 }

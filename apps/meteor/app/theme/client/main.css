@@ -21,3 +21,5 @@
 
 /* Legacy theming */
 @import 'imports/general/theme_old.css';
+@import '../../theme/client';
+@import '../../../node_modules/@rocket.chat/fuselage/dist/fuselage.css';
