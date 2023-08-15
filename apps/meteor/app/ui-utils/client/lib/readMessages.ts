@@ -65,7 +65,7 @@ class ReadMessage extends Emitter {
 		// Only read messages if user saw the first unread message
 		const unreadMark = document.querySelector<HTMLElement>('.message.first-unread, .rcx-message-divider--unread');
 		if (unreadMark) {
-			const visible = unreadMark.offsetTop >= 0;
+			const visible = unreadMark.offsetTop > (unreadMark.offsetParent?.scrollTop || 0);
 
 			if (!visible) {
 				this.log('readMessage -> readNow canceled, unread mark visible:', visible);
