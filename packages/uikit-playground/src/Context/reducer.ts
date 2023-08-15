@@ -110,6 +110,8 @@ const reducer = (state: initialStateType, action: IAction) => {
     }
     case ActionTypes.UpdatePayload: {
       state.screens[activeScreen].payload.blocks = action?.payload?.blocks;
+      if (action?.payload?.surface)
+        state.screens[activeScreen].payload.surface = action?.payload?.surface;
       state.screens[activeScreen].changedByEditor =
         action?.payload?.changedByEditor === undefined;
       state.projects[activeProject].flowEdges = filterEdges(
@@ -143,8 +145,8 @@ const reducer = (state: initialStateType, action: IAction) => {
             id,
             name: action?.payload || 'Untitled Screen',
             payload: {
-              blocks: [],
               surface: SurfaceOptions.Message,
+              blocks: [],
             },
             date: getDate(),
             actionPreview: {},
@@ -248,8 +250,8 @@ const reducer = (state: initialStateType, action: IAction) => {
             name: 'Untitled Screen',
             date: getDate(),
             payload: {
-              blocks: [],
               surface: SurfaceOptions.Message,
+              blocks: [],
             },
             actionPreview: {},
           },
@@ -294,6 +296,9 @@ const reducer = (state: initialStateType, action: IAction) => {
     }
 
     case ActionTypes.DeleteProject: {
+      window.console.log(state.projects[action.payload]?.screens);
+      const screensIds = state.projects[action.payload]?.screens;
+      screensIds?.map((id) => delete state.screens[id]);
       delete state.projects[action.payload];
       return {
         ...state,

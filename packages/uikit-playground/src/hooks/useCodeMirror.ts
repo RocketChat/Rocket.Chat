@@ -3,7 +3,7 @@ import type { Extension } from '@codemirror/state';
 import { EditorView } from 'codemirror';
 import { useCallback, useEffect, useState, useRef } from 'react';
 
-type changes = {
+export type ICodeMirrorChanges = {
   value: string;
   isDispatch: boolean;
   cursor?: number;
@@ -12,7 +12,7 @@ type changes = {
 export default function useCodeMirror(extensions?: Extension[], doc?: string) {
   const view = useRef<EditorView>();
   const [element, setElement] = useState<HTMLElement>();
-  const [changes, setChanges] = useState<changes>({
+  const [changes, setChanges] = useState<ICodeMirrorChanges>({
     value: '[]',
     isDispatch: true,
     cursor: 0,

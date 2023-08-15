@@ -114,8 +114,8 @@ export const initialState: initialStateType = {
   screens: {
     [initialScreenId]: {
       payload: {
-        blocks: [],
         surface: SurfaceOptions.Message,
+        blocks: [],
       },
       id: initialScreenId,
       name: 'Untitled Screen',

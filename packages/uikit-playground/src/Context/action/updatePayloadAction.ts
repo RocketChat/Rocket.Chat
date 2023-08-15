@@ -1,9 +1,11 @@
+import { SurfaceOptions } from '../../Components/Preview/Display/Surface/constant';
 import { ILayoutBlock } from '../initialState';
 import { ActionTypes } from '../reducer';
 
 type PayloadType = {
   blocks: ILayoutBlock[];
   changedByEditor?: boolean;
+  surface?: SurfaceOptions;
 };
 
 export type UpdatePayloadAction = {

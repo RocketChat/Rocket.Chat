@@ -1,14 +1,13 @@
 import type { Extension } from '@codemirror/state';
 import { Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import json5 from 'json5';
 import { useEffect, useContext } from 'react';
 
 import { updatePayloadAction, context } from '../../Context';
 import useCodeMirror from '../../hooks/useCodeMirror';
-import codePrettier from '../../utils/codePrettier';
 import intendCode from '../../utils/intendCode';
-import { ILayoutBlock } from '../../Context/initialState';
+import { IPayload } from '../../Context/initialState';
+import useFormatCodeMirrorValue from '../../hooks/useFormatCodeMirrorValue';
 
 type CodeMirrorProps = {
   extensions?: Extension[];
@@ -24,45 +23,35 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
     extensions,
     intendCode(screens[activeScreen]?.payload)
   );
-  const debounceValue = useDebouncedValue(changes?.value, 1500);
+  const debounceValue = useDebouncedValue(changes, 1500);
 
-  useEffect(() => {
-    if (!changes?.isDispatch) {
-      try {
-        const parsedCode: ILayoutBlock[] = json5.parse(changes.value);
-        dispatch(updatePayloadAction({ blocks: parsedCode }));
-      } catch (e) {
-        // do nothing
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [changes?.value]);
-
-  useEffect(() => {
-    if (!changes?.isDispatch) {
-      try {
-        const prettierCode = codePrettier(changes.value, changes.cursor || 0);
-        setValue(prettierCode.formatted, {
-          cursor: prettierCode.cursorOffset,
-        });
-      } catch (e) {
-        // do nothing
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debounceValue]);
+  useFormatCodeMirrorValue(
+    (
+      parsedCode: IPayload,
+      prettifiedCode: { formatted: string; cursorOffset: number }
+    ) => {
+      dispatch(
+        updatePayloadAction({
+          blocks: parsedCode.blocks,
+          surface: parsedCode.surface,
+        })
+      );
+      setValue(prettifiedCode.formatted, {
+        cursor: prettifiedCode.cursorOffset,
+      });
+    },
+    debounceValue
+  );
 
   useEffect(() => {
     if (!screens[activeScreen]?.changedByEditor) {
       setValue(intendCode(screens[activeScreen]?.payload), {});
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [screens[activeScreen]?.payload.blocks, activeScreen]);
-
-  useEffect(() => {
-    setValue(intendCode(screens[activeScreen]?.payload), {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeScreen]);
+  }, [
+    screens[activeScreen]?.payload.blocks,
+    screens[activeScreen]?.payload.surface,
+    activeScreen,
+  ]);
 
   return (
     <>
