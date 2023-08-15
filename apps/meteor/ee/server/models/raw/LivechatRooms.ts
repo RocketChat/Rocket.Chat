@@ -362,6 +362,9 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 					},
 				},
 				{
+					$sort: { value: -1 },
+				},
+				{
 					$group: {
 						_id: null,
 						total: { $sum: '$value' },
@@ -496,63 +499,63 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return this.col.aggregate(
 			[
 				{
-				  $match: {
-					t: "l",
-					departmentId: {
-					  $exists: true,
+					$match: {
+						t: 'l',
+						departmentId: {
+							$exists: true,
+						},
+						ts: {
+							$lt: end,
+							$gte: start,
+						},
+						...extraQuery,
 					},
-					ts: {
-					  $lt: end,
-					  $gte: start,
+				},
+				{
+					$group: {
+						_id: '$departmentId',
+						total: { $sum: 1 },
 					},
-					...extraQuery,
-				  },
 				},
 				{
-				  $group: {
-					_id: "$departmentId",
-					total: { $sum: 1 },
-				  },
-				},
-				{
-				  $lookup: {
-					from: "rocketchat_livechat_department",
-					localField: "_id",
-					foreignField: "_id",
-					as: "department",
-				  },
-				},
-				{
-				  $group: {
-					_id: {
-					  $arrayElemAt: ["$department.name", 0],
+					$lookup: {
+						from: 'rocketchat_livechat_department',
+						localField: '_id',
+						foreignField: '_id',
+						as: 'department',
 					},
-					total: {
-					  $sum: "$total",
+				},
+				{
+					$group: {
+						_id: {
+							$arrayElemAt: ['$department.name', 0],
+						},
+						total: {
+							$sum: '$total',
+						},
 					},
-				  },
 				},
 				{
-				  $sort: sort || { total: -1 },
+					$sort: sort || { total: -1 },
 				},
 				{
-				  $group: {
-					_id: null,
-					total: { $sum: "$total" },
-					data: {
-					  $push: {
-						label: "$_id",
-						value: "$total",
-					  },
+					$group: {
+						_id: null,
+						total: { $sum: '$total' },
+						data: {
+							$push: {
+								label: '$_id',
+								value: '$total',
+							},
+						},
 					},
-				  },
 				},
 				{
-				  $project: {
-					_id: 0,
-				  },
+					$project: {
+						_id: 0,
+					},
 				},
-			  ],
+			],
 			{ readPreference: readSecondaryPreferred() },
 		);
 	}
