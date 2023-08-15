@@ -29,6 +29,7 @@ export const useTagsSection = () => {
 
 	const {
 		data: { data, total = 0, unspecified = 0 } = { data: [], total: 0 },
+		refetch,
 		isLoading,
 		isError,
 		isSuccess,
@@ -41,7 +42,6 @@ export const useTagsSection = () => {
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
-			useErrorBoundary: true,
 		},
 	);
 
@@ -58,13 +58,14 @@ export const useTagsSection = () => {
 			subtitle,
 			data,
 			total,
+			period,
+			periodSelectorProps,
+			downloadProps,
 			isError,
 			isLoading,
 			isDataFound: isSuccess && data.length > 0,
-			periodSelectorProps,
-			period,
-			downloadProps,
+			onRetry: refetch,
 		}),
-		[title, subtitle, data, total, isError, isLoading, isSuccess, periodSelectorProps, period, downloadProps],
+		[title, subtitle, data, total, isError, isLoading, isSuccess, periodSelectorProps, period, downloadProps, refetch],
 	);
 };

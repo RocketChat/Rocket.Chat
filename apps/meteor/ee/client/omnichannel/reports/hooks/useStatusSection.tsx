@@ -34,6 +34,7 @@ export const useStatusSection = () => {
 		isLoading,
 		isError,
 		isSuccess,
+		refetch,
 	} = useQuery(
 		['omnichannel-reports', 'conversations-by-status', period, t],
 		async () => {
@@ -43,7 +44,6 @@ export const useStatusSection = () => {
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
-			useErrorBoundary: true,
 		},
 	);
 
@@ -61,13 +61,14 @@ export const useStatusSection = () => {
 			subtitle,
 			data,
 			total,
+			period,
+			periodSelectorProps,
+			downloadProps,
 			isLoading,
 			isError,
 			isDataFound: isSuccess && data.length > 0,
-			periodSelectorProps,
-			downloadProps,
-			period,
+			onRetry: refetch,
 		}),
-		[title, subtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, downloadProps, period],
+		[title, subtitle, data, total, period, periodSelectorProps, downloadProps, isLoading, isError, isSuccess, refetch],
 	);
 };

@@ -8,7 +8,7 @@ import React from 'react';
 import DownloadDataButton from '../../../components/dashboards/DownloadDataButton';
 import type { PeriodSelectorProps } from '../../../components/dashboards/PeriodSelector';
 import PeriodSelector from '../../../components/dashboards/PeriodSelector';
-import { CardErrorBoundary } from './CardErrorBoundary';
+import { CardErrorState } from './CardErrorState';
 
 type ReportCardProps = {
 	title: string;
@@ -21,6 +21,8 @@ type ReportCardProps = {
 	loadingSkeleton?: ReactElement;
 	subtitle?: string;
 	full?: boolean;
+	isError?: boolean;
+	onRetry?: () => void;
 };
 
 export const ReportCard = ({
@@ -33,11 +35,13 @@ export const ReportCard = ({
 	height,
 	subtitle,
 	full,
+	isError,
+	onRetry,
 	loadingSkeleton: LoadingSkeleton = <Skeleton style={{ transform: 'none' }} height='100%' />,
 }: ReportCardProps) => {
 	const t = useTranslation();
 	return (
-		<Box is={Card} maxWidth={full ? '100%' : 'calc(50% - 16px)'} height='initial' flexGrow={1} overflow='hidden' margin={8}>
+		<Box is={Card} width={full ? '100%' : 'calc(50% - 16px)'} height='initial' flexGrow={1} flexShrink={0} overflow='hidden' margin={8}>
 			<Card.Title>
 				<Box display='flex' justifyContent='space-between' alignItems='center' wrap='no-wrap'>
 					<Box display='flex' flexDirection='column' flexShrink={1} mie={16}>
@@ -56,7 +60,7 @@ export const ReportCard = ({
 			</Card.Title>
 			<Card.Body height={height}>
 				<Card.Col>
-					<CardErrorBoundary>
+					<CardErrorState isError={isError} onRetry={onRetry}>
 						{isLoading && LoadingSkeleton}
 
 						{!isLoading && !isDataFound && (
@@ -67,7 +71,7 @@ export const ReportCard = ({
 						)}
 
 						{!isLoading && isDataFound && children}
-					</CardErrorBoundary>
+					</CardErrorState>
 				</Card.Col>
 			</Card.Body>
 		</Box>

@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
-import { COLORS, PERIOD_OPTIONS } from '../components/constants';
+import { PERIOD_OPTIONS } from '../components/constants';
 import { formatPeriodDescription } from '../utils/formatPeriodDescription';
 import { useDefaultDownload } from './useDefaultDownload';
 
@@ -24,8 +24,7 @@ const formatChartData = (data: { label: string; value: number }[] | undefined = 
 	const displayedData = data.length > 5 ? getTop5(data) : data;
 	return displayedData.map((item, i) => ({
 		...item,
-		id: item.label,
-		color: Object.values(COLORS)[i] ?? '#2F343D',
+		id: `${item.label}_${i}`,
 	}));
 };
 
@@ -36,6 +35,7 @@ export const useChannelsSection = () => {
 
 	const {
 		data: { data, total } = { data: [], total: 0 },
+		refetch,
 		isLoading,
 		isError,
 		isSuccess,
@@ -48,7 +48,6 @@ export const useChannelsSection = () => {
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
-			useErrorBoundary: true,
 		},
 	);
 
@@ -72,7 +71,8 @@ export const useChannelsSection = () => {
 			periodSelectorProps,
 			period,
 			downloadProps,
+			onRetry: refetch,
 		}),
-		[title, subtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps],
+		[title, subtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps, refetch],
 	);
 };

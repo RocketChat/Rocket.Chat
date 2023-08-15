@@ -23,6 +23,7 @@ export const useAgentsSection = () => {
 
 	const {
 		data: { data, total = 0, unspecified = 0 } = { data: [], total: 0 },
+		refetch,
 		isLoading,
 		isError,
 		isSuccess,
@@ -39,7 +40,6 @@ export const useAgentsSection = () => {
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
-			useErrorBoundary: true,
 		},
 	);
 
@@ -70,6 +70,7 @@ export const useAgentsSection = () => {
 			sortBy,
 			sortDirection,
 			setSort,
+			onRetry: refetch,
 		}),
 		[
 			title,
@@ -85,6 +86,7 @@ export const useAgentsSection = () => {
 			sortBy,
 			sortDirection,
 			setSort,
+			refetch,
 		],
 	);
 };
