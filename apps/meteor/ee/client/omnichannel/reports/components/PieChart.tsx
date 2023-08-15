@@ -4,7 +4,15 @@ import React from 'react';
 
 import { REPORTS_CHARTS_THEME } from './constants';
 
-export const PieChart = ({ data, width, height }: { data: unknown; width: number; height: number }) => {
+export const PieChart = ({
+	data,
+	width,
+	height,
+}: {
+	data: { label: string; value: number; id: string; color: string }[];
+	width: number;
+	height: number;
+}) => {
 	return (
 		<Pie
 			width={width}
