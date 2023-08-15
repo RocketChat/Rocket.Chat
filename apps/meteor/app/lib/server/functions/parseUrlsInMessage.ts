@@ -1,8 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { getMessageUrlRegex } from '../../../../lib/getMessageUrlRegex';
 import { Markdown } from '../../../markdown/server';
+import { settings } from '../../../settings/server';
 
 export const parseUrlsInMessage = (message: IMessage & { parseUrls?: boolean }, previewUrls?: string[]): IMessage => {
 	if (message.parseUrls === false) {
@@ -17,7 +17,7 @@ export const parseUrlsInMessage = (message: IMessage & { parseUrls?: boolean }, 
 		message.urls = [...new Set(urls)].map((url) => ({
 			url,
 			meta: {},
-			...(previewUrls && !previewUrls.includes(url) && !url.includes(Meteor.absoluteUrl()) && { ignoreParse: true }),
+			...(previewUrls && !previewUrls.includes(url) && !url.includes(settings.get('Site_Url')) && { ignoreParse: true }),
 		}));
 	}
 

@@ -51,7 +51,7 @@ callbacks.add(
 
 		for await (const item of msg.urls) {
 			// if the URL doesn't belong to the current server, skip
-			if (!item.url.includes(Meteor.absoluteUrl())) {
+			if (!item.url.includes(settings.get('Site_Url'))) {
 				continue;
 			}
 

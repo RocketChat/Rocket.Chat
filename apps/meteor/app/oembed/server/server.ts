@@ -289,7 +289,10 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	if (Array.isArray(message.urls)) {
 		log.debug('URLs found', message.urls.length);
 
-		if (message.attachments || message.urls.filter((item) => !item.url.includes(Meteor.absoluteUrl())).length > MAX_EXTERNAL_URL_PREVIEWS) {
+		if (
+			message.attachments ||
+			message.urls.filter((item) => !item.url.includes(settings.get('Site_Url'))).length > MAX_EXTERNAL_URL_PREVIEWS
+		) {
 			log.debug('All URL ignored');
 			return message;
 		}
