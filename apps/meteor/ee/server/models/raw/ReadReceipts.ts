@@ -11,11 +11,7 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [
-			{ key: { roomId: 1, userId: 1, messageId: 1 }, unique: true },
-			{ key: { messageId: 1 } },
-			{ key: { userId: 1 } },
-		];
+		return [{ key: { roomId: 1, userId: 1, messageId: 1 }, unique: true }, { key: { messageId: 1 } }, { key: { userId: 1 } }];
 	}
 
 	findByMessageId(messageId: string): FindCursor<ReadReceipt> {
@@ -81,7 +77,6 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 
 		if (ignoreThreads) {
 			query.tmid = { $exists: false };
-			query.thread = { $ne: true };
 		}
 
 		if (users.length) {
@@ -96,6 +91,6 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 	}
 
 	setAsThreadById(messageId: string): Promise<Document | UpdateResult> {
-		return this.updateMany({ messageId }, { $set: { thread: true } });
+		return this.updateMany({ messageId }, { $set: { tmid: messageId } });
 	}
 }
