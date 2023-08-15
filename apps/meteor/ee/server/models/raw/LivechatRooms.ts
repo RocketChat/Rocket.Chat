@@ -451,7 +451,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 								],
 							},
 						},
-						onhold: {
+						On_Hold: {
 							$sum: {
 								$cond: [{ $eq: ['$onHold', true] }, 1, 0],
 							},
