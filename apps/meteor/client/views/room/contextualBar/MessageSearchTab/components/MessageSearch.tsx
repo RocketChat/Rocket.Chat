@@ -14,7 +14,7 @@ import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBound
 import { isMessageFirstUnread } from '../../../MessageList/lib/isMessageFirstUnread';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
-import LoadingMessagesIndicator from '../../../components/body/LoadingMessagesIndicator';
+import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
 import { useRoomSubscription } from '../../../contexts/RoomContext';
 import { useMessageSearchQuery } from '../hooks/useMessageSearchQuery';
 

@@ -1,8 +1,7 @@
-/* eslint-env mocha */
-
 import type { ILivechatAgent, ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourBehaviors, LivechatBusinessHourTypes, ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { sleep } from '../../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
