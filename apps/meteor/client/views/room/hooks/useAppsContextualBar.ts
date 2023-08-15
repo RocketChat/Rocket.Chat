@@ -7,7 +7,7 @@ import { useRoom } from '../contexts/RoomContext';
 
 type AppsContextualBarData = {
 	viewId: string;
-	roomId: string;
+	rid: string;
 	payload: IUIKitContextualBarInteraction;
 	appId: string;
 };
@@ -17,7 +17,7 @@ export const useAppsContextualBar = (): AppsContextualBarData | undefined => {
 	const actionManager = useUiKitActionManager();
 	const [appId, setAppId] = useState<string>();
 
-	const { _id: roomId } = useRoom();
+	const { _id: rid } = useRoom();
 
 	const viewId = useRouteParameter('context');
 
@@ -39,7 +39,7 @@ export const useAppsContextualBar = (): AppsContextualBarData | undefined => {
 	if (viewId && payload && appId) {
 		return {
 			viewId,
-			roomId,
+			rid,
 			payload,
 			appId,
 		};
