@@ -55,7 +55,7 @@ const Item: FC<{
 					>
 						{t('Use')}
 					</Button>
-					<Icon name='chevron-left' size={24} color='hint' />
+					<Icon name='chevron-left' size='x24' color='hint' />
 				</Box>
 			</Box>
 			<Box fontScale='p2' mbs='8px' color='hint' withTruncatedText>

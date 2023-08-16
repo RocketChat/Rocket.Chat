@@ -142,7 +142,7 @@ jobs:
           path: |
             ~/.cache/ms-playwright
           # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
-          key: playwright-1.23.1
+          key: playwright-1.23.1.
 
       - name: Install Playwright
         if: inputs.type == 'ui' && steps.cache-playwright.outputs.cache-hit != 'true'

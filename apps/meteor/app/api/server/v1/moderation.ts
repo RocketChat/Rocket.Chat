@@ -6,7 +6,6 @@ import {
 	isReportInfoParams,
 	isReportMessageHistoryParams,
 	isModerationReportUserPost,
-	// isUserReportsGet,
 	isModerationDeleteMsgHistoryParams,
 	isReportsByMsgIdParams,
 } from '@rocket.chat/rest-typings';

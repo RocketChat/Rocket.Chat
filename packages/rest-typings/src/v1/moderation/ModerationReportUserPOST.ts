@@ -15,6 +15,7 @@ const reportUserPropsSchema = {
 		},
 		description: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['userId', 'description'],

@@ -19,6 +19,7 @@ import UserAutoCompleteMultiple from '../../../../../components/UserAutoComplete
 import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
+import { useAddMatrixUsers } from './AddMatrixUsers/useAddMatrixUsers';
 
 type AddUsersProps = {
 	rid: IRoom['_id'];
@@ -37,6 +38,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 	const {
 		handleSubmit,
 		control,
+		getValues,
 		formState: { isDirty },
 	} = useForm({ defaultValues: { users: [] } });
 
@@ -50,6 +52,8 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 			dispatchToastMessage({ type: 'error', message: error as Error });
 		}
 	});
+
+	const addClickHandler = useAddMatrixUsers();
 
 	return (
 		<>
@@ -80,9 +84,24 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
-						{t('Add_users')}
-					</Button>
+					{isRoomFederated(room) ? (
+						<Button
+							primary
+							disabled={addClickHandler.isLoading}
+							onClick={() =>
+								addClickHandler.mutate({
+									users: getValues('users'),
+									handleSave,
+								})
+							}
+						>
+							{t('Add_users')}
+						</Button>
+					) : (
+						<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
+							{t('Add_users')}
+						</Button>
+					)}
 				</ButtonGroup>
 			</ContextualbarFooter>
 		</>

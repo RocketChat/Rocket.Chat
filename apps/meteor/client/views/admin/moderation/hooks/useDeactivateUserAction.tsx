@@ -20,7 +20,7 @@ const useDeactivateUserAction = (userId: string) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('User_has_been_deactivated') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_User_deactivated') });
 		},
 	});
 
@@ -30,7 +30,7 @@ const useDeactivateUserAction = (userId: string) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Deleted') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_Messages_deleted') });
 		},
 	});
 
