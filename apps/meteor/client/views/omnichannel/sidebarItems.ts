@@ -17,8 +17,7 @@ export const {
 		href: '/omnichannel/reports',
 		icon: 'file',
 		i18nLabel: 'Reports',
-		// TODO: Define necessary permissions
-		// permissionGranted: (): boolean => hasPermission('?'),
+		permissionGranted: (): boolean => hasPermission('view-livechat-analytics'),
 	},
 	{
 		href: '/omnichannel/analytics',
