@@ -1,29 +1,22 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import { LayoutContext, useRouter, useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
+import { LayoutContext, useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
 const LayoutProvider: FC = ({ children }) => {
 	const showTopNavbarEmbeddedLayout = Boolean(useSetting('UI_Show_top_navbar_embedded_layout'));
 	const [isCollapsed, setIsCollapsed] = useState(false);
-	const [isEmbedded, setIsEmbedded] = useState(false);
-	const layout = useSearchParameter('layout');
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
+
+	const router = useRouter();
+	// Once the layout is embedded, it can't be changed
+	const [isEmbedded] = useState(() => router.getSearchParameters().layout === 'embedded');
 
 	const isMobile = !breakpoints.includes('lg');
 
 	useEffect(() => {
 		setIsCollapsed(isMobile);
 	}, [isMobile]);
-
-	// Once set, embedded layout should not be changed
-	useEffect(() => {
-		if (layout === 'embedded') {
-			setIsEmbedded(true);
-		}
-	}, [layout]);
-
-	const router = useRouter();
 
 	return (
 		<LayoutContext.Provider
