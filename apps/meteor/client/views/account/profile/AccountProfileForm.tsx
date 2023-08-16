@@ -1,32 +1,37 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
 import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, PasswordInput, Button } from '@rocket.chat/fuselage';
-import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback, useSafely, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { SHA256 } from '@rocket.chat/sha256';
 import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
-import { useAccountsCustomFields, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import {
+	useAccountsCustomFields,
+	useMethod,
+	useToastMessageDispatch,
+	useTranslation,
+	useEndpoint,
+	useUser,
+} from '@rocket.chat/ui-contexts';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { Dispatch, ReactElement, SetStateAction } from 'react';
+import type { AllHTMLAttributes, ReactElement } from 'react';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import UserStatusMenu from '../../../components/UserStatusMenu';
+// import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
+import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
-import type { AccountFormValues } from './AccountProfilePage';
+import { useAccountProfileSettings } from './useAccountProfileSettings';
+import { useAllowPasswordChange } from './useAllowPasswordChange';
 
-type AccountProfileFormProps = {
-	values: Record<string, unknown>;
-	handlers: Record<string, (eventOrValue: unknown) => void>;
-	user: IUser | null;
-	settings: Record<string, unknown> & { namesRegex: RegExp };
-	onSaveStateChange: Dispatch<SetStateAction<boolean>>;
-};
-
-// TODO: Replace this form using React Hook Form
-const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChange, ...props }: AccountProfileFormProps): ReactElement => {
+const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+
+	const user = useUser();
+
+	// const { values, handlers, hasUnsavedChanges, commit, reset } = useForm();
 
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
 	const getAvatarSuggestions = useEndpoint('GET', '/v1/users.getAvatarSuggestion');
@@ -50,38 +55,43 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 		allowRealNameChange,
 		allowUserStatusMessageChange,
 		allowEmailChange,
-		allowPasswordChange,
 		allowUserAvatarChange,
+		allowDeleteOwnAccount,
 		canChangeUsername,
-		namesRegex,
 		requireName,
-	} = settings;
+		namesRegex,
+		erasureType,
+	} = useAccountProfileSettings();
+	const { allowPasswordChange } = useAllowPasswordChange();
 
-	const { realname, email, username, password, confirmationPassword, statusText, bio, statusType, customFields, nickname } =
-		values as AccountFormValues;
+	// const { realname, email, username, password, confirmationPassword, statusText, bio, statusType, customFields, nickname } =
+	// 	values as AccountFormValues;
+
+	// const {
+	// 	handleRealname,
+	// 	handleEmail,
+	// 	handleUsername,
+	// 	handlePassword,
+	// 	handleConfirmationPassword,
+	// 	handleAvatar,
+	// 	handleStatusText,
+	// 	handleStatusType,
+	// 	handleBio,
+	// 	handleNickname,
+	// 	handleCustomFields,
+	// } = handlers;
 
 	const {
-		handleRealname,
-		handleEmail,
-		handleUsername,
-		handlePassword,
-		handleConfirmationPassword,
-		handleAvatar,
-		handleStatusText,
-		handleStatusType,
-		handleBio,
-		handleNickname,
-		handleCustomFields,
-	} = handlers;
-
-	const {
+		register,
 		control,
 		watch,
-		formState: { errors: customFieldsErrors },
-	} = useForm({
-		defaultValues: { customFields: { ...customFields } },
-		mode: 'onBlur',
-	});
+		handleSubmit,
+		formState: { errors: customFieldsErrors, dirtyFields },
+	} = useFormContext();
+
+	console.log('dirtyFields', dirtyFields);
+
+	const { avatar, realname, email, password, statusText, bio, confirmationPassword, username } = watch();
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
 
@@ -131,10 +141,10 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 		[namesRegex, t, user?.username, checkUsernameAvailability, setUsernameError],
 	);
 
-	useEffect(() => {
-		const subscription = watch((value) => handleCustomFields({ ...value.customFields }));
-		return () => subscription.unsubscribe();
-	}, [watch, handleCustomFields]);
+	// useEffect(() => {
+	// 	const subscription = watch((value) => handleCustomFields({ ...value.customFields }));
+	// 	return () => subscription.unsubscribe();
+	// }, [watch, handleCustomFields]);
 
 	useEffect(() => {
 		const getSuggestions = async (): Promise<void> => {
@@ -148,11 +158,11 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 		checkUsername(username);
 	}, [checkUsername, username]);
 
-	useEffect(() => {
-		if (!password) {
-			handleConfirmationPassword('');
-		}
-	}, [password, handleConfirmationPassword]);
+	// useEffect(() => {
+	// 	if (!password) {
+	// 		handleConfirmationPassword('');
+	// 	}
+	// }, [password, handleConfirmationPassword]);
 
 	const nameError = useMemo(() => {
 		if (user?.name === realname) {
@@ -187,206 +197,191 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 		return undefined;
 	}, [customFieldsErrors]);
 
-	const verified = user?.emails?.[0]?.verified ?? false;
+	const isUserVerified = user?.emails?.[0]?.verified ?? false;
 
-	const canSave = !(
-		!!passwordError ||
-		!!emailError ||
-		!!usernameError ||
-		!!nameError ||
-		!!statusTextError ||
-		!!bioError ||
-		!customFieldsError
-	);
+	// const canSave = !(
+	// 	!!passwordError ||
+	// 	!!emailError ||
+	// 	!!usernameError ||
+	// 	!!nameError ||
+	// 	!!statusTextError ||
+	// 	!!bioError ||
+	// 	!customFieldsError
+	// );
 
-	useEffect(() => {
-		onSaveStateChange(canSave);
-	}, [canSave, onSaveStateChange]);
+	// useEffect(() => {
+	// 	onSaveStateChange(canSave);
+	// }, [canSave, onSaveStateChange]);
 
-	const handleSubmit = useCallback((e) => {
-		e.preventDefault();
-	}, []);
+	// const handleSubmit = useCallback((e) => {
+	// 	e.preventDefault();
+	// }, []);
+
+	const saveFn = useMethod('saveUserProfile');
+
+	const nameId = useUniqueId();
+	const usernameId = useUniqueId();
+	const nicknameId = useUniqueId();
+
+	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
+
+	const handleSave = ({ statusType, nickname, bio, customFields, ...data }) => {
+		console.log(data);
+		const save = async (typedPassword?: string): Promise<void> => {
+			try {
+				if (!(password === confirmationPassword)) {
+					throw new Error(t('Invalid_confirm_pass'));
+				}
+				await saveFn(
+					{
+						...(allowRealNameChange ? { realname } : {}),
+						...(allowEmailChange && user ? getUserEmailAddress(user) !== email && { email } : {}),
+						...(allowPasswordChange ? { newPassword: password } : {}),
+						...(canChangeUsername ? { username } : {}),
+						...(allowUserStatusMessageChange ? { statusText } : {}),
+						...(typedPassword && { typedPassword: SHA256(typedPassword) }),
+						statusType,
+						nickname,
+						bio,
+					},
+					customFields,
+				);
+				// handlePassword('');
+				// handleConfirmationPassword('');
+				const avatarResult = await updateAvatar();
+				// if (avatarResult) {
+				// 	handleAvatar('');
+				// }
+				// commit();
+				dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
+			} catch (error: unknown) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		};
+		save();
+	};
 
 	return (
-		<FieldGroup is='form' autoComplete='off' onSubmit={handleSubmit} {...props}>
-			{useMemo(
-				() => (
-					<Field>
-						<UserAvatarEditor
-							etag={user?.avatarETag}
-							currentUsername={user?.username}
-							username={username}
-							setAvatarObj={handleAvatar}
-							disabled={!allowUserAvatarChange}
-							suggestions={avatarSuggestions as any}
+		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
+			<FieldGroup>
+				<Field>
+					<Controller
+						control={control}
+						name='avatar'
+						render={({ field: { value, onChange } }) => (
+							<UserAvatarEditor
+								etag={user?.avatarETag}
+								currentUsername={user?.username}
+								username={username}
+								setAvatarObj={onChange}
+								disabled={!allowUserAvatarChange}
+								suggestions={avatarSuggestions as any}
+							/>
+						)}
+					/>
+				</Field>
+				<Box display='flex' flexDirection='row' justifyContent='space-between'>
+					<Field mie={8} flexShrink={1}>
+						<Field.Label htmlFor={nameId}>{t('Name')}</Field.Label>
+						<Field.Row>
+							<TextInput {...register('realname')} id={nameId} error={nameError} disabled={!allowRealNameChange} />
+						</Field.Row>
+						{!allowRealNameChange && <Field.Hint>{t('RealName_Change_Disabled')}</Field.Hint>}
+						<Field.Error>{nameError}</Field.Error>
+					</Field>
+					<Field mis={8} flexShrink={1}>
+						<Field.Label htmlFor={usernameId}>{t('Username')}</Field.Label>
+						<Field.Row>
+							<TextInput {...register('username')} id={usernameId} error={usernameError} addon={<Icon name='at' size='x20' />} />
+						</Field.Row>
+						{!canChangeUsername && <Field.Hint>{t('Username_Change_Disabled')}</Field.Hint>}
+						<Field.Error>{usernameError}</Field.Error>
+					</Field>
+				</Box>
+				<Field>
+					<Field.Label>{t('StatusMessage')}</Field.Label>
+					<Field.Row>
+						<TextInput
+							{...register('statusText')}
+							error={statusTextError}
+							disabled={!allowUserStatusMessageChange}
+							flexGrow={1}
+							placeholder={t('StatusMessage_Placeholder')}
+							// addon={<UserStatusMenu margin='neg-x2' onChange={handleStatusType} initialStatus={statusType as IUser['status']} />}
 						/>
-					</Field>
-				),
-				[username, user?.username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user?.avatarETag],
-			)}
-			<Box display='flex' flexDirection='row' justifyContent='space-between'>
-				{useMemo(
-					() => (
-						<Field mie={8} flexShrink={1}>
-							<Field.Label flexGrow={0}>{t('Name')}</Field.Label>
-							<Field.Row>
-								<TextInput error={nameError} disabled={!allowRealNameChange} flexGrow={1} value={realname} onChange={handleRealname} />
-							</Field.Row>
-							{!allowRealNameChange && <Field.Hint>{t('RealName_Change_Disabled')}</Field.Hint>}
-							<Field.Error>{nameError}</Field.Error>
-						</Field>
-					),
-					[t, realname, handleRealname, allowRealNameChange, nameError],
-				)}
-				{useMemo(
-					() => (
-						<Field mis={8} flexShrink={1}>
-							<Field.Label flexGrow={0}>{t('Username')}</Field.Label>
-							<Field.Row>
-								<TextInput
-									error={usernameError}
-									disabled={!canChangeUsername}
-									flexGrow={1}
-									value={username}
-									onChange={handleUsername}
-									addon={<Icon name='at' size='x20' />}
-								/>
-							</Field.Row>
-							{!canChangeUsername && <Field.Hint>{t('Username_Change_Disabled')}</Field.Hint>}
-							<Field.Error>{usernameError}</Field.Error>
-						</Field>
-					),
-					[t, username, handleUsername, canChangeUsername, usernameError],
-				)}
-			</Box>
-			{useMemo(
-				() => (
-					<Field>
-						<Field.Label>{t('StatusMessage')}</Field.Label>
-						<Field.Row>
-							<TextInput
-								error={statusTextError}
-								disabled={!allowUserStatusMessageChange}
-								flexGrow={1}
-								value={statusText}
-								onChange={handleStatusText}
-								placeholder={t('StatusMessage_Placeholder')}
-								addon={<UserStatusMenu margin='neg-x2' onChange={handleStatusType} initialStatus={statusType as IUser['status']} />}
-							/>
-						</Field.Row>
-						{!allowUserStatusMessageChange && <Field.Hint>{t('StatusMessage_Change_Disabled')}</Field.Hint>}
-						<Field.Error>{statusTextError}</Field.Error>
-					</Field>
-				),
-				[t, statusTextError, allowUserStatusMessageChange, statusText, handleStatusText, handleStatusType, statusType],
-			)}
-			{useMemo(
-				() => (
-					<Field>
-						<Field.Label>{t('Nickname')}</Field.Label>
-						<Field.Row>
-							<TextInput
-								flexGrow={1}
-								value={nickname}
-								onChange={handleNickname}
-								addon={<Icon name='edit' size='x20' alignSelf='center' />}
-							/>
-						</Field.Row>
-					</Field>
-				),
-				[nickname, handleNickname, t],
-			)}
-			{useMemo(
-				() => (
-					<Field>
-						<Field.Label>{t('Bio')}</Field.Label>
-						<Field.Row>
-							<TextAreaInput
-								error={bioError}
-								rows={3}
-								flexGrow={1}
-								value={bio}
-								onChange={handleBio}
-								addon={<Icon name='edit' size='x20' alignSelf='center' />}
-							/>
-						</Field.Row>
-						<Field.Error>{bioError}</Field.Error>
-					</Field>
-				),
-				[bio, handleBio, bioError, t],
-			)}
-			{useMemo(
-				() => (
-					<Field>
-						<Field.Label>{t('Email')}</Field.Label>
-						<Field.Row display='flex' flexDirection='row' justifyContent='space-between'>
-							<TextInput
-								flexGrow={1}
-								value={email}
-								error={emailError}
-								onChange={handleEmail}
-								addon={<Icon name={verified ? 'circle-check' : 'mail'} size='x20' />}
-								disabled={!allowEmailChange}
-							/>
-							{!verified && (
-								<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail} mis={24}>
-									{t('Resend_verification_email')}
-								</Button>
-							)}
-						</Field.Row>
-						{!allowEmailChange && <Field.Hint>{t('Email_Change_Disabled')}</Field.Hint>}
-						<Field.Error>{t(emailError as TranslationKey)}</Field.Error>
-					</Field>
-				),
-				[t, email, emailError, handleEmail, verified, allowEmailChange, previousEmail, handleSendConfirmationEmail],
-			)}
-			{useMemo(
-				() => (
-					<Field>
-						<Field.Label>{t('New_password')}</Field.Label>
-						<Field.Row mbe={4}>
-							<PasswordInput
-								autoComplete='off'
-								disabled={!allowPasswordChange}
-								error={showPasswordError ? passwordError : undefined}
-								flexGrow={1}
-								value={password}
-								onChange={handlePassword}
-								addon={<Icon name='key' size='x20' />}
-								placeholder={t('Create_a_password')}
-							/>
-						</Field.Row>
-						<Field.Row mbs={4}>
-							<PasswordInput
-								autoComplete='off'
-								error={showPasswordError ? passwordError : undefined}
-								flexGrow={1}
-								value={confirmationPassword}
-								onChange={handleConfirmationPassword}
-								addon={<Icon name='key' size='x20' />}
-								placeholder={t('Confirm_password')}
-								disabled={!allowPasswordChange}
-							/>
-						</Field.Row>
-						{!allowPasswordChange && <Field.Hint>{t('Password_Change_Disabled')}</Field.Hint>}
-						{passwordError && <Field.Error>{showPasswordError ? passwordError : undefined}</Field.Error>}
-						{allowPasswordChange && <PasswordVerifier password={password} />}
-					</Field>
-				),
-				[
-					t,
-					allowPasswordChange,
-					showPasswordError,
-					passwordError,
-					password,
-					handlePassword,
-					confirmationPassword,
-					handleConfirmationPassword,
-				],
-			)}
-
-			{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
-		</FieldGroup>
+					</Field.Row>
+					{!allowUserStatusMessageChange && <Field.Hint>{t('StatusMessage_Change_Disabled')}</Field.Hint>}
+					<Field.Error>{statusTextError}</Field.Error>
+				</Field>
+				<Field>
+					<Field.Label htmlFor={nicknameId}>{t('Nickname')}</Field.Label>
+					<Field.Row>
+						<TextInput {...register('nickname')} flexGrow={1} addon={<Icon name='edit' size='x20' alignSelf='center' />} />
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Label>{t('Bio')}</Field.Label>
+					<Field.Row>
+						<TextAreaInput
+							{...register('bio')}
+							error={bioError}
+							rows={3}
+							flexGrow={1}
+							addon={<Icon name='edit' size='x20' alignSelf='center' />}
+						/>
+					</Field.Row>
+					<Field.Error>{bioError}</Field.Error>
+				</Field>
+				<Field>
+					<Field.Label>{t('Email')}</Field.Label>
+					<Field.Row display='flex' flexDirection='row' justifyContent='space-between'>
+						<TextInput
+							{...register('email')}
+							flexGrow={1}
+							error={emailError}
+							addon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
+							disabled={!allowEmailChange}
+						/>
+						{!isUserVerified && (
+							<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail} mis={24}>
+								{t('Resend_verification_email')}
+							</Button>
+						)}
+					</Field.Row>
+					{!allowEmailChange && <Field.Hint>{t('Email_Change_Disabled')}</Field.Hint>}
+					<Field.Error>{t(emailError as TranslationKey)}</Field.Error>
+				</Field>
+				<Field>
+					<Field.Label>{t('New_password')}</Field.Label>
+					<Field.Row mbe={4}>
+						<PasswordInput
+							{...register('password')}
+							autoComplete='off'
+							disabled={!allowPasswordChange}
+							error={showPasswordError ? passwordError : undefined}
+							flexGrow={1}
+							addon={<Icon name='key' size='x20' />}
+							placeholder={t('Create_a_password')}
+						/>
+					</Field.Row>
+					<Field.Row mbs={4}>
+						<PasswordInput
+							{...register('confirmationPassword')}
+							autoComplete='off'
+							error={showPasswordError ? passwordError : undefined}
+							flexGrow={1}
+							addon={<Icon name='key' size='x20' />}
+							placeholder={t('Confirm_password')}
+							disabled={!allowPasswordChange}
+						/>
+					</Field.Row>
+					{!allowPasswordChange && <Field.Hint>{t('Password_Change_Disabled')}</Field.Hint>}
+					{passwordError && <Field.Error>{showPasswordError ? passwordError : undefined}</Field.Error>}
+					{allowPasswordChange && <PasswordVerifier password={password} />}
+				</Field>
+				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
+			</FieldGroup>
+		</Box>
 	);
 };
 
