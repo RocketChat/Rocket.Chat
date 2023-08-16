@@ -1,5 +1,5 @@
-import type { AggregationCursor, FindCursor, Filter, FindOptions, UpdateResult, Document, UpdateFilter } from 'mongodb';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { AggregationCursor, FindCursor, Filter, FindOptions, UpdateResult, Document, UpdateFilter } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -46,6 +46,8 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	updateLastAgentByToken(token: string, lastAgent: ILivechatVisitor['lastAgent']): Promise<Document | UpdateResult>;
 
 	updateById(_id: string, update: UpdateFilter<ILivechatVisitor>): Promise<Document | UpdateResult>;
+
+	setVisitorsEmail(_id: string, email: string): Promise<Document | UpdateResult>;
 
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void>;
 }

@@ -1,6 +1,6 @@
+import type { ICustomSound } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import type { ICustomSound } from '@rocket.chat/core-typings';
 
 import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { getURL } from '../../../utils/client';

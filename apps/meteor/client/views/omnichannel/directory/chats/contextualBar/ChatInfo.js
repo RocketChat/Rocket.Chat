@@ -1,5 +1,5 @@
 import { RoomVerificationState } from '@rocket.chat/core-typings';
-import { Box, Margins, Tag, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
@@ -17,7 +17,6 @@ import Label from '../../../components/Label';
 import { AgentField, SlaField, ContactField, SourceField } from '../../components';
 import PriorityField from '../../components/PriorityField';
 import { useOmnichannelRoomInfo } from '../../hooks/useOmnichannelRoomInfo';
-import { useTagsLabels } from '../hooks/useTagsLabels';
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
 
@@ -35,6 +34,7 @@ function ChatInfo({ id, route }) {
 	const [verificationStatus, setVerificationStatus] = useState(room?.verificationStatus);
 	const {
 		ts,
+		tags,
 		closedAt,
 		departmentId,
 		v,
@@ -50,7 +50,6 @@ function ChatInfo({ id, route }) {
 		queuedAt,
 	} = room || { room: { v: {} } };
 
-	const tags = useTagsLabels(room?.tags);
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 	const subscription = useUserSubscription(id);
@@ -97,7 +96,7 @@ function ChatInfo({ id, route }) {
 
 	return (
 		<>
-			<ContextualbarScrollableContent p='x24'>
+			<ContextualbarScrollableContent p={24}>
 				<Margins block='x4'>
 					{source && <SourceField room={room} />}
 					{room && v && <ContactField contact={v} room={room} />}
@@ -109,7 +108,7 @@ function ChatInfo({ id, route }) {
 							<Label>{t('Tags')}</Label>
 							<Info>
 								{tags.map((tag) => (
-									<Box key={tag} mie='x4' display='inline'>
+									<Box key={tag} mie={4} display='inline'>
 										<Tag style={{ display: 'inline' }} disabled>
 											{tag}
 										</Tag>
@@ -181,8 +180,8 @@ function ChatInfo({ id, route }) {
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={onEditClick}>
-						<Icon name='pencil' size='x20' /> {t('Edit')}
+					<Button icon='pencil' onClick={onEditClick}>
+						{t('Edit')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>

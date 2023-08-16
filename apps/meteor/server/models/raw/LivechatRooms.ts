@@ -1,18 +1,4 @@
 import type {
-	Db,
-	Collection,
-	IndexDescription,
-	Document,
-	Filter,
-	FindOptions,
-	UpdateFilter,
-	SortDirection,
-	FindCursor,
-	UpdateResult,
-} from 'mongodb';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Settings } from '@rocket.chat/models';
-import type {
 	IOmnichannelRoom,
 	RocketChatRecordDeleted,
 	IOmnichannelRoomClosingInfo,
@@ -24,10 +10,24 @@ import type {
 	RoomVerificationState,
 } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import { Settings } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type {
+	Db,
+	Collection,
+	IndexDescription,
+	Document,
+	Filter,
+	FindOptions,
+	UpdateFilter,
+	SortDirection,
+	FindCursor,
+	UpdateResult,
+} from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { BaseRaw } from './BaseRaw';
 
 /**
  * @extends BaseRaw<ILivechatRoom>

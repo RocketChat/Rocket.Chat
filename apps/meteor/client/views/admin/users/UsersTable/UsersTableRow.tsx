@@ -38,7 +38,7 @@ const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): React
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={username} etag={avatarETag} />}
-					<Box display='flex' mi='x8' withTruncatedText>
+					<Box display='flex' mi={8} withTruncatedText>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' color='default' withTruncatedText>
 								{name || username}
@@ -58,7 +58,7 @@ const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): React
 					<Box fontScale='p2m' color='hint' withTruncatedText>
 						{username}
 					</Box>{' '}
-					<Box mi='x4' />
+					<Box mi={4} />
 				</GenericTableCell>
 			)}
 			<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>

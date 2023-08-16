@@ -1,15 +1,15 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
+import { OmnichannelVerification } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms } from '@rocket.chat/models';
-import { OmnichannelVerification } from '@rocket.chat/core-services';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
+import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
-import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
+import { settings } from '../../../../settings/server';
 import { Livechat } from '../../lib/Livechat';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { settings } from '../../../../settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
+import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 
 API.v1.addRoute('livechat/visitor', {
 	async post() {

@@ -1,10 +1,10 @@
-import { LivechatVisitors } from '@rocket.chat/models';
 import type { IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isEditedMessage, isOmnichannelRoom, RoomVerificationState } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings/server';
 import { isTruthy } from '../../../../lib/isTruthy';
+import { settings } from '../../../settings/server';
 
 function validateMessage(message: IMessage, room: IOmnichannelRoom) {
 	// skips this callback if the message was edited
@@ -32,7 +32,7 @@ function validateMessage(message: IMessage, room: IOmnichannelRoom) {
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message, room) {
+	async (message, room) => {
 		if (!isOmnichannelRoom(room)) {
 			return message;
 		}
@@ -46,7 +46,7 @@ callbacks.add(
 
 		const emailRegexp = new RegExp(settings.get<string>('Livechat_lead_email_regex'), 'gi');
 		const msgEmails = message.msg.match(emailRegexp)?.filter(isTruthy) || [];
-		if (msgEmails || msgPhones) {
+		if (room.verificationStatus !== RoomVerificationState.isListeningToEmail && (msgEmails || msgPhones)) {
 			await LivechatVisitors.saveGuestEmailPhoneById(room.v._id, msgEmails, msgPhones);
 
 			await callbacks.run('livechat.leadCapture', room);

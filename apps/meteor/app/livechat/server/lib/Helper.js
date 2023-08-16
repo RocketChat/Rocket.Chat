@@ -1,9 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
+import { api, Message } from '@rocket.chat/core-services';
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG, RoomVerificationState } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
-import { api, Message } from '@rocket.chat/core-services';
 import {
 	LivechatDepartmentAgents,
 	LivechatInquiry,
@@ -13,20 +11,22 @@ import {
 	Rooms,
 	Users,
 } from '@rocket.chat/models';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { Livechat } from './Livechat';
-import { Livechat as LivechatTyped } from './LivechatTyped';
-import { RoutingManager } from './RoutingManager';
-import { callbacks } from '../../../../lib/callbacks';
-import { Logger } from '../../../logger/server';
-import { settings } from '../../../settings/server';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
-import { sendNotification } from '../../../lib/server';
-import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { queueInquiry, saveQueueInquiry } from './QueueManager';
+import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
 import { i18n } from '../../../../server/lib/i18n';
+import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { sendNotification } from '../../../lib/server';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { Logger } from '../../../logger/server';
+import { settings } from '../../../settings/server';
+import { Livechat } from './Livechat';
+import { Livechat as LivechatTyped } from './LivechatTyped';
+import { queueInquiry, saveQueueInquiry } from './QueueManager';
+import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('LivechatHelper');
 

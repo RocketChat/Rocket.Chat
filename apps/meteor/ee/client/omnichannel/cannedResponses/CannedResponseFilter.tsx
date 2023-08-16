@@ -37,18 +37,18 @@ const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
 	}, []);
 
 	return (
-		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' color='default' {...props}>
-			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-				<Box mb='x4'>{t('Search')}</Box>
+		<Box mb={16} is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' color='default' {...props}>
+			<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
+				<Box mb={4}>{t('Search')}</Box>
 				<TextInput addon={<Icon name='magnifier' size='x20' />} onChange={setShortcut} value={shortcutValue} />
 			</Box>
 
-			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-				<Box mb='x4'>{t('Sharing')}</Box>
+			<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
+				<Box mb={4}>{t('Sharing')}</Box>
 				<Select onChange={setSharing} options={sharingList} value={sharingValue} />
 			</Box>
-			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-				<Box mb='x4'>{t('Created_by')}</Box>
+			<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
+				<Box mb={4}>{t('Created_by')}</Box>
 				<AutoCompleteAgent onChange={setCreatedBy} value={createdByValue} haveAll />
 			</Box>
 		</Box>

@@ -1,11 +1,11 @@
 import os from 'os';
 
 import { Settings } from '@rocket.chat/models';
-import { check, Match } from 'meteor/check';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { check, Match } from 'meteor/check';
 
-import { Info } from '../../../utils/server';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
+import { Info } from '../../../utils/rocketchat.info';
 
 export const getNewUpdates = async () => {
 	try {

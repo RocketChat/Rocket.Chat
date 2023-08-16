@@ -35,9 +35,9 @@ const MessageBoxReplies = (): ReactElement | null => {
 	`;
 
 	return (
-		<Box mbe='x8' position='relative' overflowY='auto' maxHeight='x256'>
+		<Box mbe={8} position='relative' overflowY='auto' maxHeight='x256'>
 			{replies.map((reply, key) => (
-				<Margins block='x4' key={key}>
+				<Margins block={4} key={key}>
 					<Box display='flex' position='relative'>
 						<QuoteAttachment
 							attachment={

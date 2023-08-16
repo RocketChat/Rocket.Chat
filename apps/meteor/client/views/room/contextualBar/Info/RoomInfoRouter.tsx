@@ -3,33 +3,28 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
 import { useRoom } from '../../contexts/RoomContext';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import EditRoomInfoWithData from './EditRoomInfo';
 import RoomInfo from './RoomInfo';
 import { useCanEditRoom } from './hooks/useCanEditRoom';
 
 type RoomInfoRouterProps = {
-	rid: IRoom['_id'];
-	onClickBack: () => void;
-	onEnterRoom: (room: IRoom) => void;
-	resetState: () => void;
+	onClickBack?: () => void;
+	onEnterRoom?: (room: IRoom) => void;
+	resetState?: () => void;
 };
 
-const RoomInfoRouter = ({ rid, onClickBack, onEnterRoom, resetState }: RoomInfoRouterProps) => {
+const RoomInfoRouter = ({ onClickBack, onEnterRoom, resetState }: RoomInfoRouterProps) => {
 	const [isEditing, setIsEditing] = useState(false);
 
-	const onClickClose = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 	const room = useRoom();
 
-	if (!room) {
-		throw new Error('Room not found');
-	}
-
 	const canEdit = useCanEditRoom(room);
-	const onClickEnterRoom = useMutableCallback(() => onEnterRoom(room));
+	const onClickEnterRoom = useMutableCallback(() => onEnterRoom?.(room));
 
 	if (isEditing) {
-		return <EditRoomInfoWithData rid={rid} onClickBack={() => setIsEditing(false)} />;
+		return <EditRoomInfoWithData onClickBack={() => setIsEditing(false)} />;
 	}
 
 	return (
@@ -38,7 +33,7 @@ const RoomInfoRouter = ({ rid, onClickBack, onEnterRoom, resetState }: RoomInfoR
 			icon={room.t === 'p' ? 'lock' : 'hashtag'}
 			onClickBack={onClickBack}
 			onClickEdit={canEdit ? () => setIsEditing(true) : undefined}
-			onClickClose={onClickClose}
+			onClickClose={closeTab}
 			{...(Boolean(onEnterRoom) && {
 				onClickEnterRoom,
 			})}

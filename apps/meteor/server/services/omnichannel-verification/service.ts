@@ -1,22 +1,22 @@
-import { RoomVerificationState } from '@rocket.chat/core-typings';
-import type { IRoom, IMessage, IOmnichannelGenericRoom, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
-import { check } from 'meteor/check';
 import type { IOmnichannelVerification, ISetVisitorEmailResult } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IRoom, IMessage, IOmnichannelGenericRoom, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { RoomVerificationState } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Accounts } from 'meteor/accounts-base';
+import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import bcrypt from 'bcrypt';
+import { Accounts } from 'meteor/accounts-base';
+import { check } from 'meteor/check';
 
+import { checkEmailAvailability } from '../../../app/lib/server/functions/checkEmailAvailability';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { validateEmailDomain } from '../../../app/lib/server/lib';
 import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
-import { i18n } from '../../lib/i18n';
-import { settings } from '../../../app/settings/server';
 import { Logger } from '../../../app/logger/server';
 import * as Mailer from '../../../app/mailer/server/api';
-import { validateEmailDomain } from '../../../app/lib/server/lib';
-import { checkEmailAvailability } from '../../../app/lib/server/functions';
+import { settings } from '../../../app/settings/server';
+import { i18n } from '../../lib/i18n';
 
 interface IRandomOTP {
 	random: string;
@@ -268,7 +268,6 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 				}
 				return { success: false, error: error as Error };
 			}
-
 			const visitor = await LivechatVisitors.findOneById(userId, {
 				projection: {
 					visitorEmails: 1,
@@ -282,25 +281,23 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 			if (visitor?.visitorEmails?.length && visitor.visitorEmails[0].address === email) {
 				return { success: true };
 			}
-
 			// Check email availability
-			if (!(await checkEmailAvailability(email))) {
-				throw new Error('error-email-unavailable');
-			}
+			const isEmailAvailable = await checkEmailAvailability(email);
+			if (!isEmailAvailable) {
+				const message = {
+					msg: i18n.t('Sorry, this email is already in use'),
+					groupable: false,
+				};
+				await sendMessage(bot, message, room);
 
-			// Set new email
-			const updateVisitor = {
-				$set: {
-					visitorEmails: [
-						{
-							address: email,
-						},
-					],
-				},
+				return { success: false };
+			}
+			await LivechatVisitors.setVisitorsEmail(userId, email);
+			const result = {
+				success: true,
 			};
-			await LivechatVisitors.updateById(userId, updateVisitor);
 			await LivechatRooms.updateWrongMessageCount(room._id, 0);
-			return { success: true };
+			return result;
 		} catch (error) {
 			this.logger.error({ msg: 'Failed to update email :', error });
 			return { success: false, error: error as Error };
