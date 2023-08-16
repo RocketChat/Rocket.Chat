@@ -454,13 +454,14 @@ export class ImportDataConverter {
 
 		const batchToInsert = new Set<IImportUser>();
 
-		for await (const { data, _id } of users) {
+		for await (const record of users) {
+			const { data, _id } = record;
 			if (this.aborted) {
 				break;
 			}
 
 			try {
-				if (beforeImportFn && !(await beforeImportFn(data, 'user'))) {
+				if (beforeImportFn && !(await beforeImportFn(record))) {
 					await this.skipRecord(_id);
 					skippedCount++;
 					continue;
@@ -537,7 +538,7 @@ export class ImportDataConverter {
 				}
 
 				if (afterImportFn) {
-					await afterImportFn(data, 'user', isNewUser);
+					await afterImportFn(record, isNewUser);
 				}
 			} catch (e) {
 				this._logger.error(e);
@@ -741,13 +742,14 @@ export class ImportDataConverter {
 		const rids: Array<string> = [];
 		const messages = await this.getMessagesToImport();
 
-		for await (const { data, _id } of messages) {
+		for await (const record of messages) {
+			const { data, _id } = record;
 			if (this.aborted) {
 				return;
 			}
 
 			try {
-				if (beforeImportFn && !(await beforeImportFn(data, 'message'))) {
+				if (beforeImportFn && !(await beforeImportFn(record))) {
 					await this.skipRecord(_id);
 					continue;
 				}
@@ -816,7 +818,7 @@ export class ImportDataConverter {
 				}
 
 				if (afterImportFn) {
-					await afterImportFn(data, 'message', true);
+					await afterImportFn(record, true);
 				}
 			} catch (e) {
 				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
@@ -1116,13 +1118,14 @@ export class ImportDataConverter {
 
 	async convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn, onErrorFn }: IConversionCallbacks = {}): Promise<void> {
 		const channels = await this.getChannelsToImport();
-		for await (const { data, _id } of channels) {
+		for await (const record of channels) {
+			const { data, _id } = record;
 			if (this.aborted) {
 				return;
 			}
 
 			try {
-				if (beforeImportFn && !(await beforeImportFn(data, 'channel'))) {
+				if (beforeImportFn && !(await beforeImportFn(record))) {
 					await this.skipRecord(_id);
 					continue;
 				}
@@ -1151,7 +1154,7 @@ export class ImportDataConverter {
 				}
 
 				if (afterImportFn) {
-					await afterImportFn(data, 'channel', !existingRoom);
+					await afterImportFn(record, !existingRoom);
 				}
 			} catch (e) {
 				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));

@@ -400,6 +400,10 @@ export class LDAPConnection {
 			return [];
 		}
 
+		if (!this.options.groupFilterGroupMemberFormat) {
+			searchLogger.debug(`LDAP Group Filter is enabled but no group member format is set.`);
+		}
+
 		const filter = ['(&'];
 
 		if (this.options.groupFilterObjectClass) {
