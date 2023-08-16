@@ -30,7 +30,7 @@ function BooleanSettingInput({
 	};
 
 	return (
-		<Field.Row marginBlockEnd='x8'>
+		<Field.Row marginBlockEnd={8}>
 			<ToggleSwitch
 				data-qa-setting-id={_id}
 				id={_id}

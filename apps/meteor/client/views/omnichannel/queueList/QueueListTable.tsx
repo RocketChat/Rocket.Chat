@@ -89,9 +89,7 @@ const QueueListTable = (): ReactElement => {
 	}, [sortBy, sortDirection, itemsPerPage, current, filters.status, filters.departmentId, filters.servedBy]);
 
 	const getLivechatQueue = useEndpoint('GET', '/v1/livechat/queue');
-	const { data, isSuccess, isLoading } = useQuery(['livechat-queue', query], async () => getLivechatQueue(query), {
-		refetchOnWindowFocus: false,
-	});
+	const { data, isSuccess, isLoading } = useQuery(['livechat-queue', query], async () => getLivechatQueue(query));
 
 	return (
 		<>
@@ -115,7 +113,7 @@ const QueueListTable = (): ReactElement => {
 									<GenericTableCell withTruncatedText>
 										<Box display='flex' alignItems='center' mb='5px'>
 											<UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={user.username} />
-											<Box display='flex' mi='x8'>
+											<Box display='flex' mi={8}>
 												{user.username}
 											</Box>
 										</Box>

@@ -7,20 +7,13 @@ import React from 'react';
 import GenericModal from '../../components/GenericModal';
 
 type SaveE2EPasswordModalProps = {
-	passwordRevealText: string;
 	randomPassword: string;
 	onClose: () => void;
 	onCancel: () => void;
 	onConfirm: () => void;
 };
 
-const SaveE2EPasswordModal = ({
-	passwordRevealText,
-	randomPassword,
-	onClose,
-	onCancel,
-	onConfirm,
-}: SaveE2EPasswordModalProps): ReactElement => {
+const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: SaveE2EPasswordModalProps): ReactElement => {
 	const t = useTranslation();
 	const { copy, hasCopied } = useClipboard(randomPassword);
 
@@ -35,8 +28,8 @@ const SaveE2EPasswordModal = ({
 			title={t('Save_your_encryption_password')}
 		>
 			<>
-				<Box dangerouslySetInnerHTML={{ __html: passwordRevealText }} />
-				<Button disabled={hasCopied} small mbs='x24' onClick={() => copy()}>
+				<Box dangerouslySetInnerHTML={{ __html: t('E2E_password_reveal_text', { randomPassword }) }} />
+				<Button disabled={hasCopied} small mbs={24} onClick={() => copy()}>
 					{hasCopied ? t('Copied') : t('Copy_password')}
 				</Button>
 			</>
