@@ -1,15 +1,15 @@
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
-import { Random } from '@rocket.chat/random';
-import { Emitter } from '@rocket.chat/emitter';
 import { UIKitInteractionTypes } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
+import { Random } from '@rocket.chat/random';
 import { lazy } from 'react';
 
-import { t } from '../../utils/lib/i18n';
 import * as banners from '../../../client/lib/banners';
-import { dispatchToastMessage } from '../../../client/lib/toast';
-import { sdk } from '../../utils/client/lib/SDKClient';
-import { router } from '../../../client/providers/RouterProvider';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { dispatchToastMessage } from '../../../client/lib/toast';
+import { router } from '../../../client/providers/RouterProvider';
+import { sdk } from '../../utils/client/lib/SDKClient';
+import { t } from '../../utils/lib/i18n';
 
 const UiKitModal = lazy(() => import('../../../client/views/modal/uikit/UiKitModal'));
 

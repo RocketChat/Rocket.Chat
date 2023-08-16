@@ -1,5 +1,5 @@
-import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
+import { DDPCommon } from 'meteor/ddp-common';
 
 class MethodInvocation extends DDPCommon.MethodInvocation {
 	constructor(options) {

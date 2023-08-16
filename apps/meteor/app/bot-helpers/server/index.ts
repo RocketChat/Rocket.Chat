@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
-import type { Filter, FindCursor } from 'mongodb';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Rooms, Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
+import type { Filter, FindCursor } from 'mongodb';
 
-import { settings } from '../../settings/server';
-import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
 import { removeUserFromRoomMethod } from '../../../server/methods/removeUserFromRoom';
+import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
 import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
+import { settings } from '../../settings/server';
 
 /**
  * BotHelpers helps bots

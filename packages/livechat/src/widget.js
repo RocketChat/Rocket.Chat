@@ -417,13 +417,14 @@ const trackNavigation = () => {
 };
 
 const init = (url) => {
-	if (!url) {
+	const trimmedUrl = url.trim();
+	if (!trimmedUrl) {
 		return;
 	}
 
-	config.url = url;
+	config.url = trimmedUrl;
 
-	createWidget(url);
+	createWidget(trimmedUrl);
 	attachMessageListener();
 	trackNavigation();
 };

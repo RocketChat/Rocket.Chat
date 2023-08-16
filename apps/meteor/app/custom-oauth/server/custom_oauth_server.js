@@ -1,19 +1,19 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import { Accounts } from 'meteor/accounts-base';
-import { OAuth } from 'meteor/oauth';
-import { ServiceConfiguration } from 'meteor/service-configuration';
-import _ from 'underscore';
 import { LDAP } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { Accounts } from 'meteor/accounts-base';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import { OAuth } from 'meteor/oauth';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+import _ from 'underscore';
 
-import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
-import { Logger } from '../../logger/server';
+import { callbacks } from '../../../lib/callbacks';
 import { isURL } from '../../../lib/utils/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
-import { callbacks } from '../../../lib/callbacks';
+import { Logger } from '../../logger/server';
 import { settings } from '../../settings/server';
+import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 
 const logger = new Logger('CustomOAuth');
 
@@ -136,7 +136,7 @@ export class CustomOAuth {
 			const request = await fetch(`${this.tokenPath}`, {
 				method: 'POST',
 				headers,
-				params,
+				body: params,
 			});
 
 			if (!request.ok) {
@@ -355,7 +355,7 @@ export class CustomOAuth {
 					user.services[serviceName] &&
 					user.services[serviceName].id === serviceData.id &&
 					user.name === serviceData.name &&
-					(this.keyField === 'email' || user.emails?.find(({ address }) => address === serviceData.email))
+					(this.keyField === 'email' || !serviceData.email || user.emails?.find(({ address }) => address === serviceData.email))
 				) {
 					return;
 				}
@@ -402,7 +402,7 @@ export class CustomOAuth {
 		const self = this;
 		const whitelisted = ['id', 'email', 'username', 'name', this.rolesClaim];
 
-		registerAccessTokenService(name, async function (options) {
+		registerAccessTokenService(name, async (options) => {
 			check(
 				options,
 				Match.ObjectIncluding({

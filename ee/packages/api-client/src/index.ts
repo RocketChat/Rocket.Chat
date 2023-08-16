@@ -1,4 +1,3 @@
-import { stringify } from 'query-string';
 import type { Serialized } from '@rocket.chat/core-typings';
 import type {
 	MatchPathPattern,
@@ -8,6 +7,7 @@ import type {
 	PathWithoutParamsFor,
 	PathWithParamsFor,
 } from '@rocket.chat/rest-typings';
+import { stringify } from 'query-string';
 
 import type { Middleware, RestClientInterface } from './RestClientInterface';
 import { hasRequiredTwoFactorMethod, isTotpInvalidError, isTotpRequiredError } from './errors';

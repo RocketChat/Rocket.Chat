@@ -1,5 +1,5 @@
-import fetch from 'node-fetch';
 import type { Reporter, TestCase, TestResult } from '@playwright/test/reporter';
+import fetch from 'node-fetch';
 
 class RocketChatReporter implements Reporter {
 	private url: string;

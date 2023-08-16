@@ -20,7 +20,7 @@ function ContactEditWithData({ id, close }) {
 	}
 
 	if (error || !data || !data.contact) {
-		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
+		return <Box mbs={16}>{t('Contact_not_found')}</Box>;
 	}
 
 	return <ContactNewEdit id={id} data={data} close={close} />;

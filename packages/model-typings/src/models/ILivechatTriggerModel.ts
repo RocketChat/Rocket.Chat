@@ -1,5 +1,5 @@
-import type { FindCursor, UpdateResult } from 'mongodb';
 import type { ILivechatTrigger } from '@rocket.chat/core-typings';
+import type { FindCursor, UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 

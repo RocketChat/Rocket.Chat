@@ -1,15 +1,15 @@
-import type { AtLeast, IRoom, IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
 import { ServiceClassInternal, Authorization } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
+import type { AtLeast, IRoom, IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
-import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
-import { createDirectMessage } from '../../methods/createDirectMessage';
+import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
+import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
-import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { createDirectMessage } from '../../methods/createDirectMessage';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';

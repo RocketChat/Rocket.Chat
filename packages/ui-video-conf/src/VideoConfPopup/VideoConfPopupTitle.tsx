@@ -9,7 +9,7 @@ type VideoConfPopupTitleProps = {
 const VideoConfPopupTitle = ({ text, counter = false }: VideoConfPopupTitleProps): ReactElement => (
 	<Box display='flex' alignItems='center'>
 		<Box fontScale='p2b'>{text}</Box>
-		{counter && <Throbber size='x8' mis='x4' />}
+		{counter && <Throbber size='x8' mis={4} />}
 	</Box>
 );
 

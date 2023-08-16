@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { FederationServers, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import * as federationErrors from './errors';
 import { getUserByUsername } from '../handler';
+import * as federationErrors from './errors';
 
 export async function addUser(query) {
 	if (!Meteor.userId()) {

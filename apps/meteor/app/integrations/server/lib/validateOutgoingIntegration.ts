@@ -1,16 +1,18 @@
-import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
-import { Babel } from 'meteor/babel-compiler';
-import _ from 'underscore';
 import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import { Babel } from 'meteor/babel-compiler';
+import { Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
+import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { outgoingEvents } from '../../lib/outgoingEvents';
-import { parseCSV } from '../../../../lib/utils/parseCSV';
 
 const scopedChannels = ['all_public_channels', 'all_private_groups', 'all_direct_messages'];
 const validChannelChars = ['@', '#'];
+
+const FREEZE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.FREEZE_INTEGRATION_SCRIPTS).toLowerCase());
 
 function _verifyRequiredFields(integration: INewOutgoingIntegration | IUpdateOutgoingIntegration): void {
 	if (
@@ -169,7 +171,7 @@ export const validateOutgoingIntegration = async function (
 		delete integrationData.triggerWords;
 	}
 
-	if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
+	if (!FREEZE_INTEGRATION_SCRIPTS && integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
 		try {
 			const babelOptions = Object.assign(Babel.getDefaultOptions({ runtime: false }), {
 				compact: true,
