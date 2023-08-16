@@ -1,6 +1,6 @@
-import type { BarLayer } from '@nivo/bar';
+import type { BarCustomLayerProps, BarDatum } from '@nivo/bar';
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Tooltip } from '@rocket.chat/fuselage';
+import { Box, Palette, Tooltip } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import React, { useMemo } from 'react';
 
@@ -39,28 +39,50 @@ type BarChartProps = {
 	colors?: ComponentProps<typeof ResponsiveBar>['colors'];
 };
 
-const sideLabel: BarLayer<{
-	size: '3' | '4' | '5' | '6' | '7' | '8';
-	count: number;
-}> = ({ bars, labelSkipWidth }) => (
+const sideLabelStyle = {
+	fill: Palette.text['font-annotation'].toString(),
+	fontFamily:
+		'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
+	fontSize: 12,
+};
+
+const horizontalSideLabel = ({ bars, labelSkipWidth }: BarCustomLayerProps<BarDatum>) => (
 	<g>
-		{bars.map(({ width, height, y, data }) => {
+		{bars?.map(({ width, height, y, data }) => {
 			if (width >= labelSkipWidth) {
 				return null;
 			}
 
 			return (
 				<text
-					key={data.id}
-					transform={`translate(${width + 10}, ${y + height / 2})`}
-					text-anchor='left'
-					dominant-baseline='central'
-					style={{
-						fontFamily: 'sans-serif',
-						fontSize: '11px',
-						fill: 'rgb(51, 51, 51)',
-						pointerEvents: 'none',
-					}}
+					key={data.indexValue}
+					transform={`translate(${width + 8}, ${y + height / 2})`}
+					textAnchor='left'
+					dominantBaseline='central'
+					style={sideLabelStyle}
+				>
+					{data.formattedValue}
+				</text>
+			);
+		})}
+	</g>
+);
+
+const verticalSideLabel = ({ bars, labelSkipHeight, innerHeight }: BarCustomLayerProps<BarDatum>) => (
+	<g>
+		{bars?.map(({ width, height, x, y, data }) => {
+			console.log({ width, innerHeight, height, x, y, data });
+			if (height >= labelSkipHeight) {
+				return null;
+			}
+
+			return (
+				<text
+					key={data.indexValue}
+					transform={`translate(${x + width / 2}, ${innerHeight - height - 8})`}
+					textAnchor='middle'
+					dominantBaseline='central'
+					style={sideLabelStyle}
 				>
 					{data.formattedValue}
 				</text>
@@ -89,6 +111,10 @@ export const BarChart = ({
 		return { minHeight, padding };
 	}, [data.length]);
 
+	const sideLabel: any = direction === 'vertical' ? verticalSideLabel : horizontalSideLabel;
+
+	console.log(sideLabel);
+
 	return (
 		<Box maxWidth={maxWidth} height={height} overflowY='auto'>
 			<Box position='relative' height={Math.max(minHeight, height)} padding={8} overflow='hidden'>
@@ -115,9 +141,8 @@ export const BarChart = ({
 					margin={margins}
 					motionConfig='stiff'
 					theme={REPORTS_CHARTS_THEME}
-					labelSkipWidth={6}
-					// TODO: Create a switch to change the scale type
-					// valueScale={{ type: 'symlog' }}
+					labelSkipWidth={direction === 'horizontal' ? 24 : undefined}
+					labelSkipHeight={direction === 'vertical' ? 16 : undefined}
 					valueScale={{ type: 'linear' }}
 					tooltip={({ data }) => <Tooltip>{`${data.label}: ${data.value}`}</Tooltip>}
 				/>
