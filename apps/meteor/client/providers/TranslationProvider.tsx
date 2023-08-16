@@ -172,15 +172,15 @@ type TranslationProviderProps = {
 };
 
 const useAutoLanguage = () => {
+	// usually that value is set based on the user's config language
+	const [language] = useLocalStorage('userLanguage', 'en');
+
 	const serverLanguage = useSetting<string>('Language');
 	const browserLanguage = filterLanguage(window.navigator.userLanguage ?? window.navigator.language);
 	const defaultUserLanguage = browserLanguage || serverLanguage || 'en';
 
 	// if the language is supported, if not remove the region
 	const suggestedLanguage = languages.includes(defaultUserLanguage) ? defaultUserLanguage : defaultUserLanguage.split('-').shift() ?? 'en';
-
-	// usually that value is set based on the user's config language
-	const [language] = useLocalStorage('userLanguage', suggestedLanguage);
 
 	document.documentElement.classList[isRTLScriptLanguage(language) ? 'add' : 'remove']('rtl');
 	document.documentElement.setAttribute('dir', isRTLScriptLanguage(language) ? 'rtl' : 'ltr');
@@ -282,6 +282,9 @@ const TranslationProviderInner = ({
 			loadLanguage: async (language: string): Promise<void> => {
 				i18n.changeLanguage(language).then(() => applyCustomTranslations());
 			},
+			preferLanguage: () => {
+				
+			};
 			translate: Object.assign(addSprinfToI18n(t), {
 				has: ((key, options) => key && i18n.exists(key, options)) as TranslationContextValue['translate']['has'],
 			}),
