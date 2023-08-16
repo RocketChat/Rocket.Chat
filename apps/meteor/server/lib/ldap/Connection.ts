@@ -9,6 +9,7 @@ import type {
 import ldapjs from 'ldapjs';
 
 import { settings } from '../../../app/settings/server';
+import { ensureArray } from '../../../lib/utils/arrayUtils';
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 
@@ -429,9 +430,9 @@ export class LDAPConnection {
 			return [];
 		}
 
-		const membersBuffer: Buffer[] = result[0].raw[this.options.groupFilterGroupMemberAttribute] as Buffer[];
+		const members = this.extractLdapAttribute(result[0].raw[this.options.groupFilterGroupMemberAttribute]) as string[];
 
-		return membersBuffer.map((member) => member.toString());
+		return ensureArray<string>(members);
 	}
 
 	public async isUserAcceptedByGroupFilter(username: string, userdn: string): Promise<boolean> {
