@@ -9,25 +9,29 @@ const label = (
 const lastNDays =
 	(
 		n: number,
-	): ((utc: boolean) => {
+	): ((
+		utc: boolean,
+		delay: number,
+	) => {
 		start: Date;
 		end: Date;
 	}) =>
-	(utc): { start: Date; end: Date } => ({
+	(utc, delay): { start: Date; end: Date } => ({
 		start: utc
-			? moment.utc().startOf('day').subtract(n, 'days').toDate()
-			: moment()
+			? moment
+					.utc()
 					.startOf('day')
-					.subtract(n + 1, 'days')
-					.toDate(),
-		end: utc ? moment.utc().endOf('day').subtract(1, 'days').toDate() : moment().endOf('day').toDate(),
+					.subtract(n + delay, 'days')
+					.toDate()
+			: moment().startOf('day').subtract(n, 'days').toDate(),
+		end: utc ? moment.utc().endOf('day').subtract(delay, 'days').toDate() : moment().endOf('day').toDate(),
 	});
 
 const periods = [
 	{
 		key: 'today',
 		label: label('Today'),
-		range: lastNDays(1),
+		range: lastNDays(0),
 	},
 	{
 		key: 'this week',
@@ -86,6 +90,7 @@ export const getPeriod = (key: (typeof periods)[number]['key']): Period => {
 export const getPeriodRange = (
 	key: (typeof periods)[number]['key'],
 	utc = false,
+	delay = 1,
 ): {
 	start: Date;
 	end: Date;
@@ -96,5 +101,5 @@ export const getPeriodRange = (
 		throw new Error(`"${key}" is not a valid period key`);
 	}
 
-	return period.range(utc);
+	return period.range(utc, delay);
 };

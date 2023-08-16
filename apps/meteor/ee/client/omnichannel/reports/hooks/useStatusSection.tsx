@@ -36,7 +36,7 @@ export const useStatusSection = () => {
 	const t = useTranslation();
 	const [period, periodSelectorProps] = usePeriodSelectorStorage('reports-status-period', PERIOD_OPTIONS);
 	const getConversationsByStatus = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-status');
-	const { start, end } = getPeriodRange(period);
+	const { start, end } = getPeriodRange(period, true, 0);
 
 	const {
 		data: { data, total } = { data: [], total: 0 },
