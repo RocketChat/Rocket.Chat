@@ -15,16 +15,16 @@ type RoomToolboxProps = {
 
 const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const t = useTranslation();
-	const { isMobile } = useLayout();
+	const { roomToolboxExpanded } = useLayout();
 
 	const toolbox = useRoomToolbox();
 	const { actions, openTab } = toolbox;
 
 	const featuredActions = actions.filter((action) => action.featured);
 	const normalActions = actions.filter((action) => !action.featured);
-	const visibleActions = isMobile ? [] : normalActions.slice(0, 6);
+	const visibleActions = !roomToolboxExpanded ? [] : normalActions.slice(0, 6);
 	const hiddenActions: Record<string, RoomToolboxActionConfig> = Object.fromEntries(
-		(isMobile ? actions : normalActions.slice(6))
+		(!roomToolboxExpanded ? actions : normalActions.slice(6))
 			.filter((item) => !item.disabled)
 			.map((item) => {
 				return [
@@ -74,10 +74,10 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 			{featuredActions.map(mapToToolboxItem)}
 			{featuredActions.length > 0 && <HeaderToolboxDivider />}
 			{visibleActions.map(mapToToolboxItem)}
-			{(normalActions.length > 6 || isMobile) && (
+			{(normalActions.length > 6 || !roomToolboxExpanded) && (
 				<Menu
 					data-qa-id='ToolBox-Menu'
-					tiny={!isMobile}
+					tiny={roomToolboxExpanded}
 					title={t('Options')}
 					maxHeight='initial'
 					className={className}
