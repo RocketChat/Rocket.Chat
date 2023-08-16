@@ -153,7 +153,7 @@ export class ImportDataConverter {
 			_id: new ObjectId().toHexString(),
 			data,
 			dataType: type,
-			...options,
+			options,
 		});
 	}
 
