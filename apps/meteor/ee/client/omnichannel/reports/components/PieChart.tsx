@@ -28,7 +28,7 @@ export const PieChart = ({
 			enableArcLinkLabels={false}
 			enableArcLabels={false}
 			margin={{ right: 200 }}
-			tooltip={({ datum }) => <Tooltip>{`${datum.label}: ${datum.value}`}</Tooltip>}
+			tooltip={({ datum }) => <Tooltip>{datum.label}</Tooltip>}
 			legends={[
 				{
 					anchor: 'right',

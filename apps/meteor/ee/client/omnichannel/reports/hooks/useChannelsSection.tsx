@@ -27,7 +27,7 @@ const formatChartData = (data: { label: string; value: number }[] | undefined = 
 		const percentage = round((item.value / total) * 100);
 		return {
 			...item,
-			label: `${item.label} (${percentage}%)`,
+			label: `${item.label} ${item.value} (${percentage}%)`,
 			rawLabel: item.label,
 			id: `${item.label}_${i}`,
 		};
