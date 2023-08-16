@@ -45,7 +45,7 @@ const UserAvatarWithStatus = () => {
 				alignItems='center'
 				display='flex'
 				overflow='hidden'
-				size={12}
+				size='x12'
 				borderWidth='default'
 				position='absolute'
 				bg='surface-tint'

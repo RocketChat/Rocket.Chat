@@ -53,7 +53,7 @@ Meteor.methods<ServerMethods>({
 		if (agentId !== uid) {
 			if (!(await hasPermissionAsync(uid, 'manage-livechat-agents'))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-					method: 'livechat:saveAgentInfo',
+					method: 'livechat:changeLivechatStatus',
 				});
 			}
 			return Livechat.setUserStatusLivechat(agentId, newStatus);
