@@ -36,7 +36,7 @@ export const useTagsSection = () => {
 	} = useQuery(
 		['omnichannel-reports', 'conversations-by-tags', period],
 		async () => {
-			const { start, end } = getPeriodRange(period, true, 0);
+			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsByTags({ start: start.toISOString(), end: end.toISOString() });
 			return { ...response, data: formatChartData(response.data) };
 		},

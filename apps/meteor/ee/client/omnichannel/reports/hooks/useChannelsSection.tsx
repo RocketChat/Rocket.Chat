@@ -35,7 +35,7 @@ export const useChannelsSection = () => {
 	} = useQuery(
 		['omnichannel-reports', 'conversations-by-source', period],
 		async () => {
-			const { start, end } = getPeriodRange(period, true, 0);
+			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsBySource({ start: start.toISOString(), end: end.toISOString() });
 			const formattedData = formatChartData(response.data, response.total);
 			const displayData = getTop(5, formattedData, t);

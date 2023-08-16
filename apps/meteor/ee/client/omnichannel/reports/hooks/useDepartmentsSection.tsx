@@ -27,7 +27,7 @@ export const useDepartmentsSection = () => {
 	} = useQuery(
 		['omnichannel-reports', 'conversations-by-department', period],
 		async () => {
-			const { start, end } = getPeriodRange(period, true, 0);
+			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsByDepartment({ start: start.toISOString(), end: end.toISOString() });
 			return { ...response, data: formatChartData(response.data) };
 		},

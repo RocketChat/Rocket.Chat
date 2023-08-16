@@ -9,22 +9,13 @@ const label = (
 const lastNDays =
 	(
 		n: number,
-	): ((
-		utc: boolean,
-		delay: number,
-	) => {
+	): ((utc: boolean) => {
 		start: Date;
 		end: Date;
 	}) =>
-	(utc, delay): { start: Date; end: Date } => ({
-		start: utc
-			? moment
-					.utc()
-					.startOf('day')
-					.subtract(n + delay, 'days')
-					.toDate()
-			: moment().startOf('day').subtract(n, 'days').toDate(),
-		end: utc ? moment.utc().endOf('day').subtract(delay, 'days').toDate() : moment().endOf('day').toDate(),
+	(utc): { start: Date; end: Date } => ({
+		start: utc ? moment.utc().startOf('day').subtract(n, 'days').toDate() : moment().startOf('day').subtract(n, 'days').toDate(),
+		end: utc ? moment.utc().endOf('day').toDate() : moment().endOf('day').toDate(),
 	});
 
 const periods = [
@@ -89,8 +80,7 @@ export const getPeriod = (key: (typeof periods)[number]['key']): Period => {
 
 export const getPeriodRange = (
 	key: (typeof periods)[number]['key'],
-	utc = false,
-	delay = 1,
+	utc = true,
 ): {
 	start: Date;
 	end: Date;
@@ -101,5 +91,5 @@ export const getPeriodRange = (
 		throw new Error(`"${key}" is not a valid period key`);
 	}
 
-	return period.range(utc, delay);
+	return period.range(utc);
 };

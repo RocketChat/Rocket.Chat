@@ -30,7 +30,7 @@ export const useAgentsSection = () => {
 	} = useQuery(
 		['omnichannel-reports', 'conversations-by-agent', period, sortBy, sortDirection],
 		async () => {
-			const { start, end } = getPeriodRange(period, true, 0);
+			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsBySource({
 				start: start.toISOString(),
 				end: end.toISOString(),
