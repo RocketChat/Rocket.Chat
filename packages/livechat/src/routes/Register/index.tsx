@@ -1,5 +1,5 @@
 import { route } from 'preact-router';
-import { useContext, useEffect, useRef, useState } from 'preact/hooks';
+import { useContext, useEffect, useRef } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
 import { Form, FormField, TextInput, SelectInput, CustomFields as CustomFieldsForm } from '../../components/Form';
+import { FormScrollShadow } from '../../components/Form/FormScrollShadow';
 import Screen from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
@@ -25,9 +26,6 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 
 	const topRef = useRef<HTMLDivElement>(null);
 	const bottomRef = useRef<HTMLDivElement>(null);
-
-	const [atTop, setAtTop] = useState(true);
-	const [atBottom, setAtBottom] = useState(false);
 
 	const {
 		handleSubmit,
@@ -106,31 +104,6 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 		}
 	}, [user?._id]);
 
-	// TODO: Move this to its own component
-	const callback: IntersectionObserverCallback = (entries) => {
-		entries.forEach((entry) => {
-			entry.target.id === 'top' && setAtTop(entry.isIntersecting);
-			entry.target.id === 'bottom' && setAtBottom(entry.isIntersecting);
-		});
-	};
-
-	useEffect(() => {
-		const observer = new IntersectionObserver(callback, {
-			root: document.getElementById('scrollShadow'),
-			rootMargin: '0px',
-			threshold: 0.1,
-		});
-		if (topRef.current) {
-			observer.observe(topRef.current);
-		}
-		if (bottomRef.current) {
-			observer.observe(bottomRef.current);
-		}
-		return () => {
-			observer.disconnect();
-		};
-	}, []);
-
 	return (
 		<Screen
 			theme={{
@@ -143,7 +116,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 			className={createClassName(styles, 'register')}
 			{...screenProps}
 		>
-			<div id='scrollShadow' className={createClassName(styles, 'scrollShadow', { atTop, atBottom })}>
+			<FormScrollShadow topRef={topRef} bottomRef={bottomRef}>
 				<Screen.Content full>
 					<Form
 						id='register'
@@ -209,7 +182,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 						<div ref={bottomRef} id='bottom' style={{ height: '1px', width: '100%' }} />
 					</Form>
 				</Screen.Content>
-			</div>
+			</FormScrollShadow>
 			<Screen.Footer>
 				<Button loading={loading} form='register' submit full disabled={!isDirty || !isValid || loading || isSubmitting}>
 					{t('start_chat')}

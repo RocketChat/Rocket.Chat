@@ -1,4 +1,4 @@
-import { useContext } from 'preact/hooks';
+import { useContext, useRef } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
 import { Form, FormField, SelectInput, TextInput } from '../../components/Form';
+import { FormScrollShadow } from '../../components/Form/FormScrollShadow';
 import { MultilineTextInput } from '../../components/Form/MultilineTextInput';
 import { renderMarkdown } from '../../components/Messages/MessageText/markdown';
 import { ModalManager } from '../../components/Modal';
@@ -34,6 +35,9 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 		alerts,
 	} = useContext(StoreContext);
 	const { t } = useTranslation();
+
+	const topRef = useRef<HTMLDivElement>(null);
+	const bottomRef = useRef<HTMLDivElement>(null);
 
 	const {
 		handleSubmit,
@@ -85,79 +89,84 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 			title={customOfflineTitle || title || defaultTitle}
 			className={createClassName(styles, 'leave-message')}
 		>
-			<Screen.Content>
-				<div
-					className={createClassName(styles, 'leave-message__main-message')}
-					// TODO: Implement Gazzodown and remove dangerouslySetInnerHTML from Livechat
-					// eslint-disable-next-line react/no-danger
-					dangerouslySetInnerHTML={{
-						__html: renderMarkdown(
-							displayOfflineForm ? offlineMessage || defaultMessage : offlineUnavailableMessage || defaultUnavailableMessage,
-						),
-					}}
-				/>
+			<FormScrollShadow topRef={topRef} bottomRef={bottomRef}>
+				<Screen.Content>
+					<div id='top' ref={topRef} style={{ height: '1px', width: '100%' }} />
 
-				<Form
-					// The price of using react-hook-form on a preact project ¯\_(ツ)_/¯
-					onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>) as unknown as JSXInternal.GenericEventHandler<HTMLFormElement>}
-					id='leaveMessage'
-				>
-					<FormField required label={t('name')} error={errors.name?.message?.toString()}>
-						<Controller
-							name='name'
-							control={control}
-							// defaultValue={guestName}
-							rules={{ required: true }}
-							render={({ field }) => (
-								<TextInput placeholder={t('insert_your_field_here', { field: t('name') })} disabled={loading} {...field} />
-							)}
-						/>
-					</FormField>
+					<div
+						className={createClassName(styles, 'leave-message__main-message')}
+						// TODO: Implement Gazzodown and remove dangerouslySetInnerHTML from Livechat
+						// eslint-disable-next-line react/no-danger
+						dangerouslySetInnerHTML={{
+							__html: renderMarkdown(
+								displayOfflineForm ? offlineMessage || defaultMessage : offlineUnavailableMessage || defaultUnavailableMessage,
+							),
+						}}
+					/>
 
-					<FormField required label={t('email')} error={errors.email?.message?.toString()}>
-						<Controller
-							name='email'
-							control={control}
-							// defaultValue={guestEmail}
-							rules={{
-								required: true,
-								validate: { checkEmail: (value) => validateEmail(value, { style: 'rfc' }) || t('invalid_email') },
-							}}
-							render={({ field }) => (
-								<TextInput placeholder={t('insert_your_field_here', { field: t('email') })} disabled={loading} {...field} />
-							)}
-						/>
-					</FormField>
-
-					{departments?.some((dept) => dept.showOnOfflineForm) ? (
-						<FormField label={t('i_need_help_with')} error={errors.department?.message?.toString()}>
+					<Form
+						// The price of using react-hook-form on a preact project ¯\_(ツ)_/¯
+						onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>) as unknown as JSXInternal.GenericEventHandler<HTMLFormElement>}
+						id='leaveMessage'
+					>
+						<FormField required label={t('name')} error={errors.name?.message?.toString()}>
 							<Controller
-								name='department'
+								name='name'
 								control={control}
+								// defaultValue={guestName}
+								rules={{ required: true }}
 								render={({ field }) => (
-									<SelectInput
-										options={sortArrayByColumn(departments, 'name').map(({ _id, name }: { _id: string; name: string }) => ({
-											value: _id,
-											label: name,
-										}))}
-										placeholder={t('choose_an_option')}
-										disabled={loading}
-										{...field}
-									/>
+									<TextInput placeholder={t('insert_your_field_here', { field: t('name') })} disabled={loading} {...field} />
 								)}
 							/>
 						</FormField>
-					) : null}
-					<FormField required label={t('message')} error={errors.message?.message?.toString()}>
-						<Controller
-							name='message'
-							control={control}
-							rules={{ required: true }}
-							render={({ field }) => <MultilineTextInput rows={4} placeholder={t('write_your_message')} disabled={loading} {...field} />}
-						/>
-					</FormField>
-				</Form>
-			</Screen.Content>
+
+						<FormField required label={t('email')} error={errors.email?.message?.toString()}>
+							<Controller
+								name='email'
+								control={control}
+								// defaultValue={guestEmail}
+								rules={{
+									required: true,
+									validate: { checkEmail: (value) => validateEmail(value, { style: 'rfc' }) || t('invalid_email') },
+								}}
+								render={({ field }) => (
+									<TextInput placeholder={t('insert_your_field_here', { field: t('email') })} disabled={loading} {...field} />
+								)}
+							/>
+						</FormField>
+
+						{departments?.some((dept) => dept.showOnOfflineForm) ? (
+							<FormField label={t('i_need_help_with')} error={errors.department?.message?.toString()}>
+								<Controller
+									name='department'
+									control={control}
+									render={({ field }) => (
+										<SelectInput
+											options={sortArrayByColumn(departments, 'name').map(({ _id, name }: { _id: string; name: string }) => ({
+												value: _id,
+												label: name,
+											}))}
+											placeholder={t('choose_an_option')}
+											disabled={loading}
+											{...field}
+										/>
+									)}
+								/>
+							</FormField>
+						) : null}
+						<FormField required label={t('message')} error={errors.message?.message?.toString()}>
+							<Controller
+								name='message'
+								control={control}
+								rules={{ required: true }}
+								render={({ field }) => <MultilineTextInput rows={4} placeholder={t('write_your_message')} disabled={loading} {...field} />}
+							/>
+						</FormField>
+					</Form>
+					<div ref={bottomRef} id='bottom' style={{ height: '1px', width: '100%' }} />
+				</Screen.Content>
+			</FormScrollShadow>
 			<Screen.Footer>
 				<Button loading={loading} form='leaveMessage' submit full disabled={!isDirty || !isValid || loading || isSubmitting}>
 					{t('send')}
