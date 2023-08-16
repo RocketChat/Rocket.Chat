@@ -151,7 +151,7 @@ class Triggers {
 							store.state.messages,
 							message,
 							({ _id }) => _id === message._id,
-							({ ts }) => ts,
+							({ ts }) => new Date(ts).getTime(),
 						),
 					});
 
