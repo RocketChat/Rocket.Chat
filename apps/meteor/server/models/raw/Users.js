@@ -345,7 +345,7 @@ export class UsersRaw extends BaseRaw {
 				{
 					$project: {
 						...options.projection,
-						roomRoles: '$sub.roles',
+						roomRoles: { $ifNull: ['$sub.roles', []] },
 					},
 				},
 				{
