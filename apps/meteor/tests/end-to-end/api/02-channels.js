@@ -1238,7 +1238,7 @@ describe('[Channels]', function () {
 					expect(res.body).to.have.property('offset');
 
 					const member = res.body.members[0];
-					expect(member).to.have.property('roles');
+					expect(member).to.have.property('roomRoles');
 					expect(member).to.have.property('_id');
 					expect(member).to.have.property('username');
 					expect(member).to.have.property('name');
