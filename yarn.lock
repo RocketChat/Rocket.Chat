@@ -7491,7 +7491,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/federation@workspace:ee/packages/federation"
   dependencies:
-    "@rocket.chat/apps-engine": ^1.39.1
+    "@rocket.chat/apps-engine": 1.40.0
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
