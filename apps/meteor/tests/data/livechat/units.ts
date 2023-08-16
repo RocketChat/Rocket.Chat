@@ -28,7 +28,7 @@ export const createMonitor = async (username?: string): Promise<{ _id: string; u
 	});
 };
 
-export const createUnit = async (monitorId: string, username?: string, departmentIds: string[]): Promise<IOmnichannelBusinessUnit> => {
+export const createUnit = async (monitorId: string, username: string | undefined, departmentIds: string[]): Promise<IOmnichannelBusinessUnit> => {
     if (!username) {
         throw new Error('username is required');
     }
