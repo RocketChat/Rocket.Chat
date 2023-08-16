@@ -16,6 +16,7 @@ import { Meteor } from 'meteor/meteor';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../../server/lib/logger/Logger';
+import { settings } from '../../../settings/server';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
@@ -129,8 +130,17 @@ export const RoutingManager: Routing = {
 		if (!agent) {
 			logger.debug(`No agents available. Unable to delegate inquiry ${inquiry._id}`);
 			// When an inqury reaches here on CE, it will stay here as 'ready' since on CE there's no mechanism to re queue it.
-			// When reaching this point, managers have to manually transfer the inquiry to another room. This is expected.
-			return LivechatRooms.findOneById(rid);
+			// When reaching this point, managers have to manually transfer delegateInquiry the inquiry to another room. This is expected.
+			const room = await LivechatRooms.findOneById(rid);
+
+			if (settings.get('Livechat_accept_chats_with_no_agents')) {
+				// Need to check if "Livechat_accept_chats_with_no_agents" is enabled
+				// If it is, then we should return the chat to queue
+				// @ts-expect-error - this is a runtime property
+				room.chatQueued = true;
+			}
+
+			return room;
 		}
 
 		logger.debug(`Inquiry ${inquiry._id} will be taken by agent ${agent.agentId}`);

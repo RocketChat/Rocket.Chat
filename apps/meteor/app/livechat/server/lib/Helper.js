@@ -284,12 +284,12 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 	const room = await LivechatRooms.findOneById(rid);
 	setImmediate(() => callbacks.run('livechat.chatQueued', room));
 
-	if (RoutingManager.getConfig().autoAssignAgent) {
-		return;
-	}
-
 	if (!agent || !(await allowAgentSkipQueue(agent))) {
 		await saveQueueInquiry(inquiry);
+	}
+
+	if (RoutingManager.getConfig().autoAssignAgent) {
+		return;
 	}
 
 	// Alert only the online agents of the queued request
@@ -500,7 +500,6 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 
 	if (chatQueued) {
 		logger.debug(`Forwarding succesful. Marking inquiry ${inquiry._id} as ready`);
-		await LivechatInquiry.readyInquiry(inquiry._id);
 		await LivechatRooms.removeAgentByRoomId(rid);
 		await dispatchAgentDelegated(rid, null);
 		const newInquiry = await LivechatInquiry.findOneById(inquiry._id);
