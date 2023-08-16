@@ -1,13 +1,14 @@
 import type { IImportProgress, ProgressStep } from '@rocket.chat/core-typings';
 import { Box, Margins, Throbber, ProgressBar } from '@rocket.chat/fuselage';
-import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { ImportingStartedStates } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 import Page from '../../../components/Page';
+import { ImportsCount } from './ImportsCount';
 import { useErrorHandler } from './useErrorHandler';
 
 const ImportProgressPage = function ImportProgressPage() {
@@ -97,17 +98,16 @@ const ImportProgressPage = function ImportProgressPage() {
 		},
 	);
 
-	const [progressRate, setProgressRate] = useSafely(useState<number>(0));
+	// eslint-disable-next-line new-cap
+	const { progressRate, messageCount, usersCount, channelsCount } = ImportsCount();
 
 	const isImportProgress = (_element: any): _element is IImportProgress => true;
 
-	useEffect(
-		() =>
-			streamer('progress', (rate) => {
-				isImportProgress(rate) ? setProgressRate(rate.count.completed) : setProgressRate(rate.rate);
-			}),
-		[streamer, setProgressRate],
-	);
+	const completedPercentage = isImportProgress(progressRate)
+		? (progressRate.count.completed * 100) / progressRate.count.total
+		: progressRate.rate * 10;
+
+	const totalData = messageCount + usersCount + channelsCount;
 
 	const progress = useQuery(
 		['importers', 'progress'],
@@ -179,12 +179,10 @@ const ImportProgressPage = function ImportProgressPage() {
 									{t((progress.data.step[0].toUpperCase() + progress.data.step.slice(1)) as any)}
 								</Box>
 								<Box display='flex' justifyContent='center'>
-									<Box is={ProgressBar} animated percentage={(progressRate / 100).toFixed(0)} mie='x24' />
+									<Box is={ProgressBar} animated percentage={completedPercentage.toFixed(0)} mie='x24' />
 									<Box is='span' fontScale='p2'>
-										{progress.data.completed}/{progress.data.total} (
-										{numberFormat((progress.data.completed / progress.data.total) * 100, 0)}
+										{progress.data.completed}/{totalData} ({numberFormat((progress.data.completed / totalData) * 100, 0)}
 										%)
-										{/* TODO: use selected channels, users and messages count instead of progressRate*/}
 									</Box>
 								</Box>
 							</>
