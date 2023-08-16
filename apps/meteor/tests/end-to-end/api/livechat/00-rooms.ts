@@ -1850,17 +1850,17 @@ describe('LIVECHAT - rooms', function () {
 			await updatePermission('close-others-livechat-room', ['admin']);
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(200);
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }).expect(200);
 		});
 		it('should fail if room is closed', async () => {
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
 
 			// close room
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(200);
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }).expect(200);
 
 			// try to close again
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(400);
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }).expect(400);
 		});
 
 		(IS_EE ? it : it.skip)('should close room and generate transcript pdf', async () => {
