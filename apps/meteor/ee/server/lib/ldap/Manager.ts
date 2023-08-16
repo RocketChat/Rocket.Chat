@@ -55,8 +55,8 @@ export class LDAPEEManager extends LDAPManager {
 					}
 
 					const memberFormat = ldap.options.groupFilterGroupMemberFormat
-						?.replace(/#{username}/g, options?.username as string)
-						.replace(/#{userdn}/g, options?.dn as string);
+						?.replace(/#{username}/g, options?.username || '#{username}')
+						.replace(/#{userdn}/g, options?.dn || '#{userdn}');
 
 					return membersOfGroupFilter.includes(memberFormat);
 				}) as ImporterBeforeImportCallback,
