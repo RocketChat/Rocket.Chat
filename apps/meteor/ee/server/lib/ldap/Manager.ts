@@ -53,7 +53,17 @@ export class LDAPEEManager extends LDAPManager {
 					if (!ldap.options.groupFilterEnabled) {
 						return true;
 					}
-					return membersOfGroupFilter.includes(data.importIds[0]);
+
+					if (!ldap.options.groupFilterGroupMemberFormat) {
+						logger.debug(`LDAP Group Filter is enabled but no group member format is set.`);
+						return true;
+					}
+
+					const memberFormat = ldap.options.groupFilterGroupMemberFormat
+						?.replace(/#{username}/g, data.username || '')
+						.replace(/#{userdn}/g, data.importIds[0]);
+
+					return membersOfGroupFilter.includes(memberFormat);
 				}) as ImporterBeforeImportCallback,
 				afterImportFn: (async (data: IImportUser, _type: string, isNewRecord: boolean): Promise<void> =>
 					this.advancedSync(ldap, data, converter, isNewRecord)) as ImporterAfterImportCallback,
