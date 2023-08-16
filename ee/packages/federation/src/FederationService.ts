@@ -386,4 +386,8 @@ export class FederationService extends ServiceClassInternal implements IFederati
 			FederationRoomSenderConverter.toJoinExternalPublicRoomDto(internalUserId, externalRoomId, roomName, pageToken),
 		);
 	}
+
+	public async verifyMatrixIds(_matrixIds: string[]): Promise<Map<string, string>> {
+		return new Map<string, string>();
+	}
 }
