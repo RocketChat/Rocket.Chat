@@ -580,7 +580,7 @@ export class LDAPEEManager extends LDAPManager {
 
 			if (ldapUser) {
 				const userData = this.mapUserData(ldapUser, user.username);
-				converter.addUserSync(userData, { dn: ldapUser.dn, username: ldapUser.username });
+				converter.addUserSync(userData, { dn: ldapUser.dn, username: this.getLdapUsername(data) });
 			}
 		}
 	}
