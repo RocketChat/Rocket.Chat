@@ -402,6 +402,7 @@ export class LDAPConnection {
 
 		if (!this.options.groupFilterGroupMemberFormat) {
 			searchLogger.debug(`LDAP Group Filter is enabled but no group member format is set.`);
+			return [];
 		}
 
 		const filter = ['(&'];
