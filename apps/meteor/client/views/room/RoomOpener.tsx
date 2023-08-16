@@ -13,7 +13,7 @@ import { useOpenRoom } from './hooks/useOpenRoom';
 
 const RoomProvider = lazy(() => import('./providers/RoomProvider'));
 const RoomNotFound = lazy(() => import('./RoomNotFound'));
-const Room = lazy(() => import('./Room/Room'));
+const Room = lazy(() => import('./Room'));
 const RoomLayout = lazy(() => import('./layout/RoomLayout'));
 const NotAuthorizedPage = lazy(() => import('../notAuthorized/NotAuthorizedPage'));
 

@@ -1,76 +1,33 @@
-import { MockedAuthorizationContext } from '@rocket.chat/mock-providers/src/MockedAuthorizationContext';
-import { MockedServerContext } from '@rocket.chat/mock-providers/src/MockedServerContext';
-import { MockedSettingsContext } from '@rocket.chat/mock-providers/src/MockedSettingsContext';
-import { MockedUserContext } from '@rocket.chat/mock-providers/src/MockedUserContext';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react-hooks';
-import React from 'react';
 
-import { ActionManagerContext } from '../../../../contexts/ActionManagerContext';
 import { useAppsItems } from './useAppsItems';
 
 it('should return and empty array if the user does not have `manage-apps` and `access-marketplace` permission', () => {
-	const { result } = renderHook(
-		() => {
-			return useAppsItems();
-		},
-		{
-			wrapper: ({ children }) => (
-				<QueryClientProvider client={queryClient}>
-					<MockedServerContext
-						handleRequest={(args) => {
-							if (args.method === 'GET' && args.pathPattern === '/apps/actionButtons') {
-								return [] as any;
-							}
-						}}
-					>
-						<MockedSettingsContext settings={{}}>
-							<MockedUserContext userPreferences={{}}>
-								<MockedUiKitActionManager>{children}</MockedUiKitActionManager>
-							</MockedUserContext>
-						</MockedSettingsContext>
-					</MockedServerContext>
-				</QueryClientProvider>
-			),
-		},
-	);
+	const { result } = renderHook(() => useAppsItems(), {
+		wrapper: mockAppRoot()
+			.withEndpoint('GET', '/apps/actionButtons', () => [])
+			.build(),
+	});
 
 	expect(result.all[0]).toEqual([]);
 });
 
 it('should return `marketplace` and `installed` items if the user has `access-marketplace` permission', () => {
-	const { result } = renderHook(
-		() => {
-			return useAppsItems();
-		},
-		{
-			wrapper: ({ children }) => (
-				<QueryClientProvider client={queryClient}>
-					<MockedServerContext
-						handleRequest={(args) => {
-							if (args.method === 'GET' && args.pathPattern === '/apps/actionButtons') {
-								return [] as any;
-							}
-						}}
-					>
-						<MockedAuthorizationContext permissions={['access-marketplace']}>
-							<MockedSettingsContext settings={{}}>
-								<MockedUserContext userPreferences={{}}>
-									<MockedUiKitActionManager>{children}</MockedUiKitActionManager>
-								</MockedUserContext>
-							</MockedSettingsContext>
-						</MockedAuthorizationContext>
-					</MockedServerContext>
-				</QueryClientProvider>
-			),
-		},
-	);
+	const { result } = renderHook(() => useAppsItems(), {
+		wrapper: mockAppRoot()
+			.withEndpoint('GET', '/apps/actionButtons', () => [])
+			.withPermission('access-marketplace')
+			.build(),
+	});
 
 	expect(result.current[0]).toEqual(
 		expect.objectContaining({
 			id: 'marketplace',
 		}),
 	);
+
 	expect(result.current[1]).toEqual(
 		expect.objectContaining({
 			id: 'installed',
@@ -79,48 +36,25 @@ it('should return `marketplace` and `installed` items if the user has `access-ma
 });
 
 it('should return `marketplace` and `installed` items if the user has `manage-apps` permission', () => {
-	const { result } = renderHook(
-		() => {
-			return useAppsItems();
-		},
-		{
-			wrapper: ({ children }) => (
-				<QueryClientProvider client={queryClient}>
-					<MockedServerContext
-						handleRequest={async (args) => {
-							if (args.method === 'GET' && args.pathPattern === '/apps/app-request/stats') {
-								return {
-									data: {
-										totalSeen: 0,
-										totalUnseen: 1,
-									},
-								} as any;
-							}
-							if (args.method === 'GET' && args.pathPattern === '/apps/actionButtons') {
-								return [] as any;
-							}
-
-							throw new Error('Method not mocked');
-						}}
-					>
-						<MockedAuthorizationContext permissions={['manage-apps']}>
-							<MockedSettingsContext settings={{}}>
-								<MockedUserContext userPreferences={{}}>
-									<MockedUiKitActionManager>{children}</MockedUiKitActionManager>
-								</MockedUserContext>
-							</MockedSettingsContext>
-						</MockedAuthorizationContext>
-					</MockedServerContext>
-				</QueryClientProvider>
-			),
-		},
-	);
+	const { result } = renderHook(() => useAppsItems(), {
+		wrapper: mockAppRoot()
+			.withEndpoint('GET', '/apps/actionButtons', () => [])
+			.withEndpoint('GET', '/apps/app-request/stats', () => ({
+				data: {
+					totalSeen: 0,
+					totalUnseen: 1,
+				},
+			}))
+			.withPermission('manage-apps')
+			.build(),
+	});
 
 	expect(result.current[0]).toEqual(
 		expect.objectContaining({
 			id: 'marketplace',
 		}),
 	);
+
 	expect(result.current[1]).toEqual(
 		expect.objectContaining({
 			id: 'installed',
@@ -135,55 +69,32 @@ it('should return `marketplace` and `installed` items if the user has `manage-ap
 });
 
 it('should return one action from the server with no conditions', async () => {
-	const { result, waitForValueToChange } = renderHook(
-		() => {
-			return useAppsItems();
-		},
-		{
-			wrapper: ({ children }) => (
-				<QueryClientProvider client={queryClient}>
-					<MockedServerContext
-						handleRequest={async (args) => {
-							if (args.method === 'GET' && args.pathPattern === '/apps/app-request/stats') {
-								return {
-									data: {
-										totalSeen: 0,
-										totalUnseen: 1,
-									},
-								} as any;
-							}
-							if (args.method === 'GET' && args.pathPattern === '/apps/actionButtons') {
-								return [
-									{
-										appId: 'APP_ID',
-										actionId: 'ACTION_ID',
-										labelI18n: 'LABEL_I18N',
-										context: 'userDropdownAction',
-									},
-								] as any;
-							}
-
-							throw new Error('Method not mocked');
-						}}
-					>
-						<MockedAuthorizationContext permissions={['manage-apps']}>
-							<MockedSettingsContext settings={{}}>
-								<MockedUserContext userPreferences={{}}>
-									<MockedUiKitActionManager>{children}</MockedUiKitActionManager>
-								</MockedUserContext>
-							</MockedSettingsContext>
-						</MockedAuthorizationContext>
-					</MockedServerContext>
-				</QueryClientProvider>
-			),
-		},
-	);
+	const { result, waitForValueToChange } = renderHook(() => useAppsItems(), {
+		wrapper: mockAppRoot()
+			.withEndpoint('GET', '/apps/actionButtons', () => [
+				{
+					appId: 'APP_ID',
+					actionId: 'ACTION_ID',
+					labelI18n: 'LABEL_I18N',
+					context: UIActionButtonContext.USER_DROPDOWN_ACTION,
+				},
+			])
+			.withEndpoint('GET', '/apps/app-request/stats', () => ({
+				data: {
+					totalSeen: 0,
+					totalUnseen: 1,
+				},
+			}))
+			.withPermission('manage-apps')
+			.build(),
+	});
 
 	expect(result.current[0]).toEqual(
 		expect.objectContaining({
 			id: 'marketplace',
 		}),
 	);
+
 	expect(result.current[1]).toEqual(
 		expect.objectContaining({
 			id: 'installed',
@@ -201,55 +112,29 @@ it('should return one action from the server with no conditions', async () => {
 
 describe('User Dropdown actions with role conditions', () => {
 	it('should return the action if the user has admin role', async () => {
-		const { result, waitForValueToChange } = renderHook(
-			() => {
-				return useAppsItems();
-			},
-			{
-				wrapper: ({ children }) => (
-					<QueryClientProvider client={queryClient}>
-						<MockedServerContext
-							handleRequest={async (args) => {
-								if (args.method === 'GET' && args.pathPattern === '/apps/app-request/stats') {
-									return {
-										data: {
-											totalSeen: 0,
-											totalUnseen: 1,
-										},
-									} as any;
-								}
-								if (args.method === 'GET' && args.pathPattern === '/apps/actionButtons') {
-									return [
-										{
-											appId: 'APP_ID',
-											actionId: 'ACTION_ID',
-											labelI18n: 'LABEL_I18N',
-											context: 'userDropdownAction',
-											when: {
-												hasOneRole: ['admin'],
-											},
-										},
-									] as any;
-								}
-
-								throw new Error('Method not mocked');
-							}}
-						>
-							<MockedAuthorizationContext permissions={['manage-apps']} roles={['admin']}>
-								<MockedSettingsContext settings={{}}>
-									<MockedUserContext userPreferences={{}}>
-										<MockedUiKitActionManager>{children}</MockedUiKitActionManager>
-									</MockedUserContext>
-								</MockedSettingsContext>
-							</MockedAuthorizationContext>
-						</MockedServerContext>
-					</QueryClientProvider>
-				),
-			},
-		);
-
-		await waitForValueToChange(() => {
-			return queryClient.isFetching();
+		const { result, waitForValueToChange } = renderHook(() => useAppsItems(), {
+			wrapper: mockAppRoot()
+				.withEndpoint('GET', '/apps/actionButtons', () => [
+					{
+						appId: 'APP_ID',
+						actionId: 'ACTION_ID',
+						labelI18n: 'LABEL_I18N',
+						context: UIActionButtonContext.USER_DROPDOWN_ACTION,
+						when: {
+							hasOneRole: ['admin'],
+						},
+					},
+				])
+				.withEndpoint('GET', '/apps/app-request/stats', () => ({
+					data: {
+						totalSeen: 0,
+						totalUnseen: 1,
+					},
+				}))
+				.withPermission('manage-apps')
+				.withJohnDoe()
+				.withRole('admin')
+				.build(),
 		});
 
 		expect(result.current[0]).toEqual(
@@ -257,11 +142,14 @@ describe('User Dropdown actions with role conditions', () => {
 				id: 'marketplace',
 			}),
 		);
+
 		expect(result.current[1]).toEqual(
 			expect.objectContaining({
 				id: 'installed',
 			}),
 		);
+
+		await waitForValueToChange(() => result.current[3]);
 
 		expect(result.current[3]).toEqual(
 			expect.objectContaining({
@@ -271,55 +159,27 @@ describe('User Dropdown actions with role conditions', () => {
 	});
 
 	it('should return filter the action if the user doesn`t have admin role', async () => {
-		const { result, waitForValueToChange } = renderHook(
-			() => {
-				return useAppsItems();
-			},
-			{
-				wrapper: ({ children }) => (
-					<QueryClientProvider client={queryClient}>
-						<MockedServerContext
-							handleRequest={async (args) => {
-								if (args.method === 'GET' && args.pathPattern === '/apps/app-request/stats') {
-									return {
-										data: {
-											totalSeen: 0,
-											totalUnseen: 1,
-										},
-									} as any;
-								}
-								if (args.method === 'GET' && args.pathPattern === '/apps/actionButtons') {
-									return [
-										{
-											appId: 'APP_ID',
-											actionId: 'ACTION_ID',
-											labelI18n: 'LABEL_I18N',
-											context: 'userDropdownAction',
-											when: {
-												hasOneRole: ['admin'],
-											},
-										},
-									] as any;
-								}
-
-								throw new Error('Method not mocked');
-							}}
-						>
-							<MockedAuthorizationContext permissions={['manage-apps']}>
-								<MockedSettingsContext settings={{}}>
-									<MockedUserContext userPreferences={{}}>
-										<MockedUiKitActionManager>{children}</MockedUiKitActionManager>
-									</MockedUserContext>
-								</MockedSettingsContext>
-							</MockedAuthorizationContext>
-						</MockedServerContext>
-					</QueryClientProvider>
-				),
-			},
-		);
-
-		await waitForValueToChange(() => {
-			return queryClient.isFetching();
+		const { result } = renderHook(() => useAppsItems(), {
+			wrapper: mockAppRoot()
+				.withEndpoint('GET', '/apps/actionButtons', () => [
+					{
+						appId: 'APP_ID',
+						actionId: 'ACTION_ID',
+						labelI18n: 'LABEL_I18N',
+						context: UIActionButtonContext.USER_DROPDOWN_ACTION,
+						when: {
+							hasOneRole: ['admin'],
+						},
+					},
+				])
+				.withEndpoint('GET', '/apps/app-request/stats', () => ({
+					data: {
+						totalSeen: 0,
+						totalUnseen: 1,
+					},
+				}))
+				.withPermission('manage-apps')
+				.build(),
 		});
 
 		expect(result.current[0]).toEqual(
@@ -327,6 +187,7 @@ describe('User Dropdown actions with role conditions', () => {
 				id: 'marketplace',
 			}),
 		);
+
 		expect(result.current[1]).toEqual(
 			expect.objectContaining({
 				id: 'installed',
@@ -345,55 +206,27 @@ describe('User Dropdown actions with role conditions', () => {
 
 describe('User Dropdown actions with permission conditions', () => {
 	it('should return the action if the user has manage-apps permission', async () => {
-		const { result, waitForValueToChange } = renderHook(
-			() => {
-				return useAppsItems();
-			},
-			{
-				wrapper: ({ children }) => (
-					<QueryClientProvider client={queryClient}>
-						<MockedServerContext
-							handleRequest={async (args) => {
-								if (args.method === 'GET' && args.pathPattern === '/apps/app-request/stats') {
-									return {
-										data: {
-											totalSeen: 0,
-											totalUnseen: 1,
-										},
-									} as any;
-								}
-								if (args.method === 'GET' && args.pathPattern === '/apps/actionButtons') {
-									return [
-										{
-											appId: 'APP_ID',
-											actionId: 'ACTION_ID',
-											labelI18n: 'LABEL_I18N',
-											context: 'userDropdownAction',
-											when: {
-												hasOnePermission: ['manage-apps'],
-											},
-										},
-									] as any;
-								}
-
-								throw new Error('Method not mocked');
-							}}
-						>
-							<MockedAuthorizationContext permissions={['manage-apps']}>
-								<MockedSettingsContext settings={{}}>
-									<MockedUserContext userPreferences={{}}>
-										<MockedUiKitActionManager>{children}</MockedUiKitActionManager>
-									</MockedUserContext>
-								</MockedSettingsContext>
-							</MockedAuthorizationContext>
-						</MockedServerContext>
-					</QueryClientProvider>
-				),
-			},
-		);
-
-		await waitForValueToChange(() => {
-			return queryClient.isFetching();
+		const { result, waitForValueToChange } = renderHook(() => useAppsItems(), {
+			wrapper: mockAppRoot()
+				.withEndpoint('GET', '/apps/actionButtons', () => [
+					{
+						appId: 'APP_ID',
+						actionId: 'ACTION_ID',
+						labelI18n: 'LABEL_I18N',
+						context: UIActionButtonContext.USER_DROPDOWN_ACTION,
+						when: {
+							hasOnePermission: ['manage-apps'],
+						},
+					},
+				])
+				.withEndpoint('GET', '/apps/app-request/stats', () => ({
+					data: {
+						totalSeen: 0,
+						totalUnseen: 1,
+					},
+				}))
+				.withPermission('manage-apps')
+				.build(),
 		});
 
 		expect(result.current[0]).toEqual(
@@ -401,11 +234,14 @@ describe('User Dropdown actions with permission conditions', () => {
 				id: 'marketplace',
 			}),
 		);
+
 		expect(result.current[1]).toEqual(
 			expect.objectContaining({
 				id: 'installed',
 			}),
 		);
+
+		await waitForValueToChange(() => result.current[3]);
 
 		expect(result.current[3]).toEqual(
 			expect.objectContaining({
@@ -415,73 +251,29 @@ describe('User Dropdown actions with permission conditions', () => {
 	});
 
 	it('should return filter the action if the user doesn`t have `any` permission', async () => {
-		const { result, waitForValueToChange } = renderHook(
-			() => {
-				return useAppsItems();
-			},
-			{
-				wrapper: ({ children }) => (
-					<QueryClientProvider client={queryClient}>
-						<MockedServerContext
-							handleRequest={async (args) => {
-								if (args.method === 'GET' && args.pathPattern === '/apps/app-request/stats') {
-									return {
-										data: {
-											totalSeen: 0,
-											totalUnseen: 1,
-										},
-									} as any;
-								}
-								if (args.method === 'GET' && args.pathPattern === '/apps/actionButtons') {
-									return [
-										{
-											appId: 'APP_ID',
-											actionId: 'ACTION_ID',
-											labelI18n: 'LABEL_I18N',
-											context: 'userDropdownAction',
-											when: {
-												hasOnePermission: ['any'],
-											},
-										},
-									] as any;
-								}
-
-								throw new Error('Method not mocked');
-							}}
-						>
-							<MockedAuthorizationContext permissions={['manage-apps']}>
-								<MockedSettingsContext settings={{}}>
-									<MockedUserContext userPreferences={{}}>
-										<MockedUiKitActionManager>{children}</MockedUiKitActionManager>
-									</MockedUserContext>
-								</MockedSettingsContext>
-							</MockedAuthorizationContext>
-						</MockedServerContext>
-					</QueryClientProvider>
-				),
-			},
-		);
-
-		await waitForValueToChange(() => {
-			return queryClient.isFetching();
+		const { result } = renderHook(() => useAppsItems(), {
+			wrapper: mockAppRoot()
+				.withEndpoint('GET', '/apps/actionButtons', () => [
+					{
+						appId: 'APP_ID',
+						actionId: 'ACTION_ID',
+						labelI18n: 'LABEL_I18N',
+						context: UIActionButtonContext.USER_DROPDOWN_ACTION,
+						when: {
+							hasOnePermission: ['any'],
+						},
+					},
+				])
+				.withEndpoint('GET', '/apps/app-request/stats', () => ({
+					data: {
+						totalSeen: 0,
+						totalUnseen: 1,
+					},
+				}))
+				.withPermission('manage-apps')
+				.build(),
 		});
 
 		expect(result.current[3]).toEqual(undefined);
 	});
-});
-
-export const MockedUiKitActionManager = ({ children }: { children: React.ReactNode }) => {
-	return <ActionManagerContext.Provider value={{} as any}>{children}</ActionManagerContext.Provider>;
-};
-
-const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			// ✅ turns retries off
-			retry: false,
-		},
-	},
-});
-afterEach(() => {
-	queryClient.clear();
 });
