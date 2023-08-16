@@ -1,4 +1,4 @@
-import type { IRoom, IOmnichannelGenericRoom, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IOmnichannelGenericRoom, IOmnichannelRoom, IMessage } from '@rocket.chat/core-typings';
 
 import type { IServiceClass } from './ServiceClass';
 
@@ -11,4 +11,5 @@ export interface IOmnichannelVerification extends IServiceClass {
 	verifyVisitorCode(room: IOmnichannelRoom, _codeFromVisitor: string): Promise<boolean>;
 	setVisitorEmail(room: IOmnichannelRoom, email: string): Promise<ISetVisitorEmailResult>;
 	sendVerificationCodeToVisitor(visitorId: string, room: IOmnichannelGenericRoom): Promise<void>;
+	createLivechatMessage(room: IOmnichannelRoom, text: string): Promise<IMessage['_id']>;
 }

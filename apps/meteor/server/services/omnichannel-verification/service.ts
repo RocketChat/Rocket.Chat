@@ -158,8 +158,17 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		}
 		const result = await this.wrongInput(room, true);
 		if (result) {
-			const text = i18n.t('Wrong_OTP_Input_Message');
-			await this.createLivechatMessage(room, text);
+			if (room.source.type === 'widget') {
+				const bot = await Users.findOneById('rocket.cat');
+				const wrongOtpInstructionsMessage = {
+					msg: i18n.t('Wrong_OTP_Widget_Input_Message'),
+					groupable: false,
+				};
+				await sendMessage(bot, wrongOtpInstructionsMessage, room);
+			} else if (room.source.type === 'app') {
+				const wrongOTPText = i18n.t('Wrong_OTP_App_Input_Message');
+				await this.createLivechatMessage(room, wrongOTPText);
+			}
 		}
 		return false;
 	}
@@ -175,7 +184,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		return message._id;
 	}
 
-	private async createLivechatMessage(room: IOmnichannelRoom, text: string): Promise<IMessage['_id']> {
+	async createLivechatMessage(room: IOmnichannelRoom, text: string): Promise<IMessage['_id']> {
 		return this.createMessage(room, [
 			this.buildMessageBlock(text),
 			{
@@ -225,8 +234,17 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 			const visitor = await LivechatVisitors.findOneById(visitorRoomId, { projection: { visitorEmails: 1 } });
 			const user = await Users.findOneById('rocket.cat');
 			if (visitor?.visitorEmails?.length && visitor.visitorEmails[0].address) {
-				const otpInstructionsText = i18n.t('OTP_Entry_Instructions_for_Visitor_Verification_Process');
-				await this.createLivechatMessage(room, otpInstructionsText);
+				if (room.source.type === 'widget') {
+					const otpInstructionsMessage = {
+						msg: i18n.t('OTP_Entry_Instructions_for_Visitor_Widget_Verification_Process'),
+						groupable: false,
+					};
+					await sendMessage(user, otpInstructionsMessage, room);
+				} else if (room.source.type === 'app') {
+					const otpInstructionsText = i18n.t('OTP_Entry_Instructions_for_Visitor_App_Verification_Process');
+					await this.createLivechatMessage(room, otpInstructionsText);
+				}
+
 				await this.sendVerificationCodeToVisitor(visitorRoomId, room);
 				await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.isListeningToOTP);
 			} else {
