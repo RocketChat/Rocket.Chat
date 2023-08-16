@@ -12,7 +12,7 @@ const LayoutProvider: FC = ({ children }) => {
 	// Once the layout is embedded, it can't be changed
 	const [isEmbedded] = useState(() => router.getSearchParameters().layout === 'embedded');
 
-	const isMobile = !breakpoints.includes('lg');
+	const isMobile = !breakpoints.includes('md');
 
 	useEffect(() => {
 		setIsCollapsed(isMobile);
@@ -38,6 +38,7 @@ const LayoutProvider: FC = ({ children }) => {
 						// eslint-disable-next-line no-nested-ternary
 						contextualBar: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
 					},
+					roomToolboxExpanded: breakpoints.includes('lg'),
 					contextualBarExpanded: breakpoints.includes('sm'),
 					// eslint-disable-next-line no-nested-ternary
 					contextualBarPosition: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
