@@ -1876,7 +1876,11 @@ describe('LIVECHAT - rooms', function () {
 				room: { _id: roomId },
 			} = await startANewLivechatRoomAndTakeIt();
 
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId, generateTranscriptPdf: true }).expect(200);
+			await request
+				.post(api('livechat/room.closeByUser'))
+				.set(credentials)
+				.send({ rid: roomId, comment: 'test', generateTranscriptPdf: true })
+				.expect(200);
 
 			// Wait for the pdf to be generated
 			await sleep(1500);
@@ -1890,7 +1894,11 @@ describe('LIVECHAT - rooms', function () {
 				room: { _id: roomId },
 			} = await startANewLivechatRoomAndTakeIt();
 
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId, generateTranscriptPdf: false }).expect(200);
+			await request
+				.post(api('livechat/room.closeByUser'))
+				.set(credentials)
+				.send({ rid: roomId, comment: 'test', generateTranscriptPdf: false })
+				.expect(200);
 
 			// Wait for the pdf to not be generated
 			await sleep(1500);
