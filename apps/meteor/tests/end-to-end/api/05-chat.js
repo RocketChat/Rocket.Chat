@@ -824,6 +824,84 @@ describe('[Chat]', function () {
 						.end(done);
 				}, 200);
 			});
+
+			it('should not generate previews if an empty array of URL to preview is provided', (done) => {
+				request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: 'GENERAL',
+							msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
+						},
+						previewUrls: [],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
+						expect(res.body.message.urls[0]).to.have.property('ignoreParse', true);
+						expect(res.body.message.urls[0]).to.have.property('meta').to.deep.equals({});
+					})
+					.end(done);
+			});
+
+			it('should generate previews of chosen URL when the previewUrls array is provided', (done) => {
+				request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: 'GENERAL',
+							msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4 https://www.rocket.chat/',
+						},
+						previewUrls: ['https://www.rocket.chat/'],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
+						expect(res.body.message.urls[0]).to.have.property('ignoreParse', true);
+						expect(res.body.message.urls[0]).to.have.property('meta').that.is.an('object').that.is.empty;
+						expect(res.body.message.urls[1]).to.not.have.property('ignoreParse');
+						expect(res.body.message.urls[1]).to.have.property('meta').that.is.an('object').that.is.not.empty;
+					})
+					.end(done);
+			});
+
+			it('should not generate previews if the message contains more than five external URL', (done) => {
+				const urls = [
+					'https://www.youtube.com/watch?v=no050HN4ojo',
+					'https://www.youtube.com/watch?v=9iaSd13mqXA',
+					'https://www.youtube.com/watch?v=MW_qsbgt1KQ',
+					'https://www.youtube.com/watch?v=hLF1XwH5rd4',
+					'https://www.youtube.com/watch?v=Eo-F9hRBbTk',
+					'https://www.youtube.com/watch?v=08ms3W7adFI',
+				];
+				request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: 'GENERAL',
+							msg: urls.join(' '),
+						},
+						previewUrls: urls,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
+						res.body.message.urls.forEach((url) => {
+							expect(url).to.not.have.property('ignoreParse');
+							expect(url).to.have.property('meta').that.is.an('object').that.is.empty;
+						});
+					})
+					.end(done);
+			});
 		});
 
 		describe('Read only channel', () => {
