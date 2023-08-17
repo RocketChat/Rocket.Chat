@@ -1,6 +1,6 @@
 {
 	"extends": ["@rocket.chat/eslint-config"],
-	"ignorePatterns": ["**/dist"],
+	"ignorePatterns": ["**/dist", "**/coverage"],
 	"rules": {
 		"@typescript-eslint/naming-convention": [
 			"error",

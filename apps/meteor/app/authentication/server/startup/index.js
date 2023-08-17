@@ -298,6 +298,11 @@ const insertUserDocAsync = async function (options, user) {
 		};
 	}
 
+	// Make sure that the user has the field 'roles'
+	if (!user.roles) {
+		user.roles = [];
+	}
+
 	const _id = insertUserDoc.call(Accounts, options, user);
 
 	user = await Users.findOne({
