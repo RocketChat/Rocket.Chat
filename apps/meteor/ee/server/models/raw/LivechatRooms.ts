@@ -384,7 +384,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 					},
 				},
 			],
-			{ readPreference: readSecondaryPreferred() },
+			{ hint: 'source_1_ts_1', readPreference: readSecondaryPreferred() },
 		);
 	}
 
@@ -561,7 +561,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 					},
 				},
 			],
-			{ readPreference: readSecondaryPreferred() },
+			{ hint: 'departmentId_1_ts_1', readPreference: readSecondaryPreferred() },
 		);
 	}
 
@@ -639,7 +639,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 					},
 				},
 			],
-			{ readPreference: readSecondaryPreferred() },
+			{ hint: 'tags.0_1_ts_1', readPreference: readSecondaryPreferred() },
 		);
 	}
 
@@ -734,7 +734,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 					},
 				},
 			],
-			{ readPreference: readSecondaryPreferred() },
+			{ hint: 'servedBy_1_ts_1', readPreference: readSecondaryPreferred() },
 		);
 	}
 
