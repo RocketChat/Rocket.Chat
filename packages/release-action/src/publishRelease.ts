@@ -7,7 +7,7 @@ import * as core from '@actions/core';
 
 import { createNpmFile } from './createNpmFile';
 import { setupOctokit } from './setupOctokit';
-import { bumpFileVersions, createBumpFile, getChangelogEntry, readPackageJson } from './utils';
+import { bumpFileVersions, createBumpFile, getChangelogEntry, getEngineVersionsMd, readPackageJson } from './utils';
 import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
 import { checkoutBranch, commitChanges, createTag, getCurrentBranch, mergeBranch, pushChanges } from './gitUtils';
 
@@ -73,7 +73,7 @@ export async function publishRelease({
 		throw new Error('Could not find changelog entry for version newVersion');
 	}
 
-	const releaseBody = changelogEntry.content;
+	const releaseBody = (await getEngineVersionsMd(cwd)) + changelogEntry.content;
 
 	core.info('update version in all files to new');
 	await bumpFileVersions(cwd, currentVersion, newVersion);
