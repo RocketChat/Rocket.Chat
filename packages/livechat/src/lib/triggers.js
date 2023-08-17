@@ -105,12 +105,10 @@ class Triggers {
 		this._started = true;
 		this._triggers = [...triggers];
 
-		firedTriggers.forEach((id) => {
-			this._triggers.forEach((trigger) => {
-				if (trigger._id === id) {
-					trigger.skip = true;
-				}
-			});
+		this._triggers.forEach((trigger) => {
+			if (firedTriggers.includes(trigger._id)) {
+				trigger.skip = true;
+			}
 		});
 
 		store.on('change', ([state, prevState]) => {
@@ -121,7 +119,7 @@ class Triggers {
 	}
 
 	async fire(trigger) {
-		const { token, firedTriggers = [], user } = store.state;
+		const { token, user } = store.state;
 
 		if (!this._enabled || user) {
 			return;
@@ -174,7 +172,7 @@ class Triggers {
 
 		if (trigger.runOnce) {
 			trigger.skip = true;
-			store.setState({ firedTriggers: [...firedTriggers, trigger._id] });
+			store.setState({ firedTriggers: [...store.state.firedTriggers, trigger._id] });
 		}
 	}
 
