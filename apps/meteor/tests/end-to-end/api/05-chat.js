@@ -825,8 +825,9 @@ describe('[Chat]', function () {
 				}, 200);
 			});
 
-			it('should not generate previews if an empty array of URL to preview is provided', (done) => {
-				request
+			it('should not generate previews if an empty array of URL to preview is provided', async () => {
+				let msgId;
+				await request
 					.post(api('chat.sendMessage'))
 					.set(credentials)
 					.send({
@@ -842,13 +843,27 @@ describe('[Chat]', function () {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
 						expect(res.body.message.urls[0]).to.have.property('ignoreParse', true);
-						expect(res.body.message.urls[0]).to.have.property('meta').to.deep.equals({});
+						msgId = res.body.message._id;
+					});
+
+				await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({
+						msgId,
 					})
-					.end(done);
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(1);
+
+						expect(res.body.message.urls[0]).to.have.property('meta').to.deep.equals({});
+					});
 			});
 
-			it('should generate previews of chosen URL when the previewUrls array is provided', (done) => {
-				request
+			it('should generate previews of chosen URL when the previewUrls array is provided', async () => {
+				let msgId;
+				await request
 					.post(api('chat.sendMessage'))
 					.set(credentials)
 					.send({
@@ -862,16 +877,30 @@ describe('[Chat]', function () {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(2);
 						expect(res.body.message.urls[0]).to.have.property('ignoreParse', true);
-						expect(res.body.message.urls[0]).to.have.property('meta').that.is.an('object').that.is.empty;
 						expect(res.body.message.urls[1]).to.not.have.property('ignoreParse');
-						expect(res.body.message.urls[1]).to.have.property('meta').that.is.an('object').that.is.not.empty;
+						msgId = res.body.message._id;
+					});
+
+				await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({
+						msgId,
 					})
-					.end(done);
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(2);
+
+						expect(res.body.message.urls[0]).to.have.property('meta').that.is.an('object').that.is.empty;
+						expect(res.body.message.urls[1]).to.have.property('meta').that.is.an('object').that.is.not.empty;
+					});
 			});
 
-			it('should not generate previews if the message contains more than five external URL', (done) => {
+			it('should not generate previews if the message contains more than five external URL', async () => {
+				let msgId;
 				const urls = [
 					'https://www.youtube.com/watch?v=no050HN4ojo',
 					'https://www.youtube.com/watch?v=9iaSd13mqXA',
@@ -880,7 +909,7 @@ describe('[Chat]', function () {
 					'https://www.youtube.com/watch?v=Eo-F9hRBbTk',
 					'https://www.youtube.com/watch?v=08ms3W7adFI',
 				];
-				request
+				await request
 					.post(api('chat.sendMessage'))
 					.set(credentials)
 					.send({
@@ -894,13 +923,26 @@ describe('[Chat]', function () {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(urls.length);
+						msgId = res.body.message._id;
+					});
+
+				await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({
+						msgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(urls.length);
+
 						res.body.message.urls.forEach((url) => {
 							expect(url).to.not.have.property('ignoreParse');
 							expect(url).to.have.property('meta').that.is.an('object').that.is.empty;
 						});
-					})
-					.end(done);
+					});
 			});
 		});
 
