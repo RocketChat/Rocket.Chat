@@ -1,6 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
-import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -8,31 +7,18 @@ import React from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
-import EditUser from './EditUser';
+import AdminUserForm from './AdminUserForm';
 
-type EditUserWithDataProps = {
-	userId: string;
+type AdminUserFormWithDataProps = {
+	uid: IUser['_id'];
 	onReload: () => void;
-	roleData: any;
-	roleState: boolean;
-	roleError: unknown;
-	availableRoles: SelectOption[];
 };
 
-const EditUserWithData = ({
-	userId,
-	onReload,
-	roleData,
-	roleState,
-	roleError,
-	availableRoles,
-	...props
-}: EditUserWithDataProps): ReactElement => {
+const AdminUserFormWithData = ({ uid, onReload }: AdminUserFormWithDataProps): ReactElement => {
 	const t = useTranslation();
+	const { data, isLoading, isError } = useUserInfoQuery({ userId: uid });
 
-	const { data, isLoading: state, error, isSuccess } = useUserInfoQuery({ userId });
-
-	if (state || roleState) {
+	if (isLoading) {
 		return (
 			<Box p={24}>
 				<FormSkeleton />
@@ -40,7 +26,7 @@ const EditUserWithData = ({
 		);
 	}
 
-	if (error || roleError) {
+	if (isError) {
 		return (
 			<Callout m={16} type='danger'>
 				{t('User_not_found')}
@@ -56,9 +42,7 @@ const EditUserWithData = ({
 		);
 	}
 
-	return (
-		<EditUser userData={isSuccess ? data.user : {}} roles={roleData.roles} onReload={onReload} availableRoles={availableRoles} {...props} />
-	);
+	return <AdminUserForm userData={data?.user} onReload={onReload} />;
 };
 
-export default EditUserWithData;
+export default AdminUserFormWithData;
