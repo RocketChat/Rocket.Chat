@@ -35,6 +35,7 @@ import { ContextualbarScrollableContent } from '../../../components/Contextualba
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
+import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 import { useSmtpConfig } from './hooks/useSmtpConfig';
 
 type AdminUserFormProps = {
@@ -218,7 +219,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 								<Controller
 									control={control}
 									name='verified'
-									render={({ field: { onChange, value } }) => <ToggleSwitch checked={value} onChange={onChange} />}
+									render={({ field: { onChange, value } }) => <ToggleSwitch id={verifiedId} checked={value} onChange={onChange} />}
 								/>
 							</Field.Row>
 						</Box>
@@ -226,20 +227,29 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 					<Field>
 						<Field.Label htmlFor={statusTextId}>{t('StatusMessage')}</Field.Label>
 						<Field.Row>
-							<TextInput id={statusTextId} {...register('statusText')} flexGrow={1} addon={<Icon name='edit' size='x20' />} />
+							<TextInput
+								id={statusTextId}
+								{...register('statusText', {
+									maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH) },
+								})}
+								flexGrow={1}
+								addon={<Icon name='edit' size='x20' />}
+							/>
 						</Field.Row>
+						{errors?.statusText && <Field.Error>{errors.statusText.message}</Field.Error>}
 					</Field>
 					<Field>
 						<Field.Label htmlFor={bioId}>{t('Bio')}</Field.Label>
 						<Field.Row>
 							<TextAreaInput
 								id={bioId}
-								{...register('bio')}
+								{...register('bio', { maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', BIO_TEXT_MAX_LENGTH) } })}
 								rows={3}
 								flexGrow={1}
 								addon={<Icon name='edit' size='x20' alignSelf='center' />}
 							/>
 						</Field.Row>
+						{errors?.bio && <Field.Error>{errors.bio.message}</Field.Error>}
 					</Field>
 					<Field>
 						<Field.Label htmlFor={nicknameId}>{t('Nickname')}</Field.Label>
