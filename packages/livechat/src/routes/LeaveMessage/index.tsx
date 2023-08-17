@@ -90,7 +90,7 @@ const LeaveMessage = ({ screenProps }: { screenProps: { [key: string]: unknown }
 			className={createClassName(styles, 'leave-message')}
 		>
 			<FormScrollShadow topRef={topRef} bottomRef={bottomRef}>
-				<Screen.Content>
+				<Screen.Content full>
 					<div id='top' ref={topRef} style={{ height: '1px', width: '100%' }} />
 
 					<div
