@@ -10,7 +10,7 @@ const LayoutProvider: FC = ({ children }) => {
 	const isEmbedded = layout === 'embedded';
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
 
-	const isMobile = !breakpoints.includes('lg');
+	const isMobile = !breakpoints.includes('md');
 
 	useEffect(() => {
 		setIsCollapsed(isMobile);
@@ -38,6 +38,7 @@ const LayoutProvider: FC = ({ children }) => {
 						// eslint-disable-next-line no-nested-ternary
 						contextualBar: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
 					},
+					roomToolboxExpanded: breakpoints.includes('lg'),
 					contextualBarExpanded: breakpoints.includes('sm'),
 					// eslint-disable-next-line no-nested-ternary
 					contextualBarPosition: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
