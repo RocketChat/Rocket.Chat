@@ -950,13 +950,13 @@ describe('[Groups]', function () {
 				.end(done);
 		});
 
-		it('should return a filtered array of members by channel', (done) => {
+		it('should return a filtered array of members by group', (done) => {
 			request
 				.get(api('groups.membersByHighestRole'))
 				.set(credentials)
 				.query({
 					roomId: testGroup._id,
-					filter: 'rocket.cat',
+					filter: testUser.username,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)

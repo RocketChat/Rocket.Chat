@@ -1226,7 +1226,7 @@ describe('[Channels]', function () {
 				.set(credentials)
 				.query({
 					roomId: testChannel._id,
-					filter: 'rocket.cat',
+					filter: testUser.username,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
