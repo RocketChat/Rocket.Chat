@@ -36,4 +36,5 @@ import './v299';
 import './v300';
 import './v301';
 import './v302';
+import './v303';
 import './xrun';
