@@ -29,7 +29,7 @@ callbacks.add(
 		}
 
 		// check if room is yet awaiting for response from visitor
-		if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.waitingResponse)) {
+		if (!room.waitingResponse) {
 			// case where agent sends second message or any subsequent message in a room before visitor responds to the first message
 			// in this case, we just need to update the lastMessageTs of the responseBy object
 			if (room.responseBy) {
