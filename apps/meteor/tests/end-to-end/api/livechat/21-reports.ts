@@ -20,6 +20,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 	before(async () => {
 		const user: IUser = await createUser();
 		const userCredentials = await login(user.username, password);
+		if (!user.username) {
+			throw new Error('user not created');
+		}
 		await createMonitor(user.username);
 
 		agent2 = {
@@ -32,6 +35,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 		const user: IUser = await createUser();
 		const userCredentials = await login(user.username, password);
 		await createAgent();
+		if (!user.username) {
+			throw new Error('user not created');
+		}
 		await createMonitor(user.username);
 		const dep1 = await createDepartment();
 		await addOrRemoveAgentFromDepartment(

@@ -70,9 +70,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { callStatus: 1 }, sparse: true }, // used on statistics
 			{ key: { priorityId: 1 }, sparse: true },
 			{ key: { slaId: 1 }, sparse: true },
-			{ key: { ts: 1, tags: 1 } },
-			{ key: { ts: 1, departmentId: 1 } },
-			{ key: { ts: 1, servedBy: 1 } },
+			{ key: { t: 1, ts: 1 } },
 		];
 	}
 
