@@ -10,7 +10,7 @@
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} não pertence mais a {{role}}, por {{user_by}}",
   "__username__was_set__role__by__user_by_": "{{username}} foi definido como {{role}} por {{user_by}}",
   "__count__conversations__period__": "{{count}} conversas, {{period}}",
-  "__count__tags__period__": "{{count}} tags, {{period}}",
+  "__count__tags__and__count__conversations__period__": "{{count}} tags e {{conversations}} conversas, {{period}}",
   "__departments__departments_and__count__conversations__period__": "{{departments}} departmentos e {{count}} conversas, {{period}}",
   "__count__without__department__": "{{count}} sem departamento",
   "__count__without__tags__": "{{count}} sem tags",

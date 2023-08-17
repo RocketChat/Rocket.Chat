@@ -46,7 +46,11 @@ export const useTagsSection = () => {
 	);
 
 	const title = t('Conversations_by_tag');
-	const subtitleTotals = t('__count__tags__period__', { count: total, period: formatPeriodDescription(period, t) });
+	const subtitleTotals = t('__count__tags__and__count__conversations__period__', {
+		count: data.length,
+		conversations: total,
+		period: formatPeriodDescription(period, t),
+	});
 	const subtitleUnspecified = unspecified > 0 ? `(${t('__count__without__tags__', { count: unspecified })})` : '';
 	const subtitle = `${subtitleTotals} ${subtitleUnspecified}`;
 
