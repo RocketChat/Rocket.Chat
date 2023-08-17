@@ -71,7 +71,6 @@ const horizontalSideLabel = ({ bars, labelSkipWidth }: BarCustomLayerProps<BarDa
 const verticalSideLabel = ({ bars, labelSkipHeight, innerHeight }: BarCustomLayerProps<BarDatum>) => (
 	<g>
 		{bars?.map(({ width, height, x, y, data }) => {
-			console.log({ width, innerHeight, height, x, y, data });
 			if (height >= labelSkipHeight) {
 				return null;
 			}
@@ -112,8 +111,6 @@ export const BarChart = ({
 	}, [data.length]);
 
 	const sideLabel: any = direction === 'vertical' ? verticalSideLabel : horizontalSideLabel;
-
-	console.log(sideLabel);
 
 	return (
 		<Box maxWidth={maxWidth} height={height} overflowY='auto'>
