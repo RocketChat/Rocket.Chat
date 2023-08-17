@@ -9,6 +9,7 @@ interface Window {
 				setOutlookExchangeUrl?: (url: string, userId: string) => Promise<void>;
 				hasOutlookCredentials?: () => Promise<boolean>;
 				clearOutlookCredentials?: () => void;
+				setSidebarCustomTheme?: (theme: string) => void;
 		  }
 		| undefined;
 }
