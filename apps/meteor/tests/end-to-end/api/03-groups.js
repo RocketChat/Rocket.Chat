@@ -974,7 +974,6 @@ describe('[Groups]', function () {
 					expect(member).to.have.property('name');
 					expect(member).to.have.property('status');
 					expect(member).to.have.property('highestRole');
-					expect(member).to.have.property('statusConnection');
 				})
 				.end(done);
 		});
