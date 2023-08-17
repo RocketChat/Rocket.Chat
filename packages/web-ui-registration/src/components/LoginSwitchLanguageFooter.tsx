@@ -1,8 +1,10 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Button } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey, TranslationLanguage } from '@rocket.chat/ui-contexts';
 import { useSetting, useLoadLanguage, useLanguage, useLanguages, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
+import { Trans } from 'react-i18next';
 
 export const normalizeLanguage = (language: string): string => {
 	// Fix browsers having all-lowercase language settings eg. pt-br, en-us
@@ -27,9 +29,12 @@ const LoginSwitchLanguageFooter = (): ReactElement | null => {
 	const serverLanguage = normalizeLanguage((useSetting('Language') as string | undefined) || 'en');
 
 	const suggestions = useMemo(() => {
-		const potentialSuggestions = new Set([serverLanguage, browserLanguage, 'en'].map(normalizeLanguage));
-		return Array.from(potentialSuggestions).filter((language) => {
-			return language && language !== currentLanguage && Boolean(languages.find(({ key }) => key === language));
+		const potentialLanguages = new Set([serverLanguage, browserLanguage, 'en'].map(normalizeLanguage));
+		const potentialSuggestions = Array.from(potentialLanguages).map((potentialLanguageKey) =>
+			languages.find((language) => language.key === potentialLanguageKey),
+		);
+		return potentialSuggestions.filter((language): language is TranslationLanguage => {
+			return !!language && language.key !== currentLanguage;
 		});
 	}, [serverLanguage, currentLanguage, languages]);
 
@@ -43,17 +48,19 @@ const LoginSwitchLanguageFooter = (): ReactElement | null => {
 		return null;
 	}
 
-	return (
-		<Box display='flex'>
-			{t('Switch_to')}
+	console.log(languages);
 
-			{suggestions.map((language, index) => (
-				<Box key={language} mis={8} display='flex'>
-					{index > 0 ? <Box mie={8}>|</Box> : null}
-					<Box onClick={handleSwitchLanguageClick(language)}>{language}</Box>
+	return (
+		<>
+			{suggestions.map(({ name }) => (
+				<Box key={name}>
+					<Trans i18nKey='registration.component.switchLanguage'>
+						Switch to
+						<Button onClick={handleSwitchLanguageClick(name)}>{t(name as TranslationKey)}</Button>
+					</Trans>
 				</Box>
 			))}
-		</Box>
+		</>
 	);
 };
 

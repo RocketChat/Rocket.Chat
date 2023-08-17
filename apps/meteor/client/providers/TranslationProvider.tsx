@@ -282,9 +282,7 @@ const TranslationProviderInner = ({
 			loadLanguage: async (language: string): Promise<void> => {
 				i18n.changeLanguage(language).then(() => applyCustomTranslations());
 			},
-			preferLanguage: () => {
-				
-			};
+			preferLanguage: () => 0,
 			translate: Object.assign(addSprinfToI18n(t), {
 				has: ((key, options) => key && i18n.exists(key, options)) as TranslationContextValue['translate']['has'],
 			}),
