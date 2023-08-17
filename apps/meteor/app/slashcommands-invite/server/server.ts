@@ -60,10 +60,15 @@ slashCommands.add({
 		await Promise.all(
 			usersFiltered.map(async (user) => {
 				try {
-					return await addUsersToRoomMethod(userId, {
-						rid: message.rid,
-						users: [user.username || ''],
-					});
+					const inviter = await Users.findOneById(userId);
+					return await addUsersToRoomMethod(
+						userId,
+						{
+							rid: message.rid,
+							users: [user.username || ''],
+						},
+						inviter ?? undefined,
+					);
 				} catch ({ error }: any) {
 					if (typeof error !== 'string') {
 						return;
