@@ -70,7 +70,7 @@ const horizontalSideLabel = ({ bars, labelSkipWidth }: BarCustomLayerProps<BarDa
 
 const verticalSideLabel = ({ bars, labelSkipHeight, innerHeight }: BarCustomLayerProps<BarDatum>) => (
 	<g>
-		{bars?.map(({ width, height, x, y, data }) => {
+		{bars?.map(({ width, height, x, data }) => {
 			if (height >= labelSkipHeight) {
 				return null;
 			}

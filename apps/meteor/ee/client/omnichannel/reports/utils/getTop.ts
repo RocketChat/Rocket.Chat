@@ -1,8 +1,4 @@
-export const getTop = (
-	limit = 5,
-	data: { label: string; value: number }[] | undefined = [],
-	formatter: (others: number) => { label: string; value: number },
-) => {
+export const getTop = <T extends { label: string; value: number }>(limit = 5, data: T[], formatter: (others: number) => T): T[] => {
 	if (data.length < limit) {
 		return data;
 	}
