@@ -1122,7 +1122,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			$set: {
 				open: true,
 				alert: true,
-				ls: new Date(Number(firstMessageUnreadTimestamp) - 1), // make sure last seen is before the first unread message
+				ls: new Date(firstMessageUnreadTimestamp.getTime() - 1), // make sure last seen is before the first unread message
 				unread: 1,
 			},
 		};
