@@ -21,16 +21,16 @@ type MenuActionsProps = {
 
 const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const t = useTranslation();
-	const { isMobile } = useLayout();
+	const { roomToolboxExpanded } = useLayout();
 
 	const toolbox = useRoomToolbox();
 	const { actions, openTab } = toolbox;
 
 	const featuredActions = actions.filter((action) => action.featured);
 	const normalActions = actions.filter((action) => !action.featured);
-	const visibleActions = isMobile ? [] : normalActions.slice(0, 6);
+	const visibleActions = !roomToolboxExpanded ? [] : normalActions.slice(0, 6);
 
-	const hiddenActions = (isMobile ? actions : normalActions.slice(6))
+	const hiddenActions = (!roomToolboxExpanded ? actions : normalActions.slice(6))
 		.filter((item) => !item.disabled && !item.featured)
 		.map((item) => ({
 			'key': item.id,
@@ -91,7 +91,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 			{featuredActions.map(mapToToolboxItem)}
 			{featuredActions.length > 0 && <HeaderToolboxDivider />}
 			{visibleActions.map(mapToToolboxItem)}
-			{(normalActions.length > 6 || isMobile) && (
+			{(normalActions.length > 6 || roomToolboxExpanded) && (
 				<GenericMenu title={t('Options')} data-qa-id='ToolBox-Menu' sections={hiddenActions} placement='bottom-end' />
 			)}
 		</>
