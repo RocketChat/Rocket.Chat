@@ -32,7 +32,7 @@
 		"moleculer": "^0.14.29",
 		"mongodb": "^4.12.1",
 		"nats": "^2.4.0",
-		"pino": "^8.4.2",
+		"pino": "^8.15.0",
 		"polka": "^0.5.2"
 	},
 	"devDependencies": {

@@ -30,7 +30,7 @@
 		"moment-timezone": "^0.5.43",
 		"mongo-message-queue": "^1.0.0",
 		"mongodb": "^4.12.1",
-		"pino": "^8.4.2"
+		"pino": "^8.15.0"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
