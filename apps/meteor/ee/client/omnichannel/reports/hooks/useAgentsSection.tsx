@@ -18,7 +18,7 @@ const formatChartData = (data: { label: string; value: number }[] | undefined = 
 export const useAgentsSection = () => {
 	const t = useTranslation();
 	const [period, periodSelectorProps] = usePeriodSelectorStorage('reports-agents-period', PERIOD_OPTIONS);
-	const getConversationsBySource = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-agent');
+	const getConversationsByAgent = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-agent');
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'total'>('total', 'desc');
 
 	const {
@@ -31,7 +31,7 @@ export const useAgentsSection = () => {
 		['omnichannel-reports', 'conversations-by-agent', period, sortBy, sortDirection],
 		async () => {
 			const { start, end } = getPeriodRange(period);
-			const response = await getConversationsBySource({
+			const response = await getConversationsByAgent({
 				start: start.toISOString(),
 				end: end.toISOString(),
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
