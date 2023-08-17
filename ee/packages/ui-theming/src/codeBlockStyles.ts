@@ -7,7 +7,7 @@ code.hljs {
 	padding: 3px 5px;
 }
 .hljs {
-	background: #1d1f21 !important !important;
+	background: #1d1f21 !important;
 	color: #c5c8c6 !important;
 }
 .hljs span::selection,
