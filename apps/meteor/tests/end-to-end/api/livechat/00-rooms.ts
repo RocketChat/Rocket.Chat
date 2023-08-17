@@ -1846,8 +1846,16 @@ describe('LIVECHAT - rooms', function () {
 			const { _id } = await createLivechatRoom(visitor.token);
 			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(400);
 		});
+		it('should not close a room without comment', async () => {
+			await restorePermissionToRoles('close-others-livechat-room');
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			const response = await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(400);
+
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error', 'error-comment-is-required');
+		});
 		it('should close room if user has permission', async () => {
-			await updatePermission('close-others-livechat-room', ['admin']);
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
 			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }).expect(200);
