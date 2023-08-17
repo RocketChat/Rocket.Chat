@@ -2,7 +2,7 @@ import type { IUIActionButton, UIActionButtonContext } from '@rocket.chat/apps-e
 import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import type { MessageActionConfig, MessageActionContext } from '../../app/ui-utils/client/lib/MessageAction';
 import type { MessageBoxAction } from '../../app/ui-utils/client/lib/messageBox';
@@ -14,25 +14,10 @@ import { useUiKitActionManager } from './useUiKitActionManager';
 const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
 
 export const useAppActionButtons = (context?: `${UIActionButtonContext}`) => {
-	const stream = useRef<() => void>();
 	const queryClient = useQueryClient();
 
 	const apps = useStream('apps');
 	const uid = useUserId();
-
-	useEffect(() => () => stream.current?.(), []);
-
-	useQuery(['apps', 'stream', 'actionButtons', uid], () => {
-		if (!uid) {
-			return [];
-		}
-		stream.current?.();
-		stream.current = apps('actions/changed', () => {
-			queryClient.invalidateQueries(['apps', 'actionButtons']);
-		});
-
-		return [];
-	});
 
 	const getActionButtons = useEndpoint('GET', '/apps/actionButtons');
 
@@ -40,7 +25,19 @@ export const useAppActionButtons = (context?: `${UIActionButtonContext}`) => {
 		...(context && {
 			select: (data) => data.filter((button) => button.context === context),
 		}),
+		staleTime: Infinity,
 	});
+
+	useEffect(() => {
+		if (!uid) {
+			return;
+		}
+
+		return apps('actions/changed', () => {
+			queryClient.invalidateQueries(['apps', 'actionButtons']);
+		});
+	}, [uid, queryClient, apps]);
+
 	return result;
 };
 

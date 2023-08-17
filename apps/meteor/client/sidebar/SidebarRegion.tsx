@@ -46,12 +46,12 @@ const SidebarRegion = () => {
 			transform: translate3d(0px, 0px, 0px);
 		}
 
-		// 768px to 1599px
+		/* // 768px to 1599px
 		// using em unit base 16
 		@media (max-width: 48em) {
 			width: 80%;
 			min-width: 80%;
-		}
+		} */
 
 		// 1600px to 1919px
 		// using em unit base 16
