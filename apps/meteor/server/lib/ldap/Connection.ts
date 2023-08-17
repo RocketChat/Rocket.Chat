@@ -430,7 +430,7 @@ export class LDAPConnection {
 			return [];
 		}
 
-		const members = this.extractLdapAttribute(result[0].raw[this.options.groupFilterGroupMemberAttribute]) as string[];
+		const members = this.extractLdapAttribute(result[0].raw[this.options.groupFilterGroupMemberAttribute]) as string | string[];
 
 		return ensureArray<string>(members);
 	}
