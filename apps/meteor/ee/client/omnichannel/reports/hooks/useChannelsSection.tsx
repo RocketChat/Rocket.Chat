@@ -10,16 +10,18 @@ import { getTop } from '../utils/getTop';
 import { round } from '../utils/round';
 import { useDefaultDownload } from './useDefaultDownload';
 
+const formatItem = (item: { label: string; value: number }, total: number) => {
+	const percentage = round((item.value / total) * 100);
+	return {
+		...item,
+		label: `${item.label} ${item.value} (${percentage}%)`,
+		rawLabel: item.label,
+		id: `${item.label}_${item.value}`,
+	};
+};
+
 const formatChartData = (data: { label: string; value: number }[] | undefined = [], total = 0) => {
-	return data.map((item, i) => {
-		const percentage = round((item.value / total) * 100);
-		return {
-			...item,
-			label: `${item.label} ${item.value} (${percentage}%)`,
-			rawLabel: item.label,
-			id: `${item.label}_${i}`,
-		};
-	});
+	return data.map((item) => formatItem(item, total));
 };
 
 export const useChannelsSection = () => {
@@ -38,9 +40,9 @@ export const useChannelsSection = () => {
 		async () => {
 			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsBySource({ start: start.toISOString(), end: end.toISOString() });
-			const formattedData = formatChartData(response.data, response.total);
-			const displayData = getTop(5, formattedData, t);
-			return { ...response, data: displayData, rawData: formattedData };
+			const data = formatChartData(response.data, response.total);
+			const displayData = getTop(5, data, (value) => formatItem({ label: t('Others'), value }, total));
+			return { ...response, data: displayData, rawData: data };
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
