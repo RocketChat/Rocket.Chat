@@ -1264,8 +1264,8 @@ describe('[Channels]', function () {
 
 					const member = res.body.members[0];
 					expect(member).to.have.property('highestRole');
-					expect(member.roles).to.have.length(1);
-					expect(member.roles[0]).to.be.equal('moderator');
+					expect(member.roomRoles).to.have.length(1);
+					expect(member.roomRoles[0]).to.be.equal('moderator');
 
 					const { highestRole } = member;
 					expect(highestRole).to.have.property('role', 'moderator');
@@ -1290,8 +1290,8 @@ describe('[Channels]', function () {
 
 					const member = res.body.members[0];
 					expect(member).to.have.property('highestRole');
-					expect(member.roles).to.have.length(1);
-					expect(member.roles[0]).to.be.equal('owner');
+					expect(member.roomRoles).to.have.length(1);
+					expect(member.roomRoles[0]).to.be.equal('owner');
 
 					const { highestRole } = member;
 					expect(highestRole).to.have.property('role', 'owner');
