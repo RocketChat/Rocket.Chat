@@ -26,7 +26,7 @@ const FederatedRoomListItem: VFC<FederatedRoomListItemProps> = ({
 	const t = useTranslation();
 
 	return (
-		<Box mb={16} is='li' display='flex' flexDirection='column' w='full' name={canonicalAlias}>
+		<Box mb={16} pi={24} is='li' display='flex' flexDirection='column' w='full' name={canonicalAlias}>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center' mbe={4}>
 				<Box flexGrow={1} flexShrink={1} fontScale='p1' fontWeight='bold' title={name} withTruncatedText>
 					{name}

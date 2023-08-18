@@ -1,6 +1,5 @@
-import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
 import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, PasswordInput, Button } from '@rocket.chat/fuselage';
-import { useDebouncedCallback, useSafely, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { SHA256 } from '@rocket.chat/sha256';
 import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
 import {
@@ -31,25 +30,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 
 	const user = useUser();
 
-	// const { values, handlers, hasUnsavedChanges, commit, reset } = useForm();
-
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
-	const getAvatarSuggestions = useEndpoint('GET', '/v1/users.getAvatarSuggestion');
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
 
 	const customFieldsMetadata = useAccountsCustomFields();
 
 	const [usernameError, setUsernameError] = useState<string | undefined>();
-	const [avatarSuggestions, setAvatarSuggestions] = useSafely(
-		useState<{
-			[key: string]: {
-				blob: string;
-				contentType: string;
-				service: string;
-				url: string;
-			};
-		}>({}),
-	);
 
 	const {
 		allowRealNameChange,
@@ -86,12 +72,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		control,
 		watch,
 		handleSubmit,
-		formState: { errors: customFieldsErrors, dirtyFields },
+		formState: { errors, dirtyFields },
 	} = useFormContext();
 
 	console.log('dirtyFields', dirtyFields);
 
-	const { avatar, realname, email, password, statusText, bio, confirmationPassword, username } = watch();
+	const { avatar, realname, email, password, statusText, confirmationPassword, username } = watch();
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
 
@@ -141,19 +127,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		[namesRegex, t, user?.username, checkUsernameAvailability, setUsernameError],
 	);
 
-	// useEffect(() => {
-	// 	const subscription = watch((value) => handleCustomFields({ ...value.customFields }));
-	// 	return () => subscription.unsubscribe();
-	// }, [watch, handleCustomFields]);
-
-	useEffect(() => {
-		const getSuggestions = async (): Promise<void> => {
-			const { suggestions } = await getAvatarSuggestions();
-			setAvatarSuggestions(suggestions);
-		};
-		getSuggestions();
-	}, [getAvatarSuggestions, setAvatarSuggestions, user]);
-
 	useEffect(() => {
 		checkUsername(username);
 	}, [checkUsername, username]);
@@ -172,30 +145,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 			return t('Field_required');
 		}
 	}, [realname, requireName, t, user?.name]);
-
-	const statusTextError = useMemo(() => {
-		if (statusText && statusText.length > USER_STATUS_TEXT_MAX_LENGTH) {
-			return t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH);
-		}
-
-		return undefined;
-	}, [statusText, t]);
-
-	const bioError = useMemo(() => {
-		if (bio && bio.length > BIO_TEXT_MAX_LENGTH) {
-			return t('Max_length_is', BIO_TEXT_MAX_LENGTH);
-		}
-
-		return undefined;
-	}, [bio, t]);
-
-	const customFieldsError = useMemo(() => {
-		if (customFieldsErrors) {
-			return customFieldsErrors;
-		}
-
-		return undefined;
-	}, [customFieldsErrors]);
 
 	const isUserVerified = user?.emails?.[0]?.verified ?? false;
 
@@ -268,14 +217,13 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					<Controller
 						control={control}
 						name='avatar'
-						render={({ field: { value, onChange } }) => (
+						render={({ field: { onChange } }) => (
 							<UserAvatarEditor
 								etag={user?.avatarETag}
 								currentUsername={user?.username}
 								username={username}
 								setAvatarObj={onChange}
 								disabled={!allowUserAvatarChange}
-								suggestions={avatarSuggestions as any}
 							/>
 						)}
 					/>
@@ -302,8 +250,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					<Field.Label>{t('StatusMessage')}</Field.Label>
 					<Field.Row>
 						<TextInput
-							{...register('statusText')}
-							error={statusTextError}
+							{...register('statusText', {
+								maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH) },
+							})}
+							error={errors?.statusText?.message}
 							disabled={!allowUserStatusMessageChange}
 							flexGrow={1}
 							placeholder={t('StatusMessage_Placeholder')}
@@ -311,7 +261,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						/>
 					</Field.Row>
 					{!allowUserStatusMessageChange && <Field.Hint>{t('StatusMessage_Change_Disabled')}</Field.Hint>}
-					<Field.Error>{statusTextError}</Field.Error>
+					{errors?.statusText && <Field.Error>{errors?.statusText.message}</Field.Error>}
 				</Field>
 				<Field>
 					<Field.Label htmlFor={nicknameId}>{t('Nickname')}</Field.Label>
@@ -323,14 +273,14 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					<Field.Label>{t('Bio')}</Field.Label>
 					<Field.Row>
 						<TextAreaInput
-							{...register('bio')}
-							error={bioError}
+							{...register('bio', { maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', BIO_TEXT_MAX_LENGTH) } })}
+							error={errors.bio?.message}
 							rows={3}
 							flexGrow={1}
 							addon={<Icon name='edit' size='x20' alignSelf='center' />}
 						/>
 					</Field.Row>
-					<Field.Error>{bioError}</Field.Error>
+					{errors?.bio && <Field.Error>{errors.bio.message}</Field.Error>}
 				</Field>
 				<Field>
 					<Field.Label>{t('Email')}</Field.Label>
