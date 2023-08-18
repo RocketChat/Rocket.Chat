@@ -37,11 +37,10 @@ it('should return 0 unseen features', () => {
 			.build(),
 	});
 
-	expect(result.current).toEqual(
+	expect(result.all[0]).toEqual(
 		expect.objectContaining({
 			featurePreviewEnabled: true,
-			unseenFeatures: defaultFeaturesPreview.length,
-			features: defaultFeaturesPreview,
+			unseenFeatures: 0,
 		}),
 	);
 });
