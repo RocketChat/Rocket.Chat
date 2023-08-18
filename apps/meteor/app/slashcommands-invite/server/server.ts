@@ -57,17 +57,27 @@ slashCommands.add({
 			});
 		}
 
+		const inviter = await Users.findOneById(userId);
+
+		if (!inviter) {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+				msg: i18n.t('error-invalid-user', {
+					lng: settings.get('Language') || 'en',
+				}),
+			});
+			return;
+		}
+
 		await Promise.all(
 			usersFiltered.map(async (user) => {
 				try {
-					const inviter = await Users.findOneById(userId);
 					return await addUsersToRoomMethod(
 						userId,
 						{
 							rid: message.rid,
 							users: [user.username || ''],
 						},
-						inviter ?? undefined,
+						inviter,
 					);
 				} catch ({ error }: any) {
 					if (typeof error !== 'string') {
