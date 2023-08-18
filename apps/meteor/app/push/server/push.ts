@@ -251,7 +251,7 @@ class PushClass {
 			$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
 		};
 
-		const appTokens = await AppsTokens.find(query).toArray();
+		const appTokens = AppsTokens.find(query);
 
 		for await (const app of appTokens) {
 			logger.debug('send to token', app.token);
