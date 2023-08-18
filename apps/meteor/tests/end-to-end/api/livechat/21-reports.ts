@@ -11,7 +11,7 @@ import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('LIVECHAT - reports', () => {
+(IS_EE ? describe.only : describe.skip)('LIVECHAT - reports', () => {
 	before((done) => getCredentials(done));
 
 	let agent2: { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
@@ -45,7 +45,26 @@ import { IS_EE } from '../../../e2e/config/constants';
 			{ agentId: 'rocketchat.internal.admin.test', username: 'rocketchat.internal.admin.test', count: 0, order: 0 },
 			true,
 		);
-		await startANewLivechatRoomAndTakeIt({ departmentId: dep1._id });
+		const { room, visitor } = await startANewLivechatRoomAndTakeIt({ departmentId: dep1._id });
+
+		await request
+			.post(api('livechat/room.saveInfo'))
+			.set(credentials)
+			.send({
+				roomData: {
+					_id: room._id,
+					topic: 'new topic',
+					tags: ['tag1', 'tag2'],
+				},
+				guestData: {
+					_id: visitor._id,
+				},
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res: Response) => {
+				expect(res.body).to.have.property('success', true);
+			});
 
 		await createUnit(user._id, user.username, [dep1._id]);
 
