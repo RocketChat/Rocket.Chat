@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 import type { ReactElement, SyntheticEvent } from 'react';
 
-import { useTabBarClose } from '../../../../client/views/room/contexts/ToolboxContext';
+import { useRoomToolbox } from '../../../../client/views/room/contexts/RoomToolboxContext';
 import GameCenterContainer from './GameCenterContainer';
 import GameCenterList from './GameCenterList';
 import { useExternalComponentsQuery } from './hooks/useExternalComponentsQuery';
@@ -21,13 +21,13 @@ const prevent = (e: SyntheticEvent): void => {
 const GameCenter = (): ReactElement => {
 	const [openedGame, setOpenedGame] = useState<IGame>();
 
-	const closeTabBar = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 
 	const result = useExternalComponentsQuery();
 
 	const handleClose = useMutableCallback((e) => {
 		prevent(e);
-		closeTabBar();
+		closeTab();
 	});
 
 	const handleBack = useMutableCallback((e) => {

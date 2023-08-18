@@ -16,6 +16,8 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
+const FREEZE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.FREEZE_INTEGRATION_SCRIPTS).toLowerCase());
+
 Meteor.methods<ServerMethods>({
 	async updateOutgoingIntegration(integrationId, _integration) {
 		if (!this.userId) {
@@ -51,22 +53,8 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('invalid_integration', '[methods] updateOutgoingIntegration -> integration not found');
 		}
 
-		if (integration.scriptCompiled) {
-			await Integrations.updateOne(
-				{ _id: integrationId },
-				{
-					$set: { scriptCompiled: integration.scriptCompiled },
-					$unset: { scriptError: 1 as const },
-				},
-			);
-		} else {
-			await Integrations.updateOne(
-				{ _id: integrationId },
-				{
-					$set: { scriptError: integration.scriptError },
-					$unset: { scriptCompiled: 1 as const },
-				},
-			);
+		if (FREEZE_INTEGRATION_SCRIPTS && integration.script?.trim() !== currentIntegration.script?.trim()) {
+			throw new Meteor.Error('integration-scripts-disabled');
 		}
 
 		await Integrations.updateOne(
@@ -86,8 +74,13 @@ Meteor.methods<ServerMethods>({
 					userId: integration.userId,
 					urls: integration.urls,
 					token: integration.token,
-					script: integration.script,
-					scriptEnabled: integration.scriptEnabled,
+					...(FREEZE_INTEGRATION_SCRIPTS
+						? {}
+						: {
+								script: integration.script,
+								scriptEnabled: integration.scriptEnabled,
+								...(integration.scriptCompiled ? { scriptCompiled: integration.scriptCompiled } : { scriptError: integration.scriptError }),
+						  }),
 					triggerWords: integration.triggerWords,
 					retryFailedCalls: integration.retryFailedCalls,
 					retryCount: integration.retryCount,
@@ -97,6 +90,13 @@ Meteor.methods<ServerMethods>({
 					_updatedAt: new Date(),
 					_updatedBy: await Users.findOne({ _id: this.userId }, { projection: { username: 1 } }),
 				},
+				...(FREEZE_INTEGRATION_SCRIPTS
+					? {}
+					: {
+							$unset: {
+								...(integration.scriptCompiled ? { scriptError: 1 as const } : { scriptCompiled: 1 as const }),
+							},
+					  }),
 			},
 		);
 

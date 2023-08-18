@@ -97,14 +97,18 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 		return setEmojiPicker(<EmojiPicker reference={ref} onClose={() => setEmojiPicker(null)} onPickEmoji={(emoji) => callback(emoji)} />);
 	}, []);
 
+	const handlePreview = useCallback((emoji: string, name: string) => setEmojiToPreview({ emoji, name }), [setEmojiToPreview]);
+
+	const handleRemovePreview = useCallback(() => setEmojiToPreview(null), [setEmojiToPreview]);
+
 	const contextValue = useMemo(
 		(): ContextType<typeof EmojiPickerContext> => ({
 			isOpen: emojiPicker !== null,
 			close: () => setEmojiPicker(null),
 			open,
 			emojiToPreview,
-			handlePreview: (emoji: string, name: string) => setEmojiToPreview({ emoji, name }),
-			handleRemovePreview: () => setEmojiToPreview(null),
+			handlePreview,
+			handleRemovePreview,
 			addRecentEmoji,
 			getEmojiListsByCategory,
 			recentEmojis,
@@ -121,7 +125,6 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 			emojiPicker,
 			open,
 			emojiToPreview,
-			setEmojiToPreview,
 			addRecentEmoji,
 			getEmojiListsByCategory,
 			recentEmojis,
@@ -132,6 +135,8 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 			customItemsLimit,
 			setActualTone,
 			quickReactions,
+			handlePreview,
+			handleRemovePreview,
 		],
 	);
 

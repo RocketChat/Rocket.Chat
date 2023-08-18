@@ -3,6 +3,7 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
+import { getPermaLink } from '../../../../client/lib/getPermaLink';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
@@ -28,7 +29,7 @@ Meteor.startup(async () => {
 		id: 'reply-directly',
 		icon: 'reply-directly',
 		label: 'Reply_in_direct_message',
-		context: ['message', 'message-mobile', 'threads', 'federated'],
+		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		role: 'link',
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
@@ -70,7 +71,7 @@ Meteor.startup(async () => {
 		context: ['message', 'message-mobile', 'threads'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			const permalink = await MessageAction.getPermaLink(message._id);
+			const permalink = await getPermaLink(message._id);
 			imperativeModal.open({
 				component: ShareMessageModal,
 				props: {
@@ -123,7 +124,7 @@ Meteor.startup(async () => {
 		async action(_, props) {
 			try {
 				const { message = messageArgs(this).msg } = props;
-				const permalink = await MessageAction.getPermaLink(message._id);
+				const permalink = await getPermaLink(message._id);
 				await navigator.clipboard.writeText(permalink);
 				dispatchToastMessage({ type: 'success', message: t('Copied') });
 			} catch (e) {

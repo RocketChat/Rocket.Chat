@@ -16,7 +16,7 @@ Meteor.startup(() => {
 			id: 'reply-in-thread',
 			icon: 'thread',
 			label: 'Reply_in_thread',
-			context: ['message', 'message-mobile'],
+			context: ['message', 'message-mobile', 'videoconf'],
 			action(e, props) {
 				const { message = messageArgs(this).msg } = props;
 				e.stopPropagation();

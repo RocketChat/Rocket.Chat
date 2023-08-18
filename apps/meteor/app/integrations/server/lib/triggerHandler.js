@@ -18,6 +18,8 @@ import { outgoingEvents } from '../../lib/outgoingEvents';
 import { forbiddenModelMethods } from '../api/api';
 import { outgoingLogger } from '../logger';
 
+const DISABLE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.DISABLE_INTEGRATION_SCRIPTS).toLowerCase());
+
 class RocketChatIntegrationHandler {
 	constructor() {
 		this.successResults = [200, 201, 202];
@@ -270,6 +272,10 @@ class RocketChatIntegrationHandler {
 	}
 
 	getIntegrationScript(integration) {
+		if (DISABLE_INTEGRATION_SCRIPTS) {
+			throw new Meteor.Error('integration-scripts-disabled');
+		}
+
 		const compiledScript = this.compiledScripts[integration._id];
 		if (compiledScript && +compiledScript._updatedAt === +integration._updatedAt) {
 			return compiledScript.script;
@@ -313,7 +319,12 @@ class RocketChatIntegrationHandler {
 	}
 
 	hasScriptAndMethod(integration, method) {
-		if (integration.scriptEnabled !== true || !integration.scriptCompiled || integration.scriptCompiled.trim() === '') {
+		if (
+			DISABLE_INTEGRATION_SCRIPTS ||
+			integration.scriptEnabled !== true ||
+			!integration.scriptCompiled ||
+			integration.scriptCompiled.trim() === ''
+		) {
 			return false;
 		}
 
@@ -328,6 +339,10 @@ class RocketChatIntegrationHandler {
 	}
 
 	async executeScript(integration, method, params, historyId) {
+		if (DISABLE_INTEGRATION_SCRIPTS) {
+			return;
+		}
+
 		let script;
 		try {
 			script = this.getIntegrationScript(integration);
