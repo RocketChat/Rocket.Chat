@@ -45,7 +45,7 @@ Meteor.startup(() => {
 				}
 				return user?._id ? !replies.includes(user._id) : false;
 			},
-			order: 2,
+			order: 1,
 			group: 'menu',
 		});
 	});

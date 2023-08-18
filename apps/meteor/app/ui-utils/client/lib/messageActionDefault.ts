@@ -137,7 +137,7 @@ Meteor.startup(async () => {
 		condition({ subscription }) {
 			return !!subscription;
 		},
-		order: 4,
+		order: 5,
 		group: 'menu',
 	});
 
@@ -157,7 +157,7 @@ Meteor.startup(async () => {
 		condition({ subscription }) {
 			return !!subscription;
 		},
-		order: 5,
+		order: 6,
 		group: 'menu',
 	});
 
@@ -200,7 +200,7 @@ Meteor.startup(async () => {
 			}
 			return true;
 		},
-		order: 7,
+		order: 8,
 		group: 'menu',
 	});
 
@@ -228,7 +228,7 @@ Meteor.startup(async () => {
 
 			return chat?.data.canDeleteMessage(message) ?? false;
 		},
-		order: 18,
+		order: 10,
 		group: 'menu',
 	});
 
@@ -255,7 +255,7 @@ Meteor.startup(async () => {
 			}
 			return Boolean(subscription);
 		},
-		order: 17,
+		order: 9,
 		group: 'menu',
 	});
 
@@ -274,7 +274,7 @@ Meteor.startup(async () => {
 		condition({ message: { reactions } }) {
 			return !!reactions;
 		},
-		order: 18,
+		order: 9,
 		group: 'menu',
 	});
 });

@@ -36,7 +36,7 @@ Meteor.startup(() => {
 			}
 			return hasAtLeastOnePermission('pin-message', message.rid);
 		},
-		order: 7,
+		order: 2,
 		group: 'menu',
 	});
 });

@@ -38,7 +38,7 @@ Meteor.startup(() => {
 
 			return !Array.isArray(message.starred) || !message.starred.find((star: any) => star._id === user?._id);
 		},
-		order: 9,
+		order: 3,
 		group: 'menu',
 	});
 });
