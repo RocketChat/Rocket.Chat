@@ -9,7 +9,7 @@ export default {
 	component: BusinessHoursTimeZone,
 	decorators: [
 		(fn) => (
-			<Box maxWidth='x600' alignSelf='center' w='full' m='x24'>
+			<Box maxWidth='x600' alignSelf='center' w='full' m={24}>
 				{fn()}
 			</Box>
 		),
