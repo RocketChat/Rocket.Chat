@@ -10,7 +10,7 @@ const LayoutProvider: FC = ({ children }) => {
 	const isEmbedded = layout === 'embedded';
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
 
-	const isMobile = !breakpoints.includes('lg');
+	const isMobile = !breakpoints.includes('md');
 
 	useEffect(() => {
 		setIsCollapsed(isMobile);
