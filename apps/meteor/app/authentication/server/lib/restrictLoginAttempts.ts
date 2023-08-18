@@ -75,7 +75,9 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	const lastSuccessfulAttemptAt = (await ServerEvents.findLastSuccessfulAttemptByIp(ip))?.ts;
 
 	// succesful logins should reset the counter
-	const startTime = new Date(Math.max(lockoutTimeStart.getTime(), lastSuccessfulAttemptAt.getTime()));
+	const startTime = lastSuccessfulAttemptAt
+		? new Date(Math.max(lockoutTimeStart.getTime(), lastSuccessfulAttemptAt.getTime()))
+		: lockoutTimeStart;
 
 	const failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIpSince(ip, startTime);
 
@@ -121,7 +123,9 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 	const lastSuccessfulAttemptAt = (await ServerEvents.findLastSuccessfulAttemptByUsername(loginUsername))?.ts;
 
 	// succesful logins should reset the counter
-	const startTime = new Date(Math.max(lockoutTimeStart.getTime(), lastSuccessfulAttemptAt.getTime()));
+	const startTime = lastSuccessfulAttemptAt
+		? new Date(Math.max(lockoutTimeStart.getTime(), lastSuccessfulAttemptAt.getTime()))
+		: lockoutTimeStart;
 
 	// get total failed attempts during the lockout time
 	const failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByUsernameSince(loginUsername, startTime);
