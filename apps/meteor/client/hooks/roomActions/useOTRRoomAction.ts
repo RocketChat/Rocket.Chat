@@ -33,6 +33,7 @@ export const useOTRRoomAction = () => {
 			tabComponent: OTR,
 			order: 13,
 			full: true,
+			type: 'communication',
 			...(federated && {
 				tooltip: t('core.OTR_unavailable_for_federation'),
 				disabled: true,
