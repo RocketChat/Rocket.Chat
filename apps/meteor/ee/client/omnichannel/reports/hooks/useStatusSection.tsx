@@ -20,7 +20,7 @@ const STATUSES: Record<string, { label: TranslationKey; color: string }> = {
 const formatChartData = (data: { label: string; value: number }[] | undefined = [], total = 0, t: TranslationContextValue['translate']) => {
 	return data.map((item) => {
 		const status = STATUSES[item.label];
-		const percentage = round((item.value / total) * 100);
+		const percentage = total > 0 ? round((item.value / total) * 100) : 0;
 		const label = t(status.label);
 		return {
 			...item,

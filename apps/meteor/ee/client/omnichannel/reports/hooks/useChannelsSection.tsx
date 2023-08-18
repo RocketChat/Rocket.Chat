@@ -13,7 +13,7 @@ import { useDefaultDownload } from './useDefaultDownload';
 type DataItem = { label: string; value: number; id: string; rawLabel: string };
 
 const formatItem = (item: { label: string; value: number }, total: number): DataItem => {
-	const percentage = round((item.value / total) * 100);
+	const percentage = total > 0 ? round((item.value / total) * 100) : 0;
 	return {
 		...item,
 		label: `${item.label} ${item.value} (${percentage}%)`,
@@ -43,7 +43,7 @@ export const useChannelsSection = () => {
 			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsBySource({ start: start.toISOString(), end: end.toISOString() });
 			const data = formatChartData(response.data, response.total);
-			const displayData: DataItem[] = getTop<DataItem>(5, data, (value) => formatItem({ label: t('Others'), value }, total));
+			const displayData: DataItem[] = getTop<DataItem>(5, data, (value) => formatItem({ label: t('Others'), value }, response.total));
 			return { ...response, data: displayData, rawData: data };
 		},
 		{
