@@ -74,7 +74,7 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	const lockoutTimeStart = addMinutesToADate(new Date(), minutesUntilUnblock * -1);
 	const lastSuccessfulAttemptAt = (await ServerEvents.findLastSuccessfulAttemptByIp(ip))?.ts;
 
-	// succesful logins should reset the counter
+	// successful logins should reset the counter
 	const startTime = lastSuccessfulAttemptAt
 		? new Date(Math.max(lockoutTimeStart.getTime(), lastSuccessfulAttemptAt.getTime()))
 		: lockoutTimeStart;
