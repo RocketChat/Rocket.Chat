@@ -1,9 +1,10 @@
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey, TranslationLanguage } from '@rocket.chat/ui-contexts';
-import { useSetting, useLoadLanguage, useLanguage, useLanguages, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import { Fragment, useMemo } from 'react';
+import { HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
+import type { TranslationLanguage } from '@rocket.chat/ui-contexts';
+import { useSetting, useLoadLanguage, useLanguage, useLanguages, useRouter } from '@rocket.chat/ui-contexts';
+import type { ReactElement, UIEvent } from 'react';
+import { useMemo } from 'react';
 import { Trans } from 'react-i18next';
 
 export const normalizeLanguage = (language: string): string => {
@@ -20,7 +21,6 @@ export const normalizeLanguage = (language: string): string => {
 const browserLanguage = normalizeLanguage(window.navigator.language ?? 'en');
 
 const LoginSwitchLanguageFooter = (): ReactElement | null => {
-	const t = useTranslation();
 	const currentLanguage = useLanguage();
 
 	const languages = useLanguages();
@@ -39,28 +39,32 @@ const LoginSwitchLanguageFooter = (): ReactElement | null => {
 	}, [serverLanguage, currentLanguage, languages]);
 
 	const [, setUserLanguage] = useLocalStorage('userLanguage', '');
-	const handleSwitchLanguageClick = (language: string) => async (): Promise<void> => {
-		await loadLanguage(language);
-		setUserLanguage(language);
-	};
+	const handleSwitchLanguageClick =
+		(language: TranslationLanguage) =>
+		async (event: UIEvent): Promise<void> => {
+			event.preventDefault();
+			await loadLanguage(language.key);
+			setUserLanguage(language.key);
+		};
+
+	const router = useRouter();
 
 	if (!suggestions.length) {
 		return null;
 	}
 
-	console.log(languages);
-
 	return (
-		<>
-			{suggestions.map(({ name }) => (
-				<Box key={name}>
-					<Trans i18nKey='registration.component.switchLanguage'>
-						Switch to
-						<Button onClick={handleSwitchLanguageClick(name)}>{t(name as TranslationKey)}</Button>
-					</Trans>
-				</Box>
-			))}
-		</>
+		<HorizontalWizardLayoutCaption>
+			<Box withRichContent>
+				{suggestions.map((suggestion) => (
+					<a key={suggestion.key} href={router.buildRoutePath('/home')} role='button' onClick={handleSwitchLanguageClick(suggestion)}>
+						<Trans i18nKey='registration.component.switchLanguage' lang={suggestion.key}>
+							Switch to <strong>{{ name: suggestion.name }}</strong>
+						</Trans>
+					</a>
+				))}
+			</Box>
+		</HorizontalWizardLayoutCaption>
 	);
 };
 

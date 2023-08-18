@@ -80,6 +80,7 @@ export class MockedAppRootBuilder {
 				name: 'English',
 			},
 		],
+		preferLanguage: () => undefined,
 		loadLanguage: () => Promise.resolve(),
 		translate: Object.assign((key: string) => key, {
 			has: (_key: string | number | symbol): _key is TranslationKey => true,

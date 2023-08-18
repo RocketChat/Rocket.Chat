@@ -5550,7 +5550,7 @@
   "registration.component.login": "Logga in",
   "registration.component.login.userNotFound": "Användare inte hittad",
   "registration.component.login.incorrectPassword": "Felaktigt lösenord",
-  "registration.component.switchLanguage": "Växla till <1>en</1>",
+  "registration.component.switchLanguage": "Växla till <1>{{name}}</1>",
   "registration.component.resetPassword": "Återställ lösenord",
   "registration.component.form.emailOrUsername": "E-postadress eller lösenord",
   "registration.component.form.username": "Användarnamn",
