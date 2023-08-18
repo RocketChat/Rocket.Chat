@@ -175,7 +175,7 @@ registerAdminRoute('/emoji/:context?/:id?', {
 
 registerAdminRoute('/users/:context?/:id?', {
 	name: 'admin-users',
-	component: lazy(() => import('./users/UsersRoute')),
+	component: lazy(() => import('./users/AdminUsersRoute')),
 });
 
 registerAdminRoute('/rooms/:context?/:id?', {

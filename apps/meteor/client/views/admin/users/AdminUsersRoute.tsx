@@ -3,16 +3,16 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
-import UsersPage from './UsersPage';
+import AdminUsersPage from './AdminUsersPage';
 
-const UsersRoute = (): ReactElement => {
+const AdminUsersRoute = (): ReactElement => {
 	const canViewUserAdministration = usePermission('view-user-administration');
 
 	if (!canViewUserAdministration) {
 		return <NotAuthorizedPage />;
 	}
 
-	return <UsersPage />;
+	return <AdminUsersPage />;
 };
 
-export default UsersRoute;
+export default AdminUsersRoute;
