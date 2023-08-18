@@ -35,8 +35,13 @@ export const sendAPN = ({
 	const note = new apn.Notification();
 
 	note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
-	note.badge = notification.badge as number; // the module accepts undefined, but is typed wrong
-	note.sound = notification.sound as string; // the module accepts undefined, but is typed wrong
+	if (notification.badge !== undefined) {
+		note.badge = notification.badge;
+	}
+
+	if (notification.sound !== undefined) {
+		note.sound = notification.sound;
+	}
 
 	if (notification.contentAvailable != null) {
 		note.setContentAvailable(notification.contentAvailable);
