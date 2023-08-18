@@ -1,8 +1,8 @@
+import { ActionManagerContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement } from 'react';
 import React from 'react';
 
 import * as ActionManager from '../../app/ui-message/client/ActionManager';
-import { ActionManagerContext } from '../contexts/ActionManagerContext';
 import { useAppActionButtons } from '../hooks/useAppActionButtons';
 import { useAppSlashCommands } from '../hooks/useAppSlashCommands';
 import { useAppUiKitInteraction } from '../hooks/useAppUiKitInteraction';
