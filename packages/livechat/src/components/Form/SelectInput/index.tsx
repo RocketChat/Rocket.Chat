@@ -73,9 +73,11 @@ export const SelectInput = ({
 				})}
 				ref={ref}
 			>
-				<option value='' disabled hidden>
-					{placeholder}
-				</option>
+				{placeholder && (
+					<option selected value='' disabled hidden>
+						{placeholder}
+					</option>
+				)}
 				{SelectOptions}
 			</select>
 			<ArrowIcon className={createClassName(styles, 'select-input__arrow')} />
