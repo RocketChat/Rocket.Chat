@@ -7,18 +7,14 @@ import { logger } from './logger';
 
 let apnConnection: apn.Provider | undefined;
 
-// the definition included in the module does not include the set-only attributes
-class ApnNotification extends apn.Notification {
-	setContentAvailable: (value: boolean | 1 | 0) => void;
-
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	set category(_value: string | undefined) {}
-
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	set body(_value: string) {}
-
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	set title(_value: string) {}
+declare module 'apn' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Notification {
+		setContentAvailable: (value: boolean | 1 | 0) => void;
+		set category(_value: string | undefined);
+		set body(_value: string);
+		set title(_value: string);
+	}
 }
 
 export const sendAPN = ({
@@ -36,7 +32,7 @@ export const sendAPN = ({
 
 	const priority = notification.priority || notification.priority === 0 ? notification.priority : 10;
 
-	const note = new apn.Notification() as ApnNotification;
+	const note = new apn.Notification();
 
 	note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
 	note.badge = notification.badge as number; // the module accepts undefined, but is typed wrong
