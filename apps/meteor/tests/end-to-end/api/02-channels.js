@@ -1316,8 +1316,8 @@ describe('[Channels]', function () {
 
 					const member = res.body.members[0];
 					expect(member).to.have.property('highestRole');
-					expect(member.roles).to.have.length(1);
-					expect(member.roles[0]).to.be.equal('leader');
+					expect(member.roomRoles).to.have.length(1);
+					expect(member.roomRoles[0]).to.be.equal('leader');
 
 					const { highestRole } = member;
 					expect(highestRole).to.have.property('role', 'member');
