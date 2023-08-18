@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Button } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
 import type { TranslationLanguage } from '@rocket.chat/ui-contexts';
@@ -57,11 +57,19 @@ const LoginSwitchLanguageFooter = (): ReactElement | null => {
 		<HorizontalWizardLayoutCaption>
 			<Box withRichContent>
 				{suggestions.map((suggestion) => (
-					<a key={suggestion.key} href={router.buildRoutePath('/home')} role='button' onClick={handleSwitchLanguageClick(suggestion)}>
-						<Trans i18nKey='registration.component.switchLanguage' lang={suggestion.key}>
-							Switch to <strong>{{ name: suggestion.name }}</strong>
+					<Button
+						secondary
+						small
+						mie={8}
+						key={suggestion.key}
+						href={router.buildRoutePath('/home')}
+						role='button'
+						onClick={handleSwitchLanguageClick(suggestion)}
+					>
+						<Trans i18nKey='registration.component.switchLanguage' lang={suggestion.key} tOptions={{ lng: suggestion.key }}>
+							<Box fontScale='c1'>Change to {{ name: suggestion.name }}</Box>
 						</Trans>
-					</a>
+					</Button>
 				))}
 			</Box>
 		</HorizontalWizardLayoutCaption>
