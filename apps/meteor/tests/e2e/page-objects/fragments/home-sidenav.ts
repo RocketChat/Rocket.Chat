@@ -66,7 +66,7 @@ export class HomeSidenav {
 		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
 	}
 
-	async switchStatus(status: 'Offline offline' | 'Online online'): Promise<void> {
+	async switchStatus(status: 'offline' | 'online'): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
 		await this.page.locator(`role=menuitemcheckbox[name="${status}"]`).click();
 	}
