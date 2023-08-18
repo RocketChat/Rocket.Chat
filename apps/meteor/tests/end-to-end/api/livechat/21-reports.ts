@@ -11,7 +11,7 @@ import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe.only : describe.skip)('LIVECHAT - reports', () => {
+(IS_EE ? describe : describe.skip)('LIVECHAT - reports', () => {
 	before((done) => getCredentials(done));
 
 	let agent2: { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
