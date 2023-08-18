@@ -41,7 +41,7 @@ export const AgentsTable = memo(({ data, sortBy, sortDirection, setSort }: Agent
 			<GenericTableBody>
 				{data.map((item) => (
 					<GenericTableRow key={`${item.label}_${item.value}`}>
-						<GenericTableCell>{item.label}</GenericTableCell>
+						<GenericTableCell withTruncatedText>{item.label}</GenericTableCell>
 						<GenericTableCell>{item.value}</GenericTableCell>
 					</GenericTableRow>
 				))}
