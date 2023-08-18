@@ -8,12 +8,12 @@ import Section from '../Section';
 
 type GenericGroupPageProps = ISetting;
 
-function GenericGroupPage({ _id, ...group }: GenericGroupPageProps): ReactElement {
+function GenericGroupPage({ _id, ...props }: GenericGroupPageProps): ReactElement {
 	const sections = useEditableSettingsGroupSections(_id);
 	const solo = sections.length === 1;
 
 	return (
-		<GroupPage _id={_id} {...group}>
+		<GroupPage _id={_id} {...props}>
 			{sections.map((sectionName) => (
 				<Section key={sectionName || ''} groupId={_id} sectionName={sectionName} solo={solo} />
 			))}

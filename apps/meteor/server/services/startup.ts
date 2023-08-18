@@ -11,6 +11,7 @@ import { BannerService } from './banner/service';
 import { CalendarService } from './calendar/service';
 import { DeviceManagementService } from './device-management/service';
 import { MediaService } from './image/service';
+import { ImportService } from './import/service';
 import { LDAPService } from './ldap/service';
 import { MessageService } from './messages/service';
 import { MeteorService } from './meteor/service';
@@ -55,6 +56,7 @@ api.registerService(new MessageService());
 api.registerService(new TranslationService());
 api.registerService(new SettingsService());
 api.registerService(new OmnichannelIntegrationService());
+api.registerService(new ImportService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {

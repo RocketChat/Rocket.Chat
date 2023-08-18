@@ -25,7 +25,6 @@ export const executeGetImportFileData = async (): Promise<IImportFileData | { wa
 	}
 
 	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
-	await importer.instance.build();
 
 	const waitingSteps = [
 		ProgressStep.DOWNLOADING_FILE,

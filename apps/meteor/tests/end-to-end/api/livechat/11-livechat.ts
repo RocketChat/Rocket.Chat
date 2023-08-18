@@ -1,6 +1,5 @@
-/* eslint-env mocha */
-
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';

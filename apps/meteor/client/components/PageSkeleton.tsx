@@ -8,7 +8,7 @@ const PageSkeleton = (): ReactElement => (
 	<Page>
 		<Page.Header title={<Skeleton width='x320' maxWidth='full' />}>
 			<ButtonGroup>
-				<Button children={<Skeleton width='x80' />} disabled primary />
+				<Button children={<Skeleton width='x80' />} disabled />
 			</ButtonGroup>
 		</Page.Header>
 

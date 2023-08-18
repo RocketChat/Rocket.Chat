@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, directMessage, apiUsername, apiEmail, methodCall } from '../../data/api-data.js';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
@@ -230,7 +231,7 @@ describe('[Direct Messages]', function () {
 			.end(done);
 	});
 
-	context("Setting: 'Use Real Name': true", () => {
+	describe("Setting: 'Use Real Name': true", () => {
 		before(async () => updateSetting('UI_Use_Real_Name', true));
 		after(async () => updateSetting('UI_Use_Real_Name', false));
 
@@ -832,7 +833,7 @@ describe('[Direct Messages]', function () {
 				.end(done);
 		});
 
-		context('when authenticated as a non-admin user', () => {
+		describe('when authenticated as a non-admin user', () => {
 			let otherUser;
 			let otherCredentials;
 
