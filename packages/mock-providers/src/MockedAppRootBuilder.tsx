@@ -21,7 +21,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { type WrapperComponent } from '@testing-library/react-hooks';
 import { createInstance } from 'i18next';
 import { type ObjectId } from 'mongodb';
-import React, { type ContextType, type ReactNode, useEffect, useReducer, Suspense } from 'react';
+import React, { type ContextType, type ReactNode, useEffect, useReducer } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 type Mutable<T> = {
@@ -313,34 +313,37 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	private i18n = createInstance({
-		lng: 'en',
-		fallbackLng: 'en',
-		ns: ['core'],
-		nsSeparator: '.',
-		partialBundledLanguages: true,
-		defaultNS: 'core',
-		react: {
-			useSuspense: true,
+	private i18n = createInstance(
+		{
+			debug: true,
+			lng: 'en',
+			fallbackLng: 'en',
+			ns: ['core'],
+			nsSeparator: '.',
+			partialBundledLanguages: true,
+			defaultNS: 'core',
+			interpolation: {
+				escapeValue: false,
+			},
+			initImmediate: false,
 		},
-		interpolation: {
-			escapeValue: false,
-		},
-	}).use(initReactI18next);
+		() => undefined,
+	).use(initReactI18next);
 
 	withTranslations(lng: string, ns: string, resources: Record<string, string>): this {
-		const apply = () => {
+		const addResources = () => {
+			this.i18n.addResources(lng, ns, resources);
 			for (const [key, value] of Object.entries(resources)) {
 				this.i18n.addResource(lng, ns, key, value);
 			}
 		};
 
 		if (this.i18n.isInitialized) {
-			apply();
+			addResources();
 			return this;
 		}
 
-		this.i18n.on('initialized', apply);
+		this.i18n.on('initialized', addResources);
 		return this;
 	}
 
@@ -394,10 +397,6 @@ export class MockedAppRootBuilder {
 			const [translation, updateTranslation] = useReducer(reduceTranslation, undefined, () => reduceTranslation());
 
 			useEffect(() => {
-				if (!i18n.isInitialized) {
-					i18n.init();
-				}
-
 				i18n.on('initialized', updateTranslation);
 				i18n.on('languageChanged', updateTranslation);
 
@@ -478,10 +477,6 @@ export class MockedAppRootBuilder {
 		const WrapperComponent = this.build();
 
 		// eslint-disable-next-line react/display-name, react/no-multi-comp
-		return (fn) => (
-			<WrapperComponent>
-				<Suspense fallback={null}>{fn()}</Suspense>
-			</WrapperComponent>
-		);
+		return (fn) => <WrapperComponent>{fn()}</WrapperComponent>;
 	}
 }

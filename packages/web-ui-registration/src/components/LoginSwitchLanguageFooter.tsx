@@ -1,10 +1,8 @@
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
-import type { TranslationLanguage } from '@rocket.chat/ui-contexts';
-import { useSetting, useLoadLanguage, useLanguage, useLanguages, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement, UIEvent } from 'react';
-import { useMemo } from 'react';
+import { type TranslationLanguage, useSetting, useLoadLanguage, useLanguage, useLanguages } from '@rocket.chat/ui-contexts';
+import { type ReactElement, type UIEvent, useMemo } from 'react';
 import { Trans } from 'react-i18next';
 
 export const normalizeLanguage = (language: string): string => {
@@ -18,9 +16,13 @@ export const normalizeLanguage = (language: string): string => {
 	return language;
 };
 
-const browserLanguage = normalizeLanguage(window.navigator.language ?? 'en');
+type LoginSwitchLanguageFooterProps = {
+	browserLanguage?: string;
+};
 
-const LoginSwitchLanguageFooter = (): ReactElement | null => {
+const LoginSwitchLanguageFooter = ({
+	browserLanguage = normalizeLanguage(window.navigator.language ?? 'en'),
+}: LoginSwitchLanguageFooterProps): ReactElement | null => {
 	const currentLanguage = useLanguage();
 
 	const languages = useLanguages();
@@ -36,7 +38,7 @@ const LoginSwitchLanguageFooter = (): ReactElement | null => {
 		return potentialSuggestions.filter((language): language is TranslationLanguage => {
 			return !!language && language.key !== currentLanguage;
 		});
-	}, [serverLanguage, currentLanguage, languages]);
+	}, [serverLanguage, browserLanguage, languages, currentLanguage]);
 
 	const [, setUserLanguage] = useLocalStorage('userLanguage', '');
 	const handleSwitchLanguageClick =
@@ -47,31 +49,19 @@ const LoginSwitchLanguageFooter = (): ReactElement | null => {
 			setUserLanguage(language.key);
 		};
 
-	const router = useRouter();
-
 	if (!suggestions.length) {
 		return null;
 	}
 
 	return (
 		<HorizontalWizardLayoutCaption>
-			<Box withRichContent>
-				{suggestions.map((suggestion) => (
-					<Button
-						secondary
-						small
-						mie={8}
-						key={suggestion.key}
-						href={router.buildRoutePath('/home')}
-						role='button'
-						onClick={handleSwitchLanguageClick(suggestion)}
-					>
-						<Trans i18nKey='registration.component.switchLanguage' lang={suggestion.key} tOptions={{ lng: suggestion.key }}>
-							<Box fontScale='c1'>Change to {{ name: suggestion.name }}</Box>
-						</Trans>
-					</Button>
-				))}
-			</Box>
+			{suggestions.map((suggestion) => (
+				<Button secondary small mie={8} key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
+					<Trans i18nKey='registration.component.switchLanguage' tOptions={{ lng: suggestion.key }}>
+						Change to <strong>{{ name: suggestion.name }}</strong>
+					</Trans>
+				</Button>
+			))}
 		</HorizontalWizardLayoutCaption>
 	);
 };
