@@ -1,5 +1,5 @@
 import type { ILivechatAgent, IOmnichannelRoom, IUser, SelectedAgent } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, OmnichannelSourceType, RoomVerificationState } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Subscriptions, Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import {
@@ -449,6 +449,30 @@ API.v1.addRoute(
 				oldRoom: room,
 			});
 
+			return API.v1.success();
+		},
+	},
+);
+API.v1.addRoute(
+	'livechat/room.verificationStatus',
+	{ authRequired: true, permissionsRequired: ['initiate-livechat-verification-process'] },
+	{
+		async put() {
+			// const { roomId } = this.queryParams;
+			const { roomId } = this.bodyParams;
+			if (!roomId) {
+				throw new Error('invalid-room');
+			}
+			// const room = await LivechatRooms.findOneById(roomId, { _id: 1 });
+			// if (!room) {
+			// 	throw new Error('invalid-room');
+			// }
+			console.log('hi', roomId);
+			const roomAfterVerificationStateUpdate = await LivechatRooms.updateVerificationStatusById(roomId, RoomVerificationState.unVerified);
+			// if (!roomAfterVerificationStateUpdate) {
+			// 	return API.v1.failure();
+			// }
+			console.log('hi', roomAfterVerificationStateUpdate);
 			return API.v1.success();
 		},
 	},
