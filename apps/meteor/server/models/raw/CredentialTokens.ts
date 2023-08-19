@@ -27,7 +27,7 @@ export class CredentialTokensRaw extends BaseRaw<ICredentialToken> implements IC
 
 	findOneNotExpiredById(_id: string): Promise<ICredentialToken | null> {
 		const query = {
-			_id,
+			'userInfo.profile.inResponseToId': _id,
 			expireAt: { $gt: new Date() },
 		};
 
