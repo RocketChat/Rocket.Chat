@@ -1,8 +1,9 @@
 {
 	"extends": "../../tsconfig.base.client.json",
 	"compilerOptions": {
-		"rootDir": "./src",
-		"outDir": "./dist"
+		"rootDirs": ["./src","./.storybook"],
+		"outDir": "./dist",
+		"module": "CommonJS"
 	},
-	"include": ["./src/**/*"]
+	"include": ["./src", "./.storybook"],
 }
