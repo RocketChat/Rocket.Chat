@@ -1,10 +1,8 @@
 import { themes } from '@storybook/theming';
 import { type Parameters } from '@storybook/addons';
-import { type DecoratorFn } from '@storybook/react';
 import manifest from '../package.json';
 import logo from './logo.svg';
-import { mockAppRoot } from '@rocket.chat/mock-providers';
-import React from 'react';
+import '@rocket.chat/fuselage/dist/fuselage.css';
 
 export const parameters: Parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -35,8 +33,3 @@ export const parameters: Parameters = {
   },
 };
 
-const MockedAppRoot = mockAppRoot().build();
-
-export const decorators: DecoratorFn[] = [
-  (fn) => <MockedAppRoot>{fn()}</MockedAppRoot>,
-];
