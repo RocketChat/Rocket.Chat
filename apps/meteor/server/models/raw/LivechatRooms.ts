@@ -1679,6 +1679,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				verificationStatus,
 			},
 		};
+
 		return this.updateOne(query, update);
 	}
 
