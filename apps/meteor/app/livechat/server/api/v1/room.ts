@@ -458,21 +458,14 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['initiate-livechat-verification-process'] },
 	{
 		async put() {
-			// const { roomId } = this.queryParams;
 			const { roomId } = this.bodyParams;
 			if (!roomId) {
 				throw new Error('invalid-room');
 			}
-			// const room = await LivechatRooms.findOneById(roomId, { _id: 1 });
-			// if (!room) {
-			// 	throw new Error('invalid-room');
-			// }
-			console.log('hi', roomId);
 			const roomAfterVerificationStateUpdate = await LivechatRooms.updateVerificationStatusById(roomId, RoomVerificationState.unVerified);
-			// if (!roomAfterVerificationStateUpdate) {
-			// 	return API.v1.failure();
-			// }
-			console.log('hi', roomAfterVerificationStateUpdate);
+			if (!roomAfterVerificationStateUpdate) {
+				return API.v1.failure();
+			}
 			return API.v1.success();
 		},
 	},
