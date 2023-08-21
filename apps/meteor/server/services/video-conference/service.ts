@@ -32,10 +32,14 @@ import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import { MongoInternals } from 'meteor/mongo';
 
+import { RocketChatAssets } from '../../../app/assets/server';
 import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import PushNotification from '../../../app/push-notifications/server/lib/PushNotification';
+import { Push } from '../../../app/push/server/push';
 import { settings } from '../../../app/settings/server';
 import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
+import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { Apps } from '../../../ee/server/apps';
 import { callbacks } from '../../../lib/callbacks';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
@@ -583,6 +587,39 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
+	private async sendPushNotification(call: IDirectVideoConference, calleeId: IUser['_id']): Promise<void> {
+		if (settings.get('Push_enable') !== true) {
+			return;
+		}
+
+		await Push.send({
+			from: 'push',
+			badge: 0,
+			sound: 'default',
+			priority: 10,
+			title: `@${call.createdBy.username}`,
+			text: i18n.t('Video_Conference'),
+			payload: {
+				host: Meteor.absoluteUrl(),
+				rid: call.rid,
+				notificationType: 'videoconf',
+				caller: call.createdBy,
+				avatar: getUserAvatarURL(call.createdBy.username || ''),
+				status: call.status,
+			},
+			userId: calleeId,
+			notId: PushNotification.getNotificationId(`${call.rid}|${call._id}`),
+			gcm: {
+				style: 'inbox',
+				image: RocketChatAssets.getURL('Assets_favicon_192'),
+			},
+			apn: {
+				category: 'MESSAGE_NOREPLY',
+				topicSuffix: '.voip',
+			},
+		});
+	}
+
 	private async startDirect(
 		providerName: string,
 		user: IUser,
@@ -636,6 +673,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				// Ignore errors on this timeout
 			}
 		}, 40000);
+
+		await this.sendPushNotification(call, calleeId);
 
 		return {
 			type: 'direct',
