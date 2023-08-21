@@ -1,13 +1,33 @@
+import type { IAppsTokens, RequiredField } from '@rocket.chat/core-typings';
 import apn from 'apn';
 import EJSON from 'ejson';
 
+import type { PushOptions, PendingPushNotification } from './definition';
 import { logger } from './logger';
 
-let apnConnection;
+let apnConnection: apn.Provider | undefined;
 
-export const sendAPN = ({ userToken, notification, _removeToken }) => {
-	if (typeof notification.apn === 'object') {
-		notification = Object.assign({}, notification, notification.apn);
+declare module 'apn' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Notification {
+		setContentAvailable: (value: boolean | 1 | 0) => void;
+		set category(_value: string | undefined);
+		set body(_value: string);
+		set title(_value: string);
+	}
+}
+
+export const sendAPN = ({
+	userToken,
+	notification,
+	_removeToken,
+}: {
+	userToken: string;
+	notification: PendingPushNotification & { topic: string };
+	_removeToken: (token: IAppsTokens['token']) => void;
+}) => {
+	if (!apnConnection) {
+		throw new Error('Apn Connection not initialized.');
 	}
 
 	const priority = notification.priority || notification.priority === 0 ? notification.priority : 10;
@@ -15,8 +35,13 @@ export const sendAPN = ({ userToken, notification, _removeToken }) => {
 	const note = new apn.Notification();
 
 	note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
-	note.badge = notification.badge;
-	note.sound = notification.sound;
+	if (notification.badge !== undefined) {
+		note.badge = notification.badge;
+	}
+
+	if (notification.sound !== undefined) {
+		note.sound = notification.sound;
+	}
 
 	if (notification.contentAvailable != null) {
 		note.setContentAvailable(notification.contentAvailable);
@@ -25,7 +50,7 @@ export const sendAPN = ({ userToken, notification, _removeToken }) => {
 	// adds category support for iOS8 custom actions as described here:
 	// https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/
 	// RemoteNotificationsPG/Chapters/IPhoneOSClientImp.html#//apple_ref/doc/uid/TP40008194-CH103-SW36
-	note.category = notification.category;
+	note.category = notification.apn?.category;
 
 	note.body = notification.text;
 	note.title = notification.title;
@@ -40,16 +65,14 @@ export const sendAPN = ({ userToken, notification, _removeToken }) => {
 	note.payload.messageFrom = notification.from;
 	note.priority = priority;
 
-	// Store the token on the note so we can reference it if there was an error
-	note.token = userToken;
 	note.topic = notification.topic;
-	note.mutableContent = 1;
+	note.mutableContent = true;
 
-	apnConnection.send(note, userToken).then((response) => {
+	void apnConnection.send(note, userToken).then((response) => {
 		response.failed.forEach((failure) => {
 			logger.debug(`Got error code ${failure.status} for token ${userToken}`);
 
-			if (['400', '410'].includes(failure.status)) {
+			if (['400', '410'].includes(failure.status ?? '')) {
 				logger.debug(`Removing token ${userToken}`);
 				_removeToken({
 					apn: userToken,
@@ -59,19 +82,10 @@ export const sendAPN = ({ userToken, notification, _removeToken }) => {
 	});
 };
 
-export const initAPN = ({ options, absoluteUrl }) => {
+export const initAPN = ({ options, absoluteUrl }: { options: RequiredField<PushOptions, 'apn'>; absoluteUrl: string }) => {
 	logger.debug('APN configured');
 
-	// Allow production to be a general option for push notifications
-	if (options.production === Boolean(options.production)) {
-		options.apn.production = options.production;
-	}
-
-	// Give the user warnings about development settings
-	if (options.apn.development) {
-		// This flag is normally set by the configuration file
-		logger.warn('WARNING: Push APN is using development key and certificate');
-	} else if (options.apn.gateway) {
+	if (options.apn.gateway) {
 		// We check the apn gateway i the options, we could risk shipping
 		// server into production while using the production configuration.
 		// On the other hand we could be in development but using the production
@@ -93,7 +107,7 @@ export const initAPN = ({ options, absoluteUrl }) => {
 			// Warn about gateways we dont know about
 			logger.warn(`WARNING: Push APN unknown gateway "${options.apn.gateway}"`);
 		}
-	} else if (options.apn.production) {
+	} else if (options.production) {
 		if (/http:\/\/localhost/.test(absoluteUrl)) {
 			logger.warn('WARNING: Push APN is configured to production mode - but server is running from localhost');
 		}
@@ -102,12 +116,12 @@ export const initAPN = ({ options, absoluteUrl }) => {
 	}
 
 	// Check certificate data
-	if (!options.apn.cert || !options.apn.cert.length) {
+	if (!options.apn.cert?.length) {
 		logger.error('ERROR: Push server could not find cert');
 	}
 
 	// Check key data
-	if (!options.apn.key || !options.apn.key.length) {
+	if (!options.apn.key?.length) {
 		logger.error('ERROR: Push server could not find key');
 	}
 
