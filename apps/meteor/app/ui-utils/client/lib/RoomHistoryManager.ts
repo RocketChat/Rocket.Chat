@@ -195,6 +195,7 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 
 		waitAfterFlush(() => {
+			this.emit('loaded-messages');
 			const heightDiff = wrapper.scrollHeight - (previousHeight ?? NaN);
 			wrapper.scrollTop = (scroll ?? NaN) + heightDiff;
 		});
@@ -296,6 +297,7 @@ class RoomHistoryManagerClass extends Emitter {
 		upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
 
 		Tracker.afterFlush(async () => {
+			this.emit('loaded-messages');
 			room.isLoading.set(false);
 		});
 

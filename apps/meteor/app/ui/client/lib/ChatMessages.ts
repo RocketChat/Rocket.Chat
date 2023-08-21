@@ -12,7 +12,7 @@ import { replyBroadcast } from '../../../../client/lib/chats/flows/replyBroadcas
 import { requestMessageDeletion } from '../../../../client/lib/chats/flows/requestMessageDeletion';
 import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
 import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
-import { ReadStateManager } from '../../../../client/lib/chats/readState';
+import { ReadStateManager } from '../../../../client/lib/chats/readStateManager';
 import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import {
 	setHighlightMessage,

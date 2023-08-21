@@ -3,6 +3,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 
 import { ChatMessage } from '../../../app/models/client';
+import { LegacyRoomManager } from '../../../app/ui-utils/client/lib/LegacyRoomManager';
 import { RoomHistoryManager } from '../../../app/ui-utils/client/lib/RoomHistoryManager';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
@@ -33,7 +34,6 @@ export class ReadStateManager extends Emitter {
 	}
 
 	public onUnreadStateChange = (callback: (firstUnreadRecord?: IMessage['_id']) => void): UnsuscribeUnreadStateChange => {
-		console.log(this.firstUnreadRecordId);
 		callback(this.firstUnreadRecordId);
 		const unsub = this.on('unread-state-change', callback);
 		return unsub;
@@ -44,9 +44,18 @@ export class ReadStateManager extends Emitter {
 			return;
 		}
 
+		const firstUpdate = !this.subscription;
+
 		this.subscription = subscription;
-		const { unread, alert } = this.subscription || {};
+		LegacyRoomManager.getOpenedRoomByRid(this.rid)?.unreadSince.set(this.subscription.ls);
+
+		const { unread, alert } = this.subscription;
 		if (!unread && !alert) {
+			return;
+		}
+
+		if (firstUpdate) {
+			this.updateFirstUnreadRecordId();
 			return;
 		}
 
@@ -61,7 +70,6 @@ export class ReadStateManager extends Emitter {
 		if (!this.subscription?.ls) {
 			return;
 		}
-		console.log(this.subscription.ls);
 
 		const firstUnreadRecord = ChatMessage.findOne(
 			{
@@ -79,10 +87,19 @@ export class ReadStateManager extends Emitter {
 				},
 			},
 		);
-		console.log({ firstUnreadRecord });
 
-		this.firstUnreadRecordId = firstUnreadRecord?._id;
-		this.emit('unread-state-change', firstUnreadRecord?._id);
+		this.setFirstUnreadRecordId(firstUnreadRecord?._id);
+
+		RoomHistoryManager.once('loaded-messages', () => this.updateFirstUnreadRecordId());
+	}
+
+	private setFirstUnreadRecordId(firstUnreadRecordId: string | undefined) {
+		this.firstUnreadRecordId = firstUnreadRecordId;
+		this.emit('unread-state-change', this.firstUnreadRecordId);
+	}
+
+	public clearUnreadMark() {
+		this.setFirstUnreadRecordId(undefined);
 	}
 
 	public handleWindowEvents = (): UnsuscribeWindowEvents => {
@@ -125,7 +142,7 @@ export class ReadStateManager extends Emitter {
 			return;
 		}
 
-		if (!this.isUnreadMarkVisible()) {
+		if (this.unreadMark && !this.isUnreadMarkVisible()) {
 			return;
 		}
 		// if there are unloaded unread messages, don't mark as read

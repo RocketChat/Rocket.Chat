@@ -4,7 +4,7 @@ import type { UIEvent } from 'react';
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import type { Subscribable } from '../../definitions/Subscribable';
 import type { Upload } from './Upload';
-import type { ReadStateManager } from './readState';
+import type { ReadStateManager } from './readStateManager';
 
 export type ComposerAPI = {
 	release(): void;
