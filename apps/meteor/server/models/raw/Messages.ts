@@ -1396,23 +1396,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		ignoreThreads = true,
 		selectedMessageIds: string[] = [],
 	): Promise<number> {
-		if (limit) {
-			const count = (
-				await this.deleteMany({
-					_id: {
-						$in: selectedMessageIds,
-					},
-				})
-			).deletedCount;
-
-			if (count) {
-				// decrease message count
-				await Rooms.decreaseMessageCountById(rid, count);
-			}
-
-			return count;
-		}
-
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
@@ -1432,7 +1415,40 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			query.tcount = { $exists: false };
 		}
 
-		const count = (await this.deleteMany(query)).deletedCount;
+		const notCountedMessages = (
+			await this.find(
+				{
+					...query,
+					$or: [{ _hidden: true }, { editedAt: { $exists: true }, editedBy: { $exists: true }, t: 'rm' }],
+				},
+				{
+					projection: {
+						_id: 1,
+					},
+					limit,
+				},
+			).toArray()
+		).length;
+
+		if (!limit) {
+			const count = (await this.deleteMany(query)).deletedCount - notCountedMessages;
+			if (count) {
+				// decrease message count
+				await Rooms.decreaseMessageCountById(rid, count);
+			}
+
+			return count;
+		}
+
+		const count =
+			(
+				await this.deleteMany({
+					_id: {
+						$in: selectedMessageIds,
+					},
+				})
+			).deletedCount - notCountedMessages;
+
 		if (count) {
 			// decrease message count
 			await Rooms.decreaseMessageCountById(rid, count);

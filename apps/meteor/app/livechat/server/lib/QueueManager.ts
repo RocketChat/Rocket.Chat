@@ -1,3 +1,4 @@
+import type { ILivechatInquiryRecord, ILivechatVisitor, IMessage, IOmnichannelRoom, SelectedAgent } from '@rocket.chat/core-typings';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -9,25 +10,44 @@ import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('QueueManager');
 
-export const saveQueueInquiry = async (inquiry) => {
+export const saveQueueInquiry = async (inquiry: ILivechatInquiryRecord) => {
 	await LivechatInquiry.queueInquiry(inquiry._id);
 	await callbacks.run('livechat.afterInquiryQueued', inquiry);
 };
 
-export const queueInquiry = async (inquiry, defaultAgent) => {
+export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent?: SelectedAgent) => {
 	const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
 	logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
 
 	await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
-	inquiry = await LivechatInquiry.findOneById(inquiry._id);
+	const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
 
-	if (inquiry.status === 'ready') {
+	if (!dbInquiry) {
+		logger.error(`Inquiry with id ${inquiry._id} not found`);
+		throw new Error('inquiry-not-found');
+	}
+
+	if (dbInquiry.status === 'ready') {
 		logger.debug(`Inquiry with id ${inquiry._id} is ready. Delegating to agent ${inquiryAgent?.username}`);
-		return RoutingManager.delegateInquiry(inquiry, inquiryAgent);
+		return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent);
 	}
 };
 
-export const QueueManager = {
+type queueManager = {
+	requestRoom: (params: {
+		guest: ILivechatVisitor;
+		message: Pick<IMessage, 'rid' | 'msg'>;
+		roomInfo: {
+			source?: IOmnichannelRoom['source'];
+			[key: string]: unknown;
+		};
+		agent?: SelectedAgent;
+		extraData?: Record<string, unknown>;
+	}) => Promise<IOmnichannelRoom>;
+	unarchiveRoom: (archivedRoom?: IOmnichannelRoom) => Promise<IOmnichannelRoom>;
+};
+
+export const QueueManager: queueManager = {
 	async requestRoom({ guest, message, roomInfo, agent, extraData }) {
 		logger.debug(`Requesting a room for guest ${guest._id}`);
 		check(
@@ -43,6 +63,7 @@ export const QueueManager = {
 				username: String,
 				status: Match.Maybe(String),
 				department: Match.Maybe(String),
+				name: Match.Maybe(String),
 			}),
 		);
 
@@ -52,9 +73,13 @@ export const QueueManager = {
 		}
 
 		const { rid } = message;
-		const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;
+		const name = (roomInfo?.fname as string) || guest.name || guest.username;
 
 		const room = await LivechatRooms.findOneById(await createLivechatRoom(rid, name, guest, roomInfo, extraData));
+		if (!room) {
+			logger.error(`Room for visitor ${guest._id} not found`);
+			throw new Error('room-not-found');
+		}
 		logger.debug(`Room for visitor ${guest._id} created with id ${room._id}`);
 
 		const inquiry = await LivechatInquiry.findOneById(
@@ -66,6 +91,11 @@ export const QueueManager = {
 				extraData: { ...extraData, source: roomInfo.source },
 			}),
 		);
+		if (!inquiry) {
+			logger.error(`Inquiry for visitor ${guest._id} not found`);
+			throw new Error('inquiry-not-found');
+		}
+
 		logger.debug(`Generated inquiry for visitor ${guest._id} with id ${inquiry._id} [Not queued]`);
 
 		await LivechatRooms.updateRoomCount();
@@ -82,18 +112,13 @@ export const QueueManager = {
 		return newRoom;
 	},
 
-	async unarchiveRoom(archivedRoom = {}) {
-		const {
-			_id: rid,
-			open,
-			closedAt,
-			fname: name,
-			servedBy,
-			v,
-			departmentId: department,
-			lastMessage: message,
-			source = {},
-		} = archivedRoom;
+	async unarchiveRoom(archivedRoom) {
+		if (!archivedRoom) {
+			logger.error('No room to unarchive');
+			throw new Error('no-room-to-unarchive');
+		}
+
+		const { _id: rid, open, closedAt, fname: name, servedBy, v, departmentId: department, lastMessage: message, source } = archivedRoom;
 
 		if (!rid || !closedAt || !!open) {
 			return archivedRoom;
@@ -101,7 +126,7 @@ export const QueueManager = {
 
 		logger.debug(`Attempting to unarchive room with id ${rid}`);
 
-		const oldInquiry = await LivechatInquiry.findOneByRoomId(rid);
+		const oldInquiry = await LivechatInquiry.findOneByRoomId<Pick<ILivechatInquiryRecord, '_id'>>(rid, { projection: { _id: 1 } });
 		if (oldInquiry) {
 			logger.debug(`Removing old inquiry (${oldInquiry._id}) for room ${rid}`);
 			await LivechatInquiry.removeByRoomId(rid);
@@ -112,8 +137,8 @@ export const QueueManager = {
 			...(department && { department }),
 		};
 
-		let defaultAgent;
-		if (servedBy && (await Users.findOneOnlineAgentByUserList(servedBy.username))) {
+		let defaultAgent: SelectedAgent | undefined;
+		if (servedBy?.username && (await Users.findOneOnlineAgentByUserList(servedBy.username))) {
 			defaultAgent = { agentId: servedBy._id, username: servedBy.username };
 		}
 
@@ -124,6 +149,11 @@ export const QueueManager = {
 			throw new Error('room-not-found');
 		}
 		const inquiry = await LivechatInquiry.findOneById(await createLivechatInquiry({ rid, name, guest, message, extraData: { source } }));
+		if (!inquiry) {
+			logger.error(`Inquiry for visitor ${guest._id} not found`);
+			throw new Error('inquiry-not-found');
+		}
+
 		logger.debug(`Generated inquiry for visitor ${v._id} with id ${inquiry._id} [Not queued]`);
 
 		await queueInquiry(inquiry, defaultAgent);
