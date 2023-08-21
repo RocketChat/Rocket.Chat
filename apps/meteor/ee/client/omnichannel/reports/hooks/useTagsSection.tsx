@@ -53,6 +53,7 @@ export const useTagsSection = () => {
 	});
 	const subtitleUnspecified = unspecified > 0 ? `(${t('__count__without__tags__', { count: unspecified })})` : '';
 	const subtitle = `${subtitleTotals} ${subtitleUnspecified}`;
+	const emptyStateSubtitle = t('Omnichannel_Reports_Tags_Empty_Subtitle');
 
 	const downloadProps = useDefaultDownload({ columnName: t('Tags'), title, data, period });
 
@@ -60,6 +61,7 @@ export const useTagsSection = () => {
 		() => ({
 			title,
 			subtitle,
+			emptyStateSubtitle,
 			data,
 			total,
 			period,
@@ -70,6 +72,6 @@ export const useTagsSection = () => {
 			isDataFound: isSuccess && data.length > 0,
 			onRetry: refetch,
 		}),
-		[title, subtitle, data, total, isError, isLoading, isSuccess, periodSelectorProps, period, downloadProps, refetch],
+		[title, subtitle, emptyStateSubtitle, data, total, isError, isLoading, isSuccess, periodSelectorProps, period, downloadProps, refetch],
 	);
 };

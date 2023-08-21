@@ -1,25 +1,25 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Box, Skeleton, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Box, Skeleton, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { Card } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
 import DownloadDataButton from '../../../components/dashboards/DownloadDataButton';
-import type { PeriodSelectorProps } from '../../../components/dashboards/PeriodSelector';
 import PeriodSelector from '../../../components/dashboards/PeriodSelector';
 import { CardErrorState } from './CardErrorState';
 
 type ReportCardProps = {
 	title: string;
 	children: ReactNode;
-	periodSelectorProps: PeriodSelectorProps<any>;
+	periodSelectorProps: ComponentProps<typeof PeriodSelector>;
 	downloadProps: ComponentProps<typeof DownloadDataButton>;
 	isLoading?: boolean;
 	isDataFound?: boolean;
 	height?: number;
 	loadingSkeleton?: ReactElement;
 	subtitle?: string;
+	emptyStateSubtitle?: string;
 	full?: boolean;
 	isError?: boolean;
 	onRetry?: () => void;
@@ -34,6 +34,7 @@ export const ReportCard = ({
 	isDataFound,
 	height,
 	subtitle,
+	emptyStateSubtitle,
 	full,
 	isError,
 	onRetry,
@@ -77,7 +78,8 @@ export const ReportCard = ({
 						{!isLoading && !isDataFound && (
 							<States style={{ height: '100%' }}>
 								<StatesIcon name='dashboard' />
-								<StatesTitle>{t('No_data_found')}</StatesTitle>
+								<StatesTitle>{t('No_data_for_the_selected_period')}</StatesTitle>
+								<StatesSubtitle>{emptyStateSubtitle}</StatesSubtitle>
 							</States>
 						)}
 

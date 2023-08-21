@@ -61,6 +61,7 @@ export const useStatusSection = () => {
 		count: total ?? 0,
 		period: formatPeriodDescription(period, t),
 	});
+	const emptyStateSubtitle = t('Omnichannel_Reports_Status_Empty_Subtitle');
 
 	const downloadProps = useDefaultDownload({ columnName: t('Status'), title, data, period });
 
@@ -68,6 +69,7 @@ export const useStatusSection = () => {
 		() => ({
 			title,
 			subtitle,
+			emptyStateSubtitle,
 			data,
 			total,
 			period,
@@ -78,6 +80,6 @@ export const useStatusSection = () => {
 			isDataFound: isSuccess && data.length > 0,
 			onRetry: refetch,
 		}),
-		[title, subtitle, data, total, period, periodSelectorProps, downloadProps, isLoading, isError, isSuccess, refetch],
+		[title, subtitle, emptyStateSubtitle, data, total, period, periodSelectorProps, downloadProps, isLoading, isError, isSuccess, refetch],
 	);
 };

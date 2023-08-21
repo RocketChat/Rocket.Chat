@@ -52,6 +52,7 @@ export const useAgentsSection = () => {
 	});
 	const subtitleUnspecified = unspecified > 0 ? `(${t('__count__without__assignee__', { count: unspecified })})` : '';
 	const subtitle = `${subtitleTotals} ${subtitleUnspecified}`;
+	const emptyStateSubtitle = t('Omnichannel_Reports_Agents_Empty_Subtitle');
 
 	const downloadProps = useDefaultDownload({ columnName: t('Agents'), title, data, period });
 
@@ -59,6 +60,7 @@ export const useAgentsSection = () => {
 		() => ({
 			title,
 			subtitle,
+			emptyStateSubtitle,
 			data,
 			total,
 			isLoading,
@@ -75,6 +77,7 @@ export const useAgentsSection = () => {
 		[
 			title,
 			subtitle,
+			emptyStateSubtitle,
 			data,
 			total,
 			isLoading,

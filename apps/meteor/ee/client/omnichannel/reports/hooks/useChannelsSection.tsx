@@ -65,6 +65,7 @@ export const useChannelsSection = () => {
 		count: total ?? 0,
 		period: formatPeriodDescription(period, t),
 	});
+	const emptyStateSubtitle = t('Omnichannel_Reports_Channels_Empty_Subtitle');
 
 	const downloadProps = useDefaultDownload({ columnName: t('Channel'), title, data: rawData, period });
 
@@ -72,6 +73,7 @@ export const useChannelsSection = () => {
 		() => ({
 			title,
 			subtitle,
+			emptyStateSubtitle,
 			data,
 			total,
 			isLoading,
@@ -82,6 +84,6 @@ export const useChannelsSection = () => {
 			downloadProps,
 			onRetry: refetch,
 		}),
-		[title, subtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps, refetch],
+		[title, subtitle, emptyStateSubtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps, refetch],
 	);
 };

@@ -44,6 +44,7 @@ export const useDepartmentsSection = () => {
 	});
 	const subtitleUnspecified = unspecified > 0 ? `(${t('__count__without__department__', { count: unspecified })})` : '';
 	const subtitle = `${subtitleTotals} ${subtitleUnspecified}`;
+	const emptyStateSubtitle = t('Omnichannel_Reports_Departments_Empty_Subtitle');
 
 	const downloadProps = useDefaultDownload({ columnName: t('Departments'), title, data, period });
 
@@ -51,6 +52,7 @@ export const useDepartmentsSection = () => {
 		() => ({
 			title,
 			subtitle,
+			emptyStateSubtitle,
 			data,
 			total,
 			isLoading,
@@ -60,6 +62,6 @@ export const useDepartmentsSection = () => {
 			period,
 			downloadProps,
 		}),
-		[title, subtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps],
+		[title, subtitle, emptyStateSubtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps],
 	);
 };
