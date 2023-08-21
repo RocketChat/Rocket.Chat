@@ -101,7 +101,7 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 
 	statsPms.push(
 		// Total livechat monitors
-		Users.col.countDocuments({ type: 'livechat-monitor' }).then((count) => {
+		Users.col.countDocuments({ roles: 'livechat-monitor' }).then((count) => {
 			statistics.livechatMonitors = count;
 			return true;
 		}),
