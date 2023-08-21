@@ -315,7 +315,7 @@ export class MockedAppRootBuilder {
 
 	private i18n = createInstance(
 		{
-			debug: true,
+			// debug: true,
 			lng: 'en',
 			fallbackLng: 'en',
 			ns: ['core'],

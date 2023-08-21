@@ -5,7 +5,7 @@ import { type TranslationLanguage, useSetting, useLoadLanguage, useLanguage, use
 import { type ReactElement, type UIEvent, useMemo } from 'react';
 import { Trans } from 'react-i18next';
 
-export const normalizeLanguage = (language: string): string => {
+const normalizeLanguage = (language: string): string => {
 	// Fix browsers having all-lowercase language settings eg. pt-br, en-us
 	const regex = /([a-z]{2,3})-([a-z]{2,4})/;
 	const matches = regex.exec(language);
@@ -16,6 +16,28 @@ export const normalizeLanguage = (language: string): string => {
 	return language;
 };
 
+const useSuggestedLanguages = ({
+	browserLanguage = normalizeLanguage(window.navigator.language ?? 'en'),
+}: {
+	browserLanguage?: string;
+}) => {
+	const availableLanguages = useLanguages();
+	const currentLanguage = useLanguage();
+	const serverLanguage = normalizeLanguage(useSetting<string>('Language') || 'en');
+
+	const suggestions = useMemo(() => {
+		const potentialLanguages = new Set([serverLanguage, browserLanguage, 'en'].map(normalizeLanguage));
+		const potentialSuggestions = Array.from(potentialLanguages).map((potentialLanguageKey) =>
+			availableLanguages.find((language) => language.key === potentialLanguageKey),
+		);
+		return potentialSuggestions.filter((language): language is TranslationLanguage => {
+			return !!language && language.key !== currentLanguage;
+		});
+	}, [serverLanguage, browserLanguage, availableLanguages, currentLanguage]);
+
+	return { suggestions };
+};
+
 type LoginSwitchLanguageFooterProps = {
 	browserLanguage?: string;
 };
@@ -23,22 +45,8 @@ type LoginSwitchLanguageFooterProps = {
 const LoginSwitchLanguageFooter = ({
 	browserLanguage = normalizeLanguage(window.navigator.language ?? 'en'),
 }: LoginSwitchLanguageFooterProps): ReactElement | null => {
-	const currentLanguage = useLanguage();
-
-	const languages = useLanguages();
 	const loadLanguage = useLoadLanguage();
-
-	const serverLanguage = normalizeLanguage((useSetting('Language') as string | undefined) || 'en');
-
-	const suggestions = useMemo(() => {
-		const potentialLanguages = new Set([serverLanguage, browserLanguage, 'en'].map(normalizeLanguage));
-		const potentialSuggestions = Array.from(potentialLanguages).map((potentialLanguageKey) =>
-			languages.find((language) => language.key === potentialLanguageKey),
-		);
-		return potentialSuggestions.filter((language): language is TranslationLanguage => {
-			return !!language && language.key !== currentLanguage;
-		});
-	}, [serverLanguage, browserLanguage, languages, currentLanguage]);
+	const { suggestions } = useSuggestedLanguages({ browserLanguage });
 
 	const [, setUserLanguage] = useLocalStorage('userLanguage', '');
 	const handleSwitchLanguageClick =
