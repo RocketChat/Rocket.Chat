@@ -27,7 +27,7 @@ const formatItem = (item: { label: string; value: number }, total: number, t: Tr
 		...item,
 		label: `${t(TYPE_LABEL[item.label]) || capitalize(item.label)} ${item.value} (${percentage}%)`,
 		rawLabel: item.label,
-		id: `${item.label}_${item.value}`,
+		id: item.label,
 	};
 };
 
