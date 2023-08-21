@@ -19,11 +19,6 @@ export const {
 		permissionGranted: (): boolean => settings.get('Accounts_AllowUserProfileChange'),
 	},
 	{
-		href: '/account/theme',
-		i18nLabel: 'Theme',
-		icon: 'palette',
-	},
-	{
 		href: '/account/preferences',
 		i18nLabel: 'Preferences',
 		icon: 'customize',
@@ -60,8 +55,8 @@ export const {
 		permissionGranted: () => settings.get('Accounts_AllowFeaturePreview') && defaultFeaturesPreview?.length > 0,
 	},
 	{
-		href: '/account/accessibility',
-		i18nLabel: 'Accessibility',
+		href: '/account/accessibility-and-appearance',
+		i18nLabel: 'Accessibility_and_Appearance',
 		icon: 'person-arms-spread',
 	},
 ]);

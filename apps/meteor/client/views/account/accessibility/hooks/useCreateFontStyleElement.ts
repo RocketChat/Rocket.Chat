@@ -16,8 +16,5 @@ export const useCreateFontStyleElement = (fontSize: string): void => {
 		const css = `html { font-size: ${fontSize}; }`;
 		styleElement.innerHTML = css;
 		document.head.appendChild(styleElement);
-		return () => {
-			document.head.removeChild(styleElement);
-		};
 	}, [fontSize]);
 };

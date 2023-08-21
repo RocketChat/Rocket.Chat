@@ -36,13 +36,9 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: '/account/feature-preview';
 			pattern: '/account/feature-preview';
 		};
-		'theme': {
-			pathname: '/account/theme';
-			pattern: '/account/theme';
-		};
-		'accessibility': {
-			pathname: '/account/accessibility';
-			pattern: '/account/accessibility';
+		'accessibility-and-appearance': {
+			pathname: '/account/accessibility-and-appearance';
+			pattern: '/account/accessibility-and-appearance';
 		};
 	}
 }
@@ -87,12 +83,8 @@ registerAccountRoute('/feature-preview', {
 	name: 'feature-preview',
 	component: lazy(() => import('./featurePreview/AccountFeaturePreviewPage')),
 });
-registerAccountRoute('/theme', {
-	name: 'theme',
-	component: lazy(() => import('./themes/ThemePage')),
-});
 
-registerAccountRoute('/accessibility', {
-	name: 'accessibility',
+registerAccountRoute('/accessibility-and-appearance', {
+	name: 'accessibility-and-appearance',
 	component: lazy(() => import('./accessibility/AccessibilityPage')),
 });
