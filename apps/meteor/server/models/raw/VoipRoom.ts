@@ -1,4 +1,4 @@
-import type { IVoipRoomClosingInfo, IVoipRoom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import { type IVoipRoomClosingInfo, type IVoipRoom, type RocketChatRecordDeleted, UserStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, IVoipRoomModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
@@ -96,7 +96,7 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 					closedAt,
 					callDuration,
 					'metrics.serviceTimeDuration': serviceTimeDuration,
-					'v.status': 'offline',
+					'v.status': UserStatus.OFFLINE,
 					...extraData,
 				},
 				$unset: {
