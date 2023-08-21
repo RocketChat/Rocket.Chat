@@ -25,10 +25,10 @@ const TeamsTableRow = ({ onClick, team, mediaQuery }: TeamsTableRowProps) => {
 			<GenericTableCell>
 				<Box display='flex'>
 					<Box flexGrow={0}>{avatarUrl && <Avatar size='x40' title={fname || name} url={avatarUrl} />}</Box>
-					<Box flexGrow={1} mi='x8' withTruncatedText>
+					<Box flexGrow={1} mi={8} withTruncatedText>
 						<Box display='flex' alignItems='center'>
 							<RoomIcon room={team} />
-							<Box fontScale='p2m' mi='x4'>
+							<Box fontScale='p2m' mi={4}>
 								{fname || name}
 							</Box>
 							<RoomTags room={team} />

@@ -10,6 +10,7 @@ import type { ICalendarService } from './types/ICalendarService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
+import type { IImportService } from './types/IImportService';
 import type { ILDAPService } from './types/ILDAPService';
 import type { ILicense } from './types/ILicense';
 import type { IMediaService, ResizeResult } from './types/IMediaService';
@@ -118,6 +119,7 @@ export {
 	ISettingsService,
 	IOmnichannelEEService,
 	IOmnichannelIntegrationService,
+	IImportService,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -152,6 +154,7 @@ export const OmnichannelIntegration = proxifyWithWait<IOmnichannelIntegrationSer
 export const Federation = proxifyWithWait<IFederationService>('federation');
 export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
 export const OmnichannelEEService = proxifyWithWait<IOmnichannelEEService>('omnichannel-ee');
+export const Import = proxifyWithWait<IImportService>('import');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

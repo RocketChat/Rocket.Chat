@@ -89,7 +89,7 @@ export class FederationSidenav {
 		await this.page.locator('role=search >> role=searchbox').type(name);
 		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).waitFor();
 		await this.page.waitForTimeout(2000);
-		
+
 		return this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).count();
 	}
 

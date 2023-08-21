@@ -46,9 +46,9 @@ const RoomListRow = ({ data, item }: { data: RoomListRowProps; item: ISubscripti
 	if (typeof item === 'string') {
 		const Section = sections[item];
 		return Section ? (
-			<Section aria-level='1' />
+			<Section />
 		) : (
-			<SidebarSection aria-level='1'>
+			<SidebarSection>
 				<SidebarSection.Title>{t(item)}</SidebarSection.Title>
 			</SidebarSection>
 		);

@@ -20,7 +20,7 @@ export class Registration {
 	}
 
 	get main(): Locator {
-		return this.page.locator('role=main[name="Home"]');
+		return this.page.locator('role=main');
 	}
 
 	get backToLogin(): Locator {
