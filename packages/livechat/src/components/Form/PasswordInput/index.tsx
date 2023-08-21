@@ -5,7 +5,7 @@ import type { JSXInternal } from 'preact/src/jsx';
 import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
 
-type TextInputProps = {
+type PasswordInputProps = {
 	name?: string;
 	value?: string;
 	placeholder?: string;
@@ -15,24 +15,34 @@ type TextInputProps = {
 	onChange?: JSXInternal.EventHandler<TargetedEvent<HTMLInputElement, Event>>;
 	onInput?: JSXInternal.EventHandler<TargetedEvent<HTMLInputElement, Event>>;
 	onBlur?: JSXInternal.EventHandler<TargetedEvent<HTMLInputElement, Event>>;
+	ref?: Ref<HTMLInputElement>;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
-	ref?: Ref<HTMLInputElement>;
 };
 
-const TextInput = ({ name, value, placeholder, disabled, small, error, onChange, onInput, className, style = {}, ref }: TextInputProps) => (
+export const PasswordInput = ({
+	name,
+	placeholder,
+	disabled,
+	small,
+	error,
+	className,
+	style = {},
+	onBlur,
+	onChange,
+	onInput,
+	ref,
+}: PasswordInputProps) => (
 	<input
-		type='text'
 		name={name}
-		value={value}
+		type='password'
 		placeholder={placeholder}
 		disabled={disabled}
+		className={createClassName(styles, 'password-input', { disabled, error, small }, [className])}
+		style={style}
+		onBlur={onBlur}
 		onChange={onChange}
 		onInput={onInput}
-		className={createClassName(styles, 'text-input', { disabled, error, small }, [className])}
 		ref={ref}
-		style={style}
 	/>
 );
-
-export { TextInput };
