@@ -67,6 +67,8 @@ export class AppHttpBridge extends HttpBridge {
 			content = undefined;
 		}
 
+		const timeout = request.timeout || DEFAULT_TIMEOUT;
+
 		// end comptability with old HTTP.call API
 
 		this.orch.debugLog(`The App ${info.appId} is requesting from the outter webs:`, info);
@@ -78,7 +80,7 @@ export class AppHttpBridge extends HttpBridge {
 					method,
 					body: content,
 					headers,
-					timeout: DEFAULT_TIMEOUT,
+					timeout,
 				},
 				(request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
 					(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized),
