@@ -1,6 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../server/lib/i18n';
 import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
@@ -60,12 +61,9 @@ slashCommands.add({
 		const inviter = await Users.findOneById(userId);
 
 		if (!inviter) {
-			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: i18n.t('error-invalid-user', {
-					lng: settings.get('Language') || 'en',
-				}),
+			throw new Meteor.Error('error-user-not-found', 'Inviter not found', {
+				method: 'slashcommand-invite',
 			});
-			return;
 		}
 
 		await Promise.all(
