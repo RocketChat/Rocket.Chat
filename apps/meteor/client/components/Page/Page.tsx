@@ -20,7 +20,6 @@ const Page = ({ background = 'light', ...props }: PageProps): ReactElement => {
 				flexShrink={1}
 				height='full'
 				overflow='hidden'
-				aria-labelledby='PageHeader-title'
 				bg={background}
 				color='default'
 				{...props}
