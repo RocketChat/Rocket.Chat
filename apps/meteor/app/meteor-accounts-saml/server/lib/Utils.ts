@@ -130,6 +130,10 @@ export class SAMLUtils {
 		return newTemplate;
 	}
 
+	public static getValidationActionRedirectPath(credentialToken: string): string {
+		return `saml/${credentialToken}?saml_idp_credentialToken=${credentialToken}`;
+	}
+
 	public static log(obj: any, ...args: Array<any>): void {
 		if (debug && logger) {
 			logger.debug(obj, ...args);
