@@ -3,18 +3,17 @@ import { isThreadMessage } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
-import React, { Fragment, memo, useMemo, useState } from 'react';
+import React, { Fragment, memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
-import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import ThreadMessagePreview from '../../../components/message/variants/ThreadMessagePreview';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useRoomSubscription } from '../contexts/RoomContext';
+import { useReadStateManager } from '../hooks/useReadStateManager';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useMessages } from './hooks/useMessages';
-import { isMessageFirstUnread } from './lib/isMessageFirstUnread';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { isMessageSequential } from './lib/isMessageSequential';
 import MessageListProvider from './providers/MessageListProvider';
@@ -31,14 +30,8 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 	const formatDate = useFormatDate();
-	const [firstUnreadMessageId, setFirstUnreadMessage] = useState<string | undefined>();
-	const hideUnreadMark = useMemo(
-		() =>
-			withDebouncing({ wait: 5000 })(() => {
-				setFirstUnreadMessage(undefined);
-			}),
-		[],
-	);
+
+	const firstUnreadMessageId = useReadStateManager();
 
 	return (
 		<MessageListProvider scrollMessageList={scrollMessageList}>
@@ -47,13 +40,6 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 					const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 
 					const newDay = isMessageNewDay(message, previous);
-					const isFirstUnread = isMessageFirstUnread(subscription, message, previous);
-
-					if (isFirstUnread && !firstUnreadMessageId) {
-						setFirstUnreadMessage(message._id);
-					} else if (message._id === firstUnreadMessageId) {
-						hideUnreadMark();
-					}
 
 					const showUnreadDivider = firstUnreadMessageId === message._id;
 
@@ -93,7 +79,7 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 								<ThreadMessagePreview
 									data-mid={message._id}
 									data-tmid={message.tmid}
-									data-unread={isFirstUnread}
+									data-unread={showUnreadDivider}
 									data-sequential={sequential}
 									sequential={shouldShowAsSequential}
 									message={message}
