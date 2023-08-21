@@ -1931,6 +1931,7 @@
   "error-could-not-change-email": "Could not change email",
   "error-could-not-change-name": "Could not change name",
   "error-could-not-change-username": "Could not change username",
+  "error-comment-is-required": "Comment is required",
   "error-custom-field-name-already-exists": "Custom field name already exists",
   "error-delete-protected-role": "Cannot delete a protected role",
   "error-department-not-found": "Department not found",
