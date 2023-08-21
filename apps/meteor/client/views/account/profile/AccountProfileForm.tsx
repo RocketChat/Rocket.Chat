@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, PasswordInput, Button } from '@rocket.chat/fuselage';
-import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
 import { useAccountsCustomFields, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -29,22 +29,11 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
-	const getAvatarSuggestions = useEndpoint('GET', '/v1/users.getAvatarSuggestion');
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
 
 	const customFieldsMetadata = useAccountsCustomFields();
 
 	const [usernameError, setUsernameError] = useState<string | undefined>();
-	const [avatarSuggestions, setAvatarSuggestions] = useSafely(
-		useState<{
-			[key: string]: {
-				blob: string;
-				contentType: string;
-				service: string;
-				url: string;
-			};
-		}>({}),
-	);
 
 	const {
 		allowRealNameChange,
@@ -137,14 +126,6 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 	}, [watch, handleCustomFields]);
 
 	useEffect(() => {
-		const getSuggestions = async (): Promise<void> => {
-			const { suggestions } = await getAvatarSuggestions();
-			setAvatarSuggestions(suggestions);
-		};
-		getSuggestions();
-	}, [getAvatarSuggestions, setAvatarSuggestions, user]);
-
-	useEffect(() => {
 		checkUsername(username);
 	}, [checkUsername, username]);
 
@@ -218,11 +199,10 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 							username={username}
 							setAvatarObj={handleAvatar}
 							disabled={!allowUserAvatarChange}
-							suggestions={avatarSuggestions as any}
 						/>
 					</Field>
 				),
-				[username, user?.username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user?.avatarETag],
+				[username, user?.username, handleAvatar, allowUserAvatarChange, user?.avatarETag],
 			)}
 			<Box display='flex' flexDirection='row' justifyContent='space-between'>
 				{useMemo(
