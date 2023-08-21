@@ -1376,8 +1376,23 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			query.tcount = { $exists: false };
 		}
 
+		const notCountedMessages = (
+			await this.find(
+				{
+					...query,
+					$or: [{ _hidden: true }, { editedAt: { $exists: true }, editedBy: { $exists: true }, t: 'rm' }],
+				},
+				{
+					projection: {
+						_id: 1,
+					},
+					limit,
+				},
+			).toArray()
+		).length;
+
 		if (!limit) {
-			const count = (await this.deleteMany(query)).deletedCount;
+			const count = (await this.deleteMany(query)).deletedCount - notCountedMessages;
 
 			if (count) {
 				// decrease message count
@@ -1387,22 +1402,27 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			return count;
 		}
 
-		const messagesToDelete = (
-			await this.find(query, {
-				projection: {
-					_id: 1,
-				},
-				limit,
-			}).toArray()
-		).map(({ _id }) => _id);
+		const messagesToDelete = await this.find(query, {
+			projection: {
+				_id: 1,
+				_hidden: 1,
+				t: 1,
+				editedAt: 1,
+				editedBy: 1,
+			},
+			limit,
+		}).toArray();
 
-		const count = (
-			await this.deleteMany({
-				_id: {
-					$in: messagesToDelete,
-				},
-			})
-		).deletedCount;
+		const messagesIdsToDelete = messagesToDelete.map(({ _id }) => _id);
+
+		const count =
+			(
+				await this.deleteMany({
+					_id: {
+						$in: messagesIdsToDelete,
+					},
+				})
+			).deletedCount - notCountedMessages;
 
 		if (count) {
 			// decrease message count
