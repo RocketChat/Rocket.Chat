@@ -17,21 +17,15 @@ const toDataURL = (file: File, callback: (result: FileReader['result']) => void)
 	reader.readAsDataURL(file);
 };
 
-type AvatarSuggestion = {
-	service: string;
-	url: string;
-};
-
 type UserAvatarEditorType = {
 	currentUsername: IUser['username'];
 	username: IUser['username'];
 	setAvatarObj: (obj: AvatarObject) => void;
-	suggestions: AvatarSuggestion[] | undefined;
-	disabled: boolean;
+	disabled?: boolean;
 	etag: IUser['avatarETag'];
 };
 
-function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions, disabled, etag }: UserAvatarEditorType): ReactElement {
+function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, etag }: UserAvatarEditorType): ReactElement {
 	const t = useTranslation();
 	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
@@ -100,14 +94,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 								disabled={disabled || !avatarFromUrl}
 								title={t('Add_URL')}
 							/>
-							{suggestions && (
-								<UserAvatarSuggestions
-									suggestions={suggestions}
-									setAvatarObj={setAvatarObj}
-									setNewAvatarSource={setNewAvatarSource}
-									disabled={disabled}
-								/>
-							)}
+							<UserAvatarSuggestions setAvatarObj={setAvatarObj} setNewAvatarSource={setNewAvatarSource} disabled={disabled} />
 						</Margins>
 					</Box>
 					<Margins inlineStart={4}>
