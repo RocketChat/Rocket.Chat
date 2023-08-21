@@ -24,6 +24,9 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 	const handleFeaturePreview = useMutableCallback(() => {
 		router.navigate('/account/feature-preview');
 	});
+	const handleAccessibility = useMutableCallback(() => {
+		router.navigate('/account/accessibility');
+	});
 
 	const featurePreviewItem = {
 		id: 'feature-preview',
@@ -57,6 +60,12 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 			icon: 'customize',
 			content: t('Preferences'),
 			onClick: handlePreferences,
+		},
+		{
+			id: 'accessibility',
+			icon: 'person-arms-spread',
+			content: t('Accessibility'),
+			onClick: handleAccessibility,
 		},
 		...(featurePreviewEnabled && defaultFeaturesPreview.length > 0 ? [featurePreviewItem] : []),
 	];

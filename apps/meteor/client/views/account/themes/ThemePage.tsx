@@ -1,4 +1,5 @@
 import { Accordion, Box, Button, ButtonGroup, Field, RadioButton, Tag } from '@rocket.chat/fuselage';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
@@ -17,6 +18,7 @@ const ThemePage = () => {
 	const { data: license } = useIsEnterprise();
 
 	const themePreference = useUserPreference<ThemePreference>('themeAppearence') || 'auto';
+	const [, setPrevTheme] = useLocalStorage('prevTheme', themePreference);
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
 	const {
@@ -35,6 +37,7 @@ const ThemePage = () => {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
+			setPrevTheme(themePreference);
 			reset({ themeAppearence });
 		}
 	};
@@ -56,7 +59,7 @@ const ThemePage = () => {
 								return (
 									<Field key={id} pbe={themes.length - 1 ? undefined : 'x28'} pbs={index === 0 ? undefined : 'x28'}>
 										<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-											<Field.Label display='flex' alignItems='center' htmlFor={id}>
+											<Field.Label display='flex' alignItems='center' fontScale='p2b' htmlFor={id}>
 												{t.has(title) ? t(title) : title}
 												{communityDisabled && (
 													<Box is='span' mis={8}>

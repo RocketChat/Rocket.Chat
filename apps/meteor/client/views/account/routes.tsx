@@ -40,6 +40,10 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: '/account/theme';
 			pattern: '/account/theme';
 		};
+		'accessibility': {
+			pathname: '/account/accessibility';
+			pattern: '/account/accessibility';
+		};
 	}
 }
 
@@ -86,4 +90,9 @@ registerAccountRoute('/feature-preview', {
 registerAccountRoute('/theme', {
 	name: 'theme',
 	component: lazy(() => import('./themes/ThemePage')),
+});
+
+registerAccountRoute('/accessibility', {
+	name: 'accessibility',
+	component: lazy(() => import('./accessibility/AccessibilityPage')),
 });
