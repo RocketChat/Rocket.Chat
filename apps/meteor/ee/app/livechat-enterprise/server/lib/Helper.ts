@@ -175,7 +175,7 @@ export const processWaitingQueue = async (department: string | undefined, inquir
 	return false;
 };
 
-export const setPredictedVisitorAbandonmentTime = async (room: IOmnichannelRoom) => {
+export const setPredictedVisitorAbandonmentTime = async (room: Pick<IOmnichannelRoom, '_id' | 'responseBy' | 'departmentId'>) => {
 	if (
 		!room.responseBy?.firstResponseTs ||
 		!settings.get('Livechat_abandoned_rooms_action') ||

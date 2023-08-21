@@ -2,9 +2,7 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
-import { setPredictedVisitorAbandonmentTime } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
 import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings/server';
 
 callbacks.add(
 	'afterSaveMessage',
@@ -46,17 +44,11 @@ callbacks.add(
 			lastMessageTs: new Date(message.ts),
 		};
 
-		// set the predicted visitor abandonment time if the settings are enabled
-		if (settings.get('Livechat_abandoned_rooms_action') !== 'none' && settings.get<number>('Livechat_visitor_inactivity_timeout') > 0) {
-			room.responseBy = responseBy;
-			await setPredictedVisitorAbandonmentTime(room);
-		}
-
 		// this unsets waitingResponse and sets responseBy object
 		await LivechatRooms.setResponseByRoomId(room._id, responseBy);
 
 		return message;
 	},
 	callbacks.priority.HIGH,
-	'markRoomRespondedAndSetVisitorAbandonment',
+	'markRoomResponded',
 );

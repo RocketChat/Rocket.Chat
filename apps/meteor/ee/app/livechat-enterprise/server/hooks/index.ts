@@ -2,6 +2,7 @@ import './addDepartmentAncestors';
 import './afterForwardChatToDepartment';
 import './beforeListTags';
 import './beforeJoinRoom';
+import './setPredictedVisitorAbandonmentTime';
 import './beforeForwardRoomToDepartment';
 import './afterRemoveDepartment';
 import './onLoadForwardDepartmentRestrictions';

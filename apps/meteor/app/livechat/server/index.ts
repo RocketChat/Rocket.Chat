@@ -3,7 +3,7 @@ import './startup';
 import '../lib/messageTypes';
 import './hooks/beforeDelegateAgent';
 import './hooks/leadCapture';
-import './hooks/markRoomRespondedAndSetVisitorAbandonment';
+import './hooks/markRoomResponded';
 import './hooks/offlineMessage';
 import './hooks/offlineMessageToChannel';
 import './hooks/saveAnalyticsData';
