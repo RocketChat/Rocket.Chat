@@ -32,6 +32,7 @@
     ".:build:esm": "tsc -p tsconfig-esm.json",
     ".:build:cjs": "tsc -p tsconfig-cjs.json",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"typecheck": "tsc --noEmit",
     "docs": "cross-env NODE_ENV=production build-storybook -o ../../static/fuselage-ui-kit",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "cross-env NODE_ENV=production build-storybook",

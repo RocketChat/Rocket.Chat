@@ -24,11 +24,11 @@ import StaticSelectElement from '../elements/StaticSelectElement';
 import TimePickerElement from '../elements/TimePickerElement';
 import ToggleSwitchElement from '../elements/ToggleSwitchElement';
 
-export type FuselageSurfaceRendererProps = ConstructorParameters<
+type FuselageSurfaceRendererProps = ConstructorParameters<
   typeof UiKit.SurfaceRenderer
 >[0];
 
-export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement> {
+export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement> {
   public constructor(allowedBlocks?: FuselageSurfaceRendererProps) {
     super(
       allowedBlocks || [
