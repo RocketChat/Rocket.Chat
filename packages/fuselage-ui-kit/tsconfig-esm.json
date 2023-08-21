@@ -1,7 +1,9 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+		"rootDir": "./src",
     "module": "ESNext",
     "outDir": "./dist/esm"
-  }
+  },
+	"exclude": ["src/**/*.stories.tsx"]
 }
