@@ -1,6 +1,5 @@
 import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-// useToastMessageDispatch,
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -22,7 +21,9 @@ export const ComposerOmnichannelVerification = (): ReactElement => {
 	return (
 		<MessageFooterCallout>
 			<MessageFooterCalloutContent>{t('This_conversation_is_currently_undergoing_a_verification_process')}</MessageFooterCalloutContent>
-			<MessageFooterCalloutAction onClick={handleCancelVerification}>{t('Cancel')}</MessageFooterCalloutAction>
+			<MessageFooterCalloutAction danger={true} onClick={handleCancelVerification}>
+				{t('Cancel')}
+			</MessageFooterCalloutAction>
 		</MessageFooterCallout>
 	);
 };

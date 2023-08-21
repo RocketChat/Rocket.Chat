@@ -6,7 +6,8 @@ const MessageFooterCalloutAction = forwardRef<HTMLButtonElement, ComponentProps<
 	props,
 	ref,
 ): ReactElement {
-	return <Button mi={4} ref={ref} primary small flexShrink={0} {...props} />;
+	const modifiedProps = props.danger ? { ...props, primary: false } : props;
+	return <Button mi={4} ref={ref} primary small flexShrink={0} {...modifiedProps} />;
 });
 
 export default MessageFooterCalloutAction;

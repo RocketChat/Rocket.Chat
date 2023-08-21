@@ -1,5 +1,5 @@
 import type { ILivechatAgent, IOmnichannelRoom, IUser, SelectedAgent } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom, OmnichannelSourceType, RoomVerificationState } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Subscriptions, Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import {
@@ -22,7 +22,6 @@ import { isWidget } from '../../../../api/server/helpers/isWidget';
 import { canAccessRoomAsync } from '../../../../authorization/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
-import { sendMessage } from '../../../../lib/server/functions/sendMessage';
 import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { Livechat } from '../../lib/Livechat';
@@ -449,38 +448,6 @@ API.v1.addRoute(
 				user: this.user,
 				oldRoom: room,
 			});
-
-			return API.v1.success();
-		},
-	},
-);
-API.v1.addRoute(
-	'livechat/room.verificationStatus',
-	{ authRequired: true, permissionsRequired: ['initiate-livechat-verification-process'] },
-	{
-		async put() {
-			const { roomId } = this.bodyParams;
-			if (!roomId) {
-				throw new Error('invalid-room');
-			}
-
-			const room = await LivechatRooms.findOneById(roomId);
-			if (!room) {
-				throw new Error('error-invalid-room');
-			}
-
-			const roomAfterVerificationStateUpdate = await LivechatRooms.updateVerificationStatusById(roomId, RoomVerificationState.unVerified);
-
-			if (!roomAfterVerificationStateUpdate) {
-				return API.v1.failure();
-			}
-
-			const bot = await Users.findOneById('rocket.cat');
-			const message = {
-				msg: i18n.t('Visitor_Verification_Process_cancelled'),
-				groupable: false,
-			};
-			await sendMessage(bot, message, room);
 
 			return API.v1.success();
 		},
