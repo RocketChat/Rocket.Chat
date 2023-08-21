@@ -65,7 +65,7 @@ export const ReportCard = ({
 					</Box>
 					<Box flexGrow={0} flexShrink={0} display='flex' alignItems='center'>
 						<PeriodSelector {...periodSelectorProps} />
-						<DownloadDataButton {...downloadProps} size={32} />
+						<DownloadDataButton data-tooltip='Download CSV' {...downloadProps} size={32} />
 					</Box>
 				</Box>
 			</Card.Title>
