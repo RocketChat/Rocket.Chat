@@ -1,13 +1,23 @@
+import type { IAppsTokens, RequiredField } from '@rocket.chat/core-typings';
 import EJSON from 'ejson';
 import gcm from 'node-gcm';
 
+import type { PendingPushNotification, PushOptions } from './definition';
 import { logger } from './logger';
 
-export const sendGCM = function ({ userTokens, notification, _replaceToken, _removeToken, options }) {
-	if (typeof notification.gcm === 'object') {
-		notification = Object.assign({}, notification, notification.gcm);
-	}
-
+export const sendGCM = function ({
+	userTokens,
+	notification,
+	_replaceToken,
+	_removeToken,
+	options,
+}: {
+	userTokens: string | string[];
+	notification: PendingPushNotification;
+	_replaceToken: (currentToken: IAppsTokens['token'], newToken: IAppsTokens['token']) => void;
+	_removeToken: (token: IAppsTokens['token']) => void;
+	options: RequiredField<PushOptions, 'gcm'>;
+}) {
 	// Make sure userTokens are an array of strings
 	if (typeof userTokens === 'string') {
 		userTokens = [userTokens];
@@ -22,22 +32,14 @@ export const sendGCM = function ({ userTokens, notification, _replaceToken, _rem
 	logger.debug('sendGCM', userTokens, notification);
 
 	// Allow user to set payload
-	const data = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
+	const data: Record<string, any> = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
 
 	data.title = notification.title;
 	data.message = notification.text;
 
 	// Set image
-	if (notification.image != null) {
-		data.image = notification.image;
-	}
-
-	if (notification.android_channel_id != null) {
-		data.android_channel_id = notification.android_channel_id;
-	} else {
-		logger.debug(
-			'For devices running Android 8.0 or later you are required to provide an android_channel_id. See https://github.com/raix/push/issues/341 for more info',
-		);
+	if (notification.gcm?.image != null) {
+		data.image = notification.gcm?.image;
 	}
 
 	// Set extra details
@@ -50,24 +52,8 @@ export const sendGCM = function ({ userTokens, notification, _replaceToken, _rem
 	if (notification.notId != null) {
 		data.notId = notification.notId;
 	}
-	if (notification.style != null) {
-		data.style = notification.style;
-	}
-	if (notification.summaryText != null) {
-		data.summaryText = notification.summaryText;
-	}
-	if (notification.picture != null) {
-		data.picture = notification.picture;
-	}
-
-	// Action Buttons
-	if (notification.actions != null) {
-		data.actions = notification.actions;
-	}
-
-	// Force Start
-	if (notification.forceStart != null) {
-		data['force-start'] = notification.forceStart;
+	if (notification.gcm?.style != null) {
+		data.style = notification.gcm?.style;
 	}
 
 	if (notification.contentAvailable != null) {
@@ -105,7 +91,7 @@ export const sendGCM = function ({ userTokens, notification, _replaceToken, _rem
 
 		logger.debug({ msg: 'ANDROID: Result of sender', result });
 
-		if (result.canonical_ids === 1 && userToken) {
+		if (result.canonical_ids === 1 && userToken && result.results?.[0].registration_id) {
 			// This is an old device, token is replaced
 			try {
 				_replaceToken({ gcm: userToken }, { gcm: result.results[0].registration_id });

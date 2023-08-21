@@ -81,7 +81,7 @@ jobs:
 
     steps:
       - name: Launch MongoDB
-        uses: supercharge/mongodb-github-action@1.9.0
+        uses: supercharge/mongodb-github-action@v1.10.0
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: rs0
