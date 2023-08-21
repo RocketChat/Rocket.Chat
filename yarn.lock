@@ -8051,6 +8051,7 @@ __metadata:
     "@types/mocha": "github:whitecolor/mocha-types"
     "@types/moment-timezone": ^0.5.30
     "@types/node": ^14.18.51
+    "@types/node-gcm": ^1.0.1
     "@types/node-rsa": ^1.1.1
     "@types/nodemailer": ^6.4.8
     "@types/oauth2-server": ^3.0.13
@@ -11721,6 +11722,13 @@ __metadata:
     "@types/node": "*"
     form-data: ^3.0.0
   checksum: a3e5d7f413d1638d795dff03f7b142b1b0e0c109ed210479000ce7b3ea11f9a6d89d9a024c96578d9249570c5fe5287a5f0f4aaba98199222230196ff2d6b283
+  languageName: node
+  linkType: hard
+
+"@types/node-gcm@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@types/node-gcm@npm:1.0.1"
+  checksum: feaf8952ae0029075fef79b5a6397fbccb19caa6580bc9e15ab20f47fa122f4be2241dde72bb5884ec87b4a8a5d33a4e9e4c219a6e83cf906bf7d93f373f4f0e
   languageName: node
   linkType: hard
 
