@@ -430,7 +430,7 @@ export class SAML {
 				};
 
 				await this.storeCredential(credentialToken, loginResult);
-				const url = `${Meteor.absoluteUrl('saml')}/${credentialToken}?saml_idp_credentialToken=${credentialToken}`;
+				const url = Meteor.absoluteUrl(`saml/${credentialToken}?saml_idp_credentialToken=${credentialToken}`);
 				res.writeHead(302, {
 					Location: url,
 				});
