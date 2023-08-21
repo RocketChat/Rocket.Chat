@@ -1,3 +1,9 @@
 import { router } from '../../providers/RouterProvider';
 
-export const isLayoutEmbedded = (): boolean => router.getSearchParameters().layout === 'embedded';
+let embedded = false;
+
+router.subscribeToRouteChange(() => {
+	embedded = router.getSearchParameters().layout === 'embedded';
+});
+
+export const isLayoutEmbedded = () => embedded;

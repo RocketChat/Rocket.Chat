@@ -199,8 +199,9 @@ type ChainedCallbackSignatures = {
 			status: string;
 		};
 		room: IOmnichannelRoom;
-		options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clientAction?: boolean };
+		options: { forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any }; clientAction?: boolean };
 	}) => (IOmnichannelRoom & { chatQueued: boolean }) | void;
+	'livechat.beforeInquiry': (data: Pick<ILivechatInquiryRecord, 'source'>) => Pick<ILivechatInquiryRecord, 'source'>;
 	'roomNameChanged': (room: IRoom) => void;
 	'roomTopicChanged': (room: IRoom) => void;
 	'roomAnnouncementChanged': (room: IRoom) => void;
@@ -224,7 +225,6 @@ export type Hook =
 	| 'beforeRemoveFromRoom'
 	| 'beforeValidateLogin'
 	| 'livechat.beforeForwardRoomToDepartment'
-	| 'livechat.beforeInquiry'
 	| 'livechat.beforeRoom'
 	| 'livechat.beforeRouteChat'
 	| 'livechat.chatQueued'

@@ -223,6 +223,7 @@ export type AvatarServiceObject = {
 	blob: Blob;
 	contentType: string;
 	service: string;
+	url: string;
 };
 
 export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;
