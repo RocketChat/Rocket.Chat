@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">
-  The ultimate Free Open Source Solution for team communications
+  The ultimate Free Open Source (FOSS) solution for team communications
 </h1>
 
 <p align="center">
