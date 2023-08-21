@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import type { Extension } from '@codemirror/state';
 import { Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
@@ -52,6 +53,10 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
     screens[activeScreen]?.payload.surface,
     activeScreen,
   ]);
+
+  useEffect(() => {
+    setValue(intendCode(screens[activeScreen]?.payload), {});
+  }, [activeScreen]);
 
   return (
     <>
