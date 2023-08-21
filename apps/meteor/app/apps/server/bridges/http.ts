@@ -7,6 +7,11 @@ import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestra
 
 const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
 
+// Previously, there was no timeout for HTTP requests.
+// We're setting the default timeout now to 3 minutes as it
+// seems to be a good balance
+const DEFAULT_TIMEOUT = 3 * 60 * 1000;
+
 export class AppHttpBridge extends HttpBridge {
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
@@ -73,6 +78,7 @@ export class AppHttpBridge extends HttpBridge {
 					method,
 					body: content,
 					headers,
+					timeout: DEFAULT_TIMEOUT,
 				},
 				(request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
 					(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized),
