@@ -172,7 +172,7 @@ describe('LIVECHAT - inquiries', function () {
 					expect(res.body).to.have.property('success', true);
 				});
 			const inquiry2 = (await fetchInquiry(room._id)) as ILivechatInquiryRecord;
-			expect(inquiry2.source.type).to.equal('api');
+			expect(inquiry2.source?.type).to.equal('api');
 			expect(inquiry2.status).to.equal('taken');
 		}).timeout(5000);
 	});
