@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react-hooks';
 
-import { useFeaturePreviewList, defaultFeaturesPreview } from './useFeaturePreviewList';
+import { useFeaturePreviewList, enabledDefaultFeatures } from './useFeaturePreviewList';
 
 it('should return the number of unseen features and Accounts_AllowFeaturePreview enabled ', () => {
 	const { result } = renderHook(() => useFeaturePreviewList(), {
@@ -11,7 +11,7 @@ it('should return the number of unseen features and Accounts_AllowFeaturePreview
 	expect(result.all[0]).toEqual(
 		expect.objectContaining({
 			featurePreviewEnabled: true,
-			unseenFeatures: defaultFeaturesPreview.length,
+			unseenFeatures: enabledDefaultFeatures.length,
 		}),
 	);
 });
@@ -33,7 +33,7 @@ it('should return 0 unseen features', () => {
 	const { result } = renderHook(() => useFeaturePreviewList(), {
 		wrapper: mockAppRoot()
 			.withSetting('Accounts_AllowFeaturePreview', true)
-			.withUserPreference('featuresPreview', defaultFeaturesPreview)
+			.withUserPreference('featuresPreview', enabledDefaultFeatures)
 			.build(),
 	});
 
@@ -61,8 +61,8 @@ it('should ignore removed feature previews', () => {
 	expect(result.current).toEqual(
 		expect.objectContaining({
 			featurePreviewEnabled: true,
-			unseenFeatures: defaultFeaturesPreview.length,
-			features: defaultFeaturesPreview,
+			unseenFeatures: enabledDefaultFeatures.length,
+			features: enabledDefaultFeatures,
 		}),
 	);
 });
