@@ -1,3 +1,5 @@
+import type { PendingAvatarImporter } from '../../importer-pending-avatars/server/importer';
+import type { PendingFileImporter } from '../../importer-pending-files/server/importer';
 import type { Base } from '../server';
 
 export class ImporterInfo {
@@ -11,7 +13,7 @@ export class ImporterInfo {
 
 	importer: Base | undefined;
 
-	instance: Base | undefined;
+	instance: PendingFileImporter | PendingAvatarImporter | undefined;
 
 	/**
 	 * Creates a new class which contains information about the importer.
@@ -28,6 +30,6 @@ export class ImporterInfo {
 		this.warnings = warnings;
 
 		this.importer = undefined;
-		this.instance = undefined;
+		// this.instance = undefined;
 	}
 }

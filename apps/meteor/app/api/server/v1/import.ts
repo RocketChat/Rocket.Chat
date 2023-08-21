@@ -137,8 +137,9 @@ API.v1.addRoute(
 
 			const operation = await Import.newOperation(this.userId, importer.name, importer.key);
 
-			importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
-			const count = await importer.instance.prepareFileCount();
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			importer.instance = new importer.importer!(importer, operation); // eslint-disable-line new-cap
+			const count = await importer.instance?.prepareFileCount();
 
 			return API.v1.success({
 				count,
@@ -162,8 +163,9 @@ API.v1.addRoute(
 			}
 
 			const operation = await Import.newOperation(this.userId, importer.name, importer.key);
-			importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
-			const count = await importer.instance.prepareFileCount();
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			importer.instance = new importer.importer!(importer, operation); // eslint-disable-line new-cap
+			const count = await importer.instance?.prepareFileCount();
 
 			return API.v1.success({
 				count,
