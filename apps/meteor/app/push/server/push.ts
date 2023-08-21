@@ -1,28 +1,75 @@
+import type { IAppsTokens, RequiredField, Optional, IPushNotificationConfig } from '@rocket.chat/core-typings';
 import { AppsTokens } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { pick } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { settings } from '../../settings/server';
 import { initAPN, sendAPN } from './apn';
+import type { PushOptions, PendingPushNotification } from './definition';
 import { sendGCM } from './gcm';
 import { logger } from './logger';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 
+// This type must match the type defined in the push gateway
+type GatewayNotification = {
+	uniqueId: string;
+	from: string;
+	title: string;
+	text: string;
+	badge?: number;
+	sound?: string;
+	notId?: number;
+	contentAvailable?: 1 | 0;
+	forceStart?: number;
+	topic?: string;
+	apn?: {
+		from?: string;
+		title?: string;
+		text?: string;
+		badge?: number;
+		sound?: string;
+		notId?: number;
+		category?: string;
+	};
+	gcm?: {
+		from?: string;
+		title?: string;
+		text?: string;
+		image?: string;
+		style?: string;
+		summaryText?: string;
+		picture?: string;
+		badge?: number;
+		sound?: string;
+		notId?: number;
+		actions?: any[];
+	};
+	query?: {
+		userId: any;
+	};
+	token?: IAppsTokens['token'];
+	tokens?: IAppsTokens['token'][];
+	payload?: Record<string, any>;
+	delayUntil?: Date;
+	createdAt: Date;
+	createdBy?: string;
+};
+
 class PushClass {
-	options = {};
+	options: PushOptions = {
+		uniqueId: '',
+	};
 
 	isConfigured = false;
 
-	configure(options) {
-		this.options = Object.assign(
-			{
-				sendTimeout: 60000, // Timeout period for notification send
-			},
-			options,
-		);
+	public configure(options: PushOptions): void {
+		this.options = {
+			sendTimeout: 60000, // Timeout period for notification send
+			...options,
+		};
 		// https://npmjs.org/package/apn
 
 		// After requesting the certificate from Apple, export your private key as
@@ -46,57 +93,44 @@ class PushClass {
 		logger.debug('Configure', this.options);
 
 		if (this.options.apn) {
-			initAPN({ options: this.options, absoluteUrl: Meteor.absoluteUrl() });
+			initAPN({ options: this.options as RequiredField<PushOptions, 'apn'>, absoluteUrl: Meteor.absoluteUrl() });
 		}
 	}
 
-	sendWorker(task, interval) {
-		logger.debug(`Send worker started, using interval: ${interval}`);
-
-		return setInterval(() => {
-			try {
-				task();
-			} catch (error) {
-				logger.debug(`Error while sending: ${error.message}`);
-			}
-		}, interval);
-	}
-
-	_replaceToken(currentToken, newToken) {
+	private replaceToken(currentToken: IAppsTokens['token'], newToken: IAppsTokens['token']): void {
 		void AppsTokens.updateMany({ token: currentToken }, { $set: { token: newToken } });
 	}
 
-	_removeToken(token) {
+	private removeToken(token: IAppsTokens['token']): void {
 		void AppsTokens.deleteOne({ token });
 	}
 
-	_shouldUseGateway() {
-		return !!this.options.gateways && settings.get('Register_Server') && settings.get('Cloud_Service_Agree_PrivacyTerms');
+	private shouldUseGateway(): boolean {
+		return Boolean(!!this.options.gateways && settings.get('Register_Server') && settings.get('Cloud_Service_Agree_PrivacyTerms'));
 	}
 
-	sendNotificationNative(app, notification, countApn, countGcm) {
+	private sendNotificationNative(app: IAppsTokens, notification: PendingPushNotification, countApn: string[], countGcm: string[]): void {
 		logger.debug('send to token', app.token);
 
-		if (app.token.apn) {
+		if ('apn' in app.token && app.token.apn) {
 			countApn.push(app._id);
 			// Send to APN
 			if (this.options.apn) {
-				notification.topic = app.appName;
-				sendAPN({ userToken: app.token.apn, notification, _removeToken: this._removeToken });
+				sendAPN({ userToken: app.token.apn, notification: { topic: app.appName, ...notification }, _removeToken: this.removeToken });
 			}
-		} else if (app.token.gcm) {
+		} else if ('gcm' in app.token && app.token.gcm) {
 			countGcm.push(app._id);
 
 			// Send to GCM
 			// We do support multiple here - so we should construct an array
 			// and send it bulk - Investigate limit count of id's
-			if (this.options.gcm && this.options.gcm.apiKey) {
+			if (this.options.gcm?.apiKey) {
 				sendGCM({
 					userTokens: app.token.gcm,
 					notification,
-					_replaceToken: this._replaceToken,
-					_removeToken: this._removeToken,
-					options: this.options,
+					_replaceToken: this.replaceToken,
+					_removeToken: this.removeToken,
+					options: this.options as RequiredField<PushOptions, 'gcm'>,
 				});
 			}
 		} else {
@@ -104,7 +138,13 @@ class PushClass {
 		}
 	}
 
-	async sendGatewayPush(gateway, service, token, notification, tries = 0) {
+	private async sendGatewayPush(
+		gateway: string,
+		service: 'apn' | 'gcm',
+		token: string,
+		notification: Optional<GatewayNotification, 'uniqueId'>,
+		tries = 0,
+	): Promise<void> {
 		notification.uniqueId = this.options.uniqueId;
 
 		const options = {
@@ -156,32 +196,43 @@ class PushClass {
 
 			logger.log('Trying sending push to gateway again in', ms, 'milliseconds');
 
-			return setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
+			setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
 		}
 	}
 
-	async sendNotificationGateway(app, notification, countApn, countGcm) {
+	private async sendNotificationGateway(
+		app: IAppsTokens,
+		notification: PendingPushNotification,
+		countApn: string[],
+		countGcm: string[],
+	): Promise<void> {
+		if (!this.options.gateways) {
+			return;
+		}
+
+		// Gateway accepts every attribute from the PendingPushNotification type, except for the priority
+		const { priority: _priority, ...notifData } = notification;
+
 		for (const gateway of this.options.gateways) {
 			logger.debug('send to token', app.token);
 
-			if (app.token.apn) {
+			if ('apn' in app.token && app.token.apn) {
 				countApn.push(app._id);
-				notification.topic = app.appName;
-				return this.sendGatewayPush(gateway, 'apn', app.token.apn, notification);
+				return this.sendGatewayPush(gateway, 'apn', app.token.apn, { topic: app.appName, ...notifData });
 			}
 
-			if (app.token.gcm) {
+			if ('gcm' in app.token && app.token.gcm) {
 				countGcm.push(app._id);
-				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, notification);
+				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, notifData);
 			}
 		}
 	}
 
-	async sendNotification(notification = { badge: 0 }) {
+	private async sendNotification(notification: PendingPushNotification): Promise<{ apn: string[]; gcm: string[] }> {
 		logger.debug('Sending notification', notification);
 
-		const countApn = [];
-		const countGcm = [];
+		const countApn: string[] = [];
+		const countGcm: string[] = [];
 
 		if (notification.from !== String(notification.from)) {
 			throw new Error('Push.send: option "from" not a string');
@@ -200,15 +251,18 @@ class PushClass {
 			$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
 		};
 
-		await AppsTokens.find(query).forEach((app) => {
+		const appTokens = AppsTokens.find(query);
+
+		for await (const app of appTokens) {
 			logger.debug('send to token', app.token);
 
-			if (this._shouldUseGateway()) {
-				return this.sendNotificationGateway(app, notification, countApn, countGcm);
+			if (this.shouldUseGateway()) {
+				await this.sendNotificationGateway(app, notification, countApn, countGcm);
+				continue;
 			}
 
-			return this.sendNotificationNative(app, notification, countApn, countGcm);
-		});
+			this.sendNotificationNative(app, notification, countApn, countGcm);
+		}
 
 		if (settings.get('Log_Level') === '2') {
 			logger.debug(`Sent message "${notification.title}" to ${countApn.length} ios apps ${countGcm.length} android apps`);
@@ -238,7 +292,7 @@ class PushClass {
 
 	// This is a general function to validate that the data added to notifications
 	// is in the correct format. If not this function will throw errors
-	_validateDocument(notification) {
+	private _validateDocument(notification: PendingPushNotification): void {
 		// Check the general notification
 		check(notification, {
 			from: String,
@@ -250,35 +304,18 @@ class PushClass {
 			sound: Match.Optional(String),
 			notId: Match.Optional(Match.Integer),
 			contentAvailable: Match.Optional(Match.Integer),
-			forceStart: Match.Optional(Match.Integer),
 			apn: Match.Optional({
-				from: Match.Optional(String),
-				title: Match.Optional(String),
-				text: Match.Optional(String),
-				badge: Match.Optional(Match.Integer),
-				sound: Match.Optional(String),
-				notId: Match.Optional(Match.Integer),
-				actions: Match.Optional([Match.Any]),
 				category: Match.Optional(String),
 			}),
 			gcm: Match.Optional({
-				from: Match.Optional(String),
-				title: Match.Optional(String),
-				text: Match.Optional(String),
 				image: Match.Optional(String),
 				style: Match.Optional(String),
-				summaryText: Match.Optional(String),
-				picture: Match.Optional(String),
-				badge: Match.Optional(Match.Integer),
-				sound: Match.Optional(String),
-				notId: Match.Optional(Match.Integer),
 			}),
-			android_channel_id: Match.Optional(String),
 			userId: String,
 			payload: Match.Optional(Object),
-			delayUntil: Match.Optional(Date),
 			createdAt: Date,
 			createdBy: Match.OneOf(String, null),
+			priority: Match.Optional(Match.Integer),
 		});
 
 		if (!notification.userId) {
@@ -286,64 +323,47 @@ class PushClass {
 		}
 	}
 
-	async send(options) {
-		// If on the client we set the user id - on the server we need an option
-		// set or we default to "<SERVER>" as the creator of the notification
-		// If current user not set see if we can set it to the logged in user
-		// this will only run on the client if Meteor.userId is available
-		const currentUser = options.createdBy || '<SERVER>';
+	private hasApnOptions(options: IPushNotificationConfig): options is RequiredField<IPushNotificationConfig, 'apn'> {
+		return Match.test(options.apn, Object);
+	}
 
-		// Rig the notification object
-		const notification = Object.assign(
-			{
-				createdAt: new Date(),
-				createdBy: currentUser,
-				sent: false,
-				sending: 0,
-			},
-			_.pick(options, 'from', 'title', 'text', 'userId'),
-		);
+	private hasGcmOptions(options: IPushNotificationConfig): options is RequiredField<IPushNotificationConfig, 'gcm'> {
+		return Match.test(options.gcm, Object);
+	}
 
-		// Add extra
-		Object.assign(notification, _.pick(options, 'payload', 'badge', 'sound', 'notId', 'delayUntil', 'android_channel_id'));
+	public async send(options: IPushNotificationConfig) {
+		const notification: PendingPushNotification = {
+			createdAt: new Date(),
+			// createdBy is no longer used, but the gateway still expects it
+			createdBy: '<SERVER>',
+			sent: false,
+			sending: 0,
 
-		if (Match.test(options.apn, Object)) {
-			notification.apn = _.pick(options.apn, 'from', 'title', 'text', 'badge', 'sound', 'notId', 'category');
-		}
+			...pick(options, 'from', 'title', 'text', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority'),
 
-		if (Match.test(options.gcm, Object)) {
-			notification.gcm = _.pick(
-				options.gcm,
-				'image',
-				'style',
-				'summaryText',
-				'picture',
-				'from',
-				'title',
-				'text',
-				'badge',
-				'sound',
-				'notId',
-				'actions',
-				'android_channel_id',
-			);
-		}
-
-		if (options.contentAvailable != null) {
-			notification.contentAvailable = options.contentAvailable;
-		}
-
-		if (options.forceStart != null) {
-			notification.forceStart = options.forceStart;
-		}
+			...(this.hasApnOptions(options)
+				? {
+						apn: {
+							...pick(options.apn, 'category'),
+						},
+				  }
+				: {}),
+			...(this.hasGcmOptions(options)
+				? {
+						gcm: {
+							...pick(options.gcm, 'image', 'style'),
+						},
+				  }
+				: {}),
+		};
 
 		// Validate the notification
 		this._validateDocument(notification);
 
 		try {
 			await this.sendNotification(notification);
-		} catch (error) {
-			logger.debug(`Could not send notification id: "${notification._id}", Error: ${error.message}`);
+		} catch (error: any) {
+			logger.debug(`Could not send notification to user "${notification.userId}", Error: ${error.message}`);
 			logger.debug(error.stack);
 		}
 	}
