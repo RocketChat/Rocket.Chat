@@ -1,3 +1,5 @@
+import { capitalize } from '@rocket.chat/string-helpers';
+import type { TranslationContextValue, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -12,18 +14,25 @@ import { useDefaultDownload } from './useDefaultDownload';
 
 type DataItem = { label: string; value: number; id: string; rawLabel: string };
 
-const formatItem = (item: { label: string; value: number }, total: number): DataItem => {
+const TYPE_LABEL: Record<string, TranslationKey> = {
+	widget: 'Livechat',
+	email: 'Email',
+	sms: 'SMS',
+	api: 'Custom_Integration',
+};
+
+const formatItem = (item: { label: string; value: number }, total: number, t: TranslationContextValue['translate']): DataItem => {
 	const percentage = total > 0 ? round((item.value / total) * 100) : 0;
 	return {
 		...item,
-		label: `${item.label} ${item.value} (${percentage}%)`,
+		label: `${t(TYPE_LABEL[item.label]) || capitalize(item.label)} ${item.value} (${percentage}%)`,
 		rawLabel: item.label,
 		id: `${item.label}_${item.value}`,
 	};
 };
 
-const formatChartData = (data: { label: string; value: number }[] | undefined = [], total = 0) => {
-	return data.map((item) => formatItem(item, total));
+const formatChartData = (data: { label: string; value: number }[] | undefined = [], total = 0, t: TranslationContextValue['translate']) => {
+	return data.map((item) => formatItem(item, total, t));
 };
 
 export const useChannelsSection = () => {
@@ -42,8 +51,8 @@ export const useChannelsSection = () => {
 		async () => {
 			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsBySource({ start: start.toISOString(), end: end.toISOString() });
-			const data = formatChartData(response.data, response.total);
-			const displayData: DataItem[] = getTop<DataItem>(5, data, (value) => formatItem({ label: t('Others'), value }, response.total));
+			const data = formatChartData(response.data, response.total, t);
+			const displayData: DataItem[] = getTop<DataItem>(5, data, (value) => formatItem({ label: t('Others'), value }, response.total, t));
 			return { ...response, data: displayData, rawData: data };
 		},
 		{
