@@ -116,7 +116,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 			actions={
 				<AdminUserInfoActions
 					isActive={data?.user.active}
-					isAdmin={data?.user.roles.includes('admin')}
+					isAdmin={data?.user.roles?.includes('admin')}
 					userId={data?.user._id}
 					username={user.username}
 					isFederatedUser={isUserFederated(data?.user as unknown as IUser)}

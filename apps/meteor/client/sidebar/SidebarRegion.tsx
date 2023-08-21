@@ -38,21 +38,27 @@ const SidebarRegion = () => {
 		height: 100%;
 		user-select: none;
 		transition: transform 0.3s;
+		width: var(--sidebar-width);
+		min-width: var(--sidebar-width);
+
+		> .rcx-sidebar:not(:last-child) {
+			visibility: hidden;
+		}
 
 		&.opened {
 			box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
 			transform: translate3d(0px, 0px, 0px);
 		}
 
-		// 768px to 1599px
+		/* // 768px to 1599px
 		// using em unit base 16
 		@media (max-width: 48em) {
 			width: 80%;
 			min-width: 80%;
-		}
+		} */
+
 		// 1600px to 1919px
 		// using em unit base 16
-
 		@media (min-width: 100em) {
 			width: var(--sidebar-md-width);
 			min-width: var(--sidebar-md-width);

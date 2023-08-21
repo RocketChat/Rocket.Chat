@@ -1,5 +1,5 @@
 /node_modules/
-/tests/e2e/
+#/tests/e2e/
 /tests/data/
 /packages/
 /app/emoji-emojione/generateEmojiIndex.js
