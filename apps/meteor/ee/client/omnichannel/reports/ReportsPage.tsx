@@ -10,7 +10,10 @@ const ReportsPage = () => {
 
 	return (
 		<Page background='tint'>
-			<Page.Header title={t('Reports')}></Page.Header>
+			<Page.Header title={t('Reports')} />
+			<Box is='p' color='hint' fontScale='p2' mi={24}>
+				{t('Omnichannel_Reports_Summary')}
+			</Box>
 			<Page.ScrollableContentWithShadow alignItems='center'>
 				<Box display='flex' flexWrap='wrap' maxWidth='1600px' m={-8}>
 					<StatusSection />

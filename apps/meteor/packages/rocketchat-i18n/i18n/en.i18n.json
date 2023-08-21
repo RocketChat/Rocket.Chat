@@ -3811,6 +3811,7 @@
   "Omnichannel_Reports_Status_Empty_Subtitle": "This chart will update as soon as conversations start.",
   "Omnichannel_Reports_Tags_Empty_Subtitle": "This chart shows the most frequently used tags.",
   "Omnichannel_Reports_Agents_Empty_Subtitle": "This chart displays which agents receive the highest volume of conversations.",
+  "Omnichannel_Reports_Summary": "Gain insights into the operation and export metrics.",
   "On": "On",
   "on-hold-livechat-room": "On Hold Omnichannel Room",
   "on-hold-livechat-room_description": "Permission to on hold omnichannel room",
