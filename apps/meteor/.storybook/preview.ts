@@ -1,11 +1,12 @@
-import { DocsPage, DocsContainer } from '@storybook/addon-docs';
-import { addDecorator, addParameters } from '@storybook/react';
+import { DecoratorFn, Parameters } from '@storybook/react';
 
 import { rocketChatDecorator } from './decorators';
 
-addDecorator(rocketChatDecorator);
+export const decorators: DecoratorFn[] = [
+	rocketChatDecorator
+];
 
-addParameters({
+export const parameters: Parameters = {
 	backgrounds: {
 		grid: {
 			cellSize: 4,
@@ -13,14 +14,10 @@ addParameters({
 			opacity: 0.5,
 		},
 	},
-	docs: {
-		container: DocsContainer,
-		page: DocsPage,
-	},
 	options: {
 		storySort: {
 			method: 'alphabetical',
 			order: ['Components', '*', 'Enterprise'],
 		},
 	},
-});
+};
