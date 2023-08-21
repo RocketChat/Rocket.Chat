@@ -7,7 +7,7 @@ type ContextualbarCloseProps = Partial<ComponentProps<typeof ContextualbarAction
 
 const ContextualbarClose = (props: ContextualbarCloseProps): ReactElement => {
 	const t = useTranslation();
-	return <ContextualbarAction data-qa='ContextualbarActionClose' {...props} title={t('Close')} name='cross' />;
+	return <ContextualbarAction data-qa='ContextualbarActionClose' {...props} aria-label={t('Close')} name='cross' />;
 };
 
 export default memo(ContextualbarClose);

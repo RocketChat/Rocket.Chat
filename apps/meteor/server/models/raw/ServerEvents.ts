@@ -1,7 +1,7 @@
-import type { IServerEventsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, IndexDescription } from 'mongodb';
 import type { IServerEvent, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { ServerEventType } from '@rocket.chat/core-typings';
+import type { IServerEventsModel } from '@rocket.chat/model-typings';
+import type { Collection, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -29,6 +29,26 @@ export class ServerEventsRaw extends BaseRaw<IServerEvent> implements IServerEve
 			{
 				'u.username': username,
 				't': ServerEventType.FAILED_LOGIN_ATTEMPT,
+			},
+			{ sort: { ts: -1 } },
+		);
+	}
+
+	async findLastSuccessfulAttemptByIp(ip: string): Promise<IServerEvent | null> {
+		return this.findOne<IServerEvent>(
+			{
+				ip,
+				t: ServerEventType.LOGIN,
+			},
+			{ sort: { ts: -1 } },
+		);
+	}
+
+	async findLastSuccessfulAttemptByUsername(username: string): Promise<IServerEvent | null> {
+		return this.findOne<IServerEvent>(
+			{
+				'u.username': username,
+				't': ServerEventType.LOGIN,
 			},
 			{ sort: { ts: -1 } },
 		);

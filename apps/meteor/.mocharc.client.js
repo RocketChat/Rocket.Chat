@@ -33,10 +33,10 @@ module.exports = {
 	exit: false,
 	slow: 200,
 	spec: [
-		'client/**/*.spec.{ts,tsx}',
-		'tests/unit/client/**/*.spec.{ts,tsx}',
+		'tests/unit/client/sidebar/**/*.spec.{ts,tsx}',
+		'tests/unit/client/components/**/*.spec.{ts,tsx}',
+		'tests/unit/client/lib/**/*.spec.{ts,tsx}',
 		'tests/unit/lib/**/*.tests.ts',
 		'tests/unit/client/**/*.test.ts',
 	],
-	exclude: ['client/hooks/*.spec.{ts,tsx}', 'client/sidebar/header/actions/hooks/*.spec.{ts,tsx}'],
 };

@@ -3,7 +3,6 @@ import {
 	Button,
 	ButtonGroup,
 	Callout,
-	Icon,
 	Margins,
 	ProgressBar,
 	Skeleton,
@@ -30,7 +29,7 @@ const CustomUserStatusService = () => {
 
 	if (result.isLoading || disablePresenceService.isLoading || licenseIsLoading) {
 		return (
-			<Box pi='x16' pb='x8'>
+			<Box pi={16} pb={8}>
 				<Skeleton />
 				<Skeleton />
 				<Skeleton />
@@ -41,11 +40,11 @@ const CustomUserStatusService = () => {
 	}
 	if (result.isError || disablePresenceService.isError) {
 		return (
-			<Box display='flex' flexDirection='column' alignItems='center' pb='x20' color='default'>
+			<Box display='flex' flexDirection='column' alignItems='center' pb={20} color='default'>
 				<StatesIcon name='circle-exclamation' />
-				<StatesSubtitle>Unable to load active connections</StatesSubtitle>
-				<StatesAction onClick={() => result.refetch()}>
-					<Icon name='reload' /> Retry
+				<StatesSubtitle>{t('Unable_to_load_active_connections')}</StatesSubtitle>
+				<StatesAction icon='reload' onClick={() => result.refetch()}>
+					{t('Retry')}
 				</StatesAction>
 			</Box>
 		);
@@ -57,7 +56,7 @@ const CustomUserStatusService = () => {
 		<>
 			<ContextualbarContent display='flex' flexDirection='column' justifyContent='space-between' color='default'>
 				<div>
-					<Box display='flex' justifyContent='space-between' mb='x16'>
+					<Box display='flex' justifyContent='space-between' mb={16}>
 						<Box fontScale='p1'>{t('Service_status')}</Box>
 						<ToggleSwitch
 							disabled={disablePresenceService.isLoading || !presenceDisabled || percentage === 100}
@@ -65,26 +64,26 @@ const CustomUserStatusService = () => {
 							onChange={() => disablePresenceService.mutate()}
 						/>
 					</Box>
-					<Box display='flex' fontScale='c1' justifyContent='space-between' mb='x16'>
+					<Box display='flex' fontScale='c1' justifyContent='space-between' mb={16}>
 						<Box>{t('Active_connections')}</Box>
 						<Box>{license?.isEnterprise ? current : `${current}/${max}`}</Box>
 					</Box>
 					{!license?.isEnterprise && <ProgressBar percentage={percentage} variant={percentage > 80 ? 'danger' : 'success'} />}
 					{presenceDisabled && (
-						<Margins block='x16'>
+						<Margins block={16}>
 							<Callout type='danger' title={t('Service_disabled')}>
 								{t('Service_disabled_description')}
 							</Callout>
 						</Margins>
 					)}
 				</div>
-				<Box display='flex' flexDirection='column' mb='x16'>
+				<Box display='flex' flexDirection='column' mb={16}>
 					{license?.isEnterprise ? (
 						<>
-							<Box fontScale='p2' mb='x8'>
+							<Box fontScale='p2' mb={8}>
 								{t('Enterprise_cap_description')}
 							</Box>
-							<Box fontScale='p2' mb='x8'>
+							<Box fontScale='p2' mb={8}>
 								{t('Larger_amounts_of_active_connections')}{' '}
 								<Box is='a' href='https://docs.rocket.chat/deploy/scaling-rocket.chat' target='_blank' color='info'>
 									{t('multiple_instance_solutions')}
@@ -93,10 +92,10 @@ const CustomUserStatusService = () => {
 						</>
 					) : (
 						<>
-							<Box fontScale='p2' mb='x8'>
+							<Box fontScale='p2' mb={8}>
 								{t('Community_cap_description')}
 							</Box>
-							<Box fontScale='p2' mb='x8'>
+							<Box fontScale='p2' mb={8}>
 								{t('Enterprise_cap_description')}
 							</Box>
 						</>

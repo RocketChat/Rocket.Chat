@@ -1,22 +1,22 @@
-import limax from 'limax';
-import { SHA256 } from '@rocket.chat/sha256';
-// #ToDo: #TODO: Remove Meteor dependencies
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
-import ldapEscape from 'ldap-escape';
-import _ from 'underscore';
 import type { ILDAPEntry, LDAPLoginResult, ILDAPUniqueIdentifierField, IUser, LoginUsername, IImportUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
+import { SHA256 } from '@rocket.chat/sha256';
+import ldapEscape from 'ldap-escape';
+import limax from 'limax';
+// #ToDo: #TODO: Remove Meteor dependencies
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
+import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
+import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
 import { settings } from '../../../app/settings/server';
+import { callbacks } from '../../../lib/callbacks';
+import { omit } from '../../../lib/utils/omit';
 import { LDAPConnection } from './Connection';
 import { LDAPDataConverter } from './DataConverter';
-import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 import { logger, authLogger, connLogger } from './Logger';
-import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
-import { callbacks } from '../../../lib/callbacks';
-import { setUserAvatar } from '../../../app/lib/server/functions';
-import { omit } from '../../../lib/utils/omit';
+import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 
 export class LDAPManager {
 	public static async login(username: string, password: string): Promise<LDAPLoginResult> {
@@ -151,6 +151,7 @@ export class LDAPManager {
 		return {
 			flagEmailsAsVerified: settings.get<boolean>('Accounts_Verify_Email_For_External_Accounts') ?? false,
 			skipExistingUsers: false,
+			skipUserCallbacks: false,
 		};
 	}
 

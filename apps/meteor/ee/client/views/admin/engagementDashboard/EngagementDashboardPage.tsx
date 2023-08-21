@@ -34,7 +34,7 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 
 	return (
 		<Page background='tint'>
-			<Page.Header title={t('Engagement_Dashboard')}>
+			<Page.Header title={t('Engagement')}>
 				<Select options={timezoneOptions} value={timezoneId} onChange={handleTimezoneChange} />
 			</Page.Header>
 			<Tabs>
@@ -49,7 +49,7 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 				</Tabs.Item>
 			</Tabs>
 			<Page.ScrollableContent padding={0}>
-				<Box m='x24'>
+				<Box m={24}>
 					{(tab === 'users' && <UsersTab timezone={timezoneId} />) ||
 						(tab === 'messages' && <MessagesTab />) ||
 						(tab === 'channels' && <ChannelsTab />)}

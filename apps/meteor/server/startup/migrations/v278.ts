@@ -1,8 +1,8 @@
 import { Banners, Settings } from '@rocket.chat/models';
 
-import { addMigration } from '../../lib/migrations';
-import { isEnterprise } from '../../../ee/app/license/server';
 import { settings } from '../../../app/settings/server';
+import { isEnterprise } from '../../../ee/app/license/server';
+import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 278,

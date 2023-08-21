@@ -1,5 +1,5 @@
-import type { FindOptions } from 'mongodb';
-import _ from 'underscore';
+import type { IOmnichannelVoipService, FindVoipRoomsParams } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, Voip } from '@rocket.chat/core-services';
 import type {
 	IVoipExtensionBase,
 	IVoipExtensionWithAgentInfo,
@@ -11,14 +11,14 @@ import type {
 	IVoipRoom,
 	IVoipRoomClosingInfo,
 } from '@rocket.chat/core-typings';
-import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents } from '@rocket.chat/core-typings';
-import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents, UserStatus } from '@rocket.chat/core-typings';
 import { Users, VoipRoom, PbxEvents } from '@rocket.chat/models';
-import type { IOmnichannelVoipService, FindVoipRoomsParams } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal, Voip } from '@rocket.chat/core-services';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { FindOptions } from 'mongodb';
+import _ from 'underscore';
 
-import { Logger } from '../../lib/logger/Logger';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { Logger } from '../../lib/logger/Logger';
 import type { IOmniRoomClosingMessage } from './internalTypes';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
@@ -92,7 +92,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		guest: ILivechatVisitor,
 		direction: IVoipRoom['direction'],
 	): Promise<string> {
-		const status = 'online';
+		const status = UserStatus.ONLINE;
 		const { _id, department: departmentId } = guest;
 		const newRoomAt = new Date();
 
@@ -151,7 +151,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 				token: guest.token,
 				status,
 				username: guest.username,
-				phone: guest?.phone?.[0]?.phoneNumber,
+				...(guest?.phone?.[0] && { phone: guest.phone[0].phoneNumber }),
 			},
 			servedBy: {
 				_id: agent.agentId,

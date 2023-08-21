@@ -1,4 +1,7 @@
-import { MongoInternals } from 'meteor/mongo';
+import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
+import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
+import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type {
 	IDirectVideoConference,
 	ILivechatVideoConference,
@@ -24,25 +27,22 @@ import {
 	isGroupVideoConference,
 	isLivechatVideoConference,
 } from '@rocket.chat/core-typings';
-import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
-import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
-import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
-import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
-import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal } from '@rocket.chat/core-services';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
+import { MongoInternals } from 'meteor/mongo';
 
-import { Apps } from '../../../ee/server/apps';
+import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
+import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
+import { Apps } from '../../../ee/server/apps';
+import { callbacks } from '../../../lib/callbacks';
+import { availabilityErrors } from '../../../lib/videoConference/constants';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { i18n } from '../../lib/i18n';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
-import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
-import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { availabilityErrors } from '../../../lib/videoConference/constants';
-import { callbacks } from '../../../lib/callbacks';
-import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { i18n } from '../../lib/i18n';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 

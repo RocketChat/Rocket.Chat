@@ -1,12 +1,14 @@
+import { Markup } from '@rocket.chat/gazzodown';
+import { parse } from '@rocket.chat/message-parser';
 import { Component } from 'preact';
 import { withTranslation } from 'react-i18next';
 
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
 import { Form, FormField, SelectInput, TextInput, Validations } from '../../components/Form';
-import { renderMarkdown } from '../../components/Messages/MessageText/markdown';
 import Screen from '../../components/Screen';
-import { createClassName, sortArrayByColumn } from '../../components/helpers';
+import { createClassName } from '../../helpers/createClassName';
+import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import styles from './styles.scss';
 
 class LeaveMessage extends Component {
@@ -163,13 +165,10 @@ class LeaveMessage extends Component {
 		return (
 			<Screen color={color} title={title || defaultTitle} className={createClassName(styles, 'leave-message')} {...props}>
 				<Screen.Content>
-					<div
-						className={createClassName(styles, 'leave-message__main-message')}
-						// eslint-disable-next-line react/no-danger
-						dangerouslySetInnerHTML={{
-							__html: renderMarkdown(hasForm ? message || defaultMessage : unavailableMessage || defaultUnavailableMessage),
-						}}
-					/>
+					<div className={createClassName(styles, 'leave-message__main-message')}>
+						<Markup tokens={hasForm ? parse(message || defaultMessage) : parse(unavailableMessage || defaultUnavailableMessage)} />
+					</div>
+
 					{hasForm && this.renderForm(this.props, this.state)}
 				</Screen.Content>
 				<Screen.Footer />

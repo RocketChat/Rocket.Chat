@@ -1,12 +1,12 @@
 import { BlockType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
 import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Objects';
-import moment from 'moment';
 import type { IBanner } from '@rocket.chat/core-typings';
 import { BannerPlatform } from '@rocket.chat/core-typings';
+import moment from 'moment';
 
 import { settings } from '../../../app/settings/server';
-import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins';
 import { i18n } from '../../lib/i18n';
+import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins';
 
 export const getBannerForAdmins = (expireAt: Date): Omit<IBanner, '_id'> => {
 	const lng = settings.get<string>('Language') || 'en';

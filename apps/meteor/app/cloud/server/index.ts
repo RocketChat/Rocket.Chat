@@ -1,18 +1,18 @@
-import { Meteor } from 'meteor/meteor';
 import { cronJobs } from '@rocket.chat/cron';
+import { Meteor } from 'meteor/meteor';
 
+import { SystemLogger } from '../../../server/lib/logger/system';
+import { settings } from '../../settings/server';
+import { connectWorkspace } from './functions/connectWorkspace';
 import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
 import { getWorkspaceAccessTokenWithScope } from './functions/getWorkspaceAccessTokenWithScope';
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
 import { syncWorkspace } from './functions/syncWorkspace';
-import { connectWorkspace } from './functions/connectWorkspace';
-import { settings } from '../../settings/server';
-import { SystemLogger } from '../../../server/lib/logger/system';
 import './methods';
 
 const licenseCronName = 'Cloud Workspace Sync';
 
-Meteor.startup(async function () {
+Meteor.startup(async () => {
 	// run token/license sync if registered
 	let TroubleshootDisableWorkspaceSync: boolean;
 	settings.watch<boolean>('Troubleshoot_Disable_Workspace_Sync', async (value) => {

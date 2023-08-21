@@ -76,6 +76,20 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 				$limit: count,
 			},
 			{
+				$lookup: {
+					from: 'users',
+					localField: '_id.user',
+					foreignField: '_id',
+					as: 'user',
+				},
+			},
+			{
+				$unwind: {
+					path: '$user',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
 				// TODO: maybe clean up the projection, i.e. exclude things we don't need
 				$project: {
 					_id: 0,
@@ -85,6 +99,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 					username: '$reports.message.u.username',
 					name: '$reports.message.u.name',
 					userId: '$reports.message.u._id',
+					isUserDeleted: { $cond: ['$user', false, true] },
 					count: 1,
 					rooms: 1,
 				},

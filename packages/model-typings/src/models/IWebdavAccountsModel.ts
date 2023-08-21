@@ -1,5 +1,5 @@
-import type { FindOptions, FindCursor, DeleteResult } from 'mongodb';
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
+import type { FindOptions, FindCursor, DeleteResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 

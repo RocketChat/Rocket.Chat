@@ -1,8 +1,8 @@
 import type { ILivechatMonitor } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../../app/api/server';
-import { findMonitors, findMonitorByUsername } from './lib/monitors';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
+import { findMonitors, findMonitorByUsername } from './lib/monitors';
 
 API.v1.addRoute(
 	'livechat/monitors',

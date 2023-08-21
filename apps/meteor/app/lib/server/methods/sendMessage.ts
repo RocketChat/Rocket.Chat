@@ -1,19 +1,19 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import moment from 'moment';
 import { api } from '@rocket.chat/core-services';
-import { Messages, Users } from '@rocket.chat/models';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
+import { Messages, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import moment from 'moment';
 
+import { i18n } from '../../../../server/lib/i18n';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
-import { sendMessage } from '../functions';
+import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { i18n } from '../../../../server/lib/i18n';
 
 export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>) {
 	if (message.tshow && !message.tmid) {

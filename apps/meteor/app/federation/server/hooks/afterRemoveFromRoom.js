@@ -1,10 +1,10 @@
 import { FederationRoomEvents } from '@rocket.chat/models';
 
 import { getFederatedRoomData, hasExternalDomain, isLocalUser } from '../functions/helpers';
+import { dispatchEvent } from '../handler';
+import { getFederationDomain } from '../lib/getFederationDomain';
 import { clientLogger } from '../lib/logger';
 import { normalizers } from '../normalizers';
-import { getFederationDomain } from '../lib/getFederationDomain';
-import { dispatchEvent } from '../handler';
 
 async function afterRemoveFromRoom(involvedUsers, room) {
 	const { removedUser } = involvedUsers;

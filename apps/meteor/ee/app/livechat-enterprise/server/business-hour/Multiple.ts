@@ -1,14 +1,14 @@
-import moment from 'moment';
 import type { ILivechatDepartment, ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
+import moment from 'moment';
 
+import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 import type { IBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { AbstractBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
-import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
-import { bhLogger } from '../lib/logger';
 import { settings } from '../../../../../app/settings/server';
-import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
+import { bhLogger } from '../lib/logger';
+import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 
 interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 	timezoneName: string;
@@ -102,10 +102,27 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		if (!defaultBusinessHour) {
 			return options;
 		}
-		await removeBusinessHourByAgentIds(agentsId, defaultBusinessHour._id);
 		if (!department.businessHourId) {
+			// If this department doesn't have a business hour, we need to apply default business hour to these agents
+			// And then reset their status based on these BH
+			const isDefaultBusinessHourActive = (await filterBusinessHoursThatMustBeOpened([defaultBusinessHour])).length > 0;
+			if (!isDefaultBusinessHourActive) {
+				bhLogger.debug('Default business hour is not active. No need to apply it to agents');
+				return options;
+			}
+
+			await this.UsersRepository.addBusinessHourByAgentIds(agentsId, defaultBusinessHour._id);
+			await this.UsersRepository.makeAgentsWithinBusinessHourAvailable(agentsId);
+
 			return options;
 		}
+
+		// This department has a business hour, so we need to
+		// 1. Remove default business hour from these agents if they have it
+		// 2. Add this department's business hour to these agents
+		// 3. Update their status based on these BH
+		await removeBusinessHourByAgentIds(agentsId, defaultBusinessHour._id);
+
 		const businessHour = await this.BusinessHourRepository.findOneById(department.businessHourId);
 		if (!businessHour) {
 			return options;
@@ -115,6 +132,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			return options;
 		}
 		await this.UsersRepository.addBusinessHourByAgentIds(agentsId, businessHour._id);
+		await this.UsersRepository.makeAgentsWithinBusinessHourAvailable(agentsId);
+
 		return options;
 	}
 

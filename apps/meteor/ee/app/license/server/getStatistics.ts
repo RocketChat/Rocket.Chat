@@ -1,7 +1,7 @@
 import { log } from 'console';
 
-import { CannedResponse, OmnichannelServiceLevelAgreements, LivechatRooms, LivechatTag, LivechatUnit, Users } from '@rocket.chat/models';
 import { Analytics } from '@rocket.chat/core-services';
+import { CannedResponse, OmnichannelServiceLevelAgreements, LivechatRooms, LivechatTag, LivechatUnit, Users } from '@rocket.chat/models';
 
 import { getModules, getTags, hasLicense } from './license';
 
@@ -101,7 +101,7 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 
 	statsPms.push(
 		// Total livechat monitors
-		Users.col.countDocuments({ type: 'livechat-monitor' }).then((count) => {
+		Users.col.countDocuments({ roles: 'livechat-monitor' }).then((count) => {
 			statistics.livechatMonitors = count;
 			return true;
 		}),

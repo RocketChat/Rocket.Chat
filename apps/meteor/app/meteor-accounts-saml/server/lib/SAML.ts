@@ -1,22 +1,25 @@
 import type { ServerResponse } from 'http';
 
-import { Meteor } from 'meteor/meteor';
-import { Random } from '@rocket.chat/random';
-import { Accounts } from 'meteor/accounts-base';
-import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import type { IUser, IIncomingMessage, IPersonalAccessToken } from '@rocket.chat/core-typings';
 import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { createRoom } from '../../../lib/server/functions/createRoom';
+import { generateUsernameSuggestion } from '../../../lib/server/functions/getUsernameSuggestion';
+import { saveUserIdentity } from '../../../lib/server/functions/saveUserIdentity';
 import { settings } from '../../../settings/server';
-import { saveUserIdentity, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';
-import { SAMLServiceProvider } from './ServiceProvider';
-import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import { i18n } from '../../../utils/lib/i18n';
 import type { ISAMLAction } from '../definition/ISAMLAction';
 import type { ISAMLUser } from '../definition/ISAMLUser';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import { SAMLServiceProvider } from './ServiceProvider';
 import { SAMLUtils } from './Utils';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { ensureArray } from '../../../../lib/utils/arrayUtils';
-import { i18n } from '../../../utils/lib/i18n';
 
 const showErrorMessage = function (res: ServerResponse, err: string): void {
 	res.writeHead(200, {
@@ -120,6 +123,7 @@ export class SAML {
 		}));
 
 		let { username } = userObject;
+		const { fullName } = userObject;
 
 		const active = !settings.get('Accounts_ManuallyApproveNewUsers');
 
@@ -128,7 +132,7 @@ export class SAML {
 			const roles = userObject.roles?.length ? userObject.roles : ensureArray<string>(defaultUserRole.split(','));
 
 			const newUser: Record<string, any> = {
-				name: userObject.fullName,
+				name: fullName,
 				active,
 				globalRoles: roles,
 				emails,
@@ -196,7 +200,7 @@ export class SAML {
 
 		// Overwrite fullname if needed
 		if (nameOverwrite === true) {
-			updateData.name = userObject.fullName;
+			updateData.name = fullName;
 		}
 
 		// When updating an user, we only update the roles if we received them from the mapping
@@ -217,8 +221,8 @@ export class SAML {
 			},
 		);
 
-		if (username && username !== user.username) {
-			await saveUserIdentity({ _id: user._id, username });
+		if (username && fullName && (username !== user.username || fullName !== user.name)) {
+			await saveUserIdentity({ _id: user._id, name: fullName, username });
 		}
 
 		// sending token along with the userId
@@ -426,7 +430,7 @@ export class SAML {
 				};
 
 				await this.storeCredential(credentialToken, loginResult);
-				const url = `${Meteor.absoluteUrl('home')}?saml_idp_credentialToken=${credentialToken}`;
+				const url = `${Meteor.absoluteUrl('saml')}/${credentialToken}`;
 				res.writeHead(302, {
 					Location: url,
 				});

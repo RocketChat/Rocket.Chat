@@ -1,7 +1,7 @@
 import WS from 'jest-websocket-mock';
 
-import { MinimalDDPClient } from '../src/MinimalDDPClient';
 import { ConnectionImpl } from '../src/Connection';
+import { MinimalDDPClient } from '../src/MinimalDDPClient';
 import { handleConnection, handleConnectionAndRejects, handleMethod } from './helpers';
 
 let server: WS;

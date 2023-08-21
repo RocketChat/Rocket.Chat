@@ -111,7 +111,7 @@ const PreferencesSoundSection = ({ onChange, commitRef, ...props }: FormSectionP
 									min='0'
 									max='100'
 								/>
-								<Tooltip placement='right' mis='x8'>
+								<Tooltip placement='right' mis={8}>
 									{notificationsSoundVolume}
 								</Tooltip>
 							</Field.Row>
