@@ -13,7 +13,7 @@ export class SlackAPI {
 				types: 'public_channel',
 				exclude_archived: true,
 				limit: 1000,
-				cursor,
+				...(cursor && { cursor }),
 			},
 		});
 		const response = await request.json();
@@ -37,7 +37,7 @@ export class SlackAPI {
 				types: 'private_channel',
 				exclude_archived: true,
 				limit: 1000,
-				cursor,
+				...(cursor && { cursor }),
 			},
 		});
 		const response = await request.json();
@@ -77,7 +77,7 @@ export class SlackAPI {
 					token: this.apiToken,
 					channel: channelId,
 					limit: MAX_MEMBERS_PER_CALL,
-					cursor: currentCursor,
+					...(currentCursor && { cursor: currentCursor }),
 				},
 			});
 			// eslint-disable-next-line no-await-in-loop
@@ -96,7 +96,7 @@ export class SlackAPI {
 	async react(data) {
 		const request = await fetch('https://slack.com/api/reactions.add', {
 			method: 'POST',
-			body: data,
+			params: data,
 		});
 		const response = await request.json();
 		return response && request.status === 200 && response && request.ok;
@@ -105,7 +105,7 @@ export class SlackAPI {
 	async removeReaction(data) {
 		const request = await fetch('https://slack.com/api/reactions.remove', {
 			method: 'POST',
-			body: data,
+			params: data,
 		});
 		const response = await request.json();
 		return response && request.status === 200 && response && request.ok;
@@ -114,7 +114,7 @@ export class SlackAPI {
 	async removeMessage(data) {
 		const request = await fetch('https://slack.com/api/chat.delete', {
 			method: 'POST',
-			body: data,
+			params: data,
 		});
 		const response = await request.json();
 		return response && request.status === 200 && response && request.ok;
@@ -123,7 +123,7 @@ export class SlackAPI {
 	async sendMessage(data) {
 		const request = await fetch('https://slack.com/api/chat.postMessage', {
 			method: 'POST',
-			body: data,
+			params: data,
 		});
 		return request.json();
 	}
@@ -131,7 +131,7 @@ export class SlackAPI {
 	async updateMessage(data) {
 		const request = await fetch('https://slack.com/api/chat.update', {
 			method: 'POST',
-			body: data,
+			params: data,
 		});
 		const response = await request.json();
 		return response && request.status === 200 && response && request.ok;

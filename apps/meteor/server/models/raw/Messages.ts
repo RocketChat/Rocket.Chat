@@ -77,6 +77,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { 'navigation.token': 1 }, sparse: true },
 
 			{ key: { 'federation.eventId': 1 }, sparse: true },
+			{ key: { t: 1 }, sparse: true },
 		];
 	}
 
@@ -224,9 +225,31 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const params: Exclude<Parameters<Collection<IMessage>['aggregate']>[0], undefined> = [
 			{ $match: { t: { $exists: false }, ts: { $gte: start, $lte: end } } },
 			{
+				$group: {
+					_id: {
+						rid: '$rid',
+						date: {
+							$dateToString: { format: '%Y%m%d', date: '$ts' },
+						},
+					},
+					messages: { $sum: 1 },
+				},
+			},
+			{
+				$group: {
+					_id: '$_id.rid',
+					data: {
+						$push: {
+							date: '$_id.date',
+							messages: '$messages',
+						},
+					},
+				},
+			},
+			{
 				$lookup: {
 					from: 'rocketchat_room',
-					localField: 'rid',
+					localField: '_id',
 					foreignField: '_id',
 					as: 'room',
 				},
@@ -237,8 +260,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				},
 			},
 			{
-				$group: {
-					_id: {
+				$project: {
+					data: '$data',
+					room: {
 						_id: '$room._id',
 						name: {
 							$cond: [{ $ifNull: ['$room.fname', false] }, '$room.fname', '$room.name'],
@@ -247,25 +271,22 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 						usernames: {
 							$cond: [{ $ifNull: ['$room.usernames', false] }, '$room.usernames', []],
 						},
-						date: {
-							$concat: [{ $substr: ['$ts', 0, 4] }, { $substr: ['$ts', 5, 2] }, { $substr: ['$ts', 8, 2] }],
-						},
 					},
-					messages: { $sum: 1 },
+					type: 'messages',
+				},
+			},
+			{
+				$unwind: {
+					path: '$data',
 				},
 			},
 			{
 				$project: {
 					_id: 0,
-					date: '$_id.date',
-					room: {
-						_id: '$_id._id',
-						name: '$_id.name',
-						t: '$_id.t',
-						usernames: '$_id.usernames',
-					},
-					type: 'messages',
-					messages: 1,
+					date: '$data.date',
+					room: 1,
+					type: 1,
+					messages: '$data.messages',
 				},
 			},
 		];
@@ -1355,8 +1376,23 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			query.tcount = { $exists: false };
 		}
 
+		const notCountedMessages = (
+			await this.find(
+				{
+					...query,
+					$or: [{ _hidden: true }, { editedAt: { $exists: true }, editedBy: { $exists: true }, t: 'rm' }],
+				},
+				{
+					projection: {
+						_id: 1,
+					},
+					limit,
+				},
+			).toArray()
+		).length;
+
 		if (!limit) {
-			const count = (await this.deleteMany(query)).deletedCount;
+			const count = (await this.deleteMany(query)).deletedCount - notCountedMessages;
 
 			if (count) {
 				// decrease message count
@@ -1366,22 +1402,27 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			return count;
 		}
 
-		const messagesToDelete = (
-			await this.find(query, {
-				projection: {
-					_id: 1,
-				},
-				limit,
-			}).toArray()
-		).map(({ _id }) => _id);
+		const messagesToDelete = await this.find(query, {
+			projection: {
+				_id: 1,
+				_hidden: 1,
+				t: 1,
+				editedAt: 1,
+				editedBy: 1,
+			},
+			limit,
+		}).toArray();
 
-		const count = (
-			await this.deleteMany({
-				_id: {
-					$in: messagesToDelete,
-				},
-			})
-		).deletedCount;
+		const messagesIdsToDelete = messagesToDelete.map(({ _id }) => _id);
+
+		const count =
+			(
+				await this.deleteMany({
+					_id: {
+						$in: messagesIdsToDelete,
+					},
+				})
+			).deletedCount - notCountedMessages;
 
 		if (count) {
 			// decrease message count
