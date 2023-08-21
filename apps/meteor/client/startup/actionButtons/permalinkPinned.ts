@@ -25,7 +25,7 @@ Meteor.startup(() => {
 		condition({ subscription }) {
 			return !!subscription;
 		},
-		order: 101,
+		order: 5,
 		group: 'menu',
 	});
 });

@@ -1,6 +1,6 @@
 import { Box, MessageToolboxItem, Option, OptionDivider, OptionTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, MouseEvent, MouseEventHandler, ReactElement } from 'react';
 import React, { Fragment, useRef, useState } from 'react';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -8,7 +8,7 @@ import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import ToolboxDropdown from './ToolboxDropdown';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
-	action: (event: UIEvent) => void;
+	action: ((event: MouseEvent<HTMLElement, MouseEvent>) => void) & MouseEventHandler<HTMLElement>;
 };
 
 type MessageActionMenuProps = {

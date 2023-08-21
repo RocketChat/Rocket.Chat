@@ -30,7 +30,7 @@ Meteor.startup(() => {
 
 			return Boolean(message.starred?.find((star) => star._id === user?._id));
 		},
-		order: 101,
+		order: 10,
 		group: 'menu',
 	});
 });
