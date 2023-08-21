@@ -1,7 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Flex, Box, InputBox, Button, Label } from '@rocket.chat/fuselage';
 import { RocketChatLogo } from '@rocket.chat/logo';
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import routes from '../Routes/Routes';

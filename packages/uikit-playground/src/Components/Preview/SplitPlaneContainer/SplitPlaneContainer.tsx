@@ -24,9 +24,9 @@ const SplitPlaneContainer: FC<{ PreviewSize: Partial<PreviewSizeType> }> = ({
   }, [isTablet, dispatch]);
 
   const splitPaneProps = {
-    defaultSize: PreviewSize.inlineSize * 0.5,
+    defaultSize: (PreviewSize.inlineSize || 1) * 0.5,
     minSize: 300,
-    maxSize: PreviewSize.inlineSize - 350,
+    maxSize: (PreviewSize.inlineSize || 1) - 350,
     allowResize: !isTablet,
   };
 

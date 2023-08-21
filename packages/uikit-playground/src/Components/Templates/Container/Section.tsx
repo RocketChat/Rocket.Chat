@@ -1,5 +1,4 @@
 import { Box, Label } from '@rocket.chat/fuselage';
-import React from 'react';
 
 import type { templateType } from '../../../utils/templates';
 import Payload from './Payload';

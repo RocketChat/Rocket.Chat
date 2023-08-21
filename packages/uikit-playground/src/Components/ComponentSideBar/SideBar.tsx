@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import React, { useEffect, useContext } from 'react';
+import { useEffect, useContext } from 'react';
 
 import { context, sidebarToggleAction } from '../../Context';
 import ScrollableSideBar from './ScrollableSideBar';
@@ -33,7 +33,7 @@ const SideBar: FC = () => {
       height={'100%'}
       display={'flex'}
       zIndex={4}
-      bg='#fff'
+      bg="#fff"
       className={[slide]}
     >
       <SliderBtn />

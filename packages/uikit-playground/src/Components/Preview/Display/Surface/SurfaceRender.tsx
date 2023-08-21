@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import React from 'react';
 
 import BannerSurface from './BannerSurface';
 import MessageSurface from './MessageSurface';

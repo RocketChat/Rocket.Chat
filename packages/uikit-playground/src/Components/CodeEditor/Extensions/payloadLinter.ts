@@ -55,7 +55,7 @@ const payloadLinter = linter((view: EditorView) => {
       });
       return diagnostics;
     }
-    if (head.name === 'ObjectExpression') parsePayload(head, diagnostics, view);
+    if (head.name === 'ObjectExpression') parsePayload(head, view);
     head = head.nextSibling;
   } while (head);
 

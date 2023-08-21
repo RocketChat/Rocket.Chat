@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import { context } from '../../Context';
 import SplitPlaneContainer from './SplitPlaneContainer/SplitPlaneContainer';
@@ -28,9 +28,9 @@ const Wrapper = () => {
   };
 
   return (
-    <Box position='relative' width={'100%'} flexGrow={1}>
+    <Box position="relative" width={'100%'} flexGrow={1}>
       <Box
-        position='absolute'
+        position="absolute"
         width={isTablet ? '200%' : '100%'}
         height={'100%'}
         display={'flex'}

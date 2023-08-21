@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 
 import Items from './Items';
 import type { Item, ItemBranch } from './types';

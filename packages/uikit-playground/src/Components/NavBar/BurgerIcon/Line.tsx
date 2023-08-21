@@ -1,14 +1,13 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 const Line = ({
   animated,
   moved,
 }: {
-  animated: boolean,
-  moved?: boolean,
+  animated: boolean;
+  moved?: boolean;
 }): ReactElement => {
   const animatedStyle = animated
     ? css`
@@ -40,12 +39,12 @@ const Line = ({
 
   return (
     <Box
-      is='span'
-      width='x20'
-      height='x2'
-      backgroundColor='currentColor'
+      is="span"
+      width="x20"
+      height="x2"
+      backgroundColor="currentColor"
       className={[animatedStyle, movedStyle]}
-      aria-hidden='true'
+      aria-hidden="true"
     />
   );
 };

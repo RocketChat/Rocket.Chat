@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Icon, Scrollable } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import { context, templatesToggleAction } from '../../Context';
 import { templates } from '../../utils/templates';

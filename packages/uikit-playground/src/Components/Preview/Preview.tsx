@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import React, { useEffect, useContext } from 'react';
+import { useEffect, useContext } from 'react';
 
 import { context, previewTabsToggleAction } from '../../Context';
 import NavPanel from './NavPanel';
@@ -21,7 +21,7 @@ const Preview: FC = () => {
     <Box
       display={'flex'}
       flexGrow={1}
-      bg='#fff'
+      bg="#fff"
       zIndex={3}
       height={'100%'}
       flexDirection={'column'}

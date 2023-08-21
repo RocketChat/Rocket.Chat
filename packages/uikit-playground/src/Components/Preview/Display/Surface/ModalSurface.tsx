@@ -11,7 +11,6 @@ import {
   Button,
 } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
-import React from 'react';
 
 const ModalSurface = ({ children }: { children: ReactNode }) => (
   <Modal>

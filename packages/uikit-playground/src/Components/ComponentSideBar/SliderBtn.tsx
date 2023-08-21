@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Label } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import { context, sidebarToggleAction } from '../../Context';
 
