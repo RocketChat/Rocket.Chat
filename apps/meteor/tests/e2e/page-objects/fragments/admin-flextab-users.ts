@@ -32,7 +32,11 @@ export class AdminFlextabUsers {
 	}
 
 	get checkboxVerified(): Locator {
-		return this.page.locator('//label[text()="Email"]/following-sibling::span//input/following-sibling::i');
+		return this.page.locator('//label[text()="Verified"]');
+	}
+
+	get userRole(): Locator {
+		return this.page.locator('button[role="option"]:has-text("user")');
 	}
 
 	async addRole(role: string): Promise<void> {

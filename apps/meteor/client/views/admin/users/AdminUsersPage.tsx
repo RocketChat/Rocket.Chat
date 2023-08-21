@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { usePermission, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useRef } from 'react';
 
@@ -7,19 +7,20 @@ import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
-import AddUser from './AddUser';
+import AdminInviteUsers from './AdminInviteUsers';
+import AdminUserForm from './AdminUserForm';
+import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
-import EditUserWithData from './EditUserWithData';
-import InviteUsers from './InviteUsers';
 import UsersTable from './UsersTable';
 
 const UsersPage = (): ReactElement => {
 	const t = useTranslation();
-	const context = useRouteParameter('context');
-	const id = useRouteParameter('id');
 	const seatsCap = useSeatsCap();
 	const reload = useRef(() => null);
-	const usersRoute = useRoute('admin-users');
+
+	const router = useRouter();
+	const context = useRouteParameter('context');
+	const id = useRouteParameter('id');
 
 	const canCreateUser = usePermission('create-user');
 	const canBulkCreateUser = usePermission('bulk-register-user');
@@ -30,21 +31,9 @@ const UsersPage = (): ReactElement => {
 		}
 
 		if (seatsCap.activeUsers >= seatsCap.maxActiveUsers && !['edit', 'info'].includes(context)) {
-			usersRoute.push({});
+			router.navigate('/admin/users');
 		}
-	}, [context, seatsCap, usersRoute]);
-
-	const handleCloseContextualbar = (): void => {
-		usersRoute.push({});
-	};
-
-	const handleNewUser = (): void => {
-		usersRoute.push({ context: 'new' });
-	};
-
-	const handleInviteUser = (): void => {
-		usersRoute.push({ context: 'invite' });
-	};
+	}, [router, context, seatsCap]);
 
 	const handleReload = (): void => {
 		seatsCap?.reload();
@@ -60,12 +49,12 @@ const UsersPage = (): ReactElement => {
 					) : (
 						<ButtonGroup>
 							{canCreateUser && (
-								<Button icon='user-plus' onClick={handleNewUser}>
+								<Button icon='user-plus' onClick={() => router.navigate('/admin/users/new')}>
 									{t('New')}
 								</Button>
 							)}
 							{canBulkCreateUser && (
-								<Button icon='mail' onClick={handleInviteUser}>
+								<Button icon='mail' onClick={() => router.navigate('/admin/users/invite')}>
 									{t('Invite')}
 								</Button>
 							)}
@@ -85,12 +74,12 @@ const UsersPage = (): ReactElement => {
 							{context === 'new' && t('Add_User')}
 							{context === 'invite' && t('Invite_Users')}
 						</ContextualbarTitle>
-						<ContextualbarClose onClick={handleCloseContextualbar} />
+						<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
 					</ContextualbarHeader>
 					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
-					{context === 'edit' && id && <EditUserWithData uid={id} onReload={handleReload} />}
-					{context === 'new' && <AddUser onReload={handleReload} />}
-					{context === 'invite' && <InviteUsers />}
+					{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
+					{context === 'new' && <AdminUserForm onReload={handleReload} />}
+					{context === 'invite' && <AdminInviteUsers />}
 				</Contextualbar>
 			)}
 		</Page>
