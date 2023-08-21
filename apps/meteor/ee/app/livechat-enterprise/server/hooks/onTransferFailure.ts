@@ -1,4 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IRoom, ILivechatVisitor, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
 
@@ -16,8 +17,17 @@ const onTransferFailure = async (
 		transferData: { [k: string]: string | any };
 	},
 ) => {
+	if (!isOmnichannelRoom(room)) {
+		return false;
+	}
+
 	cbLogger.debug(`Attempting to transfer room ${room._id} using fallback departments`);
 	const { departmentId } = transferData;
+	if (!departmentId) {
+		cbLogger.debug(`No departmentId found in transferData`);
+		return false;
+	}
+
 	const department = (await LivechatDepartment.findOneById(departmentId, {
 		projection: { _id: 1, name: 1, fallbackForwardDepartment: 1 },
 	})) as Partial<ILivechatDepartment>;
@@ -27,6 +37,16 @@ const onTransferFailure = async (
 	}
 
 	cbLogger.debug(`Fallback department ${department.fallbackForwardDepartment} found for department ${department._id}. Redirecting`);
+	// TODO: find enabled not archived here
+	const fallbackDepartment = await LivechatDepartment.findOneById(department.fallbackForwardDepartment, {
+		projection: { name: 1, _id: 1 },
+	});
+
+	if (!fallbackDepartment) {
+		cbLogger.debug(`Fallback department ${department.fallbackForwardDepartment} not found`);
+		return false;
+	}
+
 	const transferDataFallback = {
 		...transferData,
 		prevDepartment: department.name,
