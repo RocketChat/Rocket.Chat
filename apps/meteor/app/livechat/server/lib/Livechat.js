@@ -868,6 +868,10 @@ export const Livechat = {
 			}
 		}
 
+		// TODO Block offline form if Livechat_offline_email is undefined
+		// (it does not make sense to have an offline form that does nothing)
+		// `this.sendEmail` will throw an error if the email is invalid
+		// thus this breaks livechat, since the "to" email is invalid, and that returns an [invalid email] error to the livechat client
 		let emailTo = settings.get('Livechat_offline_email');
 		if (department && department !== '') {
 			const dep = await LivechatDepartmentRaw.findOneByIdOrName(department);
