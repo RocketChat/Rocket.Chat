@@ -269,9 +269,9 @@ API.v1.addRoute(
 				return API.v1.failure('Invalid user id provided.');
 			}
 
-			const response = await ModerationReports.createWithDescriptionAndUser(reportedUser, description, { _id, name, username, createdAt });
+			await ModerationReports.createWithDescriptionAndUser(reportedUser, description, { _id, name, username, createdAt });
 
-			return API.v1.success(response);
+			return API.v1.success();
 		},
 	},
 );
