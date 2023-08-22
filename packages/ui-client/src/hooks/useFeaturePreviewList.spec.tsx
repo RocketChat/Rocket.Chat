@@ -67,7 +67,7 @@ it('should ignore removed feature previews', () => {
 	);
 });
 
-it.only('should turn off ignored feature previews', async () => {
+it('should turn off ignored feature previews', async () => {
 	const { result } = renderHook(() => useFeaturePreviewList(), {
 		wrapper: mockAppRoot()
 			.withSetting('Accounts_AllowFeaturePreview', true)
