@@ -180,7 +180,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		const params = [...firstParams, usersGroup, project, facet];
-		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred(), allowDiskUse: true }).toArray();
 	}
 
 	async findAllNumberOfAbandonedRooms({
