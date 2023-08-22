@@ -1,4 +1,4 @@
-import type { IEditedMessage, IMessage, IUser } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -8,7 +8,7 @@ import { settings } from '../../../settings/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 export const updateMessage = async function (
-	message: IMessage,
+	message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>,
 	user: IUser,
 	originalMsg?: IMessage,
 	previewUrls?: string[],
@@ -38,7 +38,7 @@ export const updateMessage = async function (
 		await Messages.cloneAndSaveAsHistoryById(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
 	}
 
-	Object.assign<IMessage, Omit<IEditedMessage, keyof IMessage>>(message, {
+	Object.assign<AtLeast<IMessage, '_id' | 'rid' | 'msg'>, Omit<IEditedMessage, keyof IMessage>>(message, {
 		editedAt: new Date(),
 		editedBy: {
 			_id: user._id,

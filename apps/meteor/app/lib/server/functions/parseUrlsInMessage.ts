@@ -1,10 +1,10 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, AtLeast } from '@rocket.chat/core-typings';
 
 import { getMessageUrlRegex } from '../../../../lib/getMessageUrlRegex';
 import { Markdown } from '../../../markdown/server';
 import { settings } from '../../../settings/server';
 
-export const parseUrlsInMessage = (message: IMessage & { parseUrls?: boolean }, previewUrls?: string[]): IMessage => {
+export const parseUrlsInMessage = (message: AtLeast<IMessage, 'msg'> & { parseUrls?: boolean }, previewUrls?: string[]) => {
 	if (message.parseUrls === false) {
 		return message;
 	}
@@ -25,6 +25,4 @@ export const parseUrlsInMessage = (message: IMessage & { parseUrls?: boolean }, 
 	message.msg = message.html || message.msg;
 	delete message.html;
 	delete message.tokens;
-
-	return message;
 };
