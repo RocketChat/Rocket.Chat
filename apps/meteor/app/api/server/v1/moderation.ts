@@ -263,25 +263,15 @@ API.v1.addRoute(
 				user: { _id, name, username, createdAt },
 			} = this;
 
-<<<<<<< HEAD
-			const reportedUser = await Users.findOneById(userId, { projection: { _id: 1, name: 1, username: 1 } });
-=======
 			const reportedUser = await Users.findOneById(userId, { projection: { _id: 1, name: 1, username: 1, emails: 1, createdAt: 1 } });
->>>>>>> develop
 
 			if (!reportedUser) {
 				return API.v1.failure('Invalid user id provided.');
 			}
 
-<<<<<<< HEAD
-			const response = await ModerationReports.createWithDescriptionAndUser(reportedUser, description, { _id, name, username, createdAt });
-
-			return API.v1.success(response);
-=======
 			await ModerationReports.createWithDescriptionAndUser(reportedUser, description, { _id, name, username, createdAt });
 
 			return API.v1.success();
->>>>>>> develop
 		},
 	},
 );
