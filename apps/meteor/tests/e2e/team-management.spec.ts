@@ -47,7 +47,6 @@ test.describe.serial('teams-management', () => {
 		await page.locator('role=button[name="Reply in Thread"]').click();
 		await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetTeam}"]`).type('any-reply-message');
 		await page.keyboard.press('Enter');
-
 		await expect(poHomeTeam.tabs.flexTabViewThreadMessage).toHaveText('any-reply-message');
 	});
 
