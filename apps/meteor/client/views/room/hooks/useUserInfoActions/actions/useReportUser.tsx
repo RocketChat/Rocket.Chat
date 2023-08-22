@@ -1,15 +1,14 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Box, Icon } from '@rocket.chat/fuselage';
 import { useEndpoint, useSetModal, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useUserDisplayName } from '../../../../../hooks/useUserDisplayName';
-import type { Action } from '../../../../hooks/useActionSpread';
 import ReportUserModal from '../../../contextualBar/UserInfo/ReportUserModal';
+import type { UserInfoAction } from '../useUserInfoActions';
 
-export const useReportUser = (user: Pick<IUser, '_id' | 'username' | 'name'>): Action | undefined => {
+export const useReportUser = (user: Pick<IUser, '_id' | 'username' | 'name'>): UserInfoAction | undefined => {
 	const { _id: uid, username, name } = user;
 	const ownUserId = useUserId();
 	const setModal = useSetModal();
@@ -44,13 +43,11 @@ export const useReportUser = (user: Pick<IUser, '_id' | 'username' | 'name'>): A
 
 		return ownUserId !== uid
 			? {
-					label: (
-						<Box color='status-font-on-danger'>
-							<Icon mie='x4' name='warning' size='x20' />
-							{t('Report_User')}
-						</Box>
-					),
-					action,
+					icon: 'warning' as const,
+					content: t('Report_User'),
+					onClick: action,
+					type: 'management' as const,
+					variant: 'danger' as const,
 			  }
 			: undefined;
 	}, [ownUserId, uid, t, setModal, username, reportUserMutation.mutate, displayName]);
