@@ -3254,7 +3254,7 @@ export type OmnichannelEndpoints = {
 
 	'/v1/livechat/users/:type': {
 		GET: (params: LivechatUsersManagerGETProps) => PaginatedResult<{
-			users: ILivechatAgent[];
+			users: (ILivechatAgent & { departments: string[] })[];
 		}>;
 		POST: (params: POSTLivechatUsersTypeProps) => { success: boolean };
 	};
@@ -3290,7 +3290,7 @@ export type OmnichannelEndpoints = {
 
 	'/v1/livechat/users/agent': {
 		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
-			users: ILivechatAgent[];
+			users: (ILivechatAgent & { departments: string[] })[];
 		}>;
 		POST: (params: LivechatUsersManagerPOSTProps) => { success: boolean };
 	};

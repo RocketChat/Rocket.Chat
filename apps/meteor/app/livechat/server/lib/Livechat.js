@@ -564,18 +564,14 @@ export const Livechat = {
 	},
 
 	async afterRemoveAgent(user) {
-		await Promise.all([
-			Users.removeAgent(user._id),
-			LivechatDepartmentAgents.removeByAgentId(user._id),
-			LivechatVisitors.removeContactManagerByUsername(user.username),
-		]);
+		await callbacks.run('livechat.afterAgentRemoved', { agent: user });
 		return true;
 	},
 
 	async removeAgent(username) {
 		check(username, String);
 
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
