@@ -1,5 +1,34 @@
 # @rocket.chat/meteor
 
+## 6.3.2
+
+### Patch Changes
+
+- 778b155ab4: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 5660169ec8: fixed layout changing from embedded view when navigating
+- f7b93f2a6a: Fixed an issue where timeout for http requests in Apps-Engine bridges was too short
+- 653d97ce22: fix: mobile app unable to detect successful SAML login
+- 8a0e36f7b1: fixed the video recorder window not closing after permission is denied.
+  - @rocket.chat/core-typings@6.3.2
+  - @rocket.chat/rest-typings@6.3.2
+  - @rocket.chat/api-client@0.1.2
+  - @rocket.chat/omnichannel-services@0.0.8
+  - @rocket.chat/pdf-worker@0.0.8
+  - @rocket.chat/presence@0.0.8
+  - @rocket.chat/core-services@0.1.2
+  - @rocket.chat/cron@0.0.4
+  - @rocket.chat/gazzodown@1.0.2
+  - @rocket.chat/model-typings@0.0.8
+  - @rocket.chat/ui-contexts@1.0.2
+  - @rocket.chat/fuselage-ui-kit@1.0.2
+  - @rocket.chat/models@0.0.8
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.2
+  - @rocket.chat/ui-video-conf@1.0.2
+  - @rocket.chat/web-ui-registration@1.0.2
+  - @rocket.chat/instance-status@0.0.8
+
 ## 6.3.1
 
 ### Patch Changes
