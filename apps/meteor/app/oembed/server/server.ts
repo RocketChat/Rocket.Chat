@@ -17,8 +17,8 @@ import { isURL } from '../../../lib/utils/isURL';
 import { Logger } from '../../logger/server';
 import { settings } from '../../settings/server';
 import { Info } from '../../utils/rocketchat.info';
-import { MAX_EXTERNAL_URL_PREVIEWS } from './constants';
 
+const MAX_EXTERNAL_URL_PREVIEWS = 5;
 const log = new Logger('OEmbed');
 //  Detect encoding
 //  Priority:

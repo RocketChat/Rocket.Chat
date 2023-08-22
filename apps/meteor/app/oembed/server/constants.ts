@@ -1,1 +1,0 @@
-export const MAX_EXTERNAL_URL_PREVIEWS = 5;
