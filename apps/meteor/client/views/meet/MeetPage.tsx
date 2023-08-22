@@ -5,6 +5,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import UserAvatar from '../../components/avatar/UserAvatar';
+import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
 import CallPage from './CallPage';
@@ -16,7 +17,7 @@ const MeetPage = () => {
 	const [visitorId, setVisitorId] = useState(null);
 	const roomId = useRouteParameter('rid');
 	const visitorToken = useSearchParameter('token');
-	const layout = useSearchParameter('layout');
+	const isLayoutEmbedded = useEmbeddedLayout();
 	const [visitorName, setVisitorName] = useState('');
 	const [agentName, setAgentName] = useState('');
 	const [callStartTime, setCallStartTime] = useState(undefined);
@@ -147,7 +148,7 @@ const MeetPage = () => {
 			setStatus={setStatus}
 			visitorName={visitorName}
 			agentName={agentName}
-			layout={layout}
+			isLayoutEmbedded={isLayoutEmbedded}
 			callStartTime={callStartTime}
 		/>
 	);
