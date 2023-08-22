@@ -66,3 +66,29 @@ it('should ignore removed feature previews', () => {
 		}),
 	);
 });
+
+const oldFeature = {
+	name: 'oldFeature',
+	i18n: 'Quick_reactions',
+	description: 'Quick_reactions_description',
+	group: 'Message',
+	imageUrl: 'images/featurePreview/quick-reactions.png',
+	value: false,
+	enabled: true,
+} as any;
+
+it('should turn off ignored feature previews', async () => {
+	const { result } = renderHook(() => useFeaturePreviewList([...enabledDefaultFeatures, oldFeature]), {
+		wrapper: mockAppRoot()
+			.withSetting('Accounts_AllowFeaturePreview', true)
+			.withUserPreference('featuresPreview', [
+				{
+					name: 'oldFeature',
+					value: true,
+				},
+			])
+			.build(),
+	});
+
+	expect(result.current.features).toEqual(expect.arrayContaining([...enabledDefaultFeatures, { ...oldFeature, value: false }]));
+});
