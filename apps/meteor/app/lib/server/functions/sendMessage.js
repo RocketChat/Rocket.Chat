@@ -203,7 +203,7 @@ function cleanupMessageObject(message) {
 	['customClass'].forEach((field) => delete message[field]);
 }
 
-export const sendMessage = async function (user, message, room, upsert = false, previewUrls) {
+export const sendMessage = async function (user, message, room, upsert = false, previewUrls = undefined) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
