@@ -21,7 +21,7 @@ export const ComposerOmnichannelVerification = (): ReactElement => {
 	return (
 		<MessageFooterCallout>
 			<MessageFooterCalloutContent>{t('This_conversation_is_currently_undergoing_a_verification_process')}</MessageFooterCalloutContent>
-			<MessageFooterCalloutAction danger={true} onClick={handleCancelVerification}>
+			<MessageFooterCalloutAction danger={true} primary={false} onClick={handleCancelVerification}>
 				{t('Cancel')}
 			</MessageFooterCalloutAction>
 		</MessageFooterCallout>
