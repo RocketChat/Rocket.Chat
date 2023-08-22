@@ -1,10 +1,10 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { LoginService, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { UserContext, useEndpoint, useSetting, TranslationContext } from '@rocket.chat/ui-contexts';
+import { UserContext, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
-import React, { useEffect, useMemo, useContext } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { Subscriptions, ChatRoom } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
@@ -65,8 +65,8 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 
 	const userId = useReactiveValue(getUserId);
 	const user = useReactiveValue(getUser);
-	const [language] = useLocalStorage('userLanguage', user?.language ?? 'en');
-	const { preferLanguage } = useContext(TranslationContext);
+	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
+	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
 
 	const { data: license } = useIsEnterprise();
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
@@ -166,8 +166,16 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	);
 
 	useEffect(() => {
-		preferLanguage(user?.language);
-	}, [language, preferLanguage, user?.language]);
+		if (!!userId && preferedLanguage !== userLanguage) {
+			setUserPreferences({ data: { language: preferedLanguage } });
+			setUserLanguage(preferedLanguage);
+		}
+
+		if (user?.language !== undefined && user.language !== userLanguage) {
+			setUserLanguage(user.language);
+			setPreferedLanguage(user.language);
+		}
+	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
 
 	useEffect(() => {
 		if (!license?.isEnterprise && user?.settings?.preferences?.themeAppearence === 'high-contrast') {

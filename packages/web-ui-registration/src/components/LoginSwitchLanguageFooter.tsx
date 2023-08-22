@@ -48,13 +48,13 @@ const LoginSwitchLanguageFooter = ({
 	const loadLanguage = useLoadLanguage();
 	const { suggestions } = useSuggestedLanguages({ browserLanguage });
 
-	const [, setUserLanguage] = useLocalStorage('userLanguage', '');
+	const [, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
 	const handleSwitchLanguageClick =
 		(language: TranslationLanguage) =>
 		async (event: UIEvent): Promise<void> => {
 			event.preventDefault();
 			await loadLanguage(language.key);
-			setUserLanguage(language.key);
+			setPreferedLanguage(language.key);
 		};
 
 	if (!suggestions.length) {

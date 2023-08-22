@@ -382,7 +382,6 @@ export class MockedAppRootBuilder {
 
 					await i18n.changeLanguage(language);
 				},
-				preferLanguage: () => 0,
 				translate: Object.assign(
 					(key: TranslationKey, options?: unknown) => (i18n.isInitialized ? i18n.t(key, options as { lng?: string }) : ''),
 					{
