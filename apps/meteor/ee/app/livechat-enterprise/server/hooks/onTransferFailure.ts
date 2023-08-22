@@ -47,12 +47,19 @@ const onTransferFailure = async (
 		return false;
 	}
 
+	const fallbackDepartmentDb = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'name'>>(
+		department.fallbackForwardDepartment,
+		{
+			projection: { name: 1, _id: 1 },
+		},
+	);
+
 	const transferDataFallback = {
 		...transferData,
 		prevDepartment: department.name,
 		departmentId: department.fallbackForwardDepartment,
-		department: await LivechatDepartment.findOneById(department.fallbackForwardDepartment, {
-			projection: { name: 1, _id: 1 },
+		...(fallbackDepartmentDb && {
+			department: fallbackDepartmentDb,
 		}),
 	};
 
