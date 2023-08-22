@@ -6,6 +6,7 @@ import { onLicense } from '../../app/license/server/license';
 import('./LivechatPriority');
 import('./OmnichannelServiceLevelAgreements');
 import('./AuditLog');
+import('./ReadReceipts');
 
 await onLicense('livechat-enterprise', () => {
 	import('./CannedResponse');
@@ -14,7 +15,6 @@ await onLicense('livechat-enterprise', () => {
 	import('./LivechatUnitMonitors');
 	import('./LivechatRooms');
 	import('./LivechatInquiry');
-	import('./ReadReceipts');
 	import('./LivechatDepartment');
 	import('./Users');
 	import('./LivechatDepartmentAgents');

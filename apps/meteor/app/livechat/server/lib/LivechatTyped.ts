@@ -21,6 +21,7 @@ import {
 	Messages,
 	Users,
 	LivechatDepartmentAgents,
+	ReadReceipts,
 } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -401,6 +402,7 @@ class LivechatClass {
 
 		const result = await Promise.allSettled([
 			Messages.removeByRoomId(rid),
+			ReadReceipts.removeByRoomId(rid),
 			Subscriptions.removeByRoomId(rid),
 			LivechatInquiry.removeByRoomId(rid),
 			LivechatRooms.removeById(rid),

@@ -18,6 +18,7 @@ import {
 	LivechatDepartmentAgents,
 	Rooms,
 	Users,
+	ReadReceipts,
 } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -641,13 +642,18 @@ export const Livechat = {
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		const cursor = LivechatRooms.findByVisitorToken(token, extraQuery);
 		for await (const room of cursor) {
-			await FileUpload.removeFilesByRoomId(room._id);
-			await Messages.removeByRoomId(room._id);
+			await Promise.all([
+				FileUpload.removeFilesByRoomId(room._id),
+				Messages.removeByRoomId(room._id),
+				ReadReceipts.removeByRoomId(room._id),
+			]);
 		}
 
-		await Subscriptions.removeByVisitorToken(token);
-		await LivechatRooms.removeByVisitorToken(token);
-		await LivechatInquiry.removeByVisitorToken(token);
+		await Promise.all([
+			Subscriptions.removeByVisitorToken(token),
+			LivechatRooms.removeByVisitorToken(token),
+			LivechatInquiry.removeByVisitorToken(token),
+		]);
 	},
 
 	async saveDepartmentAgents(_id, departmentAgents) {
