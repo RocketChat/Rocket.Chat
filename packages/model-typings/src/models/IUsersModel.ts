@@ -379,4 +379,9 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countRemote(options?: FindOptions<IUser>): Promise<number>;
 	findOneByImportId(importId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	removeAgent(_id: string): Promise<UpdateResult>;
+	findAgentsWithDepartments<T = ILivechatAgent>(
+		role: string,
+		query: Filter<IUser>,
+		options: FindOptions<IUser>,
+	): Promise<{ sortedResults: (T & { departments: string[] })[]; totalCount: { total: number }[] }[]>;
 }

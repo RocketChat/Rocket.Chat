@@ -108,9 +108,16 @@ class AutoTransferChatSchedulerClass {
 
 		this.logger.debug(`Transferring room ${roomId} to agent ${agent.agentId}`);
 
+		const transferredBy = await this.getSchedulerUser();
+
+		if (!transferredBy) {
+			this.logger.error(`Error while transferring room ${room._id}: user not found`);
+			return;
+		}
+
 		await forwardRoomToAgent(room, {
 			userId: agent.agentId,
-			transferredBy: await this.getSchedulerUser(),
+			transferredBy,
 			transferredTo: agent,
 			scope: 'autoTransferUnansweredChatsToAgent',
 			comment: timeoutDuration,
