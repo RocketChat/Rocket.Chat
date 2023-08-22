@@ -13,7 +13,6 @@ export const themeItems = [
 		isEEOnly: true,
 		id: 'high-contrast',
 		title: 'Theme_high_contrast',
-		externalLink: 'https://www.rocket.chat/sales-contact',
 		description: 'Theme_high_contrast_description',
 	},
 	{
