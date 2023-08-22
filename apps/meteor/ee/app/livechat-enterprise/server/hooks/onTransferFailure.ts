@@ -1,6 +1,6 @@
 import { Message } from '@rocket.chat/core-services';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import type { IRoom, ILivechatVisitor, ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { IRoom, ILivechatVisitor, ILivechatDepartment, TransferData } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
 
 import { forwardRoomToDepartment } from '../../../../../app/livechat/server/lib/Helper';
@@ -14,7 +14,7 @@ const onTransferFailure = async (
 		transferData,
 	}: {
 		guest: ILivechatVisitor;
-		transferData: { [k: string]: string | any };
+		transferData: TransferData;
 	},
 ) => {
 	if (!isOmnichannelRoom(room)) {

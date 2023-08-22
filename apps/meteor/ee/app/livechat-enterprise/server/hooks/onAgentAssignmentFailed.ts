@@ -12,7 +12,7 @@ const handleOnAgentAssignmentFailed = async (
 	}: {
 		inquiry: any;
 		options: {
-			forwardingToDepartment?: { oldDepartmentId: string; transferData: any };
+			forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any };
 			clientAction?: boolean;
 		};
 	},

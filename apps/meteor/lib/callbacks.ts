@@ -19,6 +19,7 @@ import type {
 	SelectedAgent,
 	InquiryWithAgentInfo,
 	ILivechatTagRecord,
+	TransferData,
 } from '@rocket.chat/core-typings';
 import type { FilterOperators } from 'mongodb';
 
@@ -128,7 +129,7 @@ type ChainedCallbackSignatures = {
 	'livechat:afterOnHoldChatResumed': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
 	'livechat:onTransferFailure': (
 		room: IRoom,
-		params: { guest: ILivechatVisitor; transferData: { [k: string]: string | any } },
+		params: { guest: ILivechatVisitor; transferData: TransferData },
 	) => IOmnichannelRoom | Promise<boolean>;
 	'livechat.afterForwardChatToAgent': (params: {
 		rid: IRoom['_id'];
@@ -198,7 +199,7 @@ type ChainedCallbackSignatures = {
 				rid: string;
 				status: string;
 			};
-			options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clientAction?: boolean };
+			options: { forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any }; clientAction?: boolean };
 		},
 	) => Promise<(IOmnichannelRoom & { chatQueued: boolean }) | undefined>;
 	'livechat.beforeInquiry': (data: Pick<ILivechatInquiryRecord, 'source'>) => Pick<ILivechatInquiryRecord, 'source'>;
