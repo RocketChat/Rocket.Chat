@@ -41,6 +41,10 @@ const SidebarRegion = () => {
 		width: var(--sidebar-width);
 		min-width: var(--sidebar-width);
 
+		> .rcx-sidebar:not(:last-child) {
+			visibility: hidden;
+		}
+
 		&.opened {
 			box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
 			transform: translate3d(0px, 0px, 0px);

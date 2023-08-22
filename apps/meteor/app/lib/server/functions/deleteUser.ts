@@ -57,7 +57,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 				await Messages.removeByUserId(userId);
 
-				await ModerationReports.hideReportsByUserId(
+				await ModerationReports.hideMessageReportsByUserId(
 					userId,
 					deletedBy || userId,
 					deletedBy === userId ? 'user deleted own account' : 'user account deleted',

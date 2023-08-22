@@ -1,8 +1,8 @@
+import { Logger } from '@rocket.chat/logger';
 import { Settings, ImportData, Imports } from '@rocket.chat/models';
 import AdmZip from 'adm-zip';
 
 import { Selection, SelectionChannel, SelectionUser } from '..';
-import { Logger } from '../../../logger/server';
 import { t } from '../../../utils/lib/i18n';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterProgressStep';

@@ -1,0 +1,27 @@
+.scrollShadow {
+	overflow: hidden;
+
+	&::before,
+	&::after {
+		position: absolute;
+		z-index: 0;
+
+		width: 100%;
+		height: 1px;
+
+		content: "";
+		transition: all 0.3s;
+
+		background-color: rgba(47, 52, 61, 0.9);
+
+		box-shadow: 0 0 12px 1px rgba(47, 52, 61, 0.9);
+	}
+
+	&--atTop::before {
+		box-shadow: none;
+	}
+
+	&--atBottom::after {
+		box-shadow: none;
+	}
+}

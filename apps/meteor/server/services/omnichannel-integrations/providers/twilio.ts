@@ -39,27 +39,14 @@ const isTwilioData = (data: unknown): data is TwilioData => {
 
 const MAX_FILE_SIZE = 5242880;
 
-const notifyAgent = (userId: string, rid: string, msg: string) =>
+const notifyAgent = (userId: string | undefined, rid: string | undefined, msg: string) =>
+	userId &&
+	rid &&
 	void api.broadcast('notify.ephemeralMessage', userId, rid, {
 		msg,
 	});
 
 export class Twilio implements ISMSProvider {
-	accountSid: string;
-
-	authToken: string;
-
-	fileUploadEnabled: string;
-
-	mediaTypeWhiteList: string;
-
-	constructor() {
-		this.accountSid = settings.get('SMS_Twilio_Account_SID');
-		this.authToken = settings.get('SMS_Twilio_authToken');
-		this.fileUploadEnabled = settings.get('SMS_Twilio_FileUpload_Enabled');
-		this.mediaTypeWhiteList = settings.get('SMS_Twilio_FileUpload_MediaTypeWhiteList');
-	}
-
 	parse(data: unknown): ServiceData {
 		let numMedia = 0;
 
@@ -115,6 +102,69 @@ export class Twilio implements ISMSProvider {
 		return returnData;
 	}
 
+	private async getClient(rid?: string, userId?: string) {
+		const sid = settings.get<string>('SMS_Twilio_Account_SID');
+		const token = settings.get<string>('SMS_Twilio_authToken');
+		if (!sid || !token) {
+			await notifyAgent(userId, rid, i18n.t('SMS_Twilio_NotConfigured'));
+			return;
+		}
+
+		try {
+			return twilio(sid, token);
+		} catch (error) {
+			await notifyAgent(userId, rid, i18n.t('SMS_Twilio_InvalidCredentials'));
+			SystemLogger.error(`(Twilio) -> ${error}`);
+		}
+	}
+
+	private async validateFileUpload(
+		extraData: {
+			fileUpload?: { size: number; type: string; publicFilePath: string };
+			location?: { coordinates: [number, number] };
+			rid?: string;
+			userId?: string;
+		},
+		lang: string,
+	): Promise<string> {
+		const { rid, userId, fileUpload: { size, type, publicFilePath } = { size: 0, type: 'invalid' } } = extraData;
+		const user = userId ? await Users.findOne({ _id: userId }, { projection: { language: 1 } }) : null;
+		const lng = user?.language || lang;
+
+		let reason;
+		if (!settings.get('SMS_Twilio_FileUpload_Enabled')) {
+			reason = i18n.t('FileUpload_Disabled', { lng });
+		} else if (size > MAX_FILE_SIZE) {
+			reason = i18n.t('File_exceeds_allowed_size_of_bytes', {
+				size: filesize(MAX_FILE_SIZE),
+				lng,
+			});
+		} else if (!fileUploadIsValidContentType(type, settings.get('SMS_Twilio_FileUpload_MediaTypeWhiteList'))) {
+			reason = i18n.t('File_type_is_not_accepted', { lng });
+		} else if (!publicFilePath) {
+			reason = i18n.t('FileUpload_NotAllowed', { lng });
+		}
+
+		// Check if JWT is set for public file uploads when protect_files is on
+		// If it's not, notify user upload won't go to twilio
+		const protectFileUploads = settings.get('FileUpload_ProtectFiles');
+		const jwtEnabled = settings.get('FileUpload_Enable_json_web_token_for_files');
+		const isJWTKeySet = jwtEnabled && !!settings.get('FileUpload_json_web_token_secret_for_files');
+
+		if (protectFileUploads && (!jwtEnabled || !isJWTKeySet)) {
+			reason = i18n.t('FileUpload_ProtectFilesEnabled_JWTNotSet', { lng });
+		}
+
+		if (reason) {
+			await notifyAgent(userId, rid, reason);
+			SystemLogger.error(`(Twilio) -> ${reason}`);
+			return '';
+		}
+
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		return publicFilePath!;
+	}
+
 	async send(
 		fromNumber: string,
 		toNumber: string,
@@ -126,37 +176,28 @@ export class Twilio implements ISMSProvider {
 			userId?: string;
 		},
 	): Promise<SMSProviderResult> {
-		const client = twilio(this.accountSid, this.authToken);
+		const { rid, userId } = extraData || {};
+
+		const client = await this.getClient(rid, userId);
+		if (!client) {
+			return {
+				isSuccess: false,
+				resultMsg: 'Twilio not configured',
+			};
+		}
+
 		let body = message;
 
 		let mediaUrl;
 		const defaultLanguage = settings.get<string>('Language') || 'en';
 		if (extraData?.fileUpload) {
-			const {
-				rid,
-				userId,
-				fileUpload: { size, type, publicFilePath },
-			} = extraData;
-			const user = userId ? await Users.findOne({ _id: userId }, { projection: { language: 1 } }) : null;
-			const lng = user?.language || defaultLanguage;
-
-			let reason;
-			if (!this.fileUploadEnabled) {
-				reason = i18n.t('FileUpload_Disabled', { lng });
-			} else if (size > MAX_FILE_SIZE) {
-				reason = i18n.t('File_exceeds_allowed_size_of_bytes', {
-					size: filesize(MAX_FILE_SIZE),
-					lng,
-				});
-			} else if (!fileUploadIsValidContentType(type, this.fileUploadMediaTypeWhiteList())) {
-				reason = i18n.t('File_type_is_not_accepted', { lng });
+			const publicFilePath = await this.validateFileUpload(extraData, defaultLanguage);
+			if (!publicFilePath) {
+				return {
+					isSuccess: false,
+					resultMsg: 'File upload not allowed',
+				};
 			}
-
-			if (reason) {
-				rid && userId && (await notifyAgent(userId, rid, reason));
-				SystemLogger.error(`(Twilio) -> ${reason}`);
-			}
-
 			mediaUrl = [publicFilePath];
 		}
 
@@ -167,22 +208,31 @@ export class Twilio implements ISMSProvider {
 			body = i18n.t('Location', { lng: defaultLanguage });
 		}
 
-		const result = await client.messages.create({
-			to: toNumber,
-			from: fromNumber,
-			body,
-			...(mediaUrl && { mediaUrl }),
-			...(persistentAction && { persistentAction }),
-		});
+		try {
+			const result = await client.messages.create({
+				to: toNumber,
+				from: fromNumber,
+				body,
+				...(mediaUrl && { mediaUrl }),
+				...(persistentAction && { persistentAction }),
+			});
 
-		return {
-			isSuccess: result.status !== 'failed',
-			resultMsg: result.status,
-		};
-	}
+			if (result.errorCode) {
+				await notifyAgent(userId, rid, result.errorMessage);
+				SystemLogger.error(`(Twilio) -> ${result.errorCode}`);
+			}
 
-	fileUploadMediaTypeWhiteList(): any {
-		throw new Error('Method not implemented.');
+			return {
+				isSuccess: result.status !== 'failed',
+				resultMsg: result.status,
+			};
+		} catch (e: any) {
+			await notifyAgent(userId, rid, e.message);
+			return {
+				isSuccess: false,
+				resultMsg: e.message,
+			};
+		}
 	}
 
 	response(): SMSProviderResponse {
