@@ -44,7 +44,7 @@ export const useReportUser = (user: Pick<IUser, '_id' | 'username' | 'name'>): U
 		return ownUserId !== uid
 			? {
 					icon: 'warning' as const,
-					content: t('Report_User'),
+					content: t('Report'),
 					onClick: action,
 					type: 'management' as const,
 					variant: 'danger' as const,
