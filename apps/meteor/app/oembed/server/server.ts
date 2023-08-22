@@ -3,6 +3,7 @@ import URL from 'url';
 
 import type { OEmbedUrlContentResult, OEmbedUrlWithMetadata, IMessage, MessageAttachment, OEmbedMeta } from '@rocket.chat/core-typings';
 import { isOEmbedUrlContentResult, isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Messages, OEmbedCache } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { camelCase } from 'change-case';
@@ -14,7 +15,6 @@ import _ from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
 import { isURL } from '../../../lib/utils/isURL';
-import { Logger } from '../../logger/server';
 import { settings } from '../../settings/server';
 import { Info } from '../../utils/rocketchat.info';
 
