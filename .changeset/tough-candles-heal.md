@@ -4,4 +4,4 @@
 "@rocket.chat/model-typings": patch
 ---
 
-fix: use agent's first response time to calculate when visitor's chat would be abandoned due to no reply
+Fixes a problem where the calculated time for considering the visitor abandonment was the first message from the visitor and not the visitor's reply to the agent.
