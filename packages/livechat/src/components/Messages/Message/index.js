@@ -1,4 +1,4 @@
-import { formatDistance } from 'date-fns';
+import { formatDistance } from 'date-fns/formatDistance';
 import format from 'date-fns/format';
 import isToday from 'date-fns/isToday';
 import { memo } from 'preact/compat';
