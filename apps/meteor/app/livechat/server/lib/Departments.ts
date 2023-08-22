@@ -1,5 +1,5 @@
-import { Logger } from '@rocket.chat/logger';
 import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
