@@ -14,6 +14,7 @@ export default {
 	moduleNameMapper: {
 		'\\.css$': 'identity-obj-proxy',
 		'^react($|/.+)': '<rootDir>/node_modules/react$1',
+		'^@tanstack/(.+)': '<rootDir>/node_modules/@tanstack/$1',
 	},
 	collectCoverage: true,
 };

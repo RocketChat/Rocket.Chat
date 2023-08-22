@@ -18,7 +18,7 @@ export interface IModerationInfo {
 export interface IModerationReport extends IRocketChatRecord {
 	message?: IMessage;
 	room?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'federated' | 'prid'>;
-	reportedUser?: Pick<IUser, '_id' | 'username' | 'name'>;
+	reportedUser?: Pick<IUser, '_id' | 'username' | 'name' | 'emails' | 'createdAt'>;
 	description: string;
 	ts: Date | string;
 	reportedBy: Pick<IUser, '_id' | 'username' | 'name' | 'createdAt'>;
