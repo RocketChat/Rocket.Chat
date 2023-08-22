@@ -35,7 +35,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 
 export const enabledDefaultFeatures = defaultFeaturesPreview.filter((feature) => feature.enabled);
 
-export const useFeaturePreviewList = (defaultFeatures = enabledDefaultFeatures) => {
+export const useFeaturePreviewList = () => {
 	const featurePreviewEnabled = useSetting<boolean>('Accounts_AllowFeaturePreview');
 	const userFeaturesPreview = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
 
@@ -43,11 +43,11 @@ export const useFeaturePreviewList = (defaultFeatures = enabledDefaultFeatures) 
 		return { unseenFeatures: 0, features: [] as FeaturePreviewProps[], featurePreviewEnabled };
 	}
 
-	const unseenFeatures = defaultFeatures.filter(
+	const unseenFeatures = defaultFeaturesPreview.filter(
 		(feature) => !userFeaturesPreview?.find((userFeature) => userFeature.name === feature.name),
 	).length;
 
-	const mergedFeatures = defaultFeatures.map((feature) => {
+	const mergedFeatures = defaultFeaturesPreview.map((feature) => {
 		const userFeature = userFeaturesPreview?.find((userFeature) => userFeature.name === feature.name);
 		return { ...feature, ...userFeature };
 	});
