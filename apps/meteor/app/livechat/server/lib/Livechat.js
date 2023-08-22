@@ -564,18 +564,14 @@ export const Livechat = {
 	},
 
 	async afterRemoveAgent(user) {
-		await Promise.all([
-			Users.removeAgent(user._id),
-			LivechatDepartmentAgents.removeByAgentId(user._id),
-			LivechatVisitors.removeContactManagerByUsername(user.username),
-		]);
+		await callbacks.run('livechat.afterAgentRemoved', { agent: user });
 		return true;
 	},
 
 	async removeAgent(username) {
 		check(username, String);
 
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -872,6 +868,10 @@ export const Livechat = {
 			}
 		}
 
+		// TODO Block offline form if Livechat_offline_email is undefined
+		// (it does not make sense to have an offline form that does nothing)
+		// `this.sendEmail` will throw an error if the email is invalid
+		// thus this breaks livechat, since the "to" email is invalid, and that returns an [invalid email] error to the livechat client
 		let emailTo = settings.get('Livechat_offline_email');
 		if (department && department !== '') {
 			const dep = await LivechatDepartmentRaw.findOneByIdOrName(department);
