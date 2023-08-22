@@ -67,7 +67,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 						</Box>
 					</ContextualbarContent>
 					<ContextualbarFooter>
-						<ButtonGroup mbs='x8' stretch>
+						<ButtonGroup mbs={8} stretch>
 							<Button primary disabled={syncOutlookCalendar.isLoading} onClick={() => syncOutlookCalendar.mutate()}>
 								{syncOutlookCalendar.isLoading ? t('Please_wait') : t('Login')}
 							</Button>
@@ -122,7 +122,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 							)}
 						</ButtonGroup>
 						{hasOutlookMethods && (
-							<ButtonGroup mbs='x8' stretch>
+							<ButtonGroup mbs={8} stretch>
 								<Button primary disabled={syncOutlookCalendar.isLoading} onClick={() => syncOutlookCalendar.mutate()}>
 									{syncOutlookCalendar.isLoading ? t('Sync_in_progress') : t('Sync')}
 								</Button>

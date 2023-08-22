@@ -1,5 +1,5 @@
-import type { IVisitor } from './IInquiry';
 import type { ILivechatPriority } from './ILivechatPriority';
+import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
@@ -151,7 +151,7 @@ export enum OmnichannelSourceType {
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
 	t: 'l' | 'v';
-	v: IVisitor;
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token'> & { lastMessageTs?: Date; phone?: string };
 	email?: {
 		// Data used when the room is created from an email, via email Integration.
 		inbox: string;
@@ -277,7 +277,7 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 	queue: string;
 	// The ID assigned to the call (opaque ID)
 	callUniqueId?: string;
-	v: IVisitor;
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token'> & { lastMessageTs?: Date; phone?: string };
 	// Outbound means the call was initiated from Rocket.Chat and vise versa
 	direction: 'inbound' | 'outbound';
 }

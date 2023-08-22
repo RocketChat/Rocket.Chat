@@ -12,7 +12,6 @@ export const useAppUiKitInteraction = (
 	) => void,
 ) => {
 	const notifyUser = useStream('notify-user');
-
 	const uid = useUserId();
 
 	useEffect(() => {

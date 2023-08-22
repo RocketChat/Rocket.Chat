@@ -40,11 +40,12 @@ callbacks.add(
 			return message;
 		}
 
-		let extraData = {};
+		const { rid, u: { _id: userId } = {} } = message;
+		let extraData = { rid, userId };
 		if (message.file) {
 			message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
-			const { fileUpload, rid, u: { _id: userId } = {} } = message;
-			extraData = Object.assign({}, { rid, userId, fileUpload });
+			const { fileUpload } = message;
+			extraData = Object.assign({}, extraData, { fileUpload });
 		}
 
 		if (message.location) {

@@ -75,7 +75,7 @@ export interface IUserServices {
 		enabled: boolean;
 		changedAt: Date;
 	};
-	emailCode: IUserEmailCode[];
+	emailCode?: IUserEmailCode[];
 	saml?: {
 		inResponseTo?: string;
 		provider?: string;
@@ -180,6 +180,7 @@ export interface IUser extends IRocketChatRecord {
 		};
 	};
 	importIds?: string[];
+	_pendingAvatarUrl?: string;
 }
 
 export interface IRegisterUser extends IUser {
@@ -222,6 +223,7 @@ export type AvatarServiceObject = {
 	blob: Blob;
 	contentType: string;
 	service: string;
+	url: string;
 };
 
 export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;

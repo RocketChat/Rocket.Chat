@@ -6,10 +6,10 @@ import { useMemo } from 'react';
 import { closeUserCard } from '../../../../../../app/ui/client/lib/userCard';
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../../../contexts/VideoConfContext';
 import { VideoConfManager } from '../../../../../lib/VideoConfManager';
-import type { Action } from '../../../../hooks/useActionSpread';
 import { useVideoConfWarning } from '../../../contextualBar/VideoConference/hooks/useVideoConfWarning';
+import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
-export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): Action | undefined => {
+export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const usernameSubscription = useUserSubscriptionByName(user.username ?? '');
 	const room = useUserRoom(usernameSubscription?.rid || '');
@@ -37,9 +37,10 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): Action | u
 
 		return room && !isRoomFederated(room) && user._id !== ownUserId
 			? {
-					label: t('Start_call'),
+					content: t('Start_call'),
 					icon: 'phone' as const,
-					action,
+					onClick: action,
+					type: 'communication' as UserInfoActionType,
 			  }
 			: undefined;
 	}, [t, room, dispatchPopup, dispatchWarning, isCalling, isRinging, ownUserId, user._id]);

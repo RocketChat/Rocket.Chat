@@ -10,7 +10,7 @@ type AgentInfoActionProps = {
 } & Omit<HtmlHTMLAttributes<HTMLElement>, 'is'>;
 
 const AgentInfoAction: FC<AgentInfoActionProps> = ({ icon, label, ...props }) => (
-	<Button icon={icon} data-qa={`AgentInfoAction-${label}`} title={label} {...props} mi='x4'>
+	<Button icon={icon} data-qa={`AgentInfoAction-${label}`} title={label} {...props} mi={4}>
 		{label}
 	</Button>
 );
