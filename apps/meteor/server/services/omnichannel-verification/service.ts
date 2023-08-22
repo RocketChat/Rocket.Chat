@@ -77,7 +77,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 				LivechatRooms.updateWrongMessageCount(room._id, 0),
 				LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.verifiedFalse),
 				emailCode && _isWrongOTP
-					? Promise.all(emailCode.map(({ code }) => LivechatRooms.removeEmailCodeByRoomIdAndCode(room._id, code)))
+					? emailCode.map(({ code }) => LivechatRooms.removeEmailCodeByRoomIdAndCode(room._id, code))
 					: Promise.resolve(),
 				// eslint-disable-next-line no-constant-condition
 				room?.servedBy?._id || 'rocket.cat'
@@ -89,7 +89,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 					: Promise.resolve(),
 			]);
 
-			const comment = 'Chat closed due to multiple invalid input';
+			const comment = i18n.t('Chat_closed_due_to_multiple_invalid_input');
 			const userId = room?.servedBy?._id || 'rocket.cat';
 			const user = await Users.findOneById(userId);
 			await LivechatTyped.closeRoom({ user, room, comment });
@@ -165,7 +165,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 					groupable: false,
 				};
 				await sendMessage(bot, wrongOtpInstructionsMessage, room);
-			} else if (room.source.type === 'app') {
+			} else {
 				const wrongOTPText = i18n.t('Wrong_OTP_App_Input_Message');
 				await this.createLivechatMessage(room, wrongOTPText);
 			}
@@ -240,7 +240,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 						groupable: false,
 					};
 					await sendMessage(user, otpInstructionsMessage, room);
-				} else if (room.source.type === 'app') {
+				} else {
 					const otpInstructionsText = i18n.t('OTP_Entry_Instructions_for_Visitor_App_Verification_Process');
 					await this.createLivechatMessage(room, otpInstructionsText);
 				}

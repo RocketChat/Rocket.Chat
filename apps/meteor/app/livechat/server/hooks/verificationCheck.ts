@@ -33,7 +33,7 @@ callbacks.add(
 							groupable: false,
 						};
 						await sendMessage(bot, wrongOtpInstructionsMessage, room);
-					} else if (room.source.type === 'app') {
+					} else {
 						const resendOTPText = i18n.t('Visitor_App_Verification_Process_Resend_OTP');
 						await OmnichannelVerification.createLivechatMessage(room, resendOTPText);
 					}

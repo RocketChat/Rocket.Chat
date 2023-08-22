@@ -934,6 +934,7 @@
   "Chat_closed": "Chat closed",
   "Chat_closed_by_agent": "Chat closed by agent",
   "Chat_closed_successfully": "Chat closed successfully",
+  "Chat_closed_due_to_multiple_invalid_input":"Chat closed due to multiple invalid input",
   "Chat_History": "Chat History",
   "Chat_Now": "Chat Now",
   "chat_on_hold_due_to_inactivity": "This chat is on-hold due to inactivity",
