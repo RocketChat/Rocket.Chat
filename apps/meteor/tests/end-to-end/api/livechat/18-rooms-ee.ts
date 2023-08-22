@@ -280,13 +280,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(lastMessageTs).to.not.be.undefined;
 			expect(firstResponseTs).to.not.be.undefined;
 
-			if (!lastMessageTs || !predictedVisitorAbandonmentAt || !firstResponseTs) {
-				throw new Error('lastMessageTs, predictedVisitorAbandonmentAt and firstResponseTs should not be undefined');
-			}
-
 			// expect predictedVisitorAbandonmentAt to be 60 seconds after lastMessageTs
 			const lastMessageTsDate = new Date(lastMessageTs);
-			const predictedVisitorAbandonmentAtDate = new Date(predictedVisitorAbandonmentAt);
+			const predictedVisitorAbandonmentAtDate = new Date(predictedVisitorAbandonmentAt as Date);
 			const firstResponseTsDate = new Date(firstResponseTs);
 
 			expect(predictedVisitorAbandonmentAtDate.getTime()).to.be.equal(lastMessageTsDate.getTime() + 60000);
@@ -305,13 +301,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(predictedVisitorAbandonmentAt).to.not.be.undefined;
 			expect(lastMessageTs).to.not.be.undefined;
 
-			if (!lastMessageTs || !predictedVisitorAbandonmentAt || !firstResponseTs) {
-				throw new Error('lastMessageTs, predictedVisitorAbandonmentAt and firstResponseTs should not be undefined');
-			}
-
 			// expect predictedVisitorAbandonmentAt to be 60 seconds after first message
 			const lastMessageTsDate = new Date(lastMessageTs);
-			const predictedVisitorAbandonmentAtDate = new Date(predictedVisitorAbandonmentAt);
+			const predictedVisitorAbandonmentAtDate = new Date(predictedVisitorAbandonmentAt as Date);
 			const firstResponseTsDate = new Date(firstResponseTs);
 
 			expect(predictedVisitorAbandonmentAtDate.getTime()).to.be.equal(firstResponseTsDate.getTime() + 60000);
