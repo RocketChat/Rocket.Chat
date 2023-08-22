@@ -15,10 +15,10 @@ import { useDefaultDownload } from './useDefaultDownload';
 type DataItem = { label: string; value: number; id: string; rawLabel: string };
 
 const TYPE_LABEL: Record<string, TranslationKey> = {
-	widget: 'Livechat',
-	email: 'Email',
-	sms: 'SMS',
-	api: 'Custom_Integration',
+	'widget': 'Livechat',
+	'email-inbox': 'Email',
+	'twilio': 'SMS',
+	'api': 'Custom_Integration',
 };
 
 const formatItem = (item: { label: string; value: number }, total: number, t: TranslationContextValue['translate']): DataItem => {
