@@ -1,9 +1,21 @@
+import type { ComponentChildren } from 'preact';
 import { cloneElement } from 'preact';
+import type { JSXInternal } from 'preact/src/jsx';
 
 import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
 
-export const FormField = ({ required = false, label = '', description = '', error = '', className = undefined, style = {}, children }) => (
+type FormFieldProps = {
+	required?: boolean;
+	label?: string;
+	description?: string;
+	error?: string;
+	className?: string;
+	style?: JSXInternal.CSSProperties;
+	children: ComponentChildren;
+};
+
+export const FormField = ({ required, label, description, error, className, style = {}, children }: FormFieldProps) => (
 	<div className={createClassName(styles, 'form-field', { required, error: !!error }, [className])} style={style}>
 		<label className={createClassName(styles, 'form-field__label-wrapper')}>
 			{label ? <span className={createClassName(styles, 'form-field__label')}>{label}</span> : null}
