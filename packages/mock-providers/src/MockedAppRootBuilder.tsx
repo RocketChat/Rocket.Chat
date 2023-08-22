@@ -365,12 +365,14 @@ export class MockedAppRootBuilder {
 					{
 						en: 'Default',
 						name: i18n.isInitialized ? i18n.t('Default') : 'Default',
+						ogName: i18n.isInitialized ? i18n.t('Default') : 'Default',
 						key: '',
 					},
 					...(i18n.isInitialized
 						? [...new Set([...i18n.languages, ...languages])].map((key) => ({
 								en: key,
 								name: new Intl.DisplayNames([key], { type: 'language' }).of(key) ?? key,
+								ogName: new Intl.DisplayNames([key], { type: 'language' }).of(key) ?? key,
 								key,
 						  }))
 						: []),
