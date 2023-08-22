@@ -203,6 +203,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await this.runVideoConferenceChangedEvent(callId);
 		this.notifyVideoConfUpdate(call.rid, call._id);
+
+		await this.sendAllPushNotifications(call._id);
 	}
 
 	public async get(callId: VideoConference['_id']): Promise<Omit<VideoConference, 'providerData'> | null> {
@@ -587,8 +589,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
-	private async sendPushNotification(call: IDirectVideoConference, calleeId: IUser['_id']): Promise<void> {
-		if (settings.get('Push_enable') !== true) {
+	private async sendPushNotification(
+		call: AtLeast<IDirectVideoConference, 'createdBy' | 'rid' | '_id' | 'status'>,
+		calleeId: IUser['_id'],
+	): Promise<void> {
+		if (settings.get('Push_enable') !== true || settings.get('VideoConf_Mobile_Ringing') !== true) {
 			return;
 		}
 
@@ -604,7 +609,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				rid: call.rid,
 				notificationType: 'videoconf',
 				caller: call.createdBy,
-				avatar: getUserAvatarURL(call.createdBy.username || ''),
+				avatar: getUserAvatarURL(call.createdBy.username),
 				status: call.status,
 			},
 			userId: calleeId,
@@ -618,6 +623,24 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				topicSuffix: '.voip',
 			},
 		});
+	}
+
+	private async sendAllPushNotifications(callId: VideoConference['_id']): Promise<void> {
+		const call = await VideoConferenceModel.findOneById<Pick<VideoConference, 'createdBy' | 'rid' | '_id' | 'users' | 'status'>>(callId, {
+			projection: { createdBy: 1, rid: 1, users: 1, status: 1 },
+		});
+
+		if (!call) {
+			return;
+		}
+
+		const subscriptions = Subscriptions.findByRoomIdAndNotUserId(call.rid, call.createdBy._id, {
+			projection: { 'u._id': 1, '_id': 0 },
+		});
+
+		for await (const subscription of subscriptions) {
+			await this.sendPushNotification(call, subscription.u._id);
+		}
 	}
 
 	private async startDirect(
@@ -988,5 +1011,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
 		await this.runVideoConferenceChangedEvent(call._id);
+		await this.sendAllPushNotifications(call._id);
 	}
 }
