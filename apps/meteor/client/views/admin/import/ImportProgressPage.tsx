@@ -1,4 +1,4 @@
-import type { IImportProgress, ProgressStep } from '@rocket.chat/core-typings';
+import type { ProgressStep } from '@rocket.chat/core-typings';
 import { Box, Margins, Throbber, ProgressBar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
@@ -99,13 +99,7 @@ const ImportProgressPage = function ImportProgressPage() {
 	);
 
 	// eslint-disable-next-line new-cap
-	const { progressRate, messageCount, usersCount, channelsCount } = ImportsCount();
-
-	const isImportProgress = (_element: any): _element is IImportProgress => true;
-
-	const completedPercentage = isImportProgress(progressRate)
-		? (progressRate.count.completed * 100) / progressRate.count.total
-		: progressRate.rate * 10;
+	const { messageCount, usersCount, channelsCount } = ImportsCount();
 
 	const totalData = messageCount + usersCount + channelsCount;
 
@@ -179,7 +173,7 @@ const ImportProgressPage = function ImportProgressPage() {
 									{t((progress.data.step[0].toUpperCase() + progress.data.step.slice(1)) as any)}
 								</Box>
 								<Box display='flex' justifyContent='center'>
-									<Box is={ProgressBar} animated percentage={completedPercentage.toFixed(0)} mie='x24' />
+									<Box is={ProgressBar} animated percentage={((progress.data.completed * 100) / totalData).toFixed(0)} mie='x24' />
 									<Box is='span' fontScale='p2'>
 										{progress.data.completed}/{totalData} ({numberFormat((progress.data.completed / totalData) * 100, 0)}
 										%)

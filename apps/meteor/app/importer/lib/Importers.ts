@@ -16,7 +16,7 @@ class ImportersContainer {
 	 * @param {ImporterInfo} info The information related to the importer.
 	 * @param {*} [importer] The class for the importer, will be undefined on the client.
 	 */
-	add(info: ImporterInfo, importer: Base | undefined) {
+	add(info: ImporterInfo, importer: typeof Base) {
 		if (!(info instanceof ImporterInfo)) {
 			throw new Error('The importer must be a valid ImporterInfo instance.');
 		}
