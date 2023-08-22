@@ -483,7 +483,7 @@ export class LDAPManager {
 		return this.slugify(requestUsername);
 	}
 
-	private static getLdapUsername(ldapUser: ILDAPEntry): string | undefined {
+	protected static getLdapUsername(ldapUser: ILDAPEntry): string | undefined {
 		const usernameField = getLDAPConditionalSetting('LDAP_Username_Field') as string;
 		return this.getLdapDynamicValue(ldapUser, usernameField);
 	}

@@ -1,9 +1,9 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
-import { Option, Menu } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useActionSpread } from '../../../hooks/useActionSpread';
+import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 type RoomMembersActionsProps = {
@@ -14,21 +14,12 @@ type RoomMembersActionsProps = {
 };
 
 const RoomMembersActions = ({ username, _id, rid, reload }: RoomMembersActionsProps): ReactElement | null => {
-	const { menu: menuOptions } = useActionSpread(useUserInfoActions({ _id, username }, rid, reload), 0);
+	const t = useTranslation();
+	const { menuActions: menuOptions } = useUserInfoActions({ _id, username }, rid, reload, 0);
 	if (!menuOptions) {
 		return null;
 	}
-
-	return (
-		<Menu
-			flexShrink={0}
-			maxHeight='initial'
-			key='menu'
-			tiny
-			renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option {...props} label={label} icon={icon} />}
-			options={menuOptions}
-		/>
-	);
+	return <GenericMenu title={t('More')} key='menu' data-qa-id='UserUserInfo-menu' sections={menuOptions} placement='bottom-end' />;
 };
 
 export default RoomMembersActions;

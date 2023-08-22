@@ -10,7 +10,7 @@ import type {
 	ILivechatAgent,
 	IMessage,
 } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
 	LivechatDepartment,
 	LivechatInquiry,
@@ -125,7 +125,7 @@ class LivechatClass {
 		return RoutingManager.getNextAgent(department);
 	}
 
-	async getOnlineAgents(department?: string, agent?: SelectedAgent): Promise<FindCursor<ILivechatAgent> | undefined> {
+	async getOnlineAgents(department?: string, agent?: SelectedAgent | null): Promise<FindCursor<ILivechatAgent> | undefined> {
 		if (agent?.agentId) {
 			return Users.findOnlineAgents(agent.agentId);
 		}
@@ -154,6 +154,11 @@ class LivechatClass {
 		if (!room || !isOmnichannelRoom(room) || !room.open) {
 			this.logger.debug(`Room ${room._id} is not open`);
 			return;
+		}
+
+		const commentRequired = settings.get('Livechat_request_comment_when_closing_conversation');
+		if (commentRequired && !comment?.trim()) {
+			throw new Error('error-comment-is-required');
 		}
 
 		const { updatedOptions: options } = await this.resolveChatTags(room, params.options);
@@ -540,7 +545,7 @@ class LivechatClass {
 		phone,
 		username,
 		connectionData,
-		status = 'online',
+		status = UserStatus.ONLINE,
 	}: {
 		id?: string;
 		token: string;
@@ -781,7 +786,7 @@ class LivechatClass {
 					return updateDepartmentAgents(
 						dep._id,
 						{
-							...(toRemoveIds.includes(dep._id) ? { remove: [{ agentId: _id }] } : { upsert: [{ agentId: _id }] }),
+							...(toRemoveIds.includes(dep._id) ? { remove: [{ agentId: _id }] } : { upsert: [{ agentId: _id, count: 0, order: 0 }] }),
 						},
 						dep.enabled,
 					);
