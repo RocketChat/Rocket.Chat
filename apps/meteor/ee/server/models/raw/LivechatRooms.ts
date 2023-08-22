@@ -37,12 +37,32 @@ declare module '@rocket.chat/model-typings' {
 		): FindCursor<IOmnichannelRoom>;
 		setPriorityByRoomId(roomId: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<UpdateResult>;
 		unsetPriorityByRoomId(roomId: string): Promise<UpdateResult>;
+		countPrioritizedRooms(): Promise<number>;
+		countRoomsWithSla(): Promise<number>;
+		countRoomsWithPdfTranscriptRequested(): Promise<number>;
+		countRoomsWithTranscriptSent(): Promise<number>;
 	}
 }
 
 export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoomsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOmnichannelRoom>>) {
 		super(db, trash);
+	}
+
+	countPrioritizedRooms(): Promise<number> {
+		return this.col.countDocuments({ priorityId: { $exists: true } });
+	}
+
+	countRoomsWithSla(): Promise<number> {
+		return this.col.countDocuments({ slaId: { $exists: true } });
+	}
+
+	countRoomsWithPdfTranscriptRequested(): Promise<number> {
+		return this.col.countDocuments({ pdfTranscriptRequested: true });
+	}
+
+	countRoomsWithTranscriptSent(): Promise<number> {
+		return this.col.countDocuments({ pdfTranscriptFileId: { $exists: true } });
 	}
 
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {

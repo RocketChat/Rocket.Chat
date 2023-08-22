@@ -9,6 +9,7 @@ import type {
 	SelectedAgent,
 	ILivechatAgent,
 	IMessage,
+	ILivechatDepartment,
 } from '@rocket.chat/core-typings';
 import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -298,7 +299,10 @@ class LivechatClass {
 			room = null;
 		}
 
-		if (guest.department && !(await LivechatDepartment.findOneById(guest.department))) {
+		if (
+			guest.department &&
+			!(await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id'>>(guest.department, { projection: { _id: 1 } }))
+		) {
 			await LivechatVisitors.removeDepartmentById(guest._id);
 			const tmpGuest = await LivechatVisitors.findOneById(guest._id);
 			if (tmpGuest) {
@@ -356,7 +360,9 @@ class LivechatClass {
 				return onlineForDep;
 			}
 
-			const dep = await LivechatDepartment.findOneById(department);
+			const dep = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(department, {
+				projection: { fallbackForwardDepartment: 1 },
+			});
 			if (!dep?.fallbackForwardDepartment) {
 				return onlineForDep;
 			}
@@ -584,7 +590,7 @@ class LivechatClass {
 
 		if (department) {
 			Livechat.logger.debug(`Attempt to find a department with id/name ${department}`);
-			const dep = await LivechatDepartment.findOneByIdOrName(department);
+			const dep = await LivechatDepartment.findOneByIdOrName(department, { projection: { _id: 1 } });
 			if (!dep) {
 				Livechat.logger.debug('Invalid department provided');
 				throw new Meteor.Error('error-invalid-department', 'The provided department is invalid');
@@ -671,7 +677,12 @@ class LivechatClass {
 			};
 		}
 
-		const department = await LivechatDepartment.findOneById(departmentId);
+		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'requestTagBeforeClosingChat' | 'chatClosingTags'>>(
+			departmentId,
+			{
+				projection: { requestTagBeforeClosingChat: 1, chatClosingTags: 1 },
+			},
+		);
 		if (!department) {
 			return {
 				updatedOptions: {
