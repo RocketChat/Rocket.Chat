@@ -16,8 +16,7 @@
 		"build": "node ./src/index.mjs",
 		"lint": "eslint --ext .mjs,.js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .mjs,.js,.jsx,.ts,.tsx . --fix",
-		"test": "NODE_OPTIONS=--experimental-vm-modules jest",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
+		"test": "NODE_OPTIONS=--experimental-vm-modules jest"
 	},
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
