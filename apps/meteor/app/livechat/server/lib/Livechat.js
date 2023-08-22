@@ -5,6 +5,7 @@ import dns from 'dns';
 import util from 'util';
 
 import { Message, VideoConf, api } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatVisitors,
 	LivechatCustomField,
@@ -34,7 +35,6 @@ import { FileUpload } from '../../../file-upload/server';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
-import { Logger } from '../../../logger/server';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
