@@ -1,6 +1,4 @@
-import { Markup } from '@rocket.chat/gazzodown';
-import { parse } from '@rocket.chat/message-parser';
-import { memo } from 'preact/compat';
+import { Suspense, lazy, memo } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
 
 import { createClassName } from '../../../helpers/createClassName';
@@ -16,10 +14,14 @@ type MessageTextProps = {
 };
 export const MessageText = memo(({ text, system, className, style = {} }: MessageTextProps) => {
 	const bigEmoji = isBigEmoji(text);
+	const { Markup } = lazy(() => import('@rocket.chat/gazzodown'));
+	const { parse } = lazy(() => import('@rocket.chat/message-parser'));
 
 	return (
 		<div className={createClassName(styles, 'message-text', { system, bigEmoji }, [className])} style={style}>
-			<Markup tokens={parse(shortnameToUnicode(text), { emoticons: true })} />
+			<Suspense fallback={null}>
+				<Markup tokens={parse(shortnameToUnicode(text), { emoticons: true })} />
+			</Suspense>
 		</div>
 	);
 });
