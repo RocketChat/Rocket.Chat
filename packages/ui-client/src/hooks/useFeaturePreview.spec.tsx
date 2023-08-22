@@ -34,7 +34,7 @@ it('should return true if featurePreviewEnabled is true and feature is in userPr
 	expect(result.all[0]).toBe(true);
 });
 
-it.only('should return false for disabled features', () => {
+it('should return false for disabled features', () => {
 	const { result } = renderHook(() => useFeaturePreview('navigationBar'), {
 		wrapper: mockAppRoot()
 			.withSetting('Accounts_AllowFeaturePreview', true)
