@@ -51,7 +51,6 @@ export const ReportCard = ({
 			height='initial'
 			flexGrow={1}
 			flexShrink={0}
-			overflow='hidden'
 			margin={8}
 		>
 			<Card.Title>
@@ -66,7 +65,7 @@ export const ReportCard = ({
 					</Box>
 					<Box flexGrow={0} flexShrink={0} display='flex' alignItems='center'>
 						<PeriodSelector {...periodSelectorProps} />
-						<DownloadDataButton data-tooltip='Download CSV' {...downloadProps} size={32} />
+						<DownloadDataButton {...downloadProps} title='Download CSV' size={32} />
 					</Box>
 				</Box>
 			</Card.Title>
