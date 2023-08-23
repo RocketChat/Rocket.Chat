@@ -15,7 +15,7 @@ const ReportsPage = () => {
 				{t('Omnichannel_Reports_Summary')}
 			</Box>
 			<Page.ScrollableContentWithShadow alignItems='center'>
-				<Box display='flex' flexWrap='wrap' maxWidth='1600px' m={-8}>
+				<Box display='flex' flexWrap='wrap' maxWidth='100rem' m={-8}>
 					<StatusSection />
 
 					<ChannelsSection />
