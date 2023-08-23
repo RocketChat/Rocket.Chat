@@ -3,7 +3,7 @@ import https from 'https';
 import url from 'url';
 
 import { Message } from '@rocket.chat/core-services';
-import { Messages, Rooms, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Users, ReadReceipts } from '@rocket.chat/models';
 import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
 
@@ -670,6 +670,10 @@ export default class SlackAdapter {
 		});
 	}
 
+	createSlackMessageId(ts, channelId) {
+		return `slack${channelId ? `-${channelId}` : ''}-${ts.replace(/\./g, '-')}`;
+	}
+
 	async postMessage(slackChannel, rocketMessage) {
 		if (slackChannel && slackChannel.id) {
 			let iconUrl = getUserAvatarURL(rocketMessage.u && rocketMessage.u.username);
@@ -975,7 +979,7 @@ export default class SlackAdapter {
 	async processShareMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (slackMessage.file && slackMessage.file.url_private_download !== undefined) {
 			const details = {
-				message_id: `slack-${slackMessage.ts.replace(/\./g, '-')}`,
+				message_id: this.createSlackMessageId(slackMessage.ts),
 				name: slackMessage.file.name,
 				size: slackMessage.file.size,
 				type: slackMessage.file.mimetype,
@@ -1012,13 +1016,12 @@ export default class SlackAdapter {
 				],
 			};
 
-			if (!isImporting) {
-				await Messages.setPinnedByIdAndUserId(
-					`slack-${slackMessage.attachments[0].channel_id}-${slackMessage.attachments[0].ts.replace(/\./g, '-')}`,
-					rocketMsgObj.u,
-					true,
-					new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
-				);
+			if (!isImporting && slackMessage.attachments[0].channel_id && slackMessage.attachments[0].ts) {
+				const messageId = this.createSlackMessageId(slackMessage.attachments[0].ts, slackMessage.attachments[0].channel_id);
+				await Messages.setPinnedByIdAndUserId(messageId, rocketMsgObj.u, true, new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000));
+				if (settings.get('Message_Read_Receipt_Store_Users')) {
+					await ReadReceipts.setPinnedByMessageId(messageId, true);
+				}
 			}
 
 			return rocketMsgObj;
@@ -1224,12 +1227,11 @@ export default class SlackAdapter {
 						],
 					};
 
-					await Messages.setPinnedByIdAndUserId(
-						`slack-${pin.channel}-${pin.message.ts.replace(/\./g, '-')}`,
-						msgObj.u,
-						true,
-						new Date(parseInt(pin.message.ts.split('.')[0]) * 1000),
-					);
+					const messageId = this.createSlackMessageId(pin.message.ts, pin.channel);
+					await Messages.setPinnedByIdAndUserId(messageId, msgObj.u, true, new Date(parseInt(pin.message.ts.split('.')[0]) * 1000));
+					if (settings.get('Message_Read_Receipt_Store_Users')) {
+						await ReadReceipts.setPinnedByMessageId(messageId, true);
+					}
 				}
 			}
 		}

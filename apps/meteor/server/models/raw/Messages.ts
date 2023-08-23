@@ -1348,14 +1348,53 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	async removeByIdPinnedTimestampLimitAndUsers(
+	async findByIdPinnedTimestampLimitAndUsers(
 		rid: string,
-		pinned: boolean,
+		ignorePinned: boolean,
 		ignoreDiscussion = true,
 		ts: Filter<IMessage>['ts'],
 		limit: number,
 		users: string[] = [],
 		ignoreThreads = true,
+	): Promise<string[]> {
+		const query: Filter<IMessage> = {
+			rid,
+			ts,
+			...(users.length > 0 && { 'u.username': { $in: users } }),
+		};
+
+		if (ignorePinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (ignoreDiscussion) {
+			query.drid = { $exists: false };
+		}
+
+		if (ignoreThreads) {
+			query.tmid = { $exists: false };
+			query.tcount = { $exists: false };
+		}
+
+		return (
+			await this.find(query, {
+				projection: {
+					_id: 1,
+				},
+				limit,
+			}).toArray()
+		).map(({ _id }) => _id);
+	}
+
+	async removeByIdPinnedTimestampLimitAndUsers(
+		rid: string,
+		ignorePinned: boolean,
+		ignoreDiscussion = true,
+		ts: Filter<IMessage>['ts'],
+		limit: number,
+		users: string[] = [],
+		ignoreThreads = true,
+		selectedMessageIds: string[] = [],
 	): Promise<number> {
 		const query: Filter<IMessage> = {
 			rid,
@@ -1363,7 +1402,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			...(users.length > 0 && { 'u.username': { $in: users } }),
 		};
 
-		if (pinned) {
+		if (ignorePinned) {
 			query.pinned = { $ne: true };
 		}
 
@@ -1393,7 +1432,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		if (!limit) {
 			const count = (await this.deleteMany(query)).deletedCount - notCountedMessages;
-
 			if (count) {
 				// decrease message count
 				await Rooms.decreaseMessageCountById(rid, count);
@@ -1402,24 +1440,11 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			return count;
 		}
 
-		const messagesToDelete = await this.find(query, {
-			projection: {
-				_id: 1,
-				_hidden: 1,
-				t: 1,
-				editedAt: 1,
-				editedBy: 1,
-			},
-			limit,
-		}).toArray();
-
-		const messagesIdsToDelete = messagesToDelete.map(({ _id }) => _id);
-
 		const count =
 			(
 				await this.deleteMany({
 					_id: {
-						$in: messagesIdsToDelete,
+						$in: selectedMessageIds,
 					},
 				})
 			).deletedCount - notCountedMessages;
@@ -1511,7 +1536,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
+	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>> {
 		const query = {
 			unread: true,
 			rid,
@@ -1529,11 +1554,19 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, {
 			projection: {
 				_id: 1,
+				t: 1,
+				pinned: 1,
+				drid: 1,
+				tmid: 1,
 			},
 		});
 	}
 
-	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
+	findUnreadThreadMessagesByDate(
+		tmid: string,
+		userId: string,
+		after: Date,
+	): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>> {
 		const query = {
 			'u._id': { $ne: userId },
 			'unread': true,
@@ -1545,6 +1578,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, {
 			projection: {
 				_id: 1,
+				t: 1,
+				pinned: 1,
+				drid: 1,
+				tmid: 1,
 			},
 		});
 	}

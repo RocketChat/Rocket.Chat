@@ -66,3 +66,19 @@ it('should ignore removed feature previews', () => {
 		}),
 	);
 });
+
+it('should turn off ignored feature previews', async () => {
+	const { result } = renderHook(() => useFeaturePreviewList(), {
+		wrapper: mockAppRoot()
+			.withSetting('Accounts_AllowFeaturePreview', true)
+			.withUserPreference('featuresPreview', [
+				{
+					name: 'oldFeature',
+					value: true,
+				},
+			])
+			.build(),
+	});
+
+	expect(result.current.features).toEqual(expect.arrayContaining(enabledDefaultFeatures));
+});

@@ -1,7 +1,7 @@
 import { Message } from '@rocket.chat/core-services';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import type { IMessage, IUser, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -113,6 +113,9 @@ Meteor.methods<ServerMethods>({
 		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
 		await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+		if (settings.get('Message_Read_Receipt_Store_Users')) {
+			await ReadReceipts.setPinnedByMessageId(message._id, originalMessage.pinned);
+		}
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 		}
@@ -219,6 +222,9 @@ Meteor.methods<ServerMethods>({
 		await Apps.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
 
 		await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+		if (settings.get('Message_Read_Receipt_Store_Users')) {
+			await ReadReceipts.setPinnedByMessageId(originalMessage._id, originalMessage.pinned);
+		}
 
 		return true;
 	},
