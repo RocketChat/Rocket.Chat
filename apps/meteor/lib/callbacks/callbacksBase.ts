@@ -1,6 +1,6 @@
+import type { Logger } from '@rocket.chat/logger';
 import { Random } from '@rocket.chat/random';
 
-import type { Logger } from '../../app/logger/server';
 import { compareByRanking } from '../utils/comparisons';
 
 enum CallbackPriority {
