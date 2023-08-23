@@ -19,7 +19,7 @@ test.describe.serial('Omnichannel Triggers', () => {
 			email: faker.internet.email(),
 		};
 		triggersName = faker.string.uuid();
-		triggerMessage = 'Welcome to Rocket Chat';
+		triggerMessage = 'This is a trigger message';
 		const requests = await Promise.all([
 			api.post('/livechat/users/agent', { username: 'user1' }),
 			api.post('/livechat/users/manager', { username: 'user1' }),
