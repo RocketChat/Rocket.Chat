@@ -1,10 +1,10 @@
+import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms } from '@rocket.chat/models';
 import moment from 'moment-timezone';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { secondsToHHMMSS } from '../../../../lib/utils/secondsToHHMMSS';
 import { i18n } from '../../../../server/lib/i18n';
-import { Logger } from '../../../logger/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 
 const HOURS_IN_DAY = 24;

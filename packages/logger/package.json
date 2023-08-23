@@ -1,9 +1,5 @@
----
-to: packages/<%= name %>/package.json
----
-
 {
-	"name": "@rocket.chat/<%= name.toLowerCase() %>",
+	"name": "@rocket.chat/logger",
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
@@ -24,5 +20,9 @@ to: packages/<%= name %>/package.json
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	]
+	],
+	"dependencies": {
+		"@rocket.chat/emitter": "next",
+		"pino": "^8.15.0"
+	}
 }
