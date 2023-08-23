@@ -1,7 +1,10 @@
-import type { MainLogger } from './getPino';
-import { getPino } from './getPino';
+import { getPino, type MainLogger } from './getPino';
 import type { LogLevelSetting } from './logLevel';
 import { logLevel } from './logLevel';
+
+export * from './getPino';
+export * from './logLevel';
+export * from './logQueue';
 
 const getLevel = (level: LogLevelSetting): string => {
 	switch (level) {
@@ -18,7 +21,7 @@ const getLevel = (level: LogLevelSetting): string => {
 
 let defaultLevel = 'warn';
 
-logLevel.once('changed', (level) => {
+logLevel.once('changed', (level: LogLevelSetting) => {
 	defaultLevel = getLevel(level);
 });
 
@@ -28,7 +31,7 @@ export class Logger {
 	constructor(loggerLabel: string) {
 		this.logger = getPino(loggerLabel, defaultLevel);
 
-		logLevel.on('changed', (level) => {
+		logLevel.on('changed', (level: LogLevelSetting) => {
 			this.logger.level = getLevel(level);
 		});
 	}
@@ -36,7 +39,7 @@ export class Logger {
 	section(name: string): MainLogger {
 		const child = this.logger.child({ section: name }) as MainLogger;
 
-		logLevel.on('changed', (level) => {
+		logLevel.on('changed', (level: LogLevelSetting) => {
 			child.level = getLevel(level);
 		});
 
