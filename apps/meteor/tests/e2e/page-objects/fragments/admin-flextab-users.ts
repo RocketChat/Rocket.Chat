@@ -8,11 +8,11 @@ export class AdminFlextabUsers {
 	}
 
 	get btnNew(): Locator {
-		return this.page.locator('//button[text()="New"]');
+		return this.page.locator('button:has-text("New")');
 	}
 
 	get btnSave(): Locator {
-		return this.page.locator('//button[text()="Save"]');
+		return this.page.locator('button:has-text("Save")');
 	}
 
 	get inputName(): Locator {

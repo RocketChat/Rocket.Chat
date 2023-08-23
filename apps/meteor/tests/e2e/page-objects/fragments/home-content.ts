@@ -42,7 +42,7 @@ export class HomeContent {
 	}
 
 	get btnJoinRoom(): Locator {
-		return this.page.locator('//button[contains(text(), "Join")]');
+		return this.page.locator('role=button[name="Join"]');
 	}
 
 	async openRoomInfo(): Promise<void> {
