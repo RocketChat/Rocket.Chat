@@ -9,6 +9,7 @@ import {
 	Rooms,
 	Subscriptions,
 	Users,
+	ReadReceipts,
 	LivechatUnitMonitors,
 	ModerationReports,
 } from '@rocket.chat/models';
@@ -56,6 +57,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 				}
 
 				await Messages.removeByUserId(userId);
+				await ReadReceipts.removeByUserId(userId);
 
 				await ModerationReports.hideMessageReportsByUserId(
 					userId,
