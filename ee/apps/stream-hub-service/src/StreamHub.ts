@@ -1,8 +1,8 @@
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { ServiceClass } from '@rocket.chat/core-services';
+import type { Logger } from '@rocket.chat/logger';
 
 import type { DatabaseWatcher } from '../../../../apps/meteor/server/database/DatabaseWatcher';
-import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 import { initWatchers } from '../../../../apps/meteor/server/modules/watchers/watchers.module';
 
 export class StreamHub extends ServiceClass implements IServiceClass {

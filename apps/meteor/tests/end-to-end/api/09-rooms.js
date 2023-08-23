@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { sendSimpleMessage } from '../../data/chat.helper';
+import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions.js';
 import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { closeRoom, createRoom } from '../../data/rooms.helper';
@@ -383,6 +383,12 @@ describe('[Rooms]', function () {
 				.end(done);
 			user = undefined;
 		});
+		before(async () => {
+			await updateSetting('Message_ShowDeletedStatus', true);
+		});
+		after(async () => {
+			await updateSetting('Message_ShowDeletedStatus', false);
+		});
 		it('create a public channel', (done) => {
 			createRoom({ type: 'c', name: `testeChannel${+new Date()}` }).end((err, res) => {
 				publicChannel = res.body.channel;
@@ -416,6 +422,43 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
+		});
+		it('should not count hidden or deleted messages when limit param is not sent', async () => {
+			const res = await sendSimpleMessage({ roomId: publicChannel._id });
+			await deleteMessage({ roomId: publicChannel._id, msgId: res.body.message._id });
+			await request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: publicChannel._id,
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count', 0);
+				});
+		});
+		it('should not count hidden or deleted messages when limit param is sent', async () => {
+			const res = await sendSimpleMessage({ roomId: publicChannel._id });
+			await deleteMessage({ roomId: publicChannel._id, msgId: res.body.message._id });
+			await request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: publicChannel._id,
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
+					limit: 2000,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count', 0);
+				});
 		});
 		it('should successfully delete an image and thumbnail from public channel', (done) => {
 			request
