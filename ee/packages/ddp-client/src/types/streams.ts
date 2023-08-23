@@ -21,6 +21,7 @@ import type {
 	ICalendarNotification,
 	IUserStatus,
 	ILivechatInquiryRecord,
+	ILivechatAgent,
 	IImportProgress,
 	IBanner,
 } from '@rocket.chat/core-typings';
@@ -269,14 +270,16 @@ export interface StreamerEvents {
 						status: string;
 				  }
 				| {
-						type: 'queueData' | 'agentData';
-						data: {
-							[k: string]: unknown;
-						};
+						type: 'queueData';
+						data:
+							| {
+									[k: string]: unknown;
+							  }
+							| undefined;
 				  }
 				| {
 						type: 'agentData';
-						data: unknown;
+						data: ILivechatAgent | undefined | { hiddenInfo: boolean };
 				  }
 				| {
 						type: 'visitorData';

@@ -1,11 +1,11 @@
 import EventEmitter from 'events';
 
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
+import type { Logger } from '@rocket.chat/logger';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Timestamp, Db, ChangeStreamDeleteDocument, ChangeStreamInsertDocument, ChangeStreamUpdateDocument } from 'mongodb';
 import { MongoClient } from 'mongodb';
 
-import type { Logger } from '../lib/logger/Logger';
 import { convertChangeStreamPayload } from './convertChangeStreamPayload';
 import { convertOplogPayload } from './convertOplogPayload';
 import { getWatchCollections } from './watchCollections';

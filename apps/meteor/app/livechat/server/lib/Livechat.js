@@ -5,6 +5,7 @@ import dns from 'dns';
 import util from 'util';
 
 import { Message, VideoConf, api } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatVisitors,
 	LivechatCustomField,
@@ -17,6 +18,7 @@ import {
 	LivechatDepartmentAgents,
 	Rooms,
 	Users,
+	ReadReceipts,
 } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -34,7 +36,6 @@ import { FileUpload } from '../../../file-upload/server';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
-import { Logger } from '../../../logger/server';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
@@ -564,18 +565,14 @@ export const Livechat = {
 	},
 
 	async afterRemoveAgent(user) {
-		await Promise.all([
-			Users.removeAgent(user._id),
-			LivechatDepartmentAgents.removeByAgentId(user._id),
-			LivechatVisitors.removeContactManagerByUsername(user.username),
-		]);
+		await callbacks.run('livechat.afterAgentRemoved', { agent: user });
 		return true;
 	},
 
 	async removeAgent(username) {
 		check(username, String);
 
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -645,13 +642,18 @@ export const Livechat = {
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		const cursor = LivechatRooms.findByVisitorToken(token, extraQuery);
 		for await (const room of cursor) {
-			await FileUpload.removeFilesByRoomId(room._id);
-			await Messages.removeByRoomId(room._id);
+			await Promise.all([
+				FileUpload.removeFilesByRoomId(room._id),
+				Messages.removeByRoomId(room._id),
+				ReadReceipts.removeByRoomId(room._id),
+			]);
 		}
 
-		await Subscriptions.removeByVisitorToken(token);
-		await LivechatRooms.removeByVisitorToken(token);
-		await LivechatInquiry.removeByVisitorToken(token);
+		await Promise.all([
+			Subscriptions.removeByVisitorToken(token),
+			LivechatRooms.removeByVisitorToken(token),
+			LivechatInquiry.removeByVisitorToken(token),
+		]);
 	},
 
 	async saveDepartmentAgents(_id, departmentAgents) {
@@ -872,6 +874,10 @@ export const Livechat = {
 			}
 		}
 
+		// TODO Block offline form if Livechat_offline_email is undefined
+		// (it does not make sense to have an offline form that does nothing)
+		// `this.sendEmail` will throw an error if the email is invalid
+		// thus this breaks livechat, since the "to" email is invalid, and that returns an [invalid email] error to the livechat client
 		let emailTo = settings.get('Livechat_offline_email');
 		if (department && department !== '') {
 			const dep = await LivechatDepartmentRaw.findOneByIdOrName(department);

@@ -4,9 +4,9 @@ import { before, describe, it } from 'mocha';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
-import { createVisitor, createLivechatRoom, makeAgentUnavailable } from '../../../data/livechat/rooms';
+import { createVisitor, createLivechatRoom, makeAgentUnavailable, closeOmnichannelRoom } from '../../../data/livechat/rooms';
 import { createBotAgent, getRandomVisitorToken } from '../../../data/livechat/users';
-import { updateSetting } from '../../../data/permissions.helper';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - Utils', function () {
@@ -276,6 +276,140 @@ describe('LIVECHAT - Utils', function () {
 			expect(body).to.have.property('success', true);
 		});
 	});
+	describe('livechat/transcript/:rid', () => {
+		it('should fail if user is not authenticated', async () => {
+			await request.delete(api('livechat/transcript/rid')).send({}).expect(401);
+		});
+		it('should fail if user doesnt have "send-omnichannel-chat-transcript" permission', async () => {
+			const user = await createVisitor();
+			const room = await createLivechatRoom(user.token);
+			await removePermissionFromAllRoles('send-omnichannel-chat-transcript');
+
+			await request
+				.delete(api(`livechat/transcript/${room._id}`))
+				.set(credentials)
+				.send({})
+				.expect(403);
+		});
+		it('should fail if rid is not a valid room id', async () => {
+			await restorePermissionToRoles('send-omnichannel-chat-transcript');
+			await request.delete(api('livechat/transcript/rid')).set(credentials).send({}).expect(400);
+		});
+		it('should fail if room is not open', async () => {
+			const user = await createVisitor();
+			const room = await createLivechatRoom(user.token);
+			await closeOmnichannelRoom(room._id);
+			await request
+				.delete(api(`livechat/transcript/${room._id}`))
+				.set(credentials)
+				.send({})
+				.expect(400);
+		});
+		it('should fail if room doesnt have transcript requested', async () => {
+			const user = await createVisitor();
+			const room = await createLivechatRoom(user.token);
+
+			await request
+				.delete(api(`livechat/transcript/${room._id}`))
+				.set(credentials)
+				.send({})
+				.expect(400);
+		});
+		it('should remove transcript if all good', async () => {
+			const user = await createVisitor();
+			const room = await createLivechatRoom(user.token);
+
+			await request
+				.post(api(`livechat/transcript/${room._id}`))
+				.set(credentials)
+				.send({ email: 'abc@abc.com', subject: 'test' })
+				.expect(200);
+
+			await request
+				.delete(api(`livechat/transcript/${room._id}`))
+				.set(credentials)
+				.send({})
+				.expect(200);
+		});
+	});
+
+	describe('POST livechat/transcript/:rid', () => {
+		it('should fail if user is not authenticated', async () => {
+			await request.post(api('livechat/transcript/rid')).send({}).expect(401);
+		});
+		it('should fail if "email" param is not sent', async () => {
+			const user = await createVisitor();
+			const room = await createLivechatRoom(user.token);
+
+			await request
+				.post(api(`livechat/transcript/${room._id}`))
+				.set(credentials)
+				.send({})
+				.expect(400);
+		});
+		it('should fail if "subject" param is not sent', async () => {
+			const user = await createVisitor();
+			const room = await createLivechatRoom(user.token);
+
+			await request
+				.post(api(`livechat/transcript/${room._id}`))
+				.set(credentials)
+				.send({ email: 'abc@abc.xmz' })
+				.expect(400);
+		});
+		it('should fail if user doesnt have "send-omnichannel-chat-transcript" permission', async () => {
+			const user = await createVisitor();
+			const room = await createLivechatRoom(user.token);
+			await updatePermission('send-omnichannel-chat-transcript', []);
+
+			await request
+				.post(api(`livechat/transcript/${room._id}`))
+				.set(credentials)
+				.send({ email: 'abc@abc.com', subject: 'test' })
+				.expect(403);
+		});
+		it('should fail if rid is not a valid room id', async () => {
+			await updatePermission('send-omnichannel-chat-transcript', ['livechat-manager', 'admin']);
+			await request.post(api('livechat/transcript/rid')).set(credentials).send({ email: 'abc@abc.com', subject: 'test' }).expect(400);
+		});
+		it('should fail if room is not open', async () => {
+			const user = await createVisitor();
+			const room = await createLivechatRoom(user.token);
+			await closeOmnichannelRoom(room._id);
+			await request
+				.post(api(`livechat/transcript/${room._id}`))
+				.set(credentials)
+				.send({ email: 'abc@abc.com', subject: 'test' })
+				.expect(400);
+		});
+		it('should fail if room already has transcript requested', async () => {
+			const user = await createVisitor();
+			const room = await createLivechatRoom(user.token);
+
+			await request
+				.post(api(`livechat/transcript/${room._id}`))
+				.set(credentials)
+				.send({ email: 'abc@abc.com', subject: 'test' })
+				.expect(200);
+
+			await request
+				.post(api(`livechat/transcript/${room._id}`))
+				.set(credentials)
+				.send({ email: 'abc@abc.com', subject: 'test' })
+				.expect(400);
+		});
+		it('should request transcript if all good', async () => {
+			const user = await createVisitor();
+			const room = await createLivechatRoom(user.token);
+
+			await request
+				.post(api(`livechat/transcript/${room._id}`))
+				.set(credentials)
+				.send({ email: 'abc@abc.com', subject: 'test' })
+				.expect(200);
+		});
+	});
+
 	describe('livechat/visitor.callStatus', () => {
 		it('should fail if token is not in body params', async () => {
 			const { body } = await request.post(api('livechat/visitor.callStatus')).set(credentials).send({});

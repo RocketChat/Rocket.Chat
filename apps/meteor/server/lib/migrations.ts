@@ -1,9 +1,9 @@
 import type { IControl } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Migrations } from '@rocket.chat/models';
 
 import { Info } from '../../app/utils/rocketchat.info';
 import { sleep } from '../../lib/utils/sleep';
-import { Logger } from './logger/Logger';
 import { showErrorBox } from './logger/showBox';
 
 type IMigration = {
