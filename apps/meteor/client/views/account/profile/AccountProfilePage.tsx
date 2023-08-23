@@ -3,7 +3,15 @@ import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { SHA256 } from '@rocket.chat/sha256';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetModal, useToastMessageDispatch, useUser, useLogout, useEndpoint, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	useSetModal,
+	useToastMessageDispatch,
+	useUser,
+	useLogout,
+	useEndpoint,
+	useTranslation,
+	useSetting,
+} from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -11,10 +19,8 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
 import Page from '../../../components/Page';
-// import { useForm } from '../../../hooks/useForm';
 import AccountProfileForm from './AccountProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
-import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { useAllowPasswordChange } from './useAllowPasswordChange';
 
 export type AccountFormValues = {
@@ -47,10 +53,20 @@ const getInitialValues = (user: IUser | null): AccountFormValues => ({
 	nickname: user?.nickname ?? '',
 });
 
+// TODO: enforce useMutation
+// TODO: replace useMethod to useEndpoint
 const AccountProfilePage = (): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
+
+	const setModal = useSetModal();
+	const logout = useLogout();
+	const [loggingOut, setLoggingOut] = useState(false);
+
+	const erasureType = useSetting('Message_ErasureType');
+	const allowDeleteOwnAccount = useSetting('Accounts_AllowDeleteOwnAccount');
+	const { hasLocalPassword } = useAllowPasswordChange();
 
 	const methods = useForm({
 		defaultValues: getInitialValues(user),
@@ -58,38 +74,12 @@ const AccountProfilePage = (): ReactElement => {
 	});
 
 	const {
-		watch,
 		reset,
 		formState: { isDirty },
 	} = methods;
-	const { realname, email, avatar, username, password, confirmationPassword, statusText, statusType, customFields, bio, nickname } =
-		watch();
-
-	// const { values, handlers, hasUnsavedChanges, commit, reset } = useForm(getInitialValues(user));
-	const [canSave, setCanSave] = useState(true);
-	const setModal = useSetModal();
-	const logout = useLogout();
-	const [loggingOut, setLoggingOut] = useState(false);
 
 	const logoutOtherClients = useEndpoint('POST', '/v1/users.logoutOtherClients');
-	const deleteOwnAccount = useMethod('deleteUserOwnAccount');
-
-	const {
-		allowRealNameChange,
-		allowUserStatusMessageChange,
-		allowEmailChange,
-		allowUserAvatarChange,
-		allowDeleteOwnAccount,
-		canChangeUsername,
-		requireName,
-		namesRegex,
-		erasureType,
-	} = useAccountProfileSettings();
-	const { allowPasswordChange, hasLocalPassword } = useAllowPasswordChange();
-
-	// const { realname, email, avatar, username, password, statusText, statusType, customFields, bio, nickname } = values as AccountFormValues;
-
-	// const { handleAvatar, handlePassword, handleConfirmationPassword } = handlers;
+	const deleteOwnAccount = useEndpoint('POST', '/v1/users.deleteOwnAccount');
 
 	const handleLogoutOtherLocations = useCallback(async () => {
 		setLoggingOut(true);
@@ -99,7 +89,7 @@ const AccountProfilePage = (): ReactElement => {
 				type: 'success',
 				message: t('Logged_out_of_other_clients_successfully'),
 			});
-		} catch (error: unknown) {
+		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 		setLoggingOut(false);
@@ -109,11 +99,11 @@ const AccountProfilePage = (): ReactElement => {
 		(passwordOrUsername, shouldChangeOwner, shouldBeRemoved) => {
 			const handleConfirm = async (): Promise<void> => {
 				try {
-					await deleteOwnAccount(SHA256(passwordOrUsername), true);
+					await deleteOwnAccount({ password: SHA256(passwordOrUsername), confirmRelinquish: true });
 					dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
 					setModal(null);
 					logout();
-				} catch (error: unknown) {
+				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 				}
 			};
@@ -135,7 +125,7 @@ const AccountProfilePage = (): ReactElement => {
 	const handleDeleteOwnAccount = useCallback(async () => {
 		const handleConfirm = async (passwordOrUsername: string): Promise<void> => {
 			try {
-				await deleteOwnAccount(SHA256(passwordOrUsername));
+				await deleteOwnAccount({ password: SHA256(passwordOrUsername) });
 				dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
 				logout();
 			} catch (error: any) {
@@ -178,13 +168,7 @@ const AccountProfilePage = (): ReactElement => {
 					<Button disabled={!isDirty} onClick={() => reset(getInitialValues(user))}>
 						{t('Cancel')}
 					</Button>
-					<Button
-						form={profileFormId}
-						data-qa='AccountProfilePageSaveButton'
-						primary
-						disabled={!isDirty || !canSave || loggingOut}
-						type='submit'
-					>
+					<Button form={profileFormId} data-qa='AccountProfilePageSaveButton' primary disabled={!isDirty || loggingOut} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

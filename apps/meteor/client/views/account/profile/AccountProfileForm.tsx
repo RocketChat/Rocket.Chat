@@ -10,7 +10,7 @@ import {
 	useEndpoint,
 	useUser,
 } from '@rocket.chat/ui-contexts';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ReactElement } from 'react';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -26,9 +26,8 @@ import { useAllowPasswordChange } from './useAllowPasswordChange';
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactElement => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-
 	const user = useUser();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
@@ -42,11 +41,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		allowUserStatusMessageChange,
 		allowEmailChange,
 		allowUserAvatarChange,
-		allowDeleteOwnAccount,
 		canChangeUsername,
 		requireName,
 		namesRegex,
-		erasureType,
 	} = useAccountProfileSettings();
 	const { allowPasswordChange } = useAllowPasswordChange();
 
@@ -75,23 +72,23 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		formState: { errors, dirtyFields },
 	} = useFormContext();
 
-	console.log('dirtyFields', dirtyFields);
-
 	const { avatar, realname, email, password, statusText, confirmationPassword, username } = watch();
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
 
+	const mutateConfirmationEmail = useMutation({
+		mutationFn: sendConfirmationEmail,
+		onSuccess: () => dispatchToastMessage({ type: 'success', message: t('Verification_email_sent') }),
+		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
+	});
+
 	const handleSendConfirmationEmail = useCallback(async () => {
 		if (email !== previousEmail) {
-			return;
+			return dispatchToastMessage({ type: 'error', message: 'Cannot be the same email' });
 		}
-		try {
-			await sendConfirmationEmail({ email });
-			dispatchToastMessage({ type: 'success', message: t('Verification_email_sent') });
-		} catch (error: unknown) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}, [dispatchToastMessage, email, previousEmail, sendConfirmationEmail, t]);
+
+		mutateConfirmationEmail.mutateAsync({ email });
+	}, [dispatchToastMessage, email, previousEmail, mutateConfirmationEmail]);
 
 	// this is will decide whether form can be saved
 	const passwordError = useMemo(() => {
@@ -108,7 +105,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		[passwordError, password, confirmationPassword],
 	);
 
-	const emailError = useMemo(() => (validateEmail(email) ? undefined : 'error-invalid-email-address'), [email]);
+	// const emailError = useMemo((email) => (validateEmail(email) ? undefined : 'error-invalid-email-address'), [email]);
 	const checkUsername = useDebouncedCallback(
 		async (username: string) => {
 			if (user?.username === username) {
@@ -168,10 +165,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 
 	const saveFn = useMethod('saveUserProfile');
 
-	const nameId = useUniqueId();
-	const usernameId = useUniqueId();
-	const nicknameId = useUniqueId();
-
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
 
 	const handleSave = ({ statusType, nickname, bio, customFields, ...data }) => {
@@ -203,12 +196,19 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 				// }
 				// commit();
 				dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
-			} catch (error: unknown) {
+			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};
 		save();
 	};
+
+	const nameId = useUniqueId();
+	const usernameId = useUniqueId();
+	const nicknameId = useUniqueId();
+	const statusMessageId = useUniqueId();
+	const bioId = useUniqueId();
+	const emailId = useUniqueId();
 
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
@@ -247,9 +247,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					</Field>
 				</Box>
 				<Field>
-					<Field.Label>{t('StatusMessage')}</Field.Label>
+					<Field.Label htmlFor={statusMessageId}>{t('StatusMessage')}</Field.Label>
 					<Field.Row>
 						<TextInput
+							id={statusMessageId}
 							{...register('statusText', {
 								maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH) },
 							})}
@@ -270,9 +271,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					</Field.Row>
 				</Field>
 				<Field>
-					<Field.Label>{t('Bio')}</Field.Label>
+					<Field.Label htmlFor={bioId}>{t('Bio')}</Field.Label>
 					<Field.Row>
 						<TextAreaInput
+							id={bioId}
 							{...register('bio', { maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', BIO_TEXT_MAX_LENGTH) } })}
 							error={errors.bio?.message}
 							rows={3}
@@ -283,12 +285,15 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					{errors?.bio && <Field.Error>{errors.bio.message}</Field.Error>}
 				</Field>
 				<Field>
-					<Field.Label>{t('Email')}</Field.Label>
+					<Field.Label htmlFor={emailId}>{t('Email')}</Field.Label>
 					<Field.Row display='flex' flexDirection='row' justifyContent='space-between'>
 						<TextInput
-							{...register('email')}
+							id={emailId}
+							{...register('email', {
+								validate: { validateEmail: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')) },
+							})}
 							flexGrow={1}
-							error={emailError}
+							error={errors.email?.message}
 							addon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
 							disabled={!allowEmailChange}
 						/>
@@ -299,7 +304,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						)}
 					</Field.Row>
 					{!allowEmailChange && <Field.Hint>{t('Email_Change_Disabled')}</Field.Hint>}
-					<Field.Error>{t(emailError as TranslationKey)}</Field.Error>
+					{errors.email && <Field.Error>{errors?.email?.message}</Field.Error>}
 				</Field>
 				<Field>
 					<Field.Label>{t('New_password')}</Field.Label>
@@ -307,11 +312,11 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						<PasswordInput
 							{...register('password')}
 							autoComplete='off'
-							disabled={!allowPasswordChange}
 							error={showPasswordError ? passwordError : undefined}
 							flexGrow={1}
 							addon={<Icon name='key' size='x20' />}
 							placeholder={t('Create_a_password')}
+							disabled={!allowPasswordChange}
 						/>
 					</Field.Row>
 					<Field.Row mbs={4}>
