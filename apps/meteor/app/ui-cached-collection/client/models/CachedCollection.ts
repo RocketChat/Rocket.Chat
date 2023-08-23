@@ -6,11 +6,11 @@ import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
+import { baseURI } from '../../../../client/lib/baseURI';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import Notifications from '../../../notifications/client/lib/Notifications';
-import { settings } from '../../../settings/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 import { CachedCollectionManager } from './CachedCollectionManager';
 
@@ -36,7 +36,7 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 	!((record as unknown as { _updatedAt: unknown })._updatedAt instanceof Date);
 
 localforage.config({
-	name: settings.get('Site_Url'),
+	name: baseURI,
 });
 
 export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<{ changed: T; removed: T }> {
