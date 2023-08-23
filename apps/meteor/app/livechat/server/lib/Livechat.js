@@ -839,7 +839,7 @@ export const Livechat = {
 
 	async sendOfflineMessage(data = {}) {
 		if (!settings.get('Livechat_display_offline_form')) {
-			return false;
+			throw new Error('error-offline-form-disabled');
 		}
 
 		const { message, name, email, department, host } = data;
@@ -892,8 +892,6 @@ export const Livechat = {
 		setImmediate(() => {
 			callbacks.run('livechat.offlineMessage', data);
 		});
-
-		return true;
 	},
 
 	async notifyAgentStatusChanged(userId, status) {
