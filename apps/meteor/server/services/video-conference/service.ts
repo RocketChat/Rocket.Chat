@@ -35,6 +35,7 @@ import { MongoInternals } from 'meteor/mongo';
 import { RocketChatAssets } from '../../../app/assets/server';
 import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { metrics } from '../../../app/metrics/server/lib/metrics';
 import PushNotification from '../../../app/push-notifications/server/lib/PushNotification';
 import { Push } from '../../../app/push/server/push';
 import { settings } from '../../../app/settings/server';
@@ -602,6 +603,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
+		metrics.notificationsSent.inc({ notification_type: 'mobile' });
 		await Push.send({
 			from: 'push',
 			badge: 0,
