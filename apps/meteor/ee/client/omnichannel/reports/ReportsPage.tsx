@@ -3,6 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import Page from '../../../../client/components/Page';
+import { ResizeObserver } from './components/ResizeObserver';
 import { AgentsSection, ChannelsSection, DepartmentsSection, StatusSection, TagsSection } from './sections';
 
 const ReportsPage = () => {
@@ -15,17 +16,19 @@ const ReportsPage = () => {
 				{t('Omnichannel_Reports_Summary')}
 			</Box>
 			<Page.ScrollableContentWithShadow alignItems='center'>
-				<Box display='flex' flexWrap='wrap' maxWidth='100rem' m={-8}>
-					<StatusSection />
+				<ResizeObserver>
+					<Box display='flex' flexWrap='wrap' maxWidth='100rem' m={-8}>
+						<StatusSection />
 
-					<ChannelsSection />
+						<ChannelsSection />
 
-					<DepartmentsSection />
+						<DepartmentsSection />
 
-					<TagsSection />
+						<TagsSection />
 
-					<AgentsSection />
-				</Box>
+						<AgentsSection />
+					</Box>
+				</ResizeObserver>
 			</Page.ScrollableContentWithShadow>
 		</Page>
 	);

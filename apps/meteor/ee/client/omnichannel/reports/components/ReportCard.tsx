@@ -7,6 +7,7 @@ import React from 'react';
 
 import DownloadDataButton from '../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../components/dashboards/PeriodSelector';
+import { useIsResizing } from '../hooks/useIsResizing';
 import { CardErrorState } from './CardErrorState';
 
 type ReportCardProps = {
@@ -30,7 +31,7 @@ export const ReportCard = ({
 	children,
 	periodSelectorProps,
 	downloadProps,
-	isLoading,
+	isLoading: isLoadingData,
 	isDataFound,
 	height,
 	subtitle,
@@ -42,9 +43,11 @@ export const ReportCard = ({
 }: ReportCardProps) => {
 	const t = useTranslation();
 	const width = full ? '100%' : '50%';
+	const isResizing = useIsResizing();
+	const isLoading = isLoadingData || isResizing;
+
 	return (
 		<Box
-			is={Card}
 			minWidth={500}
 			maxWidth='calc(100% - 16px)'
 			width={`calc(${width} - 16px)`}
