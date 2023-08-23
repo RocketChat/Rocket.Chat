@@ -165,8 +165,8 @@ const ImportProgressPage = function ImportProgressPage() {
 									{t((progress.data.step[0].toUpperCase() + progress.data.step.slice(1)) as any)}
 								</Box>
 								<Box display='flex' justifyContent='center'>
-									<Box is={ProgressBar} percentage={numberFormat((progress.data.completed / progress.data.total) * 100, 0)} mie={24} />
-									<Box is='span' fontScale='p2'>
+									<ProgressBar percentage={(progress.data.completed / progress.data.total) * 100} />
+									<Box is='span' fontScale='p2' mis={24}>
 										{numberFormat((progress.data.completed / progress.data.total) * 100, 0)}%
 									</Box>
 								</Box>

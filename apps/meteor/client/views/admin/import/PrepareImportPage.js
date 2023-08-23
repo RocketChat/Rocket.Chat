@@ -204,8 +204,10 @@ function PrepareImportPage() {
 							<>
 								{progressRate ? (
 									<Box display='flex' justifyContent='center' fontScale='p2'>
-										<Box is={ProgressBar} percentage={(progressRate * 10).toFixed(0)} mie='x24' />
-										<Box is='span'>{numberFormat(progressRate, 0)}%</Box>
+										<ProgressBar percentage={(progressRate * 10).toFixed(0)} />
+										<Box is='span' mis='x24'>
+											{numberFormat(progressRate, 0)}%
+										</Box>
 									</Box>
 								) : (
 									<Throbber justifyContent='center' />
