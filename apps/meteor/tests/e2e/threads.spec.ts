@@ -107,7 +107,7 @@ test.describe.serial('Threads', () => {
 		});
 
 		test('expect quote the thread message', async ({ page }) => {
-			await poHomeChannel.content.openLastThreadMessageMenu();
+			await page.locator('//main//aside >> [data-qa-type="message"]').last().hover();
 			await page.locator('role=button[name="Quote"]').click();
 			await page.locator('[name="msg"]').last().fill('this is a quote message');
 			await page.keyboard.press('Enter');
