@@ -4,6 +4,7 @@ import Ajv from 'ajv';
 const ajv = new Ajv({
 	coerceTypes: true,
 });
+export type FontSize = '100%' | '14px' | '18px' | '20px' | '24px';
 
 export type UsersSetPreferencesParamsPOST = {
 	userId?: string;
@@ -42,6 +43,7 @@ export type UsersSetPreferencesParamsPOST = {
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		featuresPreview?: { name: string; value: boolean }[];
 		themeAppearence?: ThemePreference;
+		fontSize?: FontSize;
 		receiveLoginDetectionEmail?: boolean;
 		notifyCalendarEvents?: boolean;
 		idleTimeLimit?: number;
@@ -211,6 +213,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				themeAppearence: {
+					type: 'string',
+					nullable: true,
+				},
+				fontSize: {
 					type: 'string',
 					nullable: true,
 				},

@@ -1,4 +1,5 @@
 import { Subscriptions, Users } from '@rocket.chat/models';
+import type { FontSize } from '@rocket.chat/rest-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
 import { Match, check } from 'meteor/check';
@@ -36,6 +37,7 @@ type UserPreferences = {
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
 	themeAppearence: ThemePreference;
+	fontSize?: FontSize;
 	receiveLoginDetectionEmail: boolean;
 	notifyCalendarEvents: boolean;
 };
@@ -78,6 +80,8 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		sidebarDisplayAvatar: Match.Optional(Boolean),
 		sidebarGroupByType: Match.Optional(Boolean),
 		muteFocusedConversations: Match.Optional(Boolean),
+		themeAppearence: Match.Optional(String),
+		fontSize: Match.Optional(String),
 		omnichannelTranscriptEmail: Match.Optional(Boolean),
 		omnichannelTranscriptPDF: Match.Optional(Boolean),
 		notifyCalendarEvents: Match.Optional(Boolean),
