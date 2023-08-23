@@ -8,6 +8,7 @@ import React from 'react';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
 import AppDetailsAPIs from './AppDetailsAPIs';
+import { normalizeUrl } from './normalizeUrl';
 
 const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 	const t = useTranslation();
@@ -18,12 +19,15 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 		categories = [],
 		screenshots,
 		apis,
-		documentationUrl,
+		documentationUrl: documentation,
 	} = app;
 
 	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
 	const isCarouselVisible = screenshots && Boolean(screenshots.length);
-	const normalizeDocumentationUrl = documentationUrl?.startsWith('http') ? documentationUrl : `https://${documentationUrl}`;
+
+	const normalizedHomepageUrl = normalizeUrl(homepage);
+	const normalizedSupportUrl = normalizeUrl(support);
+	const normalizedDocumentationUrl = normalizeUrl(documentation);
 
 	return (
 		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>
@@ -76,24 +80,21 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 								<Box fontScale='h4' color='hint'>
 									{t('Author_Site')}
 								</Box>
-								<ExternalLink to={homepage} />
+								{normalizedHomepageUrl ? <ExternalLink to={normalizedHomepageUrl}>{homepage}</ExternalLink> : homepage}
 							</Box>
 							<Box display='flex' flexDirection='column' flexGrow={1}>
 								<Box fontScale='h4' color='hint'>
 									{t('Support')}
 								</Box>
-								<ExternalLink to={support} />
+								{normalizedSupportUrl ? <ExternalLink to={normalizedSupportUrl}>{support}</ExternalLink> : support}
 							</Box>
 						</Box>
-
-						{documentationUrl && (
-							<>
-								<Box fontScale='h4' color='hint'>
-									{t('Documentation')}
-								</Box>
-								<ExternalLink to={normalizeDocumentationUrl} />
-							</>
-						)}
+						<>
+							<Box fontScale='h4' color='hint'>
+								{t('Documentation')}
+							</Box>
+							{normalizedDocumentationUrl ? <ExternalLink to={normalizedDocumentationUrl}>{documentation}</ExternalLink> : documentation}
+						</>
 					</Box>
 
 					{apis?.length ? (

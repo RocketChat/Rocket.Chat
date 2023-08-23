@@ -24,6 +24,7 @@ export const useExportMessagesRoomAction = () => {
 			tabComponent: ExportMessages,
 			full: true,
 			order: 12,
+			type: 'communication',
 		};
 	}, [permitted]);
 };

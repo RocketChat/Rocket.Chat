@@ -12,7 +12,7 @@ export const useRocketSearchRoomAction = () => {
 			title: 'Search_Messages',
 			icon: 'magnifier',
 			tabComponent: MessageSearchTab,
-			order: 6,
+			order: 5,
 		}),
 		[],
 	);

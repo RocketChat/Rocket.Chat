@@ -1,8 +1,10 @@
-import type { IMessage, IModerationAudit, IModerationReport } from '@rocket.chat/core-typings';
+import type { IMessage, IModerationAudit, IModerationReport, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createUser, deleteUser } from '../../data/users.helper.js';
 
 // test for the /moderation.reportsByUsers endpoint
 
@@ -594,6 +596,49 @@ describe('[Moderation]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
+				});
+		});
+	});
+
+	describe('[/moderation.reportUser]', () => {
+		let userToBeReported: IUser;
+
+		before(async () => {
+			userToBeReported = await createUser();
+		});
+
+		after(async () => {
+			await deleteUser(userToBeReported);
+		});
+
+		it('should report an user', async () => {
+			await request
+				.post(api('moderation.reportUser'))
+				.set(credentials)
+				.send({
+					userId: userToBeReported?._id,
+					description: 'sample report',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should fail to report an user if not provided description', async () => {
+			await request
+				.post(api('moderation.reportUser'))
+				.set(credentials)
+				.send({
+					userId: userToBeReported?._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
 				});
 		});
 	});
