@@ -17,7 +17,7 @@ Meteor.methods<ServerMethods>({
 	async 'livechat:discardTranscript'(rid: string) {
 		check(rid, String);
 		methodDeprecationLogger.warn(
-			'The method "livechat:discardTranscript" is deprecated and will be removed after version v7.0.0. Use "livechat/transcript/:rid" instead.',
+			'The method "livechat:discardTranscript" is deprecated and will be removed after version v7.0.0. Use "livechat/transcript/:rid" (DELETE) instead.',
 		);
 
 		const user = Meteor.userId();

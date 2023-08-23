@@ -2056,7 +2056,7 @@ describe('LIVECHAT - rooms', function () {
 				})
 				.expect(200);
 
-			// Then, delete transcript with livechat:deleteTranscript method
+			// Then, delete the transcript
 			await request
 				.delete(api(`livechat/transcript/${_id}`))
 				.set(credentials)
