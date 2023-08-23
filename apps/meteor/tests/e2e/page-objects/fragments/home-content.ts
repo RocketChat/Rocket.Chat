@@ -177,7 +177,7 @@ export class HomeContent {
 	}
 
 	get btnSendTranscript(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-mail-arrow-top-right"]');
+		return this.page.locator('role=button[name="Send transcript"]');
 	}
 
 	get btnSendTranscriptToEmail(): Locator {
