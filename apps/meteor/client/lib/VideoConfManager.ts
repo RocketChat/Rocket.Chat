@@ -291,20 +291,20 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			return false;
 		}
 
+		debug && console.log(`[VideoConf] Dismissing call ${callId}`);
 		this.dismissedCalls.add(callId);
 		// We don't need to hold on to the dismissed callIds forever because the server won't let anyone call us with it for very long
 		setTimeout(() => this.dismissedCalls.delete(callId), CALL_TIMEOUT * 20);
-		return true;
+		// Only change the state if this call is actually in our list
+		return this.incomingDirectCalls.has(callId);
 	}
 
 	public dismissIncomingCall(callId: string): boolean {
 		if (this.dismissedIncomingCallHelper(callId)) {
-			debug && console.log(`[VideoConf] Dismissed call ${callId}`);
 			this.emit('ringing/changed');
 			this.emit('incoming/changed');
 			return true;
 		}
-		debug && console.log(`[VideoConf] Failed to dismiss call ${callId}`);
 		return false;
 	}
 
