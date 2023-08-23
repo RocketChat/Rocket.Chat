@@ -33,12 +33,11 @@ export const REPORTS_CHARTS_THEME = {
 };
 
 export const COLORS = {
-	info: Palette.statusColor['status-font-on-info'].toString(),
-	success: Palette.statusColor['status-font-on-success'].toString(),
-	danger: Palette.statusColor['status-font-on-danger'].toString(),
 	service2: Palette.statusColor['status-font-on-service-2'].toString(),
+	danger: Palette.statusColor['status-font-on-danger'].toString(),
+	success: Palette.statusColor['status-font-on-success'].toString(),
+	info: Palette.statusColor['status-font-on-info'].toString(),
 	warning: Palette.statusColor['status-font-on-warning'].toString(),
-	service1: Palette.statusColor['status-font-on-service-1'].toString(),
 	warning2: Palette.statusColor['status-font-on-warning-2'].toString(),
 };
 

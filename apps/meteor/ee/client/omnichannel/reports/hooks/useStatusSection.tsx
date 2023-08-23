@@ -12,7 +12,7 @@ import { useDefaultDownload } from './useDefaultDownload';
 
 const STATUSES: Record<string, { label: TranslationKey; color: string }> = {
 	Open: { label: 'Omnichannel_Reports_Status_Open', color: COLORS.success },
-	Queued: { label: 'Queued', color: COLORS.info },
+	Queued: { label: 'Queued', color: COLORS.warning2 },
 	On_Hold: { label: 'On_Hold', color: COLORS.warning },
 	Closed: { label: 'Omnichannel_Reports_Status_Closed', color: COLORS.danger },
 };
