@@ -40,6 +40,7 @@ import { Push } from '../../../app/push/server/push';
 import { settings } from '../../../app/settings/server';
 import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
+import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
 import { Apps } from '../../../ee/server/apps';
 import { callbacks } from '../../../lib/callbacks';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
@@ -593,7 +594,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		call: AtLeast<IDirectVideoConference, 'createdBy' | 'rid' | '_id' | 'status'>,
 		calleeId: IUser['_id'],
 	): Promise<void> {
-		if (settings.get('Push_enable') !== true || settings.get('VideoConf_Mobile_Ringing') !== true) {
+		if (
+			settings.get('Push_enable') !== true ||
+			settings.get('VideoConf_Mobile_Ringing') !== true ||
+			!(await getUserPreference(calleeId, 'enableMobileRinging'))
+		) {
 			return;
 		}
 
@@ -626,6 +631,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async sendAllPushNotifications(callId: VideoConference['_id']): Promise<void> {
+		if (settings.get('Push_enable') !== true || settings.get('VideoConf_Mobile_Ringing') !== true) {
+			return;
+		}
+
 		const call = await VideoConferenceModel.findOneById<Pick<VideoConference, 'createdBy' | 'rid' | '_id' | 'users' | 'status'>>(callId, {
 			projection: { createdBy: 1, rid: 1, users: 1, status: 1 },
 		});

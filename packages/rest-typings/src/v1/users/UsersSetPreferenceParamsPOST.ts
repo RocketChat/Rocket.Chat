@@ -47,6 +47,7 @@ export type UsersSetPreferencesParamsPOST = {
 		idleTimeLimit?: number;
 		omnichannelTranscriptEmail?: boolean;
 		omnichannelTranscriptPDF?: boolean;
+		enableMobileRinging?: boolean;
 	};
 };
 
@@ -231,6 +232,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				omnichannelTranscriptPDF: {
+					type: 'boolean',
+					nullable: true,
+				},
+				enableMobileRinging: {
 					type: 'boolean',
 					nullable: true,
 				},
