@@ -23,10 +23,11 @@ const TYPE_LABEL: Record<string, TranslationKey> = {
 
 const formatItem = (item: { label: string; value: number }, total: number, t: TranslationContextValue['translate']): DataItem => {
 	const percentage = total > 0 ? round((item.value / total) * 100) : 0;
+	const label = `${t(TYPE_LABEL[item.label]) || capitalize(item.label)}`;
 	return {
 		...item,
-		label: `${t(TYPE_LABEL[item.label]) || capitalize(item.label)} ${item.value} (${percentage}%)`,
-		rawLabel: item.label,
+		label: `${label} ${item.value} (${percentage}%)`,
+		rawLabel: label,
 		id: item.label,
 	};
 };
