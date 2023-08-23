@@ -59,7 +59,7 @@ export const ReportCard = ({
 						<Box is='span' withTruncatedText>
 							{title}
 						</Box>
-						<Box is='span' color='hint' fontScale='p2'>
+						<Box is='span' color='hint' fontScale='c1'>
 							{subtitle}
 						</Box>
 					</Box>
