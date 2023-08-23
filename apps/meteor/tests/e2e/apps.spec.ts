@@ -1,7 +1,8 @@
-import { expect, test } from './utils/test';
+import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
+import { expect, test } from './utils/test';
 
-test.use({ storageState: 'user1-session.json' });
+test.use({ storageState: Users.user1.state });
 
 test.describe.serial('Apps', () => {
 	let poHomeChannel: HomeChannel;
@@ -15,12 +16,12 @@ test.describe.serial('Apps', () => {
 
 	test('expect allow user open app contextualbar', async () => {
 		await poHomeChannel.content.dispatchSlashCommand('/contextualbar');
-		await expect(poHomeChannel.btnVerticalBarClose).toBeVisible();
+		await expect(poHomeChannel.btnContextualbarClose).toBeVisible();
 	});
 
 	test('expect app contextualbar to be closed', async () => {
 		await poHomeChannel.content.dispatchSlashCommand('/contextualbar');
-		await poHomeChannel.btnVerticalBarClose.click();
-		await expect(poHomeChannel.btnVerticalBarClose).toBeHidden();
+		await poHomeChannel.btnContextualbarClose.click();
+		await expect(poHomeChannel.btnContextualbarClose).toBeHidden();
 	});
 });

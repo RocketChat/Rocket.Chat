@@ -2,11 +2,12 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useSession, useUserPreference, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import { useOpenedRoom } from '../../lib/RoomManager';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
@@ -24,7 +25,7 @@ const RoomList = (): ReactElement => {
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const { ref } = useResizeObserver({ debounceDelay: 100 });
-	const openedRoom = (useSession('openedRoom') as string) || '';
+	const openedRoom = useOpenedRoom() ?? '';
 	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode') || 'extended';
 
 	const extended = sidebarViewMode === 'extended';
@@ -104,7 +105,7 @@ const RoomList = (): ReactElement => {
 			padding-block-start: 12px;
 		}
 
-		@media (width <= 400px) {
+		@media (max-width: 400px) {
 			padding: 0 calc(var(--sidebar-small-default-padding) - 4px);
 
 			&__type,
@@ -115,7 +116,7 @@ const RoomList = (): ReactElement => {
 	`;
 
 	return (
-		<Box className={[roomsListStyle, 'sidebar--custom-colors'].filter(Boolean)} aria-label={t('Channels')} role='region'>
+		<Box className={[roomsListStyle, 'sidebar--custom-colors'].filter(Boolean)} aria-label={t('Channels')} role='navigation'>
 			<Box h='full' w='full' ref={ref}>
 				<Virtuoso
 					totalCount={roomsList.length}

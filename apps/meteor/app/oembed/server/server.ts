@@ -1,23 +1,22 @@
-import URL from 'url';
 import querystring from 'querystring';
+import URL from 'url';
 
-import { camelCase } from 'change-case';
-import _ from 'underscore';
-import iconv from 'iconv-lite';
-import ipRangeCheck from 'ip-range-check';
-import he from 'he';
-import jschardet from 'jschardet';
 import type { OEmbedUrlContentResult, OEmbedUrlWithMetadata, IMessage, MessageAttachment, OEmbedMeta } from '@rocket.chat/core-typings';
 import { isOEmbedUrlContentResult, isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
-import { OEmbedCache } from '@rocket.chat/models';
+import { Logger } from '@rocket.chat/logger';
+import { Messages, OEmbedCache } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { camelCase } from 'change-case';
+import he from 'he';
+import iconv from 'iconv-lite';
+import ipRangeCheck from 'ip-range-check';
+import jschardet from 'jschardet';
+import _ from 'underscore';
 
-import { Logger } from '../../logger/server';
-import { Messages } from '../../models/server';
 import { callbacks } from '../../../lib/callbacks';
-import { settings } from '../../settings/server';
 import { isURL } from '../../../lib/utils/isURL';
-import { Info } from '../../utils/server';
-import { fetch } from '../../../server/lib/http/fetch';
+import { settings } from '../../settings/server';
+import { Info } from '../../utils/rocketchat.info';
 
 const log = new Logger('OEmbed');
 //  Detect encoding
@@ -94,7 +93,7 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 		throw new Error('invalid/unsafe port');
 	}
 
-	const data = callbacks.run('oembed:beforeGetUrlContent', {
+	const data = await callbacks.run('oembed:beforeGetUrlContent', {
 		urlObj,
 		parsedUrl,
 	});
@@ -125,10 +124,9 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 
 	let totalSize = 0;
 	const chunks = [];
-	// @ts-expect-error from https://github.com/microsoft/TypeScript/issues/39051
 	for await (const chunk of response.body) {
 		totalSize += chunk.length;
-		chunks.push(chunk);
+		chunks.push(chunk as Buffer);
 
 		if (totalSize > sizeLimit) {
 			log.warn({ msg: 'OEmbed request size exceeded', url });
@@ -139,7 +137,6 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 	log.debug('Obtained response from server with length of', totalSize);
 	const buffer = Buffer.concat(chunks);
 	return {
-		// @ts-expect-error - fetch types are kinda weird
 		headers: Object.fromEntries(response.headers),
 		body: toUtf8(response.headers.get('content-type') || 'text/plain', buffer),
 		parsedUrl,
@@ -188,19 +185,19 @@ const getUrlMeta = async function (
 			metas[name] = metas[name] || he.unescape(value);
 			return metas[name];
 		};
-		content.body.replace(/<title[^>]*>([^<]*)<\/title>/gim, function (_meta, title) {
+		content.body.replace(/<title[^>]*>([^<]*)<\/title>/gim, (_meta, title) => {
 			return escapeMeta('pageTitle', title);
 		});
-		content.body.replace(/<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gim, function (_meta, name, value) {
+		content.body.replace(/<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gim, (_meta, name, value) => {
 			return escapeMeta(camelCase(name), value);
 		});
-		content.body.replace(/<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*\scontent=["]([^"]*)["][^>]*>/gim, function (_meta, name, value) {
+		content.body.replace(/<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*\scontent=["]([^"]*)["][^>]*>/gim, (_meta, name, value) => {
 			return escapeMeta(camelCase(name), value);
 		});
-		content.body.replace(/<meta[^>]*\scontent=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gim, function (_meta, value, name) {
+		content.body.replace(/<meta[^>]*\scontent=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gim, (_meta, value, name) => {
 			return escapeMeta(camelCase(name), value);
 		});
-		content.body.replace(/<meta[^>]*\scontent=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gim, function (_meta, value, name) {
+		content.body.replace(/<meta[^>]*\scontent=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gim, (_meta, value, name) => {
 			return escapeMeta(camelCase(name), value);
 		});
 		if (metas.fragment === '!' && withFragment == null) {
@@ -324,10 +321,10 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 			}
 		}
 		if (attachments.length) {
-			Messages.setMessageAttachments(message._id, attachments);
+			await Messages.setMessageAttachments(message._id, attachments);
 		}
 		if (changed === true) {
-			Messages.setUrlsById(message._id, message.urls);
+			await Messages.setUrlsById(message._id, message.urls);
 		}
 	}
 	return message;
@@ -343,14 +340,9 @@ const OEmbed: {
 	getUrlMeta,
 };
 
-settings.watch('API_Embed', function (value) {
+settings.watch('API_Embed', (value) => {
 	if (value) {
-		return callbacks.add(
-			'afterSaveMessage',
-			(message) => Promise.await(OEmbed.rocketUrlParser(message)),
-			callbacks.priority.LOW,
-			'API_Embed',
-		);
+		return callbacks.add('afterSaveMessage', (message) => OEmbed.rocketUrlParser(message), callbacks.priority.LOW, 'API_Embed');
 	}
 	return callbacks.remove('afterSaveMessage', 'API_Embed');
 });

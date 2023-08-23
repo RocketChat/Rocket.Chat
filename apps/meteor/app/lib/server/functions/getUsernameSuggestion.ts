@@ -1,14 +1,14 @@
-import limax from 'limax';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import limax from 'limax';
 
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 
 function slug(text: string): string {
 	return limax(text, { replacement: '.' }).replace(/[^0-9a-z-_.]/g, '');
 }
 
-function usernameIsAvailable(username: string): boolean {
+async function usernameIsAvailable(username: string): Promise<boolean> {
 	if (username.length === 0) {
 		return false;
 	}
@@ -17,12 +17,12 @@ function usernameIsAvailable(username: string): boolean {
 		return false;
 	}
 
-	return !Users.findOneByUsernameIgnoringCase(username);
+	return !(await Users.findOneByUsernameIgnoringCase(username, {}));
 }
 
 const name = (username: string): string => (settings.get('UTF8_Names_Slugify') ? slug(username) : username);
 
-export function generateUsernameSuggestion(user: Pick<IUser, 'name' | 'emails' | 'services'>): string | undefined {
+export async function generateUsernameSuggestion(user: Pick<IUser, 'name' | 'emails' | 'services'>): Promise<string | undefined> {
 	let usernames = [];
 
 	if (user.name) {
@@ -60,18 +60,19 @@ export function generateUsernameSuggestion(user: Pick<IUser, 'name' | 'emails' |
 
 	usernames = usernames.filter((e) => e);
 
-	for (const item of usernames) {
-		if (usernameIsAvailable(item)) {
+	for await (const item of usernames) {
+		if (await usernameIsAvailable(item)) {
 			return item;
 		}
 	}
 
 	usernames.push(settings.get('Accounts_DefaultUsernamePrefixSuggestion'));
 
-	let index = Users.find({ username: new RegExp(`^${usernames[0]}-[0-9]+`) }).count();
+	let index = await Users.col.countDocuments({ username: new RegExp(`^${usernames[0]}-[0-9]+`) });
 	const username = '';
 	while (!username) {
-		if (usernameIsAvailable(`${usernames[0]}-${index}`)) {
+		// eslint-disable-next-line no-await-in-loop
+		if (await usernameIsAvailable(`${usernames[0]}-${index}`)) {
 			return `${usernames[0]}-${index}`;
 		}
 		index++;

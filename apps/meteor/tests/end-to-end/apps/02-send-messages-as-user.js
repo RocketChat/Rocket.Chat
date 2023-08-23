@@ -1,11 +1,12 @@
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials } from '../../data/api-data.js';
 import { apps } from '../../data/apps/apps-data.js';
 import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
 import { getMessageById } from '../../data/chat.helper.js';
 import { createRoom } from '../../data/rooms.helper';
-import { adminUsername, password } from '../../data/user.js';
+import { adminUsername, password } from '../../data/user';
 import { createUser, login } from '../../data/users.helper.js';
 
 describe('Apps - Send Messages As User', function () {

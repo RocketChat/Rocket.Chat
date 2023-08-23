@@ -1,37 +1,35 @@
-import moment from 'moment';
 import type { IDirectMessageRoom, IRoom, IMessage } from '@rocket.chat/core-typings';
 import { Messages, Analytics } from '@rocket.chat/models';
+import moment from 'moment';
 
-import { convertDateToInt, diffBetweenDaysInclusive, convertIntToDate, getTotalOfWeekItems } from './date';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { convertDateToInt, diffBetweenDaysInclusive, convertIntToDate, getTotalOfWeekItems } from './date';
 
-export const handleMessagesSent = (message: IMessage, room?: IRoom): IMessage => {
+export const handleMessagesSent = async (message: IMessage, room?: IRoom): Promise<IMessage> => {
 	const roomTypesToShow = roomCoordinator.getTypesToShowOnDashboard();
 	if (!room || !roomTypesToShow.includes(room.t)) {
 		return message;
 	}
 
-	Promise.await(
-		Analytics.saveMessageSent({
-			date: convertDateToInt(message.ts),
-			room,
-		}),
-	);
+	await Analytics.saveMessageSent({
+		date: convertDateToInt(message.ts),
+		room,
+	});
+
 	return message;
 };
 
-export const handleMessagesDeleted = (message: IMessage, room?: IRoom): IMessage => {
+export const handleMessagesDeleted = async (message: IMessage, room?: IRoom): Promise<IMessage> => {
 	const roomTypesToShow = roomCoordinator.getTypesToShowOnDashboard();
 	if (!room || !roomTypesToShow.includes(room.t)) {
 		return message;
 	}
 
-	Promise.await(
-		Analytics.saveMessageDeleted({
-			date: convertDateToInt(message.ts),
-			room,
-		}),
-	);
+	await Analytics.saveMessageDeleted({
+		date: convertDateToInt(message.ts),
+		room,
+	});
+
 	return message;
 };
 

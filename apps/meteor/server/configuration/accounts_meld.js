@@ -1,11 +1,10 @@
-import _ from 'underscore';
+import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-
-import { Users } from '../../app/models/server';
+import _ from 'underscore';
 
 const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
 
-Accounts.updateOrCreateUserFromExternalService = function (serviceName, serviceData = {}, ...args /* , options*/) {
+const updateOrCreateUserFromExternalServiceAsync = async function (serviceName, serviceData = {}, ...args /* , options*/) {
 	const services = ['facebook', 'github', 'gitlab', 'google', 'meteor-developer', 'linkedin', 'twitter', 'apple'];
 
 	if (services.includes(serviceName) === false && serviceData._OAuthCustom !== true) {
@@ -24,7 +23,7 @@ Accounts.updateOrCreateUserFromExternalService = function (serviceName, serviceD
 	}
 
 	if (serviceData.email) {
-		const user = Users.findOneByEmailAddress(serviceData.email);
+		const user = await Users.findOneByEmailAddress(serviceData.email);
 		if (user != null) {
 			const findQuery = {
 				address: serviceData.email,
@@ -32,17 +31,22 @@ Accounts.updateOrCreateUserFromExternalService = function (serviceName, serviceD
 			};
 
 			if (user.services?.password && !_.findWhere(user.emails, findQuery)) {
-				Users.resetPasswordAndSetRequirePasswordChange(
+				await Users.resetPasswordAndSetRequirePasswordChange(
 					user._id,
 					true,
 					'This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password',
 				);
 			}
 
-			Users.setServiceId(user._id, serviceName, serviceData.id);
-			Users.setEmailVerified(user._id, serviceData.email);
+			await Users.setServiceId(user._id, serviceName, serviceData.id);
+			await Users.setEmailVerified(user._id, serviceData.email);
 		}
 	}
 
 	return orig_updateOrCreateUserFromExternalService.apply(this, [serviceName, serviceData, ...args]);
+};
+
+Accounts.updateOrCreateUserFromExternalService = function (...args) {
+	// Depends on meteor support for Async
+	return Promise.await(updateOrCreateUserFromExternalServiceAsync.call(this, ...args));
 };

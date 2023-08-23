@@ -1,21 +1,20 @@
-import { Settings } from '@rocket.chat/models';
-import { Random } from 'meteor/random';
+import { Settings, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
-import { Users } from '../../models/server';
 
 export class CsvImporter extends Base {
-	constructor(info, importRecord) {
-		super(info, importRecord);
+	constructor(info, importRecord, converterOptions = {}) {
+		super(info, importRecord, converterOptions);
 
 		const { parse } = require('csv-parse/lib/sync');
 
 		this.csvParser = parse;
 	}
 
-	prepareUsingLocalFile(fullFilePath) {
+	async prepareUsingLocalFile(fullFilePath) {
 		this.logger.debug('start preparing import operation');
-		this.converter.clearImportData();
+		await this.converter.clearImportData();
 
 		const zip = new this.AdmZip(fullFilePath);
 		const totalEntries = zip.getEntryCount();
@@ -54,28 +53,30 @@ export class CsvImporter extends Base {
 			return roomIds.get(roomName);
 		};
 
-		zip.forEach((entry) => {
+		for await (const entry of zip.getEntries()) {
 			this.logger.debug(`Entry: ${entry.entryName}`);
 
 			// Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
 			if (entry.entryName.indexOf('__MACOSX') > -1) {
 				this.logger.debug(`Ignoring the file: ${entry.entryName}`);
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			// Directories are ignored, since they are "virtual" in a zip file
 			if (entry.isDirectory) {
 				this.logger.debug(`Ignoring the directory entry: ${entry.entryName}`);
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			// Parse the channels
 			if (entry.entryName.toLowerCase() === 'channels.csv') {
-				super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+				await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 				const parsedChannels = this.csvParser(entry.getData().toString());
 				channelsCount = parsedChannels.length;
 
-				for (const c of parsedChannels) {
+				for await (const c of parsedChannels) {
 					const name = c[0].trim();
 					const id = getRoomId(name);
 					const creator = c[1].trim();
@@ -86,7 +87,7 @@ export class CsvImporter extends Base {
 						.map((m) => m.trim())
 						.filter((m) => m);
 
-					this.converter.addChannel({
+					await this.converter.addChannel({
 						importIds: [id],
 						u: {
 							_id: creator,
@@ -97,24 +98,26 @@ export class CsvImporter extends Base {
 					});
 				}
 
-				super.updateRecord({ 'count.channels': channelsCount });
-				return increaseProgressCount();
+				await super.updateRecord({ 'count.channels': channelsCount });
+				increaseProgressCount();
+				continue;
 			}
 
 			// Parse the users
 			if (entry.entryName.toLowerCase() === 'users.csv') {
-				super.updateProgress(ProgressStep.PREPARING_USERS);
+				await super.updateProgress(ProgressStep.PREPARING_USERS);
 				const parsedUsers = this.csvParser(entry.getData().toString());
 				usersCount = parsedUsers.length;
 
-				for (const u of parsedUsers) {
+				for await (const u of parsedUsers) {
 					const username = u[0].trim();
 					availableUsernames.add(username);
 
 					const email = u[1].trim();
 					const name = u[2].trim();
 
-					this.converter.addUser({
+					await this.converter.addUser({
+						type: 'user',
 						importIds: [username],
 						emails: [email],
 						username,
@@ -122,15 +125,15 @@ export class CsvImporter extends Base {
 					});
 				}
 
-				Promise.await(Settings.incrementValueById('CSV_Importer_Count', usersCount));
-				super.updateRecord({ 'count.users': usersCount });
-				return increaseProgressCount();
+				await super.updateRecord({ 'count.users': usersCount });
+				increaseProgressCount();
+				continue;
 			}
 
 			// Parse the messages
 			if (entry.entryName.indexOf('/') > -1) {
 				if (this.progress.step !== ProgressStep.PREPARING_MESSAGES) {
-					super.updateProgress(ProgressStep.PREPARING_MESSAGES);
+					await super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 				}
 
 				const item = entry.entryName.split('/'); // random/messages.csv
@@ -142,7 +145,8 @@ export class CsvImporter extends Base {
 					msgs = this.csvParser(entry.getData().toString());
 				} catch (e) {
 					this.logger.warn(`The file ${entry.entryName} contains invalid syntax`, e);
-					return increaseProgressCount();
+					increaseProgressCount();
+					continue;
 				}
 
 				let data;
@@ -165,14 +169,14 @@ export class CsvImporter extends Base {
 				messagesCount += data.length;
 				const channelName = `${folderName}/${msgGroupData}`;
 
-				super.updateRecord({ messagesstatus: channelName });
+				await super.updateRecord({ messagesstatus: channelName });
 
 				if (isDirect) {
-					for (const msg of data) {
+					for await (const msg of data) {
 						const sourceId = [msg.username, msg.otherUsername].sort().join('/');
 
 						if (!dmRooms.has(sourceId)) {
-							this.converter.addChannel({
+							await this.converter.addChannel({
 								importIds: [sourceId],
 								users: [msg.username, msg.otherUsername],
 								t: 'd',
@@ -192,12 +196,12 @@ export class CsvImporter extends Base {
 
 						usedUsernames.add(msg.username);
 						usedUsernames.add(msg.otherUsername);
-						this.converter.addMessage(newMessage);
+						await this.converter.addMessage(newMessage);
 					}
 				} else {
 					const rid = getRoomId(folderName);
 
-					for (const msg of data) {
+					for await (const msg of data) {
 						const newMessage = {
 							rid,
 							u: {
@@ -208,40 +212,46 @@ export class CsvImporter extends Base {
 						};
 
 						usedUsernames.add(msg.username);
-						this.converter.addMessage(newMessage);
+						await this.converter.addMessage(newMessage);
 					}
 				}
 
-				super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
-				return increaseProgressCount();
+				await super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
+				increaseProgressCount();
+				continue;
 			}
 
 			increaseProgressCount();
-		});
+		}
+
+		if (usersCount) {
+			await Settings.incrementValueById('CSV_Importer_Count', usersCount);
+		}
 
 		// Check if any of the message usernames was not in the imported list of users
-		for (const username of usedUsernames) {
+		for await (const username of usedUsernames) {
 			if (availableUsernames.has(username)) {
 				continue;
 			}
 
 			// Check if an user with that username already exists
-			const user = Users.findOneByUsername(username);
+			const user = await Users.findOneByUsername(username);
 			if (user && !user.importIds?.includes(username)) {
 				// Add the username to the local user's importIds so it can be found by the import process
 				// This way we can support importing new messages for existing users
-				Users.addImportIds(user._id, username);
+				await Users.addImportIds(user._id, username);
 			}
 		}
 
-		super.addCountToTotal(messagesCount + usersCount + channelsCount);
+		await super.addCountToTotal(messagesCount + usersCount + channelsCount);
 		ImporterWebsocket.progressUpdated({ rate: 100 });
 
 		// Ensure we have at least a single user, channel, or message
 		if (usersCount === 0 && channelsCount === 0 && messagesCount === 0) {
 			this.logger.error('No users, channels, or messages found in the import file.');
-			super.updateProgress(ProgressStep.ERROR);
-			return super.getProgress();
+			await super.updateProgress(ProgressStep.ERROR);
 		}
+
+		return super.getProgress();
 	}
 }

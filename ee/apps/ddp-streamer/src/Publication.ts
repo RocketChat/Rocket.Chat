@@ -2,8 +2,8 @@ import { EventEmitter } from 'events';
 
 import type { IPublication } from 'meteor/rocketchat:streamer';
 
-import type { Server } from './Server';
 import type { Client } from './Client';
+import type { Server } from './Server';
 import type { IPacket } from './types/IPacket';
 
 export class Publication extends EventEmitter implements IPublication {

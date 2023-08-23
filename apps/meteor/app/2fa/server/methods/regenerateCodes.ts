@@ -1,27 +1,35 @@
+import { Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { Users } from '../../../models/server';
 import { TOTP } from '../lib/totp';
 
-Meteor.methods({
-	'2fa:regenerateCodes'(userToken) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'2fa:regenerateCodes': (userToken: string) => { codes: string[] } | undefined;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async '2fa:regenerateCodes'(userToken) {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('not-authorized');
 		}
 
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: '2fa:regenerateCodes',
 			});
 		}
 
-		if (!user.services || !user.services.totp || !user.services.totp.enabled) {
+		if (!user.services?.totp?.enabled) {
 			throw new Meteor.Error('invalid-totp');
 		}
 
-		const verified = TOTP.verify({
+		const verified = await TOTP.verify({
 			secret: user.services.totp.secret,
 			token: userToken,
 			userId,
@@ -31,7 +39,7 @@ Meteor.methods({
 		if (verified) {
 			const { codes, hashedCodes } = TOTP.generateCodes();
 
-			Users.update2FABackupCodesByUserId(Meteor.userId(), hashedCodes);
+			await Users.update2FABackupCodesByUserId(userId, hashedCodes);
 			return { codes };
 		}
 	},

@@ -6,6 +6,7 @@ import type { FormEvent } from 'react';
 import React, { memo, useMemo } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
+import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useEditableSettings } from '../../EditableSettingsContext';
 import TabbedGroupPage from './TabbedGroupPage';
 
@@ -18,6 +19,8 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 	const ldapEnabled = useSetting('LDAP_Enable');
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
+
+	const handleLinkClick = useExternalLink();
 
 	const editableSettings = useEditableSettings(
 		useMemo(
@@ -89,11 +92,20 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 
 			setModal(
 				<GenericModal
+					wrapperFunction={(props) => (
+						<Box
+							is='form'
+							onSubmit={(e: FormEvent) => {
+								e.preventDefault();
+								confirmSearch();
+							}}
+							{...props}
+						/>
+					)}
 					variant='info'
 					confirmText={t('Search')}
 					cancelText={t('Cancel')}
 					title={t('Test_LDAP_Search')}
-					onConfirm={confirmSearch}
 					onClose={closeModal}
 				>
 					<Field>
@@ -121,7 +133,7 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 					<Button children={t('Test_Connection')} disabled={!ldapEnabled || changed} onClick={handleTestConnectionButtonClick} />
 					<Button children={t('Test_LDAP_Search')} disabled={!ldapEnabled || changed} onClick={handleSearchTestButtonClick} />
 					<Button children={t('LDAP_Sync_Now')} disabled={!ldapEnabled || changed} onClick={handleSyncNowButtonClick} />
-					<Button is='a' href='https://go.rocket.chat/i/ldap-docs' target='_blank'>
+					<Button role='link' onClick={() => handleLinkClick('https://go.rocket.chat/i/ldap-docs')}>
 						{t('LDAP_Documentation')}
 					</Button>
 				</>

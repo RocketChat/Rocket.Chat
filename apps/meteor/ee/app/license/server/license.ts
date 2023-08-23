@@ -1,21 +1,27 @@
 import { EventEmitter } from 'events';
 
-import { Users } from '../../../../app/models/server';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import { Apps } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
+
+import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
+import type { ILicense } from '../definition/ILicense';
+import type { ILicenseTag } from '../definition/ILicenseTag';
 import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
-import type { ILicense } from '../definitions/ILicense';
-import type { ILicenseTag } from '../definitions/ILicenseTag';
+import { isUnderAppLimits } from './lib/isUnderAppLimits';
 
 const EnterpriseLicenses = new EventEmitter();
 
-export interface IValidLicense {
+interface IValidLicense {
 	valid?: boolean;
 	license: ILicense;
 }
 
 let maxGuestUsers = 0;
+let maxRoomsPerGuest = 0;
 let maxActiveUsers = 0;
 
 class LicenseClass {
@@ -29,6 +35,11 @@ class LicenseClass {
 
 	private modules = new Set<string>();
 
+	private appsConfig: NonNullable<ILicense['apps']> = {
+		maxPrivateApps: 3,
+		maxMarketplaceApps: 5,
+	};
+
 	private _validateExpiration(expiration: string): boolean {
 		return new Date() > new Date(expiration);
 	}
@@ -40,6 +51,21 @@ class LicenseClass {
 		const regex = new RegExp(`^${licenseURL}$`, 'i');
 
 		return !!regex.exec(url);
+	}
+
+	private _setAppsConfig(license: ILicense): void {
+		// If the license is valid, no limit is going to be applied to apps installation for now
+		// This guarantees that upgraded workspaces won't be affected by the new limit right away
+		// and gives us time to propagate the new limit schema to all licenses
+		const { maxPrivateApps = -1, maxMarketplaceApps = -1 } = license.apps || {};
+
+		if (maxPrivateApps === -1 || maxPrivateApps > this.appsConfig.maxPrivateApps) {
+			this.appsConfig.maxPrivateApps = maxPrivateApps;
+		}
+
+		if (maxMarketplaceApps === -1 || maxMarketplaceApps > this.appsConfig.maxMarketplaceApps) {
+			this.appsConfig.maxMarketplaceApps = maxMarketplaceApps;
+		}
 	}
 
 	private _validModules(licenseModules: string[]): void {
@@ -130,6 +156,10 @@ class LicenseClass {
 		return [...this.tags];
 	}
 
+	getAppsConfig(): NonNullable<ILicense['apps']> {
+		return this.appsConfig;
+	}
+
 	setURL(url: string): void {
 		this.url = url.replace(/\/$/, '').replace(/^https?:\/\/(.*)$/, '$1');
 
@@ -145,7 +175,7 @@ class LicenseClass {
 					return item;
 				}
 				if (!this._validateURL(license.url, this.url)) {
-					item.valid = false;
+					this.invalidate(item);
 					console.error(`#### License error: invalid url, licensed to ${license.url}, used on ${this.url}`);
 					this._invalidModules(license.modules);
 					return item;
@@ -153,7 +183,7 @@ class LicenseClass {
 			}
 
 			if (license.expiry && this._validateExpiration(license.expiry)) {
-				item.valid = false;
+				this.invalidate(item);
 				console.error(`#### License error: expired, valid until ${license.expiry}`);
 				this._invalidModules(license.modules);
 				return item;
@@ -163,9 +193,15 @@ class LicenseClass {
 				maxGuestUsers = license.maxGuestUsers;
 			}
 
+			if (license.maxRoomsPerGuest > maxRoomsPerGuest) {
+				maxRoomsPerGuest = license.maxRoomsPerGuest;
+			}
+
 			if (license.maxActiveUsers > maxActiveUsers) {
 				maxActiveUsers = license.maxActiveUsers;
 			}
+
+			this._setAppsConfig(license);
 
 			this._validModules(license.modules);
 
@@ -181,12 +217,32 @@ class LicenseClass {
 		this.showLicenses();
 	}
 
-	canAddNewUser(): boolean {
+	invalidate(item: IValidLicense): void {
+		item.valid = false;
+
+		EnterpriseLicenses.emit('invalidate');
+	}
+
+	async canAddNewUser(userCount = 1): Promise<boolean> {
 		if (!maxActiveUsers) {
 			return true;
 		}
 
-		return maxActiveUsers > Users.getActiveLocalUserCount();
+		return maxActiveUsers > (await Users.getActiveLocalUserCount()) + userCount;
+	}
+
+	async canEnableApp(app: IAppStorageItem): Promise<boolean> {
+		if (!(await Apps.isInitialized())) {
+			return false;
+		}
+
+		// Migrated apps were installed before the validation was implemented
+		// so they're always allowed to be enabled
+		if (app.migrated) {
+			return true;
+		}
+
+		return isUnderAppLimits(this.appsConfig, getInstallationSourceFromAppStorageItem(app));
 	}
 
 	showLicenses(): void {
@@ -272,6 +328,10 @@ export function getMaxGuestUsers(): number {
 	return maxGuestUsers;
 }
 
+export function getMaxRoomsPerGuest(): number {
+	return maxRoomsPerGuest;
+}
+
 export function getMaxActiveUsers(): number {
 	return maxActiveUsers;
 }
@@ -288,11 +348,19 @@ export function getTags(): ILicenseTag[] {
 	return License.getTags();
 }
 
-export function canAddNewUser(): boolean {
-	return License.canAddNewUser();
+export function getAppsConfig(): NonNullable<ILicense['apps']> {
+	return License.getAppsConfig();
 }
 
-export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void {
+export async function canAddNewUser(userCount = 1): Promise<boolean> {
+	return License.canAddNewUser(userCount);
+}
+
+export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {
+	return License.canEnableApp(app);
+}
+
+export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void | Promise<void> {
 	if (hasLicense(feature)) {
 		return cb();
 	}
@@ -300,7 +368,7 @@ export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void):
 	EnterpriseLicenses.once(`valid:${feature}`, cb);
 }
 
-export function onValidFeature(feature: BundleFeature, cb: () => void): () => void {
+function onValidFeature(feature: BundleFeature, cb: () => void): () => void {
 	EnterpriseLicenses.on(`valid:${feature}`, cb);
 
 	if (hasLicense(feature)) {
@@ -312,7 +380,7 @@ export function onValidFeature(feature: BundleFeature, cb: () => void): () => vo
 	};
 }
 
-export function onInvalidFeature(feature: BundleFeature, cb: () => void): () => void {
+function onInvalidFeature(feature: BundleFeature, cb: () => void): () => void {
 	EnterpriseLicenses.on(`invalid:${feature}`, cb);
 
 	if (!hasLicense(feature)) {
@@ -330,28 +398,28 @@ export function onToggledFeature(
 		up,
 		down,
 	}: {
-		up?: () => void;
-		down?: () => void;
+		up?: () => Promise<void> | void;
+		down?: () => Promise<void> | void;
 	},
 ): () => void {
 	let enabled = hasLicense(feature);
 
 	const offValidFeature = onValidFeature(feature, () => {
 		if (!enabled) {
-			up?.();
+			void up?.();
 			enabled = true;
 		}
 	});
 
 	const offInvalidFeature = onInvalidFeature(feature, () => {
 		if (enabled) {
-			down?.();
+			void down?.();
 			enabled = false;
 		}
 	});
 
 	if (enabled) {
-		up?.();
+		void up?.();
 	}
 
 	return (): void => {
@@ -368,6 +436,10 @@ export function onValidateLicenses(cb: (...args: any[]) => void): void {
 	EnterpriseLicenses.on('validate', cb);
 }
 
+export function onInvalidateLicense(cb: (...args: any[]) => void): void {
+	EnterpriseLicenses.on('invalidate', cb);
+}
+
 export function flatModules(modulesAndBundles: string[]): string[] {
 	const bundles = modulesAndBundles.filter(isBundle);
 	const modules = modulesAndBundles.filter((x) => !isBundle(x));
@@ -377,14 +449,14 @@ export function flatModules(modulesAndBundles: string[]): string[] {
 	return modules.concat(modulesFromBundles);
 }
 
-export interface IOverrideClassProperties {
+interface IOverrideClassProperties {
 	[key: string]: (...args: any[]) => any;
 }
 
 type Class = { new (...args: any[]): any };
 
-export function overwriteClassOnLicense(license: BundleFeature, original: Class, overwrite: IOverrideClassProperties): void {
-	onLicense(license, () => {
+export async function overwriteClassOnLicense(license: BundleFeature, original: Class, overwrite: IOverrideClassProperties): Promise<void> {
+	await onLicense(license, () => {
 		Object.entries(overwrite).forEach(([key, value]) => {
 			const originalFn = original.prototype[key];
 			original.prototype[key] = function (...args: any[]): any {

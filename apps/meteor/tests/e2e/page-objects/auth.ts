@@ -20,7 +20,7 @@ export class Registration {
 	}
 
 	get main(): Locator {
-		return this.page.locator('role=main[name="Home"]');
+		return this.page.locator('role=main');
 	}
 
 	get backToLogin(): Locator {
@@ -32,7 +32,7 @@ export class Registration {
 	}
 
 	get btnRegisterConfirmUsername(): Locator {
-		return this.page.locator('button[data-loading-text=" Please_wait ..."]');
+		return this.page.locator('role=button[name="Use this username"]');
 	}
 
 	get btnForgotPassword(): Locator {

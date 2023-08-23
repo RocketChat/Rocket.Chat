@@ -1,14 +1,17 @@
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { ChatSubscription } from '../../app/models/client';
 
-Meteor.methods({
-	openRoom(rid) {
+Meteor.methods<ServerMethods>({
+	async openRoom(rid) {
 		if (!Meteor.userId()) {
-			return false;
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'openRoom',
+			});
 		}
 
-		ChatSubscription.update(
+		return ChatSubscription.update(
 			{
 				rid,
 				'u._id': Meteor.userId(),

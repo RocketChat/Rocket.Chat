@@ -1,9 +1,10 @@
-import { FederationRoomEvents } from '../../../models/server';
+import { FederationRoomEvents } from '@rocket.chat/models';
+
 import { getFederatedRoomData, hasExternalDomain, isLocalUser } from '../functions/helpers';
+import { dispatchEvent } from '../handler';
+import { getFederationDomain } from '../lib/getFederationDomain';
 import { clientLogger } from '../lib/logger';
 import { normalizers } from '../normalizers';
-import { getFederationDomain } from '../lib/getFederationDomain';
-import { dispatchEvent } from '../handler';
 
 async function afterLeaveRoom(user, room) {
 	const localDomain = getFederationDomain();
@@ -15,7 +16,7 @@ async function afterLeaveRoom(user, room) {
 
 	clientLogger.debug({ msg: 'afterLeaveRoom', user, room });
 
-	const { users } = getFederatedRoomData(room);
+	const { users } = await getFederatedRoomData(room);
 
 	try {
 		// Get the domains after leave
@@ -33,7 +34,7 @@ async function afterLeaveRoom(user, room) {
 		//
 		// Create the user left event
 		//
-		const normalizedSourceUser = normalizers.normalizeUser(user);
+		const normalizedSourceUser = await normalizers.normalizeUser(user);
 
 		const userLeftEvent = await FederationRoomEvents.createUserLeftEvent(localDomain, room._id, normalizedSourceUser, domainsAfterLeave);
 
@@ -48,6 +49,6 @@ async function afterLeaveRoom(user, room) {
 
 export const definition = {
 	hook: 'afterLeaveRoom',
-	callback: (roomOwner, room) => Promise.await(afterLeaveRoom(roomOwner, room)),
+	callback: afterLeaveRoom,
 	id: 'federation-after-leave-room',
 };

@@ -1,6 +1,6 @@
-import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 import { asyncLocalStorage } from '@rocket.chat/core-services';
 import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
+import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { EnterpriseCheck } from './lib/EnterpriseCheck';
 
@@ -75,10 +75,11 @@ export class NetworkBroker implements IBroker {
 		if (!name) {
 			return;
 		}
-		this.broker.destroyService(name);
+		void this.broker.destroyService(name);
+		instance.removeAllListeners();
 	}
 
-	createService(instance: IServiceClass): void {
+	createService(instance: IServiceClass, serviceDependencies?: string[]): void {
 		const methods = (
 			instance.constructor?.name === 'Object'
 				? Object.getOwnPropertyNames(instance)
@@ -97,14 +98,14 @@ export class NetworkBroker implements IBroker {
 			return;
 		}
 
-		const dependencies = name !== 'license' ? { dependencies: ['license'] } : {};
-
+		// Allow services to depend on other services too
+		const dependencies = name !== 'license' ? { dependencies: ['license', ...(serviceDependencies || [])] } : {};
 		const service: ServiceSchema = {
 			name,
 			actions: {},
 			mixins: !instance.isInternal() ? [EnterpriseCheck] : [],
 			...dependencies,
-			events: instanceEvents.reduce<Record<string, (ctx: Context) => void>>((map, eventName) => {
+			events: instanceEvents.reduce<Record<string, (ctx: Context) => void>>((map, { eventName }) => {
 				map[eventName] = /^\$/.test(eventName)
 					? (ctx: Context): void => {
 							// internal events params are not an array
@@ -164,7 +165,7 @@ export class NetworkBroker implements IBroker {
 	}
 
 	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		this.broker.broadcastLocal(event, args);
+		void this.broker.broadcastLocal(event, args);
 	}
 
 	async broadcastToServices<T extends keyof EventSignatures>(
@@ -172,7 +173,7 @@ export class NetworkBroker implements IBroker {
 		event: T,
 		...args: Parameters<EventSignatures[T]>
 	): Promise<void> {
-		this.broker.broadcast(event, args, services);
+		void this.broker.broadcast(event, args, services);
 	}
 
 	async nodeList(): Promise<IBrokerNode[]> {

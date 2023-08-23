@@ -12,9 +12,6 @@
 		"noImplicitReturns": false,
 		"noFallthroughCasesInSwitch": false,
 
-		/* Module Resolution Options */
-		"importsNotUsedAsValues": "preserve",
-
 		"outDir": "./dist"
 	},
 	"files": ["./src/service.ts"],

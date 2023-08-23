@@ -1,11 +1,10 @@
 import { EnvironmentalVariableBridge } from '@rocket.chat/apps-engine/server/bridges/EnvironmentalVariableBridge';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class AppEnvironmentalVariableBridge extends EnvironmentalVariableBridge {
 	allowed: Array<string>;
 
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 		this.allowed = ['NODE_ENV', 'ROOT_URL', 'INSTANCE_IP'];

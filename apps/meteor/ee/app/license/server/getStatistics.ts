@@ -1,7 +1,7 @@
 import { log } from 'console';
 
-import { CannedResponse, LivechatPriority, LivechatTag, LivechatUnit } from '@rocket.chat/models';
 import { Analytics } from '@rocket.chat/core-services';
+import { CannedResponse, OmnichannelServiceLevelAgreements, LivechatRooms, LivechatTag, LivechatUnit, Users } from '@rocket.chat/models';
 
 import { getModules, getTags, hasLicense } from './license';
 
@@ -17,7 +17,13 @@ type EEOnlyStats = {
 	livechatTags: number;
 	cannedResponses: number;
 	priorities: number;
+	slas: number;
 	businessUnits: number;
+	omnichannelPdfTranscriptRequested: number;
+	omnichannelPdfTranscriptSucceeded: number;
+	omnichannelRoomsWithSlas: number;
+	omnichannelRoomsWithPriorities: number;
+	livechatMonitors: number;
 };
 
 export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
@@ -57,27 +63,65 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 
 	// Number of canned responses
 	statsPms.push(
-		CannedResponse.col.count().then((count) => {
+		CannedResponse.col.estimatedDocumentCount().then((count) => {
 			statistics.cannedResponses = count;
 			return true;
 		}),
 	);
 
-	// Number of Priorities
+	// Number of Service Level Agreements
 	statsPms.push(
-		LivechatPriority.col.count().then((count) => {
-			statistics.priorities = count;
+		OmnichannelServiceLevelAgreements.col.count().then((count) => {
+			statistics.slas = count;
+			return true;
+		}),
+	);
+
+	statsPms.push(
+		LivechatRooms.col.countDocuments({ priorityId: { $exists: true } }).then((count) => {
+			statistics.omnichannelRoomsWithPriorities = count;
+			return true;
+		}),
+	);
+
+	statsPms.push(
+		LivechatRooms.col.countDocuments({ slaId: { $exists: true } }).then((count) => {
+			statistics.omnichannelRoomsWithSlas = count;
 			return true;
 		}),
 	);
 
 	// Number of business units
 	statsPms.push(
-		LivechatUnit.find({ type: 'u' })
+		LivechatUnit.countUnits().then((count) => {
+			statistics.businessUnits = count;
+			return true;
+		}),
+	);
+
+	statsPms.push(
+		// Total livechat monitors
+		Users.col.countDocuments({ roles: 'livechat-monitor' }).then((count) => {
+			statistics.livechatMonitors = count;
+			return true;
+		}),
+	);
+
+	// Number of PDF transcript requested
+	statsPms.push(
+		LivechatRooms.find({ pdfTranscriptRequested: { $exists: true } })
 			.count()
 			.then((count) => {
-				statistics.businessUnits = count;
-				return true;
+				statistics.omnichannelPdfTranscriptRequested = count;
+			}),
+	);
+
+	// Number of PDF transcript that succeeded
+	statsPms.push(
+		LivechatRooms.find({ pdfTranscriptFileId: { $exists: true } })
+			.count()
+			.then((count) => {
+				statistics.omnichannelPdfTranscriptSucceeded = count;
 			}),
 	);
 

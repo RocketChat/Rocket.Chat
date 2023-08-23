@@ -36,7 +36,7 @@ type QuoteAttachmentProps = {
 };
 
 export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElement => {
-	const format = useTimeAgo();
+	const formatTime = useTimeAgo();
 
 	return (
 		<>
@@ -52,7 +52,7 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 					<AttachmentAuthor>
 						<AttachmentAuthorAvatar url={attachment.author_icon} />
 						<AttachmentAuthorName
-							{...(attachment.author_name && { is: 'a', href: attachment.author_link, target: '_blank', color: 'hint' })}
+							{...(attachment.author_link && { is: 'a', href: attachment.author_link, target: '_blank', color: 'hint' })}
 						>
 							{attachment.author_name}
 						</AttachmentAuthorName>
@@ -61,14 +61,14 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 								fontScale='c1'
 								{...(attachment.message_link ? { is: 'a', href: attachment.message_link, color: 'hint' } : { color: 'hint' })}
 							>
-								{format(attachment.ts)}
+								{formatTime(attachment.ts)}
 							</Box>
 						)}
 					</AttachmentAuthor>
-					{attachment.md ? <MessageContentBody md={attachment.md} /> : attachment.text}
+					{attachment.md ? <MessageContentBody md={attachment.md} /> : attachment.text.substring(attachment.text.indexOf('\n') + 1)}
 					{attachment.attachments && (
 						<AttachmentInner>
-							<Attachments attachments={attachment.attachments} />
+							<Attachments attachments={attachment.attachments} collapsed={attachment.collapsed} />
 						</AttachmentInner>
 					)}
 				</AttachmentDetails>

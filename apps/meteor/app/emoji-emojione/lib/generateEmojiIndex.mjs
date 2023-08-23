@@ -9,11 +9,11 @@ import _ from 'underscore';
 import gm from 'gm'; // lgtm[js/unused-local-variable]
 
 const assetFolder = '../../../node_modules/emojione-assets';
-const emojiJsonFile = `${ assetFolder }/emoji.json`;
+const emojiJsonFile = `${assetFolder}/emoji.json`;
 
 if (!fs.existsSync(emojiJsonFile)) {
-	console.error(`${ emojiJsonFile } doesn't exist.`);
-	console.error('Maybe you need to run \'meteor npm install emojione-assets\' or \'meteor npm install\'?');
+	console.error(`${emojiJsonFile} doesn't exist.`);
+	console.error("Maybe you need to run 'meteor npm install emojione-assets' or 'meteor npm install'?");
 } else {
 	const emojiJson = fs.readFileSync(emojiJsonFile);
 	generateEmojiPicker(emojiJson);
@@ -51,7 +51,6 @@ function generateEmojiPicker(data) {
  * Mapping category hashes into human readable and translated names
  */\n\n`;
 
-
 	const emojiCategoriesMapping = [
 		{ key: 'people', i18n: 'Smileys_and_People' },
 		{ key: 'nature', i18n: 'Animals_and_Nature' },
@@ -66,11 +65,11 @@ function generateEmojiPicker(data) {
 	// emojiCategories
 	output += `export const emojiCategories = [\n`;
 	for (let category in emojisByCategory) {
-		const map = emojiCategoriesMapping.find(o => o.key === category);
+		const map = emojiCategoriesMapping.find((o) => o.key === category);
 		if (map) {
 			output += `\t{ key: '${category}', i18n: '${map.i18n}' },\n`;
 		} else {
-			if(category !== 'modifier' || category !== 'regional'){
+			if (category !== 'modifier' || category !== 'regional') {
 				console.error(`No emojiCategory mapping for ${category}`);
 			}
 		}
@@ -86,7 +85,6 @@ function generateEmojiPicker(data) {
 		} else {
 			output += `\t${toneList[tone]}: 1,\n`;
 		}
-
 	}
 	output += `};\n`;
 
@@ -96,16 +94,16 @@ function generateEmojiPicker(data) {
 		output += `\t${category}: [\n`;
 
 		for (let emoji in emojisByCategory[category]) {
-			output += `\t\t'${emojiList[emojisByCategory[category][emoji]].shortname.replace(/:/g,'')}',\n`;
+			output += `\t\t'${emojiList[emojisByCategory[category][emoji]].shortname.replace(/:/g, '')}',\n`;
 		}
 
 		output += `\t],\n`;
 	}
 	output += `};\n`;
 
-	fs.writeFileSync("emojiPicker.js", output, {
+	fs.writeFileSync('emojiPicker.js', output, {
 		encoding: 'utf8',
-		flag: 'w'
+		flag: 'w',
 	});
 	console.log('Generated emojiPicker.js!');
 
@@ -116,41 +114,44 @@ function generateEmojiPicker(data) {
 	for (let category in emojisByCategory) {
 		let srcList = [];
 		let diversityList = [];
-		const emojis = _.filter(emojiList, x => x.category === category);
-		const spritePath = `../../../public/packages/emojione/${ category }-sprites.png`;
+		const emojis = _.filter(emojiList, (x) => x.category === category);
+		const spritePath = `../../../public/packages/emojione/${category}-sprites.png`;
 
 		_.each(emojis, function (emoji) {
-			srcList.push(`${ assetFolder }/png/64/${ emoji.code_points.base }.png`);
-			if(emoji.diversity){
+			srcList.push(`${assetFolder}/png/64/${emoji.code_points.base}.png`);
+			if (emoji.diversity) {
 				diversityList[emoji.code_points.base] = true;
 			}
 		});
-		spriteCss += `@import './${ category }-sprites.css';\n`;
+		spriteCss += `@import './${category}-sprites.css';\n`;
 
-		nsg({
-			src: srcList,
-			spritePath: spritePath,
-			layout: 'packed',
-			stylesheet: 'emojione.tpl',
-			stylesheetPath: `../client/${ category }-sprites.css`,
-			compositor: 'gm',
-			layoutOptions: {
-				scaling: 1,
+		nsg(
+			{
+				src: srcList,
+				spritePath: spritePath,
+				layout: 'packed',
+				stylesheet: 'emojione.tpl',
+				stylesheetPath: `../client/${category}-sprites.css`,
+				compositor: 'gm',
+				layoutOptions: {
+					scaling: 1,
+				},
+				stylesheetOptions: {
+					prefix: '',
+					diversityList: diversityList,
+					category: category,
+					spritePath: `/packages/emojione/${category}-sprites.png`,
+					pixelRatio: 1,
+				},
 			},
-			stylesheetOptions: {
-				prefix: '',
-				diversityList: diversityList,
-				category: category,
-				spritePath: `/packages/emojione/${ category }-sprites.png`,
-				pixelRatio: 1
-			}
-		}, function (err) {
-			if (err) {
-				console.error(err);
-				return;
-			}
-			console.log(`${ category }'s sprite generated!`);
-		});
+			function (err) {
+				if (err) {
+					console.error(err);
+					return;
+				}
+				console.log(`${category}'s sprite generated!`);
+			},
+		);
 	}
 
 	spriteCss += `
@@ -160,8 +161,8 @@ function generateEmojiPicker(data) {
 	display: inline-block;
 	overflow: hidden;
 
-	width: 22px;
-	height: 22px;
+	width: 1.375rem;
+	height: 1.375rem;
 	margin: 0 0.15em;
 
 	vertical-align: middle;
@@ -173,14 +174,9 @@ function generateEmojiPicker(data) {
 	image-rendering: -webkit-optimize-contrast;
 	image-rendering: optimizeQuality;
 }
-
-.emojione.big {
-	width: 44px;
-	height: 44px;
-}
 `;
-	fs.writeFileSync("../client/emojione-sprites.css", spriteCss, {
+	fs.writeFileSync('../client/emojione-sprites.css', spriteCss, {
 		encoding: 'utf8',
-		flag: 'w'
+		flag: 'w',
 	});
 }

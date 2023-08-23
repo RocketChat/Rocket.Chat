@@ -1,29 +1,29 @@
 import { faker } from '@faker-js/faker';
 
-import { test, expect } from './utils/test';
+import { Users } from './fixtures/userStates';
 import { HomeChannel, AccountProfile } from './page-objects';
+import { test, expect } from './utils/test';
 
-test.use({ storageState: 'user3-session.json' });
+test.use({ storageState: Users.user3.state });
 
 test.describe.serial('settings-account-profile', () => {
 	let poHomeChannel: HomeChannel;
 	let poAccountProfile: AccountProfile;
 
-	const token = faker.random.alpha(10);
+	const token = faker.string.alpha(10);
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		poAccountProfile = new AccountProfile(page);
 
-		await page.goto('/home');
+		await page.goto('/account/profile');
 	});
 
 	// FIXME: solve test intermitencies
-	test.skip('expect update profile with new name/username', async ({ page }) => {
-		const newName = faker.name.findName();
+	test.skip('expect update profile with new name/username', async () => {
+		const newName = faker.person.fullName();
 		const newUsername = faker.internet.userName(newName);
 
-		await page.goto('/account/profile');
 		await poAccountProfile.inputName.fill(newName);
 		await poAccountProfile.inputUsername.fill(newUsername);
 		await poAccountProfile.btnSubmit.click();
@@ -51,7 +51,7 @@ test.describe.serial('settings-account-profile', () => {
 			await poAccountProfile.inputToken.type(token);
 			await poAccountProfile.btnTokensAdd.click();
 			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
-			await page.locator('button:has-text("Ok")').click();
+			await page.locator('role=button[name=Ok]').click();
 		});
 
 		await test.step('expect not allow add new personal token with same name', async () => {
@@ -64,7 +64,7 @@ test.describe.serial('settings-account-profile', () => {
 			await poAccountProfile.tokenInTable(token).locator('button >> nth=0').click();
 			await poAccountProfile.btnRegenerateTokenModal.click();
 			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
-			await page.locator('button:has-text("Ok")').click();
+			await page.locator('role=button[name=Ok]').click();
 		});
 
 		await test.step('expect delete personal token', async () => {

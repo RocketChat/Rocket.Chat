@@ -1,17 +1,30 @@
-import path, { join } from 'path';
-import { mkdir, mkdtemp } from 'fs/promises';
+import { mkdtemp } from 'fs/promises';
 import { tmpdir } from 'os';
+import path, { join } from 'path';
 
-import { Meteor } from 'meteor/meteor';
+import type { IExportOperation } from '@rocket.chat/core-typings';
 import { ExportOperations, UserDataFiles } from '@rocket.chat/models';
-import type { IExportOperation, IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../app/settings/server';
 import * as dataExport from '../lib/dataExport';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		requestDataDownload(params: { fullExport?: boolean }): Promise<{
+			requested: boolean;
+			exportOperation: IExportOperation;
+			url: string | null;
+			pendingOperationsBeforeMyRequest: number;
+		}>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async requestDataDownload({ fullExport = false }) {
-		const currentUserData = Meteor.user() as IUser | null;
+		const currentUserData = await Meteor.userAsync();
 
 		if (!currentUserData) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user');
@@ -52,7 +65,6 @@ Meteor.methods({
 		}
 
 		const tempFolder = settings.get<string | undefined>('UserData_FileSystemPath')?.trim() || (await mkdtemp(join(tmpdir(), 'userData')));
-		await mkdir(tempFolder, { recursive: true });
 
 		const exportOperation = {
 			status: 'preparing',
@@ -68,10 +80,8 @@ Meteor.methods({
 		exportOperation._id = id;
 
 		const folderName = path.join(tempFolder, id);
-		await mkdir(folderName, { recursive: true });
 
 		const assetsFolder = path.join(folderName, 'assets');
-		await mkdir(assetsFolder, { recursive: true });
 
 		exportOperation.exportPath = folderName;
 		exportOperation.assetsPath = assetsFolder;

@@ -1,13 +1,13 @@
-import type { IAnalyticsSeatRequest } from '@rocket.chat/core-typings';
-import { Analytics } from '@rocket.chat/models';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IAnalyticsService } from '@rocket.chat/core-services';
+import type { IAnalyticsSeatRequest } from '@rocket.chat/core-typings';
+import { Analytics } from '@rocket.chat/models';
 
 export class AnalyticsService extends ServiceClassInternal implements IAnalyticsService {
 	protected name = 'analytics';
 
 	async saveSeatRequest(): Promise<void> {
-		Analytics.update({ type: 'seat-request' }, { $inc: { count: 1 } }, { upsert: true });
+		await Analytics.update({ type: 'seat-request' }, { $inc: { count: 1 } }, { upsert: true });
 	}
 
 	async getSeatRequestCount(): Promise<number> {

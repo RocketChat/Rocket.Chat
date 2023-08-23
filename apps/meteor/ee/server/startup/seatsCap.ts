@@ -1,8 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+import { throttle } from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
+import { i18n } from '../../../server/lib/i18n';
+import { validateUserRoles } from '../../app/authorization/server/validateUserRoles';
 import { canAddNewUser, getMaxActiveUsers, onValidateLicenses } from '../../app/license/server/license';
 import {
 	createSeatsLimitBanners,
@@ -11,18 +14,27 @@ import {
 	enableDangerBanner,
 	enableWarningBanner,
 } from '../../app/license/server/maxSeatsBanners';
-import { validateUserRoles } from '../../app/authorization/server/validateUserRoles';
-import { Users } from '../../../app/models/server';
 
 callbacks.add(
 	'onCreateUser',
-	({ isGuest }: { isGuest: boolean }) => {
+	async ({ isGuest }: { isGuest: boolean }) => {
 		if (isGuest) {
 			return;
 		}
 
-		if (!canAddNewUser()) {
-			throw new Meteor.Error('error-license-user-limit-reached', TAPi18n.__('error-license-user-limit-reached'));
+		if (!(await canAddNewUser())) {
+			throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
+		}
+	},
+	callbacks.priority.MEDIUM,
+	'check-max-user-seats',
+);
+
+callbacks.add(
+	'beforeUserImport',
+	async ({ userCount }) => {
+		if (!(await canAddNewUser(userCount))) {
+			throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 		}
 	},
 	callbacks.priority.MEDIUM,
@@ -31,7 +43,7 @@ callbacks.add(
 
 callbacks.add(
 	'beforeActivateUser',
-	(user: IUser) => {
+	async (user: IUser) => {
 		if (user.roles.length === 1 && user.roles.includes('guest')) {
 			return;
 		}
@@ -40,8 +52,8 @@ callbacks.add(
 			return;
 		}
 
-		if (!canAddNewUser()) {
-			throw new Meteor.Error('error-license-user-limit-reached', TAPi18n.__('error-license-user-limit-reached'));
+		if (!(await canAddNewUser())) {
+			throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 		}
 	},
 	callbacks.priority.MEDIUM,
@@ -50,10 +62,10 @@ callbacks.add(
 
 callbacks.add(
 	'validateUserRoles',
-	(userData: Partial<IUser>) => {
+	async (userData: Partial<IUser>) => {
 		const isGuest = userData.roles?.includes('guest');
 		if (isGuest) {
-			validateUserRoles(Meteor.userId(), userData);
+			await validateUserRoles(Meteor.userId(), userData);
 			return;
 		}
 
@@ -61,8 +73,8 @@ callbacks.add(
 			return;
 		}
 
-		const currentUserData = Users.findOneById(userData._id);
-		if (currentUserData.type === 'app') {
+		const currentUserData = await Users.findOneById(userData._id);
+		if (currentUserData?.type === 'app') {
 			return;
 		}
 
@@ -71,24 +83,24 @@ callbacks.add(
 			return;
 		}
 
-		if (!canAddNewUser()) {
-			throw new Meteor.Error('error-license-user-limit-reached', TAPi18n.__('error-license-user-limit-reached'));
+		if (!(await canAddNewUser())) {
+			throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 		}
 	},
 	callbacks.priority.MEDIUM,
 	'check-max-user-seats',
 );
 
-const handleMaxSeatsBanners = (): void => {
+const handleMaxSeatsBanners = throttle(async function _handleMaxSeatsBanners() {
 	const maxActiveUsers = getMaxActiveUsers();
 
 	if (!maxActiveUsers) {
-		disableWarningBannerDiscardingDismissal();
-		disableDangerBannerDiscardingDismissal();
+		await disableWarningBannerDiscardingDismissal();
+		await disableDangerBannerDiscardingDismissal();
 		return;
 	}
 
-	const activeUsers = Users.getActiveLocalUserCount();
+	const activeUsers = await Users.getActiveLocalUserCount();
 
 	// callback runs before user is added, so we should add the user
 	// that is being created to the current value.
@@ -96,17 +108,17 @@ const handleMaxSeatsBanners = (): void => {
 	const seatsLeft = maxActiveUsers - activeUsers;
 
 	if (ratio < 0.8 || ratio >= 1) {
-		disableWarningBannerDiscardingDismissal();
+		await disableWarningBannerDiscardingDismissal();
 	} else {
-		enableWarningBanner(seatsLeft);
+		await enableWarningBanner(seatsLeft);
 	}
 
 	if (ratio < 1) {
-		disableDangerBannerDiscardingDismissal();
+		await disableDangerBannerDiscardingDismissal();
 	} else {
-		enableDangerBanner();
+		await enableDangerBanner();
 	}
-};
+}, 10000);
 
 callbacks.add('afterCreateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
@@ -118,10 +130,12 @@ callbacks.add('afterDeactivateUser', handleMaxSeatsBanners, callbacks.priority.M
 
 callbacks.add('afterActivateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
-Meteor.startup(() => {
-	createSeatsLimitBanners();
+callbacks.add('afterUserImport', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
-	handleMaxSeatsBanners();
+Meteor.startup(async () => {
+	await createSeatsLimitBanners();
+
+	await handleMaxSeatsBanners();
 
 	onValidateLicenses(handleMaxSeatsBanners);
 });

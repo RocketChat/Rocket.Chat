@@ -1,5 +1,5 @@
+import type { IVoipRoom, IVoipRoomClosingInfo } from '@rocket.chat/core-typings';
 import type { FindOptions, UpdateResult, Document, FindCursor } from 'mongodb';
-import type { IVoipRoom, IRoomClosingInfo } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -13,7 +13,7 @@ export interface IVoipRoomModel extends IBaseModel<IVoipRoom> {
 
 	findOneByVisitorToken(visitorToken: string, options?: FindOptions<IVoipRoom>): Promise<IVoipRoom | null>;
 	findOneByIdAndVisitorToken(_id: IVoipRoom['_id'], visitorToken: string, options?: FindOptions<IVoipRoom>): Promise<IVoipRoom | null>;
-	closeByRoomId(roomId: IVoipRoom['_id'], closeInfo: IRoomClosingInfo): Promise<Document | UpdateResult>;
+	closeByRoomId(roomId: IVoipRoom['_id'], closeInfo: IVoipRoomClosingInfo): Promise<Document | UpdateResult>;
 
 	findRoomsWithCriteria({
 		agents,

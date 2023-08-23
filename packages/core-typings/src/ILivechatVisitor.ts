@@ -1,4 +1,5 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { UserStatus } from './UserStatus';
 
 export interface IVisitorPhone {
 	phoneNumber: string;
@@ -36,6 +37,7 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 	ip?: string;
 	host?: string;
 	visitorEmails?: IVisitorEmail[];
+	status?: UserStatus;
 	lastAgent?: {
 		username: string;
 		agentId: string;
@@ -53,7 +55,7 @@ export interface ILivechatVisitorDTO {
 	name?: string;
 	email?: string;
 	department?: string;
-	phone?: string | { number: string };
+	phone?: string;
 	username?: string;
 	customFields?: {
 		key: string;

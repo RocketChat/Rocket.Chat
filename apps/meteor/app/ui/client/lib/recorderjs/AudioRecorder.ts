@@ -1,5 +1,5 @@
-import { AudioEncoder } from './AudioEncoder';
 import { settings } from '../../../../settings/client';
+import { AudioEncoder } from './AudioEncoder';
 
 export class AudioRecorder {
 	private audioContext: AudioContext | undefined;
@@ -25,7 +25,7 @@ export class AudioRecorder {
 			return;
 		}
 
-		this.audioContext.close();
+		void this.audioContext.close();
 		delete this.audioContext;
 	}
 
@@ -76,6 +76,7 @@ export class AudioRecorder {
 			this.destroyStream();
 			this.destroyAudioContext();
 			cb?.call(this, false);
+			throw error;
 		}
 	}
 

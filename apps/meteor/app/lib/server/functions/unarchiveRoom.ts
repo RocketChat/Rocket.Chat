@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
+import { Message } from '@rocket.chat/core-services';
+import type { IMessage } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 
-import { Rooms, Messages, Subscriptions } from '../../../models/server';
-
-export const unarchiveRoom = function (rid: string): void {
-	Rooms.unarchiveById(rid);
-	Subscriptions.unarchiveByRoomId(rid);
-	Messages.createRoomUnarchivedByRoomIdAndUser(rid, Meteor.user());
+export const unarchiveRoom = async function (rid: string, user: IMessage['u']): Promise<void> {
+	await Rooms.unarchiveById(rid);
+	await Subscriptions.unarchiveByRoomId(rid);
+	await Message.saveSystemMessage('room-unarchived', rid, '', user);
 };

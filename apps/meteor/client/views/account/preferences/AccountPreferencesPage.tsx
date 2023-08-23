@@ -31,7 +31,6 @@ type CurrentData = {
 	pushNotifications: string;
 	enableAutoAway: boolean;
 	highlights: string;
-	messageViewMode: number;
 	hideUsernames: boolean;
 	hideRoles: boolean;
 	displayAvatars: boolean;
@@ -47,6 +46,7 @@ type CurrentData = {
 	muteFocusedConversations: boolean;
 	receiveLoginDetectionEmail: boolean;
 	dontAskAgainList: [action: string, label: string][];
+	notifyCalendarEvents: boolean;
 };
 
 export type FormSectionProps = {
@@ -129,13 +129,7 @@ const AccountPreferencesPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Preferences')}>
-				<ButtonGroup>
-					<Button primary disabled={!hasAnyChange} onClick={handleSave}>
-						{t('Save_changes')}
-					</Button>
-				</ButtonGroup>
-			</Page.Header>
+			<Page.Header title={t('Preferences')} />
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<Accordion>
@@ -150,6 +144,13 @@ const AccountPreferencesPage = (): ReactElement => {
 					</Accordion>
 				</Box>
 			</Page.ScrollableContentWithShadow>
+			<Page.Footer isDirty={hasAnyChange}>
+				<ButtonGroup>
+					<Button primary disabled={!hasAnyChange} onClick={handleSave}>
+						{t('Save_changes')}
+					</Button>
+				</ButtonGroup>
+			</Page.Footer>
 		</Page>
 	);
 };

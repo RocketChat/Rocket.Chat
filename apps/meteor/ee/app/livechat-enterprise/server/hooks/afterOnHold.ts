@@ -1,13 +1,14 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
-import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
+import { i18n } from '../../../../../server/lib/i18n';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
 import { cbLogger } from '../lib/logger';
 
 let autoCloseOnHoldChatTimeout = 0;
 
-const handleAfterOnHold = async (room: any = {}): Promise<any> => {
+const handleAfterOnHold = async (room: Pick<IOmnichannelRoom, '_id'>): Promise<any> => {
 	const { _id: rid } = room;
 	if (!rid) {
 		cbLogger.debug('Skipping callback. No room provided');
@@ -22,13 +23,13 @@ const handleAfterOnHold = async (room: any = {}): Promise<any> => {
 	cbLogger.debug(`Scheduling room ${rid} to be closed in ${autoCloseOnHoldChatTimeout} seconds`);
 	const closeComment =
 		settings.get<string>('Livechat_auto_close_on_hold_chats_custom_message') ||
-		TAPi18n.__('Closed_automatically_because_chat_was_onhold_for_seconds', {
+		i18n.t('Closed_automatically_because_chat_was_onhold_for_seconds', {
 			onHoldTime: autoCloseOnHoldChatTimeout,
 		});
-	await AutoCloseOnHoldScheduler.scheduleRoom(room._id, autoCloseOnHoldChatTimeout, closeComment);
+	await AutoCloseOnHoldScheduler.scheduleRoom(rid, autoCloseOnHoldChatTimeout, closeComment);
 };
 
-settings.watch('Livechat_auto_close_on_hold_chats_timeout', (value) => {
+settings.watch<number>('Livechat_auto_close_on_hold_chats_timeout', (value) => {
 	autoCloseOnHoldChatTimeout = value as number;
 	if (!value || value <= 0) {
 		callbacks.remove('livechat:afterOnHold', 'livechat-auto-close-on-hold');

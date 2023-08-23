@@ -1,16 +1,17 @@
-import { Meteor } from 'meteor/meteor';
+import { Message, Team } from '@rocket.chat/core-services';
+import { Rooms } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
-import { Team } from '@rocket.chat/core-services';
+import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';
-import { hasPermission } from '../../app/authorization/server';
-import { Rooms, Messages } from '../../app/models/server';
-import { Apps } from '../../app/apps/server';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
+import { Apps } from '../../ee/server/apps';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 export async function eraseRoom(rid: string, uid: string): Promise<void> {
-	const room = Rooms.findOneById(rid);
+	const room = await Rooms.findOneById(rid);
 
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -24,36 +25,49 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 		});
 	}
 
-	if (!roomCoordinator.getRoomDirectives(room.t)?.canBeDeleted((permissionId, rid) => hasPermission(uid, permissionId, rid), room)) {
+	if (
+		!(await roomCoordinator
+			.getRoomDirectives(room.t)
+			?.canBeDeleted((permissionId, rid) => hasPermissionAsync(uid, permissionId, rid), room))
+	) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'eraseRoom',
 		});
 	}
 
 	if (Apps?.isLoaded()) {
-		const prevent = Promise.await(Apps.getBridges()?.getListenerBridge().roomEvent('IPreRoomDeletePrevent', room));
+		const prevent = await Apps.getBridges()?.getListenerBridge().roomEvent('IPreRoomDeletePrevent', room);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the room erasing.');
 		}
 	}
 
-	deleteRoom(rid);
+	await deleteRoom(rid);
 
 	const team = room.teamId && (await Team.getOneById(room.teamId));
 
 	if (team) {
-		const user = Meteor.user();
-		Messages.createUserDeleteRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
+		const user = await Meteor.userAsync();
+		if (user) {
+			await Message.saveSystemMessage('user-deleted-room-from-team', team.roomId, room.name || '', user);
+		}
 	}
 
 	if (Apps?.isLoaded()) {
-		Apps.getBridges()?.getListenerBridge().roomEvent('IPostRoomDeleted', room);
+		void Apps.getBridges()?.getListenerBridge().roomEvent('IPostRoomDeleted', room);
 	}
 }
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		eraseRoom(rid: string): Promise<boolean>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async eraseRoom(rid: string) {
-		methodDeprecationLogger.warn('eraseRoom is deprecated and will be removed in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('eraseRoom', '7.0.0');
 
 		check(rid, String);
 

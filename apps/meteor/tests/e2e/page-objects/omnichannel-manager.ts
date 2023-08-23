@@ -17,7 +17,7 @@ export class OmnichannelManager {
 	}
 
 	get btnAdd(): Locator {
-		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add"');
+		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add manager"');
 	}
 
 	firstRowInTable(userId: string) {
@@ -26,6 +26,10 @@ export class OmnichannelManager {
 
 	get btnDeleteFirstRowInTable() {
 		return this.page.locator('button[title="Remove"]');
+	}
+
+	btnDeleteSelectedAgent(text: string) {
+		return this.page.locator('tr', { has: this.page.locator(`td >> text="${text}"`) }).locator('button[title="Remove"]');
 	}
 
 	get btnModalRemove(): Locator {

@@ -1,14 +1,12 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
+import { Users } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { Meteor } from 'meteor/meteor';
 
-import { Users } from '../../../models/server';
-import { hasPermission } from '../../../authorization/server';
-import { RateLimiter, validateEmailDomain } from '../lib';
-import * as Mailer from '../../../mailer';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { checkEmailAvailability } from '.';
+import { RateLimiter, validateEmailDomain } from '../lib';
+import { checkEmailAvailability } from './checkEmailAvailability';
 
 let html = '';
 Meteor.startup(() => {
@@ -17,7 +15,7 @@ Meteor.startup(() => {
 	});
 });
 
-const _sendEmailChangeNotification = function (to: string, newEmail: string) {
+const _sendEmailChangeNotification = async function (to: string, newEmail: string) {
 	const subject = String(settings.get('Email_Changed_Email_Subject'));
 	const email = {
 		to,
@@ -30,7 +28,7 @@ const _sendEmailChangeNotification = function (to: string, newEmail: string) {
 	};
 
 	try {
-		Mailer.send(email);
+		await Mailer.send(email);
 	} catch (error: any) {
 		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
 			function: 'setEmail',
@@ -39,8 +37,8 @@ const _sendEmailChangeNotification = function (to: string, newEmail: string) {
 	}
 };
 
-const _setEmail = function (userId: string, email: string, shouldSendVerificationEmail = true) {
-	email = s.trim(email);
+const _setEmail = async function (userId: string, email: string, shouldSendVerificationEmail = true) {
+	email = email.trim();
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
 	}
@@ -49,41 +47,47 @@ const _setEmail = function (userId: string, email: string, shouldSendVerificatio
 		throw new Meteor.Error('error-invalid-email', 'Invalid email', { function: '_setEmail' });
 	}
 
-	validateEmailDomain(email);
+	await validateEmailDomain(email);
 
-	const user = Users.findOneById(userId);
+	const user = await Users.findOneById(userId);
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
+	}
 
 	// User already has desired username, return
-	if (user.emails?.[0] && user.emails[0].address === email) {
+	if (user?.emails?.[0] && user.emails[0].address === email) {
 		return user;
 	}
 
 	// Check email availability
-	if (!checkEmailAvailability(email)) {
+	if (!(await checkEmailAvailability(email))) {
 		throw new Meteor.Error('error-field-unavailable', `${email} is already in use :(`, {
 			function: '_setEmail',
 			field: email,
 		});
 	}
 
-	const oldEmail = user.emails?.[0];
+	const oldEmail = user?.emails?.[0];
 
 	if (oldEmail) {
-		_sendEmailChangeNotification(oldEmail.address, email);
+		await _sendEmailChangeNotification(oldEmail.address, email);
 	}
 
 	// Set new email
-	Users.setEmail(user._id, email);
-	user.email = email;
+	await Users.setEmail(user?._id, email);
+	const result = {
+		...user,
+		email,
+	};
 	if (shouldSendVerificationEmail === true) {
-		Meteor.call('sendConfirmationEmail', user.email);
+		await Meteor.callAsync('sendConfirmationEmail', result.email);
 	}
-	return user;
+	return result;
 };
 
 export const setEmail = RateLimiter.limitFunction(_setEmail, 1, 60000, {
-	0() {
+	async 0() {
 		const userId = Meteor.userId();
-		return !userId || !hasPermission(userId, 'edit-other-user-info');
+		return !userId || !(await hasPermissionAsync(userId, 'edit-other-user-info'));
 	}, // Administrators have permission to change others emails, so don't limit those
 });

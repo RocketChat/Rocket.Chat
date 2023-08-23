@@ -1,4 +1,4 @@
-import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
@@ -11,6 +11,11 @@ import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import UsersInRoleTable from './UsersInRoleTable';
 
+type UsersInRolePayload = {
+	rid?: IRoom['_id'];
+	users: string[];
+};
+
 const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	const t = useTranslation();
 	const reload = useRef<() => void>(() => undefined);
@@ -22,7 +27,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		formState: { isDirty },
 		reset,
 		getValues,
-	} = useForm<{ rid?: IRoom['_id']; users: IUser['username'][] }>({ defaultValues: { users: [] } });
+	} = useForm<UsersInRolePayload>({ defaultValues: { users: [] } });
 
 	const { _id, name, description } = role;
 	const router = useRoute('admin-permissions');
@@ -37,7 +42,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		});
 	});
 
-	const handleAdd = useMutableCallback(async ({ users, rid }: { users: IUser['username'][]; rid?: IRoom['_id'] }) => {
+	const handleAdd = useMutableCallback(async ({ users, rid }: UsersInRolePayload) => {
 		try {
 			await Promise.all(
 				users.map(async (user) => {
@@ -63,9 +68,9 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 			</Page.Header>
 			<Page.Content>
 				<Box display='flex' flexDirection='column' w='full' mi='neg-x4'>
-					<Margins inline='x4'>
+					<Margins inline={4}>
 						{role.scope !== 'Users' && (
-							<Field mbe='x4'>
+							<Field mbe={4}>
 								<Field.Label>{t('Choose_a_room')}</Field.Label>
 								<Field.Row>
 									<Controller
@@ -85,23 +90,10 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 									control={control}
 									name='users'
 									render={({ field: { onChange, value } }): ReactElement => (
-										<UserAutoCompleteMultiple
-											value={value}
-											placeholder={t('User')}
-											onChange={(member, action): void => {
-												if (!action && value) {
-													if (value.includes(member)) {
-														return;
-													}
-													return onChange([...value, member]);
-												}
-
-												onChange(value?.filter((current) => current !== member));
-											}}
-										/>
+										<UserAutoCompleteMultiple value={value} placeholder={t('User')} onChange={onChange} />
 									)}
 								/>
-								<ButtonGroup mis='x8' align='end'>
+								<ButtonGroup mis={8} align='end'>
 									<Button primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
 										{t('Add')}
 									</Button>
@@ -110,7 +102,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 						</Field>
 					</Margins>
 				</Box>
-				<Margins blockStart='x8'>
+				<Margins blockStart={8}>
 					{(role.scope === 'Users' || rid) && (
 						<UsersInRoleTable reloadRef={reload} rid={rid} roleId={_id} roleName={name} description={description} />
 					)}

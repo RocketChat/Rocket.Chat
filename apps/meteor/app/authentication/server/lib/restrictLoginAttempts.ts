@@ -1,19 +1,19 @@
 import type { IServerEvent } from '@rocket.chat/core-typings';
 import { ServerEventType } from '@rocket.chat/core-typings';
-import { Rooms, ServerEvents, Sessions, Users } from '@rocket.chat/models';
-import moment from 'moment';
+import { Logger } from '@rocket.chat/logger';
+import { Rooms, ServerEvents, Users } from '@rocket.chat/models';
 
 import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
-import { sendMessage } from '../../../lib/server/functions';
-import { Logger } from '../../../logger/server';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { settings } from '../../../settings/server';
 import type { ILoginAttempt } from '../ILoginAttempt';
 
 const logger = new Logger('LoginProtection');
 
-export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, failedAttempts: number): Promise<void> => {
-	const channelToNotify = settings.get('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
+const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, failedAttempts: number): Promise<void> => {
+	const channelToNotify = settings.get<string>('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
+
 	if (!channelToNotify) {
 		logger.error('Cannot notify failed logins: channel provided is invalid');
 		return;
@@ -57,36 +57,42 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 		return true;
 	}
 
-	const lastLogin = await Sessions.findLastLoginByIp(ip);
-	let failedAttemptsSinceLastLogin;
-
-	if (!lastLogin || !lastLogin.loginAt) {
-		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIp(ip);
-	} else {
-		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIpSince(ip, new Date(lastLogin.loginAt));
-	}
-
-	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip');
-
-	if (attemptsUntilBlock && failedAttemptsSinceLastLogin < attemptsUntilBlock) {
+	// misconfigured
+	const attemptsUntilBlock = settings.get<number>('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip');
+	if (!attemptsUntilBlock) {
 		return true;
 	}
 
-	const lastAttemptAt = (await ServerEvents.findLastFailedAttemptByIp(ip))?.ts;
-
-	if (!lastAttemptAt) {
+	// if user never failed to login, then it's valid
+	const lastFailedAttemptAt = (await ServerEvents.findLastFailedAttemptByIp(ip))?.ts;
+	if (!lastFailedAttemptAt) {
 		return true;
 	}
 
-	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes') as number;
-	const willBeBlockedUntil = addMinutesToADate(new Date(lastAttemptAt), minutesUntilUnblock);
-	const isValid = moment(new Date()).isSameOrAfter(willBeBlockedUntil);
+	const minutesUntilUnblock = settings.get<number>('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes');
 
-	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed') && !isValid) {
-		notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+	const lockoutTimeStart = addMinutesToADate(new Date(), minutesUntilUnblock * -1);
+	const lastSuccessfulAttemptAt = (await ServerEvents.findLastSuccessfulAttemptByIp(ip))?.ts;
+
+	// successful logins should reset the counter
+	const startTime = lastSuccessfulAttemptAt
+		? new Date(Math.max(lockoutTimeStart.getTime(), lastSuccessfulAttemptAt.getTime()))
+		: lockoutTimeStart;
+
+	const failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIpSince(ip, startTime);
+
+	// if user didn't reach the threshold, then it's valid
+	if (failedAttemptsSinceLastLogin < attemptsUntilBlock) {
+		return true;
 	}
 
-	return isValid;
+	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed')) {
+		const willBeBlockedUntil = addMinutesToADate(new Date(lastFailedAttemptAt), minutesUntilUnblock);
+
+		await notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+	}
+
+	return false;
 };
 
 export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolean> => {
@@ -95,41 +101,47 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 	}
 
 	const loginUsername = login.methodArguments[0].user?.username;
-	const user = login.user || (loginUsername && (await Users.findOneByUsername(loginUsername))) || undefined;
-
-	if (!user?.username) {
+	if (!loginUsername) {
 		return true;
 	}
 
-	let failedAttemptsSinceLastLogin;
-
-	if (!user?.lastLogin) {
-		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByUsername(user.username);
-	} else {
-		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByUsernameSince(user.username, new Date(user.lastLogin));
-	}
-
-	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User');
-
-	if (attemptsUntilBlock && failedAttemptsSinceLastLogin < attemptsUntilBlock) {
+	// misconfigured
+	const attemptsUntilBlock = settings.get<number>('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User');
+	if (!attemptsUntilBlock) {
 		return true;
 	}
 
-	const lastAttemptAt = (await ServerEvents.findLastFailedAttemptByUsername(user.username as string))?.ts;
-
-	if (!lastAttemptAt) {
+	// if user never failed to login, then it's valid
+	const lastFailedAttemptAt = (await ServerEvents.findLastFailedAttemptByUsername(loginUsername))?.ts;
+	if (!lastFailedAttemptAt) {
 		return true;
 	}
 
-	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes') as number;
-	const willBeBlockedUntil = addMinutesToADate(new Date(lastAttemptAt), minutesUntilUnblock);
-	const isValid = moment(new Date()).isSameOrAfter(willBeBlockedUntil);
+	const minutesUntilUnblock = settings.get<number>('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes');
 
-	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed') && !isValid) {
-		notifyFailedLogin(user.username, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+	const lockoutTimeStart = addMinutesToADate(new Date(), minutesUntilUnblock * -1);
+	const lastSuccessfulAttemptAt = (await ServerEvents.findLastSuccessfulAttemptByUsername(loginUsername))?.ts;
+
+	// succesful logins should reset the counter
+	const startTime = lastSuccessfulAttemptAt
+		? new Date(Math.max(lockoutTimeStart.getTime(), lastSuccessfulAttemptAt.getTime()))
+		: lockoutTimeStart;
+
+	// get total failed attempts during the lockout time
+	const failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByUsernameSince(loginUsername, startTime);
+
+	// if user didn't reach the threshold, then it's valid
+	if (failedAttemptsSinceLastLogin < attemptsUntilBlock) {
+		return true;
 	}
 
-	return isValid;
+	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed')) {
+		const willBeBlockedUntil = addMinutesToADate(new Date(lastFailedAttemptAt), minutesUntilUnblock);
+
+		await notifyFailedLogin(loginUsername, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+	}
+
+	return false;
 };
 
 export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<void> => {

@@ -1,6 +1,6 @@
-import type { UserStatus } from './UserStatus';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
+import type { UserStatus } from './UserStatus';
 
 export interface ILoginToken {
 	hashedToken: string;
@@ -31,7 +31,7 @@ export interface IUserEmailCode {
 	expire: Date;
 }
 
-type LoginToken = IMeteorLoginToken & IPersonalAccessToken;
+type LoginToken = IMeteorLoginToken | IPersonalAccessToken;
 export type Username = string;
 
 export type ILoginUsername =
@@ -45,7 +45,8 @@ export type LoginUsername = string | ILoginUsername;
 
 export interface IUserServices {
 	password?: {
-		bcrypt: string;
+		exists?: boolean;
+		bcrypt?: string;
 	};
 	passwordHistory?: string[];
 	email?: {
@@ -74,7 +75,7 @@ export interface IUserServices {
 		enabled: boolean;
 		changedAt: Date;
 	};
-	emailCode: IUserEmailCode[];
+	emailCode?: IUserEmailCode[];
 	saml?: {
 		inResponseTo?: string;
 		provider?: string;
@@ -86,6 +87,14 @@ export interface IUserServices {
 		id: string;
 		idAttribute?: string;
 	};
+	nextcloud?: {
+		accessToken: string;
+		refreshToken: string;
+		serverURL: string;
+	};
+	dolphin?: {
+		NickName?: string;
+	};
 }
 
 export interface IUserEmail {
@@ -95,7 +104,7 @@ export interface IUserEmail {
 
 export interface IUserSettings {
 	profile: any;
-	preferences: {
+	preferences?: {
 		[key: string]: any;
 	};
 }
@@ -149,13 +158,29 @@ export interface IUser extends IRocketChatRecord {
 	ldap?: boolean;
 	extension?: string;
 	inviteToken?: string;
-	federated?: boolean;
 	canViewAllInfo?: boolean;
 	phone?: string;
 	reason?: string;
+	// TODO: move this to a specific federation user type
+	federated?: boolean;
 	federation?: {
 		avatarUrl?: string;
+		searchedServerNames?: string[];
 	};
+	banners?: {
+		[key: string]: {
+			id: string;
+			priority: number;
+			title: string;
+			text: string;
+			textArguments?: string[];
+			modifiers: ('large' | 'danger')[];
+			link: string;
+			read?: boolean;
+		};
+	};
+	importIds?: string[];
+	_pendingAvatarUrl?: string;
 }
 
 export interface IRegisterUser extends IUser {
@@ -164,21 +189,22 @@ export interface IRegisterUser extends IUser {
 }
 
 export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
-export const isUserFederated = (user: Partial<IUser>): user is IUser => 'federated' in user && user.federated === true;
+export const isUserFederated = (user: Partial<IUser>) => 'federated' in user && user.federated === true;
 
 export type IUserDataEvent = {
 	id: unknown;
 } & (
-	| ({
+	| {
 			type: 'inserted';
-	  } & IUser)
+			data: IUser;
+	  }
 	| {
 			type: 'removed';
 	  }
 	| {
 			type: 'updated';
 			diff: Partial<IUser>;
-			unset: Record<keyof IUser, boolean | 0 | 1>;
+			unset: Record<string, number>;
 	  }
 );
 
@@ -197,6 +223,7 @@ export type AvatarServiceObject = {
 	blob: Blob;
 	contentType: string;
 	service: string;
+	url: string;
 };
 
 export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;

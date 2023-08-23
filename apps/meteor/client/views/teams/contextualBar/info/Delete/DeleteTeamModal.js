@@ -6,7 +6,7 @@ import StepTwo from './StepTwo';
 
 const STEPS = { LIST_ROOMS: 'LIST_ROOMS', CONFIRM_DELETE: 'CONFIRM_DELETE' };
 
-export const DeleteTeamModal = ({ onCancel, onConfirm, rooms }) => {
+const DeleteTeamModal = ({ onCancel, onConfirm, rooms }) => {
 	const hasRooms = rooms?.length > 0;
 
 	const [step, setStep] = useState(hasRooms ? STEPS.LIST_ROOMS : STEPS.CONFIRM_DELETE);

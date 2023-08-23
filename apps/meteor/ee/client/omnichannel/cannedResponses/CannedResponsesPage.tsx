@@ -1,73 +1,47 @@
-import { Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, ReactElement, Dispatch, SetStateAction } from 'react';
+import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
-import GenericTable from '../../../../client/components/GenericTable';
-import NoResults from '../../../../client/components/GenericTable/NoResults';
 import Page from '../../../../client/components/Page';
+import CannedResponseEditWithData from './CannedResponseEditWithData';
+import CannedResponseNew from './CannedResponseNew';
+import CannedResponsesTable from './CannedResponsesTable';
 
-export type CannedResponsesPageProps = {
-	data: any;
-	header: ReactElement[];
-	setParams: Dispatch<SetStateAction<{ current: number; itemsPerPage: 25 | 50 | 100 }>>;
-	params: { current: number; itemsPerPage: 25 | 50 | 100 };
-	title: string;
-	renderFilter?: (props: any) => ReactElement;
-	renderRow?: (props: any) => ReactElement;
-	totalCannedResponses: number;
-};
-
-const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
-	data,
-	header,
-	setParams,
-	params,
-	title,
-	renderRow,
-	renderFilter,
-	totalCannedResponses,
-}) => {
+const CannedResponsesPage = () => {
 	const t = useTranslation();
-
-	const Route = useRoute('omnichannel-canned-responses');
+	const cannedResponseRoute = useRoute('omnichannel-canned-responses');
+	const queryClient = useQueryClient();
 
 	const handleClick = useMutableCallback(() =>
-		Route.push({
+		cannedResponseRoute.push({
 			context: 'new',
 		}),
 	);
 
+	const context = useRouteParameter('context');
+	const id = useRouteParameter('id');
+
+	const reload = useMutableCallback(() => queryClient.invalidateQueries(['canned-responses']));
+
+	if (context === 'edit' && id) {
+		return <CannedResponseEditWithData reload={reload} totalDataReload={reload} cannedResponseId={id} />;
+	}
+
+	if (context === 'new') {
+		return <CannedResponseNew reload={reload} totalDataReload={reload} />;
+	}
+
 	return (
 		<Page>
-			<Page.Header title={title}>
+			<Page.Header title={t('Canned_Responses')}>
 				<ButtonGroup>
-					<Button onClick={handleClick} title={t('New_Canned_Response')}>
-						<Icon name='plus' /> {t('New')}
-					</Button>
+					<Button onClick={handleClick}>{t('Create_canned_response')}</Button>
 				</ButtonGroup>
 			</Page.Header>
 			<Page.Content>
-				{totalCannedResponses < 1 ? (
-					<NoResults
-						icon='baloon-exclamation'
-						title={t('No_Canned_Responses_Yet')}
-						description={t('No_Canned_Responses_Yet-description')}
-						buttonTitle={t('Create_your_First_Canned_Response')}
-						buttonAction={handleClick}
-					></NoResults>
-				) : (
-					<GenericTable
-						renderFilter={renderFilter}
-						header={header}
-						renderRow={renderRow}
-						results={data?.cannedResponses}
-						total={data?.total}
-						setParams={setParams}
-						params={params}
-					/>
-				)}
+				<CannedResponsesTable />
 			</Page.Content>
 		</Page>
 	);

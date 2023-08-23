@@ -1,9 +1,11 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRoute, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { useEffect } from 'react';
 
-import VerticalBar from '../../../components/VerticalBar';
+import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import CustomRoleUpsellModal from './CustomRoleUpsellModal';
 import EditRolePageWithData from './EditRolePageWithData';
 
 const PermissionsContextBar = (): ReactElement | null => {
@@ -11,20 +13,32 @@ const PermissionsContextBar = (): ReactElement | null => {
 	const _id = useRouteParameter('_id');
 	const context = useRouteParameter('context');
 	const router = useRoute('admin-permissions');
+	const setModal = useSetModal();
+	const { data } = useIsEnterprise();
+	const isEnterprise = !!data?.isEnterprise;
 
-	const handleCloseVerticalBar = useMutableCallback(() => {
+	const handleCloseContextualbar = useMutableCallback(() => {
 		router.push({});
 	});
 
+	useEffect(() => {
+		if (context !== 'new' || isEnterprise) {
+			return;
+		}
+
+		setModal(<CustomRoleUpsellModal onClose={() => setModal(null)} />);
+		handleCloseContextualbar();
+	}, [context, isEnterprise, handleCloseContextualbar, setModal]);
+
 	return (
 		(context && (
-			<VerticalBar>
-				<VerticalBar.Header>
-					<VerticalBar.Text>{context === 'edit' ? t('Role_Editing') : t('New_role')}</VerticalBar.Text>
-					<VerticalBar.Close onClick={handleCloseVerticalBar} />
-				</VerticalBar.Header>
+			<Contextualbar>
+				<ContextualbarHeader>
+					<ContextualbarTitle>{context === 'edit' ? t('Role_Editing') : t('New_role')}</ContextualbarTitle>
+					<ContextualbarClose onClick={handleCloseContextualbar} />
+				</ContextualbarHeader>
 				<EditRolePageWithData roleId={_id} />
-			</VerticalBar>
+			</Contextualbar>
 		)) ||
 		null
 	);

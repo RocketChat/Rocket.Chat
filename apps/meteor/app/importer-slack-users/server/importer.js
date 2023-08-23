@@ -1,38 +1,50 @@
+import fs from 'fs';
+
 import { Settings } from '@rocket.chat/models';
 
+import { RocketChatFile } from '../../file/server';
 import { Base, ProgressStep } from '../../importer/server';
-import { RocketChatFile } from '../../file';
 
 export class SlackUsersImporter extends Base {
-	constructor(info, importRecord) {
-		super(info, importRecord);
+	constructor(info, importRecord, converterOptions = {}) {
+		super(info, importRecord, converterOptions);
 
 		const { parse } = require('csv-parse/lib/sync');
 
 		this.csvParser = parse;
 	}
 
-	prepare(dataURI, sentContentType, fileName) {
+	async prepareUsingLocalFile(fullFilePath) {
 		this.logger.debug('start preparing import operation');
-		this.converter.clearImportData();
-		super.prepare(dataURI, sentContentType, fileName, true);
+		await this.converter.clearImportData();
 
-		super.updateProgress(ProgressStep.PREPARING_USERS);
+		const file = fs.readFileSync(fullFilePath);
+		const buffer = Buffer.isBuffer(file) ? file : Buffer.from(file);
+
+		const { contentType } = this.importRecord;
+		const fileName = this.importRecord.file;
+
+		const data = buffer.toString('base64');
+		const dataURI = `data:${contentType};base64,${data}`;
+
+		await this.updateRecord({ file: fileName });
+
+		await super.updateProgress(ProgressStep.PREPARING_USERS);
 		const uriResult = RocketChatFile.dataURIParse(dataURI);
 		const buf = Buffer.from(uriResult.image, 'base64');
 		const parsed = this.csvParser(buf.toString());
 
 		let userCount = 0;
-		parsed.forEach((user, index) => {
+		for await (const [index, user] of parsed.entries()) {
 			// Ignore the first column
 			if (index === 0) {
-				return;
+				continue;
 			}
 
 			const username = user[0];
 			const email = user[1];
 			if (!email) {
-				return;
+				continue;
 			}
 
 			const name = user[7] || user[8] || username;
@@ -58,19 +70,20 @@ export class SlackUsersImporter extends Base {
 					break;
 			}
 
-			this.converter.addUser(newUser);
+			await this.converter.addUser(newUser);
 			userCount++;
-		});
+		}
 
 		if (userCount === 0) {
 			this.logger.error('No users found in the import file.');
-			super.updateProgress(ProgressStep.ERROR);
+			await super.updateProgress(ProgressStep.ERROR);
 			return super.getProgress();
 		}
 
-		super.updateProgress(ProgressStep.USER_SELECTION);
-		super.addCountToTotal(userCount);
-		Settings.incrementValueById('Slack_Users_Importer_Count', userCount);
-		return super.updateRecord({ 'count.users': userCount });
+		await super.updateProgress(ProgressStep.USER_SELECTION);
+		await super.addCountToTotal(userCount);
+		await Settings.incrementValueById('Slack_Users_Importer_Count', userCount);
+		await super.updateRecord({ 'count.users': userCount });
+		return super.getProgress();
 	}
 }

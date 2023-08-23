@@ -1,12 +1,14 @@
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, apiPublicChannelName, channel, reservedWords } from '../../data/api-data.js';
-import { adminUsername, password } from '../../data/user.js';
-import { createUser, login } from '../../data/users.helper';
+import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
+import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
-import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { testFileUploads } from '../../data/uploads.helper';
+import { adminUsername, password } from '../../data/user';
+import { createUser, login, deleteUser } from '../../data/users.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve /* , reject*/) => {
@@ -48,6 +50,66 @@ describe('[Channels]', function () {
 			.end(done);
 	});
 
+	describe('[/channels.create]', () => {
+		let guestUser;
+		let room;
+
+		before(async () => {
+			guestUser = await createUser({ roles: ['guest'] });
+		});
+		after(async () => {
+			await deleteUser(guestUser);
+		});
+
+		it('should not add guest users to more rooms than defined in the license', async function () {
+			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+			if (!process.env.IS_EE) {
+				this.skip();
+			}
+
+			const promises = [];
+			for (let i = 0; i < maxRoomsPerGuest; i++) {
+				promises.push(
+					createRoom({
+						type: 'c',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+						members: [guestUser.username],
+					}),
+				);
+			}
+			await Promise.all(promises);
+
+			request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+					members: [guestUser.username],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					room = res.body.group;
+				})
+				.then(() => {
+					request
+						.get(api('channels.members'))
+						.set(credentials)
+						.query({
+							roomId: room._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('members').and.to.be.an('array');
+							expect(res.body.members).to.have.lengthOf(1);
+						});
+				});
+		});
+	});
 	describe('[/channels.info]', () => {
 		let testChannel = {};
 		let channelMessage = {};
@@ -62,6 +124,21 @@ describe('[Channels]', function () {
 				.expect(200)
 				.expect((res) => {
 					testChannel = res.body.channel;
+				})
+				.end(done);
+		});
+		it('should fail to create the same channel twice', (done) => {
+			request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: apiPublicChannelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.contain('error-duplicate-channel-name');
 				})
 				.end(done);
 		});
@@ -144,7 +221,7 @@ describe('[Channels]', function () {
 				})
 				.end(done);
 		});
-		it('should return channel structure with "lastMessage" object including pin, reaction and star(should be an array) infos', (done) => {
+		it('should return channel structure with "lastMessage" object including pin, reactions and star(should be an array) infos', (done) => {
 			request
 				.get(api('channels.info'))
 				.set(credentials)
@@ -302,7 +379,7 @@ describe('[Channels]', function () {
 		});
 	});
 
-	describe('[/channels.files]', async function () {
+	describe('[/channels.files]', async () => {
 		await testFileUploads('channels.files', channel);
 	});
 
@@ -521,6 +598,36 @@ describe('[Channels]', function () {
 			.end(done);
 	});
 
+	it('/channels.addModerator should fail with missing room Id', (done) => {
+		request
+			.post(api('channels.addModerator'))
+			.set(credentials)
+			.send({
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+			})
+			.end(done);
+	});
+
+	it('/channels.addModerator should fail with missing user Id', (done) => {
+		request
+			.post(api('channels.addModerator'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+			})
+			.end(done);
+	});
+
 	it('/channels.removeModerator', (done) => {
 		request
 			.post(api('channels.removeModerator'))
@@ -533,6 +640,36 @@ describe('[Channels]', function () {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
+			})
+			.end(done);
+	});
+
+	it('/channels.removeModerator should fail on invalid room id', (done) => {
+		request
+			.post(api('channels.removeModerator'))
+			.set(credentials)
+			.send({
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+			})
+			.end(done);
+	});
+
+	it('/channels.removeModerator should fail on invalid user id', (done) => {
+		request
+			.post(api('channels.removeModerator'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
 			})
 			.end(done);
 	});
@@ -1062,6 +1199,7 @@ describe('[Channels]', function () {
 										alias: 'test',
 										username: 'rocket.cat',
 										scriptEnabled: false,
+										overrideDestinationChannelEnabled: true,
 										channel: `#${createdChannel.name}`,
 									},
 									userCredentials,
@@ -1932,7 +2070,7 @@ describe('[Channels]', function () {
 		});
 	});
 
-	context("Setting: 'Use Real Name': true", () => {
+	describe("Setting: 'Use Real Name': true", () => {
 		before(async () => {
 			await updateSetting('UI_Use_Real_Name', true);
 
@@ -2017,6 +2155,22 @@ describe('[Channels]', function () {
 					expect(retChannel).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})
 				.end(done);
+		});
+
+		it('/channels.list.join should return empty list when member of no group', async () => {
+			const user = await createUser({ joinDefaultChannels: false });
+			const newCreds = await login(user.username, password);
+			await request
+				.get(api('channels.list.joined'))
+				.set(newCreds)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count').that.is.equal(0);
+					expect(res.body).to.have.property('total').that.is.equal(0);
+					expect(res.body).to.have.property('channels').and.to.be.an('array').and.that.has.lengthOf(0);
+				});
 		});
 	});
 });

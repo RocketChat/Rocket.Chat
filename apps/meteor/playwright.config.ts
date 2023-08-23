@@ -10,7 +10,7 @@ export default {
 		trace: 'retain-on-failure',
 		baseURL: constants.BASE_URL,
 		screenshot: process.env.CI ? 'off' : 'only-on-failure',
-		channel: 'chrome',
+		video: process.env.CI ? 'off' : 'retain-on-failure',
 		launchOptions: {
 			// force GPU hardware acceleration
 			// (even in headless mode)
@@ -20,19 +20,34 @@ export default {
 	},
 	outputDir: 'tests/e2e/.playwright',
 	reporter: [
-		process.env.CI ? ['github'] : ['list'],
+		['list'],
+		process.env.REPORTER_ROCKETCHAT_REPORT === 'true' && [
+			'./reporters/rocketchat.ts',
+			{
+				url: process.env.REPORTER_ROCKETCHAT_URL,
+				apiKey: process.env.REPORTER_ROCKETCHAT_API_KEY,
+				branch: process.env.REPORTER_ROCKETCHAT_BRANCH,
+				draft: process.env.REPORTER_ROCKETCHAT_DRAFT === 'true',
+			},
+		],
 		[
 			'playwright-qase-reporter',
 			{
+				apiToken: `${process.env.QASE_API_TOKEN}`,
+				rootSuiteTitle: 'Rocket.chat automation',
 				projectCode: 'RC',
-				// uploadAttachments: true,
+				runComplete: true,
+				basePath: 'https://api.qase.io/v1',
+				logging: true,
+				uploadAttachments: false,
+				environmentId: '1',
 			},
 		],
-	],
+	].filter(Boolean),
 	testDir: 'tests/e2e',
+	testIgnore: 'tests/e2e/federation/**',
 	workers: 1,
-	retries: process.env.CI ? 2 : undefined,
 	timeout: 60 * 1000,
-	globalTimeout: 40 * 60 * 1000,
+	globalTimeout: (process.env.IS_EE === 'true' ? 50 : 40) * 60 * 1000,
 	maxFailures: process.env.CI ? 5 : undefined,
 } as PlaywrightTestConfig;

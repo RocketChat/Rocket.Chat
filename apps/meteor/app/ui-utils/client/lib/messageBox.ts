@@ -1,24 +1,17 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import type { ContextType } from 'react';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
+import type { ChatAPI } from '../../../../client/lib/chats/ChatAPI';
 
-type MessageBoxAction = {
+export type MessageBoxAction = {
 	label: TranslationKey;
 	id: string;
 	icon?: string;
-	action: (params: {
-		rid: IRoom['_id'];
-		tmid?: IMessage['_id'];
-		event: Event;
-		messageBox: HTMLElement;
-		chat: ContextType<typeof ChatContext>;
-	}) => void;
+	action: (params: { rid: IRoom['_id']; tmid?: IMessage['_id']; event: Event; chat: ChatAPI }) => void;
 	condition?: () => boolean;
 };
 
-export class MessageBoxActions {
+class MessageBoxActions {
 	actions: Map<TranslationKey, MessageBoxAction[]> = new Map();
 
 	add(group: TranslationKey, label: TranslationKey, config: Omit<MessageBoxAction, 'label'>) {

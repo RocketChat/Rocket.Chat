@@ -1,7 +1,7 @@
-import { Users } from '../../../../models/server';
+import { Users } from '@rocket.chat/models';
 
-export default function handleOnCreateRoom(user, room) {
-	const users = Users.findByRoomId(room._id);
+export default async function handleOnCreateRoom(user, room) {
+	const users = await Users.findByRoomId(room._id);
 
 	users.forEach((user) => {
 		if (user.profile?.irc?.fromIRC) {

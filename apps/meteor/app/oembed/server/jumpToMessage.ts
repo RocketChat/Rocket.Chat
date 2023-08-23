@@ -1,21 +1,21 @@
-import URL from 'url';
 import QueryString from 'querystring';
+import URL from 'url';
 
-import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
-import type { ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import type { MessageAttachment, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
+import { Messages, Users, Rooms } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
-import { Messages, Rooms, Users } from '../../models/server';
-import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
-import { canAccessRoom } from '../../authorization/server/functions/canAccessRoom';
+import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
+import { canAccessRoomAsync } from '../../authorization/server/functions/canAccessRoom';
+import { settings } from '../../settings/server';
+import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
-const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttachment => {
+const recursiveRemoveAttachments = (attachments: MessageAttachment, deep = 1, quoteChainLimit: number): MessageAttachment => {
 	if (attachments && isQuoteAttachment(attachments)) {
-		if (deep < settings.get<number>('Message_QuoteChainLimit')) {
-			attachments.attachments?.map((msg) => recursiveRemove(msg, deep + 1));
+		if (deep < quoteChainLimit - 1) {
+			attachments.attachments?.map((msg) => recursiveRemoveAttachments(msg, deep + 1, quoteChainLimit));
 		} else {
 			delete attachments.attachments;
 		}
@@ -24,57 +24,67 @@ const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttac
 	return attachments;
 };
 
-const validateAttachmentDeepness = (message: ITranslatedMessage): ITranslatedMessage => {
-	if (!message || !message.attachments) {
+const validateAttachmentDeepness = (message: IMessage): IMessage => {
+	if (!message?.attachments) {
 		return message;
 	}
 
-	message.attachments = message.attachments?.map((attachment) => recursiveRemove(attachment));
+	const quoteChainLimit = settings.get<number>('Message_QuoteChainLimit');
+	if ((message.attachments && quoteChainLimit < 2) || isNaN(quoteChainLimit)) {
+		delete message.attachments;
+	}
+
+	message.attachments = message.attachments?.map((attachment) => recursiveRemoveAttachments(attachment, 1, quoteChainLimit));
 
 	return message;
 };
 
 callbacks.add(
 	'beforeSaveMessage',
-	(msg) => {
+	async (msg) => {
 		// if no message is present, or the message doesn't have any URL, skip
-		if (!msg || !msg.urls || !msg.urls.length) {
+		if (!msg?.urls?.length) {
 			return msg;
 		}
 
-		const currentUser = Users.findOneById(msg.u._id);
+		const currentUser = await Users.findOneById(msg.u._id);
 
-		msg.urls.forEach((item) => {
-			// if the URL is not internal, skip
+		for await (const item of msg.urls) {
+			// if the URL doesn't belong to the current server, skip
 			if (!item.url.includes(Meteor.absoluteUrl())) {
-				return;
+				continue;
 			}
 
 			const urlObj = URL.parse(item.url);
 
 			// if the URL doesn't have query params (doesn't reference message) skip
 			if (!urlObj.query) {
-				return;
+				continue;
 			}
 
 			const { msg: msgId } = QueryString.parse(urlObj.query);
 
-			if (!_.isString(msgId)) {
-				return;
+			if (typeof msgId !== 'string') {
+				continue;
 			}
 
-			const jumpToMessage = validateAttachmentDeepness(Messages.findOneById(msgId));
+			const message = await Messages.findOneById(msgId);
+
+			const jumpToMessage = message && validateAttachmentDeepness(message);
 			if (!jumpToMessage) {
-				return;
+				continue;
 			}
 
 			// validates if user can see the message
 			// user has to belong to the room the message was first wrote in
-			const room = Rooms.findOneById(jumpToMessage.rid);
+			const room = await Rooms.findOneById<IOmnichannelRoom>(jumpToMessage.rid);
+			if (!room) {
+				continue;
+			}
 			const isLiveChatRoomVisitor = !!msg.token && !!room.v?.token && msg.token === room.v.token;
-			const canAccessRoomForUser = isLiveChatRoomVisitor || canAccessRoom(room, currentUser);
+			const canAccessRoomForUser = isLiveChatRoomVisitor || (currentUser && (await canAccessRoomAsync(room, currentUser)));
 			if (!canAccessRoomForUser) {
-				return;
+				continue;
 			}
 
 			msg.attachments = msg.attachments || [];
@@ -84,9 +94,13 @@ callbacks.add(
 				msg.attachments.splice(index, 1);
 			}
 
-			msg.attachments.push(createQuoteAttachment(jumpToMessage, item.url));
+			const useRealName = Boolean(settings.get('UI_Use_Real_Name'));
+
+			msg.attachments.push(
+				createQuoteAttachment(jumpToMessage, item.url, useRealName, getUserAvatarURL(jumpToMessage.u.username || '') as string),
+			);
 			item.ignoreParse = true;
-		});
+		}
 
 		return msg;
 	},

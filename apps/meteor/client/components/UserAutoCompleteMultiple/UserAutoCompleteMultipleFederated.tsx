@@ -14,7 +14,7 @@ type UserAutoCompleteMultipleFederatedProps = {
 	placeholder?: string;
 };
 
-export type UserAutoCompleteOptionType = {
+type UserAutoCompleteOptionType = {
 	name: string;
 	username: string;
 	_federated?: boolean;
@@ -24,7 +24,7 @@ type UserAutoCompleteOptions = {
 	[k: string]: UserAutoCompleteOptionType;
 };
 
-const matrixRegex = new RegExp('(.*:.*)');
+const matrixRegex = new RegExp('@(.*:.*)');
 
 const UserAutoCompleteMultipleFederated = ({
 	onChange,
@@ -103,9 +103,9 @@ const UserAutoCompleteMultipleFederated = ({
 					const currentCachedOption = selectedCache[value] || {};
 
 					return (
-						<Chip key={value} {...props} height='x20' onMouseDown={onMouseDown} mie='x4' mb='x2'>
+						<Chip key={value} {...props} height='x20' onMouseDown={onMouseDown} mie={4} mb={2}>
 							{currentCachedOption._federated ? <Icon size='x20' name='globe' /> : <UserAvatar size='x20' username={value} />}
-							<Box is='span' margin='none' mis='x4'>
+							<Box is='span' margin='none' mis={4}>
 								{currentCachedOption.name || currentCachedOption.username || value}
 							</Box>
 						</Chip>
@@ -113,6 +113,7 @@ const UserAutoCompleteMultipleFederated = ({
 				}}
 				renderOptions={AutocompleteOptions}
 				options={options.concat(Object.entries(selectedCache)).map(([, item]) => [item.username, item.name || item.username])}
+				data-qa='create-channel-users-autocomplete'
 			/>
 		</OptionsContext.Provider>
 	);

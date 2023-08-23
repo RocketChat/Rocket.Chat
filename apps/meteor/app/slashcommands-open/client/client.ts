@@ -1,14 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import type { RoomType, ISubscription, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import type { Mongo } from 'meteor/mongo';
 
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { router } from '../../../client/providers/RouterProvider';
 import { Subscriptions, ChatSubscription } from '../../models/client';
+import { sdk } from '../../utils/client/lib/SDKClient';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'open',
-	callback: function Open(_command, params): void {
-		const dict: Record<string, string[]> = {
+	callback: async function Open({ params }: SlashCommandCallbackParams<'open'>): Promise<void> {
+		const dict: Record<string, RoomType[]> = {
 			'#': ['c', 'p'],
 			'@': ['d'],
 		};
@@ -16,7 +18,7 @@ slashCommands.add({
 		const room = params.trim().replace(/#|@/, '');
 		const type = dict[params.trim()[0]] || [];
 
-		const query = {
+		const query: Mongo.Selector<ISubscription> = {
 			name: room,
 			...(type && { t: { $in: type } }),
 		};
@@ -24,19 +26,22 @@ slashCommands.add({
 		const subscription = ChatSubscription.findOne(query);
 
 		if (subscription) {
-			roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters());
 		}
 
 		if (type && type.indexOf('d') === -1) {
 			return;
 		}
-		return Meteor.call('createDirectMessage', room, function (err: Meteor.Error) {
-			if (err) {
+		try {
+			await sdk.call('createDirectMessage', room);
+			const subscription = Subscriptions.findOne(query);
+			if (!subscription) {
 				return;
 			}
-			const subscription = Subscriptions.findOne(query);
-			roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
-		});
+			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters());
+		} catch (err: unknown) {
+			// noop
+		}
 	},
 	options: {
 		description: 'Opens_a_channel_group_or_direct_message',

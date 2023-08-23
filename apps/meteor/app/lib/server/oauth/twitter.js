@@ -6,7 +6,7 @@ import { registerAccessTokenService } from './oauth';
 
 const whitelistedFields = ['id', 'name', 'description', 'profile_image_url', 'profile_image_url_https', 'lang', 'email'];
 
-const getIdentity = function (accessToken, appId, appSecret, accessTokenSecret) {
+const getIdentity = async function (accessToken, appId, appSecret, accessTokenSecret) {
 	const Twitter = new Twit({
 		consumer_key: appId,
 		consumer_secret: appSecret,
@@ -14,7 +14,7 @@ const getIdentity = function (accessToken, appId, appSecret, accessTokenSecret) 
 		access_token_secret: accessTokenSecret,
 	});
 	try {
-		const result = Promise.await(Twitter.get('account/verify_credentials.json?include_email=true'));
+		const result = await Twitter.get('account/verify_credentials.json?include_email=true');
 
 		return result.data;
 	} catch (err) {
@@ -24,7 +24,7 @@ const getIdentity = function (accessToken, appId, appSecret, accessTokenSecret) 
 	}
 };
 
-registerAccessTokenService('twitter', function (options) {
+registerAccessTokenService('twitter', async (options) => {
 	check(
 		options,
 		Match.ObjectIncluding({
@@ -36,7 +36,7 @@ registerAccessTokenService('twitter', function (options) {
 		}),
 	);
 
-	const identity = getIdentity(options.accessToken, options.appId, options.appSecret, options.accessTokenSecret);
+	const identity = await getIdentity(options.accessToken, options.appId, options.appSecret, options.accessTokenSecret);
 
 	const serviceData = {
 		accessToken: options.accessToken,

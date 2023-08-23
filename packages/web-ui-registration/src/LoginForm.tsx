@@ -1,19 +1,19 @@
-import type { UseMutationResult } from '@tanstack/react-query';
-import { useMutation } from '@tanstack/react-query';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
+import type { UseMutationResult } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import EmailConfirmationForm from './EmailConfirmationForm';
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import LoginServices from './LoginServices';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 
-type LoginErrors =
+export type LoginErrors =
 	| 'error-user-is-not-activated'
 	| 'error-invalid-email'
 	| 'error-login-blocked-for-ip'
@@ -62,7 +62,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		},
 		onError: (error: any) => {
 			if ([error.error, error.errorType].includes('error-invalid-email')) {
-				setError('email', { type: 'invalid-email', message: t('Invalid_email') });
+				setError('email', { type: 'invalid-email', message: t('registration.page.login.errors.invalidEmail') });
 			}
 
 			if ('error' in error && error.error !== 403) {
@@ -77,12 +77,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	});
 
 	if (errors.email?.type === 'invalid-email') {
-		return (
-			<EmailConfirmationForm
-				onBackToLogin={() => clearErrors('email')}
-				email={getValues('username')?.includes('@') ? getValues('username') : undefined}
-			/>
-		);
+		return <EmailConfirmationForm onBackToLogin={() => clearErrors('email')} email={getValues('email')} />;
 	}
 
 	return (
@@ -204,7 +199,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 					</Form.Footer>
 				</>
 			)}
-			<LoginServices disabled={loginMutation.isLoading} />
+			<LoginServices disabled={loginMutation.isLoading} setError={setErrorOnSubmit} />
 		</Form>
 	);
 };

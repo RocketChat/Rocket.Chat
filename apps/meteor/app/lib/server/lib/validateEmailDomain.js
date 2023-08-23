@@ -1,17 +1,18 @@
 import dns from 'dns';
+import util from 'util';
 
 import { Meteor } from 'meteor/meteor';
 
-import { emailDomainDefaultBlackList } from './defaultBlockedDomainsList';
-import { settings } from '../../../settings/server';
 import { validateEmail } from '../../../../lib/emailValidator';
+import { settings } from '../../../settings/server';
+import { emailDomainDefaultBlackList } from './defaultBlockedDomainsList';
 
-const dnsResolveMx = Meteor.wrapAsync(dns.resolveMx);
+const dnsResolveMx = util.promisify(dns.resolveMx);
 
 let emailDomainBlackList = [];
 let emailDomainWhiteList = [];
 
-settings.watch('Accounts_BlockedDomainsList', function (value) {
+settings.watch('Accounts_BlockedDomainsList', (value) => {
 	if (!value) {
 		emailDomainBlackList = [];
 		return;
@@ -22,7 +23,7 @@ settings.watch('Accounts_BlockedDomainsList', function (value) {
 		.filter(Boolean)
 		.map((domain) => domain.trim());
 });
-settings.watch('Accounts_AllowedDomainsList', function (value) {
+settings.watch('Accounts_AllowedDomainsList', (value) => {
 	if (!value) {
 		emailDomainWhiteList = [];
 		return;
@@ -34,7 +35,7 @@ settings.watch('Accounts_AllowedDomainsList', function (value) {
 		.map((domain) => domain.trim());
 });
 
-export const validateEmailDomain = function (email) {
+export const validateEmailDomain = async function (email) {
 	if (!validateEmail(email)) {
 		throw new Meteor.Error('error-invalid-email', `Invalid email ${email}`, {
 			function: 'RocketChat.validateEmailDomain',
@@ -61,7 +62,7 @@ export const validateEmailDomain = function (email) {
 
 	if (settings.get('Accounts_UseDNSDomainCheck')) {
 		try {
-			dnsResolveMx(emailDomain);
+			await dnsResolveMx(emailDomain);
 		} catch (e) {
 			throw new Meteor.Error('error-invalid-domain', 'Invalid domain', {
 				function: 'RocketChat.validateEmailDomain',

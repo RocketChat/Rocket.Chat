@@ -1,7 +1,7 @@
 import type { ISetting, Serialized } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React from 'react';
 
@@ -47,12 +47,15 @@ const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const save: (settings: Pick<ISetting, '_id'>[] & { value: unknown }[]) => Promise<void> = useMethod('livechat:saveAppearance');
+	const save = useEndpoint('POST', '/v1/livechat/appearance');
 
 	const { values, handlers, commit, reset, hasUnsavedChanges } = useForm(reduceAppearance(settings));
 
 	const handleSave = useMutableCallback(async () => {
-		const mappedAppearance = Object.entries(values).map(([_id, value]) => ({ _id, value }));
+		const mappedAppearance = Object.entries(values).map(([_id, value]) => ({ _id, value })) as {
+			_id: string;
+			value: string | boolean | number;
+		}[];
 
 		try {
 			await save(mappedAppearance);
@@ -63,25 +66,22 @@ const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 		}
 	});
 
-	const handleResetButtonClick = (): void => {
-		reset();
-	};
-
 	return (
 		<Page>
-			<Page.Header title={t('Appearance')}>
-				<ButtonGroup align='end'>
-					<Button onClick={handleResetButtonClick}>{t('Reset')}</Button>
-					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
-						{t('Save')}
-					</Button>
-				</ButtonGroup>
-			</Page.Header>
+			<Page.Header title={t('Appearance')}></Page.Header>
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<AppearanceForm values={values} handlers={handlers} />
 				</Box>
 			</Page.ScrollableContentWithShadow>
+			<Page.Footer isDirty={hasUnsavedChanges}>
+				<ButtonGroup>
+					<Button onClick={() => reset()}>{t('Cancel')}</Button>
+					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
+						{t('Save_changes')}
+					</Button>
+				</ButtonGroup>
+			</Page.Footer>
 		</Page>
 	);
 };

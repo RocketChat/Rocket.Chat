@@ -1,5 +1,5 @@
-import { Table } from '@rocket.chat/fuselage';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { TableRow, TableCell } from '@rocket.chat/fuselage';
+import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import {
@@ -16,15 +16,10 @@ function ImportOperationSummary({
 	type,
 	_updatedAt,
 	status,
-	file,
+	file = '',
 	user,
 	small,
-	count: { users = 0, channels = 0, messages = 0, total = 0 } = {
-		users: null,
-		channels: null,
-		messages: null,
-		total: null,
-	},
+	count: { users = 0, channels = 0, messages = 0, total = 0 } = {},
 	valid,
 }) {
 	const t = useTranslation();
@@ -55,17 +50,16 @@ function ImportOperationSummary({
 
 	const canCheckProgress = useMemo(() => valid && ImportingStartedStates.includes(status), [valid, status]);
 
-	const prepareImportRoute = useRoute('admin-import-prepare');
-	const importProgressRoute = useRoute('admin-import-progress');
+	const router = useRouter();
 
 	const handleClick = () => {
 		if (canContinue) {
-			prepareImportRoute.push();
+			router.navigate('/admin/import/prepare');
 			return;
 		}
 
 		if (canCheckProgress) {
-			importProgressRoute.push();
+			router.navigate('/admin/import/progress');
 		}
 	};
 
@@ -81,20 +75,20 @@ function ImportOperationSummary({
 		: {};
 
 	return (
-		<Table.Row {...props}>
-			<Table.Cell>{type}</Table.Cell>
-			<Table.Cell>{formatDateAndTime(_updatedAt)}</Table.Cell>
+		<TableRow {...props}>
+			<TableCell>{type}</TableCell>
+			<TableCell>{formatDateAndTime(_updatedAt)}</TableCell>
 			{!small && (
 				<>
-					<Table.Cell>{status && t(status.replace('importer_', 'importer_status_'))}</Table.Cell>
-					<Table.Cell>{fileName}</Table.Cell>
-					<Table.Cell align='center'>{users}</Table.Cell>
-					<Table.Cell align='center'>{channels}</Table.Cell>
-					<Table.Cell align='center'>{messages}</Table.Cell>
-					<Table.Cell align='center'>{total}</Table.Cell>
+					<TableCell>{status && t(status.replace('importer_', 'importer_status_'))}</TableCell>
+					<TableCell>{fileName}</TableCell>
+					<TableCell align='center'>{users}</TableCell>
+					<TableCell align='center'>{channels}</TableCell>
+					<TableCell align='center'>{messages}</TableCell>
+					<TableCell align='center'>{total}</TableCell>
 				</>
 			)}
-		</Table.Row>
+		</TableRow>
 	);
 }
 

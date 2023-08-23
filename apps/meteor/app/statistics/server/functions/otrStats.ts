@@ -1,13 +1,14 @@
-import { updateCounter } from './updateStatsCounter';
-import { Rooms } from '../../../models/server';
+import { Rooms } from '@rocket.chat/models';
+
 import telemetryEvent from '../lib/telemetryEvents';
+import { updateCounter } from './updateStatsCounter';
 
 type otrDataType = { rid: string };
 
-export function otrStats(data: otrDataType): void {
+export async function otrStats(data: otrDataType) {
 	updateCounter({ settingsId: 'OTR_Count' });
 
-	Rooms.setOTRForDMByRoomID(data.rid);
+	await Rooms.setOTRForDMByRoomID(data.rid);
 }
 
 telemetryEvent.register('otrStats', otrStats);

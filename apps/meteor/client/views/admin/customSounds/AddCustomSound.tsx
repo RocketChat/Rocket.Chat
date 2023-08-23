@@ -3,9 +3,8 @@ import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat
 import type { ReactElement, FormEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
-import VerticalBar from '../../../components/VerticalBar';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useFileInput } from '../../../hooks/useFileInput';
-import type { soundDataType } from './lib';
 import { validate, createSoundData } from './lib';
 
 type AddCustomSoundProps = {
@@ -32,7 +31,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 
 	const saveAction = useCallback(
 		async (name, soundFile): Promise<string | undefined> => {
-			const soundData: soundDataType = createSoundData(soundFile, name);
+			const soundData = createSoundData(soundFile, name);
 			const validation = validate(soundData, soundFile) as Array<Parameters<typeof t>[0]>;
 
 			validation.forEach((error) => {
@@ -52,7 +51,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 				reader.readAsBinaryString(soundFile);
 				reader.onloadend = (): void => {
 					try {
-						uploadCustomSound(reader.result, soundFile.type, {
+						uploadCustomSound(reader.result as string, soundFile.type, {
 							...soundData,
 							_id: soundId,
 							random: Math.round(Math.random() * 1000),
@@ -73,7 +72,9 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const handleSave = useCallback(async () => {
 		try {
 			const result = await saveAction(name, sound);
-			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
+			if (result) {
+				dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
+			}
 			result && goToNew(result);
 			onChange();
 		} catch (error) {
@@ -82,41 +83,42 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	}, [dispatchToastMessage, goToNew, name, onChange, saveAction, sound, t]);
 
 	return (
-		<VerticalBar.ScrollableContent {...props}>
-			<Field>
-				<Field.Label>{t('Name')}</Field.Label>
-				<Field.Row>
-					<TextInput
-						value={name}
-						onChange={(e: FormEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
-						placeholder={t('Name')}
-					/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
-				<Box display='flex' flexDirection='row' mbs='none'>
-					<Margins inline='x4'>
-						<Button square onClick={clickUpload}>
-							<Icon name='upload' size='x20' />
-						</Button>
-						{sound?.name || t('None')}
-					</Margins>
-				</Box>
-			</Field>
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button mie='x4' onClick={close}>
-							{t('Cancel')}
-						</Button>
-						<Button primary onClick={handleSave} disabled={name === ''}>
-							{t('Save')}
-						</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-		</VerticalBar.ScrollableContent>
+		<>
+			<ContextualbarScrollableContent {...props}>
+				<Field>
+					<Field.Label>{t('Name')}</Field.Label>
+					<Field.Row>
+						<TextInput
+							value={name}
+							onChange={(e: FormEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
+							placeholder={t('Name')}
+						/>
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
+					<Box display='flex' flexDirection='row' mbs='none'>
+						<Margins inline={4}>
+							{/* FIXME: replace to IconButton */}
+							<Button square onClick={clickUpload}>
+								<Icon name='upload' size='x20' />
+							</Button>
+							{sound?.name || t('None')}
+						</Margins>
+					</Box>
+				</Field>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button mie={4} onClick={close}>
+						{t('Cancel')}
+					</Button>
+					<Button primary onClick={handleSave} disabled={name === ''}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
+		</>
 	);
 };
 

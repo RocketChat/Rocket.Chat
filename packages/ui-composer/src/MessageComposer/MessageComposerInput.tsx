@@ -1,13 +1,41 @@
-import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Palette } from '@rocket.chat/fuselage';
+import type { ComponentProps, ReactElement, Ref } from 'react';
 import { forwardRef } from 'react';
 
-const MessageComposerInput = forwardRef<HTMLInputElement, ComponentProps<typeof Box>>(
-	(props, ref): ReactElement => (
+const messageComposerInputStyle = css`
+	resize: none;
+
+	&::placeholder {
+		color: ${Palette.text['font-annotation']};
+	}
+`;
+
+type MessageComposerInputProps = ComponentProps<typeof Box>;
+
+const MessageComposerInput = forwardRef(function MessageComposerInput(
+	props: MessageComposerInputProps,
+	ref: Ref<HTMLInputElement>,
+): ReactElement {
+	return (
 		<Box is='label' width='full' fontSize={0}>
-			<Box minHeight='20px' rows={1} fontScale='p2' ref={ref} pi={12} mb={16} {...props} borderWidth={0} is='textarea' />
+			<Box
+				className={[messageComposerInputStyle, 'rc-message-box__textarea js-input-message']}
+				{...props}
+				color='default'
+				width='full'
+				minHeight='20px'
+				maxHeight='155px'
+				rows={1}
+				fontScale='p2'
+				ref={ref}
+				pi={12}
+				mb={16}
+				borderWidth={0}
+				is='textarea'
+			/>
 		</Box>
-	),
-);
+	);
+});
 
 export default MessageComposerInput;

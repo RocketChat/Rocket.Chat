@@ -12,7 +12,6 @@ import {
 	Button,
 	ButtonGroup,
 	Box,
-	Icon,
 	TextAreaInput,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -24,16 +23,23 @@ import {
 	useRole,
 	useMethod,
 	useTranslation,
-	useRoute,
+	useRouter,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useRef } from 'react';
 
 import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
 import { RoomSettingsEnum } from '../../../../../../definition/IRoomTypeConfig';
+import {
+	ContextualbarHeader,
+	ContextualbarBack,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+} from '../../../../../components/Contextualbar';
 import GenericModal from '../../../../../components/GenericModal';
 import RawText from '../../../../../components/RawText';
-import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { useForm } from '../../../../../hooks/useForm';
@@ -128,7 +134,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const maxAgeDefault = useSetting(`RetentionPolicy_MaxAge_${typeMap[room.t]}`) || 30;
 
 	const saveData = useRef({});
-	const router = useRoute('home');
+	const router = useRouter();
 
 	const onChange = useCallback(({ initialValue, value, key }) => {
 		const { current } = saveData;
@@ -205,7 +211,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		canViewJoinCode,
 		canViewEncrypted,
 	] = useMemo(() => {
-		const isAllowed = roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange || (() => {});
+		const isAllowed = roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange || (() => {});
 		return [
 			isAllowed(room, RoomSettingsEnum.NAME),
 			isAllowed(room, RoomSettingsEnum.TOPIC),
@@ -271,7 +277,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		const onConfirm = async () => {
 			await deleteRoom(room._id);
 			onCancel();
-			router.push({});
+			router.navigate('/home');
 		};
 
 		setModal(
@@ -289,15 +295,16 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		handleRetentionMaxAge(Math.max(1, Number(e.currentTarget.value)));
 	});
 
+	const isFederated = useMemo(() => isRoomFederated(room), [room]);
+
 	return (
 		<>
-			<VerticalBar.Header>
-				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
-				<VerticalBar.Text>{room.teamId ? t('edit-team') : t('edit-room')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
-
-			<VerticalBar.ScrollableContent p='x24' is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
+			<ContextualbarHeader>
+				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
+				<ContextualbarTitle>{room.teamId ? t('edit-team') : t('edit-room')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent p={24} is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
 				<Box display='flex' justifyContent='center'>
 					<RoomAvatarEditor room={room} roomAvatar={roomAvatar} onChangeAvatar={handleRoomAvatar} />
 				</Box>
@@ -311,7 +318,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 					<Field>
 						<Field.Label>{t('Description')}</Field.Label>
 						<Field.Row>
-							<TextAreaInput rows={4} value={roomDescription} onChange={handleRoomDescription} flexGrow={1} />
+							<TextAreaInput disabled={isFederated} rows={4} value={roomDescription} onChange={handleRoomDescription} flexGrow={1} />
 						</Field.Row>
 					</Field>
 				)}
@@ -319,7 +326,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 					<Field>
 						<Field.Label>{t('Announcement')}</Field.Label>
 						<Field.Row>
-							<TextAreaInput rows={4} value={roomAnnouncement} onChange={handleRoomAnnouncement} flexGrow={1} />
+							<TextAreaInput disabled={isFederated} rows={4} value={roomAnnouncement} onChange={handleRoomAnnouncement} flexGrow={1} />
 						</Field.Row>
 					</Field>
 				)}
@@ -336,7 +343,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Private')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch disabled={!canChangeType || isRoomFederated(room)} checked={roomType === 'p'} onChange={changeRoomType} />
+								<ToggleSwitch disabled={!canChangeType || isFederated} checked={roomType === 'p'} onChange={changeRoomType} />
 							</Field.Row>
 						</Box>
 						<Field.Hint>{t('Teams_New_Private_Description_Enabled')}</Field.Hint>
@@ -347,7 +354,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Read_only')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch disabled={!canSetRo || isRoomFederated(room)} checked={readOnly} onChange={handleReadOnly} />
+								<ToggleSwitch disabled={!canSetRo || isFederated} checked={readOnly} onChange={handleReadOnly} />
 							</Field.Row>
 						</Box>
 						<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
@@ -379,7 +386,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Password_to_access')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch checked={joinCodeRequired} onChange={handleJoinCodeRequired} />
+								<ToggleSwitch disabled={isFederated} checked={joinCodeRequired} onChange={handleJoinCodeRequired} />
 							</Field.Row>
 						</Box>
 						<Field.Row>
@@ -398,14 +405,14 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Hide_System_Messages')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch checked={hideSysMes} onChange={handleHideSysMes} />
+								<ToggleSwitch checked={hideSysMes} disabled={isFederated} onChange={handleHideSysMes} />
 							</Field.Row>
 						</Box>
 						<Field.Row>
 							<MultiSelect
 								maxWidth='100%'
 								options={sysMesOptions}
-								disabled={!hideSysMes}
+								disabled={!hideSysMes || isFederated}
 								value={systemMessages}
 								onChange={handleSystemMessages}
 								placeholder={t('Select_an_option')}
@@ -419,7 +426,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Encrypted')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch disabled={!canToggleEncryption} checked={encrypted} onChange={handleEncrypted} />
+								<ToggleSwitch disabled={!canToggleEncryption || isFederated} checked={encrypted} onChange={handleEncrypted} />
 							</Field.Row>
 						</Box>
 					</Field>
@@ -481,29 +488,22 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						</Accordion.Item>
 					</Accordion>
 				)}
-				<Field>
-					<Field.Row>
-						<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-							<ButtonGroup stretch flexGrow={1}>
-								<Button type='reset' disabled={!hasUnsavedChanges} onClick={reset}>
-									{t('Reset')}
-								</Button>
-								<Button flexGrow={1} disabled={!hasUnsavedChanges} onClick={handleSave}>
-									{t('Save')}
-								</Button>
-							</ButtonGroup>
-						</Box>
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Row>
-						<Button flexGrow={1} danger disabled={!canDelete} onClick={handleDelete}>
-							<Icon name='trash' size='x16' />
-							{t('Delete')}
-						</Button>
-					</Field.Row>
-				</Field>
-			</VerticalBar.ScrollableContent>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button type='reset' disabled={!hasUnsavedChanges} onClick={reset}>
+						{t('Reset')}
+					</Button>
+					<Button disabled={!hasUnsavedChanges} onClick={handleSave}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+				<ButtonGroup stretch mbs={8}>
+					<Button icon='trash' danger disabled={!canDelete || isFederated} onClick={handleDelete}>
+						{t('Delete')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
 		</>
 	);
 }

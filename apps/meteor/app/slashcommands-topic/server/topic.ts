@@ -1,17 +1,14 @@
-import { Meteor } from 'meteor/meteor';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { saveRoomSettings } from '../../channel-settings/server/methods/saveRoomSettings';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { hasPermission } from '../../authorization/server/functions/hasPermission';
 
 slashCommands.add({
 	command: 'topic',
-	callback: function Topic(_command: 'topic', params, item): void {
-		if (Meteor.isServer && hasPermission(Meteor.userId() as string, 'edit-room', item.rid)) {
-			Meteor.call('saveRoomSettings', item.rid, 'roomTopic', params, (err: Meteor.Error) => {
-				if (err) {
-					throw err;
-				}
-			});
+	callback: async ({ params, message, userId }: SlashCommandCallbackParams<'topic'>): Promise<void> => {
+		if (userId && (await hasPermissionAsync(userId, 'edit-room', message.rid))) {
+			await saveRoomSettings(userId, message.rid, 'roomTopic', params);
 		}
 	},
 	options: {

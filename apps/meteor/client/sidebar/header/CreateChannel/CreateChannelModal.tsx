@@ -1,7 +1,14 @@
 import { Box, Modal, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation, useEndpoint, usePermission, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import {
+	useSetting,
+	useTranslation,
+	useEndpoint,
+	usePermission,
+	useToastMessageDispatch,
+	usePermissionWithScopedRoles,
+} from '@rocket.chat/ui-contexts';
+import type { ComponentProps, ReactElement } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -37,8 +44,8 @@ const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModu
 
 const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): ReactElement => {
 	const t = useTranslation();
+	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
-	const canSetReadOnly = usePermission('set-readonly');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const federationEnabled = useSetting('Federation_Matrix_enabled');
@@ -131,7 +138,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 				topic,
 				broadcast,
 				encrypted,
-				federated,
+				...(federated && { federated }),
 				...(teamId && { teamId }),
 			},
 		};
@@ -159,12 +166,16 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 	);
 
 	return (
-		<Modal data-qa='create-channel-modal' aria-label={t('Create_channel')}>
+		<Modal
+			data-qa='create-channel-modal'
+			aria-label={t('Create_channel')}
+			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleCreateChannel)} {...props} />}
+		>
 			<Modal.Header>
 				<Modal.Title>{t('Create_channel')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={onClose} />
 			</Modal.Header>
-			<Modal.Content mbe='x2'>
+			<Modal.Content mbe={2}>
 				<FieldGroup>
 					<Field>
 						<Field.Label>{t('Name')}</Field.Label>
@@ -308,7 +319,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isDirty} onClick={handleSubmit(handleCreateChannel)} primary data-qa-type='create-channel-confirm-button'>
+					<Button disabled={!isDirty} type='submit' primary data-qa-type='create-channel-confirm-button'>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

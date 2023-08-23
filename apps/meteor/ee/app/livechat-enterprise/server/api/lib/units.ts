@@ -1,6 +1,6 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { IOmnichannelBusinessUnit, ILivechatMonitor } from '@rocket.chat/core-typings';
+import type { IOmnichannelBusinessUnit, ILivechatUnitMonitor } from '@rocket.chat/core-typings';
 import { LivechatUnitMonitors, LivechatUnit } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { FindOptions } from 'mongodb';
 
 export async function findUnits({
@@ -39,8 +39,8 @@ export async function findUnits({
 	};
 }
 
-export async function findUnitMonitors({ unitId }: { unitId: string }): Promise<ILivechatMonitor[]> {
-	return LivechatUnitMonitors.find({ unitId }).toArray() as Promise<ILivechatMonitor[]>;
+export async function findUnitMonitors({ unitId }: { unitId: string }): Promise<ILivechatUnitMonitor[]> {
+	return LivechatUnitMonitors.find({ unitId }).toArray();
 }
 
 export async function findUnitById({ unitId }: { unitId: string }): Promise<IOmnichannelBusinessUnit | null> {

@@ -1,9 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { KonchatNotification } from '../../../../app/ui/client';
-import { t } from '../../../../app/utils/client';
+import { KonchatNotification } from '../../../../app/ui/client/lib/KonchatNotification';
+import { sdk } from '../../../../app/utils/client/lib/SDKClient';
+import { t } from '../../../../app/utils/lib/i18n';
 import { dispatchToastMessage } from '../../toast';
-import { call } from '../../utils/call';
 import type { ChatAPI } from '../ChatAPI';
 import { processMessageEditing } from './processMessageEditing';
 import { processSetReaction } from './processSetReaction';
@@ -29,7 +29,7 @@ const process = async (chat: ChatAPI, message: IMessage): Promise<void> => {
 		return;
 	}
 
-	await call('sendMessage', message);
+	await sdk.call('sendMessage', message);
 };
 
 export const sendMessage = async (chat: ChatAPI, { text, tshow }: { text: string; tshow?: boolean }): Promise<boolean> => {
@@ -55,7 +55,7 @@ export const sendMessage = async (chat: ChatAPI, { text, tshow }: { text: string
 		const message = await chat.data.composeMessage(text, {
 			sendToChannel: tshow,
 			quotedMessages: chat.composer?.quotedMessages.get() ?? [],
-			originalMessage: chat.currentEditing ? await chat.data.findMessageByID(chat.currentEditing.mid) : undefined,
+			originalMessage: chat.currentEditing ? await chat.data.findMessageByID(chat.currentEditing.mid) : null,
 		});
 
 		try {

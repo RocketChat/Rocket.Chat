@@ -2,7 +2,8 @@ import mitt from 'mitt';
 import { route } from 'preact-router';
 
 import { Livechat } from '../api';
-import { upsert, asyncForEach } from '../components/helpers';
+import { asyncForEach } from '../helpers/asyncForEach';
+import { upsert } from '../helpers/upsert';
 import store from '../store';
 import { normalizeAgent } from './api';
 import { processUnread } from './main';
@@ -57,7 +58,21 @@ const getAgent = (triggerAction) => {
 	return agentPromise;
 };
 
+const isInIframe = () => window.self !== window.top;
+
 class Triggers {
+	/** @property {Triggers} instance*/
+
+	/** @property {boolean} _started */
+
+	/** @property {Array} _requests */
+
+	/** @property {Array} _triggers */
+
+	/** @property {boolean} _enabled */
+
+	/** @property {import('mitt').Emitter} callbacks */
+
 	constructor() {
 		if (!Triggers.instance) {
 			this._started = false;
@@ -96,6 +111,12 @@ class Triggers {
 					trigger.skip = true;
 				}
 			});
+		});
+
+		store.on('change', ([state, prevState]) => {
+			if (prevState.parentUrl !== state.parentUrl) {
+				this.processPageUrlTriggers();
+			}
 		});
 	}
 
@@ -162,11 +183,12 @@ class Triggers {
 			if (trigger.skip) {
 				return;
 			}
+
 			trigger.conditions.forEach((condition) => {
 				switch (condition.name) {
 					case 'page-url':
 						const hrefRegExp = new RegExp(condition.value, 'g');
-						if (hrefRegExp.test(window.location.href)) {
+						if (this.parentUrl && hrefRegExp.test(this.parentUrl)) {
 							this.fire(trigger);
 						}
 						break;
@@ -188,12 +210,33 @@ class Triggers {
 		this._requests = [];
 	}
 
+	processPageUrlTriggers() {
+		if (!this.parentUrl) return;
+
+		this._triggers.forEach((trigger) => {
+			if (trigger.skip) return;
+
+			trigger.conditions.forEach((condition) => {
+				if (condition.name !== 'page-url') return;
+
+				const hrefRegExp = new RegExp(condition.value, 'g');
+				if (hrefRegExp.test(this.parentUrl)) {
+					this.fire(trigger);
+				}
+			});
+		});
+	}
+
 	set triggers(newTriggers) {
 		this._triggers = [...newTriggers];
 	}
 
 	set enabled(value) {
 		this._enabled = value;
+	}
+
+	get parentUrl() {
+		return isInIframe() ? store.state.parentUrl : window.location.href;
 	}
 }
 

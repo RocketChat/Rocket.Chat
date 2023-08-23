@@ -1,10 +1,11 @@
-import { Meteor } from 'meteor/meteor';
 import { BlockType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
 import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Objects';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Banner } from '@rocket.chat/core-services';
 import type { IBanner } from '@rocket.chat/core-typings';
 import { BannerPlatform } from '@rocket.chat/core-typings';
-import { Banner } from '@rocket.chat/core-services';
+import { Meteor } from 'meteor/meteor';
+
+import { i18n } from '../../../../server/lib/i18n';
 
 const WARNING_BANNER_ID = 'closeToSeatsLimit';
 const DANGER_BANNER_ID = 'reachedSeatsLimit';
@@ -24,7 +25,7 @@ const makeWarningBanner = (seats: number): IBanner => ({
 				blockId: 'attention',
 				text: {
 					type: TextObjectType.MARKDOWN,
-					text: TAPi18n.__('Close_to_seat_limit_banner_warning', {
+					text: i18n.t('Close_to_seat_limit_banner_warning', {
 						seats,
 						url: Meteor.absoluteUrl('/requestSeats'),
 					}),
@@ -59,7 +60,7 @@ const makeDangerBanner = (): IBanner => ({
 				blockId: 'attention',
 				text: {
 					type: TextObjectType.MARKDOWN,
-					text: TAPi18n.__('Reached_seat_limit_banner_warning', {
+					text: i18n.t('Reached_seat_limit_banner_warning', {
 						url: Meteor.absoluteUrl('/requestSeats'),
 					}),
 					emoji: false,
@@ -81,33 +82,33 @@ const makeDangerBanner = (): IBanner => ({
 export const createSeatsLimitBanners = async (): Promise<void> => {
 	const [warning, danger] = await Promise.all([Banner.getById(WARNING_BANNER_ID), Banner.getById(DANGER_BANNER_ID)]);
 	if (!warning) {
-		Banner.create(makeWarningBanner(0));
+		await Banner.create(makeWarningBanner(0));
 	}
 	if (!danger) {
-		Banner.create(makeDangerBanner());
+		await Banner.create(makeDangerBanner());
 	}
 };
 
-export const enableDangerBanner = (): void => {
-	Banner.enable(DANGER_BANNER_ID, makeDangerBanner());
-};
+export async function enableDangerBanner() {
+	await Banner.enable(DANGER_BANNER_ID, makeDangerBanner());
+}
 
 export const disableDangerBannerDiscardingDismissal = async (): Promise<void> => {
 	const banner = await Banner.getById(DANGER_BANNER_ID);
 	if (banner?.active) {
-		Banner.disable(DANGER_BANNER_ID);
-		Banner.discardDismissal(DANGER_BANNER_ID);
+		await Banner.disable(DANGER_BANNER_ID);
+		await Banner.discardDismissal(DANGER_BANNER_ID);
 	}
 };
 
-export const enableWarningBanner = (seatsLeft: number): void => {
-	Banner.enable(WARNING_BANNER_ID, makeWarningBanner(seatsLeft));
-};
+export async function enableWarningBanner(seatsLeft: number) {
+	await Banner.enable(WARNING_BANNER_ID, makeWarningBanner(seatsLeft));
+}
 
-export const disableWarningBannerDiscardingDismissal = async (): Promise<void> => {
+export async function disableWarningBannerDiscardingDismissal() {
 	const banner = await Banner.getById(WARNING_BANNER_ID);
 	if (banner?.active) {
-		Banner.disable(WARNING_BANNER_ID);
-		Banner.discardDismissal(WARNING_BANNER_ID);
+		await Banner.disable(WARNING_BANNER_ID);
+		await Banner.discardDismissal(WARNING_BANNER_ID);
 	}
-};
+}

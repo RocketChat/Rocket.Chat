@@ -1,9 +1,10 @@
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
-import { updatePermission } from '../../data/permissions.helper.js';
-import { createUser, login } from '../../data/users.helper';
+import { updatePermission } from '../../data/permissions.helper';
 import { adminUsername, password } from '../../data/user';
+import { createUser, login } from '../../data/users.helper';
 
 describe('[Teams]', () => {
 	before((done) => getCredentials(done));

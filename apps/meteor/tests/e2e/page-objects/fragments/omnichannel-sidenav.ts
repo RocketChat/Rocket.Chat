@@ -8,15 +8,15 @@ export class OmnichannelSidenav {
 	}
 
 	get linkDepartments(): Locator {
-		return this.page.locator('a[href="omnichannel/departments"]');
+		return this.page.locator('a[href="/omnichannel/departments"]');
 	}
 
 	get linkAgents(): Locator {
-		return this.page.locator('a[href="omnichannel/agents"]');
+		return this.page.locator('a[href="/omnichannel/agents"]');
 	}
 
 	get linkManagers(): Locator {
-		return this.page.locator('a[href="omnichannel/managers"]');
+		return this.page.locator('a[href="/omnichannel/managers"]');
 	}
 
 	get linkCustomFields(): Locator {
@@ -24,6 +24,18 @@ export class OmnichannelSidenav {
 	}
 
 	get linkCurrentChats(): Locator {
-		return this.page.locator('a[href="omnichannel/current"]');
+		return this.page.locator('a[href="/omnichannel/current"]');
+	}
+
+	get linkTriggers(): Locator {
+		return this.page.locator('a[href="/omnichannel/triggers"]');
+	}
+
+	get linkSlaPolicies(): Locator {
+		return this.page.locator('a[href="/omnichannel/sla-policies"]');
+	}
+
+	get linkPriorities(): Locator {
+		return this.page.locator('a[href="/omnichannel/priorities"]');
 	}
 }

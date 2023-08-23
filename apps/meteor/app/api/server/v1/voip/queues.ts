@@ -1,6 +1,6 @@
-import { Match, check } from 'meteor/check';
-import type { IVoipConnectorResult, IQueueSummary, IQueueMembershipDetails, IQueueMembershipSubscription } from '@rocket.chat/core-typings';
 import { Voip } from '@rocket.chat/core-services';
+import type { IVoipConnectorResult, IQueueSummary, IQueueMembershipDetails, IQueueMembershipSubscription } from '@rocket.chat/core-typings';
+import { Match, check } from 'meteor/check';
 
 import { API } from '../../api';
 
@@ -21,12 +21,12 @@ API.v1.addRoute(
 	{
 		async get() {
 			check(
-				this.requestParams(),
+				this.queryParams,
 				Match.ObjectIncluding({
 					extension: String,
 				}),
 			);
-			const membershipDetails: IVoipConnectorResult = await Voip.getQueuedCallsForThisExtension(this.requestParams());
+			const membershipDetails: IVoipConnectorResult = await Voip.getQueuedCallsForThisExtension(this.queryParams);
 			return API.v1.success(membershipDetails.result as IQueueMembershipDetails);
 		},
 	},
@@ -38,12 +38,12 @@ API.v1.addRoute(
 	{
 		async get() {
 			check(
-				this.requestParams(),
+				this.queryParams,
 				Match.ObjectIncluding({
 					extension: String,
 				}),
 			);
-			const membershipDetails: IVoipConnectorResult = await Voip.getQueueMembership(this.requestParams());
+			const membershipDetails: IVoipConnectorResult = await Voip.getQueueMembership(this.queryParams);
 			return API.v1.success(membershipDetails.result as IQueueMembershipSubscription);
 		},
 	},

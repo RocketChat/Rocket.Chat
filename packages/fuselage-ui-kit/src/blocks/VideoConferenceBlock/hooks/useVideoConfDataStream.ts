@@ -1,75 +1,29 @@
-import { useStream } from '@rocket.chat/ui-contexts';
-import { Emitter } from '@rocket.chat/emitter';
-import { useCallback, useEffect } from 'react';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { useSingleStream } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 import { useVideoConfData } from './useVideoConfData';
-
-const ee = new Emitter<Record<string, void>>();
-
-const events = new Map<string, () => void>();
-
-const useStreamBySubPath = (
-  streamer: ReturnType<typeof useStream>,
-  subpath: string,
-  callback: () => void
-) => {
-  const maybeSubscribe = useCallback(() => {
-    // If we're already subscribed, don't do it again
-    if (events.has(subpath)) {
-      return;
-    }
-
-    events.set(
-      subpath,
-      streamer(subpath, () => {
-        ee.emit(subpath);
-      })
-    );
-  }, [streamer, subpath]);
-
-  const maybeUnsubscribe = useCallback(() => {
-    // If someone is still listening, don't unsubscribe
-    if (ee.has(subpath)) {
-      return;
-    }
-
-    const unsubscribe = events.get(subpath);
-    if (unsubscribe) {
-      unsubscribe();
-      events.delete(subpath);
-    }
-  }, [subpath]);
-
-  useEffect(() => {
-    maybeSubscribe();
-    ee.on(subpath, callback);
-
-    return () => {
-      ee.off(subpath, callback);
-      maybeUnsubscribe();
-    };
-  }, [callback, subpath]);
-};
 
 export const useVideoConfDataStream = ({
   rid,
   callId,
 }: {
-  rid: string;
+  rid: IRoom['_id'];
   callId: string;
 }) => {
   const queryClient = useQueryClient();
-  const subpath = `${rid}/${callId}`;
 
-  const subscribeNotifyRoom = useStream('notify-room');
+  const subscribeNotifyRoom = useSingleStream('notify-room');
 
-  useStreamBySubPath(
-    subscribeNotifyRoom,
-    subpath,
-    useCallback(() => {
-      queryClient.invalidateQueries(['video-conference', callId]);
-    }, [subpath])
-  );
+  useEffect(() => {
+    return subscribeNotifyRoom(
+      `${rid}/videoconf`,
+      (id) =>
+        id === callId &&
+        queryClient.invalidateQueries(['video-conference', callId])
+    );
+  }, [rid, callId, subscribeNotifyRoom, queryClient]);
+
   return useVideoConfData({ callId });
 };

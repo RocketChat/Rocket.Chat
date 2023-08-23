@@ -18,7 +18,7 @@ const getSettingOptions = (
 
 	const setting = settings.find(({ _id }) => _id === settingId);
 
-	if (!setting || !setting.values) {
+	if (!setting?.values) {
 		return [];
 	}
 
@@ -37,12 +37,12 @@ const OrganizationInfoStep = (): ReactElement => {
 		goToNextStep,
 		completeSetupWizard,
 		currentStep,
+		registerPreIntent,
 		skipCloudRegistration,
 		maxSteps,
 	} = useSetupWizardContext();
 
 	const countryOptions = getSettingOptions(settings, 'Country', t);
-	const organizationTypeOptions = getSettingOptions(settings, 'Organization_Type', t);
 	const organizationIndustryOptions = getSettingOptions(settings, 'Industry', t);
 	const organizationSizeOptions = getSettingOptions(settings, 'Size', t);
 
@@ -51,6 +51,7 @@ const OrganizationInfoStep = (): ReactElement => {
 			return completeSetupWizard();
 		}
 		setSetupWizardData((prevState) => ({ ...prevState, organizationData: data }));
+		await registerPreIntent();
 		goToNextStep();
 	};
 
@@ -61,7 +62,6 @@ const OrganizationInfoStep = (): ReactElement => {
 			onBackButtonClick={!hasAdminRole ? goToPreviousStep : undefined}
 			currentStep={currentStep}
 			stepCount={maxSteps}
-			organizationTypeOptions={organizationTypeOptions}
 			organizationIndustryOptions={organizationIndustryOptions}
 			organizationSizeOptions={organizationSizeOptions}
 			countryOptions={countryOptions}

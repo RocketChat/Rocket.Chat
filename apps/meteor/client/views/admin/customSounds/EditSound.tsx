@@ -1,10 +1,10 @@
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, IconButton } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, SyntheticEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
-import VerticalBar from '../../../components/VerticalBar';
 import { useFileInput } from '../../../hooks/useFileInput';
 import { validate, createSoundData } from './lib';
 
@@ -49,11 +49,12 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: sound.extension });
 			const validation = validate(soundData, sound);
 			if (validation.length === 0) {
-				let soundId;
+				let soundId: string;
 				try {
 					soundId = await insertOrUpdateSound(soundData);
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
+					return;
 				}
 
 				soundData._id = soundId;
@@ -66,7 +67,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					reader.readAsBinaryString(sound);
 					reader.onloadend = (): void => {
 						try {
-							uploadCustomSound(reader.result, sound.type, soundData);
+							uploadCustomSound(reader.result as string, sound.type, { ...soundData, _id: soundId });
 							return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 						} catch (error) {
 							dispatchToastMessage({ type: 'error', message: error });
@@ -116,49 +117,42 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
 
 	return (
-		<VerticalBar.ScrollableContent {...props}>
-			<Field>
-				<Field.Label>{t('Name')}</Field.Label>
-				<Field.Row>
-					<TextInput
-						value={name}
-						onChange={(e: SyntheticEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
-						placeholder={t('Name')}
-					/>
-				</Field.Row>
-			</Field>
-
-			<Field>
-				<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
-				<Box display='flex' flexDirection='row' mbs='none'>
-					<Margins inline='x4'>
-						<IconButton icon='upload' secondary onClick={clickUpload} />
-						{sound?.name || 'none'}
-					</Margins>
-				</Box>
-			</Field>
-
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button onClick={close}>{t('Cancel')}</Button>
-						<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
-							{t('Save')}
-						</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button danger onClick={handleDeleteButtonClick}>
-							<Icon name='trash' mie='x4' />
-							{t('Delete')}
-						</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-		</VerticalBar.ScrollableContent>
+		<>
+			<ContextualbarScrollableContent {...props}>
+				<Field>
+					<Field.Label>{t('Name')}</Field.Label>
+					<Field.Row>
+						<TextInput
+							value={name}
+							onChange={(e: SyntheticEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
+							placeholder={t('Name')}
+						/>
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
+					<Box display='flex' flexDirection='row' mbs='none'>
+						<Margins inline={4}>
+							<IconButton icon='upload' secondary onClick={clickUpload} />
+							{sound?.name || 'none'}
+						</Margins>
+					</Box>
+				</Field>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button onClick={close}>{t('Cancel')}</Button>
+					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+				<ButtonGroup mbs={8} stretch>
+					<Button icon='trash' danger onClick={handleDeleteButtonClick}>
+						{t('Delete')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
+		</>
 	);
 }
 

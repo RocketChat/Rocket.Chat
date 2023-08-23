@@ -2,12 +2,12 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	useSetModal,
 	useToastMessageDispatch,
-	useRoute,
 	useUserId,
 	useSetting,
 	usePermission,
 	useMethod,
 	useTranslation,
+	useRouter,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
@@ -16,7 +16,8 @@ import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { useTabBarClose, useTabBarOpen } from '../../../room/contexts/ToolboxContext';
+import { useRoom } from '../../../room/contexts/RoomContext';
+import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
 import DeleteTeamModal from './Delete';
 import LeaveTeam from './LeaveTeam';
@@ -34,9 +35,9 @@ const retentionPolicyAppliesTo = {
 	d: 'RetentionPolicy_AppliesToDMs',
 };
 
-const TeamsInfoWithLogic = ({ room, openEditing }) => {
-	const onClickClose = useTabBarClose();
-	const openTabbar = useTabBarOpen();
+const TeamsInfoWithLogic = ({ openEditing }) => {
+	const room = useRoom();
+	const { openTab, closeTab } = useRoomToolbox();
 	const t = useTranslation();
 	const userId = useUserId();
 
@@ -61,7 +62,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 
 	const hideTeam = useMethod('hideRoom');
 
-	const router = useRoute('home');
+	const router = useRouter();
 
 	const canDelete = usePermission('delete-team', room._id);
 	const canEdit = usePermission('edit-team-channel', room._id);
@@ -75,7 +76,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 			try {
 				await deleteTeam({ teamId: room.teamId, ...(roomsToRemove.length && { roomsToRemove }) });
 				dispatchToastMessage({ type: 'success', message: t('Team_has_been_deleted') });
-				router.push({});
+				router.navigate('/home');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
@@ -97,7 +98,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 					...(roomsToLeave.length && { rooms: roomsToLeave }),
 				});
 				dispatchToastMessage({ type: 'success', message: t('Teams_left_team_successfully') });
-				router.push({});
+				router.navigate('/home');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
@@ -112,7 +113,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 		const hide = async () => {
 			try {
 				await hideTeam(room._id);
-				router.push({});
+				router.navigate('/home');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
@@ -120,7 +121,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 			}
 		};
 
-		const warnText = roomCoordinator.getRoomDirectives(room.t)?.getUiText(UiTextContext.HIDE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(room.t).getUiText(UiTextContext.HIDE_WARNING);
 
 		if (dontAskHideRoom) {
 			return hide();
@@ -144,7 +145,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 		);
 	});
 
-	const onClickViewChannels = useCallback(() => openTabbar('team-channels'), [openTabbar]);
+	const onClickViewChannels = useCallback(() => openTab('team-channels'), [openTab]);
 
 	const onClickConvertToChannel = useMutableCallback(() => {
 		const onConfirm = async (roomsToRemove) => {
@@ -172,7 +173,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 			room={room}
 			retentionPolicy={retentionPolicyEnabled && retentionPolicy}
 			onClickEdit={canEdit && openEditing}
-			onClickClose={onClickClose}
+			onClickClose={closeTab}
 			onClickDelete={canDelete && onClickDelete}
 			onClickLeave={/* canLeave && */ onClickLeave}
 			onClickHide={/* joined && */ handleHide}

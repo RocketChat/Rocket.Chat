@@ -1,9 +1,0 @@
-{
-	"env": {
-		"mocha": true
-	},
-	"globals": {
-		"browser": false,
-		"expect": false
-	}
-}

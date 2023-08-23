@@ -1,19 +1,17 @@
-import moment from 'moment';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users, Analytics, Sessions } from '@rocket.chat/models';
+import moment from 'moment';
 
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
-export const handleUserCreated = (user: IUser): IUser => {
+export const handleUserCreated = async (user: IUser): Promise<IUser> => {
 	if (user.roles?.includes('anonymous')) {
 		return user;
 	}
 
-	Promise.await(
-		Analytics.saveUserData({
-			date: convertDateToInt(user.createdAt),
-		}),
-	);
+	await Analytics.saveUserData({
+		date: convertDateToInt(user.createdAt),
+	});
 
 	return user;
 };

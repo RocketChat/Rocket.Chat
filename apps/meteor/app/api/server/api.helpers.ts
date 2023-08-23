@@ -10,11 +10,11 @@ export type PermissionsPayload = {
 	};
 };
 
-export type PermissionsPayloadLight = {
+type PermissionsPayloadLight = {
 	[key in RequestMethod]?: string[];
 };
 
-export type PermissionsRequiredKey = string[] | PermissionsPayload | PermissionsPayloadLight;
+type PermissionsRequiredKey = string[] | PermissionsPayload | PermissionsPayloadLight;
 
 const isLegacyPermissionsPayload = (permissionsPayload: PermissionsRequiredKey): permissionsPayload is string[] => {
 	return Array.isArray(permissionsPayload);
@@ -65,7 +65,7 @@ export async function checkPermissionsForInvocation(
 }
 
 // We'll assume options only contains permissionsRequired, as we don't care of the other elements
-export function checkPermissions(options: { permissionsRequired: PermissionsRequiredKey }) {
+export function checkPermissions(options: { permissionsRequired?: PermissionsRequiredKey }) {
 	if (!options.permissionsRequired) {
 		return false;
 	}

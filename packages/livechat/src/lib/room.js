@@ -3,7 +3,9 @@ import { route } from 'preact-router';
 
 import { Livechat } from '../api';
 import { CallStatus, isCallOngoing } from '../components/Calls/CallStatus';
-import { setCookies, upsert, canRenderMessage } from '../components/helpers';
+import { canRenderMessage } from '../helpers/canRenderMessage';
+import { setCookies } from '../helpers/cookies';
+import { upsert } from '../helpers/upsert';
 import { store, initialState } from '../store';
 import { normalizeAgent } from './api';
 import Commands from './commands';
@@ -17,6 +19,8 @@ import { handleTranscript } from './transcript';
 const commands = new Commands();
 
 export const closeChat = async ({ transcriptRequested } = {}) => {
+	Livechat.unsubscribeAll();
+
 	if (!transcriptRequested) {
 		await handleTranscript();
 	}
@@ -122,8 +126,6 @@ export const initRoom = async () => {
 		return;
 	}
 
-	Livechat.unsubscribeAll();
-
 	const {
 		token,
 		agent,
@@ -135,7 +137,7 @@ export const initRoom = async () => {
 	let roomAgent = agent;
 	if (!roomAgent) {
 		if (servedBy) {
-			roomAgent = await Livechat.agent({ rid });
+			roomAgent = await Livechat.agent(rid);
 			await store.setState({ agent: roomAgent, queueInfo: null });
 			parentCall('callback', ['assign-agent', normalizeAgent(roomAgent)]);
 		}
@@ -179,7 +181,8 @@ const transformAgentInformationOnMessage = (message) => {
 	return message;
 };
 
-Livechat.onTyping((username, isTyping) => {
+Livechat.onUserActivity((username, activities) => {
+	const isTyping = activities.includes('user-typing');
 	const { typing, user, agent } = store.state;
 
 	if (user && user.username && user.username === username) {
@@ -200,9 +203,13 @@ Livechat.onTyping((username, isTyping) => {
 	}
 });
 
-Livechat.onMessage(async (message) => {
+Livechat.onMessage(async (originalMessage) => {
+	let message = JSON.parse(JSON.stringify(originalMessage));
+
 	if (message.ts instanceof Date) {
 		message.ts = message.ts.toISOString();
+	} else {
+		message.ts = message.ts.$date ? new Date(message.ts.$date).toISOString() : new Date(message.ts).toISOString();
 	}
 
 	message = await normalizeMessage(message);

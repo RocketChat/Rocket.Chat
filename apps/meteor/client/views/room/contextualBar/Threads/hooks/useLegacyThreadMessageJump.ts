@@ -1,13 +1,35 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import { useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useRef, useEffect } from 'react';
 
-export const useLegacyThreadMessageJump = (
-	mid: IMessage['_id'] | undefined,
-	{ enabled = true, onJumpTo }: { enabled?: boolean; onJumpTo?: (mid: IMessage['_id']) => void },
-) => {
+import { waitForElement } from '../../../../../lib/utils/waitForElement';
+import { clearHighlightMessage, setHighlightMessage } from '../../../MessageList/providers/messageHighlightSubscription';
+
+export const useLegacyThreadMessageJump = ({ enabled = true }: { enabled?: boolean }) => {
+	const router = useRouter();
+	const mid = useSearchParameter('msg');
+
+	const clearQueryStringParameter = () => {
+		const name = router.getRouteName();
+
+		if (!name) {
+			return;
+		}
+
+		const { msg: _, ...search } = router.getSearchParameters();
+
+		router.navigate(
+			{
+				name,
+				params: router.getRouteParameters(),
+				search,
+			},
+			{ replace: true },
+		);
+	};
+
 	const parentRef = useRef<HTMLElement>(null);
-	const onJumpToRef = useRef(onJumpTo);
-	onJumpToRef.current = onJumpTo;
+	const clearQueryStringParameterRef = useRef(clearQueryStringParameter);
+	clearQueryStringParameterRef.current = clearQueryStringParameter;
 
 	useEffect(() => {
 		const parent = parentRef.current;
@@ -16,25 +38,36 @@ export const useLegacyThreadMessageJump = (
 			return;
 		}
 
-		const messageElement = parent.querySelector(`[data-id="${mid}"]`);
-		if (!messageElement) {
-			return;
-		}
+		const abortController = new AbortController();
 
-		messageElement.classList.add('highlight');
+		waitForElement<HTMLElement>(`[data-id='${mid}']`, { parent, signal: abortController.signal }).then((messageElement) => {
+			if (abortController.signal.aborted) {
+				return;
+			}
 
-		const removeClass = () => {
-			messageElement.classList.remove('highlight');
-			messageElement.removeEventListener('animationend', removeClass);
+			setHighlightMessage(mid);
+			clearQueryStringParameterRef.current?.();
+
+			setTimeout(() => {
+				clearHighlightMessage();
+			}, 1000);
+
+			setTimeout(() => {
+				if (abortController.signal.aborted) {
+					return;
+				}
+
+				messageElement.scrollIntoView({
+					behavior: 'smooth',
+					block: 'nearest',
+				});
+			}, 300);
+		});
+
+		return () => {
+			abortController.abort();
 		};
-		messageElement.addEventListener('animationend', removeClass);
-
-		setTimeout(() => {
-			messageElement.scrollIntoView();
-			const onJumpTo = onJumpToRef.current;
-			onJumpTo?.(mid);
-		}, 300);
-	}, [enabled, mid, onJumpTo]);
+	}, [enabled, mid]);
 
 	return { parentRef };
 };

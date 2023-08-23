@@ -13,16 +13,16 @@ const AnnouncementComponent: FC<AnnouncementComponentParams> = ({ children, onCl
 		color: ${Palette.text['font-pure-black'].theme('announcement-text')};
 		cursor: pointer;
 		transition: transform 0.2s ease-out;
-		a {
+		a:link {
 			color: ${Palette.text['font-pure-black'].theme('announcement-text')};
-			text-decoration: underline !important;
+			text-decoration: underline;
 		}
 		> * {
 			flex: auto;
 		}
 		&:hover,
 		&:focus {
-			text-decoration: underline !important;
+			text-decoration: underline;
 		}
 	`;
 
@@ -30,7 +30,7 @@ const AnnouncementComponent: FC<AnnouncementComponentParams> = ({ children, onCl
 		<Box
 			onClick={onClickOpen}
 			height='x40'
-			pi='x24'
+			pi={24}
 			alignItems='center'
 			display='flex'
 			fontScale='p2m'

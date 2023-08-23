@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { Settings } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { onValidateLicenses, getLicenses } from '../../app/license/server/license';
 
@@ -10,7 +10,7 @@ const handleHadTrial = (): void => {
 		}
 
 		if (license.meta?.trial) {
-			Settings.updateValueById('Cloud_Workspace_Had_Trial', true);
+			void Settings.updateValueById('Cloud_Workspace_Had_Trial', true);
 		}
 	});
 };

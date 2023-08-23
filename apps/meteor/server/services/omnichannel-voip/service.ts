@@ -1,5 +1,5 @@
-import type { FindOptions } from 'mongodb';
-import _ from 'underscore';
+import type { IOmnichannelVoipService, FindVoipRoomsParams } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, Voip } from '@rocket.chat/core-services';
 import type {
 	IVoipExtensionBase,
 	IVoipExtensionWithAgentInfo,
@@ -9,15 +9,15 @@ import type {
 	ILivechatAgent,
 	ILivechatVisitor,
 	IVoipRoom,
-	IRoomClosingInfo,
+	IVoipRoomClosingInfo,
 } from '@rocket.chat/core-typings';
-import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents } from '@rocket.chat/core-typings';
-import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents, UserStatus } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users, VoipRoom, PbxEvents } from '@rocket.chat/models';
-import type { IOmnichannelVoipService, FindVoipRoomsParams } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal, Voip } from '@rocket.chat/core-services';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { FindOptions } from 'mongodb';
+import _ from 'underscore';
 
-import { Logger } from '../../lib/logger/Logger';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import type { IOmniRoomClosingMessage } from './internalTypes';
 
@@ -62,7 +62,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			return;
 		}
 		this.logger.debug(`Notifying agent ${agent._id} of hangup on room ${currentRoom._id}`);
-		api.broadcast('call.callerhangup', agent._id, { roomId: currentRoom._id });
+		void api.broadcast('call.callerhangup', agent._id, { roomId: currentRoom._id });
 	}
 
 	private async processAgentDisconnect(extension: string): Promise<void> {
@@ -92,7 +92,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		guest: ILivechatVisitor,
 		direction: IVoipRoom['direction'],
 	): Promise<string> {
-		const status = 'online';
+		const status = UserStatus.ONLINE;
 		const { _id, department: departmentId } = guest;
 		const newRoomAt = new Date();
 
@@ -151,7 +151,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 				token: guest.token,
 				status,
 				username: guest.username,
-				phone: guest?.phone?.[0]?.phoneNumber,
+				...(guest?.phone?.[0] && { phone: guest.phone[0].phoneNumber }),
 			},
 			servedBy: {
 				_id: agent.agentId,
@@ -175,7 +175,6 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			autoTranslateLanguage: '',
 			responseBy: '',
 			livechatData: '',
-			priorityId: '',
 			u: {
 				_id: agent.agentId,
 				username: agent.username,
@@ -289,7 +288,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		}
 
 		let { closeInfo, closeSystemMsgData } = await this.getBaseRoomClosingData(closerParam, room, sysMessageId, options);
-		const finalClosingData = this.getRoomClosingData(closeInfo, closeSystemMsgData, room, sysMessageId, options);
+		const finalClosingData = await this.getRoomClosingData(closeInfo, closeSystemMsgData, room, sysMessageId, options);
 		closeInfo = finalClosingData.closeInfo;
 		closeSystemMsgData = finalClosingData.closeSystemMsgData;
 
@@ -307,13 +306,13 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		return true;
 	}
 
-	getRoomClosingData(
-		closeInfo: IRoomClosingInfo,
+	async getRoomClosingData(
+		closeInfo: IVoipRoomClosingInfo,
 		closeSystemMsgData: IOmniRoomClosingMessage,
 		_room: IVoipRoom,
 		_sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
 		_options?: { comment?: string; tags?: string[] },
-	): { closeInfo: IRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage } {
+	): Promise<{ closeInfo: IVoipRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage }> {
 		return { closeInfo, closeSystemMsgData };
 	}
 
@@ -322,11 +321,11 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		room: IVoipRoom,
 		sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
 		_options?: { comment?: string; tags?: string[] },
-	): Promise<{ closeInfo: IRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage }> {
+	): Promise<{ closeInfo: IVoipRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage }> {
 		const now = new Date();
 		const closer = isILivechatVisitor(closerParam) ? 'visitor' : 'user';
 
-		const closeData: IRoomClosingInfo = {
+		const closeData: IVoipRoomClosingInfo = {
 			closedAt: now,
 			callDuration: now.getTime() - room.ts.getTime(),
 			closer,

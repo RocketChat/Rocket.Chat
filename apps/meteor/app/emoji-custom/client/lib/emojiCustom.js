@@ -1,12 +1,14 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import $ from 'jquery';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { isSetNotNull } from './function-isSet';
-import { RoomManager } from '../../../ui-utils/client';
-import { emoji, EmojiPicker } from '../../../emoji/client';
+import { emoji, updateRecent } from '../../../emoji/client';
 import { CachedCollectionManager } from '../../../ui-cached-collection/client';
-import { APIClient, getURL } from '../../../utils/client';
+import { LegacyRoomManager } from '../../../ui-utils/client';
+import { getURL } from '../../../utils/client';
+import { sdk } from '../../../utils/client/lib/SDKClient';
+import { isSetNotNull } from './function-isSet';
 
 export const getEmojiUrlFromName = function (name, extension) {
 	if (name == null) {
@@ -39,7 +41,7 @@ export const deleteEmojiCustom = function (emojiData) {
 			}
 		}
 	}
-	EmojiPicker.updateRecent('rocket');
+	updateRecent('rocket');
 };
 
 export const updateEmojiCustom = function (emojiData) {
@@ -113,9 +115,9 @@ export const updateEmojiCustom = function (emojiData) {
 	}
 
 	// update in picker and opened rooms
-	for (key in RoomManager.openedRooms) {
-		if (RoomManager.openedRooms.hasOwnProperty(key)) {
-			const room = RoomManager.openedRooms[key];
+	for (key in LegacyRoomManager.openedRooms) {
+		if (LegacyRoomManager.openedRooms.hasOwnProperty(key)) {
+			const room = LegacyRoomManager.openedRooms[key];
 			if (previousExists && emojiData.name !== emojiData.previousName) {
 				$(room.dom)
 					.find(`span[data-emoji='${emojiData.previousName}']`)
@@ -127,7 +129,7 @@ export const updateEmojiCustom = function (emojiData) {
 		}
 	}
 
-	EmojiPicker.updateRecent('rocket');
+	updateRecent('rocket');
 };
 
 const customRender = (html) => {
@@ -179,7 +181,7 @@ Meteor.startup(() =>
 		try {
 			const {
 				emojis: { update: emojis },
-			} = await APIClient.get('/v1/emoji-custom.list');
+			} = await sdk.rest.get('/v1/emoji-custom.list');
 
 			emoji.packages.emojiCustom.emojisByCategory = { rocket: [] };
 			for (const currentEmoji of emojis) {

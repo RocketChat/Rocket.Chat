@@ -15,13 +15,13 @@ const MyDataModal: FC<MyDataModalProps> = ({ onCancel, title, text, ...props }) 
 	return (
 		<Modal {...props}>
 			<Modal.Header>
-				<Modal.Icon color='on-success' name='circle-check' />
+				<Modal.Icon color='status-font-on-success' name='circle-check' />
 				<Modal.Title>{title}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			{text && (
 				<Modal.Content fontScale='p2'>
-					<Box mb='x8'>{text}</Box>
+					<Box mb={8}>{text}</Box>
 				</Modal.Content>
 			)}
 			<Modal.Footer>

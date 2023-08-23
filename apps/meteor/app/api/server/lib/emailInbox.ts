@@ -1,8 +1,6 @@
 import type { IEmailInbox } from '@rocket.chat/core-typings';
+import { EmailInbox, Users } from '@rocket.chat/models';
 import type { Filter, InsertOneResult, Sort, UpdateResult, WithId } from 'mongodb';
-import { EmailInbox } from '@rocket.chat/models';
-
-import { Users } from '../../../models/server';
 
 export const findEmailInboxes = async ({
 	query = {},
@@ -47,7 +45,7 @@ export const insertOneEmailInbox = async (
 		...emailInboxParams,
 		_createdAt: new Date(),
 		_updatedAt: new Date(),
-		_createdBy: Users.findOne(userId, { fields: { username: 1 } }),
+		_createdBy: await Users.findOneById(userId, { projection: { username: 1 } }),
 	};
 	return EmailInbox.insertOne(obj);
 };

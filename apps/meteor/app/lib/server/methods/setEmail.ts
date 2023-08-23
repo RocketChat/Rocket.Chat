@@ -1,15 +1,23 @@
-import { Meteor } from 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
-import { setEmail } from '../functions';
+import { setEmail } from '../functions/setEmail';
 import { RateLimiter } from '../lib';
 
-Meteor.methods({
-	setEmail(email) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		setEmail(email: string): string;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async setEmail(email) {
 		check(email, String);
 
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setEmail' });
@@ -26,7 +34,7 @@ Meteor.methods({
 			return email;
 		}
 
-		if (!setEmail(user._id, email)) {
+		if (!(await setEmail(user._id, email))) {
 			throw new Meteor.Error('error-could-not-change-email', 'Could not change email', {
 				method: 'setEmail',
 			});

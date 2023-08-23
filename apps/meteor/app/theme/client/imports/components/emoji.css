@@ -1,0 +1,22 @@
+.emoji {
+	position: relative;
+
+	display: inline-block;
+	overflow: hidden;
+
+	width: 1.375rem;
+	height: 1.375rem;
+	margin: 0 0.15em;
+
+	vertical-align: middle;
+	white-space: nowrap;
+	text-indent: 100%;
+
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
+
+	font-size: inherit;
+	line-height: normal;
+	image-rendering: auto;
+}

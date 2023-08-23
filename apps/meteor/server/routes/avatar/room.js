@@ -1,15 +1,13 @@
-import { Meteor } from 'meteor/meteor';
+import { Avatars, Rooms } from '@rocket.chat/models';
 import { Cookies } from 'meteor/ostrio:cookies';
-import { Avatars } from '@rocket.chat/models';
 
-import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
-import { FileUpload } from '../../../app/file-upload';
-import { Rooms } from '../../../app/models/server';
+import { FileUpload } from '../../../app/file-upload/server';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
 
 const cookie = new Cookies();
 const getRoomAvatar = async (roomId) => {
-	const room = Rooms.findOneById(roomId, { fields: { t: 1, prid: 1, name: 1, fname: 1 } });
+	const room = await Rooms.findOneById(roomId, { projection: { t: 1, prid: 1, name: 1, fname: 1, federated: 1 } });
 	if (!room) {
 		return {};
 	}
@@ -24,7 +22,7 @@ const getRoomAvatar = async (roomId) => {
 	return { room, file };
 };
 
-export const roomAvatar = Meteor.bindEnvironment(async function (req, res /* , next*/) {
+export const roomAvatar = async function (req, res /* , next*/) {
 	const roomId = decodeURIComponent(req.url.substr(1).replace(/\?.*$/, ''));
 
 	const { room, file } = await getRoomAvatar(roomId);
@@ -56,7 +54,7 @@ export const roomAvatar = Meteor.bindEnvironment(async function (req, res /* , n
 		return FileUpload.get(file, req, res);
 	}
 
-	const roomName = roomCoordinator.getRoomName(room.t, room, uid);
+	const roomName = await roomCoordinator.getRoomName(room.t, room, uid);
 
 	setCacheAndDispositionHeaders(req, res);
 
@@ -69,4 +67,4 @@ export const roomAvatar = Meteor.bindEnvironment(async function (req, res /* , n
 	const svg = renderSVGLetters(roomName, req.query.size && parseInt(req.query.size));
 
 	return serveAvatar(svg, req.query.format, res);
-});
+};

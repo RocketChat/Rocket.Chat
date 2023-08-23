@@ -1,9 +1,7 @@
-import { Badge, Box, Button, ButtonGroup, Icon, Margins, Throbber, Tabs } from '@rocket.chat/fuselage';
+import { Badge, Box, Button, ButtonGroup, Margins, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
+import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
-import s from 'underscore.string';
 
 import {
 	ProgressStep,
@@ -13,6 +11,7 @@ import {
 	ImportingStartedStates,
 	ImportingErrorStates,
 } from '../../../../app/importer/lib/ImporterProgressStep';
+import { numberFormat } from '../../../../lib/utils/stringUtils';
 import Page from '../../../components/Page';
 import PrepareChannels from './PrepareChannels';
 import PrepareUsers from './PrepareUsers';
@@ -49,27 +48,21 @@ function PrepareImportPage() {
 	const usersCount = useMemo(() => users.filter(({ do_import }) => do_import).length, [users]);
 	const channelsCount = useMemo(() => channels.filter(({ do_import }) => do_import).length, [channels]);
 
-	const importHistoryRoute = useRoute('admin-import');
-	const newImportRoute = useRoute('admin-import-new');
-	const importProgressRoute = useRoute('admin-import-progress');
+	const router = useRouter();
 
 	const getImportFileData = useEndpoint('GET', '/v1/getImportFileData');
 	const getCurrentImportOperation = useEndpoint('GET', '/v1/getCurrentImportOperation');
 	const startImport = useEndpoint('POST', '/v1/startImport');
 
-	useEffect(() => {
-		const streamer = new Meteor.Streamer('importers');
+	const streamer = useStream('importers');
 
-		const handleProgressUpdated = ({ rate }) => {
-			setProgressRate(rate);
-		};
-
-		streamer.on('progress', handleProgressUpdated);
-
-		return () => {
-			streamer.removeListener('progress', handleProgressUpdated);
-		};
-	}, [setProgressRate]);
+	useEffect(
+		() =>
+			streamer('progress', ({ rate }) => {
+				setProgressRate(rate);
+			}),
+		[streamer, setProgressRate],
+	);
 
 	useEffect(() => {
 		const loadImportFileData = async () => {
@@ -78,13 +71,13 @@ function PrepareImportPage() {
 
 				if (!data) {
 					handleError(t('Importer_not_setup'));
-					importHistoryRoute.push();
+					router.navigate('/admin/import');
 					return;
 				}
 
 				if (data.step) {
 					handleError(t('Failed_To_Load_Import_Data'));
-					importHistoryRoute.push();
+					router.navigate('/admin/import');
 					return;
 				}
 
@@ -95,7 +88,7 @@ function PrepareImportPage() {
 				setProgressRate(null);
 			} catch (error) {
 				handleError(error, t('Failed_To_Load_Import_Data'));
-				importHistoryRoute.push();
+				router.navigate('/admin/import');
 			}
 		};
 
@@ -107,12 +100,12 @@ function PrepareImportPage() {
 				);
 
 				if (!operation.valid) {
-					newImportRoute.push();
+					router.navigate('/admin/import/new');
 					return;
 				}
 
 				if (ImportingStartedStates.includes(operation.status)) {
-					importProgressRoute.push();
+					router.navigate('/admin/import/progress');
 					return;
 				}
 
@@ -128,40 +121,28 @@ function PrepareImportPage() {
 
 				if (ImportingErrorStates.includes(operation.status)) {
 					handleError(t('Import_Operation_Failed'));
-					importHistoryRoute.push();
+					router.navigate('/admin/import');
 					return;
 				}
 
 				if (operation.status === ProgressStep.DONE) {
-					importHistoryRoute.push();
+					router.navigate('/admin/import');
 					return;
 				}
 
 				handleError(t('Unknown_Import_State'));
-				importHistoryRoute.push();
+				router.navigate('/admin/import');
 			} catch (error) {
 				handleError(t('Failed_To_Load_Import_Data'));
-				importHistoryRoute.push();
+				router.navigate('/admin/import');
 			}
 		};
 
 		loadCurrentOperation();
-	}, [
-		getCurrentImportOperation,
-		getImportFileData,
-		handleError,
-		importHistoryRoute,
-		importProgressRoute,
-		newImportRoute,
-		setMessageCount,
-		setPreparing,
-		setProgressRate,
-		setStatus,
-		t,
-	]);
+	}, [getCurrentImportOperation, getImportFileData, handleError, router, setMessageCount, setPreparing, setProgressRate, setStatus, t]);
 
 	const handleBackToImportsButtonClick = () => {
-		importHistoryRoute.push();
+		router.navigate('/admin/import');
 	};
 
 	const handleStartButtonClick = async () => {
@@ -169,10 +150,10 @@ function PrepareImportPage() {
 
 		try {
 			await startImport({ input: { users, channels } });
-			importProgressRoute.push();
+			router.navigate('/admin/import/progress');
 		} catch (error) {
 			handleError(error, t('Failed_To_Start_Import'));
-			importHistoryRoute.push();
+			router.navigate('/admin/import');
 		}
 	};
 
@@ -181,17 +162,19 @@ function PrepareImportPage() {
 
 	const statusDebounced = useDebouncedValue(status, 100);
 
-	const handleMinimumImportData = () =>
-		!!((!usersCount && !channelsCount && !messageCount) || (!usersCount && !channelsCount && messageCount !== 0));
+	const handleMinimumImportData = !!(
+		(!usersCount && !channelsCount && !messageCount) ||
+		(!usersCount && !channelsCount && messageCount !== 0)
+	);
 
 	return (
 		<Page>
 			<Page.Header title={t('Importing_Data')}>
 				<ButtonGroup>
-					<Button secondary onClick={handleBackToImportsButtonClick}>
-						<Icon name='back' /> {t('Back_to_imports')}
+					<Button icon='back' secondary onClick={handleBackToImportsButtonClick}>
+						{t('Back_to_imports')}
 					</Button>
-					<Button primary disabled={isImporting || handleMinimumImportData()} onClick={handleStartButtonClick}>
+					<Button primary disabled={isImporting || handleMinimumImportData} onClick={handleStartButtonClick}>
 						{t('Importer_Prepare_Start_Import')}
 					</Button>
 				</ButtonGroup>
@@ -222,7 +205,7 @@ function PrepareImportPage() {
 								{progressRate ? (
 									<Box display='flex' justifyContent='center' fontScale='p2'>
 										<Box is='progress' value={(progressRate * 10).toFixed(0)} max='1000' marginInlineEnd='x24' />
-										<Box is='span'>{s.numberFormat(progressRate, 0)}%</Box>
+										<Box is='span'>{numberFormat(progressRate, 0)}%</Box>
 									</Box>
 								) : (
 									<Throbber justifyContent='center' />

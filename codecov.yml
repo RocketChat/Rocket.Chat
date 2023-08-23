@@ -1,8 +1,19 @@
 coverage:
   status:
+    patch: off
     project:
       default:
         target: auto
         threshold: 1%
+      client:
+        target: auto
+        flags:
+          - client
+flags:
+  client:
+    paths:
+      - apps/meteor/client
+    carryforward: true
+
 comment:
   layout: 'reach, diff, flags'

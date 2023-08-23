@@ -5,7 +5,7 @@ import React from 'react';
 import GenericModal from '../../../../../components/GenericModal';
 import ChannelDeletionTable from './ChannelDeletionTable';
 
-export const StepTwo = ({
+const StepOne = ({
 	rooms,
 	// params,
 	// onChangeParams,
@@ -26,8 +26,8 @@ export const StepTwo = ({
 			onClose={onCancel}
 			confirmText={t('Continue')}
 		>
-			<Box withRichContent mbe='x16'>
-				<Box is='span' color='on-danger' fontWeight='bold'>
+			<Box withRichContent mbe={16}>
+				<Box is='span' color='status-font-on-danger' fontWeight='bold'>
 					{t('Team_Delete_Channel_modal_content_danger')}
 				</Box>{' '}
 				{t('Teams_delete_team_Warning')}
@@ -47,4 +47,4 @@ export const StepTwo = ({
 	);
 };
 
-export default StepTwo;
+export default StepOne;

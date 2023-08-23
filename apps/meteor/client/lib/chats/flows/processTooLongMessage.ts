@@ -1,18 +1,16 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../app/settings/client';
-import { messageProperties } from '../../../../app/ui-utils/client';
-import { t } from '../../../../app/utils/client';
+import { t } from '../../../../app/utils/lib/i18n';
 import GenericModal from '../../../components/GenericModal';
 import { imperativeModal } from '../../imperativeModal';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 
 export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessage, 'msg'>): Promise<boolean> => {
-	const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(msg);
 	const maxAllowedSize = settings.get('Message_MaxAllowedSize');
 
-	if (messageProperties.length(adjustedMessage) <= maxAllowedSize) {
+	if (msg.length <= maxAllowedSize) {
 		return false;
 	}
 	const fileUploadsEnabled = settings.get('FileUpload_Enabled');
@@ -33,9 +31,10 @@ export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessag
 				type: contentType,
 				lastModified: Date.now(),
 			});
-			await chat.flows.uploadFiles([file]);
 
 			imperativeModal.close();
+			await chat.flows.uploadFiles([file]);
+
 			resolve();
 		};
 

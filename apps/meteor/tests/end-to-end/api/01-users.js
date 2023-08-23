@@ -1,7 +1,10 @@
 import crypto from 'crypto';
 
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
+import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
+import { sleep } from '../../../lib/utils/sleep';
 import {
 	getCredentials,
 	api,
@@ -14,56 +17,13 @@ import {
 	wait,
 	reservedWords,
 } from '../../data/api-data.js';
-import { adminEmail, preferences, password, adminUsername } from '../../data/user.js';
-import { imgURL } from '../../data/interactions.js';
+import { MAX_BIO_LENGTH, MAX_NICKNAME_LENGTH } from '../../data/constants.ts';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
+import { imgURL } from '../../data/interactions.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
 import { createRoom } from '../../data/rooms.helper';
-
-function createTestUser() {
-	return new Promise((resolve) => {
-		const username = `user.test.${Date.now()}`;
-		const email = `${username}@rocket.chat`;
-		request
-			.post(api('users.create'))
-			.set(credentials)
-			.send({ email, name: username, username, password, joinDefaultChannels: false })
-			.end((err, res) => resolve(res.body.user));
-	});
-}
-
-function loginTestUser(user) {
-	return new Promise((resolve, reject) => {
-		request
-			.post(api('login'))
-			.send({
-				user: user.username,
-				password,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				const userCredentials = {};
-				userCredentials['X-Auth-Token'] = res.body.data.authToken;
-				userCredentials['X-User-Id'] = res.body.data.userId;
-				resolve(userCredentials);
-			})
-			.end((err) => (err ? reject(err) : resolve()));
-	});
-}
-
-function deleteTestUser(user) {
-	return new Promise((resolve) => {
-		request
-			.post(api('users.delete'))
-			.set(credentials)
-			.send({
-				userId: user._id,
-			})
-			.end(resolve);
-	});
-}
+import { adminEmail, preferences, password, adminUsername } from '../../data/user';
+import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
 
 async function createChannel(userCredentials, name) {
 	const res = await request.post(api('channels.create')).set(userCredentials).send({
@@ -635,21 +595,33 @@ describe('[Users]', function () {
 
 	describe('[/users.list]', () => {
 		let user;
+		let deactivatedUser;
+		let user2;
+		let user2Credentials;
 
-		it('should query all users in the system', (done) => {
-			request
-				.get(api('users.list'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					const myself = res.body.users.find((user) => user.username === adminUsername);
-					expect(myself).to.not.have.property('e2e');
-				})
-				.end(done);
+		before((done) => {
+			const createDeactivatedUser = async () => {
+				const username = `deactivated_${Date.now()}${apiUsername}`;
+				const email = `deactivated_+${Date.now()}${apiEmail}`;
+
+				const userData = {
+					email,
+					name: username,
+					username,
+					password,
+					active: false,
+				};
+
+				deactivatedUser = await createUser(userData);
+
+				expect(deactivatedUser).to.not.be.null;
+				expect(deactivatedUser).to.have.nested.property('username', username);
+				expect(deactivatedUser).to.have.nested.property('emails[0].address', email);
+				expect(deactivatedUser).to.have.nested.property('active', false);
+				expect(deactivatedUser).to.have.nested.property('name', username);
+				expect(deactivatedUser).to.not.have.nested.property('e2e');
+			};
+			createDeactivatedUser().then(done);
 		});
 
 		before((done) =>
@@ -690,6 +662,35 @@ describe('[Users]', function () {
 
 		after((done) => clearCustomFields(done));
 
+		before(async () => {
+			user2 = await createUser({ joinDefaultChannels: false });
+			user2Credentials = await login(user2.username, password);
+		});
+
+		after(async () => {
+			await deleteUser(user2);
+			user2 = undefined;
+
+			await updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']);
+			await updateSetting('API_Apply_permission_view-outside-room_on_users-list', false);
+		});
+
+		it('should query all users in the system', (done) => {
+			request
+				.get(api('users.list'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					const myself = res.body.users.find((user) => user.username === adminUsername);
+					expect(myself).to.not.have.property('e2e');
+				})
+				.end(done);
+		});
+
 		it('should query all users in the system by custom fields', (done) => {
 			const query = {
 				fields: JSON.stringify({
@@ -720,6 +721,36 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
+		it('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
+			const query = {
+				fields: JSON.stringify({
+					username: 1,
+					_id: 1,
+					active: 1,
+					status: 1,
+				}),
+				sort: JSON.stringify({
+					status: -1,
+				}),
+			};
+
+			request
+				.get(api('users.list'))
+				.query(query)
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('users');
+					const lastUser = res.body.users[res.body.users.length - 1];
+					expect(lastUser).to.have.property('active', false);
+				})
+				.end(done);
+		});
+
 		it.skip('should query all users in the system by name', (done) => {
 			// filtering user list
 			request
@@ -739,6 +770,27 @@ describe('[Users]', function () {
 					expect(res.body).to.have.property('total');
 				})
 				.end(done);
+		});
+
+		it('should query all users in the system when logged as normal user and `view-outside-room` not granted', async () => {
+			await updatePermission('view-outside-room', ['admin']);
+			await request
+				.get(api('users.list'))
+				.set(user2Credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				});
+		});
+
+		it('should not query users when logged as normal user, `view-outside-room` not granted and temp setting enabled', async () => {
+			await updatePermission('view-outside-room', ['admin']);
+			await updateSetting('API_Apply_permission_view-outside-room_on_users-list', true);
+
+			await request.get(api('users.list')).set(user2Credentials).expect('Content-Type', 'application/json').expect(403);
 		});
 	});
 
@@ -1086,6 +1138,87 @@ describe('[Users]', function () {
 					expect(res.body).to.have.nested.property('user.emails[0].address', `edited${apiEmail}`);
 					expect(res.body).to.have.nested.property('user.emails[0].verified', false);
 					expect(res.body).to.not.have.nested.property('user.e2e');
+				})
+				.end(done);
+		});
+
+		it("should update a user's bio by userId", (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						bio: `edited-bio-test`,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.bio', 'edited-bio-test');
+					expect(res.body).to.not.have.nested.property('user.e2e');
+				})
+				.end(done);
+		});
+
+		it("should update a user's nickname by userId", (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						nickname: `edited-nickname-test`,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.nickname', 'edited-nickname-test');
+					expect(res.body).to.not.have.nested.property('user.e2e');
+				})
+				.end(done);
+		});
+
+		it(`should return an error when trying to set a nickname longer than ${MAX_NICKNAME_LENGTH} characters`, (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						nickname: Random.hexString(MAX_NICKNAME_LENGTH + 1),
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property(
+						'error',
+						`Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters [error-nickname-size-exceeded]`,
+					);
+				})
+				.end(done);
+		});
+
+		it(`should return an error when trying to set a bio longer than ${MAX_BIO_LENGTH} characters`, (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						bio: Random.hexString(MAX_BIO_LENGTH + 1),
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', `Bio size exceeds ${MAX_BIO_LENGTH} characters [error-bio-size-exceeded]`);
 				})
 				.end(done);
 		});
@@ -1460,6 +1593,7 @@ describe('[Users]', function () {
 		});
 
 		const newPassword = `${password}test`;
+		const currentPassword = crypto.createHash('sha256').update(password, 'utf8').digest('hex');
 		const editedUsername = `basicInfo.name${+new Date()}`;
 		const editedName = `basic-info-test-name${+new Date()}`;
 		const editedEmail = `test${+new Date()}@mail.com`;
@@ -1490,7 +1624,7 @@ describe('[Users]', function () {
 					data: {
 						name: editedName,
 						username: editedUsername,
-						currentPassword: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
+						currentPassword,
 						newPassword,
 					},
 				})
@@ -1715,6 +1849,218 @@ describe('[Users]', function () {
 				});
 
 			await updateSetting('Accounts_AllowPasswordChange', true);
+		});
+
+		describe('[Password Policy]', () => {
+			before(async () => {
+				await updateSetting('Accounts_Password_Policy_Enabled', true);
+				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
+
+				await sleep(500);
+			});
+
+			after(async () => {
+				await updateSetting('Accounts_Password_Policy_Enabled', false);
+				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
+			});
+
+			it('should throw an error if the password length is less than the minimum length', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-minLength',
+					message: 'The password does not meet the minimum length password policy.',
+				};
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: '2',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
+
+			it('should throw an error if the password length is greater than the maximum length', async () => {
+				await updateSetting('Accounts_Password_Policy_MaxLength', 5);
+				await sleep(500);
+
+				const expectedError = {
+					error: 'error-password-policy-not-met-maxLength',
+					message: 'The password does not meet the maximum length password policy.',
+				};
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'Abc@12345678',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+
+				await updateSetting('Accounts_Password_Policy_MaxLength', -1);
+			});
+
+			it('should throw an error if the password contains repeating characters', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-repeatingCharacters',
+					message: 'The password contains repeating characters which is against the password policy.',
+				};
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'A@123aaaa',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
+
+			it('should throw an error if the password does not contain at least one lowercase character', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-oneLowercase',
+					message: 'The password does not contain at least one lowercase character which is against the password policy.',
+				};
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'PASSWORD@123',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
+
+			it('should throw an error if the password does not contain at least one uppercase character', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-oneUppercase',
+					message: 'The password does not contain at least one uppercase character which is against the password policy.',
+				};
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'password@123',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
+
+			it('should throw an error if the password does not contain at least one numerical character', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-oneNumber',
+					message: 'The password does not contain at least one numerical character which is against the password policy.',
+				};
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'Password@',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
+
+			it('should throw an error if the password does not contain at least one special character', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-oneSpecial',
+					message: 'The password does not contain at least one special character which is against the password policy.',
+				};
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'Password123',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
+
+			it('should be able to update if the password meets all the validation rules', async () => {
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: '123Abc@!',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('user');
+					})
+					.expect(200);
+			});
 		});
 	});
 
@@ -3106,26 +3452,8 @@ describe('[Users]', function () {
 	describe('[/users.deactivateIdle]', () => {
 		let testUser;
 		let testUserCredentials;
-		const testRoleName = `role.test.${Date.now()}`;
-		let testRoleId = null;
+		const testRoleId = 'guest';
 
-		before('Create a new role with Users scope', (done) => {
-			request
-				.post(api('roles.create'))
-				.set(credentials)
-				.send({
-					name: testRoleName,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('role');
-					expect(res.body.role).to.have.property('name', testRoleName);
-					testRoleId = res.body.role._id;
-				})
-				.end(done);
-		});
 		before('Create test user', (done) => {
 			const username = `user.test.${Date.now()}`;
 			const email = `${username}@rocket.chat`;
@@ -3217,7 +3545,7 @@ describe('[Users]', function () {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('count', 1);
+						expect(res.body).to.have.property('count', 2);
 					})
 					.end(done);
 			});
@@ -3295,12 +3623,12 @@ describe('[Users]', function () {
 		this.timeout(20000);
 
 		before(async () => {
-			user = await createTestUser();
-			userCredentials = await loginTestUser(user);
-			newCredentials = await loginTestUser(user);
+			user = await createUser({ joinDefaultChannels: false });
+			userCredentials = await login(user.username, password);
+			newCredentials = await login(user.username, password);
 		});
 		after(async () => {
-			await deleteTestUser(user);
+			await deleteUser(user);
 			user = undefined;
 		});
 
@@ -3354,11 +3682,11 @@ describe('[Users]', function () {
 			this.timeout(20000);
 
 			before(async () => {
-				user = await createTestUser();
-				user2 = await createTestUser();
+				user = await createUser({ joinDefaultChannels: false });
+				user2 = await createUser({ joinDefaultChannels: false });
 
-				userCredentials = await loginTestUser(user);
-				user2Credentials = await loginTestUser(user2);
+				userCredentials = await login(user.username, password);
+				user2Credentials = await login(user2.username, password);
 
 				await updatePermission('view-outside-room', []);
 
@@ -3731,7 +4059,7 @@ describe('[Users]', function () {
 		});
 
 		before('create new user', (done) => {
-			createTestUser()
+			createUser({ joinDefaultChannels: false })
 				.then((user) => {
 					testUser = user;
 				})

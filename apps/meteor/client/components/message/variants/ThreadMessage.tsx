@@ -1,58 +1,45 @@
-import type { IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import { type IThreadMessage, type IThreadMainMessage, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import { useUserId, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo, memo } from 'react';
+import React, { memo, useRef } from 'react';
 
-import { useUserCard } from '../../../hooks/useUserCard';
-import { parseMessageTextToAstMarkdown, removePossibleNullMessageValues } from '../../../lib/parseMessageTextToAstMarkdown';
+import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
-import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
-import UserAvatar from '../../avatar/UserAvatar';
+import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
+import { useChat } from '../../../views/room/contexts/ChatContext';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
+import MessageToolboxHolder from '../MessageToolboxHolder';
 import StatusIndicators from '../StatusIndicators';
-import ToolboxHolder from '../ToolboxHolder';
-import { useMessageListContext } from '../list/MessageListContext';
+import MessageAvatar from '../header/MessageAvatar';
 import ThreadMessageContent from './thread/ThreadMessageContent';
 
 type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
 	unread: boolean;
 	sequential: boolean;
+	showUserAvatar: boolean;
 };
 
-const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): ReactElement => {
+const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMessageProps): ReactElement => {
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
-	const { open: openUserCard } = useUserCard();
+	const chat = useChat();
 
-	const { katex, showColors } = useMessageListContext();
-	const subscription = useUserSubscription(message.rid);
-	const autoTranslateOptions = useAutoTranslate(subscription);
+	const messageRef = useRef(null);
 
-	const normalizeMessage = useMemo(() => {
-		const parseOptions = {
-			colors: showColors,
-			emoticons: true,
-			...(Boolean(katex) && {
-				katex: {
-					dollarSyntax: katex?.dollarSyntaxEnabled,
-					parenthesisSyntax: katex?.parenthesisSyntaxEnabled,
-				},
-			}),
-		};
-		return <TMessage extends IThreadMessage | IThreadMainMessage>(message: TMessage) =>
-			parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateOptions);
-	}, [katex, showColors, autoTranslateOptions]);
+	// Checks if is videoconf message to limit toolbox actions
+	const messageContext: MessageActionContext = isVideoConfMessage(message) ? 'videoconf-threads' : 'threads';
 
-	const normalizedMessage = useMemo(() => normalizeMessage(message), [message, normalizeMessage]);
+	useJumpToMessage(message._id, messageRef);
 
 	return (
 		<Message
 			id={message._id}
+			ref={messageRef}
 			isEditing={editing}
 			isPending={message.temp}
 			sequential={sequential}
@@ -65,13 +52,16 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 			data-qa-type='message'
 		>
 			<MessageLeftContainer>
-				{!sequential && message.u.username && (
-					<UserAvatar
-						url={message.avatar}
+				{!sequential && message.u.username && showUserAvatar && (
+					<MessageAvatar
+						emoji={message.emoji}
+						avatarUrl={message.avatar}
 						username={message.u.username}
 						size='x36'
-						style={{ cursor: 'pointer' }}
-						onClick={openUserCard(message.u.username)}
+						{...(chat?.userCard && {
+							onClick: chat?.userCard.open(message.u.username),
+							style: { cursor: 'pointer' },
+						})}
 					/>
 				)}
 				{sequential && <StatusIndicators message={message} />}
@@ -80,9 +70,9 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 			<MessageContainer>
 				{!sequential && <MessageHeader message={message} />}
 
-				{ignored ? <IgnoredContent onShowMessageIgnored={toggleIgnoring} /> : <ThreadMessageContent message={normalizedMessage} />}
+				{ignored ? <IgnoredContent onShowMessageIgnored={toggleIgnoring} /> : <ThreadMessageContent message={message} />}
 			</MessageContainer>
-			{!message.private && <ToolboxHolder message={message} context={'thread'} />}
+			{!message.private && <MessageToolboxHolder message={message} context={messageContext} />}
 		</Message>
 	);
 };

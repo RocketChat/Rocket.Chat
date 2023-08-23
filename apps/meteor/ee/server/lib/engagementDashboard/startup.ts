@@ -1,8 +1,6 @@
-import { Permissions } from '@rocket.chat/models';
-
+import { callbacks } from '../../../../lib/callbacks';
 import { fillFirstDaysOfMessagesIfNeeded, handleMessagesDeleted, handleMessagesSent } from './messages';
 import { fillFirstDaysOfUsersIfNeeded, handleUserCreated } from './users';
-import { callbacks } from '../../../../lib/callbacks';
 
 export const attachCallbacks = (): void => {
 	callbacks.add('afterSaveMessage', handleMessagesSent, callbacks.priority.MEDIUM, 'engagementDashboard.afterSaveMessage');
@@ -19,8 +17,4 @@ export const detachCallbacks = (): void => {
 export const prepareAnalytics = async (): Promise<void> => {
 	const now = new Date();
 	await Promise.all([fillFirstDaysOfUsersIfNeeded(now), fillFirstDaysOfMessagesIfNeeded(now)]);
-};
-
-export const prepareAuthorization = async (): Promise<void> => {
-	Permissions.create('view-engagement-dashboard', ['admin']);
 };

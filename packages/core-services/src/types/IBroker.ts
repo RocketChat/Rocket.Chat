@@ -1,5 +1,5 @@
-import type { IServiceClass } from './ServiceClass';
 import type { EventSignatures } from '../Events';
+import type { IServiceClass } from './ServiceClass';
 
 export interface IBrokerNode {
 	id: string;
@@ -48,7 +48,7 @@ export interface IServiceMetrics {
 export interface IBroker {
 	metrics?: IServiceMetrics;
 	destroyService(service: IServiceClass): void;
-	createService(service: IServiceClass): void;
+	createService(service: IServiceClass, serviceDependencies?: string[]): void;
 	call(method: string, data: any): Promise<any>;
 	waitAndCall(method: string, data: any): Promise<any>;
 	broadcastToServices<T extends keyof EventSignatures>(

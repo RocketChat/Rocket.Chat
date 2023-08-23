@@ -6,10 +6,10 @@ import { useOembedLayout } from '../../hooks/useOembedLayout';
 import type { UrlPreviewMetadata } from './UrlPreviewMetadata';
 
 const UrlImagePreview = ({ url }: Pick<UrlPreviewMetadata, 'url'>): ReactElement => {
-	const { maxWidth: oembedMaxWidth, maxHeight: oembedMaxHeight } = useOembedLayout();
+	const { maxHeight: oembedMaxHeight } = useOembedLayout();
 
 	return (
-		<Box maxHeight={oembedMaxHeight} maxWidth={oembedMaxWidth}>
+		<Box maxHeight={oembedMaxHeight} maxWidth='100%'>
 			<MessageGenericPreviewImage className='gallery-item' url={url || ''} />
 		</Box>
 	);

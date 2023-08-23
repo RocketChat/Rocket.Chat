@@ -1,27 +1,15 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { IUser } from '@rocket.chat/core-typings';
-import {
-	Field,
-	FieldGroup,
-	TextInput,
-	TextAreaInput,
-	Box,
-	Icon,
-	AnimatedVisibility,
-	PasswordInput,
-	Button,
-	Grid,
-	Margins,
-} from '@rocket.chat/fuselage';
-import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
+import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, PasswordInput, Button } from '@rocket.chat/fuselage';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
+import { useAccountsCustomFields, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { Dispatch, ReactElement, SetStateAction } from 'react';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import CustomFieldsForm from '../../../components/CustomFieldsForm';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
@@ -41,20 +29,11 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
-	const getAvatarSuggestions = useEndpoint('GET', '/v1/users.getAvatarSuggestion');
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
 
+	const customFieldsMetadata = useAccountsCustomFields();
+
 	const [usernameError, setUsernameError] = useState<string | undefined>();
-	const [avatarSuggestions, setAvatarSuggestions] = useSafely(
-		useState<{
-			[key: string]: {
-				blob: string;
-				contentType: string;
-				service: string;
-				url: string;
-			};
-		}>({}),
-	);
 
 	const {
 		allowRealNameChange,
@@ -80,9 +59,18 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 		handleStatusText,
 		handleStatusType,
 		handleBio,
-		handleCustomFields,
 		handleNickname,
+		handleCustomFields,
 	} = handlers;
+
+	const {
+		control,
+		watch,
+		formState: { errors: customFieldsErrors },
+	} = useForm({
+		defaultValues: { customFields: { ...customFields } },
+		mode: 'onBlur',
+	});
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
 
@@ -98,10 +86,21 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 		}
 	}, [dispatchToastMessage, email, previousEmail, sendConfirmationEmail, t]);
 
-	const passwordError = useMemo(
-		() => (!password || !confirmationPassword || password === confirmationPassword ? undefined : t('Passwords_do_not_match')),
-		[t, password, confirmationPassword],
+	// this is will decide whether form can be saved
+	const passwordError = useMemo(() => {
+		// if changing password in not initiated, no password error
+		const passwordUpdateNotStarted = !password && !confirmationPassword;
+		const passwordMatches = password && confirmationPassword && password === confirmationPassword;
+
+		return passwordUpdateNotStarted || passwordMatches ? undefined : t('Passwords_do_not_match');
+	}, [t, password, confirmationPassword]);
+
+	// this will decide when to password mismatch on UI
+	const showPasswordError = useMemo(
+		() => (!password || !confirmationPassword ? false : !!passwordError),
+		[passwordError, password, confirmationPassword],
 	);
+
 	const emailError = useMemo(() => (validateEmail(email) ? undefined : 'error-invalid-email-address'), [email]);
 	const checkUsername = useDebouncedCallback(
 		async (username: string) => {
@@ -122,12 +121,9 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 	);
 
 	useEffect(() => {
-		const getSuggestions = async (): Promise<void> => {
-			const { suggestions } = await getAvatarSuggestions();
-			setAvatarSuggestions(suggestions);
-		};
-		getSuggestions();
-	}, [getAvatarSuggestions, setAvatarSuggestions, user]);
+		const subscription = watch((value) => handleCustomFields({ ...value.customFields }));
+		return () => subscription.unsubscribe();
+	}, [watch, handleCustomFields]);
 
 	useEffect(() => {
 		checkUsername(username);
@@ -164,11 +160,25 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 		return undefined;
 	}, [bio, t]);
 
-	const {
-		emails: [{ verified = false } = { verified: false }],
-	} = user as any;
+	const customFieldsError = useMemo(() => {
+		if (customFieldsErrors) {
+			return customFieldsErrors;
+		}
 
-	const canSave = !![!!passwordError, !!emailError, !!usernameError, !!nameError, !!statusTextError, !!bioError].filter(Boolean);
+		return undefined;
+	}, [customFieldsErrors]);
+
+	const verified = user?.emails?.[0]?.verified ?? false;
+
+	const canSave = !(
+		!!passwordError ||
+		!!emailError ||
+		!!usernameError ||
+		!!nameError ||
+		!!statusTextError ||
+		!!bioError ||
+		!customFieldsError
+	);
 
 	useEffect(() => {
 		onSaveStateChange(canSave);
@@ -189,16 +199,15 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 							username={username}
 							setAvatarObj={handleAvatar}
 							disabled={!allowUserAvatarChange}
-							suggestions={avatarSuggestions as any}
 						/>
 					</Field>
 				),
-				[username, user?.username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user?.avatarETag],
+				[username, user?.username, handleAvatar, allowUserAvatarChange, user?.avatarETag],
 			)}
 			<Box display='flex' flexDirection='row' justifyContent='space-between'>
 				{useMemo(
 					() => (
-						<Field mie='x8' flexShrink={1}>
+						<Field mie={8} flexShrink={1}>
 							<Field.Label flexGrow={0}>{t('Name')}</Field.Label>
 							<Field.Row>
 								<TextInput error={nameError} disabled={!allowRealNameChange} flexGrow={1} value={realname} onChange={handleRealname} />
@@ -211,7 +220,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 				)}
 				{useMemo(
 					() => (
-						<Field mis='x8' flexShrink={1}>
+						<Field mis={8} flexShrink={1}>
 							<Field.Label flexGrow={0}>{t('Username')}</Field.Label>
 							<Field.Row>
 								<TextInput
@@ -286,93 +295,77 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 				),
 				[bio, handleBio, bioError, t],
 			)}
-			<Field>
-				<Grid>
-					<Grid.Item>
-						<FieldGroup display='flex' flexDirection='column' flexGrow={1} flexShrink={0}>
-							{useMemo(
-								() => (
-									<Field>
-										<Field.Label>{t('Email')}</Field.Label>
-										<Field.Row>
-											<TextInput
-												flexGrow={1}
-												value={email}
-												error={emailError}
-												onChange={handleEmail}
-												addon={<Icon name={verified ? 'circle-check' : 'mail'} size='x20' />}
-												disabled={!allowEmailChange}
-											/>
-										</Field.Row>
-										{!allowEmailChange && <Field.Hint>{t('Email_Change_Disabled')}</Field.Hint>}
-										<Field.Error>{t(emailError as TranslationKey)}</Field.Error>
-									</Field>
-								),
-								[t, email, handleEmail, verified, allowEmailChange, emailError],
+			{useMemo(
+				() => (
+					<Field>
+						<Field.Label>{t('Email')}</Field.Label>
+						<Field.Row display='flex' flexDirection='row' justifyContent='space-between'>
+							<TextInput
+								flexGrow={1}
+								value={email}
+								error={emailError}
+								onChange={handleEmail}
+								addon={<Icon name={verified ? 'circle-check' : 'mail'} size='x20' />}
+								disabled={!allowEmailChange}
+							/>
+							{!verified && (
+								<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail} mis={24}>
+									{t('Resend_verification_email')}
+								</Button>
 							)}
-							{useMemo(
-								() =>
-									!verified && (
-										<Field>
-											<Margins blockEnd='x28'>
-												<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail}>
-													{t('Resend_verification_email')}
-												</Button>
-											</Margins>
-										</Field>
-									),
-								[verified, t, email, previousEmail, handleSendConfirmationEmail],
-							)}
-						</FieldGroup>
-					</Grid.Item>
-					<Grid.Item>
-						<FieldGroup display='flex' flexDirection='column' flexGrow={1} flexShrink={0}>
-							{useMemo(
-								() => (
-									<Field>
-										<Field.Label>{t('New_password')}</Field.Label>
-										<Field.Row>
-											<PasswordInput
-												autoComplete='off'
-												disabled={!allowPasswordChange}
-												error={passwordError}
-												flexGrow={1}
-												value={password}
-												onChange={handlePassword}
-												addon={<Icon name='key' size='x20' />}
-											/>
-										</Field.Row>
-										{!allowPasswordChange && <Field.Hint>{t('Password_Change_Disabled')}</Field.Hint>}
-									</Field>
-								),
-								[t, password, handlePassword, passwordError, allowPasswordChange],
-							)}
-							{useMemo(
-								() => (
-									<Field>
-										<AnimatedVisibility visibility={password ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}>
-											<Field.Label>{t('Confirm_password')}</Field.Label>
-											<Field.Row>
-												<PasswordInput
-													autoComplete='off'
-													error={passwordError}
-													flexGrow={1}
-													value={confirmationPassword}
-													onChange={handleConfirmationPassword}
-													addon={<Icon name='key' size='x20' />}
-												/>
-											</Field.Row>
-											{passwordError && <Field.Error>{passwordError}</Field.Error>}
-										</AnimatedVisibility>
-									</Field>
-								),
-								[t, confirmationPassword, handleConfirmationPassword, password, passwordError],
-							)}
-						</FieldGroup>
-					</Grid.Item>
-				</Grid>
-			</Field>
-			<CustomFieldsForm jsonCustomFields={undefined} customFieldsData={customFields} setCustomFieldsData={handleCustomFields} />
+						</Field.Row>
+						{!allowEmailChange && <Field.Hint>{t('Email_Change_Disabled')}</Field.Hint>}
+						<Field.Error>{t(emailError as TranslationKey)}</Field.Error>
+					</Field>
+				),
+				[t, email, emailError, handleEmail, verified, allowEmailChange, previousEmail, handleSendConfirmationEmail],
+			)}
+			{useMemo(
+				() => (
+					<Field>
+						<Field.Label>{t('New_password')}</Field.Label>
+						<Field.Row mbe={4}>
+							<PasswordInput
+								autoComplete='off'
+								disabled={!allowPasswordChange}
+								error={showPasswordError ? passwordError : undefined}
+								flexGrow={1}
+								value={password}
+								onChange={handlePassword}
+								addon={<Icon name='key' size='x20' />}
+								placeholder={t('Create_a_password')}
+							/>
+						</Field.Row>
+						<Field.Row mbs={4}>
+							<PasswordInput
+								autoComplete='off'
+								error={showPasswordError ? passwordError : undefined}
+								flexGrow={1}
+								value={confirmationPassword}
+								onChange={handleConfirmationPassword}
+								addon={<Icon name='key' size='x20' />}
+								placeholder={t('Confirm_password')}
+								disabled={!allowPasswordChange}
+							/>
+						</Field.Row>
+						{!allowPasswordChange && <Field.Hint>{t('Password_Change_Disabled')}</Field.Hint>}
+						{passwordError && <Field.Error>{showPasswordError ? passwordError : undefined}</Field.Error>}
+						{allowPasswordChange && <PasswordVerifier password={password} />}
+					</Field>
+				),
+				[
+					t,
+					allowPasswordChange,
+					showPasswordError,
+					passwordError,
+					password,
+					handlePassword,
+					confirmationPassword,
+					handleConfirmationPassword,
+				],
+			)}
+
+			{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 		</FieldGroup>
 	);
 };

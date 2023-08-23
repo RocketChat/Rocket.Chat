@@ -1,5 +1,5 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Button, Chevron, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Button, Chevron, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -49,7 +49,7 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 				<Button square small onClick={onPreviousDateClick}>
 					<Chevron left size='x20' style={{ verticalAlign: 'middle' }} />
 				</Button>
-				<Box mi='x8' flexBasis='25%' is='span' style={{ textAlign: 'center' }}>
+				<Box mi={8} flexBasis='25%' is='span' style={{ textAlign: 'center' }}>
 					{data ? moment(data.day).format(displacement < 7 ? 'dddd' : 'L') : null}
 				</Box>
 				<Button square small disabled={displacement === 0} onClick={onNextDateClick}>
@@ -89,8 +89,7 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 								}}
 								axisLeft={null}
 								animate={true}
-								motionStiffness={90}
-								motionDamping={15}
+								motionConfig='stiff'
 								theme={{
 									// TODO: Get it from theme
 									axis: {
@@ -107,19 +106,8 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 											},
 										},
 									},
-									tooltip: {
-										// @ts-ignore
-										backgroundColor: colors.n900,
-										boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
-										borderRadius: 2,
-										padding: 4,
-									},
 								}}
-								tooltip={({ value }): ReactElement => (
-									<Box fontScale='p1m' color='alternative'>
-										{t('Value_users', { value })}
-									</Box>
-								)}
+								tooltip={({ value }) => <Tooltip>{t('Value_users', { value })}</Tooltip>}
 							/>
 						</Box>
 					</Box>

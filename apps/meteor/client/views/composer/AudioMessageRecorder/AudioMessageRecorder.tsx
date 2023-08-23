@@ -1,12 +1,12 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, AllHTMLAttributes } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { AudioRecorder } from '../../../../app/ui/client';
+import { AudioRecorder } from '../../../../app/ui/client/lib/recorderjs/AudioRecorder';
 import type { ChatAPI } from '../../../lib/chats/ChatAPI';
 import { useChat } from '../../room/contexts/ChatContext';
 
@@ -14,16 +14,15 @@ const audioRecorder = new AudioRecorder();
 
 type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
-	tmid?: IMessage['_id'];
 	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
-} & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
+	isMicrophoneDenied?: boolean;
+};
 
-const AudioMessageRecorder = ({ rid, chatContext, ...props }: AudioMessageRecorderProps): ReactElement | null => {
+const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMessageRecorderProps): ReactElement | null => {
 	const t = useTranslation();
 
-	const [state, setState] = useState<'idle' | 'loading' | 'recording'>('idle');
+	const [state, setState] = useState<'loading' | 'recording'>('recording');
 	const [time, setTime] = useState('00:00');
-	const [isMicrophoneDenied, setIsMicrophoneDenied] = useState(false);
 	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
 	const [recordingRoomId, setRecordingRoomId] = useState<IRoom['_id'] | null>(null);
 
@@ -36,44 +35,13 @@ const AudioMessageRecorder = ({ rid, chatContext, ...props }: AudioMessageRecord
 
 		setTime('00:00');
 
-		const blob = await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
-
-		chat?.flows.action.stop('recording');
+		chat?.action.stop('recording');
 
 		chat?.composer?.setRecordingMode(false);
 
-		setState('idle');
+		const blob = await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
 
 		return blob;
-	});
-
-	const handleMount = useMutableCallback(async (): Promise<void> => {
-		if (navigator.permissions) {
-			try {
-				const permissionStatus = await navigator.permissions.query({ name: 'microphone' as PermissionName });
-				setIsMicrophoneDenied(permissionStatus.state === 'denied');
-				permissionStatus.onchange = (): void => {
-					setIsMicrophoneDenied(permissionStatus.state === 'denied');
-				};
-				return;
-			} catch (error) {
-				console.warn(error);
-			}
-		}
-
-		if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-			setIsMicrophoneDenied(true);
-			return;
-		}
-
-		try {
-			if (!(await navigator.mediaDevices.enumerateDevices()).some(({ kind }) => kind === 'audioinput')) {
-				setIsMicrophoneDenied(true);
-				return;
-			}
-		} catch (error) {
-			console.warn(error);
-		}
 	});
 
 	const handleUnmount = useMutableCallback(async () => {
@@ -82,48 +50,14 @@ const AudioMessageRecorder = ({ rid, chatContext, ...props }: AudioMessageRecord
 		}
 	});
 
-	useEffect(() => {
-		handleMount();
-
-		return () => {
-			handleUnmount();
-		};
-	}, [handleMount, handleUnmount]);
-
-	const isFileUploadEnabled = useSetting('FileUpload_Enabled') as boolean;
-	const isAudioRecorderEnabled = useSetting('Message_AudioRecorderEnabled') as boolean;
-	const fileUploadMediaTypeBlackList = useSetting('FileUpload_MediaTypeBlackList') as string;
-	const fileUploadMediaTypeWhiteList = useSetting('FileUpload_MediaTypeWhiteList') as string;
-
-	const isAllowed = useMemo(
-		() =>
-			audioRecorder.isSupported() &&
-			!isMicrophoneDenied &&
-			isFileUploadEnabled &&
-			isAudioRecorderEnabled &&
-			(!fileUploadMediaTypeBlackList || !fileUploadMediaTypeBlackList.match(/audio\/mp3|audio\/\*/i)) &&
-			(!fileUploadMediaTypeWhiteList || fileUploadMediaTypeWhiteList.match(/audio\/mp3|audio\/\*/i)),
-		[fileUploadMediaTypeBlackList, fileUploadMediaTypeWhiteList, isAudioRecorderEnabled, isFileUploadEnabled, isMicrophoneDenied],
-	);
-
-	const stateClass = useMemo(() => {
-		if (recordingRoomId && recordingRoomId !== rid) {
-			return 'rc-message-box__audio-message--busy';
-		}
-
-		return state && `rc-message-box__audio-message--${state}`;
-	}, [recordingRoomId, rid, state]);
-
-	const handleRecordButtonClick = useMutableCallback(async () => {
+	const handleRecord = useMutableCallback(async () => {
 		if (recordingRoomId && recordingRoomId !== rid) {
 			return;
 		}
-		chat?.composer?.setRecordingMode(true);
-		setState('recording');
 
 		try {
 			await audioRecorder.start();
-			chat?.flows.action.performContinuously('recording');
+			chat?.action.performContinuously('recording');
 			const startTime = new Date();
 			setRecordingInterval(
 				setInterval(() => {
@@ -137,9 +71,7 @@ const AudioMessageRecorder = ({ rid, chatContext, ...props }: AudioMessageRecord
 			setRecordingRoomId(rid);
 		} catch (error) {
 			console.log(error);
-			setIsMicrophoneDenied(true);
 			chat?.composer?.setRecordingMode(false);
-			setState('idle');
 		}
 	});
 
@@ -160,25 +92,28 @@ const AudioMessageRecorder = ({ rid, chatContext, ...props }: AudioMessageRecord
 		await chat?.flows.uploadFiles([file]);
 	});
 
-	if (!isAllowed) {
+	useEffect(() => {
+		handleRecord();
+
+		return () => {
+			handleUnmount();
+		};
+	}, [handleUnmount, handleRecord]);
+
+	const stateClass = useMemo(() => {
+		if (recordingRoomId && recordingRoomId !== rid) {
+			return 'rc-message-box__audio-message--busy';
+		}
+
+		return state && `rc-message-box__audio-message--${state}`;
+	}, [recordingRoomId, rid, state]);
+
+	if (isMicrophoneDenied) {
 		return null;
 	}
 
-	if (state === 'idle') {
-		return (
-			<MessageComposerAction
-				title={t('Audio_message')}
-				icon='mic'
-				className='rc-message-box__icon rc-message-box__audio-message-mic'
-				data-qa-id='audio-record'
-				onClick={handleRecordButtonClick}
-				{...props}
-			/>
-		);
-	}
-
 	return (
-		<div className={`rc-message-box__audio-message ${stateClass}`}>
+		<Box position='absolute' pi={4} pb={12} className={`rc-message-box__audio-message ${stateClass}`}>
 			{state === 'recording' && (
 				<>
 					<MessageComposerAction
@@ -202,7 +137,7 @@ const AudioMessageRecorder = ({ rid, chatContext, ...props }: AudioMessageRecord
 					<Throbber inheritColor size='x12' />
 				</div>
 			)}
-		</div>
+		</Box>
 	);
 };
 

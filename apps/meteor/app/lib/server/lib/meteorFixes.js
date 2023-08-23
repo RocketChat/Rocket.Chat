@@ -1,6 +1,4 @@
-import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
-import { Settings } from '@rocket.chat/models';
 
 const timeoutQuery = parseInt(process.env.OBSERVERS_CHECK_TIMEOUT) || 2 * 60 * 1000;
 const interval = parseInt(process.env.OBSERVERS_CHECK_INTERVAL) || 60 * 1000;
@@ -18,16 +16,16 @@ const debug = Boolean(process.env.OBSERVERS_CHECK_DEBUG);
  * A good way to freeze a observer is running the instance with --inspect and execute in inspector the following code:
  *   multiplexer = Object.values(MongoInternals.defaultRemoteCollectionDriver().mongo._observeMultiplexers)[0]
  *   multiplexer._observeDriver._needToPollQuery()
- * Whis will raise an error of bindEnvironment and block the observer
+ * This will raise an error of bindEnvironment and block the observer
  * here https://github.com/meteor/meteor/blob/be6e529a739f47446950e045f4547ee60e5de7ae/packages/mongo/oplog_observe_driver.js#L698
  *
- * This code will check for observer instances in QUERYING mode for more than 2 minutues and will manually set them back
+ * This code will check for observer instances in QUERYING mode for more than 2 minutes and will manually set them back
  * to STEADY and force the query again to refresh the data and flush the _writesToCommitWhenWeReachSteady callbacks.
  */
 
-Meteor.setInterval(() => {
+setInterval(() => {
 	if (debug) {
-		console.log('Checking for stucked observers');
+		console.log('Checking for stuck observers');
 	}
 	const now = Date.now();
 	const driver = MongoInternals.defaultRemoteCollectionDriver();
@@ -44,35 +42,3 @@ Meteor.setInterval(() => {
 			_observeDriver._needToPollQuery();
 		});
 }, interval);
-
-/**
- * If some promise is rejected and doesn't have a catch (unhandledRejection) it may cause this finally
- * here https://github.com/meteor/meteor/blob/be6e529a739f47446950e045f4547ee60e5de7ae/packages/mongo/oplog_tailing.js#L348
- * to not be executed never ending the oplog worker and freezing the entire process.
- *
- * The only way to release the process is executing the following code via inspect:
- *   MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle._workerActive = false
- *
- * Since unhandled rejections are deprecated in NodeJS:
- * (node:83382) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future, promise rejections
- * that are not handled will terminate the Node.js process with a non-zero exit code.
- * we will start respecting this and exit the process to prevent these kind of problems.
- */
-
-process.on('unhandledRejection', async (error) => {
-	await Settings.incrementValueById('Uncaught_Exceptions_Count');
-
-	console.error('=== UnHandledPromiseRejection ===');
-	console.error(error);
-	console.error('---------------------------------');
-	console.error('Errors like this can cause oplog processing errors.');
-	console.error(
-		'Setting EXIT_UNHANDLEDPROMISEREJECTION will cause the process to exit allowing your service to automatically restart the process',
-	);
-	console.error('Future node.js versions will automatically exit the process');
-	console.error('=================================');
-
-	if (process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
-		process.exit(1);
-	}
-});

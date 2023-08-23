@@ -1,7 +1,7 @@
 import type { IVoipRoom, ICallerInfo, VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { VoipClientEvents } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, ButtonGroup, Icon, SidebarFooter, Menu, IconButton } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, SidebarFooter, Menu, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MouseEvent, ReactNode } from 'react';
 import React from 'react';
@@ -83,11 +83,11 @@ export const VoipFooter = ({
 					}
 				}}
 			>
-				<Box display='flex' justifyContent='center' fontScale='c1' color='white' mbe='14px'>
+				<Box display='flex' justifyContent='center' fontScale='c1' color='font-default' mbe='14px'>
 					{callsInQueue}
 				</Box>
 				<Box display='flex' flexDirection='row' h='24px' mi='16px' mbs='12px' mbe='8px' justifyContent='space-between' alignItems='center'>
-					<Box color='disabled' fontScale='c2' withTruncatedText>
+					<Box color='font-default' fontScale='c2' withTruncatedText>
 						{title}
 					</Box>
 					{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
@@ -117,10 +117,10 @@ export const VoipFooter = ({
 				</Box>
 				<Box display='flex' flexDirection='row' mi='16px' mbe='12px' justifyContent='space-between' alignItems='center'>
 					<Box>
-						<Box color='white' fontScale='p2' withTruncatedText>
+						<Box color='font-default' fontScale='p2' withTruncatedText>
 							{contactLabel || t('Anonymous')}
 						</Box>
-						<Box color='hint' fontScale='c1' withTruncatedText>
+						<Box color='font-default' fontScale='c1' withTruncatedText>
 							{subtitle}
 						</Box>
 					</Box>
@@ -131,6 +131,7 @@ export const VoipFooter = ({
 								small
 								square
 								danger
+								icon='phone-off'
 								disabled={paused}
 								aria-label={t('End_call')}
 								data-tooltip={t('End_Call')}
@@ -140,29 +141,32 @@ export const VoipFooter = ({
 									paused && togglePause(false);
 									return callActions.end();
 								}}
-							>
-								<Icon name='phone-off' size='x16' />
-							</Button>
+							/>
 						)}
 						{callerState === 'OFFER_RECEIVED' && (
-							<Button data-tooltip={t('Decline')} aria-label={t('Decline')} small square danger onClick={callActions.reject}>
-								<Icon name='phone-off' size='x16' />
-							</Button>
+							<Button
+								icon='phone-off'
+								data-tooltip={t('Decline')}
+								aria-label={t('Decline')}
+								small
+								square
+								danger
+								onClick={callActions.reject}
+							/>
 						)}
 						{callerState === 'OFFER_RECEIVED' && (
 							<Button
 								small
 								square
 								success
+								icon='phone'
 								data-tooltip={t('Accept')}
 								onClick={async (): Promise<void> => {
 									callActions.pickUp();
 									const rid = await createRoom(caller);
 									dispatchEvent({ event: VoipClientEvents['VOIP-CALL-STARTED'], rid });
 								}}
-							>
-								<Icon name='phone' size='x16' />
-							</Button>
+							/>
 						)}
 					</ButtonGroup>
 				</Box>

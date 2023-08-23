@@ -1,9 +1,10 @@
-import { clientLogger } from '../lib/logger';
-import { FederationRoomEvents } from '../../../models/server';
-import { normalizers } from '../normalizers';
+import { FederationRoomEvents } from '@rocket.chat/models';
+
 import { hasExternalDomain } from '../functions/helpers';
-import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
+import { getFederationDomain } from '../lib/getFederationDomain';
+import { clientLogger } from '../lib/logger';
+import { normalizers } from '../normalizers';
 
 async function afterSaveMessage(message, room) {
 	// If there are not federated users on this room, ignore it
@@ -32,6 +33,6 @@ async function afterSaveMessage(message, room) {
 
 export const definition = {
 	hook: 'afterSaveMessage',
-	callback: (message, room) => Promise.await(afterSaveMessage(message, room)),
+	callback: afterSaveMessage,
 	id: 'federation-after-save-message',
 };

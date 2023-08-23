@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { isAssetsUnsetAssetProps } from '@rocket.chat/rest-typings';
+import { Meteor } from 'meteor/meteor';
 
 import { RocketChatAssets } from '../../../assets/server';
+import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
-import { settings } from '../../../settings/server';
 
 API.v1.addRoute(
 	'assets.setAsset',
@@ -30,9 +30,9 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-asset', 'Invalid asset');
 			}
 
-			Meteor.call('setAsset', fileBuffer, mimetype, assetName);
+			await Meteor.callAsync('setAsset', fileBuffer, mimetype, assetName);
 			if (refreshAllClients) {
-				Meteor.call('refreshClients');
+				await Meteor.callAsync('refreshClients');
 			}
 
 			return API.v1.success();
@@ -47,15 +47,15 @@ API.v1.addRoute(
 		validateParams: isAssetsUnsetAssetProps,
 	},
 	{
-		post() {
+		async post() {
 			const { assetName, refreshAllClients } = this.bodyParams;
 			const isValidAsset = Object.keys(RocketChatAssets.assets).includes(assetName);
 			if (!isValidAsset) {
 				throw new Meteor.Error('error-invalid-asset', 'Invalid asset');
 			}
-			Meteor.call('unsetAsset', assetName);
+			await Meteor.callAsync('unsetAsset', assetName);
 			if (refreshAllClients) {
-				Meteor.call('refreshClients');
+				await Meteor.callAsync('refreshClients');
 			}
 			return API.v1.success();
 		},

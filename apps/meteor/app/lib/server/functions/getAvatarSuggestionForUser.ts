@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { check } from 'meteor/check';
-import { Gravatar } from 'meteor/jparker:gravatar';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 import type { IUser } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import Gravatar from 'gravatar';
+import { check } from 'meteor/check';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings } from '../../../settings/server';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 const avatarProviders = {
 	facebook(user: IUser) {
@@ -71,22 +70,33 @@ const avatarProviders = {
 		}
 	},
 
-	customOAuth(user: IUser) {
-		const avatars = [];
-		for (const service in user.services) {
-			if (user.services[service as keyof typeof user.services]._OAuthCustom) {
-				const services = ServiceConfiguration.configurations.find({ service }, { fields: { secret: 0 } }).fetch();
+	async customOAuth(user: IUser) {
+		const avatars: { service: string; url: string }[] = [];
+		if (!user.services) {
+			return avatars;
+		}
 
-				if (services.length > 0) {
-					if (user.services[service as keyof typeof user.services].avatarUrl) {
-						avatars.push({
-							service,
-							url: user.services[service as keyof typeof user.services].avatarUrl,
-						});
+		await Promise.all(
+			Object.keys(user.services).map(async (service) => {
+				if (!user.services) {
+					return;
+				}
+
+				if (user.services[service as keyof typeof user.services]._OAuthCustom) {
+					const services = await ServiceConfiguration.configurations.find({ service }, { fields: { secret: 0 } }).fetchAsync();
+
+					if (services.length > 0) {
+						if (user.services[service as keyof typeof user.services].avatarUrl) {
+							avatars.push({
+								service,
+								url: user.services[service as keyof typeof user.services].avatarUrl,
+							});
+						}
 					}
 				}
-			}
-		}
+			}),
+		);
+
 		return avatars;
 	},
 
@@ -97,10 +107,10 @@ const avatarProviders = {
 				if (email.verified === true) {
 					avatars.push({
 						service: 'gravatar',
-						url: Gravatar.imageUrl(email.address, {
+						url: Gravatar.url(email.address, {
 							default: '404',
-							size: 200,
-							secure: true,
+							size: '200',
+							protocol: 'https',
 						}),
 					});
 				}
@@ -108,10 +118,10 @@ const avatarProviders = {
 				if (email.verified !== true) {
 					avatars.push({
 						service: 'gravatar',
-						url: Gravatar.imageUrl(email.address, {
+						url: Gravatar.url(email.address, {
 							default: '404',
-							size: 200,
-							secure: true,
+							size: '200',
+							protocol: 'https',
 						}),
 					});
 				}
@@ -131,8 +141,8 @@ export async function getAvatarSuggestionForUser(
 
 	const avatars = [];
 
-	for (const avatarProvider of Object.values(avatarProviders)) {
-		const avatar = avatarProvider(user);
+	for await (const avatarProvider of Object.values(avatarProviders)) {
+		const avatar = await avatarProvider(user);
 		if (avatar) {
 			if (Array.isArray(avatar)) {
 				avatars.push(...avatar);

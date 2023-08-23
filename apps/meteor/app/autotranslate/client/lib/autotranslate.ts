@@ -1,6 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-import mem from 'mem';
 import type {
 	IRoom,
 	ISubscription,
@@ -10,14 +7,17 @@ import type {
 	MessageAttachmentDefault,
 } from '@rocket.chat/core-typings';
 import { isTranslatedMessageAttachment } from '@rocket.chat/core-typings';
+import mem from 'mem';
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
-import { Subscriptions, Messages } from '../../../models/client';
-import { hasPermission } from '../../../authorization/client';
-import { call } from '../../../../client/lib/utils/call';
 import {
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
 } from '../../../../client/views/room/MessageList/lib/autoTranslate';
+import { hasPermission } from '../../../authorization/client';
+import { Subscriptions, Messages } from '../../../models/client';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 let userLanguage = 'en';
 let username = '';
@@ -110,8 +110,8 @@ export const AutoTranslate = {
 
 			try {
 				[this.providersMetadata, this.supportedLanguages] = await Promise.all([
-					call('autoTranslate.getProviderUiMetadata'),
-					call('autoTranslate.getSupportedLanguages', 'en'),
+					sdk.call('autoTranslate.getProviderUiMetadata'),
+					sdk.call('autoTranslate.getSupportedLanguages', 'en'),
 				]);
 			} catch (e: unknown) {
 				// Avoid unwanted error message on UI when autotranslate is disabled while fetching data
@@ -129,38 +129,6 @@ export const AutoTranslate = {
 
 		this.initialized = true;
 	},
-};
-
-export const createAutoTranslateMessageRenderer = (): ((message: ITranslatedMessage) => ITranslatedMessage) => {
-	AutoTranslate.init();
-
-	return (message: ITranslatedMessage): ITranslatedMessage => {
-		const subscription = AutoTranslate.findSubscriptionByRid(message.rid);
-		const autoTranslateLanguage = AutoTranslate.getLanguage(message.rid);
-		if (message.u && message.u._id !== Meteor.userId()) {
-			if (!message.translations) {
-				message.translations = {};
-			}
-			if (!!subscription?.autoTranslate !== !!message.autoTranslateShowInverse) {
-				message.translations.original = message.html;
-				if (
-					message.translations[autoTranslateLanguage] &&
-					!hasTranslationLanguageInAttachments(message.attachments, autoTranslateLanguage)
-				) {
-					message.html = message.translations[autoTranslateLanguage];
-				}
-
-				if (message.attachments && message.attachments.length > 0) {
-					message.attachments = AutoTranslate.translateAttachments(
-						message.attachments,
-						autoTranslateLanguage,
-						!!message.autoTranslateShowInverse,
-					);
-				}
-			}
-		}
-		return message;
-	};
 };
 
 export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslatedMessage) => void) => {

@@ -1,12 +1,14 @@
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data.js';
-import { adminUsername, password } from '../../data/user.js';
-import { createUser, login } from '../../data/users.helper';
+import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
+import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
-import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { testFileUploads } from '../../data/uploads.helper';
+import { adminUsername, password } from '../../data/user';
+import { createUser, login, deleteUser } from '../../data/users.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve /* , reject*/) => {
@@ -46,6 +48,66 @@ describe('[Groups]', function () {
 				group.name = res.body.group.name;
 			})
 			.end(done);
+	});
+	describe('[/groups.create]', () => {
+		let guestUser;
+		let room;
+
+		before(async () => {
+			guestUser = await createUser({ roles: ['guest'] });
+		});
+		after(async () => {
+			await deleteUser(guestUser);
+		});
+
+		it('should not add guest users to more rooms than defined in the license', async function () {
+			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+			if (!process.env.IS_EE) {
+				this.skip();
+			}
+			const promises = [];
+
+			for (let i = 0; i < maxRoomsPerGuest; i++) {
+				promises.push(
+					createRoom({
+						type: 'p',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+						members: [guestUser.username],
+					}),
+				);
+			}
+			await Promise.all(promises);
+
+			request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+					members: [guestUser.username],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					room = res.body.group;
+				})
+				.then(() => {
+					request
+						.get(api('groups.members'))
+						.set(credentials)
+						.query({
+							roomId: room._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('members').and.to.be.an('array');
+							expect(res.body.members).to.have.lengthOf(1);
+						});
+				});
+		});
 	});
 	describe('/groups.create (encrypted)', () => {
 		it('should create a new encrypted group', async () => {
@@ -652,6 +714,22 @@ describe('[Groups]', function () {
 			.end(done);
 	});
 
+	it('/groups.list should return a list of zero length if not a member of any group', async () => {
+		const user = await createUser();
+		const newCreds = await login(user.username, password);
+		request
+			.get(api('groups.list'))
+			.set(newCreds)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('count').and.to.equal(0);
+				expect(res.body).to.have.property('total').and.to.equal(0);
+				expect(res.body).to.have.property('groups').and.to.be.an('array').and.that.has.lengthOf(0);
+			});
+	});
+
 	describe('[/groups.online]', () => {
 		const createUserAndChannel = async (setAsOnline = true) => {
 			const testUser = await createUser();
@@ -786,7 +864,7 @@ describe('[Groups]', function () {
 		});
 	});
 
-	describe('[/groups.files]', async function () {
+	describe('[/groups.files]', async () => {
 		await testFileUploads('groups.files', group);
 	});
 
@@ -885,6 +963,7 @@ describe('[Groups]', function () {
 										alias: 'test',
 										username: 'rocket.cat',
 										scriptEnabled: false,
+										overrideDestinationChannelEnabled: true,
 										channel: `#${createdGroup.name}`,
 									},
 									userCredentials,
@@ -1582,7 +1661,7 @@ describe('[Groups]', function () {
 		});
 	});
 
-	context("Setting: 'Use Real Name': true", () => {
+	describe("Setting: 'Use Real Name': true", () => {
 		let realNameGroup;
 
 		before(async () => {

@@ -1,12 +1,11 @@
-import https from 'https';
 import http from 'http';
+import https from 'https';
 
-import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Messages } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 
+import { FileUpload } from '../../file-upload/server';
 import { Base, ProgressStep, Selection } from '../../importer/server';
-import { Messages } from '../../models/server';
-import { FileUpload } from '../../file-upload';
 
 export class PendingFileImporter extends Base {
 	constructor(info, importRecord) {
@@ -15,34 +14,31 @@ export class PendingFileImporter extends Base {
 		this.bots = {};
 	}
 
-	prepareFileCount() {
+	async prepareFileCount() {
 		this.logger.debug('start preparing import operation');
-		super.updateProgress(ProgressStep.PREPARING_STARTED);
+		await super.updateProgress(ProgressStep.PREPARING_STARTED);
 
-		const messages = Messages.findAllImportedMessagesWithFilesToDownload();
-		const fileCount = messages.count();
-
+		const fileCount = await Messages.countAllImportedMessagesWithFilesToDownload();
 		if (fileCount === 0) {
-			super.updateProgress(ProgressStep.DONE);
+			await super.updateProgress(ProgressStep.DONE);
 			return 0;
 		}
 
-		this.updateRecord({ 'count.messages': fileCount, 'messagesstatus': null });
-		this.addCountToTotal(fileCount);
+		await this.updateRecord({ 'count.messages': fileCount, 'messagesstatus': null });
+		await this.addCountToTotal(fileCount);
 
 		const fileData = new Selection(this.name, [], [], fileCount);
-		this.updateRecord({ fileData });
+		await this.updateRecord({ fileData });
 
-		super.updateProgress(ProgressStep.IMPORTING_FILES);
-		Meteor.defer(() => {
+		await super.updateProgress(ProgressStep.IMPORTING_FILES);
+		setImmediate(() => {
 			this.startImport(fileData);
 		});
 
 		return fileCount;
 	}
 
-	startImport() {
-		const pendingFileMessageList = Messages.findAllImportedMessagesWithFilesToDownload();
+	async startImport() {
 		const downloadedFileIds = [];
 		const maxFileCount = 10;
 		const maxFileSize = 1024 * 1024 * 500;
@@ -51,12 +47,12 @@ export class PendingFileImporter extends Base {
 		let currentSize = 0;
 		let nextSize = 0;
 
-		const waitForFiles = () => {
+		const waitForFiles = async () => {
 			if (count + 1 < maxFileCount && currentSize + nextSize < maxFileSize) {
 				return;
 			}
 
-			Meteor.wrapAsync((callback) => {
+			return new Promise((resolve) => {
 				const handler = setInterval(() => {
 					if (count + 1 >= maxFileCount) {
 						return;
@@ -67,13 +63,13 @@ export class PendingFileImporter extends Base {
 					}
 
 					clearInterval(handler);
-					callback();
+					resolve();
 				}, 1000);
-			})();
+			});
 		};
 
-		const completeFile = (details) => {
-			this.addCountCompleted(1);
+		const completeFile = async (details) => {
+			await this.addCountCompleted(1);
 			count--;
 			currentSize -= details.size;
 		};
@@ -83,18 +79,19 @@ export class PendingFileImporter extends Base {
 		};
 
 		try {
-			pendingFileMessageList.forEach((message) => {
+			const pendingFileMessageList = Messages.findAllImportedMessagesWithFilesToDownload();
+			for await (const message of pendingFileMessageList) {
 				try {
 					const { _importFile } = message;
 
 					if (!_importFile || _importFile.downloaded || downloadedFileIds.includes(_importFile.id)) {
-						this.addCountCompleted(1);
+						await this.addCountCompleted(1);
 						return;
 					}
 
 					const url = _importFile.downloadUrl;
 					if (!url || !url.startsWith('http')) {
-						this.addCountCompleted(1);
+						await this.addCountCompleted(1);
 						return;
 					}
 
@@ -111,100 +108,82 @@ export class PendingFileImporter extends Base {
 					const reportProgress = this.reportProgress.bind(this);
 
 					nextSize = details.size;
-					waitForFiles();
+					await waitForFiles();
 					count++;
 					currentSize += nextSize;
 					downloadedFileIds.push(_importFile.id);
 
-					requestModule.get(
-						url,
-						Meteor.bindEnvironment(function (res) {
-							const contentType = res.headers['content-type'];
-							if (!details.type && contentType) {
-								details.type = contentType;
+					requestModule.get(url, (res) => {
+						const contentType = res.headers['content-type'];
+						if (!details.type && contentType) {
+							details.type = contentType;
+						}
+
+						const rawData = [];
+						res.on('data', (chunk) => {
+							rawData.push(chunk);
+
+							// Update progress more often on large files
+							reportProgress();
+						});
+						res.on('error', async (error) => {
+							await completeFile(details);
+							logError(error);
+						});
+
+						res.on('end', async () => {
+							try {
+								// Bypass the fileStore filters
+								const file = await fileStore._doInsert(details, Buffer.concat(rawData));
+
+								const url = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
+								const attachment = {
+									title: file.name,
+									title_link: url,
+								};
+
+								if (/^image\/.+/.test(file.type)) {
+									attachment.image_url = url;
+									attachment.image_type = file.type;
+									attachment.image_size = file.size;
+									attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
+								}
+
+								if (/^audio\/.+/.test(file.type)) {
+									attachment.audio_url = url;
+									attachment.audio_type = file.type;
+									attachment.audio_size = file.size;
+								}
+
+								if (/^video\/.+/.test(file.type)) {
+									attachment.video_url = url;
+									attachment.video_type = file.type;
+									attachment.video_size = file.size;
+								}
+
+								await Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment);
+								await completeFile(details);
+							} catch (error) {
+								await completeFile(details);
+								logError(error);
 							}
-
-							const rawData = [];
-							res.on(
-								'data',
-								Meteor.bindEnvironment((chunk) => {
-									rawData.push(chunk);
-
-									// Update progress more often on large files
-									reportProgress();
-								}),
-							);
-							res.on(
-								'error',
-								Meteor.bindEnvironment((error) => {
-									completeFile(details);
-									logError(error);
-								}),
-							);
-
-							res.on(
-								'end',
-								Meteor.bindEnvironment(() => {
-									try {
-										// Bypass the fileStore filters
-										fileStore._doInsert(details, Buffer.concat(rawData), function (error, file) {
-											if (error) {
-												completeFile(details);
-												logError(error);
-												return;
-											}
-
-											const url = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
-											const attachment = {
-												title: file.name,
-												title_link: url,
-											};
-
-											if (/^image\/.+/.test(file.type)) {
-												attachment.image_url = url;
-												attachment.image_type = file.type;
-												attachment.image_size = file.size;
-												attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
-											}
-
-											if (/^audio\/.+/.test(file.type)) {
-												attachment.audio_url = url;
-												attachment.audio_type = file.type;
-												attachment.audio_size = file.size;
-											}
-
-											if (/^video\/.+/.test(file.type)) {
-												attachment.video_url = url;
-												attachment.video_type = file.type;
-												attachment.video_size = file.size;
-											}
-
-											Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment);
-											completeFile(details);
-										});
-									} catch (error) {
-										completeFile(details);
-										logError(error);
-									}
-								}),
-							);
-						}),
-					);
+						});
+					});
 				} catch (error) {
 					this.logger.error(error);
 				}
-			});
+			}
 		} catch (error) {
 			// If the cursor expired, restart the method
 			if (error && error.codeName === 'CursorNotFound') {
 				return this.startImport();
 			}
 
-			super.updateProgress(ProgressStep.ERROR);
+			await super.updateProgress(ProgressStep.ERROR);
 			throw error;
 		}
 
-		super.updateProgress(ProgressStep.DONE);
+		await super.updateProgress(ProgressStep.DONE);
 		return this.getProgress();
 	}
 }

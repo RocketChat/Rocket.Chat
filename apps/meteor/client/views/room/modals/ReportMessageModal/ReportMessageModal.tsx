@@ -7,6 +7,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import GenericModal from '../../../../components/GenericModal';
+import MarkdownText from '../../../../components/MarkdownText';
+import MessageContentBody from '../../../../components/message/MessageContentBody';
 
 type ReportMessageModalsFields = {
 	description: string;
@@ -14,15 +16,14 @@ type ReportMessageModalsFields = {
 
 type ReportMessageModalProps = {
 	onClose: () => void;
-	messageText?: string;
-	messageId: IMessage['_id'];
+	message: IMessage;
 };
 
 const wordBreak = css`
 	word-break: break-word;
 `;
 
-const ReportMessageModal = ({ messageText, messageId, onClose }: ReportMessageModalProps): ReactElement => {
+const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): ReactElement => {
 	const t = useTranslation();
 	const {
 		register,
@@ -32,9 +33,11 @@ const ReportMessageModal = ({ messageText, messageId, onClose }: ReportMessageMo
 	const dispatchToastMessage = useToastMessageDispatch();
 	const reportMessage = useMethod('reportMessage');
 
+	const { _id } = message;
+
 	const handleReportMessage = async ({ description }: ReportMessageModalsFields): Promise<void> => {
 		try {
-			await reportMessage(messageId, description);
+			await reportMessage(_id, description);
 			dispatchToastMessage({ type: 'success', message: t('Report_has_been_sent') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -45,15 +48,15 @@ const ReportMessageModal = ({ messageText, messageId, onClose }: ReportMessageMo
 
 	return (
 		<GenericModal
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleReportMessage)} {...props} />}
 			variant='danger'
 			title={t('Report_this_message_question_mark')}
 			onClose={onClose}
 			onCancel={onClose}
-			onConfirm={handleSubmit(handleReportMessage)}
 			confirmText={t('Report_exclamation_mark')}
 		>
-			<Box mbe='x24' className={wordBreak}>
-				{messageText}
+			<Box mbe={24} className={wordBreak}>
+				{message.md ? <MessageContentBody md={message.md} /> : <MarkdownText variant='inline' parseEmoji content={message.msg} />}
 			</Box>
 			<FieldGroup>
 				<Field>

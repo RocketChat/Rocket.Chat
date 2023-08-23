@@ -1,9 +1,10 @@
-import { isGETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { LivechatRooms } from '@rocket.chat/models';
+import { isGETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { findRooms } from '../../../server/api/lib/rooms';
-import { hasPermission } from '../../../../authorization/server';
 
 const validateDateParams = (property: string, date?: string) => {
 	let parsedDate: { start?: string; end?: string } | undefined = undefined;
@@ -27,16 +28,17 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isGETLivechatRoomsParams },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields } = this.parseJsonQuery();
-			const { agents, departmentId, open, tags, roomName, onhold } = this.requestParams();
-			const { createdAt, customFields, closedAt } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields } = await this.parseJsonQuery();
+			const { agents, departmentId, open, tags, roomName, onhold } = this.queryParams;
+			const { createdAt, customFields, closedAt } = this.queryParams;
 
 			const createdAtParam = validateDateParams('createdAt', createdAt);
 			const closedAtParam = validateDateParams('closedAt', closedAt);
 
-			const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
-			const hasAgentAccess = hasPermission(this.userId, 'view-l-room') && agents?.includes(this.userId) && agents?.length === 1;
+			const hasAdminAccess = await hasPermissionAsync(this.userId, 'view-livechat-rooms');
+			const hasAgentAccess =
+				(await hasPermissionAsync(this.userId, 'view-l-room')) && agents?.includes(this.userId) && agents?.length === 1;
 			if (!hasAdminAccess && !hasAgentAccess) {
 				return API.v1.unauthorized();
 			}

@@ -1,5 +1,3 @@
-/* eslint-disable import/order */
-/* eslint-disable import/no-duplicates */
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
@@ -9,7 +7,6 @@ import { checkPermissions } from '../../../../../../../app/api/server/api.helper
 describe('checkPermissions', () => {
 	it('should return false when no options.permissionsRequired key is present', () => {
 		const options = {};
-		// @ts-expect-error - for testing purposes
 		expect(checkPermissions(options)).to.be.false;
 	});
 	it('should return false when options.permissionsRequired is of an invalid format', () => {

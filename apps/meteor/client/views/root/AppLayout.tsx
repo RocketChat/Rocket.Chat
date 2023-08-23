@@ -1,26 +1,32 @@
-import { PaletteStyleTag } from '@rocket.chat/ui-theming/src/PaletteStyleTag';
-import { SidebarPaletteStyleTag } from '@rocket.chat/ui-theming/src/SidebarPaletteStyleTag';
-import type { FC } from 'react';
-import React, { Suspense } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
+import { useAnalytics } from '../../../app/analytics/client/loadScript';
+import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { appLayout } from '../../lib/appLayout';
-import { blazePortals, useBlazePortals } from '../../lib/portals/blazePortals';
 import PageLoading from './PageLoading';
+import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
+import { useGoogleTagManager } from './hooks/useGoogleTagManager';
+import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 
-const AppLayout: FC = () => {
+const AppLayout = () => {
+	useEffect(() => {
+		document.body.classList.add('color-primary-font-color', 'rcx-content--main');
+
+		return () => {
+			document.body.classList.remove('color-primary-font-color', 'rcx-content--main');
+		};
+	}, []);
+
+	useMessageLinkClicks();
+	useGoogleTagManager();
+	useAnalytics();
+	useEscapeKeyStroke();
+	useAnalyticsEventTracking();
+
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
-	const [portals] = useBlazePortals(blazePortals);
-
-	return (
-		<>
-			<PaletteStyleTag />
-			<SidebarPaletteStyleTag />
-			<Suspense fallback={<PageLoading />}>{layout}</Suspense>
-			{portals}
-		</>
-	);
+	return <Suspense fallback={<PageLoading />}>{layout}</Suspense>;
 };
 
 export default AppLayout;

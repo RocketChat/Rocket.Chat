@@ -13,7 +13,7 @@ export class Admin {
 	}
 
 	get inputSearchRooms(): Locator {
-		return this.page.locator('input[placeholder ="Search Rooms"]');
+		return this.page.locator('input[placeholder ="Search rooms"]');
 	}
 
 	get inputSearchUsers(): Locator {
@@ -127,6 +127,10 @@ export class Admin {
 
 	get btnDeleteAssetsLogo(): Locator {
 		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> role=button[name="Delete"]');
+	}
+
+	get btnCreateRole(): Locator {
+		return this.page.locator('button[name="New role"]');
 	}
 
 	get inputAssetsLogo(): Locator {

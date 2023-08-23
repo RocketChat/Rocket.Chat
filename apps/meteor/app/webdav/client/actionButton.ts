@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 
-import { getURL } from '../../utils/client';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { messageArgs } from '../../../client/lib/utils/messageArgs';
+import SaveToWebdav from '../../../client/views/room/webdav/SaveToWebdavModal';
 import { WebdavAccounts } from '../../models/client';
 import { settings } from '../../settings/client';
 import { MessageAction } from '../../ui-utils/client';
-import { messageArgs } from '../../../client/lib/utils/messageArgs';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
-import SaveToWebdav from '../../../client/views/room/webdav/SaveToWebdavModal';
+import { getURL } from '../../utils/client';
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	MessageAction.addButton({
 		id: 'webdav-upload',
 		icon: 'upload',
@@ -29,7 +29,7 @@ Meteor.startup(function () {
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const [attachment] = message.attachments || [];
-			const url = getURL(attachment.title_link, { full: true });
+			const url = getURL(attachment.title_link as string, { full: true });
 			imperativeModal.open({
 				component: SaveToWebdav,
 				props: {

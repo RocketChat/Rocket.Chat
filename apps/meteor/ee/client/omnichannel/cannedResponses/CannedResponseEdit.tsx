@@ -1,5 +1,5 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse, Serialized } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, Icon, FieldGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
@@ -19,7 +19,7 @@ const CannedResponseEdit: FC<{
 	departmentData?: {
 		department: Serialized<ILivechatDepartment>;
 	};
-}> = ({ data, reload, totalDataReload, isNew = false, departmentData = {} }) => {
+}> = ({ data, reload, totalDataReload, isNew = false }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const Route = useRoute('omnichannel-canned-responses');
@@ -39,14 +39,9 @@ const CannedResponseEdit: FC<{
 		_id: data?.cannedResponse ? data.cannedResponse._id : '',
 		shortcut: data ? data.cannedResponse.shortcut : '',
 		text: data ? data.cannedResponse.text : '',
-		tags:
-			data?.cannedResponse?.tags && Array.isArray(data.cannedResponse.tags)
-				? data.cannedResponse.tags.map((tag) => ({ label: tag, value: tag }))
-				: [],
+		tags: data?.cannedResponse?.tags ?? [],
 		scope: data ? data.cannedResponse.scope : 'user',
-		departmentId: data?.cannedResponse?.departmentId
-			? { value: data.cannedResponse.departmentId, label: departmentData?.department?.name }
-			: '',
+		departmentId: data?.cannedResponse?.departmentId ? data.cannedResponse.departmentId : '',
 	});
 
 	const { values, handlers, hasUnsavedChanges } = form;
@@ -100,16 +95,15 @@ const CannedResponseEdit: FC<{
 				text: string;
 				scope: string;
 				tags: any;
-				departmentId: { value: string; label: string };
+				departmentId: string;
 			};
-			const mappedTags = tags.map((tag: string | { value: string; label: string }) => (typeof tag === 'object' ? tag?.value : tag));
 			await saveCannedResponse({
 				...(_id && { _id }),
 				shortcut,
 				text,
 				scope,
-				...(mappedTags.length > 0 && { tags: mappedTags }),
-				...(departmentId && { departmentId: departmentId.value }),
+				tags,
+				...(departmentId && { departmentId }),
 			});
 			dispatchToastMessage({
 				type: 'success',
@@ -139,8 +133,8 @@ const CannedResponseEdit: FC<{
 		<Page>
 			<Page.Header title={isNew ? t('New_CannedResponse') : t('Edit_CannedResponse')}>
 				<ButtonGroup>
-					<Button onClick={handleReturn}>
-						<Icon name='back' /> {t('Back')}
+					<Button icon='back' onClick={handleReturn}>
+						{t('Back')}
 					</Button>
 					<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={onSave}>
 						{t('Save')}

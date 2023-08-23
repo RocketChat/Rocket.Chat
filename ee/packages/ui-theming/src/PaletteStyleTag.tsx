@@ -1,19 +1,28 @@
-import type { ReactElement } from 'react';
-import React from 'react';
+import { memo } from 'react';
 import { createPortal } from 'react-dom';
 
-import { convertToCss } from './convertToCss';
-import { filterOnlyChangedColors } from './filterOnlyChangedColors';
+import { codeBlock } from './codeBlockStyles';
+import { convertToCss } from './helpers/convertToCss';
+import { filterOnlyChangedColors } from './helpers/filterOnlyChangedColors';
+import { useCreateStyleContainer } from './hooks/useCreateStyleContainer';
+import { useThemeMode } from './hooks/useThemeMode';
 import { defaultPalette } from './palette';
 import { darkPalette } from './paletteDark';
-import { useThemeMode } from './hooks/useThemeMode';
+import { paletteHighContrast } from './paletteHighContrast';
 
-export const PaletteStyleTag = (): ReactElement | null => {
+export const PaletteStyleTag = memo(function PaletteStyleTag() {
 	const [, , theme] = useThemeMode();
 
-	if (theme !== 'dark') {
-		return null;
-	}
+	const getPalette = () => {
+		if (theme === 'dark') {
+			return darkPalette;
+		}
+		if (theme === 'high-contrast') {
+			return paletteHighContrast;
+		}
+		return {};
+	};
+	const palette = convertToCss(filterOnlyChangedColors(defaultPalette, getPalette()), '.rcx-content--main');
 
-	return createPortal(<style>{convertToCss(filterOnlyChangedColors(defaultPalette, darkPalette))}</style>, document.head);
-};
+	return createPortal(theme === 'dark' ? palette + codeBlock : palette, useCreateStyleContainer('main-palette'));
+});

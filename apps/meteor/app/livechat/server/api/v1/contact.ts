@@ -1,7 +1,7 @@
-import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import { LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
 import { Contacts } from '../../lib/Contacts';
@@ -70,7 +70,7 @@ API.v1.addRoute(
 
 				const cfIds = Object.keys(customCF);
 
-				const customFields = await LivechatCustomField.findMatchingCustomFieldsByIds(Object.keys(cfIds), 'visitor', true, {
+				const customFields = await LivechatCustomField.findMatchingCustomFieldsByIds(cfIds, 'visitor', true, {
 					projection: { _id: 1 },
 				}).toArray();
 

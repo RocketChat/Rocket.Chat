@@ -1,12 +1,22 @@
-import { Meteor } from 'meteor/meteor';
 import { Settings } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
-Meteor.methods({
-	async 'livechat:saveAppearance'(settings: { _id: string; value: any }[]) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:saveAppearance'(settings: { _id: string; value: any }[]): Promise<void>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async 'livechat:saveAppearance'(settings) {
+		methodDeprecationLogger.method('livechat:saveAppearance', '7.0.0');
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'view-livechat-manager')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:saveAppearance',
 			});

@@ -1,5 +1,5 @@
-import { Accounts } from 'meteor/accounts-base';
 import type { IUser, IPassword } from '@rocket.chat/core-typings';
+import { Accounts } from 'meteor/accounts-base';
 
 import { settings } from '../../app/settings/server';
 
@@ -8,7 +8,7 @@ import { settings } from '../../app/settings/server';
  * @param {object} user User object
  * @param {object} pass Object with { plain: 'plain-test-password' } or { sha256: 'sha256password' }
  */
-export function compareUserPasswordHistory(user: IUser, pass: IPassword): boolean {
+export async function compareUserPasswordHistory(user: IUser, pass: IPassword): Promise<boolean> {
 	if (!user?.services?.passwordHistory || !settings.get('Accounts_Password_History_Enabled')) {
 		return true;
 	}
@@ -20,7 +20,7 @@ export function compareUserPasswordHistory(user: IUser, pass: IPassword): boolea
 	const currentPassword = user.services.password.bcrypt;
 	const passwordHistory = user.services.passwordHistory.slice(-Number(settings.get('Accounts_Password_History_Amount')));
 
-	for (const password of passwordHistory) {
+	for await (const password of passwordHistory) {
 		if (!password.trim()) {
 			user.services.password.bcrypt = currentPassword;
 			return false;
@@ -32,7 +32,7 @@ export function compareUserPasswordHistory(user: IUser, pass: IPassword): boolea
 			algorithm: 'sha-256' as const,
 		};
 
-		const passCheck = Accounts._checkPassword(user as Meteor.User, historyPassword);
+		const passCheck = await Accounts._checkPasswordAsync(user as Meteor.User, historyPassword);
 
 		if (!passCheck.error) {
 			user.services.password.bcrypt = currentPassword;

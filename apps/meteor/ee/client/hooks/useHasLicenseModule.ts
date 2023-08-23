@@ -1,19 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useMethod, useUserId } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 
-import { hasLicense } from '../../app/license/client';
 import type { BundleFeature } from '../../app/license/server/bundles';
 
 export const useHasLicenseModule = (licenseName: BundleFeature): 'loading' | boolean => {
-	const [license, setLicense] = useState<'loading' | boolean>('loading');
+	const method = useMethod('license:getModules');
+	const uid = useUserId();
 
-	useEffect(() => {
-		hasLicense(licenseName).then((enabled) => {
-			if (enabled) {
-				return setLicense(true);
-			}
-			setLicense(false);
-		});
-	}, [licenseName]);
+	const features = useQuery(['ee.features'], method, {
+		enabled: !!uid,
+	});
 
-	return license;
+	return features.data?.includes(licenseName) ?? 'loading';
 };

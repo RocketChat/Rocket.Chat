@@ -1,14 +1,14 @@
 import { Settings } from '@rocket.chat/models';
 
-import { addMigration } from '../../lib/migrations';
 import { settings } from '../../../app/settings/server';
+import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 282,
-	up() {
+	async up() {
 		const omnichannelCallProvider = settings.get('Omnichannel_call_provider');
 		if (omnichannelCallProvider !== 'none') {
-			Settings.updateOne(
+			await Settings.updateOne(
 				{ _id: 'Omnichannel_call_provider' },
 				{
 					$set: { value: 'default-provider' },

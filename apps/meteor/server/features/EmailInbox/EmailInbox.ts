@@ -1,13 +1,13 @@
+import type { IEmailInbox } from '@rocket.chat/core-typings';
+import { EmailInbox, EmailMessageHistory } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import nodemailer from 'nodemailer';
 import type Mail from 'nodemailer/lib/mailer';
-import type { IEmailInbox } from '@rocket.chat/core-typings';
-import { EmailInbox, EmailMessageHistory } from '@rocket.chat/models';
 
+import { settings } from '../../../app/settings/server';
 import { IMAPInterceptor } from '../../email/IMAPInterceptor';
 import { onEmailReceived } from './EmailInbox_Incoming';
 import { logger } from './logger';
-import { settings } from '../../../app/settings/server';
 
 export type Inbox = {
 	imap: IMAPInterceptor;
@@ -58,24 +58,21 @@ export async function configureEmailInboxes(): Promise<void> {
 				emailInboxRecord._id,
 			);
 
-			imap.on(
-				'email',
-				Meteor.bindEnvironment(async (email) => {
-					if (!email.messageId) {
-						return;
-					}
+			imap.on('email', async (email) => {
+				if (!email.messageId) {
+					return;
+				}
 
-					try {
-						await EmailMessageHistory.create({ _id: email.messageId, email: emailInboxRecord.email });
-						onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
-					} catch (e: any) {
-						// In case the email message history has been received by other instance..
-						logger.error(e);
-					}
-				}),
-			);
+				try {
+					await EmailMessageHistory.create({ _id: email.messageId, email: emailInboxRecord.email });
+					void onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
+				} catch (e: any) {
+					// In case the email message history has been received by other instance..
+					logger.error(e);
+				}
+			});
 
-			imap.start();
+			await imap.start();
 
 			const smtp = nodemailer.createTransport({
 				host: emailInboxRecord.smtp.server,
@@ -98,6 +95,6 @@ export async function configureEmailInboxes(): Promise<void> {
 
 Meteor.startup(() => {
 	settings.watchOnce('Livechat_Routing_Method', (_) => {
-		configureEmailInboxes();
+		void configureEmailInboxes();
 	});
 });

@@ -1,10 +1,10 @@
 import type { ILivechatAgentActivity, IServiceHistory, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatAgentActivityModel } from '@rocket.chat/model-typings';
-import type { AggregationCursor, Collection, Document, FindCursor, Db, ModifyResult, IndexDescription, UpdateResult } from 'mongodb';
 import moment from 'moment';
+import type { AggregationCursor, Collection, Document, FindCursor, Db, ModifyResult, IndexDescription, UpdateResult } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { BaseRaw } from './BaseRaw';
 
 export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> implements ILivechatAgentActivityModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatAgentActivity>>) {
@@ -90,7 +90,11 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		return this.find(query);
 	}
 
-	findAllAverageAvailableServiceTime({ date, departmentId }: { date: Date; departmentId: string }): Promise<ILivechatAgentActivity[]> {
+	findAllAverageAvailableServiceTime({ date, departmentId }: { date: Date; departmentId?: string }): Promise<
+		{
+			averageAvailableServiceTimeInSeconds: number;
+		}[]
+	> {
 		const match = { $match: { date } };
 		const lookup = {
 			$lookup: {
@@ -125,6 +129,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 				rooms: { $sum: 1 },
 			},
 		};
+
 		const project = {
 			$project: {
 				averageAvailableServiceTimeInSeconds: {
@@ -134,15 +139,20 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 				},
 			},
 		};
+
 		const params = [match] as object[];
-		if (departmentId && departmentId !== 'undefined') {
+		if (departmentId && (departmentId !== 'undefined' || departmentId !== undefined)) {
 			params.push(lookup);
 			params.push(unwind);
 			params.push(departmentsMatch);
 		}
 		params.push(group);
 		params.push(project);
-		return this.col.aggregate<ILivechatAgentActivity>(params, { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col
+			.aggregate<{
+				averageAvailableServiceTimeInSeconds: number;
+			}>(params, { readPreference: readSecondaryPreferred() })
+			.toArray();
 	}
 
 	findAvailableServiceTimeHistory({

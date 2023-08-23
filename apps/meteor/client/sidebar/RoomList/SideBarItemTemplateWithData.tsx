@@ -1,12 +1,13 @@
-/* eslint-disable react/display-name */
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
-import { Badge, Sidebar, SidebarItemAction } from '@rocket.chat/fuselage';
+import { Badge, Sidebar, SidebarItemAction, SidebarItemActions, Margins } from '@rocket.chat/fuselage';
 import type { useTranslation } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
 import React, { memo, useMemo } from 'react';
 
+import { useOmnichannelPriorities } from '../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
+import { PriorityIcon } from '../../../ee/client/omnichannel/priorities/PriorityIcon';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomMenu from '../RoomMenu';
@@ -81,7 +82,6 @@ function SideBarItemTemplateWithData({
 	SideBarItemTemplate,
 	AvatarTemplate,
 	t,
-	// sidebarViewMode,
 	isAnonymous,
 	videoConfActions,
 }: RoomListRowProps): ReactElement {
@@ -116,38 +116,43 @@ function SideBarItemTemplateWithData({
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<>
+				<SidebarItemActions>
 					<SidebarItemAction onClick={videoConfActions.acceptCall} secondary success icon='phone' />
 					<SidebarItemAction onClick={videoConfActions.rejectCall} secondary danger icon='phone-off' />
-				</>
+				</SidebarItemActions>
 			),
 		[videoConfActions],
 	);
 
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
+	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
+
+	const message = extended && getMessage(room, lastMessage, t);
+	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 
 	const threadUnread = tunread.length > 0;
-	const message = extended && getMessage(room, lastMessage, t);
-
-	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 	const variant =
-		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
+		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'secondary';
+
 	const isUnread = unread > 0 || threadUnread;
-	const showBadge = !hideUnreadStatus || (!hideMentionStatus && userMentions);
-	const badges =
-		showBadge && isUnread ? (
-			// TODO: Remove any
-			<Badge {...({ style: { flexShrink: 0 } } as any)} variant={variant}>
-				{unread + tunread?.length}
-			</Badge>
-		) : null;
+	const showBadge = !hideUnreadStatus || (!hideMentionStatus && (Boolean(userMentions) || tunreadUser.length > 0));
+
+	const badges = (
+		<Margins inlineStart={8}>
+			{showBadge && isUnread && (
+				<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant}>
+					{unread + tunread?.length}
+				</Badge>
+			)}
+			{isOmnichannelRoom(room) && isPriorityEnabled && <PriorityIcon level={room.priorityWeight} />}
+		</Margins>
+	);
 
 	return (
 		<SideBarItemTemplate
 			is='a'
 			id={id}
 			data-qa='sidebar-item'
-			aria-level={2}
 			unread={highlighted}
 			selected={selected}
 			href={href}
@@ -165,7 +170,7 @@ function SideBarItemTemplateWithData({
 			actions={actions}
 			menu={
 				!isAnonymous &&
-				!isQueued &&
+				(!isQueued || (isQueued && isPriorityEnabled)) &&
 				((): ReactElement => (
 					<RoomMenu
 						alert={alert}
@@ -176,6 +181,7 @@ function SideBarItemTemplateWithData({
 						type={type}
 						cl={cl}
 						name={title}
+						hideDefaultOptions={isQueued}
 					/>
 				))
 			}
@@ -228,6 +234,14 @@ export default memo(SideBarItemTemplateWithData, (prevProps, nextProps) => {
 		return false;
 	}
 	if (prevProps.room.teamMain !== nextProps.room.teamMain) {
+		return false;
+	}
+
+	if (
+		isOmnichannelRoom(prevProps.room) &&
+		isOmnichannelRoom(nextProps.room) &&
+		prevProps.room.priorityWeight !== nextProps.room.priorityWeight
+	) {
 		return false;
 	}
 

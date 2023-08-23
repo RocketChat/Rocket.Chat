@@ -1,5 +1,6 @@
 import type { AvatarObject, IUser } from '@rocket.chat/core-typings';
-import { ButtonGroup, Button, Box, Icon } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { SHA256 } from '@rocket.chat/sha256';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetModal,
@@ -11,7 +12,6 @@ import {
 	useMethod,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
-import { SHA256 } from 'meteor/sha';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState, useCallback } from 'react';
 
@@ -71,7 +71,7 @@ const AccountProfilePage = (): ReactElement => {
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
-	const localPassword = Boolean(user?.services?.password?.bcrypt);
+	const localPassword = Boolean(user?.services?.password?.exists);
 
 	const erasureType = useSetting('Message_ErasureType');
 	const allowRealNameChange = useSetting('Accounts_AllowRealNameChange');
@@ -125,6 +125,9 @@ const AccountProfilePage = (): ReactElement => {
 	const onSave = useCallback(async () => {
 		const save = async (typedPassword?: string): Promise<void> => {
 			try {
+				if (!(values.password === values.confirmationPassword)) {
+					throw new Error(t('Invalid_confirm_pass'));
+				}
 				await saveFn(
 					{
 						...(allowRealNameChange ? { realname } : {}),
@@ -154,29 +157,31 @@ const AccountProfilePage = (): ReactElement => {
 
 		save();
 	}, [
+		values?.password,
+		values?.confirmationPassword,
 		saveFn,
-		allowEmailChange,
-		allowPasswordChange,
 		allowRealNameChange,
-		allowUserStatusMessageChange,
-		bio,
-		canChangeUsername,
-		email,
-		password,
 		realname,
-		statusText,
-		username,
+		allowEmailChange,
 		user,
-		updateAvatar,
-		handleAvatar,
-		dispatchToastMessage,
-		t,
-		customFields,
+		email,
+		allowPasswordChange,
+		password,
+		canChangeUsername,
+		username,
+		allowUserStatusMessageChange,
+		statusText,
 		statusType,
-		commit,
 		nickname,
+		bio,
+		customFields,
 		handlePassword,
 		handleConfirmationPassword,
+		updateAvatar,
+		commit,
+		dispatchToastMessage,
+		t,
+		handleAvatar,
 	]);
 
 	const handleLogoutOtherLocations = useCallback(async () => {
@@ -241,32 +246,32 @@ const AccountProfilePage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Profile')}>
-				<ButtonGroup>
-					<Button danger disabled={!hasUnsavedChanges} onClick={reset}>
-						{t('Reset')}
-					</Button>
-					<Button data-qa='AccountProfilePageSaveButton' primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
-						{t('Save_changes')}
-					</Button>
-				</ButtonGroup>
-			</Page.Header>
+			<Page.Header title={t('Profile')} />
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='600px' w='full' alignSelf='center'>
 					<AccountProfileForm values={values} handlers={handlers} user={user} settings={settings} onSaveStateChange={setCanSave} />
-					<ButtonGroup stretch mb='x12'>
+					<ButtonGroup stretch mb={12}>
 						<Button onClick={handleLogoutOtherLocations} flexGrow={0} disabled={loggingOut}>
 							{t('Logout_Others')}
 						</Button>
 						{allowDeleteOwnAccount && (
-							<Button danger onClick={handleDeleteOwnAccount}>
-								<Icon name='trash' size='x20' mie='x4' />
+							<Button icon='trash' danger onClick={handleDeleteOwnAccount}>
 								{t('Delete_my_account')}
 							</Button>
 						)}
 					</ButtonGroup>
 				</Box>
 			</Page.ScrollableContentWithShadow>
+			<Page.Footer isDirty={hasUnsavedChanges}>
+				<ButtonGroup>
+					<Button disabled={!hasUnsavedChanges} onClick={reset}>
+						{t('Cancel')}
+					</Button>
+					<Button data-qa='AccountProfilePageSaveButton' primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
+						{t('Save_changes')}
+					</Button>
+				</ButtonGroup>
+			</Page.Footer>
 		</Page>
 	);
 };

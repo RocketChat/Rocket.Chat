@@ -1,10 +1,18 @@
-import { Meteor } from 'meteor/meteor';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import notifications from '../../../notifications/server/lib/Notifications';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		clearIntegrationHistory(integrationId: string): Promise<boolean>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async clearIntegrationHistory(integrationId) {
 		let integration;
 
@@ -14,9 +22,9 @@ Meteor.methods({
 			});
 		}
 
-		if (hasPermission(this.userId, 'manage-outgoing-integrations')) {
+		if (await hasPermissionAsync(this.userId, 'manage-outgoing-integrations')) {
 			integration = await Integrations.findOneById(integrationId);
-		} else if (hasPermission(this.userId, 'manage-own-outgoing-integrations')) {
+		} else if (await hasPermissionAsync(this.userId, 'manage-own-outgoing-integrations')) {
 			integration = await Integrations.findOne({
 				'_id': integrationId,
 				'_createdBy._id': this.userId,
@@ -35,7 +43,7 @@ Meteor.methods({
 
 		await IntegrationHistory.removeByIntegrationId(integrationId);
 
-		notifications.streamIntegrationHistory.emit(integrationId, { type: 'removed' });
+		notifications.streamIntegrationHistory.emit(integrationId, { type: 'removed', id: integrationId });
 
 		return true;
 	},

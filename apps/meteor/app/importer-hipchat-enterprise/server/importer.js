@@ -1,15 +1,15 @@
-import { Readable } from 'stream';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
+import { Readable } from 'stream';
 
-import { Meteor } from 'meteor/meteor';
 import { Settings } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { Base, ProgressStep } from '../../importer/server';
 
 export class HipChatEnterpriseImporter extends Base {
-	constructor(info, importRecord) {
-		super(info, importRecord);
+	constructor(info, importRecord, converterOptions = {}) {
+		super(info, importRecord, converterOptions);
 
 		this.Readable = Readable;
 		this.zlib = require('zlib');
@@ -30,7 +30,7 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	async prepareUsersFile(file) {
-		super.updateProgress(ProgressStep.PREPARING_USERS);
+		await super.updateProgress(ProgressStep.PREPARING_USERS);
 		let count = 0;
 
 		for (const u of file) {
@@ -54,16 +54,16 @@ export class HipChatEnterpriseImporter extends Base {
 		}
 
 		await Settings.incrementValueById('Hipchat_Enterprise_Importer_Count', count);
-		super.updateRecord({ 'count.users': count });
-		super.addCountToTotal(count);
+		await super.updateRecord({ 'count.users': count });
+		await super.addCountToTotal(count);
 	}
 
 	async prepareRoomsFile(file) {
-		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 		let count = 0;
 
-		for (const r of file) {
-			this.converter.addChannel({
+		for await (const r of file) {
+			await this.converter.addChannel({
 				u: {
 					_id: r.Room.owner,
 				},
@@ -79,8 +79,8 @@ export class HipChatEnterpriseImporter extends Base {
 			count++;
 		}
 
-		super.updateRecord({ 'count.channels': count });
-		super.addCountToTotal(count);
+		await super.updateRecord({ 'count.channels': count });
+		await super.addCountToTotal(count);
 	}
 
 	async prepareUserMessagesFile(file) {
@@ -88,7 +88,7 @@ export class HipChatEnterpriseImporter extends Base {
 		let count = 0;
 		const dmRooms = [];
 
-		for (const m of file) {
+		for await (const m of file) {
 			if (!m.PrivateUserMessage) {
 				continue;
 			}
@@ -104,7 +104,7 @@ export class HipChatEnterpriseImporter extends Base {
 			const users = [senderId, receiverId].sort();
 
 			if (!dmRooms[receiverId]) {
-				dmRooms[receiverId] = this.converter.findDMForImportedUsers(senderId, receiverId);
+				dmRooms[receiverId] = await this.converter.findDMForImportedUsers(senderId, receiverId);
 
 				if (!dmRooms[receiverId]) {
 					const room = {
@@ -113,7 +113,7 @@ export class HipChatEnterpriseImporter extends Base {
 						t: 'd',
 						ts: new Date(m.PrivateUserMessage.timestamp.split(' ')[0]),
 					};
-					this.converter.addChannel(room);
+					await this.converter.addChannel(room);
 					dmRooms[receiverId] = room;
 				}
 			}
@@ -121,14 +121,14 @@ export class HipChatEnterpriseImporter extends Base {
 			const rid = dmRooms[receiverId].importIds[0];
 			const newMessage = this.convertImportedMessage(m.PrivateUserMessage, rid, 'private');
 			count++;
-			this.converter.addMessage(newMessage);
+			await this.converter.addMessage(newMessage);
 		}
 
 		return count;
 	}
 
-	get turndownService() {
-		const TurndownService = Promise.await(import('turndown')).default;
+	async loadTurndownService() {
+		const TurndownService = (await import('turndown')).default;
 
 		const turndownService = new TurndownService({
 			strongDelimiter: '*',
@@ -197,23 +197,25 @@ export class HipChatEnterpriseImporter extends Base {
 		this.logger.debug(`preparing room with ${file.length} messages `);
 		let count = 0;
 
-		for (const m of file) {
+		await this.loadTurndownService();
+
+		for await (const m of file) {
 			if (m.UserMessage) {
 				const newMessage = this.convertImportedMessage(m.UserMessage, rid, 'user');
-				this.converter.addMessage(newMessage);
+				await this.converter.addMessage(newMessage);
 				count++;
 			} else if (m.NotificationMessage) {
 				const newMessage = this.convertImportedMessage(m.NotificationMessage, rid, 'notif');
 				newMessage.u._id = 'rocket.cat';
 				newMessage.alias = m.NotificationMessage.sender;
 
-				this.converter.addMessage(newMessage);
+				await this.converter.addMessage(newMessage);
 				count++;
 			} else if (m.TopicRoomMessage) {
 				const newMessage = this.convertImportedMessage(m.TopicRoomMessage, rid, 'topic');
 				newMessage.t = 'room_changed_topic';
 
-				this.converter.addMessage(newMessage);
+				await this.converter.addMessage(newMessage);
 				count++;
 			} else if (m.ArchiveRoomMessage) {
 				this.logger.warn('Archived Room Notification was ignored.');
@@ -228,12 +230,12 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	async prepareMessagesFile(file, info) {
-		super.updateProgress(ProgressStep.PREPARING_MESSAGES);
+		await super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 
 		const [type, id] = info.dir.split('/');
 		const roomIdentifier = `${type}/${id}`;
 
-		super.updateRecord({ messagesstatus: roomIdentifier });
+		await super.updateRecord({ messagesstatus: roomIdentifier });
 
 		switch (type) {
 			case 'users':
@@ -273,9 +275,9 @@ export class HipChatEnterpriseImporter extends Base {
 		return 0;
 	}
 
-	prepareUsingLocalFile(fullFilePath) {
+	async prepareUsingLocalFile(fullFilePath) {
 		this.logger.debug('start preparing import operation');
-		this.converter.clearImportData();
+		await this.converter.clearImportData();
 
 		// HipChat duplicates direct messages (one for each user)
 		// This object will keep track of messages that have already been prepared so it doesn't try to do it twice
@@ -283,60 +285,46 @@ export class HipChatEnterpriseImporter extends Base {
 		let messageCount = 0;
 
 		const promise = new Promise((resolve, reject) => {
-			this.extract.on(
-				'entry',
-				Meteor.bindEnvironment((header, stream, next) => {
-					this.logger.debug(`new entry from import file: ${header.name}`);
-					if (!header.name.endsWith('.json')) {
-						stream.resume();
-						return next();
-					}
-
-					const info = this.path.parse(header.name);
-					let pos = 0;
-					let data = Buffer.allocUnsafe(header.size);
-
-					stream.on(
-						'data',
-						Meteor.bindEnvironment((chunk) => {
-							data.fill(chunk, pos, pos + chunk.length);
-							pos += chunk.length;
-						}),
-					);
-
-					stream.on(
-						'end',
-						Meteor.bindEnvironment(async () => {
-							this.logger.info(`Processing the file: ${header.name}`);
-							const newMessageCount = await this.prepareFile(info, data, header.name);
-
-							messageCount += newMessageCount;
-							super.updateRecord({ 'count.messages': messageCount });
-							super.addCountToTotal(newMessageCount);
-
-							data = undefined;
-
-							this.logger.debug('next import entry');
-							next();
-						}),
-					);
-
-					stream.on('error', () => next());
+			this.extract.on('entry', (header, stream, next) => {
+				this.logger.debug(`new entry from import file: ${header.name}`);
+				if (!header.name.endsWith('.json')) {
 					stream.resume();
-				}),
-			);
+					return next();
+				}
+
+				const info = this.path.parse(header.name);
+				let pos = 0;
+				let data = Buffer.allocUnsafe(header.size);
+
+				stream.on('data', (chunk) => {
+					data.fill(chunk, pos, pos + chunk.length);
+					pos += chunk.length;
+				});
+
+				stream.on('end', async () => {
+					this.logger.info(`Processing the file: ${header.name}`);
+					const newMessageCount = await this.prepareFile(info, data, header.name);
+
+					messageCount += newMessageCount;
+					await super.updateRecord({ 'count.messages': messageCount });
+					await super.addCountToTotal(newMessageCount);
+
+					data = undefined;
+
+					this.logger.debug('next import entry');
+					next();
+				});
+
+				stream.on('error', () => next());
+				stream.resume();
+			});
 
 			this.extract.on('error', (err) => {
 				this.logger.error({ msg: 'extract error:', err });
 				reject(new Meteor.Error('error-import-file-extract-error'));
 			});
 
-			this.extract.on(
-				'finish',
-				Meteor.bindEnvironment(() => {
-					resolve();
-				}),
-			);
+			this.extract.on('finish', resolve);
 
 			const rs = fs.createReadStream(fullFilePath);
 			const gunzip = this.zlib.createGunzip();

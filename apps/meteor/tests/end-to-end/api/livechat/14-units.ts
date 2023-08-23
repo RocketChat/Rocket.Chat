@@ -1,13 +1,12 @@
-/* eslint-env mocha */
-
 import type { ILivechatDepartment, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createDepartment } from '../../../data/livechat/rooms';
 import { createMonitor, createUnit } from '../../../data/livechat/units';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { createUser } from '../../../data/users.helper';
+import { createUser, deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Units', function () {
@@ -15,8 +14,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updateSetting('Livechat_enabled', true).then(done);
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
 	});
 
 	describe('[GET] livechat/units', () => {
@@ -40,7 +39,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();
-			const unit = await createUnit(user._id, user.username, department._id);
+			const unit = await createUnit(user._id, user.username, [department._id]);
 
 			const { body } = await request.get(api('livechat/units')).set(credentials).expect(200);
 			expect(body.units).to.be.an('array').with.lengthOf.greaterThan(0);
@@ -50,6 +49,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(unitFound).to.have.property('numMonitors', 1);
 			expect(unitFound).to.have.property('numDepartments', 1);
 			expect(unitFound).to.have.property('type', 'u');
+
+			// cleanup
+			await deleteUser(user);
 		});
 	});
 
@@ -91,6 +93,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body).to.have.property('type', 'u');
 			expect(body).to.have.property('numMonitors', 1);
 			expect(body).to.have.property('numDepartments', 1);
+
+			// cleanup
+			await deleteUser(user);
 		});
 	});
 
@@ -104,7 +109,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();
-			const unit = await createUnit(user._id, user.username, department._id);
+			const unit = await createUnit(user._id, user.username, [department._id]);
 
 			const { body } = await request
 				.get(api(`livechat/units/${unit._id}`))
@@ -115,6 +120,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body).to.have.property('numMonitors', 1);
 			expect(body).to.have.property('numDepartments', 1);
 			expect(body).to.have.property('type', 'u');
+
+			// cleanup
+			await deleteUser(user);
 		});
 	});
 
@@ -128,7 +136,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();
-			const unit = await createUnit(user._id, user.username, department._id);
+			const unit = await createUnit(user._id, user.username, [department._id]);
 
 			const { body } = await request
 				.post(api(`livechat/units/${unit._id}`))
@@ -146,6 +154,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body).to.have.property('type', 'u');
 			expect(body).to.have.property('numMonitors', 1);
 			expect(body).to.have.property('numDepartments', 1);
+
+			// cleanup
+			await deleteUser(user);
 		});
 	});
 
@@ -159,7 +170,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();
-			const unit = await createUnit(user._id, user.username, department._id);
+			const unit = await createUnit(user._id, user.username, [department._id]);
 
 			const { body } = await request
 				.delete(api(`livechat/units/${unit._id}`))
@@ -167,6 +178,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(200);
 
 			expect(body).to.have.be.a('number').equal(1);
+
+			// cleanup
+			await deleteUser(user);
 		});
 	});
 
@@ -180,7 +194,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();
-			const unit = await createUnit(user._id, user.username, department._id);
+			const unit = await createUnit(user._id, user.username, [department._id]);
 
 			const { body } = await request
 				.get(api(`livechat/units/${unit._id}/departments`))
@@ -191,6 +205,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.departments).to.have.lengthOf(1);
 			expect(body.departments[0]).to.have.property('_id', department._id);
 			expect(body.departments[0]).to.have.property('name', department.name);
+
+			// cleanup
+			await deleteUser(user);
 		});
 	});
 
@@ -204,7 +221,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();
-			const unit = await createUnit(user._id, user.username, department._id);
+			const unit = await createUnit(user._id, user.username, [department._id]);
 
 			const { body } = await request
 				.get(api(`livechat/units/${unit._id}/departments/available`))
@@ -216,6 +233,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			const myUnit = body.departments.find((d: ILivechatDepartment) => d.parentId === unit._id);
 			expect(myUnit).to.not.be.undefined.and.not.be.null;
+
+			// cleanup
+			await deleteUser(user);
 		});
 	});
 
@@ -229,7 +249,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();
-			const unit = await createUnit(user._id, user.username, department._id);
+			const unit = await createUnit(user._id, user.username, [department._id]);
 
 			const { body } = await request
 				.get(api(`livechat/units/${unit._id}/monitors`))
@@ -240,6 +260,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.monitors).to.have.lengthOf(1);
 			expect(body.monitors[0]).to.have.property('monitorId', user._id);
 			expect(body.monitors[0]).to.have.property('username', user.username);
+
+			// cleanup
+			await deleteUser(user);
 		});
 	});
 
@@ -257,6 +280,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body).to.have.property('monitors');
 			expect(body.monitors).to.have.lengthOf(1);
 			expect(body.monitors[0]).to.have.property('username', user.username);
+
+			// cleanup
+			await deleteUser(user);
 		});
 	});
 
@@ -275,6 +301,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.set(credentials)
 				.expect(200);
 			expect(body).to.have.property('username', user.username);
+
+			// cleanup
+			await deleteUser(user);
 		});
 	});
 });
