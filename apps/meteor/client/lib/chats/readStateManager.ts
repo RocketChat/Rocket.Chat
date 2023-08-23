@@ -34,9 +34,9 @@ export class ReadStateManager extends Emitter {
 		return this.on('unread-state-change', callback);
 	};
 
-	public getFirstUnreadRecordId() {
+	public getFirstUnreadRecordId = () => {
 		return this.firstUnreadRecordId;
-	}
+	};
 
 	public updateSubscription(subscription?: ISubscription) {
 		if (!subscription) {
