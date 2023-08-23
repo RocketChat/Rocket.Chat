@@ -126,20 +126,13 @@ API.v1.addRoute(
 				realname: this.bodyParams.data.name,
 				username: this.bodyParams.data.username,
 				nickname: this.bodyParams.data.nickname,
+				bio: this.bodyParams.data.bio,
 				statusText: this.bodyParams.data.statusText,
+				statusType: this.bodyParams.data.statusType,
 				newPassword: this.bodyParams.data.newPassword,
-				typedPassword: this.bodyParams.data.currentPassword,
 			};
 
-			// saveUserProfile now uses the default two factor authentication procedures, so we need to provide that
-			const twoFactorOptions = !userData.typedPassword
-				? null
-				: {
-						twoFactorCode: userData.typedPassword,
-						twoFactorMethod: 'password',
-				  };
-
-			await Meteor.callAsync('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
+			await Meteor.callAsync('saveUserProfile', userData, this.bodyParams.customFields);
 
 			return API.v1.success({
 				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
