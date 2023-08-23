@@ -12,7 +12,7 @@ export class FederationHomeFlextabMembers {
 	}
 
 	get addUsersButton(): Locator {
-		return this.page.locator('//button[contains(text(), "Add")]');
+		return this.page.locator('role=button[name="Add"]');
 	}
 
 	get btnRemoveUserFromRoom(): Locator {
