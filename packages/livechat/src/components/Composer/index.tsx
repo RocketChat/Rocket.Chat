@@ -271,6 +271,7 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 				ref={this.handleRef}
 				contentEditable
 				data-placeholder={placeholder}
+				data-qa='livechat-composer'
 				onInput={this.handleInput(onChange)}
 				onKeyPress={this.handleKeypress(onSubmit)}
 				onPaste={this.handlePaste(onUpload)}

@@ -92,6 +92,6 @@ export class OmnichannelLiveChat {
 			await this.textAreaMessage.type('any_message');
 		}
 		await this.btnSendMessage(buttonLabel).click();
-		await this.page.waitForTimeout(500);
+		await this.page.waitForSelector('[data-qa="livechat-composer"]');
 	}
 }
