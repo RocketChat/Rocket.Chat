@@ -2,7 +2,10 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 
 import VideoConferenceBlock from '../blocks/VideoConferenceBlock/VideoConferenceBlock';
-import { FuselageSurfaceRenderer } from './FuselageSurfaceRenderer';
+import {
+  FuselageSurfaceRenderer,
+  renderTextObject,
+} from './FuselageSurfaceRenderer';
 
 export class FuselageMessageSurfaceRenderer extends FuselageSurfaceRenderer {
   public constructor() {
@@ -17,6 +20,10 @@ export class FuselageMessageSurfaceRenderer extends FuselageSurfaceRenderer {
       'video_conf',
     ]);
   }
+
+  plain_text = renderTextObject;
+
+  mrkdwn = renderTextObject;
 
   video_conf(
     block: UiKit.VideoConferenceBlock,
