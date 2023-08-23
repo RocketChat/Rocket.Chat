@@ -246,6 +246,10 @@ type LivechatVisitorCallStatus = {
 	callId: string;
 };
 
+type LivechatVerification = {
+	roomId: IRoom['_id'];
+};
+
 const LivechatVisitorCallStatusSchema = {
 	type: 'object',
 	properties: {
@@ -3005,6 +3009,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/room.join': {
 		GET: (params: LiveChatRoomJoin) => void;
+	};
+	'/v1/livechat/room.verificationStatus': {
+		PUT: (params: LivechatVerification) => void;
 	};
 	'/v1/livechat/room.forward': {
 		POST: (params: LiveChatRoomForward) => void;
