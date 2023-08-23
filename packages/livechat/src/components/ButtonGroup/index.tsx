@@ -1,13 +1,14 @@
-import { cloneElement, toChildArray } from 'preact';
+import type { ComponentChildren } from 'preact';
+import { cloneElement, isValidElement, toChildArray } from 'preact';
 import { memo } from 'preact/compat';
 
 import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
 
-export const ButtonGroup = memo(({ children }) => (
-	<div className={createClassName(styles, 'button-group')}>
+export const ButtonGroup = memo(({ children, full = false }: { children: ComponentChildren; full?: boolean }) => (
+	<div className={createClassName(styles, 'button-group', { full })}>
 		{toChildArray(children).map((child) =>
-			typeof child === 'object' ? cloneElement(child, { className: createClassName(styles, 'button-group__item') }) : child,
+			isValidElement(child) ? cloneElement(child, { className: createClassName(styles, 'button-group__item') }) : child,
 		)}
 	</div>
 ));
