@@ -15,7 +15,7 @@ import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
-import { useFirstUnreadId } from '../../../hooks/useFirstUnreadId';
+import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useScrollMessageList } from '../../../hooks/useScrollMessageList';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
@@ -67,7 +67,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 
 	const scrollMessageList = useScrollMessageList(listWrapperScrollRef);
 
-	const firstUnreadMessageId = useFirstUnreadId();
+	const firstUnreadMessageId = useFirstUnreadMessageId();
 
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>

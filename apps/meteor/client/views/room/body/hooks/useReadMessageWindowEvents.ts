@@ -6,7 +6,6 @@ export function useReadMessageWindowEvents() {
 	const chat = useChat();
 
 	useEffect(() => {
-		const unsub = chat?.readStateManager.handleWindowEvents();
-		return unsub;
+		return chat?.readStateManager.handleWindowEvents();
 	}, [chat?.readStateManager]);
 }

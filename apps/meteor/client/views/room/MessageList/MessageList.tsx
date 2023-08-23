@@ -11,7 +11,7 @@ import SystemMessage from '../../../components/message/variants/SystemMessage';
 import ThreadMessagePreview from '../../../components/message/variants/ThreadMessagePreview';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useRoomSubscription } from '../contexts/RoomContext';
-import { useFirstUnreadId } from '../hooks/useFirstUnreadId';
+import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useMessages } from './hooks/useMessages';
 import { isMessageNewDay } from './lib/isMessageNewDay';
@@ -31,7 +31,7 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 	const formatDate = useFormatDate();
 
-	const firstUnreadMessageId = useFirstUnreadId();
+	const firstUnreadMessageId = useFirstUnreadMessageId();
 
 	return (
 		<MessageListProvider scrollMessageList={scrollMessageList}>

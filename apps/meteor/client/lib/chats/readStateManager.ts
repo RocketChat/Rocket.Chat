@@ -8,9 +8,6 @@ import { RoomHistoryManager } from '../../../app/ui-utils/client/lib/RoomHistory
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 
-type UnsuscribeWindowEvents = () => void;
-type UnsuscribeUnreadStateChange = () => void;
-
 export class ReadStateManager extends Emitter {
 	private rid: IRoom['_id'];
 
@@ -33,11 +30,13 @@ export class ReadStateManager extends Emitter {
 		return document.querySelector<HTMLElement>('.rcx-message-divider--unread');
 	}
 
-	public onUnreadStateChange = (callback: (firstUnreadRecord?: IMessage['_id']) => void): UnsuscribeUnreadStateChange => {
-		callback(this.firstUnreadRecordId);
-		const unsub = this.on('unread-state-change', callback);
-		return unsub;
+	public onUnreadStateChange = (callback: () => void): (() => void) => {
+		return this.on('unread-state-change', callback);
 	};
+
+	public getFirstUnreadRecordId() {
+		return this.firstUnreadRecordId;
+	}
 
 	public updateSubscription(subscription?: ISubscription) {
 		if (!subscription) {
@@ -102,7 +101,7 @@ export class ReadStateManager extends Emitter {
 		this.setFirstUnreadRecordId(undefined);
 	}
 
-	public handleWindowEvents = (): UnsuscribeWindowEvents => {
+	public handleWindowEvents = (): (() => void) => {
 		const handleWindowFocus = () => {
 			this.attemptMarkAsRead();
 		};
@@ -162,7 +161,7 @@ export class ReadStateManager extends Emitter {
 	});
 
 	// this will always mark as read.
-	public markAsRead() {
+	public async markAsRead() {
 		if (!this.rid) {
 			return;
 		}
