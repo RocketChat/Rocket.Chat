@@ -50,7 +50,7 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 
 	if (paginatedAppRequests.isLoading) {
 		return (
-			<Box w='full' maxWidth='x608' marginInline='auto' pbs='x36'>
+			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36}>
 				<AppRequestsLoading />
 			</Box>
 		);
@@ -58,7 +58,7 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 
 	return (
 		<Box h='full' display='flex' flexDirection='column'>
-			<Box w='full' maxWidth='x608' marginInline='auto' pbs='x36' flexGrow='1'>
+			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36} flexGrow='1'>
 				{paginatedAppRequests.isSuccess && paginatedAppRequests.data.data?.length ? (
 					paginatedAppRequests.data.data.map((request) => (
 						<AppRequestItem

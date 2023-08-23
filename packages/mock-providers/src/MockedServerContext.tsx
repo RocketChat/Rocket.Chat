@@ -1,14 +1,16 @@
-import React from 'react';
 import type { Serialized } from '@rocket.chat/core-typings';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
 
 export const MockedServerContext = ({
 	handleRequest,
 	handleMethod,
 	children,
+
+	isEnterprise,
 }: {
 	handleRequest?: <TMethod extends Method, TPathPattern extends PathPattern>(args: {
 		method: TMethod;
@@ -21,6 +23,8 @@ export const MockedServerContext = ({
 		...args: ServerMethodParameters<MethodName>
 	) => Promise<ServerMethodReturn<MethodName>>;
 	children: React.ReactNode;
+
+	isEnterprise?: boolean;
 }): any => {
 	const [queryClient] = React.useState(() => new QueryClient());
 	return (
@@ -37,6 +41,14 @@ export const MockedServerContext = ({
 						keys: UrlParams<TPathPattern>;
 						params: OperationParams<TMethod, TPathPattern>;
 					}) => {
+						if (isEnterprise !== undefined) {
+							if (args.method === 'GET' && args.pathPattern === '/v1/licenses.isEnterprise') {
+								return {
+									isEnterprise,
+								} as any;
+							}
+						}
+
 						return handleRequest?.(args);
 					},
 					getStream: () => () => undefined,

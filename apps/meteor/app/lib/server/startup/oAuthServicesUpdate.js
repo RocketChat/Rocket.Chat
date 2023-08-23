@@ -1,8 +1,8 @@
+import { Logger } from '@rocket.chat/logger';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 import { CustomOAuth } from '../../../custom-oauth/server/custom_oauth_server';
-import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
 import { addOAuthService } from '../functions/addOAuthService';
 
@@ -138,11 +138,11 @@ async function OAuthServicesRemove(_id) {
 	});
 }
 
-settings.watchByRegex(/^Accounts_OAuth_.+/, function () {
+settings.watchByRegex(/^Accounts_OAuth_.+/, () => {
 	return OAuthServicesUpdate(); // eslint-disable-line new-cap
 });
 
-settings.watchByRegex(/^Accounts_OAuth_Custom-[a-z0-9_]+/, function (key, value) {
+settings.watchByRegex(/^Accounts_OAuth_Custom-[a-z0-9_]+/, (key, value) => {
 	if (!value) {
 		return OAuthServicesRemove(key); // eslint-disable-line new-cap
 	}

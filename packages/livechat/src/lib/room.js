@@ -3,7 +3,9 @@ import { route } from 'preact-router';
 
 import { Livechat } from '../api';
 import { CallStatus, isCallOngoing } from '../components/Calls/CallStatus';
-import { setCookies, upsert, canRenderMessage } from '../components/helpers';
+import { canRenderMessage } from '../helpers/canRenderMessage';
+import { setCookies } from '../helpers/cookies';
+import { upsert } from '../helpers/upsert';
 import { store, initialState } from '../store';
 import { normalizeAgent } from './api';
 import Commands from './commands';
@@ -179,7 +181,8 @@ const transformAgentInformationOnMessage = (message) => {
 	return message;
 };
 
-Livechat.onTyping((username, isTyping) => {
+Livechat.onUserActivity((username, activities) => {
+	const isTyping = activities.includes('user-typing');
 	const { typing, user, agent } = store.state;
 
 	if (user && user.username && user.username === username) {

@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import { CustomUserStatus } from '@rocket.chat/models';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';

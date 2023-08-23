@@ -1,15 +1,15 @@
 import { Agenda } from '@rocket.chat/agenda';
-import { MongoInternals } from 'meteor/mongo';
-import { Meteor } from 'meteor/meteor';
-import { LivechatRooms, Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
+import type { MainLogger } from '@rocket.chat/logger';
+import { LivechatRooms, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
 
 import { Livechat } from '../../../../../app/livechat/server';
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
+import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { schedulerLogger } from './logger';
-import type { MainLogger } from '../../../../../server/lib/logger/getPino';
 
 const SCHEDULER_NAME = 'omnichannel_scheduler';
 
@@ -108,9 +108,16 @@ class AutoTransferChatSchedulerClass {
 
 		this.logger.debug(`Transferring room ${roomId} to agent ${agent.agentId}`);
 
+		const transferredBy = await this.getSchedulerUser();
+
+		if (!transferredBy) {
+			this.logger.error(`Error while transferring room ${room._id}: user not found`);
+			return;
+		}
+
 		await forwardRoomToAgent(room, {
 			userId: agent.agentId,
-			transferredBy: await this.getSchedulerUser(),
+			transferredBy,
 			transferredTo: agent,
 			scope: 'autoTransferUnansweredChatsToAgent',
 			comment: timeoutDuration,

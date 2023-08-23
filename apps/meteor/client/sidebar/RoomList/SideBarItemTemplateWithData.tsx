@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { Badge, Sidebar, SidebarItemAction, SidebarItemActions, Margins } from '@rocket.chat/fuselage';
@@ -154,7 +153,6 @@ function SideBarItemTemplateWithData({
 			is='a'
 			id={id}
 			data-qa='sidebar-item'
-			aria-level={2}
 			unread={highlighted}
 			selected={selected}
 			href={href}

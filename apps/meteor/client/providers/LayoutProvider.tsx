@@ -1,22 +1,22 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import { LayoutContext, useRouter, useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
+import { LayoutContext, useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
 const LayoutProvider: FC = ({ children }) => {
 	const showTopNavbarEmbeddedLayout = Boolean(useSetting('UI_Show_top_navbar_embedded_layout'));
 	const [isCollapsed, setIsCollapsed] = useState(false);
-	const layout = useSearchParameter('layout');
-	const isEmbedded = layout === 'embedded';
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
+
+	const router = useRouter();
+	// Once the layout is embedded, it can't be changed
+	const [isEmbedded] = useState(() => router.getSearchParameters().layout === 'embedded');
 
 	const isMobile = !breakpoints.includes('md');
 
 	useEffect(() => {
 		setIsCollapsed(isMobile);
 	}, [isMobile]);
-
-	const router = useRouter();
 
 	return (
 		<LayoutContext.Provider
@@ -38,6 +38,7 @@ const LayoutProvider: FC = ({ children }) => {
 						// eslint-disable-next-line no-nested-ternary
 						contextualBar: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
 					},
+					roomToolboxExpanded: breakpoints.includes('lg'),
 					contextualBarExpanded: breakpoints.includes('sm'),
 					// eslint-disable-next-line no-nested-ternary
 					contextualBarPosition: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',

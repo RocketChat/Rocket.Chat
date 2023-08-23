@@ -1,13 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Uploads, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
+import { Messages, Rooms, Uploads, Users, ReadReceipts } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
+import { Apps } from '../../../../ee/server/apps';
+import { callbacks } from '../../../../lib/callbacks';
+import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { callbacks } from '../../../../lib/callbacks';
-import { Apps } from '../../../../ee/server/apps';
-import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 
 export const deleteMessageValidatingPermission = async (message: AtLeast<IMessage, '_id'>, userId: IUser['_id']): Promise<void> => {
 	if (!message?._id) {
@@ -62,6 +62,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		if (!showDeletedStatus) {
 			await Messages.removeById(message._id);
 		}
+		await ReadReceipts.removeByMessageId(message._id);
 
 		for await (const file of files) {
 			file?._id && (await FileUpload.getStore('Uploads').deleteById(file._id));

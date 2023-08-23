@@ -17,7 +17,7 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 	useEffect(
 		() =>
 			VideoConfManager.on('call/join', (props) => {
-				handleOpenCall(props.url);
+				handleOpenCall(props.url, props.providerName);
 			}),
 		[handleOpenCall],
 	);

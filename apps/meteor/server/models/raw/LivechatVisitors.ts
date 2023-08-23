@@ -1,5 +1,7 @@
 import type { ILivechatVisitor, ISetting, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
+import { Settings } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
 	Collection,
@@ -13,8 +15,6 @@ import type {
 	DeleteResult,
 	UpdateFilter,
 } from 'mongodb';
-import { Settings } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 

@@ -1,19 +1,19 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IMessage, IUser, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
-import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Message } from '@rocket.chat/core-services';
-import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { isQuoteAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import { Messages, Rooms, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings/server';
+import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../lib/callbacks';
-import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
-import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
+import { isTruthy } from '../../../lib/isTruthy';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
-import { isTruthy } from '../../../lib/isTruthy';
+import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { settings } from '../../settings/server';
+import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
 const recursiveRemove = (msg: MessageAttachment, deep = 1) => {
 	if (!msg || !isQuoteAttachment(msg)) {
@@ -113,6 +113,9 @@ Meteor.methods<ServerMethods>({
 		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
 		await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+		if (settings.get('Message_Read_Receipt_Store_Users')) {
+			await ReadReceipts.setPinnedByMessageId(message._id, originalMessage.pinned);
+		}
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 		}
@@ -219,6 +222,9 @@ Meteor.methods<ServerMethods>({
 		await Apps.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
 
 		await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+		if (settings.get('Message_Read_Receipt_Store_Users')) {
+			await ReadReceipts.setPinnedByMessageId(originalMessage._id, originalMessage.pinned);
+		}
 
 		return true;
 	},

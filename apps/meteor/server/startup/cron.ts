@@ -1,17 +1,17 @@
+import { Logger } from '@rocket.chat/logger';
 import { Meteor } from 'meteor/meteor';
 
-import { Logger } from '../../app/logger/server';
-import { oembedCron } from '../cron/oembed';
-import { statsCron } from '../cron/statistics';
-import { npsCron } from '../cron/nps';
 import { federationCron } from '../cron/federation';
-import { videoConferencesCron } from '../cron/videoConferences';
-import { userDataDownloadsCron } from '../cron/userDataDownloads';
+import { npsCron } from '../cron/nps';
+import { oembedCron } from '../cron/oembed';
 import { startCron } from '../cron/start';
+import { statsCron } from '../cron/statistics';
+import { userDataDownloadsCron } from '../cron/userDataDownloads';
+import { videoConferencesCron } from '../cron/videoConferences';
 
 const logger = new Logger('SyncedCron');
 
-Meteor.defer(async function () {
+Meteor.defer(async () => {
 	await startCron();
 
 	await oembedCron();

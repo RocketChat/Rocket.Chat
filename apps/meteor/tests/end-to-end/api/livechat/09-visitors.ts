@@ -1,12 +1,11 @@
-/* eslint-env mocha */
-
-import { expect } from 'chai';
-import type { ILivechatVisitor } from '@rocket.chat/core-typings';
-import type { Response } from 'supertest';
 import { faker } from '@faker-js/faker';
+import type { ILivechatVisitor } from '@rocket.chat/core-typings';
+import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
+import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { updatePermission, updateSetting, removePermissionFromAllRoles, restorePermissionToRoles } from '../../../data/permissions.helper';
+import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import {
 	makeAgentAvailable,
 	createAgent,
@@ -14,9 +13,9 @@ import {
 	createVisitor,
 	startANewLivechatRoomAndTakeIt,
 } from '../../../data/livechat/rooms';
-import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import { getRandomVisitorToken } from '../../../data/livechat/users';
 import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
+import { updatePermission, updateSetting, removePermissionFromAllRoles, restorePermissionToRoles } from '../../../data/permissions.helper';
 import { adminUsername } from '../../../data/user';
 import { IS_EE } from '../../../e2e/config/constants';
 

@@ -1,11 +1,11 @@
 import EventEmitter from 'events';
 
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
-import type { Timestamp, Db, ChangeStreamDeleteDocument, ChangeStreamInsertDocument, ChangeStreamUpdateDocument } from 'mongodb';
+import type { Logger } from '@rocket.chat/logger';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Timestamp, Db, ChangeStreamDeleteDocument, ChangeStreamInsertDocument, ChangeStreamUpdateDocument } from 'mongodb';
 import { MongoClient } from 'mongodb';
 
-import type { Logger } from '../lib/logger/Logger';
 import { convertChangeStreamPayload } from './convertChangeStreamPayload';
 import { convertOplogPayload } from './convertOplogPayload';
 import { getWatchCollections } from './watchCollections';
@@ -88,7 +88,7 @@ export class DatabaseWatcher extends EventEmitter {
 		}
 
 		const isMasterDoc = await this.db.admin().command({ ismaster: 1 });
-		if (!isMasterDoc || !isMasterDoc.setName) {
+		if (!isMasterDoc?.setName) {
 			throw Error("$MONGO_URL should be a replica set's URL");
 		}
 

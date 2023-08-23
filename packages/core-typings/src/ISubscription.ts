@@ -7,7 +7,7 @@ type RoomID = string;
 
 export interface ISubscription extends IRocketChatRecord {
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
-	v?: Pick<IUser, '_id' | 'username' | 'name'>;
+	v?: Pick<IUser, '_id' | 'username' | 'name' | 'status'> & { token?: string };
 	rid: RoomID;
 	open: boolean;
 	ts: Date;

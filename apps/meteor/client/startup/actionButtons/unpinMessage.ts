@@ -13,7 +13,7 @@ Meteor.startup(() => {
 		id: 'unpin-message',
 		icon: 'pin',
 		label: 'Unpin',
-		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct'],
+		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct', 'videoconf', 'videoconf-threads'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			message.pinned = false;
