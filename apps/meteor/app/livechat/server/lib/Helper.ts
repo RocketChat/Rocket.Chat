@@ -553,7 +553,9 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
 		const department = departmentId
-			? await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(departmentId, { projection: { fallbackForwardDepartment: 1 } })
+			? await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(departmentId, {
+					projection: { fallbackForwardDepartment: 1 },
+			  })
 			: null;
 		if (!department?.fallbackForwardDepartment?.length) {
 			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
