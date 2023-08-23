@@ -15,29 +15,50 @@ type MessageActionMenuProps = {
 	options: MessageActionConfigOption[];
 };
 
+const getSectionOrder = (section: string): number => {
+	switch (section) {
+		case 'interaction':
+			return 0;
+		case 'duplication':
+			return 1;
+		case 'apps':
+			return 2;
+		case 'management':
+			return 3;
+		default:
+			return 4;
+	}
+};
+
 const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): ReactElement => {
 	const ref = useRef(null);
 	const t = useTranslation();
 	const [visible, setVisible] = useState(false);
 	const isLayoutEmbedded = useEmbeddedLayout();
 
-	const groupOptions = options
-		.map(({ type, color, ...option }) => ({
-			...option,
-			...(type && { type }),
-			...(color === 'alert' && { variant: 'danger' as const }),
-		}))
-		.reduce((acc, option) => {
-			const type = option.type ? option.type : '';
-			acc[type] = acc[type] || [];
-			if (!(isLayoutEmbedded && option.id === 'reply-directly')) acc[type].push(option);
+	const groupOptions = options.reduce((acc, option) => {
+		const { type = '' } = option;
 
-			if (acc[type].length === 0) delete acc[type];
+		if (option.color === 'alert') {
+			option.variant = 'danger' as const;
+		}
 
+		const order = getSectionOrder(type);
+
+		const [sectionType, options] = acc[getSectionOrder(type)] ?? [type, []];
+
+		if (!(isLayoutEmbedded && option.id === 'reply-directly')) {
+			options.push(option);
+		}
+
+		if (options.length === 0) {
 			return acc;
-		}, {} as { [key: string]: MessageActionConfigOption[] }) as {
-		[key: string]: MessageActionConfigOption[];
-	};
+		}
+
+		acc[order] = [sectionType, options];
+
+		return acc;
+	}, [] as unknown as [section: string, options: Array<MessageActionConfigOption>][]);
 
 	console.log({ groupOptions });
 
@@ -55,9 +76,9 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 				<>
 					<Box position='fixed' inset={0} onClick={(): void => setVisible(!visible)} />
 					<ToolboxDropdown reference={ref} {...props}>
-						{Object.entries(groupOptions).map(([, options], index, arr) => (
+						{groupOptions.map(([section, options], index, arr) => (
 							<Fragment key={index}>
-								{options[0].type === 'apps' && <OptionTitle>Apps</OptionTitle>}
+								{section === 'apps' && <OptionTitle>Apps</OptionTitle>}
 								{options.map((option) => (
 									<Option
 										variant={option.variant}
