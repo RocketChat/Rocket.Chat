@@ -11,25 +11,25 @@ export class PasswordPolicy {
 		mustContainAtLeastOneSpecialCharacter: RegExp;
 	};
 
-	enabled: boolean;
+	private enabled: boolean;
 
-	minLength: number;
+	private minLength: number;
 
-	maxLength: number;
+	private maxLength: number;
 
-	forbidRepeatingCharacters: boolean;
+	private forbidRepeatingCharacters: boolean;
 
-	mustContainAtLeastOneLowercase: boolean;
+	private mustContainAtLeastOneLowercase: boolean;
 
-	mustContainAtLeastOneUppercase: boolean;
+	private mustContainAtLeastOneUppercase: boolean;
 
-	mustContainAtLeastOneNumber: boolean;
+	private mustContainAtLeastOneNumber: boolean;
 
-	mustContainAtLeastOneSpecialCharacter: boolean;
+	private mustContainAtLeastOneSpecialCharacter: boolean;
 
-	throwError: boolean;
+	private throwError: boolean;
 
-	forbidRepeatingCharactersCount: number;
+	private forbidRepeatingCharactersCount: number;
 
 	constructor({
 		enabled = false,
@@ -114,7 +114,7 @@ export class PasswordPolicy {
 		if (this.minLength >= 1) {
 			validationReturn.push({
 				name: 'get-password-policy-minLength',
-				isValid: !!((password as string).length < this.minLength),
+				isValid: !!(password.length < this.minLength),
 				limit: this.minLength,
 			});
 		}
@@ -122,7 +122,7 @@ export class PasswordPolicy {
 		if (this.maxLength >= 1) {
 			validationReturn.push({
 				name: 'get-password-policy-maxLength',
-				isValid: !!((password as string).length > this.maxLength),
+				isValid: !!(password.length > this.maxLength),
 				limit: this.maxLength,
 			});
 		}
@@ -130,7 +130,7 @@ export class PasswordPolicy {
 		if (this.forbidRepeatingCharacters) {
 			validationReturn.push({
 				name: 'get-password-policy-forbidRepeatingCharactersCount',
-				isValid: this.regex.forbiddingRepeatingCharacters.test(password as string),
+				isValid: this.regex.forbiddingRepeatingCharacters.test(password),
 				limit: this.forbidRepeatingCharactersCount,
 			});
 		}
@@ -138,35 +138,35 @@ export class PasswordPolicy {
 		if (this.mustContainAtLeastOneLowercase) {
 			validationReturn.push({
 				name: 'get-password-policy-mustContainAtLeastOneLowercase',
-				isValid: this.regex.mustContainAtLeastOneLowercase.test(password as string),
+				isValid: this.regex.mustContainAtLeastOneLowercase.test(password),
 			});
 		}
 
 		if (this.mustContainAtLeastOneUppercase) {
 			validationReturn.push({
 				name: 'get-password-policy-mustContainAtLeastOneUppercase',
-				isValid: this.regex.mustContainAtLeastOneUppercase.test(password as string),
+				isValid: this.regex.mustContainAtLeastOneUppercase.test(password),
 			});
 		}
 
 		if (this.mustContainAtLeastOneNumber) {
 			validationReturn.push({
 				name: 'get-password-policy-mustContainAtLeastOneNumber',
-				isValid: this.regex.mustContainAtLeastOneNumber.test(password as string),
+				isValid: this.regex.mustContainAtLeastOneNumber.test(password),
 			});
 		}
 
 		if (this.mustContainAtLeastOneSpecialCharacter) {
 			validationReturn.push({
 				name: 'get-password-policy-mustContainAtLeastOneSpecialCharacter',
-				isValid: this.regex.mustContainAtLeastOneSpecialCharacter.test(password as string),
+				isValid: this.regex.mustContainAtLeastOneSpecialCharacter.test(password),
 			});
 		}
 
 		return validationReturn;
 	}
 
-	validate(password: string | unknown) {
+	validate(password: string) {
 		const reasons: {
 			error: string;
 			message: string;
