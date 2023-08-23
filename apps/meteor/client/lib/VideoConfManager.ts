@@ -18,10 +18,14 @@ const CALL_TIMEOUT = 10000;
 // How long are we gonna wait for a link after accepting an incoming call
 const ACCEPT_TIMEOUT = 5000;
 
-export type DirectCallParams = {
+type DirectCallParams = {
 	uid: IUser['_id'];
 	rid: IRoom['_id'];
 	callId: string;
+};
+
+export type DirectCallData = DirectCallParams & {
+	dismissed: boolean;
 };
 
 type IncomingDirectCall = DirectCallParams & {
@@ -143,13 +147,12 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		return false;
 	}
 
-	public getIncomingDirectCalls(): DirectCallParams[] {
+	public getIncomingDirectCalls(): DirectCallData[] {
 		return (
 			[...this.incomingDirectCalls.values()]
 				// Filter out any calls that we're in the process of accepting, so they're already hidden from the UI
 				.filter((call) => !call.acceptTimeout)
-				// Do not send internal state data to the UI
-				.map(({ timeout: _, acceptTimeout: _t, ...call }) => ({ ...call }))
+				.map(({ timeout: _, acceptTimeout: _t, ...call }) => ({ ...call, dismissed: this.isCallDismissed(call.callId) }))
 		);
 	}
 
