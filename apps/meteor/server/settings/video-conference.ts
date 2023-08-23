@@ -8,7 +8,7 @@ export const createVConfSettings = () =>
 			public: true,
 		});
 
-		await this.add('VideoConf_Mobile_Ringing', true, {
+		await this.add('VideoConf_Mobile_Ringing', false, {
 			type: 'boolean',
 			public: true,
 			enterprise: true,
