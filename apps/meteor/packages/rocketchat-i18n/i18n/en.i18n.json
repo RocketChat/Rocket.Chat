@@ -1947,6 +1947,7 @@
   "error-duplicate-priority-name": "A priority with the same name already exists",
   "error-edit-permissions-not-allowed": "Editing permissions is not allowed",
   "error-email-domain-blacklisted": "The email domain is blacklisted",
+  "error-email-body-not-initialized": "Email body not initialized. Setup Email's Header & Footer on Email settings before sending rich emails",
   "error-email-send-failed": "Error trying to send email: {{message}}",
   "error-essential-app-disabled": "Error: a Rocket.Chat App that is essential for this is disabled. Please contact your administrator",
   "error-failed-to-delete-department": "Failed to delete department",
