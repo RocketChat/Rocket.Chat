@@ -203,7 +203,16 @@ function cleanupMessageObject(message) {
 	['customClass'].forEach((field) => delete message[field]);
 }
 
-export const sendMessage = async function (user, message, room, upsert = false, previewUrls) {
+/**
+ * Validates and sends the message object.
+ * @param {IUser} user
+ * @param {AtLeast<IMessage, 'rid'>} message
+ * @param {IRoom} room
+ * @param {boolean} [upsert=false]
+ * @param {string[]} [previewUrls]
+ * @returns {Promise<IMessage>}
+ */
+export const sendMessage = async function (user, message, room, upsert = false, previewUrls = undefined) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
