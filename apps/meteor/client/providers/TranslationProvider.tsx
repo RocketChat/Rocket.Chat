@@ -122,6 +122,8 @@ const useI18next = (lng: string): typeof i18next => {
 			},
 			react: {
 				useSuspense: true,
+				bindI18n: 'languageChanged loaded',
+				bindI18nStore: 'added removed',
 			},
 			interpolation: {
 				escapeValue: false,

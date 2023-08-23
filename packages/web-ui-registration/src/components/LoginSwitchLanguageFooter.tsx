@@ -2,8 +2,8 @@ import { Button } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
 import { type TranslationLanguage, useSetting, useLoadLanguage, useLanguage, useLanguages } from '@rocket.chat/ui-contexts';
-import { type ReactElement, type UIEvent, useMemo } from 'react';
-import { Trans } from 'react-i18next';
+import { type ReactElement, type UIEvent, useMemo, useEffect } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 
 const normalizeLanguage = (language: string): string => {
 	// Fix browsers having all-lowercase language settings eg. pt-br, en-us
@@ -34,6 +34,12 @@ const useSuggestedLanguages = ({
 			return !!language && language.key !== currentLanguage;
 		});
 	}, [serverLanguage, browserLanguage, availableLanguages, currentLanguage]);
+
+	const { i18n } = useTranslation();
+
+	useEffect(() => {
+		i18n.loadLanguages(suggestions.map((suggestion) => suggestion.key));
+	}, [i18n, suggestions]);
 
 	return { suggestions };
 };
