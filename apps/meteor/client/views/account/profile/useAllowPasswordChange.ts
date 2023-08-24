@@ -13,5 +13,5 @@ export const useAllowPasswordChange = () => {
 		allowPasswordChange = hasLocalPassword;
 	}
 
-	return useMemo(() => ({ allowPasswordChange, hasLocalPassword }), [allowPasswordChange, hasLocalPassword]);
+	return { allowPasswordChange, hasLocalPassword };
 };

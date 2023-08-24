@@ -13,26 +13,13 @@ export const useAccountProfileSettings = () => {
 
 	const namesRegex = useMemo(() => new RegExp(`^${namesRegexSetting}$`), [namesRegexSetting]);
 
-	const settings = useMemo(
-		() => ({
-			allowRealNameChange,
-			allowUserStatusMessageChange,
-			allowEmailChange,
-			allowUserAvatarChange,
-			canChangeUsername,
-			requireName,
-			namesRegex,
-		}),
-		[
-			allowEmailChange,
-			allowRealNameChange,
-			allowUserAvatarChange,
-			allowUserStatusMessageChange,
-			canChangeUsername,
-			requireName,
-			namesRegex,
-		],
-	);
-
-	return settings;
+	return {
+		allowRealNameChange,
+		allowUserStatusMessageChange,
+		allowEmailChange,
+		allowUserAvatarChange,
+		canChangeUsername,
+		requireName,
+		namesRegex,
+	};
 };
