@@ -24,7 +24,7 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 	);
 
 	const menu = useMemo(() => {
-		if (!menuOptions) {
+		if (!menuOptions?.length) {
 			return null;
 		}
 
