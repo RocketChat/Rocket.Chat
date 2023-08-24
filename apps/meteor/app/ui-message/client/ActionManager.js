@@ -163,6 +163,14 @@ export const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...d
 		return UIKitIncomingInteractionType.CONTEXTUAL_BAR_CLOSE;
 	}
 
+	if ([UIKitIncomingInteractionType.TOAST_MESSAGE].includes(type)) {
+		const { toast } = data;
+
+		dispatchToastMessage(toast);
+
+		return UIKitInteractionTypes.TOAST_MESSAGE;
+	}
+
 	return UIKitInteractionTypes.MODAL_ClOSE;
 };
 
