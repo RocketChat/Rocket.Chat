@@ -22,5 +22,6 @@ declare module '*.info' {
 		version: string;
 		tag?: string;
 		branch?: string;
+		supportedVersions: string;
 	};
 }

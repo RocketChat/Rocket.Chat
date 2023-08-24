@@ -1,6 +1,8 @@
 import { exec } from 'child_process';
 import os from 'os';
 import util from 'util';
+import path from 'path';
+import fs from 'fs';
 
 const execAsync = util.promisify(exec);
 
@@ -24,6 +26,7 @@ class VersionCompiler {
 			};
 
 			output.marketplaceApiVersion = require('@rocket.chat/apps-engine/package.json').version.replace(/^[^0-9]/g, '');
+			output.minimumClientVersions = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), './package.json'), { encoding: 'utf8' }))?.rocketchat?.minimumClientVersions || {};
 			try {
 				const result = await execAsync("git log --pretty=format:'%H%n%ad%n%an%n%s' -n 1");
 				const data = result.stdout.split('\n');
