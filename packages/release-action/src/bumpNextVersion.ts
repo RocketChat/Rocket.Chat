@@ -1,14 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 
-import { exec } from '@actions/exec';
 import * as core from '@actions/core';
+import { exec } from '@actions/exec';
 import * as github from '@actions/github';
 
-import { setupOctokit } from './setupOctokit';
 import { createNpmFile } from './createNpmFile';
-import { getChangelogEntry, bumpFileVersions, readPackageJson } from './utils';
 import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
+import { commitChanges, createBranch, createTag, pushNewBranch } from './gitUtils';
+import { setupOctokit } from './setupOctokit';
+import { getChangelogEntry, bumpFileVersions, readPackageJson, getEngineVersionsMd } from './utils';
 
 export async function bumpNextVersion({
 	githubToken,
@@ -48,7 +49,7 @@ export async function bumpNextVersion({
 		throw new Error('Could not find changelog entry for version newVersion');
 	}
 
-	const prBody = changelogEntry.content;
+	const prBody = (await getEngineVersionsMd(cwd)) + changelogEntry.content;
 
 	const finalVersion = newVersion.split('-')[0];
 
@@ -59,19 +60,18 @@ export async function bumpNextVersion({
 	await bumpFileVersions(cwd, currentVersion, newVersion);
 
 	// TODO check if branch exists
-	await exec('git', ['checkout', '-b', newBranch]);
+	await createBranch(newBranch);
 
-	await exec('git', ['add', '.']);
-	await exec('git', ['commit', '-m', newVersion]);
+	await commitChanges(`Release ${newVersion}`);
 
 	core.info('fix dependencies in workspace packages');
 	await fixWorkspaceVersionsBeforePublish();
 
 	await exec('yarn', ['changeset', 'publish', '--no-git-tag']);
 
-	await exec('git', ['tag', newVersion]);
+	await createTag(newVersion);
 
-	await exec('git', ['push', '--force', '--follow-tags', 'origin', `HEAD:refs/heads/${newBranch}`]);
+	await pushNewBranch(newBranch, true);
 
 	if (newVersion.includes('rc.0')) {
 		const finalPrTitle = `Release ${finalVersion}`;

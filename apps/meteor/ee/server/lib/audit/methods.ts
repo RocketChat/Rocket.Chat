@@ -1,17 +1,17 @@
-import { Meteor } from 'meteor/meteor';
+import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser, IAuditLog } from '@rocket.chat/core-typings';
+import { LivechatRooms, Messages, Rooms, Users, AuditLog } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser, IAuditLog } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
-import { LivechatRooms, Messages, Rooms, Users, AuditLog } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { updateCounter } from '../../../../app/statistics/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { i18n } from '../../../../server/lib/i18n';
-import { callbacks } from '../../../../lib/callbacks';
 
 const getValue = (room: IRoom | null) => room && { rids: [room._id], name: room.name };
 

@@ -1,3 +1,4 @@
+import { Message } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
 	IOmnichannelRoomClosingInfo,
@@ -9,7 +10,8 @@ import type {
 	ILivechatAgent,
 	IMessage,
 } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Logger, type MainLogger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
 	LivechatInquiry,
@@ -19,26 +21,25 @@ import {
 	Messages,
 	Users,
 	LivechatDepartmentAgents,
+	ReadReceipts,
 } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
+import { Random } from '@rocket.chat/random';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import moment from 'moment-timezone';
 import type { FindCursor, UpdateFilter } from 'mongodb';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { Random } from '@rocket.chat/random';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { Logger } from '../../../logger/server';
-import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
-import { getTimezone } from '../../../utils/server/lib/getTimezone';
-import { settings } from '../../../settings/server';
-import * as Mailer from '../../../mailer/server/api';
-import { RoutingManager } from './RoutingManager';
-import { QueueManager } from './QueueManager';
-import { validateEmail } from './Helper';
-import type { MainLogger } from '../../../../server/lib/logger/getPino';
-import { metrics } from '../../../metrics/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
+import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import * as Mailer from '../../../mailer/server/api';
+import { metrics } from '../../../metrics/server';
+import { settings } from '../../../settings/server';
+import { getTimezone } from '../../../utils/server/lib/getTimezone';
+import { updateDepartmentAgents, validateEmail } from './Helper';
+import { QueueManager } from './QueueManager';
+import { RoutingManager } from './RoutingManager';
 
 type GenericCloseRoomParams = {
 	room: IOmnichannelRoom;
@@ -124,7 +125,7 @@ class LivechatClass {
 		return RoutingManager.getNextAgent(department);
 	}
 
-	async getOnlineAgents(department?: string, agent?: SelectedAgent): Promise<FindCursor<ILivechatAgent> | undefined> {
+	async getOnlineAgents(department?: string, agent?: SelectedAgent | null): Promise<FindCursor<ILivechatAgent> | undefined> {
 		if (agent?.agentId) {
 			return Users.findOnlineAgents(agent.agentId);
 		}
@@ -153,6 +154,11 @@ class LivechatClass {
 		if (!room || !isOmnichannelRoom(room) || !room.open) {
 			this.logger.debug(`Room ${room._id} is not open`);
 			return;
+		}
+
+		const commentRequired = settings.get('Livechat_request_comment_when_closing_conversation');
+		if (commentRequired && !comment?.trim()) {
+			throw new Error('error-comment-is-required');
 		}
 
 		const { updatedOptions: options } = await this.resolveChatTags(room, params.options);
@@ -396,6 +402,7 @@ class LivechatClass {
 
 		const result = await Promise.allSettled([
 			Messages.removeByRoomId(rid),
+			ReadReceipts.removeByRoomId(rid),
 			Subscriptions.removeByRoomId(rid),
 			LivechatInquiry.removeByRoomId(rid),
 			LivechatRooms.removeById(rid),
@@ -539,7 +546,7 @@ class LivechatClass {
 		phone,
 		username,
 		connectionData,
-		status = 'online',
+		status = UserStatus.ONLINE,
 	}: {
 		id?: string;
 		token: string;
@@ -748,6 +755,47 @@ class LivechatClass {
 				await Livechat.sendRequest(postData, attempts - 1);
 			}, timeout * 4);
 		}
+	}
+
+	async saveAgentInfo(_id: string, agentData: any, agentDepartments: string[]) {
+		check(_id, String);
+		check(agentData, Object);
+		check(agentDepartments, [String]);
+
+		const user = await Users.findOneById(_id);
+		if (!user || !(await hasRoleAsync(_id, 'livechat-agent'))) {
+			throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent');
+		}
+
+		await Users.setLivechatData(_id, agentData);
+
+		const currentDepartmentsForAgent = await LivechatDepartmentAgents.findByAgentId(_id).toArray();
+
+		const toRemoveIds = currentDepartmentsForAgent
+			.filter((dept) => !agentDepartments.includes(dept.departmentId))
+			.map((dept) => dept.departmentId);
+		const toAddIds = agentDepartments.filter((d) => !currentDepartmentsForAgent.some((c) => c.departmentId === d));
+
+		await Promise.all(
+			await LivechatDepartment.findInIds([...toRemoveIds, ...toAddIds], {
+				projection: {
+					_id: 1,
+					enabled: 1,
+				},
+			})
+				.map((dep) => {
+					return updateDepartmentAgents(
+						dep._id,
+						{
+							...(toRemoveIds.includes(dep._id) ? { remove: [{ agentId: _id }] } : { upsert: [{ agentId: _id, count: 0, order: 0 }] }),
+						},
+						dep.enabled,
+					);
+				})
+				.toArray(),
+		);
+
+		return true;
 	}
 }
 

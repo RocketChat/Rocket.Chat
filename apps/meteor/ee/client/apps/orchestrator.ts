@@ -1,14 +1,11 @@
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
-import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage/IAppStorageItem';
 import type { AppScreenshot, AppRequestFilter, Serialized, AppRequestsStats, PaginatedAppRequests } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { hasAtLeastOnePermission } from '../../../app/authorization/client';
-import { CachedCollectionManager } from '../../../app/ui-cached-collection/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import type { App } from '../../../client/views/marketplace/types';
@@ -173,15 +170,6 @@ class AppClientOrchestrator {
 		throw new Error('App not found');
 	}
 
-	public async setAppStatus(appId: string, status: AppStatus): Promise<string> {
-		const { status: effectiveStatus } = await sdk.rest.post(`/apps/${appId}/status`, { status });
-		return effectiveStatus;
-	}
-
-	public disableApp(appId: string): Promise<string> {
-		return this.setAppStatus(appId, AppStatus.MANUALLY_ENABLED);
-	}
-
 	public async buildExternalUrl(appId: string, purchaseType: 'buy' | 'subscription' = 'buy', details = false): Promise<IAppExternalURL> {
 		const result = await sdk.rest.get('/apps/buildExternalUrl', {
 			appId,
@@ -263,10 +251,3 @@ class AppClientOrchestrator {
 }
 
 export const AppClientOrchestratorInstance = new AppClientOrchestrator();
-
-Meteor.startup(() => {
-	CachedCollectionManager.onLogin(() => {
-		AppClientOrchestratorInstance.getAppClientManager().initialize();
-		AppClientOrchestratorInstance.load();
-	});
-});

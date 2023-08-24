@@ -1,21 +1,21 @@
 import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
 
-import { settings } from '../../settings/client';
 import { useReactiveValue } from '../../../client/hooks/useReactiveValue';
+import { settings } from '../../settings/client';
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
-		_paq: [string, ...unknown[]][];
+		_paq?: [string, ...unknown[]][];
 		GoogleAnalyticsObject: unknown;
-		ga: qa;
+		ga?: qa;
 	}
 
 	type qa = {
 		(...args: unknown[]): void;
-		l: number;
-		q: unknown[];
+		l?: number;
+		q?: unknown[];
 	};
 }
 
@@ -36,7 +36,6 @@ export const useAnalytics = (): void => {
 		if (!googleId) {
 			return;
 		}
-		/*eslint-disable */
 		if (googleId.startsWith('G-')) {
 			// Google Analytics 4
 			const f = document.getElementsByTagName('script')[0];
@@ -47,32 +46,33 @@ export const useAnalytics = (): void => {
 
 			// injecting the dataLayer into the windows global object
 			const w: Window & { dataLayer?: any } = window;
-			let dataLayer = w.dataLayer || [];
-			function gtag(key: string, value: any) {
+			const dataLayer = w.dataLayer || [];
+			const gtag = (key: string, value: any) => {
 				dataLayer.push(key, value);
-			}
+			};
 			gtag('js', new Date());
 			gtag('config', googleId);
 		} else {
 			// Google Analytics 3
 			(function (i, s, o, g, r: 'ga', a?: any, m?: any) {
-				i['GoogleAnalyticsObject'] = r;
+				i.GoogleAnalyticsObject = r;
 				(i[r] =
 					i[r] ||
-					function () {
-						(i[r].q = i[r].q || []).push(arguments);
+					function (...args) {
+						((i[r] as any).q = (i[r] as any).q || []).push(args);
+						// eslint-disable-next-line no-sequences
 					}),
-					(i[r].l = new Date().getTime());
+					((i[r] as any).l = new Date().getTime());
+				// eslint-disable-next-line no-sequences
 				(a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
 				a.async = 1;
 				a.src = g;
 				m.parentNode.insertBefore(a, m);
 			})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-			window.ga('create', googleId, 'auto');
-			window.ga('send', 'pageview');
+			window.ga?.('create', googleId, 'auto');
+			window.ga?.('send', 'pageview');
 		}
-		/* eslint-enable */
 	}, [googleId, uid]);
 
 	useEffect(() => {

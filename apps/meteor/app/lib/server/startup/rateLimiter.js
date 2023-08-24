@@ -1,12 +1,12 @@
-import _ from 'underscore';
-import { Meteor } from 'meteor/meteor';
+import { Logger } from '@rocket.chat/logger';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { Meteor } from 'meteor/meteor';
 import { RateLimiter } from 'meteor/rate-limit';
+import _ from 'underscore';
 
-import { settings } from '../../../settings/server';
-import { metrics } from '../../../metrics/server';
-import { Logger } from '../../../logger/server';
 import { sleep } from '../../../../lib/utils/sleep';
+import { metrics } from '../../../metrics/server';
+import { settings } from '../../../settings/server';
 
 const logger = new Logger('RateLimiter');
 
@@ -62,7 +62,7 @@ RateLimiter.prototype.check = function (input) {
 	};
 
 	const matchedRules = self._findAllMatchingRules(input);
-	_.each(matchedRules, function (rule) {
+	_.each(matchedRules, (rule) => {
 		// ==== BEGIN OVERRIDE ====
 		const callbackReply = {
 			allowed: true,

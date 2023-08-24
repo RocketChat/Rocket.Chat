@@ -1,5 +1,5 @@
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
-import { useCurrentRoute, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
@@ -27,11 +27,7 @@ const AppsPageContent = (): ReactElement => {
 	const [text, setText] = useDebouncedState('', 500);
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
-	const [currentRouteName] = useCurrentRoute();
-	if (!currentRouteName) {
-		throw new Error('No current route name');
-	}
-	const router = useRoute(currentRouteName);
+	const router = useRouter();
 
 	const context = useRouteParameter('context');
 
@@ -59,17 +55,36 @@ const AppsPageContent = (): ReactElement => {
 	});
 	const statusFilterOnSelected = useRadioToggle(setStatusFilterStructure);
 
-	const [sortFilterStructure, setSortFilterStructure] = useState<RadioDropDownGroup>({
-		label: t('Sort_By'),
-		items: [
-			{ id: 'urf', label: t('Unread_Requested_First'), checked: false },
-			{ id: 'url', label: t('Unread_Requested_Last'), checked: false },
-			{ id: 'az', label: 'A-Z', checked: false },
-			{ id: 'za', label: 'Z-A', checked: false },
-			{ id: 'mru', label: t('Most_recent_updated'), checked: true },
-			{ id: 'lru', label: t('Least_recent_updated'), checked: false },
-		],
+	const baseFilterStructureItems = [
+		{ id: 'az', label: 'A-Z', checked: false },
+		{ id: 'za', label: 'Z-A', checked: false },
+		{ id: 'mru', label: t('Most_recent_updated'), checked: true },
+		{ id: 'lru', label: t('Least_recent_updated'), checked: false },
+	];
+
+	const requestedFilterItems = [
+		{ id: 'urf', label: t('Unread_Requested_First'), checked: false },
+		{ id: 'url', label: t('Unread_Requested_Last'), checked: false },
+	];
+
+	const createFilterStructureItems = () => {
+		return isRequested ? [...requestedFilterItems, ...baseFilterStructureItems] : baseFilterStructureItems;
+	};
+
+	const [sortFilterStructure, setSortFilterStructure] = useState<RadioDropDownGroup>(() => {
+		return {
+			label: t('Sort_By'),
+			items: createFilterStructureItems(),
+		};
 	});
+
+	useEffect(() => {
+		setSortFilterStructure({
+			label: t('Sort_By'),
+			items: createFilterStructureItems(),
+		});
+	}, [isRequested]);
+
 	const sortFilterOnSelected = useRadioToggle(setSortFilterStructure);
 
 	const getAppsData = useCallback((): appsDataType => {
@@ -119,8 +134,14 @@ const AppsPageContent = (): ReactElement => {
 		sortFilterStructure.items.find((item) => item.checked)?.id !== 'mru' ||
 		selectedCategories.length > 0;
 
-	const handleReturn = (): void => {
-		router.push({ context: 'explore', page: 'list' });
+	const handleReturn = () => {
+		router.navigate({
+			name: 'marketplace',
+			params: {
+				context: 'explore',
+				page: 'list',
+			},
+		});
 	};
 
 	const toggleInitialSortOption = useCallback((isRequested: boolean) => {

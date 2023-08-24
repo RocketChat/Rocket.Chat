@@ -27,8 +27,11 @@ import type {
 	UserStatus,
 	ILivechatPriority,
 	VideoConference,
+	ICalendarNotification,
 	AtLeast,
 	ILivechatInquiryRecord,
+	ILivechatAgent,
+	IBanner,
 } from '@rocket.chat/core-typings';
 
 import type { AutoUpdateRecord } from './types/IMeteor';
@@ -36,6 +39,7 @@ import type { AutoUpdateRecord } from './types/IMeteor';
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
 export type EventSignatures = {
+	'room.video-conference': (params: { rid: string; callId: string }) => void;
 	'shutdown': (params: Record<string, string[]>) => void;
 	'$services.changed': (info: { localService: boolean }) => void;
 	'accounts.login': (info: { userId: string; connection: ISocketConnection }) => void;
@@ -46,6 +50,7 @@ export type EventSignatures = {
 	'banner.new'(bannerId: string): void;
 	'banner.enabled'(bannerId: string): void;
 	'banner.disabled'(bannerId: string): void;
+	'banner.user'(userId: string, banner: IBanner): void;
 	'emoji.deleteCustom'(emoji: IEmoji): void;
 	'emoji.updateCustom'(emoji: IEmoji): void;
 	'license.module'(data: { module: string; valid: boolean }): void;
@@ -82,6 +87,7 @@ export type EventSignatures = {
 	): void;
 	'notify.deleteCustomSound'(data: { soundData: ICustomSound }): void;
 	'notify.updateCustomSound'(data: { soundData: ICustomSound }): void;
+	'notify.calendar'(uid: string, data: ICalendarNotification): void;
 	'permission.changed'(data: { clientAction: ClientAction; data: any }): void;
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
 	'room.avatarUpdate'(room: Pick<IRoom, '_id' | 'avatarETag'>): void;
@@ -233,7 +239,10 @@ export type EventSignatures = {
 	}): void;
 	'omnichannel.room'(
 		roomId: string,
-		data: { type: 'agentStatus'; status: string } | { type: 'queueData' | 'agentData'; data: { [k: string]: unknown } },
+		data:
+			| { type: 'agentStatus'; status: string }
+			| { type: 'queueData'; data: { [k: string]: unknown } | undefined }
+			| { type: 'agentData'; data: ILivechatAgent | undefined | { hiddenInfo: boolean } },
 	): void;
 
 	// Send all events from here

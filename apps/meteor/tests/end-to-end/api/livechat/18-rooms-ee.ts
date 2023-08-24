@@ -1,7 +1,6 @@
-/* eslint-env mocha */
-
 import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import {
@@ -19,7 +18,7 @@ import {
 import { sleep } from '../../../data/livechat/utils';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
-import { createUser, login } from '../../../data/users.helper';
+import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - rooms', function () {
@@ -45,6 +44,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 			user,
 			credentials: userCredentials,
 		};
+	});
+
+	after(async () => {
+		await deleteUser(agent2.user);
 	});
 
 	describe('livechat/room.onHold', () => {

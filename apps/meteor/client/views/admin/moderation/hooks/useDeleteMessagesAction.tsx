@@ -2,9 +2,10 @@ import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch, useTransla
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import GenericModal from '../../../../components/GenericModal';
 
-const useDeleteMessagesAction = (userId: string) => {
+const useDeleteMessagesAction = (userId: string): GenericMenuItemProps => {
 	const t = useTranslation();
 	const deleteMessages = useEndpoint('POST', '/v1/moderation.user.deleteReportedMessages');
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -18,7 +19,7 @@ const useDeleteMessagesAction = (userId: string) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Deleted') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_Messages_deleted') });
 		},
 	});
 
@@ -44,8 +45,10 @@ const useDeleteMessagesAction = (userId: string) => {
 	};
 
 	return {
-		label: { label: t('Moderation_Delete_all_messages'), icon: 'trash' },
-		action: () => confirmDeletMessages(),
+		id: 'deleteAll',
+		content: t('Moderation_Delete_all_messages'),
+		icon: 'trash',
+		onClick: () => confirmDeletMessages(),
 	};
 };
 

@@ -1,8 +1,9 @@
-import moment from 'moment';
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
+import moment from 'moment';
 
+import { businessHourLogger } from '../lib/logger';
 import { createDefaultBusinessHourRow } from './LivechatBusinessHours';
 
 export const filterBusinessHoursThatMustBeOpened = async (
@@ -52,8 +53,13 @@ export const openBusinessHourDefault = async (): Promise<void> => {
 		},
 	});
 	const businessHoursToOpenIds = (await filterBusinessHoursThatMustBeOpened(activeBusinessHours)).map((businessHour) => businessHour._id);
+	businessHourLogger.debug({ msg: 'Opening default business hours', businessHoursToOpenIds });
 	await Users.openAgentsBusinessHoursByBusinessHourId(businessHoursToOpenIds);
+	if (businessHoursToOpenIds.length) {
+		await Users.makeAgentsWithinBusinessHourAvailable();
+	}
 	await Users.updateLivechatStatusBasedOnBusinessHours();
+	businessHourLogger.debug('Done opening default business hours');
 };
 
 export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {

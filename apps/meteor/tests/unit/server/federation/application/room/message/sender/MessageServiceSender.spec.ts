@@ -1,7 +1,7 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { expect } from 'chai';
-import sinon from 'sinon';
 import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
 import { FederationMessageServiceSender } from '../../../../../../../../server/services/federation/application/room/message/sender/MessageServiceSender';
 

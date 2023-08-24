@@ -1,7 +1,7 @@
+import { Logger } from '@rocket.chat/logger';
 import type { Response } from 'meteor/rocketchat:restivus';
 import semver from 'semver';
 
-import { Logger } from '../../../logger/server';
 import { metrics } from '../../../metrics/server';
 
 const deprecationLogger = new Logger('DeprecationWarning');

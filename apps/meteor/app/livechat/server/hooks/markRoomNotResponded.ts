@@ -5,7 +5,7 @@ import { callbacks } from '../../../../lib/callbacks';
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message, room) {
+	async (message, room) => {
 		if (!isOmnichannelRoom(room)) {
 			return message;
 		}

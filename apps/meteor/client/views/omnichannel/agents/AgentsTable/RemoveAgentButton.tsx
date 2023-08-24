@@ -11,9 +11,10 @@ import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 type RemoveAgentButtonProps = {
 	_id: string;
 	reload: () => void;
+	onAgentRemoved?: () => void;
 };
 
-const RemoveAgentButton = ({ _id, reload }: RemoveAgentButtonProps): ReactElement => {
+const RemoveAgentButton = ({ _id, reload, onAgentRemoved }: RemoveAgentButtonProps): ReactElement => {
 	const deleteAction = useEndpointAction('DELETE', '/v1/livechat/users/agent/:_id', { keys: { _id } });
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -23,6 +24,7 @@ const RemoveAgentButton = ({ _id, reload }: RemoveAgentButtonProps): ReactElemen
 		const result = await deleteAction();
 		if (result.success === true) {
 			reload();
+			onAgentRemoved?.();
 		}
 	});
 
@@ -43,7 +45,7 @@ const RemoveAgentButton = ({ _id, reload }: RemoveAgentButtonProps): ReactElemen
 
 	return (
 		<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-			<IconButton icon='trash' mini small title={t('Remove')} onClick={handleDelete} />
+			<IconButton icon='trash' small title={t('Remove')} onClick={handleDelete} />
 		</GenericTableCell>
 	);
 };
