@@ -2,7 +2,7 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import moment from 'moment';
 
 export const formatQueuedAt = (room: IOmnichannelRoom) => {
-	const { servedBy, closedAt, open, queuedAt, ts } = room;
+	const { servedBy, closedAt, open, queuedAt, ts } = room || {};
 	const queueStartedAt = queuedAt || ts;
 
 	// Room served
@@ -16,5 +16,9 @@ export const formatQueuedAt = (room: IOmnichannelRoom) => {
 	}
 
 	// Room closed and not served
-	return moment(closedAt).from(moment(queueStartedAt), true);
+	if (closedAt && queueStartedAt) {
+		return moment(closedAt).from(moment(queueStartedAt), true);
+	}
+
+	return '';
 };
