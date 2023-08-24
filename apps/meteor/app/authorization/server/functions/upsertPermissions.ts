@@ -112,7 +112,6 @@ export const upsertPermissions = async (): Promise<void> => {
 
 	// register a callback for settings for be create in higher-level-packages
 	settings.on('*', async ([settingId]) => {
-		console.log('settings.on', settingId);
 		const previousSettingPermissions = await getPreviousPermissions(settingId);
 		const setting = await Settings.findOneById(settingId);
 		if (setting && !setting.hidden) {
