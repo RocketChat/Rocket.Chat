@@ -1,10 +1,10 @@
 import { Component } from 'preact';
-import { Suspense, lazy } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
 import { Form, FormField, SelectInput, TextInput, Validations } from '../../components/Form';
+import MarkdownBlock from '../../components/MarkdownBlock';
 import Screen from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
@@ -160,16 +160,12 @@ class LeaveMessage extends Component {
 		const defaultTitle = t('leave_a_message');
 		const defaultMessage = t('we_are_not_online_right_now_please_leave_a_message');
 		const defaultUnavailableMessage = ''; // TODO
-		const { Markup } = lazy(() => import('@rocket.chat/gazzodown'));
-		const { parse } = lazy(() => import('@rocket.chat/message-parser'));
 
 		return (
 			<Screen color={color} title={title || defaultTitle} className={createClassName(styles, 'leave-message')} {...props}>
 				<Screen.Content>
 					<div className={createClassName(styles, 'leave-message__main-message')}>
-						<Suspense fallback={<span />}>
-							<Markup tokens={hasForm ? parse(message || defaultMessage) : parse(unavailableMessage || defaultUnavailableMessage)} />
-						</Suspense>
+						<MarkdownBlock text={hasForm ? message || defaultMessage : unavailableMessage || defaultUnavailableMessage} />
 					</div>
 
 					{hasForm && this.renderForm(this.props, this.state)}

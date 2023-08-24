@@ -1,5 +1,5 @@
-import { Picker } from 'emoji-mart';
 import { Component } from 'preact';
+import { Suspense, lazy } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
 import { Button } from '../../components/Button';
@@ -20,7 +20,13 @@ import RemoveIcon from '../../icons/remove.svg';
 import SendIcon from '../../icons/send.svg';
 import EmojiIcon from '../../icons/smile.svg';
 import styles from './styles.scss';
+
 import 'emoji-mart/css/emoji-mart.css';
+
+const Picker = lazy(async () => {
+	const { Picker } = await import('emoji-mart');
+	return Picker;
+});
 
 class Chat extends Component {
 	state = {
@@ -165,14 +171,16 @@ class Chat extends Component {
 							dispatch={dispatch}
 						/>
 						{this.state.emojiPickerActive && (
-							<Picker
-								style={{ position: 'absolute', zIndex: 10, bottom: 0, maxWidth: '90%', left: 20, maxHeight: '90%' }}
-								showPreview={false}
-								showSkinTones={false}
-								sheetSize={64}
-								onSelect={this.handleEmojiSelect}
-								autoFocus={true}
-							/>
+							<Suspense fallback={null}>
+								<Picker
+									style={{ position: 'absolute', zIndex: 10, bottom: 0, maxWidth: '90%', left: 20, maxHeight: '90%' }}
+									showPreview={false}
+									showSkinTones={false}
+									sheetSize={64}
+									onSelect={this.handleEmojiSelect}
+									autoFocus={true}
+								/>
+							</Suspense>
 						)}
 					</div>
 				</Screen.Content>

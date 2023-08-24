@@ -21,9 +21,6 @@ const common = (args: webpack.CliConfigOptions): Partial<webpack.Configuration> 
 			'react-dom': 'preact/compat',
 		},
 	},
-	performance: {
-		maxAssetSize: 1000000,
-	},
 	optimization: {
 		sideEffects: false,
 		splitChunks: {
@@ -34,33 +31,6 @@ const common = (args: webpack.CliConfigOptions): Partial<webpack.Configuration> 
 			minChunks: 1,
 			minSize: 20000,
 			maxSize: 0,
-			// cacheGroups: {
-			// 	'vendor-katex': {
-			// 		name: 'vendor-katex',
-			// 		test: /[\\/]node_modules[\\/]katex*?[\\/]/,
-			// 		chunks: 'all',
-			// 	},
-			// 	'vendor-rocketchat': {
-			// 		name: 'vendor-rocketchat',
-			// 		test: /[\\/]node_modules[\\/]@rocket.chat*?[\\/]/,
-			// 		chunks: 'all',
-			// 	},
-			// 	'vendor-react-aria': {
-			// 		name: 'vendor-react-aria',
-			// 		test: /[\\/]node_modules[\\/]@react-aria*?[\\/]/,
-			// 		chunks: 'all',
-			// 	},
-			// 	// 'vendor-react': {
-			// 	// 	name: 'vendor-react-aria',
-			// 	// 	test: /[\\/]node_modules[\\/]@react-aria*?[\\/]/,
-			// 	// 	chunks: 'all',
-			// 	// },
-			// 	'vendor-highlightjs': {
-			// 		name: 'vendor-highlightjs',
-			// 		test: /[\\/]node_modules[\\/]highlight.js*?[\\/]/,
-			// 		chunks: 'all',
-			// 	},
-			// },
 		},
 		noEmitOnErrors: true,
 		...(args.mode === 'production' && {
