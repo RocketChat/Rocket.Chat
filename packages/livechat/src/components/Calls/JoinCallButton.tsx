@@ -1,4 +1,4 @@
-import type { TFunction } from 'react-i18next';
+import { type TFunction } from 'i18next';
 import { withTranslation } from 'react-i18next';
 
 import { getConnectionBaseUrl } from '../../helpers/baseUrl';
@@ -7,8 +7,7 @@ import VideoIcon from '../../icons/video.svg';
 import constants from '../../lib/constants';
 import store from '../../store';
 import { Button } from '../Button';
-import type { CallStatus } from './CallStatus';
-import { isCallOngoing } from './CallStatus';
+import { type CallStatus, isCallOngoing } from './CallStatus';
 import styles from './styles.scss';
 
 type JoinCallButtonProps = {
