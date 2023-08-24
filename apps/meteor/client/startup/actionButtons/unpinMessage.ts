@@ -32,7 +32,7 @@ Meteor.startup(() => {
 
 			return hasAtLeastOnePermission('pin-message', message.rid);
 		},
-		order: 8,
+		order: 2,
 		group: 'menu',
 	});
 });
