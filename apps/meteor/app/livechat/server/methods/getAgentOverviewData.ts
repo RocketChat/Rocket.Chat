@@ -3,8 +3,8 @@ import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { Livechat } from '../lib/Livechat';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
