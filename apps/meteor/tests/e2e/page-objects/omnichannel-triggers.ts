@@ -13,7 +13,7 @@ export class OmnichannelTriggers {
 	}
 
 	headingButtonNew(name: string) {
-		return this.page.locator(`role=main >> role=heading >> role=button[name="${name}"]`);
+		return this.page.locator(`role=main >> role=button[name="${name}"]`).first();
 	}
 
 	get Name(): Locator {
