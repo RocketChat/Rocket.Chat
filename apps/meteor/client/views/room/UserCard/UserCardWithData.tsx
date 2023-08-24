@@ -66,7 +66,7 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 	});
 
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
-		{ _id: user._id ?? '', username: user.username },
+		{ _id: user._id ?? '', username: user.username, name: user.name },
 		rid,
 	);
 
