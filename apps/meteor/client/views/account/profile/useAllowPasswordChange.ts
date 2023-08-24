@@ -1,5 +1,4 @@
 import { useSetting, useUser } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
 
 export const useAllowPasswordChange = () => {
 	const user = useUser();
