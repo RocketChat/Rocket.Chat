@@ -133,8 +133,31 @@ export class Spotlight {
 		}
 	}
 
-	async _performExtraUserSearches(/* userId, searchParams */) {
-		// Overwrite this method to include extra searches
+	mapTeams(teams) {
+		return teams.map((t) => {
+			t.isTeam = true;
+			t.username = t.name;
+			t.status = 'online';
+			return t;
+		});
+	}
+
+	async _searchTeams(userId, { text, options, users, mentions }) {
+		if (!mentions) {
+			return users;
+		}
+
+		options.limit -= users.length;
+
+		if (options.limit <= 0) {
+			return users;
+		}
+
+		const teamOptions = { ...options, projection: { name: 1, type: 1 } };
+		const teams = await Team.search(userId, text, teamOptions);
+		users.push(...this.mapTeams(teams));
+
+		return users;
 	}
 
 	async searchUsers({ userId, rid, text, usernames, mentions }) {
@@ -245,7 +268,7 @@ export class Spotlight {
 			return users;
 		}
 
-		if (await this._performExtraUserSearches(userId, searchParams)) {
+		if (await this._searchTeams(userId, searchParams)) {
 			return users;
 		}
 
