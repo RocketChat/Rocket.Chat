@@ -8,6 +8,7 @@ const colors = {
 	away: 'status-font-on-warning',
 	online: 'status-font-on-success',
 	offline: 'annotation',
+	disabled: 'annotation',
 };
 
 const iconMap = {

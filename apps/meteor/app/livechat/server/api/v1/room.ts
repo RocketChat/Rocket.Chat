@@ -1,4 +1,4 @@
-import type { ILivechatAgent, IOmnichannelRoom, IUser, SelectedAgent } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IOmnichannelRoom, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Subscriptions, Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -13,7 +13,6 @@ import {
 	isPOSTLivechatRoomCloseByUserParams,
 } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
@@ -30,7 +29,7 @@ import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { findVisitorInfo } from '../lib/visitors';
 
-const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: true }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
+const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
 API.v1.addRoute('livechat/room', {
 	async get() {
@@ -328,7 +327,8 @@ API.v1.addRoute(
 			}
 
 			const guest = await LivechatVisitors.findOneById(room.v?._id);
-			transferData.transferredBy = normalizeTransferredByData((await Meteor.userAsync()) || {}, room);
+			const transferedBy = this.user satisfies TransferByData;
+			transferData.transferredBy = normalizeTransferredByData(transferedBy, room);
 			if (transferData.userId) {
 				const userToTransfer = await Users.findOneById(transferData.userId);
 				if (userToTransfer) {

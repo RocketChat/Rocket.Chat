@@ -32,7 +32,7 @@ export class HomeSidenav {
 	}
 
 	get btnCreate(): Locator {
-		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
+		return this.page.locator('role=button[name="Create"]');
 	}
 
 	getSidebarItemByName(name: string): Locator {
@@ -52,7 +52,7 @@ export class HomeSidenav {
 	}
 
 	async openInstalledApps(): Promise<void> {
-		await this.page.locator('//button[@title="Administration"]').click();
+		await this.page.locator('role=button[name="Administration"]').click();
 		await this.page.locator('//div[contains(text(),"Installed")]').click();
 	}
 
@@ -66,7 +66,7 @@ export class HomeSidenav {
 		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
 	}
 
-	async switchStatus(status: 'Offline offline' | 'Online online'): Promise<void> {
+	async switchStatus(status: 'offline' | 'online'): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
 		await this.page.locator(`role=menuitemcheckbox[name="${status}"]`).click();
 	}
@@ -87,7 +87,7 @@ export class HomeSidenav {
 			online = 'Turn off answer chats',
 		}
 
-		const currentStatus = await toggleButton.getAttribute('data-tooltip');
+		const currentStatus = await toggleButton.getAttribute('title');
 		if (status === 'offline') {
 			if (currentStatus === StatusTitleMap.online) {
 				await toggleButton.click();
@@ -98,7 +98,7 @@ export class HomeSidenav {
 
 		await this.page.waitForTimeout(500);
 
-		const newStatus = await this.page.locator('#omnichannel-status-toggle').getAttribute('data-tooltip');
+		const newStatus = await this.page.locator('#omnichannel-status-toggle').getAttribute('title');
 		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
 	}
 
