@@ -48,7 +48,7 @@ const EnterE2EPasswordModal = ({
 			onCancel={onCancel}
 		>
 			<Box dangerouslySetInnerHTML={{ __html: t('E2E_password_request_text') }} />
-			<FieldGroup mbs='x24' w='full'>
+			<FieldGroup mbs={24} w='full'>
 				<Field>
 					<Field.Row>
 						<PasswordInput

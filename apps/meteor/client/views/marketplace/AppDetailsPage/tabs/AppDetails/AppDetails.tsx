@@ -1,4 +1,4 @@
-import { Box, ButtonGroup, Callout, Chip, Margins } from '@rocket.chat/fuselage';
+import { Box, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -8,6 +8,7 @@ import React from 'react';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
 import AppDetailsAPIs from './AppDetailsAPIs';
+import { normalizeUrl } from './normalizeUrl';
 
 const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 	const t = useTranslation();
@@ -18,12 +19,15 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 		categories = [],
 		screenshots,
 		apis,
-		documentationUrl,
+		documentationUrl: documentation,
 	} = app;
 
 	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
 	const isCarouselVisible = screenshots && Boolean(screenshots.length);
-	const normalizeDocumentationUrl = documentationUrl?.startsWith('http') ? documentationUrl : `https://${documentationUrl}`;
+
+	const normalizedHomepageUrl = normalizeUrl(homepage);
+	const normalizedSupportUrl = normalizeUrl(support);
+	const normalizedDocumentationUrl = normalizeUrl(documentation);
 
 	return (
 		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>
@@ -44,56 +48,53 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 			)}
 
 			<Box display='flex' flexDirection='column'>
-				<Margins block='x17'>
+				<Margins block={16}>
 					{isCarouselVisible && <ScreenshotCarouselAnchor screenshots={screenshots} />}
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8' color='titles-labels'>
+						<Box fontScale='h4' mbe={8} color='titles-labels'>
 							{t('Description')}
 						</Box>
 						<Box dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }} withRichContent />
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8' color='titles-labels'>
+						<Box fontScale='h4' mbe={8} color='titles-labels'>
 							{t('Categories')}
 						</Box>
-						<ButtonGroup flexWrap='wrap'>
+						<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='start' alignItems='center'>
 							{categories?.map((current) => (
-								<Chip key={current} textTransform='uppercase'>
+								<Chip key={current} textTransform='uppercase' m={4}>
 									{current}
 								</Chip>
 							))}
-						</ButtonGroup>
+						</Box>
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8'>
+						<Box fontScale='h4' mbe={8}>
 							{t('Contact')}
 						</Box>
-						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap' mbe='x24'>
-							<Box display='flex' flexDirection='column' mie='x12' flexGrow={1}>
+						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap' mbe={24}>
+							<Box display='flex' flexDirection='column' mie={12} flexGrow={1}>
 								<Box fontScale='h4' color='hint'>
 									{t('Author_Site')}
 								</Box>
-								<ExternalLink to={homepage} />
+								{normalizedHomepageUrl ? <ExternalLink to={normalizedHomepageUrl}>{homepage}</ExternalLink> : homepage}
 							</Box>
 							<Box display='flex' flexDirection='column' flexGrow={1}>
 								<Box fontScale='h4' color='hint'>
 									{t('Support')}
 								</Box>
-								<ExternalLink to={support} />
+								{normalizedSupportUrl ? <ExternalLink to={normalizedSupportUrl}>{support}</ExternalLink> : support}
 							</Box>
 						</Box>
-
-						{documentationUrl && (
-							<>
-								<Box fontScale='h4' color='hint'>
-									{t('Documentation')}
-								</Box>
-								<ExternalLink to={normalizeDocumentationUrl} />
-							</>
-						)}
+						<>
+							<Box fontScale='h4' color='hint'>
+								{t('Documentation')}
+							</Box>
+							{normalizedDocumentationUrl ? <ExternalLink to={normalizedDocumentationUrl}>{documentation}</ExternalLink> : documentation}
+						</>
 					</Box>
 
 					{apis?.length ? (

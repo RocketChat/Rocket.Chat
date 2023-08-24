@@ -13,7 +13,7 @@ export class FederationAdmin {
 	}
 
 	get inputSearchRooms(): Locator {
-		return this.page.locator('input[placeholder ="Search Rooms"]');
+		return this.page.locator('input[placeholder ="Search rooms"]');
 	}
 
 	get inputSearchUsers(): Locator {
@@ -65,11 +65,11 @@ export class FederationAdmin {
 	}
 
 	get roomsBtnDelete(): Locator {
-		return this.page.locator('//button[text()="Delete"]');
+		return this.page.locator('role=button[name="Delete"]');
 	}
 
 	get roomsBtnUploadAvatar(): Locator {
-		return this.page.locator('//button[text()="Upload"]');
+		return this.page.locator('role=button[name="Upload"]');
 	}
 
 	get roomsBtnDefaultAvatar(): Locator {

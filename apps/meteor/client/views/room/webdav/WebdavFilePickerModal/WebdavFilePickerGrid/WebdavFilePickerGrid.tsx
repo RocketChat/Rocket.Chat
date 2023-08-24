@@ -28,7 +28,7 @@ const WebdavFilePickerGrid = ({ webdavNodes, onNodeClick, isLoading }: WebdavFil
 				Array(6)
 					.fill('')
 					.map((_, index) => (
-						<WebdavFilePickerGridItem p='x4' key={index}>
+						<WebdavFilePickerGridItem p={4} key={index}>
 							<Skeleton variant='rect' width='full' height='full' />
 						</WebdavFilePickerGridItem>
 					))}
@@ -38,7 +38,7 @@ const WebdavFilePickerGrid = ({ webdavNodes, onNodeClick, isLoading }: WebdavFil
 
 					return (
 						<WebdavFilePickerGridItem key={index} className={hoverStyle} onClick={(): void => onNodeClick(webdavNode)}>
-							<Icon mie='x4' size='x72' name={icon} />
+							<Icon mie={4} size='x72' name={icon} />
 							<Box textAlign='center'>{webdavNode.basename}</Box>
 						</WebdavFilePickerGridItem>
 					);

@@ -27,7 +27,7 @@ const Template: ComponentStory<typeof Medium> = (args) => (
 	<Medium
 		{...args}
 		titleIcon={
-			<Box mi='x4'>
+			<Box mi={4}>
 				<Status.Online />
 			</Box>
 		}

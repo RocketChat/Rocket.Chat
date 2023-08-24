@@ -57,6 +57,7 @@ export class UsersRaw extends BaseRaw {
 			{ key: { statusConnection: 1 }, sparse: 1 },
 			{ key: { appId: 1 }, sparse: 1 },
 			{ key: { type: 1 } },
+			{ key: { federated: 1 }, sparse: true },
 			{ key: { federation: 1 }, sparse: true },
 			{ key: { isRemote: 1 }, sparse: true },
 			{ key: { 'services.saml.inResponseTo': 1 } },
@@ -66,6 +67,7 @@ export class UsersRaw extends BaseRaw {
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
 			{ key: { 'active': 1, 'services.totp.enabled': 1 }, sparse: true }, // used by statistics
+			{ key: { importIds: 1 }, sparse: true },
 			// Used for case insensitive queries
 			// @deprecated
 			// Should be converted to unique index later within a migration to prevent errors of duplicated
@@ -76,6 +78,18 @@ export class UsersRaw extends BaseRaw {
 				unique: false,
 				sparse: true,
 				name: 'emails.address_insensitive',
+				collation: { locale: 'en', strength: 2, caseLevel: false },
+			},
+			// Used for case insensitive queries
+			// @deprecated
+			// Should be converted to unique index later within a migration to prevent errors of duplicated
+			// records. Those errors does not helps to identify the duplicated value so we need to find a
+			// way to help the migration in case it happens.
+			{
+				key: { username: 1 },
+				unique: false,
+				sparse: true,
+				name: 'username_insensitive',
 				collation: { locale: 'en', strength: 2, caseLevel: false },
 			},
 		];
@@ -167,6 +181,52 @@ export class UsersRaw extends BaseRaw {
 		Object.assign(query, { roles: { $in: roles } });
 
 		return this.findPaginated(query, options);
+	}
+
+	findAgentsWithDepartments(role, query, options) {
+		const roles = [].concat(role);
+
+		Object.assign(query, { roles: { $in: roles } });
+
+		const aggregate = [
+			{
+				$match: query,
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_livechat_department_agents',
+					localField: '_id',
+					foreignField: 'agentId',
+					as: 'departments',
+				},
+			},
+			{
+				$unwind: {
+					path: '$departments',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
+				$group: {
+					_id: '$_id',
+					username: { $first: '$username' },
+					status: { $first: '$status' },
+					statusLivechat: { $first: '$statusLivechat' },
+					name: { $first: '$name' },
+					emails: { $first: '$emails' },
+					livechat: { $first: '$livechat' },
+					departments: { $push: '$departments.departmentId' },
+				},
+			},
+			{
+				$facet: {
+					sortedResults: [{ $sort: options.sort }, { $skip: options.skip }, options.limit && { $limit: options.limit }],
+					totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+				},
+			},
+		];
+
+		return this.col.aggregate(aggregate).toArray();
 	}
 
 	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
@@ -321,13 +381,12 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	findOneByUsernameIgnoringCase(username, options) {
-		if (typeof username === 'string') {
-			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
-		}
-
 		const query = { username };
 
-		return this.findOne(query, options);
+		return this.findOne(query, {
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+			...options,
+		});
 	}
 
 	findOneWithoutLDAPByUsernameIgnoringCase(username, options) {

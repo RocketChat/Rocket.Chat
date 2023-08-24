@@ -21,6 +21,9 @@ import type {
 	ICalendarNotification,
 	IUserStatus,
 	ILivechatInquiryRecord,
+	ILivechatAgent,
+	IImportProgress,
+	IBanner,
 } from '@rocket.chat/core-typings';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
@@ -165,38 +168,13 @@ export interface StreamerEvents {
 			];
 		},
 		{ key: `${string}/calendar`; args: [ICalendarNotification] },
+		{ key: `${string}/banners`; args: [IBanner] },
 	];
 
 	'importers': [
 		{
 			key: 'progress';
-			args: [
-				{
-					step?:
-						| 'importer_new'
-						| 'importer_uploading'
-						| 'importer_downloading_file'
-						| 'importer_file_loaded'
-						| 'importer_preparing_started'
-						| 'importer_preparing_users'
-						| 'importer_preparing_channels'
-						| 'importer_preparing_messages'
-						| 'importer_user_selection'
-						| 'importer_importing_started'
-						| 'importer_importing_users'
-						| 'importer_importing_channels'
-						| 'importer_importing_messages'
-						| 'importer_importing_files'
-						| 'importer_finishing'
-						| 'importer_done'
-						| 'importer_import_failed'
-						| 'importer_import_cancelled';
-					rate: number;
-					key?: string;
-					name?: string;
-					count?: { completed: number; total: number };
-				},
-			];
+			args: [{ rate: number } | IImportProgress];
 		},
 	];
 
@@ -292,14 +270,16 @@ export interface StreamerEvents {
 						status: string;
 				  }
 				| {
-						type: 'queueData' | 'agentData';
-						data: {
-							[k: string]: unknown;
-						};
+						type: 'queueData';
+						data:
+							| {
+									[k: string]: unknown;
+							  }
+							| undefined;
 				  }
 				| {
 						type: 'agentData';
-						data: unknown;
+						data: ILivechatAgent | undefined | { hiddenInfo: boolean };
 				  }
 				| {
 						type: 'visitorData';

@@ -2,15 +2,15 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
 
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const ExportMessages = lazy(() => import('../../views/room/contextualBar/ExportMessages'));
 
-export const useExportMessagesRoomAction = (): ToolboxActionConfig | undefined => {
+export const useExportMessagesRoomAction = () => {
 	const room = useRoom();
 	const permitted = usePermission('mail-messages', room._id);
 
-	return useMemo(() => {
+	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!permitted) {
 			return undefined;
 		}
@@ -21,9 +21,10 @@ export const useExportMessagesRoomAction = (): ToolboxActionConfig | undefined =
 			anonymous: true,
 			title: 'Export_Messages',
 			icon: 'mail',
-			template: ExportMessages,
+			tabComponent: ExportMessages,
 			full: true,
 			order: 12,
+			type: 'communication',
 		};
 	}, [permitted]);
 };

@@ -1,5 +1,5 @@
 import { Livechat } from '../api';
-import { parse, upsert } from '../components/helpers';
+import { upsert } from '../helpers/upsert';
 import { store } from '../store';
 import { createToken } from './random';
 
@@ -68,8 +68,6 @@ export const normalizeMessage = async (message) => {
 	if (isThreadMsg) {
 		return null;
 	}
-
-	message.msg = parse(message.msg);
 
 	if (message && message.tmid && !message.threadMsg) {
 		return normalizeThreadMessage(message);

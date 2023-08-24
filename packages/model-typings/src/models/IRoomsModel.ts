@@ -213,7 +213,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		options?: FindOptions<IRoom>,
 		includeFederatedRooms?: boolean,
 	): FindCursor<IRoom>;
-	findByNameAndTypesNotInIds(
+	findByNameOrFNameAndTypesNotInIds(
 		name: IRoom['name'] | RegExp,
 		types: IRoom['t'][],
 		ids: string[],
