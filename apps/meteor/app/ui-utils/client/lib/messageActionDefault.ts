@@ -241,9 +241,9 @@ Meteor.startup(async () => {
 				},
 			});
 		},
-		condition({ subscription, room }) {
+		condition({ subscription, room, message }) {
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
-			if (isLivechatRoom) {
+			if (isLivechatRoom || message.u._id === Meteor.userId()) {
 				return false;
 			}
 			return Boolean(subscription);
