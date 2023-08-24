@@ -81,7 +81,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	describe('livechat/analytics/dashboards/conversations-by-source', () => {
 		it('should return an error when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await updatePermission('view-livechat-reports', []);
 			await request
 				.get(api('livechat/analytics/dashboards/conversations-by-source'))
 				.set(credentials)
@@ -89,7 +89,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(403);
 		});
 		it('should return an error when the start and end parameters are not provided', async () => {
-			await restorePermissionToRoles('view-livechat-manager');
+			await restorePermissionToRoles('view-livechat-reports');
 			await request.get(api('livechat/analytics/dashboards/conversations-by-source')).set(credentials).expect(400);
 		});
 		it('should return an error when the start parameter is not provided', async () => {
@@ -192,7 +192,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 	describe('livechat/analytics/dashboards/conversations-by-status', () => {
 		it('should return an error when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await updatePermission('view-livechat-reports', []);
 			await request
 				.get(api('livechat/analytics/dashboards/conversations-by-status'))
 				.set(credentials)
@@ -200,7 +200,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(403);
 		});
 		it('should return an error when the start and end parameters are not provided', async () => {
-			await restorePermissionToRoles('view-livechat-manager');
+			await restorePermissionToRoles('view-livechat-reports');
 			await request.get(api('livechat/analytics/dashboards/conversations-by-status')).set(credentials).expect(400);
 		});
 		it('should return an error when the start parameter is not provided', async () => {
@@ -286,7 +286,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 	describe('livechat/analytics/dashboards/conversations-by-department', () => {
 		it('should return an error when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await updatePermission('view-livechat-reports', []);
 			await request
 				.get(api('livechat/analytics/dashboards/conversations-by-department'))
 				.set(credentials)
@@ -294,7 +294,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(403);
 		});
 		it('should return an error when the start and end parameters are not provided', async () => {
-			await restorePermissionToRoles('view-livechat-manager');
+			await restorePermissionToRoles('view-livechat-reports');
 			await request.get(api('livechat/analytics/dashboards/conversations-by-department')).set(credentials).expect(400);
 		});
 		it('should return an error when the start parameter is not provided', async () => {
@@ -388,7 +388,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 	describe('livechat/analytics/dashboards/conversations-by-tags', () => {
 		it('should return an error when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await updatePermission('view-livechat-reports', []);
 			await request
 				.get(api('livechat/analytics/dashboards/conversations-by-tags'))
 				.set(credentials)
@@ -396,7 +396,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(403);
 		});
 		it('should return an error when the start and end parameters are not provided', async () => {
-			await restorePermissionToRoles('view-livechat-manager');
+			await restorePermissionToRoles('view-livechat-reports');
 			await request.get(api('livechat/analytics/dashboards/conversations-by-tags')).set(credentials).expect(400);
 		});
 		it('should return an error when the start parameter is not provided', async () => {
@@ -482,7 +482,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 	describe('livechat/analytics/dashboards/conversations-by-agent', () => {
 		it('should return an error when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await updatePermission('view-livechat-reports', []);
 			await request
 				.get(api('livechat/analytics/dashboards/conversations-by-agent'))
 				.set(credentials)
@@ -490,7 +490,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(403);
 		});
 		it('should return an error when the start and end parameters are not provided', async () => {
-			await restorePermissionToRoles('view-livechat-manager');
+			await restorePermissionToRoles('view-livechat-reports');
 			await request.get(api('livechat/analytics/dashboards/conversations-by-agent')).set(credentials).expect(400);
 		});
 		it('should return an error when the start parameter is not provided', async () => {

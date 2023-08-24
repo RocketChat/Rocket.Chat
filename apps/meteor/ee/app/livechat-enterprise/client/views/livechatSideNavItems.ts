@@ -42,10 +42,3 @@ registerOmnichannelSidebarItem({
 	i18nLabel: 'Priorities',
 	permissionGranted: () => hasAtLeastOnePermission('manage-livechat-priorities'),
 });
-
-registerOmnichannelSidebarItem({
-	href: '/omnichannel/reports',
-	icon: 'file',
-	i18nLabel: 'Reports',
-	permissionGranted: (): boolean => hasPermission('view-livechat-analytics'),
-});

@@ -17,6 +17,7 @@ export const omnichannelEEPermissions = [
 	{ _id: 'spy-voip-calls', roles: [adminRole, livechatManagerRole, livechatMonitorRole] },
 	{ _id: 'outbound-voip-calls', roles: [adminRole, livechatManagerRole] },
 	{ _id: 'request-pdf-transcript', roles: [adminRole, livechatManagerRole, livechatMonitorRole, livechatAgentRole] },
+	{ _id: 'view-livechat-reports', roles: [adminRole, livechatManagerRole, livechatMonitorRole] },
 ];
 
 export const createPermissions = async (): Promise<void> => {

@@ -32,7 +32,7 @@ const checkDates = (start: Moment, end: Moment) => {
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversations-by-source',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardConversationsByType },
+	{ authRequired: true, permissionsRequired: ['view-livechat-reports'], validateParams: isGETDashboardConversationsByType },
 	{
 		async get() {
 			const { start, end } = this.queryParams;
@@ -52,7 +52,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversations-by-status',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardConversationsByType },
+	{ authRequired: true, permissionsRequired: ['view-livechat-reports'], validateParams: isGETDashboardConversationsByType },
 	{
 		async get() {
 			const { start, end } = this.queryParams;
@@ -71,7 +71,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversations-by-department',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardConversationsByType },
+	{ authRequired: true, permissionsRequired: ['view-livechat-reports'], validateParams: isGETDashboardConversationsByType },
 	{
 		async get() {
 			const { start, end } = this.queryParams;
@@ -91,7 +91,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversations-by-tags',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardConversationsByType },
+	{ authRequired: true, permissionsRequired: ['view-livechat-reports'], validateParams: isGETDashboardConversationsByType },
 	{
 		async get() {
 			const { start, end } = this.queryParams;
@@ -111,7 +111,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversations-by-agent',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardConversationsByType },
+	{ authRequired: true, permissionsRequired: ['view-livechat-reports'], validateParams: isGETDashboardConversationsByType },
 	{
 		async get() {
 			const { start, end } = this.queryParams;
