@@ -48,6 +48,7 @@ export const ReportCard = ({
 
 	return (
 		<Box
+			is={Card}
 			minWidth={500}
 			maxWidth='calc(100% - 16px)'
 			width={`calc(${width} - 16px)`}
