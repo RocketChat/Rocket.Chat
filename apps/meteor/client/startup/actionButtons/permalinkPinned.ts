@@ -10,7 +10,7 @@ Meteor.startup(() => {
 	MessageAction.addButton({
 		id: 'permalink-pinned',
 		icon: 'permalink',
-		label: 'Get_link',
+		label: 'Copy_link',
 		context: ['pinned'],
 		async action(_, props) {
 			try {

@@ -1705,7 +1705,7 @@
   "Generate_new_key": "Vygenerovat nový klíč",
   "Generate_New_Link": "Vytvořit nový odkaz",
   "Generating_key": "Generování klíče",
-  "Get_link": "Získat odkaz",
+  "Copy_link": "Získat odkaz",
   "get-password-policy-forbidRepeatingCharacters": "Heslo nesmí obsahovat opakující se znaky",
   "get-password-policy-forbidRepeatingCharactersCount": "Heslo nesmí obsahovat více než {{forbidRepeatingCharactersCount}} opakujících se znaků",
   "get-password-policy-maxLength": "Heslo nesmí být delší než {{maxLength}} znaků",

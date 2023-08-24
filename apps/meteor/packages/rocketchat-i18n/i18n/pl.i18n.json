@@ -2180,7 +2180,7 @@
   "Generate_new_key": "Wygeneruj nowy klucz",
   "Generate_New_Link": "Wygeneruj nowy link",
   "Generating_key": "Generowanie klucza",
-  "Get_link": "Skopiuj link",
+  "Copy_link": "Skopiuj link",
   "get-password-policy-forbidRepeatingCharacters": "Hasło nie powinno zawierać powtarzających się znaków",
   "get-password-policy-forbidRepeatingCharactersCount": "Hasło nie powinno zawierać więcej niż {{forbidRepeatingCharactersCount}} powtarzających się znaków",
   "get-password-policy-maxLength": "Hasło powinno mieć maksymalną długość {{maxLength}} znaków",

@@ -2257,7 +2257,7 @@
   "Generate_new_key": "Neuen Schlüssel erzeugen",
   "Generate_New_Link": "Neuen Link erstellen",
   "Generating_key": "Schlüssel generieren",
-  "Get_link": "Link abrufen",
+  "Copy_link": "Link abrufen",
   "get-password-policy-forbidRepeatingCharacters": "Das Passwort sollte keine sich wiederholenden Zeichen enthalten",
   "get-password-policy-forbidRepeatingCharactersCount": "Das Passwort darf nicht mehr als {{forbidRepeatingCharactersCount}} Zeichen enthalten, die sich wiederholen",
   "get-password-policy-maxLength": "Das Passwort sollte maximal {{maxLength}} Zeichen lang sein",

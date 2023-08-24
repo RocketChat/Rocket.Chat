@@ -1763,7 +1763,7 @@
   "Generate_new_key": "새 키 생성",
   "Generate_New_Link": "새 링크 생성",
   "Generating_key": "키 생성",
-  "Get_link": "링크 생성",
+  "Copy_link": "링크 생성",
   "get-password-policy-forbidRepeatingCharacters": "비밀번호는 반복되는 문자를 포함하지 않아야합니다",
   "get-password-policy-forbidRepeatingCharactersCount": "비밀번호는 {{forbidRepeatingCharactersCount}} 반복 문자를 초과 할 수 없습니다",
   "get-password-policy-maxLength": "비밀번호는 최대 {{maxLength}} 자 여야합니다.",

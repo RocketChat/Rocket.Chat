@@ -2040,7 +2040,7 @@
   "Generate_new_key": "Gerar uma nova chave",
   "Generate_New_Link": "Gerar novo link",
   "Generating_key": "Gerando chave",
-  "Get_link": "Obter link",
+  "Copy_link": "Obter link",
   "get-password-policy-forbidRepeatingCharacters": "A senha não deve conter caracteres repetidos",
   "get-password-policy-forbidRepeatingCharactersCount": "A senha não deve conter mais de {{forbidRepeatingCharactersCount}} caracteres repetidos",
   "get-password-policy-maxLength": "A senha deve ter no máximo {{maxLength}} caracteres",

@@ -2147,7 +2147,7 @@
   "Generate_new_key": "Сгенерировать новый ключ",
   "Generate_New_Link": "Сгенерировать новую ссылку",
   "Generating_key": "Генерация ключа",
-  "Get_link": "Получить ссылку",
+  "Copy_link": "Получить ссылку",
   "get-password-policy-forbidRepeatingCharacters": "Пароль не может содержать повторяющихся символов подряд",
   "get-password-policy-forbidRepeatingCharactersCount": "Пароль не должен содержать более {{forbidRepeatingCharactersCount}} повторяющихся символов в пароле",
   "get-password-policy-maxLength": "Пароль должен быть максимум {{maxLength}} символов длиной",

@@ -2019,7 +2019,7 @@
   "Generate_new_key": "إنشاء مفتاح جديد",
   "Generate_New_Link": "إنشاء رابط جديد",
   "Generating_key": "يتم إنشاء مفتاح",
-  "Get_link": "الحصول على رابط",
+  "Copy_link": "الحصول على رابط",
   "get-password-policy-forbidRepeatingCharacters": "يجب ألا تحتوي كلمة المرور على رموز متكررة",
   "get-password-policy-forbidRepeatingCharactersCount": "يجب ألا تحتوي كلمة المرور على أكثر من {{forbidRepeatingCharactersCount}} من الرموز المتكررة",
   "get-password-policy-maxLength": "يجب أن يزيد طول كلمة المرور على {{maxLength}} من الرموز",

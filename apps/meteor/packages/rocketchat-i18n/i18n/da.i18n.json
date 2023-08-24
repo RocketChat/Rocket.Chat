@@ -1716,7 +1716,7 @@
   "Generate_new_key": "Generér en ny nøgle",
   "Generate_New_Link": "Generér nyt link",
   "Generating_key": "Genererer nøgle",
-  "Get_link": "Få link",
+  "Copy_link": "Få link",
   "get-password-policy-forbidRepeatingCharacters": "Adgangskoden bør ikke indeholde gentagne tegn",
   "get-password-policy-forbidRepeatingCharactersCount": "Adgangskoden bør ikke indeholde mere end {{forbidRepeatingCharactersCount}} gentagne tegn",
   "get-password-policy-maxLength": "Adgangskoden skal maksimalt være {{maxLength}} tegn lang",

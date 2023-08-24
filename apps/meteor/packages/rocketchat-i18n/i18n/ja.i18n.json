@@ -1992,7 +1992,7 @@
   "Generate_new_key": "新しいキーを生成",
   "Generate_New_Link": "新しいリンクの生成",
   "Generating_key": "キーを生成中",
-  "Get_link": "リンクの取得",
+  "Copy_link": "リンクの取得",
   "get-password-policy-forbidRepeatingCharacters": "パスワードに繰り返し文字を含めないでください",
   "get-password-policy-forbidRepeatingCharactersCount": "パスワードに{{forbidRepeatingCharactersCount}}個を超える繰り返し文字を含めることはできません",
   "get-password-policy-maxLength": "パスワードは{{maxLength}}文字以内にする必要があります",
