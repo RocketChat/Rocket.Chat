@@ -10,7 +10,7 @@ import UserInfo from '../../../../components/UserInfo';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 type UserInfoActionsProps = {
-	user: Pick<IUser, '_id' | 'username'>;
+	user: Pick<IUser, '_id' | 'username' | 'name'>;
 	rid: IRoom['_id'];
 	backToList: () => void;
 };
@@ -18,13 +18,13 @@ type UserInfoActionsProps = {
 const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): ReactElement => {
 	const t = useTranslation();
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
-		{ _id: user._id, username: user.username },
+		{ _id: user._id, username: user.username, name: user.name },
 		rid,
 		backToList,
 	);
 
 	const menu = useMemo(() => {
-		if (!menuOptions) {
+		if (!menuOptions?.length) {
 			return null;
 		}
 
