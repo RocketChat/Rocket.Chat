@@ -606,7 +606,7 @@ const RoomBody = (): ReactElement => {
 								>
 									<MessageListErrorBoundary>
 										<ScrollableContentWrapper ref={wrapperRef}>
-											<ul className='messages-list' aria-live='polite'>
+											<ul className='messages-list' aria-live='polite' aria-busy={isLoadingMoreMessages}>
 												{canPreview ? (
 													<>
 														{hasMorePreviousMessages ? (
