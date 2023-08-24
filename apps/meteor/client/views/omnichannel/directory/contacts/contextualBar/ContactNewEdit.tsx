@@ -179,7 +179,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 
 	if (isLoadingCustomFields) {
 		return (
-			<ContextualbarContent p='x24'>
+			<ContextualbarContent>
 				<FormSkeleton />
 			</ContextualbarContent>
 		);

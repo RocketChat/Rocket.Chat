@@ -17,7 +17,7 @@ function ContactEditWithData({ id, close }) {
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return (
-			<ContextualbarContent p='x24'>
+			<ContextualbarContent>
 				<FormSkeleton />
 			</ContextualbarContent>
 		);
