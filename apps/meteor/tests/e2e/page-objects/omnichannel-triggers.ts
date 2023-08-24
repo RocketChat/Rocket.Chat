@@ -52,6 +52,10 @@ export class OmnichannelTriggers {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--success >> nth=0');
 	}
 
+	get btnCloseToastMessage(): Locator {
+		return this.toastMessage.locator('role=button');
+	}
+
 	get inputSearch() {
 		return this.page.locator('[placeholder="Search"]');
 	}

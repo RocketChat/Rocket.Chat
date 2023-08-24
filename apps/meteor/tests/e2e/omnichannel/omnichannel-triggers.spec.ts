@@ -69,19 +69,21 @@ test.describe.serial('Omnichannel Triggers', () => {
 	test('create and edit trigger', async () => {
 		await test.step('expect create new trigger', async () => {
 			await agent.poHomeOmnichannel.triggers.createTrigger(triggersName, triggerMessage);
-			await expect(agent.poHomeOmnichannel.triggers.toastMessage).toBeVisible();
+			await agent.poHomeOmnichannel.triggers.btnCloseToastMessage.click();
 		});
 
 		await test.step('expect update trigger', async () => {
 			await agent.poHomeOmnichannel.triggers.firstRowInTriggerTable(triggersName).click();
 			await agent.poHomeOmnichannel.triggers.updateTrigger(triggersName);
-			await expect(agent.poHomeOmnichannel.triggers.toastMessage).toBeVisible();
+			await agent.poHomeOmnichannel.triggers.btnCloseToastMessage.click();
 		});
 	});
 
 	test('trigger condition: chat opened by visitor', async ({ page }) => {
-		await page.goto('/livechat');
-		await poLiveChat.openLiveChat();
+		await test.step('expect to start conversation', async () => {
+			await page.goto('/livechat');
+			await poLiveChat.openLiveChat();
+		});
 
 		await test.step('expect trigger message before registration', async () => {
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
@@ -111,13 +113,16 @@ test.describe.serial('Omnichannel Triggers', () => {
 	test('trigger condition: after guest registration', async ({ page }) => {
 		await test.step('expect update trigger to after guest registration', async () => {
 			await agent.poHomeOmnichannel.triggers.firstRowInTriggerTable(`edited-${triggersName}`).click();
-			await agent.poHomeOmnichannel.triggers.fillTriggerForm({ condition: 'after-guest-registration' });
+			await agent.poHomeOmnichannel.triggers.fillTriggerForm({ condition: 'after-guest-registration', triggerMessage });
 			await agent.poHomeOmnichannel.triggers.btnSave.click();
-			await expect(agent.poHomeOmnichannel.triggers.toastMessage).toBeVisible();
+			await agent.poHomeOmnichannel.triggers.btnCloseToastMessage.click();
+			await agent.page.waitForTimeout(500);
 		});
 
-		await page.goto('/livechat');
-		await poLiveChat.openLiveChat();
+		await test.step('expect to start conversation', async () => {
+			await page.goto('/livechat');
+			await poLiveChat.openLiveChat();
+		});
 
 		await test.step('expect not to have trigger message before registration', async () => {
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).not.toBeVisible();
