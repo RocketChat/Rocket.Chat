@@ -15,6 +15,7 @@ import { useIgnoreUserAction } from './actions/useIgnoreUserAction';
 import { useMuteUserAction } from './actions/useMuteUserAction';
 import { useRedirectModerationConsole } from './actions/useRedirectModerationConsole';
 import { useRemoveUserAction } from './actions/useRemoveUserAction';
+import { useReportUser } from './actions/useReportUser';
 
 export type UserInfoActionType = 'communication' | 'privileges' | 'management';
 
@@ -33,7 +34,7 @@ type UserMenuAction = {
 }[];
 
 export const useUserInfoActions = (
-	user: Pick<IUser, '_id' | 'username'>,
+	user: Pick<IUser, '_id' | 'username' | 'name'>,
 	rid: IRoom['_id'],
 	reload?: () => void,
 	size = 2,
@@ -48,6 +49,7 @@ export const useUserInfoActions = (
 	const muteUser = useMuteUserAction(user, rid);
 	const removeUser = useRemoveUserAction(user, rid, reload);
 	const call = useCallAction(user);
+	const reportUserOption = useReportUser(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
 
 	const userinfoActions = useMemo(
@@ -61,6 +63,7 @@ export const useUserInfoActions = (
 			...(ignoreUser && { ignoreUser }),
 			...(muteUser && { muteUser }),
 			...(blockUser && { toggleBlock: blockUser }),
+			...(reportUserOption && { reportUser: reportUserOption }),
 			...(removeUser && { removeUser }),
 		}),
 		[
@@ -74,6 +77,7 @@ export const useUserInfoActions = (
 			muteUser,
 			blockUser,
 			removeUser,
+			reportUserOption,
 			openModerationConsole,
 		],
 	);
