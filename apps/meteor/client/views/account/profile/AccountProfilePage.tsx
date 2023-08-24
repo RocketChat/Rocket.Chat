@@ -1,4 +1,3 @@
-import type { AvatarObject, IUser } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { SHA256 } from '@rocket.chat/sha256';
@@ -16,45 +15,14 @@ import type { ReactElement } from 'react';
 import React, { useState, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
 import Page from '../../../components/Page';
 import AccountProfileForm from './AccountProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
+import { getProfileInitialValues } from './getProfileInitialValues';
 import { useAllowPasswordChange } from './useAllowPasswordChange';
 
-export type AccountFormValues = {
-	realname: string;
-	email: string;
-	username: string;
-	password: string;
-	confirmationPassword: string;
-	avatar: AvatarObject;
-	url: string;
-	statusText: string;
-	statusType: string;
-	bio: string;
-	customFields: Record<string, string>;
-	nickname: string;
-};
-
-const getInitialValues = (user: IUser | null): AccountFormValues => ({
-	realname: user?.name ?? '',
-	email: user ? getUserEmailAddress(user) || '' : '',
-	username: user?.username ?? '',
-	password: '',
-	confirmationPassword: '',
-	avatar: '' as AvatarObject,
-	url: '',
-	statusText: user?.statusText ?? '',
-	statusType: user?.status ?? '',
-	bio: user?.bio ?? '',
-	customFields: user?.customFields ?? {},
-	nickname: user?.nickname ?? '',
-});
-
 // TODO: enforce useMutation
-// TODO: replace useMethod to useEndpoint
 const AccountProfilePage = (): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();
@@ -69,7 +37,7 @@ const AccountProfilePage = (): ReactElement => {
 	const { hasLocalPassword } = useAllowPasswordChange();
 
 	const methods = useForm({
-		defaultValues: getInitialValues(user),
+		defaultValues: getProfileInitialValues(user),
 		mode: 'onBlur',
 	});
 
@@ -165,7 +133,7 @@ const AccountProfilePage = (): ReactElement => {
 			</Page.ScrollableContentWithShadow>
 			<Page.Footer isDirty={isDirty}>
 				<ButtonGroup>
-					<Button disabled={!isDirty} onClick={() => reset(getInitialValues(user))}>
+					<Button disabled={!isDirty} onClick={() => reset(getProfileInitialValues(user))}>
 						{t('Cancel')}
 					</Button>
 					<Button form={profileFormId} data-qa='AccountProfilePageSaveButton' primary disabled={!isDirty || loggingOut} type='submit'>
