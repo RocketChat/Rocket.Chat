@@ -35,9 +35,7 @@ export const upsertPermissions = async (): Promise<void> => {
 			[key: string]: IPermission;
 		} = {};
 
-		const selector = { level: 'settings' as const, ...(settingId && { settingId }) };
-
-		await Permissions.find(selector).forEach((permission: IPermission) => {
+		await Permissions.findByLevel('settings', settingId).forEach((permission: IPermission) => {
 			previousSettingPermissions[permission._id] = permission;
 		});
 		return previousSettingPermissions;
@@ -114,6 +112,7 @@ export const upsertPermissions = async (): Promise<void> => {
 
 	// register a callback for settings for be create in higher-level-packages
 	settings.on('*', async ([settingId]) => {
+		console.log('settings.on', settingId);
 		const previousSettingPermissions = await getPreviousPermissions(settingId);
 		const setting = await Settings.findOneById(settingId);
 		if (setting && !setting.hidden) {

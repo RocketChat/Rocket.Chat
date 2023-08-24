@@ -1,6 +1,6 @@
 import type { IPermission, IRole, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IPermissionsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, IndexDescription } from 'mongodb';
+import type { Collection, Db, FindCursor, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -59,5 +59,9 @@ export class PermissionsRaw extends BaseRaw<IPermission> implements IPermissions
 
 	async removeRole(permission: string, role: IRole['_id']): Promise<void> {
 		await this.updateOne({ _id: permission, roles: role }, { $pull: { roles: role } });
+	}
+
+	findByLevel(level: 'settings', settingId?: string): FindCursor<IPermission> {
+		return this.find({ level, ...(settingId && { settingId }) });
 	}
 }
