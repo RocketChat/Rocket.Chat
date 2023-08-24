@@ -17,16 +17,18 @@ type MessageActionMenuProps = {
 
 const getSectionOrder = (section: string): number => {
 	switch (section) {
-		case 'interaction':
+		case 'communication':
 			return 0;
-		case 'duplication':
+		case 'interaction':
 			return 1;
-		case 'apps':
+		case 'duplication':
 			return 2;
-		case 'management':
+		case 'apps':
 			return 3;
-		default:
+		case 'management':
 			return 4;
+		default:
+			return 5;
 	}
 };
 
@@ -59,8 +61,6 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 
 		return acc;
 	}, [] as unknown as [section: string, options: Array<MessageActionConfigOption>][]);
-
-	console.log({ groupOptions });
 
 	return (
 		<>
