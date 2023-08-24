@@ -1450,7 +1450,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		const update: UpdateFilter<IRoom> = {
 			$addToSet: {
 				importIds: {
-					$each: importIds,
+					$each: ([] as string[]).concat(importIds),
 				},
 			},
 		};
