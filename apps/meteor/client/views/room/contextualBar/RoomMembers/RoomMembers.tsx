@@ -1,8 +1,8 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
-import { useMutableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -20,7 +20,7 @@ import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import RoomMembersRow from './RoomMembersRow';
 
-type RoomMemberUser = Pick<IUser, 'username' | '_id' | '_updatedAt' | 'name' | 'status'>;
+type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status'>;
 
 type RoomMembersProps = {
 	rid: IRoom['_id'];
@@ -38,7 +38,7 @@ type RoomMembersProps = {
 	onClickView: (e: MouseEvent<HTMLElement>) => void;
 	onClickAdd?: () => void;
 	onClickInvite?: () => void;
-	loadMoreItems: (start: number, end: number) => void;
+	loadMoreItems: () => void;
 	renderRow?: (props: ComponentProps<typeof RoomMembersRow>) => ReactElement | null;
 	reload: () => void;
 };
@@ -66,7 +66,6 @@ const RoomMembers = ({
 	const t = useTranslation();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
 	const itemData = useMemo(() => ({ onClickView, rid }), [onClickView, rid]);
-	const loadMore = useMutableCallback((start) => !loading && loadMoreItems(start, Math.min(50, total - start)));
 
 	const options: SelectOption[] = useMemo(
 		() => [
@@ -78,15 +77,13 @@ const RoomMembers = ({
 
 	const loadMoreMembers = useDebouncedCallback(
 		() => {
-			if (members.length >= total) {
-				return;
-			}
-
-			loadMore(members.length);
+			loadMoreItems();
 		},
 		300,
-		[loadMore, members],
+		[loadMoreItems, members],
 	);
+
+	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
 
 	return (
 		<>
@@ -95,8 +92,8 @@ const RoomMembers = ({
 				<ContextualbarTitle>{isTeam ? t('Teams_members') : t('Members')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent p='x12'>
-				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
+			<ContextualbarContent p={12}>
+				<Box display='flex' flexDirection='row' p={12} flexShrink={0}>
 					<TextInput
 						placeholder={t('Search_by_username')}
 						value={text}
@@ -104,34 +101,30 @@ const RoomMembers = ({
 						onChange={setText}
 						addon={<Icon name='magnifier' size='x20' />}
 					/>
-					<Box w='x144' mis='x8'>
+					<Box w='x144' mis={8}>
 						<Select onChange={(value): void => setType(value as 'online' | 'all')} value={type} options={options} />
 					</Box>
 				</Box>
 
 				{loading && (
-					<Box pi='x24' pb='x12'>
+					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
 
 				{error && (
-					<Box pi='x12' pb='x12'>
+					<Box pi={12} pb={12}>
 						<Callout type='danger'>{error.message}</Callout>
 					</Box>
 				)}
 
 				{!loading && members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 
-				{!loading && members && members.length > 0 && (
+				{!loading && members.length > 0 && (
 					<>
-						<Box pi='x18' pb='x12'>
+						<Box pi={18} pb={12}>
 							<Box is='span' color='hint' fontScale='p2'>
-								{t('Showing')}: {members.length}
-							</Box>
-
-							<Box is='span' color='hint' fontScale='p2' mis='x8'>
-								{t('Total')}: {total}
+								{t('Showing_current_of_total', { current: members.length, total })}
 							</Box>
 						</Box>
 
@@ -146,7 +139,9 @@ const RoomMembers = ({
 								data={members}
 								// eslint-disable-next-line react/no-multi-comp
 								components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
-								itemContent={(index, data): ReactElement => <RowComponent data={itemData} user={data} index={index} reload={reload} />}
+								itemContent={(index, data): ReactElement => (
+									<RowComponent useRealName={useRealName} data={itemData} user={data} index={index} reload={reload} />
+								)}
 							/>
 						</Box>
 					</>
@@ -156,14 +151,12 @@ const RoomMembers = ({
 				<ContextualbarFooter>
 					<ButtonGroup stretch>
 						{onClickInvite && (
-							<Button onClick={onClickInvite} width='50%'>
-								<Icon name='link' size='x20' mie='x4' />
+							<Button icon='link' onClick={onClickInvite} width='50%'>
 								{t('Invite_Link')}
 							</Button>
 						)}
 						{onClickAdd && (
-							<Button onClick={onClickAdd} width='50%' primary>
-								<Icon name='user-plus' size='x20' mie='x4' />
+							<Button icon='user-plus' onClick={onClickAdd} width='50%' primary>
 								{t('Add')}
 							</Button>
 						)}

@@ -1,12 +1,12 @@
+import { Settings } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Inject } from 'meteor/meteorhacks:inject-initial';
 import { Tracker } from 'meteor/tracker';
-import { Settings } from '@rocket.chat/models';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 
+import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import { settings } from '../../settings/server';
 import { applyHeadInjections, headInjections, injectIntoBody, injectIntoHead } from './inject';
-import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 
 import './scripts';
 
@@ -150,11 +150,11 @@ injectIntoBody(
 	You need to enable JavaScript to run this app.
 </noscript>
 <div id="react-root">
-	<div class="page-loading">
-		<div class="loading-animation">
-			<div class="bounce bounce1"></div>
-			<div class="bounce bounce2"></div>
-			<div class="bounce bounce3"></div>
+	<div class="page-loading" role="alert" aria-busy="true" aria-live="polite" aria-label="loading">
+		<div class="loading__animation">
+			<div class="loading__animation__bounce"></div>
+			<div class="loading__animation__bounce"></div>
+			<div class="loading__animation__bounce"></div>
 		</div>
 	</div>
 </div>

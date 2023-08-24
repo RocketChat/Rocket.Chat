@@ -42,7 +42,7 @@ export class HomeContent {
 	}
 
 	get btnJoinRoom(): Locator {
-		return this.page.locator('//button[contains(text(), "Join")]');
+		return this.page.locator('role=button[name="Join"]');
 	}
 
 	async openRoomInfo(): Promise<void> {
@@ -145,7 +145,7 @@ export class HomeContent {
 	}
 
 	get btnVideoMessage(): Locator {
-		return this.page.locator('[data-id="video-message"]');
+		return this.page.locator('[data-qa-id="video-message"]');
 	}
 
 	get btnRecordAudio(): Locator {
@@ -177,7 +177,7 @@ export class HomeContent {
 	}
 
 	get btnSendTranscript(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-mail-arrow-top-right"]');
+		return this.page.locator('role=button[name="Send transcript"]');
 	}
 
 	get btnSendTranscriptToEmail(): Locator {

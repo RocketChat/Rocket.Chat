@@ -1,11 +1,11 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import type { IUser } from '@rocket.chat/core-typings';
 
-import { Messages } from '../../../models/client';
-import { asReactiveSource } from '../../../../client/lib/tracker';
 import { RoomManager } from '../../../../client/lib/RoomManager';
+import { asReactiveSource } from '../../../../client/lib/tracker';
+import { Messages } from '../../../models/client';
 
 export const usersFromRoomMessages = new Mongo.Collection<{
 	_id: string;
@@ -41,6 +41,7 @@ Meteor.startup(() => {
 				fields: {
 					'u.username': 1,
 					'u.name': 1,
+					'u._id': 1,
 					'ts': 1,
 				},
 				sort: { ts: -1 },
@@ -52,9 +53,9 @@ Meteor.startup(() => {
 				uniqueMessageUsersControl[username] = true;
 				return notMapped;
 			})
-			.forEach(({ u: { username, name }, ts }) =>
-				usersFromRoomMessages.upsert(username, {
-					_id: username,
+			.forEach(({ u: { username, name, _id }, ts }) =>
+				usersFromRoomMessages.upsert(_id, {
+					_id,
 					username,
 					name,
 					ts,

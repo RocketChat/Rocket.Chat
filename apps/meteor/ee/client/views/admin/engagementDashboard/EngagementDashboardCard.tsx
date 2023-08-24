@@ -11,7 +11,7 @@ type EngagementDashboardCardProps = {
 };
 
 const EngagementDashboardCard = ({ children, title = undefined }: EngagementDashboardCardProps): ReactElement => (
-	<Box mb='x16'>
+	<Box mb={16}>
 		<Card>
 			{title && <Card.Title>{title}</Card.Title>}
 			<Card.Body>

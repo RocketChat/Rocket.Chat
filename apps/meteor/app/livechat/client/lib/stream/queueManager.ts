@@ -1,8 +1,9 @@
 import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent } from '@rocket.chat/core-typings';
 
-import { LivechatInquiry } from '../../collections/LivechatInquiry';
+import { queryClient } from '../../../../../client/lib/queryClient';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
 import { sdk } from '../../../../utils/client/lib/SDKClient';
+import { LivechatInquiry } from '../../collections/LivechatInquiry';
 
 const departments = new Set();
 
@@ -10,12 +11,13 @@ const events = {
 	added: (inquiry: ILivechatInquiryRecord) => {
 		departments.has(inquiry.department) && LivechatInquiry.insert({ ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
 	},
-	changed: (inquiry: ILivechatInquiryRecord) => {
+	changed: async (inquiry: ILivechatInquiryRecord) => {
 		if (inquiry.status !== 'queued' || (inquiry.department && !departments.has(inquiry.department))) {
 			return LivechatInquiry.remove(inquiry._id);
 		}
 
 		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+		await queryClient.invalidateQueries(['/v1/rooms.info', inquiry.rid]);
 	},
 	removed: (inquiry: ILivechatInquiryRecord) => LivechatInquiry.remove(inquiry._id),
 };
@@ -32,12 +34,12 @@ const removeListenerOfDepartment = (departmentId: ILivechatDepartment['_id']) =>
 
 const appendListenerToDepartment = (departmentId: ILivechatDepartment['_id']) => {
 	departments.add(departmentId);
-	sdk.stream('livechat-inquiry-queue-observer', [`department/${departmentId}`], (args) => {
+	sdk.stream('livechat-inquiry-queue-observer', [`department/${departmentId}`], async (args) => {
 		if (!('type' in args)) {
 			return;
 		}
 		const { type, ...inquiry } = args;
-		events[args.type](inquiry);
+		await events[args.type](inquiry);
 	});
 	return () => removeListenerOfDepartment(departmentId);
 };
@@ -57,12 +59,12 @@ const getAgentsDepartments = async (userId: IOmnichannelAgent['_id']) => {
 const removeGlobalListener = () => sdk.stop('livechat-inquiry-queue-observer', 'public');
 
 const addGlobalListener = () => {
-	sdk.stream('livechat-inquiry-queue-observer', ['public'], (args) => {
+	sdk.stream('livechat-inquiry-queue-observer', ['public'], async (args) => {
 		if (!('type' in args)) {
 			return;
 		}
 		const { type, ...inquiry } = args;
-		events[args.type](inquiry);
+		await events[args.type](inquiry);
 	});
 	return removeGlobalListener;
 };

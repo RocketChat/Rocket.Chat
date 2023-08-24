@@ -1,9 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { Random } from '@rocket.chat/random';
-import type { ILivechatAgent, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IOmnichannelRoom, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Subscriptions, Messages } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 import {
 	isLiveChatRoomForwardProps,
 	isPOSTLivechatRoomCloseParams,
@@ -14,25 +12,24 @@ import {
 	isLiveChatRoomSaveInfoProps,
 	isPOSTLivechatRoomCloseByUserParams,
 } from '@rocket.chat/rest-typings';
+import { check } from 'meteor/check';
 
-import { settings as rcSettings } from '../../../../settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
+import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
-import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
-import { Livechat } from '../../lib/Livechat';
-import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { normalizeTransferredByData } from '../../lib/Helper';
-import { findVisitorInfo } from '../lib/visitors';
+import { isWidget } from '../../../../api/server/helpers/isWidget';
 import { canAccessRoomAsync } from '../../../../authorization/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { addUserToRoom } from '../../../../lib/server/functions';
-import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
-import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
-import { callbacks } from '../../../../../lib/callbacks';
+import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
+import { settings as rcSettings } from '../../../../settings/server';
+import { normalizeTransferredByData } from '../../lib/Helper';
+import { Livechat } from '../../lib/Livechat';
 import type { CloseRoomParams } from '../../lib/LivechatTyped';
-import { isWidget } from '../../../../api/server/helpers/isWidget';
-import { i18n } from '../../../../../server/lib/i18n';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
+import { findVisitorInfo } from '../lib/visitors';
 
-const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: true }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
+const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
 API.v1.addRoute('livechat/room', {
 	async get() {
@@ -59,7 +56,7 @@ API.v1.addRoute('livechat/room', {
 				return API.v1.success({ room, newRoom: false });
 			}
 
-			let agent;
+			let agent: SelectedAgent | undefined;
 			const agentObj = agentId && (await findAgent(agentId));
 			if (agentObj) {
 				if (isAgentWithInfo(agentObj)) {
@@ -233,11 +230,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/room.transfer',
-	{ validateParams: isPOSTLivechatRoomTransferParams },
+	{ validateParams: isPOSTLivechatRoomTransferParams, deprecationVersion: '7.0.0' },
 	{
 		async post() {
-			apiDeprecationLogger.warn('livechat/room.transfer has been deprecated. Use livechat/room.forward instead.');
-
 			const { rid, token, department } = this.bodyParams;
 
 			const guest = await findGuest(token);
@@ -265,13 +260,7 @@ API.v1.addRoute(
 				throw new Error('invalid-room');
 			}
 
-			return API.v1.success(
-				deprecationWarning({
-					endpoint: 'livechat/room.transfer',
-					versionWillBeRemoved: '6.0',
-					response: { room },
-				}),
-			);
+			return API.v1.success({ room });
 		},
 	},
 );
@@ -338,7 +327,8 @@ API.v1.addRoute(
 			}
 
 			const guest = await LivechatVisitors.findOneById(room.v?._id);
-			transferData.transferredBy = normalizeTransferredByData((await Meteor.userAsync()) || {}, room);
+			const transferedBy = this.user satisfies TransferByData;
+			transferData.transferredBy = normalizeTransferredByData(transferedBy, room);
 			if (transferData.userId) {
 				const userToTransfer = await Users.findOneById(transferData.userId);
 				if (userToTransfer) {
@@ -362,7 +352,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/room.visitor',
-	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPUTLivechatRoomVisitorParams },
+	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPUTLivechatRoomVisitorParams, deprecationVersion: '7.0.0' },
 	{
 		async put() {
 			// This endpoint is deprecated and will be removed in future versions.
@@ -389,9 +379,7 @@ API.v1.addRoute(
 				return API.v1.failure();
 			}
 
-			return API.v1.success(
-				deprecationWarning({ endpoint: 'livechat/room.visitor', versionWillBeRemoved: '6.0', response: { room: roomAfterChange } }),
-			);
+			return API.v1.success({ room: roomAfterChange });
 		},
 	},
 );

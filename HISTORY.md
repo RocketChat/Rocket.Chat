@@ -1,3 +1,195 @@
+# 6.2.11
+
+`2023-07-26  ·  1 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.3`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.39.1`
+
+### 🐛 Bug fixes
+
+
+- Performance issue when using api to create users ([#29914](https://github.com/RocketChat/Rocket.Chat/pull/29914) by [@KevLehman](https://github.com/KevLehman))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 6.2.11 ([#29915](https://github.com/RocketChat/Rocket.Chat/pull/29915) by [@rocketchat-github-ci](https://github.com/rocketchat-github-ci))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@rocketchat-github-ci](https://github.com/rocketchat-github-ci)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+
+# 6.2.5
+
+`2023-06-07  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.3`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.39.1`
+
+### 🐛 Bug fixes
+
+
+- Seat counter including apps ([#29489](https://github.com/RocketChat/Rocket.Chat/pull/29489))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
+# 6.2.4
+
+`2023-06-07  ·  2 🐛  ·  2 🔍  ·  5 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.3`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.39.1`
+
+### 🐛 Bug fixes
+
+
+- Imported messages are not displayed ([#29485](https://github.com/RocketChat/Rocket.Chat/pull/29485))
+
+  - Fix issue with imported messages not being displayed in the room.
+   - Fix importer agent being added as a member of every imported room.
+
+- message deletion fails if has files attached on filesystem storage ([#29313](https://github.com/RocketChat/Rocket.Chat/pull/29313))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Fix Omnichannel Webhooks tests ([#29344](https://github.com/RocketChat/Rocket.Chat/pull/29344))
+
+- use local httpbin container on github CI's ([#29067](https://github.com/RocketChat/Rocket.Chat/pull/29067))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 6.2.3
+
+`2023-06-05  ·  1 🎉  ·  9 🐛  ·  9 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.3`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.39.1`
+
+### 🎉 New features
+
+
+- Add support to use `TRANSPORTER` env var for monolith deployments ([#29373](https://github.com/RocketChat/Rocket.Chat/pull/29373))
+
+### 🐛 Bug fixes
+
+
+- `queuedForUser` endpoint not filtering by status ([#29189](https://github.com/RocketChat/Rocket.Chat/pull/29189))
+
+- Embedded layout stops working after navigation occurs ([#29147](https://github.com/RocketChat/Rocket.Chat/pull/29147))
+
+- File upload in Safari, IOS devices ([#27121](https://github.com/RocketChat/Rocket.Chat/pull/27121))
+
+- fix wrong %s translations  ([#29395](https://github.com/RocketChat/Rocket.Chat/pull/29395))
+
+- getActiveLocalUserCount query ([#29349](https://github.com/RocketChat/Rocket.Chat/pull/29349))
+
+- Import progress page stuck at 0% ([#29421](https://github.com/RocketChat/Rocket.Chat/pull/29421))
+
+  - Fix incorrect percentage calc;
+   - Fix import progress page stuck at 0%.
+
+- Importer crashes when sending the "active status" e-mail notification to users ([#29401](https://github.com/RocketChat/Rocket.Chat/pull/29401))
+
+  - Fix `getImportProgress` endpoint returning incorrect count info (`total: 0, completed: 0`);
+   - Fix server crash when sending the "active status" e-mail notification to users on import.
+
+- OTR session closing after 10 seconds without warning ([#29245](https://github.com/RocketChat/Rocket.Chat/pull/29245))
+
+  The `Notifications` streamer is sending two events when there's a license applied to the workspace and it's not using Microservices. I'm avoiding this by simply ignoring the second event in OTRRoom.
+
+  There is still an issue where there's 2 system messages being fired after accepting, but that's not a really big concern since it doesn't break anything.
+
+- unable to create user if Accounts_ManuallyApproveNewUsers is enabled ([#29293](https://github.com/RocketChat/Rocket.Chat/pull/29293))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@jessicaschelly](https://github.com/jessicaschelly)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 6.2.2
+
+`2023-05-19  ·  1 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.3`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.39.1`
+
+### 🐛 Bug fixes
+
+
+- Livechat `CSP` whitelist validation ([#29278](https://github.com/RocketChat/Rocket.Chat/pull/29278))
+
+  This PR fixes the Livechat CSP validation, which was incorrectly blocking access to the widget for all non whitelisted domains.
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@ggazzo](https://github.com/ggazzo)
+
+# 6.2.1
+
+`2023-05-17  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.3`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.39.1`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump apps engine and vm2 ([#29262](https://github.com/RocketChat/Rocket.Chat/pull/29262))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@AllanPazRibeiro](https://github.com/AllanPazRibeiro)
+
 # 6.2.0
 
 `2023-05-15  ·  9 🎉  ·  2 🚀  ·  80 🐛  ·  290 🔍  ·  56 👩‍💻👨‍💻`

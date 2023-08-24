@@ -1,8 +1,8 @@
-import { Messages, Rooms } from '@rocket.chat/models';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { Messages, Rooms } from '@rocket.chat/models';
 
-import { validateMessage, prepareMessageObject } from './sendMessage';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
+import { validateMessage, prepareMessageObject } from './sendMessage';
 
 export const insertMessage = async function (
 	user: Pick<IUser, '_id' | 'username'>,
@@ -29,14 +29,11 @@ export const insertMessage = async function (
 				},
 				{ $set: rest },
 			);
-		}
-		await Messages.insertOne({
-			_id,
-			// @ts-expect-error - seems it doesn't like this syntax :(
-			'u._id': message.u._id,
-			...rest,
-		});
-		if (!existingMessage) {
+		} else {
+			await Messages.insertOne({
+				_id,
+				...rest,
+			});
 			await Rooms.incMsgCountById(rid, 1);
 		}
 		message._id = _id;

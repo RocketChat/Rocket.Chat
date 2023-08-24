@@ -155,3 +155,15 @@ export const updateRecent = (recentList: string[]) => {
 		!recentPkgList.includes(_emoji) && recentPkgList.push(_emoji);
 	});
 };
+
+const getEmojiRender = (emojiName: string) => {
+	const emojiPackageName = emoji.list[emojiName]?.emojiPackage;
+	const emojiPackage = emoji.packages[emojiPackageName];
+	return emojiPackage?.render(emojiName);
+};
+
+export const getFrequentEmoji = (frequentEmoji: string[]) => {
+	return frequentEmoji?.map((frequentEmoji) => {
+		return { emoji: frequentEmoji, image: getEmojiRender(`:${frequentEmoji}:`) };
+	});
+};

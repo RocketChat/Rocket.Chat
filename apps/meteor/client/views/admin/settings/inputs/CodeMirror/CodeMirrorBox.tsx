@@ -35,12 +35,12 @@ const CodeMirrorBox = ({ label, children }: { label: string; children: ReactElem
 			className={['code-mirror-box', fullScreen && 'code-mirror-box-fullscreen', fullScreen && fullScreenStyle].filter(Boolean)}
 		>
 			{fullScreen && (
-				<Box fontScale='p1' mbe='x4'>
+				<Box fontScale='p1' mbe={4}>
 					{label}
 				</Box>
 			)}
 			{children}
-			<ButtonGroup mbs='x8'>
+			<ButtonGroup mbs={8}>
 				<Button primary onClick={(): void => toggleFullScreen()}>
 					{fullScreen ? t('Exit_Full_Screen') : t('Full_Screen')}
 				</Button>

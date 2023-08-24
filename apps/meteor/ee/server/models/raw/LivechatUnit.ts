@@ -1,11 +1,11 @@
-import type { IOmnichannelBusinessUnit, ILivechatUnitMonitor, ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { IOmnichannelBusinessUnit, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatUnitModel } from '@rocket.chat/model-typings';
-import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
 import { LivechatUnitMonitors, LivechatDepartment, LivechatRooms } from '@rocket.chat/models';
+import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
 
-import { getUnitsFromUser } from '../../../app/livechat-enterprise/server/lib/units';
-import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
+import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
+import { getUnitsFromUser } from '../../../app/livechat-enterprise/server/lib/units';
 
 const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUnit> = {}) => {
 	const query: FilterOperators<IOmnichannelBusinessUnit> = { ...originalQuery, type: 'u' };
@@ -69,13 +69,13 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 	}
 
 	async createOrUpdateUnit(
-		_id: string | undefined,
+		_id: string | null,
 		{ name, visibility }: { name: string; visibility: IOmnichannelBusinessUnit['visibility'] },
 		ancestors: string[],
-		monitors: ILivechatUnitMonitor[],
+		monitors: { monitorId: string; username: string }[],
 		departments: { departmentId: string }[],
 	): Promise<Omit<IOmnichannelBusinessUnit, '_updatedAt'>> {
-		monitors = ([] as ILivechatUnitMonitor[]).concat(monitors || []);
+		monitors = ([] as { monitorId: string; username: string }[]).concat(monitors || []);
 		ancestors = ([] as string[]).concat(ancestors || []);
 
 		const record = {
@@ -200,9 +200,13 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		return monitoredUnits.map((u) => u.unitId);
 	}
 
-	async findMonitoredDepartmentsByMonitorId(monitorId: string): Promise<ILivechatDepartment[]> {
+	async findMonitoredDepartmentsByMonitorId(monitorId: string, includeDisabled: boolean): Promise<ILivechatDepartment[]> {
 		const monitoredUnits = await this.findByMonitorId(monitorId);
-		return LivechatDepartment.findByUnitIds(monitoredUnits, {}).toArray();
+
+		if (includeDisabled) {
+			return LivechatDepartment.findByUnitIds(monitoredUnits, {}).toArray();
+		}
+		return LivechatDepartment.findActiveByUnitIds(monitoredUnits, {}).toArray();
 	}
 
 	countUnits(): Promise<number> {

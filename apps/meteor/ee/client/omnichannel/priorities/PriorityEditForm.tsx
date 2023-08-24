@@ -80,7 +80,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 					rules={{ required: t('The_field_is_required', t('Name')), validate: (v) => v?.trim() !== '' }}
 					render={({ field: { value, onChange } }): ReactElement => (
 						<StringSettingInput
-							_id={''}
+							_id=''
 							disabled={isSaving}
 							error={errors.name?.message}
 							label={`${t('Name')}*`}

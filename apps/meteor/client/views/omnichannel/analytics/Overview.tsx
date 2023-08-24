@@ -55,13 +55,13 @@ const Overview = ({ type, dateRange, departmentId }: { type: string; dateRange: 
 	}, [start, end, loadData, params]);
 
 	return (
-		<Box pb='x28' flexDirection='column'>
+		<Box pb={28} flexDirection='column'>
 			{displayData.map((items = [], i) => (
 				<CounterRow key={i} border='0' pb='none'>
 					{items.map(({ title, value }, i) => (
 						<CounterItem
 							flexShrink={1}
-							pb='x8'
+							pb={8}
 							flexBasis='100%'
 							key={i}
 							title={title ? t(title as TranslationKey) : <Skeleton width='x60' />}

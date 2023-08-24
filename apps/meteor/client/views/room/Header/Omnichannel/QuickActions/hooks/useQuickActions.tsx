@@ -1,4 +1,3 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	useSetModal,
@@ -10,7 +9,7 @@ import {
 	useEndpoint,
 	useMethod,
 	useTranslation,
-	useRoute,
+	useRouter,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useEffect } from 'react';
 
@@ -24,26 +23,23 @@ import ForwardChatModal from '../../../../../../components/Omnichannel/modals/Fo
 import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
 import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
-import type { QuickActionsActionConfig } from '../../../../lib/QuickActions';
-import { QuickActionsEnum } from '../../../../lib/QuickActions';
-import { useQuickActionsContext } from '../../../../lib/QuickActions/QuickActionsContext';
+import { quickActionHooks } from '../../../../../../ui';
+import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
+import type { QuickActionsActionConfig } from '../../../../lib/quickActions';
+import { QuickActionsEnum } from '../../../../lib/quickActions';
 import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
 import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
 
-export const useQuickActions = (
-	room: IOmnichannelRoom,
-): {
-	visibleActions: QuickActionsActionConfig[];
-	actionDefault: (e: unknown) => void;
-	getAction: (id: string) => void;
+export const useQuickActions = (): {
+	quickActions: QuickActionsActionConfig[];
+	actionDefault: (actionId: string) => void;
 } => {
+	const room = useOmnichannelRoom();
 	const setModal = useSetModal();
-	const homeRoute = useRoute('home');
+	const router = useRouter();
 
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const context = useQuickActionsContext();
-	const actions = (Array.from(context.actions.values()) as QuickActionsActionConfig[]).sort((a, b) => (a.order || 0) - (b.order || 0));
 
 	const [onHoldModalActive, setOnHoldModalActive] = useState(false);
 
@@ -76,12 +72,12 @@ export const useQuickActions = (
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
-	const requestTranscript = useMethod('livechat:requestTranscript');
+	const requestTranscript = useEndpoint('POST', '/v1/livechat/transcript/:rid', { rid });
 
 	const handleRequestTranscript = useCallback(
 		async (email: string, subject: string) => {
 			try {
-				await requestTranscript(rid, email, subject);
+				await requestTranscript({ email, subject });
 				closeModal();
 				dispatchToastMessage({
 					type: 'success',
@@ -91,7 +87,7 @@ export const useQuickActions = (
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeModal, dispatchToastMessage, requestTranscript, rid, t],
+		[closeModal, dispatchToastMessage, requestTranscript, t],
 	);
 
 	const sendTranscriptPDF = useEndpoint('POST', '/v1/omnichannel/:rid/request-transcript', { rid });
@@ -166,14 +162,14 @@ export const useQuickActions = (
 			try {
 				await forwardChat(transferData);
 				dispatchToastMessage({ type: 'success', message: t('Transferred') });
-				homeRoute.push();
+				router.navigate('/home');
 				LegacyRoomManager.close(room.t + rid);
 				closeModal();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeModal, dispatchToastMessage, forwardChat, room.t, rid, homeRoute, t],
+		[closeModal, dispatchToastMessage, forwardChat, room.t, rid, router, t],
 	);
 
 	const closeChat = useEndpoint('POST', '/v1/livechat/room.closeByUser');
@@ -213,7 +209,7 @@ export const useQuickActions = (
 	const returnChatToQueueMutation = useReturnChatToQueueMutation({
 		onSuccess: () => {
 			LegacyRoomManager.close(room.t + rid);
-			homeRoute.push();
+			router.navigate('/home');
 		},
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -337,21 +333,22 @@ export const useQuickActions = (
 		return false;
 	};
 
-	const visibleActions = actions.filter((action) => {
-		const { options, id } = action;
-		if (options) {
-			action.options = options.filter(({ id }) => hasPermissionButtons(id));
-		}
-		return hasPermissionButtons(id);
-	});
+	const quickActions = quickActionHooks
+		.map((quickActionHook) => quickActionHook())
+		.filter((quickAction): quickAction is QuickActionsActionConfig => !!quickAction)
+		.filter((action) => {
+			const { options, id } = action;
+			if (options) {
+				action.options = options.filter(({ id }) => hasPermissionButtons(id));
+			}
 
-	const actionDefault = useMutableCallback((actionId) => {
+			return hasPermissionButtons(id);
+		})
+		.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+	const actionDefault = useMutableCallback((actionId: string) => {
 		handleAction(actionId);
 	});
 
-	const getAction = useMutableCallback((id) => {
-		handleAction(id);
-	});
-
-	return { visibleActions, actionDefault, getAction };
+	return { quickActions, actionDefault };
 };

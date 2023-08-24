@@ -1,24 +1,39 @@
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { IconButton } from '@rocket.chat/fuselage';
 import type { MouseEvent, AllHTMLAttributes } from 'react';
 import React, { memo } from 'react';
 
 import type { EmojiItem } from '../../../../app/emoji/client';
 import { usePreviewEmoji } from '../../../contexts/EmojiPickerContext';
 
-type EmojiElementProps = EmojiItem & { onClick: (e: MouseEvent<HTMLElement>) => void } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
+type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: MouseEvent<HTMLElement>) => void } & Omit<
+		AllHTMLAttributes<HTMLButtonElement>,
+		'is'
+	>;
 
-const EmojiElement = ({ emoji, image, onClick, ...props }: EmojiElementProps) => {
+const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiElementProps) => {
 	const { handlePreview, handleRemovePreview } = usePreviewEmoji();
+
 	if (!image) {
 		return null;
 	}
 
-	const emojiElement = <Box dangerouslySetInnerHTML={{ __html: image }} />;
+	const emojiSmallClass = css`
+		> .emoji,
+		.emojione {
+			width: 1.125rem;
+			height: 1.125rem;
+		}
+	`;
+
+	const emojiElement = <div dangerouslySetInnerHTML={{ __html: image }} />;
 
 	return (
 		<IconButton
 			{...props}
-			medium
+			{...(small && { className: emojiSmallClass })}
+			small={small}
+			medium={!small}
 			onMouseOver={() => handlePreview(image, emoji)}
 			onMouseLeave={handleRemovePreview}
 			onClick={onClick}

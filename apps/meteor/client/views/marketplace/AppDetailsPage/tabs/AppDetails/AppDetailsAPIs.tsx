@@ -4,7 +4,7 @@ import { useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { Fragment } from 'react';
 
-import { apiCurlGetter } from '../../../helpers';
+import { apiCurlGetter } from '../../../helpers/apiCurlGetter';
 
 type AppDetailsAPIsProps = {
 	apis: IApiEndpointMetadata[];
@@ -18,11 +18,11 @@ const AppDetailsAPIs: FC<AppDetailsAPIsProps> = ({ apis }) => {
 	return (
 		<>
 			<Box display='flex' flexDirection='column'>
-				<Box fontScale='h4' mb='x12'>
+				<Box fontScale='h4' mb={12}>
 					{t('APIs')}
 				</Box>
 				{apis.map((api) => (
-					<Box key={api.path} mb='x8'>
+					<Box key={api.path} mb={8}>
 						<Box fontScale='p2m'>
 							{api.methods.join(' | ').toUpperCase()} {api.path}
 						</Box>

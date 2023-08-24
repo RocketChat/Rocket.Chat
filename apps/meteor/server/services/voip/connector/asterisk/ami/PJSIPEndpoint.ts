@@ -28,13 +28,13 @@
  * 7. Important to note that the intermediate events containing a result part for an execution of a particular command
  *    have same actionid, which is received by this class as a successful execution of a command in actionResultCallback.
  */
-import _ from 'underscore';
-import type { Db } from 'mongodb';
 import { EndpointState } from '@rocket.chat/core-typings';
 import type { IVoipConnectorResult, IExtensionDetails } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
+import type { Db } from 'mongodb';
+import _ from 'underscore';
 
 import { Command, CommandType } from '../Command';
-import { Logger } from '../../../../../lib/logger/Logger';
 import { Commands } from '../Commands';
 import { CallbackContext } from './CallbackContext';
 
@@ -127,7 +127,7 @@ export class PJSIPEndpoint extends Command {
 			return;
 		}
 		this.resetEventHandlers();
-		const extensions = _.sortBy(this.result.endpoints, function (o: any) {
+		const extensions = _.sortBy(this.result.endpoints, (o: any) => {
 			return o.extension;
 		});
 		this.returnResolve({ result: extensions } as IVoipConnectorResult);

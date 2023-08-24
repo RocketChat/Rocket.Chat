@@ -1,9 +1,9 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { LivechatInquiry, LivechatPriority, LivechatRooms } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 import type { ILivechatPriority, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
-import type { FindOptions } from 'mongodb';
+import { LivechatInquiry, LivechatPriority, LivechatRooms } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { FindOptions } from 'mongodb';
 
 import { logger } from '../../lib/logger';
 

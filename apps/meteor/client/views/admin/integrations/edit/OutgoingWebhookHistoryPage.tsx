@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon, Pagination } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Pagination } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useRoute, useRouteParameter, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement, ComponentProps } from 'react';
@@ -52,7 +52,6 @@ function OutgoingWebhookHistoryPage(props: ComponentProps<typeof Page>): ReactEl
 		{
 			cacheTime: 99999,
 			staleTime: 99999,
-			refetchOnWindowFocus: false,
 		},
 	);
 
@@ -114,11 +113,11 @@ function OutgoingWebhookHistoryPage(props: ComponentProps<typeof Page>): ReactEl
 		<Page flexDirection='column' {...props}>
 			<Page.Header title={t('Integration_Outgoing_WebHook_History')}>
 				<ButtonGroup>
-					<Button onClick={handleClickReturn}>
-						<Icon name='back' size='x16' /> {t('Back')}
+					<Button icon='back' onClick={handleClickReturn}>
+						{t('Back')}
 					</Button>
-					<Button danger onClick={handleClearHistory} disabled={total === 0}>
-						<Icon name='trash' /> {t('clear_history')}
+					<Button icon='trash' danger onClick={handleClearHistory} disabled={total === 0}>
+						{t('clear_history')}
 					</Button>
 				</ButtonGroup>
 			</Page.Header>

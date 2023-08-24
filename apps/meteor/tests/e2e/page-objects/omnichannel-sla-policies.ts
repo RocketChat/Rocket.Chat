@@ -64,7 +64,7 @@ export class OmnichannelSlaPolicies {
 	}
 
 	get btnNew() {
-		return this.page.locator('button.rcx-button >> text="New"');
+		return this.page.locator('button.rcx-button >> text="Create SLA policy"');
 	}
 
 	get btnDelete() {
@@ -76,6 +76,6 @@ export class OmnichannelSlaPolicies {
 	}
 
 	get txtEmptyState() {
-		return this.page.locator('div >> text="No data found"');
+		return this.page.locator('div >> text="No results found"');
 	}
 }

@@ -1,7 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import { Random } from '@rocket.chat/random';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+
+import { sdk } from '../../utils/client/lib/SDKClient';
 
 if (!Accounts.saml) {
 	Accounts.saml = {};
@@ -53,19 +55,22 @@ Meteor.loginWithSaml = function (options /* , callback*/) {
 
 Meteor.logoutWithSaml = function (options /* , callback*/) {
 	// Accounts.saml.idpInitiatedSLO(options, callback);
-	Meteor.call('samlLogout', options.provider, function (err, result) {
-		if (err || !result) {
-			MeteorLogout.apply(Meteor);
-			return;
-		}
+	sdk
+		.call('samlLogout', options.provider)
+		.then((result) => {
+			if (!result) {
+				MeteorLogout.apply(Meteor);
+				return;
+			}
 
-		// Remove the userId from the client to prevent calls to the server while the logout is processed.
-		// If the logout fails, the userId will be reloaded on the resume call
-		Meteor._localStorage.removeItem(Accounts.USER_ID_KEY);
+			// Remove the userId from the client to prevent calls to the server while the logout is processed.
+			// If the logout fails, the userId will be reloaded on the resume call
+			Meteor._localStorage.removeItem(Accounts.USER_ID_KEY);
 
-		// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
-		window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${options.provider}/?redirect=${encodeURIComponent(result)}`));
-	});
+			// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
+			window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${options.provider}/?redirect=${encodeURIComponent(result)}`));
+		})
+		.catch(() => MeteorLogout.apply(Meteor));
 };
 
 Meteor.loginWithSamlToken = function (token, userCallback) {

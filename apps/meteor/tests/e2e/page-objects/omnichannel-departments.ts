@@ -16,8 +16,13 @@ export class OmnichannelDepartments {
 		return this.page.locator('[placeholder="Search"]');
 	}
 
+	async search(text: string) {
+		await this.inputSearch.fill(text);
+		await this.page.waitForTimeout(500);
+	}
+
 	get btnNew() {
-		return this.page.locator('button.rcx-button >> text="New"');
+		return this.page.locator('role=button[name="Create department"]');
 	}
 
 	get btnEnabled() {
@@ -57,11 +62,11 @@ export class OmnichannelDepartments {
 	}
 
 	get btnSave() {
-		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Save"');
+		return this.page.locator('role=button[name="Save"]');
 	}
 
 	get btnBack() {
-		return this.page.locator('button.rcx-button >> text=" Back"');
+		return this.page.locator('role=button[name="Back"]');
 	}
 
 	get allDepartmentsTab() {

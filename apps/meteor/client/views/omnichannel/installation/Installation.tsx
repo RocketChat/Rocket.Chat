@@ -8,6 +8,7 @@ import RawText from '../../../components/RawText';
 import TextCopy from '../../../components/TextCopy';
 import Wrapper from './Wrapper';
 
+// TODO: use `CodeSnippet` Component
 const Installation = (): ReactElement => {
 	const t = useTranslation();
 	const setting = useSetting('Site_Url') as string;

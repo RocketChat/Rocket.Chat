@@ -2,13 +2,14 @@ import fs from 'fs';
 import path from 'path';
 
 import { expect } from 'chai';
+import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { password } from '../../data/user';
-import { closeRoom, createRoom } from '../../data/rooms.helper';
+import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions.js';
 import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
-import { sendSimpleMessage } from '../../data/chat.helper';
+import { closeRoom, createRoom } from '../../data/rooms.helper';
+import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
@@ -382,6 +383,12 @@ describe('[Rooms]', function () {
 				.end(done);
 			user = undefined;
 		});
+		before(async () => {
+			await updateSetting('Message_ShowDeletedStatus', true);
+		});
+		after(async () => {
+			await updateSetting('Message_ShowDeletedStatus', false);
+		});
 		it('create a public channel', (done) => {
 			createRoom({ type: 'c', name: `testeChannel${+new Date()}` }).end((err, res) => {
 				publicChannel = res.body.channel;
@@ -415,6 +422,43 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
+		});
+		it('should not count hidden or deleted messages when limit param is not sent', async () => {
+			const res = await sendSimpleMessage({ roomId: publicChannel._id });
+			await deleteMessage({ roomId: publicChannel._id, msgId: res.body.message._id });
+			await request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: publicChannel._id,
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count', 0);
+				});
+		});
+		it('should not count hidden or deleted messages when limit param is sent', async () => {
+			const res = await sendSimpleMessage({ roomId: publicChannel._id });
+			await deleteMessage({ roomId: publicChannel._id, msgId: res.body.message._id });
+			await request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: publicChannel._id,
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
+					limit: 2000,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count', 0);
+				});
 		});
 		it('should successfully delete an image and thumbnail from public channel', (done) => {
 			request
@@ -1306,10 +1350,23 @@ describe('[Rooms]', function () {
 		const suffix = `test-${Date.now()}`;
 		const fnameRoom = `Ελληνικά-${suffix}`;
 		const nameRoom = `Ellinika-${suffix}`;
+		const discussionRoomName = `${nameRoom}-discussion`;
+
+		let testGroup;
 
 		before((done) => {
 			updateSetting('UI_Allow_room_names_with_special_chars', true).then(() => {
-				createRoom({ type: 'p', name: fnameRoom }).end(done);
+				createRoom({ type: 'p', name: fnameRoom }).end((err, res) => {
+					testGroup = res.body.group;
+					request
+						.post(api('rooms.createDiscussion'))
+						.set(credentials)
+						.send({
+							prid: testGroup._id,
+							t_name: discussionRoomName,
+						})
+						.end(done);
+				});
 			});
 		});
 
@@ -1399,6 +1456,73 @@ describe('[Rooms]', function () {
 					})
 					.end(done);
 			});
+		});
+		it('should filter by only rooms types', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					types: ['p'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf.at.least(1);
+					expect(res.body.rooms[0].t).to.be.equal('p');
+					expect(res.body.rooms.find((room) => room.name === nameRoom)).to.exist;
+					expect(res.body.rooms.find((room) => room.name === discussionRoomName)).to.not.exist;
+				})
+				.end(done);
+		});
+		it('should filter by only name', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(1);
+					expect(res.body.rooms[0].name).to.be.equal(nameRoom);
+				})
+				.end(done);
+		});
+		it('should filter by type and name at the same query', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+					types: ['p'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(1);
+					expect(res.body.rooms[0].name).to.be.equal(nameRoom);
+				})
+				.end(done);
+		});
+		it('should return an empty array when filter by wrong type and correct room name', (done) => {
+			request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+					types: ['c'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(0);
+				})
+				.end(done);
 		});
 	});
 

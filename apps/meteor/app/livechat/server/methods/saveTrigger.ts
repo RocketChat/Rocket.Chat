@@ -1,10 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
+import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 import { LivechatTrigger } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { ILivechatTrigger } from '@rocket.chat/core-typings';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -15,6 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:saveTrigger'(trigger) {
+		methodDeprecationLogger.method('livechat:saveTrigger', '7.0.0');
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {

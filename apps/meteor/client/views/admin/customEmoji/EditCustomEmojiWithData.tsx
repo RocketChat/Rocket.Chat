@@ -25,12 +25,12 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 
 	if (isLoading) {
 		return (
-			<Box pb='x20'>
-				<Skeleton mbs='x8' />
+			<Box pb={20}>
+				<Skeleton mbs={8} />
 				<InputBox.Skeleton w='full' />
-				<Skeleton mbs='x8' />
+				<Skeleton mbs={8} />
 				<InputBox.Skeleton w='full' />
-				<ButtonGroup stretch w='full' mbs='x8'>
+				<ButtonGroup stretch w='full' mbs={8}>
 					<Button disabled>
 						<Throbber inheritColor />
 					</Button>
@@ -38,7 +38,7 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 						<Throbber inheritColor />
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup stretch w='full' mbs='x8'>
+				<ButtonGroup stretch w='full' mbs={8}>
 					<Button danger disabled>
 						<Throbber inheritColor />
 					</Button>

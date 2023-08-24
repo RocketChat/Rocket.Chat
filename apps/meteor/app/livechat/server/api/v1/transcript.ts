@@ -1,9 +1,11 @@
-import { isPOSTLivechatTranscriptParams } from '@rocket.chat/rest-typings';
-import { LivechatRooms } from '@rocket.chat/models';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms, Users } from '@rocket.chat/models';
+import { isPOSTLivechatTranscriptParams, isPOSTLivechatTranscriptRequestParams } from '@rocket.chat/rest-typings';
 
-import { API } from '../../../../api/server';
-import { Livechat } from '../../lib/LivechatTyped';
 import { i18n } from '../../../../../server/lib/i18n';
+import { API } from '../../../../api/server';
+import { Livechat as LivechatJS } from '../../lib/Livechat';
+import { Livechat } from '../../lib/LivechatTyped';
 
 API.v1.addRoute(
 	'livechat/transcript',
@@ -22,23 +24,42 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/transcript/:rid',
-	{ authRequired: true, permissionsRequired: ['send-omnichannel-chat-transcript'] },
+	{
+		authRequired: true,
+		permissionsRequired: ['send-omnichannel-chat-transcript'],
+		validateParams: {
+			POST: isPOSTLivechatTranscriptRequestParams,
+		},
+	},
 	{
 		async delete() {
 			const { rid } = this.urlParams;
+			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, 'open' | 'transcriptRequest'>>(rid, {
+				projection: { open: 1, transcriptRequest: 1 },
+			});
 
-			const room = await LivechatRooms.findOneById(rid);
 			if (!room?.open) {
 				throw new Error('error-invalid-room');
 			}
-
 			if (!room.transcriptRequest) {
 				throw new Error('error-transcript-not-requested');
 			}
 
 			await LivechatRooms.unsetEmailTranscriptRequestedByRoomId(rid);
 
-			return API.v1.success(true);
+			return API.v1.success();
+		},
+		async post() {
+			const { rid } = this.urlParams;
+			const { email, subject } = this.bodyParams;
+
+			const user = await Users.findOneById(this.userId, {
+				projection: { _id: 1, username: 1, name: 1, utcOffset: 1 },
+			});
+
+			await LivechatJS.requestTranscript({ rid, email, subject, user });
+
+			return API.v1.success();
 		},
 	},
 );

@@ -6,7 +6,11 @@ export interface IOmnichannelServiceLevelAgreementsModel extends IBaseModel<IOmn
 	findOneByIdOrName(_idOrName: string, options?: any): Promise<IOmnichannelServiceLevelAgreements | null>;
 	createOrUpdatePriority(
 		{ name, description, dueTimeInMinutes }: Pick<IOmnichannelServiceLevelAgreements, 'name' | 'description' | 'dueTimeInMinutes'>,
-		_id?: string,
+		_id: string | null,
 	): Promise<Omit<IOmnichannelServiceLevelAgreements, '_updatedAt'>>;
-	findDuplicate(_id: string, name: string, dueTimeInMinutes: number): Promise<Pick<IOmnichannelServiceLevelAgreements, '_id'> | null>;
+	findDuplicate(
+		_id: string | null,
+		name: string,
+		dueTimeInMinutes: number,
+	): Promise<Pick<IOmnichannelServiceLevelAgreements, '_id'> | null>;
 }

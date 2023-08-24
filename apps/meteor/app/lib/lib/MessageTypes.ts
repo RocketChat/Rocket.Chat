@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import type { MessageTypesValues as MessageTypesValuesType } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 // import { callbacks } from '../../../lib/callbacks';
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	MessageTypes.registerType({
 		id: 'r',
 		system: true,
@@ -189,24 +189,22 @@ Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'subscription-role-added',
 		system: true,
-		message: '__username__was_set__role__by__user_by_',
+		message: 'set__username__as__role_',
 		data(message) {
 			return {
 				username: message.msg,
 				role: message.role || '',
-				user_by: message.u.username,
 			};
 		},
 	});
 	MessageTypes.registerType({
 		id: 'subscription-role-removed',
 		system: true,
-		message: '__username__is_no_longer__role__defined_by__user_by_',
+		message: 'removed__username__as__role_',
 		data(message) {
 			return {
 				username: message.msg,
 				role: message.role || '',
-				user_by: message.u.username,
 			};
 		},
 	});

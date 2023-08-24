@@ -26,8 +26,8 @@ const FederatedRoomListItem: VFC<FederatedRoomListItemProps> = ({
 	const t = useTranslation();
 
 	return (
-		<Box mb='x16' is='li' display='flex' flexDirection='column' w='full' name={canonicalAlias}>
-			<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center' mbe='x4'>
+		<Box mb={16} pi={24} is='li' display='flex' flexDirection='column' w='full' name={canonicalAlias}>
+			<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center' mbe={4}>
 				<Box flexGrow={1} flexShrink={1} fontScale='p1' fontWeight='bold' title={name} withTruncatedText>
 					{name}
 				</Box>
@@ -39,22 +39,22 @@ const FederatedRoomListItem: VFC<FederatedRoomListItemProps> = ({
 				{/* Currently canJoin is only false when the ammount of members is too big. This property will be used in the future
 					in case the matrix room is knock only. When that happens, the check for this should be based on the limit setting. */}
 				{!canJoin && (
-					<Box flexShrink={0} color={'danger'} title={t('Currently_we_dont_support_joining_servers_with_this_many_people')}>
+					<Box flexShrink={0} color='danger' title={t('Currently_we_dont_support_joining_servers_with_this_many_people')}>
 						{t('Cant_join')}
 					</Box>
 				)}
 			</Box>
 
 			{topic && (
-				<Box is='p' fontScale='c1' mb='x4' maxHeight='x120' overflow='hidden' withTruncatedText className={[clampLine]}>
+				<Box is='p' fontScale='c1' mb={4} maxHeight='x120' overflow='hidden' withTruncatedText className={[clampLine]}>
 					{topic}
 				</Box>
 			)}
 
-			<Box mbs='x4' fontScale='micro' fontWeight='bolder' verticalAlign='top'>
+			<Box mbs={4} fontScale='micro' fontWeight='bolder' verticalAlign='top'>
 				{canonicalAlias}{' '}
 				<Box color='hint' is='span' verticalAlign='top'>
-					<Icon name='user' size='x12' mbe='x1' />
+					<Icon name='user' size='x12' mbe={2} />
 					{joinedMembers}
 				</Box>
 			</Box>

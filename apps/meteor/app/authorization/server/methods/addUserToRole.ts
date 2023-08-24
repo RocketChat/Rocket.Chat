@@ -1,12 +1,12 @@
-import { Meteor } from 'meteor/meteor';
+import { api } from '@rocket.chat/core-services';
 import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
 import { hasPermissionAsync } from '../functions/hasPermission';
-import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -41,8 +41,12 @@ Meteor.methods<ServerMethods>({
 					method: 'authorization:addUserToRole',
 				});
 			}
-
-			apiDeprecationLogger.warn(`Calling authorization:addUserToRole with role names will be deprecated in future versions of Rocket.Chat`);
+			methodDeprecationLogger.deprecatedParameterUsage(
+				'authorization:addUserToRole',
+				'role',
+				'7.0.0',
+				({ parameter, method, version }) => `Calling ${method} with \`${parameter}\` names is deprecated and will be removed ${version}`,
+			);
 		}
 
 		if (role._id === 'admin' && !(await hasPermissionAsync(userId, 'assign-admin-role'))) {

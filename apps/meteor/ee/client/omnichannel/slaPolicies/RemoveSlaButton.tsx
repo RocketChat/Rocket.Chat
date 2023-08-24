@@ -1,49 +1,42 @@
-import { Table, IconButton } from '@rocket.chat/fuselage';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import React from 'react';
 
 import GenericModal from '../../../../client/components/GenericModal';
+import { GenericTableCell } from '../../../../client/components/GenericTable';
 
-type Props = {
-	_id: string;
-	reload: () => void;
-};
-
-function RemoveSlaButton({ _id, reload }: Props): ReactElement {
-	const removeSLA = useEndpoint('DELETE', `/v1/livechat/sla/:slaId`, { slaId: _id });
-	const setModal = useSetModal();
-	const dispatchToastMessage = useToastMessageDispatch();
+const RemoveSlaButton = ({ _id, reload }: { _id: string; reload: () => void }) => {
 	const t = useTranslation();
+	const setModal = useSetModal();
 	const slaRoute = useRoute('omnichannel-sla-policies');
+	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleRemoveClick = useMutableCallback(async () => {
-		await removeSLA();
-		reload();
-	});
+	const removeSLA = useEndpoint('DELETE', `/v1/livechat/sla/:slaId`, { slaId: _id });
 
 	const handleDelete = useMutableCallback((e) => {
 		e.stopPropagation();
 		const onDeleteAgent = async (): Promise<void> => {
 			try {
-				await handleRemoveClick();
+				await removeSLA();
 				dispatchToastMessage({ type: 'success', message: t('SLA_removed') });
+				reload();
 				slaRoute.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				setModal();
 			}
-			setModal();
 		};
 
 		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={(): void => setModal()} confirmText={t('Delete')} />);
 	});
 
 	return (
-		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
-			<IconButton icon='trash' mini title={t('Remove')} onClick={handleDelete} />
-		</Table.Cell>
+		<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+			<IconButton icon='trash' small title={t('Remove')} onClick={handleDelete} />
+		</GenericTableCell>
 	);
-}
+};
 
 export default RemoveSlaButton;

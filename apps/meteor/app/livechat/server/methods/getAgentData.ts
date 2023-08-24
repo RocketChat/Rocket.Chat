@@ -1,8 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+
+import { settings } from '../../../settings/server';
 
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
@@ -36,6 +38,6 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		return Users.getAgentInfo(room.servedBy._id);
+		return Users.getAgentInfo(room.servedBy._id, settings.get('Livechat_show_agent_email'));
 	},
 });
