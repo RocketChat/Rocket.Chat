@@ -3,7 +3,7 @@ import { after, before, beforeEach, afterEach, describe, it } from 'mocha';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { updateSetting } from '../../data/permissions.helper';
+import { updateSetting, updatePermission } from '../../data/permissions.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser } from '../../data/users.helper';
 
@@ -25,6 +25,8 @@ describe('[Failed Login Attempts]', function () {
 		await updateSetting('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes', userBlockSeconds / 60);
 		await updateSetting('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip', maxAttemptsByIp);
 		await updateSetting('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes', ipBlockSeconds / 60);
+
+		await updatePermission('logout-other-user', ['admin']);
 	});
 
 	after(async () => {
