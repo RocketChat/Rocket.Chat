@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-fix: skeleton loading
+fix: Missing padding on Omnichannel contacts Contextualbar loading state
