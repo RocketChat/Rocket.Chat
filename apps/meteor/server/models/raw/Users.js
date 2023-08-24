@@ -183,6 +183,52 @@ export class UsersRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
+	findAgentsWithDepartments(role, query, options) {
+		const roles = [].concat(role);
+
+		Object.assign(query, { roles: { $in: roles } });
+
+		const aggregate = [
+			{
+				$match: query,
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_livechat_department_agents',
+					localField: '_id',
+					foreignField: 'agentId',
+					as: 'departments',
+				},
+			},
+			{
+				$unwind: {
+					path: '$departments',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
+				$group: {
+					_id: '$_id',
+					username: { $first: '$username' },
+					status: { $first: '$status' },
+					statusLivechat: { $first: '$statusLivechat' },
+					name: { $first: '$name' },
+					emails: { $first: '$emails' },
+					livechat: { $first: '$livechat' },
+					departments: { $push: '$departments.departmentId' },
+				},
+			},
+			{
+				$facet: {
+					sortedResults: [{ $sort: options.sort }, { $skip: options.skip }, options.limit && { $limit: options.limit }],
+					totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+				},
+			},
+		];
+
+		return this.col.aggregate(aggregate).toArray();
+	}
+
 	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');

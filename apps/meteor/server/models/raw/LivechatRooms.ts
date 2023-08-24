@@ -8,6 +8,7 @@ import type {
 	ILivechatPriority,
 	IOmnichannelServiceLevelAgreements,
 } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -179,7 +180,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		const params = [...firstParams, usersGroup, project, facet];
-		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred(), allowDiskUse: true }).toArray();
 	}
 
 	async findAllNumberOfAbandonedRooms({
@@ -1597,7 +1598,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					closedAt,
 					'metrics.chatDuration': chatDuration,
 					'metrics.serviceTimeDuration': serviceTimeDuration,
-					'v.status': 'offline',
+					'v.status': UserStatus.OFFLINE,
 					...(closer && { closer }),
 					...(closedBy && { closedBy }),
 					...(tags && { tags }),
@@ -2336,7 +2337,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.updateOne(query, update);
 	}
 
-	updateVisitorStatus(token: string, status: 'online' | 'busy' | 'away' | 'offline') {
+	updateVisitorStatus(token: string, status: UserStatus) {
 		const query: Filter<IOmnichannelRoom> = {
 			'v.token': token,
 			'open': true,

@@ -3,6 +3,8 @@
 @import '../../styles/variables';
 
 .footer {
+	z-index: 2;
+
 	display: flex;
 	flex-direction: column;
 	flex: 0 0 auto;
@@ -11,6 +13,8 @@
 	padding: 4px 8px;
 
 	color: $color-text-grey;
+
+	background-color: $bg-color-white;
 
 	font-size: 0.625rem;
 	align-items: stretch;
