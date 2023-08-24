@@ -32,6 +32,7 @@ import type {
 	ILivechatInquiryRecord,
 	ILivechatAgent,
 	IBanner,
+	ILivechatVisitor,
 } from '@rocket.chat/core-typings';
 
 import type { AutoUpdateRecord } from './types/IMeteor';
@@ -242,7 +243,8 @@ export type EventSignatures = {
 		data:
 			| { type: 'agentStatus'; status: string }
 			| { type: 'queueData'; data: { [k: string]: unknown } | undefined }
-			| { type: 'agentData'; data: ILivechatAgent | undefined | { hiddenInfo: boolean } },
+			| { type: 'agentData'; data: ILivechatAgent | undefined | { hiddenInfo: boolean } }
+			| { type: 'visitorData'; visitor: ILivechatVisitor },
 	): void;
 
 	// Send all events from here

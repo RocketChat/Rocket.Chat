@@ -4,7 +4,8 @@
 import dns from 'dns';
 import util from 'util';
 
-import { Message, VideoConf, api } from '@rocket.chat/core-services';
+import { Message, api } from '@rocket.chat/core-services';
+import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatVisitors,
@@ -30,15 +31,12 @@ import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
-import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { businessHourManager } from '../business-hour';
 import { Analytics } from './Analytics';
 import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { Livechat as LivechatTyped } from './LivechatTyped';
@@ -52,39 +50,6 @@ export const Livechat = {
 	Analytics,
 
 	logger,
-
-	async sendMessage({ guest, message, roomInfo, agent }) {
-		const { room, newRoom } = await LivechatTyped.getRoom(guest, message, roomInfo, agent);
-		if (guest.name) {
-			message.alias = guest.name;
-		}
-		return Object.assign(await sendMessage(guest, message, room), {
-			newRoom,
-			showConnecting: this.showConnecting(),
-		});
-	},
-
-	async updateMessage({ guest, message }) {
-		check(message, Match.ObjectIncluding({ _id: String }));
-
-		const originalMessage = await Messages.findOneById(message._id);
-		if (!originalMessage || !originalMessage._id) {
-			return;
-		}
-
-		const editAllowed = settings.get('Message_AllowEditing');
-		const editOwn = originalMessage.u && originalMessage.u._id === guest._id;
-
-		if (!editAllowed || !editOwn) {
-			throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', {
-				method: 'livechatUpdateMessage',
-			});
-		}
-
-		await updateMessage(message, guest);
-
-		return true;
-	},
 
 	async deleteMessage({ guest, message }) {
 		Livechat.logger.debug(`Attempting to delete a message by visitor ${guest._id}`);
@@ -523,7 +488,10 @@ export const Livechat = {
 
 	async afterAgentAdded(user) {
 		await Users.setOperator(user._id, true);
-		await this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
+		await LivechatTyped.setUserStatusLivechat(
+			user._id,
+			user.status !== 'offline' ? ILivechatAgentStatus.AVAILABLE : ILivechatAgentStatus.NOT_AVAILABLE,
+		);
 
 		callbacks.runAsync('livechat.onNewAgentCreated', user._id);
 
@@ -614,18 +582,6 @@ export const Livechat = {
 
 		await this.cleanGuestHistory(_id);
 		return LivechatVisitors.removeById(_id);
-	},
-
-	async setUserStatusLivechat(userId, status) {
-		const user = await Users.setLivechatStatus(userId, status);
-		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
-		return user;
-	},
-
-	async setUserStatusLivechatIf(userId, status, condition, fields) {
-		const user = await Users.setLivechatStatusIf(userId, status, condition, fields);
-		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
-		return user;
 	},
 
 	async cleanGuestHistory(_id) {
@@ -908,65 +864,5 @@ export const Livechat = {
 				status,
 			});
 		});
-	},
-
-	async allowAgentChangeServiceStatus(statusLivechat, agentId) {
-		if (statusLivechat !== 'available') {
-			return true;
-		}
-
-		return businessHourManager.allowAgentChangeServiceStatus(agentId);
-	},
-
-	notifyRoomVisitorChange(roomId, visitor) {
-		void api.broadcast('omnichannel.room', roomId, {
-			type: 'visitorData',
-			visitor,
-		});
-	},
-
-	async changeRoomVisitor(userId, roomId, visitor) {
-		const user = await Users.findOneById(userId);
-		if (!user) {
-			throw new Error('error-user-not-found');
-		}
-
-		if (!(await hasPermissionAsync(userId, 'change-livechat-room-visitor'))) {
-			throw new Error('error-not-authorized');
-		}
-
-		const room = await LivechatRooms.findOneById(roomId, { ...roomAccessAttributes, _id: 1, t: 1 });
-
-		if (!room) {
-			throw new Meteor.Error('invalid-room');
-		}
-
-		if (!(await canAccessRoomAsync(room, user))) {
-			throw new Error('error-not-allowed');
-		}
-
-		await LivechatRooms.changeVisitorByRoomId(room._id, visitor);
-
-		Livechat.notifyRoomVisitorChange(room._id, visitor);
-
-		return LivechatRooms.findOneById(roomId);
-	},
-	async updateLastChat(contactId, lastChat) {
-		const updateUser = {
-			$set: {
-				lastChat,
-			},
-		};
-		await LivechatVisitors.updateById(contactId, updateUser);
-	},
-	async updateCallStatus(callId, rid, status, user) {
-		await Rooms.setCallStatus(rid, status);
-		if (status === 'ended' || status === 'declined') {
-			if (await VideoConf.declineLivechatCall(callId)) {
-				return;
-			}
-
-			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date() }, user);
-		}
 	},
 };

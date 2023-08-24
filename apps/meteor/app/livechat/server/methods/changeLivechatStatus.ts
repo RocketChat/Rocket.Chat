@@ -1,10 +1,11 @@
+import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { Livechat } from '../lib/Livechat';
+import { Livechat } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -12,6 +13,17 @@ declare module '@rocket.chat/ui-contexts' {
 		'livechat:changeLivechatStatus'(params?: { status?: string; agentId?: string }): unknown;
 	}
 }
+
+const toStatus = (status?: string): ILivechatAgentStatus | undefined => {
+	switch (status) {
+		case 'available':
+			return ILivechatAgentStatus.AVAILABLE;
+		case 'not-available':
+			return ILivechatAgentStatus.NOT_AVAILABLE;
+		default:
+			return undefined;
+	}
+};
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:changeLivechatStatus'({ status, agentId = Meteor.userId() } = {}) {
@@ -44,7 +56,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const newStatus = status || (agent.statusLivechat === 'available' ? 'not-available' : 'available');
+		const newStatus: ILivechatAgentStatus =
+			toStatus(status) || (agent.statusLivechat === 'available' ? ILivechatAgentStatus.NOT_AVAILABLE : ILivechatAgentStatus.AVAILABLE);
 
 		if (newStatus === agent.statusLivechat) {
 			return;

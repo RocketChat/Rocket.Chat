@@ -373,7 +373,7 @@ API.v1.addRoute(
 				throw new Error('invalid-room-visitor');
 			}
 
-			const roomAfterChange = await Livechat.changeRoomVisitor(this.userId, rid, visitor);
+			const roomAfterChange = await LivechatTyped.changeRoomVisitor(this.userId, rid, visitor);
 
 			if (!roomAfterChange) {
 				return API.v1.failure();

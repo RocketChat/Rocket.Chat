@@ -44,7 +44,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			throw new Error('Invalid token for livechat message');
 		}
 
-		const msg = await Livechat.sendMessage({
+		const msg = await LivechatTyped.sendMessage({
 			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(message.visitor),
 			message: await this.orch.getConverters()?.get('messages').convertAppMessage(message),
 			agent: undefined,
@@ -69,12 +69,19 @@ export class AppLivechatBridge extends LivechatBridge {
 	protected async updateMessage(message: ILivechatMessage, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is updating a message.`);
 
+		const { visitor } = message;
+
+		if (!visitor) {
+			throw new Error('Invalid visitor, cannot update message');
+		}
+
 		const data = {
-			guest: message.visitor,
+			guest: visitor,
 			message: await this.orch.getConverters()?.get('messages').convertAppMessage(message),
 		};
 
-		await Livechat.updateMessage(data);
+		// @ts-expect-error - IVisitor is not compatible with ILivechatVisitor
+		await LivechatTyped.updateMessage(data);
 	}
 
 	protected async createRoom(visitor: IVisitor, agent: IUser, appId: string, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {

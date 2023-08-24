@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, VideoConf, api } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
 	IOmnichannelRoomClosingInfo,
@@ -9,6 +9,8 @@ import type {
 	SelectedAgent,
 	ILivechatAgent,
 	IMessage,
+	IRoom,
+	ILivechatAgentStatus,
 } from '@rocket.chat/core-typings';
 import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -22,21 +24,26 @@ import {
 	Users,
 	LivechatDepartmentAgents,
 	ReadReceipts,
+	Rooms,
 } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import moment from 'moment-timezone';
-import type { FindCursor, UpdateFilter } from 'mongodb';
+import type { FindCursor, UpdateFilter, Filter } from 'mongodb';
 
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
+import { businessHourManager } from '../business-hour';
 import { updateDepartmentAgents, validateEmail } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -796,6 +803,134 @@ class LivechatClass {
 		);
 
 		return true;
+	}
+
+	showConnecting() {
+		const config = RoutingManager.getConfig();
+		return config?.showConnecting || false;
+	}
+
+	async sendMessage({
+		guest,
+		message,
+		roomInfo,
+		agent,
+	}: {
+		guest: ILivechatVisitor;
+		message: Pick<
+			IMessage,
+			'_id' | 'msg' | 'rid' | 'alias' | 'msg' | 'file' | 'attachments' | 'file' | 'token' | 'groupable' | 'blocks'
+		> & { email?: any };
+		roomInfo: {
+			source?: IOmnichannelRoom['source'];
+			[key: string]: unknown;
+		};
+		agent?: SelectedAgent;
+	}) {
+		const { room, newRoom } = await this.getRoom(guest, message, roomInfo, agent);
+		if (guest.name) {
+			message.alias = guest.name;
+		}
+		return Object.assign(await sendMessage(guest, message, room), {
+			newRoom,
+			showConnecting: this.showConnecting(),
+		});
+	}
+
+	async updateMessage({ guest, message }: { guest: ILivechatVisitor; message: Pick<IMessage, '_id' | 'msg'> }) {
+		check(message, Match.ObjectIncluding({ _id: String }));
+
+		const originalMessage = await Messages.findOneById(message._id);
+		if (!originalMessage?._id) {
+			return false;
+		}
+
+		const editAllowed = settings.get('Message_AllowEditing');
+		const editOwn = originalMessage.u && originalMessage.u._id === guest._id;
+
+		if (!editAllowed || !editOwn) {
+			throw new Error('error-action-not-allowed');
+		}
+
+		// @ts-expect-error - Update message expects a user, but we're passing a visitor
+		await updateMessage(message, guest);
+
+		return true;
+	}
+
+	async updateCallStatus(callId: string, rid: string, status: IRoom['callStatus'], user: ILivechatVisitor | IUser) {
+		await Rooms.setCallStatus(rid, status);
+		if (status === 'ended' || status === 'declined') {
+			if (await VideoConf.declineLivechatCall(callId)) {
+				return;
+			}
+
+			// @ts-expect-error - Update message expects a user, but we're passing a visitor
+			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date() } as unknown as IMessage, user);
+		}
+	}
+
+	async updateLastChat(contactId: string, lastChat: ILivechatVisitor['lastChat']) {
+		const updateUser = {
+			$set: {
+				lastChat,
+			},
+		};
+		await LivechatVisitors.updateById(contactId, updateUser);
+	}
+
+	notifyRoomVisitorChange(roomId: string, visitor: ILivechatVisitor) {
+		void api.broadcast('omnichannel.room', roomId, {
+			type: 'visitorData',
+			visitor,
+		});
+	}
+
+	async changeRoomVisitor(userId: string, roomId: string, visitor: ILivechatVisitor) {
+		const user = await Users.findOneById(userId);
+		if (!user) {
+			throw new Error('error-user-not-found');
+		}
+
+		if (!(await hasPermissionAsync(userId, 'change-livechat-room-visitor'))) {
+			throw new Error('error-not-authorized');
+		}
+
+		const room = await LivechatRooms.findOneById(roomId, { ...roomAccessAttributes, _id: 1, t: 1 });
+
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		if (!(await canAccessRoomAsync(room, user))) {
+			throw new Error('error-not-allowed');
+		}
+
+		await LivechatRooms.changeVisitorByRoomId(room._id, visitor);
+
+		this.notifyRoomVisitorChange(room._id, visitor);
+
+		return LivechatRooms.findOneById(roomId);
+	}
+
+	async allowAgentChangeServiceStatus(statusLivechat: ILivechatAgentStatus, agentId: string) {
+		if (statusLivechat !== 'available') {
+			return true;
+		}
+
+		return businessHourManager.allowAgentChangeServiceStatus(agentId);
+	}
+
+	async setUserStatusLivechat(userId: string, status: ILivechatAgentStatus) {
+		const user = await Users.setLivechatStatus(userId, status);
+		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
+		return user;
+	}
+
+	async setUserStatusLivechatIf(userId: string, status: ILivechatAgentStatus, condition: Filter<IUser>, fields: Record<string, any>) {
+		const user = await Users.setLivechatStatusIf(userId, status, condition, fields);
+		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
+		return user;
 	}
 }
 

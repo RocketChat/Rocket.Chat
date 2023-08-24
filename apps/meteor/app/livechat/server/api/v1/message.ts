@@ -67,7 +67,7 @@ API.v1.addRoute(
 				},
 			};
 
-			const result = await Livechat.sendMessage(sendMessage);
+			const result = await LivechatTyped.sendMessage(sendMessage);
 			if (result) {
 				const message = await Messages.findOneById(_id);
 				if (!message) {
@@ -134,7 +134,7 @@ API.v1.addRoute(
 				throw new Error('invalid-message');
 			}
 
-			const result = await Livechat.updateMessage({
+			const result = await LivechatTyped.updateMessage({
 				guest,
 				message: { _id: msg._id, msg: this.bodyParams.msg },
 			});
@@ -272,10 +272,16 @@ API.v1.addRoute(
 				visitor = await LivechatVisitors.findOneById(visitorId);
 			}
 
+			const v = visitor;
+
+			if (!v) {
+				throw new Error('invalid-visitor');
+			}
+
 			const sentMessages = await Promise.all(
 				this.bodyParams.messages.map(async (message: { msg: string }): Promise<{ username: string; msg: string; ts: number }> => {
 					const sendMessage = {
-						guest: visitor,
+						guest: v,
 						message: {
 							_id: Random.id(),
 							rid,
@@ -288,8 +294,7 @@ API.v1.addRoute(
 							},
 						},
 					};
-					// @ts-expect-error -- Typings on sendMessage are wrong
-					const sentMessage = await Livechat.sendMessage(sendMessage);
+					const sentMessage = await LivechatTyped.sendMessage(sendMessage);
 					return {
 						username: sentMessage.u.username,
 						msg: sentMessage.msg,

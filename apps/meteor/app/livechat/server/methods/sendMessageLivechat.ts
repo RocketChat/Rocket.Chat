@@ -1,34 +1,20 @@
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
-import type { MessageAttachment } from '@rocket.chat/core-typings';
+import type { MessageAttachment, IMessage } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
-import { Livechat } from '../lib/Livechat';
+import { Livechat } from '../lib/LivechatTyped';
 
 interface ILivechatMessage {
 	token: string;
 	_id: string;
 	rid: string;
 	msg: string;
-	file?: {
-		_id: string;
-		name?: string;
-		type?: string;
-		size?: number;
-		description?: string;
-		identify?: { size: { width: number; height: number } };
-	};
-	files?: {
-		_id: string;
-		name?: string;
-		type?: string;
-		size?: number;
-		description?: string;
-		identify?: { size: { width: number; height: number } };
-	}[];
+	file?: IMessage['file'];
+	files?: IMessage['files'];
 	attachments?: MessageAttachment[];
 }
 

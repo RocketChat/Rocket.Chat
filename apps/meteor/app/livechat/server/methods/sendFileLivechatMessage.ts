@@ -4,6 +4,7 @@ import type {
 	AudioAttachmentProps,
 	VideoAttachmentProps,
 	IUpload,
+	FileProp,
 } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -82,24 +83,23 @@ export const sendFileLivechatMessage = async ({ roomId, visitorToken, file, msgD
 		(attachment as VideoAttachmentProps).video_size = file.size || 0;
 	}
 
+	const uploadedFile = {
+		_id: file._id,
+		type: file.type || 'application/octet-stream',
+		format: file.extension,
+		size: file.size || 0,
+		name: file.name || 'Uploaded file',
+		identify: file.identify || {},
+	} as FileProp;
+
 	const msg = Object.assign(
 		{
 			_id: Random.id(),
 			rid: roomId,
 			ts: new Date(),
 			msg: '',
-			file: {
-				_id: file._id,
-				name: file.name,
-				type: file.type,
-			},
-			files: [
-				{
-					_id: file._id,
-					name: file.name,
-					type: file.type,
-				},
-			],
+			file: uploadedFile,
+			files: [uploadedFile],
 			groupable: false,
 			attachments: [attachment],
 			token: visitorToken,
