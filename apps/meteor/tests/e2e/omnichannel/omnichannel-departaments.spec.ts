@@ -48,7 +48,7 @@ test.describe.serial('omnichannel-departments', () => {
 		});
 
 		await test.step('expect name and email to be required', async () => {
-			await poOmnichannelDepartments.btnNew.click();
+			await poOmnichannelDepartments.headingButtonNew('Create department').click();
 			await expect(poOmnichannelDepartments.invalidInputEmail).not.toBeVisible();
 
 			await poOmnichannelDepartments.inputName.fill('any_text');
@@ -153,7 +153,7 @@ test.describe.serial('omnichannel-departments', () => {
 		const tagsDepartmentName = faker.string.uuid();
 
 		await test.step('expect create new department', async () => {
-			await poOmnichannelDepartments.btnNew.click();
+			await poOmnichannelDepartments.headingButtonNew('Create department').click();
 			await poOmnichannelDepartments.btnEnabled.click();
 			await poOmnichannelDepartments.inputName.fill(tagsDepartmentName);
 			await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
