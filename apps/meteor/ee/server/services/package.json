@@ -18,7 +18,7 @@
 	"author": "Rocket.Chat",
 	"license": "MIT",
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.40.0",
+		"@rocket.chat/apps-engine": "1.41.0-alpha.290",
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "next",
@@ -43,7 +43,7 @@
 		"moleculer": "^0.14.29",
 		"mongodb": "^4.12.1",
 		"nats": "^2.6.1",
-		"pino": "^7.11.0",
+		"pino": "^8.15.0",
 		"sodium-native": "^3.3.0",
 		"sodium-plus": "^0.9.0",
 		"uuid": "^8.3.2",

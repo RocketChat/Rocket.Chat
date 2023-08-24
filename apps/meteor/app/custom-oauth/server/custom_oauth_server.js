@@ -1,4 +1,5 @@
 import { LDAP } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Accounts } from 'meteor/accounts-base';
@@ -11,7 +12,6 @@ import _ from 'underscore';
 import { callbacks } from '../../../lib/callbacks';
 import { isURL } from '../../../lib/utils/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
-import { Logger } from '../../logger/server';
 import { settings } from '../../settings/server';
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 
