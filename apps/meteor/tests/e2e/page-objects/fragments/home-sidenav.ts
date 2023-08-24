@@ -32,7 +32,7 @@ export class HomeSidenav {
 	}
 
 	get btnCreate(): Locator {
-		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
+		return this.page.locator('role=button[name="Create"]');
 	}
 
 	getSidebarItemByName(name: string): Locator {
@@ -52,7 +52,7 @@ export class HomeSidenav {
 	}
 
 	async openInstalledApps(): Promise<void> {
-		await this.page.locator('//button[@title="Administration"]').click();
+		await this.page.locator('role=button[name="Administration"]').click();
 		await this.page.locator('//div[contains(text(),"Installed")]').click();
 	}
 
