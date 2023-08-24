@@ -1,5 +1,6 @@
 import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import i18nDict from '@rocket.chat/i18n';
+import type { TOptions } from 'i18next';
 
 import { i18n } from '../../app/utils/lib/i18n';
 
