@@ -9,8 +9,8 @@ export const ChannelsSection = () => {
 	const colors = useMemo(() => Object.values(COLORS), []);
 
 	return (
-		<ReportCard {...config} height={200}>
-			<PieChart data={data} width={400} height={200} colors={colors} />
+		<ReportCard {...config} minHeight={200}>
+			<PieChart data={data} width={200} height={200} colors={colors} />
 		</ReportCard>
 	);
 };

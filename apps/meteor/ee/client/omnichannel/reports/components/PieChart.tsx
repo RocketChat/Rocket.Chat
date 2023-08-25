@@ -1,9 +1,16 @@
 import { Pie } from '@nivo/pie';
 import { Tooltip } from '@rocket.chat/fuselage';
+import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
 import React from 'react';
 
 import { REPORTS_CHARTS_THEME } from './constants';
+
+const legendItemHeight = 20;
+const legendItemWidth = 200;
+const legendItemsSpacing = 8;
+const legendSpacing = 24;
+const legendInlineSize = legendItemWidth + legendSpacing;
 
 export const PieChart = ({
 	data,
@@ -16,10 +23,12 @@ export const PieChart = ({
 	height: number;
 	colors?: ComponentProps<typeof Pie>['colors'];
 }) => {
+	const breakpoints = useBreakpoints();
+	const isSmallScreen = !breakpoints.includes('md');
+	const legendBlockSize = data.length * (legendItemHeight + legendItemsSpacing) + legendSpacing;
+
 	return (
 		<Pie
-			width={width}
-			height={height}
 			data={data}
 			innerRadius={0.6}
 			colors={colors ?? { datum: 'data.color' }}
@@ -27,21 +36,23 @@ export const PieChart = ({
 			theme={REPORTS_CHARTS_THEME}
 			enableArcLinkLabels={false}
 			enableArcLabels={false}
-			margin={{ right: 224 }}
 			tooltip={({ datum }) => <Tooltip>{datum.label}</Tooltip>}
+			width={isSmallScreen ? width : width + legendInlineSize}
+			height={isSmallScreen ? height + legendBlockSize : height}
+			margin={isSmallScreen ? { top: legendBlockSize } : { right: legendInlineSize }}
 			legends={[
 				{
-					anchor: 'right',
 					direction: 'column',
 					justify: false,
-					translateX: 224,
-					translateY: 0,
-					itemWidth: 200,
-					itemHeight: 20,
-					itemsSpacing: 8,
 					symbolSize: 12,
 					itemDirection: 'left-to-right',
 					symbolShape: 'circle',
+					anchor: isSmallScreen ? 'top' : 'right',
+					translateX: isSmallScreen ? 0 : legendInlineSize,
+					translateY: isSmallScreen ? legendBlockSize * -1 : 0,
+					itemWidth: legendItemWidth,
+					itemHeight: legendItemHeight,
+					itemsSpacing: legendItemsSpacing,
 				},
 			]}
 		/>

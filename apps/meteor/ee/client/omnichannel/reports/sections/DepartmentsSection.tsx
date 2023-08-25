@@ -8,7 +8,7 @@ export const DepartmentsSection = () => {
 	const { data, ...config } = useDepartmentsSection();
 
 	return (
-		<ReportCard {...config} height={360}>
+		<ReportCard {...config} minHeight={360}>
 			<BarChart
 				data={data}
 				direction='horizontal'

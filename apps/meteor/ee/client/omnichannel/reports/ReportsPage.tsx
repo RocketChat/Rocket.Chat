@@ -17,7 +17,7 @@ const ReportsPage = () => {
 			</Box>
 			<Page.ScrollableContentWithShadow alignItems='center'>
 				<ResizeObserver>
-					<Box display='flex' flexWrap='wrap' maxWidth='100rem' m={-8}>
+					<Box display='flex' flexWrap='wrap' width='100rem' maxWidth='100%' m={-8}>
 						<StatusSection />
 
 						<ChannelsSection />

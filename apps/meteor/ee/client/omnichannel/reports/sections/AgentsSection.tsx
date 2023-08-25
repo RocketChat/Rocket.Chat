@@ -1,5 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
+import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -25,12 +26,14 @@ const LoadingSkeleton = () => (
 export const AgentsSection = () => {
 	const { data, sortBy, sortDirection, setSort, ...config } = useAgentsSection();
 	const t = useTranslation();
+	const breakpoints = useBreakpoints();
+	const isSmallScreen = !breakpoints.includes('lg');
 
 	return (
-		<ReportCard {...config} full height={360} loadingSkeleton={<LoadingSkeleton />}>
-			<Box display='flex' style={{ gap: '16px' }}>
-				<Flex.Item grow={1}>
-					<Box maxWidth='50%'>
+		<ReportCard {...config} full minHeight={360} loadingSkeleton={<LoadingSkeleton />}>
+			<Box display='flex' style={{ gap: '1rem' }} flexWrap='wrap' flexDirection={isSmallScreen ? 'column' : 'row'}>
+				<Flex.Item grow={1} shrink={0} basis='auto'>
+					<Box>
 						<Box is='p' fontScale='p2' mbe={8}>
 							{t('Top_5_agents_with_the_most_conversations')}
 						</Box>
@@ -55,8 +58,10 @@ export const AgentsSection = () => {
 						/>
 					</Box>
 				</Flex.Item>
-				<Flex.Item grow={1}>
-					<AgentsTable data={data} sortBy={sortBy} sortDirection={sortDirection} setSort={setSort} />
+				<Flex.Item grow={1} shrink={0} basis='auto'>
+					<Box display='flex' minWidth='50%' height={390}>
+						<AgentsTable data={data} sortBy={sortBy} sortDirection={sortDirection} setSort={setSort} />
+					</Box>
 				</Flex.Item>
 			</Box>
 		</ReportCard>

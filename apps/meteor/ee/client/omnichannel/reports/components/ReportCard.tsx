@@ -17,7 +17,7 @@ type ReportCardProps = {
 	downloadProps: ComponentProps<typeof DownloadDataButton>;
 	isLoading?: boolean;
 	isDataFound?: boolean;
-	height?: number;
+	minHeight?: number;
 	loadingSkeleton?: ReactElement;
 	subtitle?: string;
 	emptyStateSubtitle?: string;
@@ -33,7 +33,7 @@ export const ReportCard = ({
 	downloadProps,
 	isLoading: isLoadingData,
 	isDataFound,
-	height,
+	minHeight,
 	subtitle,
 	emptyStateSubtitle,
 	full,
@@ -49,16 +49,16 @@ export const ReportCard = ({
 	return (
 		<Box
 			is={Card}
-			minWidth={500}
 			maxWidth='calc(100% - 16px)'
-			width={`calc(${width} - 16px)`}
+			minWidth={`calc(${width} - 16px)`}
 			height='initial'
 			flexGrow={1}
 			flexShrink={0}
+			flexBasis='auto'
 			margin={8}
 		>
 			<Card.Title>
-				<Box display='flex' justifyContent='space-between' alignItems='center' wrap='no-wrap'>
+				<Box display='flex' justifyContent='space-between' alignItems='center' flexWrap='wrap' style={{ rowGap: 8 }}>
 					<Box display='flex' flexDirection='column' flexShrink={1} mie={16}>
 						<Box is='span' withTruncatedText>
 							{title}
@@ -73,21 +73,23 @@ export const ReportCard = ({
 					</Box>
 				</Box>
 			</Card.Title>
-			<Card.Body height={height}>
+			<Card.Body>
 				<Card.Col>
-					<CardErrorState isError={isError} onRetry={onRetry}>
-						{isLoading && LoadingSkeleton}
+					<Box minHeight={minHeight}>
+						<CardErrorState isError={isError} onRetry={onRetry}>
+							{isLoading && LoadingSkeleton}
 
-						{!isLoading && !isDataFound && (
-							<States style={{ height: '100%' }}>
-								<StatesIcon name='dashboard' />
-								<StatesTitle>{t('No_data_available_for_the_selected_period')}</StatesTitle>
-								<StatesSubtitle>{emptyStateSubtitle}</StatesSubtitle>
-							</States>
-						)}
+							{!isLoading && !isDataFound && (
+								<States style={{ height: '100%' }}>
+									<StatesIcon name='dashboard' />
+									<StatesTitle>{t('No_data_available_for_the_selected_period')}</StatesTitle>
+									<StatesSubtitle>{emptyStateSubtitle}</StatesSubtitle>
+								</States>
+							)}
 
-						{!isLoading && isDataFound && children}
-					</CardErrorState>
+							{!isLoading && isDataFound && children}
+						</CardErrorState>
+					</Box>
 				</Card.Col>
 			</Card.Body>
 		</Box>
