@@ -1,6 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 
 import RoomOpener from './RoomOpener';
 
@@ -15,7 +15,7 @@ const RoomRoute = ({ extractOpenRoomParams }: RoomRouteProps) => {
 	const router = useRouter();
 	const [params, setParams] = useState(() => extractOpenRoomParams(router.getRouteParameters()));
 
-	useEffect(
+	useLayoutEffect(
 		() =>
 			router.subscribeToRouteChange(() => {
 				setParams(extractOpenRoomParams(router.getRouteParameters()));
