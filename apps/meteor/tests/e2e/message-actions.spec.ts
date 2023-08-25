@@ -20,7 +20,7 @@ test.describe.serial('message-actions', () => {
 	test('expect reply the message in direct', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply in direct');
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('li', { hasText: 'Reply in Direct Message' }).click();
+		await page.locator('li', { hasText: 'Reply in direct message' }).click();
 
 		await expect(page).toHaveURL(/.*reply/);
 	});
@@ -28,7 +28,7 @@ test.describe.serial('message-actions', () => {
 	test('expect reply the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply');
 		await page.locator('[data-qa-type="message"]').last().hover();
-		await page.locator('role=button[name="Reply in Thread"]').click();
+		await page.locator('role=button[name="Reply in thread"]').click();
 		await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('this is a reply message');
 		await page.keyboard.press('Enter');
 

@@ -19,7 +19,7 @@ test.describe.serial('Threads', () => {
 	test('expect thread message preview if alsoSendToChannel checkbox is checked', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply');
 		await page.locator('[data-qa-type="message"]').last().hover();
-		await page.locator('role=button[name="Reply in Thread"]').click();
+		await page.locator('role=button[name="Reply in thread"]').click();
 
 		await expect(page).toHaveURL(/.*thread/);
 
@@ -75,7 +75,7 @@ test.describe.serial('Threads', () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('this is a message for reply');
 			await page.locator('[data-qa-type="message"]').last().hover();
-			await page.locator('role=button[name="Reply in Thread"]').click();
+			await page.locator('role=button[name="Reply in thread"]').click();
 		});
 
 		test('expect delete the thread message and close thread if has only one message', async ({ page }) => {
