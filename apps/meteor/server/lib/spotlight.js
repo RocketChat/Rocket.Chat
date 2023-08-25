@@ -1,3 +1,4 @@
+import { Team } from '@rocket.chat/core-services';
 import { Users, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
