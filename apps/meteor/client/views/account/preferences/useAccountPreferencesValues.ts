@@ -11,6 +11,7 @@ export type AccountPreferencesData = {
 	emailNotificationMode?: string;
 	receiveLoginDetectionEmail?: boolean;
 	notifyCalendarEvents?: boolean;
+	enableMobileRinging?: boolean;
 	unreadAlert?: boolean;
 	showThreadsInMainChannel?: boolean;
 	alsoSendThreadToChannel?: 'default' | 'always' | 'never';
@@ -53,6 +54,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 	const emailNotificationMode = useUserPreference<string>('emailNotificationMode');
 	const receiveLoginDetectionEmail = useUserPreference<boolean>('receiveLoginDetectionEmail');
 	const notifyCalendarEvents = useUserPreference<boolean>('notifyCalendarEvents');
+	const enableMobileRinging = useUserPreference<boolean>('enableMobileRinging');
 
 	const unreadAlert = useUserPreference<boolean>('unreadAlert');
 	const showThreadsInMainChannel = useUserPreference<boolean>('showThreadsInMainChannel');
@@ -87,6 +89,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 		emailNotificationMode,
 		receiveLoginDetectionEmail,
 		notifyCalendarEvents,
+		enableMobileRinging,
 		unreadAlert,
 		showThreadsInMainChannel,
 		alsoSendThreadToChannel,
