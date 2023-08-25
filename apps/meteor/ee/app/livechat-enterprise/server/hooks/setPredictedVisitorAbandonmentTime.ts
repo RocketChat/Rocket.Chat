@@ -7,6 +7,10 @@ import { setPredictedVisitorAbandonmentTime } from '../lib/Helper';
 callbacks.add(
 	'afterSaveMessage',
 	async (message, room) => {
+		if (!isOmnichannelRoom(room)) {
+			return message;
+		}
+
 		if (
 			!settings.get('Livechat_abandoned_rooms_action') ||
 			settings.get('Livechat_abandoned_rooms_action') === 'none' ||
@@ -19,12 +23,8 @@ callbacks.add(
 			return message;
 		}
 
-		if (!isOmnichannelRoom(room)) {
-			return message;
-		}
-
 		// message valid only if it is a livechat room
-		if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
+		if (!room.v?.token) {
 			return message;
 		}
 		// if the message has a type means it is a special message (like the closing comment), so skip it

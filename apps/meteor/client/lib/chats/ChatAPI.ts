@@ -4,6 +4,7 @@ import type { UIEvent } from 'react';
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import type { Subscribable } from '../../definitions/Subscribable';
 import type { Upload } from './Upload';
+import type { ReadStateManager } from './readStateManager';
 
 export type ComposerAPI = {
 	release(): void;
@@ -86,7 +87,6 @@ export type DataAPI = {
 	getRoom(): Promise<IRoom>;
 	isSubscribedToRoom(): Promise<boolean>;
 	joinRoom(): Promise<void>;
-	markRoomAsRead(): Promise<void>;
 	findDiscussionByID(drid: IRoom['_id']): Promise<IRoom | undefined>;
 	getDiscussionByID(drid: IRoom['_id']): Promise<IRoom>;
 	findSubscription(): Promise<ISubscription | undefined>;
@@ -110,6 +110,7 @@ export type ChatAPI = {
 	readonly setComposerAPI: (composer: ComposerAPI) => void;
 	readonly data: DataAPI;
 	readonly uploads: UploadsAPI;
+	readonly readStateManager: ReadStateManager;
 	readonly messageEditing: {
 		toPreviousMessage(): Promise<void>;
 		toNextMessage(): Promise<void>;
