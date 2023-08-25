@@ -1,5 +1,6 @@
 import { Agenda } from '@rocket.chat/agenda';
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { MainLogger } from '@rocket.chat/logger';
 import { LivechatRooms, LivechatInquiry as LivechatInquiryRaw, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
@@ -8,7 +9,6 @@ import type { Db } from 'mongodb';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { settings } from '../../../../../app/settings/server';
 import { i18n } from '../../../../../server/lib/i18n';
-import type { MainLogger } from '../../../../../server/lib/logger/getPino';
 import { schedulerLogger } from './logger';
 
 const SCHEDULER_NAME = 'omnichannel_queue_inactivity_monitor';

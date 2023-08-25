@@ -133,6 +133,10 @@ $button-icon-padding: 10px;
 		padding: $button-small-padding;
 	}
 
+	&--full {
+		width: 100%;
+	}
+
 	&--disabled {
 		cursor: not-allowed;
 

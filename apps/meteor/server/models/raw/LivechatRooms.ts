@@ -180,7 +180,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		const params = [...firstParams, usersGroup, project, facet];
-		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred(), allowDiskUse: true }).toArray();
 	}
 
 	async findAllNumberOfAbandonedRooms({
@@ -2514,6 +2514,22 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	async updateDepartmentAncestorsById(_rid: string, _departmentAncestors?: string[]): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	countPrioritizedRooms(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	countRoomsWithSla(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	countRoomsWithPdfTranscriptRequested(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	countRoomsWithTranscriptSent(): Promise<number> {
 		throw new Error('Method not implemented.');
 	}
 }

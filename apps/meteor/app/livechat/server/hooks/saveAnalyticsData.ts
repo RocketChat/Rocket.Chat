@@ -8,12 +8,12 @@ import { callbackLogger } from '../lib/logger';
 callbacks.add(
 	'afterSaveMessage',
 	async (message, room) => {
-		callbackLogger.debug(`Calculating Omnichannel metrics for room ${room._id}`);
 		// check if room is livechat
 		if (!isOmnichannelRoom(room)) {
 			return message;
 		}
 
+		callbackLogger.debug(`Calculating Omnichannel metrics for room ${room._id}`);
 		// skips this callback if the message was edited
 		if (!message || isEditedMessage(message)) {
 			return message;
