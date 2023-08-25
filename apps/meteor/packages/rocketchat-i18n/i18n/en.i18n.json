@@ -3913,6 +3913,7 @@
   "Password_History_Amount_Description": "Amount of most recently used passwords to prevent users from reusing.",
   "Password_must_have": "Password must have:",
   "Password_Policy": "Password Policy",
+  "Password_Policy_Aria_Description": "Below it's listed the password requirement verifications",
   "Password_to_access": "Password to access",
   "Passwords_do_not_match": "Passwords do not match",
   "Past_Chats": "Past Chats",
