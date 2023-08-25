@@ -1,6 +1,6 @@
 import { parse } from '@rocket.chat/message-parser';
 
-export const normalizeUrl = (url: string | undefined): string | undefined => {
+export const normalizeUrl = (url: string): string | undefined => {
 	if (!url) {
 		return undefined;
 	}

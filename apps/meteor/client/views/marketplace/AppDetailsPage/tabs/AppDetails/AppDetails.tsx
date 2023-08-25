@@ -25,9 +25,9 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
 	const isCarouselVisible = screenshots && Boolean(screenshots.length);
 
-	const normalizedHomepageUrl = normalizeUrl(homepage);
-	const normalizedSupportUrl = normalizeUrl(support);
-	const normalizedDocumentationUrl = normalizeUrl(documentation);
+	const normalizedHomepageUrl = homepage && normalizeUrl(homepage);
+	const normalizedSupportUrl = support && normalizeUrl(support);
+	const normalizedDocumentationUrl = documentation && normalizeUrl(documentation);
 
 	return (
 		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>
