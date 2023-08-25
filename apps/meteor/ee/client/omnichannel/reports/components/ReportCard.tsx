@@ -81,7 +81,7 @@ export const ReportCard = ({
 						{!isLoading && !isDataFound && (
 							<States style={{ height: '100%' }}>
 								<StatesIcon name='dashboard' />
-								<StatesTitle>{t('No_data_for_the_selected_period')}</StatesTitle>
+								<StatesTitle>{t('No_data_available_for_the_selected_period')}</StatesTitle>
 								<StatesSubtitle>{emptyStateSubtitle}</StatesSubtitle>
 							</States>
 						)}
