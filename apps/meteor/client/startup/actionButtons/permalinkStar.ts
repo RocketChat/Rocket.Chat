@@ -10,7 +10,7 @@ Meteor.startup(() => {
 	MessageAction.addButton({
 		id: 'permalink-star',
 		icon: 'permalink',
-		label: 'Get_link',
+		label: 'Copy_link',
 		// classes: 'clipboard',
 		context: ['starred', 'threads', 'videoconf-threads'],
 		async action(_, props) {
