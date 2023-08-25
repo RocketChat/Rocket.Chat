@@ -31,10 +31,11 @@ type WorkspaceRegistrationData<T> = {
 	setupComplete: boolean;
 	connectionDisable: boolean;
 	npsEnabled: SettingValue;
+	cloudToken: string; // TODO: still to be defined
 };
 
 export async function buildWorkspaceRegistrationData<T extends string | undefined>(contactEmail: T): Promise<WorkspaceRegistrationData<T>> {
-	const stats = (await Statistics.findLast()) || (await statistics.get());
+	const stats = (await Statistics.findLastSentWithCloudToken()) || (await statistics.get());
 
 	const address = settings.get('Site_Url');
 	const siteName = settings.get('Site_Name');
@@ -78,5 +79,6 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		setupComplete: setupWizardState === 'completed',
 		connectionDisable: !registerServer,
 		npsEnabled,
+		cloudToken: stats.cloudToken, // TODO: still to be defined
 	};
 }

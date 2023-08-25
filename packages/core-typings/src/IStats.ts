@@ -209,4 +209,5 @@ export interface IStats {
 	webRTCEnabled: boolean;
 	webRTCEnabledForOmnichannel: boolean;
 	omnichannelWebRTCCalls: number;
+	cloudToken: string;
 }

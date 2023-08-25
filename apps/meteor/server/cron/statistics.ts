@@ -1,5 +1,6 @@
 import { cronJobs } from '@rocket.chat/cron';
 import type { Logger } from '@rocket.chat/logger';
+import { Statistics } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 
@@ -20,11 +21,14 @@ async function generateStatistics(logger: Logger): Promise<void> {
 		const token = await getWorkspaceAccessToken();
 		const headers = { ...(token && { Authorization: `Bearer ${token}` }) };
 
-		await fetch('https://collector.rocket.chat/', {
+		const response = await fetch('https://collector.rocket.chat/', {
 			method: 'POST',
 			body: cronStatistics,
 			headers,
 		});
+
+		const { cloudToken } = await response.json();
+		await Statistics.updateOne({ _id: cronStatistics._id }, { $set: { cloudToken } });
 	} catch (error) {
 		/* error*/
 		logger.warn('Failed to send usage report');

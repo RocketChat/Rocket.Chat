@@ -15,7 +15,7 @@ import UsageCard from './UsageCard';
 type InformationPageProps = {
 	canViewStatistics: boolean;
 	info: IServerInfo;
-	statistics: IStats;
+	statistics: Omit<IStats, 'cloudToken'>;
 	instances: Serialized<IInstance[]>;
 	onClickRefreshButton: () => void;
 	onClickDownloadInfo: () => void;
