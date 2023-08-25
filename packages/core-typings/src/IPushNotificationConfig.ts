@@ -14,5 +14,6 @@ export interface IPushNotificationConfig {
 	};
 	apn?: {
 		category: string;
+		topicSuffix?: string;
 	};
 }
