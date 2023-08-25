@@ -10,13 +10,10 @@ import { sendMessage } from '../../../lib/server/functions/sendMessage';
 callbacks.add(
 	'afterSaveMessage',
 	async (message: IMessage, room: IRoom) => {
-		if (!isOmnichannelRoom(room)) {
+		if (!isOmnichannelRoom(room) || message.u._id !== room.v._id) {
 			return;
 		}
 
-		if (message.u._id !== room.v._id) {
-			return;
-		}
 		switch (room.verificationStatus) {
 			case RoomVerificationState.isListeningToEmail: {
 				const result = await OmnichannelVerification.setVisitorEmail(room, message.msg);
@@ -28,12 +25,27 @@ callbacks.add(
 				break;
 			}
 			case RoomVerificationState.isListeningToOTP: {
+				const bot = await Users.findOneById('rocket.cat');
+				if (message.msg === 'Resend OTP') {
+					if (room.source.type === 'widget') {
+						const wrongOtpInstructionsMessage = {
+							msg: i18n.t('Visitor_Widget_Verification_Process_Resend_OTP'),
+							groupable: false,
+						};
+						await sendMessage(bot, wrongOtpInstructionsMessage, room);
+					} else {
+						const resendOTPText = i18n.t('Visitor_App_Verification_Process_Resend_OTP');
+						await OmnichannelVerification.createLivechatMessage(room, resendOTPText);
+					}
+					await OmnichannelVerification.sendVerificationCodeToVisitor(room.v._id, room);
+					await LivechatRooms.updateWrongMessageCount(room._id, 0);
+					return;
+				}
 				const result = await OmnichannelVerification.verifyVisitorCode(room, message.msg);
 				if (!result) {
 					return;
 				}
 				await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.verified);
-				const bot = await Users.findOneById('rocket.cat');
 				const completionMessage = {
 					msg: i18n.t('Visitor_Verification_Process_Completed'),
 					groupable: false,
