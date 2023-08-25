@@ -1,10 +1,10 @@
-import type { IModerationReport, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
 import { ajv } from '../Ajv';
 
 export type ArchiveReportPropsPOST = {
 	userId?: IUser['_id'];
-	msgId?: IModerationReport['message']['_id'];
+	msgId?: IMessage['_id'];
 	action?: string;
 	reason?: string;
 };

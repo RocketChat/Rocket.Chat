@@ -1,4 +1,4 @@
-import { Logger } from '../../../../../app/logger/server';
+import { Logger } from '@rocket.chat/logger';
 
 export const logger = new Logger('LivechatEnterprise');
 
