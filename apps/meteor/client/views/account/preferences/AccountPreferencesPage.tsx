@@ -47,6 +47,7 @@ type CurrentData = {
 	receiveLoginDetectionEmail: boolean;
 	dontAskAgainList: [action: string, label: string][];
 	notifyCalendarEvents: boolean;
+	enableMobileRinging: boolean;
 };
 
 export type FormSectionProps = {
