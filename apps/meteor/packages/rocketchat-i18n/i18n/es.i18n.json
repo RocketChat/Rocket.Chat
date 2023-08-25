@@ -1995,7 +1995,7 @@
   "Generate_new_key": "Generar una nueva clave",
   "Generate_New_Link": "Generar un nuevo enlace",
   "Generating_key": "Generando clave",
-  "Copy_link": "Obtener enlace",
+  "Get_link": "Obtener enlace",
   "get-password-policy-forbidRepeatingCharacters": "La contraseña no debe contener caracteres repetidos",
   "get-password-policy-forbidRepeatingCharactersCount": "La contraseña solo puede contener {{forbidRepeatingCharactersCount}} caracteres repetidos",
   "get-password-policy-maxLength": "La contraseña debe tener un máximo de {{maxLength}} caracteres",

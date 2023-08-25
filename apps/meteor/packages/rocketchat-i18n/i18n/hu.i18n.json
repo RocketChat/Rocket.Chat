@@ -2213,7 +2213,7 @@
   "Generate_new_key": "Új kulcs előállítása",
   "Generate_New_Link": "Új hivatkozás előállítása",
   "Generating_key": "Kulcs előállítása",
-  "Copy_link": "Hivatkozás lekérése",
+  "Get_link": "Hivatkozás lekérése",
   "get-password-policy-forbidRepeatingCharacters": "A jelszó nem tartalmazhat ismétlődő karaktereket",
   "get-password-policy-forbidRepeatingCharactersCount": "A jelszó nem tartalmazhat több mint {{forbidRepeatingCharactersCount}} ismétlődő karaktert",
   "get-password-policy-maxLength": "A jelszónak legfeljebb {{maxLength}} karakter hosszúságúnak kell lennie",

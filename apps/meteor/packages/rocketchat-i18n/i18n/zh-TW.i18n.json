@@ -1971,7 +1971,7 @@
   "Generate_new_key": "產生新的金鑰",
   "Generate_New_Link": "產生新的連接",
   "Generating_key": "產生金鑰中",
-  "Copy_link": "取得連結",
+  "Get_link": "取得連結",
   "get-password-policy-forbidRepeatingCharacters": "密碼不應包含重複字元",
   "get-password-policy-forbidRepeatingCharactersCount": "密碼中不得包含 {{forbidRepeatingCharactersCount}} 個重複字元",
   "get-password-policy-maxLength": "密碼長度不得超過 {{maxLength}} 個字元",

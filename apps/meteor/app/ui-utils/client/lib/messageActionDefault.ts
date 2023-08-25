@@ -120,7 +120,7 @@ Meteor.startup(async () => {
 	MessageAction.addButton({
 		id: 'permalink',
 		icon: 'permalink',
-		label: 'Copy_link',
+		label: 'Get_link',
 		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		type: 'duplication',
@@ -144,7 +144,7 @@ Meteor.startup(async () => {
 	MessageAction.addButton({
 		id: 'copy',
 		icon: 'copy',
-		label: 'Copy_text',
+		label: 'Copy',
 		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		type: 'duplication',

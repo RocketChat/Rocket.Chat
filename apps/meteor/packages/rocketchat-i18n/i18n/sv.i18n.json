@@ -2292,7 +2292,7 @@
   "Generate_new_key": "Generera en ny nyckel",
   "Generate_New_Link": "Generera en ny länk",
   "Generating_key": "Genererar nyckel",
-  "Copy_link": "Kopiera länk",
+  "Get_link": "Kopiera länk",
   "get-password-policy-forbidRepeatingCharacters": "Lösenordet får inte innehålla samma tecken fler än en gång",
   "get-password-policy-forbidRepeatingCharactersCount": "Lösenordet får inte innehålla fler än {{forbidRepeatingCharactersCount}} upprepade tecken",
   "get-password-policy-maxLength": "Lösenordet får bestå av högst {{maxLength}} tecken",

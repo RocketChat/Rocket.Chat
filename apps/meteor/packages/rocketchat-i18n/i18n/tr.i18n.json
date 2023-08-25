@@ -1451,7 +1451,7 @@
   "Gaming": "Oyun",
   "General": "Genel",
   "Generate_New_Link": "Yeni Bağlantı Oluştur",
-  "Copy_link": "Bağlantıyı Al",
+  "Get_link": "Bağlantıyı Al",
   "github_no_public_email": "Sen GitHub hesabınızda kamu e-posta olarak herhangi bir e-posta yok",
   "Give_a_unique_name_for_the_custom_oauth": "Özel OAuth için benzersiz bir ad verin",
   "strike": "üstü çizili",

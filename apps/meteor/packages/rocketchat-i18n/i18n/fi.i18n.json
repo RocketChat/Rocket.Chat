@@ -2290,7 +2290,7 @@
   "Generate_new_key": "Luo uusi avain",
   "Generate_New_Link": "Luo uusi linkki",
   "Generating_key": "Luodaan avainta",
-  "Copy_link": "Hae linkki",
+  "Get_link": "Hae linkki",
   "get-password-policy-forbidRepeatingCharacters": "Salasana ei saa sisältää toistuvia merkkejä",
   "get-password-policy-forbidRepeatingCharactersCount": "Salasana ei saa sisältää yli {{forbidRepeatingCharactersCount}} toistuvaa merkkiä",
   "get-password-policy-maxLength": "Salasanan on oltava enintään {{maxLength}} merkkiä pitkä",

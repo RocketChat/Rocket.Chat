@@ -2005,7 +2005,7 @@
   "Generate_new_key": "Genereer een nieuwe sleutel",
   "Generate_New_Link": "Genereer een nieuwe link",
   "Generating_key": "Sleutel genereren",
-  "Copy_link": "Link krijgen",
+  "Get_link": "Link krijgen",
   "get-password-policy-forbidRepeatingCharacters": "Het wachtwoord mag geen herhalende tekens bevatten",
   "get-password-policy-forbidRepeatingCharactersCount": "Het wachtwoord mag niet meer dan {{forbidRepeatingCharactersCount}} herhalende tekens bevatten",
   "get-password-policy-maxLength": "Het wachtwoord mag maximaal {{maxLength}} tekens lang zijn",

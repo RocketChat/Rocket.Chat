@@ -2010,7 +2010,7 @@
   "Generate_new_key": "Générer une nouvelle clé",
   "Generate_New_Link": "Générer un nouveau lien",
   "Generating_key": "Génération de la clé",
-  "Copy_link": "Obtenir le lien",
+  "Get_link": "Obtenir le lien",
   "get-password-policy-forbidRepeatingCharacters": "Le mot de passe ne doit pas contenir de caractères répétitifs",
   "get-password-policy-forbidRepeatingCharactersCount": "Le mot de passe ne doit pas contenir plus de {{forbidRepeatingCharactersCount}} caractères répétitifs",
   "get-password-policy-maxLength": "Le mot de passe doit comporter au maximum {{maxLength}} caractères",

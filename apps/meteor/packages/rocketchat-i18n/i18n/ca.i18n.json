@@ -1997,7 +1997,7 @@
   "Generate_new_key": "Generar una nova clau",
   "Generate_New_Link": "Generar un nou enllaç",
   "Generating_key": "Generant clau",
-  "Copy_link": "Obtenir l'enllaç",
+  "Get_link": "Obtenir l'enllaç",
   "get-password-policy-forbidRepeatingCharacters": "La contrasenya no ha de contenir caràcters repetits",
   "get-password-policy-forbidRepeatingCharactersCount": "La contrasenya no ha de contenir més que {{forbidRepeatingCharactersCount}} caràcters repetits",
   "get-password-policy-maxLength": "La contrasenya ha de tenir un màxim de {{maxLength}} caràcters",
