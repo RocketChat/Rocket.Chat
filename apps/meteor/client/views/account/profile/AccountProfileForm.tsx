@@ -128,6 +128,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	const emailId = useUniqueId();
 	const passwordId = useUniqueId();
 	const confirmPasswordId = useUniqueId();
+	const passwordVerifierId = useUniqueId();
 
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
@@ -297,8 +298,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							flexGrow={1}
 							addon={<Icon name='key' size='x20' />}
 							disabled={!allowPasswordChange}
+							aria-describedby={passwordVerifierId}
 						/>
 					</Field.Row>
+					{allowPasswordChange && Boolean(password.length) && <PasswordVerifier password={password} id={passwordVerifierId} />}
 				</Field>
 				<Field>
 					<Field.Label htmlFor={confirmPasswordId}>{t('Confirm_password')}</Field.Label>
@@ -323,7 +326,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							{errors.confirmationPassword.message}
 						</Field.Error>
 					)}
-					{allowPasswordChange && <PasswordVerifier password={password} />}
 				</Field>
 				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 			</FieldGroup>
