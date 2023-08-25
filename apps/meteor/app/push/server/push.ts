@@ -200,6 +200,17 @@ class PushClass {
 		}
 	}
 
+	private getGatewayNotificationData(notification: PendingPushNotification): Omit<GatewayNotification, 'uniqueId'> {
+		// Gateway accepts every attribute from the PendingPushNotification type, except for the priority and apn.topicSuffix
+		const { priority: _priority, apn, ...notifData } = notification;
+		const { topicSuffix: _topicSuffix, ...apnData } = apn || ({} as RequiredField<PendingPushNotification, 'apn'>['apn']);
+
+		return {
+			...notifData,
+			...(notification.apn ? { apn: { ...apnData } } : {}),
+		};
+	}
+
 	private async sendNotificationGateway(
 		app: IAppsTokens,
 		notification: PendingPushNotification,
@@ -210,20 +221,21 @@ class PushClass {
 			return;
 		}
 
-		// Gateway accepts every attribute from the PendingPushNotification type, except for the priority
-		const { priority: _priority, ...notifData } = notification;
+		const { topicSuffix = '' } = notification.apn || {};
+
+		const gatewayNotification = this.getGatewayNotificationData(notification);
 
 		for (const gateway of this.options.gateways) {
 			logger.debug('send to token', app.token);
 
 			if ('apn' in app.token && app.token.apn) {
 				countApn.push(app._id);
-				return this.sendGatewayPush(gateway, 'apn', app.token.apn, { topic: app.appName, ...notifData });
+				return this.sendGatewayPush(gateway, 'apn', app.token.apn, { topic: `${app.appName}${topicSuffix}`, ...gatewayNotification });
 			}
 
 			if ('gcm' in app.token && app.token.gcm) {
 				countGcm.push(app._id);
-				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, notifData);
+				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, gatewayNotification);
 			}
 		}
 	}
@@ -306,6 +318,7 @@ class PushClass {
 			contentAvailable: Match.Optional(Match.Integer),
 			apn: Match.Optional({
 				category: Match.Optional(String),
+				topicSuffix: Match.Optional(String),
 			}),
 			gcm: Match.Optional({
 				image: Match.Optional(String),
@@ -344,7 +357,7 @@ class PushClass {
 			...(this.hasApnOptions(options)
 				? {
 						apn: {
-							...pick(options.apn, 'category'),
+							...pick(options.apn, 'category', 'topicSuffix'),
 						},
 				  }
 				: {}),

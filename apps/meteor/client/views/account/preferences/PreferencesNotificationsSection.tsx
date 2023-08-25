@@ -37,6 +37,7 @@ const PreferencesNotificationsSection = () => {
 	const allowLoginEmailPreference = useSetting('Device_Management_Allow_Login_Email_preference');
 	const showNewLoginEmailPreference = loginEmailEnabled && allowLoginEmailPreference;
 	const showCalendarPreference = useSetting('Outlook_Calendar_Enabled');
+	const showMobileRinging = useSetting('VideoConf_Mobile_Ringing');
 
 	const userEmailNotificationMode = useUserPreference('emailNotificationMode') as keyof typeof emailNotificationOptionsLabelMap;
 
@@ -85,6 +86,7 @@ const PreferencesNotificationsSection = () => {
 	const emailNotificationModeId = useUniqueId();
 	const receiveLoginDetectionEmailId = useUniqueId();
 	const notifyCalendarEventsId = useUniqueId();
+	const enableMobileRingingId = useUniqueId();
 
 	return (
 		<Accordion.Item title={t('Notifications')}>
@@ -210,6 +212,22 @@ const PreferencesNotificationsSection = () => {
 									control={control}
 									render={({ field: { ref, value, onChange } }) => (
 										<ToggleSwitch id={notifyCalendarEventsId} ref={ref} checked={value} onChange={onChange} />
+									)}
+								/>
+							</Field.Row>
+						</Box>
+					</Field>
+				)}
+				{showMobileRinging && (
+					<Field>
+						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+							<Field.Label htmlFor={enableMobileRingingId}>{t('VideoConf_Mobile_Ringing')}</Field.Label>
+							<Field.Row>
+								<Controller
+									name='enableMobileRinging'
+									control={control}
+									render={({ field: { ref, value, onChange } }) => (
+										<ToggleSwitch id={enableMobileRingingId} ref={ref} checked={value} onChange={onChange} />
 									)}
 								/>
 							</Field.Row>
