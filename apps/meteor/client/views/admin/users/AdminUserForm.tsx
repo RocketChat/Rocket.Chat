@@ -270,7 +270,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 							<Field.Row>
 								<PasswordInput
 									id={passwordId}
-									{...register('password', { required: t('The_field_is_required', t('Password')) })}
+									{...register('password', { required: !userData?._id && t('The_field_is_required', t('Password')) })}
 									aria-invalid={errors.password ? 'true' : 'false'}
 									error={errors.password?.message}
 									flexGrow={1}
