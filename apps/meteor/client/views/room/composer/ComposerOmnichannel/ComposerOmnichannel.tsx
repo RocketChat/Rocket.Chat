@@ -1,3 +1,4 @@
+import { RoomVerificationState } from '@rocket.chat/core-typings';
 import { MessageFooterCallout } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -9,9 +10,10 @@ import ComposerMessage from '../ComposerMessage';
 import { ComposerOmnichannelInquiry } from './ComposerOmnichannelInquiry';
 import { ComposerOmnichannelJoin } from './ComposerOmnichannelJoin';
 import { ComposerOmnichannelOnHold } from './ComposerOmnichannelOnHold';
+import { ComposerOmnichannelVerification } from './ComposerOmnichannelVerification';
 
 const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement => {
-	const { servedBy, queuedAt, open, onHold } = useOmnichannelRoom();
+	const { servedBy, queuedAt, open, onHold, verificationStatus } = useOmnichannelRoom();
 	const userId = useUserId();
 
 	const isSubscribed = useUserIsSubscribed();
@@ -28,6 +30,9 @@ const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement => {
 
 	if (onHold) {
 		return <ComposerOmnichannelOnHold />;
+	}
+	if (verificationStatus === RoomVerificationState.isListeningToEmail || verificationStatus === RoomVerificationState.isListeningToOTP) {
+		return <ComposerOmnichannelVerification />;
 	}
 
 	if (isInquired) {
