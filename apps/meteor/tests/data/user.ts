@@ -33,6 +33,7 @@ export const preferences = {
 		sendOnEnter: 'normal',
 		idleTimeLimit: 3600,
 		notifyCalendarEvents: false,
+		enableMobileRinging: false,
 	},
 };
 
