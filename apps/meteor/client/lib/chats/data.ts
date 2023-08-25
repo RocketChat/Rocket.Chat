@@ -5,7 +5,7 @@ import moment from 'moment';
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
 import { Messages, ChatRoom, ChatSubscription } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
-import { readMessage, MessageTypes } from '../../../app/ui-utils/client';
+import { MessageTypes } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { onClientBeforeSendMessage } from '../onClientBeforeSendMessage';
 import { prependReplies } from '../utils/prependReplies';
@@ -249,11 +249,6 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		await sdk.call('joinRoom', rid);
 	};
 
-	const markRoomAsRead = async (): Promise<void> => {
-		readMessage.readNow(rid);
-		readMessage.refreshUnreadMark(rid);
-	};
-
 	const findDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom | undefined> =>
 		ChatRoom.findOne({ _id: drid, prid: { $exists: true } }, { reactive: false });
 
@@ -318,7 +313,6 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		getRoom,
 		isSubscribedToRoom,
 		joinRoom,
-		markRoomAsRead,
 		findDiscussionByID,
 		getDiscussionByID,
 		findSubscription,
