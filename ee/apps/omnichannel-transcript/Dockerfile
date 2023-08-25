@@ -31,6 +31,9 @@ COPY ./ee/packages/pdf-worker/dist ee/packages/pdf-worker/dist
 COPY ./packages/tools/package.json packages/tools/package.json
 COPY ./packages/tools/dist packages/tools/dist
 
+COPY ./packages/logger/package.json packages/logger/package.json
+COPY ./packages/logger/dist packages/logger/dist
+
 COPY ./ee/apps/${SERVICE}/dist .
 
 COPY ./package.json .
@@ -45,7 +48,11 @@ ENV NODE_ENV=production \
 
 WORKDIR /app/ee/apps/${SERVICE}
 
-RUN yarn workspaces focus --production
+RUN apk update && \
+    apk --no-cache --virtual build-dependencies add g++ python3 make && \
+    yarn workspaces focus --production && \
+    rm -rf /var/cache/apk/* && \
+    apk del build-dependencies
 
 EXPOSE 3000 9458
 

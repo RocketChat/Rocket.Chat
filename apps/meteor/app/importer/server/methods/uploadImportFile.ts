@@ -1,3 +1,4 @@
+import { Import } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
@@ -20,8 +21,9 @@ export const executeUploadImportFile = async (
 		throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, 'uploadImportFile');
 	}
 
-	importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
-	await importer.instance.build();
+	const operation = await Import.newOperation(userId, importer.name, importer.key);
+
+	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
 	const date = new Date();
 	const dateStr = `${date.getUTCFullYear()}${date.getUTCMonth()}${date.getUTCDate()}${date.getUTCHours()}${date.getUTCMinutes()}${date.getUTCSeconds()}`;

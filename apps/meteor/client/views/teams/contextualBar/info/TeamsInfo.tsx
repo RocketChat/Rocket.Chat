@@ -105,7 +105,7 @@ const TeamsInfo = ({
 			<Menu
 				small={false}
 				flexShrink={0}
-				mi='x2'
+				mi={2}
 				key='menu'
 				maxHeight='initial'
 				secondary
@@ -130,7 +130,7 @@ const TeamsInfo = ({
 				<ContextualbarTitle>{t('Teams_Info')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent p='x24'>
+			<ContextualbarScrollableContent p={24}>
 				<InfoPanel>
 					<InfoPanel.Avatar>
 						<RoomAvatar size='x332' room={room} />
@@ -140,7 +140,7 @@ const TeamsInfo = ({
 
 					<InfoPanel.Section>
 						{room.archived && (
-							<Box mb='x16'>
+							<Box mb={16}>
 								<Callout type='warning'>{t('Room_archived')}</Callout>
 							</Box>
 						)}

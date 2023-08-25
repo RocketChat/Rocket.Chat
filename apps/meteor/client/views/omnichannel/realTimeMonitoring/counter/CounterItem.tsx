@@ -9,11 +9,11 @@ const CounterItem = ({
 	title: string | JSX.Element;
 	count: string;
 	flexShrink?: number;
-	pb?: string;
+	pb?: number;
 	flexBasis?: string;
 }) => (
 	<Box display='flex' flexDirection='column' justifyContent='space-between' alignItems='center' flexGrow={1} {...props}>
-		<Box fontScale='h4' textTransform='uppercase' color='hint' textAlign='center' pi='x8'>
+		<Box fontScale='h4' textTransform='uppercase' color='hint' textAlign='center' pi={8}>
 			{title}
 		</Box>
 		<Box fontScale='h2'>{count}</Box>

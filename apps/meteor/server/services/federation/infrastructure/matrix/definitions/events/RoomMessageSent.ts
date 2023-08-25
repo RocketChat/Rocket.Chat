@@ -21,7 +21,7 @@ interface IMatrixContentInfo {
 	duration?: number;
 }
 
-type MatrixRelatesToRelType = 'm.replace';
+type MatrixRelatesToRelType = 'm.replace' | MatrixEventType.MESSAGE_ON_THREAD;
 
 export enum MatrixEnumRelatesToRelType {
 	REPLACE = 'm.replace',
@@ -47,6 +47,7 @@ export interface IMatrixEventContentRoomMessageSent extends IBaseEventContent {
 		'm.in_reply_to'?: {
 			event_id: string;
 		};
+		'is_falling_back'?: boolean;
 	};
 }
 

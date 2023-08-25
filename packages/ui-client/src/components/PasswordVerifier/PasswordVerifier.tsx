@@ -21,8 +21,8 @@ export const PasswordVerifier = ({ password }: PasswordVerifierProps) => {
 	}
 
 	return (
-		<Box display='flex' flexDirection='column' mbs='x8'>
-			<Box mbe='x8' fontScale='c2' id={uniqueId}>
+		<Box display='flex' flexDirection='column' mbs={8}>
+			<Box mbe={8} fontScale='c2' id={uniqueId}>
 				{t('Password_must_have')}
 			</Box>
 			<Box display='flex' flexWrap='wrap' role='list' aria-labelledby={uniqueId}>

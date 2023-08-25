@@ -49,7 +49,11 @@ const RoomMembersItem = ({ _id, name, username, federated, onClickView, rid, rel
 				{nameOrUsername} {displayUsername && <OptionDescription>({displayUsername})</OptionDescription>}
 			</OptionContent>
 			<OptionMenu onClick={preventPropagation}>
-				{showButton ? <UserActions username={username} rid={rid} _id={_id} reload={reload} /> : <IconButton tiny icon='kebab' />}
+				{showButton ? (
+					<UserActions username={username} name={name} rid={rid} _id={_id} reload={reload} />
+				) : (
+					<IconButton tiny icon='kebab' />
+				)}
 			</OptionMenu>
 		</Option>
 	);
