@@ -23,6 +23,8 @@ interface IRandomOTP {
 	encryptedRandom: string;
 	expire: Date;
 }
+
+const bot = await Users.findOneById('rocket.cat');
 export class OmnichannelVerification extends ServiceClassInternal implements IOmnichannelVerification {
 	protected name = 'omnichannel-verification';
 
@@ -79,16 +81,12 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 				emailCode && _isWrongOTP
 					? emailCode.map(({ code }) => LivechatRooms.removeEmailCodeByRoomIdAndCode(room._id, code))
 					: Promise.resolve(),
-				// eslint-disable-next-line no-constant-condition
-				room?.servedBy?._id || 'rocket.cat'
-					? sendMessage(
-							await Users.findOneById('rocket.cat'),
-							{ msg: i18n.t('Visitor_Verification_Process_failed'), groupable: false },
-							room,
-					  )
-					: Promise.resolve(),
 			]);
-
+			const message = {
+				msg: i18n.t('Visitor_Verification_Process_failed'),
+				groupable: false,
+			};
+			await sendMessage(bot, message, room);
 			const comment = i18n.t('Chat_closed_due_to_multiple_invalid_input');
 			const userId = room?.servedBy?._id || 'rocket.cat';
 			const user = await Users.findOneById(userId);
@@ -127,7 +125,6 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		}
 		const visitorEmail = visitor.visitorEmails[0].address;
 		const { random, encryptedRandom, expire } = await this.generateRandomOTP();
-		this.logger.info(random);
 		await LivechatRooms.addEmailCodeByRoomId(room._id, encryptedRandom, expire);
 		await this.send2FAEmail(visitorEmail, random);
 	}
@@ -159,7 +156,6 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		const result = await this.wrongInput(room, true);
 		if (result) {
 			if (room.source.type === 'widget') {
-				const bot = await Users.findOneById('rocket.cat');
 				const wrongOtpInstructionsMessage = {
 					msg: i18n.t('Wrong_OTP_Widget_Input_Message'),
 					groupable: false,
@@ -179,8 +175,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 			groupable: false,
 			blocks: customBlocks,
 		};
-		const user = await Users.findOneById('rocket.cat');
-		const message = await sendMessage(user, record, room, false);
+		const message = await sendMessage(bot, record, room, false);
 		return message._id;
 	}
 
@@ -232,14 +227,13 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 				throw new Error('error-invalid-user');
 			}
 			const visitor = await LivechatVisitors.findOneById(visitorRoomId, { projection: { visitorEmails: 1 } });
-			const user = await Users.findOneById('rocket.cat');
 			if (visitor?.visitorEmails?.length && visitor.visitorEmails[0].address) {
 				if (room.source.type === 'widget') {
 					const otpInstructionsMessage = {
 						msg: i18n.t('OTP_Entry_Instructions_for_Visitor_Widget_Verification_Process'),
 						groupable: false,
 					};
-					await sendMessage(user, otpInstructionsMessage, room);
+					await sendMessage(bot, otpInstructionsMessage, room);
 				} else {
 					const otpInstructionsText = i18n.t('OTP_Entry_Instructions_for_Visitor_App_Verification_Process');
 					await this.createLivechatMessage(room, otpInstructionsText);
@@ -252,7 +246,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 					msg: i18n.t('Email_Entry_Instructions_for_Visitor_Verification_Process'),
 					groupable: false,
 				};
-				await sendMessage(user, emailInstructionsMessage, room);
+				await sendMessage(bot, emailInstructionsMessage, room);
 				await LivechatRooms.updateVerificationStatusById(room._id, RoomVerificationState.isListeningToEmail);
 			}
 		} catch (error) {
@@ -263,7 +257,6 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 	async setVisitorEmail(room: IOmnichannelRoom, email: string): Promise<ISetVisitorEmailResult> {
 		try {
 			const userId = room.v._id;
-			const bot = await Users.findOneById('rocket.cat');
 			email = email.trim();
 			if (!userId) {
 				throw new Error('error-invalid-user');
