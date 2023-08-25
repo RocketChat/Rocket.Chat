@@ -47,11 +47,11 @@ const AccountTokensTable = (): ReactElement => {
 	const headers = useMemo(
 		() =>
 			[
-				<GenericTableHeaderCell key={'name'}>{t('API_Personal_Access_Token_Name')}</GenericTableHeaderCell>,
-				isMedium && <GenericTableHeaderCell key={'createdAt'}>{t('Created_at')}</GenericTableHeaderCell>,
-				<GenericTableHeaderCell key={'lastTokenPart'}>{t('Last_token_part')}</GenericTableHeaderCell>,
-				<GenericTableHeaderCell key={'2fa'}>{t('Two Factor Authentication')}</GenericTableHeaderCell>,
-				<GenericTableHeaderCell key={'actions'} />,
+				<GenericTableHeaderCell key='name'>{t('API_Personal_Access_Token_Name')}</GenericTableHeaderCell>,
+				isMedium && <GenericTableHeaderCell key='createdAt'>{t('Created_at')}</GenericTableHeaderCell>,
+				<GenericTableHeaderCell key='lastTokenPart'>{t('Last_token_part')}</GenericTableHeaderCell>,
+				<GenericTableHeaderCell key='2fa'>{t('Two Factor Authentication')}</GenericTableHeaderCell>,
+				<GenericTableHeaderCell key='actions' />,
 			].filter(Boolean),
 		[isMedium, t],
 	);
@@ -140,7 +140,7 @@ const AccountTokensTable = (): ReactElement => {
 		<>
 			<AddToken reload={reload} />
 			{phase === AsyncStatePhase.LOADING && (
-				<GenericTable>
+				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
 				</GenericTable>

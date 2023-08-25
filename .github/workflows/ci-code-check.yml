@@ -22,10 +22,10 @@ jobs:
         check: ['ts', 'lint']
 
     steps:
-      # - name: Set Swap Space
-      #   uses: pierotofy/set-swap-space@master
-      #   with:
-      #     swap-size-gb: 4
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 4
 
       - uses: actions/checkout@v3
 
@@ -47,6 +47,17 @@ jobs:
       - name: TS TypeCheck
         if: matrix.check == 'ts'
         run: yarn turbo run typecheck
+
+      - name: Cache eslint
+        uses: actions/cache@v3
+        if: matrix.check == 'lint'
+        with:
+          path: ./apps/meteor/.eslintcache
+          key: eslintcache-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}-${{ github.event.issue.number }}
+          restore-keys: |
+            eslintcache-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}
+            eslintcache-cache-${{ runner.OS }}
+            eslintcache-cache
 
       - name: Lint
         if: matrix.check == 'lint'

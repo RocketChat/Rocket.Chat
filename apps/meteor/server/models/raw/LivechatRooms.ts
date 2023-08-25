@@ -1,4 +1,18 @@
 import type {
+	IOmnichannelRoom,
+	RocketChatRecordDeleted,
+	IOmnichannelRoomClosingInfo,
+	DeepWritable,
+	ISetting,
+	IMessage,
+	ILivechatPriority,
+	IOmnichannelServiceLevelAgreements,
+} from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
+import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import { Settings } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type {
 	Db,
 	Collection,
 	IndexDescription,
@@ -10,23 +24,10 @@ import type {
 	FindCursor,
 	UpdateResult,
 } from 'mongodb';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Settings } from '@rocket.chat/models';
-import type {
-	IOmnichannelRoom,
-	RocketChatRecordDeleted,
-	IOmnichannelRoomClosingInfo,
-	DeepWritable,
-	ISetting,
-	IMessage,
-	ILivechatPriority,
-	IOmnichannelServiceLevelAgreements,
-} from '@rocket.chat/core-typings';
-import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 
-import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { BaseRaw } from './BaseRaw';
 
 /**
  * @extends BaseRaw<ILivechatRoom>
@@ -179,7 +180,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		const params = [...firstParams, usersGroup, project, facet];
-		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred(), allowDiskUse: true }).toArray();
 	}
 
 	async findAllNumberOfAbandonedRooms({
@@ -1597,7 +1598,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					closedAt,
 					'metrics.chatDuration': chatDuration,
 					'metrics.serviceTimeDuration': serviceTimeDuration,
-					'v.status': 'offline',
+					'v.status': UserStatus.OFFLINE,
 					...(closer && { closer }),
 					...(closedBy && { closedBy }),
 					...(tags && { tags }),
@@ -2044,13 +2045,13 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					'metrics.response.ft': analyticsData.firstResponseTime,
 				}),
 			},
-			$inc: {
-				...(analyticsData && {
+			...(analyticsData && {
+				$inc: {
 					'metrics.response.total': 1,
 					'metrics.response.tt': analyticsData.responseTime as number,
 					'metrics.reaction.tt': analyticsData.reactionTime as number,
-				}),
-			},
+				},
+			}),
 		};
 
 		// livechat analytics : update last message timestamps
@@ -2336,7 +2337,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.updateOne(query, update);
 	}
 
-	updateVisitorStatus(token: string, status: 'online' | 'busy' | 'away' | 'offline') {
+	updateVisitorStatus(token: string, status: UserStatus) {
 		const query: Filter<IOmnichannelRoom> = {
 			'v.token': token,
 			'open': true,
@@ -2513,6 +2514,22 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	async updateDepartmentAncestorsById(_rid: string, _departmentAncestors?: string[]): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	countPrioritizedRooms(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	countRoomsWithSla(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	countRoomsWithPdfTranscriptRequested(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	countRoomsWithTranscriptSent(): Promise<number> {
 		throw new Error('Method not implemented.');
 	}
 }

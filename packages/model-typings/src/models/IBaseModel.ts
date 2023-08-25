@@ -1,3 +1,4 @@
+import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type {
 	BulkWriteOptions,
 	ChangeStream,
@@ -20,7 +21,6 @@ import type {
 	UpdateResult,
 	WithId,
 } from 'mongodb';
-import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 
 export type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> | void;
 export type ResultFields<Base, Defaults> = Defaults extends void
@@ -117,4 +117,6 @@ export interface IBaseModel<
 	): FindPaginated<FindCursor<WithId<TDeleted>>>;
 
 	watch(pipeline?: object[]): ChangeStream<T>;
+	countDocuments(query: Filter<T>): Promise<number>;
+	estimatedDocumentCount(): Promise<number>;
 }

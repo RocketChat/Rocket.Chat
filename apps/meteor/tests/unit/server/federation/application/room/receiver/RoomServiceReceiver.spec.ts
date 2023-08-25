@@ -1,8 +1,7 @@
-/* eslint-disable import/first */
-import { expect } from 'chai';
-import sinon from 'sinon';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { expect } from 'chai';
 import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
 import { EVENT_ORIGIN } from '../../../../../../../server/services/federation/domain/IFederationBridge';
 
@@ -83,6 +82,10 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		sendQuoteFileMessage: sinon.stub(),
 		editQuotedMessage: sinon.stub(),
 		getMessageToEditWhenReplyAndQuote: sinon.stub(),
+		sendThreadQuoteMessage: sinon.stub(),
+		sendThreadMessage: sinon.stub(),
+		sendThreadFileMessage: sinon.stub(),
+		sendThreadQuoteFileMessage: sinon.stub(),
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
@@ -152,6 +155,10 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 		messageAdapter.findOneByFederationIdOnReactions.reset();
 		messageAdapter.sendQuoteFileMessage.reset();
 		messageAdapter.sendQuoteMessage.reset();
+		messageAdapter.sendThreadQuoteMessage.reset();
+		messageAdapter.sendThreadMessage.reset();
+		messageAdapter.sendThreadFileMessage.reset();
+		messageAdapter.sendThreadQuoteFileMessage.reset();
 		bridge.extractHomeserverOrigin.reset();
 		bridge.joinRoom.reset();
 		bridge.getUserProfileInformation.reset();
@@ -1864,6 +1871,284 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 					notifyChannel: true,
 				}),
 			).to.be.true;
+		});
+	});
+
+	describe('#onExternalThreadedMessageReceived()', () => {
+		it('should NOT send a message if the thread root event id does not exist', async () => {
+			await service.onExternalThreadedMessageReceived({
+				rawMessage: 'text',
+			} as any);
+
+			expect(messageAdapter.sendThreadMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadQuoteMessage.called).to.be.false;
+		});
+		it('should NOT send a message if the internal thread parent message does not exist', async () => {
+			messageAdapter.getMessageByFederationId.resolves(undefined);
+			await service.onExternalThreadedMessageReceived({
+				rawMessage: 'text',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(messageAdapter.sendThreadMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadQuoteMessage.called).to.be.false;
+		});
+		it('should NOT send a message if the room does not exists', async () => {
+			messageAdapter.getMessageByFederationId.resolves({});
+			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+			await service.onExternalThreadedMessageReceived({
+				rawMessage: 'text',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(messageAdapter.sendThreadQuoteMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadMessage.called).to.be.false;
+		});
+
+		it('should NOT send a message if the sender does not exists', async () => {
+			messageAdapter.getMessageByFederationId.resolves({});
+			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			userAdapter.getFederatedUserByExternalId.resolves(undefined);
+			await service.onExternalThreadedMessageReceived({
+				rawMessage: 'text',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(messageAdapter.sendThreadQuoteMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadMessage.called).to.be.false;
+		});
+
+		it('should NOT send a message if the message was already be sent through federation and is just a reply back event', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			userAdapter.getFederatedUserByExternalId.resolves({} as any);
+			messageAdapter.getMessageByFederationId.resolves({} as any);
+			await service.onExternalThreadedMessageReceived({
+				messageText: 'text',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(messageAdapter.sendThreadQuoteMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadMessage.called).to.be.false;
+		});
+
+		it('should send a message if the room, the sender already exists and the message does not exists, because it was sent originally from Matrix', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			userAdapter.getFederatedUserByExternalId.resolves({} as any);
+			messageAdapter.getMessageByFederationId.onFirstCall().resolves({ _id: 'messageThreadId' });
+			roomAdapter.getFederatedRoomByExternalId.onSecondCall().resolves(undefined);
+			await service.onExternalThreadedMessageReceived({
+				messageText: 'text',
+				rawMessage: 'rawMessage',
+				externalFormattedText: 'externalFormattedText',
+				externalEventId: 'externalEventId',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(
+				messageAdapter.sendThreadMessage.calledWith(
+					{},
+					{},
+					'rawMessage',
+					'externalEventId',
+					'messageThreadId',
+					'externalFormattedText',
+					'localDomain',
+				),
+			).to.be.true;
+			expect(messageAdapter.sendThreadQuoteMessage.called).to.be.false;
+		});
+
+		describe('Quoting messages', () => {
+			it('should NOT send a quote message if its necessary to quote but the message to quote does not exists', async () => {
+				messageAdapter.getMessageByFederationId.onFirstCall().resolves({ _id: 'messageThreadId' });
+				roomAdapter.getFederatedRoomByExternalId.onSecondCall().resolves(undefined);
+				roomAdapter.getFederatedRoomByExternalId.onThirdCall().resolves(undefined);
+				roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+				userAdapter.getFederatedUserByExternalId.resolves({} as any);
+				messageAdapter.getMessageByFederationId.resolves(undefined);
+				await service.onExternalThreadedMessageReceived({
+					messageText: 'text',
+					replyToEventId: 'replyToEventId',
+					thread: { rootEventId: 'rootEventId' },
+				} as any);
+
+				expect(messageAdapter.sendThreadQuoteMessage.called).to.be.false;
+				expect(messageAdapter.sendThreadMessage.called).to.be.false;
+			});
+
+			it('should send a quote message if its necessary to quote and the message to quote exists', async () => {
+				messageAdapter.getMessageByFederationId.onFirstCall().resolves({ _id: 'messageThreadId' });
+				roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+				userAdapter.getFederatedUserByExternalId.resolves({} as any);
+				messageAdapter.getMessageByFederationId.onSecondCall().resolves(undefined);
+				messageAdapter.getMessageByFederationId.onThirdCall().resolves({} as any);
+				await service.onExternalThreadedMessageReceived({
+					messageText: 'text',
+					externalEventId: 'externalEventId',
+					replyToEventId: 'replyToEventId',
+					rawMessage: 'rawMessage',
+					externalFormattedText: 'externalFormattedText',
+					thread: { rootEventId: 'rootEventId' },
+				} as any);
+
+				expect(
+					messageAdapter.sendThreadQuoteMessage.calledWith(
+						{},
+						{},
+						'rawMessage',
+						'externalEventId',
+						{},
+						'localDomain',
+						'messageThreadId',
+						'externalFormattedText',
+					),
+				).to.be.true;
+				expect(messageAdapter.sendThreadMessage.called).to.be.false;
+			});
+		});
+	});
+
+	describe('#onExternalThreadedFileMessageReceived()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: false,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should NOT send a message if the thread root event id does not exist', async () => {
+			await service.onExternalThreadedFileMessageReceived({
+				rawMessage: 'text',
+			} as any);
+
+			expect(messageAdapter.sendThreadQuoteFileMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadFileMessage.called).to.be.false;
+		});
+		it('should NOT send a message if the internal thread parent message does not exist', async () => {
+			messageAdapter.getMessageByFederationId.resolves(undefined);
+			await service.onExternalThreadedFileMessageReceived({
+				rawMessage: 'text',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(messageAdapter.sendThreadQuoteFileMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadFileMessage.called).to.be.false;
+		});
+		it('should NOT send a message if the room does not exists', async () => {
+			messageAdapter.getMessageByFederationId.resolves({});
+			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+			await service.onExternalThreadedFileMessageReceived({
+				rawMessage: 'text',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(messageAdapter.sendThreadQuoteFileMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadFileMessage.called).to.be.false;
+		});
+
+		it('should NOT send a message if the sender does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
+			userAdapter.getFederatedUserByExternalId.resolves(undefined);
+			messageAdapter.getMessageByFederationId.resolves({});
+			await service.onExternalThreadedFileMessageReceived({
+				rawMessage: 'text',
+				thread: { rootEventId: 'rootEventId' },
+			} as any);
+
+			expect(messageAdapter.sendThreadQuoteFileMessage.called).to.be.false;
+			expect(messageAdapter.sendThreadFileMessage.called).to.be.false;
+		});
+
+		it('should send a message if the room and the sender already exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			bridge.getReadStreamForFileFromUrl.resolves();
+
+			const files = [{ id: 'fileId', name: 'filename' }];
+			const attachments = ['attachment', 'attachment2'];
+			fileAdapter.uploadFile.resolves({ files, attachments } as any);
+			messageAdapter.getMessageByFederationId.onFirstCall().resolves({ _id: 'messageThreadId' });
+			messageAdapter.getMessageByFederationId.onSecondCall().resolves(undefined);
+
+			await service.onExternalThreadedFileMessageReceived({
+				thread: { rootEventId: 'rootEventId' },
+				externalEventId: 'externalEventId',
+				messageBody: {
+					filename: 'filename',
+					size: 12,
+					mimetype: 'mimetype',
+					url: 'url',
+				},
+			} as any);
+
+			expect(messageAdapter.sendThreadFileMessage.calledWith(user, room, files, attachments, 'externalEventId', 'messageThreadId')).to.be
+				.true;
+			expect(messageAdapter.sendThreadQuoteFileMessage.called).to.be.false;
+		});
+
+		describe('Quoting messages', () => {
+			it('should NOT send a quote message if its necessary to quote but the message to quote does not exists', async () => {
+				roomAdapter.getFederatedRoomByExternalId.resolves(room);
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				messageAdapter.getMessageByFederationId.resolves(undefined);
+				fileAdapter.uploadFile.resolves({} as any);
+
+				messageAdapter.getMessageByFederationId.onFirstCall().resolves({ _id: 'messageThreadId' });
+				messageAdapter.getMessageByFederationId.onSecondCall().resolves(undefined);
+				messageAdapter.getMessageByFederationId.onThirdCall().resolves(undefined);
+				await service.onExternalThreadedFileMessageReceived({
+					thread: { rootEventId: 'rootEventId' },
+					externalEventId: 'externalEventId',
+					replyToEventId: 'replyToEventId',
+					messageBody: {
+						filename: 'filename',
+						size: 12,
+						mimetype: 'mimetype',
+						url: 'url',
+					},
+				} as any);
+
+				expect(messageAdapter.sendThreadQuoteFileMessage.called).to.be.false;
+				expect(messageAdapter.sendThreadFileMessage.called).to.be.false;
+			});
+
+			it('should send a quote message if its necessary to quote and the message to quote exists', async () => {
+				const messageToReplyTo = { federation: { eventId: 'eventId' } } as any;
+				roomAdapter.getFederatedRoomByExternalId.resolves(room);
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				messageAdapter.getMessageByFederationId.onFirstCall().resolves({ _id: 'messageThreadId' });
+				messageAdapter.getMessageByFederationId.onSecondCall().resolves(undefined);
+				messageAdapter.getMessageByFederationId.onThirdCall().resolves(messageToReplyTo);
+				const files = [{ id: 'fileId', name: 'filename' }];
+				const attachments = ['attachment', 'attachment2'];
+				fileAdapter.uploadFile.resolves({ files, attachments } as any);
+
+				await service.onExternalThreadedFileMessageReceived({
+					thread: { rootEventId: 'rootEventId' },
+					externalEventId: 'externalEventId',
+					replyToEventId: 'replyToEventId',
+					messageBody: {
+						filename: 'filename',
+						size: 12,
+						mimetype: 'mimetype',
+						url: 'url',
+					},
+				} as any);
+
+				expect(
+					messageAdapter.sendThreadQuoteFileMessage.calledWith(
+						user,
+						room,
+						files,
+						attachments,
+						'externalEventId',
+						messageToReplyTo,
+						'localDomain',
+						'messageThreadId',
+					),
+				).to.be.true;
+				expect(messageAdapter.sendThreadFileMessage.called).to.be.false;
+			});
 		});
 	});
 });

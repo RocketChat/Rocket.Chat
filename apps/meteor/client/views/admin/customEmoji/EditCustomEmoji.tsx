@@ -1,9 +1,9 @@
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, FieldGroup, IconButton } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldGroup, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, ChangeEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
@@ -130,50 +130,52 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 	};
 
 	return (
-		<ContextualbarScrollableContent {...props}>
-			<FieldGroup>
-				<Field>
-					<Field.Label>{t('Name')}</Field.Label>
-					<Field.Row>
-						<TextInput value={name} onChange={handleChangeName} placeholder={t('Name')} />
-					</Field.Row>
-					{errors.name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
-				</Field>
-				<Field>
-					<Field.Label>{t('Aliases')}</Field.Label>
-					<Field.Row>
-						<TextInput value={aliases} onChange={handleChangeAliases} placeholder={t('Aliases')} />
-					</Field.Row>
-					{errors.aliases && <Field.Error>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</Field.Error>}
-				</Field>
-				<Field>
-					<Field.Label alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
-						{t('Custom_Emoji')}
-						<IconButton icon='upload' secondary onClick={clickUpload} />
-					</Field.Label>
-					{newEmojiPreview && (
-						<Box display='flex' flexDirection='row' mbs='none' justifyContent='center'>
-							<Margins inline='x4'>
-								<Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview} />
-							</Margins>
-						</Box>
-					)}
-				</Field>
-			</FieldGroup>
-			<ButtonGroup stretch w='full'>
-				<Button onClick={close}>{t('Cancel')}</Button>
-				<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
-					{t('Save')}
-				</Button>
-			</ButtonGroup>
-
-			<ButtonGroup stretch w='full'>
-				<Button danger onClick={handleDeleteButtonClick}>
-					<Icon name='trash' mie='x4' />
-					{t('Delete')}
-				</Button>
-			</ButtonGroup>
-		</ContextualbarScrollableContent>
+		<>
+			<ContextualbarScrollableContent {...props}>
+				<FieldGroup>
+					<Field>
+						<Field.Label>{t('Name')}</Field.Label>
+						<Field.Row>
+							<TextInput value={name} onChange={handleChangeName} placeholder={t('Name')} />
+						</Field.Row>
+						{errors.name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
+					</Field>
+					<Field>
+						<Field.Label>{t('Aliases')}</Field.Label>
+						<Field.Row>
+							<TextInput value={aliases} onChange={handleChangeAliases} placeholder={t('Aliases')} />
+						</Field.Row>
+						{errors.aliases && <Field.Error>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</Field.Error>}
+					</Field>
+					<Field>
+						<Field.Label alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
+							{t('Custom_Emoji')}
+							<IconButton icon='upload' secondary onClick={clickUpload} />
+						</Field.Label>
+						{newEmojiPreview && (
+							<Box display='flex' flexDirection='row' mbs='none' justifyContent='center'>
+								<Margins inline={4}>
+									<Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview} />
+								</Margins>
+							</Box>
+						)}
+					</Field>
+				</FieldGroup>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button onClick={close}>{t('Cancel')}</Button>
+					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+				<ButtonGroup mbs={8} stretch>
+					<Button icon='trash' danger onClick={handleDeleteButtonClick}>
+						{t('Delete')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
+		</>
 	);
 };
 

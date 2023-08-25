@@ -1,12 +1,12 @@
 // Kick is a named function that will replace /kick commands
 import { api } from '@rocket.chat/core-services';
-import { Users } from '@rocket.chat/models';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
+import { i18n } from '../../../server/lib/i18n';
+import { removeUserFromRoomMethod } from '../../../server/methods/removeUserFromRoom';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { removeUserFromRoomMethod } from '../../../server/methods/removeUserFromRoom';
-import { i18n } from '../../../server/lib/i18n';
 
 slashCommands.add({
 	command: 'kick',

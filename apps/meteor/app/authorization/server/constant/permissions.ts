@@ -69,6 +69,8 @@ export const permissions = [
 	{ _id: 'view-c-room', roles: ['admin', 'user', 'bot', 'app', 'anonymous'] },
 	{ _id: 'user-generate-access-token', roles: ['admin'] },
 	{ _id: 'view-d-room', roles: ['admin', 'user', 'bot', 'app', 'guest'] },
+	{ _id: 'view-device-management', roles: ['admin'] },
+	{ _id: 'view-engagement-dashboard', roles: ['admin'] },
 	{ _id: 'view-full-other-user-info', roles: ['admin'] },
 	{ _id: 'view-history', roles: ['admin', 'user', 'anonymous'] },
 	{ _id: 'view-joined-room', roles: ['guest', 'bot', 'app', 'anonymous'] },
@@ -83,7 +85,7 @@ export const permissions = [
 	{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] },
 	{ _id: 'view-outside-room', roles: ['admin', 'owner', 'moderator', 'user'] },
 	{ _id: 'view-broadcast-member-list', roles: ['admin', 'owner', 'moderator'] },
-	{ _id: 'call-management', roles: ['admin', 'owner', 'moderator'] },
+	{ _id: 'call-management', roles: ['admin', 'owner', 'moderator', 'user'] },
 	{ _id: 'create-invite-links', roles: ['admin', 'owner', 'moderator'] },
 	{
 		_id: 'view-l-room',

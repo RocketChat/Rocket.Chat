@@ -3,21 +3,14 @@ import React, { useCallback } from 'react';
 
 import VideoConfBlockModal from '../VideoConfBlockModal';
 
-type WindowMaybeDesktop = typeof window & {
-	RocketChatDesktop?: {
-		openInternalVideoChatWindow?: (url: string, options: undefined) => void;
-	};
-};
-
-export const useVideoOpenCall = () => {
+export const useVideoConfOpenCall = () => {
 	const setModal = useSetModal();
 
 	const handleOpenCall = useCallback(
-		(callUrl: string) => {
-			const windowMaybeDesktop = window as WindowMaybeDesktop;
-			if (windowMaybeDesktop.RocketChatDesktop?.openInternalVideoChatWindow) {
-				windowMaybeDesktop.RocketChatDesktop.openInternalVideoChatWindow(callUrl, undefined);
-			} else {
+		(callUrl: string, providerName?: string | undefined) => {
+			const desktopApp = window.RocketChatDesktop;
+
+			if (!desktopApp?.openInternalVideoChatWindow) {
 				const open = () => window.open(callUrl);
 				const popup = open();
 
@@ -26,7 +19,9 @@ export const useVideoOpenCall = () => {
 				}
 
 				setModal(<VideoConfBlockModal onClose={(): void => setModal(null)} onConfirm={open} />);
+				return;
 			}
+			desktopApp.openInternalVideoChatWindow(callUrl, { providerName });
 		},
 		[setModal],
 	);

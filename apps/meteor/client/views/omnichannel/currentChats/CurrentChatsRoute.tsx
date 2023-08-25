@@ -2,6 +2,7 @@ import { Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { hashQueryKey } from '@tanstack/react-query';
 import moment from 'moment';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo, useState } from 'react';
@@ -10,6 +11,7 @@ import { useOmnichannelPriorities } from '../../../../ee/client/omnichannel/hook
 import { PriorityIcon } from '../../../../ee/client/omnichannel/priorities/PriorityIcon';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
+	GenericTable,
 	GenericTableBody,
 	GenericTableCell,
 	GenericTableHeader,
@@ -17,7 +19,6 @@ import {
 	GenericTableLoadingTable,
 	GenericTableRow,
 } from '../../../components/GenericTable';
-import { GenericTable } from '../../../components/GenericTable/V2/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
@@ -159,6 +160,9 @@ const CurrentChatsRoute = (): ReactElement => {
 	);
 
 	const { data, isLoading, isSuccess } = useCurrentChats(query);
+
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
 
 	const onRowClick = useMutableCallback((_id) => {
 		directoryRoute.push({ id: _id });
@@ -306,12 +310,24 @@ const CurrentChatsRoute = (): ReactElement => {
 			<Page>
 				<Page.Header title={t('Current_Chats')} />
 				<Page.Content>
-					<FilterByText
-						setFilter={onFilter as ComponentProps<typeof FilterByText>['setFilter']}
-						setCustomFields={setCustomFields}
-						customFields={customFields}
-						hasCustomFields={hasCustomFields}
-					/>
+					{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && (
+						<FilterByText
+							setFilter={onFilter as ComponentProps<typeof FilterByText>['setFilter']}
+							setCustomFields={setCustomFields}
+							customFields={customFields}
+							hasCustomFields={hasCustomFields}
+						/>
+					)}
+					{isSuccess && data?.rooms.length === 0 && queryHasChanged && <GenericNoResults />}
+					{isSuccess && data?.rooms.length === 0 && !queryHasChanged && (
+						<GenericNoResults
+							icon='discussion'
+							title={t('No_chats_yet')}
+							description={t('No_chats_yet_description')}
+							linkHref='https://go.rocket.chat/omnichannel-docs'
+							linkText={t('Learn_more_about_current_chats')}
+						/>
+					)}
 					{isLoading && (
 						<GenericTable>
 							<GenericTableHeader>{headers}</GenericTableHeader>
@@ -320,7 +336,7 @@ const CurrentChatsRoute = (): ReactElement => {
 							</GenericTableBody>
 						</GenericTable>
 					)}
-					{isSuccess && data.rooms.length > 0 && (
+					{isSuccess && data?.rooms.length > 0 && (
 						<>
 							<GenericTable>
 								<GenericTableHeader>{headers}</GenericTableHeader>
@@ -339,7 +355,6 @@ const CurrentChatsRoute = (): ReactElement => {
 							/>
 						</>
 					)}
-					{isSuccess && data.rooms.length === 0 && <GenericNoResults />}
 				</Page.Content>
 			</Page>
 			{id === 'custom-fields' && hasCustomFields && (

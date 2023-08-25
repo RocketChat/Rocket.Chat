@@ -12,7 +12,7 @@ export class FederationHomeFlextabMembers {
 	}
 
 	get addUsersButton(): Locator {
-		return this.page.locator('//button[contains(text(), "Add")]');
+		return this.page.locator('role=button[name="Add"]');
 	}
 
 	get btnRemoveUserFromRoom(): Locator {
@@ -50,6 +50,6 @@ export class FederationHomeFlextabMembers {
 
 	async showAllUsers() {
 		await this.page.locator('.rcx-select >> text=Online').first().click();
-		await this.page.locator('.rcx-option__content:has-text("All")').first().click();
+		await this.page.locator('.rcx-option:has-text("All")').first().click();
 	}
 }

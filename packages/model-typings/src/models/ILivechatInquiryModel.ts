@@ -1,10 +1,10 @@
-import type { FindOptions, DistinctOptions, Document, UpdateResult, DeleteResult, FindCursor } from 'mongodb';
 import type {
 	IMessage,
 	ILivechatInquiryRecord,
 	LivechatInquiryStatus,
 	OmnichannelSortingMechanismSettingType,
 } from '@rocket.chat/core-typings';
+import type { FindOptions, DistinctOptions, Document, UpdateResult, DeleteResult, FindCursor } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -14,7 +14,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 		rid: string,
 		options: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null>;
-	getDistinctQueuedDepartments(options: DistinctOptions): Promise<string[]>;
+	getDistinctQueuedDepartments(options: DistinctOptions): Promise<(string | undefined)[]>;
 	setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null>;
 	setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateResult>;
 	findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null>;

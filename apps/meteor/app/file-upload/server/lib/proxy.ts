@@ -1,15 +1,15 @@
 import http from 'http';
 import URL from 'url';
 
-import { WebApp } from 'meteor/webapp';
 import { InstanceStatus } from '@rocket.chat/instance-status';
+import { Logger } from '@rocket.chat/logger';
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
 import type createServer from 'connect';
+import { WebApp } from 'meteor/webapp';
 
 import { UploadFS } from '../../../../server/ufs';
-import { Logger } from '../../../logger/server';
-import { isDocker } from '../../../utils/server';
+import { isDocker } from '../../../utils/server/functions/isDocker';
 
 const logger = new Logger('UploadProxy');
 
@@ -88,7 +88,7 @@ async function handle(req: createServer.IncomingMessage, res: http.ServerRespons
 		'UFS proxy middleware is deprecated as this upload method is not being used by Web/Mobile Clients. See this: https://docs.rocket.chat/api/rest-api/methods/rooms/upload',
 	);
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	const proxy = http.request(options, function (proxy_res) {
+	const proxy = http.request(options, (proxy_res) => {
 		proxy_res.pipe(res, {
 			end: true,
 		});

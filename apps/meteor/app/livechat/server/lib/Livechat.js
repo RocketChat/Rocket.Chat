@@ -4,9 +4,8 @@
 import dns from 'dns';
 import util from 'util';
 
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import UAParser from 'ua-parser-js';
+import { Message, VideoConf, api } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatVisitors,
 	LivechatCustomField,
@@ -19,30 +18,31 @@ import {
 	LivechatDepartmentAgents,
 	Rooms,
 	Users,
+	ReadReceipts,
 } from '@rocket.chat/models';
-import { Message, VideoConf, api } from '@rocket.chat/core-services';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import UAParser from 'ua-parser-js';
 
-import { RoutingManager } from './RoutingManager';
-import { Analytics } from './Analytics';
-import { settings } from '../../../settings/server';
-import { callbacks } from '../../../../lib/callbacks';
-import { Logger } from '../../../logger/server';
-import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import * as Mailer from '../../../mailer/server/api';
-import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { updateMessage } from '../../../lib/server/functions/updateMessage';
-import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
-import { FileUpload } from '../../../file-upload/server';
-import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
-import { businessHourManager } from '../business-hour';
+import { callbacks } from '../../../../lib/callbacks';
+import { trim } from '../../../../lib/utils/stringUtils';
+import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
-import { trim } from '../../../../lib/utils/stringUtils';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { FileUpload } from '../../../file-upload/server';
+import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { updateMessage } from '../../../lib/server/functions/updateMessage';
+import * as Mailer from '../../../mailer/server/api';
+import { settings } from '../../../settings/server';
+import { businessHourManager } from '../business-hour';
+import { Analytics } from './Analytics';
+import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { Livechat as LivechatTyped } from './LivechatTyped';
-import { i18n } from '../../../../server/lib/i18n';
+import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('Livechat');
 
@@ -521,6 +521,15 @@ export const Livechat = {
 		return postData;
 	},
 
+	async afterAgentAdded(user) {
+		await Users.setOperator(user._id, true);
+		await this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
+
+		callbacks.runAsync('livechat.onNewAgentCreated', user._id);
+
+		return user;
+	},
+
 	async addAgent(username) {
 		check(username, String);
 
@@ -531,9 +540,7 @@ export const Livechat = {
 		}
 
 		if (await addUserRolesAsync(user._id, ['livechat-agent'])) {
-			await Users.setOperator(user._id, true);
-			await this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
-			return user;
+			return this.afterAgentAdded(user);
 		}
 
 		return false;
@@ -557,10 +564,15 @@ export const Livechat = {
 		return false;
 	},
 
+	async afterRemoveAgent(user) {
+		await callbacks.run('livechat.afterAgentRemoved', { agent: user });
+		return true;
+	},
+
 	async removeAgent(username) {
 		check(username, String);
 
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -571,16 +583,7 @@ export const Livechat = {
 		const { _id } = user;
 
 		if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
-			await Users.setOperator(_id, false);
-			await Users.removeLivechatData(_id);
-			await this.setUserStatusLivechat(_id, 'not-available');
-
-			await Promise.all([
-				LivechatDepartmentAgents.removeByAgentId(_id),
-				LivechatVisitors.removeContactManagerByUsername(username),
-				Users.unsetExtension(_id),
-			]);
-			return true;
+			return this.afterRemoveAgent(user);
 		}
 
 		return false;
@@ -639,13 +642,18 @@ export const Livechat = {
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		const cursor = LivechatRooms.findByVisitorToken(token, extraQuery);
 		for await (const room of cursor) {
-			await FileUpload.removeFilesByRoomId(room._id);
-			await Messages.removeByRoomId(room._id);
+			await Promise.all([
+				FileUpload.removeFilesByRoomId(room._id),
+				Messages.removeByRoomId(room._id),
+				ReadReceipts.removeByRoomId(room._id),
+			]);
 		}
 
-		await Subscriptions.removeByVisitorToken(token);
-		await LivechatRooms.removeByVisitorToken(token);
-		await LivechatInquiry.removeByVisitorToken(token);
+		await Promise.all([
+			Subscriptions.removeByVisitorToken(token),
+			LivechatRooms.removeByVisitorToken(token),
+			LivechatInquiry.removeByVisitorToken(token),
+		]);
 	},
 
 	async saveDepartmentAgents(_id, departmentAgents) {
@@ -679,24 +687,6 @@ export const Livechat = {
 		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
 	},
 
-	async saveAgentInfo(_id, agentData, agentDepartments) {
-		check(_id, Match.Maybe(String));
-		check(agentData, Object);
-		check(agentDepartments, [String]);
-
-		const user = await Users.findOneById(_id);
-		if (!user || !(await hasRoleAsync(_id, 'livechat-agent'))) {
-			throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent', {
-				method: 'livechat:saveAgentInfo',
-			});
-		}
-
-		await Users.setLivechatData(_id, agentData);
-		await LivechatDepartmentRaw.saveDepartmentsByAgent(user, agentDepartments);
-
-		return true;
-	},
-
 	/*
 	 * @deprecated - Use the equivalent from DepartmentHelpers class
 	 */
@@ -719,7 +709,9 @@ export const Livechat = {
 			});
 		}
 		const ret = (await LivechatDepartmentRaw.removeById(_id)).deletedCount;
-		const agentsIds = (await LivechatDepartmentAgents.findByDepartmentId(_id).toArray()).map((agent) => agent.agentId);
+		const agentsIds = (await LivechatDepartmentAgents.findByDepartmentId(_id, { projection: { agentId: 1 } }).toArray()).map(
+			(agent) => agent.agentId,
+		);
 		await LivechatDepartmentAgents.removeByDepartmentId(_id);
 		await LivechatDepartmentRaw.unsetFallbackDepartmentByDepartmentId(_id);
 		if (ret) {
@@ -741,6 +733,8 @@ export const Livechat = {
 			});
 		}
 
+		// TODO: these kind of actions should be on events instead of here
+		await LivechatDepartmentAgents.enableAgentsByDepartmentId(_id);
 		return LivechatDepartmentRaw.unarchiveDepartment(_id);
 	},
 
@@ -755,7 +749,11 @@ export const Livechat = {
 			});
 		}
 
-		return LivechatDepartmentRaw.archiveDepartment(_id);
+		await LivechatDepartmentAgents.disableAgentsByDepartmentId(_id);
+		await LivechatDepartmentRaw.archiveDepartment(_id);
+
+		this.logger.debug({ msg: 'Running livechat.afterDepartmentArchived callback for department:', departmentId: _id });
+		await callbacks.run('livechat.afterDepartmentArchived', department);
 	},
 
 	showConnecting() {
@@ -878,6 +876,10 @@ export const Livechat = {
 			}
 		}
 
+		// TODO Block offline form if Livechat_offline_email is undefined
+		// (it does not make sense to have an offline form that does nothing)
+		// `this.sendEmail` will throw an error if the email is invalid
+		// thus this breaks livechat, since the "to" email is invalid, and that returns an [invalid email] error to the livechat client
 		let emailTo = settings.get('Livechat_offline_email');
 		if (department && department !== '') {
 			const dep = await LivechatDepartmentRaw.findOneByIdOrName(department);

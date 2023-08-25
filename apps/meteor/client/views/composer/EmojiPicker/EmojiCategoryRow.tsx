@@ -39,11 +39,11 @@ const EmojiCategoryRow = ({
 	`;
 
 	return (
-		<Box mbe='x12'>
+		<Box mbe={12}>
 			<Box
 				is='h4'
 				fontScale='c1'
-				mbe='x12'
+				mbe={12}
 				id={`emoji-list-category-${categoryKey}`}
 				ref={(element) => {
 					categoriesPosition.current.push({ el: element, top: element?.offsetTop });
@@ -57,20 +57,14 @@ const EmojiCategoryRow = ({
 					<>
 						{categoryKey === CUSTOM_CATEGORY &&
 							emojis.list.map(
-								({ emoji, image, emojiHandle }, index = 1) =>
+								({ emoji, image }, index = 1) =>
 									index < customItemsLimit && (
-										<EmojiElement
-											key={emoji + categoryKey}
-											emoji={emoji}
-											image={image}
-											emojiHandle={emojiHandle}
-											onClick={handleSelectEmoji}
-										/>
+										<EmojiElement key={emoji + categoryKey} emoji={emoji} image={image} onClick={handleSelectEmoji} />
 									),
 							)}
 						{!(categoryKey === CUSTOM_CATEGORY) &&
-							emojis.list.map(({ emoji, image, emojiHandle }) => (
-								<EmojiElement key={emoji + categoryKey} emoji={emoji} image={image} emojiHandle={emojiHandle} onClick={handleSelectEmoji} />
+							emojis.list.map(({ emoji, image }) => (
+								<EmojiElement key={emoji + categoryKey} emoji={emoji} image={image} onClick={handleSelectEmoji} />
 							))}
 					</>
 				</EmojiPickerCategoryWrapper>

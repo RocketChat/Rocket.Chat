@@ -1,6 +1,6 @@
+import { Logger } from '@rocket.chat/logger';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { Logger } from '../../logger/server';
 import { settings } from '../../settings/server';
 
 export const logger = new Logger('CAS');
@@ -12,7 +12,7 @@ async function updateServices(/* record*/) {
 		clearTimeout(timer);
 	}
 
-	timer = setTimeout(async function () {
+	timer = setTimeout(async () => {
 		const data = {
 			// These will pe passed to 'node-cas' as options
 			enabled: settings.get('CAS_enabled'),

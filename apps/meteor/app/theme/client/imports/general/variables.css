@@ -205,9 +205,9 @@
 	/*
 	* Sidebar
 	*/
-	--sidebar-width: 280px;
-	--sidebar-md-width: 320px;
-	--sidebar-lg-width: 336px;
+	--sidebar-width: 17.5rem;
+	--sidebar-md-width: 20rem;
+	--sidebar-lg-width: 21rem;
 	--sidebar-small-width: 90%;
 	--sidebar-background-hover: var(--rc-color-primary-dark);
 	--sidebar-background-light: var(--rc-color-primary-lightest);

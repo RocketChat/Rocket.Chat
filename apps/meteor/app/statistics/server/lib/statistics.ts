@@ -1,8 +1,9 @@
-import os from 'os';
 import { log } from 'console';
+import os from 'os';
 
-import { MongoInternals } from 'meteor/mongo';
+import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
 import type { IRoom, IStats } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import {
 	NotificationQueue,
 	Rooms,
@@ -24,21 +25,21 @@ import {
 	Subscriptions,
 	Users,
 } from '@rocket.chat/models';
-import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
-import { UserStatus } from '@rocket.chat/core-typings';
+import { MongoInternals } from 'meteor/mongo';
 
-import { settings } from '../../../settings/server';
-import { Info, getMongoInfo } from '../../../utils/server';
-import { getControl } from '../../../../server/lib/migrations';
-import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
+import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
+import { isRunningMs } from '../../../../server/lib/isRunningMs';
+import { getControl } from '../../../../server/lib/migrations';
+import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
+import { getMatrixFederationStatistics } from '../../../../server/services/federation/infrastructure/rocket-chat/adapters/Statistics';
+import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
+import { settings } from '../../../settings/server';
+import { Info } from '../../../utils/rocketchat.info';
+import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
-import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
-import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
-import { isRunningMs } from '../../../../server/lib/isRunningMs';
-import { getMatrixFederationStatistics } from '../../../../server/services/federation/infrastructure/rocket-chat/adapters/Statistics';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -121,11 +122,11 @@ export const statistics = {
 		statistics.totalThreads = await Messages.countThreads();
 
 		// livechat visitors
-		statistics.totalLivechatVisitors = await LivechatVisitors.col.estimatedDocumentCount();
+		statistics.totalLivechatVisitors = await LivechatVisitors.estimatedDocumentCount();
 
 		// livechat agents
 		statistics.totalLivechatAgents = await Users.countAgents();
-		statistics.totalLivechatManagers = await Users.col.countDocuments({ roles: 'livechat-manager' });
+		statistics.totalLivechatManagers = await Users.countDocuments({ roles: 'livechat-manager' });
 
 		// livechat enabled
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
@@ -146,14 +147,14 @@ export const statistics = {
 
 		// Number of departments
 		statsPms.push(
-			LivechatDepartment.col.count().then((count) => {
+			LivechatDepartment.estimatedDocumentCount().then((count) => {
 				statistics.departments = count;
 			}),
 		);
 
 		// Number of archived departments
 		statsPms.push(
-			LivechatDepartment.col.countDocuments({ archived: true }).then((count) => {
+			LivechatDepartment.countArchived().then((count) => {
 				statistics.archivedDepartments = count;
 			}),
 		);

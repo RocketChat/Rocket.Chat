@@ -220,8 +220,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			<Page>
 				<Page.Header title={title}>
 					<ButtonGroup>
-						<Button onClick={handleReturn}>
-							<Icon name='back' /> {t('Back')}
+						<Button icon='back' onClick={handleReturn}>
+							{t('Back')}
 						</Button>
 						<Button type='submit' form={formId} primary disabled={!isFormValid}>
 							{t('Save')}
@@ -343,7 +343,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										<MaxChats
 											value={value}
 											handler={onChange}
-											label={'Max_number_of_chats_per_agent'}
+											label='Max_number_of_chats_per_agent'
 											placeholder='Max_number_of_chats_per_agent_description'
 										/>
 									)}
@@ -360,7 +360,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										<VisitorInactivity
 											value={value}
 											handler={onChange}
-											label={'How_long_to_wait_to_consider_visitor_abandonment_in_seconds'}
+											label='How_long_to_wait_to_consider_visitor_abandonment_in_seconds'
 											placeholder='Number_in_seconds'
 										/>
 									)}
@@ -377,7 +377,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										<AbandonedMessageInput
 											value={value}
 											handler={onChange}
-											label={'Livechat_abandoned_rooms_closed_custom_message'}
+											label='Livechat_abandoned_rooms_closed_custom_message'
 											placeholder='Enter_a_custom_message'
 										/>
 									)}
@@ -394,8 +394,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										<WaitingQueueMessageInput
 											value={value}
 											handler={onChange}
-											label={'Waiting_queue_message'}
-											placeholder={'Waiting_queue_message'}
+											label='Waiting_queue_message'
+											placeholder='Waiting_queue_message'
 										/>
 									)}
 								/>
@@ -412,7 +412,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 											departmentId={id ?? ''}
 											value={value}
 											handler={onChange}
-											label={'List_of_departments_for_forward'}
+											label='List_of_departments_for_forward'
 										/>
 									)}
 								/>
@@ -473,9 +473,9 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							</Field>
 						)}
 
-						<Divider mb='x16' />
+						<Divider mb={16} />
 						<Field>
-							<Field.Label mb='x4'>{t('Agents')}:</Field.Label>
+							<Field.Label mb={4}>{t('Agents')}:</Field.Label>
 							<Box display='flex' flexDirection='column' height='50vh'>
 								<DepartmentsAgentsTable control={control} register={register} />
 							</Box>

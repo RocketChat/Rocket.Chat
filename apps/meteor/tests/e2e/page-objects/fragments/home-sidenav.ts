@@ -32,26 +32,33 @@ export class HomeSidenav {
 	}
 
 	get btnCreate(): Locator {
-		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
+		return this.page.locator('role=button[name="Create"]');
 	}
 
 	getSidebarItemByName(name: string): Locator {
 		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
 	}
 
+	async selectPriority(name: string, priority: string) {
+		const sidebarItem = this.getSidebarItemByName(name);
+		await sidebarItem.hover();
+		await sidebarItem.locator(`[data-testid="menu"]`).click();
+		await this.page.locator(`li[value="${priority}"]`).click();
+	}
+
 	async openAdministrationByLabel(text: string): Promise<void> {
 		await this.page.locator('role=button[name="Administration"]').click();
-		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
+		await this.page.locator(`role=menuitem[name="${text}"]`).click();
 	}
 
 	async openInstalledApps(): Promise<void> {
-		await this.page.locator('//button[@title="Administration"]').click();
+		await this.page.locator('role=button[name="Administration"]').click();
 		await this.page.locator('//div[contains(text(),"Installed")]').click();
 	}
 
 	async openNewByLabel(text: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-create"]').click();
-		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
+		await this.page.locator('role=button[name="Create new"]').click();
+		await this.page.locator(`role=menuitem[name="${text}"]`).click();
 	}
 
 	async logout(): Promise<void> {
@@ -61,13 +68,19 @@ export class HomeSidenav {
 
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
-		await this.page.locator(`//li[@class="rcx-option"]//div[contains(text(), "${status}")]`).click();
+		await this.page.locator(`role=menuitemcheckbox[name="${status}"]`).click();
 	}
 
 	async openChat(name: string): Promise<void> {
 		await this.page.locator('role=navigation >> role=button[name=Search]').click();
 		await this.page.locator('role=search >> role=searchbox').type(name);
 		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
+
+		await this.page.locator('role=main').waitFor();
+		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
+
+		await expect(this.page.locator('role=main >> .rcx-skeleton')).toHaveCount(0);
+		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
 	}
 
 	async switchOmnichannelStatus(status: 'offline' | 'online') {
@@ -80,7 +93,7 @@ export class HomeSidenav {
 			online = 'Turn off answer chats',
 		}
 
-		const currentStatus = await toggleButton.getAttribute('data-tooltip');
+		const currentStatus = await toggleButton.getAttribute('title');
 		if (status === 'offline') {
 			if (currentStatus === StatusTitleMap.online) {
 				await toggleButton.click();
@@ -91,7 +104,7 @@ export class HomeSidenav {
 
 		await this.page.waitForTimeout(500);
 
-		const newStatus = await this.page.locator('#omnichannel-status-toggle').getAttribute('data-tooltip');
+		const newStatus = await this.page.locator('#omnichannel-status-toggle').getAttribute('title');
 		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
 	}
 

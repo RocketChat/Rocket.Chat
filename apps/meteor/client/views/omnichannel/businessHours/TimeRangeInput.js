@@ -21,11 +21,11 @@ const TimeRangeInput = ({ onChange, start: startDefault, finish: finishDefault }
 
 	return (
 		<>
-			<Box display='flex' flexDirection='column' flexGrow={1} mie='x2'>
+			<Box display='flex' flexDirection='column' flexGrow={1} mie={2}>
 				{t('Open')}:
 				<InputBox type='time' value={start} onChange={handleChangeFrom} />
 			</Box>
-			<Box display='flex' flexDirection='column' flexGrow={1} mis='x2'>
+			<Box display='flex' flexDirection='column' flexGrow={1} mis={2}>
 				{t('Close')}:
 				<InputBox type='time' value={finish} onChange={handleChangeTo} />
 			</Box>

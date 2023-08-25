@@ -1,14 +1,16 @@
+import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput, Callout } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
+import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
+import EmailConfirmationForm from './EmailConfirmationForm';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
-import EmailConfirmationForm from './EmailConfirmationForm';
 
 type LoginRegisterPayload = {
 	name: string;
@@ -32,6 +34,9 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	const formLabelId = useUniqueId();
 	const registerUser = useRegisterMethod();
+	const customFields = useAccountsCustomFields();
+
+	const [serverError, setServerError] = useState<string | undefined>(undefined);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -42,6 +47,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		watch,
 		getValues,
 		clearErrors,
+		control,
 		formState: { errors },
 	} = useForm<LoginRegisterPayload>();
 
@@ -71,6 +77,9 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						dispatchToastMessage({ type: 'info', message: t('registration.page.registration.waitActivationWarning') });
 						setLoginRoute('login');
 					}
+					if (error.error === 'error-user-registration-custom-field') {
+						setServerError(error.message);
+					}
 				},
 			},
 		);
@@ -98,6 +107,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								})}
 								error={errors.name && t('registration.component.form.requiredField')}
 								aria-invalid={errors.name ? 'true' : 'false'}
+								placeholder={t('onboarding.form.adminInfoForm.fields.fullName.placeholder')}
 								id='name'
 							/>
 						</Field.Row>
@@ -149,14 +159,10 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								error={errors.password && (errors.password?.message || t('registration.component.form.requiredField'))}
 								aria-invalid={errors.password ? 'true' : undefined}
 								id='password'
-								placeholder={passwordPlaceholder}
+								placeholder={passwordPlaceholder || t('Create_a_password')}
 							/>
 						</Field.Row>
-						{errors.password && <Field.Error>{errors.password.message}</Field.Error>}
-					</Field>
-					{requiresPasswordConfirmation && (
-						<Field>
-							<Field.Label htmlFor='passwordConfirmation'>{t('registration.component.form.confirmPassword')}*</Field.Label>
+						{requiresPasswordConfirmation && (
 							<Field.Row>
 								<PasswordInput
 									{...register('passwordConfirmation', {
@@ -167,17 +173,18 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 									error={errors.passwordConfirmation?.type === 'validate' ? t('registration.component.form.invalidConfirmPass') : undefined}
 									aria-invalid={errors.passwordConfirmation ? 'true' : false}
 									id='passwordConfirmation'
-									placeholder={passwordConfirmationPlaceholder}
+									placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
 								/>
 							</Field.Row>
-							{errors.passwordConfirmation?.type === 'validate' && (
-								<Field.Error>{t('registration.component.form.invalidConfirmPass')}</Field.Error>
-							)}
-							{errors.passwordConfirmation?.type === 'required' && (
-								<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
-							)}
-						</Field>
-					)}
+						)}
+						{errors.passwordConfirmation?.type === 'validate' && requiresPasswordConfirmation && (
+							<Field.Error>{t('registration.component.form.invalidConfirmPass')}</Field.Error>
+						)}
+						{errors.passwordConfirmation?.type === 'required' && requiresPasswordConfirmation && (
+							<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
+						)}
+						<PasswordVerifier password={watch('password')} />
+					</Field>
 					{manuallyApproveNewUsersRequired && (
 						<Field>
 							<Field.Label htmlFor='reason'>{t('registration.component.form.reasonToJoin')}*</Field.Label>
@@ -194,6 +201,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							{errors.reason && <Field.Error>{t('registration.component.form.requiredField')}</Field.Error>}
 						</Field>
 					)}
+					<CustomFieldsForm formName='customFields' formControl={control} metadata={customFields} />
+					{serverError && <Callout type='danger'>{serverError}</Callout>}
 				</FieldGroup>
 			</Form.Container>
 			<Form.Footer>

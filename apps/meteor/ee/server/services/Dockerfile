@@ -62,7 +62,12 @@ ENV NODE_ENV=production \
     PORT=3000
 
 WORKDIR /app/apps/meteor/ee/server/services
-RUN yarn workspaces focus --production
+
+RUN apk update && \
+    apk --no-cache --virtual build-dependencies add g++ python3 make && \
+    yarn workspaces focus --production && \
+    rm -rf /var/cache/apk/* && \
+    apk del build-dependencies
 
 WORKDIR /app/apps/meteor/ee/server/services/${SERVICE}
 

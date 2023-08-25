@@ -1,8 +1,10 @@
+import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
 	coerceTypes: true,
 });
+export type FontSize = '100%' | '14px' | '18px' | '20px' | '24px';
 
 export type UsersSetPreferencesParamsPOST = {
 	userId?: string;
@@ -24,6 +26,7 @@ export type UsersSetPreferencesParamsPOST = {
 		highlights?: string[];
 		alsoSendThreadToChannel?: 'never' | 'always' | 'default';
 		desktopNotificationRequireInteraction?: boolean;
+		showThreadsInMainChannel?: boolean;
 		hideUsernames?: boolean;
 		hideRoles?: boolean;
 		displayAvatars?: boolean;
@@ -38,8 +41,11 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
-		themeAppearence?: 'auto' | 'light' | 'dark';
+		featuresPreview?: { name: string; value: boolean }[];
+		themeAppearence?: ThemePreference;
+		fontSize?: FontSize;
 		receiveLoginDetectionEmail?: boolean;
+		notifyCalendarEvents?: boolean;
 		idleTimeLimit?: number;
 		omnichannelTranscriptEmail?: boolean;
 		omnichannelTranscriptPDF?: boolean;
@@ -124,6 +130,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					},
 					nullable: true,
 				},
+				showThreadsInMainChannel: {
+					type: 'boolean',
+					nullable: true,
+				},
 				desktopNotificationRequireInteraction: {
 					type: 'boolean',
 					nullable: true,
@@ -191,11 +201,30 @@ const UsersSetPreferencesParamsPostSchema = {
 					},
 					nullable: true,
 				},
+				featuresPreview: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							name: { type: 'string' },
+							value: { type: 'boolean' },
+						},
+					},
+					nullable: true,
+				},
 				themeAppearence: {
 					type: 'string',
 					nullable: true,
 				},
+				fontSize: {
+					type: 'string',
+					nullable: true,
+				},
 				receiveLoginDetectionEmail: {
+					type: 'boolean',
+					nullable: true,
+				},
+				notifyCalendarEvents: {
 					type: 'boolean',
 					nullable: true,
 				},

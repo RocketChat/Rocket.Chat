@@ -67,7 +67,7 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 					/>
 				</Field.Row>
 			</Field>
-			<Box mbs='x8'>
+			<Box mbs={8}>
 				<Button disabled={!isDirty} primary onClick={handleSubmit(onClickNewLink)}>
 					{t('Generate_New_Link')}
 				</Button>
