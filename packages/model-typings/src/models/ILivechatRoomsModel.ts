@@ -3,7 +3,7 @@ import type {
 	IOmnichannelRoom,
 	IOmnichannelRoomClosingInfo,
 	ISetting,
-	IVisitor,
+	ILivechatVisitor,
 	RoomVerificationState,
 } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter } from 'mongodb';
@@ -238,7 +238,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	changeAgentByRoomId(roomId: string, newAgent: { agentId: string; username: string }): Promise<UpdateResult>;
 	changeDepartmentIdByRoomId(roomId: string, departmentId: string): Promise<UpdateResult>;
 	saveCRMDataByRoomId(roomId: string, crmData: unknown): Promise<UpdateResult>;
-	updateVisitorStatus(token: string, status: IVisitor['status']): Promise<UpdateResult | Document>;
+	updateVisitorStatus(token: string, status: ILivechatVisitor['status']): Promise<UpdateResult | Document>;
 	removeAgentByRoomId(roomId: string): Promise<UpdateResult>;
 	removeByVisitorToken(token: string): Promise<DeleteResult>;
 	removeById(_id: string): Promise<DeleteResult>;

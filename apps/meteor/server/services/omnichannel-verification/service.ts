@@ -2,6 +2,7 @@ import type { IOmnichannelVerification, ISetVisitorEmailResult } from '@rocket.c
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IRoom, IMessage, IOmnichannelGenericRoom, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { RoomVerificationState } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
@@ -13,7 +14,6 @@ import { checkEmailAvailability } from '../../../app/lib/server/functions/checkE
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { validateEmailDomain } from '../../../app/lib/server/lib';
 import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
-import { Logger } from '../../../app/logger/server';
 import * as Mailer from '../../../app/mailer/server/api';
 import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';

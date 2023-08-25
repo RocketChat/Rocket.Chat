@@ -56,6 +56,19 @@ export class MatrixRoomMessageSentHandler extends MatrixBaseEventHandler {
 			: this.roomService.onExternalMessageReceived(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent));
 	}
 
+	private executeThreadedTextMessageHandler(
+		eventContent: IMatrixEventContentRoomMessageSent,
+		externalEvent: MatrixEventRoomMessageSent,
+	): any {
+		const isAnEditionEvent =
+			eventContent['m.new_content'] &&
+			eventContent['m.relates_to'] &&
+			eventContent['m.relates_to'].rel_type === MatrixEnumRelatesToRelType.REPLACE;
+		return isAnEditionEvent
+			? this.roomService.onExternalMessageEditedReceived(MatrixRoomReceiverConverter.toEditRoomMessageDto(externalEvent))
+			: this.roomService.onExternalThreadedMessageReceived(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent));
+	}
+
 	public async handle(externalEvent: MatrixEventRoomMessageSent): Promise<void> {
 		const handlers = {
 			[MatrixEnumSendMessageType.TEXT]: () => this.executeTextMessageHandler(externalEvent.content, externalEvent),
@@ -75,9 +88,35 @@ export class MatrixRoomMessageSentHandler extends MatrixBaseEventHandler {
 				throw new Error('Location events are not supported yet');
 			},
 		};
-		const defaultHandler = () =>
-			this.roomService.onExternalMessageReceived(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent));
 
+		const threadHandlers = {
+			[MatrixEnumSendMessageType.TEXT]: () => this.executeThreadedTextMessageHandler(externalEvent.content, externalEvent),
+			[MatrixEnumSendMessageType.AUDIO]: () =>
+				this.roomService.onExternalThreadedFileMessageReceived(MatrixRoomReceiverConverter.toSendRoomFileMessageDto(externalEvent)),
+			[MatrixEnumSendMessageType.FILE]: () =>
+				this.roomService.onExternalThreadedFileMessageReceived(MatrixRoomReceiverConverter.toSendRoomFileMessageDto(externalEvent)),
+			[MatrixEnumSendMessageType.IMAGE]: () =>
+				this.roomService.onExternalThreadedFileMessageReceived(MatrixRoomReceiverConverter.toSendRoomFileMessageDto(externalEvent)),
+			[MatrixEnumSendMessageType.NOTICE]: () =>
+				this.roomService.onExternalThreadedMessageReceived(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent)),
+			[MatrixEnumSendMessageType.VIDEO]: () =>
+				this.roomService.onExternalThreadedFileMessageReceived(MatrixRoomReceiverConverter.toSendRoomFileMessageDto(externalEvent)),
+			[MatrixEnumSendMessageType.EMOTE]: () =>
+				this.roomService.onExternalThreadedMessageReceived(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent)),
+			[MatrixEnumSendMessageType.LOCATION]: () => {
+				throw new Error('Location events are not supported yet');
+			},
+		};
+
+		const defaultHandler = () =>
+			this.roomService.onExternalThreadedMessageReceived(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent));
+		const threadedDefaultHandler = () =>
+			this.roomService.onExternalThreadedMessageReceived(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent));
+
+		const isThreadedMessage = Boolean(externalEvent.content?.['m.relates_to']?.rel_type === MatrixEventType.MESSAGE_ON_THREAD);
+		if (isThreadedMessage) {
+			return (threadHandlers[externalEvent.content.msgtype as MatrixEnumSendMessageType] || threadedDefaultHandler)();
+		}
 		await (handlers[externalEvent.content.msgtype as MatrixEnumSendMessageType] || defaultHandler)();
 	}
 }
