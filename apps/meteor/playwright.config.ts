@@ -27,6 +27,7 @@ export default {
 				url: process.env.REPORTER_ROCKETCHAT_URL,
 				apiKey: process.env.REPORTER_ROCKETCHAT_API_KEY,
 				branch: process.env.REPORTER_ROCKETCHAT_BRANCH,
+				run: Number(process.env.REPORTER_ROCKETCHAT_RUN),
 				draft: process.env.REPORTER_ROCKETCHAT_DRAFT === 'true',
 			},
 		],

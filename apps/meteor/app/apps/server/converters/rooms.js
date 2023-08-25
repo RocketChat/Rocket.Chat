@@ -53,7 +53,7 @@ export class AppRoomsConverter {
 
 		let departmentId;
 		if (room.department) {
-			const department = await LivechatDepartment.findOneById(room.department.id);
+			const department = await LivechatDepartment.findOneById(room.department.id, { projection: { _id: 1 } });
 			departmentId = department._id;
 		}
 
