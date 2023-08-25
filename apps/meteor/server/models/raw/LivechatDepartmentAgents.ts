@@ -78,8 +78,8 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.find(query, options);
 	}
 
-	findByAgentId(agentId: string): FindCursor<ILivechatDepartmentAgents> {
-		return this.find({ agentId });
+	findByAgentId(agentId: string, options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents> {
+		return this.find({ agentId }, options);
 	}
 
 	findAgentsByDepartmentId(departmentId: string): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
@@ -151,12 +151,16 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.deleteOne({ departmentId });
 	}
 
-	findByDepartmentId(departmentId: string): FindCursor<ILivechatDepartmentAgents> {
-		return this.find({ departmentId });
+	findByDepartmentId(departmentId: string, options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents> {
+		return this.find({ departmentId }, options);
 	}
 
-	findOneByAgentIdAndDepartmentId(agentId: string, departmentId: string): Promise<ILivechatDepartmentAgents | null> {
-		return this.findOne({ agentId, departmentId });
+	findOneByAgentIdAndDepartmentId(
+		agentId: string,
+		departmentId: string,
+		options?: FindOptions<ILivechatDepartmentAgents>,
+	): Promise<ILivechatDepartmentAgents | null> {
+		return this.findOne({ agentId, departmentId }, options);
 	}
 
 	saveAgent(agent: {
