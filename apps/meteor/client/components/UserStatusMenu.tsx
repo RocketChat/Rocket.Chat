@@ -87,6 +87,7 @@ const UserStatusMenu = ({
 				onKeyUp={handleKeyUp}
 				onKeyDown={handleKeyDown}
 				margin={margin}
+				aria-label={t('User_status_menu')}
 			>
 				<UserStatus status={status} />
 			</Button>

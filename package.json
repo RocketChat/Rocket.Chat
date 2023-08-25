@@ -22,7 +22,7 @@
 		"@types/js-yaml": "^4.0.5",
 		"@types/prettier": "^2",
 		"husky": "^7.0.4",
-		"turbo": "latest"
+		"turbo": "^1.10.13"
 	},
 	"workspaces": [
 		"apps/*",
