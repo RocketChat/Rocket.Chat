@@ -107,7 +107,7 @@ export class OmnichannelTriggers {
 	}
 
 	public async createTrigger(triggersName: string, triggerMessage: string) {
-		await this.headingButtonNew('Create department').click();
+		await this.headingButtonNew('Create trigger').click();
 		await this.fillTriggerForm({
 			name: triggersName,
 			description: 'Creating a fresh trigger',
