@@ -14,7 +14,7 @@
     {
       "file": "apps/meteor/server/models/raw/Messages.ts",
       "description": "## MessageRaw class\n\n- **To register a DB model in Rocket.Chat, it is necessary to create a corresponding class for that model. In our case, as we are creating the Messages Model, we need to define a class specifically for it. This class will serve as the blueprint for the Messages Model and will be used for registering and interacting with the corresponding data in the database.**\n\n- **In order to facilitate the management of the Messages Model in Rocket.Chat's database, we have a class called MessageRaw. This class extends the BaseRaw class and implements the IMessageModel interface, which we discussed earlier. By extending BaseRaw and implementing the IMessageModel interface, MessageRaw inherits necessary functionalities and ensures it adheres to the required structure and behavior of the Messages Model in Rocket.Chat.**",
-      "line": 42
+      "line": 43
     },
     {
       "file": "apps/meteor/server/models/raw/Messages.ts",
