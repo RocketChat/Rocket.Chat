@@ -33,6 +33,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	const passwordConfirmationPlaceholder = String(useSetting('Accounts_ConfirmPasswordPlaceholder'));
 
 	const formLabelId = useUniqueId();
+	const passwordVerifierId = useUniqueId();
 	const registerUser = useRegisterMethod();
 	const customFields = useAccountsCustomFields();
 
@@ -88,6 +89,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	if (errors.email?.type === 'invalid-email') {
 		return <EmailConfirmationForm onBackToLogin={() => clearErrors('email')} email={getValues('email')} />;
 	}
+
+	const password = watch('password');
 
 	return (
 		<Form aria-labelledby={formLabelId} onSubmit={handleSubmit(handleRegister)}>
@@ -160,8 +163,10 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								aria-invalid={errors.password ? 'true' : undefined}
 								id='password'
 								placeholder={passwordPlaceholder || t('Create_a_password')}
+								aria-describedby={passwordVerifierId}
 							/>
 						</Field.Row>
+						{Boolean(password?.length) && <PasswordVerifier password={password} id={passwordVerifierId} />}
 						{requiresPasswordConfirmation && (
 							<Field.Row>
 								<PasswordInput
@@ -183,7 +188,6 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						{errors.passwordConfirmation?.type === 'required' && requiresPasswordConfirmation && (
 							<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
 						)}
-						<PasswordVerifier password={watch('password')} />
 					</Field>
 					{manuallyApproveNewUsersRequired && (
 						<Field>

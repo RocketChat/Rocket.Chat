@@ -16,7 +16,7 @@ export const PasswordVerifierItem = ({
 	return (
 		<Box display='flex' flexBasis='50%' alignItems='center' mbe={8} fontScale='c1' color={color} role='listitem' {...props}>
 			<Icon name={icon} color={color} size='x16' mie={4} />
-			<span aria-label={`${text} ${success ? 'checked' : 'unchecked'}`} />
+			<span aria-label={`${success ? 'checked' : 'unchecked'} - ${text}`} />
 			<span aria-hidden>{text}</span>
 		</Box>
 	);

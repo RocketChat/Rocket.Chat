@@ -301,7 +301,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							aria-describedby={passwordVerifierId}
 						/>
 					</Field.Row>
-					{allowPasswordChange && Boolean(password.length) && <PasswordVerifier password={password} id={passwordVerifierId} />}
+					{allowPasswordChange && Boolean(password?.length) && <PasswordVerifier password={password} id={passwordVerifierId} />}
 				</Field>
 				<Field>
 					<Field.Label htmlFor={confirmPasswordId}>{t('Confirm_password')}</Field.Label>
