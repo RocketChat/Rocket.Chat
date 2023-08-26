@@ -12,9 +12,11 @@ import type {
 	ILivechatDepartmentAgents,
 	TransferByData,
 	ILivechatAgent,
+	ILivechatDepartment,
 } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus, OmnichannelSourceType, DEFAULT_SLA_CONFIG, UserStatus } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
+import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import {
 	LivechatDepartmentAgents,
@@ -35,7 +37,6 @@ import { i18n } from '../../../../server/lib/i18n';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
 import { Livechat } from './Livechat';
 import { Livechat as LivechatTyped } from './LivechatTyped';
@@ -519,7 +520,9 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		if (!user) {
 			throw new Error('error-user-is-offline');
 		}
-		const isInDepartment = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(agentId, departmentId);
+		const isInDepartment = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(agentId, departmentId, {
+			projection: { _id: 1 },
+		});
 		if (!isInDepartment) {
 			throw new Error('error-user-not-belong-to-department');
 		}
@@ -549,13 +552,22 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
-		const department = departmentId ? await LivechatDepartment.findOneById(departmentId) : null;
+		const department = departmentId
+			? await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(departmentId, {
+					projection: { fallbackForwardDepartment: 1 },
+			  })
+			: null;
 		if (!department?.fallbackForwardDepartment?.length) {
 			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
 			throw new Error('error-no-agents-online-in-department');
 		}
 		// if a chat has a fallback department, attempt to redirect chat to there [EE]
-		return !!(await callbacks.run('livechat:onTransferFailure', { room, guest, transferData }));
+		const transferSuccess = !!(await callbacks.run('livechat:onTransferFailure', room, { guest, transferData }));
+		// On CE theres no callback so it will return the room
+		if (typeof transferSuccess !== 'boolean' || !transferSuccess) {
+			logger.debug(`Cannot forward room ${room._id}. Unable to delegate inquiry`);
+			return false;
+		}
 	}
 
 	await Livechat.saveTransferHistory(room, transferData);

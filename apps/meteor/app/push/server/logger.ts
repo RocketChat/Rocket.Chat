@@ -1,3 +1,3 @@
-import { Logger } from '../../../server/lib/logger/Logger';
+import { Logger } from '@rocket.chat/logger';
 
 export const logger = new Logger('Push');
