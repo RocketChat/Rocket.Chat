@@ -116,7 +116,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 			});
 		}
 
-		const savedDepartments = (await LivechatDepartment.find({ parentId: _id }).toArray()).map(({ _id }) => _id);
+		const savedDepartments = (await LivechatDepartment.findByParentId(_id, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
 		const departmentsToSave = departments.map(({ departmentId }) => departmentId);
 
 		// remove other departments
@@ -135,7 +135,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		}
 
 		for await (const departmentId of departmentsToSave) {
-			await LivechatDepartment.update(
+			await LivechatDepartment.updateOne(
 				{ _id: departmentId },
 				{
 					$set: {
