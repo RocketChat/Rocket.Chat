@@ -1,4 +1,5 @@
 import { Button, Field, Modal, PasswordInput } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form } from '@rocket.chat/layout';
 import { PasswordVerifier } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -19,6 +20,7 @@ const ResetPasswordPage = (): ReactElement => {
 	const setUserPassword = useMethod('setUserPassword');
 	const resetPassword = useMethod('resetPassword');
 	const token = useRouteParameter('token');
+	const passwordVerifierId = useUniqueId();
 
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
 
@@ -57,6 +59,8 @@ const ResetPasswordPage = (): ReactElement => {
 		}
 	});
 
+	const password = watch('password');
+
 	return (
 		<HorizontalTemplate>
 			<Form onSubmit={submit}>
@@ -77,7 +81,9 @@ const ResetPasswordPage = (): ReactElement => {
 								placeholder={t('Create_a_password')}
 								name='password'
 								autoComplete='off'
+								aria-describedby={passwordVerifierId}
 							/>
+							{Boolean(password?.length) && <PasswordVerifier password={password} id={passwordVerifierId} />}
 						</Field.Row>
 						{requiresPasswordConfirmation && (
 							<Field.Row>
@@ -85,7 +91,7 @@ const ResetPasswordPage = (): ReactElement => {
 									{...register('passwordConfirmation', {
 										required: true,
 										deps: ['password'],
-										validate: (val: string) => watch('password') === val,
+										validate: (val: string) => password === val,
 									})}
 									error={errors.passwordConfirmation?.type === 'validate' ? t('registration.component.form.invalidConfirmPass') : undefined}
 									aria-invalid={errors.passwordConfirmation ? 'true' : false}
@@ -95,7 +101,6 @@ const ResetPasswordPage = (): ReactElement => {
 							</Field.Row>
 						)}
 						{errors && <Field.Error>{errors.password?.message}</Field.Error>}
-						<PasswordVerifier password={watch('password')} />
 					</Field>
 				</Form.Container>
 				<Form.Footer>
