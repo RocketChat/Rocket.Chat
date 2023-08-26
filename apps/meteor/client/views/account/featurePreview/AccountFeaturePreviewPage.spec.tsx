@@ -13,6 +13,15 @@ it('should have no a11y violations', async () => {
 		wrapper: mockAppRoot()
 			.withSetting('Accounts_AllowFeaturePreview', true)
 			.withUserPreference('featurePreview', defaultFeaturesPreview)
+			.withEndpoint('POST', '/v1/users.setPreferences', () => ({
+				user: {
+					_id: 'userId',
+					settings: {
+						profile: {},
+						preferences: {},
+					},
+				},
+			}))
 			.build(),
 	});
 
