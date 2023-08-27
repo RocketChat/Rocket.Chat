@@ -10,7 +10,7 @@
     {
       "file": "apps/meteor/client/views/room/body/RoomBody.tsx",
       "description": "## The Chat Room/Channel\n\n- **RoomBody.tsx** is a file that handles the rendering of the Chat Room/Channel on the client side. It brings together multiple components to enable user interaction and communication within the chat environment.\n\n- In this file, there are various methods implemented. Let's specifically examine the process of sending a message through the **MessageComposer** component.\n#### **Additionally, the code in \"RoomBody.tsx\" includes logic for performing various actions related to the chat functionality. These actions might include *sending messages*, *editing* or *deleting* messages, *managing user permissions*, and handling user interactions within the chat environment.**",
-      "line": 53
+      "line": 54
     },
     {
       "file": "apps/meteor/client/views/room/body/RoomBody.tsx",
@@ -40,17 +40,17 @@
     {
       "file": "apps/meteor/client/views/room/composer/ComposerContainer.tsx",
       "description": "## ComposerMessage Component\n### And at the end we have ComposerMessage which is responsible for rendering MessageBox(The Text composer at the footer of Channel/Room)",
-      "line": 79
+      "line": 67
     },
     {
       "file": "apps/meteor/client/views/room/composer/ComposerMessage.tsx",
       "description": "## MessageBox Component\n\n- At the bottom of the code, there is a \"MessageBox\" component, which represents the actual chat message box. Its presence is crucial for the proper functioning of the Composer. If you were to comment out or remove the \"MessageBox\" component and run the server, you would observe that the Composer functionality would no longer be available.\n\n- The \"MessageBox\" component plays a pivotal role in enabling users to compose and send messages within the chat interface. It provides the necessary user interface elements, such as input fields and buttons, to facilitate message composition and submission.",
-      "line": 81
+      "line": 77
     },
     {
       "file": "apps/meteor/client/views/room/composer/messageBox/MessageBox.tsx",
       "description": "## The Message Box\n\n#### This file serves as the implementation of the Message Composer component, where you can explore and analyze how the code functions. By examining the code in this file, you can gain a better understanding of its inner workings.\n\n\n#### The Message Composer component receives several props, including *\"rid\"* (room ID), *\"tmid\"* (thread ID), and *\"onSend\"* (handler for sending messages), among others. These props provide necessary data and functionality for the composer to operate effectively.\n\n\n#### By inspecting and experimenting with the code, you can gain insights into how different aspects of the Message Composer are implemented and how they interact with other components and functions.\n\n- The MessageBox is using MessageBoxProps type for defining its type\n```\ntype MessageBoxProps = {rid: IRoom['_id']; ...};\nconst MessageBox = ({rid, tmid, ...}: MessageBoxProps): ReactElement => \n```",
-      "line": 99
+      "line": 98
     },
     {
       "file": "apps/meteor/client/views/room/composer/messageBox/MessageBox.tsx",
@@ -75,7 +75,7 @@
     {
       "file": "apps/meteor/client/views/room/composer/messageBox/MessageBox.tsx",
       "description": "### The Send Button\n\n- To send any message you need to click send button or hit Enter/Return key, when you click send button **handleSendMessage** method/function is called.\n```\n    <MessageComposerAction\n        onClick={handleSendMessage}\n        ....\n    />\n```",
-      "line": 430
+      "line": 433
     },
     {
       "file": "apps/meteor/client/views/room/composer/messageBox/MessageBox.tsx",

@@ -10,7 +10,7 @@
     {
       "file": "apps/meteor/client/lib/chats/ChatAPI.ts",
       "description": "## ChatAPI sendMessage\n\n#### Among many properties and functions present in ChatAPI here we have sendMessage.\n\n#### Note that sendMessage is *readonly* implying that it cannot be modified after initialization. Hence Implementing ChatAPI in any class would make it modification possible.\n\n```\n    readonly sendMessage: ({ text, tshow }: { text: string; tshow?: boolean }) => Promise<boolean>;\n```",
-      "line": 146
+      "line": 147
     },
     {
       "file": "apps/meteor/app/ui/client/lib/ChatMessages.ts",
@@ -40,7 +40,7 @@
     {
       "file": "apps/meteor/client/lib/chats/flows/sendMessage.ts",
       "description": "## Processing Message Further\n\n### In Rocket.chat Messages are sent to ../api/v1/method.call/sendMessage and this is a meteor method. ",
-      "line": 62
+      "line": 63
     },
     {
       "file": "apps/meteor/client/lib/chats/flows/sendMessage.ts",

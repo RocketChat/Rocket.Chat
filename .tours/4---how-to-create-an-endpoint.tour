@@ -5,7 +5,7 @@
     {
       "file": "apps/meteor/app/api/server/index.ts",
       "description": "## How to Create an Endpoint.\n\n### Rocket.Chat offers two methods for creating endpoints: REST API and Meteor Methods(Realtime API). These methods allow developers to extend Rocket.Chat's functionality by defining custom endpoints that can be accessed externally or internally.\n\n### In this guide, we will explore creating endpoints using the REST API and Meteor Methods in Rocket.Chat. We'll discuss their differences, use cases, and provide step-by-step instructions for implementation. By learning how to create endpoints, you'll be able to integrate external services, expose specific functionalities, and perform custom operations.\n",
-      "line": 51
+      "line": 52
     },
     {
       "file": "apps/meteor/app/api/server/api.ts",
