@@ -35,11 +35,11 @@ export class OmnichannelLiveChat {
 	}
 
 	btnSendMessage(btnText: string): Locator {
-		return this.page.locator(`[type="submit"] >> text="${btnText}"`);
+		return this.page.locator(`role=button[name="${btnText}"]`);
 	}
 
 	get btnOk(): Locator {
-		return this.page.locator('button >> text="OK"');
+		return this.page.locator('role=button[name="OK"]');
 	}
 
 	get onlineAgentMessage(): Locator {

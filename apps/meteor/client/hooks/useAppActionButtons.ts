@@ -137,6 +137,7 @@ export const useMessageActionAppsActionButtons = (context?: MessageActionContext
 							void actionManager.triggerActionButtonAction({
 								rid: params.message.rid,
 								tmid: params.message.tmid,
+								mid: params.message._id,
 								actionId: action.actionId,
 								appId: action.appId,
 								payload: { context: action.context },

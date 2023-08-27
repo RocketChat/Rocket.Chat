@@ -2,9 +2,10 @@ import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch, useTransl
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import GenericModal from '../../../../components/GenericModal';
 
-const useDismissUserAction = (userId: string) => {
+const useDismissUserAction = (userId: string): GenericMenuItemProps => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -45,8 +46,10 @@ const useDismissUserAction = (userId: string) => {
 	};
 
 	return {
-		label: { label: t('Moderation_Dismiss_reports'), icon: 'circle-check' },
-		action: () => confirmDismissUser(),
+		id: 'approve',
+		content: t('Moderation_Dismiss_reports'),
+		icon: 'circle-check',
+		onClick: () => confirmDismissUser(),
 	};
 };
 
