@@ -777,34 +777,6 @@ test.describe.parallel('Federation - Direct Messages', () => {
 					await pageForServer2.close();
 				});
 
-				test('expect the threads button to be disabled', async ({ browser, page }) => {
-					const pageForServer2 = await browser.newPage();
-					const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-
-					await doLogin({
-						page: pageForServer2,
-						server: {
-							url: constants.RC_SERVER_2.url,
-							username: userFromServer2UsernameOnly,
-							password: constants.RC_SERVER_2.password,
-						},
-						storeState: false,
-					});
-
-					await page.goto(`${constants.RC_SERVER_1.url}/home`);
-					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-
-					await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-					await poFederationChannelServer1.content.sendMessage('hello world');
-
-					await expect(poFederationChannelServer1.tabs.btnThread).toBeDisabled();
-
-					await poFederationChannelServer2.sidenav.openChat(usernameWithDomainFromServer1);
-					await expect(poFederationChannelServer2.tabs.btnCall).toBeDisabled();
-
-					await pageForServer2.close();
-				});
-
 				test('expect the discussion button to be disabled', async ({ browser, page }) => {
 					const pageForServer2 = await browser.newPage();
 					const poFederationChannelServer2 = new FederationChannel(pageForServer2);

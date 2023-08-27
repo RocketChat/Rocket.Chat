@@ -1,4 +1,4 @@
-import { usePermission, useRouter, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter, useSetModal, useCurrentModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
@@ -17,6 +17,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	const t = useTranslation();
 	const canViewEngagementDashboard = usePermission('view-engagement-dashboard');
 	const setModal = useSetModal();
+	const isModalOpen = useCurrentModal() !== null;
 
 	const router = useRouter();
 	const { tab } = router.getRouteParameters();
@@ -24,8 +25,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 
 	const hasEngagementDashboard = useHasLicenseModule('engagement-dashboard') as boolean;
 
-	const { shouldShowUpsell, isModalOpen, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales } =
-		useUpsellActions(hasEngagementDashboard);
+	const { shouldShowUpsell, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales } = useUpsellActions(hasEngagementDashboard);
 
 	useEffect(() => {
 		if (shouldShowUpsell) {

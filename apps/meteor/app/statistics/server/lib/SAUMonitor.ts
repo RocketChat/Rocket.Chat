@@ -1,5 +1,6 @@
 import type { ISession, ISessionDevice, ISocketConnectionLogged, IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
+import { Logger } from '@rocket.chat/logger';
 import { Sessions, Users } from '@rocket.chat/models';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
@@ -7,7 +8,6 @@ import UAParser from 'ua-parser-js';
 
 import { getMostImportantRole } from '../../../../lib/roles/getMostImportantRole';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
-import { Logger } from '../../../../server/lib/logger/Logger';
 import { aggregates } from '../../../../server/models/raw/Sessions';
 import { sauEvents } from '../../../../server/services/sauMonitor/events';
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';

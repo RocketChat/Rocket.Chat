@@ -31,6 +31,7 @@ export const useCleanHistoryRoomAction = () => {
 			}),
 			tabComponent: PruneMessages,
 			order: 250,
+			type: 'customization',
 		};
 	}, [federated, permitted, t]);
 };

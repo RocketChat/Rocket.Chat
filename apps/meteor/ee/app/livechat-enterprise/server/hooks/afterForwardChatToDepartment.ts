@@ -1,3 +1,4 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -8,7 +9,9 @@ callbacks.add(
 	async (options) => {
 		const { rid, newDepartmentId } = options;
 
-		const room = await LivechatRooms.findOneById(rid);
+		const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'departmentAncestors'>>(rid, {
+			projection: { departmentAncestors: 1 },
+		});
 		if (!room) {
 			cbLogger.debug('Skipping callback. No room found');
 			return options;
