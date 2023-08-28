@@ -1,3 +1,4 @@
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -5,16 +6,23 @@ import React from 'react';
 import GenericModal from '../../../../../components/GenericModal';
 import ChannelDeletionTable from './ChannelDeletionTable';
 
-const StepOne = ({
+type DeleteTeamChannelsProps = {
+	rooms: Serialized<IRoom>[];
+	onCancel: () => void;
+	selectedRooms: { [key: string]: Serialized<IRoom> };
+	onToggleAllRooms: () => void;
+	onConfirm: () => void;
+	onChangeRoomSelection: (room: Serialized<IRoom>) => void;
+};
+
+const DeleteTeamChannels = ({
 	rooms,
-	// params,
-	// onChangeParams,
-	onToggleAllRooms,
-	onChangeRoomSelection,
-	onConfirm,
 	onCancel,
 	selectedRooms,
-}) => {
+	onToggleAllRooms,
+	onConfirm,
+	onChangeRoomSelection,
+}: DeleteTeamChannelsProps) => {
 	const t = useTranslation();
 
 	return (
@@ -28,18 +36,16 @@ const StepOne = ({
 		>
 			<Box withRichContent mbe={16}>
 				<Box is='span' color='status-font-on-danger' fontWeight='bold'>
-					{t('Team_Delete_Channel_modal_content_danger')}
-				</Box>{' '}
+					{t('Team_Delete_Channel_modal_content_danger')}{' '}
+				</Box>
 				{t('Teams_delete_team_Warning')}
 			</Box>
 			<Box>
 				{t('Teams_delete_team_choose_channels')} {t('Teams_delete_team_public_notice')}
 			</Box>
 			<ChannelDeletionTable
-				onToggleAllRooms={onToggleAllRooms}
 				rooms={rooms}
-				params={{}}
-				onChangeParams={() => {}}
+				onToggleAllRooms={onToggleAllRooms}
 				onChangeRoomSelection={onChangeRoomSelection}
 				selectedRooms={selectedRooms}
 			/>
@@ -47,4 +53,4 @@ const StepOne = ({
 	);
 };
 
-export default StepOne;
+export default DeleteTeamChannels;
