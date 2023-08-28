@@ -8,7 +8,7 @@ import RoomLinkList from './RoomLinkList';
 type DeleteTeamConfirmationProps = {
 	deletedRooms: { [key: string]: Serialized<IRoom> };
 	keptRooms: { [key: string]: Serialized<IRoom> };
-	onConfirm: (roomsToDelete: IRoom['_id'][]) => Promise<void>;
+	onConfirm: (roomsToDelete: IRoom['_id'][]) => void;
 	onReturn?: () => void;
 	onCancel: () => void;
 };

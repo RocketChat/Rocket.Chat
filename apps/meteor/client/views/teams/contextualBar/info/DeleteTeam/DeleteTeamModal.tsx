@@ -9,7 +9,7 @@ const STEPS = { LIST_ROOMS: 'LIST_ROOMS', CONFIRM_DELETE: 'CONFIRM_DELETE' };
 
 type DeleteTeamModalProps = {
 	onCancel: () => void;
-	onConfirm: (roomsToDelete: IRoom['_id'][]) => Promise<void>;
+	onConfirm: (roomsToDelete: IRoom['_id'][]) => void;
 	rooms: Serialized<IRoom>[];
 };
 

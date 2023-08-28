@@ -3,8 +3,8 @@ import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import DeleteTeamModal from '.';
-import StepOne from './DeleteTeamChannels';
-import StepTwo from './DeleteTeamConfirmation';
+import DeleteTeamChannels from './DeleteTeamChannels';
+import DeleteTeamConfirmation from './DeleteTeamConfirmation';
 
 export default {
 	title: 'Teams/Contextual Bar/DeleteTeamModal',
@@ -22,16 +22,21 @@ Default.args = {
 	onCancel: action('onCancel'),
 };
 
-export const ModalStepOne: ComponentStory<typeof StepOne> = (args) => <StepOne {...args} />;
-ModalStepOne.storyName = 'StepOne';
-ModalStepOne.args = {
+export const ChannelsStep: ComponentStory<typeof DeleteTeamChannels> = (args) => <DeleteTeamChannels {...args} />;
+ChannelsStep.args = {
 	rooms: Array.from({ length: 15 }).map((_, i) => ({
-		rid: i,
+		_id: `${i}`,
 		fname: `Room #${i}`,
 		name: `room-${i}`,
 		usersCount: 10 * i,
 		type: 'p',
 		t: 'p',
+		msgs: 10,
+		u: {
+			_id: 'user',
+		},
+		autoTranslateLanguage: 'english',
+		_updatedAt: '2022-02-02 09:00',
 	})),
 	selectedRooms: {},
 	onConfirm: action('onConfirm'),
@@ -40,26 +45,39 @@ ModalStepOne.args = {
 	onToggleAllRooms: action('onToggleAllRooms'),
 };
 
-export const ModalStepTwo: ComponentStory<typeof StepTwo> = (args) => <StepTwo {...args} />;
-ModalStepTwo.storyName = 'StepTwo';
-ModalStepTwo.args = {
-	deletedRooms: Array.from({ length: 15 }).map((_, i) => ({
-		rid: i,
-		fname: `Room #${i}`,
-		name: `room-${i}`,
-		usersCount: 10 * i,
-		type: 'p',
-		t: 'p',
-	})),
-	keptRooms: Array.from({ length: 15 }).map((_, i) => ({
-		rid: i,
-		fname: `Room #${i}`,
-		name: `room-${i}`,
-		usersCount: 10 * i,
-		type: 'p',
-		t: 'p',
-	})),
-	onConfirm: action('onConfirm'),
+export const ConfirmationStep: ComponentStory<typeof DeleteTeamConfirmation> = (args) => <DeleteTeamConfirmation {...args} />;
+ConfirmationStep.args = {
+	deletedRooms: {
+		test123: {
+			_id: `123`,
+			fname: `Room 123`,
+			name: `room-123`,
+			usersCount: 10,
+			t: 'p',
+			msgs: 10,
+			u: {
+				_id: 'user',
+			},
+			autoTranslateLanguage: 'english',
+			_updatedAt: '2022-02-02 09:00',
+		},
+	},
+	keptRooms: {
+		test123: {
+			_id: `123`,
+			fname: `Room 123`,
+			name: `room-123`,
+			usersCount: 10,
+			t: 'p',
+			msgs: 10,
+			u: {
+				_id: 'user',
+			},
+			autoTranslateLanguage: 'english',
+			_updatedAt: '2022-02-02 09:00',
+		},
+	},
+	onConfirm: async (_roomsToDelete) => action('onConfirm'),
 	onCancel: action('onCancel'),
 	onReturn: action('onReturn'),
 };

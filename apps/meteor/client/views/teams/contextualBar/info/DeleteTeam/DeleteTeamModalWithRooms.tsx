@@ -10,7 +10,7 @@ import DeleteTeamModal from './DeleteTeamModal';
 
 type DeleteTeamModalWithRoomsProps = {
 	teamId: string;
-	onConfirm: (roomsToDelete: IRoom['_id'][]) => Promise<void>;
+	onConfirm: (roomsToDelete: IRoom['_id'][]) => void;
 	onCancel: () => void;
 };
 
