@@ -123,6 +123,7 @@ export class SAML {
 		}));
 
 		let { username } = userObject;
+		const { fullName } = userObject;
 
 		const active = !settings.get('Accounts_ManuallyApproveNewUsers');
 
@@ -131,7 +132,7 @@ export class SAML {
 			const roles = userObject.roles?.length ? userObject.roles : ensureArray<string>(defaultUserRole.split(','));
 
 			const newUser: Record<string, any> = {
-				name: userObject.fullName,
+				name: fullName,
 				active,
 				globalRoles: roles,
 				emails,
@@ -199,7 +200,7 @@ export class SAML {
 
 		// Overwrite fullname if needed
 		if (nameOverwrite === true) {
-			updateData.name = userObject.fullName;
+			updateData.name = fullName;
 		}
 
 		// When updating an user, we only update the roles if we received them from the mapping
@@ -220,8 +221,8 @@ export class SAML {
 			},
 		);
 
-		if (username && username !== user.username) {
-			await saveUserIdentity({ _id: user._id, username });
+		if ((username && username !== user.username) || (fullName && fullName !== user.name)) {
+			await saveUserIdentity({ _id: user._id, name: fullName || undefined, username });
 		}
 
 		// sending token along with the userId
@@ -429,7 +430,7 @@ export class SAML {
 				};
 
 				await this.storeCredential(credentialToken, loginResult);
-				const url = `${Meteor.absoluteUrl('home')}?saml_idp_credentialToken=${credentialToken}`;
+				const url = `${Meteor.absoluteUrl('saml')}/${credentialToken}`;
 				res.writeHead(302, {
 					Location: url,
 				});

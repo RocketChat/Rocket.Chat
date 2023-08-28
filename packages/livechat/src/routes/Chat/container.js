@@ -104,11 +104,11 @@ class ChatContainer extends Component {
 	};
 
 	startTyping = throttle(async ({ rid, username }) => {
-		await Livechat.notifyVisitorTyping(rid, username, true);
+		await Livechat.notifyVisitorActivity(rid, username, ['user-typing']);
 		this.stopTypingDebounced({ rid, username });
 	}, 4500);
 
-	stopTyping = ({ rid, username }) => Livechat.notifyVisitorTyping(rid, username, false);
+	stopTyping = ({ rid, username }) => Livechat.notifyVisitorActivity(rid, username, []);
 
 	stopTypingDebounced = debounce(this.stopTyping, 5000);
 
@@ -138,7 +138,7 @@ class ChatContainer extends Component {
 			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
 			await dispatch({ alerts: (alerts.push(alert), alerts) });
 		}
-		await Livechat.notifyVisitorTyping(rid, user.username, false);
+		await Livechat.notifyVisitorActivity(rid, user.username, []);
 	};
 
 	doFileUpload = async (rid, file) => {

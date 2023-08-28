@@ -1,18 +1,19 @@
 import { lazy, useMemo } from 'react';
 
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const MentionsTab = lazy(() => import('../../views/room/contextualBar/MentionsTab'));
 
-export const useMentionsRoomAction = (): ToolboxActionConfig => {
+export const useMentionsRoomAction = () => {
 	return useMemo(
-		() => ({
+		(): RoomToolboxActionConfig => ({
 			id: 'mentions',
 			groups: ['channel', 'group', 'team'],
 			title: 'Mentions',
 			icon: 'at',
-			template: MentionsTab,
-			order: 9,
+			tabComponent: MentionsTab,
+			order: 6,
+			type: 'organization',
 		}),
 		[],
 	);

@@ -19,6 +19,7 @@ import type {
 	SelectedAgent,
 	InquiryWithAgentInfo,
 	ILivechatTagRecord,
+	TransferData,
 } from '@rocket.chat/core-typings';
 import type { FilterOperators } from 'mongodb';
 
@@ -56,6 +57,7 @@ interface EventLikeCallbackSignatures {
 	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.onNewAgentCreated': (agentId: string) => void;
 	'livechat.afterTakeInquiry': (inq: InquiryWithAgentInfo, agent: { agentId: string; username: string }) => void;
+	'livechat.afterAgentRemoved': (params: { agent: Pick<IUser, '_id' | 'username'> }) => void;
 	'afterAddedToRoom': (params: { user: IUser; inviter?: IUser }, room: IRoom) => void;
 	'beforeAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
 	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[]; creatorId: IUser['_id'] }) => void;
@@ -87,6 +89,8 @@ interface EventLikeCallbackSignatures {
 	'livechat.afterDepartmentArchived': (department: Pick<ILivechatDepartmentRecord, '_id'>) => void;
 	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser: IUser | null }) => void;
 	'livechat.afterTagRemoved': (tag: ILivechatTagRecord) => void;
+	'beforeUserImport': (data: { userCount: number }) => void;
+	'afterUserImport': (data: { inserted: IUser['_id'][]; updated: IUser['_id']; skipped: number; failed: number }) => void;
 }
 
 /**
@@ -124,11 +128,10 @@ type ChainedCallbackSignatures = {
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
 	'livechat:afterOnHold': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
 	'livechat:afterOnHoldChatResumed': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
-	'livechat:onTransferFailure': (params: { room: IRoom; guest: ILivechatVisitor; transferData: { [k: string]: string | any } }) => {
-		room: IRoom;
-		guest: ILivechatVisitor;
-		transferData: { [k: string]: string | any };
-	};
+	'livechat:onTransferFailure': (
+		room: IRoom,
+		params: { guest: ILivechatVisitor; transferData: TransferData },
+	) => IOmnichannelRoom | Promise<boolean>;
 	'livechat.afterForwardChatToAgent': (params: {
 		rid: IRoom['_id'];
 		servedBy: { _id: string; ts: Date; username?: string };
@@ -189,15 +192,18 @@ type ChainedCallbackSignatures = {
 	'livechat.chatQueued': (room: IOmnichannelRoom) => IOmnichannelRoom;
 	'livechat.leadCapture': (room: IOmnichannelRoom) => IOmnichannelRoom;
 	'beforeSendMessageNotifications': (message: string) => string;
-	'livechat.onAgentAssignmentFailed': (params: {
-		inquiry: {
-			_id: string;
-			rid: string;
-			status: string;
-		};
-		room: IOmnichannelRoom;
-		options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clientAction?: boolean };
-	}) => (IOmnichannelRoom & { chatQueued: boolean }) | void;
+	'livechat.onAgentAssignmentFailed': (
+		room: IOmnichannelRoom,
+		params: {
+			inquiry: {
+				_id: string;
+				rid: string;
+				status: string;
+			};
+			options: { forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any }; clientAction?: boolean };
+		},
+	) => Promise<(IOmnichannelRoom & { chatQueued: boolean }) | undefined>;
+	'livechat.beforeInquiry': (data: Pick<ILivechatInquiryRecord, 'source'>) => Pick<ILivechatInquiryRecord, 'source'>;
 	'roomNameChanged': (room: IRoom) => void;
 	'roomTopicChanged': (room: IRoom) => void;
 	'roomAnnouncementChanged': (room: IRoom) => void;
@@ -221,7 +227,6 @@ export type Hook =
 	| 'beforeRemoveFromRoom'
 	| 'beforeValidateLogin'
 	| 'livechat.beforeForwardRoomToDepartment'
-	| 'livechat.beforeInquiry'
 	| 'livechat.beforeRoom'
 	| 'livechat.beforeRouteChat'
 	| 'livechat.chatQueued'

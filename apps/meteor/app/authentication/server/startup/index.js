@@ -158,8 +158,34 @@ const getLinkedInName = ({ firstName, lastName }) => {
 	return `${firstName} ${lastName}`;
 };
 
+const validateEmailDomain = (user) => {
+	if (user.type === 'visitor') {
+		return true;
+	}
+
+	let domainWhiteList = settings.get('Accounts_AllowedDomainsList');
+	if (_.isEmpty(domainWhiteList?.trim())) {
+		return true;
+	}
+
+	domainWhiteList = domainWhiteList.split(',').map((domain) => domain.trim());
+
+	if (user.emails && user.emails.length > 0) {
+		const email = user.emails[0].address;
+		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${escapeRegExp(domain)}$`));
+
+		if (!inWhiteList) {
+			throw new Meteor.Error('error-invalid-domain');
+		}
+	}
+
+	return true;
+};
+
 const onCreateUserAsync = async function (options, user = {}) {
-	await beforeCreateUserCallback.run(options, user);
+	if (!options.skipBeforeCreateUserCallback) {
+		await beforeCreateUserCallback.run(options, user);
+	}
 
 	user.status = 'offline';
 	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
@@ -194,7 +220,7 @@ const onCreateUserAsync = async function (options, user = {}) {
 		}
 	}
 
-	if (!user.active) {
+	if (!options.skipAdminEmail && !user.active) {
 		const destinations = [];
 		const usersInRole = await Roles.findUsersInRole('admin');
 		await usersInRole.forEach((adminUser) => {
@@ -219,10 +245,13 @@ const onCreateUserAsync = async function (options, user = {}) {
 		await Mailer.send(email);
 	}
 
-	await callbacks.run('onCreateUser', options, user);
+	if (!options.skipOnCreateUserCallback) {
+		await callbacks.run('onCreateUser', options, user);
+	}
 
-	// App IPostUserCreated event hook
-	await Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() });
+	if (!options.skipEmailValidation && !validateEmailDomain(user)) {
+		throw new Meteor.Error(403, 'User validation failed');
+	}
 
 	return user;
 };
@@ -264,23 +293,50 @@ const insertUserDocAsync = async function (options, user) {
 		};
 	}
 
+	// Make sure that the user has the field 'roles'
+	if (!user.roles) {
+		user.roles = [];
+	}
+
 	const _id = insertUserDoc.call(Accounts, options, user);
 
 	user = await Users.findOne({
 		_id,
 	});
 
+	/**
+	 * if settings shows setup wizard to be pending
+	 * and no admin's been found,
+	 * and existing role list doesn't include admin
+	 * create this user admin.
+	 * count this as the completion of setup wizard step 1.
+	 */
+	if (!options.skipAdminCheck) {
+		const hasAdmin = await Users.findOneByRolesAndType('admin', 'user', { projection: { _id: 1 } });
+		if (!roles.includes('admin') && !hasAdmin) {
+			roles.push('admin');
+			if (settings.get('Show_Setup_Wizard') === 'pending') {
+				await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			}
+		}
+	}
+
+	await addUserRolesAsync(_id, roles);
+
+	// Make user's roles to be present on callback
+	user = await Users.findOneById(_id, { projection: { username: 1, type: 1 } });
+
 	if (user.username) {
-		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
+		if (options.joinDefaultChannels !== false) {
 			await joinDefaultChannels(_id, options.joinDefaultChannelsSilenced);
 		}
 
-		if (user.type !== 'visitor') {
+		if (!options.skipAfterCreateUserCallback && user.type !== 'visitor') {
 			setImmediate(() => {
 				return callbacks.run('afterCreateUser', user);
 			});
 		}
-		if (settings.get('Accounts_SetDefaultAvatar') === true) {
+		if (!options.skipDefaultAvatar && settings.get('Accounts_SetDefaultAvatar') === true) {
 			const avatarSuggestions = await getAvatarSuggestionForUser(user);
 			for await (const service of Object.keys(avatarSuggestions)) {
 				const avatarData = avatarSuggestions[service];
@@ -292,22 +348,12 @@ const insertUserDocAsync = async function (options, user) {
 		}
 	}
 
-	/**
-	 * if settings shows setup wizard to be pending
-	 * and no admin's been found,
-	 * and existing role list doesn't include admin
-	 * create this user admin.
-	 * count this as the completion of setup wizard step 1.
-	 */
-	const hasAdmin = await Users.findOneByRolesAndType('admin', 'user', { projection: { _id: 1 } });
-	if (!roles.includes('admin') && !hasAdmin) {
-		roles.push('admin');
-		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
-		}
+	if (!options.skipAppsEngineEvent) {
+		// `post` triggered events don't need to wait for the promise to resolve
+		Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() }).catch((e) => {
+			Apps.getRocketChatLogger().error('Error while executing post user created event:', e);
+		});
 	}
-
-	await addUserRolesAsync(_id, roles);
 
 	return _id;
 };
