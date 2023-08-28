@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -159,6 +160,8 @@ const MessageBox = ({
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
 		clearPopup();
+
+		console.log('clicado');
 
 		onSend?.({
 			value: text,
