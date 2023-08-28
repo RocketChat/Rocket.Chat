@@ -21,8 +21,8 @@ export class OmnichannelDepartments {
 		await this.page.waitForTimeout(500);
 	}
 
-	get btnNew() {
-		return this.page.locator('role=button[name="Create department"]');
+	headingButtonNew(name: string) {
+		return this.page.locator(`role=main >> role=button[name="${name}"]`).first();
 	}
 
 	get btnEnabled() {

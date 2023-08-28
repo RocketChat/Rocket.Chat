@@ -12,6 +12,7 @@ import type {
 	ILivechatDepartmentAgents,
 	TransferByData,
 	ILivechatAgent,
+	ILivechatDepartment,
 } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus, OmnichannelSourceType, DEFAULT_SLA_CONFIG, UserStatus } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
@@ -519,7 +520,9 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		if (!user) {
 			throw new Error('error-user-is-offline');
 		}
-		const isInDepartment = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(agentId, departmentId);
+		const isInDepartment = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(agentId, departmentId, {
+			projection: { _id: 1 },
+		});
 		if (!isInDepartment) {
 			throw new Error('error-user-not-belong-to-department');
 		}
@@ -549,7 +552,11 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
-		const department = departmentId ? await LivechatDepartment.findOneById(departmentId) : null;
+		const department = departmentId
+			? await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(departmentId, {
+					projection: { fallbackForwardDepartment: 1 },
+			  })
+			: null;
 		if (!department?.fallbackForwardDepartment?.length) {
 			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
 			throw new Error('error-no-agents-online-in-department');
