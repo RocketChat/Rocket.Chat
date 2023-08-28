@@ -1,7 +1,7 @@
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import { settings, settingsRegistry } from '../../../settings/server';
 import { SearchLogger } from '../logger/logger';
 import type { SearchProvider } from '../model/SearchProvider';
-import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 export class SearchProviderService {
 	public providers: Record<string, SearchProvider> = {};

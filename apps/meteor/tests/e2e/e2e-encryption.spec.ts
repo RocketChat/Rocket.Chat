@@ -106,7 +106,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await injectInitialData();
 
-		await restoreState(page, Users.admin, {except: ['public_key', 'private_key']});
+		await restoreState(page, Users.admin, { except: ['public_key', 'private_key'] });
 
 		await page.locator('role=banner >> text="Enter your E2E password"').click();
 
@@ -145,7 +145,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
-		const channelName = faker.datatype.uuid();
+		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.type(channelName);
@@ -154,9 +154,8 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
-
 		await poHomeChannel.toastSuccess.locator('button >> i.rcx-icon--name-cross.rcx-icon').click();
+		await page.mouse.move(0, 0);
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
@@ -166,8 +165,9 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
-		await expect(poHomeChannel.tabs.btnE2E).toBeVisible();
-		await poHomeChannel.tabs.btnE2E.click({ force: true });
+
+		await expect(poHomeChannel.tabs.btnDisableE2E).toBeVisible();
+		await poHomeChannel.tabs.btnDisableE2E.click({ force: true });
 		await page.waitForTimeout(1000);
 
 		await poHomeChannel.content.sendMessage('hello world not encrypted');
@@ -176,8 +176,8 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).not.toBeVisible();
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
-		await expect(poHomeChannel.tabs.btnE2E).toBeVisible();
-		await poHomeChannel.tabs.btnE2E.click({ force: true });
+		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
+		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
 		await page.waitForTimeout(1000);
 
 		await poHomeChannel.content.sendMessage('hello world encrypted again');
@@ -187,7 +187,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect create a private channel, encrypt it and send an encrypted message', async ({ page }) => {
-		const channelName = faker.datatype.uuid();
+		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.type(channelName);
@@ -200,8 +200,8 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.toastSuccess.locator('button >> i.rcx-icon--name-cross.rcx-icon').click();
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
-		await expect(poHomeChannel.tabs.btnE2E).toBeVisible();
-		await poHomeChannel.tabs.btnE2E.click({ force: true });
+		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
+		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
 		await page.waitForTimeout(1000);
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();

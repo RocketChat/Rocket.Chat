@@ -1,11 +1,12 @@
-import { Meteor } from 'meteor/meteor';
+import type { ILivechatVisitor, IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Messages, LivechatRooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { ILivechatVisitor, IRoom } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
+import { callbacks } from '../../../../lib/callbacks';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { Livechat } from '../lib/Livechat';
 import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
-import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -57,8 +58,9 @@ Meteor.methods<ServerMethods>({
 			},
 		});
 
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		// If it's updating an existing visitor, it must also update the roomInfo
-		const rooms: IRoom[] = await LivechatRooms.findOpenByVisitorToken(token).toArray();
+		const rooms: IRoom[] = await LivechatRooms.findOpenByVisitorToken(token, {}, extraQuery).toArray();
 		await Promise.all(rooms.map((room) => Livechat.saveRoomInfo(room, visitor)));
 
 		if (customFields && customFields instanceof Array) {

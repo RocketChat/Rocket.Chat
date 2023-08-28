@@ -1,5 +1,6 @@
-import { Random } from '@rocket.chat/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { LivechatVisitors, LivechatRooms, Messages } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 import {
 	isPOSTLivechatMessageParams,
 	isGETLivechatMessageIdParams,
@@ -8,17 +9,17 @@ import {
 	isGETLivechatMessagesHistoryRidParams,
 	isGETLivechatMessagesParams,
 } from '@rocket.chat/rest-typings';
-import { LivechatVisitors, LivechatRooms, Messages } from '@rocket.chat/models';
 
+import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
-import { loadMessageHistory } from '../../../../lib/server/functions/loadMessageHistory';
-import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
-import { Livechat } from '../../lib/Livechat';
-import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
-import { settings } from '../../../../settings/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { isWidget } from '../../../../api/server/helpers/isWidget';
+import { loadMessageHistory } from '../../../../lib/server/functions/loadMessageHistory';
+import { settings } from '../../../../settings/server';
+import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
+import { Livechat } from '../../lib/Livechat';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 
 API.v1.addRoute(
 	'livechat/message',
@@ -254,7 +255,8 @@ API.v1.addRoute(
 			let visitor = await LivechatVisitors.getVisitorByToken(visitorToken, {});
 			let rid: string;
 			if (visitor) {
-				const rooms = await LivechatRooms.findOpenByVisitorToken(visitorToken).toArray();
+				const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+				const rooms = await LivechatRooms.findOpenByVisitorToken(visitorToken, {}, extraQuery).toArray();
 				if (rooms && rooms.length > 0) {
 					rid = rooms[0]._id;
 				} else {

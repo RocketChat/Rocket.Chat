@@ -1,11 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { LivechatRooms, Users } from '@rocket.chat/models';
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import { LivechatRooms, Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { Livechat } from '../lib/LivechatTyped';
+import { callbacks } from '../../../../lib/callbacks';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { settings } from '../../../settings/server';
+import { Livechat } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -22,7 +24,8 @@ Meteor.methods<ServerMethods>({
 		methodDeprecationLogger.method('livechat:getNextAgent', '7.0.0');
 		check(token, String);
 
-		const room = await LivechatRooms.findOpenByVisitorToken(token).toArray();
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const room = await LivechatRooms.findOpenByVisitorToken(token, {}, extraQuery).toArray();
 
 		if (room && room.length > 0) {
 			return;
@@ -40,6 +43,6 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		return Users.getAgentInfo(agent.agentId);
+		return Users.getAgentInfo(agent.agentId, settings.get('Livechat_show_agent_email'));
 	},
 });

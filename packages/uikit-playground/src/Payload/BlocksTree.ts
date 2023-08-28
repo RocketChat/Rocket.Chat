@@ -2,8 +2,12 @@ import type { Item } from '../Components/DropDown/types';
 import {
   actionWithButtonDefault,
   actionWithButtonPrimary,
+  actionWithButtonSecondary,
   actionWithButtonDanger,
   actionWithButtonAsLink,
+  actionWithButtonWarning,
+  actionWithButtonSuccess,
+  actionWithButtonSecondaryWithVariant,
   actionWithMenu,
   // actionWithImage,
   // actionWithSingleLineInput,
@@ -12,6 +16,10 @@ import {
   actionWithMultiStaticSelect,
   actionWithDatePicker,
   actionWithLinearScale,
+  actionWithToggleSwitch,
+  actionWithRadioButton,
+  actionWithCheckbox,
+  actionWithTimePicker,
 } from './action';
 import {
   contextWithPlainText,
@@ -20,6 +28,7 @@ import {
   contextWithAllElements,
 } from './context';
 import { divider } from './divider';
+import { callout } from './callout';
 import { imageWithTitle, imageWithoutTitle } from './image';
 import {
   inputWithSingleLineInput,
@@ -42,11 +51,19 @@ import {
   sectionWithButtonDefault,
   sectionWithButtonPrimary,
   sectionWithButtonDanger,
+  sectionWithButtonWarning,
+  sectionWithButtonSuccess,
+  sectionWithButtonSecondaryWithVariant,
   sectionWithButtonAsLink,
   sectionWithImage,
   sectionWithMenu,
   sectionWithdatePicker,
 } from './section';
+import {
+  disabled,
+  plain,
+  selected,
+} from './tabNavigation';
 
 const BlocksTree: Item = [
   {
@@ -64,8 +81,24 @@ const BlocksTree: Item = [
             payload: actionWithButtonPrimary,
           },
           {
+            label: 'secondary',
+            payload: actionWithButtonSecondary,
+          },
+          {
             label: 'danger',
             payload: actionWithButtonDanger,
+          },
+          {
+            label: 'warning',
+            payload: actionWithButtonWarning,
+          },
+          {
+            label: 'success',
+            payload: actionWithButtonSuccess,
+          },
+          {
+            label: 'secondary with variant',
+            payload: actionWithButtonSecondaryWithVariant,
           },
           {
             label: 'as Link',
@@ -96,8 +129,24 @@ const BlocksTree: Item = [
         payload: actionWithDatePicker,
       },
       {
+        label: 'time Picker',
+        payload: actionWithTimePicker,
+      },
+      {
         label: 'linear scale',
         payload: actionWithLinearScale,
+      },
+      {
+        label: 'toggle switch',
+        payload: actionWithToggleSwitch,
+      },
+      {
+        label: 'radio buttons',
+        payload: actionWithRadioButton,
+      },
+      {
+        label: 'checkbox',
+        payload: actionWithCheckbox,
       },
     ],
   },
@@ -135,6 +184,18 @@ const BlocksTree: Item = [
           {
             label: 'danger',
             payload: sectionWithButtonDanger,
+          },
+          {
+            label: 'warning',
+            payload: sectionWithButtonWarning,
+          },
+          {
+            label: 'success',
+            payload: sectionWithButtonSuccess,
+          },
+          {
+            label: 'secondary with variant',
+            payload: sectionWithButtonSecondaryWithVariant,
           },
           {
             label: 'as Link',
@@ -263,6 +324,32 @@ const BlocksTree: Item = [
       },
     ],
   },
+  {
+    label: 'callout',
+    branches: [
+      {
+        label: 'Plain',
+        payload: callout,
+      },
+    ],
+  },
+  {
+    label: 'TabNavigation',
+    branches: [
+      {
+        label: 'Plain',
+        payload: plain,
+      },
+      {
+        label: 'Disabled',
+        payload: disabled,
+      },
+      {
+        label: 'Selected',
+        payload: selected,
+      }
+    ],
+  }
 ];
 
 export default BlocksTree;

@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { cronJobs } from '@rocket.chat/cron';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings/server';
 import { checkVersionUpdate } from './functions/checkVersionUpdate';

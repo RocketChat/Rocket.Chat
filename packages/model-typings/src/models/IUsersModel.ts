@@ -1,4 +1,3 @@
-import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult } from 'mongodb';
 import type {
 	IUser,
 	IRole,
@@ -8,7 +7,9 @@ import type {
 	ILoginToken,
 	IPersonalAccessToken,
 	AtLeast,
+	ILivechatAgentStatus,
 } from '@rocket.chat/core-typings';
+import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -16,6 +17,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
 	findUsersInRoles<T = IUser>(roles: IRole['_id'][], scope?: null, options?: any): FindCursor<T>;
 	findPaginatedUsersInRoles<T = IUser>(roles: IRole['_id'][], options?: any): FindPaginated<FindCursor<T>>;
+	findOneByIdWithEmailAddress(uid: IUser['_id'], options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneByUsername<T = IUser>(username: string, options?: any): Promise<T>;
 	findOneAgentById<T = ILivechatAgent>(_id: string, options: any): Promise<T>;
 	findUsersInRolesWithQuery<T = IUser>(roles: IRole['_id'] | IRole['_id'][], query: any, options: any): FindCursor<T>;
@@ -92,7 +94,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	setLastRoutingTime(userId: any): Promise<number>;
 
-	setLivechatStatusIf(userId: any, status: any, conditions?: any, extraFields?: any): Promise<UpdateResult>;
+	setLivechatStatusIf(userId: string, status: ILivechatAgentStatus, conditions?: any, extraFields?: any): Promise<UpdateResult>;
 	getAgentAndAmountOngoingChats(
 		userId: any,
 	): Promise<{ agentId: string; username: string; lastAssignTime: Date; lastRoutingTime: Date; queueInfo: { chats: number } }>;
@@ -126,9 +128,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	openAgentsBusinessHoursByBusinessHourId(businessHourIds: any): any;
 
-	openAgentBusinessHoursByBusinessHourIdsAndAgentId(businessHourIds: any, agentId: any): any;
+	openAgentBusinessHoursByBusinessHourIdsAndAgentId(businessHourIds: string[], agentId: string): Promise<UpdateResult | Document>;
 
-	addBusinessHourByAgentIds(agentIds: any, businessHourId: any): any;
+	addBusinessHourByAgentIds(agentIds: string[], businessHourId: string): any;
+
+	makeAgentsWithinBusinessHourAvailable(agentIds?: string[]): Promise<UpdateResult | Document>;
 
 	removeBusinessHourByAgentIds(agentIds: any, businessHourId: any): any;
 
@@ -142,7 +146,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	setLivechatStatusActiveBasedOnBusinessHours(userId: any): any;
 
-	isAgentWithinBusinessHours(agentId: any): Promise<any>;
+	isAgentWithinBusinessHours(agentId: string): Promise<boolean>;
 
 	removeBusinessHoursFromAllUsers(): any;
 
@@ -253,7 +257,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countAgents(): Promise<number>;
 	getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<IUser>): Promise<{ agentId: string; username: string } | null>;
 	getNextBotAgent(ignoreAgentId?: string): Promise<{ agentId: string; username: string } | null>;
-	setLivechatStatus(userId: string, status: UserStatus): Promise<UpdateResult>;
+	setLivechatStatus(userId: string, status: ILivechatAgentStatus): Promise<UpdateResult>;
 	setLivechatData(userId: string, data?: Record<string, any>): Promise<UpdateResult>;
 	closeOffice(): Promise<void>;
 	openOffice(): Promise<void>;
@@ -322,7 +326,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	getSAMLByIdAndSAMLProvider(userId: string, samlProvider: string): Promise<IUser | null>;
 	findBySAMLNameIdOrIdpSession(samlNameId: string, idpSession: string): FindCursor<IUser>;
 	findBySAMLInResponseTo(inResponseTo: string): FindCursor<IUser>;
-	addImportIds(userId: string, importIds: Array<{ service: string; id: string }>): Promise<UpdateResult>;
+	addImportIds(userId: string, importIds: string | string[]): Promise<UpdateResult>;
 	updateInviteToken(userId: string, token: string): Promise<UpdateResult>;
 	updateLastLoginById(userId: string): Promise<UpdateResult>;
 	addPasswordToHistory(userId: string, password: string, passwordHistoryAmount: number): Promise<UpdateResult>;
@@ -374,4 +378,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countRoomMembers(roomId: string): Promise<number>;
 	countRemote(options?: FindOptions<IUser>): Promise<number>;
 	findOneByImportId(importId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
+	removeAgent(_id: string): Promise<UpdateResult>;
+	findAgentsWithDepartments<T = ILivechatAgent>(
+		role: string,
+		query: Filter<IUser>,
+		options: FindOptions<IUser>,
+	): Promise<{ sortedResults: (T & { departments: string[] })[]; totalCount: { total: number }[] }[]>;
+	countByRole(roleName: string): Promise<number>;
 }

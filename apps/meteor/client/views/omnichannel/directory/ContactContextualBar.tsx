@@ -13,7 +13,7 @@ import ContactInfo from './contacts/contextualBar/ContactInfo';
 import ContactNewEdit from './contacts/contextualBar/ContactNewEdit';
 
 const HEADER_OPTIONS = {
-	new: { icon: 'user', title: 'New_Contact' },
+	new: { icon: 'user', title: 'New_contact' },
 	info: { icon: 'user', title: 'Contact_Info' },
 	edit: { icon: 'pencil', title: 'Edit_Contact_Profile' },
 } as const;
@@ -38,7 +38,7 @@ const ContactContextualBar = () => {
 	const header = useMemo(() => HEADER_OPTIONS[bar] || HEADER_OPTIONS.info, [bar]);
 
 	return (
-		<Contextualbar className={'contextual-bar'}>
+		<Contextualbar className='contextual-bar'>
 			<ContextualbarHeader>
 				<ContextualbarIcon name={header.icon} />
 				<ContextualbarTitle>{t(header.title)}</ContextualbarTitle>

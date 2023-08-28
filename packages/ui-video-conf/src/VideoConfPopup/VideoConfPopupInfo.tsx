@@ -11,9 +11,9 @@ const VideoConfPopupInfo = ({ avatar, icon, children }: VideoConfPopupInfoProps)
 	<Box display='flex' alignItems='center'>
 		{avatar}
 		{(icon || children) && (
-			<Box display='flex' flexGrow={1} flexShrink={1} flexBasis='0%' alignItems='center' mis='x8' withTruncatedText>
+			<Box display='flex' flexGrow={1} flexShrink={1} flexBasis='0%' alignItems='center' mis={8} withTruncatedText>
 				{icon}
-				<Box mis='x8' fontScale='h4' withTruncatedText>
+				<Box mis={8} fontScale='h4' withTruncatedText>
 					{children}
 				</Box>
 			</Box>

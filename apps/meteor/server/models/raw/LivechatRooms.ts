@@ -1,4 +1,18 @@
 import type {
+	IOmnichannelRoom,
+	RocketChatRecordDeleted,
+	IOmnichannelRoomClosingInfo,
+	DeepWritable,
+	ISetting,
+	IMessage,
+	ILivechatPriority,
+	IOmnichannelServiceLevelAgreements,
+} from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
+import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import { Settings } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type {
 	Db,
 	Collection,
 	IndexDescription,
@@ -10,23 +24,10 @@ import type {
 	FindCursor,
 	UpdateResult,
 } from 'mongodb';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Settings } from '@rocket.chat/models';
-import type {
-	IOmnichannelRoom,
-	RocketChatRecordDeleted,
-	IOmnichannelRoomClosingInfo,
-	DeepWritable,
-	ISetting,
-	IMessage,
-	ILivechatPriority,
-	IOmnichannelServiceLevelAgreements,
-} from '@rocket.chat/core-typings';
-import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 
-import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { BaseRaw } from './BaseRaw';
 
 /**
  * @extends BaseRaw<ILivechatRoom>
@@ -179,7 +180,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		const params = [...firstParams, usersGroup, project, facet];
-		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred(), allowDiskUse: true }).toArray();
 	}
 
 	async findAllNumberOfAbandonedRooms({
@@ -1084,18 +1085,20 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findByVisitorId(visitorId: string, options: FindOptions<IOmnichannelRoom>) {
+	findByVisitorId(visitorId: string, options: FindOptions<IOmnichannelRoom>, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v._id': visitorId,
+			...extraQuery,
 		};
 		return this.find(query, options);
 	}
 
-	findPaginatedByVisitorId(visitorId: string, options: FindOptions<IOmnichannelRoom>) {
+	findPaginatedByVisitorId(visitorId: string, options: FindOptions<IOmnichannelRoom>, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v._id': visitorId,
+			...extraQuery,
 		};
 		return this.findPaginated(query, options);
 	}
@@ -1203,6 +1206,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		roomIds,
 		onhold,
 		options = {},
+		extraQuery = {},
 	}: {
 		agents?: string[];
 		roomName?: string;
@@ -1217,9 +1221,11 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		roomIds?: string[];
 		onhold?: boolean;
 		options?: { offset?: number; count?: number; sort?: { [k: string]: SortDirection } };
+		extraQuery?: Filter<IOmnichannelRoom>;
 	}) {
 		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
+			...extraQuery,
 			...(agents && {
 				$or: [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }],
 			}),
@@ -1407,8 +1413,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.updateOne({ _id: roomId }, { $set: { departmentId } });
 	}
 
-	findOpen() {
-		return this.find({ t: 'l', open: true });
+	findOpen(extraQuery = {}) {
+		return this.find({ t: 'l', open: true, ...extraQuery });
 	}
 
 	setAutoTransferOngoingById(roomId: string) {
@@ -1592,7 +1598,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					closedAt,
 					'metrics.chatDuration': chatDuration,
 					'metrics.serviceTimeDuration': serviceTimeDuration,
-					'v.status': 'offline',
+					'v.status': UserStatus.OFFLINE,
 					...(closer && { closer }),
 					...(closedBy && { closedBy }),
 					...(tags && { tags }),
@@ -1745,7 +1751,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
-	findByIds(ids: string[], fields: FindOptions<IOmnichannelRoom>['projection']) {
+	findByIds(ids: string[], fields: FindOptions<IOmnichannelRoom>['projection'], extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const options: FindOptions<IOmnichannelRoom> = {};
 
 		if (fields) {
@@ -1755,6 +1761,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			_id: { $in: ids },
+			...extraQuery,
 		};
 
 		return this.find(query, options);
@@ -1869,11 +1876,12 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return livechatCount.value;
 	}
 
-	findOpenByVisitorToken(visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}) {
+	findOpenByVisitorToken(visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
+			...extraQuery,
 		};
 
 		return this.find(query, options);
@@ -1906,31 +1914,44 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.findOne(query, options);
 	}
 
-	findOpenByVisitorTokenAndDepartmentId(visitorToken: string, departmentId: string, options: FindOptions<IOmnichannelRoom> = {}) {
+	findOpenByVisitorTokenAndDepartmentId(
+		visitorToken: string,
+		departmentId: string,
+		options: FindOptions<IOmnichannelRoom> = {},
+		extraQuery: Filter<IOmnichannelRoom> = {},
+	) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
 			departmentId,
+			...extraQuery,
 		};
 
 		return this.find(query, options);
 	}
 
-	findByVisitorToken(visitorToken: string) {
+	findByVisitorToken(visitorToken: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v.token': visitorToken,
+			...extraQuery,
 		};
 
 		return this.find(query);
 	}
 
-	findByVisitorIdAndAgentId(visitorId?: string, agentId?: string, options: FindOptions<IOmnichannelRoom> = {}) {
+	findByVisitorIdAndAgentId(
+		visitorId?: string,
+		agentId?: string,
+		options: FindOptions<IOmnichannelRoom> = {},
+		extraQuery: Filter<IOmnichannelRoom> = {},
+	) {
 		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			...(visitorId && { 'v._id': visitorId }),
 			...(agentId && { 'servedBy._id': agentId }),
+			...extraQuery,
 		};
 
 		return this.find(query, options);
@@ -1947,12 +1968,13 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.findOne(query, options);
 	}
 
-	findClosedRooms(departmentIds?: string[], options: FindOptions<IOmnichannelRoom> = {}) {
+	findClosedRooms(departmentIds?: string[], options: FindOptions<IOmnichannelRoom> = {}, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			open: { $exists: false },
 			closedAt: { $exists: true },
 			...(Array.isArray(departmentIds) && departmentIds.length > 0 && { departmentId: { $in: departmentIds } }),
+			...extraQuery,
 		};
 
 		return this.find(query, options);
@@ -2023,13 +2045,13 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					'metrics.response.ft': analyticsData.firstResponseTime,
 				}),
 			},
-			$inc: {
-				...(analyticsData && {
+			...(analyticsData && {
+				$inc: {
 					'metrics.response.total': 1,
 					'metrics.response.tt': analyticsData.responseTime as number,
 					'metrics.reaction.tt': analyticsData.reactionTime as number,
-				}),
-			},
+				},
+			}),
 		};
 
 		// livechat analytics : update last message timestamps
@@ -2071,7 +2093,12 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.col.countDocuments(query);
 	}
 
-	getAnalyticsMetricsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, { departmentId }: { departmentId?: string } = {}) {
+	getAnalyticsMetricsBetweenDate(
+		t: 'l',
+		date: { gte: Date; lt: Date },
+		{ departmentId }: { departmentId?: string } = {},
+		extraQuery: Document = {},
+	) {
 		const query: Filter<IOmnichannelRoom> = {
 			t,
 			ts: {
@@ -2079,6 +2106,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				$lt: new Date(date.lt), // ISODate, ts < date.lt
 			},
 			...(departmentId && departmentId !== 'undefined' && { departmentId }),
+			...extraQuery,
 		};
 
 		return this.find(query, {
@@ -2091,6 +2119,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		date: { gte: Date; lt: Date },
 		{ departmentId }: { departmentId?: string } = {},
 		extraQuery: Document = {},
+		extraMatchers: Document = {},
 	) {
 		return this.col.aggregate<Pick<IOmnichannelRoom, '_id' | 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs'>>(
 			[
@@ -2102,6 +2131,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 							$lt: new Date(date.lt), // ISODate, ts < date.lt
 						},
 						...(departmentId && departmentId !== 'undefined' && { departmentId }),
+						...extraMatchers,
 					},
 				},
 				{ $addFields: { roomId: '$_id' } },
@@ -2246,11 +2276,12 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		);
 	}
 
-	findOpenByAgent(userId: string) {
+	findOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
 			'servedBy._id': userId,
+			...extraQuery,
 		};
 
 		return this.find(query);
@@ -2306,7 +2337,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.updateOne(query, update);
 	}
 
-	updateVisitorStatus(token: string, status: 'online' | 'busy' | 'away' | 'offline') {
+	updateVisitorStatus(token: string, status: UserStatus) {
 		const query: Filter<IOmnichannelRoom> = {
 			'v.token': token,
 			'open': true,
@@ -2483,6 +2514,22 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	async updateDepartmentAncestorsById(_rid: string, _departmentAncestors?: string[]): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	countPrioritizedRooms(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	countRoomsWithSla(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	countRoomsWithPdfTranscriptRequested(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	countRoomsWithTranscriptSent(): Promise<number> {
 		throw new Error('Method not implemented.');
 	}
 }

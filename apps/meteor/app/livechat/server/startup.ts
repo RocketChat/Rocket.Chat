@@ -1,29 +1,29 @@
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
-import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { callbacks } from '../../../lib/callbacks';
+import { beforeLeaveRoomCallback } from '../../../lib/callbacks/beforeLeaveRoomCallback';
+import { i18n } from '../../../server/lib/i18n';
+import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { settings } from '../../settings/server';
-import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
-import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { Livechat } from './lib/Livechat';
 import { RoutingManager } from './lib/RoutingManager';
+import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 import './roomAccessValidator.internalService';
-import { i18n } from '../../../server/lib/i18n';
 
 Meteor.startup(async () => {
 	roomCoordinator.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
 
-	callbacks.add(
-		'beforeLeaveRoom',
-		function (user, room) {
+	beforeLeaveRoomCallback.add(
+		(user, room) => {
 			if (!isOmnichannelRoom(room)) {
-				return user;
+				return;
 			}
 			throw new Meteor.Error(
 				i18n.t('You_cant_leave_a_livechat_room_Please_use_the_close_button', {
@@ -37,7 +37,7 @@ Meteor.startup(async () => {
 
 	callbacks.add(
 		'beforeJoinRoom',
-		async function (user, room) {
+		async (user, room) => {
 			if (isOmnichannelRoom(room) && !(await hasPermissionAsync(user._id, 'view-l-room'))) {
 				throw new Meteor.Error('error-user-is-not-agent', 'User is not an Omnichannel Agent', {
 					method: 'beforeJoinRoom',
@@ -62,13 +62,17 @@ Meteor.startup(async () => {
 	await createDefaultBusinessHourIfNotExists();
 
 	settings.watch<boolean>('Livechat_enable_business_hours', async (value) => {
+		Livechat.logger.debug(`Changing business hour type to ${value}`);
 		if (value) {
-			return businessHourManager.startManager();
+			await businessHourManager.startManager();
+			Livechat.logger.debug(`Business hour manager started`);
+			return;
 		}
-		return businessHourManager.stopManager();
+		await businessHourManager.stopManager();
+		Livechat.logger.debug(`Business hour manager stopped`);
 	});
 
-	settings.watch<string>('Livechat_Routing_Method', function (value) {
+	settings.watch<string>('Livechat_Routing_Method', (value) => {
 		RoutingManager.setMethodNameAndStartQueue(value);
 	});
 

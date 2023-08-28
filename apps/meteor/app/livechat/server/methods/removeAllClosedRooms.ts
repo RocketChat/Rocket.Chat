@@ -1,8 +1,9 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import { LivechatRooms } from '@rocket.chat/models';
 
+import { callbacks } from '../../../../lib/callbacks';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../lib/LivechatTyped';
 
@@ -26,8 +27,9 @@ Meteor.methods<ServerMethods>({
 		// These are not debug logs since we want to know when the action is performed
 		Livechat.logger.info(`User ${Meteor.userId()} is removing all closed rooms`);
 
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		const promises: Promise<void>[] = [];
-		await LivechatRooms.findClosedRooms(departmentIds).forEach(({ _id }: IOmnichannelRoom) => {
+		await LivechatRooms.findClosedRooms(departmentIds, {}, extraQuery).forEach(({ _id }: IOmnichannelRoom) => {
 			promises.push(Livechat.removeRoom(_id));
 		});
 		await Promise.all(promises);

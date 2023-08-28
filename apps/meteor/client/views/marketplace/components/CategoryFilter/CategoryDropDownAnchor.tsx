@@ -14,14 +14,16 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 	const t = useTranslation();
 
 	return (
-		<Button
+		<Box
+			is={Button}
 			ref={ref}
 			onClick={onClick}
 			display='flex'
 			alignItems='center'
-			flexDirection='row'
-			flexGrow='1'
-			flexShrink='1'
+			justifyContent='space-between'
+			minWidth='x144'
+			flexGrow={1}
+			flexShrink={1}
 			borderColor={selectedCategoriesCount ? 'none' : 'light'}
 			borderWidth={selectedCategoriesCount ? 'none' : 'x1'}
 			{...(selectedCategoriesCount ? { primary: true } : { bg: 'surface-light' })}
@@ -29,13 +31,14 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 		>
 			{selectedCategoriesCount > 0 && (
 				<Box
-					mie='x6'
+					mie={6}
 					borderRadius='x32'
 					bg='light'
 					fontWeight={700}
 					fontSize='micro'
 					color='info'
-					pi='x6'
+					pi={6}
+					h='x40'
 					display='flex'
 					alignItems='center'
 					justifyContent='center'
@@ -43,13 +46,13 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 					{selectedCategoriesCount}
 				</Box>
 			)}
-			<Box is='span' display='flex' flexGrow={1} fontWeight={400} fontSize='p2b' color={selectedCategoriesCount ? 'white' : 'hint'}>
+			<Box is='span' display='flex' flexGrow={1} fontScale='p2' color={selectedCategoriesCount ? 'white' : 'hint'}>
 				{selectedCategoriesCount > 0 ? t('Categories') : t('All_categories')}
 			</Box>
-			<Box mi='x4' display='flex' alignItems='center' justifyContent='center'>
-				<Icon name='chevron-down' fontSize='x20' color={selectedCategoriesCount ? 'white' : 'hint'} />
+			<Box mi={4} display='flex' alignItems='center' justifyContent='center'>
+				<Icon name='chevron-down' size='x20' color={selectedCategoriesCount ? 'white' : 'hint'} />
 			</Box>
-		</Button>
+		</Box>
 	);
 });
 

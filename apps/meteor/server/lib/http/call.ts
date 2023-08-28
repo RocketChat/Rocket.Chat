@@ -1,6 +1,6 @@
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { HTTP } from 'meteor/http';
 import { URL, URLSearchParams } from 'meteor/url';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { truncate } from '../../../lib/utils/stringUtils';
 
@@ -117,7 +117,7 @@ function _call(httpMethod: string, url: string, options: HttpCallOptions, callba
 	const { headers: receivedHeaders } = options;
 
 	if (receivedHeaders) {
-		Object.keys(receivedHeaders).forEach(function (key) {
+		Object.keys(receivedHeaders).forEach((key) => {
 			headers[key] = receivedHeaders[key];
 		});
 	}

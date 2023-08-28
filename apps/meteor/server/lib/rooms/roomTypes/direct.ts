@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
 import type { IRoom, AtLeast } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
-import { roomCoordinator } from '../roomCoordinator';
 import { Federation } from '../../../services/federation/Federation';
+import { roomCoordinator } from '../roomCoordinator';
 
 const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
@@ -96,7 +96,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 
 		if (this.isGroupChat(room)) {
 			return {
-				title: this.roomName(room, userId),
+				title: await this.roomName(room, userId),
 				text: `${(useRealName && sender.name) || sender.username}: ${notificationMessage}`,
 			};
 		}
@@ -110,4 +110,4 @@ roomCoordinator.add(DirectMessageRoomType, {
 	includeInDashboard() {
 		return true;
 	},
-} as AtLeast<IRoomTypeServerDirectives, 'isGroupChat' | 'roomName'>);
+} satisfies AtLeast<IRoomTypeServerDirectives, 'isGroupChat' | 'roomName'>);

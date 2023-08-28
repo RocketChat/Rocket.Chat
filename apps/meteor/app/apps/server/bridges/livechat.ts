@@ -1,5 +1,4 @@
-import { Random } from '@rocket.chat/random';
-import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/LivechatBridge';
+import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
 import type {
 	ILivechatMessage,
 	IVisitor,
@@ -7,21 +6,23 @@ import type {
 	ILivechatTransferData,
 	IDepartment,
 } from '@rocket.chat/apps-engine/definition/livechat';
+import type { IMessage as IAppsEngineMesage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
+import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/LivechatBridge';
 import type { SelectedAgent } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { callbacks } from '../../../../lib/callbacks';
+import { deasyncPromise } from '../../../../server/deasync/deasync';
 import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
-import { deasyncPromise } from '../../../../server/deasync/deasync';
+import { settings } from '../../../settings/server';
 
 export class AppLivechatBridge extends LivechatBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}
@@ -89,7 +90,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		let agentRoom: SelectedAgent | undefined;
 		if (agent?.id) {
-			const user = await Users.getAgentInfo(agent.id);
+			const user = await Users.getAgentInfo(agent.id, settings.get('Livechat_show_agent_email'));
 			if (!user) {
 				throw new Error(`The agent with id "${agent.id}" was not found.`);
 			}
@@ -143,10 +144,12 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		let result;
 
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+
 		if (departmentId) {
-			result = await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId, {}).toArray();
+			result = await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId, {}, extraQuery).toArray();
 		} else {
-			result = await LivechatRooms.findOpenByVisitorToken(visitor.token, {}).toArray();
+			result = await LivechatRooms.findOpenByVisitorToken(visitor.token, {}, extraQuery).toArray();
 		}
 
 		return Promise.all((result as unknown as ILivechatRoom[]).map((room) => this.orch.getConverters()?.get('rooms').convertRoom(room)));
@@ -277,7 +280,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		return Promise.all((await LivechatDepartment.findEnabledWithAgents().toArray()).map(boundConverter));
 	}
 
-	protected async _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IMessage>> {
+	protected async _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IAppsEngineMesage>> {
 		this.orch.debugLog(`The App ${appId} is getting the transcript for livechat room ${roomId}.`);
 		const messageConverter = this.orch.getConverters()?.get('messages');
 
@@ -285,9 +288,9 @@ export class AppLivechatBridge extends LivechatBridge {
 			throw new Error('Could not get the message converter to process livechat room messages');
 		}
 
-		const boundMessageConverter = messageConverter.convertMessage.bind(messageConverter);
+		const livechatMessages = await Livechat.getRoomMessages({ rid: roomId });
 
-		return (await Livechat.getRoomMessages({ rid: roomId })).map(boundMessageConverter);
+		return Promise.all(livechatMessages.map((message) => messageConverter.convertMessage(message) as Promise<IAppsEngineMesage>));
 	}
 
 	protected async setCustomFields(
