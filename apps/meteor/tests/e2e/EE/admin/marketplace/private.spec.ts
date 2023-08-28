@@ -1,11 +1,13 @@
 import { expect, test } from '@playwright/test';
 
 import fixtures from '../../../fixtures/marketplace.json';
+import { Users } from '../../../fixtures/userStates';
 import locator from '../../../locators/marketplace.json';
 import { goToMarketplace, installPrivateApp, searchAppPrivate, unistallAppAPI } from '../../../support/marketplace/marketplace';
 
+test.use({ storageState: Users.admin.state });
+
 test.describe('Private Apps', () => {
-	test.use({ storageState: 'playwright/.auth/admin.json' });
 	test.beforeEach(async ({ page, request }) => {
 		await page.goto(`${process.env.URL}`);
 		await goToMarketplace(page);
@@ -37,7 +39,7 @@ test.describe('Private Apps', () => {
 		await page.getByTestId(locator.testId.menuSingleApp).click();
 		await page.getByText(locator.text.unistall).click();
 		await page.getByRole('button', { name: locator.button.yes }).click();
-		page.waitForSelector(locator.class.toast);
+		await page.waitForSelector(locator.class.toast);
 		await expect(page.locator(locator.class.toast).filter({ hasText: 'regression uninstalled' })).toBeVisible();
 		await page.getByRole('link', { name: locator.link.privateApp }).click();
 		await page.getByPlaceholder(locator.placeholder.searchPrivateApp).fill(locator.text.regression);

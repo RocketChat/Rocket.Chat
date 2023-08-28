@@ -1,10 +1,12 @@
 import { expect, test } from '@playwright/test';
 
+import { Users } from '../fixtures/userStates';
 import createChannel from '../locators/createChannel.json';
 import home from '../locators/home.json';
 import { deleteChannel } from '../support/channels/channel';
 
-test.use({ storageState: 'playwright/.auth/admin.json' });
+test.use({ storageState: Users.admin.state });
+
 test.beforeEach(async ({ page }) => {
 	await page.goto(`${process.env.URL}`);
 });

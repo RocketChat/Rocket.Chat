@@ -1,11 +1,12 @@
 import { expect, test } from '@playwright/test';
 
+import { Users } from '../fixtures/userStates';
 import createTeam from '../locators/createTeam.json';
 import home from '../locators/home.json';
 import { deleteTeam } from '../support/teams/team';
 
+test.use({ storageState: Users.admin.state });
 test.describe('Create Teams', () => {
-	test.use({ storageState: 'playwright/.auth/admin.json' });
 	test.beforeEach(async ({ page }) => {
 		await page.goto(`${process.env.URL}`);
 	});

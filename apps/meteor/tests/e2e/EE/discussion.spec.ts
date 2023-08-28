@@ -1,11 +1,12 @@
 import { expect, test } from '@playwright/test';
 
+import { Users } from '../fixtures/userStates';
 import createDiscussion from '../locators/createDiscussion.json';
 import home from '../locators/home.json';
 import { createChannelAPI, deleteChannel } from '../support/channels/channel';
 import { deleteDiscussionAPI } from '../support/discussions/discussion';
 
-test.use({ storageState: 'playwright/.auth/admin.json' });
+test.use({ storageState: Users.admin.state });
 
 test.beforeEach(async ({ page, request }) => {
 	await createChannelAPI(request, createDiscussion.names.channel);
