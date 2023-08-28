@@ -1,14 +1,15 @@
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../../lib/callbacks';
-import { settings } from '../../../../../app/settings/server';
-import { dispatchInquiryPosition } from '../lib/Helper';
-import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
-import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { online } from '../../../../../app/livechat/server/api/lib/livechat';
+import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
+import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
-import { cbLogger } from '../lib/logger';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
+import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
+import { dispatchInquiryPosition } from '../lib/Helper';
+import { cbLogger } from '../lib/logger';
 
 callbacks.add(
 	'livechat.beforeRouteChat',
@@ -16,7 +17,12 @@ callbacks.add(
 		// check here if department has fallback before queueing
 		if (inquiry?.department && !(await online(inquiry.department, true, true))) {
 			cbLogger.debug('No agents online on selected department. Inquiry will use fallback department');
-			const department = await LivechatDepartment.findOneById(inquiry.department);
+			const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(
+				inquiry.department,
+				{
+					projection: { fallbackForwardDepartment: 1 },
+				},
+			);
 
 			if (!department) {
 				cbLogger.debug('No department found. Skipping');

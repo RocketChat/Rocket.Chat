@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type {
 	IInquiry,
 	ILivechatAgent,
@@ -8,10 +8,11 @@ import type {
 	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
-import { getSettingValueById, updatePermission, updateSetting } from '../permissions.helper';
+import { getSettingValueById, restorePermissionToRoles, updateSetting } from '../permissions.helper';
 import { IUserCredentialsHeader, adminUsername } from '../user';
 import { getRandomVisitorToken } from './users';
 import { DummyResponse, sleep } from './utils';
+import { Response } from 'supertest';
 
 export const createLivechatRoom = async (visitorToken: string, extraRoomParams?: Record<string, string>): Promise<IOmnichannelRoom> => {
 	const urlParams = new URLSearchParams();
@@ -81,7 +82,7 @@ export const fetchInquiry = (roomId: string): Promise<IInquiry> => {
 	});
 };
 
-export const createDepartment = (agents?: { agentId: string }[], name?: string): Promise<ILivechatDepartment> => {
+export const createDepartment = (agents?: { agentId: string }[], name?: string, enabled = true): Promise<ILivechatDepartment> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/department'))
@@ -89,7 +90,7 @@ export const createDepartment = (agents?: { agentId: string }[], name?: string):
 			.send({
 				department: {
 					name: name || `Department ${Date.now()}`,
-					enabled: true,
+					enabled,
 					showOnOfflineForm: true,
 					showOnRegistration: true,
 					email: 'a@b.com',
@@ -101,22 +102,6 @@ export const createDepartment = (agents?: { agentId: string }[], name?: string):
 					return reject(err);
 				}
 				resolve(res.body.department);
-			});
-	});
-};
-
-export const deleteDepartment = (departmentId: string): Promise<unknown> => {
-	return new Promise((resolve, reject) => {
-		request
-			.delete(api(`livechat/department/${departmentId}`))
-			.set(credentials)
-			.send()
-			.expect(200)
-			.end((err: Error, res: DummyResponse<ILivechatAgent>) => {
-				if (err) {
-					return reject(err);
-				}
-				resolve(res.body);
 			});
 	});
 };
@@ -153,24 +138,22 @@ export const createManager = (overrideUsername?: string): Promise<ILivechatAgent
 			});
 	});
 
-export const makeAgentAvailable = async (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<void> => {
-	await updatePermission('view-l-room', ['livechat-agent', 'livechat-manager', 'admin']);
+export const makeAgentAvailable = async (overrideCredentials?: { 'X-Auth-Token': string | undefined; 'X-User-Id': string | undefined }): Promise<Response> => {
+	await restorePermissionToRoles('view-l-room');
 	await request
 		.post(api('users.setStatus'))
 		.set(overrideCredentials || credentials)
 		.send({
 			message: '',
 			status: 'online',
-		})
-		.expect(200);
+		});
 
-	await request
+	return request
 		.post(api('livechat/agent.status'))
 		.set(overrideCredentials || credentials)
 		.send({
 			status: 'available',
-		})
-		.expect(200);
+		});
 };
 
 export const makeAgentUnavailable = async (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<void> => {
@@ -262,7 +245,7 @@ export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMe
 };
 
 export const closeOmnichannelRoom = async (roomId: string, tags?: string[]): Promise<void> => {
-	await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId, ...tags && { tags } }).expect(200);
+	await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId, ...tags && { tags }, comment: faker.lorem.sentence() }).expect(200);
 };
 
 export const bulkCreateLivechatRooms = async (
@@ -319,3 +302,11 @@ export const startANewLivechatRoomAndTakeIt = async ({
 
 	return { room, visitor };
 };
+
+export const placeRoomOnHold = async (roomId: string): Promise<void> => {
+    await request
+        .post(api('livechat/room.onHold'))
+        .set(credentials)
+        .send({ roomId })
+        .expect(200);
+}

@@ -131,7 +131,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	async getMostRecentAverageChatDurationTime(
 		numberMostRecentChats: number,
-		department: string,
+		department?: string,
 	): Promise<{ props: { _id: IRoom['_id']; avgChatDuration: number } }> {
 		const aggregate = [
 			{
@@ -164,26 +164,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		types: Array<IRoom['t']>,
 		discussion = false,
 		teams = false,
-		showOnlyTeams = false,
 		options: FindOptions<IRoom> = {},
 	): FindPaginated<FindCursor<IRoom>> {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
-		const onlyTeamsQuery: Filter<IRoom> = showOnlyTeams ? { teamMain: { $exists: true } } : {};
-
-		const teamCondition: Filter<IRoom> = teams
-			? {}
-			: {
-					teamMain: {
-						$exists: false,
-					},
-			  };
-
-		const query: Filter<IRoom> = {
-			t: {
-				$in: types,
-			},
-			prid: { $exists: discussion },
+		const nameCondition: Filter<IRoom> = {
 			$or: [
 				{ name: nameRegex, federated: { $ne: true } },
 				{ fname: nameRegex },
@@ -192,71 +177,27 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 					usernames: nameRegex,
 				},
 			],
-			...teamCondition,
-			...onlyTeamsQuery,
 		};
-		return this.findPaginated(query, options);
-	}
-
-	findByTypes(
-		types: Array<IRoom['t']>,
-		discussion = false,
-		teams = false,
-		onlyTeams = false,
-		options: FindOptions<IRoom> = {},
-	): FindPaginated<FindCursor<IRoom>> {
-		const teamCondition = teams
-			? {}
-			: {
-					teamMain: {
-						$exists: false,
-					},
-			  };
-
-		const onlyTeamsCondition = onlyTeams ? { teamMain: { $exists: true } } : {};
 
 		const query: Filter<IRoom> = {
-			t: {
-				$in: types,
-			},
-			prid: { $exists: discussion },
-			...teamCondition,
-			...onlyTeamsCondition,
-		};
-		return this.findPaginated(query, options);
-	}
-
-	findByNameOrFnameContaining(
-		name: NonNullable<IRoom['name']>,
-		discussion = false,
-		teams = false,
-		onlyTeams = false,
-		options: FindOptions<IRoom> = {},
-	): FindPaginated<FindCursor<IRoom>> {
-		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
-
-		const teamCondition = teams
-			? {}
-			: {
-					teamMain: {
-						$exists: false,
-					},
-			  };
-
-		const onlyTeamsCondition = onlyTeams ? { $and: [{ teamMain: { $exists: true } }, { teamMain: true }] } : {};
-
-		const query: Filter<IRoom> = {
-			prid: { $exists: discussion },
-			$or: [
-				{ name: nameRegex, federated: { $ne: true } },
-				{ fname: nameRegex },
-				{
-					t: 'd',
-					usernames: nameRegex,
-				},
+			$and: [
+				name ? nameCondition : {},
+				types?.length || discussion || teams
+					? {
+							$or: [
+								{
+									t: {
+										$in: types,
+									},
+								},
+								...(discussion ? [{ prid: { $exists: true } }] : []),
+								...(teams ? [{ teamMain: { $exists: true } }] : []),
+							],
+					  }
+					: {},
 			],
-			...teamCondition,
-			...onlyTeamsCondition,
+			...(!discussion ? { prid: { $exists: false } } : {}),
+			...(!teams ? { teamMain: { $exists: false } } : {}),
 		};
 
 		return this.findPaginated(query, options);
@@ -1346,13 +1287,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	// 3
-	findByNameAndTypesNotInIds(
+	findByNameOrFNameAndTypesNotInIds(
 		name: IRoom['name'] | RegExp,
 		types: Array<IRoom['t']>,
 		ids: Array<IRoom['_id']>,
 		options: FindOptions<IRoom> = {},
 		includeFederatedRooms = false,
 	): FindCursor<IRoom> {
+		const nameCondition: Filter<IRoom> = {
+			$or: [{ name }, { fname: name }],
+		};
 		const query: Filter<IRoom> = {
 			_id: {
 				$nin: ids,
@@ -1386,9 +1330,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 				includeFederatedRooms
 					? {
-							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
+							$or: [
+								{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }, nameCondition] },
+								{ federated: true, fname: name },
+							],
 					  }
-					: { $or: [{ federated: { $exists: false } }, { federated: false }], name },
+					: { $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }, nameCondition] },
 			],
 		};
 
@@ -1503,7 +1450,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		const update: UpdateFilter<IRoom> = {
 			$addToSet: {
 				importIds: {
-					$each: importIds,
+					$each: ([] as string[]).concat(importIds),
 				},
 			},
 		};

@@ -1,17 +1,17 @@
 import { EventEmitter } from 'events';
 
-import { Apps } from '@rocket.chat/core-services';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import { Apps } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
+import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
+import type { ILicense } from '../definition/ILicense';
+import type { ILicenseTag } from '../definition/ILicenseTag';
 import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
-import type { ILicense } from '../definition/ILicense';
-import type { ILicenseTag } from '../definition/ILicenseTag';
 import { isUnderAppLimits } from './lib/isUnderAppLimits';
-import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -21,6 +21,7 @@ interface IValidLicense {
 }
 
 let maxGuestUsers = 0;
+let maxRoomsPerGuest = 0;
 let maxActiveUsers = 0;
 
 class LicenseClass {
@@ -192,6 +193,10 @@ class LicenseClass {
 				maxGuestUsers = license.maxGuestUsers;
 			}
 
+			if (license.maxRoomsPerGuest > maxRoomsPerGuest) {
+				maxRoomsPerGuest = license.maxRoomsPerGuest;
+			}
+
 			if (license.maxActiveUsers > maxActiveUsers) {
 				maxActiveUsers = license.maxActiveUsers;
 			}
@@ -218,12 +223,12 @@ class LicenseClass {
 		EnterpriseLicenses.emit('invalidate');
 	}
 
-	async canAddNewUser(): Promise<boolean> {
+	async canAddNewUser(userCount = 1): Promise<boolean> {
 		if (!maxActiveUsers) {
 			return true;
 		}
 
-		return maxActiveUsers > (await Users.getActiveLocalUserCount());
+		return maxActiveUsers > (await Users.getActiveLocalUserCount()) + userCount;
 	}
 
 	async canEnableApp(app: IAppStorageItem): Promise<boolean> {
@@ -323,6 +328,10 @@ export function getMaxGuestUsers(): number {
 	return maxGuestUsers;
 }
 
+export function getMaxRoomsPerGuest(): number {
+	return maxRoomsPerGuest;
+}
+
 export function getMaxActiveUsers(): number {
 	return maxActiveUsers;
 }
@@ -343,8 +352,8 @@ export function getAppsConfig(): NonNullable<ILicense['apps']> {
 	return License.getAppsConfig();
 }
 
-export async function canAddNewUser(): Promise<boolean> {
-	return License.canAddNewUser();
+export async function canAddNewUser(userCount = 1): Promise<boolean> {
+	return License.canAddNewUser(userCount);
 }
 
 export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {

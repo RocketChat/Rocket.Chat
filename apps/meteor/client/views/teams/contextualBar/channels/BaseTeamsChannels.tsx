@@ -84,10 +84,10 @@ const BaseTeamsChannels = ({
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 
-			<ContextualbarContent p='x12'>
-				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
+			<ContextualbarContent p={12}>
+				<Box display='flex' flexDirection='row' p={12} flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
-						<Margins inline='x4'>
+						<Margins inline={4}>
 							<TextInput
 								placeholder={t('Search')}
 								value={text}
@@ -95,13 +95,15 @@ const BaseTeamsChannels = ({
 								onChange={setText}
 								addon={<Icon name='magnifier' size='x20' />}
 							/>
-							<Select flexGrow={0} width='110px' onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
+							<Box w='x144'>
+								<Select onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
+							</Box>
 						</Margins>
 					</Box>
 				</Box>
 
 				{loading && (
-					<Box pi='x24' pb='x12'>
+					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
@@ -109,12 +111,12 @@ const BaseTeamsChannels = ({
 
 				{!loading && channels.length > 0 && (
 					<>
-						<Box pi='x18' pb='x12'>
+						<Box pi={18} pb={12}>
 							<Box is='span' color='hint' fontScale='p2'>
 								{t('Showing')}: {channels.length}
 							</Box>
 
-							<Box is='span' color='hint' fontScale='p2' mis='x8'>
+							<Box is='span' color='hint' fontScale='p2' mis={8}>
 								{t('Total')}: {total}
 							</Box>
 						</Box>

@@ -1,12 +1,12 @@
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { kitContext } from '@rocket.chat/fuselage-ui-kit';
+import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import type { ContextType, ReactElement, ReactEventHandler } from 'react';
 import React from 'react';
 
-import * as ActionManager from '../../../../app/ui-message/client/ActionManager';
+import { useUiKitActionManager } from '../../../hooks/useUiKitActionManager';
 import { detectEmoji } from '../../../lib/utils/detectEmoji';
 import ModalBlock from './ModalBlock';
 import type { ActionManagerState } from './hooks/useActionManagerState';
@@ -14,6 +14,7 @@ import { useActionManagerState } from './hooks/useActionManagerState';
 import { useValues } from './hooks/useValues';
 
 const UiKitModal = (props: ActionManagerState): ReactElement => {
+	const actionManager = useUiKitActionManager();
 	const state = useActionManagerState(props);
 
 	const { appId, viewId, mid: _mid, errors, view } = state;
@@ -37,7 +38,7 @@ const UiKitModal = (props: ActionManagerState): ReactElement => {
 	};
 
 	const debouncedBlockAction = useDebouncedCallback((actionId, appId, value, blockId, mid) => {
-		ActionManager.triggerBlockAction({
+		actionManager.triggerBlockAction({
 			container: {
 				type: UIKitIncomingInteractionContainerType.VIEW,
 				id: viewId,
@@ -51,13 +52,13 @@ const UiKitModal = (props: ActionManagerState): ReactElement => {
 	}, 700);
 
 	// TODO: this structure is atrociously wrong; we should revisit this
-	const context: ContextType<typeof kitContext> = {
+	const context: ContextType<typeof UiKitContext> = {
 		// @ts-expect-error Property 'mid' does not exist on type 'ActionParams'.
 		action: ({ actionId, appId, value, blockId, mid = _mid, dispatchActionConfig }) => {
 			if (Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes('on_character_entered')) {
 				debouncedBlockAction(actionId, appId, value, blockId, mid);
 			} else {
-				ActionManager.triggerBlockAction({
+				actionManager.triggerBlockAction({
 					container: {
 						type: UIKitIncomingInteractionContainerType.VIEW,
 						id: viewId,
@@ -86,7 +87,7 @@ const UiKitModal = (props: ActionManagerState): ReactElement => {
 
 	const handleSubmit = useMutableCallback((e) => {
 		prevent(e);
-		ActionManager.triggerSubmitView({
+		actionManager.triggerSubmitView({
 			viewId,
 			appId,
 			payload: {
@@ -101,7 +102,7 @@ const UiKitModal = (props: ActionManagerState): ReactElement => {
 
 	const handleCancel = useMutableCallback((e) => {
 		prevent(e);
-		ActionManager.triggerCancel({
+		actionManager.triggerCancel({
 			viewId,
 			appId,
 			view: {
@@ -113,7 +114,7 @@ const UiKitModal = (props: ActionManagerState): ReactElement => {
 	});
 
 	const handleClose = useMutableCallback(() => {
-		ActionManager.triggerCancel({
+		actionManager.triggerCancel({
 			viewId,
 			appId,
 			view: {
@@ -126,7 +127,7 @@ const UiKitModal = (props: ActionManagerState): ReactElement => {
 	});
 
 	return (
-		<kitContext.Provider value={context}>
+		<UiKitContext.Provider value={context}>
 			<MarkupInteractionContext.Provider
 				value={{
 					detectEmoji,
@@ -134,7 +135,7 @@ const UiKitModal = (props: ActionManagerState): ReactElement => {
 			>
 				<ModalBlock view={view} errors={errors} appId={appId} onSubmit={handleSubmit} onCancel={handleCancel} onClose={handleClose} />
 			</MarkupInteractionContext.Provider>
-		</kitContext.Provider>
+		</UiKitContext.Provider>
 	);
 };
 

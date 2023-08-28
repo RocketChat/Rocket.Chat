@@ -7,13 +7,14 @@ import { useTranslation } from 'react-i18next';
 
 import { getErrorMessage } from '../../lib/errorHandling';
 import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
+import { OldUrlRoomError } from '../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
 import RoomSkeleton from './RoomSkeleton';
 import { useOpenRoom } from './hooks/useOpenRoom';
 
 const RoomProvider = lazy(() => import('./providers/RoomProvider'));
 const RoomNotFound = lazy(() => import('./RoomNotFound'));
-const Room = lazy(() => import('./Room/Room'));
+const Room = lazy(() => import('./Room'));
 const RoomLayout = lazy(() => import('./layout/RoomLayout'));
 const NotAuthorizedPage = lazy(() => import('../notAuthorized/NotAuthorizedPage'));
 
@@ -29,9 +30,17 @@ const RoomOpener = ({ type, reference }: RoomOpenerProps): ReactElement => {
 	return (
 		<Suspense fallback={<RoomSkeleton />}>
 			{isLoading && <RoomSkeleton />}
-			{isSuccess && <RoomProvider rid={data.rid}>{<Room />}</RoomProvider>}
+			{isSuccess && (
+				<RoomProvider rid={data.rid}>
+					<Room />
+				</RoomProvider>
+			)}
 			{isError &&
 				(() => {
+					if (error instanceof OldUrlRoomError) {
+						return <RoomSkeleton />;
+					}
+
 					if (error instanceof RoomNotFoundError) {
 						return <RoomNotFound />;
 					}

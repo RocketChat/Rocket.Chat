@@ -1,5 +1,5 @@
-import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
@@ -250,5 +250,18 @@ export type AppsEndpoints = {
 		}) => {
 			app: App;
 		};
+	};
+
+	'/apps/ui.interaction/:id': {
+		POST: (params: {
+			type: string;
+			actionId: string;
+			rid: string;
+			mid: string;
+			viewId: string;
+			container: string;
+			triggerId: string;
+			payload: any;
+		}) => any;
 	};
 };

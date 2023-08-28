@@ -104,7 +104,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 
 	if (error || !user || !data?.user) {
 		return (
-			<ContextualbarContent pb='x16'>
+			<ContextualbarContent pb={16}>
 				<Callout type='danger'>{t('User_not_found')}</Callout>
 			</ContextualbarContent>
 		);
@@ -116,7 +116,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 			actions={
 				<AdminUserInfoActions
 					isActive={data?.user.active}
-					isAdmin={data?.user.roles.includes('admin')}
+					isAdmin={data?.user.roles?.includes('admin')}
 					userId={data?.user._id}
 					username={user.username}
 					isFederatedUser={isUserFederated(data?.user as unknown as IUser)}

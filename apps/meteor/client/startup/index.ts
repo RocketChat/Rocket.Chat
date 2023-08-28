@@ -6,7 +6,6 @@ import './afterLogoutCleanUp';
 import './appRoot';
 import './callbacks';
 import './collections';
-import './contextualBar';
 import './customOAuth';
 import './e2e';
 import './forceLogout';

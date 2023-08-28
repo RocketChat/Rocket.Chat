@@ -1,6 +1,6 @@
-import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 import { asyncLocalStorage } from '@rocket.chat/core-services';
 import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
+import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { EnterpriseCheck } from './lib/EnterpriseCheck';
 
@@ -76,6 +76,7 @@ export class NetworkBroker implements IBroker {
 			return;
 		}
 		void this.broker.destroyService(name);
+		instance.removeAllListeners();
 	}
 
 	createService(instance: IServiceClass, serviceDependencies?: string[]): void {
@@ -99,13 +100,12 @@ export class NetworkBroker implements IBroker {
 
 		// Allow services to depend on other services too
 		const dependencies = name !== 'license' ? { dependencies: ['license', ...(serviceDependencies || [])] } : {};
-
 		const service: ServiceSchema = {
 			name,
 			actions: {},
 			mixins: !instance.isInternal() ? [EnterpriseCheck] : [],
 			...dependencies,
-			events: instanceEvents.reduce<Record<string, (ctx: Context) => void>>((map, eventName) => {
+			events: instanceEvents.reduce<Record<string, (ctx: Context) => void>>((map, { eventName }) => {
 				map[eventName] = /^\$/.test(eventName)
 					? (ctx: Context): void => {
 							// internal events params are not an array

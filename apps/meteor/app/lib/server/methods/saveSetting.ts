@@ -1,22 +1,22 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
+import type { SettingValue } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { SettingValue } from '@rocket.chat/core-typings';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { getSettingPermissionId } from '../../../authorization/lib';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
+import { getSettingPermissionId } from '../../../authorization/lib';
+import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		saveSetting(_id: string, value: SettingValue, editor: string): Promise<boolean>;
+		saveSetting(_id: string, value: SettingValue, editor?: string): Promise<boolean>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	saveSetting: twoFactorRequired(async function (_id, value, editor) {
+	saveSetting: twoFactorRequired(async (_id, value, editor) => {
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {

@@ -63,8 +63,8 @@ export class OmnichannelSlaPolicies {
 		return this.page.locator('[placeholder="Search"]');
 	}
 
-	get btnNew() {
-		return this.page.locator('button.rcx-button >> text="New"');
+	headingButtonNew(name: string) {
+		return this.page.locator(`role=main >> role=button[name="${name}"]`).first();
 	}
 
 	get btnDelete() {
@@ -76,6 +76,6 @@ export class OmnichannelSlaPolicies {
 	}
 
 	get txtEmptyState() {
-		return this.page.locator('div >> text="No data found"');
+		return this.page.locator('div >> text="No results found"');
 	}
 }

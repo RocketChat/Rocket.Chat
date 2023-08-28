@@ -1,7 +1,8 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, Flex, TableRow, TableCell } from '@rocket.chat/fuselage';
+import { Box, Flex } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import { GenericTableRow, GenericTableCell } from '../../../../../components/GenericTable';
 import MarkdownText from '../../../../../components/MarkdownText';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -24,18 +25,18 @@ const UsersTableRow = ({
 	const formatDate = useFormatDate();
 
 	return (
-		<TableRow key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
-			<TableCell>
+		<GenericTableRow key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
+			<GenericTableCell>
 				<Flex.Container>
 					<Box>
 						<Flex.Item>{username && <UserAvatar size='x40' title={username} username={username} etag={avatarETag} />}</Flex.Item>
-						<Box withTruncatedText mi='x8'>
+						<Box withTruncatedText mi={8}>
 							<Box display='flex'>
 								<Box fontScale='p2m' withTruncatedText>
 									{name || username}
 									{nickname && ` (${nickname})`}
 								</Box>{' '}
-								<Box mi='x4' />{' '}
+								<Box mi={4} />{' '}
 								<Box fontScale='p2' color='hint' withTruncatedText>
 									{username}
 								</Box>
@@ -44,15 +45,17 @@ const UsersTableRow = ({
 						</Box>
 					</Box>
 				</Flex.Container>
-			</TableCell>
-			{mediaQuery && canViewFullOtherUserInfo && <TableCell withTruncatedText>{emails?.length && emails[0].address}</TableCell>}
-			{federation && <TableCell withTruncatedText>{domain}</TableCell>}
-			{mediaQuery && (
-				<TableCell fontScale='p2' color='hint' withTruncatedText>
-					{formatDate(createdAt)}
-				</TableCell>
+			</GenericTableCell>
+			{mediaQuery && canViewFullOtherUserInfo && (
+				<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
 			)}
-		</TableRow>
+			{federation && <GenericTableCell withTruncatedText>{domain}</GenericTableCell>}
+			{mediaQuery && (
+				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+					{formatDate(createdAt)}
+				</GenericTableCell>
+			)}
+		</GenericTableRow>
 	);
 };
 

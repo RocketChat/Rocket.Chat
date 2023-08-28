@@ -38,7 +38,7 @@ export class MentionsParser {
 	}
 
 	get userMentionRegex() {
-		return new RegExp(`(^|\\s|> ?)@(${this.pattern}(@(${this.pattern}))?(:([0-9a-zA-Z-_.]+))?)`, 'gm');
+		return new RegExp(`(^|\\s|>)@(${this.pattern}(@(${this.pattern}))?(:([0-9a-zA-Z-_.]+))?)`, 'gm');
 	}
 
 	get channelMentionRegex() {
@@ -97,7 +97,7 @@ export class MentionsParser {
 				!temp &&
 				!(
 					channels &&
-					channels.find(function (c) {
+					channels.find((c) => {
 						return c.dname ? c.dname === mention : c.name === mention;
 					})
 				)
@@ -107,7 +107,7 @@ export class MentionsParser {
 
 			const channel =
 				channels &&
-				channels.find(function ({ name, dname }) {
+				channels.find(({ name, dname }) => {
 					return dname ? dname === mention : name === mention;
 				});
 			const reference = channel ? channel._id : mention;

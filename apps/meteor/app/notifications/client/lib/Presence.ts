@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import type { StreamerEvents } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { Presence, STATUS_MAP } from '../../../../client/lib/presence';
 

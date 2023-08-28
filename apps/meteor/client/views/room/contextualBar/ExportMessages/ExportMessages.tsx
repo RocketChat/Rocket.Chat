@@ -1,8 +1,6 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, Select, FieldGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React, { useState, useMemo } from 'react';
 
 import {
@@ -12,16 +10,15 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 } from '../../../../components/Contextualbar';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useRoom } from '../../contexts/RoomContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import FileExport from './FileExport';
 import MailExportForm from './MailExportForm';
 
-type ExportMessagesProps = {
-	rid: IRoom['_id'];
-};
-const ExportMessages: FC<ExportMessagesProps> = ({ rid }) => {
+const ExportMessages = () => {
 	const t = useTranslation();
-	const close = useTabBarClose();
+	const room = useRoom();
+	const { closeTab } = useRoomToolbox();
 
 	const [type, setType] = useState('email');
 
@@ -38,19 +35,19 @@ const ExportMessages: FC<ExportMessagesProps> = ({ rid }) => {
 			<ContextualbarHeader>
 				<ContextualbarIcon name='mail' />
 				<ContextualbarTitle>{t('Export_Messages')}</ContextualbarTitle>
-				<ContextualbarClose onClick={close} />
+				<ContextualbarClose onClick={closeTab} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
 				<FieldGroup>
 					<Field>
 						<Field.Label>{t('Method')}</Field.Label>
 						<Field.Row>
-							<Select value={type} onChange={(value): void => setType(value)} placeholder={t('Type')} options={exportOptions} />
+							<Select value={type} onChange={setType} placeholder={t('Type')} options={exportOptions} />
 						</Field.Row>
 					</Field>
 				</FieldGroup>
-				{type && type === 'file' && <FileExport rid={rid} onCancel={close} />}
-				{type && type === 'email' && <MailExportForm rid={rid} onCancel={close} />}
+				{type && type === 'file' && <FileExport rid={room._id} onCancel={closeTab} />}
+				{type && type === 'email' && <MailExportForm rid={room._id} onCancel={closeTab} />}
 			</ContextualbarScrollableContent>
 		</>
 	);

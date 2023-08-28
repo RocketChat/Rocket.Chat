@@ -1,9 +1,18 @@
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 
+import { MatrixRoomJoinRules } from '../../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixRoomJoinRules';
+import type { RocketChatFileAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
+import type { RocketChatMessageAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Message';
+import type { RocketChatNotificationAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Notification';
+import type { RocketChatSettingsAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
+import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/definitions/FederatedRoomInternalRoles';
 import { FederatedUserEE } from '../../../domain/FederatedUser';
 import type { IFederationBridgeEE, IFederationPublicRoomsResult } from '../../../domain/IFederationBridge';
+import type { RocketChatQueueAdapterEE } from '../../../infrastructure/rocket-chat/adapters/Queue';
 import type { RocketChatRoomAdapterEE } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatUserAdapterEE } from '../../../infrastructure/rocket-chat/adapters/User';
+import { AbstractFederationApplicationServiceEE } from '../../AbstractFederationApplicationServiceEE';
+import type { FederationJoinExternalPublicRoomInputDto, FederationSearchPublicRoomsInputDto } from './input/RoomInputDto';
 import type {
 	FederationBeforeAddUserToARoomDto,
 	FederationOnRoomCreationDto,
@@ -12,15 +21,6 @@ import type {
 	FederationSetupRoomDto,
 	IFederationInviteeDto,
 } from './input/RoomSenderDto';
-import { AbstractFederationApplicationServiceEE } from '../../AbstractFederationApplicationServiceEE';
-import type { RocketChatFileAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
-import type { RocketChatSettingsAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
-import type { RocketChatMessageAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Message';
-import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/definitions/FederatedRoomInternalRoles';
-import type { FederationJoinExternalPublicRoomInputDto, FederationSearchPublicRoomsInputDto } from './input/RoomInputDto';
-import type { RocketChatNotificationAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Notification';
-import { MatrixRoomJoinRules } from '../../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixRoomJoinRules';
-import type { RocketChatQueueAdapterEE } from '../../../infrastructure/rocket-chat/adapters/Queue';
 
 export class FederationRoomServiceSender extends AbstractFederationApplicationServiceEE {
 	constructor(

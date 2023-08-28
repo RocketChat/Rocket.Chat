@@ -1,9 +1,10 @@
-import { LivechatDepartment, Users, Rooms } from '@rocket.chat/models';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatDepartment, Users, Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { sendMessage } from '../../../lib/server';
 import { i18n } from '../../../../server/lib/i18n';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { settings } from '../../../settings/server';
 
 callbacks.add(
@@ -17,9 +18,12 @@ callbacks.add(
 		let departmentName;
 		const { name, email, department, message: text, host } = data;
 		if (department && department !== '') {
-			const dept = await LivechatDepartment.findOneById(department, {
-				projection: { name: 1, offlineMessageChannelName: 1 },
-			});
+			const dept = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'name' | 'offlineMessageChannelName'>>(
+				department,
+				{
+					projection: { name: 1, offlineMessageChannelName: 1 },
+				},
+			);
 			departmentName = dept?.name;
 			if (dept?.offlineMessageChannelName) {
 				channelName = dept.offlineMessageChannelName;
@@ -30,7 +34,7 @@ callbacks.add(
 			return data;
 		}
 
-		const room: any = await Rooms.findOneByName(channelName, { projection: { t: 1, archived: 1 } });
+		const room = await Rooms.findOneByName(channelName, { projection: { t: 1, archived: 1 } });
 		if (!room || room.archived || (isOmnichannelRoom(room) && room.closedAt)) {
 			return data;
 		}

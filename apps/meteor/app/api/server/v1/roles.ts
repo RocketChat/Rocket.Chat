@@ -1,18 +1,18 @@
-import { Meteor } from 'meteor/meteor';
-import { check, Match } from 'meteor/check';
-import { isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
+import { api } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-services';
+import { isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
+import { check, Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { API } from '../api';
-import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
-import { settings } from '../../../settings/server/index';
-import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { getUserFromParams } from '../helpers/getUserFromParams';
+import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { settings } from '../../../settings/server/index';
+import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { getUserFromParams } from '../helpers/getUserFromParams';
 
 API.v1.addRoute(
 	'roles.list',
@@ -67,7 +67,7 @@ API.v1.addRoute(
 					return API.v1.failure('error-invalid-role-properties');
 				}
 
-				apiDeprecationLogger.warn(`Assigning roles by name is deprecated and will be removed on the next major release of Rocket.Chat`);
+				apiDeprecationLogger.parameter(this.request.route, 'roleName', '7.0.0', this.response);
 			}
 
 			const role = roleId ? await Roles.findOneById(roleId) : await Roles.findOneByIdOrName(roleName as string);
@@ -123,7 +123,14 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-roleId');
 				}
 
-				apiDeprecationLogger.warn(`Querying roles by name is deprecated and will be removed on the next major release of Rocket.Chat`);
+				apiDeprecationLogger.deprecatedParameterUsage(
+					this.request.route,
+					'role',
+					'7.0.0',
+					this.response,
+					({ parameter, endpoint, version }) =>
+						`Querying \`${parameter}\` by name is deprecated in ${endpoint} and will be removed on the removed on version ${version}`,
+				);
 			}
 
 			const { cursor, totalCount } = await getUsersInRolePaginated(roleData._id, roomId, {
@@ -198,7 +205,7 @@ API.v1.addRoute(
 					return API.v1.failure('error-invalid-role-properties');
 				}
 
-				apiDeprecationLogger.warn(`Unassigning roles by name is deprecated and will be removed on the next major release of Rocket.Chat`);
+				apiDeprecationLogger.parameter(this.request.route, 'roleName', '7.0.0', this.response);
 			}
 
 			const user = await Users.findOneByUsername(username);

@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import type { IUser } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { settings } from '../../../settings/server';
 import { RateLimiter } from '../lib';
 
 export const _setRealName = async function (userId: string, name: string, fullUser?: IUser): Promise<IUser | undefined> {

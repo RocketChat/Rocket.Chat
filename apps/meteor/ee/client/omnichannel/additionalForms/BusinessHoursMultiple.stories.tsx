@@ -12,7 +12,7 @@ export default {
 	},
 	decorators: [
 		(fn) => (
-			<Box maxWidth='x600' alignSelf='center' w='full' m='x24'>
+			<Box maxWidth='x600' alignSelf='center' w='full' m={24}>
 				{fn()}
 			</Box>
 		),
@@ -25,6 +25,6 @@ Default.args = {
 	departmentList: [
 		[1, 'Support'],
 		[2, 'Marketing'],
-		[3, <Skeleton width='x100' />],
+		[3, <Skeleton width='x100' key={3} />],
 	],
 } as any;

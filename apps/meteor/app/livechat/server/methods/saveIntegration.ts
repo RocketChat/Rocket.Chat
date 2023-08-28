@@ -2,8 +2,8 @@ import { Settings } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { trim } from '../../../../lib/utils/stringUtils';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -21,7 +21,7 @@ Meteor.methods<ServerMethods>({
 				method: 'livechat:saveIntegration',
 			});
 		}
-		methodDeprecationLogger.warn('livechat:saveIntegration is deprecated and will be removed on the next major release of Rocket.Chat');
+		methodDeprecationLogger.method('livechat:saveIntegration', '7.0.0');
 
 		if (typeof values.Livechat_webhookUrl !== 'undefined') {
 			await Settings.updateValueById('Livechat_webhookUrl', trim(values.Livechat_webhookUrl));

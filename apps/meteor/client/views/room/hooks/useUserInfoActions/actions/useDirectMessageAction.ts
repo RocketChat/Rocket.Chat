@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, usePermission, useRoute, useUserSubscription, useUserSubscriptionByName } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import type { Action } from '../../../../hooks/useActionSpread';
+import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
 const getShouldOpenDirectMessage = (
 	currentSubscription?: ISubscription,
@@ -16,7 +16,7 @@ const getShouldOpenDirectMessage = (
 	return (canOpenDm && directMessageIsNotAlreadyOpen) ?? false;
 };
 
-export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
+export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const usernameSubscription = useUserSubscriptionByName(user.username ?? '');
 	const currentSubscription = useUserSubscription(rid);
@@ -42,9 +42,10 @@ export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>, ri
 		() =>
 			shouldOpenDirectMessage
 				? {
-						label: t('Direct_Message'),
+						content: t('Direct_Message'),
 						icon: 'balloon' as const,
-						action: openDirectMessage,
+						onClick: openDirectMessage,
+						type: 'communication' as UserInfoActionType,
 				  }
 				: undefined,
 		[openDirectMessage, shouldOpenDirectMessage, t],

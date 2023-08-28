@@ -1,14 +1,15 @@
-import type { Db } from 'mongodb';
 import { Agenda } from '@rocket.chat/agenda';
-import { MongoInternals } from 'meteor/mongo';
-import { Meteor } from 'meteor/meteor';
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { MainLogger } from '@rocket.chat/logger';
 import { LivechatRooms, LivechatInquiry as LivechatInquiryRaw, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
+import type { Db } from 'mongodb';
 
-import { settings } from '../../../../../app/settings/server';
-import { Logger } from '../../../../../app/logger/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
+import { settings } from '../../../../../app/settings/server';
 import { i18n } from '../../../../../server/lib/i18n';
+import { schedulerLogger } from './logger';
 
 const SCHEDULER_NAME = 'omnichannel_queue_inactivity_monitor';
 
@@ -17,7 +18,7 @@ class OmnichannelQueueInactivityMonitorClass {
 
 	running: boolean;
 
-	logger: Logger;
+	logger: MainLogger;
 
 	_name: string;
 
@@ -33,7 +34,7 @@ class OmnichannelQueueInactivityMonitorClass {
 		this._db = MongoInternals.defaultRemoteCollectionDriver().mongo.db;
 		this.running = false;
 		this._name = 'Omnichannel-Queue-Inactivity-Monitor';
-		this.logger = new Logger('QueueInactivityMonitor');
+		this.logger = schedulerLogger.section(this._name);
 		this.scheduler = new Agenda({
 			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
 			db: { collection: SCHEDULER_NAME },

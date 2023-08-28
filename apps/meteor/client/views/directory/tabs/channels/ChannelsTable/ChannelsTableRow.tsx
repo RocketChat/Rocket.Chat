@@ -1,7 +1,8 @@
 import type { IRoom, ITeam } from '@rocket.chat/core-typings';
-import { Box, TableRow, TableCell, Avatar } from '@rocket.chat/fuselage';
+import { Box, Avatar } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import { GenericTableRow, GenericTableCell } from '../../../../../components/GenericTable';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { RoomIcon } from '../../../../../components/RoomIcon';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -20,14 +21,14 @@ const ChannelsTableRow = ({ onClick, room, mediaQuery }: ChannelsTableRowProps) 
 	const avatarUrl = roomCoordinator.getRoomDirectives(t).getAvatarPath(room);
 
 	return (
-		<TableRow key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>
-			<TableCell>
+		<GenericTableRow key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>
+			<GenericTableCell>
 				<Box display='flex'>
 					<Box flexGrow={0}>{avatarUrl && <Avatar size='x40' title={fname || name} url={avatarUrl} />}</Box>
-					<Box flexGrow={1} mi='x8' withTruncatedText>
+					<Box flexGrow={1} mi={8} withTruncatedText>
 						<Box display='flex' alignItems='center'>
 							<RoomIcon room={room} />
-							<Box fontScale='p2m' mi='x4'>
+							<Box fontScale='p2m' mi={4}>
 								{fname || name}
 							</Box>
 							<RoomTags room={room} />
@@ -35,26 +36,26 @@ const ChannelsTableRow = ({ onClick, room, mediaQuery }: ChannelsTableRowProps) 
 						{topic && <MarkdownText variant='inlineWithoutBreaks' fontScale='p2' color='hint' withTruncatedText content={topic} />}
 					</Box>
 				</Box>
-			</TableCell>
-			<TableCell fontScale='p2' color='hint' withTruncatedText>
+			</GenericTableCell>
+			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 				{usersCount}
-			</TableCell>
+			</GenericTableCell>
 			{mediaQuery && ts && (
-				<TableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 					{formatDate(ts)}
-				</TableCell>
+				</GenericTableCell>
 			)}
 			{mediaQuery && (
-				<TableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 					{lastMessage && formatDate(lastMessage.ts)}
-				</TableCell>
+				</GenericTableCell>
 			)}
 			{mediaQuery && (
-				<TableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 					{belongsTo}
-				</TableCell>
+				</GenericTableCell>
 			)}
-		</TableRow>
+		</GenericTableRow>
 	);
 };
 

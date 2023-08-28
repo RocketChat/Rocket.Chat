@@ -67,7 +67,7 @@ const UserInfo = ({
 	const userCustomFields = useUserCustomFields(customFields);
 
 	return (
-		<ContextualbarScrollableContent p='x24' {...props}>
+		<ContextualbarScrollableContent p={24} {...props}>
 			<InfoPanel>
 				{username && (
 					<InfoPanel.Avatar>
@@ -156,7 +156,7 @@ const UserInfo = ({
 								<Box is='a' withTruncatedText href={`mailto:${email}`}>
 									{email}
 								</Box>
-								<Margins inline='x4'>
+								<Margins inline={4}>
 									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
 								</Margins>
 							</InfoPanel.Text>

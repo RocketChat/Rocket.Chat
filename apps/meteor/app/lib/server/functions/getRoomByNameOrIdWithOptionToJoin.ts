@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { isObject } from '../../../../lib/utils/isObject';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
@@ -40,8 +40,9 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 			});
 		}
 
-		const rid = isObject(roomUser) ? [user._id, roomUser._id].sort().join('') : nameOrId;
-		room = await Rooms.findOneById(rid);
+		room = isObject(roomUser)
+			? await Rooms.findOneDirectRoomContainingAllUserIDs([...new Set([user._id, roomUser._id])])
+			: await Rooms.findOneById(nameOrId);
 
 		// If the room hasn't been found yet, let's try some more
 		if (!isObject(room)) {
@@ -55,7 +56,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 				}
 			}
 
-			await createDirectMessage([roomUser.username], user._id);
+			const { rid } = await createDirectMessage([roomUser.username], user._id);
 
 			return Rooms.findOneById(rid);
 		}

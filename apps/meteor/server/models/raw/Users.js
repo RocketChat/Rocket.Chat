@@ -1,5 +1,5 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Subscriptions } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -57,6 +57,7 @@ export class UsersRaw extends BaseRaw {
 			{ key: { statusConnection: 1 }, sparse: 1 },
 			{ key: { appId: 1 }, sparse: 1 },
 			{ key: { type: 1 } },
+			{ key: { federated: 1 }, sparse: true },
 			{ key: { federation: 1 }, sparse: true },
 			{ key: { isRemote: 1 }, sparse: true },
 			{ key: { 'services.saml.inResponseTo': 1 } },
@@ -66,6 +67,31 @@ export class UsersRaw extends BaseRaw {
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
 			{ key: { 'active': 1, 'services.totp.enabled': 1 }, sparse: true }, // used by statistics
+			{ key: { importIds: 1 }, sparse: true },
+			// Used for case insensitive queries
+			// @deprecated
+			// Should be converted to unique index later within a migration to prevent errors of duplicated
+			// records. Those errors does not helps to identify the duplicated value so we need to find a
+			// way to help the migration in case it happens.
+			{
+				key: { 'emails.address': 1 },
+				unique: false,
+				sparse: true,
+				name: 'emails.address_insensitive',
+				collation: { locale: 'en', strength: 2, caseLevel: false },
+			},
+			// Used for case insensitive queries
+			// @deprecated
+			// Should be converted to unique index later within a migration to prevent errors of duplicated
+			// records. Those errors does not helps to identify the duplicated value so we need to find a
+			// way to help the migration in case it happens.
+			{
+				key: { username: 1 },
+				unique: false,
+				sparse: true,
+				name: 'username_insensitive',
+				collation: { locale: 'en', strength: 2, caseLevel: false },
+			},
 		];
 	}
 
@@ -157,6 +183,52 @@ export class UsersRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
+	findAgentsWithDepartments(role, query, options) {
+		const roles = [].concat(role);
+
+		Object.assign(query, { roles: { $in: roles } });
+
+		const aggregate = [
+			{
+				$match: query,
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_livechat_department_agents',
+					localField: '_id',
+					foreignField: 'agentId',
+					as: 'departments',
+				},
+			},
+			{
+				$unwind: {
+					path: '$departments',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
+				$group: {
+					_id: '$_id',
+					username: { $first: '$username' },
+					status: { $first: '$status' },
+					statusLivechat: { $first: '$statusLivechat' },
+					name: { $first: '$name' },
+					emails: { $first: '$emails' },
+					livechat: { $first: '$livechat' },
+					departments: { $push: '$departments.departmentId' },
+				},
+			},
+			{
+				$facet: {
+					sortedResults: [{ $sort: options.sort }, { $skip: options.skip }, options.limit && { $limit: options.limit }],
+					totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+				},
+			},
+		];
+
+		return this.col.aggregate(aggregate).toArray();
+	}
+
 	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
@@ -192,7 +264,7 @@ export class UsersRaw extends BaseRaw {
 
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
-		const orStmt = (searchFields || []).reduce(function (acc, el) {
+		const orStmt = (searchFields || []).reduce((acc, el) => {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
@@ -235,7 +307,7 @@ export class UsersRaw extends BaseRaw {
 
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
-		const orStmt = (searchFields || []).reduce(function (acc, el) {
+		const orStmt = (searchFields || []).reduce((acc, el) => {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
@@ -304,14 +376,17 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findOneByUsernameIgnoringCase(username, options) {
-		if (typeof username === 'string') {
-			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
-		}
+	findOneByImportId(_id, options) {
+		return this.findOne({ importIds: _id }, options);
+	}
 
+	findOneByUsernameIgnoringCase(username, options) {
 		const query = { username };
 
-		return this.findOne(query, options);
+		return this.findOne(query, {
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+			...options,
+		});
 	}
 
 	findOneWithoutLDAPByUsernameIgnoringCase(username, options) {
@@ -838,9 +913,6 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: { $each: businessHourIds },
 			},
@@ -856,9 +928,6 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: { $each: businessHourIds },
 			},
@@ -874,11 +943,27 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: businessHourId,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	makeAgentsWithinBusinessHourAvailable(agentIds) {
+		const query = {
+			...(agentIds && { _id: { $in: agentIds } }),
+			roles: 'livechat-agent',
+			// Exclude away users
+			status: 'online',
+			// Exclude users that are already available, maybe due to other business hour
+			statusLivechat: 'not-available',
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
 			},
 		};
 
@@ -906,9 +991,6 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
 			$addToSet: {
 				openBusinessHours: businessHourId,
 			},
@@ -949,6 +1031,8 @@ export class UsersRaw extends BaseRaw {
 		const query = {
 			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
 			roles: 'livechat-agent',
+			// Avoid unnecessary updates
+			statusLivechat: 'available',
 			...(Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } }),
 		};
 
@@ -964,6 +1048,7 @@ export class UsersRaw extends BaseRaw {
 	setLivechatStatusActiveBasedOnBusinessHours(userId) {
 		const query = {
 			_id: userId,
+			statusDefault: { $ne: 'offline' },
 			openBusinessHours: {
 				$exists: true,
 				$not: { $size: 0 },
@@ -980,15 +1065,14 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	async isAgentWithinBusinessHours(agentId) {
-		return (
-			(await this.find({
-				_id: agentId,
-				openBusinessHours: {
-					$exists: true,
-					$not: { $size: 0 },
-				},
-			}).count()) > 0
-		);
+		const query = {
+			_id: agentId,
+			openBusinessHours: {
+				$exists: true,
+				$not: { $size: 0 },
+			},
+		};
+		return (await this.col.countDocuments(query)) > 0;
 	}
 
 	removeBusinessHoursFromAllUsers() {
@@ -1250,6 +1334,16 @@ export class UsersRaw extends BaseRaw {
 
 	findOneByResetToken(token, options) {
 		return this.findOne({ 'services.password.reset.token': token }, options);
+	}
+
+	findOneByIdWithEmailAddress(userId, options) {
+		return this.findOne(
+			{
+				_id: userId,
+				emails: { $exists: true, $ne: [] },
+			},
+			options,
+		);
 	}
 
 	setFederationAvatarUrlById(userId, federationAvatarUrl) {
@@ -1636,12 +1730,9 @@ export class UsersRaw extends BaseRaw {
 				customFields: 1,
 				status: 1,
 				livechat: 1,
+				...(showAgentEmail && { emails: 1 }),
 			},
 		};
-
-		if (showAgentEmail) {
-			options.fields.emails = 1;
-		}
 
 		return this.findOne(query, options);
 	}
@@ -1890,17 +1981,23 @@ export class UsersRaw extends BaseRaw {
 
 	findOneByEmailAddressAndServiceNameIgnoringCase(emailAddress, userId, serviceName, options) {
 		const query = {
-			'emails.address': new RegExp(`^${escapeRegExp(String(emailAddress).trim())}$`, 'i'),
+			'emails.address': String(emailAddress).trim(),
 			[`services.${serviceName}.id`]: userId,
 		};
 
-		return this.findOne(query, options);
+		return this.findOne(query, {
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+			...options,
+		});
 	}
 
 	findOneByEmailAddress(emailAddress, options) {
-		const query = { 'emails.address': String(emailAddress).trim().toLowerCase() };
+		const query = { 'emails.address': String(emailAddress).trim() };
 
-		return this.findOne(query, options);
+		return this.findOne(query, {
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+			...options,
+		});
 	}
 
 	findOneWithoutLDAPByEmailAddress(emailAddress, options) {
@@ -2820,9 +2917,17 @@ export class UsersRaw extends BaseRaw {
 	// here
 	getActiveLocalUserCount() {
 		return Promise.all([
-			this.col.countDocuments({ active: true }),
-			this.col.countDocuments({ federated: true }),
-			this.col.countDocuments({ isRemote: true }),
+			// Count all active users (fast based on index)
+			this.col.countDocuments({
+				active: true,
+			}),
+			// Count all active that are guests, apps or federated
+			// Fast based on indexes, usually based on guest index as is usually small
+			this.col.countDocuments({
+				active: true,
+				$or: [{ roles: ['guest'] }, { type: 'app' }, { federated: true }, { isRemote: true }],
+			}),
+			// Get all active and remove the guests, apps, federated, etc
 		]).then((results) => results.reduce((a, b) => a - b));
 	}
 
@@ -2874,5 +2979,25 @@ export class UsersRaw extends BaseRaw {
 
 	countRoomMembers(roomId) {
 		return this.col.countDocuments({ __rooms: roomId, active: true });
+	}
+
+	removeAgent(_id) {
+		const update = {
+			$set: {
+				operator: false,
+			},
+			$unset: {
+				livechat: 1,
+				statusLivechat: 1,
+				extension: 1,
+				openBusinessHours: 1,
+			},
+		};
+
+		return this.updateOne({ _id }, update);
+	}
+
+	countByRole(role) {
+		return this.col.countDocuments({ roles: role });
 	}
 }

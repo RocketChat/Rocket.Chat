@@ -1,10 +1,10 @@
 import { performance } from 'perf_hooks';
 
 import { format } from '@rocket.chat/log-format';
+import { getQueuedLogs, logEntries } from '@rocket.chat/logger';
 import EJSON from 'ejson';
 
 import notifications from '../../app/notifications/server/lib/Notifications';
-import { getQueuedLogs, logEntries } from '../lib/logger/logQueue';
 
 const processString = (string: string, date: Date): string => {
 	try {
