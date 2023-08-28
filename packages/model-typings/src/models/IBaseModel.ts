@@ -117,4 +117,6 @@ export interface IBaseModel<
 	): FindPaginated<FindCursor<WithId<TDeleted>>>;
 
 	watch(pipeline?: object[]): ChangeStream<T>;
+	countDocuments(query: Filter<T>): Promise<number>;
+	estimatedDocumentCount(): Promise<number>;
 }

@@ -10,11 +10,7 @@ type MessageListSkeletonProps = {
 
 const MessageListSkeleton = ({ messageCount = 2 }: MessageListSkeletonProps): ReactElement => {
 	const widths = useMemo(
-		() =>
-			Array.from(
-				{ length: messageCount },
-				() => `${availablePercentualWidths[Math.floor(Math.random() * availablePercentualWidths.length)]}%`,
-			),
+		() => Array.from({ length: messageCount }, (_, index) => `${availablePercentualWidths[index % availablePercentualWidths.length]}%`),
 		[messageCount],
 	);
 

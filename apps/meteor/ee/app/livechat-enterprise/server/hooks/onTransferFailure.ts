@@ -7,7 +7,16 @@ import { forwardRoomToDepartment } from '../../../../../app/livechat/server/lib/
 import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
-const onTransferFailure = async ({ room, guest, transferData }: { room: IRoom; guest: ILivechatVisitor; transferData: TransferData }) => {
+const onTransferFailure = async (
+	room: IRoom,
+	{
+		guest,
+		transferData,
+	}: {
+		guest: ILivechatVisitor;
+		transferData: TransferData;
+	},
+) => {
 	if (!isOmnichannelRoom(room)) {
 		return false;
 	}
@@ -19,9 +28,12 @@ const onTransferFailure = async ({ room, guest, transferData }: { room: IRoom; g
 		return false;
 	}
 
-	const department = (await LivechatDepartment.findOneById(departmentId, {
-		projection: { _id: 1, name: 1, fallbackForwardDepartment: 1 },
-	})) as Partial<ILivechatDepartment>;
+	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'name' | '_id' | 'fallbackForwardDepartment'>>(
+		departmentId,
+		{
+			projection: { _id: 1, name: 1, fallbackForwardDepartment: 1 },
+		},
+	);
 
 	if (!department?.fallbackForwardDepartment?.length) {
 		return false;
@@ -38,11 +50,20 @@ const onTransferFailure = async ({ room, guest, transferData }: { room: IRoom; g
 		return false;
 	}
 
+	const fallbackDepartmentDb = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'name'>>(
+		department.fallbackForwardDepartment,
+		{
+			projection: { name: 1, _id: 1 },
+		},
+	);
+
 	const transferDataFallback = {
 		...transferData,
 		prevDepartment: department.name,
 		departmentId: department.fallbackForwardDepartment,
-		department: fallbackDepartment,
+		...(fallbackDepartmentDb && {
+			department: fallbackDepartmentDb,
+		}),
 	};
 
 	const forwardSuccess = await forwardRoomToDepartment(room, guest, transferDataFallback);
