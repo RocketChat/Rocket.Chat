@@ -8,7 +8,7 @@ import { deleteChannel } from '../support/channels/channel';
 test.use({ storageState: Users.admin.state });
 
 test.beforeEach(async ({ page }) => {
-	await page.goto(`${process.env.URL}`);
+	await page.goto(`/home`);
 });
 test('Create a Private Channel', async ({ page }) => {
 	await page.locator(home.button.createNew).click();

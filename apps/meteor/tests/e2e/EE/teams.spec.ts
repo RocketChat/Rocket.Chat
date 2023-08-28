@@ -8,7 +8,7 @@ import { deleteTeam } from '../support/teams/team';
 test.use({ storageState: Users.admin.state });
 test.describe('Create Teams', () => {
 	test.beforeEach(async ({ page }) => {
-		await page.goto(`${process.env.URL}`);
+		await page.goto(`/home`);
 	});
 
 	test('Create a Team Private', async ({ page }) => {

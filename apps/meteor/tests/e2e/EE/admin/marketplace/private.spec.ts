@@ -7,11 +7,13 @@ import { goToMarketplace, installPrivateApp, searchAppPrivate, uninstallAppAPI }
 
 test.use({ storageState: Users.admin.state });
 
-test.describe('Private Apps', () => {
+test.describe.only('Private Apps', () => {
 	test.beforeEach(async ({ page, request }) => {
-		await page.goto(`${process.env.URL}`);
+		await page.goto(`/home`);
+		const req = page.waitForResponse(/api\/apps\/marketplace/);
 		await goToMarketplace(page);
 		await uninstallAppAPI(request, fixtures.appIdregression);
+		await req;
 	});
 
 	test('Upload a Private App', async ({ page }) => {

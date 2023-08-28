@@ -10,7 +10,7 @@ test.use({ storageState: Users.admin.state });
 
 test.beforeEach(async ({ page, request }) => {
 	await createChannelAPI(request, createDiscussion.names.channel);
-	await page.goto(`${process.env.URL}`);
+	await page.goto(`/home`);
 });
 
 test('Create a discussion', async ({ page }) => {
