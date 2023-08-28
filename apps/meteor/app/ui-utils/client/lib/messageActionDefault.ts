@@ -31,6 +31,7 @@ Meteor.startup(async () => {
 		label: 'Reply_in_direct_message',
 		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		role: 'link',
+		type: 'communication',
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			roomCoordinator.openRouteLink(
@@ -69,6 +70,7 @@ Meteor.startup(async () => {
 		icon: 'arrow-forward',
 		label: 'Share_Message',
 		context: ['message', 'message-mobile', 'threads'],
+		type: 'communication',
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const permalink = await getPermaLink(message._id);
@@ -84,7 +86,7 @@ Meteor.startup(async () => {
 			});
 		},
 		order: 0,
-		group: ['message', 'menu'],
+		group: 'message',
 	});
 
 	MessageAction.addButton({
@@ -112,15 +114,16 @@ Meteor.startup(async () => {
 			return true;
 		},
 		order: -2,
-		group: ['message', 'menu'],
+		group: 'message',
 	});
 
 	MessageAction.addButton({
 		id: 'permalink',
 		icon: 'permalink',
-		label: 'Get_link',
+		label: 'Copy_link',
 		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
+		type: 'duplication',
 		async action(_, props) {
 			try {
 				const { message = messageArgs(this).msg } = props;
@@ -134,16 +137,17 @@ Meteor.startup(async () => {
 		condition({ subscription }) {
 			return !!subscription;
 		},
-		order: 4,
+		order: 5,
 		group: 'menu',
 	});
 
 	MessageAction.addButton({
 		id: 'copy',
 		icon: 'copy',
-		label: 'Copy',
+		label: 'Copy_text',
 		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
+		type: 'duplication',
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const msgText = getMainMessageText(message).msg;
@@ -153,7 +157,7 @@ Meteor.startup(async () => {
 		condition({ subscription }) {
 			return !!subscription;
 		},
-		order: 5,
+		order: 6,
 		group: 'menu',
 	});
 
@@ -162,6 +166,7 @@ Meteor.startup(async () => {
 		icon: 'edit',
 		label: 'Edit',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
+		type: 'management',
 		async action(_, props) {
 			const { message = messageArgs(this).msg, chat } = props;
 			await chat?.messageEditing.editMessage(message);
@@ -195,7 +200,7 @@ Meteor.startup(async () => {
 			}
 			return true;
 		},
-		order: 6,
+		order: 8,
 		group: 'menu',
 	});
 
@@ -205,6 +210,7 @@ Meteor.startup(async () => {
 		label: 'Delete',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		color: 'alert',
+		type: 'management',
 		async action(this: unknown, _, { message = messageArgs(this).msg, chat }) {
 			await chat?.flows.requestMessageDeletion(message);
 		},
@@ -222,7 +228,7 @@ Meteor.startup(async () => {
 
 			return chat?.data.canDeleteMessage(message) ?? false;
 		},
-		order: 18,
+		order: 10,
 		group: 'menu',
 	});
 
@@ -232,6 +238,7 @@ Meteor.startup(async () => {
 		label: 'Report',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		color: 'alert',
+		type: 'management',
 		action(this: unknown, _, { message = messageArgs(this).msg }) {
 			imperativeModal.open({
 				component: ReportMessageModal,
@@ -249,7 +256,7 @@ Meteor.startup(async () => {
 
 			return Boolean(subscription);
 		},
-		order: 17,
+		order: 9,
 		group: 'menu',
 	});
 
@@ -258,6 +265,7 @@ Meteor.startup(async () => {
 		icon: 'emoji',
 		label: 'Reactions',
 		context: ['message', 'message-mobile', 'threads'],
+		type: 'interaction',
 		action(this: unknown, _, { message: { reactions = {} } = messageArgs(this).msg }) {
 			imperativeModal.open({
 				component: ReactionList,
@@ -267,7 +275,7 @@ Meteor.startup(async () => {
 		condition({ message: { reactions } }) {
 			return !!reactions;
 		},
-		order: 18,
+		order: 9,
 		group: 'menu',
 	});
 });

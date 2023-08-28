@@ -20,6 +20,7 @@ Meteor.startup(() => {
 			icon: 'info-circled',
 			label: 'Info',
 			context: ['starred', 'message', 'message-mobile', 'threads'],
+			type: 'duplication',
 			action(_, props) {
 				const { message = messageArgs(this).msg } = props;
 				imperativeModal.open({
