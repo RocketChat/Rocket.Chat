@@ -5,7 +5,6 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import webpack from 'webpack';
 import 'webpack-dev-server';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 // Helper to use absolute paths in the webpack config
 const _ = (p: string) => path.resolve(__dirname, p);
@@ -153,7 +152,6 @@ const config: webpack.MultiConfigurationFactory = (_env, args) => [
 				chunks: ['polyfills', 'vendor', 'bundle'],
 				chunksSortMode: 'manual',
 			}),
-			new BundleAnalyzerPlugin() as any,
 		],
 		devServer: {
 			hot: true,
