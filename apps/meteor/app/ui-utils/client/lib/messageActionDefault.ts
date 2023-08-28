@@ -166,16 +166,16 @@ Meteor.startup(async () => {
 			const { message = messageArgs(this).msg, chat } = props;
 			await chat?.messageEditing.editMessage(message);
 		},
-		condition({ message, subscription, settings, room }) {
+		condition({ message, subscription, settings, room, user }) {
 			if (subscription == null) {
 				return false;
 			}
 			if (isRoomFederated(room)) {
-				return message.u._id === Meteor.userId();
+				return message.u._id === user?._id;
 			}
 			const canEditMessage = hasAtLeastOnePermission('edit-message', message.rid);
 			const isEditAllowed = settings.Message_AllowEditing;
-			const editOwn = message.u && message.u._id === Meteor.userId();
+			const editOwn = message.u && message.u._id === user?._id;
 			if (!(canEditMessage || (isEditAllowed && editOwn))) {
 				return false;
 			}
@@ -208,12 +208,12 @@ Meteor.startup(async () => {
 		async action(this: unknown, _, { message = messageArgs(this).msg, chat }) {
 			await chat?.flows.requestMessageDeletion(message);
 		},
-		condition({ message, subscription, room, chat }) {
+		condition({ message, subscription, room, chat, user }) {
 			if (!subscription) {
 				return false;
 			}
 			if (isRoomFederated(room)) {
-				return message.u._id === Meteor.userId();
+				return message.u._id === user?._id;
 			}
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
@@ -241,11 +241,12 @@ Meteor.startup(async () => {
 				},
 			});
 		},
-		condition({ subscription, room, message }) {
+		condition({ subscription, room, message, user }) {
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
-			if (isLivechatRoom || message.u._id === Meteor.userId()) {
+			if (isLivechatRoom || message.u._id === user?._id) {
 				return false;
 			}
+
 			return Boolean(subscription);
 		},
 		order: 17,
