@@ -16,7 +16,7 @@
 		"jest-environment-jsdom": "~29.6.1",
 		"react-dom": "^18.2.0",
 		"ts-jest": "~29.0.5",
-		"typescript": "~5.1.6"
+		"typescript": "~5.2.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
