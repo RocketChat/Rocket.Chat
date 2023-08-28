@@ -15,9 +15,6 @@ const afterRemoveDepartment = async (options: { department: ILivechatDepartmentR
 
 	cbLogger.debug(`Removing department from forward list: ${department._id}`);
 	await LivechatDepartment.removeDepartmentFromForwardListById(department._id);
-	cbLogger.debug(`Removed department from forward list: ${department._id}`);
-
-	cbLogger.debug(`Post-department-removal actions completed in EE: ${department._id}`);
 
 	return options;
 };

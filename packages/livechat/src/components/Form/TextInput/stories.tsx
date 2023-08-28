@@ -13,8 +13,6 @@ export default {
 		placeholder: 'Placeholder',
 		disabled: false,
 		small: false,
-		multiline: false,
-		rows: 1,
 		error: false,
 		onInput: action('input'),
 	},
@@ -51,13 +49,6 @@ export const Small = Template.bind({});
 Small.storyName = 'small';
 Small.args = {
 	small: true,
-};
-
-export const Multiline = Template.bind({});
-Multiline.storyName = 'multiline';
-Multiline.args = {
-	multiline: true,
-	rows: 3,
 };
 
 export const WithError = Template.bind({});

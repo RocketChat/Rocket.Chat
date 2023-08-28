@@ -8,7 +8,7 @@ export class HomeFlextabNotificationPreferences {
 	}
 
 	get btnSave(): Locator {
-		return this.page.locator('//aside//button[contains(text(), "Save")]');
+		return this.page.locator('role=button[name="Save"]');
 	}
 
 	getPreferenceByDevice(device: string): Locator {

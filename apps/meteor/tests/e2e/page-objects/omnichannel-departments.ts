@@ -21,8 +21,8 @@ export class OmnichannelDepartments {
 		await this.page.waitForTimeout(500);
 	}
 
-	get btnNew() {
-		return this.page.locator('button.rcx-button >> text="Create department"');
+	headingButtonNew(name: string) {
+		return this.page.locator(`role=main >> role=button[name="${name}"]`).first();
 	}
 
 	get btnEnabled() {
@@ -62,11 +62,11 @@ export class OmnichannelDepartments {
 	}
 
 	get btnSave() {
-		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Save"');
+		return this.page.locator('role=button[name="Save"]');
 	}
 
 	get btnBack() {
-		return this.page.locator('button.rcx-button >> text=" Back"');
+		return this.page.locator('role=button[name="Back"]');
 	}
 
 	get allDepartmentsTab() {
