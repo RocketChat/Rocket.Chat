@@ -2043,4 +2043,58 @@ describe('LIVECHAT - rooms', function () {
 			expect(unread).to.equal(totalMessagesSent);
 		});
 	});
+
+	describe('livechat/transcript/:rid', () => {
+		it('should fail if user is not logged in', async () => {
+			await request.delete(api('livechat/transcript/rid')).expect(401);
+		});
+		it('should fail if user doesnt have send-omnichannel-chat-transcript permission', async () => {
+			await updatePermission('send-omnichannel-chat-transcript', []);
+			await request.delete(api('livechat/transcript/rid')).set(credentials).expect(403);
+		});
+		it('should fail if :rid is not a valid room id', async () => {
+			await updatePermission('send-omnichannel-chat-transcript', ['admin']);
+			await request.delete(api('livechat/transcript/rid')).set(credentials).expect(400);
+		});
+		it('should fail if room is closed', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(_id);
+			await request
+				.delete(api(`livechat/transcript/${_id}`))
+				.set(credentials)
+				.expect(400);
+		});
+		it('should fail if room doesnt have a transcript request active', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			await request
+				.delete(api(`livechat/transcript/${_id}`))
+				.set(credentials)
+				.expect(400);
+		});
+		it('should return OK if all conditions are met', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			// First, request transcript with livechat:requestTranscript method
+			await request
+				.post(methodCall('livechat:requestTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:requestTranscript',
+						params: [_id, 'test@test.com', 'Transcript of your omnichannel conversation'],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			// Then, delete the transcript
+			await request
+				.delete(api(`livechat/transcript/${_id}`))
+				.set(credentials)
+				.expect(200);
+		});
+	});
 });
