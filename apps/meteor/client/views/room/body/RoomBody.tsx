@@ -15,7 +15,7 @@ import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from '
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { ChatMessage, RoomRoles } from '../../../../app/models/client';
-import { readMessage, RoomHistoryManager } from '../../../../app/ui-utils/client';
+import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { isAtBottom } from '../../../../app/ui/client/views/app/lib/scrolling';
 import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
@@ -200,9 +200,9 @@ const RoomBody = (): ReactElement => {
 	}, [room._id, unread?.since, setUnreadCount]);
 
 	const handleMarkAsReadButtonClick = useCallback(() => {
-		readMessage.readNow(room._id);
+		chat.readStateManager.markAsRead();
 		setUnreadCount(0);
-	}, [room._id, setUnreadCount]);
+	}, [chat.readStateManager, setUnreadCount]);
 
 	const handleUploadProgressClose = useCallback(
 		(id: Upload['id']) => {
@@ -264,9 +264,9 @@ const RoomBody = (): ReactElement => {
 	const debouncedReadMessageRead = useMemo(
 		() =>
 			withDebouncing({ wait: 500 })(() => {
-				readMessage.read(room._id);
+				chat.readStateManager.attemptMarkAsRead();
 			}),
-		[room._id],
+		[chat.readStateManager],
 	);
 
 	useEffect(
@@ -278,9 +278,6 @@ const RoomBody = (): ReactElement => {
 				}
 
 				debouncedReadMessageRead();
-				if (subscribed && (subscription?.alert || subscription?.unread)) {
-					readMessage.refreshUnreadMark(room._id);
-				}
 			}),
 		[debouncedReadMessageRead, room._id, router, subscribed, subscription?.alert, subscription?.unread],
 	);
@@ -303,7 +300,6 @@ const RoomBody = (): ReactElement => {
 		if (!unread?.count) {
 			return debouncedReadMessageRead();
 		}
-		readMessage.refreshUnreadMark(room._id);
 	}, [debouncedReadMessageRead, room._id, unread?.count]);
 
 	useEffect(() => {
@@ -636,6 +632,8 @@ const RoomBody = (): ReactElement => {
 									onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 									onNavigateToNextMessage={handleNavigateToNextMessage}
 									onUploadFiles={handleUploadFiles}
+									// TODO: send previewUrls param
+									// previewUrls={}
 								/>
 							</RoomComposer>
 						</div>
