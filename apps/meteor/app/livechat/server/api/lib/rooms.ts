@@ -21,12 +21,12 @@ export async function findRooms({
 	departmentId?: string;
 	open?: boolean;
 	createdAt?: {
-		start?: string | undefined;
-		end?: string | undefined;
+		start?: Date | undefined;
+		end?: Date | undefined;
 	};
 	closedAt?: {
-		start?: string | undefined;
-		end?: string | undefined;
+		start?: Date | undefined;
+		end?: Date | undefined;
 	};
 	tags?: Array<string>;
 	customFields?: Record<string, string>;

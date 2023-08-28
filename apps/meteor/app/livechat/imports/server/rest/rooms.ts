@@ -1,23 +1,45 @@
 import { LivechatRooms } from '@rocket.chat/models';
 import { isGETLivechatRoomsParams } from '@rocket.chat/rest-typings';
+import moment from 'moment';
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { findRooms } from '../../../server/api/lib/rooms';
 
-const validateDateParams = (property: string, date?: string) => {
-	let parsedDate: { start?: string; end?: string } | undefined = undefined;
+const validateDateParams = (property: string, utcOffset?: number, date?: string) => {
+	let parsedDateStr: { start?: string; end?: string } | undefined = undefined;
 	if (date) {
-		parsedDate = JSON.parse(date) as { start?: string; end?: string };
+		parsedDateStr = JSON.parse(date) as { start?: string; end?: string };
 	}
 
-	if (parsedDate?.start && isNaN(Date.parse(parsedDate.start))) {
+	if (parsedDateStr?.start && isNaN(Date.parse(parsedDateStr.start))) {
 		throw new Error(`The "${property}.start" query parameter must be a valid date.`);
 	}
-	if (parsedDate?.end && isNaN(Date.parse(parsedDate.end))) {
+	if (parsedDateStr?.end && isNaN(Date.parse(parsedDateStr.end))) {
 		throw new Error(`The "${property}.end" query parameter must be a valid date.`);
 	}
+
+	if (!parsedDateStr?.start && !parsedDateStr?.end) {
+		return undefined;
+	}
+
+	const parsedDate: { start?: Date; end?: Date } = {};
+	if (parsedDateStr?.start) {
+		const start = moment(parsedDateStr.start);
+		if (utcOffset !== undefined) {
+			start.utcOffset(utcOffset, true);
+		}
+		parsedDate.start = start.toDate();
+	}
+	if (parsedDateStr?.end) {
+		const end = moment(parsedDateStr.end);
+		if (utcOffset !== undefined) {
+			end.utcOffset(utcOffset, true);
+		}
+		parsedDate.end = end.toDate();
+	}
+
 	return parsedDate;
 };
 
@@ -33,8 +55,8 @@ API.v1.addRoute(
 			const { agents, departmentId, open, tags, roomName, onhold } = this.queryParams;
 			const { createdAt, customFields, closedAt } = this.queryParams;
 
-			const createdAtParam = validateDateParams('createdAt', createdAt);
-			const closedAtParam = validateDateParams('closedAt', closedAt);
+			const createdAtParam = validateDateParams('createdAt', this.user.utcOffset, createdAt);
+			const closedAtParam = validateDateParams('closedAt', this.user.utcOffset, closedAt);
 
 			const hasAdminAccess = await hasPermissionAsync(this.userId, 'view-livechat-rooms');
 			const hasAgentAccess =
