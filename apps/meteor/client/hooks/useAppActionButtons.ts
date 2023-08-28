@@ -133,6 +133,8 @@ export const useMessageActionAppsActionButtons = (context?: MessageActionContext
 						icon: undefined as any,
 						id: getIdForActionButton(action),
 						label: Utilities.getI18nKeyForApp(action.labelI18n, action.appId),
+						order: 7,
+						type: 'apps',
 						action: (_, params) => {
 							void actionManager.triggerActionButtonAction({
 								rid: params.message.rid,
