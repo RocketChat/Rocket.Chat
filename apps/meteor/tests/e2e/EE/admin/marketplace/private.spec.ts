@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 import fixtures from '../../../fixtures/marketplace.json';
 import { Users } from '../../../fixtures/userStates';
 import locator from '../../../locators/marketplace.json';
-import { goToMarketplace, installPrivateApp, searchAppPrivate, unistallAppAPI } from '../../../support/marketplace/marketplace';
+import { goToMarketplace, installPrivateApp, searchAppPrivate, uninstallAppAPI } from '../../../support/marketplace/marketplace';
 
 test.use({ storageState: Users.admin.state });
 
@@ -11,7 +11,7 @@ test.describe('Private Apps', () => {
 	test.beforeEach(async ({ page, request }) => {
 		await page.goto(`${process.env.URL}`);
 		await goToMarketplace(page);
-		await unistallAppAPI(request, fixtures.appIdregression);
+		await uninstallAppAPI(request, fixtures.appIdregression);
 	});
 
 	test('Upload a Private App', async ({ page }) => {
@@ -24,7 +24,7 @@ test.describe('Private Apps', () => {
 		await installPrivateApp(page, fixtures.pathregression);
 		await searchAppPrivate(page, locator.text.regression);
 		await page.getByTestId(locator.testId.menuSingleApp).click();
-		await page.getByText(locator.text.unistall).click();
+		await page.getByText(locator.text.uninstall).click();
 		await page.getByRole('button', { name: locator.button.yes }).click();
 		await expect(page.locator(locator.class.toast).filter({ hasText: 'regression uninstalled' })).toBeVisible();
 		await page.getByRole('link', { name: locator.link.privateApp }).click();
@@ -37,7 +37,7 @@ test.describe('Private Apps', () => {
 		await searchAppPrivate(page, locator.text.regression);
 		await page.getByRole('link').filter({ hasText: locator.text.regression }).click();
 		await page.getByTestId(locator.testId.menuSingleApp).click();
-		await page.getByText(locator.text.unistall).click();
+		await page.getByText(locator.text.uninstall).click();
 		await page.getByRole('button', { name: locator.button.yes }).click();
 		await page.waitForSelector(locator.class.toast);
 		await expect(page.locator(locator.class.toast).filter({ hasText: 'regression uninstalled' })).toBeVisible();

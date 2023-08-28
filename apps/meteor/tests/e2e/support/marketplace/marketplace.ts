@@ -27,11 +27,11 @@ export async function searchAppPrivate(page: Page, appName: any) {
 	await app.waitFor();
 }
 
-export async function unistallAppAPI(request: APIRequestContext, app: string) {
+export async function uninstallAppAPI(request: APIRequestContext, app: string) {
 	await request.delete(`/api/apps/${app}`, {
 		headers: {
 			'X-Auth-Token': `${process.env.API_TOKEN}`,
-			'X-User-Id': `${process.env.USERID}`,
+			'X-User-Id': `${process.env.USER_ID}`,
 		},
 	});
 }
