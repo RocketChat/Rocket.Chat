@@ -73,6 +73,15 @@ export const useQuickActions = (): {
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
 	const requestTranscript = useEndpoint('POST', '/v1/livechat/transcript/:rid', { rid });
+	const verifyUser = useEndpoint('POST', '/v1/livechat/visitor.verify');
+
+	const handleVerifyUser = useCallback(async () => {
+		try {
+			await verifyUser({ rid });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	}, [dispatchToastMessage, rid, verifyUser]);
 
 	const handleRequestTranscript = useCallback(
 		async (email: string, subject: string) => {
@@ -290,6 +299,9 @@ export const useQuickActions = (): {
 				);
 				setOnHoldModalActive(true);
 				break;
+			case QuickActionsEnum.VerifyUser:
+				handleVerifyUser();
+				break;
 			default:
 				break;
 		}
@@ -302,6 +314,7 @@ export const useQuickActions = (): {
 	const hasManagerRole = useRole('livechat-manager');
 
 	const roomOpen = room?.open && (room.u?._id === uid || hasManagerRole) && room?.lastMessage?.t !== 'livechat-close';
+	const isVisitorUnVerified = room?.verificationStatus === 'unVerified';
 	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue && room?.u !== undefined;
 	const canForwardGuest = usePermission('transfer-livechat-guest');
 	const canSendTranscriptEmail = usePermission('send-omnichannel-chat-transcript');
@@ -310,6 +323,7 @@ export const useQuickActions = (): {
 	const canCloseRoom = usePermission('close-livechat-room');
 	const canCloseOthersRoom = usePermission('close-others-livechat-room');
 	const canPlaceChatOnHold = Boolean(!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed);
+	const canVerifyUser = usePermission('initiate-livechat-verification-process');
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
@@ -327,6 +341,8 @@ export const useQuickActions = (): {
 				return !!roomOpen && (canCloseRoom || canCloseOthersRoom);
 			case QuickActionsEnum.OnHoldChat:
 				return !!roomOpen && canPlaceChatOnHold;
+			case QuickActionsEnum.VerifyUser:
+				return !!roomOpen && canVerifyUser && isVisitorUnVerified;
 			default:
 				break;
 		}

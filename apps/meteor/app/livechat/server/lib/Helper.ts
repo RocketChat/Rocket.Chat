@@ -14,7 +14,13 @@ import type {
 	ILivechatAgent,
 	ILivechatDepartment,
 } from '@rocket.chat/core-typings';
-import { LivechatInquiryStatus, OmnichannelSourceType, DEFAULT_SLA_CONFIG, UserStatus } from '@rocket.chat/core-typings';
+import {
+	LivechatInquiryStatus,
+	OmnichannelSourceType,
+	DEFAULT_SLA_CONFIG,
+	UserStatus,
+	RoomVerificationState,
+} from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
@@ -105,6 +111,7 @@ export const createLivechatRoom = async (
 				alias: 'unknown',
 			},
 			queuedAt: newRoomAt,
+			verificationStatus: RoomVerificationState.unVerified,
 
 			priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
 			estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,

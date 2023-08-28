@@ -22,6 +22,7 @@ import type { IOmnichannelEEService } from './types/IOmnichannelEEService';
 import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
 import type { IOmnichannelService } from './types/IOmnichannelService';
 import type { IOmnichannelTranscriptService } from './types/IOmnichannelTranscriptService';
+import type { IOmnichannelVerification, ISetVisitorEmailResult } from './types/IOmnichannelVerification';
 import type { IOmnichannelVoipService, FindVoipRoomsParams } from './types/IOmnichannelVoipService';
 import type { IPresence } from './types/IPresence';
 import type { IPushService } from './types/IPushService';
@@ -75,11 +76,13 @@ export {
 	ILicense,
 	IListRoomsFilter,
 	ILoginResult,
+	ISetVisitorEmailResult,
 	IMediaService,
 	IMeteor,
 	INPSService,
 	IOmnichannelService,
 	IOmnichannelVoipService,
+	IOmnichannelVerification,
 	IPresence,
 	IPushService,
 	IMessageReadsService,
@@ -154,6 +157,7 @@ export const OmnichannelIntegration = proxifyWithWait<IOmnichannelIntegrationSer
 export const Federation = proxifyWithWait<IFederationService>('federation');
 export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
 export const OmnichannelEEService = proxifyWithWait<IOmnichannelEEService>('omnichannel-ee');
+export const OmnichannelVerification = proxifyWithWait<IOmnichannelVerification>('omnichannel-verification');
 export const Import = proxifyWithWait<IImportService>('import');
 
 // Calls without wait. Means that the service is optional and the result may be an error

@@ -17,6 +17,7 @@ import { MessageService } from './messages/service';
 import { MeteorService } from './meteor/service';
 import { NPSService } from './nps/service';
 import { OmnichannelIntegrationService } from './omnichannel-integrations/service';
+import { OmnichannelVerification } from './omnichannel-verification/service';
 import { OmnichannelVoipService } from './omnichannel-voip/service';
 import { OmnichannelService } from './omnichannel/service';
 import { PushService } from './push/service';
@@ -56,6 +57,7 @@ api.registerService(new MessageService());
 api.registerService(new TranslationService());
 api.registerService(new SettingsService());
 api.registerService(new OmnichannelIntegrationService());
+api.registerService(new OmnichannelVerification());
 api.registerService(new ImportService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately

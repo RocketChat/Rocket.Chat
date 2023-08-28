@@ -6,6 +6,7 @@ import { useChatForwardQuickAction } from './hooks/quickActions/useChatForwardQu
 import { useCloseChatQuickAction } from './hooks/quickActions/useCloseChatQuickAction';
 import { useMoveQueueQuickAction } from './hooks/quickActions/useMoveQueueQuickAction';
 import { useTranscriptQuickAction } from './hooks/quickActions/useTranscriptQuickAction';
+import { useVerifyUserQuickAction } from './hooks/quickActions/useVerifyUserQuickAction';
 import { useAutotranslateRoomAction } from './hooks/roomActions/useAutotranslateRoomAction';
 import { useChannelSettingsRoomAction } from './hooks/roomActions/useChannelSettingsRoomAction';
 import { useCleanHistoryRoomAction } from './hooks/roomActions/useCleanHistoryRoomAction';
@@ -77,4 +78,5 @@ export const quickActionHooks = [
 	useTranscriptQuickAction,
 	useCloseChatQuickAction,
 	useOnHoldChatQuickAction,
+	useVerifyUserQuickAction,
 ] satisfies (() => QuickActionsActionConfig | undefined)[];

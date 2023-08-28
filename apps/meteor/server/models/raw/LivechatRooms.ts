@@ -7,6 +7,7 @@ import type {
 	IMessage,
 	ILivechatPriority,
 	IOmnichannelServiceLevelAgreements,
+	RoomVerificationState,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
@@ -1667,6 +1668,80 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		return this.updateMany(query, update);
+	}
+
+	updateVerificationStatusById(_id: string, verificationStatus: RoomVerificationState) {
+		const query: Filter<IOmnichannelRoom> = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				verificationStatus,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	updateWrongMessageCount(_id: string, value: number): Promise<UpdateResult> {
+		const query: Filter<IOmnichannelRoom> = {
+			_id,
+		};
+		const update = {
+			$set: {
+				wrongMessageCount: value,
+			},
+		};
+		return this.updateOne(query, update);
+	}
+
+	addEmailCodeByRoomId(_id: string, code: string, expire: Date): Promise<UpdateResult> {
+		const query: Filter<IOmnichannelRoom> = {
+			_id,
+		};
+		const update = {
+			$push: {
+				'services.emailCode': {
+					$each: [
+						{
+							code,
+							expire,
+						},
+					],
+					$slice: -5,
+				},
+			},
+		};
+		return this.updateOne(query, update);
+	}
+
+	removeExpiredEmailCodesOfRoomId(_id: string): Promise<UpdateResult> {
+		const query: Filter<IOmnichannelRoom> = {
+			_id,
+		};
+		const update = {
+			$pull: {
+				'services.emailCode': {
+					expire: { $lt: new Date() },
+				},
+			},
+		};
+		return this.updateOne(query, update);
+	}
+
+	removeEmailCodeByRoomIdAndCode(_id: string, code: string): Promise<UpdateResult> {
+		const query: Filter<IOmnichannelRoom> = {
+			_id,
+		};
+		const update = {
+			$pull: {
+				'services.emailCode': {
+					code,
+				},
+			},
+		};
+		return this.updateOne(query, update);
 	}
 
 	async saveRoomById({

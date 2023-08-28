@@ -60,6 +60,10 @@ type LivechatRoomOnHold = {
 	roomId: IRoom['_id'];
 };
 
+type LivechatVisitorVerify = {
+	rid: IRoom['_id'];
+};
+
 const LivechatRoomOnHoldSchema = {
 	type: 'object',
 	properties: {
@@ -242,6 +246,10 @@ type LivechatVisitorCallStatus = {
 	callStatus: string;
 	rid: string;
 	callId: string;
+};
+
+type LivechatVerification = {
+	roomId: IRoom['_id'];
 };
 
 const LivechatVisitorCallStatusSchema = {
@@ -3142,6 +3150,9 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/room.join': {
 		GET: (params: LiveChatRoomJoin) => void;
 	};
+	'/v1/livechat/room.verificationStatus': {
+		PUT: (params: LivechatVerification) => void;
+	};
 	'/v1/livechat/room.forward': {
 		POST: (params: LiveChatRoomForward) => void;
 	};
@@ -3332,6 +3343,12 @@ export type OmnichannelEndpoints = {
 		POST: (params: LivechatVisitorStatus) => {
 			token: string;
 			status: string;
+		};
+	};
+
+	'/v1/livechat/visitor.verify': {
+		POST: (params: LivechatVisitorVerify) => {
+			rid: string;
 		};
 	};
 

@@ -148,6 +148,21 @@ export enum OmnichannelSourceType {
 	API = 'api',
 	OTHER = 'other', // catch-all source type
 }
+export interface IVisitorEmailCode {
+	code: string;
+	expire: Date;
+}
+export interface IVisitorServices {
+	emailCode: IVisitorEmailCode[];
+}
+
+export enum RoomVerificationState {
+	isListeningToEmail = 'isListeningToEmail',
+	isListeningToOTP = 'isListeningToOTP',
+	unVerified = 'unVerified',
+	verified = 'verified',
+	verifiedFalse = 'verifiedFalse',
+}
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
 	t: 'l' | 'v';
@@ -214,6 +229,14 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	closingMessage?: IMessage;
 
 	departmentAncestors?: string[];
+
+	// keys for verification process
+	// Maintaining awareness of the current state of the verification process.
+	verificationStatus: RoomVerificationState;
+	// For OTP and Email Input
+	wrongMessageCount?: number;
+	// Authentication code
+	services?: IVisitorServices;
 }
 
 export interface IOmnichannelRoom extends IOmnichannelGenericRoom {

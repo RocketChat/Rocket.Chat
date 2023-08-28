@@ -365,6 +365,19 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			},
 		);
 	}
+
+	setVisitorsEmail(_id: string, email: string): Promise<Document | UpdateResult> {
+		const updateVisitor = {
+			$set: {
+				visitorEmails: [
+					{
+						address: email,
+					},
+				],
+			},
+		};
+		return this.updateOne({ _id }, updateVisitor);
+	}
 }
 
 type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
