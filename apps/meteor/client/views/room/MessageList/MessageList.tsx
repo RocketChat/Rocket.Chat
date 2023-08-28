@@ -11,9 +11,9 @@ import SystemMessage from '../../../components/message/variants/SystemMessage';
 import ThreadMessagePreview from '../../../components/message/variants/ThreadMessagePreview';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useRoomSubscription } from '../contexts/RoomContext';
+import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useMessages } from './hooks/useMessages';
-import { isMessageFirstUnread } from './lib/isMessageFirstUnread';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { isMessageSequential } from './lib/isMessageSequential';
 import MessageListProvider from './providers/MessageListProvider';
@@ -31,6 +31,8 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 	const formatDate = useFormatDate();
 
+	const firstUnreadMessageId = useFirstUnreadMessageId();
+
 	return (
 		<MessageListProvider scrollMessageList={scrollMessageList}>
 			<SelectedMessagesProvider>
@@ -38,8 +40,10 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 					const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 
 					const newDay = isMessageNewDay(message, previous);
-					const firstUnread = isMessageFirstUnread(subscription, message, previous);
-					const showDivider = newDay || firstUnread;
+
+					const showUnreadDivider = firstUnreadMessageId === message._id;
+
+					const showDivider = newDay || showUnreadDivider;
 
 					const shouldShowAsSequential = sequential && !newDay;
 
@@ -54,7 +58,7 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 					return (
 						<Fragment key={message._id}>
 							{showDivider && (
-								<MessageDivider unreadLabel={firstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
+								<MessageDivider unreadLabel={showUnreadDivider ? t('Unread_Messages').toLowerCase() : undefined}>
 									{newDay && formatDate(message.ts)}
 								</MessageDivider>
 							)}
@@ -75,7 +79,7 @@ export const MessageList = ({ rid, scrollMessageList }: MessageListProps): React
 								<ThreadMessagePreview
 									data-mid={message._id}
 									data-tmid={message.tmid}
-									data-unread={firstUnread}
+									data-unread={showUnreadDivider}
 									data-sequential={sequential}
 									sequential={shouldShowAsSequential}
 									message={message}

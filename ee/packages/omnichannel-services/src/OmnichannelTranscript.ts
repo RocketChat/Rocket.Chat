@@ -40,7 +40,7 @@ type MessageData = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg' | 'md'> & {
 
 type WorkerData = {
 	siteName: string;
-	visitor: ILivechatVisitor | null;
+	visitor: Pick<ILivechatVisitor, '_id' | 'username' | 'name' | 'visitorEmails'> | null;
 	agent: ILivechatAgent | undefined;
 	closedAt?: Date;
 	messages: MessageData[];

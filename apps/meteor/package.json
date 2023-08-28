@@ -70,7 +70,7 @@
 		"@babel/preset-react": "~7.22.5",
 		"@babel/register": "~7.22.5",
 		"@faker-js/faker": "~8.0.2",
-		"@playwright/test": "^1.22.2",
+		"@playwright/test": "^1.37.1",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/livechat": "workspace:^",
 		"@rocket.chat/mock-providers": "workspace:^",

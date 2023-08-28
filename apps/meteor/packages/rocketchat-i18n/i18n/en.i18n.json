@@ -529,6 +529,7 @@
   "Apps_disabled_when_Enterprise_trial_ended_description": "Workspaces on Community Edition can have up to 5 marketplace apps and 3 private apps enabled. Ask your workspace admin to reenable apps.",
   "Apps_disabled_when_Enterprise_trial_ended_description_admin": "Workspaces on Community Edition can have up to 5 marketplace apps and 3 private apps enabled. Reenable the apps you require.",
   "Apps_Engine_Version": "Apps Engine Version",
+  "Apps_Error_private_app_install_disabled": "Private app installation and updates are disabled in this workspace",
   "Apps_Essential_Alert": "This app is essential for the following events:",
   "Apps_Essential_Disclaimer": "Events listed above will be disrupted if this app is disabled. If you want Rocket.Chat to work without this app's functionality, you need to uninstall it",
   "Apps_Framework_Source_Package_Storage_Type": "Apps' Source Package Storage type",
@@ -630,6 +631,7 @@
   "Apps_Manual_Update_Modal_Title": "This app is already installed",
   "Apps_Manual_Update_Modal_Body": "Do you want to update it?",
   "Apps_User_Already_Exists": "The username \"{{username}}\" is already being used. Rename or remove the user using it to install this App",
+
   "AutoLinker": "AutoLinker",
   "Apps_WhatIsIt": "Apps: What Are They?",
   "Apps_WhatIsIt_paragraph1": "A new icon in the administration area! What does this mean and what are Apps?",
@@ -2658,7 +2660,6 @@
   "Invalid_setting_s": "Invalid setting: %s",
   "Invalid_two_factor_code": "Invalid two factor code",
   "Invalid_username": "The username entered is invalid",
-  "Invalid_JSON": "Invalid JSON",
   "invisible": "invisible",
   "Invisible": "Invisible",
   "Invitation": "Invitation",
