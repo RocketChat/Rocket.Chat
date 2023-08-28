@@ -86,7 +86,7 @@ it("should render policy as invalid if password doesn't match the requirements",
 	);
 
 	await waitFor(() => {
-		expect(getByText('get-password-policy-minLength-label').dataset.invalid).toBe('true');
+		expect(getByText('get-password-policy-minLength-label').parentElement?.dataset.invalid).toBe('true');
 	});
 });
 
@@ -110,6 +110,6 @@ it('should render policy as valid if password match the requirements', async () 
 	);
 
 	await waitFor(() => {
-		expect(getByText('get-password-policy-minLength-label').dataset.invalid).toBe(undefined);
+		expect(getByText('get-password-policy-minLength-label').parentElement?.dataset.invalid).toBe(undefined);
 	});
 });
