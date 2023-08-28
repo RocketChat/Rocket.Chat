@@ -63,8 +63,8 @@ export class OmnichannelSlaPolicies {
 		return this.page.locator('[placeholder="Search"]');
 	}
 
-	get btnNew() {
-		return this.page.locator('button.rcx-button >> text="Create SLA policy"');
+	headingButtonNew(name: string) {
+		return this.page.locator(`role=main >> role=button[name="${name}"]`).first();
 	}
 
 	get btnDelete() {
