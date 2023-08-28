@@ -44,7 +44,7 @@ test.describe.parallel('administration', () => {
 			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
 			await poAdmin.tabs.users.checkboxVerified.click();
 			await poAdmin.tabs.users.inputPassword.type('any_password');
-			await poAdmin.tabs.users.addRole('user');
+			await expect(poAdmin.tabs.users.userRole).toBeVisible();
 			await poAdmin.tabs.users.btnSave.click();
 		});
 	});
@@ -68,7 +68,7 @@ test.describe.parallel('administration', () => {
 		test('expect open upsell modal if not enterprise', async ({ page }) => {
 			test.skip(IS_EE);
 			await poAdmin.btnCreateRole.click();
-			await page.waitForSelector('dialog[id="custom-roles"]');
+			await page.waitForSelector('role=dialog[name="Custom roles"]');
 		});
 	});
 

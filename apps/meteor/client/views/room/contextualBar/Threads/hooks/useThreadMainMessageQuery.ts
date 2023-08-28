@@ -86,31 +86,27 @@ export const useThreadMainMessageQuery = (
 		};
 	}, [tmid]);
 
-	return useQuery(
-		['rooms', room._id, 'threads', tmid, 'main-message'] as const,
-		async ({ queryKey }) => {
-			const message = await getMessage(tmid);
+	return useQuery(['rooms', room._id, 'threads', tmid, 'main-message'] as const, async ({ queryKey }) => {
+		const message = await getMessage(tmid);
 
-			const mainMessage = (await onClientMessageReceived(message)) || message;
+		const mainMessage = (await onClientMessageReceived(message)) || message;
 
-			if (!mainMessage && !isThreadMainMessage(mainMessage)) {
-				throw new Error('Invalid main message');
-			}
+		if (!mainMessage && !isThreadMainMessage(mainMessage)) {
+			throw new Error('Invalid main message');
+		}
 
-			unsubscribeRef.current =
-				unsubscribeRef.current ||
-				subscribeToMessage(mainMessage, {
-					onMutate: () => {
-						queryClient.invalidateQueries(queryKey, { exact: true });
-					},
-					onDelete: () => {
-						onDelete?.();
-						queryClient.invalidateQueries(queryKey, { exact: true });
-					},
-				});
+		unsubscribeRef.current =
+			unsubscribeRef.current ||
+			subscribeToMessage(mainMessage, {
+				onMutate: () => {
+					queryClient.invalidateQueries(queryKey, { exact: true });
+				},
+				onDelete: () => {
+					onDelete?.();
+					queryClient.invalidateQueries(queryKey, { exact: true });
+				},
+			});
 
-			return mainMessage;
-		},
-		{ refetchOnWindowFocus: false },
-	);
+		return mainMessage;
+	});
 };

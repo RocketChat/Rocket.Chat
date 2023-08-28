@@ -31,6 +31,17 @@ callbacks.add(
 );
 
 callbacks.add(
+	'beforeUserImport',
+	async ({ userCount }) => {
+		if (!(await canAddNewUser(userCount))) {
+			throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
+		}
+	},
+	callbacks.priority.MEDIUM,
+	'check-max-user-seats',
+);
+
+callbacks.add(
 	'beforeActivateUser',
 	async (user: IUser) => {
 		if (user.roles.length === 1 && user.roles.includes('guest')) {
@@ -118,6 +129,8 @@ callbacks.add('afterDeleteUser', handleMaxSeatsBanners, callbacks.priority.MEDIU
 callbacks.add('afterDeactivateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
 callbacks.add('afterActivateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
+
+callbacks.add('afterUserImport', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
 Meteor.startup(async () => {
 	await createSeatsLimitBanners();

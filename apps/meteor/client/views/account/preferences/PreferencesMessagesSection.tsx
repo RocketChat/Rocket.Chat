@@ -1,86 +1,14 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Box } from '@rocket.chat/fuselage';
-import { useUserPreference, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
 
-import { useForm } from '../../../hooks/useForm';
-import type { FormSectionProps } from './AccountPreferencesPage';
-
-type Values = {
-	unreadAlert: boolean;
-	showThreadsInMainChannel: boolean;
-	alsoSendThreadToChannel: 'default' | 'always' | 'never';
-	useEmojis: boolean;
-	convertAsciiEmoji: boolean;
-	autoImageLoad: boolean;
-	saveMobileBandwidth: boolean;
-	collapseMediaByDefault: boolean;
-	hideUsernames: boolean;
-	hideRoles: boolean;
-	hideFlexTab: boolean;
-	displayAvatars: boolean;
-	clockMode: 0 | 1 | 2;
-	sendOnEnter: 'normal' | 'alternative' | 'desktop';
-};
-
-const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSectionProps): ReactElement => {
+const PreferencesMessagesSection = () => {
 	const t = useTranslation();
-
-	const showRoles = useSetting('UI_DisplayRoles');
-
-	const settings = {
-		unreadAlert: useUserPreference('unreadAlert'),
-		showThreadsInMainChannel: useUserPreference('showThreadsInMainChannel'),
-		alsoSendThreadToChannel: useUserPreference('alsoSendThreadToChannel'),
-		useEmojis: useUserPreference('useEmojis'),
-		convertAsciiEmoji: useUserPreference('convertAsciiEmoji'),
-		autoImageLoad: useUserPreference('autoImageLoad'),
-		saveMobileBandwidth: useUserPreference('saveMobileBandwidth'),
-		collapseMediaByDefault: useUserPreference('collapseMediaByDefault'),
-		hideUsernames: useUserPreference('hideUsernames'),
-		hideRoles: useUserPreference('hideRoles'),
-		hideFlexTab: useUserPreference('hideFlexTab'),
-		clockMode: useUserPreference('clockMode') ?? 0,
-		sendOnEnter: useUserPreference('sendOnEnter'),
-		displayAvatars: useUserPreference('displayAvatars'),
-	};
-
-	const { values, handlers, commit } = useForm(settings, onChange);
-
-	const {
-		unreadAlert,
-		showThreadsInMainChannel,
-		alsoSendThreadToChannel,
-		useEmojis,
-		convertAsciiEmoji,
-		autoImageLoad,
-		saveMobileBandwidth,
-		collapseMediaByDefault,
-		hideUsernames,
-		hideRoles,
-		hideFlexTab,
-		displayAvatars,
-		clockMode,
-		sendOnEnter,
-	} = values as Values;
-
-	const {
-		handleUnreadAlert,
-		handleShowThreadsInMainChannel,
-		handleAlsoSendThreadToChannel,
-		handleUseEmojis,
-		handleConvertAsciiEmoji,
-		handleAutoImageLoad,
-		handleSaveMobileBandwidth,
-		handleCollapseMediaByDefault,
-		handleHideUsernames,
-		handleHideRoles,
-		handleHideFlexTab,
-		handleDisplayAvatars,
-		handleClockMode,
-		handleSendOnEnter,
-	} = handlers;
+	const displayRolesEnabled = useSetting('UI_DisplayRoles');
+	const { control } = useFormContext();
 
 	const alsoSendThreadMessageToChannelOptions = useMemo(
 		(): SelectOption[] => [
@@ -109,175 +37,235 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 		[t],
 	);
 
-	commitRef.current.messages = commit;
+	const unreadAlertId = useUniqueId();
+	const showThreadsInMainChannelId = useUniqueId();
+	const alsoSendThreadToChannelId = useUniqueId();
+	const clockModeId = useUniqueId();
+	const useEmojisId = useUniqueId();
+	const convertAsciiEmojiId = useUniqueId();
+	const autoImageLoadId = useUniqueId();
+	const saveMobileBandwidthId = useUniqueId();
+	const collapseMediaByDefaultId = useUniqueId();
+	const hideUsernamesId = useUniqueId();
+	const hideRolesId = useUniqueId();
+	const hideFlexTabId = useUniqueId();
+	const displayAvatarsId = useUniqueId();
+	const sendOnEnterId = useUniqueId();
 
 	return (
-		<Accordion.Item title={t('Messages')} {...props}>
+		<Accordion.Item title={t('Messages')}>
 			<FieldGroup>
-				{useMemo(
-					() => (
-						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Unread_Tray_Icon_Alert')}</Field.Label>
-							<Field.Row>
-								<ToggleSwitch checked={unreadAlert} onChange={handleUnreadAlert} />
-							</Field.Row>
-						</Field>
-					),
-					[handleUnreadAlert, t, unreadAlert],
-				)}
-				{useMemo(
-					() => (
-						<Field>
-							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-								<Field.Label>{t('Always_show_thread_replies_in_main_channel')}</Field.Label>
-								<Field.Row>
-									<ToggleSwitch checked={showThreadsInMainChannel} onChange={handleShowThreadsInMainChannel} />
-								</Field.Row>
-							</Box>
-							<Field.Hint>{t('Accounts_Default_User_Preferences_showThreadsInMainChannel_Description')}</Field.Hint>
-						</Field>
-					),
-					[handleShowThreadsInMainChannel, showThreadsInMainChannel, t],
-				)}
-				{useMemo(
-					() => (
-						<Field>
-							<Field.Label>{t('Also_send_thread_message_to_channel_behavior')}</Field.Label>
-							<Field.Row>
+				<Field>
+					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<Field.Label htmlFor={unreadAlertId}>{t('Unread_Tray_Icon_Alert')}</Field.Label>
+						<Field.Row>
+							<Controller
+								name='unreadAlert'
+								control={control}
+								render={({ field: { value, onChange, ref } }) => (
+									<ToggleSwitch id={unreadAlertId} ref={ref} checked={value} onChange={onChange} />
+								)}
+							/>
+						</Field.Row>
+					</Box>
+				</Field>
+				<Field>
+					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<Field.Label htmlFor={showThreadsInMainChannelId}>{t('Always_show_thread_replies_in_main_channel')}</Field.Label>
+						<Field.Row>
+							<Controller
+								name='showThreadsInMainChannel'
+								control={control}
+								render={({ field: { value, onChange, ref } }) => (
+									<ToggleSwitch
+										aria-describedby={`${showThreadsInMainChannelId}-hint`}
+										id={showThreadsInMainChannelId}
+										ref={ref}
+										checked={value}
+										onChange={onChange}
+									/>
+								)}
+							/>
+						</Field.Row>
+					</Box>
+					<Field.Hint id={`${showThreadsInMainChannelId}-hint`}>
+						{t('Accounts_Default_User_Preferences_showThreadsInMainChannel_Description')}
+					</Field.Hint>
+				</Field>
+				<Field>
+					<Field.Label htmlFor={alsoSendThreadToChannelId}>{t('Also_send_thread_message_to_channel_behavior')}</Field.Label>
+					<Field.Row>
+						<Controller
+							name='alsoSendThreadToChannel'
+							control={control}
+							render={({ field: { value, onChange } }) => (
 								<Select
-									value={alsoSendThreadToChannel}
-									onChange={handleAlsoSendThreadToChannel}
+									id={alsoSendThreadToChannelId}
+									aria-describedby={`${alsoSendThreadToChannelId}-hint`}
+									value={value}
+									onChange={onChange}
 									options={alsoSendThreadMessageToChannelOptions}
 								/>
-							</Field.Row>
-							<Field.Hint>{t('Accounts_Default_User_Preferences_alsoSendThreadToChannel_Description')}</Field.Hint>
-						</Field>
-					),
-					[alsoSendThreadToChannel, handleAlsoSendThreadToChannel, t, alsoSendThreadMessageToChannelOptions],
-				)}
-				{useMemo(
-					() => (
-						<Field>
-							<Field.Label>{t('Message_TimeFormat')}</Field.Label>
+							)}
+						/>
+					</Field.Row>
+					<Field.Hint id={`${alsoSendThreadToChannelId}-hint`}>
+						{t('Accounts_Default_User_Preferences_alsoSendThreadToChannel_Description')}
+					</Field.Hint>
+				</Field>
+				<Field>
+					<Field.Label htmlFor={clockModeId}>{t('Message_TimeFormat')}</Field.Label>
+					<Field.Row>
+						<Controller
+							name='clockMode'
+							control={control}
+							render={({ field: { value, onChange } }) => (
+								<Select id={clockModeId} value={`${value}`} onChange={onChange} options={timeFormatOptions} />
+							)}
+						/>
+					</Field.Row>
+				</Field>
+				<Field>
+					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<Field.Label htmlFor={useEmojisId}>{t('Use_Emojis')}</Field.Label>
+						<Field.Row>
+							<Controller
+								name='useEmojis'
+								control={control}
+								render={({ field: { value, onChange, ref } }) => (
+									<ToggleSwitch id={useEmojisId} ref={ref} checked={value} onChange={onChange} />
+								)}
+							/>
+						</Field.Row>
+					</Box>
+				</Field>
+				<Field>
+					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<Field.Label htmlFor={convertAsciiEmojiId}>{t('Convert_Ascii_Emojis')}</Field.Label>
+						<Field.Row>
+							<Controller
+								name='convertAsciiEmoji'
+								control={control}
+								render={({ field: { value, onChange, ref } }) => (
+									<ToggleSwitch id={convertAsciiEmojiId} ref={ref} checked={value} onChange={onChange} />
+								)}
+							/>
+						</Field.Row>
+					</Box>
+				</Field>
+				<Field>
+					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<Field.Label htmlFor={autoImageLoadId}>{t('Auto_Load_Images')}</Field.Label>
+						<Field.Row>
+							<Controller
+								name='autoImageLoad'
+								control={control}
+								render={({ field: { value, onChange, ref } }) => (
+									<ToggleSwitch id={autoImageLoadId} ref={ref} checked={value} onChange={onChange} />
+								)}
+							/>
+						</Field.Row>
+					</Box>
+				</Field>
+				<Field>
+					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<Field.Label htmlFor={saveMobileBandwidthId}>{t('Save_Mobile_Bandwidth')}</Field.Label>
+						<Field.Row>
+							<Controller
+								name='saveMobileBandwidth'
+								control={control}
+								render={({ field: { value, onChange, ref } }) => (
+									<ToggleSwitch id={saveMobileBandwidthId} ref={ref} checked={value} onChange={onChange} />
+								)}
+							/>
+						</Field.Row>
+					</Box>
+				</Field>
+				<Field>
+					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<Field.Label htmlFor={collapseMediaByDefaultId}>{t('Collapse_Embedded_Media_By_Default')}</Field.Label>
+						<Field.Row>
+							<Controller
+								name='collapseMediaByDefault'
+								control={control}
+								render={({ field: { value, onChange, ref } }) => (
+									<ToggleSwitch id={collapseMediaByDefaultId} ref={ref} checked={value} onChange={onChange} />
+								)}
+							/>
+						</Field.Row>
+					</Box>
+				</Field>
+				<Field>
+					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<Field.Label htmlFor={hideUsernamesId}>{t('Hide_usernames')}</Field.Label>
+						<Field.Row>
+							<Controller
+								name='hideUsernames'
+								control={control}
+								render={({ field: { value, onChange, ref } }) => (
+									<ToggleSwitch id={hideUsernamesId} ref={ref} checked={value} onChange={onChange} />
+								)}
+							/>
+						</Field.Row>
+					</Box>
+				</Field>
+				{displayRolesEnabled && (
+					<Field>
+						<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+							<Field.Label htmlFor={hideRolesId}>{t('Hide_roles')}</Field.Label>
 							<Field.Row>
-								<Select value={clockMode.toString()} onChange={handleClockMode} options={timeFormatOptions} />
+								<Controller
+									name='hideRoles'
+									control={control}
+									render={({ field: { value, onChange, ref } }) => (
+										<ToggleSwitch id={hideRolesId} ref={ref} checked={value} onChange={onChange} />
+									)}
+								/>
 							</Field.Row>
-						</Field>
-					),
-					[clockMode, handleClockMode, t, timeFormatOptions],
+						</Box>
+					</Field>
 				)}
-				{useMemo(
-					() => (
-						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Use_Emojis')}</Field.Label>
-							<Field.Row>
-								<ToggleSwitch checked={useEmojis} onChange={handleUseEmojis} />
-							</Field.Row>
-						</Field>
-					),
-					[handleUseEmojis, t, useEmojis],
-				)}
-				{useMemo(
-					() => (
-						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Convert_Ascii_Emojis')}</Field.Label>
-							<Field.Row>
-								<ToggleSwitch checked={convertAsciiEmoji} onChange={handleConvertAsciiEmoji} />
-							</Field.Row>
-						</Field>
-					),
-					[convertAsciiEmoji, handleConvertAsciiEmoji, t],
-				)}
-				{useMemo(
-					() => (
-						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Auto_Load_Images')}</Field.Label>
-							<Field.Row>
-								<ToggleSwitch checked={autoImageLoad} onChange={handleAutoImageLoad} />
-							</Field.Row>
-						</Field>
-					),
-					[autoImageLoad, handleAutoImageLoad, t],
-				)}
-				{useMemo(
-					() => (
-						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Save_Mobile_Bandwidth')}</Field.Label>
-							<Field.Row>
-								<ToggleSwitch checked={saveMobileBandwidth} onChange={handleSaveMobileBandwidth} />
-							</Field.Row>
-						</Field>
-					),
-					[handleSaveMobileBandwidth, saveMobileBandwidth, t],
-				)}
-				{useMemo(
-					() => (
-						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Collapse_Embedded_Media_By_Default')}</Field.Label>
-							<Field.Row>
-								<ToggleSwitch checked={collapseMediaByDefault} onChange={handleCollapseMediaByDefault} />
-							</Field.Row>
-						</Field>
-					),
-					[collapseMediaByDefault, handleCollapseMediaByDefault, t],
-				)}
-				{useMemo(
-					() => (
-						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Hide_usernames')}</Field.Label>
-							<Field.Row>
-								<ToggleSwitch checked={hideUsernames} onChange={handleHideUsernames} />
-							</Field.Row>
-						</Field>
-					),
-					[handleHideUsernames, hideUsernames, t],
-				)}
-				{useMemo(
-					() =>
-						showRoles && (
-							<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-								<Field.Label>{t('Hide_roles')}</Field.Label>
-								<Field.Row>
-									<ToggleSwitch checked={hideRoles} onChange={handleHideRoles} />
-								</Field.Row>
-							</Field>
-						),
-					[handleHideRoles, hideRoles, showRoles, t],
-				)}
-				{useMemo(
-					() => (
-						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Hide_flextab')}</Field.Label>
-							<Field.Row>
-								<ToggleSwitch checked={hideFlexTab} onChange={handleHideFlexTab} />
-							</Field.Row>
-						</Field>
-					),
-					[handleHideFlexTab, hideFlexTab, t],
-				)}
-				{useMemo(
-					() => (
-						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Display_avatars')}</Field.Label>
-							<Field.Row>
-								<ToggleSwitch checked={displayAvatars} onChange={handleDisplayAvatars} />
-							</Field.Row>
-						</Field>
-					),
-					[handleDisplayAvatars, displayAvatars, t],
-				)}
-				{useMemo(
-					() => (
-						<Field>
-							<Field.Label>{t('Enter_Behaviour')}</Field.Label>
-							<Field.Row>
-								<Select value={sendOnEnter} onChange={handleSendOnEnter} options={sendOnEnterOptions} />
-							</Field.Row>
-							<Field.Hint>{t('Enter_Behaviour_Description')}</Field.Hint>
-						</Field>
-					),
-					[handleSendOnEnter, sendOnEnter, sendOnEnterOptions, t],
-				)}
+				<Field>
+					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<Field.Label htmlFor={hideFlexTabId}>{t('Hide_flextab')}</Field.Label>
+						<Field.Row>
+							<Controller
+								name='hideFlexTab'
+								control={control}
+								render={({ field: { value, onChange, ref } }) => (
+									<ToggleSwitch id={hideFlexTabId} ref={ref} checked={value} onChange={onChange} />
+								)}
+							/>
+						</Field.Row>
+					</Box>
+				</Field>
+				<Field>
+					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<Field.Label htmlFor={displayAvatarsId}>{t('Display_avatars')}</Field.Label>
+						<Field.Row>
+							<Controller
+								name='displayAvatars'
+								control={control}
+								render={({ field: { value, onChange, ref } }) => (
+									<ToggleSwitch id={displayAvatarsId} ref={ref} checked={value} onChange={onChange} />
+								)}
+							/>
+						</Field.Row>
+					</Box>
+				</Field>
+				<Field>
+					<Field.Label htmlFor={sendOnEnterId}>{t('Enter_Behaviour')}</Field.Label>
+					<Field.Row>
+						<Controller
+							name='sendOnEnter'
+							control={control}
+							render={({ field: { value, onChange } }) => (
+								<Select id={sendOnEnterId} value={value} onChange={onChange} options={sendOnEnterOptions} />
+							)}
+						/>
+					</Field.Row>
+					<Field.Hint>{t('Enter_Behaviour_Description')}</Field.Hint>
+				</Field>
 			</FieldGroup>
 		</Accordion.Item>
 	);

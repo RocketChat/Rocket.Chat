@@ -1,4 +1,4 @@
-import { usePermission, useRouter, useSetModal, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter, useSetModal, useCurrentModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
@@ -13,12 +13,12 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	const t = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();
+	const isModalOpen = useCurrentModal() !== null;
 
 	const hasDeviceManagement = useHasLicenseModule('device-management') as boolean;
 	const canViewDeviceManagement = usePermission('view-device-management');
-	const cloudWorkspaceHadTrial = useSetting<boolean>('Cloud_Workspace_Had_Trial');
 
-	const { shouldShowUpsell, isModalOpen, handleGoFullyFeatured, handleTalkToSales } = useUpsellActions(hasDeviceManagement);
+	const { shouldShowUpsell, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales } = useUpsellActions(hasDeviceManagement);
 
 	useEffect(() => {
 		if (shouldShowUpsell) {

@@ -1,6 +1,5 @@
+import { Logger } from '@rocket.chat/logger';
 import type { BaseLogger } from 'pino';
-
-import { Logger } from '../../../../../../../apps/meteor/server/lib/logger/Logger';
 
 const logger = new Logger('Federation_Matrix');
 

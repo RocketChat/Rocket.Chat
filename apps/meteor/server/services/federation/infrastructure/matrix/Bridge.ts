@@ -16,6 +16,9 @@ import { RoomMembershipChangedEventType } from './definitions/events/RoomMembers
 import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definitions/events/RoomMessageSent';
 import type { MatrixEventRoomNameChanged } from './definitions/events/RoomNameChanged';
 import type { MatrixEventRoomTopicChanged } from './definitions/events/RoomTopicChanged';
+import { HttpStatusCodes } from './helpers/HtttpStatusCodes';
+import { extractUserIdAndHomeserverFromMatrixId } from './helpers/MatrixIdStringTools';
+import { VerificationStatus, MATRIX_USER_IN_USE } from './helpers/MatrixIdVerificationTypes';
 
 let MatrixUserInstance: any;
 
@@ -166,6 +169,41 @@ export class MatrixBridge implements IFederationBridge {
 		}
 	}
 
+	public async verifyInviteeIds(matrixIds: string[]): Promise<Map<string, string>> {
+		const matrixIdVerificationMap = new Map();
+		const matrixIdsVerificationPromises = matrixIds.map((matrixId) => this.verifyInviteeId(matrixId));
+		const matrixIdsVerificationPromiseResponse = await Promise.allSettled(matrixIdsVerificationPromises);
+		const matrixIdsVerificationFulfilledResults = matrixIdsVerificationPromiseResponse
+			.filter((result): result is PromiseFulfilledResult<VerificationStatus> => result.status === 'fulfilled')
+			.map((result) => result.value);
+
+		matrixIds.forEach((matrixId, idx) => matrixIdVerificationMap.set(matrixId, matrixIdsVerificationFulfilledResults[idx]));
+		return matrixIdVerificationMap;
+	}
+
+	private async verifyInviteeId(externalInviteeId: string): Promise<VerificationStatus> {
+		const [userId, homeserverUrl] = extractUserIdAndHomeserverFromMatrixId(externalInviteeId);
+		try {
+			const response = await fetch(`https://${homeserverUrl}/_matrix/client/v3/register/available`, { params: { username: userId } });
+
+			if (response.status === HttpStatusCodes.BAD_REQUEST) {
+				const responseBody = await response.json();
+
+				if (responseBody.errcode === MATRIX_USER_IN_USE) {
+					return VerificationStatus.VERIFIED;
+				}
+			}
+
+			if (response.status === HttpStatusCodes.OK) {
+				return VerificationStatus.UNVERIFIED;
+			}
+		} catch (e) {
+			return VerificationStatus.UNABLE_TO_VERIFY;
+		}
+
+		return VerificationStatus.UNABLE_TO_VERIFY;
+	}
+
 	public async createUser(username: string, name: string, domain: string, avatarUrl?: string): Promise<string> {
 		if (!MatrixUserInstance) {
 			throw new Error('Error loading the Matrix User instance from the external library');
@@ -232,6 +270,160 @@ export class MatrixBridge implements IFederationBridge {
 			return messageId;
 		} catch (e) {
 			throw new Error('User is not part of the room.');
+		}
+	}
+
+	public async sendThreadMessage(
+		externalRoomId: string,
+		externalSenderId: string,
+		message: IMessage,
+		relatesToEventId: string,
+	): Promise<string> {
+		const text = this.escapeEmojis(
+			await toExternalMessageFormat({
+				message: message.msg,
+				externalRoomId,
+				homeServerDomain: this.internalSettings.getHomeServerDomain(),
+			}),
+		);
+		const messageId = await this.bridgeInstance
+			.getIntent(externalSenderId)
+			.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+				'msgtype': 'm.text',
+				'body': this.escapeEmojis(message.msg),
+				'formatted_body': text,
+				'format': 'org.matrix.custom.html',
+				'm.relates_to': {
+					'rel_type': 'm.thread',
+					'event_id': relatesToEventId,
+					'is_falling_back': true,
+					'm.in_reply_to': {
+						event_id: relatesToEventId,
+					},
+				},
+			});
+		return messageId;
+	}
+
+	public async sendThreadReplyToMessage(
+		externalRoomId: string,
+		externalUserId: string,
+		eventToReplyTo: string,
+		originalEventSender: string,
+		replyMessage: string,
+		relatesToEventId: string,
+	): Promise<string> {
+		const { formattedMessage, message } = await toExternalQuoteMessageFormat({
+			externalRoomId,
+			eventToReplyTo,
+			originalEventSender,
+			message: this.escapeEmojis(replyMessage),
+			homeServerDomain: this.internalSettings.getHomeServerDomain(),
+		});
+		const messageId = await this.bridgeInstance
+			.getIntent(externalUserId)
+			.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+				'msgtype': 'm.text',
+				'body': message,
+				'format': 'org.matrix.custom.html',
+				'formatted_body': formattedMessage,
+				'm.relates_to': {
+					'rel_type': 'm.thread',
+					'event_id': relatesToEventId,
+					'is_falling_back': false,
+					'm.in_reply_to': {
+						event_id: eventToReplyTo,
+					},
+				},
+			});
+
+		return messageId;
+	}
+
+	public async sendMessageFileToThread(
+		externalRoomId: string,
+		externalSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+		relatesToEventId: string,
+	): Promise<string> {
+		try {
+			const mxcUrl = await this.bridgeInstance.getIntent(externalSenderId).uploadContent(content);
+			const messageId = await this.bridgeInstance
+				.getIntent(externalSenderId)
+				.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+					'body': fileDetails.filename,
+					'filename': fileDetails.filename,
+					'info': {
+						size: fileDetails.fileSize,
+						mimetype: fileDetails.mimeType,
+						...(fileDetails.metadata?.height && fileDetails.metadata?.width
+							? { h: fileDetails.metadata?.height, w: fileDetails.metadata?.width }
+							: {}),
+					},
+					'msgtype': this.getMsgTypeBasedOnMimeType(fileDetails.mimeType),
+					'url': mxcUrl,
+					'm.relates_to': {
+						'rel_type': 'm.thread',
+						'event_id': relatesToEventId,
+						'is_falling_back': true,
+						'm.in_reply_to': {
+							event_id: relatesToEventId,
+						},
+					},
+				});
+
+			return messageId;
+		} catch (e: any) {
+			federationBridgeLogger.error({ msg: 'Error sending file to thread', err: e });
+			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
+				throw new Error('File is too large');
+			}
+			return '';
+		}
+	}
+
+	public async sendReplyMessageFileToThread(
+		externalRoomId: string,
+		externalSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+		eventToReplyTo: string,
+		relatesToEventId: string,
+	): Promise<string> {
+		try {
+			const mxcUrl = await this.bridgeInstance.getIntent(externalSenderId).uploadContent(content);
+			const messageId = await this.bridgeInstance
+				.getIntent(externalSenderId)
+				.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+					'body': fileDetails.filename,
+					'filename': fileDetails.filename,
+					'info': {
+						size: fileDetails.fileSize,
+						mimetype: fileDetails.mimeType,
+						...(fileDetails.metadata?.height && fileDetails.metadata?.width
+							? { h: fileDetails.metadata?.height, w: fileDetails.metadata?.width }
+							: {}),
+					},
+					'msgtype': this.getMsgTypeBasedOnMimeType(fileDetails.mimeType),
+					'url': mxcUrl,
+					'm.relates_to': {
+						'rel_type': 'm.thread',
+						'event_id': relatesToEventId,
+						'is_falling_back': false,
+						'm.in_reply_to': {
+							event_id: eventToReplyTo,
+						},
+					},
+				});
+
+			return messageId;
+		} catch (e: any) {
+			federationBridgeLogger.error({ msg: 'Error sending file to thread', err: e });
+			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
+				throw new Error('File is too large');
+			}
+			return '';
 		}
 	}
 
@@ -404,6 +596,7 @@ export class MatrixBridge implements IFederationBridge {
 
 			return messageId;
 		} catch (e: any) {
+			federationBridgeLogger.error({ msg: 'Error sending file to room', err: e });
 			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
 				throw new Error('File is too large');
 			}
@@ -439,6 +632,7 @@ export class MatrixBridge implements IFederationBridge {
 
 			return messageId;
 		} catch (e: any) {
+			federationBridgeLogger.error({ msg: 'Error sending file to room', err: e });
 			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
 				throw new Error('File is too large');
 			}
@@ -473,6 +667,7 @@ export class MatrixBridge implements IFederationBridge {
 
 			return mxcUrl;
 		} catch (e: any) {
+			federationBridgeLogger.error({ msg: 'Error uploading content to Matrix', err: e });
 			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
 				throw new Error('File is too large');
 			}
@@ -529,6 +724,7 @@ export class MatrixBridge implements IFederationBridge {
 			controller: {
 				onEvent: (request) => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
+					console.log({ event });
 					this.eventHandler(event);
 				},
 				onLog: (line, isError) => {

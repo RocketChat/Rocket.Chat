@@ -44,7 +44,7 @@ const LegacyBanner: FC<LegacyBannerProps> = ({ config }) => {
 			inline={inline}
 			actionable={!!config.action}
 			closeable={closable}
-			icon={icon ? <Icon name={icon} size={20} /> : undefined}
+			icon={icon ? <Icon name={icon} size='x20' /> : undefined}
 			title={typeof title === 'function' ? title() : title}
 			variant={variant}
 			onAction={handleAction}
