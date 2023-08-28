@@ -62,7 +62,7 @@ const ChannelDeletionTable = ({ rooms, onChangeRoomSelection, selectedRooms, onT
 	);
 
 	return (
-		<Box display='flex' flexDirection='column' height='x200' mbs='x24'>
+		<Box display='flex' flexDirection='column' height='x200' mbs={24}>
 			<GenericTable>
 				<GenericTableHeader>{headers}</GenericTableHeader>
 				<GenericTableBody>
