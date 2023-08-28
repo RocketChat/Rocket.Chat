@@ -13,7 +13,7 @@ import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import DeleteTeamModalWithRooms from '../../teams/contextualBar/info/Delete';
+import DeleteTeamModalWithRooms from '../../teams/contextualBar/info/DeleteTeam';
 
 type EditRoomProps = {
 	room: Pick<IRoom, RoomAdminFieldsType>;
@@ -154,9 +154,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 	const deleteTeam = useEndpoint('POST', '/v1/teams.delete');
 
 	const handleDelete = useMutableCallback(() => {
-		const handleDeleteTeam = async (deletedRooms: IRoom[]): Promise<void> => {
-			const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms.map((room) => room._id) : [];
-
+		const handleDeleteTeam = async (roomsToRemove: IRoom['_id'][]) => {
 			try {
 				setDeleting(true);
 				setModal(null);
