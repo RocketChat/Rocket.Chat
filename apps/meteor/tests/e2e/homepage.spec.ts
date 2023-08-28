@@ -29,13 +29,8 @@ test.describe.serial('homepage', () => {
 			await expect(adminPage.locator('role=button[name="Customize"]')).toBeVisible();
 		});
 
-		test.describe('cards', () => {
-			for (const id of Object.values(CardIds)) {
-				// eslint-disable-next-line no-loop-func
-				test(`expect ${id} card to be visible`, async () => {
-					await expect(adminPage.locator(`[data-qa-id="${id}"]`)).toBeVisible();
-				});
-			}
+		test('expect all cards to be visible', async () => {
+			await Promise.all(Object.values(CardIds).map((id) => expect(adminPage.locator(`[data-qa-id="${id}"]`)).toBeVisible()));
 		});
 
 		test.describe('custom body with empty custom content', () => {
@@ -107,6 +102,7 @@ test.describe.serial('homepage', () => {
 	});
 
 	test.describe('layout for regular users', () => {
+		const notVisibleCards = [CardIds.Users, CardIds.Custom];
 		test.beforeAll(async ({ api }) => {
 			await expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
 		});
@@ -121,21 +117,14 @@ test.describe.serial('homepage', () => {
 			await expect(regularUserPage.locator('role=button[name="Customize"]')).not.toBeVisible();
 		});
 
-		test.describe('cards', () => {
-			for (const id of Object.values(CardIds)) {
-				if (id === CardIds.Users || id === CardIds.Custom) {
-					// eslint-disable-next-line no-loop-func
-					test(`expect ${id} card to not be visible`, async () => {
-						await expect(regularUserPage.locator(`[data-qa-id="${id}"]`)).not.toBeVisible();
-					});
-				} else {
-					// eslint-disable-next-line no-loop-func
-					test(`expect ${id} card to be visible`, async () => {
-						await expect(regularUserPage.locator(`[data-qa-id="${id}"]`)).toBeVisible();
-					});
-				}
-			}
+		test(`expect ${notVisibleCards.join(' and ')} cards to not be visible`, async () => {
+			await Promise.all([CardIds.Users, CardIds.Custom].map((id) => expect(adminPage.locator(`[data-qa-id="${id}"]`)).toBeVisible()));
 		});
+
+		test('expect all other cards to be visible', async () => {
+			await Promise.all(Object.values(CardIds).filter((id) => !notVisibleCards.includes(id)).map((id) => expect(adminPage.locator(`[data-qa-id="${id}"]`)).toBeVisible()));
+		});
+
 
 		test.describe('default values', () => {
 			test('expect welcome text to use Site_Name default setting', async () => {
