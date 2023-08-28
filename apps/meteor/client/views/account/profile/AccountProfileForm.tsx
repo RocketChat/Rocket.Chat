@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, PasswordInput, Button } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { CustomFieldsForm, PasswordVerifier, useValidatePasswordVerifiers } from '@rocket.chat/ui-client';
+import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
 	useToastMessageDispatch,
@@ -91,7 +91,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		}
 	};
 
-	const validatePassword = useValidatePasswordVerifiers(password);
+	const validatePassword = useValidatePassword(password);
 
 	// FIXME: replace to endpoint
 	const updateOwnBasicInfo = useMethod('saveUserProfile');

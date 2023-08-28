@@ -1,7 +1,7 @@
 import { Button, Field, Modal, PasswordInput } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form } from '@rocket.chat/layout';
-import { PasswordVerifier } from '@rocket.chat/ui-client';
+import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useRouter, useRouteParameter, useUser, useMethod, useTranslation, useLoginWithToken } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -20,6 +20,8 @@ const ResetPasswordPage = (): ReactElement => {
 	const setUserPassword = useMethod('setUserPassword');
 	const resetPassword = useMethod('resetPassword');
 	const token = useRouteParameter('token');
+
+	const passwordId = useUniqueId();
 	const passwordVerifierId = useUniqueId();
 
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
@@ -34,15 +36,17 @@ const ResetPasswordPage = (): ReactElement => {
 		register,
 		handleSubmit,
 		setError,
-		formState: { errors },
-		formState,
+		formState: { errors, isValid },
 		watch,
 	} = useForm<{
 		password: string;
 		passwordConfirmation: string;
 	}>({
-		mode: 'onChange',
+		mode: 'onBlur',
 	});
+
+	const password = watch('password');
+	const validatePassword = useValidatePassword(password);
 
 	const submit = handleSubmit(async (data) => {
 		try {
@@ -59,8 +63,6 @@ const ResetPasswordPage = (): ReactElement => {
 		}
 	});
 
-	const password = watch('password');
-
 	return (
 		<HorizontalTemplate>
 			<Form onSubmit={submit}>
@@ -74,17 +76,23 @@ const ResetPasswordPage = (): ReactElement => {
 							<PasswordInput
 								{...register('password', {
 									required: true,
+									validate: () => validatePassword(),
 								})}
 								error={errors.password?.message}
 								aria-invalid={errors.password ? 'true' : 'false'}
-								id='password'
+								id={passwordId}
 								placeholder={t('Create_a_password')}
 								name='password'
 								autoComplete='off'
 								aria-describedby={passwordVerifierId}
 							/>
-							{Boolean(password?.length) && <PasswordVerifier password={password} id={passwordVerifierId} />}
 						</Field.Row>
+						{errors?.password && (
+							<Field.Error aria-live='assertive' id={`${passwordId}-error`}>
+								{errors.password.message}
+							</Field.Error>
+						)}
+						<PasswordVerifier password={password} id={passwordVerifierId} />
 						{requiresPasswordConfirmation && (
 							<Field.Row>
 								<PasswordInput
@@ -105,7 +113,7 @@ const ResetPasswordPage = (): ReactElement => {
 				</Form.Container>
 				<Form.Footer>
 					<Modal.FooterControllers>
-						<Button primary disabled={!formState.isValid} type='submit'>
+						<Button primary disabled={!isValid} type='submit'>
 							{t('Reset')}
 						</Button>
 					</Modal.FooterControllers>
