@@ -1,5 +1,5 @@
 ---
-"@rocket.chat/meteor": patch
+"@rocket.chat/meteor": minor
 ---
 
-feat: message menu sections with dividers
+Reorganized the message menu
