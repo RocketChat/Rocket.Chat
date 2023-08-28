@@ -3914,6 +3914,7 @@
   "Password_must_have": "Password must have:",
   "Password_Policy": "Password Policy",
   "Password_Policy_Aria_Description": "Below it's listed the password requirement verifications",
+  "Password_must_meet_the_complexity_requirements": "Password must meet the complexity requirements.",
   "Password_to_access": "Password to access",
   "Passwords_do_not_match": "Passwords do not match",
   "Past_Chats": "Past Chats",
