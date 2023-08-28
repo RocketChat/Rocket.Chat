@@ -10,7 +10,7 @@ Meteor.startup(() => {
 	MessageAction.addButton({
 		id: 'permalink-star',
 		icon: 'permalink',
-		label: 'Get_link',
+		label: 'Copy_link',
 		// classes: 'clipboard',
 		context: ['starred', 'threads', 'videoconf-threads'],
 		async action(_, props) {
@@ -30,7 +30,7 @@ Meteor.startup(() => {
 
 			return Boolean(message.starred?.find((star) => star._id === user?._id));
 		},
-		order: 101,
+		order: 10,
 		group: 'menu',
 	});
 });

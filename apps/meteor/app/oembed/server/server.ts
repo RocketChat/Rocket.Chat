@@ -18,6 +18,7 @@ import { isURL } from '../../../lib/utils/isURL';
 import { settings } from '../../settings/server';
 import { Info } from '../../utils/rocketchat.info';
 
+const MAX_EXTERNAL_URL_PREVIEWS = 5;
 const log = new Logger('OEmbed');
 //  Detect encoding
 //  Priority:
@@ -287,16 +288,25 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	log.debug('Parsing message URLs');
 	if (Array.isArray(message.urls)) {
 		log.debug('URLs found', message.urls.length);
+
+		if (
+			message.attachments ||
+			message.urls.filter((item) => !item.url.includes(settings.get('Site_Url'))).length > MAX_EXTERNAL_URL_PREVIEWS
+		) {
+			log.debug('All URL ignored');
+			return message;
+		}
+
 		const attachments: MessageAttachment[] = [];
 
 		let changed = false;
 		for await (const item of message.urls) {
 			if (item.ignoreParse === true) {
 				log.debug('URL ignored', item.url);
-				break;
+				continue;
 			}
 			if (!isURL(item.url)) {
-				break;
+				continue;
 			}
 			const data = await getUrlMetaWithCache(item.url);
 			if (data != null) {
