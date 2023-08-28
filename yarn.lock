@@ -4955,15 +4955,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.22.2":
-  version: 1.23.1
-  resolution: "@playwright/test@npm:1.23.1"
+"@playwright/test@npm:^1.37.1":
+  version: 1.37.1
+  resolution: "@playwright/test@npm:1.37.1"
   dependencies:
     "@types/node": "*"
-    playwright-core: 1.23.1
+    fsevents: 2.3.2
+    playwright-core: 1.37.1
+  dependenciesMeta:
+    fsevents:
+      optional: true
   bin:
     playwright: cli.js
-  checksum: 27fc6b4424dfb0f0dfaaecb01a33bf77c0f95e6a1e635fe85dd4ad36e5053afdbe4ad1de4be1c5705e482451b43f7ddacf667f6c5b70ab5f8e32c30110211c29
+  checksum: b7038f29000289103c08b215eff7aabdda70cdc1375fa7dad0e81651be71086a1e2fc0e0e29dc70348037c366cf0cc69f762373fda34ba1a74aa1658741d9195
   languageName: node
   linkType: hard
 
@@ -7103,7 +7107,7 @@ __metadata:
     pino: ^8.15.0
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -7116,7 +7120,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7135,7 +7139,7 @@ __metadata:
     moment-timezone: ~0.5.43
     mongodb: ^4.12.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7157,7 +7161,7 @@ __metadata:
     split-on-first: ^3.0.0
     strict-uri-encode: ^2.0.0
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7225,7 +7229,7 @@ __metadata:
     pino: ^8.15.0
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7241,7 +7245,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7254,7 +7258,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7283,7 +7287,7 @@ __metadata:
     jest: ~29.6.1
     mongodb: ^4.12.1
     prettier: ~2.8.8
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7299,7 +7303,7 @@ __metadata:
     eslint: ~8.45.0
     mongodb: ^4.12.1
     prettier: ~2.8.8
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7316,7 +7320,7 @@ __metadata:
     jest: ~29.6.1
     mongodb: ^4.12.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7391,7 +7395,7 @@ __metadata:
     jest: ~29.6.1
     jest-environment-jsdom: ~29.6.1
     jest-websocket-mock: ^2.4.0
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     ws: ^8.13.0
   peerDependencies:
     "@rocket.chat/emitter": "*"
@@ -7439,7 +7443,7 @@ __metadata:
     polka: ^0.5.2
     sharp: ^0.30.7
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     underscore: ^1.13.6
     uuid: ^7.0.3
     ws: ^8.8.1
@@ -7478,7 +7482,7 @@ __metadata:
   resolution: "@rocket.chat/favicon@workspace:packages/favicon"
   dependencies:
     eslint: ~8.45.0
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7632,7 +7636,7 @@ __metadata:
     react-dom: ^17.0.2
     rimraf: ^3.0.2
     tslib: ^2.5.3
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/apps-engine": "*"
     "@rocket.chat/eslint-config": "*"
@@ -7724,7 +7728,7 @@ __metadata:
     react-dom: ~17.0.2
     react-error-boundary: ^3.1.4
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/core-typings": 6.3.0
     "@rocket.chat/css-in-js": "*"
@@ -7754,7 +7758,7 @@ __metadata:
     jest: ~29.6.1
     ts-jest: ~29.0.5
     tsup: ^6.7.0
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7774,7 +7778,7 @@ __metadata:
     eslint: ~8.45.0
     mongodb: ^4.12.1
     prettier: ~2.8.8
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7870,7 +7874,7 @@ __metadata:
     stylelint-order: ^5.0.0
     svg-loader: ^0.0.2
     terser-webpack-plugin: ~4.2.3
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     url-loader: ^4.1.1
     webpack: ~4.46.0
     webpack-bundle-analyzer: ^4.9.0
@@ -7895,7 +7899,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7909,7 +7913,7 @@ __metadata:
     jest: ~29.6.1
     pino: ^8.15.0
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7978,7 +7982,7 @@ __metadata:
     "@nivo/heatmap": 0.80.0
     "@nivo/line": 0.80.0
     "@nivo/pie": 0.80.0
-    "@playwright/test": ^1.22.2
+    "@playwright/test": ^1.37.1
     "@react-aria/color": ^3.0.0-beta.15
     "@react-pdf/renderer": ^3.1.12
     "@rocket.chat/account-utils": "workspace:^"
@@ -8315,7 +8319,7 @@ __metadata:
     turndown: ^7.1.2
     twilio: ^3.76.1
     twit: ^2.2.11
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     ua-parser-js: ^1.0.35
     underscore: ^1.13.6
     universal-perf-hooks: ^1.0.1
@@ -8344,7 +8348,7 @@ __metadata:
     jest: ~29.6.1
     react: ~17.0.2
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@tanstack/react-query": "*"
     react: "*"
@@ -8362,7 +8366,7 @@ __metadata:
     jest: ~29.6.1
     mongodb: ^4.12.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8375,7 +8379,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8417,7 +8421,7 @@ __metadata:
     mongodb: ^4.12.1
     pino: ^8.15.0
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8456,7 +8460,7 @@ __metadata:
     pino: ^8.15.0
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8507,7 +8511,7 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.2.0
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8519,7 +8523,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8551,7 +8555,7 @@ __metadata:
     pino: ^8.15.0
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8573,7 +8577,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     mongodb: ^4.12.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8618,7 +8622,7 @@ __metadata:
     pino: ^8.15.0
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8635,7 +8639,7 @@ __metadata:
     jest: ~29.6.1
     jest-environment-jsdom: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8654,7 +8658,7 @@ __metadata:
     remark-parse: 9.0.0
     remark-stringify: 9.0.1
     semver: ^7.5.2
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     unified: 9.2.2
   languageName: unknown
   linkType: soft
@@ -8676,7 +8680,7 @@ __metadata:
     jest-environment-jsdom: ~29.6.1
     mongodb: ^4.12.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8706,7 +8710,7 @@ __metadata:
     node-fetch: 2.3.0
     proxy-from-env: ^1.1.0
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8722,7 +8726,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8756,7 +8760,7 @@ __metadata:
     pino: ^8.15.0
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8825,7 +8829,7 @@ __metadata:
     jest: ~29.6.1
     moment-timezone: ^0.5.43
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8868,7 +8872,7 @@ __metadata:
     react-dom: ^17.0.2
     react-hook-form: ^7.30.0
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
@@ -8903,7 +8907,7 @@ __metadata:
     jest: ~29.6.1
     react-docgen-typescript-plugin: ~1.0.5
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/icons": "*"
@@ -8930,7 +8934,7 @@ __metadata:
     mongodb: ^4.12.1
     react: ~17.0.2
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     use-sync-external-store: ^1.2.0
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
@@ -8982,7 +8986,7 @@ __metadata:
     react: ~17.0.2
     react-docgen-typescript-plugin: ~1.0.5
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
@@ -9021,7 +9025,7 @@ __metadata:
     jest: ~29.6.1
     react-docgen-typescript-plugin: ~1.0.5
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
@@ -9071,7 +9075,7 @@ __metadata:
     react-router-dom: ^6.11.2
     react-split-pane: ^0.1.92
     react-virtuoso: ^4.3.10
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     use-subscription: ^1.8.0
     vite: ^4.3.9
   languageName: unknown
@@ -9091,7 +9095,7 @@ __metadata:
     jest: ~29.6.1
     react-hook-form: ^7.34.2
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/ui-contexts": 1.0.0
@@ -21089,6 +21093,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fsevents@npm:2.3.2, fsevents@npm:^2.1.2, fsevents@npm:^2.3.2, fsevents@npm:~2.3.2":
+  version: 2.3.2
+  resolution: "fsevents@npm:2.3.2"
+  dependencies:
+    node-gyp: latest
+  checksum: 97ade64e75091afee5265e6956cb72ba34db7819b4c3e94c431d4be2b19b8bb7a2d4116da417950c3425f17c8fe693d25e20212cac583ac1521ad066b77ae31f
+  conditions: os=darwin
+  languageName: node
+  linkType: hard
+
 "fsevents@npm:^1.2.7":
   version: 1.2.13
   resolution: "fsevents@npm:1.2.13"
@@ -21100,12 +21114,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fsevents@npm:^2.1.2, fsevents@npm:^2.3.2, fsevents@npm:~2.3.2":
+"fsevents@patch:fsevents@2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@^2.1.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@^2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>":
   version: 2.3.2
-  resolution: "fsevents@npm:2.3.2"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"
   dependencies:
     node-gyp: latest
-  checksum: 97ade64e75091afee5265e6956cb72ba34db7819b4c3e94c431d4be2b19b8bb7a2d4116da417950c3425f17c8fe693d25e20212cac583ac1521ad066b77ae31f
   conditions: os=darwin
   languageName: node
   linkType: hard
@@ -21116,15 +21129,6 @@ __metadata:
   dependencies:
     bindings: ^1.5.0
     nan: ^2.12.1
-  conditions: os=darwin
-  languageName: node
-  linkType: hard
-
-"fsevents@patch:fsevents@^2.1.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@^2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>":
-  version: 2.3.2
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"
-  dependencies:
-    node-gyp: latest
   conditions: os=darwin
   languageName: node
   linkType: hard
@@ -30048,12 +30052,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.23.1":
-  version: 1.23.1
-  resolution: "playwright-core@npm:1.23.1"
+"playwright-core@npm:1.37.1":
+  version: 1.37.1
+  resolution: "playwright-core@npm:1.37.1"
   bin:
-    playwright: cli.js
-  checksum: 1e6a3a7a9aaee1864b22195c7fef52b6980fcafc6d667749737455360a44a182a7035f12bfd76f298f957d1b99550420a8748f6a473ceeacf2cb2db42beb9be0
+    playwright-core: cli.js
+  checksum: 69f818da2230057584140d5b3af7778a4f4a822b5b18d133abfc5d259128becb943c343a2ddf6b0635277a69f28983e83e2bc3fce23595ececb1e410475b6368
   languageName: node
   linkType: hard
 
@@ -33269,7 +33273,7 @@ __metadata:
     "@types/chart.js": ^2.9.37
     "@types/js-yaml": ^4.0.5
     husky: ^7.0.4
-    turbo: latest
+    turbo: ^1.10.13
   languageName: unknown
   linkType: soft
 
@@ -33317,7 +33321,7 @@ __metadata:
     sodium-native: ^3.3.0
     sodium-plus: ^0.9.0
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     uuid: ^8.3.2
     ws: ^8.8.1
   languageName: unknown
@@ -36619,58 +36623,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:1.10.12":
-  version: 1.10.12
-  resolution: "turbo-darwin-64@npm:1.10.12"
+"turbo-darwin-64@npm:1.10.13":
+  version: 1.10.13
+  resolution: "turbo-darwin-64@npm:1.10.13"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:1.10.12":
-  version: 1.10.12
-  resolution: "turbo-darwin-arm64@npm:1.10.12"
+"turbo-darwin-arm64@npm:1.10.13":
+  version: 1.10.13
+  resolution: "turbo-darwin-arm64@npm:1.10.13"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:1.10.12":
-  version: 1.10.12
-  resolution: "turbo-linux-64@npm:1.10.12"
+"turbo-linux-64@npm:1.10.13":
+  version: 1.10.13
+  resolution: "turbo-linux-64@npm:1.10.13"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:1.10.12":
-  version: 1.10.12
-  resolution: "turbo-linux-arm64@npm:1.10.12"
+"turbo-linux-arm64@npm:1.10.13":
+  version: 1.10.13
+  resolution: "turbo-linux-arm64@npm:1.10.13"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:1.10.12":
-  version: 1.10.12
-  resolution: "turbo-windows-64@npm:1.10.12"
+"turbo-windows-64@npm:1.10.13":
+  version: 1.10.13
+  resolution: "turbo-windows-64@npm:1.10.13"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:1.10.12":
-  version: 1.10.12
-  resolution: "turbo-windows-arm64@npm:1.10.12"
+"turbo-windows-arm64@npm:1.10.13":
+  version: 1.10.13
+  resolution: "turbo-windows-arm64@npm:1.10.13"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:latest":
-  version: 1.10.12
-  resolution: "turbo@npm:1.10.12"
+"turbo@npm:^1.10.13":
+  version: 1.10.13
+  resolution: "turbo@npm:1.10.13"
   dependencies:
-    turbo-darwin-64: 1.10.12
-    turbo-darwin-arm64: 1.10.12
-    turbo-linux-64: 1.10.12
-    turbo-linux-arm64: 1.10.12
-    turbo-windows-64: 1.10.12
-    turbo-windows-arm64: 1.10.12
+    turbo-darwin-64: 1.10.13
+    turbo-darwin-arm64: 1.10.13
+    turbo-linux-64: 1.10.13
+    turbo-linux-arm64: 1.10.13
+    turbo-windows-64: 1.10.13
+    turbo-windows-arm64: 1.10.13
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -36686,7 +36690,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 266b70404e149b92cd64051fcdd03c56b474ed22f6bd11cf4cf1b70f55c72f9a2aaa90109b19b95e43d68e53a6be54485f0cc0135c8d5b505db09fd126a34052
+  checksum: 0c000c671534c8c80270c6d1fc77646df0e44164c0db561a85b3fefadd4bda6d5920626d067abb09af38613024e3984fb8d8bc5be922dae6236eda6aab9447a2
   languageName: node
   linkType: hard
 
@@ -36866,23 +36870,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:~5.1.6":
-  version: 5.1.6
-  resolution: "typescript@npm:5.1.6"
+"typescript@npm:~5.2.2":
+  version: 5.2.2
+  resolution: "typescript@npm:5.2.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: b2f2c35096035fe1f5facd1e38922ccb8558996331405eb00a5111cc948b2e733163cc22fab5db46992aba7dd520fff637f2c1df4996ff0e134e77d3249a7350
+  checksum: 7912821dac4d962d315c36800fe387cdc0a6298dba7ec171b350b4a6e988b51d7b8f051317786db1094bd7431d526b648aba7da8236607febb26cf5b871d2d3c
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@~5.1.6#~builtin<compat/typescript>":
-  version: 5.1.6
-  resolution: "typescript@patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=f456af"
+"typescript@patch:typescript@~5.2.2#~builtin<compat/typescript>":
+  version: 5.2.2
+  resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 21e88b0a0c0226f9cb9fd25b9626fb05b4c0f3fddac521844a13e1f30beb8f14e90bd409a9ac43c812c5946d714d6e0dee12d5d02dfc1c562c5aacfa1f49b606
+  checksum: 07106822b4305de3f22835cbba949a2b35451cad50888759b6818421290ff95d522b38ef7919e70fb381c5fe9c1c643d7dea22c8b31652a717ddbd57b7f4d554
   languageName: node
   linkType: hard
 
