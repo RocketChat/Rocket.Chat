@@ -8,4 +8,4 @@
 "@rocket.chat/web-ui-registration": patch
 ---
 
-Fixed the login page language switcher, now the componente has a new look, is reactive and the language selection becomes concrete upon login in;
+Fixed the login page language switcher, now the component has a new look, is reactive and the language selection becomes concrete upon login in. Also changed the default language of the login page to be the browser language.
