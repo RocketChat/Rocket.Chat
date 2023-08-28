@@ -14,7 +14,7 @@
 		"jest": "~29.6.1",
 		"ts-jest": "~29.0.5",
 		"tsup": "^6.7.0",
-		"typescript": "~5.1.6"
+		"typescript": "~5.2.2"
 	},
 	"scripts": {
 		"build": "node ./src/index.mjs",

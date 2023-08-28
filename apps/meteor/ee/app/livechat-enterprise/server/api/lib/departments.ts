@@ -2,7 +2,7 @@ import { LivechatDepartment, LivechatDepartmentAgents, LivechatUnit } from '@roc
 
 import { helperLogger } from '../../lib/logger';
 
-export const getDepartmentsWhichUserCanAccess = async (userId: string): Promise<string[]> => {
+export const getDepartmentsWhichUserCanAccess = async (userId: string, includeDisabled = false): Promise<string[]> => {
 	const departments = await LivechatDepartmentAgents.find(
 		{
 			agentId: userId,
@@ -14,7 +14,7 @@ export const getDepartmentsWhichUserCanAccess = async (userId: string): Promise<
 		},
 	).toArray();
 
-	const monitoredDepartments = await LivechatUnit.findMonitoredDepartmentsByMonitorId(userId);
+	const monitoredDepartments = await LivechatUnit.findMonitoredDepartmentsByMonitorId(userId, includeDisabled);
 	const combinedDepartments = [
 		...departments.map((department) => department.departmentId),
 		...monitoredDepartments.map((department) => department._id),
@@ -24,7 +24,7 @@ export const getDepartmentsWhichUserCanAccess = async (userId: string): Promise<
 };
 
 export const hasAccessToDepartment = async (userId: string, departmentId: string): Promise<boolean> => {
-	const department = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(userId, departmentId);
+	const department = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(userId, departmentId, { projection: { _id: 1 } });
 	if (department) {
 		helperLogger.debug(`User ${userId} has access to department ${departmentId} because they are an agent`);
 		return true;

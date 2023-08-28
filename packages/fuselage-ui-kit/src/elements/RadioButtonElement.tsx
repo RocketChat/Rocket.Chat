@@ -19,14 +19,14 @@ const RadioButtonElement = ({
     <Box>
       {options.map((option: UiKit.Option) => {
         return (
-          <Box key={option.value} pb='x4'>
+          <Box key={option.value} pb={4}>
             <RadioButton
               disabled={loading}
               checked={value === option.value}
               value={option.value}
               onChange={action}
             />
-            <Box is='label' pis='x8'>
+            <Box is='label' pis={8}>
               {surfaceRenderer.renderTextObject(
                 option.text,
                 0,

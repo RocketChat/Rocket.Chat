@@ -6,11 +6,11 @@ import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdo
 
 const CategoryDropDownList = ({ categories, onSelected }: CategoryDropDownListProps): ReactElement => {
 	return (
-		<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='light' borderRadius='x2'>
+		<Tile overflow='auto' pb={12} pi={0} elevation='2' w='full' bg='light' borderRadius='x2'>
 			{categories.map((category, index) => (
 				<Fragment key={index}>
 					{category.label && (
-						<Box pi='x16' pbs='x8' pbe='x4' fontScale='micro' textTransform='uppercase' color='default'>
+						<Box pi={16} pbs={8} pbe={4} fontScale='micro' textTransform='uppercase' color='default'>
 							{category.label}
 						</Box>
 					)}

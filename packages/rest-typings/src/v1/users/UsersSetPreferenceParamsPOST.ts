@@ -1,8 +1,10 @@
+import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
 	coerceTypes: true,
 });
+export type FontSize = '100%' | '14px' | '18px' | '20px' | '24px';
 
 export type UsersSetPreferencesParamsPOST = {
 	userId?: string;
@@ -40,12 +42,14 @@ export type UsersSetPreferencesParamsPOST = {
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		featuresPreview?: { name: string; value: boolean }[];
-		themeAppearence?: 'auto' | 'light' | 'dark';
+		themeAppearence?: ThemePreference;
+		fontSize?: FontSize;
 		receiveLoginDetectionEmail?: boolean;
 		notifyCalendarEvents?: boolean;
 		idleTimeLimit?: number;
 		omnichannelTranscriptEmail?: boolean;
 		omnichannelTranscriptPDF?: boolean;
+		enableMobileRinging?: boolean;
 	};
 };
 
@@ -213,6 +217,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					type: 'string',
 					nullable: true,
 				},
+				fontSize: {
+					type: 'string',
+					nullable: true,
+				},
 				receiveLoginDetectionEmail: {
 					type: 'boolean',
 					nullable: true,
@@ -230,6 +238,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				omnichannelTranscriptPDF: {
+					type: 'boolean',
+					nullable: true,
+				},
+				enableMobileRinging: {
 					type: 'boolean',
 					nullable: true,
 				},

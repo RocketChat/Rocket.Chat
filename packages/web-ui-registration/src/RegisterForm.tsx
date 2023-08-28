@@ -1,8 +1,8 @@
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput, Callout } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { PasswordVerifier, CustomFieldsForm } from '@rocket.chat/ui-client';
-import { useAccountsCustomFields, useVerifyPassword, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
+import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -50,8 +50,6 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		control,
 		formState: { errors },
 	} = useForm<LoginRegisterPayload>();
-
-	const passwordVerifications = useVerifyPassword(watch('password'));
 
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
 		registerUser.mutate(
@@ -185,7 +183,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						{errors.passwordConfirmation?.type === 'required' && requiresPasswordConfirmation && (
 							<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
 						)}
-						{passwordVerifications && <PasswordVerifier password={watch('password')} passwordVerifications={passwordVerifications} />}
+						<PasswordVerifier password={watch('password')} />
 					</Field>
 					{manuallyApproveNewUsersRequired && (
 						<Field>
@@ -203,7 +201,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							{errors.reason && <Field.Error>{t('registration.component.form.requiredField')}</Field.Error>}
 						</Field>
 					)}
-					{customFields.length > 0 && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFields} />}
+					<CustomFieldsForm formName='customFields' formControl={control} metadata={customFields} />
 					{serverError && <Callout type='danger'>{serverError}</Callout>}
 				</FieldGroup>
 			</Form.Container>

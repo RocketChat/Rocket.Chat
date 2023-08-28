@@ -13,7 +13,7 @@ const InfoPanelAction = ({ label, icon, ...props }: InfoPanelActionProps): React
 		title={typeof label === 'string' ? label : undefined}
 		aria-label={typeof label === 'string' ? label : undefined}
 		{...props}
-		mi='x4'
+		mi={4}
 		icon={icon}
 	>
 		{label}

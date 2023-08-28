@@ -31,6 +31,8 @@ import type {
 	AtLeast,
 	ILivechatInquiryRecord,
 	Username,
+	ILivechatAgent,
+	IBanner,
 } from '@rocket.chat/core-typings';
 
 import type { AutoUpdateRecord } from './types/IMeteor';
@@ -49,6 +51,7 @@ export type EventSignatures = {
 	'banner.new'(bannerId: string): void;
 	'banner.enabled'(bannerId: string): void;
 	'banner.disabled'(bannerId: string): void;
+	'banner.user'(userId: string, banner: IBanner): void;
 	'emoji.deleteCustom'(emoji: IEmoji): void;
 	'emoji.updateCustom'(emoji: IEmoji): void;
 	'license.module'(data: { module: string; valid: boolean }): void;
@@ -252,7 +255,10 @@ export type EventSignatures = {
 	}): void;
 	'omnichannel.room'(
 		roomId: string,
-		data: { type: 'agentStatus'; status: string } | { type: 'queueData' | 'agentData'; data: { [k: string]: unknown } },
+		data:
+			| { type: 'agentStatus'; status: string }
+			| { type: 'queueData'; data: { [k: string]: unknown } | undefined }
+			| { type: 'agentData'; data: ILivechatAgent | undefined | { hiddenInfo: boolean } },
 	): void;
 
 	// Send all events from here

@@ -92,12 +92,12 @@ const ComposerBoxPopupPreview = forwardRef<
 
 	return (
 		<Box className='message-popup-position' position='relative'>
-			<Tile className='message-popup' display='flex' padding='x8' role='menu' mbe='x8' aria-labelledby={id}>
+			<Tile className='message-popup' display='flex' padding={8} role='menu' mbe={8} aria-labelledby={id}>
 				<Box role='listbox' display='flex' overflow='auto' fontSize={0} width={0} flexGrow={1} aria-busy={isLoading}>
 					{isLoading &&
 						Array(5)
 							.fill(5)
-							.map((_, index) => <Skeleton variant='rect' h='100px' w='120px' m='x2' key={index} />)}
+							.map((_, index) => <Skeleton variant='rect' h='100px' w='120px' m={2} key={index} />)}
 
 					{!isLoading &&
 						itemsFlat.map((item) => (
@@ -111,7 +111,7 @@ const ComposerBoxPopupPreview = forwardRef<
 								borderColor={item === focused ? 'highlight' : 'transparent'}
 								tabIndex={item === focused ? 0 : -1}
 								aria-selected={item === focused}
-								m='x2'
+								m={2}
 								borderWidth='default'
 								borderRadius='x4'
 							>
