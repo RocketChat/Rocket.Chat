@@ -15,8 +15,8 @@ import React, { useMemo } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import type { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
+import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
 const getUserIsMuted = (
 	user: Pick<IUser, '_id' | 'username'>,
@@ -38,7 +38,7 @@ const getUserIsMuted = (
 	return room && Array.isArray(room.muted) && room.muted.indexOf(user.username ?? '') > -1;
 };
 
-export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
+export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const userCanMute = usePermission('mute-user', rid);
@@ -101,9 +101,10 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 
 		return roomCanMute && userCanMute
 			? {
-					label: t(isMuted ? 'Unmute_user' : 'Mute_user'),
+					content: t(isMuted ? 'Unmute_user' : 'Mute_user'),
 					icon: isMuted ? ('mic' as const) : ('mic-off' as const),
-					action,
+					onClick: action,
+					type: 'management' as UserInfoActionType,
 			  }
 			: undefined;
 	}, [
