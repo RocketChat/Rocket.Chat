@@ -13,7 +13,6 @@ import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 import { ChatMessage, ChatSubscription } from '../../../models/client';
 import { getUserPreference } from '../../../utils/client';
-import { readMessage } from './readMessages';
 
 export async function upsertMessage(
 	{
@@ -196,14 +195,12 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 
 		waitAfterFlush(() => {
+			this.emit('loaded-messages');
 			const heightDiff = wrapper.scrollHeight - (previousHeight ?? NaN);
 			wrapper.scrollTop = (scroll ?? NaN) + heightDiff;
 		});
 
 		room.isLoading.set(false);
-		waitAfterFlush(() => {
-			readMessage.refreshUnreadMark(rid);
-		});
 	}
 
 	public async getMoreNext(rid: IRoom['_id'], atBottomRef: MutableRefObject<boolean>) {
@@ -299,9 +296,8 @@ class RoomHistoryManagerClass extends Emitter {
 
 		upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
 
-		readMessage.refreshUnreadMark(message.rid);
-
 		Tracker.afterFlush(async () => {
+			this.emit('loaded-messages');
 			room.isLoading.set(false);
 		});
 
