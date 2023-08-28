@@ -7100,7 +7100,7 @@ __metadata:
     pino: ^8.15.0
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -7113,7 +7113,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7132,7 +7132,7 @@ __metadata:
     moment-timezone: ~0.5.43
     mongodb: ^4.12.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7154,7 +7154,7 @@ __metadata:
     split-on-first: ^3.0.0
     strict-uri-encode: ^2.0.0
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7222,7 +7222,7 @@ __metadata:
     pino: ^8.15.0
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7238,7 +7238,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7251,7 +7251,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7280,7 +7280,7 @@ __metadata:
     jest: ~29.6.1
     mongodb: ^4.12.1
     prettier: ~2.8.8
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7296,7 +7296,7 @@ __metadata:
     eslint: ~8.45.0
     mongodb: ^4.12.1
     prettier: ~2.8.8
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7313,7 +7313,7 @@ __metadata:
     jest: ~29.6.1
     mongodb: ^4.12.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7388,7 +7388,7 @@ __metadata:
     jest: ~29.6.1
     jest-environment-jsdom: ~29.6.1
     jest-websocket-mock: ^2.4.0
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     ws: ^8.13.0
   peerDependencies:
     "@rocket.chat/emitter": "*"
@@ -7436,7 +7436,7 @@ __metadata:
     polka: ^0.5.2
     sharp: ^0.30.7
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     underscore: ^1.13.6
     uuid: ^7.0.3
     ws: ^8.8.1
@@ -7475,7 +7475,7 @@ __metadata:
   resolution: "@rocket.chat/favicon@workspace:packages/favicon"
   dependencies:
     eslint: ~8.45.0
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7629,7 +7629,7 @@ __metadata:
     react-dom: ^17.0.2
     rimraf: ^3.0.2
     tslib: ^2.5.3
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/apps-engine": "*"
     "@rocket.chat/eslint-config": "*"
@@ -7721,7 +7721,7 @@ __metadata:
     react-dom: ~17.0.2
     react-error-boundary: ^3.1.4
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/core-typings": 6.3.0
     "@rocket.chat/css-in-js": "*"
@@ -7751,7 +7751,7 @@ __metadata:
     jest: ~29.6.1
     ts-jest: ~29.0.5
     tsup: ^6.7.0
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7771,7 +7771,7 @@ __metadata:
     eslint: ~8.45.0
     mongodb: ^4.12.1
     prettier: ~2.8.8
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7866,7 +7866,7 @@ __metadata:
     stylelint-order: ^5.0.0
     svg-loader: ^0.0.2
     terser-webpack-plugin: ~4.2.3
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     url-loader: ^4.1.1
     webpack: ~4.46.0
     webpack-cli: ~4.10.0
@@ -7890,7 +7890,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -7904,7 +7904,7 @@ __metadata:
     jest: ~29.6.1
     pino: ^8.15.0
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8309,7 +8309,7 @@ __metadata:
     turndown: ^7.1.2
     twilio: ^3.76.1
     twit: ^2.2.11
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     ua-parser-js: ^1.0.35
     underscore: ^1.13.6
     universal-perf-hooks: ^1.0.1
@@ -8337,7 +8337,7 @@ __metadata:
     jest: ~29.6.1
     react: ~17.0.2
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@tanstack/react-query": "*"
     react: "*"
@@ -8355,7 +8355,7 @@ __metadata:
     jest: ~29.6.1
     mongodb: ^4.12.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8368,7 +8368,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8410,7 +8410,7 @@ __metadata:
     mongodb: ^4.12.1
     pino: ^8.15.0
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8449,7 +8449,7 @@ __metadata:
     pino: ^8.15.0
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8500,7 +8500,7 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.2.0
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8512,7 +8512,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8544,7 +8544,7 @@ __metadata:
     pino: ^8.15.0
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8566,7 +8566,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     mongodb: ^4.12.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8611,7 +8611,7 @@ __metadata:
     pino: ^8.15.0
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8628,7 +8628,7 @@ __metadata:
     jest: ~29.6.1
     jest-environment-jsdom: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8647,7 +8647,7 @@ __metadata:
     remark-parse: 9.0.0
     remark-stringify: 9.0.1
     semver: ^7.5.2
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     unified: 9.2.2
   languageName: unknown
   linkType: soft
@@ -8669,7 +8669,7 @@ __metadata:
     jest-environment-jsdom: ~29.6.1
     mongodb: ^4.12.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8699,7 +8699,7 @@ __metadata:
     node-fetch: 2.3.0
     proxy-from-env: ^1.1.0
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8715,7 +8715,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8749,7 +8749,7 @@ __metadata:
     pino: ^8.15.0
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8818,7 +8818,7 @@ __metadata:
     jest: ~29.6.1
     moment-timezone: ^0.5.43
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
@@ -8861,7 +8861,7 @@ __metadata:
     react-dom: ^17.0.2
     react-hook-form: ^7.30.0
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
@@ -8896,7 +8896,7 @@ __metadata:
     jest: ~29.6.1
     react-docgen-typescript-plugin: ~1.0.5
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/icons": "*"
@@ -8923,7 +8923,7 @@ __metadata:
     mongodb: ^4.12.1
     react: ~17.0.2
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     use-sync-external-store: ^1.2.0
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
@@ -8975,7 +8975,7 @@ __metadata:
     react: ~17.0.2
     react-docgen-typescript-plugin: ~1.0.5
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
@@ -9014,7 +9014,7 @@ __metadata:
     jest: ~29.6.1
     react-docgen-typescript-plugin: ~1.0.5
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
@@ -9064,7 +9064,7 @@ __metadata:
     react-router-dom: ^6.11.2
     react-split-pane: ^0.1.92
     react-virtuoso: ^4.3.10
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     use-subscription: ^1.8.0
     vite: ^4.3.9
   languageName: unknown
@@ -9084,7 +9084,7 @@ __metadata:
     jest: ~29.6.1
     react-hook-form: ^7.34.2
     ts-jest: ~29.0.5
-    typescript: ~5.1.6
+    typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/ui-contexts": 1.0.0
@@ -33274,7 +33274,7 @@ __metadata:
     sodium-native: ^3.3.0
     sodium-plus: ^0.9.0
     ts-node: ^10.9.1
-    typescript: ~5.1.6
+    typescript: ~5.2.2
     uuid: ^8.3.2
     ws: ^8.8.1
   languageName: unknown
@@ -36805,23 +36805,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:~5.1.6":
-  version: 5.1.6
-  resolution: "typescript@npm:5.1.6"
+"typescript@npm:~5.2.2":
+  version: 5.2.2
+  resolution: "typescript@npm:5.2.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: b2f2c35096035fe1f5facd1e38922ccb8558996331405eb00a5111cc948b2e733163cc22fab5db46992aba7dd520fff637f2c1df4996ff0e134e77d3249a7350
+  checksum: 7912821dac4d962d315c36800fe387cdc0a6298dba7ec171b350b4a6e988b51d7b8f051317786db1094bd7431d526b648aba7da8236607febb26cf5b871d2d3c
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@~5.1.6#~builtin<compat/typescript>":
-  version: 5.1.6
-  resolution: "typescript@patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=f456af"
+"typescript@patch:typescript@~5.2.2#~builtin<compat/typescript>":
+  version: 5.2.2
+  resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 21e88b0a0c0226f9cb9fd25b9626fb05b4c0f3fddac521844a13e1f30beb8f14e90bd409a9ac43c812c5946d714d6e0dee12d5d02dfc1c562c5aacfa1f49b606
+  checksum: 07106822b4305de3f22835cbba949a2b35451cad50888759b6818421290ff95d522b38ef7919e70fb381c5fe9c1c643d7dea22c8b31652a717ddbd57b7f4d554
   languageName: node
   linkType: hard
 
