@@ -42,7 +42,7 @@ export const AgentsSection = () => {
 							height={360}
 							indexBy='label'
 							keys={['value']}
-							margins={{ top: 20, right: 0, bottom: 50, left: 50 }}
+							margins={{ top: 45, right: 0, bottom: 50, left: 50 }}
 							axis={{
 								axisBottom: {
 									tickSize: 0,
