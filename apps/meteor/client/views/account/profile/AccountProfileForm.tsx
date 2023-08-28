@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, PasswordInput, Button } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
+import { CustomFieldsForm, PasswordVerifier, useValidatePasswordVerifiers } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
 	useToastMessageDispatch,
@@ -90,6 +90,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 			return t('Username_already_exist');
 		}
 	};
+
+	const validatePassword = useValidatePasswordVerifiers(password);
 
 	// FIXME: replace to endpoint
 	const updateOwnBasicInfo = useMethod('saveUserProfile');
@@ -293,14 +295,22 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					<Field.Row>
 						<PasswordInput
 							id={passwordId}
-							{...register('password')}
+							{...register('password', {
+								validate: () => validatePassword(),
+							})}
 							error={errors.password?.message}
 							flexGrow={1}
 							addon={<Icon name='key' size='x20' />}
 							disabled={!allowPasswordChange}
 							aria-describedby={passwordVerifierId}
+							aria-invalid={errors.password ? 'true' : 'false'}
 						/>
 					</Field.Row>
+					{errors?.password && (
+						<Field.Error aria-live='assertive' id={`${passwordId}-error`}>
+							{errors.password.message}
+						</Field.Error>
+					)}
 					{allowPasswordChange && Boolean(password?.length) && <PasswordVerifier password={password} id={passwordVerifierId} />}
 				</Field>
 				<Field>
