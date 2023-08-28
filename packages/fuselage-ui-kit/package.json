@@ -85,7 +85,7 @@
     "react-dom": "^17.0.2",
     "rimraf": "^3.0.2",
     "tslib": "^2.5.3",
-    "typescript": "~5.1.6"
+    "typescript": "~5.2.2"
   },
   "dependencies": {
     "@rocket.chat/gazzodown": "workspace:^",

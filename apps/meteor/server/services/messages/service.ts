@@ -25,8 +25,8 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		return deleteMessage(message, user);
 	}
 
-	async updateMessage(message: IMessage, user: IUser, originalMsg?: IMessage): Promise<void> {
-		return updateMessage(message, user, originalMsg);
+	async updateMessage(message: IMessage, user: IUser, originalMsg?: IMessage, previewUrls?: string[]): Promise<void> {
+		return updateMessage(message, user, originalMsg, previewUrls);
 	}
 
 	async reactToMessage(userId: string, reaction: string, messageId: IMessage['_id'], shouldReact?: boolean): Promise<void> {

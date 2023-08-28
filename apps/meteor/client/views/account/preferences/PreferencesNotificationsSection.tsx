@@ -1,13 +1,12 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Button, Box } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
 
 import { KonchatNotification } from '../../../../app/ui/client/lib/KonchatNotification';
-import { useForm } from '../../../hooks/useForm';
-import type { FormSectionProps } from './AccountPreferencesPage';
 
 const notificationOptionsLabelMap = {
 	all: 'All_messages',
@@ -20,17 +19,11 @@ const emailNotificationOptionsLabelMap = {
 	nothing: 'Email_Notification_Mode_Disabled',
 };
 
-const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: FormSectionProps): ReactElement => {
+// TODO: Test Notification Button not working
+const PreferencesNotificationsSection = () => {
 	const t = useTranslation();
 
 	const [notificationsPermission, setNotificationsPermission] = useState<NotificationPermission>();
-
-	const userDesktopNotificationRequireInteraction = useUserPreference('desktopNotificationRequireInteraction');
-	const userDesktopNotifications = useUserPreference('desktopNotifications');
-	const userMobileNotifications = useUserPreference('pushNotifications');
-	const userEmailNotificationMode = useUserPreference('emailNotificationMode') as keyof typeof emailNotificationOptionsLabelMap;
-	const userReceiveLoginDetectionEmail = useUserPreference('receiveLoginDetectionEmail');
-	const userNotifyCalendarEvents = useUserPreference('notifyCalendarEvents');
 
 	const defaultDesktopNotifications = useSetting(
 		'Accounts_Default_User_Preferences_desktopNotifications',
@@ -44,47 +37,11 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 	const allowLoginEmailPreference = useSetting('Device_Management_Allow_Login_Email_preference');
 	const showNewLoginEmailPreference = loginEmailEnabled && allowLoginEmailPreference;
 	const showCalendarPreference = useSetting('Outlook_Calendar_Enabled');
+	const showMobileRinging = useSetting('VideoConf_Mobile_Ringing');
 
-	const { values, handlers, commit } = useForm(
-		{
-			desktopNotificationRequireInteraction: userDesktopNotificationRequireInteraction,
-			desktopNotifications: userDesktopNotifications,
-			pushNotifications: userMobileNotifications,
-			emailNotificationMode: userEmailNotificationMode,
-			receiveLoginDetectionEmail: userReceiveLoginDetectionEmail,
-			notifyCalendarEvents: userNotifyCalendarEvents,
-		},
-		onChange,
-	);
-
-	const {
-		desktopNotificationRequireInteraction,
-		desktopNotifications,
-		pushNotifications,
-		emailNotificationMode,
-		receiveLoginDetectionEmail,
-		notifyCalendarEvents,
-	} = values as {
-		desktopNotificationRequireInteraction: boolean;
-		desktopNotifications: string;
-		pushNotifications: string;
-		emailNotificationMode: string;
-		receiveLoginDetectionEmail: boolean;
-		notifyCalendarEvents: boolean;
-	};
-
-	const {
-		handleDesktopNotificationRequireInteraction,
-		handleDesktopNotifications,
-		handlePushNotifications,
-		handleEmailNotificationMode,
-		handleReceiveLoginDetectionEmail,
-		handleNotifyCalendarEvents,
-	} = handlers;
+	const userEmailNotificationMode = useUserPreference('emailNotificationMode') as keyof typeof emailNotificationOptionsLabelMap;
 
 	useEffect(() => setNotificationsPermission(window.Notification && Notification.permission), []);
-
-	commitRef.current.notifications = commit;
 
 	const onSendNotification = useCallback(() => {
 		KonchatNotification.notify({
@@ -121,8 +78,18 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 		return options;
 	}, [t, userEmailNotificationMode]);
 
+	const { control } = useFormContext();
+
+	const notificationRequireId = useUniqueId();
+	const desktopNotificationsId = useUniqueId();
+	const pushNotificationsId = useUniqueId();
+	const emailNotificationModeId = useUniqueId();
+	const receiveLoginDetectionEmailId = useUniqueId();
+	const notifyCalendarEventsId = useUniqueId();
+	const enableMobileRingingId = useUniqueId();
+
 	return (
-		<Accordion.Item title={t('Notifications')} {...props}>
+		<Accordion.Item title={t('Notifications')}>
 			<FieldGroup>
 				<Field>
 					<Field.Label>{t('Desktop_Notifications')}</Field.Label>
@@ -146,59 +113,123 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<Field.Label>{t('Notification_RequireInteraction')}</Field.Label>
+						<Field.Label htmlFor={notificationRequireId}>{t('Notification_RequireInteraction')}</Field.Label>
 						<Field.Row>
-							<ToggleSwitch checked={desktopNotificationRequireInteraction} onChange={handleDesktopNotificationRequireInteraction} />
+							<Controller
+								name='desktopNotificationRequireInteraction'
+								control={control}
+								render={({ field: { ref, value, onChange } }) => (
+									<ToggleSwitch
+										aria-describedby={`${notificationRequireId}-hint`}
+										id={notificationRequireId}
+										ref={ref}
+										checked={value}
+										onChange={onChange}
+									/>
+								)}
+							/>
 						</Field.Row>
 					</Box>
-					<Field.Hint>{t('Only_works_with_chrome_version_greater_50')}</Field.Hint>
+					<Field.Hint id={`${notificationRequireId}-hint`}>{t('Only_works_with_chrome_version_greater_50')}</Field.Hint>
 				</Field>
 				<Field>
-					<Field.Label>{t('Notification_Desktop_Default_For')}</Field.Label>
+					<Field.Label htmlFor={desktopNotificationsId}>{t('Notification_Desktop_Default_For')}</Field.Label>
 					<Field.Row>
-						<Select value={desktopNotifications} onChange={handleDesktopNotifications} options={desktopNotificationOptions} />
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Label>{t('Notification_Push_Default_For')}</Field.Label>
-					<Field.Row>
-						<Select value={pushNotifications} onChange={handlePushNotifications} options={mobileNotificationOptions} />
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Label>{t('Email_Notification_Mode')}</Field.Label>
-					<Field.Row>
-						<Select
-							disabled={!canChangeEmailNotification}
-							value={emailNotificationMode}
-							onChange={handleEmailNotificationMode}
-							options={emailNotificationOptions}
+						<Controller
+							name='desktopNotifications'
+							control={control}
+							render={({ field: { value, onChange } }) => (
+								<Select id={desktopNotificationsId} value={value} onChange={onChange} options={desktopNotificationOptions} />
+							)}
 						/>
 					</Field.Row>
-					<Field.Hint>
+				</Field>
+				<Field>
+					<Field.Label htmlFor={pushNotificationsId}>{t('Notification_Push_Default_For')}</Field.Label>
+					<Field.Row>
+						<Controller
+							name='pushNotifications'
+							control={control}
+							render={({ field: { value, onChange } }) => (
+								<Select id={pushNotificationsId} value={value} onChange={onChange} options={mobileNotificationOptions} />
+							)}
+						/>
+					</Field.Row>
+				</Field>
+				<Field>
+					<Field.Label htmlFor={emailNotificationModeId}>{t('Email_Notification_Mode')}</Field.Label>
+					<Field.Row>
+						<Controller
+							name='emailNotificationMode'
+							control={control}
+							render={({ field: { value, onChange } }) => (
+								<Select
+									aria-describedby={`${emailNotificationModeId}-hint`}
+									id={emailNotificationModeId}
+									disabled={!canChangeEmailNotification}
+									value={value}
+									onChange={onChange}
+									options={emailNotificationOptions}
+								/>
+							)}
+						/>
+					</Field.Row>
+					<Field.Hint id={`${emailNotificationModeId}-hint`}>
 						{canChangeEmailNotification && t('You_need_to_verifiy_your_email_address_to_get_notications')}
 						{!canChangeEmailNotification && t('Email_Notifications_Change_Disabled')}
 					</Field.Hint>
 				</Field>
-
 				{showNewLoginEmailPreference && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label>{t('Receive_Login_Detection_Emails')}</Field.Label>
+							<Field.Label htmlFor={receiveLoginDetectionEmailId}>{t('Receive_Login_Detection_Emails')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch checked={receiveLoginDetectionEmail} onChange={handleReceiveLoginDetectionEmail} />
+								<Controller
+									name='receiveLoginDetectionEmail'
+									control={control}
+									render={({ field: { ref, value, onChange } }) => (
+										<ToggleSwitch
+											aria-describedby={`${receiveLoginDetectionEmailId}-hint`}
+											id={receiveLoginDetectionEmailId}
+											ref={ref}
+											checked={value}
+											onChange={onChange}
+										/>
+									)}
+								/>
 							</Field.Row>
 						</Box>
-						<Field.Hint>{t('Receive_Login_Detection_Emails_Description')}</Field.Hint>
+						<Field.Hint id={`${receiveLoginDetectionEmailId}-hint`}>{t('Receive_Login_Detection_Emails_Description')}</Field.Hint>
 					</Field>
 				)}
-
 				{showCalendarPreference && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label>{t('Notify_Calendar_Events')}</Field.Label>
+							<Field.Label htmlFor={notifyCalendarEventsId}>{t('Notify_Calendar_Events')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch checked={notifyCalendarEvents} onChange={handleNotifyCalendarEvents} />
+								<Controller
+									name='notifyCalendarEvents'
+									control={control}
+									render={({ field: { ref, value, onChange } }) => (
+										<ToggleSwitch id={notifyCalendarEventsId} ref={ref} checked={value} onChange={onChange} />
+									)}
+								/>
+							</Field.Row>
+						</Box>
+					</Field>
+				)}
+				{showMobileRinging && (
+					<Field>
+						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+							<Field.Label htmlFor={enableMobileRingingId}>{t('VideoConf_Mobile_Ringing')}</Field.Label>
+							<Field.Row>
+								<Controller
+									name='enableMobileRinging'
+									control={control}
+									render={({ field: { ref, value, onChange } }) => (
+										<ToggleSwitch id={enableMobileRingingId} ref={ref} checked={value} onChange={onChange} />
+									)}
+								/>
 							</Field.Row>
 						</Box>
 					</Field>
