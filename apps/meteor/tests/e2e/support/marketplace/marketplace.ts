@@ -1,4 +1,4 @@
-import type { APIRequestContext, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 import home from '../../locators/home.json';
 import locator from '../../locators/marketplace.json';
@@ -27,21 +27,12 @@ export async function searchAppPrivate(page: Page, appName: any) {
 	await app.waitFor();
 }
 
-export async function uninstallAppAPI(request: APIRequestContext, app: string) {
-	await request.delete(`/api/apps/${app}`, {
-		headers: {
-			'X-Auth-Token': `${process.env.API_TOKEN}`,
-			'X-User-Id': `${process.env.USER_ID}`,
-		},
-	});
-}
-
 export async function installPrivateApp(page: Page, appPath: string) {
 	await page.getByRole('link', { name: locator.link.privateApp }).click();
 	await page.getByRole('button', { name: locator.button.uploadPrivateApp }).click();
 	await fileUpload(locator.button.browseFiles, appPath, page);
 	await page.getByRole('button', { name: locator.button.install }).click();
-	const responsePromise = page.waitForResponse((response) => response.url() === `${process.env.URL}/api/apps` && response.status() === 200);
+	const responsePromise = page.waitForResponse((response) => response.url().endsWith(`/api/apps`) && response.status() === 200);
 	await page.getByRole('button', { name: locator.button.agree }).click();
 	await responsePromise;
 }

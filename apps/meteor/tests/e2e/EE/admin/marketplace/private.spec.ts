@@ -1,19 +1,26 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
 
+import { IS_EE } from '../../../config/constants';
 import fixtures from '../../../fixtures/marketplace.json';
 import { Users } from '../../../fixtures/userStates';
 import locator from '../../../locators/marketplace.json';
-import { goToMarketplace, installPrivateApp, searchAppPrivate, uninstallAppAPI } from '../../../support/marketplace/marketplace';
+import { goToMarketplace, installPrivateApp, searchAppPrivate } from '../../../support/marketplace/marketplace';
+import { test } from '../../../utils/test';
 
-test.use({ storageState: Users.admin.state });
+test.describe('Private Apps', () => {
+	test.skip(!IS_EE, 'Enterprise Only');
+	test.use({ storageState: Users.admin.state });
 
-test.describe.only('Private Apps', () => {
-	test.beforeEach(async ({ page, request }) => {
+	test.beforeEach(async ({ page }) => {
 		await page.goto(`/home`);
 		const req = page.waitForResponse(/api\/apps\/marketplace/);
 		await goToMarketplace(page);
-		await uninstallAppAPI(request, fixtures.appIdregression);
 		await req;
+	});
+
+	test.afterEach(async ({ api }) => {
+		const statusCode = (await api.delete(`/api/apps/${fixtures.appIdregression}`, undefined, '')).status();
+		await expect(statusCode).toBe(200);
 	});
 
 	test('Upload a Private App', async ({ page }) => {
