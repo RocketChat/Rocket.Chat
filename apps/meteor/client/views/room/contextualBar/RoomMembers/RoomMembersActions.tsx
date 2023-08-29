@@ -8,14 +8,15 @@ import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 type RoomMembersActionsProps = {
 	username: IUser['username'];
+	name: IUser['name'];
 	_id: IUser['_id'];
 	rid: IRoom['_id'];
 	reload: () => void;
 };
 
-const RoomMembersActions = ({ username, _id, rid, reload }: RoomMembersActionsProps): ReactElement | null => {
+const RoomMembersActions = ({ username, _id, name, rid, reload }: RoomMembersActionsProps): ReactElement | null => {
 	const t = useTranslation();
-	const { menuActions: menuOptions } = useUserInfoActions({ _id, username }, rid, reload, 0);
+	const { menuActions: menuOptions } = useUserInfoActions({ _id, username, name }, rid, reload, 0);
 	if (!menuOptions) {
 		return null;
 	}
