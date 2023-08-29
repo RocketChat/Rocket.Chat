@@ -105,7 +105,6 @@ export type UploadsAPI = {
 
 export type ChatAPI = {
 	readonly uid: string | null;
-
 	readonly composer?: ComposerAPI;
 	readonly setComposerAPI: (composer: ComposerAPI) => void;
 	readonly data: DataAPI;
@@ -141,6 +140,8 @@ export type ChatAPI = {
 		stop(action: 'typing' | 'recording' | 'uploading' | 'playing'): void;
 		performContinuously(action: 'recording' | 'uploading' | 'playing'): void;
 	};
+
+	ActionManager: any;
 
 	readonly flows: {
 		readonly uploadFiles: (files: readonly File[]) => Promise<void>;
