@@ -16,7 +16,7 @@ export class MentionQueries {
 		const teams = await Team.listByNames(uniqueUsernames, { projection: { name: 1 } });
 
 		const users = await Users.find(
-			{ username: { $in: [...new Set(usernames)] } },
+			{ username: { $in: uniqueUsernames } },
 			{ projection: { _id: true, username: true, name: 1 } },
 		).toArray();
 

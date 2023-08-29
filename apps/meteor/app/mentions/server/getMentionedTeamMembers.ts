@@ -18,10 +18,8 @@ callbacks.add('beforeGetMentions', async (mentionIds: string[], extra?: IExtraDa
 		return mentionIds;
 	}
 
-	const members: ITeamMember[] = await Team.getMembersByTeamIds(teamIds, { projection: { userId: 1 } });
-	mentionIds.push(
-		...new Set(members.map(({ userId }: { userId: string }) => userId).filter((userId: string) => !mentionIds.includes(userId))),
-	);
+	const members = await Team.getMembersByTeamIds(teamIds, { projection: { userId: 1 } });
+	mentionIds.push(...new Set(members.map(({ userId }) => userId).filter((userId) => !mentionIds.includes(userId))));
 
 	return mentionIds;
 });
