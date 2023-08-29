@@ -35,14 +35,13 @@ test.describe.serial('Omnichannel Triggers', () => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
 
-	test.afterAll(async ({ page, api }) => {
+	test.afterAll(async ({ api }) => {
 		await Promise.all([
 			api.delete('/livechat/users/agent/user1'),
 			api.delete('/livechat/users/manager/user1'),
 			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false }),
 		]);
 		await agent.page.close();
-		await page.close();
 	});
 
 	test('trigger baseline', async ({ page }) => {

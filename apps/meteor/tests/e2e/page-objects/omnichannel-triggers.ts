@@ -77,7 +77,7 @@ export class OmnichannelTriggers {
 	}
 
 	get inputCondition(): Locator {
-		return this.page.locator('select[name="condition"]');
+		return this.page.locator('button', { has: this.page.locator('select[name="condition"]') });
 	}
 
 	get inputConditionValue(): Locator {
@@ -85,7 +85,7 @@ export class OmnichannelTriggers {
 	}
 
 	get inputSender(): Locator {
-		return this.page.locator('select[name="sender"]');
+		return this.page.locator('button', { has: this.page.locator('select[name="sender"]') });
 	}
 
 	get inputAgentName(): Locator {
