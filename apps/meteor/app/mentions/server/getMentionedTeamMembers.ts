@@ -1,5 +1,5 @@
 import { Team } from '@rocket.chat/core-services';
-import type { ITeamMember, IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../lib/callbacks';
 
