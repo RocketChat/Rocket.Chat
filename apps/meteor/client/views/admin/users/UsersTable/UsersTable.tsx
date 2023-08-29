@@ -132,7 +132,7 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 				</GenericTableHeaderCell>
 			),
 			<GenericTableHeaderCell w='x100' key='status' direction={sortDirection} active={sortBy === 'status'} onClick={setSort} sort='status'>
-				{t('Status')}
+				{t('Registration_status')}
 			</GenericTableHeaderCell>,
 		],
 		[mediaQuery, setSort, sortBy, sortDirection, t],
