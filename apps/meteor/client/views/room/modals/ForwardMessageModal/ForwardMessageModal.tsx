@@ -7,18 +7,18 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple.tsx';
-import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
-import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
-import { prependReplies } from '../../../../lib/utils/prependReplies';
+import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple/UserAndRoomAutoCompleteMultiple.tsx';
+import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment.tsx';
+import { useUserDisplayName } from '../../../../hooks/useUserDisplayName.ts';
+import { prependReplies } from '../../../../lib/utils/prependReplies.ts';
 
-type ShareMessageProps = {
+type ForwardMessageProps = {
 	onClose: () => void;
 	permalink: string;
 	message: IMessage;
 };
 
-const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): ReactElement => {
+const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProps): ReactElement => {
 	const t = useTranslation();
 	const getUserAvatarPath = useUserAvatarPath();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -120,4 +120,4 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 	);
 };
 
-export default memo(ShareMessageModal);
+export default memo(ForwardMessageModal);

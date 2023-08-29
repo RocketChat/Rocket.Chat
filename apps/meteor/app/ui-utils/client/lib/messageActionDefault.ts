@@ -9,9 +9,9 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { router } from '../../../../client/providers/RouterProvider';
+import ForwardMessageModal from '../../../../client/views/room/modals/ForwardMessageModal/ForwardMessageModal';
 import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
 import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
-import ShareMessageModal from '../../../../client/views/room/modals/ShareMessageModal';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { ChatRoom, Subscriptions } from '../../../models/client';
 import { t } from '../../../utils/lib/i18n';
@@ -75,7 +75,7 @@ Meteor.startup(async () => {
 			const { message = messageArgs(this).msg } = props;
 			const permalink = await getPermaLink(message._id);
 			imperativeModal.open({
-				component: ShareMessageModal,
+				component: ForwardMessageModal,
 				props: {
 					message,
 					permalink,
