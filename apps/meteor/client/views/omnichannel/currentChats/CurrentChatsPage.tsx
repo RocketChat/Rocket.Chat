@@ -84,10 +84,10 @@ const currentChatQuery: useQueryType = (
 	if (from || to) {
 		query.createdAt = JSON.stringify({
 			...(from && {
-				start: moment(new Date(from)).set({ hour: 0, minutes: 0, seconds: 0 }).format('YYYY-MM-DDTHH:mm:ss'),
+				start: moment(new Date(from)).set({ hour: 0, minutes: 0, seconds: 0 }).toISOString(),
 			}),
 			...(to && {
-				end: moment(new Date(to)).set({ hour: 23, minutes: 59, seconds: 59 }).format('YYYY-MM-DDTHH:mm:ss'),
+				end: moment(new Date(to)).set({ hour: 23, minutes: 59, seconds: 59 }).toISOString(),
 			}),
 		});
 	}
