@@ -8,9 +8,9 @@
  * Websocket configurations can be found in asterisk's http.conf and pjsip.conf
  *
  */
+import { Logger } from '@rocket.chat/logger';
 import WebSocket from 'ws';
 
-import { Logger } from '../../../../lib/logger/Logger';
 import type { Command } from '../asterisk/Command';
 import type { IConnection } from '../asterisk/IConnection';
 import type { CallbackContext } from '../asterisk/ami/CallbackContext';

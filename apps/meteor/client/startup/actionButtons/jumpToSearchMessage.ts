@@ -15,6 +15,6 @@ Meteor.startup(() => {
 			setMessageJumpQueryStringParameter(message._id);
 		},
 		order: 100,
-		group: 'menu',
+		group: 'message',
 	});
 });

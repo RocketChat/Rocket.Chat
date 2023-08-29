@@ -82,7 +82,7 @@ const GenericModal: FC<GenericModalProps> = ({
 					{tagline && <Modal.Tagline>{tagline}</Modal.Tagline>}
 					<Modal.Title>{title ?? t('Are_you_sure')}</Modal.Title>
 				</Modal.HeaderText>
-				<Modal.Close title={t('Close')} onClick={onClose} />
+				<Modal.Close aria-label={t('Close')} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>{children}</Modal.Content>
 			<Modal.Footer justifyContent={dontAskAgain ? 'space-between' : 'end'}>

@@ -1,17 +1,23 @@
 import type { Box } from '@rocket.chat/fuselage';
-import { Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { HeaderToolboxAction, HeaderToolboxDivider } from '@rocket.chat/ui-client';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 
+import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
 
 type RoomToolboxProps = {
 	className?: ComponentProps<typeof Box>['className'];
 };
+
+type MenuActionsProps = {
+	id: string;
+	items: GenericMenuItemProps[];
+}[];
 
 const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const t = useTranslation();
@@ -23,22 +29,33 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const featuredActions = actions.filter((action) => action.featured);
 	const normalActions = actions.filter((action) => !action.featured);
 	const visibleActions = !roomToolboxExpanded ? [] : normalActions.slice(0, 6);
-	const hiddenActions: Record<string, RoomToolboxActionConfig> = Object.fromEntries(
-		(!roomToolboxExpanded ? actions : normalActions.slice(6))
-			.filter((item) => !item.disabled)
-			.map((item) => {
-				return [
-					item.id,
-					{
-						label: { title: t(item.title), icon: item.icon },
-						action: (): void => {
-							openTab(item.id);
-						},
-						...item,
-					},
-				];
-			}),
-	);
+
+	const hiddenActions = (!roomToolboxExpanded ? actions : normalActions.slice(6))
+		.filter((item) => !item.disabled && !item.featured)
+		.map((item) => ({
+			'key': item.id,
+			'content': t(item.title),
+			'onClick':
+				item.action ??
+				((): void => {
+					openTab(item.id);
+				}),
+			'data-qa-id': `ToolBoxAction-${item.icon}`,
+			...item,
+		}))
+		.reduce((acc, item) => {
+			const group = item.type ? item.type : '';
+			const section = acc.find((section: { id: string }) => section.id === group);
+			if (section) {
+				section.items.push(item);
+				return acc;
+			}
+
+			const newSection = { id: group, key: item.key, title: group === 'apps' ? t('Apps') : '', items: [item] };
+			acc.push(newSection);
+
+			return acc;
+		}, [] as MenuActionsProps);
 
 	const renderDefaultToolboxItem: RoomToolboxActionConfig['renderToolboxItem'] = useMutableCallback(
 		({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }) => {
@@ -74,20 +91,8 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 			{featuredActions.map(mapToToolboxItem)}
 			{featuredActions.length > 0 && <HeaderToolboxDivider />}
 			{visibleActions.map(mapToToolboxItem)}
-			{(normalActions.length > 6 || !roomToolboxExpanded) && (
-				<Menu
-					data-qa-id='ToolBox-Menu'
-					tiny={roomToolboxExpanded}
-					title={t('Options')}
-					maxHeight='initial'
-					className={className}
-					aria-keyshortcuts='alt'
-					tabIndex={-1}
-					options={hiddenActions}
-					renderItem={({ label: { title, icon }, ...props }) => (
-						<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} gap={!icon} {...props} />
-					)}
-				/>
+			{(normalActions.length > 6 || roomToolboxExpanded) && (
+				<GenericMenu title={t('Options')} data-qa-id='ToolBox-Menu' sections={hiddenActions} placement='bottom-end' />
 			)}
 		</>
 	);

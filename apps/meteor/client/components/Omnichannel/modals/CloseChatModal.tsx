@@ -68,7 +68,7 @@ const CloseChatModal = ({
 			};
 			const requestData = transcriptEmail && visitorEmail ? { email: visitorEmail, subject } : undefined;
 
-			if (!comment && commentRequired) {
+			if (!comment?.trim() && commentRequired) {
 				setError('comment', { type: 'custom', message: t('The_field_is_required', t('Comment')) });
 			}
 
@@ -89,7 +89,7 @@ const CloseChatModal = ({
 
 	const cannotSubmit = useMemo(() => {
 		const cannotSendTag = (tagRequired && !tags?.length) || errors.tags;
-		const cannotSendComment = (commentRequired && !comment) || errors.comment;
+		const cannotSendComment = (commentRequired && !comment?.trim()) || errors.comment;
 		const cannotSendTranscriptEmail = transcriptEmail && (!visitorEmail || !subject);
 
 		return Boolean(cannotSendTag || cannotSendComment || cannotSendTranscriptEmail);

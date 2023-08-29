@@ -30,10 +30,10 @@
  */
 import { EndpointState } from '@rocket.chat/core-typings';
 import type { IVoipConnectorResult, IExtensionDetails } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import type { Db } from 'mongodb';
 import _ from 'underscore';
 
-import { Logger } from '../../../../../lib/logger/Logger';
 import { Command, CommandType } from '../Command';
 import { Commands } from '../Commands';
 import { CallbackContext } from './CallbackContext';

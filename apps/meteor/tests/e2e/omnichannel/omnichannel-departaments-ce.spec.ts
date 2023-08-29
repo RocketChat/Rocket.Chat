@@ -27,7 +27,7 @@ test.describe.serial('omnichannel-departments', () => {
 
 	test('CE departments', async () => {
 		await test.step('expect create new department', async () => {
-			await poOmnichannelDepartments.btnNew.click();
+			await poOmnichannelDepartments.headingButtonNew('Create department').click();
 			await poOmnichannelDepartments.btnEnabled.click();
 			await poOmnichannelDepartments.inputName.fill(departmentName);
 			await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
@@ -38,7 +38,7 @@ test.describe.serial('omnichannel-departments', () => {
 			await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 		});
 		await test.step('expect to not be possible adding a second department ', async () => {
-			await poOmnichannelDepartments.btnNew.click();
+			await poOmnichannelDepartments.headingButtonNew('Create department').click();
 
 			await expect(poOmnichannelDepartments.upgradeDepartmentsModal).toBeVisible();
 

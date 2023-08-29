@@ -104,15 +104,14 @@ const AccountFeaturePreviewPage = () => {
 												<Fragment key={feature.name}>
 													<Field>
 														<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-															<Field.Label>{t(feature.i18n)}</Field.Label>
+															<Field.Label htmlFor={feature.name}>{t(feature.i18n)}</Field.Label>
 															<Field.Row>
-																<Box mie={12}>{t('Enabled')}</Box>
-																<ToggleSwitch checked={feature.value} name={feature.name} onChange={handleFeatures} />
+																<ToggleSwitch id={feature.name} checked={feature.value} name={feature.name} onChange={handleFeatures} />
 															</Field.Row>
 														</Box>
 														{feature.description && <Field.Hint mbs={12}>{t(feature.description)}</Field.Hint>}
 													</Field>
-													{feature.imageUrl && <Box is='img' width='100%' height='auto' mbs={16} src={feature.imageUrl} />}
+													{feature.imageUrl && <Box is='img' width='100%' height='auto' mbs={16} src={feature.imageUrl} alt='' />}
 												</Fragment>
 											))}
 										</FieldGroup>

@@ -18,7 +18,7 @@ const AuditPage = () => {
 	const t = useTranslation();
 
 	return (
-		<Page>
+		<Page background='room'>
 			<PageHeader title={t('Message_auditing')} />
 			<Tabs>
 				<Tabs.Item selected={type === ''} onClick={() => setType('')}>

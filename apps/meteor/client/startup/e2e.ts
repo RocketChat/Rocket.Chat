@@ -18,9 +18,15 @@ Meteor.startup(() => {
 			return;
 		}
 
+		if (!window.crypto) {
+			return;
+		}
+
+		const enabled = settings.get('E2E_Enable');
+		// we don't care about the reactivity of this boolean
 		const adminEmbedded = isLayoutEmbedded() && router.getLocationPathname().startsWith('/admin');
 
-		if (!adminEmbedded && settings.get('E2E_Enable') && window.crypto) {
+		if (enabled && !adminEmbedded) {
 			e2e.startClient();
 			e2e.enabled.set(true);
 		} else {

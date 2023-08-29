@@ -1,9 +1,12 @@
 import { Team } from '@rocket.chat/core-services';
-import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
+import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser, IImportRecord } from '@rocket.chat/core-typings';
 import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 import type ldapjs from 'ldapjs';
 
-import type { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
+import type {
+	ImporterAfterImportCallback,
+	ImporterBeforeImportCallback,
+} from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../../app/lib/server/functions/createRoom';
 import { removeUserFromRoom } from '../../../../app/lib/server/functions/removeUserFromRoom';
@@ -43,9 +46,22 @@ export class LDAPEEManager extends LDAPManager {
 				await this.updateExistingUsers(ldap, converter);
 			}
 
+			const membersOfGroupFilter = await ldap.searchMembersOfGroupFilter();
+
 			await converter.convertUsers({
-				afterImportFn: (async (data: IImportUser, _type: string, isNewRecord: boolean): Promise<void> =>
-					this.advancedSync(ldap, data, converter, isNewRecord)) as ImporterAfterImportCallback,
+				beforeImportFn: (async ({ options }: IImportRecord): Promise<boolean> => {
+					if (!ldap.options.groupFilterEnabled || !ldap.options.groupFilterGroupMemberFormat) {
+						return true;
+					}
+
+					const memberFormat = ldap.options.groupFilterGroupMemberFormat
+						?.replace(/#{username}/g, options?.username || '#{username}')
+						.replace(/#{userdn}/g, options?.dn || '#{userdn}');
+
+					return membersOfGroupFilter.includes(memberFormat);
+				}) as ImporterBeforeImportCallback,
+				afterImportFn: (async ({ data }, isNewRecord: boolean): Promise<void> =>
+					this.advancedSync(ldap, data as IImportUser, converter, isNewRecord)) as ImporterAfterImportCallback,
 			});
 		} catch (error) {
 			logger.error(error);
@@ -540,7 +556,7 @@ export class LDAPEEManager extends LDAPManager {
 					count++;
 
 					const userData = this.mapUserData(data);
-					converter.addUserSync(userData);
+					converter.addUserSync(userData, { dn: data.dn, username: this.getLdapUsername(data) });
 					return userData;
 				},
 				endCallback: (error: any): void => {
@@ -564,7 +580,7 @@ export class LDAPEEManager extends LDAPManager {
 
 			if (ldapUser) {
 				const userData = this.mapUserData(ldapUser, user.username);
-				converter.addUserSync(userData);
+				converter.addUserSync(userData, { dn: ldapUser.dn, username: this.getLdapUsername(ldapUser) });
 			}
 		}
 	}

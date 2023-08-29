@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 	interface ServerMethods {
 		'raix:push-update'(options: {
 			id?: string;
-			token: string;
+			token: IAppsTokens['token'];
 			authToken: string;
 			appName: string;
 			userId?: string;
