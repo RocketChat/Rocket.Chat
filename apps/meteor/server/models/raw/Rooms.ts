@@ -95,6 +95,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 				sparse: true,
 			},
+			{ key: { t: 1, ts: 1 } },
 		];
 	}
 
@@ -1450,7 +1451,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		const update: UpdateFilter<IRoom> = {
 			$addToSet: {
 				importIds: {
-					$each: importIds,
+					$each: ([] as string[]).concat(importIds),
 				},
 			},
 		};

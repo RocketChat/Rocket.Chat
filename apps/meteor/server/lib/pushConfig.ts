@@ -71,9 +71,6 @@ Meteor.methods<ServerMethods>({
 			from: 'push',
 			title: `@${user.username}`,
 			text: i18n.t('This_is_a_push_test_messsage'),
-			apn: {
-				text: `@${user.username}:\n${i18n.t('This_is_a_push_test_messsage')}`,
-			},
 			sound: 'default',
 			userId: user._id,
 		});
@@ -96,7 +93,6 @@ settings.watch<boolean>('Push_enable', async (enabled) => {
 
 	let apn:
 		| {
-				apiKey?: string;
 				passphrase: string;
 				key: string;
 				cert: string;

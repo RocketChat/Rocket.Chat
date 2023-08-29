@@ -15,14 +15,14 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 	const handleMyAccount = useMutableCallback(() => {
 		router.navigate('/account');
 	});
-	const handleThemes = useMutableCallback(() => {
-		router.navigate('/account/theme');
-	});
 	const handlePreferences = useMutableCallback(() => {
 		router.navigate('/account/preferences');
 	});
 	const handleFeaturePreview = useMutableCallback(() => {
 		router.navigate('/account/feature-preview');
+	});
+	const handleAccessibility = useMutableCallback(() => {
+		router.navigate('/account/accessibility-and-appearance');
 	});
 
 	const featurePreviewItem = {
@@ -47,16 +47,16 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 			onClick: handleMyAccount,
 		},
 		{
-			id: 'theme',
-			icon: 'palette',
-			content: t('Theme'),
-			onClick: handleThemes,
-		},
-		{
 			id: 'preferences',
 			icon: 'customize',
 			content: t('Preferences'),
 			onClick: handlePreferences,
+		},
+		{
+			id: 'accessibility',
+			icon: 'person-arms-spread',
+			content: t('Accessibility_and_Appearance'),
+			onClick: handleAccessibility,
 		},
 		...(featurePreviewEnabled && defaultFeaturesPreview.length > 0 ? [featurePreviewItem] : []),
 	];

@@ -1,4 +1,4 @@
-import { useRouter, useSetModal, useCurrentModal, useSetting } from '@rocket.chat/ui-contexts';
+import { useRouter, useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';
@@ -10,7 +10,6 @@ export const useUpsellActions = (hasLicenseModule = false) => {
 	const router = useRouter();
 	const setModal = useSetModal();
 	const handleOpenLink = useExternalLink();
-	const isModalOpen = useCurrentModal() !== null;
 	const cloudWorkspaceHadTrial = useSetting<boolean>('Cloud_Workspace_Had_Trial');
 
 	const { data } = useIsEnterprise();
@@ -26,5 +25,5 @@ export const useUpsellActions = (hasLicenseModule = false) => {
 		setModal(null);
 	}, [handleOpenLink, setModal]);
 
-	return { isModalOpen, shouldShowUpsell, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales };
+	return { shouldShowUpsell, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales };
 };

@@ -29,7 +29,8 @@ export const usePinnedMessagesRoomAction = () => {
 				tooltip: t('core.Pinned_messages_unavailable_for_federation'),
 				disabled: true,
 			}),
-			order: 11,
+			order: 9,
+			type: 'organization',
 		};
 	}, [enabled, federated, t]);
 };

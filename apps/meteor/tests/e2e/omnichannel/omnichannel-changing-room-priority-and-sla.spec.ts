@@ -41,7 +41,7 @@ test.describe('omnichannel-changing-room-priority-and-sla', () => {
 		const { page } = await createAuxContext(browser, Users.admin);
 		agent = { page, poHomeChannel: new HomeChannel(page) };
 
-		await agent.poHomeChannel.sidenav.switchStatus('Online online');
+		await agent.poHomeChannel.sidenav.switchStatus('online');
 	});
 
 	test.afterAll(async ({ api }) => {

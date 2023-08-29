@@ -56,8 +56,8 @@ export class VirtualDataConverter extends ImportDataConverter {
 		return undefined;
 	}
 
-	public addUserSync(data: IImportUser): void {
-		return this.addObjectSync('user', data);
+	public addUserSync(data: IImportUser, options?: Record<string, any>): void {
+		return this.addObjectSync('user', data, options);
 	}
 
 	protected async addObject(type: IImportRecordType, data: IImportData, options: Record<string, any> = {}): Promise<void> {
@@ -79,7 +79,7 @@ export class VirtualDataConverter extends ImportDataConverter {
 			_id: Random.id(),
 			data,
 			dataType: type,
-			...options,
+			options,
 		});
 	}
 

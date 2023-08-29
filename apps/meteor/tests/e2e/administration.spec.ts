@@ -44,7 +44,7 @@ test.describe.parallel('administration', () => {
 			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
 			await poAdmin.tabs.users.checkboxVerified.click();
 			await poAdmin.tabs.users.inputPassword.type('any_password');
-			await poAdmin.tabs.users.addRole('user');
+			await expect(poAdmin.tabs.users.userRole).toBeVisible();
 			await poAdmin.tabs.users.btnSave.click();
 		});
 	});

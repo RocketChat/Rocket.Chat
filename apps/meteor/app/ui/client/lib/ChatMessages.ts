@@ -12,6 +12,7 @@ import { replyBroadcast } from '../../../../client/lib/chats/flows/replyBroadcas
 import { requestMessageDeletion } from '../../../../client/lib/chats/flows/requestMessageDeletion';
 import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
 import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
+import { ReadStateManager } from '../../../../client/lib/chats/readStateManager';
 import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import {
 	setHighlightMessage,
@@ -36,6 +37,8 @@ export class ChatMessages implements ChatAPI {
 	};
 
 	public data: DataAPI;
+
+	public readStateManager: ReadStateManager;
 
 	public uploads: UploadsAPI;
 
@@ -148,6 +151,8 @@ export class ChatMessages implements ChatAPI {
 		const unimplemented = () => {
 			throw new Error('Flow is not implemented');
 		};
+
+		this.readStateManager = new ReadStateManager(rid);
 
 		this.userCard = {
 			open: unimplemented,

@@ -126,6 +126,10 @@ $max-lines: 12;
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: $max-lines;
 	}
+
+	&--full {
+		height: 100%;
+	}
 }
 
 .screen__agent-email {

@@ -1,19 +1,22 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
-const handleOnAgentAssignmentFailed = async ({
-	inquiry,
-	room,
-	options,
-}: {
-	inquiry: any;
-	room: any;
-	options: {
-		forwardingToDepartment?: { oldDepartmentId: string; transferData: any };
-		clientAction?: boolean;
-	};
-}): Promise<any> => {
+const handleOnAgentAssignmentFailed = async (
+	room: IOmnichannelRoom,
+	{
+		inquiry,
+		options,
+	}: {
+		inquiry: any;
+		options: {
+			forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any };
+			clientAction?: boolean;
+		};
+	},
+) => {
 	if (!inquiry || !room) {
 		cbLogger.debug('Skipping callback. No inquiry or room provided');
 		return;
@@ -37,8 +40,7 @@ const handleOnAgentAssignmentFailed = async ({
 		return;
 	}
 
-	room.chatQueued = true;
-	return room;
+	return { ...room, chatQueued: true } as IOmnichannelRoom & { chatQueued: boolean };
 };
 
 callbacks.add(

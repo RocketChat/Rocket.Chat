@@ -1,3 +1,4 @@
+import { UserStatus } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -88,6 +89,25 @@ const QueueListTable = (): ReactElement => {
 		return query;
 	}, [sortBy, sortDirection, itemsPerPage, current, filters.status, filters.departmentId, filters.servedBy]);
 
+	const getUserStatus = (status?: string) => {
+		if (!status) {
+			return t('Offline');
+		}
+
+		switch (status) {
+			case UserStatus.ONLINE:
+				return t('Online');
+			case UserStatus.AWAY:
+				return t('Away');
+			case UserStatus.BUSY:
+				return t('Busy');
+			case UserStatus.OFFLINE:
+				return t('Offline');
+			default:
+				return status;
+		}
+	};
+
 	const getLivechatQueue = useEndpoint('GET', '/v1/livechat/queue');
 	const { data, isSuccess, isLoading } = useQuery(['livechat-queue', query], async () => getLivechatQueue(query));
 
@@ -120,7 +140,7 @@ const QueueListTable = (): ReactElement => {
 									</GenericTableCell>
 									<GenericTableCell withTruncatedText>{department ? department.name : ''}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{chats}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{user.status === 'online' ? t('Online') : t('Offline')}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{getUserStatus(user?.status)}</GenericTableCell>
 								</GenericTableRow>
 							))}
 						</GenericTableBody>

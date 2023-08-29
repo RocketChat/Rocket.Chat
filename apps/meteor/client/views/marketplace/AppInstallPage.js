@@ -77,23 +77,23 @@ function AppInstallPage() {
 			} else {
 				app = await uploadAppEndpoint(fileData);
 			}
+
+			router.navigate({
+				name: 'marketplace',
+				params: {
+					context: 'private',
+					page: 'info',
+					id: appId || app.app.id,
+				},
+			});
+
+			reload();
 		} catch (e) {
 			handleAPIError(e);
+		} finally {
+			setInstalling(false);
+			setModal(null);
 		}
-
-		router.navigate({
-			name: 'marketplace',
-			params: {
-				context: 'private',
-				page: 'info',
-				id: appId || app.app.id,
-			},
-		});
-
-		reload();
-
-		setInstalling(false);
-		setModal(null);
 	};
 
 	const cancelAction = useCallback(() => {

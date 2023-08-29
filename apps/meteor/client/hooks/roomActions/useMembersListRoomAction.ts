@@ -22,7 +22,7 @@ export const useMembersListRoomAction = () => {
 			title: team ? 'Teams_members' : 'Members',
 			icon: 'members',
 			tabComponent: MemberListRouter,
-			order: 5,
+			order: 7,
 		};
 	}, [broadcast, permittedToViewBroadcastMemberList, team]);
 };

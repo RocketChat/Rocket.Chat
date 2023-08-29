@@ -112,7 +112,7 @@ const ModerationConsoleTable: FC = () => {
 			<GenericTableHeaderCell key='reports' direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
 				{t('Moderation_Report_plural')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key='actions' width='5%' />,
+			<GenericTableHeaderCell key='actions' width='x48' />,
 		],
 		[sortDirection, sortBy, setSort, t, isDesktopOrLarger],
 	);
