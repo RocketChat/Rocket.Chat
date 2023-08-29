@@ -1,9 +1,9 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
 
 import { Users } from '../fixtures/userStates';
 import createTeam from '../locators/createTeam.json';
 import home from '../locators/home.json';
-import { deleteTeam } from '../support/teams/team';
+import { test } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 test.describe('Create Teams', () => {
@@ -30,7 +30,9 @@ test.describe('Create Teams', () => {
 		expect(await page.getByRole('link', { name: 'TeamTestAutomation' }).isVisible());
 	});
 
-	test.afterEach(async ({ page }) => {
-		await deleteTeam(page, 'TeamTestAutomation');
+	test.afterEach(async ({ api }) => {
+		await api.post(`/api/v1/channels.delete`, {
+			teamName: `TeamTestAutomation`,
+		});
 	});
 });

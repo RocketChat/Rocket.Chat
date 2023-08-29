@@ -1,15 +1,16 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
 
 import { Users } from '../fixtures/userStates';
 import createDiscussion from '../locators/createDiscussion.json';
 import home from '../locators/home.json';
-import { createChannelAPI, deleteChannel } from '../support/channels/channel';
-import { deleteDiscussionAPI } from '../support/discussions/discussion';
+import { test } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.beforeEach(async ({ page, request }) => {
-	await createChannelAPI(request, createDiscussion.names.channel);
+test.beforeEach(async ({ page, api }) => {
+	await api.post(`/api/v1/channels.create`, {
+		name: createDiscussion.names.channel,
+	});
 	await page.goto(`/home`);
 });
 
@@ -24,7 +25,12 @@ test('Create a discussion', async ({ page }) => {
 	expect(await page.getByRole('link', { name: createDiscussion.names.discussion }).isVisible());
 });
 
-test.afterEach(async ({ page, request }) => {
-	await deleteDiscussionAPI(request, createDiscussion.names.discussion);
-	await deleteChannel(page, createDiscussion.names.channel);
+test.afterEach(async ({ api }) => {
+	await api.post(`/api/v1/channels.delete`, {
+		roomName: `${createDiscussion.names.channel}`,
+	});
+
+	await api.post(`/api/v1/groups.delete`, {
+		roomName: `${createDiscussion.names.discussion}`,
+	});
 });

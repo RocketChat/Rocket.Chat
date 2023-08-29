@@ -32,7 +32,12 @@ test.describe('Private Apps', () => {
 	test('Uninstall a Private App - Outside Menu', async ({ page }) => {
 		await installPrivateApp(page, fixtures.pathregression);
 		await searchAppPrivate(page, locator.text.regression);
-		await page.getByTestId(locator.testId.menuSingleApp).click();
+
+		await page
+			.getByRole('link', { name: `${locator.text.regression}` })
+			.getByTestId(locator.testId.menuSingleApp)
+			.click();
+
 		await page.getByText(locator.text.uninstall).click();
 		await page.getByRole('button', { name: locator.button.yes }).click();
 		await expect(page.locator(locator.class.toast).filter({ hasText: 'regression uninstalled' })).toBeVisible();
@@ -45,7 +50,12 @@ test.describe('Private Apps', () => {
 		await installPrivateApp(page, fixtures.pathregression);
 		await searchAppPrivate(page, locator.text.regression);
 		await page.getByRole('link').filter({ hasText: locator.text.regression }).click();
-		await page.getByTestId(locator.testId.menuSingleApp).click();
+
+		await page
+			.getByRole('link', { name: `${locator.text.regression}` })
+			.getByTestId(locator.testId.menuSingleApp)
+			.click();
+
 		await page.getByText(locator.text.uninstall).click();
 		await page.getByRole('button', { name: locator.button.yes }).click();
 		await page.waitForSelector(locator.class.toast);
@@ -67,6 +77,7 @@ test.describe('Private Apps', () => {
 			.getByRole('link', { name: `${locator.text.regression}` })
 			.getByTestId(locator.testId.menuSingleApp)
 			.click();
+
 		await page.locator(locator.button.menu).locator(locator.button.disable).click();
 		await page.getByRole('button', { name: locator.button.yes }).click();
 		await expect(page.locator(locator.class.toast).filter({ hasText: 'regression disabled' })).toBeVisible();
@@ -97,6 +108,7 @@ test.describe('Private Apps', () => {
 			.getByRole('link', { name: `${locator.text.regression}` })
 			.getByTestId(locator.testId.menuSingleApp)
 			.click();
+
 		await page.locator(locator.button.menu).locator(locator.button.disable).click();
 		await page.getByRole('button', { name: locator.button.yes }).click();
 		await expect(page.locator(locator.class.toast).filter({ hasText: 'regression disabled' })).toBeVisible();
