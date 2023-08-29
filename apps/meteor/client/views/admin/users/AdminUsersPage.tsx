@@ -12,6 +12,7 @@ import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
 import UsersTable from './UsersTable';
+import UsersInviteTable from './UsersInviteTable';
 
 const UsersPage = (): ReactElement => {
 	const t = useTranslation();
@@ -81,7 +82,8 @@ const UsersPage = (): ReactElement => {
 							{t('Deactivated')}
 						</Tabs.Item>
 					</Tabs>
-					<UsersTable reload={reload} />
+					{(!tab || tab === 'all') && <UsersTable reload={reload} />}
+					{tab === 'tab-invited' && <UsersInviteTable reload={reload} />}
 				</Page.Content>
 			</Page>
 			{context && (

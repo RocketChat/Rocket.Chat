@@ -6001,5 +6001,16 @@
   "All_visible": "All visible",
   "Filter_by_room": "Filter by room type",
   "Filter_by_visibility": "Filter by visibility",
+  "Filter_by_invite_status": "Filter by invite status",
+  "Pending": "Pending",
+  "Accepted": "Accepted",
+  "Filter_by_invite_type": "Filter by invite type",
+  "Invite_link": "Invite link",
+  "All_invite_status": "All invite status",
+  "All_invite_types": "All invite types",
+  "Invite_types": "Invite types",
+  "Invite_type": "Invite type",
+  "Invite_status": "Invite status",
+  "Usage_allowance": "Usage allowance",
   "Theme_Appearence": "Theme Appearence"
 }

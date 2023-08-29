@@ -2,6 +2,9 @@ import type { IInvite, IRoom } from '@rocket.chat/core-typings';
 import type { JSONSchemaType } from 'ajv';
 import Ajv from 'ajv';
 
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
+
 const ajv = new Ajv({
 	coerceTypes: true,
 });
@@ -83,7 +86,7 @@ export const isSendInvitationEmailParams = ajv.compile<SendInvitationEmailParams
 
 export type InvitesEndpoints = {
 	'/v1/listInvites': {
-		GET: () => Array<IInvite>;
+		GET: (params: PaginatedRequest<{}>) => PaginatedResult<IInvite[]>;
 	};
 	'/v1/removeInvite/:_id': {
 		DELETE: () => boolean;
