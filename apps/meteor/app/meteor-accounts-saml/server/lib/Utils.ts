@@ -1,8 +1,9 @@
 import { EventEmitter } from 'events';
 import zlib from 'zlib';
 
+import type { Logger } from '@rocket.chat/logger';
+
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
-import type { Logger } from '../../../../server/lib/logger/Logger';
 import type { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
 import type { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
 import type { ISAMLUser } from '../definition/ISAMLUser';

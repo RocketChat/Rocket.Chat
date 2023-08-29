@@ -6,6 +6,8 @@ import remarkParse from 'remark-parse';
 import remarkStringify from 'remark-stringify';
 import unified from 'unified';
 
+import { getAppsEngineVersion, getMongoVersion, getNodeNpmVersions } from './getMetadata';
+
 export const BumpLevels = {
 	dep: 0,
 	patch: 1,
@@ -102,4 +104,18 @@ Bump ${pkgName} version.
 `;
 
 	await writeFile(filePath, data, 'utf8');
+}
+
+export async function getEngineVersionsMd(cwd: string) {
+	const { node } = await getNodeNpmVersions(cwd);
+	const appsEngine = await getAppsEngineVersion();
+	const mongo = await getMongoVersion(cwd);
+
+	return `### Engine versions
+
+- Node: \`${node}\`
+- MongoDB: \`${mongo.join(', ')}\`
+- Apps-Engine: \`${appsEngine}\`
+
+`;
 }

@@ -1,11 +1,10 @@
-import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { BadgeProps } from '@rocket.chat/fuselage';
 import { HeaderToolboxAction, HeaderToolboxActionBadge } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import React, { lazy, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
+import { useRoomSubscription } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const getVariant = (tunreadUser: number, tunreadGroup: number): BadgeProps['variant'] => {
@@ -24,8 +23,6 @@ const Threads = lazy(() => import('../../views/room/contextualBar/Threads'));
 
 export const useThreadRoomAction = () => {
 	const enabled = useSetting('Threads_enabled', false);
-	const room = useRoom();
-	const federated = isRoomFederated(room);
 	const subscription = useRoomSubscription();
 
 	const tunread = subscription?.tunread?.length ?? 0;
@@ -47,10 +44,6 @@ export const useThreadRoomAction = () => {
 			title: 'Threads',
 			icon: 'thread',
 			tabComponent: Threads,
-			...(federated && {
-				tooltip: t('core.Threads_unavailable_for_federation'),
-				disabled: true,
-			}),
 			order: 2,
 			renderToolboxItem: ({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }) => (
 				<HeaderToolboxAction
@@ -69,5 +62,5 @@ export const useThreadRoomAction = () => {
 				</HeaderToolboxAction>
 			),
 		};
-	}, [enabled, federated, t, unread, variant]);
+	}, [enabled, t, unread, variant]);
 };

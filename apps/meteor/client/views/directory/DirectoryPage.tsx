@@ -37,7 +37,7 @@ const DirectoryPage = (): ReactElement => {
 	const handleTabClick = useCallback((tab: TabName) => () => router.navigate(`/directory/${tab}`), [router]);
 
 	return (
-		<Page>
+		<Page background='room'>
 			<Page.Header title={t('Directory')} />
 			<Tabs flexShrink={0}>
 				<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>

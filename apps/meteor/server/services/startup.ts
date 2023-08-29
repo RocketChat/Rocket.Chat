@@ -1,10 +1,10 @@
 import { api } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
 import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/omnichannel-services';
 import { MongoInternals } from 'meteor/mongo';
 
 import { AuthorizationLivechat } from '../../app/livechat/server/roomAccessValidator.internalService';
 import { isRunningMs } from '../lib/isRunningMs';
-import { Logger } from '../lib/logger/Logger';
 import { AnalyticsService } from './analytics/service';
 import { AppsEngineService } from './apps-engine/service';
 import { BannerService } from './banner/service';

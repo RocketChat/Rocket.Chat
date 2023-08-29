@@ -39,6 +39,7 @@ export const useE2EERoomAction = () => {
 			icon: 'key',
 			order: 13,
 			action,
+			type: 'organization',
 			...(federated && {
 				tooltip: t('core.E2E_unavailable_for_federation'),
 				disabled: true,

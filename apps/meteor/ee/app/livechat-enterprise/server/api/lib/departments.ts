@@ -24,7 +24,7 @@ export const getDepartmentsWhichUserCanAccess = async (userId: string, includeDi
 };
 
 export const hasAccessToDepartment = async (userId: string, departmentId: string): Promise<boolean> => {
-	const department = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(userId, departmentId);
+	const department = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(userId, departmentId, { projection: { _id: 1 } });
 	if (department) {
 		helperLogger.debug(`User ${userId} has access to department ${departmentId} because they are an agent`);
 		return true;

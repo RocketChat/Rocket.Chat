@@ -1,7 +1,7 @@
 import type { IImportUser, ILDAPEntry } from '@rocket.chat/core-typings';
+import type { Logger } from '@rocket.chat/logger';
 import { expect, spy } from 'chai';
 
-import type { Logger } from '../../../../app/logger/server';
 import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
 
 describe('LDAP copyCustomFieldsLDAP', () => {

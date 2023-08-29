@@ -17,7 +17,7 @@ export class LivechatTriggerRaw extends BaseRaw<ILivechatTrigger> implements ILi
 		return this.find({ enabled: true });
 	}
 
-	updateById(_id: string, data: ILivechatTrigger): Promise<UpdateResult> {
+	updateById(_id: string, data: Omit<ILivechatTrigger, '_id' | '_updatedAt'>): Promise<UpdateResult> {
 		return this.updateOne({ _id }, { $set: data } as UpdateFilter<ILivechatTrigger>); // TODO: remove this cast when TypeScript is updated
 	}
 }

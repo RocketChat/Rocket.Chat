@@ -153,7 +153,6 @@ function SideBarItemTemplateWithData({
 			is='a'
 			id={id}
 			data-qa='sidebar-item'
-			aria-level={2}
 			unread={highlighted}
 			selected={selected}
 			href={href}
