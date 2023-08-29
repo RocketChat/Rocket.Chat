@@ -50,7 +50,7 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 			);
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Message_has_been_shared') });
+			dispatchToastMessage({ type: 'success', message: t('Message_has_been_forwarded') });
 		},
 		onError: (error: any) => {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -83,7 +83,7 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 	return (
 		<Modal>
 			<Modal.Header>
-				<Modal.Title>{t('Share_Message')}</Modal.Title>
+				<Modal.Title>{t('Forward_Message')}</Modal.Title>
 				<Modal.Close onClick={onClose} title={t('Close')} />
 			</Modal.Header>
 			<Modal.Content>
@@ -99,7 +99,7 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 								)}
 							/>
 						</Field.Row>
-						{!rooms.length && <Field.Hint>{t('Select_atleast_one_channel_to_share_the_messsage')}</Field.Hint>}
+						{!rooms.length && <Field.Hint>{t('Select_atleast_one_channel_to_forward_the_messsage_to')}</Field.Hint>}
 					</Field>
 					<Field>
 						<QuoteAttachment attachment={attachment} />
@@ -112,7 +112,7 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 						{hasCopied ? t('Copied') : t('Copy_Link')}
 					</Button>
 					<Button disabled={!rooms.length || sendMessageMutation.isLoading} onClick={() => sendMessageMutation.mutate()} primary>
-						{t('Share')}
+						{t('Forward')}
 					</Button>
 				</ButtonGroup>
 			</Modal.Footer>
