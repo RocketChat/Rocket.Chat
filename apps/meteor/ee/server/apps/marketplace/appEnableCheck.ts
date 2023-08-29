@@ -1,7 +1,7 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
+import type { Logger } from '@rocket.chat/logger';
 
-import type { Logger } from '../../../../server/lib/logger/Logger';
 import { getMarketplaceAppInfo } from './appInfo';
 
 export const appEnableCheck = async ({

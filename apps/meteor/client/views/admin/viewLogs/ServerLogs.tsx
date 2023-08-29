@@ -175,13 +175,14 @@ const ServerLogs = (): ReactElement => {
 					padding={8}
 					flexGrow={1}
 					fontFamily='mono'
-					color='white'
-					bg='dark'
+					color='default'
+					bg='neutral'
 					style={{ wordBreak: 'break-all' }}
 					onWheel={handleWheel}
 					onTouchStart={handleTouchStart}
 					onTouchEnd={handleTouchEnd}
 					onScroll={handleScroll}
+					borderRadius='x4'
 				>
 					{entries.sort(compareEntries).map(({ string }, i) => (
 						<span key={i} dangerouslySetInnerHTML={{ __html: ansispan(string) }} />
@@ -189,17 +190,21 @@ const ServerLogs = (): ReactElement => {
 				</Box>
 			</Scrollable>
 			<Box
+				role='button'
 				position='absolute'
+				display='flex'
+				justifyContent='center'
 				insetBlockEnd={8}
 				insetInlineStart='50%'
 				width='x132'
 				height='x32'
 				marginInline='neg-x64'
 				paddingBlock={8}
-				fontScale='c1'
+				fontScale='c2'
 				borderRadius='full'
-				color='info'
-				backgroundColor='surface'
+				elevation='1'
+				color='default'
+				bg='light'
 				onClick={handleClick}
 				textAlign='center'
 				style={{

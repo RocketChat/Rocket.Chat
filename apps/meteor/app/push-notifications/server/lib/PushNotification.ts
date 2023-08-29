@@ -65,7 +65,7 @@ class PushNotification {
 		// message is being redacted already by 'getPushData' if idOnly is true
 		const text = !idOnly && roomName !== '' ? `${username}: ${message}` : message;
 
-		const config: IPushNotificationConfig = {
+		return {
 			from: 'push',
 			badge,
 			sound: 'default',
@@ -84,15 +84,8 @@ class PushNotification {
 				style: 'inbox',
 				image: RocketChatAssets.getURL('Assets_favicon_192'),
 			},
+			...(category !== '' ? { apn: { category } } : {}),
 		};
-
-		if (category !== '') {
-			config.apn = {
-				category,
-			};
-		}
-
-		return config;
 	}
 
 	async send({ rid, uid, mid, roomName, username, message, payload, badge = 1, category }: PushNotificationData): Promise<void> {

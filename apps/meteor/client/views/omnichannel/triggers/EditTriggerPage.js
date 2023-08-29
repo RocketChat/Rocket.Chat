@@ -1,6 +1,6 @@
 import { FieldGroup, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
@@ -44,7 +44,7 @@ const EditTriggerPage = ({ data, onSave }) => {
 
 	const router = useRoute('omnichannel-triggers');
 
-	const save = useMethod('livechat:saveTrigger');
+	const save = useEndpoint('POST', '/v1/livechat/triggers');
 
 	const { values, handlers, hasUnsavedChanges } = useForm(getInitialValues(data));
 

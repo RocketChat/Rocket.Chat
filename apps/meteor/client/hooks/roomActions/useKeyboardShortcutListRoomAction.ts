@@ -13,6 +13,7 @@ export const useKeyboardShortcutListRoomAction = () => {
 			icon: 'keyboard',
 			tabComponent: KeyboardShortcuts,
 			order: 99,
+			type: 'customization',
 		}),
 		[],
 	);

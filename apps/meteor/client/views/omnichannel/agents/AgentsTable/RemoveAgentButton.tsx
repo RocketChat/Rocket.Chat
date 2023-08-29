@@ -11,9 +11,10 @@ import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 type RemoveAgentButtonProps = {
 	_id: string;
 	reload: () => void;
+	onAgentRemoved?: () => void;
 };
 
-const RemoveAgentButton = ({ _id, reload }: RemoveAgentButtonProps): ReactElement => {
+const RemoveAgentButton = ({ _id, reload, onAgentRemoved }: RemoveAgentButtonProps): ReactElement => {
 	const deleteAction = useEndpointAction('DELETE', '/v1/livechat/users/agent/:_id', { keys: { _id } });
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -23,6 +24,7 @@ const RemoveAgentButton = ({ _id, reload }: RemoveAgentButtonProps): ReactElemen
 		const result = await deleteAction();
 		if (result.success === true) {
 			reload();
+			onAgentRemoved?.();
 		}
 	});
 

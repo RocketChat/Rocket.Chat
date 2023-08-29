@@ -4,6 +4,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { Livechat } from '../lib/Livechat';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -15,6 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:requestTranscript'(rid, email, subject) {
+		methodDeprecationLogger.method('livechat:requestTranscript', '7.0.0');
 		check(rid, String);
 		check(email, String);
 

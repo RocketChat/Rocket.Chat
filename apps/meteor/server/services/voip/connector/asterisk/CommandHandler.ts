@@ -14,9 +14,9 @@
  * added as and when required.
  */
 import type { IVoipConnectorResult, IManagementServerConnectionStatus, IManagementConfigData } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import type { Db } from 'mongodb';
 
-import { Logger } from '../../../../lib/logger/Logger';
 import { getManagementServerConfig } from '../../lib/Helper';
 import { WebsocketConnection } from '../websocket/WebsocketConnection';
 import type { Command } from './Command';
