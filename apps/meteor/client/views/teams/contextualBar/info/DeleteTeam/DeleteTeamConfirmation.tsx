@@ -1,18 +1,27 @@
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
-import RoomLinkList from '../../RoomLinkList';
+import RoomLinkList from './RoomLinkList';
 
-const StepTwo = ({ deletedRooms, keptRooms, onConfirm, onReturn, onCancel }) => {
+type DeleteTeamConfirmationProps = {
+	deletedRooms: { [key: string]: Serialized<IRoom> };
+	keptRooms: { [key: string]: Serialized<IRoom> };
+	onConfirm: (roomsToDelete: IRoom['_id'][]) => void;
+	onReturn?: () => void;
+	onCancel: () => void;
+};
+
+const DeleteTeamConfirmation = ({ deletedRooms, keptRooms, onConfirm, onReturn, onCancel }: DeleteTeamConfirmationProps) => {
 	const t = useTranslation();
+	const roomIds = Object.values(deletedRooms).map(({ _id }) => _id);
 
 	return (
 		<GenericModal
 			variant='danger'
-			icon='trash'
 			title={t('Deleting')}
-			onConfirm={() => onConfirm(Object.values(deletedRooms).map(({ _id }) => _id))}
+			onConfirm={() => onConfirm(roomIds)}
 			onCancel={onReturn}
 			confirmText={t('Remove')}
 			cancelText={t('Back')}
@@ -39,4 +48,4 @@ const StepTwo = ({ deletedRooms, keptRooms, onConfirm, onReturn, onCancel }) => 
 	);
 };
 
-export default StepTwo;
+export default DeleteTeamConfirmation;

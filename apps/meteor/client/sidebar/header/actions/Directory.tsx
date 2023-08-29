@@ -1,6 +1,6 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
+import { useLayout, useRouter, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 import React from 'react';
 
@@ -13,14 +13,10 @@ const Directory = (props: DirectoryProps) => {
 		sidebar.toggle();
 		router.navigate('/directory');
 	});
+	const currentRoute = useCurrentRoutePath();
 
 	return (
-		<Sidebar.TopBar.Action
-			{...props}
-			icon='notebook-hashtag'
-			onClick={handleDirectory}
-			pressed={router.getLocationPathname().includes('/directory')}
-		/>
+		<Sidebar.TopBar.Action {...props} icon='notebook-hashtag' onClick={handleDirectory} pressed={currentRoute?.includes('/directory')} />
 	);
 };
 
