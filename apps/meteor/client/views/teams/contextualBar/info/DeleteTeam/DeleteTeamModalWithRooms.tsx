@@ -1,33 +1,33 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
-import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import DeleteTeamModal from './DeleteTeamModal';
 
 type DeleteTeamModalWithRoomsProps = {
 	teamId: string;
-	onConfirm: (rooms: IRoom[]) => void;
+	onConfirm: (roomsToDelete: IRoom['_id'][]) => void;
 	onCancel: () => void;
 };
 
 const DeleteTeamModalWithRooms = ({ teamId, onConfirm, onCancel }: DeleteTeamModalWithRoomsProps): ReactElement => {
-	const { value, phase } = useEndpointData('/v1/teams.listRooms', { params: useMemo(() => ({ teamId }), [teamId]) });
-
 	const t = useTranslation();
+	const query = useMemo(() => ({ teamId }), [teamId]);
+	const getTeamsListRooms = useEndpoint('GET', '/v1/teams.listRooms');
+	const { data, isLoading } = useQuery(['getTeamsListRooms', query], async () => getTeamsListRooms(query));
 
-	if (phase === AsyncStatePhase.LOADING) {
+	if (isLoading) {
 		return (
 			<GenericModal variant='warning' onClose={onCancel} onConfirm={onCancel} title={<Skeleton width='50%' />} confirmText={t('Cancel')}>
 				<Skeleton width='full' />
 			</GenericModal>
 		);
 	}
-	return <DeleteTeamModal onCancel={onCancel} onConfirm={onConfirm} rooms={value?.rooms} />;
+	return <DeleteTeamModal onCancel={onCancel} onConfirm={onConfirm} rooms={data?.rooms || []} />;
 };
 
 export default DeleteTeamModalWithRooms;
