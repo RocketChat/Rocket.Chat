@@ -7,7 +7,7 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple/UserAndRoomAutoCompleteMultiple';
+import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple';
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 import { prependReplies } from '../../../../lib/utils/prependReplies';
