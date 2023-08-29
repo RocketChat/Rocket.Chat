@@ -17,7 +17,7 @@ import { useRedirectModerationConsole } from './actions/useRedirectModerationCon
 import { useRemoveUserAction } from './actions/useRemoveUserAction';
 import { useReportUser } from './actions/useReportUser';
 
-export type UserInfoActionType = 'communication' | 'privileges' | 'management';
+export type UserInfoActionType = 'communication' | 'privileges' | 'management' | 'moderation';
 
 export type UserInfoAction = {
 	content: string;
