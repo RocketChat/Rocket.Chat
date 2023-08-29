@@ -42,7 +42,8 @@ export const sendMessage = async (chat: ChatAPI, { text, tshow }: { text: string
 		}
 	}
 
-	await chat.data.markRoomAsRead();
+	chat.readStateManager.clearUnreadMark();
+	await chat.readStateManager.debouncedMarkAsRead();
 
 	text = text.trim();
 
