@@ -32,7 +32,7 @@ export class HomeSidenav {
 	}
 
 	get btnCreate(): Locator {
-		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
+		return this.page.locator('role=button[name="Create"]');
 	}
 
 	getSidebarItemByName(name: string): Locator {
@@ -52,7 +52,7 @@ export class HomeSidenav {
 	}
 
 	async openInstalledApps(): Promise<void> {
-		await this.page.locator('//button[@title="Administration"]').click();
+		await this.page.locator('role=button[name="Administration"]').click();
 		await this.page.locator('//div[contains(text(),"Installed")]').click();
 	}
 
@@ -75,6 +75,12 @@ export class HomeSidenav {
 		await this.page.locator('role=navigation >> role=button[name=Search]').click();
 		await this.page.locator('role=search >> role=searchbox').type(name);
 		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
+
+		await this.page.locator('role=main').waitFor();
+		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
+
+		await expect(this.page.locator('role=main >> .rcx-skeleton')).toHaveCount(0);
+		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
 	}
 
 	async switchOmnichannelStatus(status: 'offline' | 'online') {

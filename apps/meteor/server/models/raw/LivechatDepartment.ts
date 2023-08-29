@@ -164,6 +164,11 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, options);
 	}
 
+	findEnabledInIds(departmentsIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+		const query = { _id: { $in: departmentsIds }, enabled: true };
+		return this.find(query, options);
+	}
+
 	addBusinessHourToDepartmentsByIds(ids: string[] = [], businessHourId: string): Promise<Document | UpdateResult> {
 		const query = {
 			_id: { $in: ids },
@@ -432,5 +437,13 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		];
 
 		return this.col.aggregate(aggregation).hasNext();
+	}
+
+	countArchived(): Promise<number> {
+		return this.col.countDocuments({ archived: true });
+	}
+
+	findByParentId(_parentId: string, _options?: FindOptions<ILivechatDepartment> | undefined): FindCursor<ILivechatDepartment> {
+		throw new Error('Method not implemented in CE');
 	}
 }

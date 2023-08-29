@@ -12,8 +12,8 @@ export class OmnichannelTriggers {
 		this.sidenav = new OmnichannelSidenav(page);
 	}
 
-	get btnNew(): Locator {
-		return this.page.locator('role=button[name="Create trigger"]');
+	headingButtonNew(name: string) {
+		return this.page.locator(`role=main >> role=button[name="${name}"]`).first();
 	}
 
 	get Name(): Locator {
@@ -97,7 +97,7 @@ export class OmnichannelTriggers {
 	}
 
 	public async createTrigger(triggersName: string, triggerMessage: string) {
-		await this.btnNew.click();
+		await this.headingButtonNew('Create trigger').click();
 		await this.Name.fill(triggersName);
 		await this.Description.fill('Creating a fresh trigger');
 		await this.visitorPageURL.click();
