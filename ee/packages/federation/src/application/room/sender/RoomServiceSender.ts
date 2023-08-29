@@ -728,7 +728,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 			return;
 		}
 		const internalRoom = await this.internalRoomAdapter.getInternalRoomById(internalRoomId);
-		if (!internalRoom || !internalRoom.name) {
+		if (!internalRoom?.name) {
 			throw new Error(`Room with internalId ${internalRoomId} not found`);
 		}
 		const roomName = internalRoom.fname || internalRoom.name;
