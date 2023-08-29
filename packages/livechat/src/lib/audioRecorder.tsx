@@ -1,6 +1,12 @@
 import { AudioEncoder } from './audioEncoder';
 
 export class AudioRecorder {
+	private audioContext: AudioContext | undefined;
+
+	private stream: MediaStream | undefined;
+
+	private encoder: AudioEncoder | undefined;
+
 	isSupported() {
 		return Boolean(navigator.mediaDevices?.getUserMedia) && Boolean(AudioContext);
 	}
@@ -57,7 +63,7 @@ export class AudioRecorder {
 		delete this.encoder;
 	}
 
-	async start(cb) {
+	async start(cb?: (this: this, done: boolean) => void) {
 		try {
 			this.createAudioContext();
 			await this.createStream();
@@ -72,7 +78,7 @@ export class AudioRecorder {
 		}
 	}
 
-	stop(cb) {
+	stop(cb: (data: Blob) => void) {
 		this.encoder?.on('encoded', cb);
 		this.encoder?.close();
 

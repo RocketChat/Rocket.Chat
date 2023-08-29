@@ -1,12 +1,16 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import { Livechat } from '../api';
+import { host } from '../api';
 
 export class AudioEncoder extends Emitter {
-	constructor(source, { bufferLen = 4096, numChannels = 1, bitRate = 32 } = {}) {
+	private worker: Worker;
+
+	private scriptNode: ScriptProcessorNode;
+
+	constructor(source: MediaStreamAudioSourceNode, { bufferLen = 4096, numChannels = 1, bitRate = 32 } = {}) {
 		super();
 
-		const workerPath = `${Livechat.client.host}/workers/mp3-encoder/index.js`;
+		const workerPath = `${host}/workers/mp3-encoder/index.js`;
 		this.worker = new Worker(workerPath);
 		this.worker.onmessage = this.handleWorkerMessage;
 
@@ -30,7 +34,7 @@ export class AudioEncoder extends Emitter {
 		this.worker.postMessage({ command: 'finish' });
 	}
 
-	handleWorkerMessage = (event) => {
+	handleWorkerMessage = (event: MessageEvent) => {
 		switch (event.data.command) {
 			case 'end': {
 				// prepend mp3 magic number to the buffer
@@ -44,7 +48,7 @@ export class AudioEncoder extends Emitter {
 		}
 	};
 
-	handleAudioProcess = (event) => {
+	handleAudioProcess = (event: AudioProcessingEvent) => {
 		for (let channel = 0; channel < event.inputBuffer.numberOfChannels; channel++) {
 			const buffer = event.inputBuffer.getChannelData(channel);
 			this.worker.postMessage({

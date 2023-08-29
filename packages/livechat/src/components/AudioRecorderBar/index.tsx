@@ -1,20 +1,27 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEffect, useState } from 'react';
+import type { ReactElement } from 'react';
 import { withTranslation } from 'react-i18next';
 
+import { createClassName } from '../../helpers/createClassName';
 import CheckAudioIcon from '../../icons/circle-check.svg';
 import CancelAudioIcon from '../../icons/circle-cross.svg';
 import { AudioRecorder } from '../../lib/audioRecorder';
 import { ComposerAction, ComposerActions } from '../Composer';
-import { createClassName } from '../helpers';
 import styles from './styles.scss';
 
 const audioRecorder = new AudioRecorder();
 
-const AudioRecorderBar = ({ handleRecording, onUpload }) => {
+type AudioMessageRecorderProps = {
+	handleRecording: () => void;
+	onUpload?: (files: (File | null)[]) => void;
+	isMicrophoneDenied?: boolean;
+};
+
+const AudioRecorderBar = ({ handleRecording, onUpload }: AudioMessageRecorderProps): ReactElement | null => {
 	const [time, setTime] = useState('00:00');
-	const [recordingInterval, setRecordingInterval] = useState(0);
+	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
 	const stopRecording = useMutableCallback(async () => {
 		if (recordingInterval) {
 			clearInterval(recordingInterval);
@@ -23,7 +30,7 @@ const AudioRecorderBar = ({ handleRecording, onUpload }) => {
 		handleRecording();
 
 		setTime('00:00');
-		const blob = await new Promise((resolve) => {
+		const blob = await new Promise<Blob>((resolve) => {
 			audioRecorder.stop(resolve);
 		});
 
@@ -34,7 +41,9 @@ const AudioRecorderBar = ({ handleRecording, onUpload }) => {
 		const blob = await stopRecording();
 		const fileName = `${'Audio_record'}.mp3`;
 		const file = new File([blob], fileName, { type: 'audio/mpeg' });
-		await onUpload([file]);
+		if (onUpload) {
+			onUpload([file]);
+		}
 	});
 
 	const handleRecord = useMutableCallback(async () => {

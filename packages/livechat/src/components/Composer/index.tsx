@@ -53,7 +53,9 @@ type ComposerProps = {
 	post?: ComponentChildren;
 	notifyEmojiSelect?: (cb: (emoji: string) => void) => void;
 	limitTextLength?: number;
-	isRecording: string;
+	// isRecording: string;
+	isRecording: boolean;
+	handleRecording: () => void;
 };
 
 type ComposerState = {
@@ -177,7 +179,7 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 
 	// we only update composer if value length changed from 0 to 1 or 1 to 0
 	// everything else is managed by this.el
-	shouldComponentUpdate({ value: nextValue, isRecording: nextIsRecordingValue = '' }: ComposerProps) {
+	shouldComponentUpdate({ value: nextValue, isRecording: nextIsRecordingValue = false }: ComposerProps) {
 		const { value = '', limitTextLength, isRecording } = this.props;
 
 		const nextValueEmpty = !nextValue || nextValue.length === 0;
