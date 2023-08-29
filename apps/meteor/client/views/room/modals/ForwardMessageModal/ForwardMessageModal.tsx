@@ -83,7 +83,7 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 	return (
 		<Modal>
 			<Modal.Header>
-				<Modal.Title>{t('Forward_Message')}</Modal.Title>
+				<Modal.Title>{t('Forward_message')}</Modal.Title>
 				<Modal.Close onClick={onClose} title={t('Close')} />
 			</Modal.Header>
 			<Modal.Content>
