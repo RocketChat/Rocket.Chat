@@ -103,6 +103,7 @@ test.describe.serial('homepage', () => {
 
 	test.describe('layout for regular users', () => {
 		const notVisibleCards = [CardIds.Users, CardIds.Custom];
+
 		test.beforeAll(async ({ api }) => {
 			await expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
 		});
@@ -118,11 +119,11 @@ test.describe.serial('homepage', () => {
 		});
 
 		test(`expect ${notVisibleCards.join(' and ')} cards to not be visible`, async () => {
-			await Promise.all([CardIds.Users, CardIds.Custom].map((id) => expect(adminPage.locator(`[data-qa-id="${id}"]`)).not.toBeVisible()));
+			await Promise.all(notVisibleCards.map((id) => expect(regularUserPage.locator(`[data-qa-id="${id}"]`)).not.toBeVisible()));
 		});
 
 		test('expect all other cards to be visible', async () => {
-			await Promise.all(Object.values(CardIds).filter((id) => !notVisibleCards.includes(id)).map((id) => expect(adminPage.locator(`[data-qa-id="${id}"]`)).toBeVisible()));
+			await Promise.all(Object.values(CardIds).filter((id) => !notVisibleCards.includes(id)).map((id) => expect(regularUserPage.locator(`[data-qa-id="${id}"]`)).toBeVisible()));
 		});
 
 
