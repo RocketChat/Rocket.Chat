@@ -1,8 +1,7 @@
+import { Logger } from '@rocket.chat/logger';
 import { PersistentQueue } from '@rocket.chat/models';
 import type { ValidResult, Work } from 'mongo-message-queue';
 import MessageQueue from 'mongo-message-queue';
-
-import { Logger } from './logger';
 
 /**
  * IPersistentQueue
@@ -27,7 +26,7 @@ export class Queue implements IPersistentQueue {
 	// Default delay is 5 seconds
 	protected retryDelay = 5000;
 
-	private logger = Logger;
+	private logger = new Logger('PersistentQueue');
 
 	constructor(maxWorkers = 5) {
 		this.queue = new MessageQueue();
