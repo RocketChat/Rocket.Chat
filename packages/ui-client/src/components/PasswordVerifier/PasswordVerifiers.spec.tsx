@@ -1,8 +1,19 @@
-import { MockedServerContext } from '@rocket.chat/mock-providers/src/MockedServerContext';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, waitFor } from '@testing-library/react';
 
 import { PasswordVerifier } from './PasswordVerifier';
+
+type Response = {
+	enabled: boolean;
+	policy: [
+		name: string,
+		value?:
+			| {
+					[x: string]: number;
+			  }
+			| undefined,
+	][];
+};
 
 jest.mock('react-i18next', () => ({
 	useTranslation: () => ({
@@ -14,76 +25,74 @@ jest.mock('react-i18next', () => ({
 }));
 
 afterEach(() => {
-	queryClient.clear();
+	// restore the spy created with spyOn
+	jest.restoreAllMocks();
 });
 
 it('should render no policy if its disabled ', () => {
-	const { container } = render(
-		<MockedServerContext
-			handleRequest={(request) => {
-				if (request.method === 'GET' && request.pathPattern === '/v1/pw.getPolicy') {
-					return {
-						enabled: false,
-						policy: [],
-					} as any;
-				}
-				throw new Error('Not implemented');
-			}}
-		>
-			<PasswordVerifier password='' />
-		</MockedServerContext>,
-	);
+	const response: Response = {
+		enabled: false,
+		policy: [],
+	};
+	const { queryByRole } = render(<PasswordVerifier password='' />, {
+		wrapper: mockAppRoot()
+			.withEndpoint('GET', '/v1/pw.getPolicy', () => response)
+			.build(),
+	});
 
-	expect(container.firstChild).toBeNull();
+	expect(queryByRole('list')).toBeNull();
 });
 
-it('should render no policy if its enabled but empty', () => {
-	const { container } = render(
-		<MockedServerContext
-			handleRequest={(request) => {
-				if (request.method === 'GET' && request.pathPattern === '/v1/pw.getPolicy') {
-					return {
-						enabled: true,
-						policy: [],
-					} as any;
-				}
-				throw new Error('Not implemented');
-			}}
-		>
-			<PasswordVerifier password='' />
-		</MockedServerContext>,
-	);
+it('should render no policy if its enabled but empty', async () => {
+	const response: Response = {
+		enabled: true,
+		policy: [['get-password-policy-minLength', { minLength: 10 }]],
+		// policy: [],
+	};
+	const mock = mockAppRoot();
+	const spyMock = jest.spyOn(mock, 'withEndpoint');
 
-	expect(container.firstChild).toBeNull();
+	const { debug, queryByRole } = render(<PasswordVerifier password='asdf' />, {
+		wrapper: mock.withEndpoint('GET', '/v1/pw.getPolicy', () => response).build(),
+	});
+
+	await waitFor(() => {
+		debug();
+		expect(spyMock).toHaveBeenCalled();
+		expect(queryByRole('list')).not.toBeInTheDocument();
+	});
 });
 
-const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			// ✅ turns retries off
-			retry: false,
-		},
-	},
+it('should render policy if its enabled', async () => {
+	const response: Response = {
+		enabled: true,
+		policy: [['get-password-policy-minLength', { minLength: 10 }]],
+		// policy: [],
+	};
+	const mock = mockAppRoot();
+	const spyMock = jest.spyOn(mock, 'withEndpoint');
+
+	const { debug, queryByRole } = render(<PasswordVerifier password='asdf' />, {
+		wrapper: mock.withEndpoint('GET', '/v1/pw.getPolicy', () => response).build(),
+	});
+
+	await waitFor(() => {
+		debug();
+		expect(spyMock).toHaveBeenCalled();
+		expect(queryByRole('list')).toBeInTheDocument();
+	});
 });
 
 it("should render policy as invalid if password doesn't match the requirements", async () => {
-	const { getByText } = render(
-		<QueryClientProvider client={queryClient}>
-			<MockedServerContext
-				handleRequest={(request) => {
-					if (request.method === 'GET' && request.pathPattern === '/v1/pw.getPolicy') {
-						return {
-							enabled: true,
-							policy: [['get-password-policy-minLength', { minLength: 10 }]],
-						} as any;
-					}
-					throw new Error('Not implemented');
-				}}
-			>
-				<PasswordVerifier password='asd' />
-			</MockedServerContext>
-		</QueryClientProvider>,
-	);
+	const response: Response = {
+		enabled: true,
+		policy: [['get-password-policy-minLength', { minLength: 10 }]],
+	};
+	const { getByText } = render(<PasswordVerifier password='asdf' />, {
+		wrapper: mockAppRoot()
+			.withEndpoint('GET', '/v1/pw.getPolicy', () => response)
+			.build(),
+	});
 
 	await waitFor(() => {
 		expect(getByText('get-password-policy-minLength-label').parentElement?.dataset.invalid).toBe('true');
@@ -91,23 +100,15 @@ it("should render policy as invalid if password doesn't match the requirements",
 });
 
 it('should render policy as valid if password match the requirements', async () => {
-	const { getByText } = render(
-		<QueryClientProvider client={queryClient}>
-			<MockedServerContext
-				handleRequest={(request) => {
-					if (request.method === 'GET' && request.pathPattern === '/v1/pw.getPolicy') {
-						return {
-							enabled: true,
-							policy: [['get-password-policy-minLength', { minLength: 2 }]],
-						} as any;
-					}
-					throw new Error('Not implemented');
-				}}
-			>
-				<PasswordVerifier password='asd' />
-			</MockedServerContext>
-		</QueryClientProvider>,
-	);
+	const response: Response = {
+		enabled: true,
+		policy: [['get-password-policy-minLength', { minLength: 2 }]],
+	};
+	const { getByText } = render(<PasswordVerifier password='asdf' />, {
+		wrapper: mockAppRoot()
+			.withEndpoint('GET', '/v1/pw.getPolicy', () => response)
+			.build(),
+	});
 
 	await waitFor(() => {
 		expect(getByText('get-password-policy-minLength-label').parentElement?.dataset.invalid).toBe(undefined);

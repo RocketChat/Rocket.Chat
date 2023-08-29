@@ -1,6 +1,5 @@
 export default {
 	errorOnDeprecated: true,
-
 	testEnvironment: 'jsdom',
 	modulePathIgnorePatterns: ['<rootDir>/dist/'],
 	testMatch: ['<rootDir>/src/**/**.spec.[jt]s?(x)'],
@@ -24,4 +23,5 @@ export default {
 	},
 	collectCoverage: true,
 	collectCoverageFrom: ['src/**/*.{ts,tsx}'],
+	setupFilesAfterEnv: ['@testing-library/jest-dom/extend-expect'],
 };
