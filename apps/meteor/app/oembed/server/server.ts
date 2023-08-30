@@ -62,13 +62,6 @@ const toUtf8 = function (contentType: string, body: Buffer): string {
 };
 
 const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlContentResult> => {
-	// let urlObj: URL.UrlWithStringQuery;
-	// if (typeof urlObjStr === 'string') {
-	// 	urlObj = URL.parse(urlObjStr);
-	// } else {
-	// 	urlObj = urlObjStr;
-	// }
-
 	const portsProtocol = new Map<string, string>(
 		Object.entries({
 			80: 'http:',
@@ -76,8 +69,6 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 			443: 'https:',
 		}),
 	);
-
-	// const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
 
 	const ignoredHosts = settings.get<string>('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
 	if (urlObj.hostname && (ignoredHosts.includes(urlObj.hostname) || ipRangeCheck(urlObj.hostname, ignoredHosts))) {
@@ -98,13 +89,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 
 	const data = await callbacks.run('oembed:beforeGetUrlContent', {
 		urlObj,
-		// parsedUrl,
 	});
-
-	/*  This prop is neither passed or returned by the callback, so I'll just comment it for now
-	if (data.attachments) {
-		return data;
-	} */
 
 	const url = data.urlObj.toString();
 	const sizeLimit = 250000;
@@ -124,8 +109,6 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 		settings.get('Allow_Invalid_SelfSigned_Certs'),
 	);
 
-	// load all chunks
-
 	let totalSize = 0;
 	const chunks = [];
 	for await (const chunk of response.body) {
@@ -140,10 +123,10 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 
 	log.debug('Obtained response from server with length of', totalSize);
 	const buffer = Buffer.concat(chunks);
+
 	return {
 		headers: Object.fromEntries(response.headers),
 		body: toUtf8(response.headers.get('content-type') || 'text/plain', buffer),
-		// parsedUrl,
 		statusCode: response.status,
 	};
 };
@@ -218,7 +201,6 @@ const getUrlMeta = async function (
 		url,
 		meta: metas,
 		headers,
-		// parsedUrl: content.parsedUrl,
 		content,
 	});
 };
