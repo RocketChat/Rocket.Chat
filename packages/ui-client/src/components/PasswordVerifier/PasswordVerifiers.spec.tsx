@@ -126,10 +126,11 @@ it('should render policy as valid if password matches the requirements', async (
 		enabled: true,
 		policy: [['get-password-policy-minLength', { minLength: 2 }]],
 	};
-	const mock = mockAppRoot();
 
 	const { queryByTestId, getByText } = render(<PasswordVerifier password='asd' />, {
-		wrapper: mock.withEndpoint('GET', '/v1/pw.getPolicy', () => response).build(),
+		wrapper: mockAppRoot()
+			.withEndpoint('GET', '/v1/pw.getPolicy', () => response)
+			.build(),
 	});
 
 	await waitFor(() => {
