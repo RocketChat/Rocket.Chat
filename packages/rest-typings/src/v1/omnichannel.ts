@@ -3039,7 +3039,7 @@ const POSTLivechatTriggersParamsSchema = {
 				properties: {
 					name: {
 						type: 'string',
-						enum: ['time-on-site', 'page-url', 'chat-opened-by-visitor'],
+						enum: ['time-on-site', 'page-url', 'chat-opened-by-visitor', 'after-guest-registration'],
 					},
 					value: {
 						type: 'string',
