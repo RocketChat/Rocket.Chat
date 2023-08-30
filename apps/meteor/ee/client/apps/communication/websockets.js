@@ -2,7 +2,6 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { CachedCollectionManager } from '../../../../app/ui-cached-collection/client';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
-import { slashCommands } from '../../../../app/utils/lib/slashCommand';
 
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
@@ -28,20 +27,6 @@ export class AppWebsocketReceiver extends Emitter {
 
 	listenStreamerEvents() {
 		sdk.stream('apps', ['apps'], ([key, args]) => {
-			switch (key) {
-				case AppEvents.COMMAND_ADDED:
-					this.onCommandAddedOrUpdated(...args);
-					break;
-				case AppEvents.COMMAND_UPDATED:
-					this.onCommandAddedOrUpdated(...args);
-					break;
-				case AppEvents.COMMAND_REMOVED:
-					this.onCommandRemovedOrDisabled(...args);
-					break;
-				case AppEvents.COMMAND_DISABLED:
-					this.onCommandRemovedOrDisabled(...args);
-					break;
-			}
 			this.emit(key, ...args);
 		});
 	}
@@ -53,29 +38,4 @@ export class AppWebsocketReceiver extends Emitter {
 	unregisterListener(event, listener) {
 		this.off(event, listener);
 	}
-
-	onCommandAddedOrUpdated = (command) => {
-		const retryOnFailure = (retries) => {
-			sdk.rest
-				.get('/v1/commands.get', { command })
-				.then((result) => {
-					slashCommands.add(result.command);
-				})
-				.catch((error) => {
-					if (retries - 1 === 0) {
-						throw error;
-					}
-
-					setTimeout(() => {
-						retryOnFailure(retries - 1);
-					}, 3000);
-				});
-		};
-
-		retryOnFailure(3);
-	};
-
-	onCommandRemovedOrDisabled = (command) => {
-		delete slashCommands.commands[command];
-	};
 }
