@@ -24,6 +24,7 @@ export const useDepartmentsSection = () => {
 		isLoading,
 		isError,
 		isSuccess,
+		refetch,
 	} = useQuery(
 		['omnichannel-reports', 'conversations-by-department', period],
 		async () => {
@@ -61,7 +62,8 @@ export const useDepartmentsSection = () => {
 			periodSelectorProps,
 			period,
 			downloadProps,
+			onRetry: refetch,
 		}),
-		[title, subtitle, emptyStateSubtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps],
+		[title, subtitle, emptyStateSubtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps, refetch],
 	);
 };
