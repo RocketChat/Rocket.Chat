@@ -1,7 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-// import { MockedServerContext } from '@rocket.chat/mock-providers/src/MockedServerContext';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
-// import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { PasswordVerifier } from './PasswordVerifier';
 
@@ -16,15 +14,6 @@ type Response = {
 			| undefined,
 	][];
 };
-
-// const queryClient = new QueryClient({
-// 	defaultOptions: {
-// 		queries: {
-// 			// ✅ turns retries off
-// 			retry: false,
-// 		},
-// 	},
-// });
 
 export default {
 	title: 'Components/PasswordVerifier',
