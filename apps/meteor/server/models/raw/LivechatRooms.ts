@@ -7,6 +7,7 @@ import type {
 	IMessage,
 	ILivechatPriority,
 	IOmnichannelServiceLevelAgreements,
+	ReportResult,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
@@ -23,6 +24,7 @@ import type {
 	SortDirection,
 	FindCursor,
 	UpdateResult,
+	AggregationCursor,
 } from 'mongodb';
 
 import { getValue } from '../../../app/settings/server/raw';
@@ -68,6 +70,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { callStatus: 1 }, sparse: true }, // used on statistics
 			{ key: { priorityId: 1 }, sparse: true },
 			{ key: { slaId: 1 }, sparse: true },
+			{ key: { source: 1, ts: 1 }, partialFilterExpression: { source: { $exists: true }, t: 'l' } },
+			{ key: { departmentId: 1, ts: 1 }, partialFilterExpression: { departmentId: { $exists: true }, t: 'l' } },
+			{ key: { 'tags.0': 1, 'ts': 1 }, partialFilterExpression: { 'tags.0': { $exists: true }, 't': 'l' } },
+			{ key: { servedBy: 1, ts: 1 }, partialFilterExpression: { servedBy: { $exists: true }, t: 'l' } },
 		];
 	}
 
@@ -2530,6 +2536,53 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	countRoomsWithTranscriptSent(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsBySource(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsByStatus(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsByDepartment(
+		_start: Date,
+		_end: Date,
+		_sort: Record<string, 1 | -1>,
+		_extraQuery: Filter<IOmnichannelRoom>,
+	): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsByTags(
+		_start: Date,
+		_end: Date,
+		_sort: Record<string, 1 | -1>,
+		_extraQuery: Filter<IOmnichannelRoom>,
+	): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsByAgents(
+		_start: Date,
+		_end: Date,
+		_sort: Record<string, 1 | -1>,
+		_extraQuery: Filter<IOmnichannelRoom>,
+	): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsWithoutTagsBetweenDate(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	getTotalConversationsWithoutAgentsBetweenDate(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	getTotalConversationsWithoutDepartmentBetweenDates(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
 		throw new Error('Method not implemented.');
 	}
 }
