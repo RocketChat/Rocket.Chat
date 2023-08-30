@@ -1,7 +1,13 @@
 $breakpoints: (
-	'small':  ( min-width:  767px ),
-	'medium': ( min-width:  992px ),
-	'large':  ( min-width: 1200px )
+	'small': (
+		min-width: 767px,
+	),
+	'medium': (
+		min-width: 992px,
+	),
+	'large': (
+		min-width: 1200px,
+	),
 ) !default;
 
 @mixin md($breakpoint) {
@@ -20,7 +26,7 @@ $breakpoints: (
 	}
 }
 
-@mixin keyframes( $animationName ) {
+@mixin keyframes($animationName) {
 	@-webkit-keyframes #{$animationName} {
 		@content;
 	}
@@ -38,7 +44,7 @@ $breakpoints: (
 	}
 }
 
-@mixin pressable-button($displacement: 2px, $border-width: 0) {
+@mixin pressable-button($displacement: 2px, $border-width: 0, $cursor: pointer) {
 	position: relative;
 
 	&:active,
@@ -63,7 +69,7 @@ $breakpoints: (
 		bottom: (-$border-width);
 		left: (-$border-width);
 
-		content: "";
-		cursor: pointer;
+		content: '';
+		cursor: ($cursor);
 	}
 }

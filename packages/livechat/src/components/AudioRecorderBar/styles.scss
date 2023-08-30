@@ -1,0 +1,43 @@
+.audio-message {
+	position: relative;
+
+	display: flex;
+
+	width: 100%;
+
+	color: #696969;
+
+	font-size: 0.875rem;
+
+	&__cancel,
+	&__done {
+		display: flex;
+	}
+
+	&__timer {
+		display: flex;
+
+		margin: 0 -0.25rem;
+		align-items: center;
+		justify-content: center;
+
+		&__dot,
+		&__timer-text {
+			margin: 0 0.25rem;
+		}
+
+		&__timer-text {
+			min-width: 3em;
+		}
+
+		&__dot {
+			flex: 0 0 auto;
+
+			width: 0.5rem;
+			height: 0.5rem;
+
+			border-radius: 50%;
+			background-color: red;
+		}
+	}
+}

@@ -4,6 +4,7 @@ import type { CSSProperties } from 'preact/compat';
 
 import { createClassName } from '../../helpers/createClassName';
 import { parse } from '../../helpers/parse';
+import AudioRecorderBar from '../AudioRecorderBar';
 import styles from './styles.scss';
 
 const findLastTextNode = (node: Node): Text | null => {
@@ -52,6 +53,9 @@ type ComposerProps = {
 	post?: ComponentChildren;
 	notifyEmojiSelect?: (cb: (emoji: string) => void) => void;
 	limitTextLength?: number;
+	// isRecording: string;
+	isRecording: boolean;
+	handleRecording: () => void;
 };
 
 type ComposerState = {
@@ -175,17 +179,26 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 
 	// we only update composer if value length changed from 0 to 1 or 1 to 0
 	// everything else is managed by this.el
-	shouldComponentUpdate({ value: nextValue = '' }: ComposerProps) {
-		const { value = '', limitTextLength } = this.props;
+	shouldComponentUpdate({ value: nextValue, isRecording: nextIsRecordingValue = false }: ComposerProps) {
+		const { value = '', limitTextLength, isRecording } = this.props;
 
 		const nextValueEmpty = !nextValue || nextValue.length === 0;
 		const valueEmpty = !value || value.length === 0;
 
 		if (nextValueEmpty !== valueEmpty) {
+			this.handleInnertext();
 			return true;
 		}
 
-		if (nextValue.length === limitTextLength || value.length === limitTextLength) {
+		if (nextValue?.length === limitTextLength || value.length === limitTextLength) {
+			this.handleInnertext();
+			return true;
+		}
+
+		if (isRecording !== nextIsRecordingValue) {
+			if (nextIsRecordingValue === false) {
+				this.handleInnertext();
+			}
 			return true;
 		}
 
@@ -193,6 +206,12 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 	}
 
 	componentDidUpdate() {
+		if (!this.props.isRecording) {
+			this.handleInnertext();
+		}
+	}
+
+	handleInnertext() {
 		const { el } = this;
 		if (!el) {
 			return;
@@ -264,29 +283,47 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 		return 0;
 	}
 
-	render = ({ pre, post, value, placeholder, onChange, onSubmit, onUpload, className, style }: ComposerProps) => (
+	render = ({
+		pre,
+		post,
+		value,
+		placeholder,
+		onChange,
+		onSubmit,
+		onUpload,
+		className,
+		style,
+		isRecording,
+		handleRecording,
+	}: ComposerProps) => (
 		<div className={createClassName(styles, 'composer', {}, [className])} style={style}>
 			{pre}
-			<div
-				ref={this.handleRef}
-				contentEditable
-				data-placeholder={placeholder}
-				onInput={this.handleInput(onChange)}
-				onKeyPress={this.handleKeypress(onSubmit)}
-				onPaste={this.handlePaste(onUpload)}
-				onDrop={this.handleDrop(onUpload)}
-				onClick={this.handleClick}
-				onCompositionStart={() => {
-					this.handleInputLock(true);
-				}}
-				onCompositionEnd={() => {
-					this.handleInputLock(false);
-					onChange?.(this.el?.innerText ?? '');
-				}}
-				className={createClassName(styles, 'composer__input')}
-			>
-				{value}
-			</div>
+			{!isRecording ? (
+				<div
+					ref={this.handleRef}
+					contentEditable
+					data-placeholder={placeholder}
+					onInput={this.handleInput(onChange)}
+					onKeyPress={this.handleKeypress(onSubmit)}
+					onPaste={this.handlePaste(onUpload)}
+					onDrop={this.handleDrop(onUpload)}
+					onClick={this.handleClick}
+					onCompositionStart={() => {
+						this.handleInputLock(true);
+					}}
+					onCompositionEnd={() => {
+						this.handleInputLock(false);
+						onChange?.(this.el?.innerText ?? '');
+					}}
+					className={createClassName(styles, 'composer__input')}
+				>
+					{value}
+				</div>
+			) : (
+				<div className={createClassName(styles, 'composer__input')}>
+					<AudioRecorderBar handleRecording={handleRecording} onUpload={onUpload} />
+				</div>
+			)}
 			{post}
 		</div>
 	);

@@ -15,6 +15,7 @@ import { Screen } from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import ChangeIcon from '../../icons/change.svg';
 import FinishIcon from '../../icons/finish.svg';
+import MicIcon from '../../icons/mic.svg';
 import PlusIcon from '../../icons/plus.svg';
 import RemoveIcon from '../../icons/remove.svg';
 import SendIcon from '../../icons/send.svg';
@@ -33,6 +34,8 @@ class Chat extends Component {
 		atBottom: true,
 		text: '',
 		emojiPickerActive: false,
+		isRecording: false,
+		microphoneAccess: false,
 	};
 
 	handleFilesDropTargetRef = (ref) => {
@@ -103,6 +106,21 @@ class Chat extends Component {
 	turnOffEmojiPicker = () => {
 		if (this.state.emojiPickerActive) {
 			this.setState({ emojiPickerActive: !this.state.emojiPickerActive });
+		}
+	};
+
+	handleRecording = async () => {
+		if (!this.microphoneAccess) {
+			try {
+				await navigator.mediaDevices.getUserMedia({ audio: true });
+				this.setState({ isRecording: !this.state.isRecording });
+				this.setState({ microphoneAccess: true });
+			} catch (err) {
+				this.setState({ microphoneAccess: false });
+				console.log(`${err.name} : ${err.message}`);
+			}
+		} else {
+			this.setState({ isRecording: !this.state.isRecording });
 		}
 	};
 
@@ -225,9 +243,11 @@ class Chat extends Component {
 								this.notifyEmojiSelect = click;
 							}}
 							handleEmojiClick={this.handleEmojiClick}
+							isRecording={this.state.isRecording}
+							handleRecording={this.handleRecording}
 							pre={
 								<ComposerActions>
-									<ComposerAction className={createClassName(styles, 'emoji-picker-icon')} onClick={this.toggleEmojiPickerState}>
+									<ComposerAction isDisabled={this.state.isRecording} onClick={this.toggleEmojiPickerState}>
 										<EmojiIcon width={20} height={20} />
 									</ComposerAction>
 								</ComposerActions>
@@ -235,9 +255,14 @@ class Chat extends Component {
 							post={
 								<ComposerActions>
 									{text.length === 0 && uploads && (
-										<ComposerAction onClick={this.handleUploadClick}>
-											<PlusIcon width={20} height={20} />
-										</ComposerAction>
+										<ComposerActions>
+											<ComposerAction onClick={this.handleRecording} isDisabled={this.state.isRecording}>
+												<MicIcon width={20} height={20} />
+											</ComposerAction>
+											<ComposerAction onClick={this.handleUploadClick} isDisabled={this.state.isRecording}>
+												<PlusIcon width={20} height={20} />
+											</ComposerAction>
+										</ComposerActions>
 									)}
 									{text.length > 0 && (
 										<ComposerAction onClick={this.handleSendClick}>
@@ -246,7 +271,9 @@ class Chat extends Component {
 									)}
 								</ComposerActions>
 							}
-							limitTextLength={limitTextLength}
+							{...(!this.state.isRecording && {
+								limitTextLength,
+							})}
 						/>
 					)}
 				</Screen.Footer>

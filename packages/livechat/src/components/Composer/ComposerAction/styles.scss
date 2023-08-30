@@ -22,5 +22,9 @@ $composer-action-margin: 0 6px;
 		outline: none;
 	}
 
-	@include pressable-button(1px);
+	&:disabled {
+		@include pressable-button(1px, 0, not-allowed);
+	}
+
+	@include pressable-button(1px, 0);
 }

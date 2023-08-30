@@ -40,7 +40,6 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 		chat?.composer?.setRecordingMode(false);
 
 		const blob = await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
-
 		return blob;
 	});
 
@@ -88,7 +87,6 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 
 		const fileName = `${t('Audio_record')}.mp3`;
 		const file = new File([blob], fileName, { type: 'audio/mpeg' });
-
 		await chat?.flows.uploadFiles([file]);
 	});
 
