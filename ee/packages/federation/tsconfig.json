@@ -3,6 +3,8 @@
 	"compilerOptions": {
 		"outDir": "./dist",
 		"declaration": true,
+		"strictPropertyInitialization": false,
+		"allowJs": true
 	},
 	"include": ["./src/**/*", "../../../apps/meteor/definition/externals/meteor"],
 	"exclude": ["./dist"]
