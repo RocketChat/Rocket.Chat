@@ -1,5 +1,6 @@
 import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
-import { LivechatRooms } from '@rocket.chat/models';
+import { LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
+import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
 
@@ -21,6 +22,12 @@ callbacks.add(
 		}
 		if (room.responseBy) {
 			await LivechatRooms.setAgentLastMessageTs(room._id);
+		}
+
+		// Return MMMM-YY from moment
+		const monthYear = moment().format('YYYY-MM');
+		if (!(await LivechatVisitors.isVisitorActiveOnPeriod(room.v._id, monthYear))) {
+			await LivechatVisitors.markVisitorActiveForPeriod(room.v._id, monthYear);
 		}
 
 		// check if room is yet awaiting for response

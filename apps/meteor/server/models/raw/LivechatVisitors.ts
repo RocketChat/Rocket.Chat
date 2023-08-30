@@ -32,6 +32,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { username: 1 } },
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
 			{ key: { 'livechatData.$**': 1 } },
+			{ key: { activity: 1 } },
 		];
 	}
 
@@ -364,6 +365,32 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 				},
 			},
 		);
+	}
+
+	isVisitorActiveOnPeriod(visitorId: string, period: string): Promise<boolean> {
+		const query = {
+			_id: visitorId,
+			activity: period,
+		};
+
+		return this.findOne(query, { projection: { _id: 1 } }).then(Boolean);
+	}
+
+	markVisitorActiveForPeriod(visitorId: string, period: string): Promise<UpdateResult> {
+		const query = {
+			_id: visitorId,
+		};
+
+		const update = {
+			$push: {
+				activity: {
+					$each: [period],
+					$slice: -12,
+				},
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 }
 
