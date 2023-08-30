@@ -51,6 +51,7 @@ export const useDepartmentsSection = () => {
 
 	return useMemo(
 		() => ({
+			id: 'conversations-by-department',
 			title,
 			subtitle,
 			emptyStateSubtitle,
