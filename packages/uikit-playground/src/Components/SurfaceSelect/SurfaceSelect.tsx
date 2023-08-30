@@ -7,20 +7,20 @@ import { surfaceAction } from '../../Context/action';
 import options from './options';
 
 const SurfaceSelect: FC = () => {
-  const {
-    state: { surface },
-    dispatch,
-  } = useContext(context);
-  return (
-    <Select
-      options={options}
-      value={`${surface}`}
-      placeholder='Surface'
-      onChange={(e) => {
-        dispatch(surfaceAction(parseInt(e)));
-      }}
-    />
-  );
+	const {
+		state: { surface },
+		dispatch,
+	} = useContext(context);
+	return (
+		<Select
+			options={options}
+			value={`${surface}`}
+			placeholder='Surface'
+			onChange={(e) => {
+				dispatch(surfaceAction(typeof e === 'string' ? parseInt(e) : e));
+			}}
+		/>
+	);
 };
 
 export default SurfaceSelect;
