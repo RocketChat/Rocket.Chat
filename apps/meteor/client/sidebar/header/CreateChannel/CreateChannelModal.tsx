@@ -244,7 +244,6 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 										checked={value}
 										disabled={!!canOnlyCreateOneType}
 										onChange={onChange}
-										data-qa-type='channel-private-toggle'
 									/>
 								)}
 							/>
