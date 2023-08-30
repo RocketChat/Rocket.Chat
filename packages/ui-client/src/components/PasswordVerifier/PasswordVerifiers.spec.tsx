@@ -1,4 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { passwordVerificationsTemplate } from '@rocket.chat/ui-contexts/dist/hooks/useVerifyPassword';
 import { render, waitFor } from '@testing-library/react';
 
 import { PasswordVerifier } from './PasswordVerifier';
@@ -34,6 +35,7 @@ it('should render no policy if its disabled ', () => {
 		enabled: false,
 		policy: [],
 	};
+
 	const { queryByRole } = render(<PasswordVerifier password='' />, {
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/pw.getPolicy', () => response)
@@ -46,41 +48,58 @@ it('should render no policy if its disabled ', () => {
 it('should render no policy if its enabled but empty', async () => {
 	const response: Response = {
 		enabled: true,
-		policy: [['get-password-policy-minLength', { minLength: 10 }]],
-		// policy: [],
+		policy: [],
 	};
-	const mock = mockAppRoot();
-	const spyMock = jest.spyOn(mock, 'withEndpoint');
 
-	const { debug, queryByRole } = render(<PasswordVerifier password='asdf' />, {
-		wrapper: mock.withEndpoint('GET', '/v1/pw.getPolicy', () => response).build(),
+	const { queryByRole, queryByTestId } = render(<PasswordVerifier password='asasdfafdgsdffdf' />, {
+		wrapper: mockAppRoot()
+			.withEndpoint('GET', '/v1/pw.getPolicy', () => response)
+			.build(),
 	});
 
 	await waitFor(() => {
-		debug();
-		expect(spyMock).toHaveBeenCalled();
-		expect(queryByRole('list')).not.toBeInTheDocument();
+		expect(queryByTestId('password-verifier-skeleton')).toBeNull();
 	});
+	expect(queryByRole('list')).toBeNull();
 });
 
-it('should render policy if its enabled', async () => {
+it('should render policy list if its enabled and not empty', async () => {
 	const response: Response = {
 		enabled: true,
 		policy: [['get-password-policy-minLength', { minLength: 10 }]],
-		// policy: [],
 	};
-	const mock = mockAppRoot();
-	const spyMock = jest.spyOn(mock, 'withEndpoint');
 
-	const { debug, queryByRole } = render(<PasswordVerifier password='asdf' />, {
-		wrapper: mock.withEndpoint('GET', '/v1/pw.getPolicy', () => response).build(),
+	const { queryByRole, queryByTestId } = render(<PasswordVerifier password='asasdfafdgsdffdf' />, {
+		wrapper: mockAppRoot()
+			.withEndpoint('GET', '/v1/pw.getPolicy', () => response)
+			.build(),
 	});
 
 	await waitFor(() => {
-		debug();
-		expect(spyMock).toHaveBeenCalled();
-		expect(queryByRole('list')).toBeInTheDocument();
+		expect(queryByTestId('password-verifier-skeleton')).toBeNull();
 	});
+
+	expect(queryByRole('list')).toBeVisible();
+	expect(queryByRole('listitem')).toBeVisible();
+});
+
+it('should render all the policies when all policies are enabled', async () => {
+	const response: Response = {
+		enabled: true,
+		policy: Object.keys(passwordVerificationsTemplate).map((item) => [item]),
+	};
+
+	const { queryByTestId, queryAllByRole } = render(<PasswordVerifier password='asasdfafdgsdffdf' />, {
+		wrapper: mockAppRoot()
+			.withEndpoint('GET', '/v1/pw.getPolicy', () => response)
+			.build(),
+	});
+
+	await waitFor(() => {
+		expect(queryByTestId('password-verifier-skeleton')).toBeNull();
+	});
+
+	expect(queryAllByRole('listitem').length).toEqual(response.policy.length);
 });
 
 it("should render policy as invalid if password doesn't match the requirements", async () => {
@@ -88,29 +107,34 @@ it("should render policy as invalid if password doesn't match the requirements",
 		enabled: true,
 		policy: [['get-password-policy-minLength', { minLength: 10 }]],
 	};
-	const { getByText } = render(<PasswordVerifier password='asdf' />, {
+
+	const { queryByTestId, getByText } = render(<PasswordVerifier password='asd' />, {
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/pw.getPolicy', () => response)
 			.build(),
 	});
 
 	await waitFor(() => {
-		expect(getByText('get-password-policy-minLength-label').parentElement?.dataset.invalid).toBe('true');
+		expect(queryByTestId('password-verifier-skeleton')).toBeNull();
 	});
+
+	expect(getByText('get-password-policy-minLength-label').parentElement?.dataset.invalid).toBeTruthy();
 });
 
-it('should render policy as valid if password match the requirements', async () => {
+it('should render policy as valid if password matches the requirements', async () => {
 	const response: Response = {
 		enabled: true,
 		policy: [['get-password-policy-minLength', { minLength: 2 }]],
 	};
-	const { getByText } = render(<PasswordVerifier password='asdf' />, {
-		wrapper: mockAppRoot()
-			.withEndpoint('GET', '/v1/pw.getPolicy', () => response)
-			.build(),
+	const mock = mockAppRoot();
+
+	const { queryByTestId, getByText } = render(<PasswordVerifier password='asd' />, {
+		wrapper: mock.withEndpoint('GET', '/v1/pw.getPolicy', () => response).build(),
 	});
 
 	await waitFor(() => {
-		expect(getByText('get-password-policy-minLength-label').parentElement?.dataset.invalid).toBe(undefined);
+		expect(queryByTestId('password-verifier-skeleton')).toBeNull();
 	});
+
+	expect(getByText('get-password-policy-minLength-label').parentElement?.dataset.invalid).toBeUndefined();
 });
