@@ -32,8 +32,8 @@ export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 		return records?.[0];
 	}
 
-	async findLastSentWithCloudToken(): Promise<IStats> {
-		const records = await this.find(
+	async findLastSentWithCloudToken(): Promise<IStats | null> {
+		return this.findOne(
 			{
 				cloudToken: { $exists: true },
 			},
@@ -41,9 +41,7 @@ export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 				sort: {
 					createdAt: -1,
 				},
-				limit: 1,
 			},
-		).toArray();
-		return records?.[0];
+		);
 	}
 }
