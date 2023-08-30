@@ -39,3 +39,11 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 
 	return accessToken.token;
 }
+
+export const generateWorkspaceBearerHttpHeader = async (): Promise<{ Authorization: string }> => {
+	const token = await getWorkspaceAccessToken();
+
+	return {
+		Authorization: `Bearer ${token}`,
+	};
+};

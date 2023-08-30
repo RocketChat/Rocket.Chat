@@ -4,7 +4,7 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const hasAllPermissionAsyncMock = sinon.stub();
-const serverFetchMock = sinon.stub();
+const getCachedSupportedVersionsTokenMock = sinon.stub();
 
 const { getServerInfo } = proxyquire.noCallThru().load('../../../../../../app/api/server/lib/getServerInfo', {
 	'../../../utils/rocketchat.info': {
@@ -15,18 +15,15 @@ const { getServerInfo } = proxyquire.noCallThru().load('../../../../../../app/ap
 	'../../../authorization/server/functions/hasPermission': {
 		hasPermissionAsync: hasAllPermissionAsyncMock,
 	},
-	'../../../cloud/server': {
-		getWorkspaceAccessToken: async () => 'token',
-	},
-	'@rocket.chat/server-fetch': {
-		serverFetch: serverFetchMock,
+	'../../../cloud/server/functions/supportedVersionsToken': {
+		getCachedSupportedVersionsToken: getCachedSupportedVersionsTokenMock,
 	},
 });
 
 describe('#getServerInfo()', () => {
 	beforeEach(() => {
 		hasAllPermissionAsyncMock.reset();
-		serverFetchMock.reset();
+		getCachedSupportedVersionsTokenMock.reset();
 	});
 
 	it('should return only the version (without the patch info) when the user is not present', async () => {
@@ -41,17 +38,13 @@ describe('#getServerInfo()', () => {
 	it('should return the info object + the supportedVersions from the cloud when the request to the cloud was a success', async () => {
 		const signedJwt = 'signedJwt';
 		hasAllPermissionAsyncMock.resolves(true);
-		serverFetchMock.resolves({
-			json: async () => ({
-				signed: signedJwt,
-			}),
-		});
+		getCachedSupportedVersionsTokenMock.resolves(signedJwt);
 		expect(await getServerInfo('userId')).to.be.eql({ info: { version: '3.0.1', supportedVersions: signedJwt } });
 	});
 
 	it('should return the info object ONLY from the cloud when the request to the cloud was NOT a success', async () => {
 		hasAllPermissionAsyncMock.resolves(true);
-		serverFetchMock.rejects();
+		getCachedSupportedVersionsTokenMock.rejects();
 		expect(await getServerInfo('userId')).to.be.eql({ info: { version: '3.0.1' } });
 	});
 });

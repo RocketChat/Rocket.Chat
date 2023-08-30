@@ -9,6 +9,7 @@ import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+import { cacheNewSupportedVersionsToken } from './supportedVersionsToken';
 
 export async function syncWorkspace(_reconnectCheck = false) {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
@@ -103,6 +104,7 @@ export async function syncWorkspace(_reconnectCheck = false) {
 			});
 		}
 	}
+	await cacheNewSupportedVersionsToken();
 
 	return true;
 }
