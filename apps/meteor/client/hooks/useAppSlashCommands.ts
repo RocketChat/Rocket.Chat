@@ -33,7 +33,7 @@ export const useAppSlashCommands = () => {
 					invalidate();
 			}
 		});
-	}, [apps, queryClient, uid, invalidate]);
+	}, [apps, uid, invalidate]);
 
 	const getSlashCommands = useEndpoint('GET', '/v1/commands.list');
 

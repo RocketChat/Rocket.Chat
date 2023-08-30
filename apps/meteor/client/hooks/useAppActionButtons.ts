@@ -43,7 +43,7 @@ export const useAppActionButtons = (context?: `${UIActionButtonContext}`) => {
 				invalidate();
 			}
 		});
-	}, [uid, queryClient, apps, invalidate]);
+	}, [uid, apps, invalidate]);
 
 	return result;
 };
