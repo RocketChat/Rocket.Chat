@@ -43,7 +43,11 @@ test.describe('Private Apps', () => {
 		await expect(page.locator(locator.class.toast).filter({ hasText: 'regression uninstalled' })).toBeVisible();
 		await page.getByRole('link', { name: locator.link.privateApp }).click();
 		await page.getByPlaceholder(locator.placeholder.searchPrivateApp).fill(locator.text.regression);
-		await expect(page.getByRole('link').filter({ hasText: locator.text.regression })).not.toBeVisible();
+		await expect(
+			page.getByRole('link', {
+				name: locator.text.regression,
+			}),
+		).not.toBeVisible();
 	});
 
 	test('Uninstall Private App - Inside Menu', async ({ page }) => {
@@ -62,7 +66,11 @@ test.describe('Private Apps', () => {
 		await expect(page.locator(locator.class.toast).filter({ hasText: 'regression uninstalled' })).toBeVisible();
 		await page.getByRole('link', { name: locator.link.privateApp }).click();
 		await page.getByPlaceholder(locator.placeholder.searchPrivateApp).fill(locator.text.regression);
-		await expect(page.getByRole('link').filter({ hasText: locator.text.regression })).not.toBeVisible();
+		await expect(
+			page.getByRole('link', {
+				name: locator.text.regression,
+			}),
+		).not.toBeVisible();
 	});
 	/**
 	 * for case
