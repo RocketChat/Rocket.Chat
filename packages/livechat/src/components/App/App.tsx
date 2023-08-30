@@ -1,3 +1,4 @@
+import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 import i18next from 'i18next';
 import { Component } from 'preact';
 import Router, { route } from 'preact-router';
@@ -37,6 +38,7 @@ type AppProps = {
 		online?: boolean;
 		departments: Department[];
 		enabled?: boolean;
+		triggers: ILivechatTrigger[];
 	};
 	gdpr: {
 		accepted: boolean;
@@ -80,7 +82,7 @@ export class App extends Component<AppProps, AppState> {
 		poppedOut: false,
 	};
 
-	protected handleRoute = async () => {
+	protected handleRoute = async ({ url }: { url: string }) => {
 		setTimeout(() => {
 			const {
 				config: {
@@ -91,10 +93,9 @@ export class App extends Component<AppProps, AppState> {
 						forceAcceptDataProcessingConsent: gdprRequired,
 					},
 					online,
-					departments = [],
+					departments,
 				},
 				gdpr: { accepted: gdprAccepted },
-				triggered,
 				user,
 			} = this.props;
 
@@ -110,10 +111,10 @@ export class App extends Component<AppProps, AppState> {
 			}
 
 			const showDepartment = departments.filter((dept) => dept.showOnRegistration).length > 0;
+			const isAnyFieldVisible = nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment;
+			const showRegistrationForm = !user?.token && registrationForm && isAnyFieldVisible && !Triggers.showTriggerMessages();
 
-			const showRegistrationForm =
-				registrationForm && (nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment) && !triggered && !user?.token;
-			if (showRegistrationForm) {
+			if (url === '/' && showRegistrationForm) {
 				return route('/register');
 			}
 		}, 100);
