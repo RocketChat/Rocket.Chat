@@ -46,7 +46,7 @@ const ResetPasswordPage = (): ReactElement => {
 	});
 
 	const password = watch('password');
-	const validatePassword = useValidatePassword(password);
+	const passwordIsValid = useValidatePassword(password);
 
 	const submit = handleSubmit(async (data) => {
 		try {
@@ -76,7 +76,7 @@ const ResetPasswordPage = (): ReactElement => {
 							<PasswordInput
 								{...register('password', {
 									required: true,
-									validate: () => validatePassword(),
+									validate: () => (!passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
 								})}
 								error={errors.password?.message}
 								aria-invalid={errors.password ? 'true' : 'false'}
@@ -105,6 +105,7 @@ const ResetPasswordPage = (): ReactElement => {
 									aria-invalid={errors.passwordConfirmation ? 'true' : false}
 									id='passwordConfirmation'
 									placeholder={t('Confirm_password')}
+									disabled={!passwordIsValid}
 								/>
 							</Field.Row>
 						)}

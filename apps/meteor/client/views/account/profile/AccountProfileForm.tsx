@@ -91,7 +91,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		}
 	};
 
-	const validatePassword = useValidatePassword(password);
+	const passwordIsValid = useValidatePassword(password);
 
 	// FIXME: replace to endpoint
 	const updateOwnBasicInfo = useMethod('saveUserProfile');
@@ -296,7 +296,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						<PasswordInput
 							id={passwordId}
 							{...register('password', {
-								validate: () => validatePassword(),
+								validate: () => (!passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
 							})}
 							error={errors.password?.message}
 							flexGrow={1}
@@ -324,7 +324,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							error={errors.confirmationPassword?.message}
 							flexGrow={1}
 							addon={<Icon name='key' size='x20' />}
-							disabled={!allowPasswordChange}
+							disabled={!allowPasswordChange && !passwordIsValid}
 							aria-required={password !== '' ? 'true' : 'false'}
 							aria-invalid={errors.confirmationPassword ? 'true' : 'false'}
 							aria-describedby={`${confirmPasswordId}-error ${confirmPasswordId}-hint`}

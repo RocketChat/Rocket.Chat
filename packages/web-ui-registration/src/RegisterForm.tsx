@@ -55,7 +55,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	} = useForm<LoginRegisterPayload>({ mode: 'onBlur' });
 
 	const password = watch('password');
-	const validatePassword = useValidatePassword(password);
+	const passwordIsValid = useValidatePassword(password);
 
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
 		registerUser.mutate(
@@ -161,7 +161,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							<PasswordInput
 								{...register('password', {
 									required: t('registration.component.form.requiredField'),
-									validate: () => validatePassword(),
+									validate: () => (!passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
 								})}
 								error={errors.password && (errors.password?.message || t('registration.component.form.requiredField'))}
 								aria-invalid={errors.password ? 'true' : undefined}
@@ -188,6 +188,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 									aria-invalid={errors.passwordConfirmation ? 'true' : false}
 									id='passwordConfirmation'
 									placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
+									disabled={!passwordIsValid}
 								/>
 							</Field.Row>
 						)}
