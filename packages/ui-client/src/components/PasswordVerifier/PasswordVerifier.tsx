@@ -3,8 +3,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useVerifyPassword } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { PasswordVerifierItemCorrect } from './PasswordVerifierCorrect';
-import { PasswordVerifierItemInvalid } from './PasswordVerifierInvalid';
+import { PasswordVerifierItem } from './PasswordVerifierItem';
 
 type PasswordVerifierProps = {
 	password: string;
@@ -35,13 +34,9 @@ export const PasswordVerifier = ({ password, id }: PasswordVerifierProps) => {
 					{t('Password_must_have')}
 				</Box>
 				<Box display='flex' flexWrap='wrap' role='list' aria-labelledby={uniqueId}>
-					{passwordVerifications.map(({ isValid, limit, name }) =>
-						isValid ? (
-							<PasswordVerifierItemCorrect key={name} text={t(`${name}-label`, { limit })} />
-						) : (
-							<PasswordVerifierItemInvalid key={name} text={t(`${name}-label`, { limit })} />
-						),
-					)}
+					{passwordVerifications.map(({ isValid, limit, name }) => (
+						<PasswordVerifierItem key={name} text={t(`${name}-label`, { limit })} isValid={isValid} aria-invalid={!isValid} />
+					))}
 				</Box>
 			</Box>
 		</>

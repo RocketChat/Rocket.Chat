@@ -108,7 +108,7 @@ it("should render policy as invalid if password doesn't match the requirements",
 		policy: [['get-password-policy-minLength', { minLength: 10 }]],
 	};
 
-	const { queryByTestId, getByText } = render(<PasswordVerifier password='asd' />, {
+	const { queryByTestId, getByRole } = render(<PasswordVerifier password='asd' />, {
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/pw.getPolicy', () => response)
 			.build(),
@@ -118,7 +118,7 @@ it("should render policy as invalid if password doesn't match the requirements",
 		expect(queryByTestId('password-verifier-skeleton')).toBeNull();
 	});
 
-	expect(getByText('get-password-policy-minLength-label').parentElement?.dataset.invalid).toBeTruthy();
+	expect(getByRole('listitem', { name: 'get-password-policy-minLength-label' })).toHaveAttribute('aria-invalid', 'true');
 });
 
 it('should render policy as valid if password matches the requirements', async () => {
@@ -127,7 +127,7 @@ it('should render policy as valid if password matches the requirements', async (
 		policy: [['get-password-policy-minLength', { minLength: 2 }]],
 	};
 
-	const { queryByTestId, getByText } = render(<PasswordVerifier password='asd' />, {
+	const { queryByTestId, getByRole } = render(<PasswordVerifier password='asd' />, {
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/pw.getPolicy', () => response)
 			.build(),
@@ -136,6 +136,5 @@ it('should render policy as valid if password matches the requirements', async (
 	await waitFor(() => {
 		expect(queryByTestId('password-verifier-skeleton')).toBeNull();
 	});
-
-	expect(getByText('get-password-policy-minLength-label').parentElement?.dataset.invalid).toBeUndefined();
+	expect(getByRole('listitem', { name: 'get-password-policy-minLength-label' })).toHaveAttribute('aria-invalid', 'false');
 });
