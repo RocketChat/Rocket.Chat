@@ -9,8 +9,10 @@ import type {
 	SelectedAgent,
 	ILivechatAgent,
 	IMessage,
+	ILivechatDepartment,
 } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Logger, type MainLogger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
 	LivechatInquiry,
@@ -20,6 +22,7 @@ import {
 	Messages,
 	Users,
 	LivechatDepartmentAgents,
+	ReadReceipts,
 } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -29,14 +32,13 @@ import type { FindCursor, UpdateFilter } from 'mongodb';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
-import type { MainLogger } from '../../../../server/lib/logger/getPino';
+import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { Logger } from '../../../logger/server';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
-import { validateEmail } from './Helper';
+import { updateDepartmentAgents, validateEmail } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 
@@ -124,7 +126,7 @@ class LivechatClass {
 		return RoutingManager.getNextAgent(department);
 	}
 
-	async getOnlineAgents(department?: string, agent?: SelectedAgent): Promise<FindCursor<ILivechatAgent> | undefined> {
+	async getOnlineAgents(department?: string, agent?: SelectedAgent | null): Promise<FindCursor<ILivechatAgent> | undefined> {
 		if (agent?.agentId) {
 			return Users.findOnlineAgents(agent.agentId);
 		}
@@ -153,6 +155,11 @@ class LivechatClass {
 		if (!room || !isOmnichannelRoom(room) || !room.open) {
 			this.logger.debug(`Room ${room._id} is not open`);
 			return;
+		}
+
+		const commentRequired = settings.get('Livechat_request_comment_when_closing_conversation');
+		if (commentRequired && !comment?.trim()) {
+			throw new Error('error-comment-is-required');
 		}
 
 		const { updatedOptions: options } = await this.resolveChatTags(room, params.options);
@@ -293,7 +300,10 @@ class LivechatClass {
 			room = null;
 		}
 
-		if (guest.department && !(await LivechatDepartment.findOneById(guest.department))) {
+		if (
+			guest.department &&
+			!(await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id'>>(guest.department, { projection: { _id: 1 } }))
+		) {
 			await LivechatVisitors.removeDepartmentById(guest._id);
 			const tmpGuest = await LivechatVisitors.findOneById(guest._id);
 			if (tmpGuest) {
@@ -351,7 +361,9 @@ class LivechatClass {
 				return onlineForDep;
 			}
 
-			const dep = await LivechatDepartment.findOneById(department);
+			const dep = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(department, {
+				projection: { fallbackForwardDepartment: 1 },
+			});
 			if (!dep?.fallbackForwardDepartment) {
 				return onlineForDep;
 			}
@@ -396,6 +408,7 @@ class LivechatClass {
 
 		const result = await Promise.allSettled([
 			Messages.removeByRoomId(rid),
+			ReadReceipts.removeByRoomId(rid),
 			Subscriptions.removeByRoomId(rid),
 			LivechatInquiry.removeByRoomId(rid),
 			LivechatRooms.removeById(rid),
@@ -539,7 +552,7 @@ class LivechatClass {
 		phone,
 		username,
 		connectionData,
-		status = 'online',
+		status = UserStatus.ONLINE,
 	}: {
 		id?: string;
 		token: string;
@@ -579,7 +592,7 @@ class LivechatClass {
 
 		if (department) {
 			Livechat.logger.debug(`Attempt to find a department with id/name ${department}`);
-			const dep = await LivechatDepartment.findOneByIdOrName(department);
+			const dep = await LivechatDepartment.findOneByIdOrName(department, { projection: { _id: 1 } });
 			if (!dep) {
 				Livechat.logger.debug('Invalid department provided');
 				throw new Meteor.Error('error-invalid-department', 'The provided department is invalid');
@@ -666,7 +679,12 @@ class LivechatClass {
 			};
 		}
 
-		const department = await LivechatDepartment.findOneById(departmentId);
+		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'requestTagBeforeClosingChat' | 'chatClosingTags'>>(
+			departmentId,
+			{
+				projection: { requestTagBeforeClosingChat: 1, chatClosingTags: 1 },
+			},
+		);
 		if (!department) {
 			return {
 				updatedOptions: {
@@ -748,6 +766,47 @@ class LivechatClass {
 				await Livechat.sendRequest(postData, attempts - 1);
 			}, timeout * 4);
 		}
+	}
+
+	async saveAgentInfo(_id: string, agentData: any, agentDepartments: string[]) {
+		check(_id, String);
+		check(agentData, Object);
+		check(agentDepartments, [String]);
+
+		const user = await Users.findOneById(_id);
+		if (!user || !(await hasRoleAsync(_id, 'livechat-agent'))) {
+			throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent');
+		}
+
+		await Users.setLivechatData(_id, agentData);
+
+		const currentDepartmentsForAgent = await LivechatDepartmentAgents.findByAgentId(_id).toArray();
+
+		const toRemoveIds = currentDepartmentsForAgent
+			.filter((dept) => !agentDepartments.includes(dept.departmentId))
+			.map((dept) => dept.departmentId);
+		const toAddIds = agentDepartments.filter((d) => !currentDepartmentsForAgent.some((c) => c.departmentId === d));
+
+		await Promise.all(
+			await LivechatDepartment.findInIds([...toRemoveIds, ...toAddIds], {
+				projection: {
+					_id: 1,
+					enabled: 1,
+				},
+			})
+				.map((dep) => {
+					return updateDepartmentAgents(
+						dep._id,
+						{
+							...(toRemoveIds.includes(dep._id) ? { remove: [{ agentId: _id }] } : { upsert: [{ agentId: _id, count: 0, order: 0 }] }),
+						},
+						dep.enabled,
+					);
+				})
+				.toArray(),
+		);
+
+		return true;
 	}
 }
 

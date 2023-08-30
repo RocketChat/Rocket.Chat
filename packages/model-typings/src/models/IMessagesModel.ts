@@ -1,4 +1,12 @@
-import type { IMessage, IRoom, IUser, ILivechatDepartment, MessageTypesValues, MessageAttachment } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IRoom,
+	IUser,
+	ILivechatDepartment,
+	MessageTypesValues,
+	MessageAttachment,
+	IMessageWithPendingFileImport,
+} from '@rocket.chat/core-typings';
 import type {
 	AggregationCursor,
 	CountDocumentsOptions,
@@ -186,6 +194,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findOneBySlackTs(slackTs: Date): Promise<IMessage | null>;
 
 	cloneAndSaveAsHistoryById(_id: string, user: IMessage['u']): Promise<InsertOneResult<IMessage>>;
+	cloneAndSaveAsHistoryByRecord(record: IMessage, user: IMessage['u']): Promise<InsertOneResult<IMessage>>;
 
 	setAsDeletedByIdAndUser(_id: string, user: IMessage['u']): Promise<UpdateResult>;
 	setAsDeletedByIdsAndUser(_ids: string[], user: IMessage['u']): Promise<Document | UpdateResult>;
@@ -219,13 +228,23 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	removeByIdPinnedTimestampLimitAndUsers(
 		rid: string,
-		pinned: boolean,
+		ignorePinned: boolean,
 		ignoreDiscussion: boolean,
 		ts: Filter<IMessage>['ts'],
 		limit: number,
 		users: string[],
 		ignoreThreads: boolean,
+		selectedMessageIds?: string[],
 	): Promise<number>;
+	findByIdPinnedTimestampLimitAndUsers(
+		rid: string,
+		ignorePinned: boolean,
+		ignoreDiscussion: boolean,
+		ts: Filter<IMessage>['ts'],
+		limit: number,
+		users: string[],
+		ignoreThreads: boolean,
+	): Promise<string[]>;
 	removeByUserId(userId: string): Promise<DeleteResult>;
 	getThreadFollowsByThreadId(tmid: string): Promise<string[] | undefined>;
 	setVisibleMessagesAsRead(rid: string, until: Date): Promise<UpdateResult | Document>;
@@ -234,12 +253,16 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	setThreadMessagesAsRead(tmid: string, until: Date): Promise<UpdateResult | Document>;
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult>;
 	refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<UpdateResult | Document | false>;
-	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<Pick<IMessage, '_id'>>;
-	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id'>>;
+	findUnreadThreadMessagesByDate(
+		tmid: string,
+		userId: string,
+		after: Date,
+	): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>>;
+	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>>;
 	setAsReadById(_id: string): Promise<UpdateResult>;
 	countThreads(): Promise<number>;
 	addThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult>;
-	findAllImportedMessagesWithFilesToDownload(): FindCursor<IMessage>;
+	findAllImportedMessagesWithFilesToDownload(): FindCursor<IMessageWithPendingFileImport>;
 	countAllImportedMessagesWithFilesToDownload(): Promise<number>;
 	findAgentLastMessageByVisitorLastMessageTs(roomId: string, visitorLastMessageTs: Date): Promise<IMessage | null>;
 	removeThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult>;

@@ -1,10 +1,11 @@
 import { Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import { ExternalLink, Card } from '@rocket.chat/ui-client';
+import { Card } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import { useExternalLink } from '../../../../../client/hooks/useExternalLink';
 import UsagePieGraph from '../../../../../client/views/admin/info/UsagePieGraph';
 import { useRequestSeatsLink } from '../users/useRequestSeatsLink';
 import type { SeatCapProps } from '../users/useSeatsCap';
@@ -16,6 +17,7 @@ type SeatsCardProps = {
 const SeatsCard = ({ seatsCap }: SeatsCardProps): ReactElement => {
 	const t = useTranslation();
 	const requestSeatsLink = useRequestSeatsLink();
+	const handleExternalLink = useExternalLink();
 
 	const seatsLeft = seatsCap && Math.max(seatsCap.maxActiveUsers - seatsCap.activeUsers, 0);
 
@@ -44,12 +46,10 @@ const SeatsCard = ({ seatsCap }: SeatsCardProps): ReactElement => {
 				</Card.Col>
 			</Card.Body>
 			<Card.Footer>
-				<ButtonGroup>
-					<ExternalLink to={requestSeatsLink}>
-						<Button small primary>
-							{t('Request_seats')}
-						</Button>
-					</ExternalLink>
+				<ButtonGroup align='end'>
+					<Button small primary onClick={() => handleExternalLink(requestSeatsLink)}>
+						{t('Request_seats')}
+					</Button>
 				</ButtonGroup>
 			</Card.Footer>
 		</Card>

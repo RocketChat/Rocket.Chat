@@ -1,4 +1,4 @@
-import { useRouter, useSetModal, useCurrentModal } from '@rocket.chat/ui-contexts';
+import { useRouter, useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';
@@ -10,20 +10,20 @@ export const useUpsellActions = (hasLicenseModule = false) => {
 	const router = useRouter();
 	const setModal = useSetModal();
 	const handleOpenLink = useExternalLink();
-	const isModalOpen = useCurrentModal() !== null;
+	const cloudWorkspaceHadTrial = useSetting<boolean>('Cloud_Workspace_Had_Trial');
 
 	const { data } = useIsEnterprise();
 	const shouldShowUpsell = !data?.isEnterprise || !hasLicenseModule;
 
 	const handleGoFullyFeatured = useCallback(() => {
-		setModal(null);
 		router.navigate('/admin/upgrade/go-fully-featured-registered');
+		setModal(null);
 	}, [router, setModal]);
 
 	const handleTalkToSales = useCallback(() => {
-		setModal(null);
 		handleOpenLink(TALK_TO_SALES_URL);
+		setModal(null);
 	}, [handleOpenLink, setModal]);
 
-	return { isModalOpen, shouldShowUpsell, handleGoFullyFeatured, handleTalkToSales };
+	return { shouldShowUpsell, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales };
 };

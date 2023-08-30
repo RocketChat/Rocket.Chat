@@ -3,15 +3,15 @@ import { useMemo } from 'react';
 
 import { MemberListRouter } from '../../views/room';
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
-export const useMembersListRoomAction = (): ToolboxActionConfig | undefined => {
+export const useMembersListRoomAction = () => {
 	const room = useRoom();
 	const broadcast = !!room.broadcast;
 	const team = !!room.teamMain;
 	const permittedToViewBroadcastMemberList = usePermission('view-broadcast-member-list', room._id);
 
-	return useMemo(() => {
+	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (broadcast && !permittedToViewBroadcastMemberList) {
 			return undefined;
 		}
@@ -21,8 +21,8 @@ export const useMembersListRoomAction = (): ToolboxActionConfig | undefined => {
 			groups: ['channel', 'group', 'team'],
 			title: team ? 'Teams_members' : 'Members',
 			icon: 'members',
-			template: MemberListRouter,
-			order: 5,
+			tabComponent: MemberListRouter,
+			order: 7,
 		};
 	}, [broadcast, permittedToViewBroadcastMemberList, team]);
 };

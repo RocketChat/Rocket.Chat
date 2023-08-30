@@ -7,7 +7,7 @@ import { VoipInfo } from './VoipInfo';
 // Contextual Bar for room view
 const VoipInfoWithData = () => {
 	const room = useVoipRoom();
-	const { close: closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolbox();
 
 	return <VoipInfo room={room} onClickClose={closeTab} />;
 };

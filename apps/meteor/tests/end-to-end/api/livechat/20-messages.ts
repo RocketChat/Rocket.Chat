@@ -1,7 +1,6 @@
-/* eslint-env mocha */
-
 import { faker } from '@faker-js/faker';
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
 import { getCredentials } from '../../../data/api-data';
 import {

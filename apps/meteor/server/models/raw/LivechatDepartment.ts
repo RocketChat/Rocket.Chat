@@ -164,6 +164,11 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, options);
 	}
 
+	findEnabledInIds(departmentsIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+		const query = { _id: { $in: departmentsIds }, enabled: true };
+		return this.find(query, options);
+	}
+
 	addBusinessHourToDepartmentsByIds(ids: string[] = [], businessHourId: string): Promise<Document | UpdateResult> {
 		const query = {
 			_id: { $in: ids },
@@ -263,53 +268,16 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		throw new Error('Method not implemented in Community Edition.');
 	}
 
-	async saveDepartmentsByAgent(agent: { _id: string; username: string }, departments: string[] = []): Promise<void> {
-		const { _id: agentId, username } = agent;
-		const savedDepartments = (await LivechatDepartmentAgents.findByAgentId(agentId).toArray()).map((d) => d.departmentId);
-
-		const incNumAgents = (_id: string, numAgents: number) => this.updateOne({ _id }, { $inc: { numAgents } });
-		// remove other departments
-		const deps = difference(savedDepartments, departments).map(async (departmentId) => {
-			// Migrate func
-			await LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
-			await incNumAgents(departmentId, -1);
-		});
-
-		await Promise.all(deps);
-
-		const promises = departments.map(async (departmentId) => {
-			const dep = await this.findOneById(departmentId, {
-				projection: { enabled: 1 },
-			});
-			if (!dep) {
-				return;
-			}
-
-			const { enabled: departmentEnabled } = dep;
-			// Migrate func
-			const saveResult = await LivechatDepartmentAgents.saveAgent({
-				agentId,
-				departmentId,
-				username,
-				departmentEnabled,
-				count: 0,
-				order: 0,
-			});
-
-			if (saveResult.upsertedId) {
-				await incNumAgents(departmentId, 1);
-			}
-		});
-
-		await Promise.all(promises);
-	}
-
 	updateById(_id: string, update: Partial<ILivechatDepartment>): Promise<Document | UpdateResult> {
 		return this.updateOne({ _id }, update);
 	}
 
 	updateNumAgentsById(_id: string, numAgents: number): Promise<Document | UpdateResult> {
 		return this.updateOne({ _id }, { $set: { numAgents } });
+	}
+
+	decreaseNumberOfAgentsByIds(_ids: string[]): Promise<Document | UpdateResult> {
+		return this.updateMany({ _id: { $in: _ids } }, { $inc: { numAgents: -1 } });
 	}
 
 	findEnabledWithAgents(projection: FindOptions<ILivechatDepartment>['projection'] = {}): FindCursor<ILivechatDepartment> {
@@ -470,8 +438,12 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 
 		return this.col.aggregate(aggregation).hasNext();
 	}
-}
 
-const difference = <T>(arr: T[], arr2: T[]): T[] => {
-	return arr.filter((a) => !arr2.includes(a));
-};
+	countArchived(): Promise<number> {
+		return this.col.countDocuments({ archived: true });
+	}
+
+	findByParentId(_parentId: string, _options?: FindOptions<ILivechatDepartment> | undefined): FindCursor<ILivechatDepartment> {
+		throw new Error('Method not implemented in CE');
+	}
+}

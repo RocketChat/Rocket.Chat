@@ -9,6 +9,7 @@ import type {
 import ldapjs from 'ldapjs';
 
 import { settings } from '../../../app/settings/server';
+import { ensureArray } from '../../../lib/utils/arrayUtils';
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 
@@ -389,6 +390,49 @@ export class LDAPConnection {
 		}
 
 		return `(&${filter.join('')})`;
+	}
+
+	public async searchMembersOfGroupFilter(): Promise<string[]> {
+		if (!this.options.groupFilterEnabled) {
+			return [];
+		}
+
+		if (!this.options.groupFilterGroupMemberAttribute) {
+			return [];
+		}
+
+		if (!this.options.groupFilterGroupMemberFormat) {
+			searchLogger.debug(`LDAP Group Filter is enabled but no group member format is set.`);
+			return [];
+		}
+
+		const filter = ['(&'];
+
+		if (this.options.groupFilterObjectClass) {
+			filter.push(`(objectclass=${this.options.groupFilterObjectClass})`);
+		}
+
+		if (this.options.groupFilterGroupIdAttribute) {
+			filter.push(`(${this.options.groupFilterGroupIdAttribute}=${this.options.groupFilterGroupName})`);
+		}
+		filter.push(')');
+		const searchOptions: ldapjs.SearchOptions = {
+			filter: filter.join(''),
+			scope: 'sub',
+		};
+
+		searchLogger.debug({ msg: 'Group filter LDAP:', filter: searchOptions.filter });
+
+		const result = await this.searchRaw(this.options.baseDN, searchOptions);
+
+		if (!Array.isArray(result) || result.length === 0) {
+			searchLogger.debug({ msg: 'No groups found', result });
+			return [];
+		}
+
+		const members = this.extractLdapAttribute(result[0].raw[this.options.groupFilterGroupMemberAttribute]) as string | string[];
+
+		return ensureArray<string>(members);
 	}
 
 	public async isUserAcceptedByGroupFilter(username: string, userdn: string): Promise<boolean> {

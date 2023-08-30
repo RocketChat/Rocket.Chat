@@ -1,11 +1,16 @@
-/* eslint-env mocha */
-
+import { faker } from '@faker-js/faker';
+import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCannedResponse } from '../../../data/livechat/canned-responses';
+import { createAgent, createDepartment } from '../../../data/livechat/rooms';
 import { removeTag, saveTags } from '../../../data/livechat/tags';
+import { createMonitor, createUnit } from '../../../data/livechat/units';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { password } from '../../../data/user';
+import { createUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Canned responses', function () {
@@ -35,6 +40,81 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.responses[0]).to.have.property('text');
 			expect(body.responses[0]).to.have.property('userId');
 		});
+		it('should return canned responses for monitors even if department is disabled', async () => {
+			const user = await createUser();
+			const monitor = await createMonitor(user.username);
+			const creds = await login(user.username, password);
+			const department = await createDepartment(undefined, undefined, false);
+			await createUnit(monitor._id, user.username, [department._id]);
+
+			// create canned response
+			const shortcut = faker.string.uuid();
+			await request
+				.post(api('canned-responses'))
+				.set(credentials)
+				.send({ shortcut, scope: 'department', tags: ['tag'], text: 'text', departmentId: department._id })
+				.expect(200);
+
+			const { body } = await request.get(api('canned-responses.get')).set(creds).expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body.responses).to.be.an('array').with.lengthOf.greaterThan(0);
+			expect(body.responses.find((response: IOmnichannelCannedResponse) => response.shortcut === shortcut)).to.be.an('object');
+		});
+		it('should return canned respones for scope user when agent is not on any department', async () => {
+			const user = await createUser();
+			await createAgent(user.username);
+			const creds = await login(user.username, password);
+
+			// create canned response
+			const shortcut = faker.string.uuid();
+			await request
+				.post(api('canned-responses'))
+				.set(creds)
+				.send({ shortcut, scope: 'user', tags: ['tag'], text: 'text' })
+				.expect(200);
+
+			const { body } = await request.get(api('canned-responses.get')).set(creds).expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body.responses).to.be.an('array').with.lengthOf.greaterThan(0);
+			expect(body.responses.find((response: IOmnichannelCannedResponse) => response.shortcut === shortcut)).to.be.an('object');
+		});
+		it('should return canned responses on the global scope', async () => {
+			const user = await createUser();
+			const creds = await login(user.username, password);
+			await createAgent(user.username);
+
+			// create canned response
+			const shortcut = faker.string.uuid();
+			await request.post(api('canned-responses')).set(credentials).send({ shortcut, scope: 'global', text: 'text' }).expect(200);
+
+			const { body } = await request.get(api('canned-responses.get')).set(creds).expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body.responses).to.be.an('array').with.lengthOf.greaterThan(0);
+			expect(body.responses.find((response: IOmnichannelCannedResponse) => response.shortcut === shortcut)).to.be.an('object');
+		});
+		it('should return canned responses from the departments user is in', async () => {
+			const user = await createUser();
+			const creds = await login(user.username, password);
+			await createAgent(user.username);
+			const department = await createDepartment([{ agentId: user._id }], undefined, true);
+
+			// create canned response
+			const shortcut = faker.string.uuid();
+			await request
+				.post(api('canned-responses'))
+				.set(credentials)
+				.send({ shortcut, scope: 'department', text: 'text', departmentId: department._id })
+				.expect(200);
+
+			const { body } = await request.get(api('canned-responses.get')).set(creds).expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body.responses).to.be.an('array').with.lengthOf.greaterThan(0);
+			expect(body.responses.find((response: IOmnichannelCannedResponse) => response.shortcut === shortcut)).to.be.an('object');
+		});
 	});
 
 	describe('[GET] canned-responses', () => {
@@ -45,7 +125,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should return an array of canned responses when available', async () => {
 			await updatePermission('view-canned-responses', ['livechat-agent', 'livechat-monitor', 'livechat-manager', 'admin']);
 			await createCannedResponse();
-			const { body } = await request.get(api('canned-responses')).set(credentials).expect(200);
+			const { body } = await request.get(api('canned-responses')).query({ sort: '{ "_createdAt": -1 }' }).set(credentials).expect(200);
 			expect(body).to.have.property('success', true);
 			expect(body.cannedResponses).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.cannedResponses[0]).to.have.property('_id');
@@ -136,12 +216,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const { body } = await request
 				.post(api('canned-responses'))
 				.set(credentials)
-				.send({ shortcut: 'shortcutxxx', scope: 'user', tags: [tag._id], text: 'text' })
+				.send({ shortcut: 'shortcutxxx', scope: 'user', tags: [tag.name], text: 'text' })
 				.expect(200);
 
 			expect(body).to.have.property('success', true);
 
-			const { body: getResult } = await request.get(api('canned-responses')).set(credentials).query({ 'tags[]': tag._id }).expect(200);
+			const { body: getResult } = await request.get(api('canned-responses')).set(credentials).query({ 'tags[]': tag.name }).expect(200);
 
 			expect(getResult).to.have.property('success', true);
 			expect(getResult.cannedResponses).to.be.an('array').with.lengthOf(1);
@@ -154,14 +234,14 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const { body } = await request
 				.post(api('canned-responses'))
 				.set(credentials)
-				.send({ shortcut: 'shortcutxxxx', scope: 'user', tags: [tag._id], text: 'text' })
+				.send({ shortcut: 'shortcutxxxx', scope: 'user', tags: [tag.name], text: 'text' })
 				.expect(200);
 
 			expect(body).to.have.property('success', true);
 
 			await removeTag(tag._id);
 
-			const { body: getResult } = await request.get(api('canned-responses')).set(credentials).query({ 'tags[]': tag._id }).expect(200);
+			const { body: getResult } = await request.get(api('canned-responses')).set(credentials).query({ 'tags[]': tag.name }).expect(200);
 
 			expect(getResult).to.have.property('success', true);
 			expect(getResult.cannedResponses).to.be.an('array').with.lengthOf(0);

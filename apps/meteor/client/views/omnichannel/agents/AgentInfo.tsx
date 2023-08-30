@@ -28,14 +28,14 @@ const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...pr
 	}
 
 	if (result.phase === AsyncStatePhase.REJECTED) {
-		return <Box mbs='x16'>{t('User_not_found')}</Box>;
+		return <Box mbs={16}>{t('User_not_found')}</Box>;
 	}
 
 	const { user } = result.value;
 	const { username, statusLivechat, status: userStatus } = user;
 
 	return (
-		<ContextualbarScrollableContent p='x24' {...props}>
+		<ContextualbarScrollableContent p={24} {...props}>
 			{username && (
 				<Box alignSelf='center'>
 					<UserInfo.Avatar data-qa='AgentUserInfoAvatar' username={username} />
@@ -46,8 +46,8 @@ const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...pr
 				{children}
 			</ButtonGroup>
 
-			<Margins block='x4'>
-				<Box mb='x2'>
+			<Margins block={4}>
+				<Box mb={2}>
 					<UserInfo.Username data-qa='AgentInfoUserInfoUserName' username={username} status={<UserStatus status={userStatus} />} />
 				</Box>
 

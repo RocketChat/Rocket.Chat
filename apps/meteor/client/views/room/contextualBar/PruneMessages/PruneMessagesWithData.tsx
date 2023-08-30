@@ -1,4 +1,3 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
@@ -37,11 +36,11 @@ export const initialValues = {
 
 const DEFAULT_PRUNE_LIMIT = 2000;
 
-const PruneMessagesWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
+const PruneMessagesWithData = (): ReactElement => {
 	const t = useTranslation();
 	const room = useRoom();
 	const setModal = useSetModal();
-	const { close } = useRoomToolbox();
+	const { closeTab: close } = useRoomToolbox();
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const pruneMessagesAction = useEndpoint('POST', '/v1/rooms.cleanHistory');
@@ -79,7 +78,7 @@ const PruneMessagesWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => 
 				}
 
 				const { count } = await pruneMessagesAction({
-					roomId: rid,
+					roomId: room._id,
 					latest: toDate.toISOString(),
 					oldest: fromDate.toISOString(),
 					inclusive,

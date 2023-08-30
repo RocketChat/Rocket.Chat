@@ -1,16 +1,17 @@
 import { api } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
 import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/omnichannel-services';
 import { MongoInternals } from 'meteor/mongo';
 
 import { AuthorizationLivechat } from '../../app/livechat/server/roomAccessValidator.internalService';
 import { isRunningMs } from '../lib/isRunningMs';
-import { Logger } from '../lib/logger/Logger';
 import { AnalyticsService } from './analytics/service';
 import { AppsEngineService } from './apps-engine/service';
 import { BannerService } from './banner/service';
 import { CalendarService } from './calendar/service';
 import { DeviceManagementService } from './device-management/service';
 import { MediaService } from './image/service';
+import { ImportService } from './import/service';
 import { LDAPService } from './ldap/service';
 import { MessageService } from './messages/service';
 import { MeteorService } from './meteor/service';
@@ -55,6 +56,7 @@ api.registerService(new MessageService());
 api.registerService(new TranslationService());
 api.registerService(new SettingsService());
 api.registerService(new OmnichannelIntegrationService());
+api.registerService(new ImportService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {

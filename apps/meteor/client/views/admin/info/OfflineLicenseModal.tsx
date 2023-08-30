@@ -73,13 +73,13 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 					display='flex'
 					flexDirection='column'
 					alignItems='stretch'
-					paddingInline='x16'
-					pb='x8'
+					paddingInline={16}
+					pb={8}
 					flexGrow={1}
 					backgroundColor='dark'
 					mb={status === 'invalid' ? 'x8' : undefined}
 				>
-					<Margins block='x8'>
+					<Margins block={8}>
 						<Scrollable vertical>
 							<Box
 								is='textarea'

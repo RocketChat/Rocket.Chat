@@ -13,15 +13,15 @@ export const {
 	subscribeToSidebarItems: subscribeToAccountSidebarItems,
 } = createSidebarItems([
 	{
-		href: '/account/preferences',
-		i18nLabel: 'Preferences',
-		icon: 'customize',
-	},
-	{
 		href: '/account/profile',
 		i18nLabel: 'Profile',
 		icon: 'user',
 		permissionGranted: (): boolean => settings.get('Accounts_AllowUserProfileChange'),
+	},
+	{
+		href: '/account/preferences',
+		i18nLabel: 'Preferences',
+		icon: 'customize',
 	},
 	{
 		href: '/account/security',
@@ -53,5 +53,10 @@ export const {
 		icon: 'flask',
 		badge: () => <AccountFeaturePreviewBadge />,
 		permissionGranted: () => settings.get('Accounts_AllowFeaturePreview') && defaultFeaturesPreview?.length > 0,
+	},
+	{
+		href: '/account/accessibility-and-appearance',
+		i18nLabel: 'Accessibility_and_Appearance',
+		icon: 'person-arms-spread',
 	},
 ]);

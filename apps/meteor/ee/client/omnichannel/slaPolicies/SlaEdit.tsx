@@ -104,7 +104,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 			</Field>
 			<Field.Row>
 				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-					<Margins inlineEnd='x4'>
+					<Margins inlineEnd={4}>
 						{!isNew && (
 							<Button flexGrow={1} type='reset' disabled={!isDirty} onClick={(): void => reset()}>
 								{t('Reset')}

@@ -92,8 +92,8 @@ const RoomMembers = ({
 				<ContextualbarTitle>{isTeam ? t('Teams_members') : t('Members')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent p='x12'>
-				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
+			<ContextualbarContent p={12}>
+				<Box display='flex' flexDirection='row' p={12} flexShrink={0}>
 					<TextInput
 						placeholder={t('Search_by_username')}
 						value={text}
@@ -101,19 +101,19 @@ const RoomMembers = ({
 						onChange={setText}
 						addon={<Icon name='magnifier' size='x20' />}
 					/>
-					<Box w='x144' mis='x8'>
+					<Box w='x144' mis={8}>
 						<Select onChange={(value): void => setType(value as 'online' | 'all')} value={type} options={options} />
 					</Box>
 				</Box>
 
 				{loading && (
-					<Box pi='x24' pb='x12'>
+					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
 
 				{error && (
-					<Box pi='x12' pb='x12'>
+					<Box pi={12} pb={12}>
 						<Callout type='danger'>{error.message}</Callout>
 					</Box>
 				)}
@@ -122,7 +122,7 @@ const RoomMembers = ({
 
 				{!loading && members.length > 0 && (
 					<>
-						<Box pi='x18' pb='x12'>
+						<Box pi={18} pb={12}>
 							<Box is='span' color='hint' fontScale='p2'>
 								{t('Showing_current_of_total', { current: members.length, total })}
 							</Box>

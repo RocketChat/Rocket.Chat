@@ -30,12 +30,12 @@ const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement 
 
 	if (isLoading) {
 		return (
-			<Box pb='x20' maxWidth='x600' w='full' alignSelf='center'>
-				<Skeleton mbs='x8' />
+			<Box pb={20} maxWidth='x600' w='full' alignSelf='center'>
+				<Skeleton mbs={8} />
 				<InputBox.Skeleton w='full' />
-				<Skeleton mbs='x8' />
+				<Skeleton mbs={8} />
 				<InputBox.Skeleton w='full' />
-				<ButtonGroup stretch w='full' mbs='x8'>
+				<ButtonGroup stretch w='full' mbs={8}>
 					<Button disabled>
 						<Throbber inheritColor />
 					</Button>
@@ -43,7 +43,7 @@ const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement 
 						<Throbber inheritColor />
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup stretch w='full' mbs='x8'>
+				<ButtonGroup stretch w='full' mbs={8}>
 					<Button danger disabled>
 						<Throbber inheritColor />
 					</Button>
@@ -54,7 +54,7 @@ const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement 
 
 	if (error || !data || !_id) {
 		return (
-			<Box fontScale='h2' pb='x20'>
+			<Box fontScale='h2' pb={20}>
 				{t('error-application-not-found')}
 			</Box>
 		);

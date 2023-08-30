@@ -13,7 +13,7 @@ import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import DeleteTeamModalWithRooms from '../../teams/contextualBar/info/Delete';
+import DeleteTeamModalWithRooms from '../../teams/contextualBar/info/DeleteTeam';
 
 type EditRoomProps = {
 	room: Pick<IRoom, RoomAdminFieldsType>;
@@ -154,9 +154,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 	const deleteTeam = useEndpoint('POST', '/v1/teams.delete');
 
 	const handleDelete = useMutableCallback(() => {
-		const handleDeleteTeam = async (deletedRooms: IRoom[]): Promise<void> => {
-			const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms.map((room) => room._id) : [];
-
+		const handleDeleteTeam = async (roomsToRemove: IRoom['_id'][]) => {
 			try {
 				setDeleting(true);
 				setModal(null);
@@ -211,7 +209,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		<>
 			<ContextualbarScrollableContent is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
 				{room.t !== 'd' && (
-					<Box pbe='x24' display='flex' justifyContent='center'>
+					<Box pbe={24} display='flex' justifyContent='center'>
 						<RoomAvatarEditor disabled={isRoomFederated(room)} roomAvatar={roomAvatar} room={room} onChangeAvatar={handleRoomAvatar} />
 					</Box>
 				)}
@@ -346,7 +344,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup mbs='x8' stretch>
+				<ButtonGroup mbs={8} stretch>
 					<Button icon='trash' danger disabled={deleting || !canDelete || isRoomFederated(room)} onClick={handleDelete}>
 						{t('Delete')}
 					</Button>

@@ -12,7 +12,7 @@ const NavbarUserAction = (props: AllHTMLAttributes<HTMLLIElement>) => {
 
 	return (
 		<NavbarAction {...props}>
-			<Margins blockEnd='x16'>{user ? <UserMenu user={user} /> : <UserAvatarWithStatusUnstable />}</Margins>
+			<Margins blockEnd={16}>{user ? <UserMenu user={user} /> : <UserAvatarWithStatusUnstable />}</Margins>
 		</NavbarAction>
 	);
 };

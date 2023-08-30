@@ -13,7 +13,7 @@ const MapViewFallback: FC<MapViewFallbackProps> = ({ linkUrl }) => {
 
 	return (
 		<Box is='span' fontScale='p2' display='inline-flex' alignItems='center' paddingBlock={4}>
-			<Icon name='map-pin' size={20} color='hint' />
+			<Icon name='map-pin' size='x20' color='hint' />
 			<ExternalLink to={linkUrl}>{t('Shared_Location')}</ExternalLink>
 		</Box>
 	);

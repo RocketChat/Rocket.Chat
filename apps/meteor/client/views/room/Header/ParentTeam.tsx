@@ -30,7 +30,6 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 		isLoading: teamInfoLoading,
 		isError: teamInfoError,
 	} = useQuery(['teamId', teamId], async () => teamsInfoEndpoint({ teamId }), {
-		refetchOnWindowFocus: false,
 		keepPreviousData: true,
 		retry: (_, error) => (error as APIErrorResult)?.error === 'unauthorized' && false,
 	});

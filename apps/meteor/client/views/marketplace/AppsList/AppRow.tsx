@@ -72,28 +72,28 @@ const AppRow = (props: App): ReactElement => {
 			flexDirection='row'
 			justifyContent='space-between'
 			alignItems='center'
-			mbe='x8'
-			pb='x8'
-			pi='x16'
+			mbe={8}
+			pb={8}
+			pi={16}
 			borderRadius='x4'
 			className={hoverClass}
 			bg='light'
 		>
 			<Box display='flex' flexDirection='row' width='80%'>
-				<AppAvatar size='x40' mie='x16' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
-				<Box display='flex' alignItems='center' fontScale='p2m' mie='x16' withTruncatedText>
+				<AppAvatar size='x40' mie={16} alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
+				<Box display='flex' alignItems='center' fontScale='p2m' mie={16} withTruncatedText>
 					<Box withTruncatedText fontScale='h5' color='title-labels'>
 						{name}
 					</Box>
 				</Box>
-				<Box display='flex' mie='x16' alignItems='center'>
+				<Box display='flex' mie={16} alignItems='center'>
 					{bundledIn && Boolean(bundledIn.length) && (
 						<Box display='flex' alignItems='center'>
 							<BundleChips bundledIn={bundledIn} />
 						</Box>
 					)}
 					{shortDescription && !isMobile && (
-						<Box is='span' mis='x16' fontScale='c1'>
+						<Box is='span' mis={16} fontScale='c1'>
 							{shortDescription}
 						</Box>
 					)}
@@ -101,13 +101,13 @@ const AppRow = (props: App): ReactElement => {
 			</Box>
 			<Box display='flex' flexDirection='row' width='20%' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation}>
 				{canUpdate && (
-					<Box mie='x8'>
+					<Box mie={8}>
 						<Badge small variant='primary' />
 					</Box>
 				)}
 				<AppStatus app={props} isAppDetailsPage={false} installed={installed} />
 				<Box minWidth='x32'>
-					<AppMenu app={props} isAppDetailsPage={false} mis='x4' />
+					<AppMenu app={props} isAppDetailsPage={false} mis={4} />
 				</Box>
 			</Box>
 		</Box>

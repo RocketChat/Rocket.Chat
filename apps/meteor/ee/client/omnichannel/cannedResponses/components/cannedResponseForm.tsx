@@ -35,7 +35,7 @@ const CannedResponseForm: FC<{
 
 	return (
 		<>
-			<Field mbe='x24'>
+			<Field mbe={24}>
 				<Field.Label>{t('Shortcut')}</Field.Label>
 				<TextInput
 					error={errors.shortcut}
@@ -46,7 +46,7 @@ const CannedResponseForm: FC<{
 				/>
 				<Field.Error>{errors.shortcut}</Field.Error>
 			</Field>
-			<Field mbe='x24'>
+			<Field mbe={24}>
 				<Field.Label w='full'>
 					<Box w='full' display='flex' flexDirection='row' justifyContent='space-between'>
 						{t('Message')}
@@ -57,12 +57,12 @@ const CannedResponseForm: FC<{
 				</Field.Label>
 				{previewState ? <PreviewText text={text} /> : <MarkdownTextEditor value={text} onChange={handleText} />}
 			</Field>
-			<Field mbe='x24'>
+			<Field mbe={24}>
 				<Tags handler={handleTags} tags={tags} />
 			</Field>
 			{(isManager || isMonitor) && (
 				<>
-					<Field mbe='x24'>
+					<Field mbe={24}>
 						<Field.Label>{t('Sharing')}</Field.Label>
 						<Field.Description>{radioDescription}</Field.Description>
 						<Field.Row mbs='12px' justifyContent='start'>
@@ -70,7 +70,7 @@ const CannedResponseForm: FC<{
 						</Field.Row>
 					</Field>
 					{scope === 'department' && (
-						<Field mbe='x24'>
+						<Field mbe={24}>
 							<Field.Label>{t('Department')}</Field.Label>
 							<AutoCompleteDepartment
 								{...(isMonitor && { onlyMyDepartments: isMonitor })}

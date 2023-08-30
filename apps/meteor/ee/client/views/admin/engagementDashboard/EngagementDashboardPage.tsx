@@ -49,7 +49,7 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 				</Tabs.Item>
 			</Tabs>
 			<Page.ScrollableContent padding={0}>
-				<Box m='x24'>
+				<Box m={24}>
 					{(tab === 'users' && <UsersTab timezone={timezoneId} />) ||
 						(tab === 'messages' && <MessagesTab />) ||
 						(tab === 'channels' && <ChannelsTab />)}

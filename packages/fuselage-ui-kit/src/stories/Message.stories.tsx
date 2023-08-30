@@ -3,7 +3,7 @@ import { Message, Avatar } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
 
-import { kitContext, UiKitMessage } from '..';
+import { UiKitContext, UiKitMessage } from '..';
 import * as payloads from './payloads';
 
 export default {
@@ -50,7 +50,7 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
           <Message.Timestamp>12:00 PM</Message.Timestamp>
         </Message.Header>
         <Message.Body>
-          <kitContext.Provider
+          <UiKitContext.Provider
             value={{
               action: action('action'),
               state: action('state'),
@@ -60,7 +60,7 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
             }}
           >
             {UiKitMessage(blocks)}
-          </kitContext.Provider>
+          </UiKitContext.Provider>
         </Message.Body>
       </Message.Container>
       <Message.Toolbox.Wrapper>

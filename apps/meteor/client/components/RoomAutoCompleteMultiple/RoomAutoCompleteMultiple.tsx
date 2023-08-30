@@ -50,9 +50,9 @@ const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoComplet
 			setFilter={setFilter}
 			multiple
 			renderSelected={({ selected: { value, label }, onRemove }): ReactElement => (
-				<Chip key={value} {...props} height='x20' value={value} onClick={onRemove} mie='x4' mbe='x4'>
+				<Chip key={value} {...props} height='x20' value={value} onClick={onRemove} mie={4} mbe={4}>
 					<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />
-					<Box is='span' margin='none' mis='x4'>
+					<Box is='span' margin='none' mis={4}>
 						{label?.name}
 					</Box>
 				</Chip>

@@ -8,8 +8,8 @@ import { Meteor } from 'meteor/meteor';
 import { Base, ProgressStep } from '../../importer/server';
 
 export class HipChatEnterpriseImporter extends Base {
-	constructor(info, importRecord) {
-		super(info, importRecord);
+	constructor(info, importRecord, converterOptions = {}) {
+		super(info, importRecord, converterOptions);
 
 		this.Readable = Readable;
 		this.zlib = require('zlib');

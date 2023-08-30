@@ -365,3 +365,17 @@ export type IVideoConfMessage = IMessage & {
 export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
 export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr' || message.t === 'otr-ack';
 export const isVideoConfMessage = (message: IMessage): message is IVideoConfMessage => message.t === 'videoconf';
+
+export type IMessageWithPendingFileImport = IMessage & {
+	_importFile: {
+		downloadUrl: string;
+		id: string;
+		size: number;
+		name: string;
+		external: boolean;
+		source: 'slack' | 'hipchat-enterprise';
+		original: Record<string, any>;
+		rocketChatUrl?: string;
+		downloaded?: boolean;
+	};
+};

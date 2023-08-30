@@ -90,16 +90,25 @@ API.v1.addRoute(
 				return API.v1.success({ status: agent.statusLivechat });
 			}
 
+			const canChangeStatus = await Livechat.allowAgentChangeServiceStatus(newStatus, agentId);
+
 			if (agentId !== this.userId) {
 				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {
 					return API.v1.unauthorized();
 				}
-				await Livechat.setUserStatusLivechat(agentId, newStatus);
 
-				return API.v1.success({ status: newStatus });
+				// Silent fail for admins when BH is closed
+				// Next version we'll update this to return an error
+				// And update the FE accordingly
+				if (canChangeStatus) {
+					await Livechat.setUserStatusLivechat(agentId, newStatus);
+					return API.v1.success({ status: newStatus });
+				}
+
+				return API.v1.success({ status: agent.statusLivechat });
 			}
 
-			if (!(await Livechat.allowAgentChangeServiceStatus(newStatus, agentId))) {
+			if (!canChangeStatus) {
 				return API.v1.failure('error-business-hours-are-closed');
 			}
 

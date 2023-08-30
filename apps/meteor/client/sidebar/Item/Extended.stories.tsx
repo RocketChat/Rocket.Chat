@@ -52,7 +52,7 @@ const Template: ComponentStory<typeof Extended> = (args) => (
 			</Box>
 		}
 		titleIcon={
-			<Box mi='x4'>
+			<Box mi={4}>
 				<Status.Online />
 			</Box>
 		}

@@ -19,7 +19,8 @@ Meteor.startup(() => {
 			id: 'start-discussion',
 			icon: 'discussion',
 			label: 'Discussion_start',
-			context: ['message', 'message-mobile'],
+			type: 'communication',
+			context: ['message', 'message-mobile', 'videoconf'],
 			async action(_, props) {
 				const { message = messageArgs(this).msg, room } = props;
 

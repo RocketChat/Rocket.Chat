@@ -57,7 +57,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 				</FieldGroup>
 				{sent && (
 					<FieldGroup>
-						<Callout role='status' mbs='x24' icon='mail'>
+						<Callout role='status' mbs={24} icon='mail'>
 							{t('registration.page.resetPassword.sent')}
 						</Callout>
 					</FieldGroup>

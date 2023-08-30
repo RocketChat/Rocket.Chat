@@ -11,16 +11,10 @@ export const useOutlookCalendarListForToday = () => {
 export const useOutlookCalendarList = (date: Date) => {
 	const calendarData = useEndpoint('GET', '/v1/calendar-events.list');
 
-	return useQuery(
-		['outlook', 'calendar', 'list'],
-		async () => {
-			const { data } = await calendarData({ date: date.toISOString() });
-			return data;
-		},
-		{
-			refetchOnWindowFocus: false,
-		},
-	);
+	return useQuery(['outlook', 'calendar', 'list'], async () => {
+		const { data } = await calendarData({ date: date.toISOString() });
+		return data;
+	});
 };
 
 export const useMutationOutlookCalendarSync = () => {

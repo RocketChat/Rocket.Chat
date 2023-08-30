@@ -19,7 +19,6 @@ export const executeGetImportProgress = async (): Promise<IImportProgress> => {
 	}
 
 	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
-	await importer.instance.build();
 
 	return importer.instance.getProgress();
 };

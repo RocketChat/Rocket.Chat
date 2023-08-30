@@ -1,4 +1,4 @@
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericUpsellModal from '../../components/GenericUpsellModal';
@@ -6,8 +6,7 @@ import { useUpsellActions } from '../../components/GenericUpsellModal/hooks';
 
 const UnlimitedAppsUpsellModal = ({ onClose }: { onClose: () => void }) => {
 	const t = useTranslation();
-	const cloudWorkspaceHadTrial = useSetting<boolean>('Cloud_Workspace_Had_Trial');
-	const { handleGoFullyFeatured, handleTalkToSales } = useUpsellActions();
+	const { handleGoFullyFeatured, handleTalkToSales, cloudWorkspaceHadTrial } = useUpsellActions();
 
 	return (
 		<GenericUpsellModal

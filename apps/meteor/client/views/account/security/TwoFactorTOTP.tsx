@@ -114,7 +114,7 @@ const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>
-			<Margins blockEnd='x8'>
+			<Margins blockEnd={8}>
 				<Box fontScale='h4'>{t('Two-factor_authentication')}</Box>
 				{!totpEnabled && !registeringTotp && (
 					<>
@@ -143,7 +143,7 @@ const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 						<Button danger onClick={handleDisableTotp}>
 							{t('Disable_two-factor_authentication')}
 						</Button>
-						<Box fontScale='p2m' mbs='x8'>
+						<Box fontScale='p2m' mbs={8}>
 							{t('Backup_codes')}
 						</Box>
 						<Box>{t('You_have_n_codes_remaining', { number: codesRemaining })}</Box>

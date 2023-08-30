@@ -2,7 +2,8 @@ import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import * as UiKit from '@rocket.chat/ui-kit';
 import { useContext, useMemo, useState } from 'react';
 
-import { kitContext, useUiKitStateValue } from '../contexts/kitContext';
+import { UiKitContext } from '../contexts/UiKitContext';
+import { useUiKitStateValue } from './useUiKitStateValue';
 
 type UiKitState<
   TElement extends UiKit.ActionableElement = UiKit.ActionableElement
@@ -54,7 +55,7 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
     appId: appIdFromContext,
     viewId,
     state,
-  } = useContext(kitContext);
+  } = useContext(UiKitContext);
 
   const initialValue =
     (hasInitialValue(rest) && rest.initialValue) ||

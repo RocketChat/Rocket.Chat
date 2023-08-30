@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import type { ILivechatDepartment, IUser, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
 import { IUserCredentialsHeader, password } from '../user';
-import { createUser, login } from '../users.helper';
+import { login } from '../users.helper';
 import { createAgent, makeAgentAvailable } from './rooms';
 
 export const NewDepartmentData = ((): Partial<ILivechatDepartment> => ({
@@ -61,7 +61,14 @@ export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: 
 	credentials: IUserCredentialsHeader;
 	user: IUser;
 }}> => {
-	const agent: IUser = await createUser();
+	// TODO moving here for tests
+	const username = `user.test.${Date.now()}`;
+	const email = `${username}@rocket.chat`;
+	const { body } = await request
+			.post(api('users.create'))
+			.set(credentials)
+			.send({ email, name: username, username, password });
+	const agent = body.user;
 	const createdUserCredentials = await login(agent.username, password);
 	await createAgent(agent.username);
 	await makeAgentAvailable(createdUserCredentials);

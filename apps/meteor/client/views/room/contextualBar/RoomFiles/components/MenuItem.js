@@ -11,7 +11,7 @@ const MenuItem = ({ _id, name, url, onClickDelete }) => {
 		downLoad: {
 			label: (
 				<Box display='flex' alignItems='center'>
-					<Icon mie='x4' name='download' size='x16' />
+					<Icon mie={4} name='download' size='x16' />
 					{t('Download')}
 				</Box>
 			),
@@ -26,7 +26,7 @@ const MenuItem = ({ _id, name, url, onClickDelete }) => {
 			delete: {
 				label: (
 					<Box display='flex' alignItems='center' color='status-font-on-danger'>
-						<Icon mie='x4' name='trash' size='x16' />
+						<Icon mie={4} name='trash' size='x16' />
 						{t('Delete')}
 					</Box>
 				),

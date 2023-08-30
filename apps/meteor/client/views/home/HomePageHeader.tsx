@@ -14,7 +14,7 @@ const HomepageHeader = (): ReactElement => {
 	const settingsRoute = useRoute('admin-settings');
 
 	return (
-		<PageHeader title={title} data-qa-id='home-header' role='heading'>
+		<PageHeader title={title} data-qa-id='home-header'>
 			{canEditLayout && (
 				<Button icon='pencil' onClick={() => settingsRoute.push({ group: 'Layout' })}>
 					{t('Customize')}

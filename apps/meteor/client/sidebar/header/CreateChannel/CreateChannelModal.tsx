@@ -175,7 +175,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 				<Modal.Title>{t('Create_channel')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={onClose} />
 			</Modal.Header>
-			<Modal.Content mbe='x2'>
+			<Modal.Content mbe={2}>
 				<FieldGroup>
 					<Field>
 						<Field.Label>{t('Name')}</Field.Label>

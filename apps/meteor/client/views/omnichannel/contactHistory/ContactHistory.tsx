@@ -6,7 +6,7 @@ import ContactHistoryMessagesList from './MessageList/ContactHistoryMessagesList
 
 const ContactHistory = () => {
 	const [chatId, setChatId] = useState<string>('');
-	const { close: closeTab } = useRoomToolbox();
+	const { closeTab } = useRoomToolbox();
 
 	return (
 		<>

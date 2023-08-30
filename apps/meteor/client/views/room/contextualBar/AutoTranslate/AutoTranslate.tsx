@@ -38,7 +38,7 @@ const AutoTranslate = ({
 				<ContextualbarTitle>{t('Auto_Translate')}</ContextualbarTitle>
 				{handleClose && <ContextualbarClose onClick={handleClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent pbs='x24'>
+			<ContextualbarContent pbs={24}>
 				<FieldGroup>
 					<Field>
 						<Field.Row>

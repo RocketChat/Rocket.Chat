@@ -1,15 +1,15 @@
 import { lazy, useMemo } from 'react';
 
 import { useRoomSubscription } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const NotificationPreferences = lazy(() => import('../../views/room/contextualBar/NotificationPreferences'));
 
-export const usePushNotificationsRoomAction = (): ToolboxActionConfig | undefined => {
+export const usePushNotificationsRoomAction = () => {
 	const subscription = useRoomSubscription();
 	const capable = !!subscription;
 
-	return useMemo(() => {
+	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!capable) {
 			return undefined;
 		}
@@ -19,8 +19,9 @@ export const usePushNotificationsRoomAction = (): ToolboxActionConfig | undefine
 			groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
 			title: 'Notifications_Preferences',
 			icon: 'bell',
-			template: NotificationPreferences,
-			order: 8,
+			tabComponent: NotificationPreferences,
+			order: 11,
+			type: 'customization',
 		};
 	}, [capable]);
 };

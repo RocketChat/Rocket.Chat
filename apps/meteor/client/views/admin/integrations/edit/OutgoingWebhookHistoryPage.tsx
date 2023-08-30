@@ -52,7 +52,6 @@ function OutgoingWebhookHistoryPage(props: ComponentProps<typeof Page>): ReactEl
 		{
 			cacheTime: 99999,
 			staleTime: 99999,
-			refetchOnWindowFocus: false,
 		},
 	);
 

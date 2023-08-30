@@ -38,7 +38,7 @@ const AgentEditWithData = ({ uid, reload }: AgentEditWithDataProps): ReactElemen
 	}
 
 	if (error || userDepartmentsError || availableDepartmentsError || !data || !data.user) {
-		return <Box p='x16'>{t('User_not_found')}</Box>;
+		return <Box p={16}>{t('User_not_found')}</Box>;
 	}
 
 	return <AgentEdit uid={uid} data={data} userDepartments={userDepartments} availableDepartments={availableDepartments} reset={reload} />;

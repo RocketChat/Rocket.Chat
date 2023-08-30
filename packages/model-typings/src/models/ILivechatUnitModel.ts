@@ -35,6 +35,6 @@ export interface ILivechatUnitModel extends IBaseModel<IOmnichannelBusinessUnit>
 	removeById(_id: string): Promise<DeleteResult>;
 	findOneByIdOrName(_idOrName: string, options: FindOptions<IOmnichannelBusinessUnit>): Promise<IOmnichannelBusinessUnit | null>;
 	findByMonitorId(monitorId: string): Promise<string[]>;
-	findMonitoredDepartmentsByMonitorId(monitorId: string): Promise<ILivechatDepartment[]>;
+	findMonitoredDepartmentsByMonitorId(monitorId: string, includeDisabled: boolean): Promise<ILivechatDepartment[]>;
 	countUnits(): Promise<number>;
 }

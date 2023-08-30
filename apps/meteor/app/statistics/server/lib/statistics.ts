@@ -122,11 +122,11 @@ export const statistics = {
 		statistics.totalThreads = await Messages.countThreads();
 
 		// livechat visitors
-		statistics.totalLivechatVisitors = await LivechatVisitors.col.estimatedDocumentCount();
+		statistics.totalLivechatVisitors = await LivechatVisitors.estimatedDocumentCount();
 
 		// livechat agents
 		statistics.totalLivechatAgents = await Users.countAgents();
-		statistics.totalLivechatManagers = await Users.col.countDocuments({ roles: 'livechat-manager' });
+		statistics.totalLivechatManagers = await Users.countDocuments({ roles: 'livechat-manager' });
 
 		// livechat enabled
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
@@ -147,14 +147,14 @@ export const statistics = {
 
 		// Number of departments
 		statsPms.push(
-			LivechatDepartment.col.count().then((count) => {
+			LivechatDepartment.estimatedDocumentCount().then((count) => {
 				statistics.departments = count;
 			}),
 		);
 
 		// Number of archived departments
 		statsPms.push(
-			LivechatDepartment.col.countDocuments({ archived: true }).then((count) => {
+			LivechatDepartment.countArchived().then((count) => {
 				statistics.archivedDepartments = count;
 			}),
 		);

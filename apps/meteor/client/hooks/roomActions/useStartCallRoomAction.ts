@@ -7,10 +7,10 @@ import { useTranslation } from 'react-i18next';
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../contexts/VideoConfContext';
 import { VideoConfManager } from '../../lib/VideoConfManager';
 import { useRoom } from '../../views/room/contexts/RoomContext';
+import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
 
-export const useStartCallRoomAction = (): ToolboxActionConfig | undefined => {
+export const useStartCallRoomAction = () => {
 	const room = useRoom();
 	const federated = isRoomFederated(room);
 
@@ -41,7 +41,7 @@ export const useStartCallRoomAction = (): ToolboxActionConfig | undefined => {
 			enabledForLiveChat && 'live',
 			enabledForTeams && 'team',
 			enabledForChannels && 'channel',
-		].filter((group): group is ToolboxActionConfig['groups'][number] => !!group),
+		].filter((group): group is RoomToolboxActionConfig['groups'][number] => !!group),
 	);
 
 	const enabled = groups.length > 0;
@@ -65,7 +65,7 @@ export const useStartCallRoomAction = (): ToolboxActionConfig | undefined => {
 
 	const disabled = federated || (!!room.ro && !permittedToPostReadonly);
 
-	return useMemo(() => {
+	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!allowed) {
 			return undefined;
 		}

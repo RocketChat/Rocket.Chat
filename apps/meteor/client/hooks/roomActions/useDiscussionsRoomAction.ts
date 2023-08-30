@@ -4,17 +4,17 @@ import { lazy, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { ToolboxActionConfig } from '../../views/room/lib/Toolbox';
+import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const Discussions = lazy(() => import('../../views/room/contextualBar/Discussions'));
 
-export const useDiscussionsRoomAction = (): ToolboxActionConfig | undefined => {
+export const useDiscussionsRoomAction = () => {
 	const room = useRoom();
 	const federated = isRoomFederated(room);
 	const enabled = useSetting('Discussion_enabled', false);
 	const { t } = useTranslation();
 
-	return useMemo(() => {
+	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!enabled || !!room.prid) {
 			return undefined;
 		}
@@ -24,7 +24,7 @@ export const useDiscussionsRoomAction = (): ToolboxActionConfig | undefined => {
 			groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
 			title: 'Discussions',
 			icon: 'discussion',
-			template: Discussions,
+			tabComponent: Discussions,
 			full: true,
 			...(federated && {
 				disabled: true,

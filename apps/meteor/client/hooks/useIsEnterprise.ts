@@ -7,7 +7,6 @@ export const useIsEnterprise = (): UseQueryResult<OperationResult<'GET', '/v1/li
 	const isEnterpriseEdition = useEndpoint('GET', '/v1/licenses.isEnterprise');
 	return useQuery(['licenses', 'isEnterprise'], () => isEnterpriseEdition(), {
 		keepPreviousData: true,
-		refetchOnWindowFocus: false,
 		staleTime: Infinity,
 	});
 };

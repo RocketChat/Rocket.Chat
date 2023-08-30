@@ -39,9 +39,9 @@ import { startPatchRelease } from './startPatchRelease';
 
 	if (action === 'publish-final') {
 		await publishRelease({ githubToken, mergeFinal: true, mainPackagePath });
-	} else if (action === 'publish') {
+	} else if (action === 'cut') {
 		await publishRelease({ githubToken, baseRef, mainPackagePath });
-	} else if (action === 'bump') {
+	} else if (action === 'next') {
 		await bumpNextVersion({ githubToken, mainPackagePath });
 	} else if (action === 'patch') {
 		await startPatchRelease({ baseRef, githubToken, mainPackagePath });

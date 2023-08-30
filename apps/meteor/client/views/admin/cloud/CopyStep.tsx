@@ -51,7 +51,7 @@ const CopyStep: FC<CopyStepProps> = ({ onNextButtonClick }) => {
 				<Box withRichContent>
 					<p>{t('Cloud_register_offline_helper')}</p>
 				</Box>
-				<Box display='flex' flexDirection='column' alignItems='stretch' padding='x16' flexGrow={1} backgroundColor='dark'>
+				<Box display='flex' flexDirection='column' alignItems='stretch' padding={16} flexGrow={1} backgroundColor='dark'>
 					<Scrollable vertical>
 						<Box height='x108' fontFamily='mono' fontScale='p2' color='white' style={{ wordBreak: 'break-all' }}>
 							{clientKey}

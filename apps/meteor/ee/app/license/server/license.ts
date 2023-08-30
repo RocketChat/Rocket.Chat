@@ -223,12 +223,12 @@ class LicenseClass {
 		EnterpriseLicenses.emit('invalidate');
 	}
 
-	async canAddNewUser(): Promise<boolean> {
+	async canAddNewUser(userCount = 1): Promise<boolean> {
 		if (!maxActiveUsers) {
 			return true;
 		}
 
-		return maxActiveUsers > (await Users.getActiveLocalUserCount());
+		return maxActiveUsers > (await Users.getActiveLocalUserCount()) + userCount;
 	}
 
 	async canEnableApp(app: IAppStorageItem): Promise<boolean> {
@@ -352,8 +352,8 @@ export function getAppsConfig(): NonNullable<ILicense['apps']> {
 	return License.getAppsConfig();
 }
 
-export async function canAddNewUser(): Promise<boolean> {
-	return License.canAddNewUser();
+export async function canAddNewUser(userCount = 1): Promise<boolean> {
+	return License.canAddNewUser(userCount);
 }
 
 export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {

@@ -6,9 +6,9 @@
  * e.g even though extension_info and extension_list are two different commands,
  * they will be executed by |PJSIPEndpoint| class.
  */
+import { Logger } from '@rocket.chat/logger';
 import type { Db } from 'mongodb';
 
-import { Logger } from '../../../../../lib/logger/Logger';
 import { Command } from '../Command';
 import { Commands } from '../Commands';
 import { ACDQueue } from './ACDQueue';

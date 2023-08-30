@@ -13,7 +13,7 @@ const isValidIcon = (icon: ReactNode): icon is IconName => typeof icon === 'stri
 const InfoPanelTitle: FC<InfoPanelTitleProps> = ({ title, icon }) => (
 	<Box display='flex' flexShrink={0} alignItems='center' fontScale='h4' color='default' withTruncatedText>
 		{isValidIcon(icon) ? <Icon name={icon} size='x22' /> : icon}
-		<Box mis='x8' withTruncatedText title={title}>
+		<Box mis={8} withTruncatedText title={title}>
 			{title}
 		</Box>
 	</Box>

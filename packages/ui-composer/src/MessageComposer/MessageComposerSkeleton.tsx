@@ -1,30 +1,14 @@
-import { Skeleton } from '@rocket.chat/fuselage';
+import { Skeleton, Box } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 
-import {
-	MessageComposer,
-	MessageComposerActionsDivider,
-	MessageComposerToolbar,
-	MessageComposerToolbarActions,
-	MessageComposerToolbarSubmit,
-} from '.';
+import { MessageComposer, MessageComposerToolbar } from '.';
 
 const MessageComposerSkeleton = (): ReactElement => (
 	<MessageComposer>
-		<Skeleton p='x4' m='x8' />
-		<MessageComposerToolbar>
-			<MessageComposerToolbarActions>
-				<Skeleton p='x4' pi='x6' />
-				<Skeleton p='x4' pi='x6' />
-				<MessageComposerActionsDivider />
-				<Skeleton p='x4' pi='x6' />
-				<Skeleton p='x4' pi='x6' />
-			</MessageComposerToolbarActions>
-			<MessageComposerToolbarSubmit>
-				<Skeleton p='x4' width={60} />
-				<Skeleton p='x4' width={60} />
-			</MessageComposerToolbarSubmit>
-		</MessageComposerToolbar>
+		<Box width='100%' display='flex' alignItems='center' height='x52' pi={12}>
+			<Skeleton width='100%' height={36} />
+		</Box>
+		<MessageComposerToolbar height={36} />
 	</MessageComposer>
 );
 

@@ -74,7 +74,6 @@ const AppsProvider: FC = ({ children }) => {
 		},
 		{
 			staleTime: Infinity,
-			refetchOnWindowFocus: false,
 			keepPreviousData: true,
 			onSettled: () => queryClient.invalidateQueries(['marketplace', 'apps-stored']),
 		},
@@ -93,7 +92,6 @@ const AppsProvider: FC = ({ children }) => {
 		},
 		{
 			staleTime: Infinity,
-			refetchOnWindowFocus: false,
 			keepPreviousData: true,
 			onSettled: () => queryClient.invalidateQueries(['marketplace', 'apps-stored']),
 		},
@@ -146,7 +144,6 @@ const AppsProvider: FC = ({ children }) => {
 		},
 		{
 			enabled: marketplace.isSuccess && instance.isSuccess && !instance.isRefetching,
-			refetchOnWindowFocus: false,
 			keepPreviousData: true,
 		},
 	);

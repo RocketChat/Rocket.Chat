@@ -62,9 +62,9 @@ function ColorSettingInput({
 					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 				</Box>
 			</Flex.Container>
-			<Margins inline='x4'>
+			<Margins inline={4}>
 				<Field.Row>
-					<Margins inline='x4'>
+					<Margins inline={4}>
 						<Flex.Item grow={2}>
 							{editor === 'color' && (
 								<InputBox

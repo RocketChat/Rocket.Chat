@@ -55,7 +55,7 @@ function DiscussionsList({
 		<>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='discussion' />
-				<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
+				<Box flexShrink={1} flexGrow={1} withTruncatedText mi={8}>
 					{t('Discussions')}
 				</Box>
 				<ContextualbarClose onClick={onClose} />
@@ -65,7 +65,7 @@ function DiscussionsList({
 				<Box
 					display='flex'
 					flexDirection='row'
-					p='x24'
+					p={24}
 					borderBlockEndWidth='default'
 					borderBlockEndStyle='solid'
 					borderBlockEndColor='extra-light'
@@ -81,13 +81,13 @@ function DiscussionsList({
 				</Box>
 
 				{loading && (
-					<Box pi='x24' pb='x12'>
+					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
 
 				{error instanceof Error && (
-					<Callout mi='x24' type='danger'>
+					<Callout mi={24} type='danger'>
 						{error.toString()}
 					</Callout>
 				)}

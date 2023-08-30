@@ -1,4 +1,12 @@
-import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken, UserStatus } from '@rocket.chat/core-typings';
+import type {
+	IExportOperation,
+	AvatarServiceObject,
+	ISubscription,
+	ITeam,
+	IUser,
+	IPersonalAccessToken,
+	UserStatus,
+} from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { UsersSendConfirmationEmailParamsPOST } from '..';
@@ -232,7 +240,7 @@ export type UsersEndpoints = {
 
 	'/v1/users.getAvatarSuggestion': {
 		GET: () => {
-			suggestions: Record<string, { blob: string; contentType: string; service: string; url: string }>;
+			suggestions: Record<string, AvatarServiceObject>;
 		};
 	};
 

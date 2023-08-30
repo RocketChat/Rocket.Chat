@@ -34,14 +34,18 @@ import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroup
 import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction';
 import { useVoIPRoomInfoRoomAction } from './hooks/roomActions/useVoIPRoomInfoRoomAction';
 import { useWebRTCVideoRoomAction } from './hooks/roomActions/useWebRTCVideoRoomAction';
-import type { ToolboxActionConfig } from './views/room/lib/Toolbox';
+import type { RoomToolboxActionConfig } from './views/room/contexts/RoomToolboxContext';
 import type { QuickActionsActionConfig } from './views/room/lib/quickActions';
 
 export const roomActionHooks = [
+	useChannelSettingsRoomAction,
+	useTeamInfoRoomAction,
+	useUserInfoGroupRoomAction,
+	useUserInfoRoomAction,
+	useThreadRoomAction,
 	useAutotranslateRoomAction,
 	useCallsRoomAction,
 	useCannedResponsesRoomAction,
-	useChannelSettingsRoomAction,
 	useCleanHistoryRoomAction,
 	useContactChatHistoryRoomAction,
 	useContactProfileRoomAction,
@@ -62,14 +66,10 @@ export const roomActionHooks = [
 	useStarredMessagesRoomAction,
 	useStartCallRoomAction,
 	useTeamChannelsRoomAction,
-	useTeamInfoRoomAction,
-	useThreadRoomAction,
 	useUploadedFilesListRoomAction,
-	useUserInfoGroupRoomAction,
-	useUserInfoRoomAction,
 	useVoIPRoomInfoRoomAction,
 	useWebRTCVideoRoomAction,
-] satisfies (() => ToolboxActionConfig | undefined)[];
+] satisfies (() => RoomToolboxActionConfig | undefined)[];
 
 export const quickActionHooks = [
 	useMoveQueueQuickAction,

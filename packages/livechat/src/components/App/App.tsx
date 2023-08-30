@@ -4,6 +4,7 @@ import Router, { route } from 'preact-router';
 import { parse } from 'query-string';
 import { withTranslation } from 'react-i18next';
 
+import type { Department } from '../../definitions/departments';
 import { setInitCookies } from '../../helpers/cookies';
 import { isActiveSession } from '../../helpers/isActiveSession';
 import { isRTL } from '../../helpers/isRTL';
@@ -34,9 +35,7 @@ type AppProps = {
 			forceAcceptDataProcessingConsent?: boolean;
 		};
 		online?: boolean;
-		departments: {
-			showOnRegistration: boolean;
-		}[];
+		departments: Department[];
 		enabled?: boolean;
 	};
 	gdpr: {
@@ -281,9 +280,10 @@ export class App extends Component<AppProps, AppState> {
 				<ChatConnector default path='/' {...screenProps} />
 				<ChatFinished path='/chat-finished' {...screenProps} />
 				<GDPRAgreement path='/gdpr' {...screenProps} />
-				<LeaveMessage path='/leave-message' {...screenProps} />
-				<Register path='/register' {...screenProps} />
-				<SwitchDepartment path='/switch-department' {...screenProps} />
+				{/* TODO: Find a better way to avoid prop drilling with that amout of props (perhaps create a screen context/provider) */}
+				<LeaveMessage path='/leave-message' screenProps={screenProps} />
+				<Register path='/register' screenProps={screenProps} />
+				<SwitchDepartment path='/switch-department' screenProps={screenProps} />
 				<TriggerMessage path='/trigger-messages' {...screenProps} />
 			</Router>
 		);

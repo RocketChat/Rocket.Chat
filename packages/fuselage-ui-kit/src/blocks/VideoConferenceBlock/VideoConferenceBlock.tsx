@@ -17,8 +17,8 @@ import {
 import type { MouseEventHandler, ReactElement } from 'react';
 import { useContext, memo } from 'react';
 
-import { kitContext } from '../..';
-import { useSurfaceType } from '../../contexts/SurfaceContext';
+import { UiKitContext } from '../..';
+import { useSurfaceType } from '../../hooks/useSurfaceType';
 import type { BlockProps } from '../../utils/BlockProps';
 import { useVideoConfDataStream } from './hooks/useVideoConfDataStream';
 
@@ -34,7 +34,7 @@ const VideoConferenceBlock = ({
   const surfaceType = useSurfaceType();
   const userId = useUserId();
 
-  const { action, viewId, rid } = useContext(kitContext);
+  const { action, viewId, rid } = useContext(UiKitContext);
 
   if (surfaceType !== 'message') {
     throw new Error('VideoConferenceBlock cannot be rendered outside message');
