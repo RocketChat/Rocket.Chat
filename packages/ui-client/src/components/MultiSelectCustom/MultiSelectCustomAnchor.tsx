@@ -49,12 +49,12 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			flexDirection='row'
 			borderColor={Palette.stroke['stroke-light'].toString()}
 			borderWidth='x1'
-			borderRadius='x4'
+			borderRadius={4}
 			bg={Palette.surface['surface-light'].toString()}
 			h='x40'
 			w='full'
-			pb='x10'
-			pi='x16'
+			pb={10}
+			pi={16}
 			color={isDirty ? Palette.text['font-default'].toString() : Palette.text['font-annotation'].toString()}
 			className={inputStyle}
 			{...props}
