@@ -1,7 +1,7 @@
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Tabs } from '@rocket.chat/fuselage';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
@@ -25,15 +25,17 @@ const UsersPage = (): ReactElement => {
 	const canCreateUser = usePermission('create-user');
 	const canBulkCreateUser = usePermission('bulk-register-user');
 
+	const [tab, setTab] = useState<string>('all');
+
 	useEffect(() => {
 		if (!context || !seatsCap) {
 			return;
 		}
 
-		if (seatsCap.activeUsers >= seatsCap.maxActiveUsers && !['edit', 'info'].includes(context)) {
+		if (seatsCap.activeUsers >= seatsCap.maxActiveUsers && context && !['edit', 'info'].includes(context)) {
 			router.navigate('/admin/users');
 		}
-	}, [router, context, seatsCap]);
+	}, [context, seatsCap, tab, router]);
 
 	const handleReload = (): void => {
 		seatsCap?.reload();
@@ -62,6 +64,23 @@ const UsersPage = (): ReactElement => {
 					)}
 				</Page.Header>
 				<Page.Content>
+					<Tabs>
+						<Tabs.Item selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
+							{t('All')}
+						</Tabs.Item>
+						<Tabs.Item selected={tab === 'tab-invited'} onClick={() => setTab('tab-invited')}>
+							{t('Invited')}
+						</Tabs.Item>
+						<Tabs.Item selected={tab === 'tab-new'} onClick={() => setTab('tab-new')}>
+							{t('New_users')}
+						</Tabs.Item>
+						<Tabs.Item selected={tab === 'tab-active'} onClick={() => setTab('tab-active')}>
+							{t('Active')}
+						</Tabs.Item>
+						<Tabs.Item selected={tab === 'tab-deactivated'} onClick={() => setTab('tab-deactivated')}>
+							{t('Deactivated')}
+						</Tabs.Item>
+					</Tabs>
 					<UsersTable reload={reload} />
 				</Page.Content>
 			</Page>

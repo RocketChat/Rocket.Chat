@@ -1521,6 +1521,7 @@
   "DDP_Rate_Limit_User_Interval_Time": "Limit by User: interval time",
   "DDP_Rate_Limit_User_Requests_Allowed": "Limit by User: requests allowed",
   "Deactivate": "Deactivate",
+  "Deactivated": "Deactivated",
   "Decline": "Decline",
   "Decode_Key": "Decode Key",
   "default": "default",
@@ -2669,6 +2670,7 @@
   "Invitation_Subject": "Invitation Subject",
   "Invitation_Subject_Default": "You have been invited to [Site_Name]",
   "Invite": "Invite",
+  "Invited": "Invited",
   "Invites": "Invites",
   "Invite_and_add_members_to_this_workspace_to_start_communicating": "Invite and add members to this workspace to start communicating.",
   "Invite_Link": "Invite Link",
@@ -5999,5 +6001,6 @@
   "All_visible": "All visible",
   "Filter_by_room": "Filter by room type",
   "Filter_by_visibility": "Filter by visibility",
+  "Registration_status": "Registration status",
   "Theme_Appearence": "Theme Appearence"
 }
