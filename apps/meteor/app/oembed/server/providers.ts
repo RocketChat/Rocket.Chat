@@ -143,23 +143,13 @@ callbacks.add(
 			return cleanupOembed(data);
 		}
 
-		const urlObj = new URL(data.url);
-		if (!urlObj.search) {
-			return cleanupOembed(data);
-		}
-
-		const urlParameter = urlObj.searchParams.get('url');
-		if (!urlParameter) {
-			return cleanupOembed(data);
-		}
-
 		const provider = providers.getProviderForUrl(data.url);
 
 		if (!provider) {
 			return cleanupOembed(data);
 		}
 
-		data.meta.oembedUrl = urlParameter;
+		data.meta.oembedUrl = data.url;
 
 		try {
 			const metas = JSON.parse(data.content.body);
