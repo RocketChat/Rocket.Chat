@@ -2996,4 +2996,8 @@ export class UsersRaw extends BaseRaw {
 
 		return this.updateOne({ _id }, update);
 	}
+
+	countByRole(role) {
+		return this.col.countDocuments({ roles: role });
+	}
 }

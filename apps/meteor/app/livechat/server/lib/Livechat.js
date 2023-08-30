@@ -709,7 +709,9 @@ export const Livechat = {
 			});
 		}
 		const ret = (await LivechatDepartmentRaw.removeById(_id)).deletedCount;
-		const agentsIds = (await LivechatDepartmentAgents.findByDepartmentId(_id).toArray()).map((agent) => agent.agentId);
+		const agentsIds = (await LivechatDepartmentAgents.findByDepartmentId(_id, { projection: { agentId: 1 } }).toArray()).map(
+			(agent) => agent.agentId,
+		);
 		await LivechatDepartmentAgents.removeByDepartmentId(_id);
 		await LivechatDepartmentRaw.unsetFallbackDepartmentByDepartmentId(_id);
 		if (ret) {

@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Box, MessageDivider, Throbber } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import { useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useCallback } from 'react';
@@ -22,7 +22,6 @@ import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
-import { isMessageFirstUnread } from '../MessageList/lib/isMessageFirstUnread';
 import { isMessageNewDay } from '../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../MessageList/providers/MessageListProvider';
 import { useRoomSubscription } from '../contexts/RoomContext';
@@ -37,7 +36,6 @@ type MessageListTabProps = {
 };
 
 const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryResult }: MessageListTabProps): ReactElement => {
-	const t = useTranslation();
 	const formatDate = useFormatDate();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
@@ -78,8 +76,6 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 												const previous = queryResult.data[index - 1];
 
 												const newDay = isMessageNewDay(message, previous);
-												const firstUnread = isMessageFirstUnread(subscription, message, previous);
-												const showDivider = newDay || firstUnread;
 
 												const system = MessageTypes.isSystemMessage(message);
 
@@ -89,11 +85,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 
 												return (
 													<>
-														{showDivider && (
-															<MessageDivider unreadLabel={firstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
-																{newDay && formatDate(message.ts)}
-															</MessageDivider>
-														)}
+														{newDay && <MessageDivider>{formatDate(message.ts)}</MessageDivider>}
 
 														{system ? (
 															<SystemMessage message={message} showUserAvatar={showUserAvatar} />
