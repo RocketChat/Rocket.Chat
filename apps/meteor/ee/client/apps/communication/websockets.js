@@ -27,7 +27,7 @@ export class AppWebsocketReceiver extends Emitter {
 	}
 
 	listenStreamerEvents() {
-		sdk.stream('apps', ['apps'], (key, args) => {
+		sdk.stream('apps', ['apps'], ([key, args]) => {
 			switch (key) {
 				case AppEvents.COMMAND_ADDED:
 					this.onCommandAddedOrUpdated(...args);
