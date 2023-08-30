@@ -17,7 +17,7 @@ const PeriodSelector = <TPeriod extends Period['key']>({ periods, value, onChang
 
 	const options = useMemo<[string, string][]>(() => periods.map((period) => [period, t(...getPeriod(period).label)]), [periods, t]);
 
-	return <Select options={options} value={value} onChange={(value: string): void => onChange(value as TPeriod)} />;
+	return <Select options={options} value={value} onChange={(value): void => onChange(value as TPeriod)} />;
 };
 
 export default PeriodSelector;

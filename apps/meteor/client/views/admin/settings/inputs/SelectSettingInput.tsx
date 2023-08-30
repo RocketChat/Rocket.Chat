@@ -58,7 +58,7 @@ function SelectSettingInput({
 					disabled={disabled}
 					readOnly={readonly}
 					autoComplete={autocomplete === false ? 'off' : undefined}
-					onChange={handleChange}
+					onChange={(value) => handleChange(String(value))}
 					options={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)])}
 				/>
 			</Field.Row>
