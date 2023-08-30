@@ -55,7 +55,8 @@ class Chat extends Component {
 
 	handleUploadClick = (event) => {
 		event.preventDefault();
-		this.filesDropTarget.browse();
+		console.log(this.filesDropTarget);
+		this.filesDropTarget?.click();
 	};
 
 	handleSendClick = (event) => {
