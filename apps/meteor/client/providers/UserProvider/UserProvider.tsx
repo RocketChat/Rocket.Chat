@@ -69,7 +69,6 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
 	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
 
-	const { data: license } = useIsEnterprise();
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
 	useCreateFontStyleElement(user?.settings?.preferences?.fontSize);
@@ -179,6 +178,8 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			setPreferedLanguage(user.language);
 		}
 	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
+
+	const { data: license } = useIsEnterprise({ enabled: !!userId });
 
 	useEffect(() => {
 		if (!license?.isEnterprise && user?.settings?.preferences?.themeAppearence === 'high-contrast') {
