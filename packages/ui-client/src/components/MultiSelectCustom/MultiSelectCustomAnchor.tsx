@@ -14,7 +14,7 @@ type MultiSelectCustomAnchorProps = {
 	maxCount: number;
 } & ComponentProps<typeof Button>;
 
-const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorProps>(function MultiSelectCustomAnchor(
+const MultiSelectCustomAnchor = forwardRef<HTMLButtonElement, MultiSelectCustomAnchorProps>(function MultiSelectCustomAnchor(
 	{ onClick, collapsed, selectedOptionsCount, selectedOptionsTitle, defaultTitle, maxCount, ...props },
 	ref,
 ) {
