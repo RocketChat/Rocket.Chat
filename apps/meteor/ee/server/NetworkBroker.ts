@@ -77,6 +77,7 @@ export class NetworkBroker implements IBroker {
 		}
 		void this.broker.destroyService(name);
 		instance.removeAllListeners();
+		void instance.stopped();
 	}
 
 	createService(instance: IServiceClass, serviceDependencies?: string[]): void {
@@ -158,6 +159,7 @@ export class NetworkBroker implements IBroker {
 		}
 
 		this.broker.createService(service);
+		void instance.created();
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
