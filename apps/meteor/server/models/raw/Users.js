@@ -2927,7 +2927,7 @@ export class UsersRaw extends BaseRaw {
 				active: true,
 				$or: [{ roles: ['guest'] }, { type: { $in: ['app', 'bot'] } }, { federated: true }, { isRemote: true }],
 			}),
-			// Get all active and remove the guests, apps, federated, etc
+			// Get all active and remove the guests, apps, bots and federated
 		]).then((results) => results.reduce((a, b) => a - b));
 	}
 
