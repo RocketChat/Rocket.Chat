@@ -25,9 +25,7 @@ export class AppRoleBridge extends RoleBridge {
 
 		for await (const role of cursor) {
 			const convRole = await this.orch.getConverters()?.get('roles').convertRole(role);
-			if (convRole) {
-				roles.push(convRole);
-			}
+			roles.push(convRole);
 		}
 
 		return roles;
