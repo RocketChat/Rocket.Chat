@@ -9,9 +9,9 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { router } from '../../../../client/providers/RouterProvider';
+import ForwardMessageModal from '../../../../client/views/room/modals/ForwardMessageModal/ForwardMessageModal';
 import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
 import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
-import ShareMessageModal from '../../../../client/views/room/modals/ShareMessageModal';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { ChatRoom, Subscriptions } from '../../../models/client';
 import { t } from '../../../utils/lib/i18n';
@@ -66,16 +66,16 @@ Meteor.startup(async () => {
 	});
 
 	MessageAction.addButton({
-		id: 'share-message',
+		id: 'forward-message',
 		icon: 'arrow-forward',
-		label: 'Share_Message',
+		label: 'Forward_message',
 		context: ['message', 'message-mobile', 'threads'],
 		type: 'communication',
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const permalink = await getPermaLink(message._id);
 			imperativeModal.open({
-				component: ShareMessageModal,
+				component: ForwardMessageModal,
 				props: {
 					message,
 					permalink,
@@ -171,16 +171,16 @@ Meteor.startup(async () => {
 			const { message = messageArgs(this).msg, chat } = props;
 			await chat?.messageEditing.editMessage(message);
 		},
-		condition({ message, subscription, settings, room }) {
+		condition({ message, subscription, settings, room, user }) {
 			if (subscription == null) {
 				return false;
 			}
 			if (isRoomFederated(room)) {
-				return message.u._id === Meteor.userId();
+				return message.u._id === user?._id;
 			}
 			const canEditMessage = hasAtLeastOnePermission('edit-message', message.rid);
 			const isEditAllowed = settings.Message_AllowEditing;
-			const editOwn = message.u && message.u._id === Meteor.userId();
+			const editOwn = message.u && message.u._id === user?._id;
 			if (!(canEditMessage || (isEditAllowed && editOwn))) {
 				return false;
 			}
@@ -214,12 +214,12 @@ Meteor.startup(async () => {
 		async action(this: unknown, _, { message = messageArgs(this).msg, chat }) {
 			await chat?.flows.requestMessageDeletion(message);
 		},
-		condition({ message, subscription, room, chat }) {
+		condition({ message, subscription, room, chat, user }) {
 			if (!subscription) {
 				return false;
 			}
 			if (isRoomFederated(room)) {
-				return message.u._id === Meteor.userId();
+				return message.u._id === user?._id;
 			}
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
@@ -248,11 +248,12 @@ Meteor.startup(async () => {
 				},
 			});
 		},
-		condition({ subscription, room }) {
+		condition({ subscription, room, message, user }) {
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
-			if (isLivechatRoom) {
+			if (isLivechatRoom || message.u._id === user?._id) {
 				return false;
 			}
+
 			return Boolean(subscription);
 		},
 		order: 9,

@@ -3,11 +3,13 @@ import type {
 	IOmnichannelRoom,
 	IOmnichannelServiceLevelAgreements,
 	RocketChatRecordDeleted,
+	ReportResult,
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
-import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, Filter } from 'mongodb';
+import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, Filter, AggregationCursor } from 'mongodb';
 
+import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
 import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
 import { addQueryRestrictionsToRoomsModel } from '../../../app/livechat-enterprise/server/lib/query.helper';
@@ -41,6 +43,29 @@ declare module '@rocket.chat/model-typings' {
 		countRoomsWithSla(): Promise<number>;
 		countRoomsWithPdfTranscriptRequested(): Promise<number>;
 		countRoomsWithTranscriptSent(): Promise<number>;
+		getConversationsBySource(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult>;
+		getConversationsByStatus(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult>;
+		getConversationsByDepartment(
+			start: Date,
+			end: Date,
+			sort: Record<string, 1 | -1>,
+			extraQuery: Filter<IOmnichannelRoom>,
+		): AggregationCursor<ReportResult>;
+		getConversationsByTags(
+			start: Date,
+			end: Date,
+			sort: Record<string, 1 | -1>,
+			extraQuery: Filter<IOmnichannelRoom>,
+		): AggregationCursor<ReportResult>;
+		getConversationsByAgents(
+			start: Date,
+			end: Date,
+			sort: Record<string, 1 | -1>,
+			extraQuery: Filter<IOmnichannelRoom>,
+		): AggregationCursor<ReportResult>;
+		getConversationsWithoutTagsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number>;
+		getTotalConversationsWithoutAgentsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number>;
+		getTotalConversationsWithoutDepartmentBetweenDates(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number>;
 	}
 }
 
@@ -312,5 +337,418 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		const restrictedQuery = await addQueryRestrictionsToRoomsModel(query);
 		queriesLogger.debug({ msg: 'LivechatRoomsRawEE.updateMany', query: restrictedQuery });
 		return super.updateMany(restrictedQuery, ...restArgs);
+	}
+
+	getConversationsBySource(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult> {
+		return this.col.aggregate(
+			[
+				{
+					$match: {
+						source: {
+							$exists: true,
+						},
+						t: 'l',
+						ts: {
+							$gte: start,
+							$lt: end,
+						},
+						...extraQuery,
+					},
+				},
+				{
+					$group: {
+						_id: '$source',
+						value: { $sum: 1 },
+					},
+				},
+				{
+					$sort: { value: -1 },
+				},
+				{
+					$group: {
+						_id: null,
+						total: { $sum: '$value' },
+						data: {
+							$push: {
+								label: {
+									$ifNull: ['$_id.alias', '$_id.type'],
+								},
+								value: '$value',
+							},
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+					},
+				},
+			],
+			{ hint: 'source_1_ts_1', readPreference: readSecondaryPreferred() },
+		);
+	}
+
+	getConversationsByStatus(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult> {
+		return this.col.aggregate(
+			[
+				{
+					$match: {
+						t: 'l',
+						ts: {
+							$gte: start,
+							$lt: end,
+						},
+						...extraQuery,
+					},
+				},
+				{
+					$group: {
+						_id: null,
+						total: { $sum: 1 },
+						open: {
+							$sum: {
+								$cond: [
+									{
+										$and: [
+											{ $eq: ['$open', true] },
+											{
+												$or: [{ $not: ['$onHold'] }, { $eq: ['$onHold', false] }],
+											},
+											{ $ifNull: ['$servedBy', false] },
+										],
+									},
+									1,
+									0,
+								],
+							},
+						},
+						closed: {
+							$sum: {
+								$cond: [
+									{
+										$ifNull: ['$metrics.chatDuration', false],
+									},
+									1,
+									0,
+								],
+							},
+						},
+						queued: {
+							$sum: {
+								$cond: [
+									{
+										$and: [
+											{ $eq: ['$open', true] },
+											{
+												$eq: [
+													{
+														$ifNull: ['$servedBy', null],
+													},
+													null,
+												],
+											},
+										],
+									},
+									1,
+									0,
+								],
+							},
+						},
+						onhold: {
+							$sum: {
+								$cond: [{ $eq: ['$onHold', true] }, 1, 0],
+							},
+						},
+					},
+				},
+				{
+					$project: {
+						total: 1,
+						data: [
+							{ label: 'Open', value: '$open' },
+							{ label: 'Closed', value: '$closed' },
+							{ label: 'Queued', value: '$queued' },
+							{ label: 'On_Hold', value: '$onhold' },
+						],
+					},
+				},
+				{
+					$unwind: '$data',
+				},
+				{
+					$sort: { 'data.value': -1 },
+				},
+				{
+					$group: {
+						_id: '$_id',
+						total: { $first: '$total' },
+						data: { $push: '$data' },
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+					},
+				},
+			],
+			{ readPreference: readSecondaryPreferred() },
+		);
+	}
+
+	getConversationsByDepartment(
+		start: Date,
+		end: Date,
+		sort: Record<string, 1 | -1>,
+		extraQuery: Filter<IOmnichannelRoom>,
+	): AggregationCursor<ReportResult> {
+		return this.col.aggregate(
+			[
+				{
+					$match: {
+						t: 'l',
+						departmentId: {
+							$exists: true,
+						},
+						ts: {
+							$lt: end,
+							$gte: start,
+						},
+						...extraQuery,
+					},
+				},
+				{
+					$group: {
+						_id: '$departmentId',
+						total: { $sum: 1 },
+					},
+				},
+				{
+					$lookup: {
+						from: 'rocketchat_livechat_department',
+						localField: '_id',
+						foreignField: '_id',
+						as: 'department',
+					},
+				},
+				{
+					$group: {
+						_id: {
+							$arrayElemAt: ['$department.name', 0],
+						},
+						total: {
+							$sum: '$total',
+						},
+					},
+				},
+				{
+					$sort: sort || { total: 1 },
+				},
+				{
+					$group: {
+						_id: null,
+						total: { $sum: '$total' },
+						data: {
+							$push: {
+								label: '$_id',
+								value: '$total',
+							},
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+					},
+				},
+			],
+			{ hint: 'departmentId_1_ts_1', readPreference: readSecondaryPreferred() },
+		);
+	}
+
+	getTotalConversationsWithoutDepartmentBetweenDates(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
+		return this.col.countDocuments({
+			t: 'l',
+			departmentId: {
+				$exists: false,
+			},
+			ts: {
+				$gte: start,
+				$lt: end,
+			},
+			...extraQuery,
+		});
+	}
+
+	getConversationsByTags(
+		start: Date,
+		end: Date,
+		sort: Record<string, 1 | -1>,
+		extraQuery: Filter<IOmnichannelRoom>,
+	): AggregationCursor<ReportResult> {
+		return this.col.aggregate(
+			[
+				{
+					$match: {
+						t: 'l',
+						ts: {
+							$lt: end,
+							$gte: start,
+						},
+						tags: {
+							$exists: true,
+							$ne: [],
+						},
+						...extraQuery,
+					},
+				},
+				{
+					$group: {
+						_id: '$tags',
+						total: {
+							$sum: 1,
+						},
+					},
+				},
+				{
+					$unwind: '$_id',
+				},
+				{
+					$group: {
+						_id: '$_id',
+						total: { $sum: '$total' },
+					},
+				},
+				{
+					$sort: sort || { total: 1 },
+				},
+				{
+					$group: {
+						_id: null,
+						total: { $sum: '$total' },
+						data: {
+							$push: {
+								label: '$_id',
+								value: '$total',
+							},
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+					},
+				},
+			],
+			{ hint: 'tags.0_1_ts_1', readPreference: readSecondaryPreferred() },
+		);
+	}
+
+	getConversationsWithoutTagsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
+		return this.col.countDocuments({
+			t: 'l',
+			ts: {
+				$gte: start,
+				$lt: end,
+			},
+			$or: [
+				{
+					tags: {
+						$exists: false,
+					},
+				},
+				{
+					tags: {
+						$eq: [],
+					},
+				},
+			],
+			...extraQuery,
+		});
+	}
+
+	getConversationsByAgents(
+		start: Date,
+		end: Date,
+		sort: Record<string, 1 | -1>,
+		extraQuery: Filter<IOmnichannelRoom>,
+	): AggregationCursor<ReportResult> {
+		return this.col.aggregate(
+			[
+				{
+					$match: {
+						t: 'l',
+						ts: {
+							$gte: start,
+							$lt: end,
+						},
+						servedBy: {
+							$exists: true,
+						},
+						...extraQuery,
+					},
+				},
+				{
+					$group: {
+						_id: '$servedBy._id',
+						total: { $sum: 1 },
+					},
+				},
+				{
+					$lookup: {
+						from: 'users',
+						localField: '_id',
+						foreignField: '_id',
+						as: 'agent',
+					},
+				},
+				{
+					$set: {
+						agent: { $first: '$agent' },
+					},
+				},
+				{
+					$addFields: {
+						name: {
+							$ifNull: ['$agent.name', '$_id'],
+						},
+					},
+				},
+				{
+					$sort: sort || { name: 1 },
+				},
+				{
+					$group: {
+						_id: null,
+						total: { $sum: '$total' },
+						data: {
+							$push: {
+								label: '$name',
+								value: '$total',
+							},
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+					},
+				},
+			],
+			{ hint: 'servedBy_1_ts_1', readPreference: readSecondaryPreferred() },
+		);
+	}
+
+	getTotalConversationsWithoutAgentsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
+		return this.col.countDocuments({
+			t: 'l',
+			ts: {
+				$gte: start,
+				$lt: end,
+			},
+			servedBy: {
+				$exists: false,
+			},
+			...extraQuery,
+		});
 	}
 }
