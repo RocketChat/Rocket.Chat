@@ -311,7 +311,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							{errors.password.message}
 						</Field.Error>
 					)}
-					{allowPasswordChange && Boolean(password?.length) && <PasswordVerifier password={password} id={passwordVerifierId} />}
+					{allowPasswordChange && <PasswordVerifier password={password} id={passwordVerifierId} />}
 				</Field>
 				<Field>
 					<Field.Label htmlFor={confirmPasswordId}>{t('Confirm_password')}</Field.Label>
@@ -324,7 +324,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							error={errors.confirmationPassword?.message}
 							flexGrow={1}
 							addon={<Icon name='key' size='x20' />}
-							disabled={!allowPasswordChange && !passwordIsValid}
+							disabled={!allowPasswordChange || !passwordIsValid}
 							aria-required={password !== '' ? 'true' : 'false'}
 							aria-invalid={errors.confirmationPassword ? 'true' : 'false'}
 							aria-describedby={`${confirmPasswordId}-error ${confirmPasswordId}-hint`}
