@@ -6002,5 +6002,7 @@
   "Filter_by_room": "Filter by room type",
   "Filter_by_visibility": "Filter by visibility",
   "Registration_status": "Registration status",
+  "Pending": "Pending",
+  "Pending_action": "Pending action",
   "Theme_Appearence": "Theme Appearence"
 }

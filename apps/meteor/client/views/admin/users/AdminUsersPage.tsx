@@ -68,17 +68,20 @@ const UsersPage = (): ReactElement => {
 						<Tabs.Item selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
 							{t('All')}
 						</Tabs.Item>
-						<Tabs.Item selected={tab === 'tab-invited'} onClick={() => setTab('tab-invited')}>
-							{t('Invited')}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'tab-new'} onClick={() => setTab('tab-new')}>
-							{t('New_users')}
+						<Tabs.Item selected={tab === 'tab-pending'} onClick={() => setTab('tab-pending')}>
+							{t('Pending')}
 						</Tabs.Item>
 						<Tabs.Item selected={tab === 'tab-active'} onClick={() => setTab('tab-active')}>
 							{t('Active')}
 						</Tabs.Item>
 						<Tabs.Item selected={tab === 'tab-deactivated'} onClick={() => setTab('tab-deactivated')}>
 							{t('Deactivated')}
+						</Tabs.Item>
+						<Tabs.Item selected={tab === 'tab-invited'} onClick={() => setTab('tab-invited')}>
+							{t('Invited')}
+						</Tabs.Item>
+						<Tabs.Item selected={tab === 'tab-new'} onClick={() => setTab('tab-new')}>
+							{t('New_users')}
 						</Tabs.Item>
 					</Tabs>
 					<UsersTable reload={reload} />
