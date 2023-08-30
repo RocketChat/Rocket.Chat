@@ -57,7 +57,7 @@ export class AccountProfile {
 	}
 
 	get tokenAddedModal(): Locator {
-		return this.page.locator("//div[text()='Personal Access Token successfully generated']");
+		return this.page.locator('role=dialog[name="Personal Access Token successfully generated"]');
 	}
 
 	tokenInTable(name: string): Locator {
