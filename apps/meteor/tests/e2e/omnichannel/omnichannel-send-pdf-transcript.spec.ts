@@ -81,7 +81,7 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
             await agent.poHomeChannel.transcript.contactCenter.click();
             await agent.poHomeChannel.transcript.contactCenterChats.click();
             await agent.poHomeChannel.transcript.contactCenterSearch.type(newUser.name);
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            await page.waitForTimeout(3000);
             await agent.poHomeChannel.transcript.firstRow.click();
             await agent.poHomeChannel.transcript.viewFullConversation.click();
             await agent.poHomeChannel.content.btnSendTranscript.click();
