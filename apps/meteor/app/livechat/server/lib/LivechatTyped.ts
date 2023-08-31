@@ -606,8 +606,8 @@ class LivechatClass {
 			userId = existingUser._id;
 			// Don't change token when matching by phone number, use current visitor token
 			(updateUser.$set as Mutable<UpdateUserType['$set']>).token = existingUser.token;
-		} else if (email && (existingUser = await LivechatVisitors.findOneGuestByEmailAddress(email))) {
-			Livechat.logger.debug('Found matching user by email');
+		} else if (email && (existingUser = await LivechatVisitors.findOneGuestByEmailAddress(email)) && existingUser.name === name) {
+			Livechat.logger.debug('Found matching user by email and name');
 			userId = existingUser._id;
 		} else {
 			Livechat.logger.debug(`No matches found. Attempting to create new user with token ${token}`);
