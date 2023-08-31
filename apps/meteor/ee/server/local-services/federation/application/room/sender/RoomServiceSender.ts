@@ -230,6 +230,10 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		const externalRoomId = await this.bridge.createRoom(federatedInviterUser.getExternalId(), internalRoom.t, roomName, internalRoom.topic);
 
 		await this.internalRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoom._id, externalRoomId);
+		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
+			internalRoom._id,
+			this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
+		);
 	}
 
 	private async inviteUserToAFederatedRoom(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {

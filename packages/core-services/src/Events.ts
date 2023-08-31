@@ -30,6 +30,7 @@ import type {
 	ICalendarNotification,
 	AtLeast,
 	ILivechatInquiryRecord,
+	Username,
 	ILivechatAgent,
 	IBanner,
 } from '@rocket.chat/core-typings';
@@ -91,6 +92,19 @@ export type EventSignatures = {
 	'permission.changed'(data: { clientAction: ClientAction; data: any }): void;
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
 	'room.avatarUpdate'(room: Pick<IRoom, '_id' | 'avatarETag'>): void;
+	'room.afterUserLeft'(user: IUser, room: IRoom): void;
+	'room.afterRemoveUserFromRoom'(data: { removedUser: IUser; userWhoRemoved: IUser }, room: IRoom | undefined): void;
+	'room.afterSetReaction'(message: IMessage, data: { user: IUser; reaction: string }): void;
+	'room.afterUnsetReaction'(message: IMessage, data: { user: IUser; reaction: string; oldMessage: IMessage }): void;
+	'room.afterDeleteMessage'(message: IMessage, room: IRoom): void;
+	'room.afterSaveMessage'(message: IMessage, room: IRoom): void;
+	'room.afterRoomNameChange'(params: { rid: string; name: string; oldName: string }): void;
+	'room.afterRoomTopicChange'(params: { rid: string; topic: string }): void;
+	'room.afterCreateFederatedRoom'(room: IRoom, params: { owner: IUser; originalMemberList: string[] }): void;
+	'room.onAddUsersToAFederatedRoom'(params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom): void;
+	'room.onAddUserToARoom'(params: { user: Pick<IUser, '_id' | 'username'>; inviter?: Pick<IUser, '_id' | 'username'> }, room: IRoom): void;
+	'room.afterCreateDirectMessageRoom'(room: IRoom, params: { members: IUser[]; creatorId: IUser['_id'] }): void;
+	'room.beforeCreateDirectMessageRoom'(members: IUser[] | string[]): void;
 	'setting'(data: { action: string; setting: Partial<ISetting> }): void;
 	'stream'([streamer, eventName, payload]: [string, string, any[]]): void;
 	'subscription'(data: { action: string; subscription: Partial<ISubscription> }): void;
@@ -107,6 +121,8 @@ export type EventSignatures = {
 	}): void;
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
 	'user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
+	'federated-user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
+	'federated-room.listen-typing-events'(roomId: string): void;
 	'user.video-conference'(data: {
 		userId: IUser['_id'];
 		action: string;

@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Integrations, Rooms, Subscriptions } from '@rocket.chat/models';
@@ -75,5 +75,6 @@ export async function saveRoomName(
 		await Message.saveSystemMessage('r', rid, displayName, user);
 	}
 	await callbacks.run('afterRoomNameChange', { rid, name: displayName, oldName: room.name });
+	void api.broadcast('room.afterRoomNameChange', { rid, name: displayName, oldName: room.name || '' });
 	return displayName;
 }

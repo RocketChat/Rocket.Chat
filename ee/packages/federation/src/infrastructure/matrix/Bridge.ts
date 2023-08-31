@@ -10,8 +10,8 @@ import type {
 	IFederationPublicRoomsResult,
 	IFederationSearchPublicRoomsParams,
 } from '../../domain/IFederationBridge';
-// import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
 import type { RocketChatSettingsAdapter } from '../rocket-chat/adapters/Settings';
+import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
 import { convertEmojisFromRCFormatToMatrixFormat } from './converters/room/MessageReceiver';
 import { formatExternalUserIdToInternalUsernameFormat } from './converters/room/RoomReceiver';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './converters/room/to-internal-parser-formatter';
@@ -48,11 +48,11 @@ export class MatrixBridge implements IFederationBridge {
 			await this.createInstance();
 
 			if (!this.isRunning) {
-				await this.bridgeInstance.run(this.internalSettings.getBridgePort());
+				await this.bridgeInstance.run(await this.internalSettings.getBridgePort());
 				this.isRunning = true;
 			}
 		} catch (err) {
-			// federationBridgeLogger.error({ msg: 'Failed to initialize the matrix-appservice-bridge.', err });
+			federationBridgeLogger.error({ msg: 'Failed to initialize the matrix-appservice-bridge.', err });
 		} finally {
 			this.isUpdatingBridgeStatus = false;
 		}
@@ -231,7 +231,7 @@ export class MatrixBridge implements IFederationBridge {
 						await toExternalMessageFormat({
 							message: message.msg,
 							externalRoomId,
-							homeServerDomain: this.internalSettings.getHomeServerDomain(),
+							homeServerDomain: await this.internalSettings.getHomeServerDomain(),
 						}),
 					),
 					format: 'org.matrix.custom.html',
@@ -255,7 +255,7 @@ export class MatrixBridge implements IFederationBridge {
 			eventToReplyTo,
 			originalEventSender,
 			message: this.escapeEmojis(replyMessage),
-			homeServerDomain: this.internalSettings.getHomeServerDomain(),
+			homeServerDomain: await this.internalSettings.getHomeServerDomain(),
 		});
 		const messageId = await this.bridgeInstance
 			.getIntent(externalUserId)
@@ -285,27 +285,27 @@ export class MatrixBridge implements IFederationBridge {
 		return response.body as unknown as ReadableStream;
 	}
 
-	public isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean {
-		const userDomain = this.extractHomeserverOrigin(externalUserId);
+	public isUserIdFromTheSameHomeserver(externalUserId: string, domain: string, homeserverDomain: string): boolean {
+		const userDomain = this.extractHomeserverOrigin(externalUserId, homeserverDomain);
 
 		return userDomain === domain;
 	}
 
-	public extractHomeserverOrigin(externalUserId: string): string {
-		return externalUserId.includes(':') ? externalUserId.split(':').pop() || '' : this.internalSettings.getHomeServerDomain();
+	public extractHomeserverOrigin(externalUserId: string, homeserverDomain: string): string {
+		return externalUserId.includes(':') ? externalUserId.split(':').pop() || '' : homeserverDomain;
 	}
 
-	public isRoomFromTheSameHomeserver(externalRoomId: string, domain: string): boolean {
-		return this.isUserIdFromTheSameHomeserver(externalRoomId, domain);
+	public isRoomFromTheSameHomeserver(externalRoomId: string, domain: string, homeserverDomain: string): boolean {
+		return this.isUserIdFromTheSameHomeserver(externalRoomId, domain, homeserverDomain);
 	}
 
-	public logFederationStartupInfo(_info?: string): void {
-		// federationBridgeLogger.info(`${info}:
-		// 	id: ${this.internalSettings.getApplicationServiceId()}
-		// 	bridgeUrl: ${this.internalSettings.getBridgeUrl()}
-		// 	homeserverURL: ${this.internalSettings.getHomeServerUrl()}
-		// 	homeserverDomain: ${this.internalSettings.getHomeServerDomain()}
-		// `);
+	public async logFederationStartupInfo(info?: string): Promise<void> {
+		federationBridgeLogger.info(`${info}:
+		id: ${await this.internalSettings.getApplicationServiceId()}
+		bridgeUrl: ${await this.internalSettings.getBridgeUrl()}
+		homeserverURL: ${await this.internalSettings.getHomeServerUrl()}
+		homeserverDomain: ${await this.internalSettings.getHomeServerDomain()}
+		`);
 	}
 
 	public async leaveRoom(externalRoomId: string, externalUserId: string): Promise<void> {
@@ -366,7 +366,7 @@ export class MatrixBridge implements IFederationBridge {
 			await toExternalMessageFormat({
 				message: newMessageText,
 				externalRoomId,
-				homeServerDomain: this.internalSettings.getHomeServerDomain(),
+				homeServerDomain: await this.internalSettings.getHomeServerDomain(),
 			}),
 		);
 
@@ -522,16 +522,16 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	protected async createInstance(): Promise<void> {
-		// federationBridgeLogger.info('Performing Dynamic Import of matrix-appservice-bridge');
+		federationBridgeLogger.info('Performing Dynamic Import of matrix-appservice-bridge');
 
 		// Dynamic import to prevent Rocket.Chat from loading the module until needed and then handle if that fails
 		const { Bridge, AppServiceRegistration, MatrixUser } = await import('@rocket.chat/forked-matrix-appservice-bridge');
 		MatrixUserInstance = MatrixUser;
-		const registrationFile = this.internalSettings.generateRegistrationFileObject();
+		const registrationFile = await this.internalSettings.generateRegistrationFileObject();
 
 		this.bridgeInstance = new Bridge({
-			homeserverUrl: this.internalSettings.getHomeServerUrl(),
-			domain: this.internalSettings.getHomeServerDomain(),
+			homeserverUrl: await this.internalSettings.getHomeServerUrl(),
+			domain: await this.internalSettings.getHomeServerDomain(),
 			registration: AppServiceRegistration.fromObject(this.convertRegistrationFileToMatrixFormat(registrationFile)),
 			disableStores: true,
 			controller: {
@@ -542,7 +542,7 @@ export class MatrixBridge implements IFederationBridge {
 				onLog: (line, isError) => {
 					console.log(line, isError);
 				},
-				...(this.internalSettings.generateRegistrationFileObject().enableEphemeralEvents
+				...((await this.internalSettings.generateRegistrationFileObject()).enableEphemeralEvents
 					? {
 							onEphemeralEvent: (request) => {
 								const event = request.getData() as unknown as AbstractMatrixEvent;

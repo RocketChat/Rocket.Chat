@@ -23,6 +23,5 @@
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	],
-	"type": "module"
+	]
 }
