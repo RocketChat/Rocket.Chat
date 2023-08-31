@@ -18,6 +18,8 @@ import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingInt
 
 const DISABLE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.DISABLE_INTEGRATION_SCRIPTS).toLowerCase());
 
+const DISABLE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.DISABLE_INTEGRATION_SCRIPTS).toLowerCase());
+
 export const forbiddenModelMethods = ['registerModel', 'getCollectionName'];
 
 const compiledScripts = {};
