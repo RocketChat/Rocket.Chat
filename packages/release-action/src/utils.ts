@@ -8,8 +8,6 @@ import unified from 'unified';
 
 import { getAppsEngineVersion, getMongoVersion, getNodeNpmVersions } from './getMetadata';
 
-import { getAppsEngineVersion, getMongoVersion, getNodeNpmVersions } from './getMetadata';
-
 export const BumpLevels = {
 	dep: 0,
 	patch: 1,
