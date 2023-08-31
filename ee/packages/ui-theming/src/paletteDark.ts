@@ -3,9 +3,9 @@ export const palette = [
 		category: 'Stroke',
 		description: "Use as component's outline, stroke, dividers",
 		list: [
-			{ name: 'stroke-extra-light', token: '', color: '#2F343D' },
-			{ name: 'stroke-light', token: '', color: '#333842' },
-			{ name: 'stroke-medium', token: '', color: '#404754' },
+			{ name: 'stroke-extra-light', token: '', color: '#333842' },
+			{ name: 'stroke-light', token: '', color: '#404754' },
+			{ name: 'stroke-medium', token: '', color: '#4B5362' },
 			{ name: 'stroke-dark', token: 'N600', color: '#9EA2A8' },
 			{ name: 'stroke-extra-dark', token: 'N400', color: '#CBCED1' },
 			{ name: 'stroke-extra-light-highlight', token: '', color: '#87CBFC' },
