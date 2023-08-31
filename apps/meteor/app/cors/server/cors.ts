@@ -79,7 +79,7 @@ WebApp.rawConnectHandlers.use((_req: http.IncomingMessage, res: http.ServerRespo
 const _staticFilesMiddleware = WebAppInternals.staticFilesMiddleware;
 
 // @ts-expect-error - accessing internal property of webapp
-WebAppInternals._staticFilesMiddleware = function (
+WebAppInternals.staticFilesMiddleware = function (
 	staticFiles: StaticFiles,
 	req: http.IncomingMessage,
 	res: http.ServerResponse,
