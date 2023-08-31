@@ -3,6 +3,7 @@ import { Settings, ImportData, Imports } from '@rocket.chat/models';
 import AdmZip from 'adm-zip';
 
 import { Selection, SelectionChannel, SelectionUser } from '..';
+import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils/lib/i18n';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterProgressStep';
@@ -167,6 +168,8 @@ export class Base {
 				await this.applySettingValues({});
 
 				await this.updateProgress(ProgressStep.IMPORTING_USERS);
+				const usersToImport = importSelection.users.filter((user) => user.do_import);
+				await callbacks.run('beforeUserImport', { userCount: usersToImport.length });
 				await this.converter.convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn });
 
 				await this.updateProgress(ProgressStep.IMPORTING_CHANNELS);
