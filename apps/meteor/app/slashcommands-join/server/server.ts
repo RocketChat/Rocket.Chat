@@ -41,7 +41,7 @@ slashCommands.add({
 			throw new Meteor.Error('error-user-already-in-room', 'You are already in the channel', {
 				method: 'slashCommands',
 			});
-		};
+		}
 
 		await Room.join({ room, user: { _id: userId } });
 	},

@@ -130,21 +130,21 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	}
 
 	// joinDiscussionOnMessage
-	private async joinDiscussionOnMessage({ message, room, user }: { message: IMessage; room: IRoom; user: IUser }) {
-		// abort if room is not a discussion
-		if (!room.prid) {
-			return;
-		}
+	// private async joinDiscussionOnMessage({ message, room, user }: { message: IMessage; room: IRoom; user: IUser }) {
+	// 	// abort if room is not a discussion
+	// 	if (!room.prid) {
+	// 		return;
+	// 	}
 
-		// check if user already joined the discussion
-		const sub = await Subscriptions.findOneByRoomIdAndUserId(room._id, message.u._id, {
-			projection: { _id: 1 },
-		});
+	// 	// check if user already joined the discussion
+	// 	const sub = await Subscriptions.findOneByRoomIdAndUserId(room._id, message.u._id, {
+	// 		projection: { _id: 1 },
+	// 	});
 
-		if (sub) {
-			return;
-		}
+	// 	if (sub) {
+	// 		return;
+	// 	}
 
-		await Room.join({ room, user });
-	}
+	// 	await Room.join({ room, user });
+	// }
 }
