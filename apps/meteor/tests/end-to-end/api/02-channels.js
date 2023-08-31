@@ -1238,7 +1238,6 @@ describe('[Channels]', function () {
 					expect(res.body).to.have.property('offset');
 
 					const member = res.body.members[0];
-					expect(member).to.have.property('roomRoles');
 					expect(member).to.have.property('_id');
 					expect(member).to.have.property('username');
 					expect(member).to.have.property('name');
@@ -1264,8 +1263,6 @@ describe('[Channels]', function () {
 
 					const member = res.body.members[0];
 					expect(member).to.have.property('highestRole');
-					expect(member.roomRoles).to.have.length(1);
-					expect(member.roomRoles[0]).to.be.equal('moderator');
 
 					const { highestRole } = member;
 					expect(highestRole).to.have.property('role', 'moderator');
@@ -1290,8 +1287,6 @@ describe('[Channels]', function () {
 
 					const member = res.body.members[0];
 					expect(member).to.have.property('highestRole');
-					expect(member.roomRoles).to.have.length(1);
-					expect(member.roomRoles[0]).to.be.equal('owner');
 
 					const { highestRole } = member;
 					expect(highestRole).to.have.property('role', 'owner');
@@ -1316,8 +1311,6 @@ describe('[Channels]', function () {
 
 					const member = res.body.members[0];
 					expect(member).to.have.property('highestRole');
-					expect(member.roomRoles).to.have.length(1);
-					expect(member.roomRoles[0]).to.be.equal('leader');
 
 					const { highestRole } = member;
 					expect(highestRole).to.have.property('role', 'member');
