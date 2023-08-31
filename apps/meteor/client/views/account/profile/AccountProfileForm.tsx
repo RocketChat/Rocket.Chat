@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, PasswordInput, Button } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
+import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
 	useToastMessageDispatch,
@@ -91,6 +91,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		}
 	};
 
+	const passwordIsValid = useValidatePassword(password);
+
 	// FIXME: replace to endpoint
 	const updateOwnBasicInfo = useMethod('saveUserProfile');
 
@@ -128,6 +130,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	const emailId = useUniqueId();
 	const passwordId = useUniqueId();
 	const confirmPasswordId = useUniqueId();
+	const passwordVerifierId = useUniqueId();
 
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
@@ -292,13 +295,23 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					<Field.Row>
 						<PasswordInput
 							id={passwordId}
-							{...register('password')}
+							{...register('password', {
+								validate: () => (!passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
+							})}
 							error={errors.password?.message}
 							flexGrow={1}
 							addon={<Icon name='key' size='x20' />}
 							disabled={!allowPasswordChange}
+							aria-describedby={passwordVerifierId}
+							aria-invalid={errors.password ? 'true' : 'false'}
 						/>
 					</Field.Row>
+					{errors?.password && (
+						<Field.Error aria-live='assertive' id={`${passwordId}-error`}>
+							{errors.password.message}
+						</Field.Error>
+					)}
+					{allowPasswordChange && <PasswordVerifier password={password} id={passwordVerifierId} />}
 				</Field>
 				<Field>
 					<Field.Label htmlFor={confirmPasswordId}>{t('Confirm_password')}</Field.Label>
@@ -311,7 +324,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							error={errors.confirmationPassword?.message}
 							flexGrow={1}
 							addon={<Icon name='key' size='x20' />}
-							disabled={!allowPasswordChange}
+							disabled={!allowPasswordChange || !passwordIsValid}
 							aria-required={password !== '' ? 'true' : 'false'}
 							aria-invalid={errors.confirmationPassword ? 'true' : 'false'}
 							aria-describedby={`${confirmPasswordId}-error ${confirmPasswordId}-hint`}
@@ -323,7 +336,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							{errors.confirmationPassword.message}
 						</Field.Error>
 					)}
-					{allowPasswordChange && <PasswordVerifier password={password} />}
 				</Field>
 				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 			</FieldGroup>

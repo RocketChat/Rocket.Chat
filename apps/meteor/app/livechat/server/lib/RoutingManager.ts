@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
@@ -35,7 +35,7 @@ type Routing = {
 	methods: Record<string, IRoutingMethod>;
 	startQueue(): void;
 	isMethodSet(): boolean;
-	setMethodNameAndStartQueue(name: string): void;
+	setMethodNameAndStartQueue(name: string): Promise<void>;
 	registerMethod(name: string, Method: IRoutingMethodConstructor): void;
 	getMethod(): IRoutingMethod;
 	getConfig(): RoutingMethodConfig | undefined;
@@ -73,7 +73,7 @@ export const RoutingManager: Routing = {
 		return !!this.methodName;
 	},
 
-	setMethodNameAndStartQueue(name) {
+	async setMethodNameAndStartQueue(name) {
 		logger.debug(`Changing default routing method from ${this.methodName} to ${name}`);
 		if (!this.methods[name]) {
 			logger.warn(`Cannot change routing method to ${name}. Selected Routing method does not exists. Defaulting to Manual_Selection`);
@@ -82,7 +82,7 @@ export const RoutingManager: Routing = {
 			this.methodName = name;
 		}
 
-		this.startQueue();
+		void (await Omnichannel.getQueueWorker()).shouldStart();
 	},
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention
