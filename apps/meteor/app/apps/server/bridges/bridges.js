@@ -15,6 +15,7 @@ import { AppMessageBridge } from './messages';
 import { AppModerationBridge } from './moderation';
 import { AppOAuthAppsBridge } from './oauthApps';
 import { AppPersistenceBridge } from './persistence';
+import { AppRoleBridge } from './roles';
 import { AppRoomBridge } from './rooms';
 import { AppSchedulerBridge } from './scheduler';
 import { AppSettingBridge } from './settings';
@@ -51,6 +52,7 @@ export class RealAppBridges extends AppBridges {
 		this._internalFedBridge = new AppInternalFederationBridge();
 		this._moderationBridge = new AppModerationBridge(orch);
 		this._threadBridge = new AppThreadBridge(orch);
+		this._roleBridge = new AppRoleBridge(orch);
 	}
 
 	getCommandBridge() {
@@ -143,5 +145,9 @@ export class RealAppBridges extends AppBridges {
 
 	getModerationBridge() {
 		return this._moderationBridge;
+	}
+
+	getRoleBridge() {
+		return this._roleBridge;
 	}
 }

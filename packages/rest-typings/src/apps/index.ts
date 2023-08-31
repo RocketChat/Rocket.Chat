@@ -60,7 +60,7 @@ export type AppsEndpoints = {
 						Setting_Description: string;
 					};
 				};
-			};
+			}[];
 		};
 	};
 
@@ -91,7 +91,12 @@ export type AppsEndpoints = {
 	'/apps/:id/languages': {
 		GET: () => {
 			languages: {
-				[key: string]: object;
+				[key: string]: {
+					Params: string;
+					Description: string;
+					Setting_Name: string;
+					Setting_Description: string;
+				};
 			};
 		};
 	};
