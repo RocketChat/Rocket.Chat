@@ -1,7 +1,8 @@
 import type { IMessageService } from '@rocket.chat/core-services';
 import { ServiceClassInternal, Room } from '@rocket.chat/core-services';
 import type { IMessage, MessageTypesValues, IUser, IRoom } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Messages, Subscriptions } from '@rocket.chat/models';
+import Filter from 'bad-words';
 
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -9,6 +10,44 @@ import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
+
+class BadWordsFilter {
+	private static instance: Filter;
+
+	private constructor() {
+		// no op
+	}
+
+	static configure(badWordsList?: string, goodWordsList?: string) {
+		const options = {
+			list:
+				badWordsList
+					?.split(',')
+					.map((word) => word.trim())
+					.filter(Boolean) || [],
+			// library definition does not allow optional definition
+			exclude: undefined,
+			splitRegex: undefined,
+			placeHolder: undefined,
+			regex: undefined,
+			replaceRegex: undefined,
+			emptyList: undefined,
+		};
+
+		BadWordsFilter.instance = new Filter(options);
+
+		if (goodWordsList?.length) {
+			BadWordsFilter.instance.removeWords(...goodWordsList.split(',').map((word) => word.trim()));
+		}
+	}
+
+	static getFilter() {
+		if (!BadWordsFilter.instance) {
+			throw new Error('BadWordsFilter not configured');
+		}
+		return BadWordsFilter.instance;
+	}
+}
 
 export class MessageService extends ServiceClassInternal implements IMessageService {
 	protected name = 'message';
@@ -56,9 +95,36 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		return result.insertedId;
 	}
 
-	async beforeSave({ message, room, user }: { message: IMessage; room: IRoom; user: IUser }): Promise<IMessage> {
+	async beforeSave({ message, room: _room, user: _user }: { message: IMessage; room: IRoom; user: IUser }): Promise<IMessage> {
+		// TODO move BadWordsFilter.configure to constructor and watch for settings changes
+		const badWordsList = settings.get<string>('Message_BadWordsFilterList');
+		const whiteList = settings.get<string>('Message_BadWordsWhitelist');
+		BadWordsFilter.configure(badWordsList, whiteList);
+
 		// TODO looks like this one was not being used
 		// await this.joinDiscussionOnMessage({ message, room, user });
+
+		message = await this.filterBadWords(message);
+
+		return message;
+	}
+
+	private async filterBadWords(message: IMessage): Promise<IMessage> {
+		if (!message.msg) {
+			return message;
+		}
+
+		if (!settings.get('Message_AllowBadWordsFilter')) {
+			return message;
+		}
+
+		try {
+			const filter = BadWordsFilter.getFilter();
+
+			message.msg = filter.clean(message.msg);
+		} catch (error) {
+			// ignore
+		}
 
 		return message;
 	}
