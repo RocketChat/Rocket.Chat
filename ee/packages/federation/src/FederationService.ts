@@ -652,7 +652,7 @@ export class FederationService extends ServiceClass implements IFederationServic
 		return false;
 	}
 
-	public async verifyMatrixIds(_matrixIds: string[]): Promise<Map<string, string>> {
-		return new Map<string, string>();
+	public async verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>> {
+		return this.bridge.verifyInviteeIds(matrixIds);
 	}
 }
