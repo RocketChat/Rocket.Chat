@@ -1,7 +1,7 @@
 import type { IMessageService } from '@rocket.chat/core-services';
-import { ServiceClassInternal, Room } from '@rocket.chat/core-services';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IMessage, MessageTypesValues, IUser, IRoom } from '@rocket.chat/core-typings';
-import { Messages, Subscriptions } from '@rocket.chat/models';
+import { Messages } from '@rocket.chat/models';
 import Filter from 'bad-words';
 
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
