@@ -10,8 +10,8 @@ import { createUser, deleteUser } from '../../data/users.helper';
 describe('[Failed Login Attempts]', function () {
 	this.retries(0);
 
-	const maxAttemptsByUser = 3;
-	const maxAttemptsByIp = 6;
+	const maxAttemptsByUser = 1;
+	const maxAttemptsByIp = 2;
 	const userBlockSeconds = 3;
 	const ipBlockSeconds = 8;
 
