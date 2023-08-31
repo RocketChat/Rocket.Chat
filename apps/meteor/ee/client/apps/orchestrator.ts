@@ -2,7 +2,6 @@ import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManag
 import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage/IAppStorageItem';
 import type { AppScreenshot, AppRequestFilter, Serialized, AppRequestsStats, PaginatedAppRequests } from '@rocket.chat/core-typings';
 
 import { hasAtLeastOnePermission } from '../../../app/authorization/client';
@@ -11,8 +10,6 @@ import { dispatchToastMessage } from '../../../client/lib/toast';
 import type { App } from '../../../client/views/marketplace/types';
 import type { IAppLanguage, IAppExternalURL, ICategory } from './@types/IOrchestrator';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
-import { AppWebsocketReceiver } from './communication';
-import { handleI18nResources } from './i18n';
 
 class AppClientOrchestrator {
 	private _appClientUIHost: RealAppsEngineUIHost;
@@ -20,8 +17,6 @@ class AppClientOrchestrator {
 	private _manager: AppClientManager;
 
 	private _isLoaded: boolean;
-
-	private _ws: AppWebsocketReceiver;
 
 	constructor() {
 		this._appClientUIHost = new RealAppsEngineUIHost();
@@ -31,15 +26,8 @@ class AppClientOrchestrator {
 
 	public async load(): Promise<void> {
 		if (!this._isLoaded) {
-			this._ws = new AppWebsocketReceiver();
 			this._isLoaded = true;
 		}
-
-		await handleI18nResources();
-	}
-
-	public getWsListener(): AppWebsocketReceiver {
-		return this._ws;
 	}
 
 	public getAppClientManager(): AppClientManager {
@@ -99,7 +87,7 @@ class AppClientOrchestrator {
 		return apps;
 	}
 
-	public async getAppsLanguages(): Promise<IAppLanguage> {
+	public async getAppsLanguages(): Promise<IAppLanguage[]> {
 		const { apps } = await sdk.rest.get('/apps/languages');
 		return apps;
 	}
@@ -141,7 +129,7 @@ class AppClientOrchestrator {
 		return apis;
 	}
 
-	public async getAppLanguages(appId: string): Promise<IAppStorageItem['languageContent']> {
+	public async getAppLanguages(appId: string) {
 		const { languages } = await sdk.rest.get(`/apps/${appId}/languages`);
 		return languages;
 	}
