@@ -1,3 +1,4 @@
+import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	Accordion,
 	Box,
@@ -14,9 +15,9 @@ import {
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import { useLocalStorage, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetModal, useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import Page from '../../../components/Page';
@@ -39,8 +40,19 @@ const AccessibilityPage = () => {
 	const { themeAppearence } = preferencesValues;
 	const [, setPrevTheme] = useLocalStorage('prevTheme', themeAppearence);
 	const createFontStyleElement = useCreateFontStyleElement();
+	const displayRolesEnabled = useSetting('UI_DisplayRoles');
+
+	const timeFormatOptions = useMemo(
+		(): SelectOption[] => [
+			['0', t('Default')],
+			['1', t('12_Hour')],
+			['2', t('24_Hour')],
+		],
+		[t],
+	);
 
 	const fontSizeId = useUniqueId();
+	const clockModeId = useUniqueId();
 	const hideUsernamesId = useUniqueId();
 	const hideRolesId = useUniqueId();
 
@@ -69,7 +81,7 @@ const AccessibilityPage = () => {
 		},
 	});
 
-	const handleSaveData = async (formData: AccessibilityPreferencesData) => {
+	const handleSaveData = (formData: AccessibilityPreferencesData) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		setPreferencesAction.mutateAsync({ data });
 	};
@@ -143,6 +155,18 @@ const AccessibilityPage = () => {
 									<Field.Description mb={12}>{t('Adjustable_font_size_description')}</Field.Description>
 								</Field>
 								<Field>
+									<Field.Label htmlFor={clockModeId}>{t('Message_TimeFormat')}</Field.Label>
+									<Field.Row>
+										<Controller
+											name='clockMode'
+											control={control}
+											render={({ field: { value, onChange } }) => (
+												<Select id={clockModeId} value={`${value}`} onChange={onChange} options={timeFormatOptions} />
+											)}
+										/>
+									</Field.Row>
+								</Field>
+								<Field>
 									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 										<FieldLabel htmlFor={hideUsernamesId}>{t('Hide_usernames')}</FieldLabel>
 										<FieldRow>
@@ -156,20 +180,22 @@ const AccessibilityPage = () => {
 										</FieldRow>
 									</Box>
 								</Field>
-								<Field>
-									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-										<FieldLabel htmlFor={hideRolesId}>{t('Hide_roles')}</FieldLabel>
-										<FieldRow>
-											<Controller
-												name='hideRoles'
-												control={control}
-												render={({ field: { value, onChange, ref } }) => (
-													<ToggleSwitch id={hideRolesId} ref={ref} checked={value} onChange={onChange} />
-												)}
-											/>
-										</FieldRow>
-									</Box>
-								</Field>
+								{displayRolesEnabled && (
+									<Field>
+										<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+											<FieldLabel htmlFor={hideRolesId}>{t('Hide_roles')}</FieldLabel>
+											<FieldRow>
+												<Controller
+													name='hideRoles'
+													control={control}
+													render={({ field: { value, onChange, ref } }) => (
+														<ToggleSwitch id={hideRolesId} ref={ref} checked={value} onChange={onChange} />
+													)}
+												/>
+											</FieldRow>
+										</Box>
+									</Field>
+								)}
 							</FieldGroup>
 						</Accordion.Item>
 					</Accordion>
