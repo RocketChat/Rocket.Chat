@@ -7,6 +7,8 @@ import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
 import { test, expect } from '../utils/test';
 
+test.skip(!IS_EE, 'Export transcript as PDF > Enterprie Only');
+
 test.describe('omnichannel- export chat transcript as PDF', () => {
     let poLiveChat: OmnichannelLiveChat;
     let newUser: { email: string; name: string };
@@ -53,14 +55,13 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
             test.skip(!IS_EE, 'Enterprise Only');
             await agent.poHomeChannel.content.btnSendTranscript.click();
             await agent.poHomeChannel.content.btnSendTranscriptAsPDF.hover();
-            await expect(agent.poHomeChannel.content.btnSendTranscriptAsPDF).toHaveAttribute('aria-disabled', 'true');
+            await expect(agent.poHomeChannel.content.btnSendTranscriptAsPDF).toBeDisabled();
         });
 
         await test.step('Expect chat to be closed', async () => {
            test.skip(!IS_EE, 'Enterprise Only');
             await agent.poHomeChannel.content.btnCloseChat.click();
             await agent.poHomeChannel.content.inputModalClosingComment.type('any_comment');
-            // await expect(agent.poHomeChannel.transcript.checkboxPDF).toHaveAttribute('aria-hidden', 'true');
             await agent.poHomeChannel.transcript.checkboxPDF.click();
             await agent.poHomeChannel.content.btnModalConfirm.click();
             await expect(agent.poHomeChannel.toastSuccess).toBeVisible();
@@ -70,7 +71,7 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
         await test.step('Expect to have exported PDF in rocket.cat', async () => {
 
             test.skip(!IS_EE, 'Enterprise Only');
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            awaitpage.waitForTimeout(3000);
             await agent.poHomeChannel.sidenav.openChat('rocket.cat');
             await expect(agent.poHomeChannel.transcript.DownloadedPDF).toBeVisible();
         });
