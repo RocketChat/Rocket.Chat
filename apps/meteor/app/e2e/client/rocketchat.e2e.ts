@@ -466,7 +466,7 @@ class E2E extends Emitter {
 
 		await Promise.all(
 			urls.map(async (url) => {
-				if (!url.includes(Meteor.absoluteUrl())) {
+				if (!url.includes(settings.get('Site_Url'))) {
 					return;
 				}
 

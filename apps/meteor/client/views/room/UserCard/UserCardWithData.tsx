@@ -71,7 +71,7 @@ const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWith
 	);
 
 	const menu = useMemo(() => {
-		if (!menuOptions) {
+		if (!menuOptions?.length) {
 			return null;
 		}
 
