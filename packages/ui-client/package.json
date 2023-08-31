@@ -21,6 +21,7 @@
 		"@storybook/react": "~6.5.16",
 		"@storybook/testing-library": "~0.0.13",
 		"@swc/jest": "^0.2.26",
+		"@testing-library/jest-dom": "~5.16.5",
 		"@testing-library/react": "^12.1.2",
 		"@testing-library/react-hooks": "^8.0.1",
 		"@types/babel__core": "~7.20.1",
