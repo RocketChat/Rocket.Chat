@@ -326,6 +326,8 @@ export class UsersRaw extends BaseRaw {
 		searchTerm,
 		rid,
 		searchFields,
+		ownersIds,
+		moderatorsIds,
 		options = {},
 		extraQuery = [],
 		{ startsWith = false, endsWith = false } = {},
@@ -334,19 +336,20 @@ export class UsersRaw extends BaseRaw {
 		const termRegex = new RegExp(regexString, 'i');
 
 		const orStmt = (searchFields || []).map((el) => ({ [el.trim()]: termRegex }));
+		const userSearchConditions = [
+			{
+				active: true,
+				__rooms: rid,
+				username: { $exists: true },
+				// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
+				...(searchTerm && orStmt.length && { $or: orStmt }),
+			},
+			...extraQuery,
+		];
 
-		const query = {
-			$and: [
-				{
-					active: true,
-					__rooms: rid,
-					username: { $exists: true },
-					// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
-					...(searchTerm && orStmt.length && { $or: orStmt }),
-				},
-				...extraQuery,
-			],
-		};
+		const ownerQuery = { $and: [...userSearchConditions, { _id: { $in: ownersIds } }] };
+		const moderatorQuery = { $and: [...userSearchConditions, { _id: { $in: moderatorsIds } }] };
+		const memberQuery = { $and: [...userSearchConditions, { _id: { $nin: [...ownersIds, ...moderatorsIds] } }] };
 
 		const skip =
 			options.skip !== 0
@@ -369,42 +372,27 @@ export class UsersRaw extends BaseRaw {
 		return this.col.aggregate(
 			[
 				{
-					$match: query,
-				},
-				{
-					$lookup: {
-						from: 'rocketchat_subscription',
-						let: { id: '$_id' },
-						as: 'sub',
-						pipeline: [
-							{
-								$match: {
-									$expr: {
-										$and: [{ $eq: ['$u._id', '$$id'] }, { $eq: ['$rid', rid] }],
-									},
-								},
-							},
+					$facet: {
+						owners: [
+							{ $match: ownerQuery },
+							{ $project: options.projection },
+							{ $addFields: { highestRole: { role: 'owner', level: 0 } } },
+						],
+						moderators: [
+							{ $match: moderatorQuery },
+							{ $project: options.projection },
+							{ $addFields: { highestRole: { role: 'moderator', level: 1 } } },
+						],
+						members: [
+							{ $match: memberQuery },
+							{ $project: options.projection },
+							{ $addFields: { highestRole: { role: 'member', level: 2 } } },
 						],
 					},
 				},
-				{ $unwind: '$sub' },
-				{
-					$project: {
-						...options.projection,
-						roomRoles: { $ifNull: ['$sub.roles', []] },
-					},
-				},
-				{
-					$addFields: {
-						highestRole: {
-							$cond: [
-								{ $in: ['owner', '$roomRoles'] },
-								{ role: 'owner', level: 0 },
-								{ $cond: [{ $in: ['moderator', '$roomRoles'] }, { role: 'moderator', level: 1 }, { role: 'member', level: 2 }] },
-							],
-						},
-					},
-				},
+				{ $project: { allMembers: { $concatArrays: ['$owners', '$moderators', '$members'] } } },
+				{ $unwind: '$allMembers' },
+				{ $replaceRoot: { newRoot: '$allMembers' } },
 				{
 					$facet: {
 						members: [

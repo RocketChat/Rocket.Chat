@@ -59,6 +59,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		searchTerm: string,
 		rid: string,
 		searchFields: string[],
+		ownersIds: IUser['_id'][],
+		moderatorsIds: IUser['_id'][],
 		options?: FindOptions<IUser>,
 		extraQuery?: FilterOperators<string>[],
 		params?: { startsWith?: boolean; endsWith?: boolean },

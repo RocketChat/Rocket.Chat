@@ -1,5 +1,5 @@
-import type { IUserWithRoleInfo } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import type { IUserWithRoleInfo, ISubscription } from '@rocket.chat/core-typings';
+import { Users, Subscriptions } from '@rocket.chat/models';
 import type { AggregationCursor, FilterOperators } from 'mongodb';
 
 import { settings } from '../../app/settings/server';
@@ -42,7 +42,13 @@ export async function findUsersOfRoomByHighestRole({
 
 	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 
-	return Users.findPaginatedActiveUsersByRoomIdWithHighestRole(filter, rid, searchFields, options, [
+	const ownersIds = (await Subscriptions.findByRoomIdAndHighestRole(rid, 'owner', { projection: { 'u._id': 1 } }).toArray()).map(
+		(s: ISubscription) => s.u?._id,
+	);
+	const moderatorsIds = (await Subscriptions.findByRoomIdAndHighestRole(rid, 'moderator', { projection: { 'u._id': 1 } }).toArray()).map(
+		(s: ISubscription) => s.u?._id,
+	);
+	return Users.findPaginatedActiveUsersByRoomIdWithHighestRole(filter, rid, searchFields, ownersIds, moderatorsIds, options, [
 		{
 			...(status && { status }),
 		},
