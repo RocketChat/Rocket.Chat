@@ -96,7 +96,7 @@ export class Base {
 		this.reloadCount();
 		const started = Date.now();
 
-		const beforeImportFn = async (data, type) => {
+		const beforeImportFn = async ({ data, dataType: type }) => {
 			if (this.importRecord.valid === false) {
 				this.converter.aborted = true;
 				throw new Error('The import operation is no longer valid.');
@@ -130,7 +130,7 @@ export class Base {
 				}
 			}
 
-			return true;
+			return false;
 		};
 
 		const afterImportFn = async () => {
