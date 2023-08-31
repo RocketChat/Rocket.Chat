@@ -1,7 +1,7 @@
 {
   "name": "@rocket.chat/fuselage-ui-kit",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "UiKit elements for Rocket.Chat Apps built under Fuselage design system",
   "homepage": "https://rocketchat.github.io/Rocket.Chat.Fuselage/",
   "author": {
@@ -46,9 +46,9 @@
     "@rocket.chat/icons": "*",
     "@rocket.chat/prettier-config": "*",
     "@rocket.chat/styled": "*",
-    "@rocket.chat/ui-contexts": "1.0.0",
+    "@rocket.chat/ui-contexts": "1.0.2",
     "@rocket.chat/ui-kit": "*",
-    "@rocket.chat/ui-video-conf": "1.0.0",
+    "@rocket.chat/ui-video-conf": "1.0.2",
     "@tanstack/react-query": "*",
     "react": "*",
     "react-dom": "*"
@@ -85,7 +85,7 @@
     "react-dom": "^17.0.2",
     "rimraf": "^3.0.2",
     "tslib": "^2.5.3",
-    "typescript": "~5.1.6"
+    "typescript": "~5.2.2"
   },
   "dependencies": {
     "@rocket.chat/gazzodown": "workspace:^",
