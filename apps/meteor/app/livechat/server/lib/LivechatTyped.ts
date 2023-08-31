@@ -10,7 +10,7 @@ import type {
 	ILivechatAgent,
 	IMessage,
 } from '@rocket.chat/core-typings';
-import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { OmnichannelSourceType, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
@@ -547,6 +547,7 @@ class LivechatClass {
 		username,
 		connectionData,
 		status = UserStatus.ONLINE,
+		sourceType,
 	}: {
 		id?: string;
 		token: string;
@@ -557,6 +558,7 @@ class LivechatClass {
 		username?: string;
 		connectionData?: any;
 		status?: ILivechatVisitor['status'];
+		sourceType?: IOmnichannelRoom['source']['type'];
 	}) {
 		check(token, String);
 		check(id, Match.Maybe(String));
@@ -606,7 +608,12 @@ class LivechatClass {
 			userId = existingUser._id;
 			// Don't change token when matching by phone number, use current visitor token
 			(updateUser.$set as Mutable<UpdateUserType['$set']>).token = existingUser.token;
-		} else if (email && (existingUser = await LivechatVisitors.findOneGuestByEmailAddress(email)) && existingUser.name === name) {
+		} else if (
+			email &&
+			(existingUser = await LivechatVisitors.findOneGuestByEmailAddress(email)) &&
+			// Refer to getGuestByEmail() in EmailInbox_Incoming.ts for the reason of this condition
+			(sourceType !== OmnichannelSourceType.EMAIL || existingUser.name === name)
+		) {
 			Livechat.logger.debug('Found matching user by email and name');
 			userId = existingUser._id;
 		} else {
