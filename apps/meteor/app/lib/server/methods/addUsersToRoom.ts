@@ -77,8 +77,9 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 	}
 
 	// Validate each user, then add to room
-	if (isRoomFederated(room)) {
+	if (isRoomFederated(room) && user) {
 		await callbacks.run('federation.onAddUsersToARoom', { invitees: data.users, inviter: user }, room);
+		await api.broadcast('room.onAddUsersToAFederatedRoom', { invitees: data.users, inviter: user }, room);
 		return true;
 	}
 

@@ -54,14 +54,14 @@ export class FederationRoomInternalValidator extends AbstractFederationApplicati
 		if (!externalRoom || !inviter) {
 			return;
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isRoomFromTheProxyServer = FederatedRoom.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(externalRoom.getExternalId()),
-			this.internalHomeServerDomain,
+			this.bridge.extractHomeserverOrigin(externalRoom.getExternalId(), internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		const isInviterFromTheProxyServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(inviter.getExternalId()),
-			this.internalHomeServerDomain,
+			this.bridge.extractHomeserverOrigin(inviter.getExternalId(), internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		const fullActionExecutedOnTheRemoteHomeServer = !isRoomFromTheProxyServer && !isInviterFromTheProxyServer;
 		if (fullActionExecutedOnTheRemoteHomeServer) {
@@ -83,10 +83,14 @@ export class FederationRoomInternalValidator extends AbstractFederationApplicati
 			}
 			return user.username || '';
 		});
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const atLeastOneExternalUser =
 			usernames.some(
 				(username) =>
-					!FederatedUser.isOriginalFromTheProxyServer(this.bridge.extractHomeserverOrigin(username), this.internalHomeServerDomain),
+					!FederatedUser.isOriginalFromTheProxyServer(
+						this.bridge.extractHomeserverOrigin(username, internalHomeServerDomain),
+						internalHomeServerDomain,
+					),
 			) || internalUsers.filter((user) => !this.isAddingANewExternalUser(user)).some((user) => isUserFederated(user as IUser));
 		if (atLeastOneExternalUser) {
 			throw new Error('error-this-is-an-ee-feature');

@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, api } from '@rocket.chat/core-services';
 import { Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -25,5 +25,6 @@ export const saveRoomTopic = async function (
 		await Message.saveSystemMessage('room_changed_topic', rid, roomTopic || '', user);
 	}
 	await callbacks.run('afterRoomTopicChange', { rid, topic: roomTopic });
+	void api.broadcast('room.afterRoomTopicChange', { rid, topic: roomTopic || '' });
 	return update;
 };

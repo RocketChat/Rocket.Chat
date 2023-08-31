@@ -1,4 +1,4 @@
-import { Message, Team } from '@rocket.chat/core-services';
+import { Message, Team, api } from '@rocket.chat/core-services';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
@@ -80,6 +80,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 
 	setImmediate(() => {
 		void afterRemoveFromRoomCallback.run({ removedUser, userWhoRemoved: fromUser }, room);
+		void api.broadcast('room.afterRemoveUserFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 	});
 
 	return true;

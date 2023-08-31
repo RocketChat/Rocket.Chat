@@ -1,5 +1,5 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
+import { api, type ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -51,6 +51,7 @@ export async function createDirectRoom(
 		throw new Error('error-direct-message-max-user-exceeded');
 	}
 	await callbacks.run('beforeCreateDirectRoom', members);
+	void api.broadcast('room.beforeCreateDirectMessageRoom', members);
 
 	const membersUsernames: string[] = members
 		.map((member) => {
@@ -160,6 +161,9 @@ export async function createDirectRoom(
 		const insertedRoom = await Rooms.findOneById(rid);
 
 		await callbacks.run('afterCreateDirectRoom', insertedRoom, { members: roomMembers, creatorId: options?.creator });
+		if (insertedRoom && options.creator) {
+			void api.broadcast('room.afterCreateDirectMessageRoom', insertedRoom, { members: roomMembers, creatorId: options?.creator });
+		}
 
 		void Apps.triggerEvent('IPostRoomCreate', insertedRoom);
 	}

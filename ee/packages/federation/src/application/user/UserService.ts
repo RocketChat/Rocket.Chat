@@ -23,8 +23,6 @@ const DEFAULT_SERVERS = [
 ];
 
 export class FederationUserService extends AbstractFederationApplicationService {
-	private readonly availableServers: { name: string; default: boolean; local: boolean }[];
-
 	constructor(
 		protected readonly internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected readonly internalFileAdapter: RocketChatFileAdapter,
@@ -32,9 +30,14 @@ export class FederationUserService extends AbstractFederationApplicationService 
 		protected readonly bridge: IFederationBridge,
 	) {
 		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
-		this.availableServers = [
+	}
+
+	private async getAvailableServers(): Promise<{ name: string; default: boolean; local: boolean }[]> {
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
+
+		return [
 			{
-				name: this.internalHomeServerDomain,
+				name: internalHomeServerDomain,
 				default: true,
 				local: true,
 			},
@@ -45,21 +48,24 @@ export class FederationUserService extends AbstractFederationApplicationService 
 	public async getSearchedServerNamesByInternalUserId(
 		internalUserId: string,
 	): Promise<{ name: string; default: boolean; local: boolean }[]> {
-		if (!this.internalSettingsAdapter.isFederationEnabled()) {
+		if (!(await this.internalSettingsAdapter.isFederationEnabled())) {
 			throw new Error('Federation is disabled');
 		}
 
 		const searchedServersByUser = await this.internalUserAdapter.getSearchedServerNamesByUserId(internalUserId);
 
-		return [...this.availableServers, ...searchedServersByUser.map((server) => ({ name: server, default: false, local: false }))];
+		return [
+			...(await this.getAvailableServers()),
+			...searchedServersByUser.map((server) => ({ name: server, default: false, local: false })),
+		];
 	}
 
 	public async addSearchedServerNameByInternalUserId(internalUserId: string, serverName: string): Promise<void> {
-		if (!this.internalSettingsAdapter.isFederationEnabled()) {
+		if (!(await this.internalSettingsAdapter.isFederationEnabled())) {
 			throw new Error('Federation is disabled');
 		}
 
-		if (this.availableServers.some((server) => server.name === serverName)) {
+		if ((await this.getAvailableServers()).some((server) => server.name === serverName)) {
 			throw new Error('already-a-default-server');
 		}
 
@@ -71,11 +77,11 @@ export class FederationUserService extends AbstractFederationApplicationService 
 	}
 
 	public async removeSearchedServerNameByInternalUserId(internalUserId: string, serverName: string): Promise<void> {
-		if (!this.internalSettingsAdapter.isFederationEnabled()) {
+		if (!(await this.internalSettingsAdapter.isFederationEnabled())) {
 			throw new Error('Federation is disabled');
 		}
 
-		if (this.availableServers.some((server) => server.name === serverName)) {
+		if ((await this.getAvailableServers()).some((server) => server.name === serverName)) {
 			throw new Error('cannot-remove-default-server');
 		}
 

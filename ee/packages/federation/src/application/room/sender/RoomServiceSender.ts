@@ -65,10 +65,10 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		if (!federatedInviterUser || !federatedInviteeUser) {
 			throw new Error('Could not find inviter or invitee user');
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isInviteeFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(rawInviteeId),
-			this.internalHomeServerDomain,
+			this.bridge.extractHomeserverOrigin(rawInviteeId, internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 
 		const internalFederatedRoom = await this.internalRoomAdapter.getDirectMessageFederatedRoomByUserIds([
@@ -87,10 +87,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 				federatedInviteeUser,
 			]);
 			const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
-			await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
-				createdInternalRoomId,
-				this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
-			);
+			await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(createdInternalRoomId);
 		}
 
 		const federatedRoom =
@@ -109,11 +106,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		if (isInviteeFromTheSameHomeServer) {
 			const profile = await this.bridge.getUserProfileInformation(federatedInviteeUser.getExternalId());
 			if (!profile) {
-				await this.bridge.createUser(
-					inviteeUsernameOnly,
-					federatedInviteeUser.getName() || normalizedInviteeId,
-					this.internalHomeServerDomain,
-				);
+				await this.bridge.createUser(inviteeUsernameOnly, federatedInviteeUser.getName() || normalizedInviteeId, internalHomeServerDomain);
 			}
 			await this.bridge.inviteToRoom(
 				federatedRoom.getExternalId(),
@@ -138,10 +131,10 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		if (!federatedUser) {
 			return;
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
-			this.internalHomeServerDomain,
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId(), internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		if (!isUserFromTheSameHomeServer) {
 			return;
@@ -166,10 +159,10 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		if (!byWhom) {
 			return;
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(byWhom.getExternalId()),
-			this.internalHomeServerDomain,
+			this.bridge.extractHomeserverOrigin(byWhom.getExternalId(), internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		if (!isUserFromTheSameHomeServer) {
 			return;
@@ -246,10 +239,10 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		if (!isMessageFromMatrixFederation(internalMessage) || isDeletedMessage(internalMessage)) {
 			return;
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
-			this.internalSettingsAdapter.getHomeServerDomain(),
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId(), internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		if (!isUserFromTheSameHomeServer) {
 			return;
@@ -275,10 +268,10 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		if (!isMessageFromMatrixFederation(internalMessage) || !isEditedMessage(internalMessage) || internalMessage.u._id !== internalUserId) {
 			return;
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
-			this.internalSettingsAdapter.getHomeServerDomain(),
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId(), internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		if (!isUserFromTheSameHomeServer) {
 			return;
@@ -313,10 +306,10 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		if (!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) && !myself) {
 			throw new Error('Federation_Matrix_not_allowed_to_change_owner');
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
-			this.internalSettingsAdapter.getHomeServerDomain(),
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId(), internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		if (!isUserFromTheSameHomeServer) {
 			return;
@@ -354,10 +347,10 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		if (!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) && !myself) {
 			throw new Error('Federation_Matrix_not_allowed_to_change_owner');
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
-			this.internalSettingsAdapter.getHomeServerDomain(),
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId(), internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		if (!isUserFromTheSameHomeServer) {
 			return;
@@ -398,10 +391,10 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		) {
 			throw new Error('Federation_Matrix_not_allowed_to_change_moderator');
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
-			this.internalSettingsAdapter.getHomeServerDomain(),
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId(), internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		if (!isUserFromTheSameHomeServer) {
 			return;
@@ -444,10 +437,10 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		) {
 			throw new Error('Federation_Matrix_not_allowed_to_change_moderator');
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
-			this.internalSettingsAdapter.getHomeServerDomain(),
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId(), internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		if (!isUserFromTheSameHomeServer) {
 			return;
@@ -476,10 +469,10 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		if (!federatedUser) {
 			return;
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isRoomFromTheSameHomeServer = FederatedRoom.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
-			this.internalSettingsAdapter.getHomeServerDomain(),
+			this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId(), internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		if (!isRoomFromTheSameHomeServer) {
 			return;
@@ -505,10 +498,10 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		if (!federatedUser) {
 			return;
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isRoomFromTheSameHomeServer = FederatedRoom.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
-			this.internalSettingsAdapter.getHomeServerDomain(),
+			this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId(), internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 		if (!isRoomFromTheSameHomeServer) {
 			return;
@@ -591,13 +584,20 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		internalInviterId: string,
 		internalRoomId: string,
 	): Promise<void> {
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const localUsers = invitees.filter((user) =>
-			FederatedUser.isOriginalFromTheProxyServer(this.bridge.extractHomeserverOrigin(user.rawInviteeId), this.internalHomeServerDomain),
+			FederatedUser.isOriginalFromTheProxyServer(
+				this.bridge.extractHomeserverOrigin(user.rawInviteeId, internalHomeServerDomain),
+				internalHomeServerDomain,
+			),
 		);
 
 		const externalUsers = invitees.filter(
 			(user) =>
-				!FederatedUser.isOriginalFromTheProxyServer(this.bridge.extractHomeserverOrigin(user.rawInviteeId), this.internalHomeServerDomain),
+				!FederatedUser.isOriginalFromTheProxyServer(
+					this.bridge.extractHomeserverOrigin(user.rawInviteeId, internalHomeServerDomain),
+					internalHomeServerDomain,
+				),
 		);
 
 		for await (const user of [...localUsers, ...externalUsers]) {
@@ -626,13 +626,13 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 			rooms: IFederationPublicRooms[];
 		}>
 	> {
-		if (!this.internalSettingsAdapter.isFederationEnabled()) {
+		if (!(await this.internalSettingsAdapter.isFederationEnabled())) {
 			throw new Error('Federation is disabled');
 		}
-
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const { serverName, roomName, count, pageToken } = roomSearchInputDto;
 		const rooms = await this.bridge.searchPublicRooms({
-			serverName: serverName || this.internalHomeServerDomain,
+			serverName: serverName || internalHomeServerDomain,
 			roomName,
 			limit: count,
 			pageToken,
@@ -640,7 +640,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 
 		return RoomMapper.toSearchPublicRoomsDto(
 			rooms,
-			parseInt(this.internalSettingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms() || '0'),
+			parseInt((await this.internalSettingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms()) || '0'),
 			pageToken,
 		);
 	}
@@ -651,7 +651,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		roomName?: string,
 		pageToken?: string,
 	): Promise<void> {
-		if (!this.internalSettingsAdapter.isFederationEnabled()) {
+		if (!(await this.internalSettingsAdapter.isFederationEnabled())) {
 			throw new Error('Federation is disabled');
 		}
 		await this.internalQueueAdapter.enqueueJob('federation-enterprise.joinExternalPublicRoom', {
@@ -663,7 +663,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 	}
 
 	public async joinExternalPublicRoom(joinExternalPublicRoomInputDto: FederationJoinExternalPublicRoomInputDto): Promise<void> {
-		if (!this.internalSettingsAdapter.isFederationEnabled()) {
+		if (!(await this.internalSettingsAdapter.isFederationEnabled())) {
 			throw new Error('Federation is disabled');
 		}
 
@@ -705,7 +705,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 			if (!room) {
 				throw new Error("Cannot find the room you're trying to join");
 			}
-			return room.num_joined_members <= parseInt(this.internalSettingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms() || '0');
+			return room.num_joined_members <= parseInt((await this.internalSettingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms()) || '0');
 		} catch (error) {
 			throw new Error("Cannot find the room you're trying to join");
 		}
@@ -728,22 +728,24 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 			return;
 		}
 		const internalRoom = await this.internalRoomAdapter.getInternalRoomById(internalRoomId);
-		if (!internalRoom || !internalRoom.name) {
+		if (!internalRoom?.name) {
 			throw new Error(`Room with internalId ${internalRoomId} not found`);
 		}
 		const roomName = internalRoom.fname || internalRoom.name;
 		const externalRoomId = await this.bridge.createRoom(federatedInviterUser.getExternalId(), internalRoom.t, roomName, internalRoom.topic);
 
 		await this.internalRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoom._id, externalRoomId);
+		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(internalRoom._id);
 	}
 
 	private async inviteUserToAFederatedRoom(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {
 		const { internalInviterId, internalRoomId, normalizedInviteeId, inviteeUsernameOnly, rawInviteeId } = roomInviteUserInput;
 		const isUserAutoJoining = Boolean(!internalInviterId);
 
+		const internalHomeServerDomain = await this.internalSettingsAdapter.getHomeServerDomain();
 		const isInviteeFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(rawInviteeId),
-			this.internalHomeServerDomain,
+			this.bridge.extractHomeserverOrigin(rawInviteeId, internalHomeServerDomain),
+			internalHomeServerDomain,
 		);
 
 		if (isUserAutoJoining && !isInviteeFromTheSameHomeServer) {
@@ -778,7 +780,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 				await this.bridge.createUser(
 					inviteeUsernameOnly,
 					federatedInviteeUser.getName() || federatedInviteeUser.getUsername() || username,
-					this.internalHomeServerDomain,
+					internalHomeServerDomain,
 				);
 			}
 		}

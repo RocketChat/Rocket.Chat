@@ -8,6 +8,7 @@ import type {
 import { registerModel } from '@rocket.chat/models';
 import type { Collection, Db } from 'mongodb';
 
+import { AvatarsRaw } from '../../../server/models/raw/Avatars';
 import { EmailInboxRaw } from '../../../server/models/raw/EmailInbox';
 import { InstanceStatusRaw } from '../../../server/models/raw/InstanceStatus';
 import { IntegrationHistoryRaw } from '../../../server/models/raw/IntegrationHistory';
@@ -17,6 +18,8 @@ import { LivechatInquiryRaw } from '../../../server/models/raw/LivechatInquiry';
 import { LivechatRoomsRaw } from '../../../server/models/raw/LivechatRooms';
 import { LivechatVisitorsRaw } from '../../../server/models/raw/LivechatVisitors';
 import { LoginServiceConfigurationRaw } from '../../../server/models/raw/LoginServiceConfiguration';
+import { MatrixBridgedRoomRaw } from '../../../server/models/raw/MatrixBridgedRoom';
+import { MatrixBridgedUserRaw } from '../../../server/models/raw/MatrixBridgedUser';
 import { MessagesRaw } from '../../../server/models/raw/Messages';
 import { PbxEventsRaw } from '../../../server/models/raw/PbxEvents';
 import { PermissionsRaw } from '../../../server/models/raw/Permissions';
@@ -63,4 +66,7 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
+	registerModel('IMatrixBridgedRoomModel', () => new MatrixBridgedRoomRaw(db));
+	registerModel('IMatrixBridgedUserModel', new MatrixBridgedUserRaw(db));
+	registerModel('IAvatarsModel', new AvatarsRaw(db));
 }

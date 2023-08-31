@@ -1,6 +1,6 @@
-// import { Logger } from '../../../../../lib/logger/Logger';
+import { Logger } from '@rocket.chat/logger';
+import type { BaseLogger } from 'pino';
 
-// const logger = new Logger('Federation_Matrix');
+const logger = new Logger('Federation_Matrix');
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-export const federationBridgeLogger = () => {}; // logger.section('matrix_federation_bridge');
+export const federationBridgeLogger: BaseLogger = logger.section('matrix_federation_bridge');

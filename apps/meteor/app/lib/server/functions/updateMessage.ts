@@ -1,3 +1,4 @@
+import { api } from '@rocket.chat/core-services';
 import type { IEditedMessage, IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -83,6 +84,7 @@ export const updateMessage = async function (
 		const msg = await Messages.findOneById(_id);
 		if (msg) {
 			await callbacks.run('afterSaveMessage', msg, room, user._id);
+			void api.broadcast('room.afterSaveMessage', msg, room);
 		}
 	});
 };

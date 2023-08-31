@@ -1,5 +1,3 @@
-import type { IMessage, IRoom, IUser, Username } from '@rocket.chat/core-typings';
-
 import { FederationMessageServiceReceiver } from '../application/room/message/receiver/MessageServiceReceiver';
 import { FederationMessageServiceSender } from '../application/room/message/sender/MessageServiceSender';
 import { FederationRoomServiceReceiver } from '../application/room/receiver/RoomServiceReceiver';
@@ -33,8 +31,6 @@ import { RocketChatQueueAdapter } from './rocket-chat/adapters/Queue';
 import { RocketChatRoomAdapter } from './rocket-chat/adapters/Room';
 import { RocketChatSettingsAdapter } from './rocket-chat/adapters/Settings';
 import { RocketChatUserAdapter } from './rocket-chat/adapters/User';
-import { FederationRoomSenderConverter } from './rocket-chat/converters/RoomSender';
-import { FederationHooks } from './rocket-chat/hooks';
 
 export class FederationFactory {
 	public static buildInternalSettingsAdapter(): RocketChatSettingsAdapter {
@@ -249,89 +245,5 @@ export class FederationFactory {
 			new MatrixUserTypingStatusChangedHandler(userServiceReceiver),
 			new MatrixRoomPowerLevelsChangedHandler(roomServiceReceiver),
 		];
-	}
-
-	public static setupListenersForLocalActions(
-		roomServiceSender: FederationRoomServiceSender,
-		messageServiceSender: FederationMessageServiceSender,
-	): void {
-		FederationHooks.afterUserLeaveRoom((user: IUser, room: IRoom) =>
-			roomServiceSender.afterUserLeaveRoom(FederationRoomSenderConverter.toAfterUserLeaveRoom(user._id, room._id)),
-		);
-		FederationHooks.onUserRemovedFromRoom((user: IUser, room: IRoom, userWhoRemoved: IUser) =>
-			roomServiceSender.onUserRemovedFromRoom(
-				FederationRoomSenderConverter.toOnUserRemovedFromRoom(user._id, room._id, userWhoRemoved._id),
-			),
-		);
-		FederationHooks.afterMessageReacted((message: IMessage, user: IUser, reaction: string) =>
-			messageServiceSender.sendExternalMessageReaction(message, user, reaction),
-		);
-		FederationHooks.afterMessageunReacted((message: IMessage, user: IUser, reaction: string) =>
-			messageServiceSender.sendExternalMessageUnReaction(message, user, reaction),
-		);
-		FederationHooks.afterMessageDeleted((message: IMessage, roomId: string) => roomServiceSender.afterMessageDeleted(message, roomId));
-		FederationHooks.afterMessageUpdated((message: IMessage, roomId: string, userId: string) =>
-			roomServiceSender.afterMessageUpdated(message, roomId, userId),
-		);
-		FederationHooks.afterMessageSent((message: IMessage, roomId: string, userId: string) =>
-			roomServiceSender.sendExternalMessage(FederationRoomSenderConverter.toSendExternalMessageDto(userId, roomId, message)),
-		);
-		FederationHooks.afterRoomNameChanged(async (roomId: string, roomName: string) =>
-			roomServiceSender.afterRoomNameChanged(roomId, roomName),
-		);
-		FederationHooks.afterRoomTopicChanged(async (roomId: string, roomTopic: string) =>
-			roomServiceSender.afterRoomTopicChanged(roomId, roomTopic),
-		);
-	}
-
-	public static setupListenersForLocalActionsWhenValidLicense(
-		roomServiceSender: FederationRoomServiceSender,
-		dmRoomServiceSender: FederationDirectMessageRoomServiceSender,
-		settingsAdapter: RocketChatSettingsAdapter,
-	): void {
-		const homeServerDomain = settingsAdapter.getHomeServerDomain();
-		FederationHooks.onFederatedRoomCreated(async (room: IRoom, owner: IUser, originalMemberList: string[]) =>
-			roomServiceSender.onRoomCreated(
-				FederationRoomSenderConverter.toOnRoomCreationDto(owner._id, owner.username || '', room._id, originalMemberList, homeServerDomain),
-			),
-		);
-		FederationHooks.onUsersAddedToARoom(async (room: IRoom, members: IUser[] | Username[], owner?: IUser) =>
-			roomServiceSender.onUsersAddedToARoom(
-				FederationRoomSenderConverter.toOnAddedUsersToARoomDto(
-					owner?._id || '',
-					owner?.username || '',
-					room._id,
-					members,
-					homeServerDomain,
-				),
-			),
-		);
-		FederationHooks.beforeDirectMessageRoomCreate(async (members: IUser[] | string[]) =>
-			dmRoomServiceSender.beforeDirectMessageRoomCreation(
-				FederationRoomSenderConverter.toBeforeDirectMessageCreatedDto(members, homeServerDomain),
-			),
-		);
-		FederationHooks.onDirectMessageRoomCreated(async (room: IRoom, ownerId: IUser['_id'], members: IUser[] | string[]) =>
-			dmRoomServiceSender.onDirectMessageRoomCreation(
-				FederationRoomSenderConverter.toOnDirectMessageCreatedDto(ownerId, room._id, members, homeServerDomain),
-			),
-		);
-		FederationHooks.beforeAddUserToARoom(async (user: IUser | string, room: IRoom, inviter?: IUser) =>
-			roomServiceSender.beforeAddUserToARoom(
-				FederationRoomSenderConverter.toBeforeAddUserToARoomDto([user], room, homeServerDomain, inviter),
-			),
-		);
-	}
-
-	public static setupValidators(roomInternalHooksValidator: FederationRoomInternalValidator): void {
-		FederationHooks.canAddFederatedUserToNonFederatedRoom((user: IUser | string, room: IRoom) =>
-			roomInternalHooksValidator.canAddFederatedUserToNonFederatedRoom(user, room),
-		);
-		FederationHooks.canAddFederatedUserToFederatedRoom((user: IUser | string, inviter: IUser, room: IRoom) =>
-			roomInternalHooksValidator.canAddFederatedUserToFederatedRoom(user, inviter, room),
-		);
-		FederationHooks.canCreateDirectMessageFromUI((members: (IUser | string)[]) =>
-			roomInternalHooksValidator.canCreateDirectMessageFromUI(members),
-		);
 	}
 }
