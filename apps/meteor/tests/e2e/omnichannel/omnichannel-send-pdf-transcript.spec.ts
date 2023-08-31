@@ -5,12 +5,10 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
-import { OmnichannelTranscript } from '../page-objects/omnichannel-transcript';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel- export chat transcript as PDF', () => {
     let poLiveChat: OmnichannelLiveChat;
-    let poOmnichannelTranscript: OmnichannelTranscript;
     let newUser: { email: string; name: string };
 
     let agent: { page: Page; poHomeChannel: HomeOmnichannel };
