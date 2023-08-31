@@ -49,7 +49,13 @@ const AutoTranslate = ({
 					<Field>
 						<Field.Label htmlFor='language'>{t('Language')}</Field.Label>
 						<Field.Row verticalAlign='middle'>
-							<Select id='language' value={language} disabled={!translateEnable} onChange={handleChangeLanguage} options={languages} />
+							<Select
+								id='language'
+								value={language}
+								disabled={!translateEnable}
+								onChange={(value) => handleChangeLanguage(String(value))}
+								options={languages}
+							/>
 						</Field.Row>
 					</Field>
 				</FieldGroup>

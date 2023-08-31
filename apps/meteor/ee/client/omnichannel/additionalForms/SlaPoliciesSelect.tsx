@@ -17,7 +17,7 @@ export const SlaPoliciesSelect = ({ value, label, options, onChange }: SlaPolici
 		<Field>
 			<Field.Label>{label}</Field.Label>
 			<Field.Row>
-				<Select value={value} options={optionsSelect} onChange={onChange} />
+				<Select value={value} options={optionsSelect} onChange={(value) => onChange(String(value))} />
 			</Field.Row>
 		</Field>
 	);

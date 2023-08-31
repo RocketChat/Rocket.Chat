@@ -1,5 +1,6 @@
 import { AppDepartmentsConverter } from './departments';
 import { AppMessagesConverter } from './messages';
+import { AppRolesConverter } from './roles';
 import { AppRoomsConverter } from './rooms';
 import { AppSettingsConverter } from './settings';
 import { AppUploadsConverter } from './uploads';
@@ -16,4 +17,5 @@ export {
 	AppDepartmentsConverter,
 	AppUploadsConverter,
 	AppVisitorsConverter,
+	AppRolesConverter,
 };
