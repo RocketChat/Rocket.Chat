@@ -52,14 +52,12 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
         });
 
         await test.step('Expect to be not able send transcript as PDF', async () => {
-            test.skip(!IS_EE, 'Enterprise Only');
             await agent.poHomeChannel.content.btnSendTranscript.click();
             await agent.poHomeChannel.content.btnSendTranscriptAsPDF.hover();
             await expect(agent.poHomeChannel.content.btnSendTranscriptAsPDF).toBeDisabled();
         });
 
         await test.step('Expect chat to be closed', async () => {
-           test.skip(!IS_EE, 'Enterprise Only');
             await agent.poHomeChannel.content.btnCloseChat.click();
             await agent.poHomeChannel.content.inputModalClosingComment.type('any_comment');
             await agent.poHomeChannel.transcript.checkboxPDF.click();
@@ -69,16 +67,13 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 
         // Exported PDF can be downloaded from rocket.cat room
         await test.step('Expect to have exported PDF in rocket.cat', async () => {
-
-            test.skip(!IS_EE, 'Enterprise Only');
-            awaitpage.waitForTimeout(3000);
+            await page.waitForTimeout(3000);
             await agent.poHomeChannel.sidenav.openChat('rocket.cat');
             await expect(agent.poHomeChannel.transcript.DownloadedPDF).toBeVisible();
         });
 
         // PDF can be exported from Omnichannel Contact Center
         await test.step('Expect to have exported PDF in rocket.cat', async () => {
-            test.skip(!IS_EE, 'Enterprise Only');
             await agent.poHomeChannel.transcript.contactCenter.click();
             await agent.poHomeChannel.transcript.contactCenterChats.click();
             await agent.poHomeChannel.transcript.contactCenterSearch.type(newUser.name);
