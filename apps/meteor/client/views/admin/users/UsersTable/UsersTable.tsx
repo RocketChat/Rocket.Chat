@@ -1,8 +1,6 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MutableRefObject } from 'react';
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 
@@ -17,14 +15,17 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import { useFilterActiveUsers } from '../hooks/useFilterActiveUsers';
+import { useListUsers } from '../hooks/useListUsers';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
 	reload: MutableRefObject<() => void>;
+	tab: string;
 };
 
 // TODO: Missing error state
-const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
+const UsersTable = ({ reload, tab }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const usersRoute = useRoute('admin-users');
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -34,55 +35,19 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'status'>('name');
 
 	const searchTerm = useDebouncedValue(text, 500);
-	const prevSearchTerm = useRef<string>('');
+	const prevSearchTerm = useRef('');
 
-	const query = useDebouncedValue(
-		useMemo(() => {
-			if (searchTerm !== prevSearchTerm.current) {
-				setCurrent(0);
-			}
-
-			return {
-				fields: JSON.stringify({
-					name: 1,
-					username: 1,
-					emails: 1,
-					roles: 1,
-					status: 1,
-					avatarETag: 1,
-					active: 1,
-				}),
-				query: JSON.stringify({
-					$or: [
-						{ 'emails.address': { $regex: escapeRegExp(searchTerm), $options: 'i' } },
-						{ username: { $regex: escapeRegExp(searchTerm), $options: 'i' } },
-						{ name: { $regex: escapeRegExp(searchTerm), $options: 'i' } },
-					],
-				}),
-				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: searchTerm === prevSearchTerm.current ? current : 0,
-			};
-		}, [searchTerm, sortBy, sortDirection, itemsPerPage, current, setCurrent]),
-		500,
+	const { data, isLoading, isSuccess, error, refetch } = useListUsers(
+		searchTerm,
+		prevSearchTerm,
+		setCurrent,
+		sortBy,
+		sortDirection,
+		itemsPerPage,
+		current,
 	);
 
-	const getUsers = useEndpoint('GET', '/v1/users.list');
-
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const { data, isLoading, error, isSuccess, refetch } = useQuery(
-		['users', query],
-		async () => {
-			const users = await getUsers(query);
-			return users;
-		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
-		},
-	);
+	const filteredUsers = [...useFilterActiveUsers(data?.users, tab)];
 
 	useEffect(() => {
 		reload.current = refetch;
@@ -151,12 +116,12 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
 				</GenericTable>
 			)}
-			{data?.users && data.count > 0 && isSuccess && (
+			{isSuccess && !!data && !!filteredUsers && data.count > 0 && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{data?.users.map((user) => (
+							{(tab === 'all' ? data.users : filteredUsers).map((user) => (
 								<UsersTableRow key={user._id} onClick={handleClick} mediaQuery={mediaQuery} user={user} />
 							))}
 						</GenericTableBody>
