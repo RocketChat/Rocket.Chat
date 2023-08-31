@@ -7586,7 +7586,7 @@ __metadata:
     i18next-sprintf-postprocessor: ^0.2.2
     jest: ~29.5.0
     js-yaml: ^4.1.0
-    marked: ^4.2.5
+    marked: ^5.1.0
     mocha: ^10.2.0
     mongodb: ^4.12.1
     pino: ^8.14.1
@@ -7596,6 +7596,7 @@ __metadata:
     ts-jest: ~29.0.5
     ts-node: ^10.9.1
     typescript: ~5.2.2
+    uuid: ^9.0.0
   languageName: unknown
   linkType: soft
 
@@ -26832,6 +26833,15 @@ __metadata:
   bin:
     marked: bin/marked.js
   checksum: dd7da20a3983c66b516463fad5dc8d15dc70e137d20b6dc491e134f671e84bd2ed5f859e2c35f21e56830a122e4356b9e574bcde49b72b7ad6bc121a215a1a98
+  languageName: node
+  linkType: hard
+
+"marked@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "marked@npm:5.1.0"
+  bin:
+    marked: bin/marked.js
+  checksum: ecb2b36a4758f725000400113f5107e89512b897251207e514c22605319bdddb6554fe3e68bd73b0d08f855582946e001adddfbfc7080a556a492950fb4b3a09
   languageName: node
   linkType: hard
 
