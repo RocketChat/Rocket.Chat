@@ -59,7 +59,7 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 								options={availableExtensions?.extensions?.map((extension) => [extension, extension]) || []}
 								value={extension}
 								placeholder={t('Select_an_option')}
-								onChange={setExtension}
+								onChange={(value) => setExtension(String(value))}
 							/>
 						</Field.Row>
 					</Field>

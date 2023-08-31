@@ -28,7 +28,7 @@ const CopyStep: FC<CopyStepProps> = ({ onNextButtonClick }) => {
 		loadWorkspaceRegisterData();
 	}, [getWorkspaceRegisterData]);
 
-	const copyRef = useRef<HTMLElement>(null);
+	const copyRef = useRef<HTMLButtonElement>(null);
 
 	useEffect(() => {
 		if (!copyRef.current) {

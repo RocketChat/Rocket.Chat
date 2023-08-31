@@ -19,7 +19,7 @@ import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useRoom } from '../../../room/contexts/RoomContext';
 import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
-import DeleteTeamModal from './Delete';
+import DeleteTeamModal from './DeleteTeam';
 import LeaveTeam from './LeaveTeam';
 import TeamsInfo from './TeamsInfo';
 

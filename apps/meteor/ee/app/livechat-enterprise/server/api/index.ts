@@ -9,3 +9,4 @@ import './units';
 import './business-hours';
 import './rooms';
 import './transcript';
+import './reports';
