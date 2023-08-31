@@ -102,7 +102,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		try {
 			await updateOwnBasicInfo(
 				{
-					...(allowRealNameChange ? { name } : {}),
+					...(allowRealNameChange ? { realname: name } : {}),
 					...(allowEmailChange && user ? getUserEmailAddress(user) !== email && { email } : {}),
 					...(allowPasswordChange ? { newPassword: password } : {}),
 					...(canChangeUsername ? { username } : {}),
