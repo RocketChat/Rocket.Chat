@@ -1,10 +1,9 @@
-import { Markup } from '@rocket.chat/gazzodown';
-import { parse } from '@rocket.chat/message-parser';
 import { Component } from 'preact';
 import { Trans, withTranslation } from 'react-i18next';
 
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
+import MarkdownBlock from '../../components/MarkdownBlock';
 import Screen from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
@@ -29,7 +28,7 @@ class GDPR extends Component {
 			<Screen.Content>
 				{consentText ? (
 					<p className={createClassName(styles, 'gdpr__consent-text')}>
-						<Markup tokens={parse(consentText)} />
+						<MarkdownBlock text={consentText} />
 					</p>
 				) : (
 					<p className={createClassName(styles, 'gdpr__consent-text')}>
@@ -38,7 +37,7 @@ class GDPR extends Component {
 				)}
 				{instructions ? (
 					<p className={createClassName(styles, 'gdpr__instructions')}>
-						<Markup tokens={parse(instructions)} />
+						<MarkdownBlock text={instructions} />
 					</p>
 				) : (
 					<p className={createClassName(styles, 'gdpr__instructions')}>

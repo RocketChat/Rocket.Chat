@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useToggle } from '@rocket.chat/fuselage-hooks';
+import { useOutsideClick, useToggle } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { Dispatch, FormEvent, ReactElement, RefObject, SetStateAction } from 'react';
 import { useCallback, useRef } from 'react';
@@ -53,8 +53,8 @@ export type OptionProp = TitleOptionProp | CheckboxOptionProp;
  */
 type DropDownProps = {
 	dropdownOptions: OptionProp[];
-	defaultTitle: TranslationKey; // For example: 'All rooms'
-	selectedOptionsTitle: TranslationKey; // For example: 'Rooms (3)'
+	defaultTitle: TranslationKey;
+	selectedOptionsTitle: TranslationKey;
 	selectedOptions: OptionProp[];
 	setSelectedOptions: Dispatch<SetStateAction<OptionProp[]>>;
 	customSetSelected: Dispatch<SetStateAction<OptionProp[]>>;
@@ -71,6 +71,7 @@ export const MultiSelectCustom = ({
 	searchBarText,
 }: DropDownProps): ReactElement => {
 	const reference = useRef<HTMLInputElement>(null);
+	const target = useRef<HTMLElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
 	const onClose = useCallback(
@@ -84,6 +85,8 @@ export const MultiSelectCustom = ({
 		},
 		[toggleCollapsed],
 	);
+
+	useOutsideClick([target], onClose);
 
 	const onSelect = (item: OptionProp, e?: FormEvent<HTMLElement>): void => {
 		e?.stopPropagation();
@@ -123,7 +126,7 @@ export const MultiSelectCustom = ({
 				maxCount={dropdownOptions.length}
 			/>
 			{collapsed && (
-				<MultiSelectCustomListWrapper ref={reference} onClose={onClose}>
+				<MultiSelectCustomListWrapper ref={target}>
 					<MultiSelectCustomList options={dropdownOptions} onSelected={onSelect} searchBarText={searchBarText} />
 				</MultiSelectCustomListWrapper>
 			)}
