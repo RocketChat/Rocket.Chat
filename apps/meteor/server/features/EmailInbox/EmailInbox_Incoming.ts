@@ -62,6 +62,7 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 		name: emailName,
 		email,
 		department,
+		sourceType: OmnichannelSourceType.EMAIL,
 	});
 
 	const newGuest = await LivechatVisitors.findOneById(userId);
