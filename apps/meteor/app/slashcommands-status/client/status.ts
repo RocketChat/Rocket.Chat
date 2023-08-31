@@ -1,8 +1,8 @@
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { sdk } from '../../utils/client/lib/SDKClient';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'status',

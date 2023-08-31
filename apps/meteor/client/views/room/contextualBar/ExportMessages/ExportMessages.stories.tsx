@@ -13,5 +13,5 @@ export default {
 	decorators: [(fn) => <ContextualbarContainer height='100vh'>{fn()}</ContextualbarContainer>],
 } as ComponentMeta<typeof ExportMessages>;
 
-export const Default: ComponentStory<typeof ExportMessages> = (args) => <ExportMessages {...args} />;
+export const Default: ComponentStory<typeof ExportMessages> = () => <ExportMessages />;
 Default.storyName = 'ExportMessages';

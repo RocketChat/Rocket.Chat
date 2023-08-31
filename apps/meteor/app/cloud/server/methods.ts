@@ -1,19 +1,19 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
-import { connectWorkspace } from './functions/connectWorkspace';
-import { reconnectWorkspace } from './functions/reconnectWorkspace';
-import { getOAuthAuthorizationUrl } from './functions/getOAuthAuthorizationUrl';
-import { finishOAuthAuthorization } from './functions/finishOAuthAuthorization';
-import { startRegisterWorkspace } from './functions/startRegisterWorkspace';
-import { disconnectWorkspace } from './functions/disconnectWorkspace';
-import { syncWorkspace } from './functions/syncWorkspace';
-import { checkUserHasCloudLogin } from './functions/checkUserHasCloudLogin';
-import { userLogout } from './functions/userLogout';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { buildWorkspaceRegistrationData } from './functions/buildRegistrationData';
+import { checkUserHasCloudLogin } from './functions/checkUserHasCloudLogin';
+import { connectWorkspace } from './functions/connectWorkspace';
+import { disconnectWorkspace } from './functions/disconnectWorkspace';
+import { finishOAuthAuthorization } from './functions/finishOAuthAuthorization';
+import { getOAuthAuthorizationUrl } from './functions/getOAuthAuthorizationUrl';
+import { reconnectWorkspace } from './functions/reconnectWorkspace';
+import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
+import { startRegisterWorkspace } from './functions/startRegisterWorkspace';
+import { syncWorkspace } from './functions/syncWorkspace';
+import { userLogout } from './functions/userLogout';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -40,6 +40,10 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
+	/**
+	 * @deprecated this method is deprecated and will be removed soon.
+	 * Prefer using cloud.registrationStatus rest api.
+	 */
 	async 'cloud:checkRegisterStatus'() {
 		const uid = Meteor.userId();
 

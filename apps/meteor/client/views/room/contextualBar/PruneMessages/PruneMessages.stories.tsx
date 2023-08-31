@@ -1,5 +1,6 @@
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 
 import { ContextualbarContainer } from '../../../../components/Contextualbar';
 import PruneMessages from './PruneMessages';
@@ -11,7 +12,21 @@ export default {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on.*' },
 	},
-	decorators: [(fn) => <ContextualbarContainer height='100vh'>{fn()}</ContextualbarContainer>],
+	decorators: [
+		(fn) => {
+			const methods = useForm({
+				defaultValues: {
+					pinned: true,
+				},
+			});
+
+			return (
+				<FormProvider {...methods}>
+					<ContextualbarContainer height='100vh'>{fn()}</ContextualbarContainer>
+				</FormProvider>
+			);
+		},
+	],
 } as ComponentMeta<typeof PruneMessages>;
 
 const Template: ComponentStory<typeof PruneMessages> = (args) => <PruneMessages {...args} />;
@@ -20,6 +35,5 @@ export const Default = Template.bind({});
 
 export const WithCallout = Template.bind({});
 WithCallout.args = {
-	values: { pinned: true },
 	callOutText: 'This is a callout',
 };

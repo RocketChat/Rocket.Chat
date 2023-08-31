@@ -100,8 +100,8 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 
 	const handleSave = useMutableCallback(async () => {
 		try {
-			await saveAgentInfo(uid, saveRef.current.values, departments);
 			await saveAgentStatus({ status, agentId: uid });
+			await saveAgentInfo(uid, saveRef.current.values, departments);
 			dispatchToastMessage({ type: 'success', message: t('Success') });
 			agentsRoute.push({});
 			reset();

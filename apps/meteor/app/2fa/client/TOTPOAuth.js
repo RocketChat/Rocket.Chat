@@ -1,17 +1,17 @@
 import { capitalize } from '@rocket.chat/string-helpers';
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Facebook } from 'meteor/facebook-oauth';
 import { Github } from 'meteor/github-oauth';
-import { Twitter } from 'meteor/twitter-oauth';
+import { Meteor } from 'meteor/meteor';
 import { MeteorDeveloperAccounts } from 'meteor/meteor-developer-oauth';
-import { Linkedin } from 'meteor/pauli:linkedin-oauth';
 import { OAuth } from 'meteor/oauth';
+import { Linkedin } from 'meteor/pauli:linkedin-oauth';
+import { Twitter } from 'meteor/twitter-oauth';
 
-import { process2faReturn } from '../../../client/lib/2fa/process2faReturn';
-import { CustomOAuth } from '../../custom-oauth/client/custom_oauth_client';
-import { convertError } from '../../../client/lib/2fa/utils';
 import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod';
+import { process2faReturn } from '../../../client/lib/2fa/process2faReturn';
+import { convertError } from '../../../client/lib/2fa/utils';
+import { CustomOAuth } from '../../custom-oauth/client/custom_oauth_client';
 
 let lastCredentialToken = null;
 let lastCredentialSecret = null;

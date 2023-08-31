@@ -26,8 +26,8 @@ const TwoFactorEmail = (props: ComponentProps<typeof Box>): ReactElement => {
 	}, [disable2faAction]);
 
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs='x16' {...props}>
-			<Margins blockEnd='x8'>
+		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs={16} {...props}>
+			<Margins blockEnd={8}>
 				<Box fontScale='h4'>{t('Two-factor_authentication_email')}</Box>
 				{isEnabled && (
 					<Button danger onClick={handleDisable}>

@@ -1,6 +1,6 @@
-import { PushToken } from '@rocket.chat/models';
 import type { IPushService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { PushToken } from '@rocket.chat/models';
 
 export class PushService extends ServiceClassInternal implements IPushService {
 	protected name = 'push';

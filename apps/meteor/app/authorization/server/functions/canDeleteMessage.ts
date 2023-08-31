@@ -1,8 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
-import { hasPermissionAsync } from './hasPermission';
 import { getValue } from '../../../settings/server/raw';
+import { hasPermissionAsync } from './hasPermission';
 
 const elapsedTime = (ts: Date): number => {
 	const dif = Date.now() - ts.getTime();

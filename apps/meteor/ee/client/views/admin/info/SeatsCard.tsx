@@ -1,18 +1,23 @@
 import { Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import { ExternalLink, Card } from '@rocket.chat/ui-client';
+import { Card } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import { useExternalLink } from '../../../../../client/hooks/useExternalLink';
 import UsagePieGraph from '../../../../../client/views/admin/info/UsagePieGraph';
 import { useRequestSeatsLink } from '../users/useRequestSeatsLink';
-import { useSeatsCap } from '../users/useSeatsCap';
+import type { SeatCapProps } from '../users/useSeatsCap';
 
-const SeatsCard = (): ReactElement | null => {
+type SeatsCardProps = {
+	seatsCap: SeatCapProps | undefined;
+};
+
+const SeatsCard = ({ seatsCap }: SeatsCardProps): ReactElement => {
 	const t = useTranslation();
-	const seatsCap = useSeatsCap();
 	const requestSeatsLink = useRequestSeatsLink();
+	const handleExternalLink = useExternalLink();
 
 	const seatsLeft = seatsCap && Math.max(seatsCap.maxActiveUsers - seatsCap.activeUsers, 0);
 
@@ -20,39 +25,31 @@ const SeatsCard = (): ReactElement | null => {
 
 	const color = isNearLimit ? colors.d500 : undefined;
 
-	if (seatsCap && seatsCap.maxActiveUsers === Infinity) {
-		return null;
-	}
-
 	return (
 		<Card>
 			<Card.Title>{t('Seats_usage')}</Card.Title>
 			<Card.Body>
 				<Card.Col>
-					<Card.Col.Section>
-						<Box display='flex' flexDirection='row' justifyContent='center' fontScale={isNearLimit ? 'p2m' : 'p2'}>
-							{!seatsCap ? (
-								<Skeleton variant='rect' width='x112' height='x112' />
-							) : (
-								<UsagePieGraph
-									label={<Box color={color}>{t('Seats_Available', { seatsLeft })}</Box>}
-									used={seatsCap.activeUsers}
-									total={seatsCap.maxActiveUsers}
-									size={140}
-									color={color}
-								/>
-							)}
-						</Box>
-					</Card.Col.Section>
+					<Box display='flex' flexDirection='row' justifyContent='center' fontScale={isNearLimit ? 'p2m' : 'p2'}>
+						{!seatsCap ? (
+							<Skeleton variant='rect' width='x112' height='x112' />
+						) : (
+							<UsagePieGraph
+								label={<Box color={color}>{t('Seats_Available', { seatsLeft })}</Box>}
+								used={seatsCap.activeUsers}
+								total={seatsCap.maxActiveUsers}
+								size={140}
+								color={color}
+							/>
+						)}
+					</Box>
 				</Card.Col>
 			</Card.Body>
 			<Card.Footer>
 				<ButtonGroup align='end'>
-					<ExternalLink to={requestSeatsLink}>
-						<Button small primary>
-							{t('Request_seats')}
-						</Button>
-					</ExternalLink>
+					<Button small primary onClick={() => handleExternalLink(requestSeatsLink)}>
+						{t('Request_seats')}
+					</Button>
 				</ButtonGroup>
 			</Card.Footer>
 		</Card>

@@ -1,10 +1,10 @@
-import EJSON from 'ejson';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import EJSON from 'ejson';
 
-import { httpLogger } from './logger';
-import { getFederationDomain } from './getFederationDomain';
-import { search } from './dns';
 import { encrypt } from './crypt';
+import { search } from './dns';
+import { getFederationDomain } from './getFederationDomain';
+import { httpLogger } from './logger';
 
 export async function federationRequest(method, url, body, headers, peerKey = null) {
 	let data = null;

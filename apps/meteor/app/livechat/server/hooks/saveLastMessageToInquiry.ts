@@ -12,7 +12,7 @@ callbacks.add(
 			return message;
 		}
 
-		if (!RoutingManager.getConfig().showQueue) {
+		if (!RoutingManager.getConfig()?.showQueue) {
 			// since last message is only getting used on UI as preview message when queue is enabled
 			return message;
 		}

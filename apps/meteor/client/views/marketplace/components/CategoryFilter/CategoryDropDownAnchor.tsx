@@ -31,13 +31,13 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 		>
 			{selectedCategoriesCount > 0 && (
 				<Box
-					mie='x6'
+					mie={6}
 					borderRadius='x32'
 					bg='light'
 					fontWeight={700}
 					fontSize='micro'
 					color='info'
-					pi='x6'
+					pi={6}
 					h='x40'
 					display='flex'
 					alignItems='center'
@@ -49,8 +49,8 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			<Box is='span' display='flex' flexGrow={1} fontScale='p2' color={selectedCategoriesCount ? 'white' : 'hint'}>
 				{selectedCategoriesCount > 0 ? t('Categories') : t('All_categories')}
 			</Box>
-			<Box mi='x4' display='flex' alignItems='center' justifyContent='center'>
-				<Icon name='chevron-down' fontSize='x20' color={selectedCategoriesCount ? 'white' : 'hint'} />
+			<Box mi={4} display='flex' alignItems='center' justifyContent='center'>
+				<Icon name='chevron-down' size='x20' color={selectedCategoriesCount ? 'white' : 'hint'} />
 			</Box>
 		</Box>
 	);

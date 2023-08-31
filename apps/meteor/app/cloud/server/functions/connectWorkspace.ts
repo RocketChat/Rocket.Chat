@@ -1,11 +1,11 @@
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../settings/server';
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { settings } from '../../../settings/server';
 import { saveRegistrationData } from './saveRegistrationData';
-import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export async function connectWorkspace(token: string) {
 	const { connectToCloud } = await retrieveRegistrationStatus();

@@ -4,7 +4,6 @@ import { AppDetailChangesBridge as DetailChangesBridge } from '@rocket.chat/apps
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class AppDetailChangesBridge extends DetailChangesBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}

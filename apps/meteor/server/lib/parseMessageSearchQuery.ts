@@ -214,12 +214,12 @@ class MessageSearchQueryParser {
 		return text.replace(/(?:order|sort):(asc|ascend|ascending|desc|descend|descending)/g, (_: string, direction: string) => {
 			if (direction.startsWith('asc')) {
 				this.options.sort = {
-					...(typeof this.options.sort === 'object' ? this.options.sort : {}),
+					...(typeof this.options.sort === 'object' && !Array.isArray(this.options.sort) ? this.options.sort : {}),
 					ts: 1,
 				};
 			} else if (direction.startsWith('desc')) {
 				this.options.sort = {
-					...(typeof this.options.sort === 'object' ? this.options.sort : {}),
+					...(typeof this.options.sort === 'object' && !Array.isArray(this.options.sort) ? this.options.sort : {}),
 					ts: -1,
 				};
 			}

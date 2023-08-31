@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
 import '../../meteor-accounts-saml/client/saml_client';
-import { reportError } from '../../../client/lib/2fa/utils';
 import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod';
+import { reportError } from '../../../client/lib/2fa/utils';
 
 Meteor.loginWithSamlTokenAndTOTP = function (credentialToken, code, callback) {
 	Accounts.callLoginMethod({

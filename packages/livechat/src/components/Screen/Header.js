@@ -78,7 +78,7 @@ class ScreenHeader extends Component {
 			</Header.Content>
 			<Tooltip.Container>
 				<Header.Actions>
-					<Tooltip.Trigger content={notificationsEnabled ? t('sound_is_on') : t('sound_is_off')}>
+					<Tooltip.Trigger content={notificationsEnabled ? t('sound_is_on') : t('sound_is_off')} placement='bottom-left'>
 						<Header.Action
 							aria-label={notificationsEnabled ? t('disable_notifications') : t('enable_notifications')}
 							onClick={notificationsEnabled ? onDisableNotifications : onEnableNotifications}

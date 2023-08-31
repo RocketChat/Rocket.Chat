@@ -19,7 +19,7 @@ const FileItem = ({ fileData, isDeletionAllowed, onClickDelete }) => {
 	const { _id, name, url, uploadedAt, ts, type, typeGroup, style, className, user } = fileData;
 
 	return (
-		<Box display='flex' p='x12' borderRadius='x4' style={style} className={[className, hoverClass]}>
+		<Box display='flex' p={12} borderRadius='x4' style={style} className={[className, hoverClass]}>
 			<Box
 				is='a'
 				minWidth={0}
@@ -34,7 +34,7 @@ const FileItem = ({ fileData, isDeletionAllowed, onClickDelete }) => {
 				href={url}
 			>
 				{typeGroup === 'image' ? <Avatar size='x48' url={url} /> : <FileItemIcon type={type} />}
-				<Box mis='x8' flexShrink={1} overflow='hidden'>
+				<Box mis={8} flexShrink={1} overflow='hidden'>
 					<Box withTruncatedText color='default' fontScale='p2m'>
 						{name}
 					</Box>

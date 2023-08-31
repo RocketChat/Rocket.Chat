@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import mem from 'mem';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { LivechatUnit } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import mem from 'mem';
+import { Meteor } from 'meteor/meteor';
 
 import { hasAnyRoleAsync } from '../../../../../app/authorization/server/functions/hasRole';
 

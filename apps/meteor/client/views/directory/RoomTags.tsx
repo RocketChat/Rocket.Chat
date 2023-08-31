@@ -8,8 +8,8 @@ const RoomTags = ({ room }: { room: IRoom }): ReactElement => {
 	const t = useTranslation();
 
 	return (
-		<Box mi='x4' alignItems='center' display='flex' withTruncatedText>
-			<Margins inline='x2'>
+		<Box mi={4} alignItems='center' display='flex' withTruncatedText>
+			<Margins inline={2}>
 				{room.default && <Tag variant='secondary'>{t('default')}</Tag>}
 				{room.featured && <Tag variant='secondary'>{t('featured')}</Tag>}
 			</Margins>

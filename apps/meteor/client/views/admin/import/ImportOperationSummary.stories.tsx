@@ -1,4 +1,4 @@
-import { Table } from '@rocket.chat/fuselage';
+import { Table, TableBody } from '@rocket.chat/fuselage';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
@@ -16,7 +16,7 @@ export default {
 	decorators: [
 		(fn) => (
 			<Table>
-				<Table.Body>{fn()}</Table.Body>
+				<TableBody>{fn()}</TableBody>
 			</Table>
 		),
 	],

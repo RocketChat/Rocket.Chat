@@ -1,5 +1,6 @@
 import type { ILivechatVisitor, Serialized } from '@rocket.chat/core-typings';
-import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Field, TextInput, ButtonGroup, Button, ContextualbarContent } from '@rocket.chat/fuselage';
+import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -9,7 +10,6 @@ import { useForm } from 'react-hook-form';
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import { validateEmail } from '../../../../../../lib/emailValidator';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
-import { CustomFieldsForm } from '../../../../../components/CustomFieldsFormV2';
 import { createToken } from '../../../../../lib/utils/createToken';
 import { useFormsSubscription } from '../../../additionalForms';
 import { FormSkeleton } from '../../components/FormSkeleton';
@@ -178,7 +178,11 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 	};
 
 	if (isLoadingCustomFields) {
-		return <FormSkeleton />;
+		return (
+			<ContextualbarContent>
+				<FormSkeleton />
+			</ContextualbarContent>
+		);
 	}
 
 	return (

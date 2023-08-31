@@ -39,7 +39,7 @@ export const DepartmentTags = ({ error, value: tags, onChange }: DepartmentTagsP
 				<Button
 					disabled={Boolean(!tagText.trim()) || tags.includes(tagText)}
 					data-qa='DepartmentEditAddButton-ConversationClosingTags'
-					mis='x8'
+					mis={8}
 					title={t('Add')}
 					onClick={handleAddTag}
 				>
@@ -52,7 +52,7 @@ export const DepartmentTags = ({ error, value: tags, onChange }: DepartmentTagsP
 			{tags?.length > 0 && (
 				<Field.Row justifyContent='flex-start'>
 					{tags.map((tag, i) => (
-						<Chip key={i} onClick={handleTagChipClick(tag)} mie='x8'>
+						<Chip key={i} onClick={handleTagChipClick(tag)} mie={8}>
 							{tag}
 						</Chip>
 					))}

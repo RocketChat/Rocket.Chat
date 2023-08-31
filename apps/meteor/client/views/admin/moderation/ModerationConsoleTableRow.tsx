@@ -1,7 +1,8 @@
 import type { IModerationAudit, IUser } from '@rocket.chat/core-typings';
-import { TableRow, TableCell, Box } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import ModerationConsoleActions from './ModerationConsoleActions';
@@ -27,15 +28,15 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 	const concatenatedRoomNames = roomNames.join(', ');
 
 	return (
-		<TableRow key={_id} onKeyDown={(): void => onClick(_id)} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
-			<TableCell withTruncatedText>
+		<GenericTableRow key={_id} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
+			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					{username && (
 						<Box>
 							<UserAvatar size={isDesktopOrLarger ? 'x20' : 'x40'} username={username} />
 						</Box>
 					)}
-					<Box display='flex' mi='x8' withTruncatedText>
+					<Box display='flex' mi={8} withTruncatedText>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' color='default' withTruncatedText>
 								{name || username}
@@ -49,22 +50,22 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 						</Box>
 					</Box>
 				</Box>
-			</TableCell>
+			</GenericTableCell>
 			{isDesktopOrLarger && (
-				<TableCell>
+				<GenericTableCell>
 					<Box fontScale='p2m' color='hint' withTruncatedText>
 						{username}
 					</Box>
-				</TableCell>
+				</GenericTableCell>
 			)}
-			<TableCell withTruncatedText>{message}</TableCell>
-			<TableCell withTruncatedText>{concatenatedRoomNames}</TableCell>
-			<TableCell withTruncatedText>{formatDateAndTime(ts)}</TableCell>
-			<TableCell withTruncatedText>{count}</TableCell>
-			<TableCell onClick={(e): void => e.stopPropagation()}>
+			<GenericTableCell withTruncatedText>{message}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{concatenatedRoomNames}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{formatDateAndTime(ts)}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{count}</GenericTableCell>
+			<GenericTableCell onClick={(e): void => e.stopPropagation()}>
 				<ModerationConsoleActions report={report} onClick={onClick} />
-			</TableCell>
-		</TableRow>
+			</GenericTableCell>
+		</GenericTableRow>
 	);
 };
 

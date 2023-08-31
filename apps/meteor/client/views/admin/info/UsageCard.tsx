@@ -100,9 +100,6 @@ const UsageCard = ({ statistics, vertical }: UsageCardProps): ReactElement => {
 						<TextSeparator label={t('Stats_Total_Uploads')} value={statistics.uploadsTotal} />
 						<TextSeparator label={t('Stats_Total_Uploads_Size')} value={formatMemorySize(statistics.uploadsTotalSize)} />
 					</Card.Col.Section>
-				</Card.Col>
-				<Card.Divider />
-				<Card.Col>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('Total_rooms')}</Card.Col.Title>
 						<TextSeparator

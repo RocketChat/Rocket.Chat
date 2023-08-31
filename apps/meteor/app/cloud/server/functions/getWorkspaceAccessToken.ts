@@ -1,8 +1,8 @@
 import { Settings } from '@rocket.chat/models';
 
-import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
 import { settings } from '../../../settings/server';
+import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
+import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
 /**
  * @param {boolean} forceNew

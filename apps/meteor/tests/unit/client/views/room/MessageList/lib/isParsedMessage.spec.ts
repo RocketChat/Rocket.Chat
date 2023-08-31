@@ -1,6 +1,6 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import type { Root } from '@rocket.chat/message-parser';
 /* eslint-env mocha */
-import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { isParsedMessage } from '../../../../../../../client/views/room/MessageList/lib/isParsedMessage';

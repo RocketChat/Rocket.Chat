@@ -361,7 +361,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 							</ButtonGroup>
 						</Field.Row>
 						<Field.Row>
-							<Margins blockStart='x16'>
+							<Margins blockStart={16}>
 								<ButtonGroup stretch w='full'>
 									{inboxData?._id && (
 										<Button danger onClick={handleDelete}>

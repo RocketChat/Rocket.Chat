@@ -1,12 +1,12 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
+import { trim } from '../../lib/utils/stringUtils';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { roomCoordinator } from './rooms/roomCoordinator';
-import { trim } from '../../lib/utils/stringUtils';
 
 export class Spotlight {
 	async fetchRooms(userId, rooms) {
@@ -29,6 +29,7 @@ export class Spotlight {
 				t: 1,
 				name: 1,
 				fname: 1,
+				teamMain: 1,
 				joinCodeRequired: 1,
 				lastMessage: 1,
 				federated: true,
@@ -64,7 +65,7 @@ export class Spotlight {
 
 		return this.fetchRooms(
 			userId,
-			await Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions, includeFederatedRooms).toArray(),
+			await Rooms.findByNameOrFNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions, includeFederatedRooms).toArray(),
 		);
 	}
 

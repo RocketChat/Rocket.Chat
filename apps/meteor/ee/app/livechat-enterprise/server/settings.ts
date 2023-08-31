@@ -1,5 +1,5 @@
-import { Settings } from '@rocket.chat/models';
 import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { settingsRegistry } from '../../../../app/settings/server';
 

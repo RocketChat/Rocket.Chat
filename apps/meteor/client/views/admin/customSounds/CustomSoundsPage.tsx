@@ -41,7 +41,7 @@ const CustomSoundsPage = () => {
 	return (
 		<Page flexDirection='row'>
 			<Page name='admin-custom-sounds'>
-				<Page.Header title={t('Custom_Sounds')}>
+				<Page.Header title={t('Sounds')}>
 					<Button primary onClick={handleNewButtonClick} aria-label={t('New')}>
 						{t('New')}
 					</Button>

@@ -13,7 +13,7 @@ import ContactInfo from './contacts/contextualBar/ContactInfo';
 import ContactNewEdit from './contacts/contextualBar/ContactNewEdit';
 
 const HEADER_OPTIONS = {
-	new: { icon: 'user', title: 'New_Contact' },
+	new: { icon: 'user', title: 'New_contact' },
 	info: { icon: 'user', title: 'Contact_Info' },
 	edit: { icon: 'pencil', title: 'Edit_Contact_Profile' },
 } as const;

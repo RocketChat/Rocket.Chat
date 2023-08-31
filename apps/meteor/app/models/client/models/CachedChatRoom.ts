@@ -1,8 +1,8 @@
 import type { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 
-import { ChatSubscription } from './ChatSubscription';
-import { CachedCollection } from '../../../ui-cached-collection/client';
+import { CachedCollection } from '../../../ui-cached-collection/client/models/CachedCollection';
+import { CachedChatSubscription } from './CachedChatSubscription';
 
 class CachedChatRoom extends CachedCollection<IRoom> {
 	constructor() {
@@ -22,12 +22,12 @@ class CachedChatRoom extends CachedCollection<IRoom> {
 	}
 
 	private mergeWithSubscription(room: IRoom): IRoom {
-		const sub = ChatSubscription.findOne({ rid: room._id });
+		const sub = CachedChatSubscription.collection.findOne({ rid: room._id });
 		if (!sub) {
 			return room;
 		}
 
-		ChatSubscription.update(
+		CachedChatSubscription.collection.update(
 			{
 				rid: room._id,
 			},
@@ -82,7 +82,7 @@ class CachedChatRoom extends CachedCollection<IRoom> {
 			},
 		);
 
-		ChatSubscription.update(
+		CachedChatSubscription.collection.update(
 			{
 				rid: room._id,
 				lm: { $lt: room.lm },

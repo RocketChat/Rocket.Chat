@@ -27,8 +27,8 @@ const SidebarFooterDefault = (): ReactElement => {
 			<SidebarDivider />
 			<Box
 				is='footer'
-				pb='x12'
-				pi='x16'
+				pb={12}
+				pi={16}
 				height='x48'
 				width='auto'
 				className={sidebarFooterStyle}

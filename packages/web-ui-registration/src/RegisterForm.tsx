@@ -1,14 +1,17 @@
+/* eslint-disable complexity */
+import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput, Callout } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
+import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
+import EmailConfirmationForm from './EmailConfirmationForm';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
-import EmailConfirmationForm from './EmailConfirmationForm';
 
 type LoginRegisterPayload = {
 	name: string;
@@ -31,7 +34,12 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	const passwordConfirmationPlaceholder = String(useSetting('Accounts_ConfirmPasswordPlaceholder'));
 
 	const formLabelId = useUniqueId();
+	const passwordId = useUniqueId();
+	const passwordVerifierId = useUniqueId();
 	const registerUser = useRegisterMethod();
+	const customFields = useAccountsCustomFields();
+
+	const [serverError, setServerError] = useState<string | undefined>(undefined);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -42,8 +50,12 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		watch,
 		getValues,
 		clearErrors,
+		control,
 		formState: { errors },
-	} = useForm<LoginRegisterPayload>();
+	} = useForm<LoginRegisterPayload>({ mode: 'onBlur' });
+
+	const password = watch('password');
+	const passwordIsValid = useValidatePassword(password);
 
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
 		registerUser.mutate(
@@ -70,6 +82,9 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					if (/error-user-is-not-activated/.test(error.error)) {
 						dispatchToastMessage({ type: 'info', message: t('registration.page.registration.waitActivationWarning') });
 						setLoginRoute('login');
+					}
+					if (error.error === 'error-user-registration-custom-field') {
+						setServerError(error.message);
 					}
 				},
 			},
@@ -98,6 +113,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								})}
 								error={errors.name && t('registration.component.form.requiredField')}
 								aria-invalid={errors.name ? 'true' : 'false'}
+								placeholder={t('onboarding.form.adminInfoForm.fields.fullName.placeholder')}
 								id='name'
 							/>
 						</Field.Row>
@@ -145,18 +161,22 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							<PasswordInput
 								{...register('password', {
 									required: t('registration.component.form.requiredField'),
+									validate: () => (!passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
 								})}
 								error={errors.password && (errors.password?.message || t('registration.component.form.requiredField'))}
 								aria-invalid={errors.password ? 'true' : undefined}
-								id='password'
-								placeholder={passwordPlaceholder}
+								id={passwordId}
+								placeholder={passwordPlaceholder || t('Create_a_password')}
+								aria-describedby={passwordVerifierId}
 							/>
 						</Field.Row>
-						{errors.password && <Field.Error>{errors.password.message}</Field.Error>}
-					</Field>
-					{requiresPasswordConfirmation && (
-						<Field>
-							<Field.Label htmlFor='passwordConfirmation'>{t('registration.component.form.confirmPassword')}*</Field.Label>
+						{errors?.password && (
+							<Field.Error aria-live='assertive' id={`${passwordId}-error`}>
+								{errors.password.message}
+							</Field.Error>
+						)}
+						<PasswordVerifier password={password} id={passwordVerifierId} />
+						{requiresPasswordConfirmation && (
 							<Field.Row>
 								<PasswordInput
 									{...register('passwordConfirmation', {
@@ -167,17 +187,18 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 									error={errors.passwordConfirmation?.type === 'validate' ? t('registration.component.form.invalidConfirmPass') : undefined}
 									aria-invalid={errors.passwordConfirmation ? 'true' : false}
 									id='passwordConfirmation'
-									placeholder={passwordConfirmationPlaceholder}
+									placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
+									disabled={!passwordIsValid}
 								/>
 							</Field.Row>
-							{errors.passwordConfirmation?.type === 'validate' && (
-								<Field.Error>{t('registration.component.form.invalidConfirmPass')}</Field.Error>
-							)}
-							{errors.passwordConfirmation?.type === 'required' && (
-								<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
-							)}
-						</Field>
-					)}
+						)}
+						{errors.passwordConfirmation?.type === 'validate' && requiresPasswordConfirmation && (
+							<Field.Error>{t('registration.component.form.invalidConfirmPass')}</Field.Error>
+						)}
+						{errors.passwordConfirmation?.type === 'required' && requiresPasswordConfirmation && (
+							<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
+						)}
+					</Field>
 					{manuallyApproveNewUsersRequired && (
 						<Field>
 							<Field.Label htmlFor='reason'>{t('registration.component.form.reasonToJoin')}*</Field.Label>
@@ -194,6 +215,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							{errors.reason && <Field.Error>{t('registration.component.form.requiredField')}</Field.Error>}
 						</Field>
 					)}
+					<CustomFieldsForm formName='customFields' formControl={control} metadata={customFields} />
+					{serverError && <Callout type='danger'>{serverError}</Callout>}
 				</FieldGroup>
 			</Form.Container>
 			<Form.Footer>

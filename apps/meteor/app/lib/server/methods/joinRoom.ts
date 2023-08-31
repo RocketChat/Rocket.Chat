@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import type { IRoom, IRoomWithJoinCode, IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Rooms, Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { addUserToRoom } from '../functions';
-import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { addUserToRoom } from '../functions/addUserToRoom';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

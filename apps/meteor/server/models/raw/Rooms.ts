@@ -95,6 +95,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 				sparse: true,
 			},
+			{ key: { t: 1, ts: 1 } },
 		];
 	}
 
@@ -182,7 +183,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		const query: Filter<IRoom> = {
 			$and: [
 				name ? nameCondition : {},
-				(types && types.length) || discussion || teams
+				types?.length || discussion || teams
 					? {
 							$or: [
 								{
@@ -1287,13 +1288,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	// 3
-	findByNameAndTypesNotInIds(
+	findByNameOrFNameAndTypesNotInIds(
 		name: IRoom['name'] | RegExp,
 		types: Array<IRoom['t']>,
 		ids: Array<IRoom['_id']>,
 		options: FindOptions<IRoom> = {},
 		includeFederatedRooms = false,
 	): FindCursor<IRoom> {
+		const nameCondition: Filter<IRoom> = {
+			$or: [{ name }, { fname: name }],
+		};
 		const query: Filter<IRoom> = {
 			_id: {
 				$nin: ids,
@@ -1327,9 +1331,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 				includeFederatedRooms
 					? {
-							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
+							$or: [
+								{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }, nameCondition] },
+								{ federated: true, fname: name },
+							],
 					  }
-					: { $or: [{ federated: { $exists: false } }, { federated: false }], name },
+					: { $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }, nameCondition] },
 			],
 		};
 
@@ -1444,7 +1451,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		const update: UpdateFilter<IRoom> = {
 			$addToSet: {
 				importIds: {
-					$each: importIds,
+					$each: ([] as string[]).concat(importIds),
 				},
 			},
 		};
@@ -1701,8 +1708,32 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	unmuteUsernameByRoomId(_id: IRoom['_id'], username: IUser['username']): Promise<UpdateResult> {
+	muteReadOnlyUsernameByRoomId(_id: IRoom['_id'], username: IUser['username']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id, ro: true };
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				unmuted: username,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	unmuteMutedUsernameByRoomId(_id: IRoom['_id'], username: IUser['username']): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				muted: username,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	unmuteReadOnlyUsernameByRoomId(_id: string, username: string): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id, ro: true };
 
 		const update: UpdateFilter<IRoom> = {
 			$pull: {

@@ -12,10 +12,10 @@ type AppsListProps = {
 
 const AppsList = ({ apps, title }: AppsListProps): ReactElement => (
 	<>
-		<Box is='h3' fontScale='h3' color='default' mbe='x20'>
+		<Box is='h3' fontScale='h3' color='default' mbe={20}>
 			{title}
 		</Box>
-		<Box mbe='x24'>
+		<Box mbe={24}>
 			{apps.map((app) => (
 				<AppRow key={app.id} {...app} />
 			))}

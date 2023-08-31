@@ -1,4 +1,3 @@
-import { isOauthCustomConfiguration } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
@@ -10,7 +9,8 @@ Meteor.startup(() => {
 			custom: true,
 		})
 		.observe({
-			added(record) {
+			async added(record) {
+				const { isOauthCustomConfiguration } = await import('@rocket.chat/rest-typings');
 				if (!isOauthCustomConfiguration(record)) {
 					return;
 				}

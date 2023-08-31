@@ -104,7 +104,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 							</Button>
 						</Margins>
 					</Box>
-					<Button mbs='x4' danger w='full' onClick={handleDeleteIntegration}>
+					<Button mbs={4} danger w='full' onClick={handleDeleteIntegration}>
 						{t('Delete')}
 					</Button>
 				</Field.Row>

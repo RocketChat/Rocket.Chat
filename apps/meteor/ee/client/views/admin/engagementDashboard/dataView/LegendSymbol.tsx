@@ -7,7 +7,7 @@ type LegendSymbolProps = {
 };
 
 const LegendSymbol = ({ color = 'currentColor' }: LegendSymbolProps): ReactElement => (
-	<Margins inlineEnd='x8'>
+	<Margins inlineEnd={8}>
 		<Box
 			is='span'
 			aria-hidden='true'

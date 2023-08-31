@@ -11,19 +11,19 @@ function HistoryContent({ data, isLoading }: { data: Serialized<IIntegrationHist
 
 	if (isLoading) {
 		return (
-			<Box w='full' pb='x24'>
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
+			<Box w='full' pb={24}>
+				<Skeleton mbe={4} />
+				<Skeleton mbe={8} />
+				<Skeleton mbe={4} />
+				<Skeleton mbe={8} />
+				<Skeleton mbe={4} />
+				<Skeleton mbe={8} />
 			</Box>
 		);
 	}
 
 	if (data.length < 1) {
-		return <Box mbs='x16'>{t('Integration_Outgoing_WebHook_No_History')}</Box>;
+		return <Box mbs={16}>{t('Integration_Outgoing_WebHook_No_History')}</Box>;
 	}
 
 	return (

@@ -1,20 +1,22 @@
-import { VM, VMScript } from 'vm2';
-import { Random } from '@rocket.chat/random';
-import { Livechat } from 'meteor/rocketchat:livechat';
-import _ from 'underscore';
-import moment from 'moment';
 import { Integrations, Users } from '@rocket.chat/models';
 import * as Models from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { Livechat } from 'meteor/rocketchat:livechat';
+import moment from 'moment';
+import _ from 'underscore';
+import { VM, VMScript } from 'vm2';
 
 import * as s from '../../../../lib/utils/stringUtils';
-import { incomingLogger } from '../logger';
-import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
-import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
-import { settings } from '../../../settings/server';
-import { httpCall } from '../../../../server/lib/http/call';
-import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
+import { httpCall } from '../../../../server/lib/http/call';
+import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
+import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
+import { settings } from '../../../settings/server';
+import { incomingLogger } from '../logger';
 import { addOutgoingIntegration } from '../methods/outgoing/addOutgoingIntegration';
+import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
+
+const DISABLE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.DISABLE_INTEGRATION_SCRIPTS).toLowerCase());
 
 export const forbiddenModelMethods = ['registerModel', 'getCollectionName'];
 
@@ -64,6 +66,10 @@ function buildSandbox(store = {}) {
 }
 
 function getIntegrationScript(integration) {
+	if (DISABLE_INTEGRATION_SCRIPTS) {
+		throw API.v1.failure('integration-scripts-disabled');
+	}
+
 	const compiledScript = compiledScripts[integration._id];
 	if (compiledScript && +compiledScript._updatedAt === +integration._updatedAt) {
 		return compiledScript.script;
@@ -172,7 +178,12 @@ async function executeIntegrationRest() {
 		emoji: this.integration.emoji,
 	};
 
-	if (this.integration.scriptEnabled && this.integration.scriptCompiled && this.integration.scriptCompiled.trim() !== '') {
+	if (
+		!DISABLE_INTEGRATION_SCRIPTS &&
+		this.integration.scriptEnabled &&
+		this.integration.scriptCompiled &&
+		this.integration.scriptCompiled.trim() !== ''
+	) {
 		let script;
 		try {
 			script = getIntegrationScript(this.integration);

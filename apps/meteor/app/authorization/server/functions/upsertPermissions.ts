@@ -2,9 +2,9 @@
 import type { IPermission, ISetting } from '@rocket.chat/core-typings';
 import { Permissions, Settings } from '@rocket.chat/models';
 
+import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 import { settings } from '../../../settings/server';
 import { getSettingPermissionId, CONSTANTS } from '../../lib';
-import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 import { permissions } from '../constant/permissions';
 
 export const upsertPermissions = async (): Promise<void> => {
@@ -35,9 +35,7 @@ export const upsertPermissions = async (): Promise<void> => {
 			[key: string]: IPermission;
 		} = {};
 
-		const selector = { level: 'settings' as const, ...(settingId && { settingId }) };
-
-		await Permissions.find(selector).forEach(function (permission: IPermission) {
+		await Permissions.findByLevel('settings', settingId).forEach((permission: IPermission) => {
 			previousSettingPermissions[permission._id] = permission;
 		});
 		return previousSettingPermissions;
@@ -113,7 +111,7 @@ export const upsertPermissions = async (): Promise<void> => {
 	await createPermissionsForExistingSettings();
 
 	// register a callback for settings for be create in higher-level-packages
-	settings.on('*', async function ([settingId]) {
+	settings.on('*', async ([settingId]) => {
 		const previousSettingPermissions = await getPreviousPermissions(settingId);
 		const setting = await Settings.findOneById(settingId);
 		if (setting && !setting.hidden) {

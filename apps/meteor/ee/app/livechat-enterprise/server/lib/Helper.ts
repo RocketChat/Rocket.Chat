@@ -1,4 +1,5 @@
-import moment from 'moment';
+import { api } from '@rocket.chat/core-services';
+import type { IOmnichannelRoom, IOmnichannelServiceLevelAgreements, InquiryWithAgentInfo } from '@rocket.chat/core-typings';
 import {
 	Rooms as RoomRaw,
 	LivechatRooms,
@@ -7,19 +8,16 @@ import {
 	LivechatInquiry,
 	Users,
 } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-services';
+import moment from 'moment';
 import type { Document } from 'mongodb';
-import type { IOmnichannelRoom, IOmnichannelServiceLevelAgreements, InquiryWithAgentInfo } from '@rocket.chat/core-typings';
 
-import { memoizeDebounce } from './debounceByParams';
-import { settings } from '../../../../../app/settings/server';
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
-import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
-import { logger, helperLogger } from './logger';
-import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
-import { updateInquiryQueueSla } from './SlaHelper';
+import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
+import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
+import { updateInquiryQueueSla } from './SlaHelper';
+import { memoizeDebounce } from './debounceByParams';
+import { logger, helperLogger } from './logger';
 
 type QueueInfo = {
 	message: {
@@ -32,6 +30,7 @@ type QueueInfo = {
 	statistics: Document;
 	numberMostRecentChats: number;
 };
+
 export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { agentId?: string; departmentId?: string }) => {
 	if (departmentId) {
 		const department = await LivechatDepartmentRaw.findOneById(departmentId);
@@ -42,7 +41,7 @@ export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { 
 	}
 
 	if (agentId) {
-		const user = await Users.getAgentInfo(agentId);
+		const user = await Users.getAgentInfo(agentId, settings.get('Livechat_show_agent_info'));
 		const { livechat: { maxNumberSimultaneousChat = 0 } = {} } = user || {};
 		if (maxNumberSimultaneousChat > 0) {
 			return maxNumberSimultaneousChat;
@@ -144,35 +143,6 @@ const dispatchWaitingQueueStatus = async (department?: string) => {
 // When dealing with lots of queued items we need to make sure to notify their position
 // but we don't need to notify _each_ change that takes place, just their final position
 export const debouncedDispatchWaitingQueueStatus = memoizeDebounce(dispatchWaitingQueueStatus, 1200);
-
-export const processWaitingQueue = async (department: string | undefined, inquiry: InquiryWithAgentInfo) => {
-	const queue = department || 'Public';
-	helperLogger.debug(`Processing items on queue ${queue}`);
-
-	helperLogger.debug(`Processing inquiry ${inquiry._id} from queue ${queue}`);
-	const { defaultAgent } = inquiry;
-	// TODO: remove this typecast when routing manager becomes TS
-	const room = (await RoutingManager.delegateInquiry(inquiry, defaultAgent)) as IOmnichannelRoom;
-
-	const propagateAgentDelegated = async (rid: string, agentId: string) => {
-		await dispatchAgentDelegated(rid, agentId);
-	};
-
-	if (room?.servedBy) {
-		const {
-			_id: rid,
-			servedBy: { _id: agentId },
-		} = room;
-		helperLogger.debug(`Inquiry ${inquiry._id} taken successfully by agent ${agentId}. Notifying`);
-		setTimeout(() => {
-			void propagateAgentDelegated(rid, agentId);
-		}, 1000);
-
-		return true;
-	}
-
-	return false;
-};
 
 export const setPredictedVisitorAbandonmentTime = async (room: IOmnichannelRoom) => {
 	if (

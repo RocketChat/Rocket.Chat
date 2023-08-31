@@ -1,8 +1,9 @@
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { sendSimpleMessage } from '../../data/chat.helper';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
 
 describe('AutoTranslate', function () {
 	this.retries(0);

@@ -13,28 +13,28 @@ const ButtonElement = ({
   surfaceRenderer,
 }: ButtonElementProps): ReactElement => {
   const [{ loading }, action] = useUiKitState(block, context);
+  const { style, url, text, value, secondary } = block;
 
-  if (block.url) {
+  if (url) {
     return (
       <Button
         is='a'
         target='_blank'
-        href={block.url}
-        disabled={loading}
-        primary={block.style === 'primary'}
-        danger={block.style === 'danger'}
-        minWidth='4ch'
         small
+        minWidth='4ch'
+        disabled={loading}
+        href={url}
+        primary={style === 'primary'}
+        danger={style === 'danger'}
+        success={style === 'success'}
+        warning={style === 'warning'}
+        secondary={secondary}
         onClick={action}
       >
         {loading ? (
           <Throbber />
         ) : (
-          surfaceRenderer.renderTextObject(
-            block.text,
-            0,
-            UiKit.BlockContext.NONE
-          )
+          surfaceRenderer.renderTextObject(text, 0, UiKit.BlockContext.NONE)
         )}
       </Button>
     );
@@ -42,18 +42,21 @@ const ButtonElement = ({
 
   return (
     <Button
-      disabled={loading}
-      primary={block.style === 'primary'}
-      danger={block.style === 'danger'}
-      minWidth='4ch'
       small
-      value={block.value}
+      minWidth='4ch'
+      disabled={loading}
+      primary={style === 'primary'}
+      danger={style === 'danger'}
+      success={style === 'success'}
+      warning={style === 'warning'}
+      secondary={secondary}
+      value={value}
       onClick={action}
     >
       {loading ? (
         <Throbber />
       ) : (
-        surfaceRenderer.renderTextObject(block.text, 0, UiKit.BlockContext.NONE)
+        surfaceRenderer.renderTextObject(text, 0, UiKit.BlockContext.NONE)
       )}
     </Button>
   );

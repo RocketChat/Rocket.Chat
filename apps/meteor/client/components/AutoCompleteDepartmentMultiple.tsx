@@ -13,12 +13,14 @@ type AutoCompleteDepartmentMultipleProps = {
 	onChange: (value: PaginatedMultiSelectOption[]) => void;
 	onlyMyDepartments?: boolean;
 	showArchived?: boolean;
+	enabled?: boolean;
 };
 
 const AutoCompleteDepartmentMultiple = ({
 	value,
 	onlyMyDepartments = false,
 	showArchived = false,
+	enabled = false,
 	onChange = () => undefined,
 }: AutoCompleteDepartmentMultipleProps) => {
 	const t = useTranslation();
@@ -28,8 +30,8 @@ const AutoCompleteDepartmentMultiple = ({
 
 	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
 		useMemo(
-			() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments, ...(showArchived && { showArchived: true }) }),
-			[debouncedDepartmentsFilter, onlyMyDepartments, showArchived],
+			() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments, ...(showArchived && { showArchived: true }), enabled }),
+			[debouncedDepartmentsFilter, enabled, onlyMyDepartments, showArchived],
 		),
 	);
 

@@ -1,15 +1,15 @@
+import { OmnichannelIntegration } from '@rocket.chat/core-services';
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
-import { OmnichannelIntegration } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { normalizeMessageFileUpload } from '../../utils/server/functions/normalizeMessageFileUpload';
-import { callbackLogger } from './lib/callbackLogger';
+import { callbackLogger } from './lib/logger';
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message, room) {
+	async (message, room) => {
 		callbackLogger.debug('Attempting to send SMS message');
 		// skips this callback if the message was edited
 		if (isEditedMessage(message)) {
@@ -40,11 +40,12 @@ callbacks.add(
 			return message;
 		}
 
-		let extraData = {};
+		const { rid, u: { _id: userId } = {} } = message;
+		let extraData = { rid, userId };
 		if (message.file) {
 			message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
-			const { fileUpload, rid, u: { _id: userId } = {} } = message;
-			extraData = Object.assign({}, { rid, userId, fileUpload });
+			const { fileUpload } = message;
+			extraData = Object.assign({}, extraData, { fileUpload });
 		}
 
 		if (message.location) {

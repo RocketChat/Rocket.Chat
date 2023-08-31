@@ -2,7 +2,8 @@ import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import * as UiKit from '@rocket.chat/ui-kit';
 import { useContext, useMemo, useState } from 'react';
 
-import { kitContext, useUiKitStateValue } from '../contexts/kitContext';
+import { UiKitContext } from '../contexts/UiKitContext';
+import { useUiKitStateValue } from './useUiKitStateValue';
 
 type UiKitState<
   TElement extends UiKit.ActionableElement = UiKit.ActionableElement
@@ -18,10 +19,23 @@ const hasInitialValue = <TElement extends UiKit.ActionableElement>(
 ): element is TElement & { initialValue: number | string } =>
   'initialValue' in element;
 
+const hasInitialTime = <TElement extends UiKit.ActionableElement>(
+  element: TElement
+): element is TElement & { initialTime: string } => 'initialTime' in element;
+
+const hasInitialDate = <TElement extends UiKit.ActionableElement>(
+  element: TElement
+): element is TElement & { initialDate: string } => 'initialDate' in element;
+
 const hasInitialOption = <TElement extends UiKit.ActionableElement>(
   element: TElement
 ): element is TElement & { initialOption: UiKit.Option } =>
   'initialOption' in element;
+
+const hasInitialOptions = <TElement extends UiKit.ActionableElement>(
+  element: TElement
+): element is TElement & { initialOptions: UiKit.Option[] } =>
+  'initialOptions' in element;
 
 export const useUiKitState: <TElement extends UiKit.ActionableElement>(
   element: TElement,
@@ -41,11 +55,15 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
     appId: appIdFromContext,
     viewId,
     state,
-  } = useContext(kitContext);
+  } = useContext(UiKitContext);
 
   const initialValue =
     (hasInitialValue(rest) && rest.initialValue) ||
+    (hasInitialTime(rest) && rest.initialTime) ||
+    (hasInitialDate(rest) && rest.initialDate) ||
     (hasInitialOption(rest) && rest.initialOption.value) ||
+    (hasInitialOptions(rest) &&
+      rest.initialOptions.map((option) => option.value)) ||
     undefined;
 
   const { value: _value, error } = useUiKitStateValue(actionId, initialValue);
@@ -54,10 +72,22 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
 
   const actionFunction = useMutableCallback(async (e) => {
     const {
-      target: { value },
+      target: { value: elValue },
     } = e;
     setLoading(true);
-    setValue(value);
+
+    if (Array.isArray(value)) {
+      const idx = value.findIndex((value) => value === elValue);
+
+      if (idx > -1) {
+        setValue(value.filter((_, i) => i !== idx));
+      } else {
+        setValue([...value, elValue]);
+      }
+    } else {
+      setValue(elValue);
+    }
+
     state && (await state({ blockId, appId, actionId, value, viewId }, e));
     await action(
       {

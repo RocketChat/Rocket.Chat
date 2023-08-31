@@ -1,11 +1,11 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Subscriptions } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbackLogger } from '../../../../../app/livechat/server/lib/logger';
 import { settings } from '../../../../../app/settings/server';
-import { debouncedDispatchWaitingQueueStatus } from '../lib/Helper';
-import { callbackLogger } from '../../../../../app/livechat/server/lib/callbackLogger';
+import { callbacks } from '../../../../../lib/callbacks';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
+import { debouncedDispatchWaitingQueueStatus } from '../lib/Helper';
 
 type LivechatCloseCallbackParams = {
 	room: IOmnichannelRoom;

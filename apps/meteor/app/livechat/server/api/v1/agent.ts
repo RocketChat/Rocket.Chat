@@ -1,13 +1,13 @@
-import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.chat/rest-typings';
-import { Users } from '@rocket.chat/models';
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
-import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../../lib/Livechat';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
 	async get() {
@@ -90,16 +90,25 @@ API.v1.addRoute(
 				return API.v1.success({ status: agent.statusLivechat });
 			}
 
+			const canChangeStatus = await Livechat.allowAgentChangeServiceStatus(newStatus, agentId);
+
 			if (agentId !== this.userId) {
 				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {
 					return API.v1.unauthorized();
 				}
-				await Livechat.setUserStatusLivechat(agentId, newStatus);
 
-				return API.v1.success({ status: newStatus });
+				// Silent fail for admins when BH is closed
+				// Next version we'll update this to return an error
+				// And update the FE accordingly
+				if (canChangeStatus) {
+					await Livechat.setUserStatusLivechat(agentId, newStatus);
+					return API.v1.success({ status: newStatus });
+				}
+
+				return API.v1.success({ status: agent.statusLivechat });
 			}
 
-			if (!(await Livechat.allowAgentChangeServiceStatus(newStatus, agentId))) {
+			if (!canChangeStatus) {
 				return API.v1.failure('error-business-hours-are-closed');
 			}
 

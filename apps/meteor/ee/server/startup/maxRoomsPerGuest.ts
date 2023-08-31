@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import { Subscriptions } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../lib/callbacks';
-import { getMaxRoomsPerGuest } from '../../app/license/server/license';
 import { i18n } from '../../../server/lib/i18n';
+import { getMaxRoomsPerGuest } from '../../app/license/server/license';
 
 callbacks.add(
 	'beforeAddedToRoom',

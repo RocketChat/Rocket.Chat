@@ -1,12 +1,12 @@
 import type { ReactElement, ReactNode } from 'react';
 
+import GuestForm from './GuestForm';
 import { LoginForm } from './LoginForm';
-import ResetPasswordForm from './ResetPasswordForm';
-import { useLoginRouter } from './hooks/useLoginRouter';
 import RegisterSecretPageRouter from './RegisterSecretPageRouter';
 import RegisterTemplate from './RegisterTemplate';
+import ResetPasswordForm from './ResetPasswordForm';
+import { useLoginRouter } from './hooks/useLoginRouter';
 import type { LoginRoutes } from './hooks/useLoginRouter';
-import GuestForm from './GuestForm';
 
 export const RegistrationPageRouter = ({
 	defaultRoute = 'login',

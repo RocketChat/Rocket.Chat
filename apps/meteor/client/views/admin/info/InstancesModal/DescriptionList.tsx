@@ -10,11 +10,11 @@ type DescriptionListProps = {
 const DescriptionList = ({ children, title }: DescriptionListProps) => (
 	<>
 		{title && (
-			<Box display='flex' justifyContent='flex-end' width='30%' paddingInline='x8'>
+			<Box display='flex' justifyContent='flex-end' width='30%' paddingInline={8}>
 				{title}
 			</Box>
 		)}
-		<Table striped marginBlockEnd='x32' width='full'>
+		<Table striped marginBlockEnd={32} width='full'>
 			<TableBody>{children}</TableBody>
 		</Table>
 	</>

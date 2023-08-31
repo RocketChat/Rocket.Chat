@@ -48,6 +48,17 @@ jobs:
         if: matrix.check == 'ts'
         run: yarn turbo run typecheck
 
+      - name: Cache eslint
+        uses: actions/cache@v3
+        if: matrix.check == 'lint'
+        with:
+          path: ./apps/meteor/.eslintcache
+          key: eslintcache-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}-${{ github.event.issue.number }}
+          restore-keys: |
+            eslintcache-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}
+            eslintcache-cache-${{ runner.OS }}
+            eslintcache-cache
+
       - name: Lint
         if: matrix.check == 'lint'
         run: yarn lint

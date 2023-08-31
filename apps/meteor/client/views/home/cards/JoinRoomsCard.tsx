@@ -1,15 +1,15 @@
 import { Button } from '@rocket.chat/fuselage';
 import { Card } from '@rocket.chat/ui-client';
-import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 const JoinRoomsCard = (): ReactElement => {
 	const t = useTranslation();
 
-	const directoryRoute = useRoute('directory');
+	const router = useRouter();
 	const handleDirectory = (): void => {
-		directoryRoute.push({});
+		router.navigate('/directory');
 	};
 
 	return (

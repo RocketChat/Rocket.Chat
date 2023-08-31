@@ -2,9 +2,9 @@ import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { ContextType } from 'react';
 import { useMemo } from 'react';
 
+import type { AppsContext } from '../../../contexts/AppsContext';
 import type { AsyncState } from '../../../lib/asyncState';
 import { AsyncStatePhase } from '../../../lib/asyncState';
-import type { AppsContext } from '../AppsContext';
 import { filterAppsByCategories } from '../helpers/filterAppsByCategories';
 import { filterAppsByDisabled } from '../helpers/filterAppsByDisabled';
 import { filterAppsByEnabled } from '../helpers/filterAppsByEnabled';

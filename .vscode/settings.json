@@ -20,6 +20,7 @@
 	"typescript.tsdk": "./node_modules/typescript/lib",
 	"cSpell.words": [
 		"autotranslate",
+		"Contextualbar",
 		"fname",
 		"Gazzodown",
 		"katex",

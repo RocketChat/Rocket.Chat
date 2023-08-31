@@ -1,15 +1,14 @@
-import URL from 'url';
 import QueryString from 'querystring';
+import URL from 'url';
 
-import { Meteor } from 'meteor/meteor';
 import type { MessageAttachment, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms } from '@rocket.chat/models';
 
-import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
-import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
+import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { canAccessRoomAsync } from '../../authorization/server/functions/canAccessRoom';
+import { settings } from '../../settings/server';
 import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
 const recursiveRemoveAttachments = (attachments: MessageAttachment, deep = 1, quoteChainLimit: number): MessageAttachment => {
@@ -51,7 +50,7 @@ callbacks.add(
 
 		for await (const item of msg.urls) {
 			// if the URL doesn't belong to the current server, skip
-			if (!item.url.includes(Meteor.absoluteUrl())) {
+			if (!item.url.includes(settings.get('Site_Url'))) {
 				continue;
 			}
 

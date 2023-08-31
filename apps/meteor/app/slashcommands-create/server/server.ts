@@ -1,12 +1,12 @@
 import { api } from '@rocket.chat/core-services';
-import { Rooms } from '@rocket.chat/models';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
 
+import { i18n } from '../../../server/lib/i18n';
+import { createChannelMethod } from '../../lib/server/methods/createChannel';
+import { createPrivateGroupMethod } from '../../lib/server/methods/createPrivateGroup';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { i18n } from '../../../server/lib/i18n';
-import { createPrivateGroupMethod } from '../../lib/server/methods/createPrivateGroup';
-import { createChannelMethod } from '../../lib/server/methods/createChannel';
 
 slashCommands.add({
 	command: 'create',
