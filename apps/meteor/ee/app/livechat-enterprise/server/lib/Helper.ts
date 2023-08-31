@@ -11,8 +11,6 @@ import {
 import moment from 'moment';
 import type { Document } from 'mongodb';
 
-import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -145,35 +143,6 @@ const dispatchWaitingQueueStatus = async (department?: string) => {
 // When dealing with lots of queued items we need to make sure to notify their position
 // but we don't need to notify _each_ change that takes place, just their final position
 export const debouncedDispatchWaitingQueueStatus = memoizeDebounce(dispatchWaitingQueueStatus, 1200);
-
-export const processWaitingQueue = async (department: string | undefined, inquiry: InquiryWithAgentInfo) => {
-	const queue = department || 'Public';
-	helperLogger.debug(`Processing items on queue ${queue}`);
-
-	helperLogger.debug(`Processing inquiry ${inquiry._id} from queue ${queue}`);
-	const { defaultAgent } = inquiry;
-	// TODO: remove this typecast when routing manager becomes TS
-	const room = (await RoutingManager.delegateInquiry(inquiry, defaultAgent)) as IOmnichannelRoom;
-
-	const propagateAgentDelegated = async (rid: string, agentId: string) => {
-		await dispatchAgentDelegated(rid, agentId);
-	};
-
-	if (room?.servedBy) {
-		const {
-			_id: rid,
-			servedBy: { _id: agentId },
-		} = room;
-		helperLogger.debug(`Inquiry ${inquiry._id} taken successfully by agent ${agentId}. Notifying`);
-		setTimeout(() => {
-			void propagateAgentDelegated(rid, agentId);
-		}, 1000);
-
-		return true;
-	}
-
-	return false;
-};
 
 export const setPredictedVisitorAbandonmentTime = async (room: IOmnichannelRoom) => {
 	if (
