@@ -7,7 +7,7 @@ import * as github from '@actions/github';
 
 import { setupOctokit } from './setupOctokit';
 import { createNpmFile } from './createNpmFile';
-import { getChangelogEntry, bumpFileVersions, readPackageJson } from './utils';
+import { getChangelogEntry, bumpFileVersions, readPackageJson, getEngineVersionsMd } from './utils';
 import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
 import { commitChanges, createBranch, createTag, pushNewBranch } from './gitUtils';
 
@@ -49,7 +49,7 @@ export async function bumpNextVersion({
 		throw new Error('Could not find changelog entry for version newVersion');
 	}
 
-	const prBody = changelogEntry.content;
+	const prBody = (await getEngineVersionsMd(cwd)) + changelogEntry.content;
 
 	const finalVersion = newVersion.split('-')[0];
 

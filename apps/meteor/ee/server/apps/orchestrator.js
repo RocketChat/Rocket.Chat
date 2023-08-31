@@ -26,6 +26,8 @@ function isTesting() {
 	return process.env.TEST_MODE === 'true';
 }
 
+const DISABLED_PRIVATE_APP_INSTALLATION = ['yes', 'true'].includes(String(process.env.DISABLE_PRIVATE_APP_INSTALLATION).toLowerCase());
+
 let appsSourceStorageType;
 let appsSourceStorageFilesystemPath;
 
@@ -135,6 +137,10 @@ export class AppServerOrchestrator {
 
 	isDebugging() {
 		return !isTesting();
+	}
+
+	shouldDisablePrivateAppInstallation() {
+		return DISABLED_PRIVATE_APP_INSTALLATION;
 	}
 
 	/**
