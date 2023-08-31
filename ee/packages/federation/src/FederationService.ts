@@ -21,12 +21,12 @@ import type { FederationUserServiceSender } from './application/user/sender/User
 import type { IFederationBridge } from './domain/IFederationBridge';
 import { FederationFactory } from './infrastructure/Factory';
 import type { InMemoryQueue } from './infrastructure/queue/InMemoryQueue';
-import type { RocketChatFileAdapter } from './infrastructure/rocket-chat/adapters/File';
+import type { IFileAdapterDependencies, RocketChatFileAdapter } from './infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from './infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatNotificationAdapter } from './infrastructure/rocket-chat/adapters/Notification';
 import type { RocketChatRoomAdapter } from './infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from './infrastructure/rocket-chat/adapters/Settings';
-import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapters/User';
+import type { IUserAdapterDependencies, RocketChatUserAdapter } from './infrastructure/rocket-chat/adapters/User';
 import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
 
@@ -40,6 +40,7 @@ const allowedActionsInFederatedRooms: ValueOf<typeof RoomMemberActions>[] = [
 ];
 
 const allowedActionsForModerators = allowedActionsInFederatedRooms.filter((action) => action !== RoomMemberActions.SET_AS_OWNER);
+
 export class FederationService extends ServiceClass implements IFederationService {
 	protected name = 'federation';
 
@@ -75,7 +76,7 @@ export class FederationService extends ServiceClass implements IFederationServic
 
 	protected bridge: IFederationBridge;
 
-	constructor() {
+	private constructor(userAdapterDeps: IUserAdapterDependencies, fileAdapterDeps: IFileAdapterDependencies) {
 		super();
 		const internalQueueInstance = FederationFactory.buildFederationQueue();
 		const internalSettingsAdapter = FederationFactory.buildInternalSettingsAdapter();
@@ -84,9 +85,9 @@ export class FederationService extends ServiceClass implements IFederationServic
 		this.internalQueueInstance = internalQueueInstance;
 		this.internalSettingsAdapter = internalSettingsAdapter;
 		this.bridge = bridge;
-		this.internalFileAdapter = FederationFactory.buildInternalFileAdapter();
+		this.internalFileAdapter = FederationFactory.buildInternalFileAdapter(fileAdapterDeps);
 		this.internalRoomAdapter = FederationFactory.buildInternalRoomAdapter();
-		this.internalUserAdapter = FederationFactory.buildInternalUserAdapter();
+		this.internalUserAdapter = FederationFactory.buildInternalUserAdapter(userAdapterDeps);
 		this.internalMessageAdapter = FederationFactory.buildInternalMessageAdapter();
 		this.internalNotificationAdapter = FederationFactory.buildInternalNotificationAdapter();
 		this.internalRoomServiceSender = FederationFactory.buildRoomServiceSender(
@@ -512,8 +513,11 @@ export class FederationService extends ServiceClass implements IFederationServic
 		);
 	}
 
-	static async createFederationService(): Promise<FederationService> {
-		const federationService = new FederationService();
+	static async createFederationService(
+		userAdapterDeps: IUserAdapterDependencies,
+		fileAdapterDeps: IFileAdapterDependencies,
+	): Promise<FederationService> {
+		const federationService = new FederationService(userAdapterDeps, fileAdapterDeps);
 		await federationService.initialize();
 		return federationService;
 	}

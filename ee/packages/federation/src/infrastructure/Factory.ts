@@ -24,12 +24,14 @@ import {
 } from './matrix/handlers/Room';
 import { MatrixUserTypingStatusChangedHandler } from './matrix/handlers/User';
 import { InMemoryQueue } from './queue/InMemoryQueue';
+import type { IFileAdapterDependencies } from './rocket-chat/adapters/File';
 import { RocketChatFileAdapter } from './rocket-chat/adapters/File';
 import { RocketChatMessageAdapter } from './rocket-chat/adapters/Message';
 import { RocketChatNotificationAdapter } from './rocket-chat/adapters/Notification';
 import { RocketChatQueueAdapter } from './rocket-chat/adapters/Queue';
 import { RocketChatRoomAdapter } from './rocket-chat/adapters/Room';
 import { RocketChatSettingsAdapter } from './rocket-chat/adapters/Settings';
+import type { IUserAdapterDependencies } from './rocket-chat/adapters/User';
 import { RocketChatUserAdapter } from './rocket-chat/adapters/User';
 
 export class FederationFactory {
@@ -41,16 +43,16 @@ export class FederationFactory {
 		return new RocketChatRoomAdapter();
 	}
 
-	public static buildInternalUserAdapter(): RocketChatUserAdapter {
-		return new RocketChatUserAdapter();
+	public static buildInternalUserAdapter(userAdapterDeps: IUserAdapterDependencies): RocketChatUserAdapter {
+		return new RocketChatUserAdapter(userAdapterDeps);
 	}
 
 	public static buildInternalMessageAdapter(): RocketChatMessageAdapter {
 		return new RocketChatMessageAdapter();
 	}
 
-	public static buildInternalFileAdapter(): RocketChatFileAdapter {
-		return new RocketChatFileAdapter();
+	public static buildInternalFileAdapter(fileAdapterDeps: IFileAdapterDependencies): RocketChatFileAdapter {
+		return new RocketChatFileAdapter(fileAdapterDeps);
 	}
 
 	public static buildInternalQueueAdapter(): RocketChatQueueAdapter {

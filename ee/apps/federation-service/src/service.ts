@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 3552;
 
 	// need to import service after models are registered
 	const { FederationService } = await import('@rocket.chat/federation');
-	const service = await FederationService.createFederationService();
+	const service = await FederationService.createFederationService({} as any, {} as any);
 
 	api.registerService(service);
 

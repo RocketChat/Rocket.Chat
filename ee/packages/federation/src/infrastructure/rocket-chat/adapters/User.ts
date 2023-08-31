@@ -2,7 +2,6 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users, MatrixBridgedUser } from '@rocket.chat/models';
 
 import { FederatedUser } from '../../../domain/FederatedUser';
-// import { _setRealName as setRealName, setUserAvatar } from '../../../../../../app/lib/server';
 import { extractServerNameFromExternalIdentifier } from '../../matrix/converters/room/RoomReceiver';
 
 const createFederatedUserInstance = (externalUserId: string, user: IUser, remote = true): FederatedUser => {
@@ -25,7 +24,21 @@ export const getFederatedUserByInternalUsername = async (username: string): Prom
 	return createFederatedUserInstance(externalUserId, user, remote);
 };
 
+// TODO: temporary solution until we can have all the dependencies isolated and make the service fully autonomous
+export interface IUserAdapterDependencies {
+	setRealName(userId: string, name: string, fullUser?: IUser): Promise<IUser | undefined>;
+	setUserAvatar(
+		user: Pick<IUser, '_id' | 'username'>,
+		dataURI: string | Buffer,
+		contentType: string | undefined,
+		service?: 'initials' | 'url' | 'rest' | string,
+		etag?: string,
+	): Promise<void>;
+}
+
 export class RocketChatUserAdapter {
+	constructor(private readonly dependencies: IUserAdapterDependencies) {}
+
 	public async getFederatedUserByExternalId(externalUserId: string): Promise<FederatedUser | undefined> {
 		const internalBridgedUser = await MatrixBridgedUser.getBridgedUserByExternalUserId(externalUserId);
 		if (!internalBridgedUser) {
@@ -115,16 +128,16 @@ export class RocketChatUserAdapter {
 		);
 	}
 
-	public async setAvatar(_federatedUser: FederatedUser, _avatarUrl: string): Promise<void> {
-		// await setUserAvatar(federatedUser.getInternalReference(), avatarUrl, 'image/jpeg', 'url'); // this mimetype is fixed here, but the function when called with a url as source don't use that mimetype
+	public async setAvatar(federatedUser: FederatedUser, avatarUrl: string): Promise<void> {
+		await this.dependencies.setUserAvatar(federatedUser.getInternalReference(), avatarUrl, 'image/jpeg', 'url'); // this mimetype is fixed here, but the function when called with a url as source don't use that mimetype
 	}
 
 	public async updateFederationAvatar(internalUserId: string, externalAvatarUrl: string): Promise<void> {
 		await Users.setFederationAvatarUrlById(internalUserId, externalAvatarUrl);
 	}
 
-	public async updateRealName(_internalUser: IUser, _name: string): Promise<void> {
-		// await setRealName(internalUser._id, name, internalUser);
+	public async updateRealName(internalUser: IUser, name: string): Promise<void> {
+		await this.dependencies.setRealName(internalUser._id, name, internalUser);
 	}
 
 	public async createLocalUser(internalUser: IUser): Promise<void> {
