@@ -251,7 +251,9 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	): Promise<UpdateResult>;
 	setCustomFieldsById(rid: string, customFields: Record<string, any>): Promise<UpdateResult>;
 	muteUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
-	unmuteUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
+	muteReadOnlyUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
+	unmuteMutedUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
+	unmuteReadOnlyUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
 	saveFeaturedById(rid: string, featured: boolean): Promise<UpdateResult>;
 	saveDefaultById(rid: string, defaultValue: boolean): Promise<UpdateResult>;
 	saveFavoriteById(rid: string, favorite: boolean, defaultValue: boolean): Promise<UpdateResult>;
