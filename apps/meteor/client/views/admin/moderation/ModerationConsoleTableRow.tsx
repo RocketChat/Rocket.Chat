@@ -28,7 +28,7 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 	const concatenatedRoomNames = roomNames.join(', ');
 
 	return (
-		<GenericTableRow key={_id} onKeyDown={(): void => onClick(_id)} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
+		<GenericTableRow key={_id} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					{username && (

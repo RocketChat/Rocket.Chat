@@ -40,7 +40,9 @@ test.describe.serial('settings-account-profile', () => {
 	});
 
 	test('Personal Access Tokens', async ({ page }) => {
+		const response = page.waitForResponse('**/api/v1/users.getPersonalAccessTokens');
 		await page.goto('/account/tokens');
+		await response;
 
 		await test.step('expect show empty personal access tokens table', async () => {
 			await expect(poAccountProfile.tokensTableEmpty).toBeVisible();

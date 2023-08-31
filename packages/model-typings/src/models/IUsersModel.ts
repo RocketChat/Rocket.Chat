@@ -384,4 +384,5 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		query: Filter<IUser>,
 		options: FindOptions<IUser>,
 	): Promise<{ sortedResults: (T & { departments: string[] })[]; totalCount: { total: number }[] }[]>;
+	countByRole(roleName: string): Promise<number>;
 }

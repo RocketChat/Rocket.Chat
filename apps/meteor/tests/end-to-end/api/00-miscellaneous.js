@@ -176,6 +176,7 @@ describe('miscellaneous', function () {
 					'sidebarGroupByType',
 					'muteFocusedConversations',
 					'notifyCalendarEvents',
+					'enableMobileRinging',
 				].filter((p) => Boolean(p));
 
 				expect(res.body).to.have.property('success', true);

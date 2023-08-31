@@ -424,4 +424,12 @@ export abstract class BaseRaw<
 	watch(pipeline?: object[]): ChangeStream<T> {
 		return this.col.watch(pipeline);
 	}
+
+	countDocuments(query: Filter<T>): Promise<number> {
+		return this.col.countDocuments(query);
+	}
+
+	estimatedDocumentCount(): Promise<number> {
+		return this.col.estimatedDocumentCount();
+	}
 }

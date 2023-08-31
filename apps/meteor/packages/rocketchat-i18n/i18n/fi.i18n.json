@@ -3806,7 +3806,7 @@
   "Post_to_s_as_s": "Julkaise kohteessa <strong>%s</strong> käyttäjänä <strong>%s</strong>",
   "post-readonly": "Postaa ReadOnly",
   "post-readonly_description": "Lupa lähettää viesti kanavalle, jolla on vain lukuoikeus",
-  "Powered_by_RocketChat": "Palvelun tarjoaa Elisa Videra",
+  "Powered_by_RocketChat": "Palvelun tarjoaa Rocket.Chat",
   "Preferences": "Asetukset",
   "Preferences_saved": "Asetukset tallennettu",
   "Preparing_data_for_import_process": "Tietojen valmistelu tuontiprosessia varten",

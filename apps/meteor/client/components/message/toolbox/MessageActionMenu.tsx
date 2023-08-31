@@ -1,41 +1,66 @@
-import { MessageToolboxItem, Option, OptionDivider, Box } from '@rocket.chat/fuselage';
+import { Box, MessageToolboxItem, Option, OptionDivider, OptionTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, UIEvent, ReactElement } from 'react';
-import React, { useState, Fragment, useRef } from 'react';
+import type { ComponentProps, MouseEvent, MouseEventHandler, ReactElement } from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import ToolboxDropdown from './ToolboxDropdown';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
-	action: (event: UIEvent) => void;
+	action: ((event: MouseEvent<HTMLElement, MouseEvent>) => void) & MouseEventHandler<HTMLElement>;
 };
 
 type MessageActionMenuProps = {
 	options: MessageActionConfigOption[];
 };
 
+const getSectionOrder = (section: string): number => {
+	switch (section) {
+		case 'communication':
+			return 0;
+		case 'interaction':
+			return 1;
+		case 'duplication':
+			return 2;
+		case 'apps':
+			return 3;
+		case 'management':
+			return 4;
+		default:
+			return 5;
+	}
+};
+
 const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): ReactElement => {
 	const ref = useRef(null);
-
 	const t = useTranslation();
 	const [visible, setVisible] = useState(false);
 	const isLayoutEmbedded = useEmbeddedLayout();
 
-	const groupOptions = options
-		.map(({ color, ...option }) => ({
-			...option,
-			...(color === 'alert' && { variant: 'danger' as const }),
-		}))
-		.reduce((acc, option) => {
-			const group = option.variant ? option.variant : '';
-			acc[group] = acc[group] || [];
-			if (!(isLayoutEmbedded && option.id === 'reply-directly')) acc[group].push(option);
+	const groupOptions = options.reduce((acc, option) => {
+		const { type = '' } = option;
 
+		if (option.color === 'alert') {
+			option.variant = 'danger' as const;
+		}
+
+		const order = getSectionOrder(type);
+
+		const [sectionType, options] = acc[getSectionOrder(type)] ?? [type, []];
+
+		if (!(isLayoutEmbedded && option.id === 'reply-directly')) {
+			options.push(option);
+		}
+
+		if (options.length === 0) {
 			return acc;
-		}, {} as { [key: string]: MessageActionConfigOption[] }) as {
-		[key: string]: MessageActionConfigOption[];
-	};
+		}
+
+		acc[order] = [sectionType, options];
+
+		return acc;
+	}, [] as unknown as [section: string, options: Array<MessageActionConfigOption>][]);
 
 	return (
 		<>
@@ -51,8 +76,9 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 				<>
 					<Box position='fixed' inset={0} onClick={(): void => setVisible(!visible)} />
 					<ToolboxDropdown reference={ref} {...props}>
-						{Object.entries(groupOptions).map(([, options], index, arr) => (
+						{groupOptions.map(([section, options], index, arr) => (
 							<Fragment key={index}>
+								{section === 'apps' && <OptionTitle>Apps</OptionTitle>}
 								{options.map((option) => (
 									<Option
 										variant={option.variant}
