@@ -9,7 +9,7 @@ import type { IBannerService } from './types/IBannerService';
 import type { ICalendarService } from './types/ICalendarService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
-import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
+import type { IFederationService } from './types/IFederationService';
 import type { IImportService } from './types/IImportService';
 import type { ILDAPService } from './types/ILDAPService';
 import type { ILicense } from './types/ILicense';
@@ -56,7 +56,7 @@ export { IBroker, IBrokerNode, BaseMetricOptions, IServiceMetrics } from './type
 
 export { IServiceContext, ServiceClass, IServiceClass, ServiceClassInternal } from './types/ServiceClass';
 
-export { IFederationService, IFederationServiceEE, IFederationJoinExternalPublicRoomInput } from './types/IFederationService';
+export { IFederationService, IFederationJoinExternalPublicRoomInput, IFederationStatistics } from './types/IFederationService';
 
 export {
 	AutoUpdateRecord,
@@ -152,7 +152,6 @@ export const Translation = proxifyWithWait<ITranslationService>('translation');
 export const Settings = proxifyWithWait<ISettingsService>('settings');
 export const OmnichannelIntegration = proxifyWithWait<IOmnichannelIntegrationService>('omnichannel-integration');
 export const Federation = proxifyWithWait<IFederationService>('federation');
-export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
 export const Omnichannel = proxifyWithWait<IOmnichannelService>('omnichannel');
 export const OmnichannelEEService = proxifyWithWait<IOmnichannelEEService>('omnichannel-ee');
 export const Import = proxifyWithWait<IImportService>('import');

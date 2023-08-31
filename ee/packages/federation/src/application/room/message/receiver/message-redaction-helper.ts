@@ -1,6 +1,5 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import { escapeExternalFederationEventId, type IMessage } from '@rocket.chat/core-typings';
 
-import { Federation } from '../../../../Federation';
 import type { FederatedUser } from '../../../../domain/FederatedUser';
 import type { RocketChatMessageAdapter } from '../../../../infrastructure/rocket-chat/adapters/Message';
 
@@ -29,7 +28,7 @@ class UnreactToMessageHandler implements IRoomRedactionHandler {
 	) {}
 
 	public async handle(): Promise<void> {
-		const normalizedEventId = Federation.escapeExternalFederationEventId(this.redactsEvents);
+		const normalizedEventId = escapeExternalFederationEventId(this.redactsEvents);
 		const reaction = Object.keys(this.message.reactions || {}).find(
 			(key) =>
 				this.message.reactions?.[key]?.federationReactionEventIds?.[normalizedEventId] === this.federatedUser.getUsername() &&

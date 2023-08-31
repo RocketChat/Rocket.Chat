@@ -1,4 +1,4 @@
-import { FederationEE } from '@rocket.chat/core-services';
+import { Federation } from '@rocket.chat/core-services';
 import {
 	isFederationAddServerProps,
 	isFederationRemoveServerProps,
@@ -20,7 +20,7 @@ API.v1.addRoute(
 			const { count } = await getPaginationItems(this.queryParams);
 			const { serverName, roomName, pageToken } = this.queryParams;
 
-			const result = await FederationEE.searchPublicRooms(serverName, roomName, pageToken, count);
+			const result = await Federation.searchPublicRooms(serverName, roomName, pageToken, count);
 
 			return API.v1.success(result);
 		},
@@ -34,7 +34,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const servers = await FederationEE.getSearchedServerNamesByInternalUserId(this.userId);
+			const servers = await Federation.getSearchedServerNamesByInternalUserId(this.userId);
 
 			return API.v1.success({
 				servers,
@@ -53,7 +53,7 @@ API.v1.addRoute(
 		async post() {
 			const { serverName } = this.bodyParams;
 
-			await FederationEE.addSearchedServerNameByInternalUserId(this.userId, serverName);
+			await Federation.addSearchedServerNameByInternalUserId(this.userId, serverName);
 
 			return API.v1.success();
 		},
@@ -70,7 +70,7 @@ API.v1.addRoute(
 		async post() {
 			const { serverName } = this.bodyParams;
 
-			await FederationEE.removeSearchedServerNameByInternalUserId(this.userId, serverName);
+			await Federation.removeSearchedServerNameByInternalUserId(this.userId, serverName);
 
 			return API.v1.success();
 		},
@@ -87,7 +87,7 @@ API.v1.addRoute(
 		async post() {
 			const { externalRoomId, roomName, pageToken } = this.bodyParams;
 
-			await FederationEE.scheduleJoinExternalPublicRoom(this.userId, externalRoomId, roomName, decodeURIComponent(pageToken || ''));
+			await Federation.scheduleJoinExternalPublicRoom(this.userId, externalRoomId, roomName, decodeURIComponent(pageToken || ''));
 
 			return API.v1.success();
 		},

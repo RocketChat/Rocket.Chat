@@ -8,6 +8,7 @@ import type {
 	MessageAttachment,
 	IMessageWithPendingFileImport,
 } from '@rocket.chat/core-typings';
+import { escapeExternalFederationEventId } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import { Rooms } from '@rocket.chat/models';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
@@ -31,7 +32,6 @@ import type {
 
 import { otrSystemMessages } from '../../../app/otr/lib/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { escapeExternalFederationEventId } from '../../services/federation/infrastructure/rocket-chat/adapters/federation-id-escape-helper';
 import { BaseRaw } from './BaseRaw';
 
 type DeepWritable<T> = T extends (...args: any) => any
@@ -575,7 +575,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 							$match: {
 								$and: [
 									{ 'reactions.v.usernames': { $in: [username] } },
-									{ [`reactions.v.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username },
+									{
+										[`reactions.v.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username,
+									},
 								],
 							},
 						},

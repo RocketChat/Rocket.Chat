@@ -1,5 +1,5 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message, Team, api } from '@rocket.chat/core-services';
+import { Federation, Message, Team, api } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
@@ -9,6 +9,7 @@ import { Apps } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
+import { settings } from '../../../settings/server';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { createDirectRoom } from './createDirectRoom';
 
@@ -159,12 +160,13 @@ export const createRoom = async <T extends RoomType>(
 				continue;
 			}
 
-			try {
-				await callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
-				// await Federation.runFederationChecksBeforeAddUserToRoom({ user: member, inviter: owner }, room);
-				await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
-			} catch (error) {
-				continue;
+			await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
+			if (settings.get('Federation_Matrix_enabled')) {
+				try {
+					await Federation.runFederationChecksBeforeAddUserToRoom({ user: member, inviter: owner }, room);
+				} catch (error: any) {
+					continue;
+				}
 			}
 
 			const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
@@ -198,7 +200,6 @@ export const createRoom = async <T extends RoomType>(
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
 	if (shouldBeHandledByFederation) {
-		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members });
 		void api.broadcast('room.afterCreateFederatedRoom', room, { owner, originalMemberList: members });
 	}
 

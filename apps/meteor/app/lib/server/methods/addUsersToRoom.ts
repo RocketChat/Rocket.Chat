@@ -1,14 +1,12 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isAFederatedUsername, isRoomFederated } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
-import { Federation } from '../../../../server/services/federation/Federation';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions/addUserToRoom';
 
@@ -78,7 +76,6 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 	// Validate each user, then add to room
 	if (isRoomFederated(room) && user) {
-		await callbacks.run('federation.onAddUsersToARoom', { invitees: data.users, inviter: user }, room);
 		await api.broadcast('room.onAddUsersToAFederatedRoom', { invitees: data.users, inviter: user }, room);
 		return true;
 	}
@@ -86,7 +83,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 	await Promise.all(
 		data.users.map(async (username) => {
 			const newUser = await Users.findOneByUsernameIgnoringCase(username);
-			if (!newUser && !Federation.isAFederatedUsername(username)) {
+			if (!newUser && !isAFederatedUsername(username)) {
 				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 					method: 'addUsersToRoom',
 				});

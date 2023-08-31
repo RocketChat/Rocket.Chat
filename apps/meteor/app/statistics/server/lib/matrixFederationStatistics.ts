@@ -1,8 +1,7 @@
-import { MatrixBridgedRoom, Rooms, Users } from '@rocket.chat/models';
+import type { IFederationStatistics } from '@rocket.chat/core-services';
+import { MatrixBridgedRoom, Rooms, Users, Settings } from '@rocket.chat/models';
 
-import { settings } from '../../../../../../app/settings/server';
-
-class RocketChatStatisticsAdapter {
+class FederationStatisticsAdapter {
 	async getBiggestRoomAvailable(): Promise<{
 		_id: string;
 		name: string;
@@ -44,9 +43,14 @@ class RocketChatStatisticsAdapter {
 	}
 
 	async getAmountOfConnectedExternalServers(): Promise<{ quantity: number; servers: string[] }> {
-		const externalServers = await MatrixBridgedRoom.getExternalServerConnectedExcluding(
-			settings.get('Federation_Matrix_homeserver_domain'),
-		);
+		const homeServerDomain = await Settings.findOneById('Federation_Matrix_homeserver_domain');
+		if (!homeServerDomain) {
+			return {
+				quantity: 0,
+				servers: [],
+			};
+		}
+		const externalServers = await MatrixBridgedRoom.getExternalServerConnectedExcluding(String(homeServerDomain.value));
 
 		return {
 			quantity: externalServers.length,
@@ -55,30 +59,12 @@ class RocketChatStatisticsAdapter {
 	}
 }
 
-interface IFederationStatistics {
-	enabled: boolean;
-	maximumSizeOfPublicRoomsUsers: number;
-	biggestRoom: {
-		_id: string;
-		name: string;
-		usersCount: number;
-	} | null;
-	smallestRoom: {
-		_id: string;
-		name: string;
-		usersCount: number;
-	} | null;
-	amountOfExternalUsers: number;
-	amountOfFederatedRooms: number;
-	externalConnectedServers: { quantity: number; servers: string[] };
-}
-
 export const getMatrixFederationStatistics = async (): Promise<IFederationStatistics> => {
-	const statisticsService = new RocketChatStatisticsAdapter();
+	const statisticsService = new FederationStatisticsAdapter();
 
 	return {
-		enabled: settings.get('Federation_Matrix_enabled'),
-		maximumSizeOfPublicRoomsUsers: settings.get('Federation_Matrix_max_size_of_public_rooms_users'),
+		enabled: (await Settings.findOneById('Federation_Matrix_enabled'))?.value === true,
+		maximumSizeOfPublicRoomsUsers: ((await Settings.findOneById('Federation_Matrix_max_size_of_public_rooms_users'))?.value as number) || 0,
 		biggestRoom: await statisticsService.getBiggestRoomAvailable(),
 		smallestRoom: await statisticsService.getSmallestRoomAvailable(),
 		amountOfExternalUsers: await statisticsService.getAmountOfExternalUsers(),

@@ -1,12 +1,11 @@
-import { Team } from '@rocket.chat/core-services';
+import { Federation, Team } from '@rocket.chat/core-services';
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated, TEAM_TYPE } from '@rocket.chat/core-typings';
+import { isRoomFederated, TEAM_TYPE, isSettingAllowedInAFederatedRoom } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
-import { Federation } from '../../../services/federation/Federation';
 import { roomCoordinator } from '../roomCoordinator';
 
 const PublicRoomType = getPublicRoomType(roomCoordinator);
@@ -14,7 +13,7 @@ const PublicRoomType = getPublicRoomType(roomCoordinator);
 roomCoordinator.add(PublicRoomType, {
 	allowRoomSettingChange(room, setting) {
 		if (isRoomFederated(room)) {
-			return Federation.isRoomSettingAllowed(room, setting);
+			return isSettingAllowedInAFederatedRoom(room, setting);
 		}
 		switch (setting) {
 			case RoomSettingsEnum.BROADCAST:

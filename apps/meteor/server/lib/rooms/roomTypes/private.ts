@@ -1,10 +1,10 @@
+import { Federation } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isSettingAllowedInAFederatedRoom } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../app/settings/server';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getPrivateRoomType } from '../../../../lib/rooms/roomTypes/private';
-import { Federation } from '../../../services/federation/Federation';
 import { roomCoordinator } from '../roomCoordinator';
 
 const PrivateRoomType = getPrivateRoomType(roomCoordinator);
@@ -12,7 +12,7 @@ const PrivateRoomType = getPrivateRoomType(roomCoordinator);
 roomCoordinator.add(PrivateRoomType, {
 	allowRoomSettingChange(room, setting) {
 		if (isRoomFederated(room)) {
-			return Federation.isRoomSettingAllowed(room, setting);
+			return isSettingAllowedInAFederatedRoom(room, setting);
 		}
 		switch (setting) {
 			case RoomSettingsEnum.JOIN_CODE:

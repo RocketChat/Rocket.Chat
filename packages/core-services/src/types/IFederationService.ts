@@ -1,11 +1,5 @@
-// import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, RoomMemberActions, ValueOf } from '@rocket.chat/core-typings';
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
-
-export interface IFederationService {
-	createDirectMessageRoomAndInviteUser(internalInviterId: string, internalRoomId: string, externalInviteeId: string): Promise<void>;
-
-	verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>>;
-}
 
 export interface IFederationJoinExternalPublicRoomInput {
 	internalUserId: string;
@@ -14,7 +8,25 @@ export interface IFederationJoinExternalPublicRoomInput {
 	pageToken?: string;
 }
 
-export interface IFederationServiceEE {
+export interface IFederationStatistics {
+	enabled: boolean;
+	maximumSizeOfPublicRoomsUsers: number;
+	biggestRoom: {
+		_id: string;
+		name: string;
+		usersCount: number;
+	} | null;
+	smallestRoom: {
+		_id: string;
+		name: string;
+		usersCount: number;
+	} | null;
+	amountOfExternalUsers: number;
+	amountOfFederatedRooms: number;
+	externalConnectedServers: { quantity: number; servers: string[] };
+}
+
+export interface IFederationService {
 	createDirectMessageRoom(internalUserId: string, invitees: string[]): Promise<void>;
 
 	searchPublicRooms(
@@ -38,12 +50,16 @@ export interface IFederationServiceEE {
 
 	joinExternalPublicRoom(input: IFederationJoinExternalPublicRoomInput): Promise<void>;
 
-	// runFederationChecksBeforeAddUserToRoom(
-	// 	params: { user: Pick<IUser, '_id' | 'username'> | string; inviter?: Pick<IUser, '_id' | 'username'> },
-	// 	room: IRoom,
-	// ): Promise<void>;
+	runFederationChecksBeforeAddUserToRoom(
+		params: { user: Pick<IUser, '_id' | 'username'> | string; inviter?: Pick<IUser, '_id' | 'username'> },
+		room: IRoom,
+	): Promise<void>;
 
-	// runFederationChecksBeforeCreateDirectMessageRoom(members: (string | IUser)[]): Promise<void>;
+	runFederationChecksBeforeCreateDirectMessageRoom(members: (string | IUser)[]): Promise<void>;
+
+	createDirectMessageRoomAndInviteUser(internalInviterId: string, internalRoomId: string, externalInviteeId: string): Promise<void>;
+
+	actionAllowed(room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']): Promise<boolean>;
 
 	verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>>;
 }

@@ -1,3 +1,4 @@
+import { Federation } from '@rocket.chat/core-services';
 import type { ICreateRoomParams } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
@@ -10,7 +11,6 @@ import { addUser } from '../../app/federation/server/functions/addUser';
 import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
 import { settings } from '../../app/settings/server';
-import { callbacks } from '../../lib/callbacks';
 
 export async function createDirectMessage(
 	usernames: IUser['username'][],
@@ -99,11 +99,12 @@ export async function createDirectMessage(
 	if (excludeSelf && (await hasPermissionAsync(userId, 'view-room-administration'))) {
 		options.subscriptionExtra = { open: true };
 	}
-	try {
-		await callbacks.run('federation.beforeCreateDirectMessage', roomUsers);
-		// await Federation.runFederationChecksBeforeCreateDirectMessageRoom(roomUsers);
-	} catch (error) {
-		throw new Meteor.Error((error as any)?.message);
+	if (settings.get('Federation_Matrix_enabled')) {
+		try {
+			await Federation.runFederationChecksBeforeCreateDirectMessageRoom(roomUsers);
+		} catch (error: any) {
+			throw new Meteor.Error((error as any)?.message);
+		}
 	}
 	const { _id: rid, inserted, ...room } = await createRoom('d', undefined, undefined, roomUsers as IUser[], false, undefined, {}, options);
 

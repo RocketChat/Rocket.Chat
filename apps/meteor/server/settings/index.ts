@@ -17,7 +17,7 @@ import { createIRCSettings } from './irc';
 import { createLayoutSettings } from './layout';
 import { createLdapSettings } from './ldap';
 import { createLogSettings } from './logs';
-// import { createMatrixFederationSettings } from './matrix-federation';
+import { createMatrixFederationSettings } from './matrix-federation';
 import { createMessageSettings } from './message';
 import { createMetaSettings } from './meta';
 import { createMiscSettings } from './misc';
@@ -52,7 +52,6 @@ async function createSettings() {
 		createDiscussionsSettings(),
 		createEmailSettings(),
 		createE2ESettings(),
-		createFederationSettings(),
 		createFileUploadSettings(),
 		createGeneralSettings(),
 		createIRCSettings(),
@@ -78,8 +77,10 @@ async function createSettings() {
 		createUserDataSettings(),
 		createWebDavSettings(),
 		createWebRTCSettings(),
-		// createMatrixFederationSettings(),
 	]);
+
+	await createFederationSettings();
+	await createMatrixFederationSettings();
 }
 
 await createSettings();

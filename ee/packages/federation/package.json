@@ -48,11 +48,10 @@
 		"i18next": "^23.2.11",
 		"i18next-sprintf-postprocessor": "^0.2.2",
 		"js-yaml": "^4.1.0",
-		"marked": "^5.1.0",
+		"marked": "^4.2.5",
 		"mongodb": "^4.12.1",
 		"pino": "^8.14.1",
-		"sanitize-html": "^2.11.0",
-		"uuid": "^9.0.0"
+		"sanitize-html": "^2.11.0"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

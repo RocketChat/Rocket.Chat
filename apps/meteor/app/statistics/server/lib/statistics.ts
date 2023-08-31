@@ -32,7 +32,6 @@ import { readSecondaryPreferred } from '../../../../server/database/readSecondar
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
 import { getControl } from '../../../../server/lib/migrations';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
-import { getMatrixFederationStatistics } from '../../../../server/services/federation/infrastructure/rocket-chat/adapters/Statistics';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
@@ -40,6 +39,7 @@ import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
+import { getMatrixFederationStatistics } from './matrixFederationStatistics';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 

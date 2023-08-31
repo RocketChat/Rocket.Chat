@@ -1,5 +1,6 @@
+import { Federation } from '@rocket.chat/core-services';
 import type { IRoom, AtLeast } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isSettingAllowedInAFederatedRoom } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -7,7 +8,6 @@ import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
-import { Federation } from '../../../services/federation/Federation';
 import { roomCoordinator } from '../roomCoordinator';
 
 const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
@@ -23,7 +23,7 @@ const getCurrentUserId = (): string | undefined => {
 roomCoordinator.add(DirectMessageRoomType, {
 	allowRoomSettingChange(_room, setting) {
 		if (isRoomFederated(_room)) {
-			return Federation.isRoomSettingAllowed(_room, setting);
+			return isSettingAllowedInAFederatedRoom(_room, setting);
 		}
 		switch (setting) {
 			case RoomSettingsEnum.TYPE:
