@@ -1,7 +1,8 @@
+/* eslint-disable complexity */
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput, Callout } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
+import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
@@ -33,6 +34,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	const passwordConfirmationPlaceholder = String(useSetting('Accounts_ConfirmPasswordPlaceholder'));
 
 	const formLabelId = useUniqueId();
+	const passwordId = useUniqueId();
+	const passwordVerifierId = useUniqueId();
 	const registerUser = useRegisterMethod();
 	const customFields = useAccountsCustomFields();
 
@@ -49,7 +52,10 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		clearErrors,
 		control,
 		formState: { errors },
-	} = useForm<LoginRegisterPayload>();
+	} = useForm<LoginRegisterPayload>({ mode: 'onBlur' });
+
+	const password = watch('password');
+	const passwordIsValid = useValidatePassword(password);
 
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
 		registerUser.mutate(
@@ -155,13 +161,21 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							<PasswordInput
 								{...register('password', {
 									required: t('registration.component.form.requiredField'),
+									validate: () => (!passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
 								})}
 								error={errors.password && (errors.password?.message || t('registration.component.form.requiredField'))}
 								aria-invalid={errors.password ? 'true' : undefined}
-								id='password'
+								id={passwordId}
 								placeholder={passwordPlaceholder || t('Create_a_password')}
+								aria-describedby={passwordVerifierId}
 							/>
 						</Field.Row>
+						{errors?.password && (
+							<Field.Error aria-live='assertive' id={`${passwordId}-error`}>
+								{errors.password.message}
+							</Field.Error>
+						)}
+						<PasswordVerifier password={password} id={passwordVerifierId} />
 						{requiresPasswordConfirmation && (
 							<Field.Row>
 								<PasswordInput
@@ -174,6 +188,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 									aria-invalid={errors.passwordConfirmation ? 'true' : false}
 									id='passwordConfirmation'
 									placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
+									disabled={!passwordIsValid}
 								/>
 							</Field.Row>
 						)}
@@ -183,7 +198,6 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						{errors.passwordConfirmation?.type === 'required' && requiresPasswordConfirmation && (
 							<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
 						)}
-						<PasswordVerifier password={watch('password')} />
 					</Field>
 					{manuallyApproveNewUsersRequired && (
 						<Field>

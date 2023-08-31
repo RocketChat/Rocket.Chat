@@ -8,14 +8,14 @@ export class HomeFlextabMembers {
 	}
 
 	async addUser(username: string) {
-		await this.page.locator('//button[contains(text(), "Add")]').click();
+		await this.page.locator('role=button[name="Add"]').click();
 		await this.page.locator('//label[contains(text(), "Choose users")]/..//input').type(username);
 		await this.page.locator(`[data-qa-type="autocomplete-user-option"] >> text=${username}`).first().click();
-		await this.page.locator('//button[contains(text(), "Add users")]').click();
+		await this.page.locator('role=button[name="Add users"]').click();
 	}
 
 	async inviteUser() {
-		await this.page.locator('//button[contains(text(), "Invite Link")]').click();
+		await this.page.locator('role=button[name="Invite Link"]').click();
 	}
 
 	async muteUser(username: string) {
@@ -34,7 +34,7 @@ export class HomeFlextabMembers {
 
 	async setUserAsOwner(username: string) {
 		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
-		await this.page.locator('//main//aside//button[contains(text(), "Set as owner")]').click();
+		await this.page.locator('role=button[name="Set as owner"]').click();
 	}
 
 	async showAllUsers() {
