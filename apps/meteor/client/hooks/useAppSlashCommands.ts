@@ -20,17 +20,11 @@ export const useAppSlashCommands = () => {
 			return;
 		}
 		return apps('apps', ([key, [command]]) => {
-			switch (key) {
-				case 'command/removed':
-					if (typeof command === 'string') {
-						delete slashCommands.commands[command];
-					}
-					invalidate();
-					break;
-				case 'command/added':
-				case 'command/updated':
-				case 'command/disabled':
-					invalidate();
+			if (['command/added', 'command/updated', 'command/disabled', 'command/removed'].includes(key)) {
+				if (typeof command === 'string') {
+					delete slashCommands.commands[command];
+				}
+				invalidate();
 			}
 		});
 	}, [apps, uid, invalidate]);

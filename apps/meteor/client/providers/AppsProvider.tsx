@@ -29,14 +29,8 @@ const AppsProvider: FC = ({ children }) => {
 
 	useEffect(() => {
 		return stream('apps', ([key]) => {
-			switch (key) {
-				case 'app/added':
-				case 'app/removed':
-				case 'app/updated':
-				case 'app/statusUpdate':
-				case 'app/settingUpdated':
-					invalidate();
-					break;
+			if (['app/added', 'app/removed', 'app/updated', 'app/statusUpdate', 'app/settingUpdated'].includes(key)) {
+				invalidate();
 			}
 		});
 	}, [invalidate, stream]);
