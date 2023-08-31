@@ -48,8 +48,17 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	updateById(_id: string, update: UpdateFilter<ILivechatVisitor>): Promise<Document | UpdateResult>;
 
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void>;
+
 	isVisitorActiveOnPeriod(visitorId: string, period: string): Promise<boolean>;
+
 	markVisitorActiveForPeriod(visitorId: string, period: string): Promise<UpdateResult>;
-	findOneEnabledById(_id: string, options?: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
+
+	findOneEnabledById<T extends ILivechatVisitor = ILivechatVisitor>(
+		_id: string,
+		options?: FindOptions<ILivechatVisitor>,
+	): Promise<T | null>;
+
 	disableById(_id: string): Promise<UpdateResult>;
+
+	findEnabled(query: Filter<ILivechatVisitor>, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor>;
 }

@@ -45,7 +45,7 @@ API.v1.addRoute('livechat/visitor', {
 
 		const visitorId = await LivechatTyped.registerGuest(guest);
 
-		let visitor = await VisitorsRaw.findOneById(visitorId, {});
+		let visitor = await VisitorsRaw.findOneEnabledById(visitorId, {});
 		if (visitor) {
 			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 			// If it's updating an existing visitor, it must also update the roomInfo
@@ -65,7 +65,7 @@ API.v1.addRoute('livechat/visitor', {
 				}
 			}
 
-			visitor = await VisitorsRaw.findOneById(visitorId, {});
+			visitor = await VisitorsRaw.findOneEnabledById(visitorId, {});
 		}
 
 		if (!visitor) {

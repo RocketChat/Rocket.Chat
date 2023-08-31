@@ -65,18 +65,29 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.find(query, options);
 	}
 
-	findOneEnabledById(_id: string, options?: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
+	findEnabled(query: Filter<ILivechatVisitor>, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
+		return this.find(
+			{
+				...query,
+				disabled: { $ne: true },
+			},
+			options,
+		);
+	}
+
+	findOneEnabledById<T extends ILivechatVisitor>(_id: string, options?: FindOptions<ILivechatVisitor>): Promise<T | null> {
 		const query = {
 			_id,
 			disabled: { $ne: true },
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<T>(query, options);
 	}
 
 	findVisitorByToken(token: string): FindCursor<ILivechatVisitor> {
 		const query = {
 			token,
+			disabled: { $ne: true },
 		};
 
 		return this.find(query);
@@ -177,7 +188,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		options?: FindOptions<ILivechatVisitor>,
 	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>> {
 		if (!emailOrPhone && !nameOrUsername && allowedCustomFields.length === 0) {
-			return this.findPaginated({}, options);
+			return this.findPaginated({ disabled: { $ne: true } }, options);
 		}
 
 		const query: Filter<ILivechatVisitor> = {
@@ -204,8 +215,10 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 					: []),
 				...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
 			],
+			disabled: { $ne: true },
 		};
 
+		console.log(JSON.stringify(query));
 		return this.findPaginated(query, options);
 	}
 
@@ -215,7 +228,9 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		customFields?: { [key: string]: RegExp },
 	): Promise<ILivechatVisitor | null> {
 		const query = Object.assign(
-			{},
+			{
+				disabled: { $ne: true },
+			},
 			{
 				...(email && { visitorEmails: { address: email } }),
 				...(phone && { phone: { phoneNumber: phone } }),

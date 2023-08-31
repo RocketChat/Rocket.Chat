@@ -298,7 +298,7 @@ export const Livechat = {
 	async forwardOpenChats(userId) {
 		Livechat.logger.debug(`Transferring open chats for user ${userId}`);
 		for await (const room of LivechatRooms.findOpenByAgent(userId)) {
-			const guest = await LivechatVisitors.findOneById(room.v._id);
+			const guest = await LivechatVisitors.findOneEnabledById(room.v._id);
 			const user = await Users.findOneById(userId);
 			const { _id, username, name } = user;
 			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
@@ -462,7 +462,7 @@ export const Livechat = {
 	},
 
 	async getLivechatRoomGuestInfo(room) {
-		const visitor = await LivechatVisitors.findOneById(room.v._id);
+		const visitor = await LivechatVisitors.findOneEnabledById(room.v._id);
 		const agent = await Users.findOneById(room.servedBy && room.servedBy._id);
 
 		const ua = new UAParser();
@@ -629,6 +629,11 @@ export const Livechat = {
 
 	async cleanGuestHistory(guest) {
 		const { token } = guest;
+
+		// This shouldn't be possible, but just in case
+		if (!token) {
+			throw new Error('error-invalid-guest');
+		}
 
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		const cursor = LivechatRooms.findByVisitorToken(token, extraQuery);
