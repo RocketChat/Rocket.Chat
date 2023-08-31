@@ -2,8 +2,8 @@ import type { Locator, Page } from '@playwright/test';
 
 import { HomeOmnichannelContent, HomeSidenav, HomeFlextab, OmnichannelSidenav } from './fragments';
 import { OmnichannelCurrentChats } from './omnichannel-current-chats';
-import { OmnichannelTriggers } from './omnichannel-triggers';
 import { OmnichannelTranscript } from './omnichannel-transcript';
+import { OmnichannelTriggers } from './omnichannel-triggers';
 
 export class HomeOmnichannel {
 	private readonly page: Page;
