@@ -1,7 +1,7 @@
 import { MessageToolboxItem, Option, OptionDivider, OptionTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEvent, MouseEventHandler, ReactElement } from 'react';
-import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useRef, useState } from 'react';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
@@ -34,7 +34,7 @@ const getSectionOrder = (section: string): number => {
 };
 
 const MessageActionMenu = ({ options, onChangeMenuVisibility, ...props }: MessageActionMenuProps): ReactElement => {
-	const ref = useRef<HTMLButtonElement | null>(null);
+	const buttonRef = useRef<HTMLButtonElement | null>(null);
 	const t = useTranslation();
 	const [visible, setVisible] = useState(false);
 	const isLayoutEmbedded = useEmbeddedLayout();
@@ -71,22 +71,13 @@ const MessageActionMenu = ({ options, onChangeMenuVisibility, ...props }: Messag
 		return acc;
 	}, [] as unknown as [section: string, options: Array<MessageActionConfigOption>][]);
 
-	useEffect(() => {
-		const closeMenuIfClickOutside = (e: Event): void => {
-			if (!ref.current?.contains(e.target as Node)) {
-				handleChangeMenuVisibility(false);
-			}
-		};
-		window.addEventListener('click', closeMenuIfClickOutside);
-		return () => {
-			window.removeEventListener('click', closeMenuIfClickOutside);
-		};
+	const handleClose = useCallback(() => {
+		handleChangeMenuVisibility(false);
 	}, [handleChangeMenuVisibility]);
-
 	return (
 		<>
 			<MessageToolboxItem
-				ref={ref}
+				ref={buttonRef}
 				icon='kebab'
 				onClick={(): void => handleChangeMenuVisibility(!visible)}
 				data-qa-id='menu'
@@ -95,7 +86,7 @@ const MessageActionMenu = ({ options, onChangeMenuVisibility, ...props }: Messag
 			/>
 			{visible && (
 				<>
-					<ToolboxDropdown reference={ref} {...props}>
+					<ToolboxDropdown handleClose={handleClose} reference={buttonRef} {...props}>
 						{groupOptions.map(([section, options], index, arr) => (
 							<Fragment key={index}>
 								{section === 'apps' && <OptionTitle>Apps</OptionTitle>}

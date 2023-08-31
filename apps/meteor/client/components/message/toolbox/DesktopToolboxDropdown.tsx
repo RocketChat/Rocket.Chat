@@ -1,7 +1,6 @@
 import { Tile, PositionAnimated } from '@rocket.chat/fuselage';
-import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode, Ref, RefObject } from 'react';
-import React, { useRef, forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 
 type DesktopToolboxDropdownProps = {
 	children: ReactNode;
@@ -12,12 +11,9 @@ const DesktopToolboxDropdown = forwardRef(function ToolboxDropdownDesktop(
 	{ reference, children }: DesktopToolboxDropdownProps,
 	ref: Ref<HTMLElement>,
 ) {
-	const targetRef = useRef<HTMLElement>(null);
-	const mergedRef = useMergedRefs(ref, targetRef);
-
 	return (
 		<PositionAnimated anchor={reference} placement='bottom-end' visible='visible'>
-			<Tile is='ul' padding={0} paddingBlock={12} paddingInline={0} elevation='2' ref={mergedRef}>
+			<Tile is='ul' padding={0} paddingBlock={12} paddingInline={0} elevation='2' ref={ref}>
 				{children}
 			</Tile>
 		</PositionAnimated>
