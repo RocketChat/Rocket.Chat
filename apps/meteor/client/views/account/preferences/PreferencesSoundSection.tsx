@@ -34,7 +34,7 @@ const PreferencesSoundSection = () => {
 									value={value}
 									onChange={(value) => {
 										onChange(value);
-										customSound.play(value, { volume: notificationsSoundVolume / 100 });
+										customSound.play(String(value), { volume: notificationsSoundVolume / 100 });
 									}}
 									options={soundsList}
 								/>
@@ -54,7 +54,7 @@ const PreferencesSoundSection = () => {
 									value={value}
 									onChange={(value) => {
 										onChange(value);
-										customSound.play(value, { volume: notificationsSoundVolume / 100 });
+										customSound.play(String(value), { volume: notificationsSoundVolume / 100 });
 									}}
 									options={soundsList}
 								/>

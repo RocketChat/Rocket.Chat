@@ -10,7 +10,7 @@ export class HomeSidenav {
 	}
 
 	get checkboxPrivateChannel(): Locator {
-		return this.page.locator('#modal-root [data-qa="create-channel-modal"] [data-qa-type="channel-private-toggle"]');
+		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Private"');
 	}
 
 	get checkboxEncryption(): Locator {

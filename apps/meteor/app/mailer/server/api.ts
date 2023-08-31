@@ -75,11 +75,12 @@ export const wrap = (html: string, data: { [key: string]: unknown } = {}): strin
 	}
 
 	if (!body) {
-		throw new Error('`body` is not set yet');
+		throw new Error('error-email-body-not-initialized');
 	}
 
 	return replaceEscaped(body.replace('{{body}}', html), data);
 };
+
 export const inlinecss = (html: string): string => {
 	const css = settings.get<string>('email_style');
 	return css ? juice.inlineContent(html, css) : html;
