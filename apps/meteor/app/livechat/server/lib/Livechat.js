@@ -604,16 +604,15 @@ export const Livechat = {
 	},
 
 	async removeGuest(_id) {
-		check(_id, String);
-		const guest = await LivechatVisitors.findOneById(_id, { projection: { _id: 1 } });
+		const guest = await LivechatVisitors.findOneEnabledById(_id, { projection: { _id: 1 } });
 		if (!guest) {
 			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', {
 				method: 'livechat:removeGuest',
 			});
 		}
 
-		await this.cleanGuestHistory(_id);
-		return LivechatVisitors.removeById(_id);
+		await this.cleanGuestHistory(guest);
+		return LivechatVisitors.disableById(_id);
 	},
 
 	async setUserStatusLivechat(userId, status) {
@@ -628,16 +627,8 @@ export const Livechat = {
 		return user;
 	},
 
-	async cleanGuestHistory(_id) {
-		const guest = await LivechatVisitors.findOneById(_id);
-		if (!guest) {
-			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', {
-				method: 'livechat:cleanGuestHistory',
-			});
-		}
-
+	async cleanGuestHistory(guest) {
 		const { token } = guest;
-		check(token, String);
 
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		const cursor = LivechatRooms.findByVisitorToken(token, extraQuery);

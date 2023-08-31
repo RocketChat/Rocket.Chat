@@ -50,4 +50,6 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void>;
 	isVisitorActiveOnPeriod(visitorId: string, period: string): Promise<boolean>;
 	markVisitorActiveForPeriod(visitorId: string, period: string): Promise<UpdateResult>;
+	findOneEnabledById(_id: string, options?: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
+	disableById(_id: string): Promise<UpdateResult>;
 }

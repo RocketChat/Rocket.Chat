@@ -33,6 +33,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
 			{ key: { 'livechatData.$**': 1 } },
 			{ key: { activity: 1 }, partialFilterExpression: { activity: { $exists: true } } },
+			{ key: { disabled: 1 }, partialFilterExpression: { disabled: { $exists: true } } },
 		];
 	}
 
@@ -62,6 +63,15 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		};
 
 		return this.find(query, options);
+	}
+
+	findOneEnabledById(_id: string, options?: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
+		const query = {
+			_id,
+			disabled: { $ne: true },
+		};
+
+		return this.findOne(query, options);
 	}
 
 	findVisitorByToken(token: string): FindCursor<ILivechatVisitor> {
@@ -391,6 +401,28 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	disableById(_id: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id },
+			{
+				$set: { disabled: true },
+				$unset: {
+					department: 1,
+					contactManager: 1,
+					token: 1,
+					visitorEmails: 1,
+					phone: 1,
+					name: 1,
+					livechatData: 1,
+					lastChat: 1,
+					ip: 1,
+					host: 1,
+					userAgent: 1,
+				},
+			},
+		);
 	}
 }
 

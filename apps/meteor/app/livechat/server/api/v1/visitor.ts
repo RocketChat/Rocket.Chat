@@ -122,7 +122,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 
 		const { _id } = visitor;
 		const result = await Livechat.removeGuest(_id);
-		if (!result) {
+		if (!result.modifiedCount) {
 			throw new Meteor.Error('error-removing-visitor', 'An error ocurred while deleting visitor');
 		}
 
