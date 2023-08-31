@@ -20,6 +20,8 @@ import { outgoingLogger } from '../logger';
 
 const DISABLE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.DISABLE_INTEGRATION_SCRIPTS).toLowerCase());
 
+const DISABLE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.DISABLE_INTEGRATION_SCRIPTS).toLowerCase());
+
 class RocketChatIntegrationHandler {
 	constructor() {
 		this.successResults = [200, 201, 202];
