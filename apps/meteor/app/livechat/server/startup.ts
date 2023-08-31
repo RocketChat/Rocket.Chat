@@ -73,7 +73,7 @@ Meteor.startup(async () => {
 	});
 
 	settings.watch<string>('Livechat_Routing_Method', (value) => {
-		RoutingManager.setMethodNameAndStartQueue(value);
+		void RoutingManager.setMethodNameAndStartQueue(value);
 	});
 
 	// Remove when accounts.onLogout is async
