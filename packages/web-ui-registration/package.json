@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/web-ui-registration",
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/layout": "next",
@@ -17,7 +17,7 @@
 	},
 	"peerDependencies": {
 		"@rocket.chat/layout": "*",
-		"@rocket.chat/ui-contexts": "1.0.0",
+		"@rocket.chat/ui-contexts": "1.0.2",
 		"@tanstack/react-query": "*",
 		"react": "*",
 		"react-hook-form": "*",
