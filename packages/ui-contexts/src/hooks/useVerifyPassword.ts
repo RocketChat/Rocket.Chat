@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 
 import { usePasswordPolicy } from './usePasswordPolicy';
 
-const passwordVerificationsTemplate: Record<string, (password: string, lengthCriteria?: number) => boolean> = {
+export const passwordVerificationsTemplate: Record<string, (password: string, lengthCriteria?: number) => boolean> = {
 	'get-password-policy-minLength': (password: string, minLength?: number) => Boolean(minLength && password.length >= minLength),
 	'get-password-policy-maxLength': (password: string, maxLength?: number) => Boolean(maxLength && password.length <= maxLength),
 	'get-password-policy-forbidRepeatingCharactersCount': (password: string, maxRepeatingChars?: number) => {
@@ -54,10 +54,16 @@ export const useVerifyPasswordByPolices = (policies?: PasswordPolicies) => {
 	);
 };
 
-export const useVerifyPassword = (password: string): PasswordVerifications => {
-	const { data } = usePasswordPolicy();
+export const useVerifyPassword = (password: string): { data: PasswordVerifications; isLoading: boolean } => {
+	const { data, isLoading } = usePasswordPolicy();
 
 	const validator = useVerifyPasswordByPolices((data?.enabled && data?.policy) || undefined);
 
-	return useMemo(() => validator(password), [password, validator]);
+	return useMemo(
+		() => ({
+			data: validator(password),
+			isLoading,
+		}),
+		[password, validator, isLoading],
+	);
 };
