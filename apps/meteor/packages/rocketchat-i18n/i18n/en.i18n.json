@@ -3324,6 +3324,8 @@
   "Mentions": "Mentions",
   "Mentions_default": "Mentions (default)",
   "Mentions_only": "Mentions only",
+  "Mentions_with_@_symbol": "Mentions with @ symbol",
+  "Mentions_with_@_symbol_description": "Mentions notify and highlight messages for groups or specific users, facilitating targeted communication. \nThe screen reader functionality is optimized when the \"@\" symbol is employed in the mention feature. This ensures that users relying on screen readers can easily interpret and engage with these mentions.",
   "Merge_Channels": "Merge Channels",
   "message": "message",
   "Message": "Message",
