@@ -40,7 +40,7 @@ class ChatContainer extends Component {
 			this.state.queueSpot = newQueueSpot;
 			this.state.estimatedWaitTime = newEstimatedWaitTime;
 			await this.handleQueueMessage(connecting, queueInfo);
-			await this.handleConnectingAgentAlert(newConnecting, normalizeQueueAlert(queueInfo));
+			await this.handleConnectingAgentAlert(newConnecting, await normalizeQueueAlert(queueInfo));
 		}
 	};
 
@@ -277,7 +277,7 @@ class ChatContainer extends Component {
 		if (connecting) {
 			alerts.push({
 				id: connectingAgentAlertId,
-				children: (await message) || i18n.t('please_wait_for_the_next_available_agent'),
+				children: message || i18n.t('please_wait_for_the_next_available_agent'),
 				warning: true,
 				hideCloseButton: true,
 				timeout: 0,
