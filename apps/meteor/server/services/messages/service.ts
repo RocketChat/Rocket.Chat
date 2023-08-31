@@ -1,7 +1,7 @@
 import type { IMessageService } from '@rocket.chat/core-services';
-import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { ServiceClassInternal, Room } from '@rocket.chat/core-services';
 import type { IMessage, MessageTypesValues, IUser, IRoom } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -54,5 +54,31 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		);
 
 		return result.insertedId;
+	}
+
+	async beforeSave({ message, room, user }: { message: IMessage; room: IRoom; user: IUser }): Promise<IMessage> {
+		// TODO looks like this one was not being used
+		// await this.joinDiscussionOnMessage({ message, room, user });
+
+		return message;
+	}
+
+	// joinDiscussionOnMessage
+	private async joinDiscussionOnMessage({ message, room, user }: { message: IMessage; room: IRoom; user: IUser }) {
+		// abort if room is not a discussion
+		if (!room.prid) {
+			return;
+		}
+
+		// check if user already joined the discussion
+		const sub = await Subscriptions.findOneByRoomIdAndUserId(room._id, message.u._id, {
+			projection: { _id: 1 },
+		});
+
+		if (sub) {
+			return;
+		}
+
+		await Room.join({ room, user });
 	}
 }
