@@ -78,7 +78,7 @@ const CannedResponseList: FC<{
 								ref={inputRef}
 							/>
 							<Box w='x144'>
-								<Select onChange={setType} value={type} options={options} />
+								<Select onChange={(value) => setType(String(value))} value={type} options={options} />
 							</Box>
 						</Margins>
 					</Box>

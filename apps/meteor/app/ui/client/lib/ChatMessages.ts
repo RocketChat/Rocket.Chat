@@ -12,11 +12,13 @@ import { replyBroadcast } from '../../../../client/lib/chats/flows/replyBroadcas
 import { requestMessageDeletion } from '../../../../client/lib/chats/flows/requestMessageDeletion';
 import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
 import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
+import { ReadStateManager } from '../../../../client/lib/chats/readStateManager';
 import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
+import * as ActionManager from '../../../ui-message/client/ActionManager';
 import { UserAction } from './UserAction';
 
 type DeepWritable<T> = T extends (...args: any) => any
@@ -37,7 +39,11 @@ export class ChatMessages implements ChatAPI {
 
 	public data: DataAPI;
 
+	public readStateManager: ReadStateManager;
+
 	public uploads: UploadsAPI;
+
+	public ActionManager: any;
 
 	public userCard: { open(username: string): (event: UIEvent) => void; close(): void };
 
@@ -144,10 +150,13 @@ export class ChatMessages implements ChatAPI {
 		this.uid = params.uid;
 		this.data = createDataAPI({ rid, tmid });
 		this.uploads = createUploadsAPI({ rid, tmid });
+		this.ActionManager = ActionManager;
 
 		const unimplemented = () => {
 			throw new Error('Flow is not implemented');
 		};
+
+		this.readStateManager = new ReadStateManager(rid);
 
 		this.userCard = {
 			open: unimplemented,
