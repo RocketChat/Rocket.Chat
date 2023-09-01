@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
+import { throttle } from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
 import { canAddNewUser, getMaxActiveUsers, onValidateLicenses } from '../../app/license/server/license';
@@ -79,7 +80,7 @@ callbacks.add(
 	'check-max-user-seats',
 );
 
-const handleMaxSeatsBanners = (): void => {
+const handleMaxSeatsBanners = throttle(async function _handleMaxSeatsBanners() {
 	const maxActiveUsers = getMaxActiveUsers();
 
 	if (!maxActiveUsers) {
@@ -106,7 +107,7 @@ const handleMaxSeatsBanners = (): void => {
 	} else {
 		enableDangerBanner();
 	}
-};
+}, 10000);
 
 callbacks.add('afterCreateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
