@@ -18,7 +18,6 @@
       box-shadow: 0px 0px 8px 1px #ddd;
       opacity: 0;
       transition: var(--animation-fast);
-      background: white;
     }
 
     &:hover {
@@ -39,6 +38,7 @@
         position: relative;
       }
       &::before {
+        background: white;
         opacity: 1;
       }
     }

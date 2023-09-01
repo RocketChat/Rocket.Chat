@@ -1,4 +1,4 @@
-import { Box, CheckBox, Icon, Option, TextInput, Tile } from '@rocket.chat/fuselage';
+import { Box, CheckBox, Icon, Option, SearchInput, Tile } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
@@ -31,15 +31,14 @@ const MultiSelectCustomList = ({
 		<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='light' borderRadius='x2'>
 			{searchBarText && (
 				<Option>
-					<Box mi='x8' mbs='x4' display='flex' flexWrap='wrap' alignItems='center'>
-						<TextInput
-							flexGrow={2}
-							placeholder={t(searchBarText)}
-							addon={<Icon name='magnifier' size='x20' />}
-							onChange={handleChange}
-							value={text}
-						/>
-					</Box>
+					<SearchInput
+						name='select-search'
+						placeholder={t(searchBarText)}
+						autoComplete='off'
+						addon={<Icon name='magnifier' size='x20' />}
+						onChange={handleChange}
+						value={text}
+					/>
 				</Option>
 			)}
 			{filteredOptions.map((option) => (
@@ -53,7 +52,7 @@ const MultiSelectCustomList = ({
 							<Box pis='x4' pb='x4' w='full' display='flex' justifyContent='space-between'>
 								{t(option.text as TranslationKey)}
 
-								<CheckBox checked={option.checked} onChange={(e): void => onSelected(option, e)} pi={0} />
+								<CheckBox checked={option.checked} onChange={(e): void => onSelected(option, e)} pi={0} name={option.text} />
 							</Box>
 						</Option>
 					)}
