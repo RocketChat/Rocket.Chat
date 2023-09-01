@@ -14,20 +14,35 @@ const lastNDays =
 		end: Date;
 	}) =>
 	(utc): { start: Date; end: Date } => ({
-		start: utc
-			? moment.utc().startOf('day').subtract(n, 'days').toDate()
-			: moment()
-					.startOf('day')
-					.subtract(n + 1, 'days')
-					.toDate(),
-		end: utc ? moment.utc().endOf('day').subtract(1, 'days').toDate() : moment().endOf('day').toDate(),
+		start: utc ? moment.utc().startOf('day').subtract(n, 'days').toDate() : moment().startOf('day').subtract(n, 'days').toDate(),
+		end: utc ? moment.utc().endOf('day').toDate() : moment().endOf('day').toDate(),
 	});
 
 const periods = [
 	{
+		key: 'today',
+		label: label('Today'),
+		range: lastNDays(0),
+	},
+	{
+		key: 'this week',
+		label: label('This_week'),
+		range: lastNDays(7),
+	},
+	{
 		key: 'last 7 days',
 		label: label('Last_7_days'),
 		range: lastNDays(7),
+	},
+	{
+		key: 'last 15 days',
+		label: label('Last_15_days'),
+		range: lastNDays(15),
+	},
+	{
+		key: 'this month',
+		label: label('This_month'),
+		range: lastNDays(30),
 	},
 	{
 		key: 'last 30 days',
@@ -38,6 +53,16 @@ const periods = [
 		key: 'last 90 days',
 		label: label('Last_90_days'),
 		range: lastNDays(90),
+	},
+	{
+		key: 'last 6 months',
+		label: label('Last_6_months'),
+		range: lastNDays(180),
+	},
+	{
+		key: 'last year',
+		label: label('Last_year'),
+		range: lastNDays(365),
 	},
 ] as const;
 
@@ -55,7 +80,7 @@ export const getPeriod = (key: (typeof periods)[number]['key']): Period => {
 
 export const getPeriodRange = (
 	key: (typeof periods)[number]['key'],
-	utc = false,
+	utc = true,
 ): {
 	start: Date;
 	end: Date;

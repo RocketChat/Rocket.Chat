@@ -95,6 +95,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 				sparse: true,
 			},
+			{ key: { t: 1, ts: 1 } },
 		];
 	}
 
@@ -1707,8 +1708,32 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	unmuteUsernameByRoomId(_id: IRoom['_id'], username: IUser['username']): Promise<UpdateResult> {
+	muteReadOnlyUsernameByRoomId(_id: IRoom['_id'], username: IUser['username']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id, ro: true };
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				unmuted: username,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	unmuteMutedUsernameByRoomId(_id: IRoom['_id'], username: IUser['username']): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				muted: username,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	unmuteReadOnlyUsernameByRoomId(_id: string, username: string): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id, ro: true };
 
 		const update: UpdateFilter<IRoom> = {
 			$pull: {
