@@ -1,5 +1,33 @@
 # @rocket.chat/meteor
 
+## 6.3.3
+
+### Patch Changes
+
+- bcf147f515: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- c2fe38cb34: Added ability to disable private app installation via envvar (DISABLE_PRIVATE_APP_INSTALLATION)
+- ded9666f27: Fix CORS headers not being set for assets
+- f25081bc8a: Removed an unused authentication flow
+  - @rocket.chat/core-typings@6.3.3
+  - @rocket.chat/rest-typings@6.3.3
+  - @rocket.chat/api-client@0.1.3
+  - @rocket.chat/omnichannel-services@0.0.9
+  - @rocket.chat/pdf-worker@0.0.9
+  - @rocket.chat/presence@0.0.9
+  - @rocket.chat/core-services@0.1.3
+  - @rocket.chat/cron@0.0.5
+  - @rocket.chat/gazzodown@1.0.3
+  - @rocket.chat/model-typings@0.0.9
+  - @rocket.chat/ui-contexts@1.0.3
+  - @rocket.chat/fuselage-ui-kit@1.0.3
+  - @rocket.chat/models@0.0.9
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.3
+  - @rocket.chat/ui-video-conf@1.0.3
+  - @rocket.chat/web-ui-registration@1.0.3
+  - @rocket.chat/instance-status@0.0.9
+
 ## 6.3.2
 
 ### Patch Changes

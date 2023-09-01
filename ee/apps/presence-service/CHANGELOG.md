@@ -1,5 +1,15 @@
 # @rocket.chat/presence-service
 
+## 0.2.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.3
+- @rocket.chat/presence@0.0.9
+- @rocket.chat/core-services@0.1.3
+- @rocket.chat/model-typings@0.0.9
+- @rocket.chat/models@0.0.9
+
 ## 0.2.2
 
 ### Patch Changes
