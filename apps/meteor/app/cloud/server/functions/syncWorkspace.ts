@@ -1,8 +1,11 @@
 import { NPS, Banner } from '@rocket.chat/core-services';
-import type { Cloud, Serialized } from '@rocket.chat/core-typings';
+import { type Cloud, type Serialized } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
+import { CloudWorkspaceConnectionError } from '../../../../lib/errors/CloudWorkspaceConnectionError';
+import { CloudWorkspaceRegistrationError } from '../../../../lib/errors/CloudWorkspaceRegistrationError';
+import { CloudWorkspaceSyncError } from '../../../../lib/errors/CloudWorkspaceSyncError';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { getAndCreateNpsSurvey } from '../../../../server/services/nps/getAndCreateNpsSurvey';
 import { settings } from '../../../settings/server';
@@ -11,56 +14,42 @@ import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
-export async function syncWorkspace(_reconnectCheck = false) {
+const fetchSyncPayload = async (): Promise<Serialized<Cloud.SyncPayload> | undefined> => {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 	if (!workspaceRegistered) {
-		return false;
+		throw new CloudWorkspaceRegistrationError('Workspace is not registered');
+	}
+
+	const token = await getWorkspaceAccessToken(true);
+	if (!token) {
+		throw new CloudWorkspaceConnectionError('Workspace does not have a valid access token');
 	}
 
 	const info = await buildWorkspaceRegistrationData(undefined);
+	const workspaceRegistrationClientUrl = settings.get<string>('Cloud_Workspace_Registration_Client_Uri');
+	const response = await fetch(`${workspaceRegistrationClientUrl}/client`, {
+		method: 'POST',
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+		body: info,
+	});
 
-	let result: Serialized<Cloud.SyncPayload>;
+	const payload = await response.json();
 
-	try {
-		const token = await getWorkspaceAccessToken(true);
-
-		if (!token) {
-			return false;
-		}
-
-		const workspaceRegistrationClientUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
-		const response = await fetch(`${workspaceRegistrationClientUrl}/client`, {
-			method: 'POST',
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-			body: info,
-		});
-
-		const payload = await response.json();
-
-		if (!payload) {
-			return true;
-		}
-
-		if (!response.ok) {
-			throw new Error(payload.error);
-		}
-
-		result = payload;
-	} catch (err: any) {
-		SystemLogger.error({
-			msg: 'Failed to sync with Rocket.Chat Cloud',
-			url: '/client',
-			err,
-		});
-
-		return false;
-	} finally {
-		// aways fetch the license
-		await getWorkspaceLicense();
+	if (!payload) {
+		// TODO: check if empty payload really means there is nothing to sync
+		return undefined;
 	}
 
+	if (!response.ok) {
+		throw new CloudWorkspaceSyncError(payload.error);
+	}
+
+	return payload;
+};
+
+const consumeSyncPayload = async (result: Serialized<Cloud.SyncPayload>) => {
 	if (result.publicKey) {
 		await Settings.updateValueById('Cloud_Workspace_PublicKey', result.publicKey);
 	}
@@ -105,6 +94,29 @@ export async function syncWorkspace(_reconnectCheck = false) {
 			});
 		}
 	}
+};
 
-	return true;
+export async function syncWorkspace() {
+	try {
+		const payload = await fetchSyncPayload();
+
+		if (!payload) {
+			// TODO: check if empty payload really means there is nothing to sync
+			return true;
+		}
+
+		await consumeSyncPayload(payload);
+
+		return true;
+	} catch (err) {
+		SystemLogger.error({
+			msg: 'Failed to sync with Rocket.Chat Cloud',
+			url: '/client',
+			err,
+		});
+
+		return false;
+	} finally {
+		await getWorkspaceLicense();
+	}
 }

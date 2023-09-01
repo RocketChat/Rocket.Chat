@@ -4,12 +4,6 @@ import { settings } from '../../../settings/server';
 import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
-/**
- * @param {boolean} forceNew
- * @param {string} scope
- * @param {boolean} save
- * @returns string
- */
 export async function getWorkspaceAccessToken(forceNew = false, scope = '', save = true) {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
@@ -25,7 +19,7 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 	const now = new Date();
 
 	if (expires.value && now < expires.value && !forceNew) {
-		return settings.get('Cloud_Workspace_Access_Token');
+		return settings.get<string>('Cloud_Workspace_Access_Token');
 	}
 
 	const accessToken = await getWorkspaceAccessTokenWithScope(scope);
