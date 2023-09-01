@@ -250,7 +250,7 @@ export class ListenersModule {
 		});
 
 		service.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
-			// if a EE setting changed make sure we update the value on rocket.chat
+			// if a EE setting changed make sure we broadcast the correct value according to license
 			if (clientAction !== 'removed' && isSettingEnterprise(setting)) {
 				try {
 					const result = await EnterpriseSettings.changeSettingValue(setting);
@@ -258,7 +258,8 @@ export class ListenersModule {
 						setting.value = result;
 					}
 				} catch (err: unknown) {
-					logger.error({ msg: 'Error updating enterprise setting', err });
+					logger.error({ msg: 'Error getting proper enterprise setting value. Returning `invalidValue` instead.', err });
+					setting.value = setting.invalidValue;
 				}
 			}
 
