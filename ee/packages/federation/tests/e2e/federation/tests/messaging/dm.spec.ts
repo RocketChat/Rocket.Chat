@@ -1139,83 +1139,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page2.close();
 			});
 
-			test('expect to not be able to reply in thread in Server A', async ({ browser, page, apiServer2 }) => {
-				const page2 = await browser.newPage();
-				const poFederationChannelServerUser2 = new FederationChannel(page2);
-				const usernameFromServer2 = await registerUser(apiServer2);
-
-				await doLogin({
-					page: page2,
-					server: {
-						url: constants.RC_SERVER_2.url,
-						username: usernameFromServer2,
-						password: constants.RC_SERVER_2.password,
-					},
-					storeState: false,
-				});
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await page2.goto(`${constants.RC_SERVER_2.url}/home`);
-
-				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(usernameFromServer2, constants.RC_SERVER_2.matrixServerName);
-				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
-					usernameFromServer2,
-					constants.RC_SERVER_2.matrixServerName,
-				);
-				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
-
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer1.content.sendMessage('message');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
-
-				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
-
-				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
-				await expect(poFederationChannelServerUser2.content.lastUserMessageBody).toHaveText('message from Server A');
-
-				await poFederationChannelServer1.content.openLastMessageMenu();
-				await expect(poFederationChannelServer1.content.btnOptionReplyInThread).not.toBeVisible();
-				await page2.close();
-			});
-
-			test('expect to not be able to reply in thread in Server B', async ({ browser, page, apiServer2 }) => {
-				const page2 = await browser.newPage();
-				const poFederationChannelServerUser2 = new FederationChannel(page2);
-				const usernameFromServer2 = await registerUser(apiServer2);
-
-				await doLogin({
-					page: page2,
-					server: {
-						url: constants.RC_SERVER_2.url,
-						username: usernameFromServer2,
-						password: constants.RC_SERVER_2.password,
-					},
-					storeState: false,
-				});
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await page2.goto(`${constants.RC_SERVER_2.url}/home`);
-
-				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(usernameFromServer2, constants.RC_SERVER_2.matrixServerName);
-				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
-					usernameFromServer2,
-					constants.RC_SERVER_2.matrixServerName,
-				);
-				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
-
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer1.content.sendMessage('message');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
-
-				await poFederationChannelServerUser2.content.sendMessageUsingEnter('message from Server A');
-
-				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
-				await expect(poFederationChannelServerUser2.content.lastUserMessageBody).toHaveText('message from Server A');
-
-				await poFederationChannelServerUser2.content.openLastMessageMenu();
-				await expect(poFederationChannelServerUser2.content.btnOptionReplyInThread).not.toBeVisible();
-				await page2.close();
-			});
-
-			test('expect to not be able to start a discussion from a message in thread in Server A', async ({ browser, page, apiServer2 }) => {
+			test('expect to not be able to start a discussion from a message in Server A', async ({ browser, page, apiServer2 }) => {
 				const page2 = await browser.newPage();
 				const poFederationChannelServerUser2 = new FederationChannel(page2);
 				const usernameFromServer2 = await registerUser(apiServer2);
@@ -1253,7 +1177,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page2.close();
 			});
 
-			test('expect to not be able to start a discussion from a message in thread in Server B', async ({ browser, page, apiServer2 }) => {
+			test('expect to not be able to start a discussion from a message in Server B', async ({ browser, page, apiServer2 }) => {
 				const page2 = await browser.newPage();
 				const poFederationChannelServerUser2 = new FederationChannel(page2);
 				const usernameFromServer2 = await registerUser(apiServer2);

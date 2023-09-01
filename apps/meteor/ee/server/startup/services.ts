@@ -21,7 +21,6 @@ api.registerService(new LicenseService());
 api.registerService(new MessageReadsService());
 api.registerService(new OmnichannelEE());
 
-
 // TODO: move the federation to run in a separated process as soon as we have all the dependencies properly isolated
 api.registerService(
 	await FederationService.createFederationService(

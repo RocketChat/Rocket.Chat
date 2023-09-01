@@ -75,6 +75,19 @@ describe('Federation - Infrastructure - RocketChat - FederationRoomSenderConvert
 				internalSenderId,
 				internalRoomId,
 				message: msg,
+				isThreadedMessage: false,
+			});
+		});
+		it('should have all the properties set when the message is from a thread', () => {
+			const internalSenderId = 'internalSenderId';
+			const internalRoomId = 'internalRoomId';
+			const msg = { msg: 'text', tmid: 'tmid' } as IMessage;
+			const result: any = FederationRoomSenderConverter.toSendExternalMessageDto(internalSenderId, internalRoomId, msg);
+			expect(result).to.be.eql({
+				internalSenderId,
+				internalRoomId,
+				message: msg,
+				isThreadedMessage: true,
 			});
 		});
 	});

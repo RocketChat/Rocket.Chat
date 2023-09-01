@@ -450,6 +450,7 @@ export class MatrixBridge implements IFederationBridge {
 
 			return messageId;
 		} catch (e: any) {
+			federationBridgeLogger.error({ msg: 'Error sending file to room', err: e });
 			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
 				throw new Error('File is too large');
 			}
@@ -485,6 +486,7 @@ export class MatrixBridge implements IFederationBridge {
 
 			return messageId;
 		} catch (e: any) {
+			federationBridgeLogger.error({ msg: 'Error sending file to room', err: e });
 			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
 				throw new Error('File is too large');
 			}
@@ -519,6 +521,7 @@ export class MatrixBridge implements IFederationBridge {
 
 			return mxcUrl;
 		} catch (e: any) {
+			federationBridgeLogger.error({ msg: 'Error sending file', err: e });
 			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
 				throw new Error('File is too large');
 			}
@@ -670,6 +673,160 @@ export class MatrixBridge implements IFederationBridge {
 			);
 		} catch (error) {
 			throw new Error('invalid-server-name');
+		}
+	}
+
+	public async sendThreadMessage(
+		externalRoomId: string,
+		externalSenderId: string,
+		message: IMessage,
+		relatesToEventId: string,
+	): Promise<string> {
+		const text = this.escapeEmojis(
+			await toExternalMessageFormat({
+				message: message.msg,
+				externalRoomId,
+				homeServerDomain: await this.internalSettings.getHomeServerDomain(),
+			}),
+		);
+		const messageId = await this.bridgeInstance
+			.getIntent(externalSenderId)
+			.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+				'msgtype': 'm.text',
+				'body': this.escapeEmojis(message.msg),
+				'formatted_body': text,
+				'format': 'org.matrix.custom.html',
+				'm.relates_to': {
+					'rel_type': 'm.thread',
+					'event_id': relatesToEventId,
+					'is_falling_back': true,
+					'm.in_reply_to': {
+						event_id: relatesToEventId,
+					},
+				},
+			});
+		return messageId;
+	}
+
+	public async sendThreadReplyToMessage(
+		externalRoomId: string,
+		externalUserId: string,
+		eventToReplyTo: string,
+		originalEventSender: string,
+		replyMessage: string,
+		relatesToEventId: string,
+	): Promise<string> {
+		const { formattedMessage, message } = await toExternalQuoteMessageFormat({
+			externalRoomId,
+			eventToReplyTo,
+			originalEventSender,
+			message: this.escapeEmojis(replyMessage),
+			homeServerDomain: await this.internalSettings.getHomeServerDomain(),
+		});
+		const messageId = await this.bridgeInstance
+			.getIntent(externalUserId)
+			.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+				'msgtype': 'm.text',
+				'body': message,
+				'format': 'org.matrix.custom.html',
+				'formatted_body': formattedMessage,
+				'm.relates_to': {
+					'rel_type': 'm.thread',
+					'event_id': relatesToEventId,
+					'is_falling_back': false,
+					'm.in_reply_to': {
+						event_id: eventToReplyTo,
+					},
+				},
+			});
+
+		return messageId;
+	}
+
+	public async sendMessageFileToThread(
+		externalRoomId: string,
+		externalSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+		relatesToEventId: string,
+	): Promise<string> {
+		try {
+			const mxcUrl = await this.bridgeInstance.getIntent(externalSenderId).uploadContent(content);
+			const messageId = await this.bridgeInstance
+				.getIntent(externalSenderId)
+				.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+					'body': fileDetails.filename,
+					'filename': fileDetails.filename,
+					'info': {
+						size: fileDetails.fileSize,
+						mimetype: fileDetails.mimeType,
+						...(fileDetails.metadata?.height && fileDetails.metadata?.width
+							? { h: fileDetails.metadata?.height, w: fileDetails.metadata?.width }
+							: {}),
+					},
+					'msgtype': this.getMsgTypeBasedOnMimeType(fileDetails.mimeType),
+					'url': mxcUrl,
+					'm.relates_to': {
+						'rel_type': 'm.thread',
+						'event_id': relatesToEventId,
+						'is_falling_back': true,
+						'm.in_reply_to': {
+							event_id: relatesToEventId,
+						},
+					},
+				});
+
+			return messageId;
+		} catch (e: any) {
+			federationBridgeLogger.error({ msg: 'Error sending file to thread', err: e });
+			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
+				throw new Error('File is too large');
+			}
+			return '';
+		}
+	}
+
+	public async sendReplyMessageFileToThread(
+		externalRoomId: string,
+		externalSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+		eventToReplyTo: string,
+		relatesToEventId: string,
+	): Promise<string> {
+		try {
+			const mxcUrl = await this.bridgeInstance.getIntent(externalSenderId).uploadContent(content);
+			const messageId = await this.bridgeInstance
+				.getIntent(externalSenderId)
+				.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+					'body': fileDetails.filename,
+					'filename': fileDetails.filename,
+					'info': {
+						size: fileDetails.fileSize,
+						mimetype: fileDetails.mimeType,
+						...(fileDetails.metadata?.height && fileDetails.metadata?.width
+							? { h: fileDetails.metadata?.height, w: fileDetails.metadata?.width }
+							: {}),
+					},
+					'msgtype': this.getMsgTypeBasedOnMimeType(fileDetails.mimeType),
+					'url': mxcUrl,
+					'm.relates_to': {
+						'rel_type': 'm.thread',
+						'event_id': relatesToEventId,
+						'is_falling_back': false,
+						'm.in_reply_to': {
+							event_id: eventToReplyTo,
+						},
+					},
+				});
+
+			return messageId;
+		} catch (e: any) {
+			federationBridgeLogger.error({ msg: 'Error sending file to thread', err: e });
+			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
+				throw new Error('File is too large');
+			}
+			return '';
 		}
 	}
 }

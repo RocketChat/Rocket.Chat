@@ -36,6 +36,20 @@ export class FederationHomeContent {
 		await this.page.locator('button[aria-label="Send"]').click();
 	}
 
+	async editLastThreadMessage(message: string): Promise<void> {
+		await this.openLastThreadMessageMenu();
+		await this.page.locator('[data-qa-id="edit-message"]').click();
+		await this.page.locator('[name="msg"]').last().fill(message);
+		await this.page.keyboard.press('Enter');
+	}
+
+	async sendAudioRecordedInThreadMessage(): Promise<void> {
+		await this.btnRecordAudio.nth(1).click();
+		await this.page.waitForTimeout(3000);
+		await this.page.locator('.rc-message-box__icon.rc-message-box__audio-message-done').click();
+		await this.btnModalConfirm.click();
+	}
+
 	async sendMessageUsingEnter(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
 		await this.page.keyboard.press('Enter');
@@ -78,7 +92,7 @@ export class FederationHomeContent {
 
 	async sendVideoRecordedMessage(): Promise<void> {
 		await this.btnVideoMessage.click();
-		await this.page.locator('.rcx-box.rcx-box--full.rcx-icon--name-rec').click();
+		await this.page.locator('.rcx-box.rcx-box--full.rcx-icon--name-video').click();
 		await this.page.waitForTimeout(3000);
 		await this.page.locator('.rcx-box.rcx-box--full.rcx-icon--name-stop-unfilled').click();
 		await this.page.locator('button >> text="Send"').click();
@@ -86,10 +100,62 @@ export class FederationHomeContent {
 		await this.btnModalConfirm.click();
 	}
 
+	async getLastFileThreadMessageByFileName(filename: string): Promise<Locator> {
+		return this.page
+			.locator('div.thread-list ul.thread [data-qa-type="message"]:last-child .rcx-message-container')
+			.last()
+			.locator(`div[title="${filename}"]`);
+	}
+
+	get waitForLastThreadMessageTextAttachmentEqualsText(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
+	}
+
 	async dispatchSlashCommand(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').fill(text);
 		await this.page.locator('button[aria-label="Send"]').waitFor();
 		await this.page.locator('button[aria-label="Send"]').click();
+	}
+
+	async sendThreadMessage(message: string): Promise<void> {
+		await this.page.locator('//main//aside >> [name="msg"]').last().fill(message);
+		await this.page.keyboard.press('Enter');
+	}
+
+	threadSendToChannelAlso(): Locator {
+		return this.page.locator('//main//aside >> [name="alsoSendThreadToChannel"]');
+	}
+
+	async openLastThreadMessageMenu(): Promise<void> {
+		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().hover();
+		await this.page
+			.locator('//main//aside >> [data-qa-type="message"]')
+			.last()
+			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
+			.waitFor();
+		await this.page
+			.locator('//main//aside >> [data-qa-type="message"]')
+			.last()
+			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
+			.click();
+	}
+
+	async quoteMessageInsideThread(message: string): Promise<void> {
+		await this.openLastThreadMessageMenu();
+		await this.page.locator('[data-qa-id="quote-message"]').click();
+		await this.sendThreadMessage(message);
+	}
+
+	get lastThreadMessageText(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last();
+	}
+
+	get lastThreadMessagePreviewText(): Locator {
+		return this.page.locator('div.messages-box ul.messages-list [role=link]').last();
+	}
+
+	get threadInputMessage(): Locator {
+		return this.page.locator('//main//aside >> [name="msg"]').last();
 	}
 
 	get btnModalCancel(): Locator {

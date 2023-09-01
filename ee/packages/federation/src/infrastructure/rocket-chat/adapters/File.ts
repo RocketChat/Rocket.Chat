@@ -18,9 +18,7 @@ export interface IFileAdapterDependencies {
 }
 
 export class RocketChatFileAdapter {
-	constructor(private readonly dependencies: IFileAdapterDependencies) {
-		console.log({ file: dependencies });
-	}
+	constructor(private readonly dependencies: IFileAdapterDependencies) {}
 
 	public async uploadFile(
 		readableStream: ReadableStream,

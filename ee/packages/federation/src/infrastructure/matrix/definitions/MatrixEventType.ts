@@ -9,4 +9,5 @@ export enum MatrixEventType {
 	ROOM_EVENT_REDACTED = 'm.room.redaction',
 	MESSAGE_REACTED = 'm.reaction',
 	USER_TYPING_STATUS_CHANGED = 'm.typing',
+	MESSAGE_ON_THREAD = 'm.thread',
 }

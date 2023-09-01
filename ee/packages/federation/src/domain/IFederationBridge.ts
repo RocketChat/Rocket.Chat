@@ -120,4 +120,28 @@ export interface IFederationBridge {
 	): Promise<{ creator: { id: string; username: string }; name: string; joinedMembers: string[] } | undefined>;
 	createRoom(externalCreatorId: string, roomType: RoomType, roomName: string, roomTopic?: string): Promise<string>;
 	searchPublicRooms(params: IFederationSearchPublicRoomsParams): Promise<IFederationPublicRoomsResult>;
+	sendThreadMessage(externalRoomId: string, externalSenderId: string, message: IMessage, relatesToEventId: string): Promise<string>;
+	sendMessageFileToThread(
+		externalRoomId: string,
+		externaSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+		relatesToEventId: string,
+	): Promise<string>;
+	sendThreadReplyToMessage(
+		externalRoomId: string,
+		externalUserId: string,
+		eventToReplyTo: string,
+		eventOriginalSender: string,
+		message: string,
+		relatesToEventId: string,
+	): Promise<string>;
+	sendReplyMessageFileToThread(
+		externalRoomId: string,
+		externaSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+		eventToReplyTo: string,
+		relatesToEventId: string,
+	): Promise<string>;
 }

@@ -351,6 +351,65 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 				externalFormattedText: 'externalFormattedText',
 				rawMessage: 'rawMessage',
 				replyToEventId: 'replyToEventId',
+				thread: undefined,
+			});
+		});
+
+		it('should convert the event properly when it is a thread', () => {
+			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto({
+				...event,
+				content: {
+					...event.content,
+					'm.relates_to': {
+						'event_id': 'relatesToEventId',
+						'm.in_reply_to': { event_id: 'inReplyToEventId' },
+						'rel_type': MatrixEventType.MESSAGE_ON_THREAD,
+						'is_falling_back': true,
+					},
+				},
+			} as any);
+			expect(result).to.be.eql({
+				externalEventId: 'eventId',
+				externalRoomId: '!roomId:matrix.org',
+				normalizedRoomId: 'roomId',
+				externalSenderId: '@marcos.defendi:matrix.org',
+				normalizedSenderId: 'marcos.defendi:matrix.org',
+				externalFormattedText: 'externalFormattedText',
+				rawMessage: 'rawMessage',
+				replyToEventId: undefined,
+				thread: {
+					rootEventId: 'relatesToEventId',
+					replyToEventId: 'inReplyToEventId',
+				},
+			});
+		});
+
+		it('should convert the event properly when it is a thread and the message is being edited inside the thread', () => {
+			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto({
+				...event,
+				content: {
+					...event.content,
+					'm.relates_to': {
+						'event_id': 'relatesToEventId',
+						'm.in_reply_to': { event_id: 'inReplyToEventId' },
+						'rel_type': MatrixEventType.MESSAGE_ON_THREAD,
+						'is_falling_back': false,
+					},
+				},
+			} as any);
+			expect(result).to.be.eql({
+				externalEventId: 'eventId',
+				externalRoomId: '!roomId:matrix.org',
+				normalizedRoomId: 'roomId',
+				externalSenderId: '@marcos.defendi:matrix.org',
+				normalizedSenderId: 'marcos.defendi:matrix.org',
+				externalFormattedText: 'externalFormattedText',
+				rawMessage: 'rawMessage',
+				replyToEventId: 'inReplyToEventId',
+				thread: {
+					rootEventId: 'relatesToEventId',
+					replyToEventId: 'inReplyToEventId',
+				},
 			});
 		});
 	});
@@ -555,6 +614,75 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 					messageText: event.content.body,
 				},
 				replyToEventId: 'replyToEventId',
+				thread: undefined,
+			});
+		});
+
+		it('should convert the event properly when it is a thread', () => {
+			const result = MatrixRoomReceiverConverter.toSendRoomFileMessageDto({
+				...event,
+				content: {
+					...event.content,
+					'm.relates_to': {
+						'event_id': 'relatesToEventId',
+						'm.in_reply_to': { event_id: 'inReplyToEventId' },
+						'rel_type': MatrixEventType.MESSAGE_ON_THREAD,
+						'is_falling_back': true,
+					},
+				},
+			} as any);
+			expect(result).to.be.eql({
+				externalEventId: 'eventId',
+				externalRoomId: '!roomId:matrix.org',
+				normalizedRoomId: 'roomId',
+				externalSenderId: '@marcos.defendi:matrix.org',
+				normalizedSenderId: 'marcos.defendi:matrix.org',
+				messageBody: {
+					filename: event.content.body,
+					url: event.content.url,
+					mimetype: event.content.info.mimetype,
+					size: event.content.info.size,
+					messageText: event.content.body,
+				},
+				replyToEventId: undefined,
+				thread: {
+					rootEventId: 'relatesToEventId',
+					replyToEventId: 'inReplyToEventId',
+				},
+			});
+		});
+
+		it('should convert the event properly when it is a thread and the message is being edited inside the thread', () => {
+			const result = MatrixRoomReceiverConverter.toSendRoomFileMessageDto({
+				...event,
+				content: {
+					...event.content,
+					'm.relates_to': {
+						'event_id': 'relatesToEventId',
+						'm.in_reply_to': { event_id: 'inReplyToEventId' },
+						'rel_type': MatrixEventType.MESSAGE_ON_THREAD,
+						'is_falling_back': false,
+					},
+				},
+			} as any);
+			expect(result).to.be.eql({
+				externalEventId: 'eventId',
+				externalRoomId: '!roomId:matrix.org',
+				normalizedRoomId: 'roomId',
+				externalSenderId: '@marcos.defendi:matrix.org',
+				normalizedSenderId: 'marcos.defendi:matrix.org',
+				messageBody: {
+					filename: event.content.body,
+					url: event.content.url,
+					mimetype: event.content.info.mimetype,
+					size: event.content.info.size,
+					messageText: event.content.body,
+				},
+				replyToEventId: 'inReplyToEventId',
+				thread: {
+					rootEventId: 'relatesToEventId',
+					replyToEventId: 'inReplyToEventId',
+				},
 			});
 		});
 	});

@@ -105,6 +105,7 @@ export class FederationRoomSenderConverter {
 			internalRoomId,
 			internalSenderId,
 			message,
+			isThreadedMessage: Boolean(message.tmid),
 		});
 	}
 
