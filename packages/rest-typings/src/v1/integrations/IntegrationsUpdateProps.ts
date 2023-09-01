@@ -9,7 +9,7 @@ export type IntegrationsUpdateProps =
 			integrationId: string;
 			channel: string;
 			scriptEnabled: boolean;
-			overrideDestinationChannelEnabled: boolean;
+			overrideDestinationChannelEnabled?: boolean;
 			script?: string;
 			name: string;
 			enabled: boolean;
@@ -72,7 +72,7 @@ const integrationsUpdateSchema = {
 				},
 				overrideDestinationChannelEnabled: {
 					type: 'boolean',
-					nullable: false,
+					nullable: true,
 				},
 				script: {
 					type: 'string',
@@ -99,7 +99,7 @@ const integrationsUpdateSchema = {
 					nullable: true,
 				},
 			},
-			required: ['integrationId', 'type', 'channel', 'scriptEnabled', 'overrideDestinationChannelEnabled', 'name', 'enabled'],
+			required: ['integrationId', 'type', 'channel', 'scriptEnabled', 'name', 'enabled'],
 			additionalProperties: true,
 		},
 		{
@@ -162,10 +162,6 @@ const integrationsUpdateSchema = {
 					type: 'boolean',
 					nullable: false,
 				},
-				overrideDestinationChannelEnabled: {
-					type: 'boolean',
-					nullable: false,
-				},
 				script: {
 					type: 'string',
 					nullable: true,
@@ -211,7 +207,7 @@ const integrationsUpdateSchema = {
 					nullable: true,
 				},
 			},
-			required: ['type', 'username', 'channel', 'event', 'scriptEnabled', 'overrideDestinationChannelEnabled', 'name', 'enabled'],
+			required: ['type', 'username', 'channel', 'event', 'scriptEnabled', 'name', 'enabled'],
 			additionalProperties: false,
 		},
 	],
