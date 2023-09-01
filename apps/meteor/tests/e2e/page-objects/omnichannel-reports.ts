@@ -63,7 +63,7 @@ class OmnichannelReportsSection {
 	}
 
 	async selectPeriod(period: string) {
-		await this.inputPeriodSelector.click({ force: true });
+		await this.inputPeriodSelector.click();
 		await this.page.locator(`li.rcx-option[data-key="${period}"]`).click();
 	}
 }
