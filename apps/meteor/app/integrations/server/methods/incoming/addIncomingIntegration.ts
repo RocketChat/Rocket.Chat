@@ -3,6 +3,7 @@ import { Integrations, Roles, Subscriptions, Users, Rooms } from '@rocket.chat/m
 import { Random } from '@rocket.chat/random';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Babel } from 'meteor/babel-compiler';
+import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
@@ -20,6 +21,23 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 export const addIncomingIntegration = async (userId: string, integration: INewIncomingIntegration): Promise<IIncomingIntegration> => {
+	check(
+		integration,
+		Match.ObjectIncluding({
+			type: String,
+			name: String,
+			enabled: Boolean,
+			username: String,
+			channel: String,
+			alias: Match.Maybe(String),
+			emoji: Match.Maybe(String),
+			scriptEnabled: Boolean,
+			overrideDestinationChannelEnabled: Match.Maybe(Boolean),
+			script: Match.Maybe(String),
+			avatar: Match.Maybe(String),
+		}),
+	);
+
 	if (
 		!userId ||
 		(!(await hasPermissionAsync(userId, 'manage-incoming-integrations')) &&
