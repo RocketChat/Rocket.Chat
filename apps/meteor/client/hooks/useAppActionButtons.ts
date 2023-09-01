@@ -29,9 +29,13 @@ export const useAppActionButtons = (context?: `${UIActionButtonContext}`) => {
 		staleTime: Infinity,
 	});
 
-	const invalidate = useDebouncedCallback(() => {
-		queryClient.invalidateQueries(['apps', 'actionButtons']);
-	}, 100);
+	const invalidate = useDebouncedCallback(
+		() => {
+			queryClient.invalidateQueries(['apps', 'actionButtons']);
+		},
+		100,
+		[],
+	);
 
 	useEffect(() => {
 		if (!uid) {

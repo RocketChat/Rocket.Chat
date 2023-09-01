@@ -122,6 +122,8 @@ const useI18next = (lng: string): typeof i18next => {
 			},
 			react: {
 				useSuspense: true,
+				bindI18n: 'languageChanged loaded',
+				bindI18nStore: 'added removed',
 			},
 			interpolation: {
 				escapeValue: false,
@@ -174,7 +176,7 @@ type TranslationProviderProps = {
 const useAutoLanguage = () => {
 	const serverLanguage = useSetting<string>('Language');
 	const browserLanguage = filterLanguage(window.navigator.userLanguage ?? window.navigator.language);
-	const defaultUserLanguage = serverLanguage || browserLanguage || 'en';
+	const defaultUserLanguage = browserLanguage || serverLanguage || 'en';
 
 	// if the language is supported, if not remove the region
 	const suggestedLanguage = languages.includes(defaultUserLanguage) ? defaultUserLanguage : defaultUserLanguage.split('-').shift() ?? 'en';
@@ -209,11 +211,13 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 			{
 				en: 'Default',
 				name: i18nextInstance.t('Default'),
+				ogName: i18nextInstance.t('Default'),
 				key: '',
 			},
 			...[...new Set([...i18nextInstance.languages, ...languages])].map((key) => ({
 				en: key,
 				name: getLanguageName(key, language),
+				ogName: getLanguageName(key, key),
 				key,
 			})),
 		],
@@ -270,6 +274,7 @@ const TranslationProviderInner = ({
 	availableLanguages: {
 		en: string;
 		name: string;
+		ogName: string;
 		key: string;
 	}[];
 }): ReactElement => {

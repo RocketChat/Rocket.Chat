@@ -5339,7 +5339,7 @@
   "registration.component.login": "Bejelentkezés",
   "registration.component.login.userNotFound": "A felhasználó nem található",
   "registration.component.login.incorrectPassword": "Hibás jelszó",
-  "registration.component.switchLanguage": "Átváltás <1>angolra</1>",
+  "registration.component.switchLanguage": "Átváltás <1>{{name}}</1>",
   "registration.component.resetPassword": "Jelszó visszaállítása",
   "registration.component.form.emailOrUsername": "E-mail-cím vagy felhasználónév",
   "registration.component.form.username": "Felhasználónév",
