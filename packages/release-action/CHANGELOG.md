@@ -1,5 +1,11 @@
 # @rocket.chat/release-action
 
+## 2.1.0
+
+### Minor Changes
+
+- a56f5f0a5f: Add back "Engine Versions" to the release notes
+
 ## 2.0.0
 
 ### Major Changes
