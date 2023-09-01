@@ -4,6 +4,7 @@ import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings } from '@rocket.chat/core-services';
 import { UserStatus, isSettingColor, isSettingEnterprise } from '@rocket.chat/core-typings';
 import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
 
 import { settings } from '../../../app/settings/server/cached';
@@ -26,6 +27,8 @@ const minimongoChangeMap: Record<string, string> = {
 
 export class ListenersModule {
 	constructor(service: IServiceClass, notifications: NotificationsModule) {
+		const logger = new Logger('ListenersModule');
+
 		service.onEvent('emoji.deleteCustom', (emoji) => {
 			notifications.notifyLoggedInThisInstance('deleteEmojiCustom', {
 				emojiData: emoji,
@@ -254,8 +257,8 @@ export class ListenersModule {
 					if (result !== undefined && !(result instanceof Error)) {
 						setting.value = result;
 					}
-				} catch (error) {
-					// no op
+				} catch (err: unknown) {
+					logger.error({ msg: 'Error updating enterprise setting', err });
 				}
 			}
 
