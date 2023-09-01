@@ -28,9 +28,12 @@ const onTransferFailure = async (
 		return false;
 	}
 
-	const department = (await LivechatDepartment.findOneById(departmentId, {
-		projection: { _id: 1, name: 1, fallbackForwardDepartment: 1 },
-	})) as Partial<ILivechatDepartment>;
+	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'name' | '_id' | 'fallbackForwardDepartment'>>(
+		departmentId,
+		{
+			projection: { _id: 1, name: 1, fallbackForwardDepartment: 1 },
+		},
+	);
 
 	if (!department?.fallbackForwardDepartment?.length) {
 		return false;

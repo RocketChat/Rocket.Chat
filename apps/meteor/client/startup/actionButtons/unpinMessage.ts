@@ -13,6 +13,7 @@ Meteor.startup(() => {
 		id: 'unpin-message',
 		icon: 'pin',
 		label: 'Unpin',
+		type: 'interaction',
 		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct', 'videoconf', 'videoconf-threads'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
@@ -31,7 +32,7 @@ Meteor.startup(() => {
 
 			return hasAtLeastOnePermission('pin-message', message.rid);
 		},
-		order: 8,
+		order: 2,
 		group: 'menu',
 	});
 });
