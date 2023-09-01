@@ -1,6 +1,6 @@
-import type { ComponentChildren } from 'preact';
+import type { ComponentChildren, Ref } from 'preact';
 import type { TargetedEvent } from 'preact/compat';
-import { useRef, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
 
 import { createClassName } from '../../helpers/createClassName';
@@ -16,6 +16,7 @@ type FilesDropTargetProps = {
 	className?: string;
 	style?: JSXInternal.CSSProperties;
 	children?: ComponentChildren;
+	inputRef?: Ref<HTMLInputElement>;
 	onUpload?: (files: File[]) => void;
 };
 
@@ -27,10 +28,10 @@ export const FilesDropTarget = ({
 	className,
 	style = {},
 	children,
+	inputRef,
 	onUpload,
 }: FilesDropTargetProps) => {
 	const [dragLevel, setDragLevel] = useState(0);
-	const input = useRef(null);
 
 	const handleDragOver = (event: DragEvent) => {
 		event.preventDefault();
@@ -97,10 +98,6 @@ export const FilesDropTarget = ({
 		filteredFiles.length && onUpload(filteredFiles);
 	};
 
-	// const browse = () => {
-	// 	input?.current?.click();
-	// };
-
 	return (
 		<div
 			data-overlay-text={overlayText}
@@ -112,7 +109,7 @@ export const FilesDropTarget = ({
 			style={style}
 		>
 			<input
-				ref={input}
+				ref={inputRef}
 				type='file'
 				accept={accept}
 				multiple={multiple}
