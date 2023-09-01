@@ -151,23 +151,6 @@ services:
     depends_on:
       - nats
 
-  federation-service:
-    platform: linux/amd64
-    build:
-      dockerfile: ee/apps/federation-service/Dockerfile
-      context: .
-      args:
-        SERVICE: federation-service
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/federation-service:${DOCKER_TAG}
-    environment:
-      - MONGO_URL=${MONGO_URL}
-      - 'TRANSPORTER=${TRANSPORTER}'
-      - MOLECULER_LOG_LEVEL=info
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    depends_on:
-      - nats
-
   nats:
     image: nats:2.6-alpine
 

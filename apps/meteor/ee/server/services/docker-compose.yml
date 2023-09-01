@@ -122,17 +122,6 @@ services:
     depends_on:
       - nats
 
-  federation-service:
-    container_name: federation-service
-    build:
-      context: .
-      args:
-        SERVICE: federation
-    image: rocketchat/federation-service:latest
-    env_file: .config/services/service.env
-    depends_on:
-      - nats
-
   nats:
     image: nats
     ports:

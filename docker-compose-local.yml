@@ -144,22 +144,6 @@ services:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
-
-  federation-service:
-    platform: linux/amd64
-    build:
-      dockerfile: ee/apps/federation-service/Dockerfile
-      args:
-        SERVICE: federation-service
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/federation-service:${DOCKER_TAG}
-    environment:
-      - MONGO_URL=${MONGO_URL}
-      - 'TRANSPORTER=${TRANSPORTER}'
-      - MOLECULER_LOG_LEVEL=info
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    depends_on:
-      - nats
   
   mongo:
     image: docker.io/bitnami/mongodb:4.4

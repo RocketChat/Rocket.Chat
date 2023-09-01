@@ -9,6 +9,7 @@ import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 const PORT = process.env.PORT || 3552;
 
 (async () => {
+	process.exit(1);
 	const db = await getConnection();
 
 	const trash = await getCollection<Document>(Collections.Trash);

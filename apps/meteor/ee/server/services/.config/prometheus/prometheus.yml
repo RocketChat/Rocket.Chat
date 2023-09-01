@@ -19,7 +19,6 @@ scrape_configs:
       "presence-service",
       "ddp-streamer-service",
       "stream-hub-service",
-      "federation-service",
       "traefik",
     ]
     type: A
