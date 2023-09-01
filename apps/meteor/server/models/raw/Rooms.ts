@@ -1349,7 +1349,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			t: {
 				$in: types,
 			},
-			...(defaultValue ? { default: true } : { default: { $exists: false } }),
+			...(defaultValue ? { default: true } : { default: { $ne: true } }),
 		};
 
 		return this.find(query, options);
@@ -1763,17 +1763,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	saveDefaultById(_id: IRoom['_id'], defaultValue: boolean): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
-		const update: UpdateFilter<IRoom> = defaultValue
-			? {
-					$set: {
-						default: true,
-					},
-			  }
-			: {
-					$unset: {
-						default: 1,
-					},
-			  };
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				default: defaultValue,
+			},
+		};
 
 		return this.updateOne(query, update);
 	}
