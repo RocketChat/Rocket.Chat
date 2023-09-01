@@ -2921,13 +2921,13 @@ export class UsersRaw extends BaseRaw {
 			this.col.countDocuments({
 				active: true,
 			}),
-			// Count all active that are guests, apps or federated
+			// Count all active that are guests, apps, bots or federated
 			// Fast based on indexes, usually based on guest index as is usually small
 			this.col.countDocuments({
 				active: true,
-				$or: [{ roles: ['guest'] }, { type: 'app' }, { federated: true }, { isRemote: true }],
+				$or: [{ roles: ['guest'] }, { type: { $in: ['app', 'bot'] } }, { federated: true }, { isRemote: true }],
 			}),
-			// Get all active and remove the guests, apps, federated, etc
+			// Get all active and remove the guests, apps, bots and federated
 		]).then((results) => results.reduce((a, b) => a - b));
 	}
 
