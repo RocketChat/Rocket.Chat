@@ -26,7 +26,8 @@ export async function getWorkspaceLicense(): Promise<{ updated: boolean; license
 
 	let licenseResult;
 	try {
-		const request = await fetch(`${settings.get('Cloud_Workspace_Registration_Client_Uri')}/license`, {
+		const workspaceRegistrationClientUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
+		const request = await fetch(`${workspaceRegistrationClientUrl}/license`, {
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},

@@ -1,4 +1,5 @@
 import { NPS, Banner } from '@rocket.chat/core-services';
+import type { Cloud, Serialized } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
@@ -18,30 +19,35 @@ export async function syncWorkspace(_reconnectCheck = false) {
 
 	const info = await buildWorkspaceRegistrationData(undefined);
 
-	const workspaceUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
+	let result: Serialized<Cloud.SyncPayload>;
 
-	let result;
 	try {
-		const headers: Record<string, string> = {};
 		const token = await getWorkspaceAccessToken(true);
 
-		if (token) {
-			headers.Authorization = `Bearer ${token}`;
-		} else {
+		if (!token) {
 			return false;
 		}
 
-		const request = await fetch(`${workspaceUrl}/client`, {
-			headers,
-			body: info,
+		const workspaceRegistrationClientUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
+		const response = await fetch(`${workspaceRegistrationClientUrl}/client`, {
 			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+			body: info,
 		});
 
-		if (!request.ok) {
-			throw new Error((await request.json()).error);
+		const payload = await response.json();
+
+		if (!payload) {
+			return true;
 		}
 
-		result = await request.json();
+		if (!response.ok) {
+			throw new Error(payload.error);
+		}
+
+		result = payload;
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to sync with Rocket.Chat Cloud',
@@ -55,23 +61,18 @@ export async function syncWorkspace(_reconnectCheck = false) {
 		await getWorkspaceLicense();
 	}
 
-	const data = result;
-	if (!data) {
-		return true;
+	if (result.publicKey) {
+		await Settings.updateValueById('Cloud_Workspace_PublicKey', result.publicKey);
 	}
 
-	if (data.publicKey) {
-		await Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
-	}
-
-	if (data.trial?.trialId) {
+	if (result.trial?.trialId) {
 		await Settings.updateValueById('Cloud_Workspace_Had_Trial', true);
 	}
 
-	if (data.nps) {
-		const { id: npsId, expireAt } = data.nps;
+	if (result.nps) {
+		const { id: npsId, expireAt } = result.nps;
 
-		const startAt = new Date(data.nps.startAt);
+		const startAt = new Date(result.nps.startAt);
 
 		await NPS.create({
 			npsId,
@@ -91,15 +92,16 @@ export async function syncWorkspace(_reconnectCheck = false) {
 	}
 
 	// add banners
-	if (data.banners) {
-		for await (const banner of data.banners) {
-			const { createdAt, expireAt, startAt } = banner;
+	if (result.banners) {
+		for await (const banner of result.banners) {
+			const { createdAt, expireAt, startAt, inactivedAt, _updatedAt, ...rest } = banner;
 
 			await Banner.create({
-				...banner,
+				...rest,
 				createdAt: new Date(createdAt),
 				expireAt: new Date(expireAt),
 				startAt: new Date(startAt),
+				...(inactivedAt && { inactivedAt: new Date(inactivedAt) }),
 			});
 		}
 	}
