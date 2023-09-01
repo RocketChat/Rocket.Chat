@@ -2,7 +2,7 @@ import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings } from '@rocket.chat/core-services';
-import { UserStatus, isSettingColor } from '@rocket.chat/core-typings';
+import { UserStatus, isSettingColor, isSettingEnterprise } from '@rocket.chat/core-typings';
 import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -247,11 +247,15 @@ export class ListenersModule {
 		});
 
 		service.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
-			if (clientAction !== 'removed') {
-				// TODO check if setting is EE before calling this
-				const result = await EnterpriseSettings.changeSettingValue(setting);
-				if (result !== undefined && !(result instanceof Error)) {
-					setting.value = result;
+			// if a EE setting changed make sure we update the value on rocket.chat
+			if (clientAction !== 'removed' && isSettingEnterprise(setting)) {
+				try {
+					const result = await EnterpriseSettings.changeSettingValue(setting);
+					if (result !== undefined && !(result instanceof Error)) {
+						setting.value = result;
+					}
+				} catch (error) {
+					// no op
 				}
 			}
 
