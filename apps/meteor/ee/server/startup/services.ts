@@ -6,6 +6,7 @@ import { FileUpload } from '../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments } from '../../../app/file-upload/server/methods/sendFileMessage';
 import { _setRealName } from '../../../app/lib/server/functions/setRealName';
 import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
+import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { LicenseService } from '../../app/license/server/license.internalService';
 import { OmnichannelEE } from '../../app/livechat-enterprise/server/services/omnichannel.internalService';
@@ -39,6 +40,7 @@ api.registerService(
 				return { files, attachments };
 			},
 		},
+		slashCommands,
 	),
 );
 

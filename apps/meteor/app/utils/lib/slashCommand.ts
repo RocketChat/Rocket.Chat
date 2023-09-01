@@ -1,26 +1,15 @@
 import type {
 	IMessage,
 	SlashCommand,
-	SlashCommandOptions,
 	RequiredField,
 	SlashCommandPreviewItem,
 	SlashCommandPreviews,
+	ISlashCommands,
+	ISlashCommandAddParams,
 } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
-interface ISlashCommandAddParams<T extends string> {
-	command: string;
-	callback?: SlashCommand<T>['callback'];
-	options?: SlashCommandOptions;
-	result?: SlashCommand['result'];
-	providesPreview?: boolean;
-	previewer?: SlashCommand['previewer'];
-	previewCallback?: SlashCommand['previewCallback'];
-	appId?: string;
-	description?: string;
-}
-
-export const slashCommands = {
+export const slashCommands: ISlashCommands = {
 	commands: {} as Record<string, SlashCommand>,
 	add<T extends string>({
 		command,
@@ -123,6 +112,9 @@ export const slashCommands = {
 		}
 
 		return cmd.previewCallback(command, params, message, preview, triggerId);
+	},
+	remove(command: string): void {
+		delete this.commands[command];
 	},
 };
 

@@ -1,6 +1,6 @@
 import { License, ServiceClass } from '@rocket.chat/core-services';
 import type { IFederationJoinExternalPublicRoomInput, IFederationService } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, IUser, Username, ValueOf } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISlashCommands, IUser, Username, ValueOf } from '@rocket.chat/core-typings';
 import {
 	isDirectMessageRoom,
 	isEditedMessage,
@@ -70,13 +70,15 @@ export class FederationService extends ServiceClass implements IFederationServic
 
 	private internalRoomValidator: FederationRoomInternalValidator;
 
+	private slashCommands: ISlashCommands;
+
 	private isRunning = false;
 
 	protected PROCESSING_CONCURRENCY = 1;
 
 	protected bridge: IFederationBridge;
 
-	private constructor(userAdapterDeps: IUserAdapterDependencies, fileAdapterDeps: IFileAdapterDependencies) {
+	private constructor(userAdapterDeps: IUserAdapterDependencies, fileAdapterDeps: IFileAdapterDependencies, slashCommands: ISlashCommands) {
 		super();
 		const internalQueueInstance = FederationFactory.buildFederationQueue();
 		const internalSettingsAdapter = FederationFactory.buildInternalSettingsAdapter();
@@ -84,6 +86,7 @@ export class FederationService extends ServiceClass implements IFederationServic
 
 		this.internalQueueInstance = internalQueueInstance;
 		this.internalSettingsAdapter = internalSettingsAdapter;
+		this.slashCommands = slashCommands;
 		this.bridge = bridge;
 		this.internalFileAdapter = FederationFactory.buildInternalFileAdapter(fileAdapterDeps);
 		this.internalRoomAdapter = FederationFactory.buildInternalRoomAdapter();
@@ -482,7 +485,7 @@ export class FederationService extends ServiceClass implements IFederationServic
 		await this.bridge.start();
 		void this.bridge.logFederationStartupInfo('Running Federation V2');
 		const { addDefaultFederationSlashCommand } = await import('./infrastructure/rocket-chat/slash-commands');
-		addDefaultFederationSlashCommand();
+		addDefaultFederationSlashCommand(this.slashCommands);
 		if (await this.hasValidLicense()) {
 			await this.onValidEnterpriseLicenseAdded();
 		}
@@ -516,15 +519,16 @@ export class FederationService extends ServiceClass implements IFederationServic
 	static async createFederationService(
 		userAdapterDeps: IUserAdapterDependencies,
 		fileAdapterDeps: IFileAdapterDependencies,
+		slashCommands: ISlashCommands,
 	): Promise<FederationService> {
-		const federationService = new FederationService(userAdapterDeps, fileAdapterDeps);
+		const federationService = new FederationService(userAdapterDeps, fileAdapterDeps, slashCommands);
 		await federationService.initialize();
 		return federationService;
 	}
 
 	private async onValidEnterpriseLicenseAdded(): Promise<void> {
 		const { addDMMultipleFederationSlashCommand } = await import('./infrastructure/rocket-chat/slash-commands');
-		addDMMultipleFederationSlashCommand();
+		addDMMultipleFederationSlashCommand(this.slashCommands);
 	}
 
 	public async createDirectMessageRoom(internalUserId: string, invitees: string[]): Promise<void> {
