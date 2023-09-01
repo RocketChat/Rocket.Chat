@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-client",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.9",
@@ -37,7 +37,7 @@
 		"jest": "~29.6.1",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
-		"react-hook-form": "^7.30.0",
+		"react-hook-form": "~7.45.4",
 		"ts-jest": "~29.0.5",
 		"typescript": "~5.2.2"
 	},
@@ -61,7 +61,7 @@
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"@rocket.chat/ui-contexts": "1.0.2",
+		"@rocket.chat/ui-contexts": "1.0.3",
 		"react": "~17.0.2"
 	},
 	"volta": {
