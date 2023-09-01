@@ -1,8 +1,9 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
+import { capitalize } from '@rocket.chat/string-helpers';
 import { useToastMessageDispatch, useAbsoluteUrl, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 
 import { strRight } from '../../../../../lib/utils/stringUtils';
 import GenericModal from '../../../../components/GenericModal';
@@ -17,6 +18,8 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 	const sections = useEditableSettingsGroupSections(_id);
 	const solo = sections.length === 1;
 	const t = useTranslation();
+
+	const [settingSections, setSettingSections] = useState(sections);
 
 	const sectionIsCustomOAuth = (sectionName: string): string | boolean => sectionName && /^Custom OAuth:\s.+/.test(sectionName);
 
@@ -57,6 +60,10 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 		setModal(<CreateOAuthModal onConfirm={onConfirm} onClose={(): void => setModal(null)} />);
 	};
 
+	useEffect(() => {
+		setSettingSections(sections);
+	}, [sections]);
+
 	const removeCustomOauthFactory =
 		(id: string): (() => void) =>
 		(): void => {
@@ -64,6 +71,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 				try {
 					await removeOAuthService(id);
 					dispatchToastMessage({ type: 'success', message: t('Custom_OAuth_has_been_removed') });
+					setSettingSections(settingSections.filter((section) => section !== `Custom OAuth: ${capitalize(id)}`));
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 				} finally {
@@ -94,7 +102,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 				</>
 			}
 		>
-			{sections.map((sectionName) => {
+			{settingSections.map((sectionName) => {
 				if (sectionIsCustomOAuth(sectionName)) {
 					const id = strRight(sectionName, 'Custom OAuth: ').toLowerCase();
 
