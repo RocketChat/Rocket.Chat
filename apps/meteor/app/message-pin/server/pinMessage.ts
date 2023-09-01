@@ -110,6 +110,8 @@ Meteor.methods<ServerMethods>({
 			username: me.username,
 		};
 
+		originalMessage = await Message.beforeSave({ message, room, user: me });
+
 		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
 		await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
@@ -203,7 +205,6 @@ Meteor.methods<ServerMethods>({
 			_id: userId,
 			username: me.username,
 		};
-		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
 		const room = await Rooms.findOneById(originalMessage.rid, { projection: { ...roomAccessAttributes, lastMessage: 1 } });
 		if (!room) {
@@ -213,6 +214,10 @@ Meteor.methods<ServerMethods>({
 		if (!(await canAccessRoomAsync(room, { _id: userId }))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
 		}
+
+		originalMessage = await Message.beforeSave({ message, room, user: me });
+
+		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);

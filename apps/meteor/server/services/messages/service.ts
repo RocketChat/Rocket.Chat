@@ -95,7 +95,15 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		return result.insertedId;
 	}
 
-	async beforeSave({ message, room: _room, user: _user }: { message: IMessage; room: IRoom; user: IUser }): Promise<IMessage> {
+	async beforeSave({
+		message,
+		room: _room,
+		user: _user,
+	}: {
+		message: IMessage;
+		room: IRoom;
+		user: Pick<IUser, '_id' | 'username' | 'name'>;
+	}): Promise<IMessage> {
 		// TODO move BadWordsFilter.configure to constructor and watch for settings changes
 		const badWordsList = settings.get<string>('Message_BadWordsFilterList');
 		const whiteList = settings.get<string>('Message_BadWordsWhitelist');

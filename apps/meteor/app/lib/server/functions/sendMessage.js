@@ -248,7 +248,7 @@ export const sendMessage = async function (user, message, room, upsert = false, 
 
 	parseUrlsInMessage(message, previewUrls);
 
-	message = await Message.beforeSave(message, room, user._id);
+	message = await Message.beforeSave({ message, room, user });
 
 	message = await callbacks.run('beforeSaveMessage', message, room);
 	if (message) {
