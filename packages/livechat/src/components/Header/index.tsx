@@ -1,12 +1,40 @@
+import type { ComponentChildren, Ref } from 'preact';
 import { toChildArray } from 'preact';
+import type { JSXInternal } from 'preact/src/jsx';
 
 import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
 
-export const Header = ({ children, theme: { color: backgroundColor, fontColor: color } = {}, className, post, large, style, ...props }) => (
+type HeaderProps = {
+	children?: ComponentChildren;
+	theme?: {
+		color?: string;
+		fontColor?: string;
+	};
+	className?: string;
+	post?: ComponentChildren;
+	large?: boolean;
+	style?: JSXInternal.CSSProperties;
+	ref?: Ref<HTMLElement>;
+};
+
+type HeaderComponentProps = {
+	children?: ComponentChildren;
+	className?: string;
+};
+
+export const Header = ({
+	children,
+	theme: { color: backgroundColor, fontColor: color } = {},
+	className,
+	post,
+	large,
+	style,
+	...props
+}: HeaderProps) => (
 	<header
 		className={createClassName(styles, 'header', { large }, [className])}
-		style={style || backgroundColor || color ? { ...(style || {}), backgroundColor, color } : null}
+		style={style || backgroundColor || color ? { ...(style || {}), backgroundColor, color } : undefined}
 		{...props}
 	>
 		{children}
@@ -14,25 +42,25 @@ export const Header = ({ children, theme: { color: backgroundColor, fontColor: c
 	</header>
 );
 
-export const Picture = ({ children, className = undefined, ...props }) => (
+export const Picture = ({ children, className = undefined, ...props }: HeaderComponentProps) => (
 	<div className={createClassName(styles, 'header__picture', {}, [className])} {...props}>
 		{children}
 	</div>
 );
 
-export const Content = ({ children, className = undefined, ...props }) => (
+export const Content = ({ children, className = undefined, ...props }: HeaderComponentProps) => (
 	<div className={createClassName(styles, 'header__content', {}, [className])} {...props}>
 		{children}
 	</div>
 );
 
-export const Title = ({ children, className = undefined, ...props }) => (
+export const Title = ({ children, className = undefined, ...props }: HeaderComponentProps) => (
 	<div className={createClassName(styles, 'header__title', {}, [className])} {...props}>
 		{children}
 	</div>
 );
 
-export const SubTitle = ({ children, className = undefined, ...props }) => (
+export const SubTitle = ({ children, className = undefined, ...props }: HeaderComponentProps) => (
 	<div
 		className={createClassName(
 			styles,
@@ -48,25 +76,25 @@ export const SubTitle = ({ children, className = undefined, ...props }) => (
 	</div>
 );
 
-export const Actions = ({ children, className = undefined, ...props }) => (
+export const Actions = ({ children, className = undefined, ...props }: HeaderComponentProps) => (
 	<nav className={createClassName(styles, 'header__actions', {}, [className])} {...props}>
 		{children}
 	</nav>
 );
 
-export const Action = ({ children, className = undefined, ...props }) => (
+export const Action = ({ children, className = undefined, ...props }: HeaderComponentProps & { onClick?: () => void }) => (
 	<button className={createClassName(styles, 'header__action', {}, [className])} {...props}>
 		{children}
 	</button>
 );
 
-export const Post = ({ children, className = undefined, ...props }) => (
+export const Post = ({ children, className = undefined, ...props }: HeaderComponentProps) => (
 	<div className={createClassName(styles, 'header__post', {}, [className])} {...props}>
 		{children}
 	</div>
 );
 
-export const CustomField = ({ children, className = undefined, ...props }) => (
+export const CustomField = ({ children, className = undefined, ...props }: HeaderComponentProps) => (
 	<div className={createClassName(styles, 'header__custom-field', {}, [className])} {...props}>
 		{children}
 	</div>
