@@ -1,5 +1,6 @@
 import type { IUIActionButton, UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
-import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useSingleStream, useUserId } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
@@ -16,7 +17,7 @@ const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `
 export const useAppActionButtons = (context?: `${UIActionButtonContext}`) => {
 	const queryClient = useQueryClient();
 
-	const apps = useStream('apps');
+	const apps = useSingleStream('apps');
 	const uid = useUserId();
 
 	const getActionButtons = useEndpoint('GET', '/apps/actionButtons');
@@ -28,15 +29,21 @@ export const useAppActionButtons = (context?: `${UIActionButtonContext}`) => {
 		staleTime: Infinity,
 	});
 
+	const invalidate = useDebouncedCallback(() => {
+		queryClient.invalidateQueries(['apps', 'actionButtons']);
+	}, 100);
+
 	useEffect(() => {
 		if (!uid) {
 			return;
 		}
 
-		return apps('actions/changed', () => {
-			queryClient.invalidateQueries(['apps', 'actionButtons']);
+		return apps('apps', ([key]) => {
+			if (['actions/changed'].includes(key)) {
+				invalidate();
+			}
 		});
-	}, [uid, queryClient, apps]);
+	}, [uid, apps, invalidate]);
 
 	return result;
 };

@@ -36,7 +36,7 @@ import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
-import { useSmtpConfig } from './hooks/useSmtpConfig';
+import { useSmtpQuery } from './hooks/useSmtpQuery';
 
 type AdminUserFormProps = {
 	userData?: Serialized<IUser>;
@@ -72,7 +72,8 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 	const defaultRoles = useSetting<string>('Accounts_Registration_Users_Default_Roles') || '';
 
 	const defaultUserRoles = parseCSV(defaultRoles);
-	const isSmtpEnabled = useSmtpConfig();
+	const { data } = useSmtpQuery();
+	const isSmtpEnabled = data?.isSMTPConfigured;
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
