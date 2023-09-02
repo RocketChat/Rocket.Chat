@@ -325,6 +325,7 @@ type RoomsSaveRoomSettingsProps = {
 	roomAnnouncement?: string;
 	roomDescription?: string;
 	roomType?: IRoom['t'];
+	broadcast?: boolean;
 	readOnly?: boolean;
 	reactWhenReadOnly?: boolean;
 	default?: boolean;

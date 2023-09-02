@@ -177,6 +177,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	setDescriptionById(roomId: string, description: string): Promise<UpdateResult>;
 	setStreamingOptionsById(roomId: string, streamingOptions: IRoom['streamingOptions']): Promise<UpdateResult>;
 	setReadOnlyById(roomId: string, readOnly: NonNullable<IRoom['ro']>): Promise<UpdateResult>;
+	setBroadcastById(roomId: string, broadcast: boolean): Promise<UpdateResult>;
 	setDmReadOnlyByUserId(
 		roomId: string,
 		ids: string[] | undefined,

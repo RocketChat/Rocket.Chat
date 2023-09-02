@@ -1023,6 +1023,19 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
+	setBroadcastById(_id: IRoom['_id'], broadcast: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id,
+		};
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				broadcast,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
 	setDmReadOnlyByUserId(
 		_id: IRoom['_id'],
 		ids: Array<IRoom['_id']>,

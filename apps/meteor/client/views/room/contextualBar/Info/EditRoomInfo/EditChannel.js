@@ -55,6 +55,7 @@ const useInitialValues = (room, settings) => {
 	const {
 		t,
 		ro,
+		broadcast,
 		archived,
 		topic,
 		description,
@@ -78,6 +79,7 @@ const useInitialValues = (room, settings) => {
 			roomType: t,
 			readOnly: !!ro,
 			reactWhenReadOnly,
+			broadcast: !!broadcast,
 			archived: !!archived,
 			roomTopic: topic ?? '',
 			roomDescription: description ?? '',
@@ -113,6 +115,7 @@ const useInitialValues = (room, settings) => {
 			retentionPolicyEnabled,
 			ro,
 			room,
+			broadcast,
 			sysMes,
 			t,
 			topic,
@@ -159,6 +162,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		roomName,
 		roomType,
 		readOnly,
+		broadcast,
 		encrypted,
 		roomAvatar,
 		archived,
@@ -185,6 +189,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		handleHideSysMes,
 		handleRoomName,
 		handleReadOnly,
+		handleBroadcast,
 		handleArchived,
 		handleRoomAvatar,
 		handleReactWhenReadOnly,
@@ -207,6 +212,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		canViewDescription,
 		canViewType,
 		canViewReadOnly,
+		canViewBroadcast,
 		canViewHideSysMes,
 		canViewJoinCode,
 		canViewEncrypted,
@@ -220,6 +226,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 			isAllowed(room, RoomSettingsEnum.DESCRIPTION),
 			isAllowed(room, RoomSettingsEnum.TYPE),
 			isAllowed(room, RoomSettingsEnum.READ_ONLY),
+			isAllowed(room, RoomSettingsEnum.BROADCAST),
 			isAllowed(room, RoomSettingsEnum.SYSTEM_MESSAGES),
 			isAllowed(room, RoomSettingsEnum.JOIN_CODE),
 			isAllowed(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY),
@@ -354,10 +361,21 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Read_only')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch disabled={!canSetRo || isFederated} checked={readOnly} onChange={handleReadOnly} />
+								<ToggleSwitch disabled={!canSetRo || isFederated || broadcast} checked={readOnly || broadcast} onChange={handleReadOnly} />
 							</Field.Row>
 						</Box>
 						<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
+					</Field>
+				)}
+				{canViewBroadcast && (
+					<Field>
+						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+							<Field.Label>{t('Broadcast')}</Field.Label>
+							<Field.Row>
+								<ToggleSwitch disabled={isFederated} checked={broadcast} onChange={handleBroadcast} />
+							</Field.Row>
+						</Box>
+						<Field.Hint>{t('Broadcast_channel_Description')}</Field.Hint>
 					</Field>
 				)}
 				{readOnly && (
