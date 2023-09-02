@@ -457,8 +457,8 @@ const eventHandlers = {
 			// Denormalize user
 			const denormalizedUser = normalizers.denormalizeUser(user);
 
-			// Mute user
-			await Rooms.unmuteUsernameByRoomId(roomId, denormalizedUser.username);
+			// Unmute user
+			await Rooms.unmuteMutedUsernameByRoomId(roomId, denormalizedUser.username);
 		}
 
 		return eventResult;
