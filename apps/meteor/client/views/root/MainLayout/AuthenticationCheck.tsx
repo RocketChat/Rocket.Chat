@@ -1,11 +1,11 @@
 import { useSession, useUserId, useSetting } from '@rocket.chat/ui-contexts';
-import RegistrationRoute from '@rocket.chat/web-ui-registration';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
+import React, { lazy } from 'react';
 
-import LoginPage from './LoginPage';
 import UsernameCheck from './UsernameCheck';
 
+const RegistrationRoute = lazy(() => import('@rocket.chat/web-ui-registration'));
+const LoginPage = lazy(() => import('./LoginPage'));
 /*
  * Anonymous and guest are similar in some way
  *

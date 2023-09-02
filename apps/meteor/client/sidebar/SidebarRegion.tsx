@@ -4,8 +4,7 @@ import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.cha
 import { useLayout } from '@rocket.chat/ui-contexts';
 import React, { lazy, memo } from 'react';
 
-import Sidebar from './Sidebar';
-
+const Sidebar = lazy(() => import('./Sidebar'));
 const Navbar = lazy(() => import('../navbar/Navbar'));
 
 const SidebarRegion = () => {

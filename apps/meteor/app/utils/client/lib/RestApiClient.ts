@@ -2,7 +2,6 @@ import { RestClient } from '@rocket.chat/api-client';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { invokeTwoFactorModal } from '../../../../client/lib/2fa/process2faReturn';
 import { baseURI } from '../../../../client/lib/baseURI';
 
 class RestApiClient extends RestClient {
@@ -28,7 +27,10 @@ export const APIClient = new RestApiClient({
 	baseUrl: baseURI.replace(/\/$/, ''),
 });
 
-APIClient.handleTwoFactorChallenge(invokeTwoFactorModal);
+APIClient.handleTwoFactorChallenge(async (...args) => {
+	const { invokeTwoFactorModal } = await import('../../../../client/lib/2fa/process2faReturn');
+	return invokeTwoFactorModal(...args);
+});
 
 /**
  * The original rest api code throws the Response object, which is very useful

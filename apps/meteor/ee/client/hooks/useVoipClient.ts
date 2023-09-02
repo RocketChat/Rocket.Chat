@@ -5,9 +5,7 @@ import { useUser, useSetting, useEndpoint, useStream } from '@rocket.chat/ui-con
 import { KJUR } from 'jsrsasign';
 import { useEffect, useState } from 'react';
 
-import { VoIPUser } from '../../../client/lib/voip/VoIPUser';
 import { useWebRtcServers } from '../../../client/providers/CallProvider/hooks/useWebRtcServers';
-import { EEVoipClient } from '../lib/voip/EEVoipClient';
 import { useHasLicenseModule } from './useHasLicenseModule';
 
 type UseVoipClientResult = {
@@ -87,6 +85,8 @@ export const useVoipClient = (): UseVoipClientResult => {
 							enableKeepAliveUsingOptionsForUnstableNetworks: Boolean(enableKeepAlive),
 						};
 
+						const { VoIPUser } = await import('../../../client/lib/voip/VoIPUser');
+						const { EEVoipClient } = await import('../lib/voip/EEVoipClient');
 						client = await (isEE ? EEVoipClient.create(config) : VoIPUser.create(config));
 
 						// Today we are hardcoding workflow mode.
