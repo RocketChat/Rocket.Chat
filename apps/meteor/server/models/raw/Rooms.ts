@@ -1023,7 +1023,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setBroadcastById(_id: IRoom['_id'], broadcast: boolean): Promise<UpdateResult> {
+	setBroadcastById(_id: IRoom['_id'], broadcast: NonNullable<IRoom['broadcast']>): Promise<UpdateResult> {
 		const query: Filter<IRoom> = {
 			_id,
 		};
