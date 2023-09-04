@@ -49,7 +49,6 @@
 		"build": "rm -rf dist && tsc -p tsconfig-build.json",
 		"typecheck": "tsc -p tsconfig.json --noEmit",
 		"storybook": "start-storybook -p 6006",
-		"prepare": "node prepare.js",
 		"dev": "tsc -p tsconfig-build.json --watch --preserveWatchOutput"
 	},
 	"main": "./dist/index.js",
