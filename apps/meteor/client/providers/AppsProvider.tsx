@@ -1,36 +1,15 @@
-import { usePermission } from '@rocket.chat/ui-contexts';
+import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { usePermission, useSingleStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useEffect } from 'react';
 
-import { AppEvents } from '../../ee/client/apps/communication';
 import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator';
 import PageSkeleton from '../components/PageSkeleton';
 import { AppsContext } from '../contexts/AppsContext';
 import { AsyncStatePhase } from '../lib/asyncState';
 import { useInvalidateAppsCountQueryCallback } from '../views/marketplace/hooks/useAppsCountQuery';
 import type { App } from '../views/marketplace/types';
-
-type ListenersMapping = {
-	readonly [P in keyof typeof AppEvents]?: (...args: any[]) => void;
-};
-
-const registerListeners = (listeners: ListenersMapping): (() => void) => {
-	const entries = Object.entries(listeners) as Exclude<
-		{
-			[K in keyof ListenersMapping]: [K, ListenersMapping[K]];
-		}[keyof ListenersMapping],
-		undefined
-	>[];
-	for (const [event, callback] of entries) {
-		AppClientOrchestratorInstance.getWsListener()?.registerListener(AppEvents[event], callback);
-	}
-	return (): void => {
-		for (const [event, callback] of entries) {
-			AppClientOrchestratorInstance.getWsListener()?.unregisterListener(AppEvents[event], callback);
-		}
-	};
-};
 
 const sortByName = (apps: App[]): App[] => apps.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
 
@@ -41,29 +20,24 @@ const AppsProvider: FC = ({ children }) => {
 
 	const invalidateAppsCountQuery = useInvalidateAppsCountQueryCallback();
 
-	useEffect(() => {
-		const listeners = {
-			APP_ADDED: (): void => {
-				queryClient.invalidateQueries(['marketplace', 'apps-instance']);
-			},
-			APP_UPDATED: (): void => {
-				queryClient.invalidateQueries(['marketplace', 'apps-instance']);
-			},
-			APP_REMOVED: (): void => {
-				queryClient.invalidateQueries(['marketplace', 'apps-instance']);
-			},
-			APP_STATUS_CHANGE: (): void => {
-				queryClient.invalidateQueries(['marketplace', 'apps-instance']);
-			},
-			APP_SETTING_UPDATED: (): void => {
-				queryClient.invalidateQueries(['marketplace', 'apps-instance']);
-			},
-		};
-		const unregisterListeners = registerListeners(listeners);
+	const stream = useSingleStream('apps');
 
-		// eslint-disable-next-line no-unsafe-finally
-		return unregisterListeners;
-	}, [invalidateAppsCountQuery, isAdminUser, queryClient]);
+	const invalidate = useDebouncedCallback(
+		() => {
+			queryClient.invalidateQueries(['marketplace', 'apps-instance']);
+			invalidateAppsCountQuery();
+		},
+		100,
+		[],
+	);
+
+	useEffect(() => {
+		return stream('apps', ([key]) => {
+			if (['app/added', 'app/removed', 'app/updated', 'app/statusUpdate', 'app/settingUpdated'].includes(key)) {
+				invalidate();
+			}
+		});
+	}, [invalidate, stream]);
 
 	const marketplace = useQuery(
 		['marketplace', 'apps-marketplace', isAdminUser],
