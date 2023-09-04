@@ -3,6 +3,7 @@ import { Settings, ImportData, Imports } from '@rocket.chat/models';
 import AdmZip from 'adm-zip';
 
 import { Selection, SelectionChannel, SelectionUser } from '..';
+import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils/lib/i18n';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterProgressStep';
@@ -96,7 +97,7 @@ export class Base {
 		this.reloadCount();
 		const started = Date.now();
 
-		const beforeImportFn = async (data, type) => {
+		const beforeImportFn = async ({ data, dataType: type }) => {
 			if (this.importRecord.valid === false) {
 				this.converter.aborted = true;
 				throw new Error('The import operation is no longer valid.');
@@ -130,7 +131,7 @@ export class Base {
 				}
 			}
 
-			return true;
+			return false;
 		};
 
 		const afterImportFn = async () => {
@@ -167,6 +168,8 @@ export class Base {
 				await this.applySettingValues({});
 
 				await this.updateProgress(ProgressStep.IMPORTING_USERS);
+				const usersToImport = importSelection.users.filter((user) => user.do_import);
+				await callbacks.run('beforeUserImport', { userCount: usersToImport.length });
 				await this.converter.convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn });
 
 				await this.updateProgress(ProgressStep.IMPORTING_CHANNELS);

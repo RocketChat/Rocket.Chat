@@ -5545,7 +5545,7 @@
   "registration.component.login": "Kirjaudu",
   "registration.component.login.userNotFound": "Käyttäjää ei löydy",
   "registration.component.login.incorrectPassword": "Väärä salasana",
-  "registration.component.switchLanguage": "Vaihda kieleksi <1>en</1>",
+  "registration.component.switchLanguage": "Vaihda kieleksi <1>{{name}}</1>",
   "registration.component.resetPassword": "Nollaa salasana",
   "registration.component.form.emailOrUsername": "Sähköpostiosoite tai käyttäjätunnus",
   "registration.component.form.username": "Käyttäjätunnus",
