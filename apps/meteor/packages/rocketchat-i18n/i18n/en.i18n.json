@@ -5799,7 +5799,7 @@
   "registration.component.login": "Login",
   "registration.component.login.userNotFound": "User not found",
   "registration.component.login.incorrectPassword": "Incorrect password",
-  "registration.component.switchLanguage": "Switch to <1>en</1>",
+  "registration.component.switchLanguage": "Change to <1>{{name}}</1>",
   "registration.component.resetPassword": "Reset password",
   "registration.component.form.emailOrUsername": "Email or username",
   "registration.component.form.username": "Username",

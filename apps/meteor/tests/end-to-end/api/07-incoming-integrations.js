@@ -144,6 +144,31 @@ describe('[Incoming Integrations]', function () {
 			});
 		});
 
+		it('should set overrideDestinationChannelEnabled setting to false when it is not provided', async () => {
+			let integrationId;
+			await request
+				.post(api('integrations.create'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test',
+					enabled: true,
+					alias: 'test',
+					username: 'rocket.cat',
+					scriptEnabled: false,
+					channel: '#general',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration').and.to.be.an('object');
+					expect(res.body.integration).to.have.property('overrideDestinationChannelEnabled', false);
+					integrationId = res.body.integration._id;
+				});
+			await removeIntegration(integrationId, 'incoming');
+		});
+
 		it('should add the integration successfully when the user ONLY has the permission "manage-own-incoming-integrations" to add an incoming integration', (done) => {
 			updatePermission('manage-incoming-integrations', []).then(() => {
 				updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
