@@ -46,7 +46,7 @@ export class SAUMonitorClass {
 	constructor() {
 		this._started = false;
 		this._dailyComputeJobName = 'aggregate-sessions';
-		this._dailyFinishSessionsJobName = 'aggregate-sessions';
+		this._dailyFinishSessionsJobName = 'finish-sessions';
 	}
 
 	async start(): Promise<void> {
@@ -321,7 +321,7 @@ export class SAUMonitorClass {
 		logger.info('[aggregate] - Aggregating data.');
 
 		const date = new Date();
-		date.setDate(date.getDate() - 0); // yesterday
+		date.setDate(date.getDate() - 1); // yesterday
 		const yesterday = getDateObj(date);
 
 		for await (const record of aggregates.dailySessionsOfYesterday(Sessions.col, yesterday)) {
