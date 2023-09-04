@@ -44,7 +44,7 @@ const getTokenResponse = async function (query) {
 	const expiresIn = responseContent.expires_in;
 
 	if (!accessToken) {
-		throw new Error(`Failed to complete OAuth handshake with Linkedin -- can't find access token in HTTP response. ${await response.text()}}`);
+		throw new Error(`Failed to complete OAuth handshake with Linkedin -- can't find access token in HTTP response. ${JSON.stringify(responseContent)}`);
 	}
 
 	return {
