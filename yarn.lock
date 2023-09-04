@@ -4967,19 +4967,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.37.1":
-  version: 1.37.1
-  resolution: "@playwright/test@npm:1.37.1"
+"@playwright/test@npm:next":
+  version: 1.38.0-alpha-sep-4-2023
+  resolution: "@playwright/test@npm:1.38.0-alpha-sep-4-2023"
   dependencies:
     "@types/node": "*"
     fsevents: 2.3.2
-    playwright-core: 1.37.1
+    playwright-core: 1.38.0-alpha-sep-4-2023
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     playwright: cli.js
-  checksum: b7038f29000289103c08b215eff7aabdda70cdc1375fa7dad0e81651be71086a1e2fc0e0e29dc70348037c366cf0cc69f762373fda34ba1a74aa1658741d9195
+  checksum: e3c2df454547de5fc1adcf72e5164d8ac64349019f5abd8edd55bd4bbd949a304e21b8bf737903dd8e1028cd9ced5440b721f1dc021f2cc921152ad53baec47a
   languageName: node
   linkType: hard
 
@@ -8558,7 +8558,7 @@ __metadata:
     "@nivo/heatmap": 0.80.0
     "@nivo/line": 0.80.0
     "@nivo/pie": 0.80.0
-    "@playwright/test": ^1.37.1
+    "@playwright/test": next
     "@react-aria/color": ^3.0.0-beta.15
     "@react-pdf/renderer": ^3.1.12
     "@rocket.chat/account-utils": "workspace:^"
@@ -31012,12 +31012,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.37.1":
-  version: 1.37.1
-  resolution: "playwright-core@npm:1.37.1"
+"playwright-core@npm:1.38.0-alpha-sep-4-2023":
+  version: 1.38.0-alpha-sep-4-2023
+  resolution: "playwright-core@npm:1.38.0-alpha-sep-4-2023"
   bin:
     playwright-core: cli.js
-  checksum: 69f818da2230057584140d5b3af7778a4f4a822b5b18d133abfc5d259128becb943c343a2ddf6b0635277a69f28983e83e2bc3fce23595ececb1e410475b6368
+  checksum: 233868b86a973387010e63534ec4d57ceb7ec6ed703c29edae83e5747455f2bd3bf66fbe2b69c0e26fa223f3c4b00ca6fcc9c2c574394ca68c1d38344c11bf26
   languageName: node
   linkType: hard
 
