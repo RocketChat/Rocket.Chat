@@ -123,7 +123,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.sidenav.btnCreate.click();
 
 		await regularUserPage.goto(`/channel/${channelName}`);
-		await expect(regularUserPage.locator('button', { hasText: 'Join' })).toBeVisible();
+		await expect(regularUserPage.locator('button >> text="Join"')).toBeVisible();
 	});
 
 	test.skip('expect all notification preferences of "targetChannel" to be "Mentions"', async () => {
