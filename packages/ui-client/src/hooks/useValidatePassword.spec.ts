@@ -30,6 +30,14 @@ it("should return `false` if password doesn't match all the requirements", async
 	await waitForValueToChange(() => result.current);
 	const res = await result.current;
 	expect(res).toBeFalsy();
+
+	/*
+		const { result } = renderHook(() => useValidatePassword('secret'), {
+		wrapper: mockAppRoot().withSetting('Accounts_Password_Policy_MinLength', 8).build(),
+		});
+
+		expect(result).toBeFalsy();
+	*/
 });
 
 it('should return `true` if password matches all the requirements', async () => {

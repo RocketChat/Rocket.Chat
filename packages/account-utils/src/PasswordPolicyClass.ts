@@ -1,8 +1,36 @@
-import { Random } from '@rocket.chat/random';
 import generator from 'generate-password';
-import { Meteor } from 'meteor/meteor';
 
-class PasswordPolicy {
+import { PasswordPolicyError } from './PasswordPolicyError';
+
+export class PasswordPolicy {
+	regex: {
+		forbiddingRepeatingCharacters: RegExp;
+		mustContainAtLeastOneLowercase: RegExp;
+		mustContainAtLeastOneUppercase: RegExp;
+		mustContainAtLeastOneNumber: RegExp;
+		mustContainAtLeastOneSpecialCharacter: RegExp;
+	};
+
+	private enabled: boolean;
+
+	private minLength: number;
+
+	private maxLength: number;
+
+	private forbidRepeatingCharacters: boolean;
+
+	private mustContainAtLeastOneLowercase: boolean;
+
+	private mustContainAtLeastOneUppercase: boolean;
+
+	private mustContainAtLeastOneNumber: boolean;
+
+	private mustContainAtLeastOneSpecialCharacter: boolean;
+
+	private throwError: boolean;
+
+	private forbidRepeatingCharactersCount: number;
+
 	constructor({
 		enabled = false,
 		minLength = -1,
@@ -14,8 +42,20 @@ class PasswordPolicy {
 		mustContainAtLeastOneNumber = false,
 		mustContainAtLeastOneSpecialCharacter = false,
 		throwError = true,
-	} = {}) {
+	}: {
+		enabled: boolean;
+		minLength: number;
+		maxLength: number;
+		forbidRepeatingCharacters: boolean;
+		forbidRepeatingCharactersCount: number;
+		mustContainAtLeastOneLowercase: boolean;
+		mustContainAtLeastOneUppercase: boolean;
+		mustContainAtLeastOneNumber: boolean;
+		mustContainAtLeastOneSpecialCharacter: boolean;
+		throwError: boolean;
+	}) {
 		this.regex = {
+			forbiddingRepeatingCharacters: new RegExp('.*'),
 			mustContainAtLeastOneLowercase: new RegExp('[a-z]'),
 			mustContainAtLeastOneUppercase: new RegExp('[A-Z]'),
 			mustContainAtLeastOneNumber: new RegExp('[0-9]'),
@@ -27,6 +67,7 @@ class PasswordPolicy {
 		this.maxLength = maxLength;
 		this.forbidRepeatingCharacters = forbidRepeatingCharacters;
 		this.forbidRepeatingCharactersCount = forbidRepeatingCharactersCount;
+		this.regex.forbiddingRepeatingCharacters = new RegExp(`(.)\\1{${this.forbidRepeatingCharactersCount},}`);
 		this.mustContainAtLeastOneLowercase = mustContainAtLeastOneLowercase;
 		this.mustContainAtLeastOneUppercase = mustContainAtLeastOneUppercase;
 		this.mustContainAtLeastOneNumber = mustContainAtLeastOneNumber;
@@ -34,25 +75,104 @@ class PasswordPolicy {
 		this.throwError = throwError;
 	}
 
-	set forbidRepeatingCharactersCount(value) {
-		this._forbidRepeatingCharactersCount = value;
-		this.regex.forbiddingRepeatingCharacters = new RegExp(`(.)\\1{${this.forbidRepeatingCharactersCount},}`);
+	get passwordForbidRepeatingCharactersCount() {
+		return this.forbidRepeatingCharactersCount;
 	}
 
-	get forbidRepeatingCharactersCount() {
-		return this._forbidRepeatingCharactersCount;
-	}
-
-	error(error, message, reasons) {
+	error(
+		error: string,
+		message: string,
+		reasons?: {
+			error: string;
+			message: string;
+		}[],
+	) {
 		if (this.throwError) {
-			throw new Meteor.Error(error, message, reasons);
+			throw new PasswordPolicyError(message, error, reasons);
 		}
 
 		return false;
 	}
 
-	validate(password) {
-		const reasons = [];
+	// TODO: implement isLoading state?
+	sendValidationMessage(password: string): {
+		name: string;
+		isValid: boolean;
+		limit?: number;
+	}[] {
+		type validationMessage = {
+			name: string;
+			isValid: boolean;
+			limit?: number;
+		};
+
+		const validationReturn: validationMessage[] = [];
+
+		if (!this.enabled) {
+			return [];
+		}
+
+		if (this.minLength >= 1) {
+			validationReturn.push({
+				name: 'get-password-policy-minLength',
+				isValid: !!(password.length < this.minLength),
+				limit: this.minLength,
+			});
+		}
+
+		if (this.maxLength >= 1) {
+			validationReturn.push({
+				name: 'get-password-policy-maxLength',
+				isValid: !!(password.length > this.maxLength),
+				limit: this.maxLength,
+			});
+		}
+
+		if (this.forbidRepeatingCharacters) {
+			validationReturn.push({
+				name: 'get-password-policy-forbidRepeatingCharactersCount',
+				isValid: this.regex.forbiddingRepeatingCharacters.test(password),
+				limit: this.forbidRepeatingCharactersCount,
+			});
+		}
+
+		if (this.mustContainAtLeastOneLowercase) {
+			validationReturn.push({
+				name: 'get-password-policy-mustContainAtLeastOneLowercase',
+				isValid: this.regex.mustContainAtLeastOneLowercase.test(password),
+			});
+		}
+
+		if (this.mustContainAtLeastOneUppercase) {
+			validationReturn.push({
+				name: 'get-password-policy-mustContainAtLeastOneUppercase',
+				isValid: this.regex.mustContainAtLeastOneUppercase.test(password),
+			});
+		}
+
+		if (this.mustContainAtLeastOneNumber) {
+			validationReturn.push({
+				name: 'get-password-policy-mustContainAtLeastOneNumber',
+				isValid: this.regex.mustContainAtLeastOneNumber.test(password),
+			});
+		}
+
+		if (this.mustContainAtLeastOneSpecialCharacter) {
+			validationReturn.push({
+				name: 'get-password-policy-mustContainAtLeastOneSpecialCharacter',
+				isValid: this.regex.mustContainAtLeastOneSpecialCharacter.test(password),
+			});
+		}
+
+		return validationReturn;
+	}
+
+	validate(password: string) {
+		const reasons: {
+			error: string;
+			message: string;
+		}[] = [];
+
 		if (typeof password !== 'string' || !password.trim().length) {
 			return this.error('error-password-policy-not-met', "The password provided does not meet the server's password policy.");
 		}
@@ -118,10 +238,16 @@ class PasswordPolicy {
 	}
 
 	getPasswordPolicy() {
-		const data = {
+		type dataType = {
+			enabled: boolean;
+			policy: [string, { [key: string]: number }?][];
+		};
+
+		const data: dataType = {
 			enabled: false,
 			policy: [],
 		};
+
 		if (this.enabled) {
 			data.enabled = true;
 			if (this.minLength >= 1) {
@@ -165,7 +291,7 @@ class PasswordPolicy {
 			}
 		}
 
-		return Random.id();
+		return generator.generate({ length: 17 });
 	}
 
 	_generatePassword() {
@@ -180,5 +306,3 @@ class PasswordPolicy {
 		});
 	}
 }
-
-export default PasswordPolicy;

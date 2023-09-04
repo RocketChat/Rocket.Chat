@@ -29,6 +29,9 @@
 		"react": "~17.0.2",
 		"use-sync-external-store": "^1.2.0"
 	},
+	"dependencies": {
+		"@rocket.chat/account-utils": "workspace:^"
+	},
 	"volta": {
 		"extends": "../../package.json"
 	},
