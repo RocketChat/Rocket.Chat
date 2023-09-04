@@ -1,5 +1,3 @@
-import type { URL } from 'url';
-
 import type {
 	IMessage,
 	IRoom,

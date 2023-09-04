@@ -1,5 +1,3 @@
-import { URL } from 'url';
-
 import type { OEmbedMeta, OEmbedUrlContent, OEmbedProvider } from '@rocket.chat/core-typings';
 import { camelCase } from 'change-case';
 
