@@ -186,7 +186,7 @@ class Chat extends Component {
 				</Screen.Content>
 				<Screen.Footer
 					options={
-						options ? (
+						options && !registrationRequired ? (
 							<FooterOptions>
 								<Menu.Group>
 									{onChangeDepartment && (
