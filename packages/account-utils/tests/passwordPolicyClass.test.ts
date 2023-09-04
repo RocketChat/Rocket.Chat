@@ -2,23 +2,10 @@ import { expect } from 'chai';
 
 import { PasswordPolicy } from '../src/PasswordPolicyClass';
 
-const DEFAULT_OPTIONS = {
-	enabled: false,
-	minLength: -1,
-	maxLength: -1,
-	forbidRepeatingCharacters: false,
-	forbidRepeatingCharactersCount: 3,
-	mustContainAtLeastOneLowercase: false,
-	mustContainAtLeastOneUppercase: false,
-	mustContainAtLeastOneNumber: false,
-	mustContainAtLeastOneSpecialCharacter: false,
-	throwError: true,
-};
-
 describe('PasswordPolicy', () => {
 	describe('Password tests with default options', () => {
 		it('should allow all passwords', () => {
-			const passwordPolicy = new PasswordPolicy({ ...DEFAULT_OPTIONS, throwError: false });
+			const passwordPolicy = new PasswordPolicy({ throwError: false });
 			expect(passwordPolicy.validate(null as any)).to.be.equal(false);
 			expect(passwordPolicy.validate(undefined as any)).to.be.equal(false);
 			expect(passwordPolicy.validate('')).to.be.equal(false);
@@ -31,7 +18,6 @@ describe('PasswordPolicy', () => {
 	describe('Password tests with options', () => {
 		it('should not allow non string or empty', () => {
 			const passwordPolicy = new PasswordPolicy({
-				...DEFAULT_OPTIONS,
 				enabled: true,
 				throwError: false,
 			});
@@ -46,7 +32,6 @@ describe('PasswordPolicy', () => {
 
 		it('should restrict by minLength', () => {
 			const passwordPolicy = new PasswordPolicy({
-				...DEFAULT_OPTIONS,
 				enabled: true,
 				minLength: 5,
 				throwError: false,
@@ -60,7 +45,6 @@ describe('PasswordPolicy', () => {
 
 		it('should restrict by maxLength', () => {
 			const passwordPolicy = new PasswordPolicy({
-				...DEFAULT_OPTIONS,
 				enabled: true,
 				maxLength: 5,
 				throwError: false,
@@ -74,7 +58,6 @@ describe('PasswordPolicy', () => {
 
 		it('should allow repeated characters', () => {
 			const passwordPolicy = new PasswordPolicy({
-				...DEFAULT_OPTIONS,
 				enabled: true,
 				forbidRepeatingCharacters: false,
 				throwError: false,
@@ -89,7 +72,6 @@ describe('PasswordPolicy', () => {
 
 		it('should restrict repeated characters', () => {
 			const passwordPolicy = new PasswordPolicy({
-				...DEFAULT_OPTIONS,
 				enabled: true,
 				forbidRepeatingCharacters: true,
 				forbidRepeatingCharactersCount: 3,
@@ -106,7 +88,6 @@ describe('PasswordPolicy', () => {
 
 		it('should restrict repeated characters customized', () => {
 			const passwordPolicy = new PasswordPolicy({
-				...DEFAULT_OPTIONS,
 				enabled: true,
 				forbidRepeatingCharacters: true,
 				forbidRepeatingCharactersCount: 5,
@@ -125,7 +106,6 @@ describe('PasswordPolicy', () => {
 
 		it('should contain one lowercase', () => {
 			const passwordPolicy = new PasswordPolicy({
-				...DEFAULT_OPTIONS,
 				enabled: true,
 				mustContainAtLeastOneLowercase: true,
 				throwError: false,
@@ -142,7 +122,6 @@ describe('PasswordPolicy', () => {
 
 		it('should contain one uppercase', () => {
 			const passwordPolicy = new PasswordPolicy({
-				...DEFAULT_OPTIONS,
 				enabled: true,
 				mustContainAtLeastOneUppercase: true,
 				throwError: false,
@@ -159,7 +138,6 @@ describe('PasswordPolicy', () => {
 
 		it('should contain one number', () => {
 			const passwordPolicy = new PasswordPolicy({
-				...DEFAULT_OPTIONS,
 				enabled: true,
 				mustContainAtLeastOneNumber: true,
 				throwError: false,
@@ -177,7 +155,6 @@ describe('PasswordPolicy', () => {
 
 		it('should contain one special character', () => {
 			const passwordPolicy = new PasswordPolicy({
-				...DEFAULT_OPTIONS,
 				enabled: true,
 				mustContainAtLeastOneSpecialCharacter: true,
 				throwError: false,
@@ -198,7 +175,6 @@ describe('PasswordPolicy', () => {
 	describe('Password generator', () => {
 		it('should return a random password', () => {
 			const passwordPolicy = new PasswordPolicy({
-				...DEFAULT_OPTIONS,
 				enabled: true,
 				throwError: false,
 			});
@@ -208,7 +184,6 @@ describe('PasswordPolicy', () => {
 
 		it('should return a random password with 17 characters if the policy is disabled', () => {
 			const passwordPolicy = new PasswordPolicy({
-				...DEFAULT_OPTIONS,
 				enabled: false,
 			});
 
@@ -242,7 +217,6 @@ describe('PasswordPolicy', () => {
 
 		it('should return correct values if policy is disabled', () => {
 			const passwordPolicy = new PasswordPolicy({
-				...DEFAULT_OPTIONS,
 				enabled: false,
 			});
 
@@ -254,7 +228,6 @@ describe('PasswordPolicy', () => {
 
 		it('should return correct values if policy is enabled but no specifiers exists', () => {
 			const passwordPolicy = new PasswordPolicy({
-				...DEFAULT_OPTIONS,
 				enabled: true,
 			});
 
