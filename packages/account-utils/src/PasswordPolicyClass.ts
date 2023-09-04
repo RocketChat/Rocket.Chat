@@ -1,11 +1,10 @@
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import generator from 'generate-password';
 
 import { PasswordPolicyError } from './PasswordPolicyError';
 
 type PasswordPolicyType = {
 	enabled: boolean;
-	policy: [TranslationKey, options?: Record<string, unknown>][];
+	policy: [string, options?: Record<string, unknown>][];
 };
 export class PasswordPolicy {
 	regex: {
