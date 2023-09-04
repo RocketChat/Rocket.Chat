@@ -1,7 +1,12 @@
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import generator from 'generate-password';
 
 import { PasswordPolicyError } from './PasswordPolicyError';
 
+type PasswordPolicyType = {
+	enabled: boolean;
+	policy: [TranslationKey, options?: Record<string, unknown>][];
+};
 export class PasswordPolicy {
 	regex: {
 		forbiddingRepeatingCharacters: RegExp;
@@ -226,13 +231,8 @@ export class PasswordPolicy {
 		return true;
 	}
 
-	getPasswordPolicy() {
-		type dataType = {
-			enabled: boolean;
-			policy: [string, { [key: string]: number }?][];
-		};
-
-		const data: dataType = {
+	getPasswordPolicy(): PasswordPolicyType {
+		const data: PasswordPolicyType = {
 			enabled: false,
 			policy: [],
 		};
