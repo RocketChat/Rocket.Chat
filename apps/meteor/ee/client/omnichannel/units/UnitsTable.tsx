@@ -1,5 +1,5 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
@@ -24,6 +24,7 @@ const UnitsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
 	const unitsRoute = useRoute('omnichannel-units');
+	const debouncedFilter = useDebouncedValue(filter, 500);
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'visibility'>('name');
@@ -31,12 +32,12 @@ const UnitsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	const query = useMemo(
 		() => ({
 			fields: JSON.stringify({ name: 1 }),
-			text: filter,
+			text: debouncedFilter,
 			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
 			...(itemsPerPage && { count: itemsPerPage }),
 			...(current && { offset: current }),
 		}),
-		[filter, itemsPerPage, current, sortBy, sortDirection],
+		[debouncedFilter, itemsPerPage, current, sortBy, sortDirection],
 	);
 
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
