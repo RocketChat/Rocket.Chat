@@ -1,6 +1,6 @@
 import { Message } from '@rocket.chat/core-services';
-import { isQuoteAttachment } from '@rocket.chat/core-typings';
-import type { IMessage, IUser, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import { isQuoteAttachment, isRegisterUser } from '@rocket.chat/core-typings';
+import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
@@ -82,15 +82,13 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
-		const me = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name'>>>(userId, {
-			projection: { username: 1, name: 1 },
-		});
+		const me = await Users.findOneById(userId);
 		if (!me) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'pinMessage' });
 		}
 
 		// If we keep history of edits, insert a new message to store history information
-		if (settings.get('Message_KeepHistory') && me.username) {
+		if (settings.get('Message_KeepHistory') && isRegisterUser(me)) {
 			await Messages.cloneAndSaveAsHistoryById(message._id, me);
 		}
 
@@ -188,15 +186,13 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
 		}
 
-		const me = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name'>>>(userId, {
-			projection: { username: 1, name: 1 },
-		});
+		const me = await Users.findOneById(userId);
 		if (!me) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'unpinMessage' });
 		}
 
 		// If we keep history of edits, insert a new message to store history information
-		if (settings.get('Message_KeepHistory') && me.username) {
+		if (settings.get('Message_KeepHistory') && isRegisterUser(me)) {
 			await Messages.cloneAndSaveAsHistoryById(originalMessage._id, me);
 		}
 
