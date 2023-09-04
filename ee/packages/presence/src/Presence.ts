@@ -39,9 +39,13 @@ export class Presence extends ServiceClass implements IPresence {
 			}
 		});
 
-		this.onEvent('license.module', ({ module, valid }) => {
+		this.onEvent('license.module', async ({ module, valid }) => {
 			if (module === 'scalability') {
 				this.hasLicense = valid;
+				const presenceBroadcastDisabled = await Settings.findOneById('Troubleshoot_Disable_Presence_Broadcast');
+				if (presenceBroadcastDisabled) {
+					await this.toggleBroadcast(!presenceBroadcastDisabled.value);
+				}
 			}
 		});
 	}
