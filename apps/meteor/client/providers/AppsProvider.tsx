@@ -22,10 +22,14 @@ const AppsProvider: FC = ({ children }) => {
 
 	const stream = useSingleStream('apps');
 
-	const invalidate = useDebouncedCallback(() => {
-		queryClient.invalidateQueries(['marketplace', 'apps-instance']);
-		invalidateAppsCountQuery();
-	}, 100);
+	const invalidate = useDebouncedCallback(
+		() => {
+			queryClient.invalidateQueries(['marketplace', 'apps-instance']);
+			invalidateAppsCountQuery();
+		},
+		100,
+		[],
+	);
 
 	useEffect(() => {
 		return stream('apps', ([key]) => {
