@@ -506,6 +506,10 @@ export const statistics = {
 		statistics.totalCustomRoles = await RolesRaw.findCustomRoles({ readPreference }).count();
 		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
 		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');
+		statistics.pushEnabled = settings.get('Push_enable');
+
+		const defaultGateway = (await Settings.findOneById('Push_gateway'))?.packageValue;
+		statistics.pushGatewayChanged = settings.get('Push_gateway') === defaultGateway;
 
 		const defaultHomeTitle = (await Settings.findOneById('Layout_Home_Title'))?.packageValue;
 		statistics.homeTitleChanged = settings.get('Layout_Home_Title') !== defaultHomeTitle;
