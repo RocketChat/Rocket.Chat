@@ -42,17 +42,6 @@ export class PasswordPolicy {
 		mustContainAtLeastOneNumber = false,
 		mustContainAtLeastOneSpecialCharacter = false,
 		throwError = true,
-	}: {
-		enabled: boolean;
-		minLength: number;
-		maxLength: number;
-		forbidRepeatingCharacters: boolean;
-		forbidRepeatingCharactersCount: number;
-		mustContainAtLeastOneLowercase: boolean;
-		mustContainAtLeastOneUppercase: boolean;
-		mustContainAtLeastOneNumber: boolean;
-		mustContainAtLeastOneSpecialCharacter: boolean;
-		throwError: boolean;
 	}) {
 		this.regex = {
 			forbiddingRepeatingCharacters: new RegExp('.*'),
