@@ -226,6 +226,7 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 
 	useEffect(() => {
 		if (moment.locales().includes(language.toLowerCase())) {
+			moment.locale(language);
 			return;
 		}
 
