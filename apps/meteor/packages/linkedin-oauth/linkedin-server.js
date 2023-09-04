@@ -30,12 +30,11 @@ const getTokenResponse = async function (query) {
 			body,
 		});
 
-		responseContent = await response.json();
-
 		if (!response.ok) {
 			throw new Error(responseContent.error_description);
 		}
 
+		responseContent = await response.json();
 	} catch (err) {
 		throw new Error(`Failed to complete OAuth handshake with Linkedin. ${err.message}`);
 	}
