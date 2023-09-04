@@ -16,6 +16,7 @@ type HeaderProps = {
 	large?: boolean;
 	style?: JSXInternal.CSSProperties;
 	ref?: Ref<HTMLElement>;
+	onClick: JSXInternal.DOMAttributes<HTMLElement>['onClick'];
 };
 
 type HeaderComponentProps = {
