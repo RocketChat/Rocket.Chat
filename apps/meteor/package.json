@@ -50,7 +50,7 @@
 		"set-version": "node .scripts/set-version.js",
 		"release": "meteor npm run set-version --silent",
 		"storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 start-storybook -p 6006 --no-version-updates",
-		"prepare": "node prepare.js",
+		"prepare": "node playwright.prepare.js",
 		"docker:start": "docker-compose up"
 	},
 	"license": "MIT",
