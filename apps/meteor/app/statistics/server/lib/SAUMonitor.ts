@@ -321,7 +321,7 @@ export class SAUMonitorClass {
 		logger.info('[aggregate] - Aggregating data.');
 
 		const date = new Date();
-		date.setDate(date.getDate() - 1); // yesterday
+		date.setDate(date.getDate() - 0); // yesterday
 		const yesterday = getDateObj(date);
 
 		for await (const record of aggregates.dailySessionsOfYesterday(Sessions.col, yesterday)) {
