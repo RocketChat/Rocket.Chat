@@ -10,8 +10,8 @@ import { createUser, deleteUser } from '../../data/users.helper';
 describe('[Failed Login Attempts]', function () {
 	this.retries(0);
 
-	const maxAttemptsByUser = 3;
-	const maxAttemptsByIp = 6;
+	const maxAttemptsByUser = 2;
+	const maxAttemptsByIp = 4;
 	const userBlockSeconds = 3;
 	const ipBlockSeconds = 8;
 
@@ -115,7 +115,7 @@ describe('[Failed Login Attempts]', function () {
 			await deleteUser(user);
 		});
 
-		it('should block by IP when the limit amount of failed attempts is reached', async () => {
+		it('should block by User when the limit amount of failed attempts is reached', async () => {
 			await failMaxAttempts(user.username, `${password}-incorrect`);
 
 			await shouldBlockLogin(user.username, password, 'user');
