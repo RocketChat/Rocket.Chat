@@ -7696,6 +7696,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/account-utils@workspace:packages/account-utils"
   dependencies:
+    "@types/chai": ^4.3.5
     "@types/jest": ~29.5.3
     chai: ^4.3.7
     eslint: ~8.45.0
