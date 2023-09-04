@@ -509,7 +509,7 @@ export const statistics = {
 		statistics.pushEnabled = settings.get('Push_enable');
 
 		const defaultGateway = (await Settings.findOneById('Push_gateway'))?.packageValue;
-		statistics.pushGatewayChanged = settings.get('Push_gateway') === defaultGateway;
+		statistics.pushGatewayChanged = settings.get('Push_gateway') !== defaultGateway;
 
 		const defaultHomeTitle = (await Settings.findOneById('Layout_Home_Title'))?.packageValue;
 		statistics.homeTitleChanged = settings.get('Layout_Home_Title') !== defaultHomeTitle;
