@@ -5,6 +5,7 @@ import * as constants from './tests/e2e/config/constants';
 export default {
 	globalSetup: require.resolve('./tests/e2e/config/global-setup.ts'),
 	use: {
+		channel: 'chromium',
 		headless: true,
 		ignoreHTTPSErrors: true,
 		trace: 'retain-on-failure',
