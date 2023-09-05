@@ -1,5 +1,4 @@
 import * as Models from '@rocket.chat/models';
-import { Livechat } from 'meteor/rocketchat:livechat';
 import moment from 'moment';
 import _ from 'underscore';
 
@@ -23,7 +22,7 @@ export type Vm2Sandbox<IsIncoming extends boolean> = {
 		get: (key: string) => any;
 	};
 	HTTP: (method: string, url: string, options: Record<string, any>) => unknown;
-} & (IsIncoming extends true ? { Livechat: typeof Livechat } : never) &
+} & (IsIncoming extends true ? { Livechat: undefined } : never) &
 	Record<ModelName, (typeof Models)[ModelName]>;
 
 export const buildSandbox = <IsIncoming extends boolean>(
@@ -52,9 +51,11 @@ export const buildSandbox = <IsIncoming extends boolean>(
 		console,
 		moment,
 		Promise,
+		// There's a small difference between the sandbox that is sent to incoming and to outgoing scripts
+		// Technically we could unify this but since we're deprecating vm2 anyway I'm keeping this old behavior here until the feature is removed completely
 		...(isIncoming
 			? {
-					Livechat,
+					Livechat: undefined,
 					Store: {
 						set: (key: string, val: any): any => {
 							store[key] = val;
