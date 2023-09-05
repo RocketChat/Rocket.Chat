@@ -44,7 +44,7 @@ test.describe.serial('Omnichannel Reports', () => {
 	test('Status Section', async ({ page }) => {
 		await test.step('Empty state', async () => {
 			await page.route(ENDPOINTS.BY_STATUS, async (route: Route) => {
-				await route.fulfill({ json: { data: [], total: 0 } });
+				await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [], total: 0 }) });
 			});
 
 			await poReports.statusSection.selectPeriod('this week');
@@ -65,7 +65,7 @@ test.describe.serial('Omnichannel Reports', () => {
 
 			await test.step('Retry', async () => {
 				await page.route(ENDPOINTS.BY_STATUS, async (route: Route) => {
-					await route.fulfill({ json: { data: [], total: 0 } });
+					await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [], total: 0 }) });
 				});
 
 				const responsePromise = page.waitForResponse(ENDPOINTS.BY_STATUS);
@@ -86,8 +86,11 @@ test.describe.serial('Omnichannel Reports', () => {
 			};
 
 			await page.route(ENDPOINTS.BY_STATUS, async (route: Route) => {
-				const response = await route.fetch();
-				await route.fulfill({ response, json: mock });
+				await route.fulfill({
+					status: 200,
+					contentType: 'application/json',
+					body: JSON.stringify(mock),
+				});
 			});
 
 			await poReports.statusSection.selectPeriod('last year');
@@ -102,7 +105,7 @@ test.describe.serial('Omnichannel Reports', () => {
 	test('Channels Section', async ({ page }) => {
 		await test.step('Empty state', async () => {
 			await page.route(ENDPOINTS.BY_SOURCE, async (route: Route) => {
-				await route.fulfill({ json: { data: [], total: 0 } });
+				await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [], total: 0 }) });
 			});
 
 			await poReports.channelsSection.selectPeriod('this week');
@@ -123,7 +126,7 @@ test.describe.serial('Omnichannel Reports', () => {
 
 			await test.step('Retry', async () => {
 				await page.route(ENDPOINTS.BY_SOURCE, async (route: Route) => {
-					await route.fulfill({ json: { data: [], total: 0 } });
+					await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [], total: 0 }) });
 				});
 
 				const responsePromise = page.waitForResponse(ENDPOINTS.BY_SOURCE);
@@ -141,8 +144,11 @@ test.describe.serial('Omnichannel Reports', () => {
 				total: 100,
 			};
 			await page.route(ENDPOINTS.BY_SOURCE, async (route: Route) => {
-				const response = await route.fetch();
-				await route.fulfill({ response, json: mock });
+				await route.fulfill({
+					status: 200,
+					contentType: 'application/json',
+					body: JSON.stringify(mock),
+				});
 			});
 
 			await poReports.channelsSection.selectPeriod('last year');
@@ -166,8 +172,7 @@ test.describe.serial('Omnichannel Reports', () => {
 				total: 120,
 			};
 			await page.route(ENDPOINTS.BY_SOURCE, async (route: Route) => {
-				const response = await route.fetch();
-				await route.fulfill({ response, json: mock });
+				await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(mock) });
 			});
 
 			await poReports.channelsSection.selectPeriod('last 6 months');
@@ -179,7 +184,7 @@ test.describe.serial('Omnichannel Reports', () => {
 	test('Departments Section', async ({ page }) => {
 		await test.step('Empty state', async () => {
 			await page.route(ENDPOINTS.BY_DEPARTMENT, async (route: Route) => {
-				await route.fulfill({ json: { data: [], total: 0 } });
+				await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [], total: 0 }) });
 			});
 
 			await poReports.departmentsSection.selectPeriod('this week');
@@ -202,7 +207,7 @@ test.describe.serial('Omnichannel Reports', () => {
 
 			await test.step('Retry', async () => {
 				await page.route(ENDPOINTS.BY_DEPARTMENT, async (route: Route) => {
-					await route.fulfill({ json: { data: [], total: 0 } });
+					await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [], total: 0 }) });
 				});
 
 				const responsePromise = page.waitForResponse(ENDPOINTS.BY_DEPARTMENT);
@@ -223,8 +228,7 @@ test.describe.serial('Omnichannel Reports', () => {
 				unspecified: 42,
 			};
 			await page.route(ENDPOINTS.BY_DEPARTMENT, async (route: Route) => {
-				const response = await route.fetch();
-				await route.fulfill({ response, json: mock });
+				await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(mock) });
 			});
 
 			await poReports.departmentsSection.selectPeriod('last 6 months');
@@ -241,7 +245,7 @@ test.describe.serial('Omnichannel Reports', () => {
 	test('Tags Section', async ({ page }) => {
 		await test.step('Empty state', async () => {
 			await page.route(ENDPOINTS.BY_TAGS, async (route: Route) => {
-				await route.fulfill({ json: { data: [], total: 0 } });
+				await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [], total: 0 }) });
 			});
 
 			await poReports.tagsSection.selectPeriod('this week');
@@ -262,7 +266,7 @@ test.describe.serial('Omnichannel Reports', () => {
 
 			await test.step('Retry', async () => {
 				await page.route(ENDPOINTS.BY_TAGS, async (route: Route) => {
-					await route.fulfill({ json: { data: [], total: 0 } });
+					await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [], total: 0 }) });
 				});
 
 				const responsePromise = page.waitForResponse(ENDPOINTS.BY_TAGS);
@@ -283,8 +287,7 @@ test.describe.serial('Omnichannel Reports', () => {
 				unspecified: 42,
 			};
 			await page.route(ENDPOINTS.BY_TAGS, async (route: Route) => {
-				const response = await route.fetch();
-				await route.fulfill({ response, json: mock });
+				await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(mock) });
 			});
 
 			await poReports.tagsSection.selectPeriod('last 6 months');
@@ -299,7 +302,7 @@ test.describe.serial('Omnichannel Reports', () => {
 	test('Agents Section', async ({ page }) => {
 		await test.step('Empty state', async () => {
 			await page.route(ENDPOINTS.BY_AGENT, async (route: Route) => {
-				await route.fulfill({ json: { data: [], total: 0 } });
+				await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [], total: 0 }) });
 			});
 
 			await poReports.agentsSection.selectPeriod('this week');
@@ -322,7 +325,7 @@ test.describe.serial('Omnichannel Reports', () => {
 
 			await test.step('Retry', async () => {
 				await page.route(ENDPOINTS.BY_AGENT, async (route: Route) => {
-					await route.fulfill({ json: { data: [], total: 0 } });
+					await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [], total: 0 }) });
 				});
 
 				const responsePromise = page.waitForResponse(ENDPOINTS.BY_AGENT);
@@ -343,8 +346,7 @@ test.describe.serial('Omnichannel Reports', () => {
 				unspecified: 42,
 			};
 			await page.route(ENDPOINTS.BY_AGENT, async (route: Route) => {
-				const response = await route.fetch();
-				await route.fulfill({ response, json: mock });
+				await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(mock) });
 			});
 
 			await poReports.agentsSection.selectPeriod('last 6 months');
