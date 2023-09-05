@@ -2,15 +2,17 @@ import { Message } from '@rocket.chat/fuselage';
 import { memo, ReactElement, useContext, useMemo } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
-import { useMentionsWithSymbol } from './useMentionsWithSymbol';
 
 type UserMentionElementProps = {
 	mention: string;
 };
 
+const handleUserMention = (mention: string | undefined, withSymbol: boolean | undefined): string | undefined =>
+	withSymbol ? `@${mention}` : mention;
+
 const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement => {
-	const { resolveUserMention, onUserMentionClick, isMobile, ownUserId, useRealName } = useContext(MarkupInteractionContext);
-	const handleMention = useMentionsWithSymbol();
+	const { resolveUserMention, onUserMentionClick, isMobile, ownUserId, useRealName, useMentionSymbols } =
+		useContext(MarkupInteractionContext);
 
 	const resolved = useMemo(() => resolveUserMention?.(mention), [mention, resolveUserMention]);
 	const handleClick = useMemo(() => (resolved ? onUserMentionClick?.(resolved) : undefined), [resolved, onUserMentionClick]);
@@ -18,11 +20,11 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 	const showRealName = useRealName && !isMobile;
 
 	if (mention === 'all') {
-		return <Message.Highlight variant='relevant'>{handleMention('all')}</Message.Highlight>;
+		return <Message.Highlight variant='relevant'>{handleUserMention('all', useMentionSymbols)}</Message.Highlight>;
 	}
 
 	if (mention === 'here') {
-		return <Message.Highlight variant='relevant'>{handleMention('here')}</Message.Highlight>;
+		return <Message.Highlight variant='relevant'>{handleUserMention('here', useMentionSymbols)}</Message.Highlight>;
 	}
 
 	if (!resolved) {
@@ -37,7 +39,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 			onClick={handleClick}
 			data-uid={resolved._id}
 		>
-			{handleMention(showRealName ? resolved.name : resolved.username) ?? handleMention(mention)}
+			{handleUserMention((showRealName ? resolved.name : resolved.username) ?? mention, useMentionSymbols)}
 		</Message.Highlight>
 	);
 };
