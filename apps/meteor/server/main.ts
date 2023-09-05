@@ -1,3 +1,4 @@
+import './lib/instrumentation';
 import './models/startup';
 import './settings/index';
 import '../ee/server/models/startup';
