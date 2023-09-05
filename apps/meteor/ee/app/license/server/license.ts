@@ -5,8 +5,8 @@ import { Apps } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
-import type { ILicense } from '../definition/ILicense';
-import type { ILicenseTag } from '../definition/ILicenseTag';
+import type { ILicenseV2 } from '../definition/ILicenseV2';
+import type { ILicenseV2Tag } from '../definition/ILicenseV2Tag';
 import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
@@ -17,7 +17,7 @@ const EnterpriseLicenses = new EventEmitter();
 
 interface IValidLicense {
 	valid?: boolean;
-	license: ILicense;
+	license: ILicenseV2;
 }
 
 let maxGuestUsers = 0;
@@ -31,11 +31,11 @@ class LicenseClass {
 
 	private encryptedLicenses = new Set<string>();
 
-	private tags = new Set<ILicenseTag>();
+	private tags = new Set<ILicenseV2Tag>();
 
 	private modules = new Set<string>();
 
-	private appsConfig: NonNullable<ILicense['apps']> = {
+	private appsConfig: NonNullable<ILicenseV2['apps']> = {
 		maxPrivateApps: 3,
 		maxMarketplaceApps: 5,
 	};
@@ -53,7 +53,7 @@ class LicenseClass {
 		return !!regex.exec(url);
 	}
 
-	private _setAppsConfig(license: ILicense): void {
+	private _setAppsConfig(license: ILicenseV2): void {
 		// If the license is valid, no limit is going to be applied to apps installation for now
 		// This guarantees that upgraded workspaces won't be affected by the new limit right away
 		// and gives us time to propagate the new limit schema to all licenses
@@ -91,7 +91,7 @@ class LicenseClass {
 		});
 	}
 
-	private _addTags(license: ILicense): void {
+	private _addTags(license: ILicenseV2): void {
 		// if no tag present, it means it is an old license, so try check for bundles and use them as tags
 		if (typeof license.tag === 'undefined') {
 			license.modules
@@ -104,7 +104,7 @@ class LicenseClass {
 		this._addTag(license.tag);
 	}
 
-	private _addTag(tag: ILicenseTag): void {
+	private _addTag(tag: ILicenseV2Tag): void {
 		// make sure to not add duplicated tag names
 		for (const addedTag of this.tags) {
 			if (addedTag.name.toLowerCase() === tag.name.toLowerCase()) {
@@ -115,7 +115,7 @@ class LicenseClass {
 		this.tags.add(tag);
 	}
 
-	addLicense(license: ILicense): void {
+	addLicense(license: ILicenseV2): void {
 		this.licenses.push({
 			valid: undefined,
 			license,
@@ -152,11 +152,11 @@ class LicenseClass {
 		return [...this.modules];
 	}
 
-	getTags(): ILicenseTag[] {
+	getTags(): ILicenseV2Tag[] {
 		return [...this.tags];
 	}
 
-	getAppsConfig(): NonNullable<ILicense['apps']> {
+	getAppsConfig(): NonNullable<ILicenseV2['apps']> {
 		return this.appsConfig;
 	}
 
@@ -344,11 +344,11 @@ export function getModules(): string[] {
 	return License.getModules();
 }
 
-export function getTags(): ILicenseTag[] {
+export function getTags(): ILicenseV2Tag[] {
 	return License.getTags();
 }
 
-export function getAppsConfig(): NonNullable<ILicense['apps']> {
+export function getAppsConfig(): NonNullable<ILicenseV2['apps']> {
 	return License.getAppsConfig();
 }
 

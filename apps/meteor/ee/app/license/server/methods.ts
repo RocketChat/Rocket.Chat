@@ -2,7 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import type { ILicenseTag } from '../definition/ILicenseTag';
+import type { ILicenseV2Tag } from '../definition/ILicenseV2Tag';
 import { getModules, getTags, hasLicense, isEnterprise } from './license';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -10,7 +10,7 @@ declare module '@rocket.chat/ui-contexts' {
 	interface ServerMethods {
 		'license:hasLicense'(feature: string): boolean;
 		'license:getModules'(): string[];
-		'license:getTags'(): ILicenseTag[];
+		'license:getTags'(): ILicenseV2Tag[];
 		'license:isEnterprise'(): boolean;
 	}
 }
