@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { expect } from '../utils/test';
 import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
 
 export class HomeChannel {
