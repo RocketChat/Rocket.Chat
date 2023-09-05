@@ -10,6 +10,7 @@ import {
 	filterBusinessHoursThatMustBeOpenedByDay,
 } from '../../../../../app/livechat/server/business-hour/Helper';
 import { settings } from '../../../../../app/settings/server';
+import { isTruthy } from '../../../../../lib/isTruthy';
 import { bhLogger } from '../lib/logger';
 import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 
@@ -287,73 +288,72 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			{ projection: { agentId: 1, departmentId: 1 } },
 		).toArray();
 
-		if (agentDepartments.length) {
-			// check if any one these departments have a opened business hour linked to it
-			const departments = await LivechatDepartment.findInIds(
-				agentDepartments.map(({ departmentId }) => departmentId),
-				{ projection: { _id: 1, businessHourId: 1 } },
-			).toArray();
+		if (!agentDepartments.length) {
+			// check if default businessHour is active
+			const isDefaultBHActive = openedBusinessHours.find(({ type }) => type === LivechatBusinessHourTypes.DEFAULT);
+			if (isDefaultBHActive?._id) {
+				await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
 
-			const departmentsWithActiveBH = departments.filter(
-				({ businessHourId }) => businessHourId && openedBusinessHours.findIndex(({ _id }) => _id === businessHourId) !== -1,
-			) as unknown as Array<Pick<ILivechatDepartment, '_id'> & { businessHourId: string }>;
-
-			if (!departmentsWithActiveBH.length) {
 				bhLogger.debug({
-					msg: 'No opened business hour found for any of the departments connected to the agent',
+					msg: 'Business hour status recheck passed for agent',
 					agentId,
 				});
-
-				// check if this agent has any departments that is connected to any non-default business hour
-				// if no such departments found then check default BH and if it is active, then allow the agent to change service status
-				const hasAtLeastOneDepartmentWithNonDefaultBH = departments.some(({ businessHourId }) => {
-					// check if business hour is active
-					return businessHourId && allActiveBusinessHoursForEntireWeek.findIndex(({ _id }) => _id === businessHourId) !== -1;
-				});
-				if (!hasAtLeastOneDepartmentWithNonDefaultBH) {
-					const isDefaultBHActive = openedBusinessHours.find(({ type }) => type === LivechatBusinessHourTypes.DEFAULT);
-					if (isDefaultBHActive?._id) {
-						await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
-
-						bhLogger.debug({
-							msg: 'Business hour status recheck passed for agentId',
-							agentId,
-						});
-						return;
-					}
-					bhLogger.debug({
-						msg: 'Business hour status recheck failed for agent',
-						agentId,
-					});
-				}
 				return;
 			}
 
-			const activeBusinessHoursForAgent = departmentsWithActiveBH.map(({ businessHourId }) => businessHourId);
-			await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId(activeBusinessHoursForAgent, agentId);
-
 			bhLogger.debug({
-				msg: `Business hour status recheck passed for agent`,
-				activeBusinessHoursForAgent,
-			});
-			return;
-		}
-
-		// check if default businessHour is active
-		const isDefaultBHActive = openedBusinessHours.find(({ type }) => type === LivechatBusinessHourTypes.DEFAULT);
-		if (isDefaultBHActive?._id) {
-			await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
-
-			bhLogger.debug({
-				msg: 'Business hour status recheck passed for agent',
+				msg: 'Business hour status recheck failed for agent',
 				agentId,
 			});
+		}
+
+		// check if any one these departments have a opened business hour linked to it
+		const departments = (await LivechatDepartment.findInIds(
+			agentDepartments.map(({ departmentId }) => departmentId),
+			{ projection: { _id: 1, businessHourId: 1 } },
+		).toArray()) as Pick<ILivechatDepartment, '_id' | 'businessHourId'>[];
+
+		const departmentsWithActiveBH = departments.filter(
+			({ businessHourId }) => businessHourId && openedBusinessHours.findIndex(({ _id }) => _id === businessHourId) !== -1,
+		);
+
+		if (!departmentsWithActiveBH.length) {
+			bhLogger.debug({
+				msg: 'No opened business hour found for any of the departments connected to the agent',
+				agentId,
+			});
+
+			// check if this agent has any departments that is connected to any non-default business hour
+			// if no such departments found then check default BH and if it is active, then allow the agent to change service status
+			const hasAtLeastOneDepartmentWithNonDefaultBH = departments.some(({ businessHourId }) => {
+				// check if business hour is active
+				return businessHourId && allActiveBusinessHoursForEntireWeek.findIndex(({ _id }) => _id === businessHourId) !== -1;
+			});
+			if (!hasAtLeastOneDepartmentWithNonDefaultBH) {
+				const isDefaultBHActive = openedBusinessHours.find(({ type }) => type === LivechatBusinessHourTypes.DEFAULT);
+				if (isDefaultBHActive?._id) {
+					await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
+
+					bhLogger.debug({
+						msg: 'Business hour status recheck passed for agentId',
+						agentId,
+					});
+					return;
+				}
+				bhLogger.debug({
+					msg: 'Business hour status recheck failed for agent',
+					agentId,
+				});
+			}
 			return;
 		}
 
+		const activeBusinessHoursForAgent = departmentsWithActiveBH.map(({ businessHourId }) => businessHourId).filter(isTruthy);
+		await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId(activeBusinessHoursForAgent, agentId);
+
 		bhLogger.debug({
-			msg: 'Business hour status recheck failed for agent',
-			agentId,
+			msg: `Business hour status recheck passed for agent`,
+			activeBusinessHoursForAgent,
 		});
 	}
 
