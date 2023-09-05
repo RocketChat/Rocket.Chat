@@ -25,4 +25,12 @@ export class HomeChannel {
 	get btnContextualbarClose(): Locator {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
+
+	async waitForChannel(): Promise<void> {
+		await this.page.locator('role=main').waitFor();
+		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
+
+		await expect(this.page.locator('role=main >> .rcx-skeleton')).toHaveCount(0);
+		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
+	}
 }
