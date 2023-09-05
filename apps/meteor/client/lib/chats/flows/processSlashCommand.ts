@@ -88,11 +88,20 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 	} as const;
 
 	try {
+		if (appId) {
+			chat.ActionManager.events.emit('busy', { busy: true });
+		}
+
 		const result = await sdk.call('slashCommand', { cmd: commandName, params, msg: message, triggerId });
+
 		handleResult?.(undefined, result, data);
 	} catch (error: unknown) {
 		await warnUnrecognizedSlashCommand(chat, t('Something_went_wrong_while_executing_command', { command: commandName }));
 		handleResult?.(error, undefined, data);
+	}
+
+	if (appId) {
+		chat.ActionManager.events.emit('busy', { busy: false });
 	}
 
 	return true;

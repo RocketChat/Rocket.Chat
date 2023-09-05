@@ -11,7 +11,6 @@ export default {
 		baseURL: constants.BASE_URL,
 		screenshot: process.env.CI ? 'off' : 'only-on-failure',
 		video: process.env.CI ? 'off' : 'retain-on-failure',
-		channel: 'chrome',
 		launchOptions: {
 			// force GPU hardware acceleration
 			// (even in headless mode)
@@ -28,6 +27,7 @@ export default {
 				url: process.env.REPORTER_ROCKETCHAT_URL,
 				apiKey: process.env.REPORTER_ROCKETCHAT_API_KEY,
 				branch: process.env.REPORTER_ROCKETCHAT_BRANCH,
+				run: Number(process.env.REPORTER_ROCKETCHAT_RUN),
 				draft: process.env.REPORTER_ROCKETCHAT_DRAFT === 'true',
 			},
 		],

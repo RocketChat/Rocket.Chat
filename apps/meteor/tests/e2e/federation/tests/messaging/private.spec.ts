@@ -935,45 +935,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await expect(poFederationChannelServer2.content.lastUserMessage.locator('.rcx-icon--name-star-filled')).toBeVisible();
 			});
 
-			test('expect to not be able to reply in thread in Server A', async ({ page }) => {
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.string.uuid();
-
-				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
-
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
-
-				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
-
-				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
-				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
-
-				await poFederationChannelServer1.content.openLastMessageMenu();
-				await expect(poFederationChannelServer1.content.btnOptionReplyInThread).not.toBeVisible();
-			});
-
-			test('expect to not be able to reply in thread in Server B', async ({ page }) => {
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const groupName = faker.string.uuid();
-
-				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
-
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
-
-				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
-
-				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
-				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
-
-				await poFederationChannelServer2.content.openLastMessageMenu();
-				await expect(poFederationChannelServer2.content.btnOptionReplyInThread).not.toBeVisible();
-			});
-
-			test('expect to not be able to start a discussion from a message in thread in Server A', async ({ page }) => {
+			test('expect to not be able to start a discussion from a message in Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 				const groupName = faker.string.uuid();
@@ -992,7 +954,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await expect(poFederationChannelServer1.content.btnOptionStartDiscussion).not.toBeVisible();
 			});
 
-			test('expect to not be able to start a discussion from a message in thread in Server B', async ({ page }) => {
+			test('expect to not be able to start a discussion from a message in Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 				const groupName = faker.string.uuid();

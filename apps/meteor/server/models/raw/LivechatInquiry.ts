@@ -122,7 +122,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOne(query, options);
 	}
 
-	getDistinctQueuedDepartments(options: DistinctOptions): Promise<string[]> {
+	getDistinctQueuedDepartments(options: DistinctOptions): Promise<(string | undefined)[]> {
 		return this.col.distinct('department', { status: LivechatInquiryStatus.QUEUED }, options);
 	}
 
@@ -172,13 +172,16 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}
 
 	async unlock(inquiryId: string): Promise<UpdateResult> {
-		return this.updateOne({ _id: inquiryId }, { $unset: { locked: 1, lockedAt: 1 } });
+		return this.updateOne(
+			{ _id: inquiryId },
+			{ $unset: { locked: 1, lockedAt: 1 }, $set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() } },
+		);
 	}
 
 	async unlockAll(): Promise<UpdateResult | Document> {
 		return this.updateMany(
 			{ $or: [{ lockedAt: { $exists: true } }, { locked: { $exists: true } }] },
-			{ $unset: { locked: 1, lockedAt: 1 } },
+			{ $unset: { locked: 1, lockedAt: 1 }, $set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() } },
 		);
 	}
 

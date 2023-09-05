@@ -11,6 +11,8 @@ import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../authoriza
 
 const validChannelChars = ['@', '#'];
 
+const FREEZE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.FREEZE_INTEGRATION_SCRIPTS).toLowerCase());
+
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
@@ -30,7 +32,7 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 			alias: Match.Maybe(String),
 			emoji: Match.Maybe(String),
 			scriptEnabled: Boolean,
-			overrideDestinationChannelEnabled: Boolean,
+			overrideDestinationChannelEnabled: Match.Maybe(Boolean),
 			script: Match.Maybe(String),
 			avatar: Match.Maybe(String),
 		}),
@@ -74,6 +76,10 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		});
 	}
 
+	if (FREEZE_INTEGRATION_SCRIPTS && integration.script?.trim()) {
+		throw new Meteor.Error('integration-scripts-disabled');
+	}
+
 	const user = await Users.findOne({ username: integration.username });
 
 	if (!user) {
@@ -86,6 +92,7 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		...integration,
 		type: 'webhook-incoming',
 		channel: channels,
+		overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled ?? false,
 		token: Random.id(48),
 		userId: user._id,
 		_createdAt: new Date(),

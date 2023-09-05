@@ -1,44 +1,38 @@
-import type { HTMLAttributes } from 'preact/compat';
-import { memo } from 'preact/compat';
+import type { Ref } from 'preact';
+import type { TargetedEvent } from 'preact/compat';
+import type { JSXInternal } from 'preact/src/jsx';
 
 import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
 
-type TextInputProps =
-	| ({
-			className?: string;
-			small?: boolean;
-			error?: boolean;
-			multiline?: false;
-	  } & HTMLAttributes<HTMLInputElement>)
-	| ({
-			className?: string;
-			small?: boolean;
-			error?: boolean;
-			multiline: true;
-	  } & HTMLAttributes<HTMLTextAreaElement>);
+type TextInputProps = {
+	name?: string;
+	value?: string;
+	placeholder?: string;
+	disabled?: boolean;
+	small?: boolean;
+	error?: boolean;
+	onChange?: JSXInternal.EventHandler<TargetedEvent<HTMLInputElement, Event>>;
+	onInput?: JSXInternal.EventHandler<TargetedEvent<HTMLInputElement, Event>>;
+	onBlur?: JSXInternal.EventHandler<TargetedEvent<HTMLInputElement, Event>>;
+	className?: string;
+	style?: JSXInternal.CSSProperties;
+	ref?: Ref<HTMLInputElement>;
+};
 
-export const TextInput = memo((props: TextInputProps) => {
-	if (props.multiline) {
-		const { small, error, className, disabled, ...rest } = props;
+const TextInput = ({ name, value, placeholder, disabled, small, error, onChange, onInput, className, style = {}, ref }: TextInputProps) => (
+	<input
+		type='text'
+		name={name}
+		value={value}
+		placeholder={placeholder}
+		disabled={disabled}
+		onChange={onChange}
+		onInput={onInput}
+		className={createClassName(styles, 'text-input', { disabled, error, small }, [className])}
+		ref={ref}
+		style={style}
+	/>
+);
 
-		return (
-			<textarea
-				className={createClassName(styles, 'text-input', { disabled, error, small, multiline: true }, [className])}
-				disabled={disabled}
-				{...rest}
-			/>
-		);
-	}
-
-	const { small, error, className, disabled, ...rest } = props;
-
-	return (
-		<input
-			type='text'
-			className={createClassName(styles, 'text-input', { disabled, error, small }, [className])}
-			disabled={disabled}
-			{...rest}
-		/>
-	);
-});
+export { TextInput };

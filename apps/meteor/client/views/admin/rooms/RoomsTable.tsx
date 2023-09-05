@@ -1,7 +1,8 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import { type IRoom, isDiscussion, isPublicRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import type { OptionProp } from '@rocket.chat/ui-client';
+import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { CSSProperties, ReactElement, MutableRefObject } from 'react';
 import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
@@ -20,13 +21,16 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import FilterByTypeAndText from './FilterByTypeAndText';
+import RoomsTableFilters from './RoomsTableFilters';
+import { useFilteredTypeRooms } from './useFilteredTypeRooms';
+import { useFilteredVisibilityRooms } from './useFilteredVisibilityRooms';
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
 type RoomFilters = {
-	types: string[];
-	text: string;
+	searchText: string;
+	types: OptionProp[];
+	visibility: OptionProp[];
 };
 
 const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
@@ -34,16 +38,20 @@ const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 const roomTypeI18nMap = {
 	l: 'Omnichannel',
 	c: 'Channel',
-	d: 'Direct',
-	p: 'Group',
-	discussion: 'Discussion',
+	d: 'Direct_Message',
+	p: 'Private_Channel',
 } as const;
 
-const getRoomType = (room: IRoom): (typeof roomTypeI18nMap)[keyof typeof roomTypeI18nMap] | 'Teams_Public_Team' | 'Teams_Private_Team' => {
+const getRoomType = (
+	room: IRoom,
+): (typeof roomTypeI18nMap)[keyof typeof roomTypeI18nMap] | 'Teams_Public_Team' | 'Teams_Private_Team' | 'Discussion' => {
 	if (room.teamMain) {
 		return room.t === 'c' ? 'Teams_Public_Team' : 'Teams_Private_Team';
 	}
-	return roomTypeI18nMap[room.t as keyof typeof roomTypeI18nMap];
+	if (isDiscussion(room)) {
+		return 'Discussion';
+	}
+	return roomTypeI18nMap[(room as IRoom).t as keyof typeof roomTypeI18nMap];
 };
 
 const getRoomDisplayName = (room: IRoom): string | undefined =>
@@ -51,30 +59,30 @@ const getRoomDisplayName = (room: IRoom): string | undefined =>
 
 const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): ReactElement => {
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
-	const routeName = 'admin-rooms';
 
 	const t = useTranslation();
 
-	const [roomFilter, setRoomFilter] = useState<RoomFilters>({ text: '', types: DEFAULT_TYPES });
-	const prevRoomFilterText = useRef<RoomFilters>(roomFilter);
+	const [roomFilters, setRoomFilters] = useState<RoomFilters>({ searchText: '', types: [], visibility: [] });
+
+	const prevRoomFilterText = useRef<string>(roomFilters.searchText);
 
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'usersCount' | 'msgs' | 'default' | 'featured'>('name');
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
-	const params = useDebouncedValue(roomFilter, 500);
+	const searchText = useDebouncedValue(roomFilters.searchText, 500);
 
 	const query = useDebouncedValue(
 		useMemo(() => {
-			if (params.text !== prevRoomFilterText.current.text || params.types !== prevRoomFilterText.current.types) {
+			if (searchText !== prevRoomFilterText.current) {
 				setCurrent(0);
 			}
 			return {
-				filter: params.text || '',
+				filter: searchText || '',
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
-				offset: params.text === prevRoomFilterText.current.text && params.types === prevRoomFilterText.current.types ? current : 0,
-				types: params.types || DEFAULT_TYPES,
+				offset: searchText === prevRoomFilterText.current ? current : 0,
+				types: DEFAULT_TYPES,
 			};
-		}, [params.text, params.types, sortBy, sortDirection, itemsPerPage, prevRoomFilterText, current, setCurrent]),
+		}, [searchText, sortBy, sortDirection, itemsPerPage, prevRoomFilterText, current, setCurrent]),
 		500,
 	);
 
@@ -101,16 +109,19 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	}, [reload, refetch]);
 
 	useEffect(() => {
-		prevRoomFilterText.current = { text: params.text, types: params.types };
-	}, [params.text, params.types]);
+		prevRoomFilterText.current = searchText;
+	}, [searchText]);
 
-	const router = useRoute(routeName);
+	const router = useRouter();
 
 	const onClick = useCallback(
 		(rid) => (): void =>
-			router.push({
-				context: 'edit',
-				id: rid,
+			router.navigate({
+				name: 'admin-rooms',
+				params: {
+					context: 'edit',
+					id: rid,
+				},
 			}),
 		[router],
 	);
@@ -123,6 +134,9 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				</GenericTableHeaderCell>,
 				<GenericTableHeaderCell key='type' direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' w='x100'>
 					{t('Type')}
+				</GenericTableHeaderCell>,
+				<GenericTableHeaderCell key='visibility' direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' w='x100'>
+					{t('Visibility')}
 				</GenericTableHeaderCell>,
 				<GenericTableHeaderCell
 					key='users'
@@ -170,6 +184,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const renderRow = useCallback(
 		(room: IRoom) => {
 			const { _id, t: type, usersCount, msgs, default: isDefault, featured, ...args } = room;
+			const visibility = isPublicRoom(room) ? 'Public' : 'Private';
 			const icon = roomCoordinator.getRoomDirectives(room.t).getIcon?.(room);
 			const roomName = getRoomDisplayName(room);
 
@@ -194,6 +209,12 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 						</Box>
 						<Box mi={4} />
 					</GenericTableCell>
+					<GenericTableCell>
+						<Box color='hint' fontScale='p2m' style={style}>
+							{t(visibility)}
+						</Box>
+						<Box mi='x4' />
+					</GenericTableCell>
 					<GenericTableCell style={style}>{usersCount}</GenericTableCell>
 					{mediaQuery && <GenericTableCell style={style}>{msgs}</GenericTableCell>}
 					{mediaQuery && <GenericTableCell style={style}>{isDefault ? t('True') : t('False')}</GenericTableCell>}
@@ -204,9 +225,21 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		[mediaQuery, onClick, t],
 	);
 
+	function intersectArraysWithoutDuplicates(array1: IRoom[], array2: IRoom[]) {
+		const set2 = new Set(array2);
+
+		return [...new Set(array1)].filter((item) => set2.has(item));
+	}
+
+	const roomsTypeList = useFilteredTypeRooms(roomFilters.types, isLoading, data?.rooms);
+	const roomsVisibilityList = useFilteredVisibilityRooms(roomFilters.visibility, isLoading, data?.rooms);
+
+	const roomsList = intersectArraysWithoutDuplicates(roomsTypeList, roomsVisibilityList);
+
 	return (
 		<>
-			<FilterByTypeAndText setFilter={setRoomFilter} />
+			<RoomsTableFilters setFilters={setRoomFilters} />
+
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -219,7 +252,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>{isSuccess && data?.rooms.map((room) => renderRow(room))}</GenericTableBody>
+						<GenericTableBody>{isSuccess && roomsList?.map((room) => renderRow(room))}</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider

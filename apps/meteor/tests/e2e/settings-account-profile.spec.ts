@@ -16,15 +16,14 @@ test.describe.serial('settings-account-profile', () => {
 		poHomeChannel = new HomeChannel(page);
 		poAccountProfile = new AccountProfile(page);
 
-		await page.goto('/home');
+		await page.goto('/account/profile');
 	});
 
 	// FIXME: solve test intermitencies
-	test.skip('expect update profile with new name/username', async ({ page }) => {
+	test.skip('expect update profile with new name/username', async () => {
 		const newName = faker.person.fullName();
 		const newUsername = faker.internet.userName(newName);
 
-		await page.goto('/account/profile');
 		await poAccountProfile.inputName.fill(newName);
 		await poAccountProfile.inputUsername.fill(newUsername);
 		await poAccountProfile.btnSubmit.click();
@@ -41,7 +40,9 @@ test.describe.serial('settings-account-profile', () => {
 	});
 
 	test('Personal Access Tokens', async ({ page }) => {
+		const response = page.waitForResponse('**/api/v1/users.getPersonalAccessTokens');
 		await page.goto('/account/tokens');
+		await response;
 
 		await test.step('expect show empty personal access tokens table', async () => {
 			await expect(poAccountProfile.tokensTableEmpty).toBeVisible();
