@@ -82,6 +82,16 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 	const { handleName, handleVisibility, handleDepartments, handleMonitors } = handlers;
 	const { name, visibility, departments, monitors } = values;
 
+	const departmentsOptions = useMemo(() => {
+		const pending = departments.filter(({ value }) => !departmentsSortedByName.find((dep) => dep.value === value));
+		return [...departmentsSortedByName, ...pending];
+	}, [departments, departmentsSortedByName]);
+
+	const monitorsOptions = useMemo(() => {
+		const pending = monitors.filter(({ value }) => !monitorsItems.find((mon) => mon.value === value));
+		return [...monitorsItems, ...pending];
+	}, [monitors, monitorsItems]);
+
 	const nameError = useMemo(() => (!name || name.length === 0 ? t('The_field_is_required', t('name')) : undefined), [name, t]);
 	const visibilityError = useMemo(
 		() => (!visibility || visibility.length === 0 ? t('The_field_is_required', t('description')) : undefined),
@@ -172,7 +182,7 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 									withTitle
 									filter={departmentsFilter}
 									setFilter={setDepartmentsFilter}
-									options={departmentsSortedByName}
+									options={departmentsOptions}
 									value={departments}
 									error={hasUnsavedChanges && departmentError}
 									maxWidth='100%'
@@ -194,7 +204,7 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 									withTitle
 									filter={monitorsFilter}
 									setFilter={setMonitorsFilter}
-									options={monitorsItems}
+									options={monitorsOptions}
 									value={monitors}
 									error={hasUnsavedChanges && unitMonitorsError}
 									maxWidth='100%'
