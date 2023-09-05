@@ -8,10 +8,10 @@ export default {
 		channel: 'chromium',
 		headless: true,
 		ignoreHTTPSErrors: true,
+		trace: 'retain-on-failure',
 		baseURL: constants.BASE_URL,
-		trace: 'on-first-retry',
-		video: 'on-first-retry',
-		screenshot: process.env.CI ? 'off' : 'on-first-retry',
+		screenshot: process.env.CI ? 'off' : 'only-on-failure',
+		video: process.env.CI ? 'off' : 'retain-on-failure',
 		launchOptions: {
 			// force GPU hardware acceleration
 			// (even in headless mode)
