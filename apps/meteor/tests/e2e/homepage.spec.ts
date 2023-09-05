@@ -26,6 +26,12 @@ test.describe.serial('homepage', () => {
 			await adminPage.waitForSelector('[data-qa-id="home-header"]');
 		});
 
+		test.afterAll(async ({ api }) => {
+			expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
+			expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
+			await adminPage.close();
+		});
+
 		test('layout', async () => {
 			await test.step('expect show customize button', async () => {
 				await expect(adminPage.locator('role=button[name="Customize"]')).toBeVisible();
@@ -100,12 +106,6 @@ test.describe.serial('homepage', () => {
 				});
 			});
 		});
-
-		test.afterAll(async ({ api }) => {
-			expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
-			expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
-			await adminPage.close();
-		});
 	});
 
 	test.describe('for regular users', () => {
@@ -116,6 +116,10 @@ test.describe.serial('homepage', () => {
 			regularUserPage = await browser.newPage({ storageState: Users.user2.state });
 			await regularUserPage.goto('/home');
 			await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
+		});
+
+		test.afterAll(async () => {
+			await regularUserPage.close();
 		});
 
 		test('layout', async () => {
@@ -153,6 +157,11 @@ test.describe.serial('homepage', () => {
 				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 			});
 
+			test.afterAll(async ({ api }) => {
+				expect((await api.post('/settings/Site_Name', { value: 'Rocket.Chat' })).status()).toBe(200);
+				expect((await api.post('/settings/Layout_Home_Title', { value: 'Home' })).status()).toBe(200);
+			});
+
 			test('layout', async () => {
 				await test.step('expect welcome text to be NewSiteName', async () => {
 					await expect(regularUserPage.locator('role=heading[name="Welcome to NewSiteName"]')).toBeVisible();
@@ -161,11 +170,6 @@ test.describe.serial('homepage', () => {
 				await test.step('expect header text to be Layout_Home_Title setting', async () => {
 					await expect(regularUserPage.locator('[data-qa-type="PageHeader-title"]')).toContainText('NewTitle');
 				});
-			});
-
-			test.afterAll(async ({ api }) => {
-				expect((await api.post('/settings/Site_Name', { value: 'Rocket.Chat' })).status()).toBe(200);
-				expect((await api.post('/settings/Layout_Home_Title', { value: 'Home' })).status()).toBe(200);
 			});
 		});
 
@@ -176,6 +180,11 @@ test.describe.serial('homepage', () => {
 
 				await regularUserPage.goto('/home');
 				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
+			});
+
+			test.afterAll(async ({ api }) => {
+				expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
+				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
 			});
 
 			test('expect custom body to be visible', async () => {
@@ -189,6 +198,10 @@ test.describe.serial('homepage', () => {
 					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
 				});
 
+				test.afterAll(async ({ api }) => {
+					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
+				});
+
 				test('layout', async () => {
 					await test.step('expect default layout to not be visible', async () => {
 						await expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).not.toBeVisible();
@@ -198,15 +211,6 @@ test.describe.serial('homepage', () => {
 						await expect(regularUserPage.locator('role=status[name="Hello"]')).toBeVisible();
 					});
 				});
-
-				test.afterAll(async ({ api }) => {
-					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
-				});
-			});
-
-			test.afterAll(async ({ api }) => {
-				expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
-				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
 			});
 		});
 	});
