@@ -8,10 +8,10 @@ export default {
 		channel: 'chromium',
 		headless: true,
 		ignoreHTTPSErrors: true,
-		trace: 'retain-on-failure',
 		baseURL: constants.BASE_URL,
-		screenshot: process.env.CI ? 'off' : 'only-on-failure',
-		video: process.env.CI ? 'off' : 'retain-on-failure',
+		trace: 'on-first-retry',
+		video: 'on-first-retry',
+		screenshot: process.env.CI ? 'off' : 'on-first-retry',
 		launchOptions: {
 			// force GPU hardware acceleration
 			// (even in headless mode)
@@ -52,4 +52,6 @@ export default {
 	timeout: 60 * 1000,
 	globalTimeout: (process.env.IS_EE === 'true' ? 50 : 40) * 60 * 1000,
 	maxFailures: process.env.CI ? 5 : undefined,
+	// Retry on CI only.
+	retries: process.env.CI ? 2 : 0,
 } as PlaywrightTestConfig;

@@ -209,6 +209,7 @@ jobs:
           REPORTER_ROCKETCHAT_DRAFT: ${{ github.event.pull_request.draft }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
+          CI: true
         working-directory: ./apps/meteor
         run: |
           yarn prepare
