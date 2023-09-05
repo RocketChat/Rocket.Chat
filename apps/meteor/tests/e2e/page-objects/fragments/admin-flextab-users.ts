@@ -43,4 +43,12 @@ export class AdminFlextabUsers {
 		await this.page.locator('//label[text()="Roles"]/following-sibling::span//input').click();
 		await this.page.locator(`li[value=${role}]`).click();
 	}
+
+	get inviteUsersTitle(): Locator {
+		return this.page.locator('aside >> text="Invite Members"');
+	}
+
+	get setupSmtpLink(): Locator {
+		return this.page.locator('role=link[name="Set up SMTP"]')
+	}
 }

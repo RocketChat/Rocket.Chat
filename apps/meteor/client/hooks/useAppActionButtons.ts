@@ -146,6 +146,7 @@ export const useMessageActionAppsActionButtons = (context?: MessageActionContext
 						label: Utilities.getI18nKeyForApp(action.labelI18n, action.appId),
 						order: 7,
 						type: 'apps',
+						variant: action.variant,
 						action: (_, params) => {
 							void actionManager.triggerActionButtonAction({
 								rid: params.message.rid,
