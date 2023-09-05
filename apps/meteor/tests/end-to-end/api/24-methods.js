@@ -2397,4 +2397,274 @@ describe('Meteor.methods', function () {
 				});
 		});
 	});
+
+	describe('[@muteUserInRoom & @unmuteUserInRoom]', () => {
+		let rid = null;
+		let channelName = null;
+		let testUser = null;
+		const testUserCredentials = {};
+
+		before('create channel', (done) => {
+			channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', channelName);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', 0);
+					rid = res.body.channel._id;
+				})
+				.end(done);
+		});
+
+		before('create test user', (done) => {
+			const username = `user.test.${Date.now()}`;
+			const email = `${username}@rocket.chat`;
+			request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password: username })
+				.end((err, res) => {
+					testUser = res.body.user;
+					done();
+				});
+		});
+
+		before('add user to room', (done) => {
+			request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: rid,
+					userId: testUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.end(done);
+		});
+
+		before('login testUser', (done) => {
+			request
+				.post(api('login'))
+				.send({
+					user: testUser.username,
+					password: testUser.username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
+					testUserCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+
+		describe('-> standard room', () => {
+			describe('- when muting a user in a standard room', () => {
+				it('should mute a user in a standard room', (done) => {
+					request
+						.post(methodCall('muteUserInRoom'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'muteUserInRoom',
+								params: [{ rid, username: testUser.username }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('msg', 'result');
+							expect(data).to.have.a.property('id', 'id');
+							expect(data).not.to.have.a.property('error');
+						})
+						.end(done);
+				});
+
+				it('muted user should not be able to send message', (done) => {
+					request
+						.post(api('chat.sendMessage'))
+						.set(testUserCredentials)
+						.send({
+							message: {
+								msg: 'Sample message',
+								rid,
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error').that.is.a('string');
+							expect(res.body.error).to.equal('You_have_been_muted');
+						})
+						.end(done);
+				});
+			});
+
+			describe('- when unmuting a user in a standard room', () => {
+				it('should unmute a user in a standard room', (done) => {
+					request
+						.post(methodCall('unmuteUserInRoom'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'unmuteUserInRoom',
+								params: [{ rid, username: testUser.username }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('msg', 'result');
+							expect(data).to.have.a.property('id', 'id');
+							expect(data).not.to.have.a.property('error');
+						})
+						.end(done);
+				});
+
+				it('unmuted user should be able to send message', (done) => {
+					request
+						.post(api('chat.sendMessage'))
+						.set(testUserCredentials)
+						.send({
+							message: {
+								msg: 'Sample message',
+								rid,
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		describe('-> read-only room', () => {
+			before('set room to read-only', (done) => {
+				request
+					.post(api('channels.setReadOnly'))
+					.set(credentials)
+					.send({
+						roomId: rid,
+						readOnly: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.end(done);
+			});
+
+			describe('- when unmuting a user in a read-only room', () => {
+				it('should unmute a user in a read-only room', (done) => {
+					request
+						.post(methodCall('unmuteUserInRoom'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'unmuteUserInRoom',
+								params: [{ rid, username: testUser.username }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('msg', 'result');
+							expect(data).to.have.a.property('id', 'id');
+							expect(data).not.to.have.a.property('error');
+						})
+						.end(done);
+				});
+
+				it('unmuted user in read-only room should be able to send message', (done) => {
+					request
+						.post(api('chat.sendMessage'))
+						.set(testUserCredentials)
+						.send({
+							message: {
+								msg: 'Sample message',
+								rid,
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
+			});
+
+			describe('- when muting a user in a read-only room', () => {
+				it('should mute a user in a read-only room', (done) => {
+					request
+						.post(methodCall('muteUserInRoom'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'muteUserInRoom',
+								params: [{ rid, username: testUser.username }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('msg', 'result');
+							expect(data).to.have.a.property('id', 'id');
+							expect(data).not.to.have.a.property('error');
+						})
+						.end(done);
+				});
+
+				it('muted user in read-only room should not be able to send message', (done) => {
+					request
+						.post(api('chat.sendMessage'))
+						.set(testUserCredentials)
+						.send({
+							message: {
+								msg: 'Sample message',
+								rid,
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error').that.is.a('string');
+						})
+						.end(done);
+				});
+			});
+		});
+	});
 });
