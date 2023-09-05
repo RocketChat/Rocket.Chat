@@ -204,7 +204,7 @@ function PrepareImportPage() {
 							<>
 								{progressRate ? (
 									<Box display='flex' justifyContent='center' fontScale='p2'>
-										<ProgressBar percentage={(progressRate * 10).toFixed(0)} />
+										<ProgressBar percentage={progressRate.toFixed(0)} />
 										<Box is='span' mis='x24'>
 											{numberFormat(progressRate, 0)}%
 										</Box>
