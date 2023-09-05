@@ -1,3 +1,4 @@
+import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -1685,6 +1686,24 @@ export class UsersRaw extends BaseRaw {
 			$set: {
 				statusLivechat: status,
 				livechatStatusSystemModified: false,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	makeAgentUnavailableAndUnsetExtension(userId) {
+		const query = {
+			_id: userId,
+			roles: 'livechat-agent',
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: ILivechatAgentStatus.NOT_AVAILABLE,
+			},
+			$unset: {
+				extension: 1,
 			},
 		};
 
