@@ -445,8 +445,6 @@ export class ImportDataConverter {
 	public async convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn }: IConversionCallbacks = {}): Promise<void> {
 		const users = (await this.getUsersToImport()) as IImportUserRecord[];
 
-		await callbacks.run('beforeUserImport', { userCount: users.length });
-
 		const insertedIds = new Set<IUser['_id']>();
 		const updatedIds = new Set<IUser['_id']>();
 		let skippedCount = 0;
