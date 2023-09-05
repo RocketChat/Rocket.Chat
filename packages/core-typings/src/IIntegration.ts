@@ -12,7 +12,6 @@ export interface IIncomingIntegration extends IRocketChatRecord {
 	channel: string[];
 
 	token: string;
-	overrideDestinationChannelEnabled: boolean;
 	scriptEnabled: boolean;
 	script: string;
 	scriptCompiled?: string;
@@ -21,6 +20,7 @@ export interface IIncomingIntegration extends IRocketChatRecord {
 	name: string;
 	enabled: boolean;
 
+	overrideDestinationChannelEnabled?: boolean;
 	alias?: string;
 	avatar?: string;
 	emoji?: string;

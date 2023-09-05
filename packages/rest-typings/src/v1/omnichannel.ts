@@ -23,6 +23,8 @@ import type {
 	LivechatDepartmentDTO,
 	ILivechatTriggerCondition,
 	ILivechatTriggerAction,
+	ReportResult,
+	ReportWithUnmatchingElements,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
@@ -3039,7 +3041,7 @@ const POSTLivechatTriggersParamsSchema = {
 				properties: {
 					name: {
 						type: 'string',
-						enum: ['time-on-site', 'page-url', 'chat-opened-by-visitor'],
+						enum: ['time-on-site', 'page-url', 'chat-opened-by-visitor', 'after-guest-registration'],
 					},
 					value: {
 						type: 'string',
@@ -3120,6 +3122,93 @@ const POSTLivechatAppearanceParamsSchema = {
 };
 
 export const isPOSTLivechatAppearanceParams = ajv.compile<POSTLivechatAppearanceParams>(POSTLivechatAppearanceParamsSchema);
+
+type GETDashboardConversationsByType = {
+	start: string;
+	end: string;
+	sort?: string;
+};
+
+const GETDashboardConversationsByTypeSchema = {
+	type: 'object',
+	properties: {
+		start: {
+			type: 'string',
+		},
+		end: {
+			type: 'string',
+		},
+		sort: {
+			type: 'string',
+		},
+	},
+	required: ['start', 'end'],
+	additionalProperties: false,
+};
+
+export const isGETDashboardConversationsByType = ajv.compile<GETDashboardConversationsByType>(GETDashboardConversationsByTypeSchema);
+
+type LivechatAnalyticsAgentOverviewProps = {
+	name: string;
+	from: string;
+	to: string;
+	departmentId?: string;
+};
+
+const LivechatAnalyticsAgentOverviewPropsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+		from: {
+			type: 'string',
+		},
+		to: {
+			type: 'string',
+		},
+		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['name', 'from', 'to'],
+	additionalProperties: false,
+};
+
+export const isLivechatAnalyticsAgentOverviewProps = ajv.compile<LivechatAnalyticsAgentOverviewProps>(
+	LivechatAnalyticsAgentOverviewPropsSchema,
+);
+
+type LivechatAnalyticsOverviewProps = {
+	name: string;
+	from: string;
+	to: string;
+	departmentId?: string;
+};
+
+const LivechatAnalyticsOverviewPropsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+		from: {
+			type: 'string',
+		},
+		to: {
+			type: 'string',
+		},
+		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['name', 'from', 'to'],
+	additionalProperties: false,
+};
+
+export const isLivechatAnalyticsOverviewProps = ajv.compile<LivechatAnalyticsOverviewProps>(LivechatAnalyticsOverviewPropsSchema);
 
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
@@ -3589,6 +3678,18 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/rooms/filters': {
 		GET: () => { filters: IOmnichannelRoom['source'][] };
 	};
+	'/v1/livechat/analytics/agent-overview': {
+		GET: (params: LivechatAnalyticsAgentOverviewProps) => {
+			head: { name: string }[];
+			data: { name: string; value: number }[];
+		};
+	};
+	'/v1/livechat/analytics/overview': {
+		GET: (params: LivechatAnalyticsOverviewProps) => {
+			title: string;
+			value: string | number;
+		}[];
+	};
 } & {
 	// EE
 	'/v1/livechat/analytics/agents/average-service-time': {
@@ -3687,5 +3788,20 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/inquiry.setSLA': {
 		PUT: (params: { roomId: string; sla: string }) => void;
+	};
+	'/v1/livechat/analytics/dashboards/conversations-by-source': {
+		GET: (params: GETDashboardConversationsByType) => ReportResult;
+	};
+	'/v1/livechat/analytics/dashboards/conversations-by-status': {
+		GET: (params: GETDashboardConversationsByType) => ReportResult;
+	};
+	'/v1/livechat/analytics/dashboards/conversations-by-department': {
+		GET: (params: GETDashboardConversationsByType) => ReportWithUnmatchingElements;
+	};
+	'/v1/livechat/analytics/dashboards/conversations-by-tags': {
+		GET: (params: GETDashboardConversationsByType) => ReportWithUnmatchingElements;
+	};
+	'/v1/livechat/analytics/dashboards/conversations-by-agent': {
+		GET: (params: GETDashboardConversationsByType) => ReportWithUnmatchingElements;
 	};
 };
