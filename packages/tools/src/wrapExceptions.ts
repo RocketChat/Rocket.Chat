@@ -7,7 +7,7 @@ export const wrapExceptions = <T = any>(getter: () => T) => {
 		try {
 			const value = getter();
 			if (value && value instanceof Promise) {
-				return new Promise<T>((resolve, reject) => {
+				return new Promise((resolve, reject) => {
 					value.then(resolve, (error) => {
 						try {
 							const newResult = errorWrapper(error);
