@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, PasswordInput, Button } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, Button } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
+import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
 	useToastMessageDispatch,
@@ -24,7 +24,6 @@ import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/c
 import type { AccountProfileFormValues } from './getProfileInitialValues';
 import { getProfileInitialValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
-import { useAllowPasswordChange } from './useAllowPasswordChange';
 
 // TODO: add password validation on UI
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactElement => {
@@ -46,7 +45,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		requireName,
 		namesRegex,
 	} = useAccountProfileSettings();
-	const { allowPasswordChange } = useAllowPasswordChange();
 
 	const {
 		register,
@@ -57,7 +55,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		formState: { errors },
 	} = useFormContext<AccountProfileFormValues>();
 
-	const { email, avatar, password, username } = watch();
+	const { email, avatar, username } = watch();
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
 	const isUserVerified = user?.emails?.[0]?.verified ?? false;
@@ -91,8 +89,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		}
 	};
 
-	const passwordIsValid = useValidatePassword(password);
-
 	// FIXME: replace to endpoint
 	const updateOwnBasicInfo = useMethod('saveUserProfile');
 
@@ -104,7 +100,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 				{
 					...(allowRealNameChange ? { realname: name } : {}),
 					...(allowEmailChange && user ? getUserEmailAddress(user) !== email && { email } : {}),
-					...(allowPasswordChange ? { newPassword: password } : {}),
 					...(canChangeUsername ? { username } : {}),
 					...(allowUserStatusMessageChange ? { statusText } : {}),
 					statusType,
@@ -128,9 +123,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	const statusTextId = useUniqueId();
 	const bioId = useUniqueId();
 	const emailId = useUniqueId();
-	const passwordId = useUniqueId();
-	const confirmPasswordId = useUniqueId();
-	const passwordVerifierId = useUniqueId();
 
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
@@ -290,7 +282,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					)}
 					{!allowEmailChange && <Field.Hint id={`${emailId}-hint`}>{t('Email_Change_Disabled')}</Field.Hint>}
 				</Field>
-				<Field>
+				{/* <Field>
 					<Field.Label htmlFor={passwordId}>{t('New_password')}</Field.Label>
 					<Field.Row>
 						<PasswordInput
@@ -336,7 +328,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							{errors.confirmationPassword.message}
 						</Field.Error>
 					)}
-				</Field>
+				</Field> */}
 				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 			</FieldGroup>
 		</Box>
