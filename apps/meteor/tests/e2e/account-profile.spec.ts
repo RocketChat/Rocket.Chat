@@ -23,7 +23,7 @@ test.describe.serial('settings-account-profile', () => {
 			await page.goto('/account/profile');
 		})
 
-		test('should not have any automatically detectable accessibility issues', async ({ makeAxeBuilder }) => {
+		test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
 		})
@@ -107,7 +107,7 @@ test.describe.serial('settings-account-profile', () => {
 	});
 
 	test.describe('Omnichannel', () => {
-		test('should not have any automatically detectable accessibility issues', async ({ page, makeAxeBuilder }) => {
+		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
 			await page.goto('/account/omnichannel');
 
 			const results = await makeAxeBuilder().analyze();
@@ -116,7 +116,7 @@ test.describe.serial('settings-account-profile', () => {
 	})
 
 	test.describe('Feature Preview', () => {
-		test('should not have any automatically detectable accessibility issues', async ({ page, makeAxeBuilder }) => {
+		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
 			await page.goto('/account/feature-preview');
 
 			const results = await makeAxeBuilder().analyze();
@@ -125,7 +125,7 @@ test.describe.serial('settings-account-profile', () => {
 	})
 
 	test.describe('Accessibility & Appearance', () => {
-		test('should not have any automatically detectable accessibility issues', async ({ page, makeAxeBuilder }) => {
+		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
 			await page.goto('/account/accessibility-and-appearance');
 
 			const results = await makeAxeBuilder().analyze();
