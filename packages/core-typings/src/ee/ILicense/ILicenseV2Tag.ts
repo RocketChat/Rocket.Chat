@@ -1,4 +1,4 @@
-export interface ILicenseTag {
+export interface ILicenseV2Tag {
 	name: string;
 	color: string;
 }

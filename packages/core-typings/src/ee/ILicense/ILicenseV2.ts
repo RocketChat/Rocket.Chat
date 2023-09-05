@@ -1,13 +1,13 @@
-import type { ILicenseTag } from './ILicenseTag';
+import type { ILicenseV2Tag } from './ILicenseV2Tag';
 
-export interface ILicense {
+export interface ILicenseV2 {
 	url: string;
 	expiry: string;
 	maxActiveUsers: number;
 	modules: string[];
 	maxGuestUsers: number;
 	maxRoomsPerGuest: number;
-	tag?: ILicenseTag;
+	tag?: ILicenseV2Tag;
 	meta?: {
 		trial: boolean;
 		trialEnd: string;
@@ -18,5 +18,3 @@ export interface ILicense {
 		maxMarketplaceApps: number;
 	};
 }
-
-export type LicenseAppSources = 'private' | 'marketplace';

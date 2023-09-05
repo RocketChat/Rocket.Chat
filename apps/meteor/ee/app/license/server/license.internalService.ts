@@ -1,11 +1,11 @@
-import type { ILicense } from '@rocket.chat/core-services';
+import type { ILicenseV2 } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 
 import { guestPermissions } from '../../authorization/lib/guestPermissions';
 import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
 import { getModules, hasLicense, isEnterprise, onModule, onValidateLicenses } from './license';
 
-export class LicenseService extends ServiceClassInternal implements ILicense {
+export class LicenseService extends ServiceClassInternal implements ILicenseV2 {
 	protected name = 'license';
 
 	constructor() {

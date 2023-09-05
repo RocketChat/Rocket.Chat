@@ -32,7 +32,7 @@ export type Module =
 	| 'message-read-receipt'
 	| 'outlook-calendar';
 
-export default interface ILicense {
+export default interface ILicenseV3 {
 	version: '3.0';
 	information: {
 		id?: string;

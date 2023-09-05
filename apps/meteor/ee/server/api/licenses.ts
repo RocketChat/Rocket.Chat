@@ -3,10 +3,10 @@ import { check } from 'meteor/check';
 
 import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import type { ILicense } from '../../app/license/definition/ILicense';
+import type { ILicenseV2 } from '../../app/license/definition/ILicenseV2';
 import { getLicenses, validateFormat, flatModules, getMaxActiveUsers, isEnterprise } from '../../app/license/server/license';
 
-function licenseTransform(license: ILicense): ILicense {
+function licenseTransform(license: ILicenseV2): ILicenseV2 {
 	return {
 		...license,
 		modules: flatModules(license.modules),

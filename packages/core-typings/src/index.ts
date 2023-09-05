@@ -39,7 +39,8 @@ export * from './IUserSession';
 export * from './IUserStatus';
 export * from './IUser';
 
-export * from './ee/ILicense/ILicense';
+export * from './ee/ILicense/ILicenseV2';
+export * from './ee/ILicense/ILicenseV3';
 export * from './ee/IAuditLog';
 
 export * from './import';
