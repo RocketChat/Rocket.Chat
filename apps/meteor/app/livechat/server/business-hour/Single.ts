@@ -38,16 +38,22 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 
 		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([defaultBusinessHour]);
 		if (!businessHourToOpen.length) {
-			businessHourLogger.debug(
-				`No business hour to open found for agentId: ${agentId}. Default business hour is closed. Setting agentId: ${agentId} to status: ${ILivechatAgentStatus.NOT_AVAILABLE}`,
-			);
+			businessHourLogger.debug({
+				msg: 'No business hours found. Moving agent to NOT_AVAILABLE status',
+				agentId,
+				newStatus: ILivechatAgentStatus.NOT_AVAILABLE,
+			});
 			await Users.setLivechatStatus(agentId, ILivechatAgentStatus.NOT_AVAILABLE);
 			return;
 		}
 
 		await Users.addBusinessHourByAgentIds([agentId], defaultBusinessHour._id);
 
-		businessHourLogger.debug(`Setting agentId: ${agentId} to status: ${ILivechatAgentStatus.AVAILABLE}`);
+		businessHourLogger.debug({
+			msg: 'Business hours found. Moving agent to AVAILABLE status',
+			agentId,
+			newStatus: ILivechatAgentStatus.AVAILABLE,
+		});
 	}
 
 	afterSaveBusinessHours(): Promise<void> {

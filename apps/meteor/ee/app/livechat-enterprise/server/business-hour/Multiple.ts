@@ -252,9 +252,10 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	}
 
 	async onNewAgentCreated(agentId: string): Promise<void> {
-		bhLogger.debug(
-			`Executing onNewAgentCreated for agentId: ${agentId} in Multiple BH mode. Checking if any business hours can be applied to this agent`,
-		);
+		bhLogger.debug({
+			msg: 'Executing onNewAgentCreated for agent',
+			agentId,
+		});
 
 		await this.applyAnyOpenBusinessHourToAgent(agentId);
 
@@ -262,7 +263,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	}
 
 	private async applyAnyOpenBusinessHourToAgent(agentId: string): Promise<void> {
-		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
+		const currentTime = moment().utc();
 		const day = currentTime.format('dddd');
 		const allActiveBusinessHoursForEntireWeek = await this.BusinessHourRepository.findActiveBusinessHours({
 			projection: {
@@ -274,7 +275,10 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		});
 		const openedBusinessHours = await filterBusinessHoursThatMustBeOpenedByDay(allActiveBusinessHoursForEntireWeek, day);
 		if (!openedBusinessHours.length) {
-			bhLogger.debug(`Business hour status recheck failed for agentId: ${agentId}. No opened business hour found`);
+			bhLogger.debug({
+				msg: 'Business hour status recheck failed for agent',
+				agentId,
+			});
 			return;
 		}
 
@@ -295,9 +299,10 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			) as unknown as Array<Pick<ILivechatDepartment, '_id'> & { businessHourId: string }>;
 
 			if (!departmentsWithActiveBH.length) {
-				bhLogger.debug(
-					`No opened business hour found for any of the departments connected to the agent with id: ${agentId}. Now, checking if the default business hour can be used`,
-				);
+				bhLogger.debug({
+					msg: 'No opened business hour found for any of the departments connected to the agent',
+					agentId,
+				});
 
 				// check if this agent has any departments that is connected to any non-default business hour
 				// if no such departments found then check default BH and if it is active, then allow the agent to change service status
@@ -310,10 +315,16 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 					if (isDefaultBHActive?._id) {
 						await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
 
-						bhLogger.debug(`Business hour status recheck passed for agentId: ${agentId}. Found default business hour to be active`);
+						bhLogger.debug({
+							msg: 'Business hour status recheck passed for agentId',
+							agentId,
+						});
 						return;
 					}
-					bhLogger.debug(`Business hour status recheck failed for agentId: ${agentId}. Found default business hour to be inactive`);
+					bhLogger.debug({
+						msg: 'Business hour status recheck failed for agent',
+						agentId,
+					});
 				}
 				return;
 			}
@@ -321,10 +332,10 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			const activeBusinessHoursForAgent = departmentsWithActiveBH.map(({ businessHourId }) => businessHourId);
 			await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId(activeBusinessHoursForAgent, agentId);
 
-			bhLogger.debug(
-				`Business hour status recheck passed for agentId: ${agentId}. Found following business hours to be active:`,
+			bhLogger.debug({
+				msg: `Business hour status recheck passed for agent`,
 				activeBusinessHoursForAgent,
-			);
+			});
 			return;
 		}
 
@@ -333,11 +344,17 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		if (isDefaultBHActive?._id) {
 			await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
 
-			bhLogger.debug(`Business hour status recheck passed for agentId: ${agentId}. Found default business hour to be active`);
+			bhLogger.debug({
+				msg: 'Business hour status recheck passed for agent',
+				agentId,
+			});
 			return;
 		}
 
-		bhLogger.debug(`Business hour status recheck failed for agentId: ${agentId}. No opened business hour found`);
+		bhLogger.debug({
+			msg: 'Business hour status recheck failed for agent',
+			agentId,
+		});
 	}
 
 	private async handleRemoveAgentsFromDepartments(department: Record<string, any>, agentsIds: string[], options: any): Promise<any> {

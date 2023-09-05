@@ -34,7 +34,10 @@ const handleAgentCreated = async (user: IUser) => {
 
 const handleDeactivateUser = async (user: IUser) => {
 	if (wasAgent(user)) {
-		callbackLogger.debug("Unsetting agent's voip extension on user deactivation", user._id);
+		callbackLogger.debug({
+			msg: 'Removing agent extension & making agent unavailable',
+			userId: user._id,
+		});
 		await Users.makeAgentUnavailableAndUnsetExtension(user._id);
 	}
 };
