@@ -11,23 +11,15 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('channel-management', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
-	let regularUserPage: Page;
 
-	test.beforeAll(async ({ api, browser }) => {
+	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
-		regularUserPage = await browser.newPage({ storageState: Users.user2.state });
-		await regularUserPage.goto('/home');
-		await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 	});
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
-	});
-
-	test.afterAll(async () => {
-		await regularUserPage.close();
 	});
 
 	test('expect add "user1" to "targetChannel"', async () => {
@@ -113,7 +105,19 @@ test.describe.serial('channel-management', () => {
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
 	});
 
+	let regularUserPage: Page;
 	test('expect "readOnlyChannel" to show join button', async () => {
+		test.beforeAll(async ({ api, browser }) => {
+			targetChannel = await createTargetChannel(api);
+			regularUserPage = await browser.newPage({ storageState: Users.user2.state });
+			await regularUserPage.goto('/home');
+			await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
+		});
+
+		test.afterAll(async () => {
+			await regularUserPage.close();
+		});
+
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
