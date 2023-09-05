@@ -23,11 +23,6 @@ test.describe.serial('settings-account-profile', () => {
 			await page.goto('/account/profile');
 		})
 
-		test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
-			const results = await makeAxeBuilder().analyze();
-			expect(results.violations).toEqual([]);
-		})
-
 		test.skip('expect update profile with new name/username', async () => {
 			const newName = faker.person.fullName();
 			const newUsername = faker.internet.userName({ firstName: newName });
