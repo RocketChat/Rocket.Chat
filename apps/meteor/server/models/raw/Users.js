@@ -6,6 +6,8 @@ import { BaseRaw } from './BaseRaw';
 const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdle) => ({
 	statusLivechat: 'available',
 	roles: 'livechat-agent',
+	// ignore deactivated users
+	active: true,
 	...(!isLivechatEnabledWhenAgentIdle && {
 		$or: [
 			{
@@ -933,7 +935,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateMany(query, update);
+		return this.updateOne(query, update);
 	}
 
 	addBusinessHourByAgentIds(agentIds = [], businessHourId) {
@@ -1031,6 +1033,8 @@ export class UsersRaw extends BaseRaw {
 		const query = {
 			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
 			roles: 'livechat-agent',
+			// exclude deactivated users
+			active: true,
 			// Avoid unnecessary updates
 			statusLivechat: 'available',
 			...(Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } }),
