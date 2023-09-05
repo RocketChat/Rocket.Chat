@@ -28,26 +28,34 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 	}
 
 	async onNewAgentCreated(agentId: string): Promise<void> {
-		businessHourLogger.debug(`Executing onNewAgentCreated for agentId: ${agentId} in single BH mode`);
+		businessHourLogger.debug('Executing onNewAgentCreated for agent in single BH mode', {
+			agentId,
+		});
 
 		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour();
 		if (!defaultBusinessHour) {
-			businessHourLogger.debug(`No default business hour found for agentId: ${agentId}`);
+			businessHourLogger.debug('No default business hour found for agentId', {
+				agentId,
+			});
 			return;
 		}
 
 		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([defaultBusinessHour]);
 		if (!businessHourToOpen.length) {
-			businessHourLogger.debug(
-				`No business hour to open found for agentId: ${agentId}. Default business hour is closed. Setting agentId: ${agentId} to status: ${ILivechatAgentStatus.NOT_AVAILABLE}`,
-			);
+			businessHourLogger.debug("No business hour to open found for agent. Default business hour is closed. Updating agent's status", {
+				agentId,
+				status: ILivechatAgentStatus.NOT_AVAILABLE,
+			});
 			await Users.setLivechatStatus(agentId, ILivechatAgentStatus.NOT_AVAILABLE);
 			return;
 		}
 
 		await Users.addBusinessHourByAgentIds([agentId], defaultBusinessHour._id);
 
-		businessHourLogger.debug(`Setting agentId: ${agentId} to status: ${ILivechatAgentStatus.AVAILABLE}`);
+		businessHourLogger.debug("Updated agent's status", {
+			agentId,
+			status: ILivechatAgentStatus.AVAILABLE,
+		});
 	}
 
 	afterSaveBusinessHours(): Promise<void> {
