@@ -14,7 +14,7 @@ export class HomeSidenav {
 	}
 
 	get checkboxEncryption(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> role=checkbox[name="Encrypted"]').locator('..');
+		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Encrypted"');
 	}
 
 	get checkboxReadOnly(): Locator {
