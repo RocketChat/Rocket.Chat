@@ -3,7 +3,6 @@ import type { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { HomeSidenav } from './page-objects/fragments';
 import { createTargetChannel } from './utils';
 import { test, expect } from './utils/test';
 
