@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import type http from 'http';
 import url from 'url';
 
@@ -86,6 +87,27 @@ WebAppInternals.staticFilesMiddleware = function (
 	next: NextFunction,
 ) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
+	if (Meteor.isProduction) {
+		res.setHeader('cache-control', 'public, max-age=31536000');
+	}
+
+	// Prevent meteor_runtime_config.js to load from a different expected hash possibly causing
+	// a cache of the file for the wrong hash and start a client loop due to the mismatch
+	// of the hashes of ui versions which would be checked against a websocket response
+	const { arch, path } = WebApp.categorizeRequest(req);
+	if (path === '/meteor_runtime_config.js') {
+		const program = WebApp.clientPrograms[arch];
+		if (!program?.meteorRuntimeConfigHash) {
+			program.meteorRuntimeConfigHash = createHash('sha1')
+				.update(JSON.stringify(encodeURIComponent(program.meteorRuntimeConfig)))
+				.digest('hex');
+		}
+
+		if (program.meteorRuntimeConfigHash !== req.query.hash) {
+			res.writeHead(404);
+			return res.end();
+		}
+	}
 	return _staticFilesMiddleware(staticFiles, req, res, next);
 };
 

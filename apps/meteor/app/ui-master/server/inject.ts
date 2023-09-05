@@ -76,27 +76,33 @@ export const injectIntoHead = (key: string, value: Injection): void => {
 };
 
 export const addScript = (key: string, content: string): void => {
+	const currentHash = crypto.createHash('sha1').update(content).digest('hex');
+	key += `_${currentHash}`;
+
 	if (!content.trim()) {
 		injectIntoHead(`${key}.js`, '');
 		return;
 	}
-	const currentHash = crypto.createHash('sha1').update(content).digest('hex');
+
 	injectIntoHead(`${key}.js`, {
 		type: 'JS',
-		tag: `<script id="${key}" type="text/javascript" src="${`${getURL(key)}.js?${currentHash}`}"></script>`,
+		tag: `<script id="${key}" type="text/javascript" src="${`${getURL(key)}.js`}"></script>`,
 		content,
 	});
 };
 
 export const addStyle = (key: string, content: string): void => {
+	const currentHash = crypto.createHash('sha1').update(content).digest('hex');
+	key += `_${currentHash}`;
+
 	if (!content.trim()) {
 		injectIntoHead(`${key}.css`, '');
 		return;
 	}
-	const currentHash = crypto.createHash('sha1').update(content).digest('hex');
+
 	injectIntoHead(`${key}.css`, {
 		type: 'CSS',
-		tag: `<link id="${key}" rel="stylesheet" type="text/css" href="${`${getURL(key)}.css?${currentHash}`}">`,
+		tag: `<link id="${key}" rel="stylesheet" type="text/css" href="${`${getURL(key)}.css`}">`,
 		content,
 	});
 };

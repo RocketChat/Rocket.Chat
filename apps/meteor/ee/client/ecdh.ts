@@ -76,3 +76,18 @@ sdk.rest.use(async (request, next) => {
 	const parsed = JSON.parse(decrypted);
 	return parsed;
 });
+
+window.fetch = new Proxy(window.fetch, {
+	apply(actualFetch, that, args) {
+		console.log('fetching', args);
+		// Forward function call to the original fetch
+		const result = Reflect.apply(actualFetch, that, args);
+
+		// Do whatever you want with the resulting Promise
+		result.then((response) => {
+			console.log('fetch completed!', args, response);
+		});
+
+		return result;
+	},
+});
