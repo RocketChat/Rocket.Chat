@@ -4717,6 +4717,8 @@
   "VoIP_Management_Server_Name": "Nome do servidor",
   "VoIP_Management_Server_Username": "Nome de usuário",
   "VoIP_Management_Server_Password": "Senha",
+  "VoIP_Retry_Count": "Número de tentativas",
+  "VoIP_Retry_Count_Description": "Define quantas vezes o cliente tentará se reconectar ao servidor VoIP caso a conexão seja perdida.",
   "Voip_call_started": "Chamada iniciada às",
   "Voip_call_duration": "Chamada com duração de {{duration}}",
   "Voip_call_declined": "Chamada finalizada pelo agente",
