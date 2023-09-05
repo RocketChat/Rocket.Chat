@@ -1,5 +1,7 @@
+import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
+	FieldDescription,
 	Accordion,
 	Box,
 	Button,
@@ -52,6 +54,7 @@ const AccessibilityPage = () => {
 	);
 
 	const fontSizeId = useUniqueId();
+	const mentionsWithSymbolId = useUniqueId();
 	const clockModeId = useUniqueId();
 	const hideUsernamesId = useUniqueId();
 	const hideRolesId = useUniqueId();
@@ -152,11 +155,35 @@ const AccessibilityPage = () => {
 											)}
 										/>
 									</FieldRow>
-									<Field.Description mb={12}>{t('Adjustable_font_size_description')}</Field.Description>
+									<FieldDescription mb={12}>{t('Adjustable_font_size_description')}</FieldDescription>
 								</Field>
 								<Field>
-									<Field.Label htmlFor={clockModeId}>{t('Message_TimeFormat')}</Field.Label>
-									<Field.Row>
+									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+										<FieldLabel htmlFor={fontSizeId} fontScale='p2b' mbe={12}>
+											{t('Mentions_with_@_symbol')}
+										</FieldLabel>
+										<FieldRow>
+											<Controller
+												control={control}
+												name='mentionsWithSymbol'
+												render={({ field: { onChange, value, ref } }) => (
+													<ToggleSwitch id={mentionsWithSymbolId} ref={ref} checked={value} onChange={onChange} />
+												)}
+											/>
+										</FieldRow>
+									</Box>
+									<FieldDescription
+										className={css`
+											white-space: break-spaces;
+										`}
+										mb={12}
+									>
+										{t('Mentions_with_@_symbol_description')}
+									</FieldDescription>
+								</Field>
+								<Field>
+									<FieldLabel htmlFor={clockModeId}>{t('Message_TimeFormat')}</FieldLabel>
+									<FieldRow>
 										<Controller
 											name='clockMode'
 											control={control}
@@ -164,7 +191,7 @@ const AccessibilityPage = () => {
 												<Select id={clockModeId} value={`${value}`} onChange={onChange} options={timeFormatOptions} />
 											)}
 										/>
-									</Field.Row>
+									</FieldRow>
 								</Field>
 								<Field>
 									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
