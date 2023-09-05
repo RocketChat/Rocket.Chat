@@ -1,6 +1,9 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import type { OptionProp } from '@rocket.chat/ui-client';
+import { MultiSelectCustom } from '@rocket.chat/ui-client';
+import { useEndpoint, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject } from 'react';
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 
@@ -16,6 +19,7 @@ import {
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useFilterActiveUsers } from '../hooks/useFilterActiveUsers';
+import { useFilterUsersByRole } from '../hooks/useFilterUsersByrole';
 import { useListUsers } from '../hooks/useListUsers';
 import UsersTableRow from './UsersTableRow';
 
@@ -29,7 +33,34 @@ const UsersTable = ({ reload, tab }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const usersRoute = useRoute('admin-users');
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
+	const getRoles = useEndpoint('GET', '/v1/roles.list');
+	const { data: roleData, isSuccess: hasRoleData } = useQuery(['roles'], async () => getRoles());
+
+	const roleFilterStructure = useMemo(
+		() =>
+			[
+				{
+					id: 'filter_by_role',
+					text: 'Filter_by_role',
+					isGroupTitle: true,
+				},
+				{
+					id: 'all',
+					text: 'All_roles',
+					isGroupTitle: false,
+				},
+				...((hasRoleData && roleData.roles) || []).map((currentRole) => ({
+					id: currentRole._id,
+					text: currentRole.name,
+					isGroupTitle: false,
+				})),
+			] as OptionProp[],
+		[hasRoleData, roleData?.roles],
+	);
+
 	const [text, setText] = useState('');
+	const [roleFilterOptions, setRoleFilterOptions] = useState<OptionProp[]>([]);
+	const [roleFilterSelectedOptions, setRoleFilterSelectedOptions] = useState<OptionProp[]>([]);
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'status'>('name');
@@ -47,15 +78,22 @@ const UsersTable = ({ reload, tab }: UsersTableProps): ReactElement | null => {
 		current,
 	);
 
-	const filteredUsers = [...useFilterActiveUsers(data?.users, tab)];
+	const useAllUsers = () => (tab === 'all' && isSuccess ? data?.users : []);
+
+	const currentTabUsers = [...useAllUsers(), ...useFilterActiveUsers(data?.users, tab)];
+	const filteredUsers = useFilterUsersByRole(
+		currentTabUsers,
+		roleFilterSelectedOptions.map((currentRole) => currentRole.id),
+	);
 
 	useEffect(() => {
 		reload.current = refetch;
-	}, [reload, refetch]);
+		prevSearchTerm.current = searchTerm;
+	}, [reload, refetch, searchTerm]);
 
 	useEffect(() => {
-		prevSearchTerm.current = searchTerm;
-	}, [searchTerm]);
+		setRoleFilterOptions(roleFilterStructure);
+	}, [roleFilterStructure]);
 
 	const handleClick = useMutableCallback((id): void =>
 		usersRoute.push({
@@ -109,7 +147,16 @@ const UsersTable = ({ reload, tab }: UsersTableProps): ReactElement | null => {
 
 	return (
 		<>
-			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
+			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)}>
+				<MultiSelectCustom
+					dropdownOptions={roleFilterOptions}
+					defaultTitle='All_roles'
+					selectedOptionsTitle='Rooms'
+					setSelectedOptions={setRoleFilterSelectedOptions}
+					selectedOptions={roleFilterSelectedOptions}
+					customSetSelected={setRoleFilterOptions}
+				/>
+			</FilterByText>
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -121,7 +168,7 @@ const UsersTable = ({ reload, tab }: UsersTableProps): ReactElement | null => {
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{(tab === 'all' ? data.users : filteredUsers).map((user) => (
+							{filteredUsers.map((user) => (
 								<UsersTableRow key={user._id} onClick={handleClick} mediaQuery={mediaQuery} user={user} />
 							))}
 						</GenericTableBody>

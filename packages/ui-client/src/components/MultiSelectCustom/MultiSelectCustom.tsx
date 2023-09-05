@@ -53,12 +53,12 @@ export type OptionProp = TitleOptionProp | CheckboxOptionProp;
  */
 type DropDownProps = {
 	dropdownOptions: OptionProp[];
-	defaultTitle: TranslationKey;
+	defaultTitle: string;
 	selectedOptionsTitle: TranslationKey;
 	selectedOptions: OptionProp[];
 	setSelectedOptions: Dispatch<SetStateAction<OptionProp[]>>;
 	customSetSelected: Dispatch<SetStateAction<OptionProp[]>>;
-	searchBarText?: TranslationKey;
+	searchBarText?: string;
 };
 
 export const MultiSelectCustom = ({

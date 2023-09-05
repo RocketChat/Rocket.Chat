@@ -14,7 +14,7 @@ const MultiSelectCustomList = ({
 }: {
 	options: OptionProp[];
 	onSelected: (item: OptionProp, e?: FormEvent<HTMLElement>) => void;
-	searchBarText?: TranslationKey;
+	searchBarText?: string;
 }) => {
 	const t = useTranslation();
 
@@ -33,7 +33,7 @@ const MultiSelectCustomList = ({
 				<Option>
 					<SearchInput
 						name='select-search'
-						placeholder={t(searchBarText)}
+						placeholder={t(searchBarText as TranslationKey)}
 						autoComplete='off'
 						addon={<Icon name='magnifier' size='x20' />}
 						onChange={handleChange}
