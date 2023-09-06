@@ -265,29 +265,4 @@ export class PasswordPolicy {
 		}
 		return data;
 	}
-
-	// generatePassword() {
-	// 	if (this.enabled) {
-	// 		for (let i = 0; i < 10; i++) {
-	// 			const password = this._generatePassword();
-	// 			if (this.validate(password)) {
-	// 				return password;
-	// 			}
-	// 		}
-	// 	}
-
-	// 	return generator.generate({ length: 17 });
-	// }
-
-	// _generatePassword() {
-	// 	const length = Math.min(Math.max(this.minLength, 12), this.maxLength > 0 ? this.maxLength : Number.MAX_SAFE_INTEGER);
-	// 	return generator.generate({
-	// 		length,
-	// 		...(this.mustContainAtLeastOneNumber && { numbers: true }),
-	// 		...(this.mustContainAtLeastOneSpecialCharacter && { symbols: true }),
-	// 		...(this.mustContainAtLeastOneLowercase && { lowercase: true }),
-	// 		...(this.mustContainAtLeastOneUppercase && { uppercase: true }),
-	// 		strict: true,
-	// 	});
-	// }
 }
