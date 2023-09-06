@@ -65,6 +65,7 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 			await poLivechat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 			await poLivechat.btnSendMessageToOnlineAgent.click();
 			await poHomeChannel.sidenav.getSidebarItemByName(NEW_USER.name).click();
+			await poLivechat.page.close();
 		});
 
 		await test.step('Queue: Sidebar priority change', async () => {
