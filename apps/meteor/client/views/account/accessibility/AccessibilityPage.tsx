@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
+	Icon,
 	FieldDescription,
 	Accordion,
 	Box,
@@ -105,11 +106,14 @@ const AccessibilityPage = () => {
 								return (
 									<Field key={id} pbe={themes.length - 1 ? undefined : 'x28'} pbs={index === 0 ? undefined : 'x28'}>
 										<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-											<FieldLabel display='flex' alignItems='center' fontScale='p2b' htmlFor={id}>
+											<FieldLabel display='flex' alignItems='center' htmlFor={id}>
 												{t.has(title) ? t(title) : title}
 												{communityDisabled && (
 													<Box is='span' mis={8}>
-														<Tag variant='featured'>{t('Enterprise')}</Tag>
+														<Tag variant='featured'>
+															<Icon name='lightning' />
+															{t('Enterprise')}
+														</Tag>
 													</Box>
 												)}
 											</FieldLabel>
@@ -143,7 +147,7 @@ const AccessibilityPage = () => {
 						<Accordion.Item title={t('Adjustable_layout')}>
 							<FieldGroup>
 								<Field>
-									<FieldLabel htmlFor={fontSizeId} fontScale='p2b' mbe={12}>
+									<FieldLabel htmlFor={fontSizeId} mbe={12}>
 										{t('Font_size')}
 									</FieldLabel>
 									<FieldRow>
@@ -159,17 +163,30 @@ const AccessibilityPage = () => {
 								</Field>
 								<Field>
 									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-										<FieldLabel htmlFor={fontSizeId} fontScale='p2b' mbe={12}>
+										<FieldLabel htmlFor={fontSizeId}>
 											{t('Mentions_with_@_symbol')}
+											<Box is='span' mis={8} display='inline-block'>
+												<Tag variant='featured'>
+													<Icon name='lightning' />
+													{t('Enterprise')}
+												</Tag>
+											</Box>
 										</FieldLabel>
 										<FieldRow>
-											<Controller
-												control={control}
-												name='mentionsWithSymbol'
-												render={({ field: { onChange, value, ref } }) => (
-													<ToggleSwitch id={mentionsWithSymbolId} ref={ref} checked={value} onChange={onChange} />
-												)}
-											/>
+											{license?.isEnterprise ? (
+												<Controller
+													control={control}
+													name='mentionsWithSymbol'
+													render={({ field: { onChange, value, ref } }) => (
+														<ToggleSwitch id={mentionsWithSymbolId} ref={ref} checked={value} onChange={onChange} />
+													)}
+												/>
+											) : (
+												<ToggleSwitch
+													onChange={() => setModal(<HighContrastUpsellModal onClose={() => setModal(null)} />)}
+													checked={false}
+												/>
+											)}
 										</FieldRow>
 									</Box>
 									<FieldDescription
@@ -195,7 +212,7 @@ const AccessibilityPage = () => {
 								</Field>
 								<Field>
 									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-										<FieldLabel htmlFor={hideUsernamesId}>{t('Hide_usernames')}</FieldLabel>
+										<FieldLabel htmlFor={hideUsernamesId}>{t('Username_of_the_message_author')}</FieldLabel>
 										<FieldRow>
 											<Controller
 												name='hideUsernames'
@@ -206,11 +223,12 @@ const AccessibilityPage = () => {
 											/>
 										</FieldRow>
 									</Box>
+									<FieldDescription>{t('Toggle_to_show_or_hide_usernames_of_message_authors')}</FieldDescription>
 								</Field>
 								{displayRolesEnabled && (
 									<Field>
 										<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-											<FieldLabel htmlFor={hideRolesId}>{t('Hide_roles')}</FieldLabel>
+											<FieldLabel htmlFor={hideRolesId}>{t('User_role_of_the_message_author')}</FieldLabel>
 											<FieldRow>
 												<Controller
 													name='hideRoles'
@@ -221,6 +239,7 @@ const AccessibilityPage = () => {
 												/>
 											</FieldRow>
 										</Box>
+										<FieldDescription>{t('Toggle_to_display_or_hide_the_user_roles_of_message_authors')}</FieldDescription>
 									</Field>
 								)}
 							</FieldGroup>
