@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { Apps } from '@rocket.chat/core-services';
-import type { ILicenseV2, ILicenseV2Tag } from '@rocket.chat/core-typings';
+import type { ILicenseV2, ILicenseTag } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
@@ -30,7 +30,7 @@ class LicenseClass {
 
 	private encryptedLicenses = new Set<string>();
 
-	private tags = new Set<ILicenseV2Tag>();
+	private tags = new Set<ILicenseTag>();
 
 	private modules = new Set<string>();
 
@@ -103,7 +103,7 @@ class LicenseClass {
 		this._addTag(license.tag);
 	}
 
-	private _addTag(tag: ILicenseV2Tag): void {
+	private _addTag(tag: ILicenseTag): void {
 		// make sure to not add duplicated tag names
 		for (const addedTag of this.tags) {
 			if (addedTag.name.toLowerCase() === tag.name.toLowerCase()) {
@@ -151,7 +151,7 @@ class LicenseClass {
 		return [...this.modules];
 	}
 
-	getTags(): ILicenseV2Tag[] {
+	getTags(): ILicenseTag[] {
 		return [...this.tags];
 	}
 
@@ -343,7 +343,7 @@ export function getModules(): string[] {
 	return License.getModules();
 }
 
-export function getTags(): ILicenseV2Tag[] {
+export function getTags(): ILicenseTag[] {
 	return License.getTags();
 }
 

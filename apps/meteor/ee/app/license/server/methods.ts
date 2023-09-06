@@ -1,4 +1,4 @@
-import type { ILicenseV2Tag } from '@rocket.chat/core-typings';
+import type { ILicenseTag } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -10,7 +10,7 @@ declare module '@rocket.chat/ui-contexts' {
 	interface ServerMethods {
 		'license:hasLicense'(feature: string): boolean;
 		'license:getModules'(): string[];
-		'license:getTags'(): ILicenseV2Tag[];
+		'license:getTags'(): ILicenseTag[];
 		'license:isEnterprise'(): boolean;
 	}
 }

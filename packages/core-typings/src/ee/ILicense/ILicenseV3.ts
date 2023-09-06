@@ -1,3 +1,5 @@
+import type { ILicenseTag } from './ILicenseTag';
+
 export type LicenseBehavior = 'invalidate_license' | 'start_fair_policy' | 'prevent_action' | 'prevent_installation';
 
 export type LicenseLimit = {
@@ -54,10 +56,7 @@ export interface ILicenseV3 {
 		};
 		legalText?: string;
 		notes?: string;
-		tags?: {
-			name: string;
-			color: string;
-		}[];
+		tags?: ILicenseTag[];
 	};
 	validation: {
 		serverUrls: {

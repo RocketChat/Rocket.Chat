@@ -40,7 +40,7 @@ export * from './IUserStatus';
 export * from './IUser';
 
 export * from './ee/ILicense/ILicenseV2';
-export * from './ee/ILicense/ILicenseV2Tag';
+export * from './ee/ILicense/ILicenseTag';
 export * from './ee/ILicense/ILicenseV3';
 export * from './ee/IAuditLog';
 

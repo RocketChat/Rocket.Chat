@@ -1,4 +1,4 @@
-import type { ILicenseV2Tag } from './ILicenseV2Tag';
+import type { ILicenseTag } from './ILicenseTag';
 
 export interface ILicenseV2 {
 	url: string;
@@ -7,7 +7,7 @@ export interface ILicenseV2 {
 	modules: string[];
 	maxGuestUsers: number;
 	maxRoomsPerGuest: number;
-	tag?: ILicenseV2Tag;
+	tag?: ILicenseTag;
 	meta?: {
 		trial: boolean;
 		trialEnd: string;
