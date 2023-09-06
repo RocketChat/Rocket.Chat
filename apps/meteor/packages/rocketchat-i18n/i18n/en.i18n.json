@@ -6030,5 +6030,7 @@
   "All_visible": "All visible",
   "Filter_by_room": "Filter by room type",
   "Filter_by_visibility": "Filter by visibility",
-  "Theme_Appearence": "Theme Appearence"
+  "Theme_Appearence": "Theme Appearence",
+  "video_livechat_started": "_Started a video call._",
+  "Join_call": "Join call"
 }
