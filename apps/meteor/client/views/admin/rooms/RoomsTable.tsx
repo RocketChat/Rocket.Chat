@@ -22,8 +22,6 @@ import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import RoomsTableFilters from './RoomsTableFilters';
-import { useFilteredTypeRooms } from './useFilteredTypeRooms';
-import { useFilteredVisibilityRooms } from './useFilteredVisibilityRooms';
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -32,8 +30,6 @@ type RoomFilters = {
 	types: OptionProp[];
 	visibility: OptionProp[];
 };
-
-const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 
 const roomTypeI18nMap = {
 	l: 'Omnichannel',
@@ -80,9 +76,9 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: searchText === prevRoomFilterText.current ? current : 0,
-				types: DEFAULT_TYPES,
+				types: [...roomFilters.types.map((roomType) => roomType.id)],
 			};
-		}, [searchText, sortBy, sortDirection, itemsPerPage, prevRoomFilterText, current, setCurrent]),
+		}, [searchText, sortBy, sortDirection, itemsPerPage, current, roomFilters.types, setCurrent]),
 		500,
 	);
 
@@ -225,17 +221,6 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		[mediaQuery, onClick, t],
 	);
 
-	function intersectArraysWithoutDuplicates(array1: IRoom[], array2: IRoom[]) {
-		const set2 = new Set(array2);
-
-		return [...new Set(array1)].filter((item) => set2.has(item));
-	}
-
-	const roomsTypeList = useFilteredTypeRooms(roomFilters.types, isLoading, data?.rooms);
-	const roomsVisibilityList = useFilteredVisibilityRooms(roomFilters.visibility, isLoading, data?.rooms);
-
-	const roomsList = intersectArraysWithoutDuplicates(roomsTypeList, roomsVisibilityList);
-
 	return (
 		<>
 			<RoomsTableFilters setFilters={setRoomFilters} />
@@ -248,24 +233,24 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data && data?.rooms.length > 0 && (
-				<>
-					<GenericTable>
-						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>{isSuccess && roomsList?.map((room) => renderRow(room))}</GenericTableBody>
-					</GenericTable>
-					{isSuccess && roomsList && roomsList.length === 0 && <GenericNoResults />}
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
-				</>
-			)}
+
+			<>
+				<GenericTable>
+					<GenericTableHeader>{headers}</GenericTableHeader>
+					<GenericTableBody>{isSuccess && data && data?.rooms.length > 0 && data.rooms?.map((room) => renderRow(room))}</GenericTableBody>
+				</GenericTable>
+				{isSuccess && data.rooms && data.rooms.length === 0 && <GenericNoResults />}
+				<Pagination
+					divider
+					current={current}
+					itemsPerPage={itemsPerPage}
+					count={data?.total || 0}
+					onSetItemsPerPage={setItemsPerPage}
+					onSetCurrent={setCurrent}
+					{...paginationProps}
+				/>
+			</>
+
 			{isError && (
 				<States>
 					<StatesIcon name='warning' variation='danger' />

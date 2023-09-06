@@ -12,12 +12,12 @@ const roomTypeFilterStructure = [
 		isGroupTitle: true,
 	},
 	{
-		id: 'channels',
+		id: 'c',
 		text: 'Channels',
 		checked: false,
 	},
 	{
-		id: 'directMessages',
+		id: 'd',
 		text: 'Direct_Message',
 		checked: false,
 	},
@@ -27,8 +27,13 @@ const roomTypeFilterStructure = [
 		checked: false,
 	},
 	{
-		id: 'omnichannel',
+		id: 'l',
 		text: 'Omnichannel',
+		checked: false,
+	},
+	{
+		id: 'p',
+		text: 'Private Channels',
 		checked: false,
 	},
 	{
@@ -38,35 +43,31 @@ const roomTypeFilterStructure = [
 	},
 ] as OptionProp[];
 
-const roomVisibilityFilterStructure = [
-	{
-		id: 'filter_by_visibility',
-		text: 'Filter_by_visibility',
-		isGroupTitle: true,
-	},
-	{
-		id: 'private',
-		text: 'Private',
-		checked: false,
-	},
-	{
-		id: 'public',
-		text: 'Public',
-		checked: false,
-	},
-] as OptionProp[];
+// Commented for now
+// const roomVisibilityFilterStructure = [
+// 	{
+// 		id: 'filter_by_visibility',
+// 		text: 'Filter_by_visibility',
+// 		isGroupTitle: true,
+// 	},
+// 	// {
+// 	// 	id: 'public',
+// 	// 	text: 'Public',
+// 	// 	checked: false,
+// 	// },
+// ] as OptionProp[];
 
 const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction<any>> }): ReactElement => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
 	const [roomTypeOptions, setRoomTypeOptions] = useState<OptionProp[]>(roomTypeFilterStructure);
-	const [roomVisibilityOptions, setRoomVisibilityOptions] = useState<OptionProp[]>(roomVisibilityFilterStructure);
+	// const [roomVisibilityOptions, setRoomVisibilityOptions] = useState<OptionProp[]>(roomVisibilityFilterStructure);
 	const [roomTypeSelectedOptions, setRoomTypeSelectedOptions] = useState<OptionProp[]>([]);
-	const [roomVisibilitySelectedOptions, setRoomVisibilitySelectedOptions] = useState<OptionProp[]>([]);
+	// const [roomVisibilitySelectedOptions, setRoomVisibilitySelectedOptions] = useState<OptionProp[]>([]);
 
 	useEffect(() => {
-		return setFilters({ searchText: text, types: roomTypeSelectedOptions, visibility: roomVisibilitySelectedOptions });
-	}, [setFilters, roomTypeSelectedOptions, roomVisibilitySelectedOptions, text]);
+		return setFilters({ searchText: text, types: roomTypeSelectedOptions });
+	}, [setFilters, roomTypeSelectedOptions, text]);
 
 	const handleSearchTextChange = useCallback((event) => setText(event.currentTarget.value), []);
 
@@ -101,7 +102,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 				/>
 			</Box>
 
-			<Box minWidth='x224' m='x4'>
+			{/* <Box minWidth='x224' m='x4'>
 				<MultiSelectCustom
 					dropdownOptions={roomVisibilityOptions}
 					defaultTitle={'All_visible' as any}
@@ -110,7 +111,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 					selectedOptions={roomVisibilitySelectedOptions}
 					customSetSelected={setRoomVisibilityOptions}
 				/>
-			</Box>
+			</Box> */}
 		</Box>
 	);
 };
