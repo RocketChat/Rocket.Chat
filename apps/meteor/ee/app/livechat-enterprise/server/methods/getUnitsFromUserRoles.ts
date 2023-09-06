@@ -17,7 +17,7 @@ async function getUnitsFromUserRoles(user: string | null): Promise<string[] | un
 	return LivechatUnit.findByMonitorId(user);
 }
 
-const memoizedGetUnitFromUserRoles = mem(getUnitsFromUserRoles, { maxAge: 5000 });
+const memoizedGetUnitFromUserRoles = mem(getUnitsFromUserRoles, { maxAge: 10000 });
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
