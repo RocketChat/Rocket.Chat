@@ -33,17 +33,6 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 
 	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
-	const departmentsSortedByName = departmentsItems.sort((a, b) => {
-		if (a.name > b.name) {
-			return 1;
-		}
-		if (a.name < b.name) {
-			return -1;
-		}
-
-		return 0;
-	});
-
 	const unit = data || {};
 
 	const currUnitMonitors = useMemo(
@@ -83,9 +72,9 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 	const { name, visibility, departments, monitors } = values;
 
 	const departmentsOptions = useMemo(() => {
-		const pending = departments.filter(({ value }) => !departmentsSortedByName.find((dep) => dep.value === value));
-		return [...departmentsSortedByName, ...pending];
-	}, [departments, departmentsSortedByName]);
+		const pending = departments.filter(({ value }) => !departmentsItems.find((dep) => dep.value === value));
+		return [...departmentsItems, ...pending];
+	}, [departments, departmentsItems]);
 
 	const monitorsOptions = useMemo(() => {
 		const pending = monitors.filter(({ value }) => !monitorsItems.find((mon) => mon.value === value));
