@@ -27,6 +27,7 @@ import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
 import HighContrastUpsellModal from './HighContrastUpsellModal';
+import MentionsWithSymbolUpsellModal from './MentionsWithSymbolUpsellModal';
 import { fontSizes } from './fontSizes';
 import type { AccessibilityPreferencesData } from './hooks/useAcessibilityPreferencesValues';
 import { useAccessiblityPreferencesValues } from './hooks/useAcessibilityPreferencesValues';
@@ -183,7 +184,7 @@ const AccessibilityPage = () => {
 												/>
 											) : (
 												<ToggleSwitch
-													onChange={() => setModal(<HighContrastUpsellModal onClose={() => setModal(null)} />)}
+													onChange={() => setModal(<MentionsWithSymbolUpsellModal onClose={() => setModal(null)} />)}
 													checked={false}
 												/>
 											)}
