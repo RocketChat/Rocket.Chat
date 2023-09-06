@@ -10,7 +10,9 @@ const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => 
 	const t = useTranslation();
 
 	const sections = useAdministrationMenu();
-
+	if (sections.length === 0) {
+		return <GenericMenu title={t('Administration')} is={Sidebar.TopBar.Action} {...props} />;
+	}
 	return <GenericMenu sections={sections} title={t('Administration')} is={Sidebar.TopBar.Action} {...props} />;
 };
 
