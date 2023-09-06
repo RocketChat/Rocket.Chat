@@ -1,7 +1,7 @@
 import type { Page, Locator, APIResponse } from '@playwright/test';
 
 export class OmnichannelLiveChat {
-	private readonly page: Page;
+	readonly page: Page;
 
 	constructor(page: Page, private readonly api: { get(url: string): Promise<APIResponse> }) {
 		this.page = page;
