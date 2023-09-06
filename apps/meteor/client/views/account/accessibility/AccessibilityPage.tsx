@@ -213,34 +213,44 @@ const AccessibilityPage = () => {
 								</Field>
 								<Field>
 									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-										<FieldLabel htmlFor={hideUsernamesId}>{t('Username_of_the_message_author')}</FieldLabel>
+										<FieldLabel htmlFor={hideUsernamesId}>{t('Show_usernames')}</FieldLabel>
 										<FieldRow>
 											<Controller
 												name='hideUsernames'
 												control={control}
 												render={({ field: { value, onChange, ref } }) => (
-													<ToggleSwitch id={hideUsernamesId} ref={ref} checked={value} onChange={onChange} />
+													<ToggleSwitch
+														id={hideUsernamesId}
+														ref={ref}
+														checked={!value}
+														onChange={(e) => onChange(!(e.target as HTMLInputElement).checked)}
+													/>
 												)}
 											/>
 										</FieldRow>
 									</Box>
-									<FieldDescription>{t('Toggle_to_show_or_hide_usernames_of_message_authors')}</FieldDescription>
+									<FieldDescription>{t('Show_or_hide_the_username_of_message_authors')}</FieldDescription>
 								</Field>
 								{displayRolesEnabled && (
 									<Field>
 										<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-											<FieldLabel htmlFor={hideRolesId}>{t('User_role_of_the_message_author')}</FieldLabel>
+											<FieldLabel htmlFor={hideRolesId}>{t('Show_roles')}</FieldLabel>
 											<FieldRow>
 												<Controller
 													name='hideRoles'
 													control={control}
 													render={({ field: { value, onChange, ref } }) => (
-														<ToggleSwitch id={hideRolesId} ref={ref} checked={value} onChange={onChange} />
+														<ToggleSwitch
+															id={hideRolesId}
+															ref={ref}
+															checked={!value}
+															onChange={(e) => onChange(!(e.target as HTMLInputElement).checked)}
+														/>
 													)}
 												/>
 											</FieldRow>
 										</Box>
-										<FieldDescription>{t('Toggle_to_display_or_hide_the_user_roles_of_message_authors')}</FieldDescription>
+										<FieldDescription>{t('Show_or_hide_the_user_roles_of_message_authors')}</FieldDescription>
 									</Field>
 								)}
 							</FieldGroup>
