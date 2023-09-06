@@ -97,7 +97,7 @@ async function _OAuthServicesUpdate() {
 
 			if (serviceName === 'Linkedin') {
 				data.clientConfig = {
-					requestPermissions: ['r_liteprofile', 'r_emailaddress'],
+					requestPermissions: ['openid', 'email', 'profile'],
 				};
 			}
 
