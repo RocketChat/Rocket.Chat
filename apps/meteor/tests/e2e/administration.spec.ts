@@ -78,6 +78,17 @@ test.describe.parallel('administration', () => {
 		});
 	});
 
+	test.describe('Mailer', () => {
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/admin/mailer');
+		})
+
+		test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
+			const results = await makeAxeBuilder().analyze();
+			expect(results.violations).toEqual([]);
+		})
+	})
+
 	test.describe('Settings', () => {
 		test.describe('General', () => {
 			test.beforeEach(async ({ page }) => {
