@@ -10,7 +10,7 @@ import { useAllowPasswordChange } from './useAllowPasswordChange';
 
 type PasswordFieldValues = { password: string; confirmationPassword: string };
 
-const Password = (props: AllHTMLAttributes<HTMLFormElement>) => {
+const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -100,4 +100,4 @@ const Password = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	);
 };
 
-export default Password;
+export default ChangePassword;

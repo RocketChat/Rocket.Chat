@@ -7,8 +7,8 @@ import { FormProvider, useForm } from 'react-hook-form';
 
 import Page from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
+import ChangePassword from './ChangePassword';
 import EndToEnd from './EndToEnd';
-import Password from './Password';
 import TwoFactorEmail from './TwoFactorEmail';
 import TwoFactorTOTP from './TwoFactorTOTP';
 
@@ -45,7 +45,7 @@ const AccountSecurityPage = (): ReactElement => {
 					<FormProvider {...methods}>
 						<Accordion>
 							<Accordion.Item title={t('Password')} defaultExpanded>
-								<Password id={passwordFormId} />
+								<ChangePassword id={passwordFormId} />
 							</Accordion.Item>
 						</Accordion>
 					</FormProvider>
@@ -71,7 +71,7 @@ const AccountSecurityPage = (): ReactElement => {
 			</Page.ScrollableContentWithShadow>
 			<Page.Footer isDirty={isDirty}>
 				<ButtonGroup>
-					<Button onClick={() => reset({ password: '' })}>{t('Cancel')}</Button>
+					<Button onClick={() => reset(passwordDefaultValues)}>{t('Cancel')}</Button>
 					<Button form={passwordFormId} primary disabled={!isDirty} type='submit'>
 						{t('Save_changes')}
 					</Button>
