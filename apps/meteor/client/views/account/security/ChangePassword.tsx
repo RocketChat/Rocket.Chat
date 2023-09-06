@@ -4,7 +4,7 @@ import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 
 import { useAllowPasswordChange } from './useAllowPasswordChange';
 
@@ -19,11 +19,11 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const passwordVerifierId = useUniqueId();
 
 	const {
-		register,
 		watch,
 		formState: { errors },
 		handleSubmit,
 		reset,
+		control,
 	} = useFormContext<PasswordFieldValues>();
 
 	const password = watch('password');
@@ -50,17 +50,25 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 				<Field>
 					<FieldLabel htmlFor={passwordId}>{t('New_password')}</FieldLabel>
 					<FieldRow>
-						<PasswordInput
-							id={passwordId}
-							{...register('password', {
+						<Controller
+							control={control}
+							name='password'
+							rules={{
 								validate: () => (password?.length && !passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
-							})}
-							error={errors.password?.message as string}
-							flexGrow={1}
-							addon={<Icon name='key' size='x20' />}
-							disabled={!allowPasswordChange}
-							aria-describedby={`${passwordVerifierId} ${passwordId}-hint ${passwordId}-error`}
-							aria-invalid={errors.password ? 'true' : 'false'}
+							}}
+							render={({ field: { onChange, value } }) => (
+								<PasswordInput
+									id={passwordId}
+									onChange={onChange}
+									value={value}
+									error={errors.password?.message}
+									flexGrow={1}
+									addon={<Icon name='key' size='x20' />}
+									disabled={!allowPasswordChange}
+									aria-describedby={`${passwordVerifierId} ${passwordId}-hint ${passwordId}-error`}
+									aria-invalid={errors.password ? 'true' : 'false'}
+								/>
+							)}
 						/>
 					</FieldRow>
 					{!allowPasswordChange && <FieldHint id={`${passwordId}-hint`}>{t('Password_Change_Disabled')}</FieldHint>}
@@ -75,18 +83,24 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 				<Field>
 					<FieldLabel htmlFor={confirmPasswordId}>{t('Confirm_password')}</FieldLabel>
 					<FieldRow>
-						<PasswordInput
-							id={confirmPasswordId}
-							{...register('confirmationPassword', {
-								validate: (confirmationPassword) => (password !== confirmationPassword ? t('Passwords_do_not_match') : true),
-							})}
-							error={errors.confirmationPassword?.message as string}
-							flexGrow={1}
-							addon={<Icon name='key' size='x20' />}
-							disabled={!allowPasswordChange || !passwordIsValid}
-							aria-required={password !== '' ? 'true' : 'false'}
-							aria-invalid={errors.confirmationPassword ? 'true' : 'false'}
-							aria-describedby={`${confirmPasswordId}-error`}
+						<Controller
+							control={control}
+							name='confirmationPassword'
+							rules={{ validate: (confirmationPassword) => (password !== confirmationPassword ? t('Passwords_do_not_match') : true) }}
+							render={({ field: { onChange, value } }) => (
+								<PasswordInput
+									id={confirmPasswordId}
+									onChange={onChange}
+									value={value}
+									error={errors.confirmationPassword?.message}
+									flexGrow={1}
+									addon={<Icon name='key' size='x20' />}
+									disabled={!allowPasswordChange || !passwordIsValid}
+									aria-required={password !== '' ? 'true' : 'false'}
+									aria-invalid={errors.confirmationPassword ? 'true' : 'false'}
+									aria-describedby={`${confirmPasswordId}-error`}
+								/>
+							)}
 						/>
 					</FieldRow>
 					{errors.confirmationPassword && (
