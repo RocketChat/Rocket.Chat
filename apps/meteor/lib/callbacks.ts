@@ -20,6 +20,7 @@ import type {
 	InquiryWithAgentInfo,
 	ILivechatTagRecord,
 	TransferData,
+	AtLeast,
 } from '@rocket.chat/core-typings';
 import type { FilterOperators } from 'mongodb';
 
@@ -124,7 +125,7 @@ type ChainedCallbackSignatures = {
 	'livechat.onLoadConfigApi': (config: { room: IOmnichannelRoom }) => Record<string, unknown>;
 
 	'beforeSaveMessage': (message: IMessage, room?: IRoom) => IMessage;
-	'afterCreateUser': (user: IUser) => IUser;
+	'afterCreateUser': (user: AtLeast<IUser, '_id' | 'username' | 'roles'>) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
 	'livechat:afterOnHold': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
 	'livechat:afterOnHoldChatResumed': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
