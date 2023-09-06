@@ -254,6 +254,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>{isSuccess && roomsList?.map((room) => renderRow(room))}</GenericTableBody>
 					</GenericTable>
+					{isSuccess && roomsList && roomsList.length === 0 && <GenericNoResults />}
 					<Pagination
 						divider
 						current={current}
@@ -265,7 +266,6 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					/>
 				</>
 			)}
-			{isSuccess && data && data.rooms.length === 0 && <GenericNoResults />}
 			{isError && (
 				<States>
 					<StatesIcon name='warning' variation='danger' />
