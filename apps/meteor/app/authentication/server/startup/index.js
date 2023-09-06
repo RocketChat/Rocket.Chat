@@ -263,10 +263,14 @@ Accounts.onCreateUser(function (...args) {
 
 const { insertUserDoc } = Accounts;
 const insertUserDocAsync = async function (options, user) {
-	const globalRoles = [];
+	let globalRoles = new Set();
+
+	if (Match.test(options.globalRoles, [String]) && options.globalRoles.length > 0) {
+		options.globalRoles.map((role) => globalRoles.add(role));
+	}
 
 	if (Match.test(user.globalRoles, [String]) && user.globalRoles.length > 0) {
-		globalRoles.push(...user.globalRoles);
+		user.globalRoles.map((role) => globalRoles.add(role));
 	}
 
 	delete user.globalRoles;
@@ -275,9 +279,11 @@ const insertUserDocAsync = async function (options, user) {
 		const defaultAuthServiceRoles = parseCSV(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles') || '');
 
 		if (defaultAuthServiceRoles.length > 0) {
-			globalRoles.push(...defaultAuthServiceRoles);
+			defaultAuthServiceRoles.map((role) => globalRoles.add(role));
 		}
 	}
+
+	globalRoles = [...globalRoles];
 
 	const roles = getNewUserRoles(globalRoles);
 
