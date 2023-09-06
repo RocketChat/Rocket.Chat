@@ -25,7 +25,7 @@ const UsersPage = (): ReactElement => {
 	const canCreateUser = usePermission('create-user');
 	const canBulkCreateUser = usePermission('bulk-register-user');
 
-	const [tab, setTab] = useState<'all' | 'invited' | 'new' | 'active' | 'deactivated'>('all');
+	const [tab, setTab] = useState<'all' | 'invited' | 'pending' | 'active' | 'deactivated'>('all');
 
 	useEffect(() => {
 		if (!context || !seatsCap) {
@@ -51,7 +51,7 @@ const UsersPage = (): ReactElement => {
 					) : (
 						<ButtonGroup>
 							{canCreateUser && (
-								<Button icon='user-plus' onClick={() => router.navigate('/admin/users/new')}>
+								<Button icon='user-plus' onClick={() => router.navigate('/admin/users/pending')}>
 									{t('New')}
 								</Button>
 							)}
@@ -68,17 +68,17 @@ const UsersPage = (): ReactElement => {
 						<Tabs.Item selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
 							{t('All')}
 						</Tabs.Item>
-						<Tabs.Item selected={tab === 'invited'} onClick={() => setTab('invited')}>
-							{t('Invited')}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'new'} onClick={() => setTab('new')}>
-							{t('New_users')}
+						<Tabs.Item selected={tab === 'pending'} onClick={() => setTab('pending')}>
+							{t('Pending')}
 						</Tabs.Item>
 						<Tabs.Item selected={tab === 'active'} onClick={() => setTab('active')}>
 							{t('Active')}
 						</Tabs.Item>
 						<Tabs.Item selected={tab === 'deactivated'} onClick={() => setTab('deactivated')}>
 							{t('Deactivated')}
+						</Tabs.Item>
+						<Tabs.Item selected={tab === 'invited'} onClick={() => setTab('invited')}>
+							{t('Invited')}
 						</Tabs.Item>
 					</Tabs>
 					<UsersTable reload={reload} tab={tab} />
@@ -90,14 +90,14 @@ const UsersPage = (): ReactElement => {
 						<ContextualbarTitle>
 							{context === 'info' && t('User_Info')}
 							{context === 'edit' && t('Edit_User')}
-							{context === 'new' && t('Add_User')}
+							{context === 'pending' && t('Add_User')}
 							{context === 'invite' && t('Invite_Users')}
 						</ContextualbarTitle>
 						<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
 					</ContextualbarHeader>
 					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
 					{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
-					{context === 'new' && <AdminUserForm onReload={handleReload} />}
+					{context === 'pending' && <AdminUserForm onReload={handleReload} />}
 					{context === 'invite' && <AdminInviteUsers />}
 				</Contextualbar>
 			)}

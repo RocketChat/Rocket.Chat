@@ -19,6 +19,7 @@ import {
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useFilterActiveUsers } from '../hooks/useFilterActiveUsers';
+import { useFilterPendingUsers } from '../hooks/useFilterPendingUsers';
 import { useFilterUsersByRole } from '../hooks/useFilterUsersByrole';
 import { useListUsers } from '../hooks/useListUsers';
 import UsersTableRow from './UsersTableRow';
@@ -80,7 +81,7 @@ const UsersTable = ({ reload, tab }: UsersTableProps): ReactElement | null => {
 
 	const useAllUsers = () => (tab === 'all' && isSuccess ? data?.users : []);
 
-	const currentTabUsers = [...useAllUsers(), ...useFilterActiveUsers(data?.users, tab)];
+	const currentTabUsers = [...useAllUsers(), ...useFilterActiveUsers(data?.users, tab), ...useFilterPendingUsers(data?.users, tab)];
 	const filteredUsers = useFilterUsersByRole(
 		currentTabUsers,
 		roleFilterSelectedOptions.map((currentRole) => currentRole.id),
