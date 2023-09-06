@@ -32,6 +32,7 @@ test.describe('Livechat', () => {
 		test.afterAll(async ({ api }) => {
 			await api.delete('/livechat/users/agent/user1');
 			await poAuxContext.page.close();
+			await page.close();
 		});
 
 		test('Send message to online agent', async () => {
