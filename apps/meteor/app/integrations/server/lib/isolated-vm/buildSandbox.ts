@@ -8,7 +8,7 @@ import * as s from '../../../../../lib/utils/stringUtils';
 const proxyObject = (obj: Record<string, any>, forbiddenKeys: string[] = []): Record<string, any> => {
 	return copyObject({
 		isProxy: true,
-		get: (key: keyof Response) => {
+		get: (key: string) => {
 			if (forbiddenKeys.includes(key)) {
 				return undefined;
 			}
