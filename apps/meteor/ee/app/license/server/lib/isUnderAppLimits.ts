@@ -1,7 +1,7 @@
 import { Apps } from '@rocket.chat/core-services';
+import type { ILicenseV2, LicenseAppSources } from '@rocket.chat/core-typings';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../../../lib/apps/getInstallationSourceFromAppStorageItem';
-import type { ILicenseV2, LicenseAppSources } from '../../definition/ILicenseV2';
 
 export async function isUnderAppLimits(licenseAppsConfig: NonNullable<ILicenseV2['apps']>, source: LicenseAppSources): Promise<boolean> {
 	const apps = await Apps.getApps({ enabled: true });
