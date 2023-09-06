@@ -20,7 +20,7 @@ export class IsolatedVMScriptEngine<IsIncoming extends boolean> extends Integrat
 	): Promise<any> {
 		return scriptReference.applySync(undefined, params, {
 			arguments: { copy: true },
-			result: { copy: true },
+			result: { copy: true, promise: true },
 		});
 	}
 

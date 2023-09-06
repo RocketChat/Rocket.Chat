@@ -12,6 +12,35 @@ export const getCompatibilityScript = (customScript?: string) => `
 		};
 	})();
 
+	const reproxy = (reference) => {
+		return new Proxy(reference, {
+			get(target, p, receiver) {
+				if (target !== reference || p === 'then') {
+					return Reflect.get(target, p, receiver);
+				}
+
+				const data = reference.get(p);
+
+				if (typeof data === 'object' && data instanceof ivm.Reference && data.typeof === 'function') {
+					return (...args) => data.apply(undefined, args, { arguments: { copy: true }, result: { promise: true } });
+				}
+
+				return data;
+			}
+		});
+	};
+
+	//url, options, allowSelfSignedCertificate
+	const fetch = async (...args) => {
+		const result = await serverFetch.apply(undefined, args, { arguments: { copy: true }, result: { promise: true } });
+
+		if (result && typeof result === 'object' && result.isProxy) {
+			return reproxy(result);
+		}
+
+		return result;
+	};
+
 	${customScript}
 
 	(function() {
