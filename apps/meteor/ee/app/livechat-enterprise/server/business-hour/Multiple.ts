@@ -318,11 +318,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		);
 
 		if (!departmentsWithActiveBH.length) {
-			bhLogger.debug({
-				msg: 'No opened business hour found for any of the departments connected to the agent',
-				agentId,
-			});
-
+			// No opened business hour found for any of the departments connected to the agent
 			// check if this agent has any departments that is connected to any non-default business hour
 			// if no such departments found then check default BH and if it is active, then allow the agent to change service status
 			const hasAtLeastOneDepartmentWithNonDefaultBH = departments.some(({ businessHourId }) => {
@@ -340,11 +336,11 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 					});
 					return;
 				}
-				bhLogger.debug({
-					msg: 'Business hour status recheck failed for agent',
-					agentId,
-				});
 			}
+			bhLogger.debug({
+				msg: 'Business hour status recheck failed for agent',
+				agentId,
+			});
 			return;
 		}
 
