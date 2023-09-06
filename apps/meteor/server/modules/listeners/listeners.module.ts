@@ -4,11 +4,11 @@ import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings } from '@rocket.chat/core-services';
 import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
 
 import type { NotificationsModule } from '../notifications/notifications.module';
 import { settings } from '../../../app/settings/server/cached';
+import { Logger } from '../../lib/logger/Logger';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
