@@ -269,6 +269,10 @@ const insertUserDocAsync = async function (options, user) {
 		globalRoles.push(...user.globalRoles);
 	}
 
+	if (options.roles) {
+		user.roles = [...new Set([...(user.roles || []), ...options.roles])];
+	}
+
 	delete user.globalRoles;
 
 	if (user.services && !user.services.password) {
