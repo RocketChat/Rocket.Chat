@@ -12,11 +12,6 @@ const roomTypeFilterStructure = [
 		isGroupTitle: true,
 	},
 	{
-		id: 'c',
-		text: 'Channels',
-		checked: false,
-	},
-	{
 		id: 'd',
 		text: 'Direct_Message',
 		checked: false,
@@ -37,13 +32,18 @@ const roomTypeFilterStructure = [
 		checked: false,
 	},
 	{
+		id: 'c',
+		text: 'Public Channels',
+		checked: false,
+	},
+	{
 		id: 'teams',
 		text: 'Teams',
 		checked: false,
 	},
 ] as OptionProp[];
 
-// Commented for now
+// TODO: Revisit the back-end of the rooms page in order for this filter to be possible
 // const roomVisibilityFilterStructure = [
 // 	{
 // 		id: 'filter_by_visibility',
