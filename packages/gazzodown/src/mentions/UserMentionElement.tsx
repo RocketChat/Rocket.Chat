@@ -11,7 +11,7 @@ const handleUserMention = (mention: string | undefined, withSymbol: boolean | un
 	withSymbol ? `@${mention}` : mention;
 
 const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement => {
-	const { resolveUserMention, onUserMentionClick, isMobile, ownUserId, useRealName, useMentionSymbols } =
+	const { resolveUserMention, onUserMentionClick, isMobile, ownUserId, useRealName, showMentionSymbol } =
 		useContext(MarkupInteractionContext);
 
 	const resolved = useMemo(() => resolveUserMention?.(mention), [mention, resolveUserMention]);
@@ -20,11 +20,11 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 	const showRealName = useRealName && !isMobile;
 
 	if (mention === 'all') {
-		return <Message.Highlight variant='relevant'>{handleUserMention('all', useMentionSymbols)}</Message.Highlight>;
+		return <Message.Highlight variant='relevant'>{handleUserMention('all', showMentionSymbol)}</Message.Highlight>;
 	}
 
 	if (mention === 'here') {
-		return <Message.Highlight variant='relevant'>{handleUserMention('here', useMentionSymbols)}</Message.Highlight>;
+		return <Message.Highlight variant='relevant'>{handleUserMention('here', showMentionSymbol)}</Message.Highlight>;
 	}
 
 	if (!resolved) {
@@ -39,7 +39,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 			onClick={handleClick}
 			data-uid={resolved._id}
 		>
-			{handleUserMention((showRealName ? resolved.name : resolved.username) ?? mention, useMentionSymbols)}
+			{handleUserMention((showRealName ? resolved.name : resolved.username) ?? mention, showMentionSymbol)}
 		</Message.Highlight>
 	);
 };

@@ -19,7 +19,7 @@ type MarkupInteractionContextValue = {
 	useRealName?: boolean;
 	isMobile?: boolean;
 	ownUserId?: string | null;
-	useMentionSymbols?: boolean;
+	showMentionSymbol?: boolean;
 };
 
 export const MarkupInteractionContext = createContext<MarkupInteractionContextValue>({});
