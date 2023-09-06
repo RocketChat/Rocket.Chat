@@ -1,13 +1,16 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Box } from '@rocket.chat/fuselage';
+import { FieldDescription, FieldLabel, Accordion, Field, Select, FieldGroup, ToggleSwitch, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 const PreferencesMessagesSection = () => {
 	const t = useTranslation();
 	const { control } = useFormContext();
+	const router = useRouter();
+
+	const handleGoToAccessibilityPage = () => router.navigate('/account/accessibility-and-appearance');
 
 	const alsoSendThreadMessageToChannelOptions = useMemo(
 		(): SelectOption[] => [
@@ -101,6 +104,12 @@ const PreferencesMessagesSection = () => {
 					</Field.Hint>
 				</Field>
 				<Field>
+					<FieldLabel>{t('Message_TimeFormat')}</FieldLabel>
+					<FieldDescription is='a' color='info' onClick={handleGoToAccessibilityPage}>
+						{t('Go_to_accessibility_and_appearance')}
+					</FieldDescription>
+				</Field>
+				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 						<Field.Label htmlFor={useEmojisId}>{t('Use_Emojis')}</Field.Label>
 						<Field.Row>
@@ -169,6 +178,18 @@ const PreferencesMessagesSection = () => {
 							/>
 						</Field.Row>
 					</Box>
+				</Field>
+				<Field>
+					<FieldLabel>{t('Hide_usernames')}</FieldLabel>
+					<FieldDescription is='a' color='info' onClick={handleGoToAccessibilityPage}>
+						{t('Go_to_accessibility_and_appearance')}
+					</FieldDescription>
+				</Field>
+				<Field>
+					<FieldLabel>{t('Hide_roles')}</FieldLabel>
+					<FieldDescription is='a' color='info' onClick={handleGoToAccessibilityPage}>
+						{t('Go_to_accessibility_and_appearance')}
+					</FieldDescription>
 				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>

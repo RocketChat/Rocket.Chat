@@ -2402,6 +2402,7 @@
   "Global_purge_override_warning": "A global retention policy is in place. If you leave \"Override global retention policy\" off, you can only apply a policy that is stricter than the global policy.",
   "Global_Search": "Global search",
   "Go_to_your_workspace": "Go to your workspace",
+  "Go_to_accessibility_and_appearance": "Go to accessibility and appearance",
   "Google_Meet_Enterprise_only": "Google Meet (Enterprise only)",
   "Google_Play": "Google Play",
   "Hold_Call": "Hold Call",
