@@ -3102,5 +3102,7 @@
   "registration.component.form.invalidConfirmPass": "تأییدیه رمز عبور با رمز عبور اصلی مطابقت ندارد.",
   "registration.component.form.confirmPassword": "رمز عبور خود را تأیید کنید",
   "registration.component.form.sendConfirmationEmail": "ارسال ایمیل تایید",
-  "RegisterWorkspace_Features_Omnichannel_Title": "کانال همه‌کاره"
+  "RegisterWorkspace_Features_Omnichannel_Title": "کانال همه‌کاره",
+  "Join_call": "به تماس بپیوندید.",
+  "video_livechat_started": "تماس تصویری آغاز شد."
 }
