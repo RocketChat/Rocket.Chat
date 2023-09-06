@@ -209,8 +209,11 @@ jobs:
           REPORTER_ROCKETCHAT_DRAFT: ${{ github.event.pull_request.draft }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
+          CI: true
         working-directory: ./apps/meteor
-        run: yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
+        run: |
+          yarn prepare
+          yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
