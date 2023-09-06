@@ -639,7 +639,6 @@
   "Apps_Manual_Update_Modal_Title": "This app is already installed",
   "Apps_Manual_Update_Modal_Body": "Do you want to update it?",
   "Apps_User_Already_Exists": "The username \"{{username}}\" is already being used. Rename or remove the user using it to install this App",
-
   "AutoLinker": "AutoLinker",
   "Apps_WhatIsIt": "Apps: What Are They?",
   "Apps_WhatIsIt_paragraph1": "A new icon in the administration area! What does this mean and what are Apps?",
@@ -5799,7 +5798,7 @@
   "registration.component.login": "Login",
   "registration.component.login.userNotFound": "User not found",
   "registration.component.login.incorrectPassword": "Incorrect password",
-  "registration.component.switchLanguage": "Switch to <1>en</1>",
+  "registration.component.switchLanguage": "Change to <1>{{name}}</1>",
   "registration.component.resetPassword": "Reset password",
   "registration.component.form.emailOrUsername": "Email or username",
   "registration.component.form.username": "Username",

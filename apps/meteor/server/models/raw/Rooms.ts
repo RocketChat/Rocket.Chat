@@ -1349,7 +1349,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			t: {
 				$in: types,
 			},
-			...(defaultValue ? { default: true } : { default: { $exists: false } }),
+			...(defaultValue ? { default: true } : { default: { $ne: true } }),
 		};
 
 		return this.find(query, options);
@@ -1708,8 +1708,32 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	unmuteUsernameByRoomId(_id: IRoom['_id'], username: IUser['username']): Promise<UpdateResult> {
+	muteReadOnlyUsernameByRoomId(_id: IRoom['_id'], username: IUser['username']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id, ro: true };
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				unmuted: username,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	unmuteMutedUsernameByRoomId(_id: IRoom['_id'], username: IUser['username']): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				muted: username,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	unmuteReadOnlyUsernameByRoomId(_id: string, username: string): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id, ro: true };
 
 		const update: UpdateFilter<IRoom> = {
 			$pull: {
@@ -1739,17 +1763,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	saveDefaultById(_id: IRoom['_id'], defaultValue: boolean): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
-		const update: UpdateFilter<IRoom> = defaultValue
-			? {
-					$set: {
-						default: true,
-					},
-			  }
-			: {
-					$unset: {
-						default: 1,
-					},
-			  };
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				default: defaultValue,
+			},
+		};
 
 		return this.updateOne(query, update);
 	}
