@@ -1,5 +1,7 @@
-import { PasswordPolicy } from './PasswordPolicyClass';
-import { PasswordPolicyError } from './PasswordPolicyError';
-import { hashLoginToken } from './hashLoginToken';
+import crypto from 'crypto';
 
-export { hashLoginToken, PasswordPolicyError, PasswordPolicy };
+export function hashLoginToken(loginToken: string): string {
+	const hash = crypto.createHash('sha256');
+	hash.update(loginToken);
+	return hash.digest('base64');
+}

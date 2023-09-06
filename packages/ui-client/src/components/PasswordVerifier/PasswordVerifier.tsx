@@ -22,11 +22,6 @@ export const PasswordVerifier = ({ password, id }: PasswordVerifierProps) => {
 
 	const passwordVerifications: PasswordVerificationProps = useVerifyPassword(password);
 
-	// TODO: how to implement the isLoading state with the new approach?
-	// if (isLoading) {
-	// 	return <Skeleton data-testid='password-verifier-skeleton' w='full' mbe={8} />;
-	// }
-
 	if (!passwordVerifications?.length) {
 		return null;
 	}

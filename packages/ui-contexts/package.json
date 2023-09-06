@@ -30,7 +30,7 @@
 		"use-sync-external-store": "^1.2.0"
 	},
 	"dependencies": {
-		"@rocket.chat/account-utils": "workspace:^"
+		"@rocket.chat/password-policies": "workspace:^"
 	},
 	"volta": {
 		"extends": "../../package.json"

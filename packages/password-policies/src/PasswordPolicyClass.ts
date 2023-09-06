@@ -1,10 +1,8 @@
-import generator from 'generate-password';
-
 import { PasswordPolicyError } from './PasswordPolicyError';
 
 type PasswordPolicyType = {
 	enabled: boolean;
-	policy: [string, options?: Record<string, unknown>][];
+	policy: [name: string, options?: Record<string, unknown>][];
 };
 export class PasswordPolicy {
 	regex: {
@@ -47,25 +45,24 @@ export class PasswordPolicy {
 		mustContainAtLeastOneSpecialCharacter = false,
 		throwError = true,
 	}) {
-		this.regex = {
-			forbiddingRepeatingCharacters: new RegExp('.*'),
-			mustContainAtLeastOneLowercase: new RegExp('[a-z]'),
-			mustContainAtLeastOneUppercase: new RegExp('[A-Z]'),
-			mustContainAtLeastOneNumber: new RegExp('[0-9]'),
-			mustContainAtLeastOneSpecialCharacter: new RegExp('[^A-Za-z0-9 ]'),
-		};
-
 		this.enabled = enabled;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
 		this.forbidRepeatingCharacters = forbidRepeatingCharacters;
 		this.forbidRepeatingCharactersCount = forbidRepeatingCharactersCount;
-		this.regex.forbiddingRepeatingCharacters = new RegExp(`(.)\\1{${this.forbidRepeatingCharactersCount},}`);
 		this.mustContainAtLeastOneLowercase = mustContainAtLeastOneLowercase;
 		this.mustContainAtLeastOneUppercase = mustContainAtLeastOneUppercase;
 		this.mustContainAtLeastOneNumber = mustContainAtLeastOneNumber;
 		this.mustContainAtLeastOneSpecialCharacter = mustContainAtLeastOneSpecialCharacter;
 		this.throwError = throwError;
+
+		this.regex = {
+			forbiddingRepeatingCharacters: new RegExp(`(.)\\1{${forbidRepeatingCharactersCount},}`),
+			mustContainAtLeastOneLowercase: new RegExp('[a-z]'),
+			mustContainAtLeastOneUppercase: new RegExp('[A-Z]'),
+			mustContainAtLeastOneNumber: new RegExp('[0-9]'),
+			mustContainAtLeastOneSpecialCharacter: new RegExp('[^A-Za-z0-9 ]'),
+		};
 	}
 
 	get passwordForbidRepeatingCharactersCount() {
@@ -108,7 +105,7 @@ export class PasswordPolicy {
 		if (this.minLength >= 1) {
 			validationReturn.push({
 				name: 'get-password-policy-minLength',
-				isValid: !!(password.length < this.minLength),
+				isValid: !(password.length < this.minLength),
 				limit: this.minLength,
 			});
 		}
@@ -116,7 +113,7 @@ export class PasswordPolicy {
 		if (this.maxLength >= 1) {
 			validationReturn.push({
 				name: 'get-password-policy-maxLength',
-				isValid: !!(password.length > this.maxLength),
+				isValid: !(password.length > this.maxLength),
 				limit: this.maxLength,
 			});
 		}
@@ -124,7 +121,7 @@ export class PasswordPolicy {
 		if (this.forbidRepeatingCharacters) {
 			validationReturn.push({
 				name: 'get-password-policy-forbidRepeatingCharactersCount',
-				isValid: this.regex.forbiddingRepeatingCharacters.test(password),
+				isValid: !this.regex.forbiddingRepeatingCharacters.test(password),
 				limit: this.forbidRepeatingCharactersCount,
 			});
 		}
@@ -269,28 +266,28 @@ export class PasswordPolicy {
 		return data;
 	}
 
-	generatePassword() {
-		if (this.enabled) {
-			for (let i = 0; i < 10; i++) {
-				const password = this._generatePassword();
-				if (this.validate(password)) {
-					return password;
-				}
-			}
-		}
+	// generatePassword() {
+	// 	if (this.enabled) {
+	// 		for (let i = 0; i < 10; i++) {
+	// 			const password = this._generatePassword();
+	// 			if (this.validate(password)) {
+	// 				return password;
+	// 			}
+	// 		}
+	// 	}
 
-		return generator.generate({ length: 17 });
-	}
+	// 	return generator.generate({ length: 17 });
+	// }
 
-	_generatePassword() {
-		const length = Math.min(Math.max(this.minLength, 12), this.maxLength > 0 ? this.maxLength : Number.MAX_SAFE_INTEGER);
-		return generator.generate({
-			length,
-			...(this.mustContainAtLeastOneNumber && { numbers: true }),
-			...(this.mustContainAtLeastOneSpecialCharacter && { symbols: true }),
-			...(this.mustContainAtLeastOneLowercase && { lowercase: true }),
-			...(this.mustContainAtLeastOneUppercase && { uppercase: true }),
-			strict: true,
-		});
-	}
+	// _generatePassword() {
+	// 	const length = Math.min(Math.max(this.minLength, 12), this.maxLength > 0 ? this.maxLength : Number.MAX_SAFE_INTEGER);
+	// 	return generator.generate({
+	// 		length,
+	// 		...(this.mustContainAtLeastOneNumber && { numbers: true }),
+	// 		...(this.mustContainAtLeastOneSpecialCharacter && { symbols: true }),
+	// 		...(this.mustContainAtLeastOneLowercase && { lowercase: true }),
+	// 		...(this.mustContainAtLeastOneUppercase && { uppercase: true }),
+	// 		strict: true,
+	// 	});
+	// }
 }

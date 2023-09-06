@@ -1,4 +1,4 @@
-import { PasswordPolicy } from '@rocket.chat/account-utils';
+import { PasswordPolicy } from '@rocket.chat/password-policies';
 
 import { settings } from '../../../settings/server';
 

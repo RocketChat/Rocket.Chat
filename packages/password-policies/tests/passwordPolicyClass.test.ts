@@ -172,24 +172,24 @@ describe('PasswordPolicy', () => {
 		});
 	});
 
-	describe('Password generator', () => {
-		it('should return a random password', () => {
-			const passwordPolicy = new PasswordPolicy({
-				enabled: true,
-				throwError: false,
-			});
+	// describe('Password generator', () => {
+	// 	it('should return a random password', () => {
+	// 		const passwordPolicy = new PasswordPolicy({
+	// 			enabled: true,
+	// 			throwError: false,
+	// 		});
 
-			expect(passwordPolicy.generatePassword()).to.not.be.undefined;
-		});
+	// 		expect(passwordPolicy.generatePassword()).to.not.be.undefined;
+	// 	});
 
-		it('should return a random password with 17 characters if the policy is disabled', () => {
-			const passwordPolicy = new PasswordPolicy({
-				enabled: false,
-			});
+	// 	it('should return a random password with 17 characters if the policy is disabled', () => {
+	// 		const passwordPolicy = new PasswordPolicy({
+	// 			enabled: false,
+	// 		});
 
-			expect(passwordPolicy.generatePassword().length).to.equal(17);
-		});
-	});
+	// 		expect(passwordPolicy.generatePassword().length).to.equal(17);
+	// 	});
+	// });
 
 	describe('Password Policy', () => {
 		it('should return a correct password policy', () => {
