@@ -2,11 +2,10 @@ import { EventEmitter } from 'events';
 
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { Apps } from '@rocket.chat/core-services';
+import type { ILicenseV2, ILicenseV2Tag } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
-import type { ILicenseV2 } from '../definition/ILicenseV2';
-import type { ILicenseV2Tag } from '../definition/ILicenseV2Tag';
 import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';

@@ -18,3 +18,5 @@ export interface ILicenseV2 {
 		maxMarketplaceApps: number;
 	};
 }
+
+export type LicenseAppSources = 'private' | 'marketplace';
