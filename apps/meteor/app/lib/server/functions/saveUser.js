@@ -280,6 +280,7 @@ const saveNewUser = async function (userData, sendPassword) {
 		joinDefaultChannels: userData.joinDefaultChannels,
 		isGuest,
 		globalRoles: roles,
+		skipNewUserRolesSetting: true,
 	};
 	if (userData.email) {
 		createUser.email = userData.email;

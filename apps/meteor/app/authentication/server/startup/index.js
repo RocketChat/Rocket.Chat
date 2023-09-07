@@ -285,7 +285,7 @@ const insertUserDocAsync = async function (options, user) {
 
 	globalRoles = [...globalRoles];
 
-	const roles = getNewUserRoles(globalRoles);
+	const roles = options.skipNewUserRolesSetting ? globalRoles : getNewUserRoles(globalRoles);
 
 	if (!user.type) {
 		user.type = 'user';
