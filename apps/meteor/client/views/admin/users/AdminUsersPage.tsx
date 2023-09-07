@@ -66,7 +66,7 @@ const UsersPage = (): ReactElement => {
 				</Page.Content>
 			</Page>
 			{context && (
-				<Contextualbar>
+				<Contextualbar is='aside' aria-labelledby=''>
 					<ContextualbarHeader>
 						<ContextualbarTitle>
 							{context === 'info' && t('User_Info')}
