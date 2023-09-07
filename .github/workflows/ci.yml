@@ -216,10 +216,10 @@ jobs:
       - name: Translation check
         run: yarn turbo run translation-check
 
-      - name: Reset Meteor
-        if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
-        working-directory: ./apps/meteor
-        run: meteor reset
+      # - name: Reset Meteor
+      #   if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
+      #   working-directory: ./apps/meteor
+      #   run: meteor reset
 
       - name: Build Rocket.Chat From Pull Request
         if: startsWith(github.ref, 'refs/pull/') == true
