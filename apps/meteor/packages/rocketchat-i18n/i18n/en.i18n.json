@@ -2073,6 +2073,7 @@
   "error-too-many-requests": "Error, too many requests. Please slow down. You must wait {{seconds}} seconds before trying again.",
   "error-transcript-already-requested": "Transcript already requested",
   "error-unpinning-message": "Message could not be unpinned",
+  "error-user-deactivated": "User is not active",
   "error-user-has-no-roles": "User has no roles",
   "error-user-is-not-activated": "User is not activated",
   "error-user-is-not-agent": "User is not an Omnichannel Agent",
