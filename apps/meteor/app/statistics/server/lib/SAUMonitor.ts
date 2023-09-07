@@ -46,7 +46,7 @@ export class SAUMonitorClass {
 	constructor() {
 		this._started = false;
 		this._dailyComputeJobName = 'aggregate-sessions';
-		this._dailyFinishSessionsJobName = 'aggregate-sessions';
+		this._dailyFinishSessionsJobName = 'finish-sessions';
 	}
 
 	async start(): Promise<void> {
