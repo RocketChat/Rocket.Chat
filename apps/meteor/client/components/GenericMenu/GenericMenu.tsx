@@ -43,8 +43,10 @@ const GenericMenu = ({ title, icon = 'menu', onAction, ...props }: GenericMenuPr
 	const handleItems = (items: GenericMenuItemProps[]) =>
 		hasIcon ? items.map((item) => ({ ...item, gap: !item.icon && !item.status })) : items;
 
+	const isButtonDisabled = sections && sections.length === 0;
+
 	return (
-		<>
+		<button disabled={isButtonDisabled}>
 			{sections && (
 				<MenuV2
 					icon={icon}
@@ -83,7 +85,7 @@ const GenericMenu = ({ title, icon = 'menu', onAction, ...props }: GenericMenuPr
 					))}
 				</MenuV2>
 			)}
-		</>
+		</button>
 	);
 };
 
