@@ -12,6 +12,8 @@ import Home from './actions/Home';
 import Login from './actions/Login';
 import Search from './actions/Search';
 import Sort from './actions/Sort';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 
 /**
  * @deprecated Feature preview
@@ -22,6 +24,10 @@ import Sort from './actions/Sort';
 const Header = (): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();
+	// console.log(user)
+
+	const isAdmin = user?.roles?.includes('admin');
+	// console.log(isAdmin);
 
 	return (
 		<Sidebar.TopBar.Section>
@@ -29,7 +35,7 @@ const Header = (): ReactElement => {
 			<Sidebar.TopBar.Actions>
 				<Home title={t('Home')} />
 				<Search title={t('Search')} />
-				{user && (
+				{user && isAdmin && (
 					<>
 						<Directory title={t('Directory')} />
 						<Sort title={t('Display')} />
