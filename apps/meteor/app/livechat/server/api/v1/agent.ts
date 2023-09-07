@@ -73,14 +73,19 @@ API.v1.addRoute(
 
 			const agentId = inputAgentId || this.userId;
 
-			const agent = await Users.findOneAgentById<Pick<ILivechatAgent, 'status' | 'statusLivechat'>>(agentId, {
+			const agent = await Users.findOneAgentById<Pick<ILivechatAgent, 'status' | 'statusLivechat' | 'active'>>(agentId, {
 				projection: {
 					status: 1,
 					statusLivechat: 1,
+					active: 1,
 				},
 			});
 			if (!agent) {
 				return API.v1.notFound('Agent not found');
+			}
+
+			if (!agent.active) {
+				return API.v1.failure('error-user-deactivated');
 			}
 
 			const newStatus: ILivechatAgentStatus =
