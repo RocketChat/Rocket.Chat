@@ -1,29 +1,22 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Box } from '@rocket.chat/fuselage';
+import { FieldDescription, FieldLabel, Accordion, Field, Select, FieldGroup, ToggleSwitch, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 const PreferencesMessagesSection = () => {
 	const t = useTranslation();
-	const displayRolesEnabled = useSetting('UI_DisplayRoles');
 	const { control } = useFormContext();
+	const router = useRouter();
+
+	const handleGoToAccessibilityPage = () => router.navigate('/account/accessibility-and-appearance');
 
 	const alsoSendThreadMessageToChannelOptions = useMemo(
 		(): SelectOption[] => [
 			['default', t('Selected_first_reply_unselected_following_replies')],
 			['always', t('Selected_by_default')],
 			['never', t('Unselected_by_default')],
-		],
-		[t],
-	);
-
-	const timeFormatOptions = useMemo(
-		(): SelectOption[] => [
-			['0', t('Default')], // TO DO: update SelectOption type to accept number as first item
-			['1', t('12_Hour')],
-			['2', t('24_Hour')],
 		],
 		[t],
 	);
@@ -40,14 +33,11 @@ const PreferencesMessagesSection = () => {
 	const unreadAlertId = useUniqueId();
 	const showThreadsInMainChannelId = useUniqueId();
 	const alsoSendThreadToChannelId = useUniqueId();
-	const clockModeId = useUniqueId();
 	const useEmojisId = useUniqueId();
 	const convertAsciiEmojiId = useUniqueId();
 	const autoImageLoadId = useUniqueId();
 	const saveMobileBandwidthId = useUniqueId();
 	const collapseMediaByDefaultId = useUniqueId();
-	const hideUsernamesId = useUniqueId();
-	const hideRolesId = useUniqueId();
 	const hideFlexTabId = useUniqueId();
 	const displayAvatarsId = useUniqueId();
 	const sendOnEnterId = useUniqueId();
@@ -114,16 +104,10 @@ const PreferencesMessagesSection = () => {
 					</Field.Hint>
 				</Field>
 				<Field>
-					<Field.Label htmlFor={clockModeId}>{t('Message_TimeFormat')}</Field.Label>
-					<Field.Row>
-						<Controller
-							name='clockMode'
-							control={control}
-							render={({ field: { value, onChange } }) => (
-								<Select id={clockModeId} value={`${value}`} onChange={onChange} options={timeFormatOptions} />
-							)}
-						/>
-					</Field.Row>
+					<FieldLabel>{t('Message_TimeFormat')}</FieldLabel>
+					<FieldDescription is='a' color='info' onClick={handleGoToAccessibilityPage}>
+						{t('Go_to_accessibility_and_appearance')}
+					</FieldDescription>
 				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
@@ -196,35 +180,17 @@ const PreferencesMessagesSection = () => {
 					</Box>
 				</Field>
 				<Field>
-					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label htmlFor={hideUsernamesId}>{t('Hide_usernames')}</Field.Label>
-						<Field.Row>
-							<Controller
-								name='hideUsernames'
-								control={control}
-								render={({ field: { value, onChange, ref } }) => (
-									<ToggleSwitch id={hideUsernamesId} ref={ref} checked={value} onChange={onChange} />
-								)}
-							/>
-						</Field.Row>
-					</Box>
+					<FieldLabel>{t('Hide_usernames')}</FieldLabel>
+					<FieldDescription is='a' color='info' onClick={handleGoToAccessibilityPage}>
+						{t('Go_to_accessibility_and_appearance')}
+					</FieldDescription>
 				</Field>
-				{displayRolesEnabled && (
-					<Field>
-						<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label htmlFor={hideRolesId}>{t('Hide_roles')}</Field.Label>
-							<Field.Row>
-								<Controller
-									name='hideRoles'
-									control={control}
-									render={({ field: { value, onChange, ref } }) => (
-										<ToggleSwitch id={hideRolesId} ref={ref} checked={value} onChange={onChange} />
-									)}
-								/>
-							</Field.Row>
-						</Box>
-					</Field>
-				)}
+				<Field>
+					<FieldLabel>{t('Hide_roles')}</FieldLabel>
+					<FieldDescription is='a' color='info' onClick={handleGoToAccessibilityPage}>
+						{t('Go_to_accessibility_and_appearance')}
+					</FieldDescription>
+				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 						<Field.Label htmlFor={hideFlexTabId}>{t('Hide_flextab')}</Field.Label>
