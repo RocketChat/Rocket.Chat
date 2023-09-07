@@ -277,7 +277,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		const openedBusinessHours = await filterBusinessHoursThatMustBeOpenedByDay(allActiveBusinessHoursForEntireWeek, day);
 		if (!openedBusinessHours.length) {
 			bhLogger.debug({
-				msg: 'Business hour status recheck failed for agent',
+				msg: 'Business hour status check failed for agent. No opened business hour found for the current day',
 				agentId,
 			});
 			return;
@@ -295,16 +295,17 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 				await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
 
 				bhLogger.debug({
-					msg: 'Business hour status recheck passed for agent',
+					msg: 'Business hour status check passed for agent. Found default business hour to be active',
 					agentId,
 				});
 				return;
 			}
 
 			bhLogger.debug({
-				msg: 'Business hour status recheck failed for agent',
+				msg: 'Business hour status check failed for agent. Found default business hour to be inactive',
 				agentId,
 			});
+			return;
 		}
 
 		// check if any one these departments have a opened business hour linked to it
@@ -331,14 +332,14 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 					await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
 
 					bhLogger.debug({
-						msg: 'Business hour status recheck passed for agentId',
+						msg: 'Business hour status check passed for agentId. Found default business hour to be active and agent has no departments with non-default business hours',
 						agentId,
 					});
 					return;
 				}
 			}
 			bhLogger.debug({
-				msg: 'Business hour status recheck failed for agent',
+				msg: 'Business hour status check failed for agent. No opened business hour found for any of the departments connected to the agent',
 				agentId,
 			});
 			return;
@@ -348,7 +349,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId(activeBusinessHoursForAgent, agentId);
 
 		bhLogger.debug({
-			msg: `Business hour status recheck passed for agent`,
+			msg: `Business hour status check passed for agent. Found opened business hour for departments connected to the agent`,
 			activeBusinessHoursForAgent,
 		});
 	}
