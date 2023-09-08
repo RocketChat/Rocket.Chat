@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IMessage, IDirectMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { ITypingDescriptor } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
@@ -17,7 +17,7 @@ export class AppMessageBridge extends MessageBridge {
 		super();
 	}
 
-	protected async create(message: IMessage, appId: string): Promise<string> {
+	protected async create(message: IMessage | IDirectMessage, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is creating a new message.`);
 
 		const convertedMessage = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
