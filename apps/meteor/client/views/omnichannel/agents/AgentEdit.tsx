@@ -2,8 +2,7 @@ import type { ILivechatAgent, ILivechatDepartment, ILivechatDepartmentAgents } f
 import { Field, TextInput, Button, Box, MultiSelect, Icon, Select, ContextualbarFooter, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { FC, ReactElement } from 'react';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, type FC } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
@@ -51,7 +50,6 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 		() => (userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []),
 		[userDepartments],
 	);
-	const eeForms = useFormsSubscription();
 
 	const saveRef = useRef({
 		values: {},
@@ -70,7 +68,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 		}
 	});
 
-	const { useMaxChatsPerAgent = (): ReactElement | null => null } = eeForms as any; // TODO: Find out how to use ts with eeForms
+	const { useMaxChatsPerAgent } = useFormsSubscription();
 
 	const { values, handlers, hasUnsavedChanges, commit } = useForm({
 		departments: initialDepartmentValue,
@@ -86,7 +84,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 		voipExtension: string;
 	};
 
-	const MaxChats = useMaxChatsPerAgent();
+	const MaxChats = useMaxChatsPerAgent?.();
 
 	const saveAgentInfo = useMethod('livechat:saveAgentInfo');
 	const saveAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
