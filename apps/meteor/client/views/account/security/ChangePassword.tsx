@@ -36,7 +36,6 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const handleSave = async ({ password }: { password?: string }) => {
 		try {
 			await updatePassword({ newPassword: password }, {});
-
 			dispatchToastMessage({ type: 'success', message: t('Password_changed_successfully') });
 			reset();
 		} catch (error) {
@@ -72,7 +71,6 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						/>
 					</FieldRow>
 					{!allowPasswordChange && <FieldHint id={`${passwordId}-hint`}>{t('Password_Change_Disabled')}</FieldHint>}
-
 					{errors?.password && (
 						<FieldError aria-live='assertive' id={`${passwordId}-error`}>
 							{errors.password.message}
