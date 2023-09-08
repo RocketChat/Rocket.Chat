@@ -1,5 +1,5 @@
 import type { ProgressStep } from '@rocket.chat/core-typings';
-import { Box, Margins, Throbber } from '@rocket.chat/fuselage';
+import { Box, Margins, ProgressBar, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -137,16 +137,14 @@ const ImportProgressPage = function ImportProgressPage() {
 	useEffect(() => {
 		return streamer('progress', (progress) => {
 			// There shouldn't be any progress update sending only the rate at this point of the process
-			if ('rate' in progress) {
-				return;
+			if (!('rate' in progress)) {
+				handleProgressUpdated({
+					key: progress.key,
+					step: progress.step,
+					completed: progress.count.completed,
+					total: progress.count.total,
+				});
 			}
-
-			handleProgressUpdated({
-				key: progress.key,
-				step: progress.step,
-				completed: progress.count.completed,
-				total: progress.count.total,
-			});
 		});
 	}, [handleProgressUpdated, streamer]);
 
@@ -167,11 +165,9 @@ const ImportProgressPage = function ImportProgressPage() {
 									{t((progress.data.step[0].toUpperCase() + progress.data.step.slice(1)) as any)}
 								</Box>
 								<Box display='flex' justifyContent='center'>
-									<Box is='progress' value={progress.data.completed} max={progress.data.total} marginInlineEnd={24} />
-									<Box is='span' fontScale='p2'>
-										{progress.data.completed}/{progress.data.total} (
-										{numberFormat((progress.data.completed / progress.data.total) * 100, 0)}
-										%)
+									<ProgressBar percentage={(progress.data.completed / progress.data.total) * 100} />
+									<Box is='span' fontScale='p2' mis={24}>
+										{numberFormat((progress.data.completed / progress.data.total) * 100, 0)}%
 									</Box>
 								</Box>
 							</>
