@@ -14,17 +14,17 @@ type GenericMenuCommonProps = {
 };
 type GenericMenuConditionalProps =
 	| {
-			sections?: {
-				title?: ReactNode;
-				items: GenericMenuItemProps[];
-				permission?: boolean | '' | 0 | null | undefined;
-			}[];
-			items?: never;
-	  }
+		sections?: {
+			title?: ReactNode;
+			items: GenericMenuItemProps[];
+			permission?: boolean | '' | 0 | null | undefined;
+		}[];
+		items?: never;
+	}
 	| {
-			items?: GenericMenuItemProps[];
-			sections?: never;
-	  };
+		items?: GenericMenuItemProps[];
+		sections?: never;
+	};
 
 type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof MenuV2>, 'children'>;
 
@@ -43,7 +43,7 @@ const GenericMenu = ({ title, icon = 'menu', onAction, ...props }: GenericMenuPr
 	const handleItems = (items: GenericMenuItemProps[]) =>
 		hasIcon ? items.map((item) => ({ ...item, gap: !item.icon && !item.status })) : items;
 
-	const isButtonDisabled = sections && sections.length === 0;
+	const isButtonDisabled = !(sections && sections.length > 0) && !(items && items.length > 0);
 
 	return (
 		<button disabled={isButtonDisabled}>
