@@ -14,17 +14,17 @@ type GenericMenuCommonProps = {
 };
 type GenericMenuConditionalProps =
 	| {
-		sections?: {
-			title?: ReactNode;
-			items: GenericMenuItemProps[];
-			permission?: boolean | '' | 0 | null | undefined;
-		}[];
-		items?: never;
-	}
+			sections?: {
+				title?: ReactNode;
+				items: GenericMenuItemProps[];
+				permission?: boolean | '' | 0 | null | undefined;
+			}[];
+			items?: never;
+	  }
 	| {
-		items?: GenericMenuItemProps[];
-		sections?: never;
-	};
+			items?: GenericMenuItemProps[];
+			sections?: never;
+	  };
 
 type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof MenuV2>, 'children'>;
 
