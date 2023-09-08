@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+import AxeBuilder from '@axe-core/playwright';
 import type { Locator, APIResponse, APIRequestContext } from '@playwright/test';
 import { test as baseTest, request as baseRequest } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
@@ -21,6 +22,7 @@ export type BaseTest = {
 		put(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
 		delete(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 	};
+	makeAxeBuilder: () => AxeBuilder;
 };
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -112,6 +114,12 @@ export const test = baseTest.extend<BaseTest>({
 			},
 		});
 	},
+	makeAxeBuilder: async ({ page }, use) => {
+		const SELECT_KNOW_ISSUES = ['aria-hidden-focus', 'nested-interactive']
+		
+    const makeAxeBuilder = () => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).include('body').disableRules([...SELECT_KNOW_ISSUES]);
+    await use(makeAxeBuilder);
+  }
 });
 
 export const { expect } = test;

@@ -337,6 +337,8 @@ jobs:
     uses: ./.github/workflows/ci-test-unit.yml
     with:
       node-version: ${{ needs.release-versions.outputs.node-version }}
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   test-api:
     name: 🔨 Test API (CE)
@@ -431,6 +433,7 @@ jobs:
       QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   tests-done:
     name: ✅ Tests Done
