@@ -238,7 +238,7 @@ export class Presence extends ServiceClass implements IPresence {
 			await Settings.updateValueById('Presence_broadcast_disabled', true);
 		} else {
 			const presenceBroadcastDisabled = await Settings.findOneById('Troubleshoot_Disable_Presence_Broadcast');
-			if (presenceBroadcastDisabled && presenceBroadcastDisabled.value === false) {
+			if (presenceBroadcastDisabled?.value === false) {
 				await this.toggleBroadcast(true);
 			}
 		}
