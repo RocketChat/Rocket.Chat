@@ -28,6 +28,7 @@ runs:
         path: /tmp/build
 
     - name: Unpack build
+      shell: bash
       run: |
         cd /tmp/build
         tar xzf Rocket.Chat.tar.gz
