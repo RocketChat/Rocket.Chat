@@ -145,7 +145,30 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           coverage: true
 
-  build-gh-docker:
+  build-prod:
+    name: 📦 Meteor Build - official
+    needs: [tests-done, release-versions, packages-build]
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Github Info
+        run: |
+          echo "GITHUB_ACTION: $GITHUB_ACTION"
+          echo "GITHUB_ACTOR: $GITHUB_ACTOR"
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
+          echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
+          echo "github.event_name: ${{ github.event_name }}"
+          cat $GITHUB_EVENT_PATH
+
+      - uses: actions/checkout@v3
+
+      - uses: ./.github/actions/meteor-build
+        with:
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+          coverage: false
+
+  build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
     needs: [build, release-versions]
     if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
@@ -165,56 +188,38 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+      - uses: ./.github/actions/build-docker
         with:
-          registry: ghcr.io
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
-      - name: Restore build
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-          path: /tmp/build
-
-      - name: Unpack build
-        run: |
-          cd /tmp/build
-          tar xzf Rocket.Chat.tar.gz
-          rm Rocket.Chat.tar.gz
-
-      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
-
-      - name: Setup NodeJS
-        uses: ./.github/actions/setup-node
-        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
-          cache-modules: true
-          install: true
 
-      - run: yarn build
+  build-gh-docker:
+    name: 🚢 Build Docker Images for Testing
+    needs: [tests-done, release-versions]
+    if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+    runs-on: ubuntu-20.04
 
-      - name: Build Docker images
-        run: |
-          args=(rocketchat)
+    env:
+      RC_DOCKERFILE: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
+      RC_DOCKER_TAG: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
+      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+      SERVICES_PUBLISH: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
 
-          if [[ '${{ matrix.platform }}' = 'alpine' ]]; then
-            args+=($SERVICES_PUBLISH)
-          fi;
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ['official', 'alpine']
 
-          docker compose -f docker-compose-ci.yml build "${args[@]}"
+    steps:
+      - uses: actions/checkout@v3
 
-      - name: Publish Docker images to GitHub Container Registry
-        run: |
-          args=(rocketchat)
-
-          if [[ '${{ matrix.platform }}' = 'alpine' ]]; then
-            args+=($SERVICES_PUBLISH)
-          fi;
-
-          docker compose -f docker-compose-ci.yml push "${args[@]}"
+      - uses: ./.github/actions/build-docker
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          node-version: ${{ needs.release-versions.outputs.node-version }}
 
       - name: Rename official Docker tag to GitHub Container Registry
         if: matrix.platform == 'official'
@@ -245,7 +250,7 @@ jobs:
 
   test-api:
     name: 🔨 Test API (CE)
-    needs: [checks, build-gh-docker, release-versions]
+    needs: [checks, build-gh-docker-coverage, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -264,7 +269,7 @@ jobs:
 
   test-ui:
     name: 🔨 Test UI (CE)
-    needs: [checks, build-gh-docker, release-versions]
+    needs: [checks, build-gh-docker-coverage, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -290,7 +295,7 @@ jobs:
 
   test-api-ee:
     name: 🔨 Test API (EE)
-    needs: [checks, build-gh-docker, release-versions]
+    needs: [checks, build-gh-docker-coverage, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -312,7 +317,7 @@ jobs:
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
-    needs: [checks, build-gh-docker, release-versions]
+    needs: [checks, build-gh-docker-coverage, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -352,7 +357,7 @@ jobs:
     name: 🚀 Publish build and update our registry
     runs-on: ubuntu-20.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    needs: [tests-done, release-versions]
+    needs: [build-gh-docker, release-versions]
 
     steps:
       - uses: actions/checkout@v3
