@@ -144,9 +144,9 @@ const dispatchWaitingQueueStatus = async (department?: string) => {
 // but we don't need to notify _each_ change that takes place, just their final position
 export const debouncedDispatchWaitingQueueStatus = memoizeDebounce(dispatchWaitingQueueStatus, 1200);
 
-export const setPredictedVisitorAbandonmentTime = async (room: IOmnichannelRoom) => {
+export const setPredictedVisitorAbandonmentTime = async (room: Pick<IOmnichannelRoom, '_id' | 'responseBy' | 'departmentId'>) => {
 	if (
-		!room.v?.lastMessageTs ||
+		!room.responseBy?.firstResponseTs ||
 		!settings.get('Livechat_abandoned_rooms_action') ||
 		settings.get('Livechat_abandoned_rooms_action') === 'none'
 	) {
@@ -164,7 +164,7 @@ export const setPredictedVisitorAbandonmentTime = async (room: IOmnichannelRoom)
 		return;
 	}
 
-	const willBeAbandonedAt = moment(room.v.lastMessageTs).add(Number(secondsToAdd), 'seconds').toDate();
+	const willBeAbandonedAt = moment(room.responseBy.firstResponseTs).add(Number(secondsToAdd), 'seconds').toDate();
 	await LivechatRooms.setPredictedVisitorAbandonmentByRoomId(room._id, willBeAbandonedAt);
 };
 
