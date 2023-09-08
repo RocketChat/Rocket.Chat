@@ -13,7 +13,7 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private broadcastEnabled = true;
 
-	private hasLicense?: boolean = undefined;
+	private hasLicense?: boolean;
 
 	private lostConTimeout?: NodeJS.Timeout;
 
