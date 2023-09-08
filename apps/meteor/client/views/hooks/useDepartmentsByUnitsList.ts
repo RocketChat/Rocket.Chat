@@ -45,7 +45,6 @@ export const useDepartmentsByUnitsList = (
 						name: department.archived ? `${name} [${t('Archived')}]` : name,
 						label: name,
 						value: _id,
-						...(_updatedAt && { _updatedAt: new Date(_updatedAt) }),
 					};
 				}),
 				itemCount: total,
