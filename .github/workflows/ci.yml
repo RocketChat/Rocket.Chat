@@ -148,6 +148,7 @@ jobs:
   build-prod:
     name: 📦 Meteor Build - official
     needs: [tests-done, release-versions, packages-build]
+    if: (github.event_name == 'release' || github.ref == 'refs/heads/develop')
     runs-on: ubuntu-20.04
 
     steps:
@@ -195,9 +196,8 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
 
   build-gh-docker:
-    name: 🚢 Build Docker Images for Testing
+    name: 🚢 Build Docker Images for Production
     needs: [build-prod, release-versions]
-    if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
     runs-on: ubuntu-20.04
 
     env:
