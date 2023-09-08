@@ -7,7 +7,6 @@ import {
 	MessageGenericPreviewDescription,
 } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React from 'react';
 
 import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';
@@ -16,7 +15,9 @@ import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
 import AttachmentSize from '../structure/AttachmentSize';
 
-export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
+type GenericFileAttachmentProps = MessageAttachmentBase;
+
+const GenericFileAttachment = ({
 	title,
 	description,
 	descriptionMd,
@@ -25,7 +26,7 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 	size,
 	format,
 	collapsed,
-}) => {
+}: GenericFileAttachmentProps) => {
 	const getURL = useMediaUrl();
 
 	return (
@@ -50,3 +51,5 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 		</>
 	);
 };
+
+export default GenericFileAttachment;
