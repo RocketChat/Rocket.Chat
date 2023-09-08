@@ -50,6 +50,7 @@ export type UsersSetPreferencesParamsPOST = {
 		omnichannelTranscriptEmail?: boolean;
 		omnichannelTranscriptPDF?: boolean;
 		enableMobileRinging?: boolean;
+		mentionsWithSymbol?: boolean;
 	};
 };
 
@@ -242,6 +243,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				enableMobileRinging: {
+					type: 'boolean',
+					nullable: true,
+				},
+				mentionsWithSymbol: {
 					type: 'boolean',
 					nullable: true,
 				},

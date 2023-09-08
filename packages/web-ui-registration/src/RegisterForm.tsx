@@ -34,8 +34,14 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	const passwordConfirmationPlaceholder = String(useSetting('Accounts_ConfirmPasswordPlaceholder'));
 
 	const formLabelId = useUniqueId();
-	const passwordId = useUniqueId();
 	const passwordVerifierId = useUniqueId();
+	const nameId = useUniqueId();
+	const emailId = useUniqueId();
+	const usernameId = useUniqueId();
+	const passwordId = useUniqueId();
+	const passwordConfirmationId = useUniqueId();
+	const reasonId = useUniqueId();
+
 	const registerUser = useRegisterMethod();
 	const customFields = useAccountsCustomFields();
 
@@ -54,7 +60,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		formState: { errors },
 	} = useForm<LoginRegisterPayload>({ mode: 'onBlur' });
 
-	const password = watch('password');
+	const { password } = watch();
 	const passwordIsValid = useValidatePassword(password);
 
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
@@ -103,8 +109,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			<Form.Container>
 				<FieldGroup>
 					<Field>
-						<Field.Label htmlFor='name'>
-							{requireNameForRegister ? `${t('registration.component.form.name')}*` : t('registration.component.form.nameOptional')}
+						<Field.Label required={requireNameForRegister} htmlFor={nameId}>
+							{t('registration.component.form.name')}
 						</Field.Label>
 						<Field.Row>
 							<TextInput
@@ -114,49 +120,68 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								error={errors.name && t('registration.component.form.requiredField')}
 								aria-invalid={errors.name ? 'true' : 'false'}
 								placeholder={t('onboarding.form.adminInfoForm.fields.fullName.placeholder')}
-								id='name'
+								aria-describedby={`${nameId}-error`}
+								id={nameId}
 							/>
 						</Field.Row>
-						{errors.name && <Field.Error>{t('registration.component.form.requiredField')}</Field.Error>}
+						{errors.name && (
+							<Field.Error aria-live='assertive' id={`${nameId}-error`}>
+								{t('registration.component.form.requiredField')}
+							</Field.Error>
+						)}
 					</Field>
 					<Field>
-						<Field.Label htmlFor='email'>{t('registration.component.form.email')}*</Field.Label>
+						<Field.Label required htmlFor={emailId}>
+							{t('registration.component.form.email')}
+						</Field.Label>
 						<Field.Row>
 							<TextInput
 								{...register('email', {
-									required: true,
+									required: t('registration.component.form.requiredField'),
 									pattern: {
 										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
 										message: t('registration.component.form.invalidEmail'),
 									},
 								})}
 								placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
-								error={errors.email && t('registration.component.form.invalidEmail')}
-								name='email'
-								aria-invalid={errors.email ? 'true' : undefined}
-								id='email'
+								error={errors?.email?.message}
+								aria-invalid={errors.email ? 'true' : 'false'}
+								aria-describedby={`${emailId}-error`}
+								id={emailId}
 							/>
 						</Field.Row>
-						{errors.email && <Field.Error>{errors.email.message || t('registration.component.form.requiredField')}</Field.Error>}
+						{errors.email && (
+							<Field.Error aria-live='assertive' id={`${emailId}-error`}>
+								{errors.email.message}
+							</Field.Error>
+						)}
 					</Field>
 					<Field>
-						<Field.Label htmlFor='username'>{t('registration.component.form.username')}*</Field.Label>
+						<Field.Label required htmlFor={usernameId}>
+							{t('registration.component.form.username')}
+						</Field.Label>
 						<Field.Row>
 							<TextInput
 								{...register('username', {
-									required: true,
+									required: t('registration.component.form.requiredField'),
 								})}
-								error={errors.username && (errors.username.message || t('registration.component.form.requiredField'))}
-								aria-invalid={errors.username ? 'true' : undefined}
-								id='username'
+								error={errors?.username?.message}
+								aria-invalid={errors.username ? 'true' : 'false'}
+								aria-describedby={`${usernameId}-error`}
+								id={usernameId}
 								placeholder='jon.doe'
 							/>
 						</Field.Row>
-						{errors.username?.message && <Field.Error>{errors.username.message}</Field.Error>}
-						{errors.username?.type === 'required' && <Field.Error>{t('registration.component.form.requiredField')}</Field.Error>}
+						{errors.username && (
+							<Field.Error aria-live='assertive' id={`${usernameId}-error`}>
+								{errors.username.message}
+							</Field.Error>
+						)}
 					</Field>
 					<Field>
-						<Field.Label htmlFor='password'>{t('registration.component.form.password')}*</Field.Label>
+						<Field.Label required htmlFor={passwordId}>
+							{t('registration.component.form.password')}
+						</Field.Label>
 						<Field.Row>
 							<PasswordInput
 								{...register('password', {
@@ -167,7 +192,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								aria-invalid={errors.password ? 'true' : undefined}
 								id={passwordId}
 								placeholder={passwordPlaceholder || t('Create_a_password')}
-								aria-describedby={passwordVerifierId}
+								aria-describedby={`${passwordVerifierId} ${passwordId}-error`}
 							/>
 						</Field.Row>
 						{errors?.password && (
@@ -176,43 +201,53 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							</Field.Error>
 						)}
 						<PasswordVerifier password={password} id={passwordVerifierId} />
-						{requiresPasswordConfirmation && (
+					</Field>
+					{requiresPasswordConfirmation && (
+						<Field>
+							<Field.Label htmlFor={passwordConfirmationId}>{t('registration.component.form.confirmPassword')}</Field.Label>
 							<Field.Row>
 								<PasswordInput
 									{...register('passwordConfirmation', {
-										required: true,
+										required: t('registration.component.form.requiredField'),
 										deps: ['password'],
-										validate: (val: string) => watch('password') === val,
+										validate: (val: string) => (watch('password') === val ? true : t('registration.component.form.invalidConfirmPass')),
 									})}
-									error={errors.passwordConfirmation?.type === 'validate' ? t('registration.component.form.invalidConfirmPass') : undefined}
-									aria-invalid={errors.passwordConfirmation ? 'true' : false}
-									id='passwordConfirmation'
+									error={errors.passwordConfirmation?.message}
+									aria-invalid={errors.passwordConfirmation ? 'true' : 'false'}
+									id={passwordConfirmationId}
+									aria-describedby={`${passwordConfirmationId}-error`}
 									placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
 									disabled={!passwordIsValid}
 								/>
 							</Field.Row>
-						)}
-						{errors.passwordConfirmation?.type === 'validate' && requiresPasswordConfirmation && (
-							<Field.Error>{t('registration.component.form.invalidConfirmPass')}</Field.Error>
-						)}
-						{errors.passwordConfirmation?.type === 'required' && requiresPasswordConfirmation && (
-							<Field.Error>{t('registration.component.form.requiredField')}</Field.Error>
-						)}
-					</Field>
+							{errors.passwordConfirmation && (
+								<Field.Error aria-live='assertive' id={`${passwordConfirmationId}-error`}>
+									{errors.passwordConfirmation.message}
+								</Field.Error>
+							)}
+						</Field>
+					)}
 					{manuallyApproveNewUsersRequired && (
 						<Field>
-							<Field.Label htmlFor='reason'>{t('registration.component.form.reasonToJoin')}*</Field.Label>
+							<Field.Label required htmlFor={reasonId}>
+								{t('registration.component.form.reasonToJoin')}
+							</Field.Label>
 							<Field.Row>
 								<TextAreaInput
 									{...register('reason', {
-										required: true,
+										required: t('registration.component.form.requiredField'),
 									})}
-									error={errors.reason && t('registration.component.form.requiredField')}
-									aria-invalid={errors.reason ? 'true' : undefined}
-									id='reason'
+									error={errors?.reason?.message}
+									aria-invalid={errors.reason ? 'true' : 'false'}
+									aria-describedby={`${reasonId}-error`}
+									id={reasonId}
 								/>
 							</Field.Row>
-							{errors.reason && <Field.Error>{t('registration.component.form.requiredField')}</Field.Error>}
+							{errors.reason && (
+								<Field.Error aria-live='assertive' id={`${reasonId}-error`}>
+									{t('registration.component.form.requiredField')}
+								</Field.Error>
+							)}
 						</Field>
 					)}
 					<CustomFieldsForm formName='customFields' formControl={control} metadata={customFields} />
