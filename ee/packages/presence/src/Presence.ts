@@ -233,6 +233,14 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private async validateAvailability(): Promise<void> {
 		if (this.hasLicense !== false) {
+			if (!this.broadcastEnabled) {
+				// broadcast should always be enabled if license is active (unless the troubleshoot setting is on)
+				const presenceBroadcastDisabled = await Settings.findOneById('Troubleshoot_Disable_Presence_Broadcast');
+				if (presenceBroadcastDisabled?.value === false) {
+					this.broadcastEnabled = true;
+					await this.toggleBroadcast(true);
+				}
+			}
 			return;
 		}
 
@@ -240,11 +248,6 @@ export class Presence extends ServiceClass implements IPresence {
 			this.broadcastEnabled = false;
 
 			await Settings.updateValueById('Presence_broadcast_disabled', true);
-		} else {
-			const presenceBroadcastDisabled = await Settings.findOneById('Troubleshoot_Disable_Presence_Broadcast');
-			if (presenceBroadcastDisabled?.value === false) {
-				await this.toggleBroadcast(true);
-			}
 		}
 	}
 
