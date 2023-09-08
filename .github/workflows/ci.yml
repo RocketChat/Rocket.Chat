@@ -196,7 +196,7 @@ jobs:
 
   build-gh-docker:
     name: 🚢 Build Docker Images for Testing
-    needs: [tests-done, release-versions]
+    needs: [build-prod, release-versions]
     if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
     runs-on: ubuntu-20.04
 
