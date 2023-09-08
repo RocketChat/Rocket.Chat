@@ -1,4 +1,5 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import { type IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
@@ -33,8 +34,11 @@ const handleAgentCreated = async (user: IUser) => {
 
 const handleDeactivateUser = async (user: IUser) => {
 	if (wasAgent(user)) {
-		callbackLogger.debug('Removing agent', user._id);
-		await Livechat.removeAgent(user.username);
+		callbackLogger.debug({
+			msg: 'Removing agent extension & making agent unavailable',
+			userId: user._id,
+		});
+		await Users.makeAgentUnavailableAndUnsetExtension(user._id);
 	}
 };
 
