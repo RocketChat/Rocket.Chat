@@ -4,19 +4,17 @@ import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, AllHTMLAttributes } from 'react';
 import React, { useRef } from 'react';
 
-import type { ChatAPI } from '../../../../../../lib/chats/ChatAPI';
 import { useChat } from '../../../../contexts/ChatContext';
 
 type FileUploadActionProps = {
 	collapsed?: boolean;
-	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
 } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
-const FileUploadAction = ({ collapsed, chatContext, disabled, ...props }: FileUploadActionProps) => {
+const FileUploadAction = ({ collapsed, disabled, ...props }: FileUploadActionProps) => {
 	const t = useTranslation();
 	const fileUploadEnabled = useSetting('FileUpload_Enabled');
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const chat = useChat() ?? chatContext;
+	const chat = useChat();
 
 	const handleUploadChange = async (e: ChangeEvent<HTMLInputElement>) => {
 		const { mime } = await import('../../../../../../../app/utils/lib/mimeTypes');
