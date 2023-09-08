@@ -184,9 +184,7 @@ const AppsPageContent = (): ReactElement => {
 				statusFilterOnSelected={statusFilterOnSelected}
 				context={context || 'explore'}
 			/>
-
 			{appsResult.phase === AsyncStatePhase.LOADING && <AppsPageContentSkeleton />}
-
 			{appsResult.phase === AsyncStatePhase.RESOLVED && noErrorsOcurred && (
 				<AppsPageContentBody
 					isMarketplace={isMarketplace}
@@ -200,13 +198,10 @@ const AppsPageContent = (): ReactElement => {
 					noErrorsOcurred={noErrorsOcurred}
 				/>
 			)}
-
 			{noAppRequests && <NoAppRequestsEmptyState />}
-
 			{noMarketplaceOrInstalledAppMatches && (
 				<NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={appsResult.value.shouldShowSearchText} text={text} />
 			)}
-
 			{noInstalledAppMatches && (
 				<NoInstalledAppMatchesEmptyState
 					shouldShowSearchText={appsResult.value.shouldShowSearchText}
