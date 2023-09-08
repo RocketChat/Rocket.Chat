@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { PasswordVerifierItem } from './PasswordVerifierItem';
 
 type PasswordVerifierProps = {
-	password: string;
+	password: string | undefined;
 	id?: string;
 };
 
@@ -20,7 +20,7 @@ export const PasswordVerifier = ({ password, id }: PasswordVerifierProps) => {
 	const { t } = useTranslation();
 	const uniqueId = useUniqueId();
 
-	const passwordVerifications: PasswordVerificationProps = useVerifyPassword(password);
+	const passwordVerifications: PasswordVerificationProps = useVerifyPassword(password || '');
 
 	if (!passwordVerifications?.length) {
 		return null;
