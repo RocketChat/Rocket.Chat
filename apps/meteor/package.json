@@ -161,6 +161,7 @@
 		"autoprefixer": "^9.8.8",
 		"babel-loader": "^8.3.0",
 		"babel-plugin-array-includes": "^2.0.3",
+		"babel-plugin-istanbul": "^6.1.1",
 		"chai": "^4.3.7",
 		"chai-as-promised": "^7.1.1",
 		"chai-datetime": "^1.8.0",

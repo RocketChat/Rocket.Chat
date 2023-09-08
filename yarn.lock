@@ -8675,6 +8675,7 @@ __metadata:
     aws-sdk: ^2.1363.0
     babel-loader: ^8.3.0
     babel-plugin-array-includes: ^2.0.3
+    babel-plugin-istanbul: ^6.1.1
     bad-words: ^3.0.4
     bcrypt: ^5.0.1
     body-parser: 1.20.2
