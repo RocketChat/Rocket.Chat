@@ -43,8 +43,10 @@ runs:
         install: true
 
     - run: yarn build
+      shell: bash
 
     - name: Build Docker images
+      shell: bash
       run: |
         args=(rocketchat)
 
@@ -55,6 +57,7 @@ runs:
         docker compose -f docker-compose-ci.yml build "${args[@]}"
 
     - name: Publish Docker images to GitHub Container Registry
+      shell: bash
       run: |
         args=(rocketchat)
 
