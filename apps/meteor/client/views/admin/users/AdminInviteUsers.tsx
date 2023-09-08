@@ -10,31 +10,39 @@ import {
 	TextAreaInput,
 } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ChangeEvent, ComponentProps } from 'react';
+import type { ChangeEvent } from 'react';
 import React, { useCallback, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
+import { ContextualbarScrollableContent, ContextualbarFooter, ContextualbarContent } from '../../../components/Contextualbar';
+import { FormSkeleton } from '../../../components/Skeleton';
 import { useSendInvitationEmailMutation } from './hooks/useSendInvitationEmailMutation';
-import { useSmtpConfig } from './hooks/useSmtpConfig';
+import { useSmtpQuery } from './hooks/useSmtpQuery';
 
-type InviteUsersProps = ComponentProps<typeof ContextualbarScrollableContent>;
-
-const InviteUsers = (props: InviteUsersProps): ReactElement => {
+// TODO: Replace using RHF
+const AdminInviteUsers = () => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
 	const getEmails = useCallback((text) => text.split(/[\ ,;]+/i).filter((val: string) => validateEmail(val)), []);
 	const adminRouter = useRoute('admin-settings');
 	const sendInvitationMutation = useSendInvitationEmailMutation();
-	const isSmtpEnabled = useSmtpConfig();
+	const { data, isLoading } = useSmtpQuery();
 
 	const handleClick = () => {
 		sendInvitationMutation.mutate({ emails: getEmails(text) });
 	};
 
-	if (!isSmtpEnabled) {
+	if (isLoading) {
 		return (
-			<ContextualbarScrollableContent {...props} color='default'>
+			<ContextualbarContent>
+				<FormSkeleton />
+			</ContextualbarContent>
+		);
+	}
+
+	if (!data?.isSMTPConfigured) {
+		return (
+			<ContextualbarScrollableContent>
 				<States>
 					<StatesTitle>{t('SMTP_Server_Not_Setup_Title')}</StatesTitle>
 					<StatesSubtitle>{t('SMTP_Server_Not_Setup_Description')}</StatesSubtitle>
@@ -50,7 +58,7 @@ const InviteUsers = (props: InviteUsersProps): ReactElement => {
 
 	return (
 		<>
-			<ContextualbarScrollableContent {...props} color='default'>
+			<ContextualbarScrollableContent>
 				<Box is='h2' fontScale='h2' mb={8}>
 					{t('Send_invitation_email')}
 				</Box>
@@ -70,4 +78,4 @@ const InviteUsers = (props: InviteUsersProps): ReactElement => {
 	);
 };
 
-export default InviteUsers;
+export default AdminInviteUsers;

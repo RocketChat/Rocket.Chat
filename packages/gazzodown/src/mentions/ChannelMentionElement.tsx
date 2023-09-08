@@ -7,8 +7,10 @@ type ChannelMentionElementProps = {
 	mention: string;
 };
 
+const handleChannelMention = (mention: string, withSymbol: boolean | undefined): string => (withSymbol ? `#${mention}` : mention);
+
 const ChannelMentionElement = ({ mention }: ChannelMentionElementProps): ReactElement => {
-	const { resolveChannelMention, onChannelMentionClick } = useContext(MarkupInteractionContext);
+	const { resolveChannelMention, onChannelMentionClick, showMentionSymbol } = useContext(MarkupInteractionContext);
 
 	const resolved = useMemo(() => resolveChannelMention?.(mention), [mention, resolveChannelMention]);
 	const handleClick = useMemo(() => (resolved ? onChannelMentionClick?.(resolved) : undefined), [resolved, onChannelMentionClick]);
@@ -19,7 +21,7 @@ const ChannelMentionElement = ({ mention }: ChannelMentionElementProps): ReactEl
 
 	return (
 		<Message.Highlight variant='link' clickable onClick={handleClick}>
-			{resolved.name ?? mention}
+			{handleChannelMention(resolved.name ?? mention, showMentionSymbol)}
 		</Message.Highlight>
 	);
 };
