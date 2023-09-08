@@ -237,7 +237,6 @@ export class Presence extends ServiceClass implements IPresence {
 				// broadcast should always be enabled if license is active (unless the troubleshoot setting is on)
 				const presenceBroadcastDisabled = await Settings.findOneById('Troubleshoot_Disable_Presence_Broadcast');
 				if (presenceBroadcastDisabled?.value === false) {
-					this.broadcastEnabled = true;
 					await this.toggleBroadcast(true);
 				}
 			}
