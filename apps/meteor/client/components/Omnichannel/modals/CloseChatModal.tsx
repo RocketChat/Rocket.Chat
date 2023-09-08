@@ -1,4 +1,4 @@
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldGroup, Button, TextInput, Modal, Box, CheckBox, Divider, EmailInput } from '@rocket.chat/fuselage';
 import { usePermission, useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -16,7 +16,7 @@ const CloseChatModal = ({
 	onCancel,
 	onConfirm,
 }: {
-	department?: ILivechatDepartment | null;
+	department?: Serialized<ILivechatDepartment | null>;
 	visitorEmail?: string;
 	onCancel: () => void;
 	onConfirm: (
