@@ -28,12 +28,12 @@ const roomTypeFilterStructure = [
 	},
 	{
 		id: 'p',
-		text: 'Private_channels',
+		text: 'Private_Channels',
 		checked: false,
 	},
 	{
 		id: 'c',
-		text: 'Public_channels',
+		text: 'Public_Channels',
 		checked: false,
 	},
 	{
