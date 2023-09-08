@@ -11,5 +11,6 @@ export const callout: readonly LayoutBlock[] = [
       type: 'plain_text',
       text: 'Callout Text',
     },
+    icon: 'rocket',
   },
 ];
