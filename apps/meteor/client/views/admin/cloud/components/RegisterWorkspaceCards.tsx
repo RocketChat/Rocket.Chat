@@ -12,7 +12,7 @@ const RegisterWorkspaceCards = () => {
 			{bulletFeatures.map((card) => (
 				<Grid.Item key={card.key} xs={4} sm={4} md={4} lg={4} xl={3}>
 					<Card>
-						<CardTitle>{CardTitle}</CardTitle>
+						<CardTitle>{card.title}</CardTitle>
 						<CardBody height='x88'>{card.description}</CardBody>
 					</Card>
 				</Grid.Item>
