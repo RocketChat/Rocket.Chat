@@ -232,18 +232,14 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	private async validateAvailability(): Promise<void> {
-		if (this.hasLicense !== false) {
-			return;
-		}
-
 		if (this.getTotalConnections() > MAX_CONNECTIONS) {
 			this.broadcastEnabled = false;
 
 			await Settings.updateValueById('Presence_broadcast_disabled', true);
 		} else {
 			const presenceBroadcastDisabled = await Settings.findOneById('Troubleshoot_Disable_Presence_Broadcast');
-			if (presenceBroadcastDisabled) {
-				await this.toggleBroadcast(!presenceBroadcastDisabled.value);
+			if (presenceBroadcastDisabled && presenceBroadcastDisabled.value === false) {
+				await this.toggleBroadcast(true);
 			}
 		}
 	}
