@@ -22,7 +22,6 @@ import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 import type { AccountProfileFormValues } from './getProfileInitialValues';
-import { getProfileInitialValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactElement => {
@@ -48,7 +47,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	const {
 		control,
 		watch,
-		reset,
 		handleSubmit,
 		formState: { errors },
 	} = useFormContext<AccountProfileFormValues>();
@@ -109,7 +107,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 
 			await updateAvatar();
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
-			reset(getProfileInitialValues(user));
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
