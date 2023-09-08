@@ -476,7 +476,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 							/>
 						)}
 					</Field>
-					{customFieldsMetadata && (
+					{Boolean(customFieldsMetadata.length) && (
 						<>
 							<Divider />
 							<Box fontScale='h4'>{t('Custom_Fields')}</Box>
