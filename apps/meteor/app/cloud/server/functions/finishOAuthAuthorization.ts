@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
 import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { Meteor } from 'meteor/meteor';
 
-import { getRedirectUri } from './getRedirectUri';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { userScopes } from '../oauthScopes';
-import { SystemLogger } from '../../../../server/lib/logger/system';
+import { getRedirectUri } from './getRedirectUri';
 
 export async function finishOAuthAuthorization(code: string, state: string) {
 	if (settings.get<string>('Cloud_Workspace_Registration_State') !== state) {

@@ -1,11 +1,11 @@
 import { Roles, Users } from '@rocket.chat/models';
 
-import { onLicense } from '../../app/license/server';
 import type { ISAMLUser } from '../../../app/meteor-accounts-saml/server/definition/ISAMLUser';
 import { SAMLUtils } from '../../../app/meteor-accounts-saml/server/lib/Utils';
 import { settings } from '../../../app/settings/server';
-import { addSettings } from '../settings/saml';
 import { ensureArray } from '../../../lib/utils/arrayUtils';
+import { onLicense } from '../../app/license/server';
+import { addSettings } from '../settings/saml';
 
 await onLicense('saml-enterprise', () => {
 	SAMLUtils.events.on('mapUser', async ({ profile, userObject }: { profile: Record<string, any>; userObject: ISAMLUser }) => {

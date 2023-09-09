@@ -78,7 +78,6 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 			return users;
 		},
 		{
-			refetchOnWindowFocus: false,
 			onError: (error) => {
 				dispatchToastMessage({ type: 'error', message: error });
 			},

@@ -1,10 +1,9 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import Page from '../../../components/Page';
+import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 import ManualWorkspaceRegistrationModal from './ManualWorkspaceRegistrationModal';
 import RegisterWorkspaceCards from './components/RegisterWorkspaceCards';
 import RegisterWorkspaceMenu from './components/RegisterWorkspaceMenu';
@@ -15,30 +14,28 @@ const RegisterWorkspace = () => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
-	const checkCloudRegisterStatus = useMethod('cloud:checkRegisterStatus');
-	const result = useQuery(['admin/cloud/register-status'], async () => checkCloudRegisterStatus());
-	const reload = useMutableCallback(() => result.refetch());
+	const { data: registrationStatusData, isLoading, isError, refetch } = useRegistrationStatus();
+	const isWorkspaceRegistered = registrationStatusData?.registrationStatus?.workspaceRegistered ?? false;
+	const isConnectedToCloud = registrationStatusData?.registrationStatus?.connectToCloud ?? false;
 
-	if (result.isLoading || result.isError) {
+	if (isLoading || isError) {
 		return null;
 	}
-
-	const { connectToCloud: isConnectedToCloud, workspaceRegistered: isWorkspaceRegistered } = result.data;
 
 	const handleRegisterWorkspaceClick = (): void => {
 		const handleModalClose = (): void => {
 			setModal(null);
-			reload();
+			refetch();
 		};
 		if (isWorkspaceRegistered) {
-			setModal(<ConnectWorkspaceModal onClose={handleModalClose} onStatusChange={reload} />);
-		} else setModal(<RegisterWorkspaceModal onClose={handleModalClose} onStatusChange={reload} />);
+			setModal(<ConnectWorkspaceModal onClose={handleModalClose} onStatusChange={refetch} />);
+		} else setModal(<RegisterWorkspaceModal onClose={handleModalClose} onStatusChange={refetch} />);
 	};
 
 	const handleManualWorkspaceRegistrationButton = (): void => {
 		const handleModalClose = (): void => {
 			setModal(null);
-			reload();
+			refetch();
 		};
 		setModal(<ManualWorkspaceRegistrationModal onClose={handleModalClose} />);
 	};
@@ -70,7 +67,7 @@ const RegisterWorkspace = () => {
 					isWorkspaceRegistered={isWorkspaceRegistered}
 					isConnectedToCloud={isConnectedToCloud}
 					onClick={handleRegisterWorkspaceClick}
-					onStatusChange={reload}
+					onStatusChange={refetch}
 					onClickOfflineRegistration={handleManualWorkspaceRegistrationButton}
 				/>
 			</Page.Header>

@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import { Random } from '@rocket.chat/random';
-import objectPath from 'object-path';
 import { Messages } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { Meteor } from 'meteor/meteor';
+import objectPath from 'object-path';
 
-import { slashCommands } from '../../../utils/server';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { slashCommands } from '../../../utils/server/slashCommand';
 import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';

@@ -1,13 +1,13 @@
-import type { IconProps } from '@rocket.chat/fuselage';
 import { Sidebar, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { VFC } from 'react';
 import React, { memo, useState } from 'react';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
 type ExtendedProps = {
-	icon?: IconProps['name'];
+	icon?: IconName;
 	title?: React.ReactNode;
 	avatar?: React.ReactNode | boolean;
 	actions?: React.ReactNode;
@@ -78,7 +78,11 @@ const Extended: VFC<ExtendedProps> = ({
 					</Sidebar.Item.Wrapper>
 				</Sidebar.Item.Content>
 			</Sidebar.Item.Content>
-			{actions && <Sidebar.Item.Container>{<Sidebar.Item.Actions>{actions}</Sidebar.Item.Actions>}</Sidebar.Item.Container>}
+			{actions && (
+				<Sidebar.Item.Container>
+					<Sidebar.Item.Actions>{actions}</Sidebar.Item.Actions>
+				</Sidebar.Item.Container>
+			)}
 		</Sidebar.Item>
 	);
 };

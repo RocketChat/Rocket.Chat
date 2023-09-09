@@ -1,5 +1,5 @@
-import React from 'react';
 import { OptionColumn, OptionContent, OptionDescription, OptionInput } from '@rocket.chat/fuselage';
+import React from 'react';
 
 export type ComposerBoxPopupSlashCommandProps = {
 	_id: string;

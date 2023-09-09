@@ -1,24 +1,23 @@
+import type { IMessage, IDirectMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { ITypingDescriptor } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
 import { MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { api } from '@rocket.chat/core-services';
 import { Users, Subscriptions, Messages } from '@rocket.chat/models';
 
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import notifications from '../../../notifications/server/lib/Notifications';
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
-import { deleteMessage } from '../../../lib/server';
 
 export class AppMessageBridge extends MessageBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}
 
-	protected async create(message: IMessage, appId: string): Promise<string> {
+	protected async create(message: IMessage | IDirectMessage, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is creating a new message.`);
 
 		const convertedMessage = await this.orch.getConverters()?.get('messages').convertAppMessage(message);

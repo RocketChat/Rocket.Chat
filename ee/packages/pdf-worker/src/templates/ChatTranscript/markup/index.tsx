@@ -1,12 +1,12 @@
-import type * as MessageParser from '@rocket.chat/message-parser';
 import { View } from '@react-pdf/renderer';
+import type * as MessageParser from '@rocket.chat/message-parser';
 
+import BigEmojiBlock from './blocks/BigEmojiBlock';
+import CodeBlock from './blocks/CodeBlock';
 import HeadingBlock from './blocks/HeadingBlock';
 import OrderedListBlock from './blocks/OrderedListBlock';
 import ParagraphBlock from './blocks/ParagraphBlock';
 import UnorderedListBlock from './blocks/UnorderedListBlock';
-import BigEmojiBlock from './blocks/BigEmojiBlock';
-import CodeBlock from './blocks/CodeBlock';
 
 type MarkupProps = {
 	tokens: MessageParser.Root;

@@ -55,17 +55,36 @@ const AppsPageContent = (): ReactElement => {
 	});
 	const statusFilterOnSelected = useRadioToggle(setStatusFilterStructure);
 
-	const [sortFilterStructure, setSortFilterStructure] = useState<RadioDropDownGroup>({
-		label: t('Sort_By'),
-		items: [
-			{ id: 'urf', label: t('Unread_Requested_First'), checked: false },
-			{ id: 'url', label: t('Unread_Requested_Last'), checked: false },
-			{ id: 'az', label: 'A-Z', checked: false },
-			{ id: 'za', label: 'Z-A', checked: false },
-			{ id: 'mru', label: t('Most_recent_updated'), checked: true },
-			{ id: 'lru', label: t('Least_recent_updated'), checked: false },
-		],
+	const baseFilterStructureItems = [
+		{ id: 'az', label: 'A-Z', checked: false },
+		{ id: 'za', label: 'Z-A', checked: false },
+		{ id: 'mru', label: t('Most_recent_updated'), checked: true },
+		{ id: 'lru', label: t('Least_recent_updated'), checked: false },
+	];
+
+	const requestedFilterItems = [
+		{ id: 'urf', label: t('Unread_Requested_First'), checked: false },
+		{ id: 'url', label: t('Unread_Requested_Last'), checked: false },
+	];
+
+	const createFilterStructureItems = () => {
+		return isRequested ? [...requestedFilterItems, ...baseFilterStructureItems] : baseFilterStructureItems;
+	};
+
+	const [sortFilterStructure, setSortFilterStructure] = useState<RadioDropDownGroup>(() => {
+		return {
+			label: t('Sort_By'),
+			items: createFilterStructureItems(),
+		};
 	});
+
+	useEffect(() => {
+		setSortFilterStructure({
+			label: t('Sort_By'),
+			items: createFilterStructureItems(),
+		});
+	}, [isRequested]);
+
 	const sortFilterOnSelected = useRadioToggle(setSortFilterStructure);
 
 	const getAppsData = useCallback((): appsDataType => {
@@ -165,9 +184,7 @@ const AppsPageContent = (): ReactElement => {
 				statusFilterOnSelected={statusFilterOnSelected}
 				context={context || 'explore'}
 			/>
-
 			{appsResult.phase === AsyncStatePhase.LOADING && <AppsPageContentSkeleton />}
-
 			{appsResult.phase === AsyncStatePhase.RESOLVED && noErrorsOcurred && (
 				<AppsPageContentBody
 					isMarketplace={isMarketplace}
@@ -181,13 +198,10 @@ const AppsPageContent = (): ReactElement => {
 					noErrorsOcurred={noErrorsOcurred}
 				/>
 			)}
-
 			{noAppRequests && <NoAppRequestsEmptyState />}
-
 			{noMarketplaceOrInstalledAppMatches && (
 				<NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={appsResult.value.shouldShowSearchText} text={text} />
 			)}
-
 			{noInstalledAppMatches && (
 				<NoInstalledAppMatchesEmptyState
 					shouldShowSearchText={appsResult.value.shouldShowSearchText}

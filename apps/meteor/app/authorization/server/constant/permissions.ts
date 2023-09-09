@@ -69,6 +69,8 @@ export const permissions = [
 	{ _id: 'view-c-room', roles: ['admin', 'user', 'bot', 'app', 'anonymous'] },
 	{ _id: 'user-generate-access-token', roles: ['admin'] },
 	{ _id: 'view-d-room', roles: ['admin', 'user', 'bot', 'app', 'guest'] },
+	{ _id: 'view-device-management', roles: ['admin'] },
+	{ _id: 'view-engagement-dashboard', roles: ['admin'] },
 	{ _id: 'view-full-other-user-info', roles: ['admin'] },
 	{ _id: 'view-history', roles: ['admin', 'user', 'anonymous'] },
 	{ _id: 'view-joined-room', roles: ['guest', 'bot', 'app', 'anonymous'] },

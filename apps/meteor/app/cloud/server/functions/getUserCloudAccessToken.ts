@@ -1,14 +1,14 @@
-import { Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { getRedirectUri } from './getRedirectUri';
-import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
-import { userLoggedOut } from './userLoggedOut';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { userScopes } from '../oauthScopes';
-import { SystemLogger } from '../../../../server/lib/logger/system';
+import { getRedirectUri } from './getRedirectUri';
+import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
+import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+import { userLoggedOut } from './userLoggedOut';
 
 export async function getUserCloudAccessToken(userId: string, forceNew = false, scope = '', save = true) {
 	const { connectToCloud, workspaceRegistered } = await retrieveRegistrationStatus();

@@ -1,9 +1,11 @@
-import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 import { throttle } from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
+import { i18n } from '../../../server/lib/i18n';
+import { validateUserRoles } from '../../app/authorization/server/validateUserRoles';
 import { canAddNewUser, getMaxActiveUsers, onValidateLicenses } from '../../app/license/server/license';
 import {
 	createSeatsLimitBanners,
@@ -12,8 +14,6 @@ import {
 	enableDangerBanner,
 	enableWarningBanner,
 } from '../../app/license/server/maxSeatsBanners';
-import { validateUserRoles } from '../../app/authorization/server/validateUserRoles';
-import { i18n } from '../../../server/lib/i18n';
 
 callbacks.add(
 	'onCreateUser',
@@ -23,6 +23,17 @@ callbacks.add(
 		}
 
 		if (!(await canAddNewUser())) {
+			throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
+		}
+	},
+	callbacks.priority.MEDIUM,
+	'check-max-user-seats',
+);
+
+callbacks.add(
+	'beforeUserImport',
+	async ({ userCount }) => {
+		if (!(await canAddNewUser(userCount))) {
 			throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 		}
 	},
@@ -118,6 +129,8 @@ callbacks.add('afterDeleteUser', handleMaxSeatsBanners, callbacks.priority.MEDIU
 callbacks.add('afterDeactivateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
 callbacks.add('afterActivateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
+
+callbacks.add('afterUserImport', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
 Meteor.startup(async () => {
 	await createSeatsLimitBanners();

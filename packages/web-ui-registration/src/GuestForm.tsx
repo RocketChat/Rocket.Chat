@@ -1,5 +1,5 @@
-import { Form } from '@rocket.chat/layout';
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Form } from '@rocket.chat/layout';
 import { useTranslation } from 'react-i18next';
 
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';

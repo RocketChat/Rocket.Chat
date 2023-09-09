@@ -1,10 +1,10 @@
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 
 import { API } from '../../../../../app/api/server';
-import type { AppsRestApi } from '../rest';
-import { getAppsConfig } from '../../../../app/license/server/license';
 import type { SuccessResult } from '../../../../../app/api/server/definition';
 import { getInstallationSourceFromAppStorageItem } from '../../../../../lib/apps/getInstallationSourceFromAppStorageItem';
+import { getAppsConfig } from '../../../../app/license/server/license';
+import type { AppsRestApi } from '../rest';
 
 type AppsCountResult = {
 	totalMarketplaceEnabled: number;

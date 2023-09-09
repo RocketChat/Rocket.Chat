@@ -1,25 +1,27 @@
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
-import _ from 'underscore';
-import Gravatar from 'gravatar';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import Gravatar from 'gravatar';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
-import * as Mailer from '../../../mailer/server/api';
+import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
+import { callbacks } from '../../../../lib/callbacks';
+import { trim } from '../../../../lib/utils/stringUtils';
+import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { getRoles } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { passwordPolicy } from '../lib/passwordPolicy';
-import { validateEmailDomain } from '../lib';
-import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
-import { saveUserIdentity } from './saveUserIdentity';
-import { checkEmailAvailability, setUserAvatar, setEmail } from '.';
-import { setStatusText } from './setStatusText';
-import { checkUsernameAvailability } from './checkUsernameAvailability';
-import { callbacks } from '../../../../lib/callbacks';
-import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
-import { trim } from '../../../../lib/utils/stringUtils';
+import { validateEmailDomain } from '../lib';
+import { passwordPolicy } from '../lib/passwordPolicy';
+import { checkEmailAvailability } from './checkEmailAvailability';
+import { checkUsernameAvailability } from './checkUsernameAvailability';
+import { saveUserIdentity } from './saveUserIdentity';
+import { setEmail } from './setEmail';
+import { setStatusText } from './setStatusText';
+import { setUserAvatar } from './setUserAvatar';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
@@ -237,8 +239,8 @@ export async function validateUserEditing(userId, userData) {
 
 const handleBio = (updateUser, bio) => {
 	if (bio && bio.trim()) {
-		if (typeof bio !== 'string' || bio.length > MAX_BIO_LENGTH) {
-			throw new Meteor.Error('error-invalid-field', 'bio', {
+		if (bio.length > MAX_BIO_LENGTH) {
+			throw new Meteor.Error('error-bio-size-exceeded', `Bio size exceeds ${MAX_BIO_LENGTH} characters`, {
 				method: 'saveUserProfile',
 			});
 		}
@@ -252,8 +254,8 @@ const handleBio = (updateUser, bio) => {
 
 const handleNickname = (updateUser, nickname) => {
 	if (nickname && nickname.trim()) {
-		if (typeof nickname !== 'string' || nickname.length > MAX_NICKNAME_LENGTH) {
-			throw new Meteor.Error('error-invalid-field', 'nickname', {
+		if (nickname.length > MAX_NICKNAME_LENGTH) {
+			throw new Meteor.Error('error-nickname-size-exceeded', `Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters`, {
 				method: 'saveUserProfile',
 			});
 		}

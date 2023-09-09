@@ -1,7 +1,7 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import type { IEmitter } from '@rocket.chat/emitter';
-import { createContext } from 'react';
 import type { ObjectId } from 'mongodb';
+import { createContext } from 'react';
 
 export type IRoles = { [_id: string]: IRole };
 

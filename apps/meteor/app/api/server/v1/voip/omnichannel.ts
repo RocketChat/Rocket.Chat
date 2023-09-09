@@ -1,11 +1,11 @@
-import { Match, check } from 'meteor/check';
+import { LivechatVoip } from '@rocket.chat/core-services';
 import type { IUser, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { LivechatVoip } from '@rocket.chat/core-services';
+import { Match, check } from 'meteor/check';
 
 import { API } from '../../api';
-import { logger } from './logger';
 import { getPaginationItems } from '../../helpers/getPaginationItems';
+import { logger } from './logger';
 
 function filter(
 	array: IVoipExtensionWithAgentInfo[],

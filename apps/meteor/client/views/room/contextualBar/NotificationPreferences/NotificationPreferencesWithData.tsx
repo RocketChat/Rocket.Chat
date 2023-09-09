@@ -1,11 +1,12 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { useUserSubscription, useTranslation, useCustomSound } from '@rocket.chat/ui-contexts';
+import { useTranslation, useCustomSound } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import NotificationPreferences from './NotificationPreferences';
 
 export type NotificationFormValues = {
@@ -19,11 +20,12 @@ export type NotificationFormValues = {
 	emailAlert: string;
 };
 
-const NotificationPreferencesWithData = ({ rid }: { rid: string }): ReactElement => {
+const NotificationPreferencesWithData = (): ReactElement => {
 	const t = useTranslation();
-	const handleClose = useTabBarClose();
+	const room = useRoom();
+	const subscription = useRoomSubscription();
+	const { closeTab } = useRoomToolbox();
 	const customSound = useCustomSound();
-	const subscription = useUserSubscription(rid);
 
 	const saveSettings = useEndpointAction('POST', '/v1/rooms.saveNotification', {
 		successMessage: t('Room_updated_successfully'),
@@ -81,7 +83,7 @@ const NotificationPreferencesWithData = ({ rid }: { rid: string }): ReactElement
 			};
 
 			saveSettings({
-				roomId: rid,
+				roomId: room._id,
 				notifications,
 			});
 		},
@@ -90,7 +92,7 @@ const NotificationPreferencesWithData = ({ rid }: { rid: string }): ReactElement
 	return (
 		<FormProvider {...methods}>
 			<NotificationPreferences
-				handleClose={handleClose}
+				handleClose={closeTab}
 				handleSave={handleSave}
 				handlePlaySound={handlePlaySound}
 				notificationOptions={notificationOptions}

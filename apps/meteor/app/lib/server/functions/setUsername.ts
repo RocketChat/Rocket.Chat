@@ -1,20 +1,21 @@
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
+import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Invites, Users } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-services';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { settings } from '../../../settings/server';
+import { callbacks } from '../../../../lib/callbacks';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { settings } from '../../../settings/server';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
-import { saveUserIdentity, setUserAvatar } from '.';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { callbacks } from '../../../../lib/callbacks';
 import { joinDefaultChannels } from './joinDefaultChannels';
+import { saveUserIdentity } from './saveUserIdentity';
+import { setUserAvatar } from './setUserAvatar';
 
 export const setUsernameWithValidation = async (userId: string, username: string, joinDefaultChannelsSilenced?: boolean): Promise<void> => {
 	if (!username) {

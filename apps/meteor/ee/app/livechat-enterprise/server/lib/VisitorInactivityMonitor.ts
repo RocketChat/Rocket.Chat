@@ -1,14 +1,14 @@
-import type { ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
-import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 import { OmnichannelEEService } from '@rocket.chat/core-services';
+import type { ILivechatVisitor, IOmnichannelRoom, IUser, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
+import type { MainLogger } from '@rocket.chat/logger';
+import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 
-import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
-import { i18n } from '../../../../../server/lib/i18n';
+import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
+import { i18n } from '../../../../../server/lib/i18n';
 import { schedulerLogger } from './logger';
-import type { MainLogger } from '../../../../../server/lib/logger/getPino';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
 
@@ -78,7 +78,10 @@ export class VisitorInactivityMonitor {
 			this.logger.debug(`Using cached department abandoned custom message for department ${departmentId}`);
 			return this.messageCache.get(departmentId);
 		}
-		const department = await LivechatDepartment.findOneById(departmentId);
+		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'abandonedRoomsCloseCustomMessage'>>(
+			departmentId,
+			{ projection: { _id: 1, abandonedRoomsCloseCustomMessage: 1 } },
+		);
 		if (!department) {
 			this.logger.debug(`Department ${departmentId} not found`);
 			return;

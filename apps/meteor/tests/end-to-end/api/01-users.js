@@ -1,7 +1,10 @@
 import crypto from 'crypto';
 
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
+import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
+import { sleep } from '../../../lib/utils/sleep';
 import {
 	getCredentials,
 	api,
@@ -14,12 +17,13 @@ import {
 	wait,
 	reservedWords,
 } from '../../data/api-data.js';
-import { adminEmail, preferences, password, adminUsername } from '../../data/user';
-import { imgURL } from '../../data/interactions.js';
+import { MAX_BIO_LENGTH, MAX_NICKNAME_LENGTH } from '../../data/constants.ts';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
+import { imgURL } from '../../data/interactions.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
 import { createRoom } from '../../data/rooms.helper';
+import { adminEmail, preferences, password, adminUsername } from '../../data/user';
+import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
 
 async function createChannel(userCredentials, name) {
 	const res = await request.post(api('channels.create')).set(userCredentials).send({
@@ -1138,6 +1142,87 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
+		it("should update a user's bio by userId", (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						bio: `edited-bio-test`,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.bio', 'edited-bio-test');
+					expect(res.body).to.not.have.nested.property('user.e2e');
+				})
+				.end(done);
+		});
+
+		it("should update a user's nickname by userId", (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						nickname: `edited-nickname-test`,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.nickname', 'edited-nickname-test');
+					expect(res.body).to.not.have.nested.property('user.e2e');
+				})
+				.end(done);
+		});
+
+		it(`should return an error when trying to set a nickname longer than ${MAX_NICKNAME_LENGTH} characters`, (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						nickname: Random.hexString(MAX_NICKNAME_LENGTH + 1),
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property(
+						'error',
+						`Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters [error-nickname-size-exceeded]`,
+					);
+				})
+				.end(done);
+		});
+
+		it(`should return an error when trying to set a bio longer than ${MAX_BIO_LENGTH} characters`, (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						bio: Random.hexString(MAX_BIO_LENGTH + 1),
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', `Bio size exceeds ${MAX_BIO_LENGTH} characters [error-bio-size-exceeded]`);
+				})
+				.end(done);
+		});
+
 		it("should update a bot's email", (done) => {
 			request
 				.post(api('users.update'))
@@ -1508,6 +1593,7 @@ describe('[Users]', function () {
 		});
 
 		const newPassword = `${password}test`;
+		const currentPassword = crypto.createHash('sha256').update(password, 'utf8').digest('hex');
 		const editedUsername = `basicInfo.name${+new Date()}`;
 		const editedName = `basic-info-test-name${+new Date()}`;
 		const editedEmail = `test${+new Date()}@mail.com`;
@@ -1538,7 +1624,7 @@ describe('[Users]', function () {
 					data: {
 						name: editedName,
 						username: editedUsername,
-						currentPassword: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
+						currentPassword,
 						newPassword,
 					},
 				})
@@ -1763,6 +1849,218 @@ describe('[Users]', function () {
 				});
 
 			await updateSetting('Accounts_AllowPasswordChange', true);
+		});
+
+		describe('[Password Policy]', () => {
+			before(async () => {
+				await updateSetting('Accounts_Password_Policy_Enabled', true);
+				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
+
+				await sleep(500);
+			});
+
+			after(async () => {
+				await updateSetting('Accounts_Password_Policy_Enabled', false);
+				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
+			});
+
+			it('should throw an error if the password length is less than the minimum length', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-minLength',
+					message: 'The password does not meet the minimum length password policy.',
+				};
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: '2',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
+
+			it('should throw an error if the password length is greater than the maximum length', async () => {
+				await updateSetting('Accounts_Password_Policy_MaxLength', 5);
+				await sleep(500);
+
+				const expectedError = {
+					error: 'error-password-policy-not-met-maxLength',
+					message: 'The password does not meet the maximum length password policy.',
+				};
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'Abc@12345678',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+
+				await updateSetting('Accounts_Password_Policy_MaxLength', -1);
+			});
+
+			it('should throw an error if the password contains repeating characters', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-repeatingCharacters',
+					message: 'The password contains repeating characters which is against the password policy.',
+				};
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'A@123aaaa',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
+
+			it('should throw an error if the password does not contain at least one lowercase character', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-oneLowercase',
+					message: 'The password does not contain at least one lowercase character which is against the password policy.',
+				};
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'PASSWORD@123',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
+
+			it('should throw an error if the password does not contain at least one uppercase character', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-oneUppercase',
+					message: 'The password does not contain at least one uppercase character which is against the password policy.',
+				};
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'password@123',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
+
+			it('should throw an error if the password does not contain at least one numerical character', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-oneNumber',
+					message: 'The password does not contain at least one numerical character which is against the password policy.',
+				};
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'Password@',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
+
+			it('should throw an error if the password does not contain at least one special character', async () => {
+				const expectedError = {
+					error: 'error-password-policy-not-met-oneSpecial',
+					message: 'The password does not contain at least one special character which is against the password policy.',
+				};
+
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: 'Password123',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+						expect(res.body.errorType).to.be.equal('error-password-policy-not-met');
+						expect(res.body.details).to.be.an('array').that.deep.includes(expectedError);
+					})
+					.expect(400);
+			});
+
+			it('should be able to update if the password meets all the validation rules', async () => {
+				await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({
+						data: {
+							currentPassword,
+							newPassword: '123Abc@!',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('user');
+					})
+					.expect(200);
+			});
 		});
 	});
 

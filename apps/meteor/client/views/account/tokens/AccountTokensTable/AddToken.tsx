@@ -54,10 +54,10 @@ const AddToken = ({ reload, ...props }: { reload: () => void }): ReactElement =>
 	}, [isSubmitted, submitCount, reload, resetField]);
 
 	return (
-		<FieldGroup is='form' onSubmit={handleSubmit(handleAddToken)} marginBlock='x8' {...props}>
+		<FieldGroup is='form' onSubmit={handleSubmit(handleAddToken)} marginBlock={8} {...props}>
 			<Field>
 				<Field.Row>
-					<Margins inlineEnd='x4'>
+					<Margins inlineEnd={4}>
 						<TextInput data-qa='PersonalTokenField' {...register('name')} placeholder={t('API_Add_Personal_Access_Token')} />
 					</Margins>
 					<Button primary disabled={!isDirty} type='submit'>

@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import { BlockType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
 import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Objects';
+import { Banner } from '@rocket.chat/core-services';
 import type { IBanner } from '@rocket.chat/core-typings';
 import { BannerPlatform } from '@rocket.chat/core-typings';
-import { Banner } from '@rocket.chat/core-services';
+import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../../server/lib/i18n';
 

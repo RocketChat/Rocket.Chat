@@ -1,5 +1,5 @@
-import React from 'react';
 import { AuthorizationContext } from '@rocket.chat/ui-contexts';
+import React from 'react';
 
 export const MockedAuthorizationContext = ({
 	permissions = [],

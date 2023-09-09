@@ -19,12 +19,7 @@ function ImportOperationSummary({
 	file = '',
 	user,
 	small,
-	count: { users = 0, channels = 0, messages = 0, total = 0 } = {
-		users: null,
-		channels: null,
-		messages: null,
-		total: null,
-	},
+	count: { users = 0, channels = 0, messages = 0, total = 0 } = {},
 	valid,
 }) {
 	const t = useTranslation();

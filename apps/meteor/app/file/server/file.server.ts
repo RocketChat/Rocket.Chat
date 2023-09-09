@@ -1,14 +1,14 @@
-import stream from 'stream';
 import type { ReadStream } from 'fs';
 import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
+import stream from 'stream';
 
+import type { ObjectId } from 'bson';
 import { MongoInternals } from 'meteor/mongo';
 import mkdirp from 'mkdirp';
 import type { GridFSBucketReadStream } from 'mongodb';
 import { GridFSBucket } from 'mongodb';
-import type { ObjectId } from 'bson';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -69,7 +69,7 @@ class GridFS implements IRocketChatFileStore {
 			contentType,
 		});
 
-		ws.on('close', function () {
+		ws.on('close', () => {
 			return ws.emit('end');
 		});
 		return ws;
@@ -100,11 +100,11 @@ class GridFS implements IRocketChatFileStore {
 		}
 		return new Promise<IFile>((resolve) => {
 			const data: Buffer[] = [];
-			file.readStream.on('data', function (chunk) {
+			file.readStream.on('data', (chunk) => {
 				return data.push(chunk);
 			});
 
-			file.readStream.on('end', function () {
+			file.readStream.on('end', () => {
 				resolve({
 					buffer: Buffer.concat(data),
 					contentType: file.contentType,
@@ -142,7 +142,7 @@ class FileSystem implements IRocketChatFileStore {
 
 	createWriteStream(fileName: string) {
 		const ws = fs.createWriteStream(path.join(this.absolutePath, fileName));
-		ws.on('close', function () {
+		ws.on('close', () => {
 			return ws.emit('end');
 		});
 		return ws;
@@ -181,10 +181,10 @@ class FileSystem implements IRocketChatFileStore {
 		}
 		return new Promise<IFile>((resolve) => {
 			const data: Buffer[] = [];
-			file.readStream.on('data', function (chunk: Buffer) {
+			file.readStream.on('data', (chunk: Buffer) => {
 				return data.push(chunk);
 			});
-			file.readStream.on('end', function () {
+			file.readStream.on('end', () => {
 				resolve({
 					buffer: Buffer.concat(data),
 					length: file.length,
@@ -195,7 +195,7 @@ class FileSystem implements IRocketChatFileStore {
 
 	async deleteFile(fileName: string) {
 		try {
-			return this.remove(fileName);
+			return await this.remove(fileName);
 		} catch (error1) {
 			//
 		}

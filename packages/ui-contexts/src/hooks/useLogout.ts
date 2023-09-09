@@ -1,5 +1,5 @@
-import { useContext } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useContext } from 'react';
 
 import { UserContext } from '../UserContext';
 import { useRouter } from './useRouter';

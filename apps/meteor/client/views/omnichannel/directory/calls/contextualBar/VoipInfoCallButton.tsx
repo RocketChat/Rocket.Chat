@@ -1,4 +1,4 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
@@ -29,8 +29,8 @@ export const VoipInfoCallButton = ({ phoneNumber, ...props }: VoipInfoCallButton
 			display='flex'
 			justifyContent='center'
 			fontSize='p2'
+			icon='phone'
 		>
-			<Icon name='phone' size='x20' mie='4px' />
 			{t('Call')}
 		</Button>
 	);

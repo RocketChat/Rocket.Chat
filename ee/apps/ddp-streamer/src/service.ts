@@ -1,9 +1,9 @@
-import type { Document } from 'mongodb';
 import { api } from '@rocket.chat/core-services';
+import type { Document } from 'mongodb';
 
-import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
-import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
+import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
+import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 
 (async () => {
 	const db = await getConnection();

@@ -17,7 +17,7 @@ type CallPageProps = {
 	visitorId: any;
 	status: any;
 	setStatus: any;
-	layout: any;
+	isLayoutEmbedded: boolean;
 	visitorName: any;
 	agentName: any;
 	callStartTime: any;
@@ -29,7 +29,7 @@ const CallPage: FC<CallPageProps> = ({
 	visitorId,
 	status,
 	setStatus,
-	layout,
+	isLayoutEmbedded,
 	visitorName,
 	agentName,
 	callStartTime,
@@ -45,7 +45,7 @@ const CallPage: FC<CallPageProps> = ({
 	let iconSize = 'x21';
 	let buttonSize = 'x40';
 	const avatarSize = 'x48';
-	if (layout === 'embedded') {
+	if (isLayoutEmbedded) {
 		iconSize = 'x19';
 		buttonSize = 'x35';
 	}
@@ -55,7 +55,7 @@ const CallPage: FC<CallPageProps> = ({
 		if (visitorToken) {
 			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId, visitorId);
 			const isMobileDevice = (): boolean => {
-				if (layout === 'embedded') {
+				if (isLayoutEmbedded) {
 					setCallInIframe(true);
 				}
 				if (window.innerWidth <= 450 && window.innerHeight >= 629 && window.innerHeight <= 900) {
@@ -130,7 +130,7 @@ const CallPage: FC<CallPageProps> = ({
 			});
 			setIsAgentActive(true);
 		}
-	}, [isAgentActive, status, setStatus, visitorId, roomId, visitorToken, layout]);
+	}, [isAgentActive, status, setStatus, visitorId, roomId, visitorToken, isLayoutEmbedded]);
 
 	const toggleButton = (control: any): any => {
 		if (control === 'mic') {
@@ -143,7 +143,7 @@ const CallPage: FC<CallPageProps> = ({
 	};
 
 	const closeWindow = (): void => {
-		if (layout === 'embedded') {
+		if (isLayoutEmbedded) {
 			return (parent as any)?.handleIframeClose();
 		}
 		return window.close();
@@ -213,7 +213,7 @@ const CallPage: FC<CallPageProps> = ({
 					>
 						{isCameraOn ? <Icon name='video' size={iconSize} /> : <Icon name='video-off' size={iconSize} />}
 					</Button>
-					{layout === 'embedded' && (
+					{isLayoutEmbedded && (
 						<Button
 							square
 							backgroundColor='dark'
@@ -324,7 +324,7 @@ const CallPage: FC<CallPageProps> = ({
 								size='x124'
 							/>
 							<Box color='white' fontSize={16} margin={15}>
-								{'Calling...'}
+								Calling...
 							</Box>
 							<Box
 								style={{

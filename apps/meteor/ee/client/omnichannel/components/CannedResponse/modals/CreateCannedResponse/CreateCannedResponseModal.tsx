@@ -43,7 +43,7 @@ const CreateCannedResponseModal: FC<{
 	return (
 		<Modal>
 			<Modal.Header>
-				<Modal.Title>{_id ? t('Edit_Canned_Response') : t('Create_Canned_Response')}</Modal.Title>
+				<Modal.Title>{_id ? t('Edit_Canned_Response') : t('Create_canned_response')}</Modal.Title>
 				<Modal.Close
 					onClick={(): void => {
 						onClose(null);

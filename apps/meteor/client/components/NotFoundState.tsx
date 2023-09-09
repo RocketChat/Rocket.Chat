@@ -22,7 +22,7 @@ const NotFoundState = ({ title, subtitle }: NotFoundProps): ReactElement => {
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{title}</StatesTitle>
 				<StatesSubtitle>{subtitle}</StatesSubtitle>
-				<StatesActions mbs='x16'>
+				<StatesActions mbs={16}>
 					<StatesAction onClick={handleGoHomeClick}>{t('Homepage')}</StatesAction>
 				</StatesActions>
 			</States>

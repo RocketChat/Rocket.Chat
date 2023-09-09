@@ -10,6 +10,7 @@ export type FeaturePreviewProps = {
 	group: 'Message' | 'Navigation';
 	imageUrl?: string;
 	value: boolean;
+	enabled: boolean;
 };
 
 export const defaultFeaturesPreview: FeaturePreviewProps[] = [
@@ -20,16 +21,19 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		group: 'Message',
 		imageUrl: 'images/featurePreview/quick-reactions.png',
 		value: false,
+		enabled: true,
 	},
 	{
 		name: 'navigationBar',
 		i18n: 'Navigation_bar',
 		description: 'Navigation_bar_description',
 		group: 'Navigation',
-		imageUrl: 'images/featurePreview/quick-reactions.png',
 		value: false,
+		enabled: false,
 	},
 ];
+
+export const enabledDefaultFeatures = defaultFeaturesPreview.filter((feature) => feature.enabled);
 
 export const useFeaturePreviewList = () => {
 	const featurePreviewEnabled = useSetting<boolean>('Accounts_AllowFeaturePreview');
@@ -39,11 +43,11 @@ export const useFeaturePreviewList = () => {
 		return { unseenFeatures: 0, features: [] as FeaturePreviewProps[], featurePreviewEnabled };
 	}
 
-	const unseenFeatures = defaultFeaturesPreview.filter(
+	const unseenFeatures = enabledDefaultFeatures.filter(
 		(feature) => !userFeaturesPreview?.find((userFeature) => userFeature.name === feature.name),
 	).length;
 
-	const mergedFeatures = defaultFeaturesPreview.map((feature) => {
+	const mergedFeatures = enabledDefaultFeatures.map((feature) => {
 		const userFeature = userFeaturesPreview?.find((userFeature) => userFeature.name === feature.name);
 		return { ...feature, ...userFeature };
 	});

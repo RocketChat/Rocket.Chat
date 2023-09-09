@@ -1,10 +1,10 @@
-import { isUpdateOAuthAppParams, isOauthAppsGetParams, isOauthAppsAddParams, isDeleteOAuthAppParams } from '@rocket.chat/rest-typings';
 import { OAuthApps } from '@rocket.chat/models';
+import { isUpdateOAuthAppParams, isOauthAppsGetParams, isOauthAppsAddParams, isDeleteOAuthAppParams } from '@rocket.chat/rest-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { API } from '../api';
-import { addOAuthApp } from '../../../oauth2-server-config/server/admin/functions/addOAuthApp';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { addOAuthApp } from '../../../oauth2-server-config/server/admin/functions/addOAuthApp';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'oauth-apps.list',

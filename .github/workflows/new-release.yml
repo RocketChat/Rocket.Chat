@@ -9,12 +9,12 @@ on:
         default: next
         required: true
         options:
-        - next
-        - patch
-        - publish
+          - next
+          - patch
+          - cut
       base-ref:
         description: Base version
-        default: master
+        default: develop
         required: false
 
 env:
@@ -25,48 +25,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-        token: ${{ secrets.CI_PAT }}
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.base-ref }}
+          fetch-depth: 0
+          token: ${{ secrets.CI_PAT }}
 
-    - name: Setup NodeJS
-      uses: ./.github/actions/setup-node
-      with:
-        node-version: 14.21.3
-        cache-modules: true
-        install: true
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: 14.21.3
+          cache-modules: true
+          install: true
 
-    - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-    - name: Build
-      run: yarn build --filter=@rocket.chat/release-action
+      - name: Build packages
+        run: yarn build
 
-    - name: Start next release
-      if: ${{ github.event.inputs.name == 'next' }}
-      uses: ./packages/release-action
-      with:
-        action: bump
-      env:
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.CI_PAT }}
-
-    - name: Start patch release
-      if: ${{ github.event.inputs.name == 'patch' }}
-      uses: ./packages/release-action
-      with:
-        action: patch
-        base-ref: ${{ github.event.inputs.base-ref }}
-      env:
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.CI_PAT }}
-
-    - name: Publish release
-      if: ${{ github.event.inputs.name == 'publish' }}
-      uses: ./packages/release-action
-      with:
-        action: publish
-        base-ref: ${{ github.event.inputs.base-ref }}
-      env:
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.CI_PAT }}
+      - name: 'Start release: ${{ github.event.inputs.name }}'
+        uses: ./packages/release-action
+        with:
+          action: ${{ github.event.inputs.name }}
+          base-ref: ${{ github.event.inputs.base-ref }}
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CI_PAT }}

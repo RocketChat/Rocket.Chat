@@ -9,7 +9,12 @@ export const createUser = (userData = {}) =>
 			.post(api('users.create'))
 			.set(credentials)
 			.send({ email, name: username, username, password, ...userData })
-			.end((err, res) => resolve(res.body.user));
+			.end((err, res) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body.user);
+			});
 	});
 
 export const login = (username, password) =>

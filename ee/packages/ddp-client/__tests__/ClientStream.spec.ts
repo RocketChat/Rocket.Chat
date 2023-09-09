@@ -1,6 +1,6 @@
-import { MinimalDDPClient } from '../src/MinimalDDPClient';
 import { ClientStreamImpl } from '../src/ClientStream';
 import { DDPDispatcher } from '../src/DDPDispatcher';
+import { MinimalDDPClient } from '../src/MinimalDDPClient';
 
 describe('call procedures', () => {
 	it('should be able to call a method and receive a result', async () => {

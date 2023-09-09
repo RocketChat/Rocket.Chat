@@ -1,8 +1,8 @@
-import { Messages, Rooms } from '@rocket.chat/models';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { Messages, Rooms } from '@rocket.chat/models';
 
-import { validateMessage, prepareMessageObject } from './sendMessage';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
+import { validateMessage, prepareMessageObject } from './sendMessage';
 
 export const insertMessage = async function (
 	user: Pick<IUser, '_id' | 'username'>,

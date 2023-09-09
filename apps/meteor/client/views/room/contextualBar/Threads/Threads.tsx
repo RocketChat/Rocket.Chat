@@ -1,12 +1,11 @@
-import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useTabContext } from '../../contexts/ToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import Thread from './Thread';
 import ThreadList from './ThreadList';
 
-const Threads = (): ReactElement => {
-	const tmid = useTabContext() as string | undefined;
+const Threads = () => {
+	const { context: tmid } = useRoomToolbox();
 
 	if (tmid) {
 		return <Thread tmid={tmid} />;

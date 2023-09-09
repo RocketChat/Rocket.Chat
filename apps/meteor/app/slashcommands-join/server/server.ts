@@ -1,12 +1,12 @@
-import { Meteor } from 'meteor/meteor';
 import { api } from '@rocket.chat/core-services';
-import { Rooms, Subscriptions } from '@rocket.chat/models';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings/server';
-import { slashCommands } from '../../utils/lib/slashCommand';
 import { i18n } from '../../../server/lib/i18n';
 import { joinRoomMethod } from '../../lib/server/methods/joinRoom';
+import { settings } from '../../settings/server';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'join',

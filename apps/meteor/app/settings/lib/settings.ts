@@ -1,6 +1,6 @@
+import type { SettingValue } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import type { SettingValue } from '@rocket.chat/core-typings';
 
 import { sdk } from '../../utils/client/lib/SDKClient';
 

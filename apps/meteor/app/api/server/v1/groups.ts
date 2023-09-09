@@ -6,25 +6,25 @@ import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { hideRoomMethod } from '../../../../server/methods/hideRoom';
+import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import {
 	hasAllPermissionAsync,
 	hasAtLeastOnePermissionAsync,
 	hasPermissionAsync,
 } from '../../../authorization/server/functions/hasPermission';
+import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
+import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
-import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
-import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
-import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
-import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findPrivateGroupByIdOrName({

@@ -1,13 +1,13 @@
-import { Meteor } from 'meteor/meteor';
+import { Messages } from '@rocket.chat/models';
 import {
 	isAutotranslateSaveSettingsParamsPOST,
 	isAutotranslateTranslateMessageParamsPOST,
 	isAutotranslateGetSupportedLanguagesParamsGET,
 } from '@rocket.chat/rest-typings';
-import { Messages } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { API } from '../api';
 import { settings } from '../../../settings/server';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'autotranslate.getSupportedLanguages',

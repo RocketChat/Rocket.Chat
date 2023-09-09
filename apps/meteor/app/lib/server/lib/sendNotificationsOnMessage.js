@@ -1,22 +1,22 @@
+import { Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import { Subscriptions, Users } from '@rocket.chat/models';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { Notification } from '../../../notification-queue/server/NotificationQueue';
+import { settings } from '../../../settings/server';
 import {
 	callJoinRoom,
 	messageContainsHighlight,
 	parseMessageTextPerUser,
 	replaceMentionedUsernamesWithFullNames,
 } from '../functions/notifications';
+import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { getEmailData, shouldNotifyEmail } from '../functions/notifications/email';
 import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
-import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
-import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { getMentions } from './notifyUsersOnMessage';
-import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 let TroubleshootDisableNotifications;
 

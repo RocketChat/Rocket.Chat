@@ -1,4 +1,4 @@
-import { Logger } from '../../../server/lib/logger/Logger';
+import { Logger } from '@rocket.chat/logger';
 
 const logger = new Logger('TemplateVarHandler');
 

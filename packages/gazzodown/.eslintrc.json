@@ -3,6 +3,7 @@
 		"plugin:@typescript-eslint/recommended",
 		"plugin:@typescript-eslint/eslint-recommended",
 		"@rocket.chat/eslint-config/original",
+		"@rocket.chat/eslint-config/react",
 		"prettier",
 		"plugin:anti-trojan-source/recommended",
 		"plugin:react/jsx-runtime",

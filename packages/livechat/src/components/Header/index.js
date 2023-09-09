@@ -1,6 +1,6 @@
 import { toChildArray } from 'preact';
 
-import { createClassName } from '../helpers';
+import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
 
 export const Header = ({ children, theme: { color: backgroundColor, fontColor: color } = {}, className, post, large, style, ...props }) => (

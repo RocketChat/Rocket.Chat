@@ -1,8 +1,8 @@
-import moment from 'moment';
 import type { ILivechatAgent, ISocketConnection } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
-import { LivechatAgentActivity, Sessions, Users } from '@rocket.chat/models';
 import { cronJobs } from '@rocket.chat/cron';
+import { LivechatAgentActivity, Sessions, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
 
