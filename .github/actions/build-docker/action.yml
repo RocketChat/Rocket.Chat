@@ -9,6 +9,10 @@ inputs:
     required: true
     description: 'Node version'
     type: string
+  platform:
+    required: false
+    description: 'Platform'
+    type: string
 
 runs:
   using: composite
@@ -51,7 +55,7 @@ runs:
       run: |
         args=(rocketchat)
 
-        if [[ '${{ matrix.platform }}' = 'alpine' ]]; then
+        if [[ '${{ inputs.platform }}' = 'alpine' ]]; then
           args+=($SERVICES_PUBLISH)
         fi;
 
@@ -62,7 +66,7 @@ runs:
       run: |
         args=(rocketchat)
 
-        if [[ '${{ matrix.platform }}' = 'alpine' ]]; then
+        if [[ '${{ inputs.platform }}' = 'alpine' ]]; then
           args+=($SERVICES_PUBLISH)
         fi;
 
