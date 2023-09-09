@@ -30,6 +30,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import React, { useCallback } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import { validateEmail } from '../../../../lib/emailValidator';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
@@ -43,11 +44,19 @@ type AdminUserFormProps = {
 	onReload: () => void;
 };
 
-const getInitialValue = (data?: Serialized<IUser>, defaultUserRoles?: IUser['roles']) => ({
+const getInitialValue = ({
+	data,
+	defaultUserRoles,
+	isSmtpEnabled,
+}: {
+	data?: Serialized<IUser>;
+	defaultUserRoles?: IUser['roles'];
+	isSmtpEnabled?: boolean;
+}) => ({
 	roles: data?.roles ?? defaultUserRoles,
 	name: data?.name ?? '',
 	password: '',
-	username: data?.username,
+	username: data?.username ?? '',
 	bio: data?.bio ?? '',
 	nickname: data?.nickname ?? '',
 	email: (data?.emails?.length && data.emails[0].address) || '',
@@ -57,12 +66,10 @@ const getInitialValue = (data?: Serialized<IUser>, defaultUserRoles?: IUser['rol
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
 	joinDefaultChannels: true,
-	sendWelcomeEmail: true,
+	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
 });
 
-// TODO: check email is already in use in UI
-// TODO: add validation to statusText
 const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 	const t = useTranslation();
 	const router = useRouter();
@@ -90,12 +97,11 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 		control,
 		watch,
 		handleSubmit,
-		register,
 		reset,
 		formState: { errors, isDirty },
 	} = useForm({
-		defaultValues: getInitialValue(userData, defaultUserRoles),
-		mode: 'all',
+		defaultValues: getInitialValue({ data: userData, defaultUserRoles, isSmtpEnabled }),
+		mode: 'onBlur',
 	});
 
 	const { avatar, username, setRandomPassword } = watch();
@@ -175,43 +181,82 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 					<Field>
 						<Field.Label htmlFor={nameId}>{t('Name')}</Field.Label>
 						<Field.Row>
-							<TextInput
-								id={nameId}
-								aria-invalid={errors.name ? 'true' : 'false'}
-								error={errors.name?.message}
-								flexGrow={1}
-								{...register('name', { required: t('The_field_is_required', t('Name')) })}
+							<Controller
+								control={control}
+								name='name'
+								rules={{ required: t('The_field_is_required', t('Name')) }}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										id={nameId}
+										aria-invalid={errors.name ? 'true' : 'false'}
+										aria-describedby={`${nameId}-error`}
+										error={errors.name?.message}
+										flexGrow={1}
+									/>
+								)}
 							/>
 						</Field.Row>
-						{errors?.name && <Field.Error>{errors.name.message}</Field.Error>}
+						{errors?.name && (
+							<Field.Error aria-live='assertive' id={`${nameId}-error`}>
+								{errors.name.message}
+							</Field.Error>
+						)}
 					</Field>
 					<Field>
 						<Field.Label htmlFor={usernameId}>{t('Username')}</Field.Label>
 						<Field.Row>
-							<TextInput
-								id={usernameId}
-								aria-invalid={errors.username ? 'true' : 'false'}
-								error={errors.username?.message}
-								flexGrow={1}
-								addon={<Icon name='at' size='x20' />}
-								{...register('username', { required: t('The_field_is_required', t('Username')) })}
+							<Controller
+								control={control}
+								name='username'
+								rules={{ required: t('The_field_is_required', t('Username')) }}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										id={usernameId}
+										aria-invalid={errors.username ? 'true' : 'false'}
+										aria-describedby={`${usernameId}-error`}
+										error={errors.username?.message}
+										flexGrow={1}
+										addon={<Icon name='at' size='x20' />}
+									/>
+								)}
 							/>
 						</Field.Row>
-						{errors?.username && <Field.Error>{errors.username.message}</Field.Error>}
+						{errors?.username && (
+							<Field.Error aria-live='assertive' id={`${usernameId}-error`}>
+								{errors.username.message}
+							</Field.Error>
+						)}
 					</Field>
 					<Field>
 						<Field.Label htmlFor={emailId}>{t('Email')}</Field.Label>
 						<Field.Row>
-							<TextInput
-								id={emailId}
-								aria-invalid={errors.email ? 'true' : 'false'}
-								error={errors.email?.message}
-								flexGrow={1}
-								addon={<Icon name='mail' size='x20' />}
-								{...register('email', { required: t('The_field_is_required', t('Email')) })}
+							<Controller
+								control={control}
+								name='email'
+								rules={{
+									required: t('The_field_is_required', t('Email')),
+									validate: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')),
+								}}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										id={emailId}
+										aria-invalid={errors.email ? 'true' : 'false'}
+										aria-describedby={`${emailId}-error`}
+										error={errors.email?.message}
+										flexGrow={1}
+										addon={<Icon name='mail' size='x20' />}
+									/>
+								)}
 							/>
 						</Field.Row>
-						{errors?.email && <Field.Error>{errors.email.message}</Field.Error>}
+						{errors?.email && (
+							<Field.Error aria-live='assertive' id={`${emailId}-error`}>
+								{errors.email.message}
+							</Field.Error>
+						)}
 					</Field>
 					<Field>
 						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
@@ -228,38 +273,65 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 					<Field>
 						<Field.Label htmlFor={statusTextId}>{t('StatusMessage')}</Field.Label>
 						<Field.Row>
-							<TextInput
-								id={statusTextId}
-								{...register('statusText', {
-									maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH) },
-								})}
-								flexGrow={1}
-								addon={<Icon name='edit' size='x20' />}
+							<Controller
+								control={control}
+								name='statusText'
+								rules={{ maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH) } }}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										id={statusTextId}
+										error={errors?.statusText?.message}
+										aria-invalid={errors.statusText ? 'true' : 'false'}
+										aria-describedby={`${statusTextId}-error`}
+										flexGrow={1}
+										addon={<Icon name='edit' size='x20' />}
+									/>
+								)}
 							/>
 						</Field.Row>
-						{errors?.statusText && <Field.Error>{errors.statusText.message}</Field.Error>}
+						{errors?.statusText && (
+							<Field.Error aria-live='assertive' id={`${statusTextId}-error`}>
+								{errors.statusText.message}
+							</Field.Error>
+						)}
 					</Field>
 					<Field>
 						<Field.Label htmlFor={bioId}>{t('Bio')}</Field.Label>
 						<Field.Row>
-							<TextAreaInput
-								id={bioId}
-								{...register('bio', { maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', BIO_TEXT_MAX_LENGTH) } })}
-								rows={3}
-								flexGrow={1}
-								addon={<Icon name='edit' size='x20' alignSelf='center' />}
+							<Controller
+								control={control}
+								name='bio'
+								rules={{ maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', BIO_TEXT_MAX_LENGTH) } }}
+								render={({ field }) => (
+									<TextAreaInput
+										{...field}
+										id={bioId}
+										rows={3}
+										error={errors?.bio?.message}
+										aria-invalid={errors.bio ? 'true' : 'false'}
+										aria-describedby={`${bioId}-error`}
+										flexGrow={1}
+										addon={<Icon name='edit' size='x20' alignSelf='center' />}
+									/>
+								)}
 							/>
 						</Field.Row>
-						{errors?.bio && <Field.Error>{errors.bio.message}</Field.Error>}
+						{errors?.bio && (
+							<Field.Error aria-live='assertive' id={`${bioId}-error`}>
+								{errors.bio.message}
+							</Field.Error>
+						)}
 					</Field>
 					<Field>
 						<Field.Label htmlFor={nicknameId}>{t('Nickname')}</Field.Label>
 						<Field.Row>
-							<TextInput
-								id={nicknameId}
-								{...register('nickname')}
-								flexGrow={1}
-								addon={<Icon name='edit' size='x20' alignSelf='center' />}
+							<Controller
+								control={control}
+								name='nickname'
+								render={({ field }) => (
+									<TextInput {...field} id={nicknameId} flexGrow={1} addon={<Icon name='edit' size='x20' alignSelf='center' />} />
+								)}
 							/>
 						</Field.Row>
 					</Field>
@@ -269,16 +341,28 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 						<Field>
 							<Field.Label htmlFor={passwordId}>{t('Password')}</Field.Label>
 							<Field.Row>
-								<PasswordInput
-									id={passwordId}
-									{...register('password', { required: !userData?._id && t('The_field_is_required', t('Password')) })}
-									aria-invalid={errors.password ? 'true' : 'false'}
-									error={errors.password?.message}
-									flexGrow={1}
-									addon={<Icon name='key' size='x20' />}
+								<Controller
+									control={control}
+									name='password'
+									rules={{ required: !userData?._id && t('The_field_is_required', t('Password')) }}
+									render={({ field }) => (
+										<PasswordInput
+											{...field}
+											id={passwordId}
+											aria-invalid={errors.password ? 'true' : 'false'}
+											aria-describedby={`${passwordId}-error`}
+											error={errors.password?.message}
+											flexGrow={1}
+											addon={<Icon name='key' size='x20' />}
+										/>
+									)}
 								/>
 							</Field.Row>
-							{errors?.password && <Field.Error>{errors.password.message}</Field.Error>}
+							{errors?.password && (
+								<Field.Error aria-live='assertive' id={`${passwordId}-error`}>
+									{errors.password.message}
+								</Field.Error>
+							)}
 						</Field>
 					)}
 					<Field>
@@ -309,13 +393,23 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 									control={control}
 									name='setRandomPassword'
 									render={({ field: { ref, onChange, value } }) => (
-										<ToggleSwitch ref={ref} id={setRandomPasswordId} checked={value} onChange={onChange} disabled={!isSmtpEnabled} />
+										<ToggleSwitch
+											ref={ref}
+											id={setRandomPasswordId}
+											aria-describedby={`${setRandomPasswordId}-hint`}
+											checked={value}
+											onChange={onChange}
+											disabled={!isSmtpEnabled}
+										/>
 									)}
 								/>
 							</Field.Row>
 						</Box>
 						{!isSmtpEnabled && (
-							<Field.Hint dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }} />
+							<Field.Hint
+								id={`${setRandomPasswordId}-hint`}
+								dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }}
+							/>
 						)}
 					</Field>
 					<Field>
@@ -364,16 +458,25 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 									control={control}
 									name='sendWelcomeEmail'
 									render={({ field: { onChange, value } }) => (
-										<ToggleSwitch id={sendWelcomeEmailId} onChange={onChange} checked={value} disabled={!isSmtpEnabled} />
+										<ToggleSwitch
+											id={sendWelcomeEmailId}
+											aria-describedby={`${sendWelcomeEmailId}-hint`}
+											onChange={onChange}
+											checked={value}
+											disabled={!isSmtpEnabled}
+										/>
 									)}
 								/>
 							</Field.Row>
 						</Box>
 						{!isSmtpEnabled && (
-							<Field.Hint dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }} />
+							<Field.Hint
+								id={`${sendWelcomeEmailId}-hint`}
+								dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }}
+							/>
 						)}
 					</Field>
-					{customFieldsMetadata && (
+					{Boolean(customFieldsMetadata.length) && (
 						<>
 							<Divider />
 							<Box fontScale='h4'>{t('Custom_Fields')}</Box>
@@ -384,7 +487,11 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button type='reset' disabled={!isDirty} onClick={() => reset(getInitialValue(userData))}>
+					<Button
+						type='reset'
+						disabled={!isDirty}
+						onClick={() => reset(getInitialValue({ data: userData, defaultUserRoles, isSmtpEnabled }))}
+					>
 						{t('Reset')}
 					</Button>
 					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)}>
