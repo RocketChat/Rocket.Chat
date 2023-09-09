@@ -114,7 +114,7 @@ runs:
     - name: Build Rocket.Chat
       shell: bash
       if: startsWith(github.ref, 'refs/pull/') != true
-      run: yarn build:ci -- --directory /tmp/dist
+      run: yarn build:ci -- --directory /tmp/dist --extra-packages rocketchat:coverage
 
     - name: Prepare build
       shell: bash
