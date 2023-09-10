@@ -10,7 +10,13 @@ const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => 
 	const t = useTranslation();
 
 	const sections = useAdministrationMenu();
-
+	if (sections.length === 0) {
+		return (
+			<button disabled={true}>
+				<GenericMenu sections={sections} title={t('Administration')} is={Sidebar.TopBar.Action} {...props} />
+			</button>
+		);
+	}
 	return <GenericMenu sections={sections} title={t('Administration')} is={Sidebar.TopBar.Action} {...props} />;
 };
 
