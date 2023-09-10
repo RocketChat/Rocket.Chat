@@ -14,16 +14,29 @@ import LoginPoweredBy from '../components/LoginPoweredBy';
 import LoginSwitchLanguageFooter from '../components/LoginSwitchLanguageFooter';
 import LoginTerms from '../components/LoginTerms';
 import { RegisterTitle } from '../components/RegisterTitle';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+
 
 const HorizontalTemplate = ({ children }: { children: ReactNode }): ReactElement => {
 	const hideLogo = useSetting<boolean>('Layout_Login_Hide_Logo');
 	const customLogo = useAssetWithDarkModePath('logo');
 	const customBackground = useAssetWithDarkModePath('background');
 
+
+	const getOrgLogoList = useEndpoint('GET', '/v1/orglogo.list');
+	const resultLogo = useQuery(['orgLogo'], () => getOrgLogoList(), {
+		keepPreviousData: true,
+	});
+
+	const finalLogo = resultLogo?.data?.orgLogo[0].logoUrl;
+
+	// console.log('resultLogo sidebar -->', finalLogo);
+
 	return (
 		<HorizontalWizardLayout
 			background={customBackground}
-			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' mi='neg-x8' src={customLogo} alt='Logo' /> : <></>}
+			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' mi='neg-x8' src={finalLogo} alt='Logo' /> : <></>}
 		>
 			<HorizontalWizardLayoutAside>
 				<HorizontalWizardLayoutTitle>
