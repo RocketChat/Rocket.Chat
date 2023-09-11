@@ -169,7 +169,7 @@ const getProjectionByFullDate = (): { day: string; month: string; year: string }
 export const aggregates = {
 	dailySessions(
 		collection: Collection<ISession>,
-		{ from, to }: { from: Date; to: Date },
+		{ start, end }: DestructuredRange,
 	): AggregationCursor<
 		Pick<ISession, 'mostImportantRole' | 'userId' | 'day' | 'year' | 'month' | 'type'> & {
 			time: number;
@@ -185,9 +185,7 @@ export const aggregates = {
 					lastActivityAt: { $exists: true },
 					device: { $exists: true },
 					type: 'session',
-
-					// we filter by createdAt to be able to perform a range query, since the "day", "month" and "year" fields were not meant for that
-					createdAt: { $gte: from, $lt: to },
+					...matchBasedOnDate(start, end),
 				},
 			},
 			{
@@ -1609,13 +1607,11 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		return this.updateOne({ _id }, { $set: record }, { upsert: true });
 	}
 
-	async updateAllSessionsByDateToComputed(from: Date, to: Date): Promise<UpdateResult | Document> {
+	async updateAllSessionsByDateToComputed({ start, end }: DestructuredRange): Promise<UpdateResult | Document> {
 		return this.updateMany(
 			{
 				type: 'session',
-
-				// we filter by createdAt to be able to perform a range query, since the "day", "month" and "year" fields were not meant for that
-				createdAt: { $gte: from, $lt: to },
+				...matchBasedOnDate(start, end),
 			},
 			{
 				$set: {

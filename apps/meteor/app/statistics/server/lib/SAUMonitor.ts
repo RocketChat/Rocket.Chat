@@ -320,17 +320,17 @@ export class SAUMonitorClass {
 
 		const today = new Date();
 
-		const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
-
-		// get sessions from 3 days ago to make sure even if a few cron jobs are missed, we still have the data
+		// get sessions from 3 days ago to make sure even if a few cron jobs were skipped, we still have the data
 		const threeDaysAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 3, 0, 0, 0, 0);
 
-		logger.info({ msg: '[aggregate] - Aggregating data.', from: threeDaysAgo, to: yesterday });
+		const period = { start: getDateObj(threeDaysAgo), end: getDateObj(today) };
 
-		for await (const record of aggregates.dailySessions(Sessions.col, { from: threeDaysAgo, to: yesterday })) {
+		logger.info({ msg: '[aggregate] - Aggregating data.', period });
+
+		for await (const record of aggregates.dailySessions(Sessions.col, period)) {
 			await Sessions.updateDailySessionById(`${record.userId}-${record.year}-${record.month}-${record.day}`, record);
 		}
 
-		await Sessions.updateAllSessionsByDateToComputed(threeDaysAgo, yesterday);
+		await Sessions.updateAllSessionsByDateToComputed(period);
 	}
 }

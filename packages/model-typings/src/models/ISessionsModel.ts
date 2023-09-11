@@ -148,5 +148,5 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 
 	updateDailySessionById(_id: ISession['_id'], record: Partial<ISession>): Promise<UpdateResult>;
 
-	updateAllSessionsByDateToComputed(from: Date, to: Date): Promise<UpdateResult | Document>;
+	updateAllSessionsByDateToComputed({ start, end }: DestructuredRange): Promise<UpdateResult | Document>;
 }
