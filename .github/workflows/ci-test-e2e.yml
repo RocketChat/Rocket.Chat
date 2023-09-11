@@ -260,6 +260,13 @@ jobs:
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
+      - name: Store e2e-api-ee-coverage
+        if: inputs.type == 'api' && inputs.release == 'ee'
+        uses: actions/upload-artifact@v3
+        with:
+          name: e2e-api-ee-coverage
+          path: /tmp/coverage
+
       - name: Store e2e-ee-coverage
         if: inputs.type == 'ui' && inputs.release == 'ee'
         uses: actions/upload-artifact@v3
