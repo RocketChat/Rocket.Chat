@@ -3,7 +3,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { Sound } from '.';
-import { beepAudio, sampleAudio } from '../../helpers.stories';
+import { beepAudio, sampleAudio } from '../../../.storybook/helpers';
 
 export default {
 	title: 'Components/Sound',

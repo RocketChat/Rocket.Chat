@@ -2,7 +2,7 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import { loremIpsum } from '../../helpers.stories';
+import { loremIpsum } from '../../../.storybook/helpers';
 import Modal from './component';
 
 export default {

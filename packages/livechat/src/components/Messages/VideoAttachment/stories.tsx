@@ -2,7 +2,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import VideoAttachment from '.';
-import { sampleVideo } from '../../../helpers.stories';
+import { sampleVideo } from '../../../../.storybook/helpers';
 
 export default {
 	title: 'Messages/VideoAttachment',

@@ -2,7 +2,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { MessageAvatars } from '.';
-import { avatarResolver } from '../../../helpers.stories';
+import { avatarResolver } from '../../../../.storybook/helpers';
 
 export default {
 	title: 'Messages/MessageAvatars',
