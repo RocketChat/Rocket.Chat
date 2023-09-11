@@ -22,7 +22,7 @@ import {
 	getDepartmentById,
 	deleteDepartment,
 } from '../../../data/livechat/department';
-import { createAgent, makeAgentAvailable } from '../../../data/livechat/rooms';
+import { createAgent, createManager, makeAgentAvailable } from '../../../data/livechat/rooms';
 import { removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting, updateEESetting } from '../../../data/permissions.helper';
 import type { IUserCredentialsHeader } from '../../../data/user';
@@ -833,6 +833,23 @@ describe('LIVECHAT - business hours', function () {
 
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
+		});
+		it('should verify if managers are not able to make deactivated agents available', async () => {
+			await createManager();
+
+			await activateOrDeactivateUser(agent._id, false);
+
+			const response = await request
+				.post(api('livechat/agent.status'))
+				.set(credentials)
+				.send({
+					status: 'available',
+					agentId: agent._id,
+				})
+				.expect(400);
+
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error', 'error-user-deactivated');
 		});
 	});
 });
