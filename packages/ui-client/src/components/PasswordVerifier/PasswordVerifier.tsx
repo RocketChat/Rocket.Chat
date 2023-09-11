@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { PasswordVerifierItem } from './PasswordVerifierItem';
 
 type PasswordVerifierProps = {
-	password: string;
+	password: string | undefined;
 	id?: string;
 };
 
@@ -14,7 +14,7 @@ export const PasswordVerifier = ({ password, id }: PasswordVerifierProps) => {
 	const { t } = useTranslation();
 	const uniqueId = useUniqueId();
 
-	const { data: passwordVerifications, isLoading } = useVerifyPassword(password);
+	const { data: passwordVerifications, isLoading } = useVerifyPassword(password || '');
 
 	if (isLoading) {
 		return <Skeleton data-testid='password-verifier-skeleton' w='full' mbe={8} />;
