@@ -1,7 +1,6 @@
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { ContextType } from 'react';
 import { useMemo } from 'react';
-import { compose } from 'underscore';
 
 import type { AppsContext } from '../../../contexts/AppsContext';
 import type { AsyncState } from '../../../lib/asyncState';
@@ -85,7 +84,13 @@ export const useFilteredApps = ({
 			requested: (apps: App[]) => apps.filter(({ appRequestStats, installed }) => Boolean(appRequestStats) && !installed),
 		};
 
-		const filtered = compose(
+		type appsFilterFunction = (apps: App[]) => App[];
+		const composeAppsFilters =
+			(...functions: appsFilterFunction[]) =>
+			(initialValue: App[]) =>
+				functions.reduce((currentAppsList, currentFilterFunction) => currentFilterFunction(currentAppsList), initialValue);
+
+		const filtered = composeAppsFilters(
 			context ? filterByContext[context] : fallback,
 			filterByPurchaseType[purchaseType],
 			filterByStatus[status],
