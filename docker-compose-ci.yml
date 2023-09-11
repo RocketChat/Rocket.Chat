@@ -2,6 +2,8 @@ version: '3.8'
 
 services:
   rocketchat:
+    volumes:
+      - /tmp/coverage:/tmp/coverage
     platform: linux/amd64
     build:
       dockerfile: ${RC_DOCKERFILE}

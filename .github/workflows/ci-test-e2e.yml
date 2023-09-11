@@ -184,6 +184,8 @@ jobs:
         env:
           WEBHOOK_TEST_URL: 'http://host.docker.internal:10000'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          COVERAGE_DIR: '/tmp/coverage'
+          COVERAGE_REPORTER: 'lcov'
         run: |
           for i in $(seq 1 2); do
             npm run testapi && s=0 && break || s=$?
@@ -246,6 +248,14 @@ jobs:
         with:
           directory: ./apps/meteor
           flags: e2e
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - uses: codecov/codecov-action@v3
+        if: inputs.type == 'api' && inputs.release == 'ee'
+        with:
+          directory: /tmp/coverage
+          flags: e2e-api
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
