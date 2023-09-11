@@ -802,6 +802,7 @@ describe('LIVECHAT - business hours', function () {
 
 		after(async () => {
 			await deleteUser(agent);
+			await updateSetting('Livechat_enable_business_hours', false);
 		});
 
 		it('should verify if agent becomes unavailable to take chats when user is deactivated', async () => {
