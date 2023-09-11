@@ -29,7 +29,7 @@ Linkedin.requestCredential = async function (options, credentialRequestCompleteC
 		scope = requestPermissions.join('+');
 	} else {
 		// If extra permissions not passed, we need to request basic, available to all
-		scope = 'r_emailaddress+r_liteprofile';
+		scope = 'openid+email+profile';
 	}
 	const loginStyle = OAuth._loginStyle('linkedin', config, options);
 	if (!otherOptionsToPassThrough.popupOptions) {

@@ -5,7 +5,6 @@ import {
 	HorizontalWizardLayoutContent,
 	HorizontalWizardLayoutTitle,
 	HorizontalWizardLayoutFooter,
-	HorizontalWizardLayoutDescription,
 } from '@rocket.chat/layout';
 import { useSetting, useAssetWithDarkModePath } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
@@ -29,9 +28,7 @@ const HorizontalTemplate = ({ children }: { children: ReactNode }): ReactElement
 				<HorizontalWizardLayoutTitle>
 					<RegisterTitle />
 				</HorizontalWizardLayoutTitle>
-				<HorizontalWizardLayoutDescription>
-					<LoginPoweredBy />
-				</HorizontalWizardLayoutDescription>
+				<LoginPoweredBy />
 			</HorizontalWizardLayoutAside>
 			<HorizontalWizardLayoutContent>
 				{children}
