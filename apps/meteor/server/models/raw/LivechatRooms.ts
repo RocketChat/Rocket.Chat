@@ -2458,11 +2458,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		const update = {
-			$push: {
-				'v.activity': {
-					$each: [period],
-					$slice: -12,
-				},
+			$addToSet: {
+				'v.activity': period,
 			},
 		};
 

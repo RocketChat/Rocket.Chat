@@ -23,12 +23,12 @@ callbacks.add(
 
 		// Return YYYY-MM from moment
 		const monthYear = moment().format('YYYY-MM');
-		if (!(await LivechatVisitors.isVisitorActiveOnPeriod(room.v._id, monthYear))) {
-			await Promise.all([
-				LivechatVisitors.markVisitorActiveForPeriod(room.v._id, monthYear),
-				LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear),
-			]);
+		const isVisitorActive = await LivechatVisitors.isVisitorActiveOnPeriod(room.v._id, monthYear);
+		if (!isVisitorActive) {
+			await LivechatVisitors.markVisitorActiveForPeriod(room.v._id, monthYear);
 		}
+
+		await LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear);
 
 		if (room.responseBy) {
 			await LivechatRooms.setAgentLastMessageTs(room._id);
