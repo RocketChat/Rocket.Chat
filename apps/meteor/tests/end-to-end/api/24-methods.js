@@ -2422,7 +2422,7 @@ describe('Meteor.methods', function () {
 
 		describe('-> standard room', () => {
 			describe('- when muting a user in a standard room', () => {
-				it('should mute a user in a standard room', async () => {
+				it('should mute an user in a standard room', async () => {
 					await request
 						.post(methodCall('muteUserInRoom'))
 						.set(credentials)
@@ -2467,7 +2467,7 @@ describe('Meteor.methods', function () {
 			});
 
 			describe('- when unmuting a user in a standard room', () => {
-				it('should unmute a user in a standard room', async () => {
+				it('should unmute an user in a standard room', async () => {
 					await request
 						.post(methodCall('unmuteUserInRoom'))
 						.set(credentials)
@@ -2523,8 +2523,27 @@ describe('Meteor.methods', function () {
 					.expect(200);
 			});
 
+            it('should not allow an user to send messages', async () => {
+                await request
+                    .post(api('chat.sendMessage'))
+                    .set(testUserCredentials)
+                    .send({
+                        message: {
+                            msg: 'Sample message',
+                            rid,
+                        },
+                    })
+                    .expect('Content-Type', 'application/json')
+                    .expect(400)
+                    .expect((res) => {
+                        expect(res.body).to.have.property('success', false);
+                        expect(res.body).to.have.property('error').that.is.a('string');
+                        expect(res.body.error).to.equal('You_cannot_send_messages_to_read_only_channels');
+                    });
+            });
+
 			describe('- when unmuting a user in a read-only room', () => {
-				it('should unmute a user in a read-only room', async () => {
+				it('should unmute an user in a read-only room', async () => {
 					await request
 						.post(methodCall('unmuteUserInRoom'))
 						.set(credentials)
@@ -2567,7 +2586,7 @@ describe('Meteor.methods', function () {
 			});
 
 			describe('- when muting a user in a read-only room', () => {
-				it('should mute a user in a read-only room', async () => {
+				it('should mute an user in a read-only room', async () => {
 					await request
 						.post(methodCall('muteUserInRoom'))
 						.set(credentials)
