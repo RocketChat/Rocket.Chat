@@ -28,6 +28,7 @@ export type RoomToolboxActionConfig = {
 		onClickBack?: () => void;
 	}>;
 	type?: 'organization' | 'communication' | 'customization' | 'apps';
+	variant?: 'danger';
 };
 
 export type RoomToolboxContextValue = {
