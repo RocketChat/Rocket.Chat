@@ -43,27 +43,11 @@ const roomTypeFilterStructure = [
 	},
 ] as OptionProp[];
 
-// TODO: Revisit the back-end of the rooms page in order for this filter to be possible
-// const roomVisibilityFilterStructure = [
-// 	{
-// 		id: 'filter_by_visibility',
-// 		text: 'Filter_by_visibility',
-// 		isGroupTitle: true,
-// 	},
-// 	// {
-// 	// 	id: 'public',
-// 	// 	text: 'Public',
-// 	// 	checked: false,
-// 	// },
-// ] as OptionProp[];
-
 const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction<any>> }): ReactElement => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
 	const [roomTypeOptions, setRoomTypeOptions] = useState<OptionProp[]>(roomTypeFilterStructure);
-	// const [roomVisibilityOptions, setRoomVisibilityOptions] = useState<OptionProp[]>(roomVisibilityFilterStructure);
 	const [roomTypeSelectedOptions, setRoomTypeSelectedOptions] = useState<OptionProp[]>([]);
-	// const [roomVisibilitySelectedOptions, setRoomVisibilitySelectedOptions] = useState<OptionProp[]>([]);
 
 	useEffect(() => {
 		return setFilters({ searchText: text, types: roomTypeSelectedOptions });
@@ -101,17 +85,6 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 					customSetSelected={setRoomTypeOptions}
 				/>
 			</Box>
-
-			{/* <Box minWidth='x224' m='x4'>
-				<MultiSelectCustom
-					dropdownOptions={roomVisibilityOptions}
-					defaultTitle={'All_visible' as any}
-					selectedOptionsTitle='Visible'
-					setSelectedOptions={setRoomVisibilitySelectedOptions}
-					selectedOptions={roomVisibilitySelectedOptions}
-					customSetSelected={setRoomVisibilityOptions}
-				/>
-			</Box> */}
 		</Box>
 	);
 };
