@@ -4,7 +4,7 @@ import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import { useEndpoint, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement, MutableRefObject } from 'react';
+import type { ReactElement, MutableRefObject, Dispatch, SetStateAction } from 'react';
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
@@ -25,12 +25,13 @@ import { useListUsers } from '../hooks/useListUsers';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
+	setPendingActionsCount: Dispatch<SetStateAction<any>>;
 	reload: MutableRefObject<() => void>;
 	tab: string;
 };
 
 // TODO: Missing error state
-const UsersTable = ({ reload, tab }: UsersTableProps): ReactElement | null => {
+const UsersTable = ({ setPendingActionsCount, reload, tab }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const usersRoute = useRoute('admin-users');
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -86,6 +87,13 @@ const UsersTable = ({ reload, tab }: UsersTableProps): ReactElement | null => {
 		currentTabUsers,
 		roleFilterSelectedOptions.map((currentRole) => currentRole.id),
 	);
+
+	// TODO: how to call this function and display the count even when not clicked?
+	const pendingActionsCount = useFilterPendingUsers(data?.users, tab).length;
+	useEffect(() => {
+		// console.log('pendingActionsCount: ', pendingActionsCount);
+		setPendingActionsCount(pendingActionsCount);
+	}, [pendingActionsCount, setPendingActionsCount]);
 
 	useEffect(() => {
 		reload.current = refetch;

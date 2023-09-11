@@ -42,6 +42,8 @@ const UsersPage = (): ReactElement => {
 		reload.current();
 	};
 
+	const [pendingActionsCount, setPendingActionsCount] = useState<number>(0);
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -69,7 +71,7 @@ const UsersPage = (): ReactElement => {
 							{t('All')}
 						</Tabs.Item>
 						<Tabs.Item selected={tab === 'pending'} onClick={() => setTab('pending')}>
-							{t('Pending')}
+							{pendingActionsCount === 0 ? t('Pending') : `${t('Pending')} (${pendingActionsCount})`}
 						</Tabs.Item>
 						<Tabs.Item selected={tab === 'active'} onClick={() => setTab('active')}>
 							{t('Active')}
@@ -81,7 +83,7 @@ const UsersPage = (): ReactElement => {
 							{t('Invited')}
 						</Tabs.Item>
 					</Tabs>
-					<UsersTable reload={reload} tab={tab} />
+					<UsersTable reload={reload} tab={tab} setPendingActionsCount={setPendingActionsCount} />
 				</Page.Content>
 			</Page>
 			{context && (
