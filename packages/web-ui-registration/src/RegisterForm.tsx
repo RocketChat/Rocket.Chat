@@ -5,7 +5,7 @@ import { Form, ActionLink } from '@rocket.chat/layout';
 import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -63,6 +63,14 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	const { password } = watch();
 	const passwordIsValid = useValidatePassword(password);
 
+	const registerFormRef = useRef<HTMLElement>(null);
+
+	useEffect(() => {
+		if (registerFormRef.current) {
+			registerFormRef.current.focus();
+		}
+	}, []);
+
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
 		registerUser.mutate(
 			{ pass: password, ...formData },
@@ -102,7 +110,13 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	}
 
 	return (
-		<Form aria-labelledby={formLabelId} onSubmit={handleSubmit(handleRegister)}>
+		<Form
+			tabIndex={-1}
+			ref={registerFormRef}
+			aria-labelledby={formLabelId}
+			aria-describedby='welcomeTitle'
+			onSubmit={handleSubmit(handleRegister)}
+		>
 			<Form.Header>
 				<Form.Title id={formLabelId}>{t('registration.component.form.createAnAccount')}</Form.Title>
 			</Form.Header>
