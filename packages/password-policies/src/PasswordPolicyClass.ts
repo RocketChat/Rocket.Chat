@@ -4,8 +4,15 @@ type PasswordPolicyType = {
 	enabled: boolean;
 	policy: [name: string, options?: Record<string, unknown>][];
 };
+
+type ValidationMessageType = {
+	name: string;
+	isValid: boolean;
+	limit?: number;
+};
+
 export class PasswordPolicy {
-	regex: {
+	private regex: {
 		forbiddingRepeatingCharacters: RegExp;
 		mustContainAtLeastOneLowercase: RegExp;
 		mustContainAtLeastOneUppercase: RegExp;
@@ -65,10 +72,6 @@ export class PasswordPolicy {
 		};
 	}
 
-	get passwordForbidRepeatingCharactersCount() {
-		return this.forbidRepeatingCharactersCount;
-	}
-
 	error(
 		error: string,
 		message: string,
@@ -84,19 +87,12 @@ export class PasswordPolicy {
 		return false;
 	}
 
-	// TODO: implement isLoading state?
 	sendValidationMessage(password: string): {
 		name: string;
 		isValid: boolean;
 		limit?: number;
 	}[] {
-		type validationMessage = {
-			name: string;
-			isValid: boolean;
-			limit?: number;
-		};
-
-		const validationReturn: validationMessage[] = [];
+		const validationReturn: ValidationMessageType[] = [];
 
 		if (!this.enabled) {
 			return [];

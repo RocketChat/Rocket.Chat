@@ -2,15 +2,15 @@ import { PasswordPolicy } from '@rocket.chat/password-policies';
 
 import { settings } from '../../../settings/server';
 
-let enabled = false;
-let minLength = -1;
-let maxLength = -1;
-let forbidRepeatingCharacters = false;
-let forbidRepeatingCharactersCount = 3;
-let mustContainAtLeastOneLowercase = false;
-let mustContainAtLeastOneUppercase = false;
-let mustContainAtLeastOneNumber = false;
-let mustContainAtLeastOneSpecialCharacter = false;
+const enabled = false;
+const minLength = -1;
+const maxLength = -1;
+const forbidRepeatingCharacters = false;
+const forbidRepeatingCharactersCount = 3;
+const mustContainAtLeastOneLowercase = false;
+const mustContainAtLeastOneUppercase = false;
+const mustContainAtLeastOneNumber = false;
+const mustContainAtLeastOneSpecialCharacter = false;
 
 export let passwordPolicy = new PasswordPolicy({
 	enabled,
@@ -25,9 +25,19 @@ export let passwordPolicy = new PasswordPolicy({
 	throwError: true,
 });
 
-settings.watch('Accounts_Password_Policy_Enabled', (value) => {
-	enabled = Boolean(value);
-	passwordPolicy = new PasswordPolicy({
+settings.watchMultiple(
+	[
+		'Accounts_Password_Policy_Enabled',
+		'Accounts_Password_Policy_MinLength',
+		'Accounts_Password_Policy_MaxLength',
+		'Accounts_Password_Policy_ForbidRepeatingCharacters',
+		'Accounts_Password_Policy_ForbidRepeatingCharactersCount',
+		'Accounts_Password_Policy_AtLeastOneLowercase',
+		'Accounts_Password_Policy_AtLeastOneUppercase',
+		'Accounts_Password_Policy_AtLeastOneNumber',
+		'Accounts_Password_Policy_AtLeastOneSpecialCharacter',
+	],
+	([
 		enabled,
 		minLength,
 		maxLength,
@@ -37,126 +47,61 @@ settings.watch('Accounts_Password_Policy_Enabled', (value) => {
 		mustContainAtLeastOneUppercase,
 		mustContainAtLeastOneNumber,
 		mustContainAtLeastOneSpecialCharacter,
-		throwError: true,
-	});
-});
-settings.watch('Accounts_Password_Policy_MinLength', (value) => {
-	minLength = Number(value);
-	passwordPolicy = new PasswordPolicy({
-		enabled,
-		minLength,
-		maxLength,
-		forbidRepeatingCharacters,
-		forbidRepeatingCharactersCount,
-		mustContainAtLeastOneLowercase,
-		mustContainAtLeastOneUppercase,
-		mustContainAtLeastOneNumber,
-		mustContainAtLeastOneSpecialCharacter,
-		throwError: true,
-	});
-});
-settings.watch('Accounts_Password_Policy_MaxLength', (value) => {
-	maxLength = Number(value);
-	passwordPolicy = new PasswordPolicy({
-		enabled,
-		minLength,
-		maxLength,
-		forbidRepeatingCharacters,
-		forbidRepeatingCharactersCount,
-		mustContainAtLeastOneLowercase,
-		mustContainAtLeastOneUppercase,
-		mustContainAtLeastOneNumber,
-		mustContainAtLeastOneSpecialCharacter,
-		throwError: true,
-	});
-});
-settings.watch('Accounts_Password_Policy_ForbidRepeatingCharacters', (value) => {
-	forbidRepeatingCharacters = Boolean(value);
-	passwordPolicy = new PasswordPolicy({
-		enabled,
-		minLength,
-		maxLength,
-		forbidRepeatingCharacters,
-		forbidRepeatingCharactersCount,
-		mustContainAtLeastOneLowercase,
-		mustContainAtLeastOneUppercase,
-		mustContainAtLeastOneNumber,
-		mustContainAtLeastOneSpecialCharacter,
-		throwError: true,
-	});
-});
-settings.watch('Accounts_Password_Policy_ForbidRepeatingCharactersCount', (value) => {
-	forbidRepeatingCharactersCount = Number(value);
-	passwordPolicy = new PasswordPolicy({
-		enabled,
-		minLength,
-		maxLength,
-		forbidRepeatingCharacters,
-		forbidRepeatingCharactersCount,
-		mustContainAtLeastOneLowercase,
-		mustContainAtLeastOneUppercase,
-		mustContainAtLeastOneNumber,
-		mustContainAtLeastOneSpecialCharacter,
-		throwError: true,
-	});
-});
-settings.watch('Accounts_Password_Policy_AtLeastOneLowercase', (value) => {
-	mustContainAtLeastOneLowercase = Boolean(value);
-	passwordPolicy = new PasswordPolicy({
-		enabled,
-		minLength,
-		maxLength,
-		forbidRepeatingCharacters,
-		forbidRepeatingCharactersCount,
-		mustContainAtLeastOneLowercase,
-		mustContainAtLeastOneUppercase,
-		mustContainAtLeastOneNumber,
-		mustContainAtLeastOneSpecialCharacter,
-		throwError: true,
-	});
-});
-settings.watch('Accounts_Password_Policy_AtLeastOneUppercase', (value) => {
-	mustContainAtLeastOneUppercase = Boolean(value);
-	passwordPolicy = new PasswordPolicy({
-		enabled,
-		minLength,
-		maxLength,
-		forbidRepeatingCharacters,
-		forbidRepeatingCharactersCount,
-		mustContainAtLeastOneLowercase,
-		mustContainAtLeastOneUppercase,
-		mustContainAtLeastOneNumber,
-		mustContainAtLeastOneSpecialCharacter,
-		throwError: true,
-	});
-});
-settings.watch('Accounts_Password_Policy_AtLeastOneNumber', (value) => {
-	mustContainAtLeastOneNumber = Boolean(value);
-	passwordPolicy = new PasswordPolicy({
-		enabled,
-		minLength,
-		maxLength,
-		forbidRepeatingCharacters,
-		forbidRepeatingCharactersCount,
-		mustContainAtLeastOneLowercase,
-		mustContainAtLeastOneUppercase,
-		mustContainAtLeastOneNumber,
-		mustContainAtLeastOneSpecialCharacter,
-		throwError: true,
-	});
-});
-settings.watch('Accounts_Password_Policy_AtLeastOneSpecialCharacter', (value) => {
-	mustContainAtLeastOneSpecialCharacter = Boolean(value);
-	passwordPolicy = new PasswordPolicy({
-		enabled,
-		minLength,
-		maxLength,
-		forbidRepeatingCharacters,
-		forbidRepeatingCharactersCount,
-		mustContainAtLeastOneLowercase,
-		mustContainAtLeastOneUppercase,
-		mustContainAtLeastOneNumber,
-		mustContainAtLeastOneSpecialCharacter,
-		throwError: true,
-	});
-});
+	]) => {
+		passwordPolicy = new PasswordPolicy({
+			enabled: Boolean(enabled),
+			minLength: Number(minLength),
+			maxLength: Number(maxLength),
+			forbidRepeatingCharacters: Boolean(forbidRepeatingCharacters),
+			forbidRepeatingCharactersCount: Number(forbidRepeatingCharactersCount),
+			mustContainAtLeastOneLowercase: Boolean(mustContainAtLeastOneLowercase),
+			mustContainAtLeastOneUppercase: Boolean(mustContainAtLeastOneUppercase),
+			mustContainAtLeastOneNumber: Boolean(mustContainAtLeastOneNumber),
+			mustContainAtLeastOneSpecialCharacter: Boolean(mustContainAtLeastOneSpecialCharacter),
+			throwError: true,
+		});
+	},
+);
+// 		enabled,
+// 		minLength,
+// 		maxLength,
+// 		forbidRepeatingCharacters,
+// 		forbidRepeatingCharactersCount,
+// 		mustContainAtLeastOneLowercase,
+// 		mustContainAtLeastOneUppercase,
+// 		mustContainAtLeastOneNumber,
+// 		mustContainAtLeastOneSpecialCharacter,
+// 		throwError: true,
+// 	});
+// });
+// settings.watch('Accounts_Password_Policy_AtLeastOneNumber', (value) => {
+// 	mustContainAtLeastOneNumber = Boolean(value);
+// 	passwordPolicy = new PasswordPolicy({
+// 		enabled,
+// 		minLength,
+// 		maxLength,
+// 		forbidRepeatingCharacters,
+// 		forbidRepeatingCharactersCount,
+// 		mustContainAtLeastOneLowercase,
+// 		mustContainAtLeastOneUppercase,
+// 		mustContainAtLeastOneNumber,
+// 		mustContainAtLeastOneSpecialCharacter,
+// 		throwError: true,
+// 	});
+// });
+// settings.watch('Accounts_Password_Policy_AtLeastOneSpecialCharacter', (value) => {
+// 	console.log('Accounts_Password_Policy_AtLeastOneSpecialCharacter');
+// 	mustContainAtLeastOneSpecialCharacter = Boolean(value);
+// 	passwordPolicy = new PasswordPolicy({
+// 		enabled,
+// 		minLength,
+// 		maxLength,
+// 		forbidRepeatingCharacters,
+// 		forbidRepeatingCharactersCount,
+// 		mustContainAtLeastOneLowercase,
+// 		mustContainAtLeastOneUppercase,
+// 		mustContainAtLeastOneNumber,
+// 		mustContainAtLeastOneSpecialCharacter,
+// 		throwError: true,
+// 	});
+// });
