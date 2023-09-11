@@ -33,7 +33,7 @@ const HighContrastUpsellModal = ({ onClose }: { onClose: () => void }) => {
 			onClose={onClose}
 			onCancel={handleTalkToSales}
 			onConfirm={handleGoFullyFeatured}
-			cancelText={t('Talk_to_sales')}
+			cancelText={t('Talk_to_an_expert')}
 			confirmText={t('Start_free_trial')}
 		/>
 	);
