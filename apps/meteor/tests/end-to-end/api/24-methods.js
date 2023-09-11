@@ -5,7 +5,7 @@ import { getCredentials, request, methodCall, api, credentials } from '../../dat
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
-import { createUser, deleteUser } from '../../data/users.helper.js';
+import { createUser, deleteUser, login } from '../../data/users.helper.js';
 
 describe('Meteor.methods', function () {
 	this.retries(0);
@@ -2404,73 +2404,26 @@ describe('Meteor.methods', function () {
 		let testUser = null;
 		const testUserCredentials = {};
 
-		before('create channel', (done) => {
-			channelName = `methods-test-channel-${Date.now()}`;
-			request
-				.post(api('channels.create'))
-				.set(credentials)
-				.send({
-					name: channelName,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('channel._id');
-					expect(res.body).to.have.nested.property('channel.name', channelName);
-					expect(res.body).to.have.nested.property('channel.t', 'c');
-					expect(res.body).to.have.nested.property('channel.msgs', 0);
-					rid = res.body.channel._id;
-				})
-				.end(done);
-		});
-
-		before('create test user', (done) => {
+		before('create test user', async () => {
 			const username = `user.test.${Date.now()}`;
 			const email = `${username}@rocket.chat`;
-			request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password: username })
-				.end((err, res) => {
-					testUser = res.body.user;
-					done();
-				});
+
+			testUser = createUser({ email, name: username, username, password: username, roles: ['user'] });
 		});
 
-		before('add user to room', (done) => {
-			request
-				.post(api('channels.invite'))
-				.set(credentials)
-				.send({
-					roomId: rid,
-					userId: testUser._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.end(done);
+		before('create channel', async () => {
+			channelName = `methods-test-channel-${Date.now()}`;
+			rid = (await createRoom({ type: 'c', name: channelName, members: [testUser._id] })).body.channel._id;
 		});
 
-		before('login testUser', (done) => {
-			request
-				.post(api('login'))
-				.send({
-					user: testUser.username,
-					password: testUser.username,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
-					testUserCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
+		before('login testUser', async () => {
+			testUserCredentials = await login({ username: testUser.username, password: testUser.username });
 		});
 
 		describe('-> standard room', () => {
 			describe('- when muting a user in a standard room', () => {
-				it('should mute a user in a standard room', (done) => {
-					request
+				it('should mute a user in a standard room', async () => {
+					await request
 						.post(methodCall('muteUserInRoom'))
 						.set(credentials)
 						.send({
@@ -2490,12 +2443,11 @@ describe('Meteor.methods', function () {
 							expect(data).to.have.a.property('msg', 'result');
 							expect(data).to.have.a.property('id', 'id');
 							expect(data).not.to.have.a.property('error');
-						})
-						.end(done);
+						});
 				});
 
-				it('muted user should not be able to send message', (done) => {
-					request
+				it('muted user should not be able to send message', async () => {
+					await request
 						.post(api('chat.sendMessage'))
 						.set(testUserCredentials)
 						.send({
@@ -2510,14 +2462,13 @@ describe('Meteor.methods', function () {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body).to.have.property('error').that.is.a('string');
 							expect(res.body.error).to.equal('You_have_been_muted');
-						})
-						.end(done);
+						});
 				});
 			});
 
 			describe('- when unmuting a user in a standard room', () => {
-				it('should unmute a user in a standard room', (done) => {
-					request
+				it('should unmute a user in a standard room', async () => {
+					await request
 						.post(methodCall('unmuteUserInRoom'))
 						.set(credentials)
 						.send({
@@ -2537,12 +2488,11 @@ describe('Meteor.methods', function () {
 							expect(data).to.have.a.property('msg', 'result');
 							expect(data).to.have.a.property('id', 'id');
 							expect(data).not.to.have.a.property('error');
-						})
-						.end(done);
+						});
 				});
 
-				it('unmuted user should be able to send message', (done) => {
-					request
+				it('unmuted user should be able to send message', async () => {
+					await request
 						.post(api('chat.sendMessage'))
 						.set(testUserCredentials)
 						.send({
@@ -2555,15 +2505,14 @@ describe('Meteor.methods', function () {
 						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
-						})
-						.end(done);
+						});
 				});
 			});
 		});
 
 		describe('-> read-only room', () => {
-			before('set room to read-only', (done) => {
-				request
+			before('set room to read-only', async () => {
+				await request
 					.post(api('channels.setReadOnly'))
 					.set(credentials)
 					.send({
@@ -2571,13 +2520,12 @@ describe('Meteor.methods', function () {
 						readOnly: true,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.end(done);
+					.expect(200);
 			});
 
 			describe('- when unmuting a user in a read-only room', () => {
-				it('should unmute a user in a read-only room', (done) => {
-					request
+				it('should unmute a user in a read-only room', async () => {
+					await request
 						.post(methodCall('unmuteUserInRoom'))
 						.set(credentials)
 						.send({
@@ -2597,12 +2545,11 @@ describe('Meteor.methods', function () {
 							expect(data).to.have.a.property('msg', 'result');
 							expect(data).to.have.a.property('id', 'id');
 							expect(data).not.to.have.a.property('error');
-						})
-						.end(done);
+						});
 				});
 
-				it('unmuted user in read-only room should be able to send message', (done) => {
-					request
+				it('unmuted user in read-only room should be able to send message', async () => {
+					await request
 						.post(api('chat.sendMessage'))
 						.set(testUserCredentials)
 						.send({
@@ -2615,14 +2562,13 @@ describe('Meteor.methods', function () {
 						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
-						})
-						.end(done);
+						});
 				});
 			});
 
 			describe('- when muting a user in a read-only room', () => {
-				it('should mute a user in a read-only room', (done) => {
-					request
+				it('should mute a user in a read-only room', async () => {
+					await request
 						.post(methodCall('muteUserInRoom'))
 						.set(credentials)
 						.send({
@@ -2642,12 +2588,11 @@ describe('Meteor.methods', function () {
 							expect(data).to.have.a.property('msg', 'result');
 							expect(data).to.have.a.property('id', 'id');
 							expect(data).not.to.have.a.property('error');
-						})
-						.end(done);
+						});
 				});
 
-				it('muted user in read-only room should not be able to send message', (done) => {
-					request
+				it('muted user in read-only room should not be able to send message', async () => {
+					await request
 						.post(api('chat.sendMessage'))
 						.set(testUserCredentials)
 						.send({
@@ -2661,8 +2606,7 @@ describe('Meteor.methods', function () {
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body).to.have.property('error').that.is.a('string');
-						})
-						.end(done);
+						});
 				});
 			});
 		});
