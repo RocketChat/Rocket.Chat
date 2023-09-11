@@ -27,7 +27,7 @@ import { removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting, updateEESetting } from '../../../data/permissions.helper';
 import type { IUserCredentialsHeader } from '../../../data/user';
 import { password } from '../../../data/user';
-import { createUser, deleteUser, getMe, login } from '../../../data/users.helper';
+import { activateOrDeactivateUser, createUser, deleteUser, getMe, getUserByUsername, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - business hours', function () {
@@ -780,6 +780,59 @@ describe('LIVECHAT - business hours', function () {
 
 		after(async () => {
 			await deleteUser(agent._id);
+		});
+	});
+
+	describe('BH behavior upon user deactivation and activation', () => {
+		let defaultBH: ILivechatBusinessHour;
+		let agent: ILivechatAgent;
+
+		before(async () => {
+			await updateSetting('Livechat_enable_business_hours', true);
+			await updateEESetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.SINGLE);
+			// wait for callbacks to run
+			await sleep(2000);
+
+			defaultBH = await getDefaultBusinessHour();
+			await openOrCloseBusinessHour(defaultBH, true);
+
+			agent = await createUser();
+			await createAgent(agent.username);
+		});
+
+		after(async () => {
+			await deleteUser(agent);
+		});
+
+		it('should verify if agent becomes unavailable to take chats when user is deactivated', async () => {
+			await activateOrDeactivateUser(agent._id, false);
+
+			const latestAgent = await getUserByUsername(agent.username);
+
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
+		});
+
+		it('should verify if agent becomes available to take chats when user is activated, if business hour is active', async () => {
+			await openOrCloseBusinessHour(defaultBH, true);
+
+			await activateOrDeactivateUser(agent._id, true);
+
+			const latestAgent = await getUserByUsername(agent.username);
+
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.AVAILABLE);
+		});
+		it('should verify if agent becomes unavailable to take chats when user is activated, if business hour is inactive', async () => {
+			await openOrCloseBusinessHour(defaultBH, false);
+
+			await activateOrDeactivateUser(agent._id, false);
+			await activateOrDeactivateUser(agent._id, true);
+
+			const latestAgent = await getUserByUsername(agent.username);
+
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
 		});
 	});
 });
