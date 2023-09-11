@@ -27,7 +27,7 @@ import { removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting, updateEESetting } from '../../../data/permissions.helper';
 import type { IUserCredentialsHeader } from '../../../data/user';
 import { password } from '../../../data/user';
-import { activateOrDeactivateUser, createUser, deleteUser, getMe, getUserByUsername, login } from '../../../data/users.helper';
+import { setUserActiveStatus, createUser, deleteUser, getMe, getUserByUsername, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - business hours', function () {
@@ -249,7 +249,7 @@ describe('LIVECHAT - business hours', function () {
 		});
 	});
 
-	(IS_EE ? describe : describe.skip)('[EE] BH operations upon creation', () => {
+	(IS_EE ? describe : describe.skip)('[EE][BH] On Business Hour created', () => {
 		let defaultBusinessHour: ILivechatBusinessHour;
 
 		before(async () => {
@@ -288,7 +288,7 @@ describe('LIVECHAT - business hours', function () {
 	//  and "dep2" and both these depts are connected to same BH, then in this case after
 	//  archiving "dep1", we'd still need to BH within this user's cache since he's part of
 	//  "dep2" which is linked to BH
-	(IS_EE ? describe : describe.skip)('[EE] BH operations post department archiving', () => {
+	(IS_EE ? describe : describe.skip)('[EE][BH] On Department archived', () => {
 		let defaultBusinessHour: ILivechatBusinessHour;
 		let customBusinessHour: ILivechatBusinessHour;
 		let deptLinkedToCustomBH: ILivechatDepartment;
@@ -434,7 +434,7 @@ describe('LIVECHAT - business hours', function () {
 			await deleteUser(agentLinkedToDept.user);
 		});
 	});
-	(IS_EE ? describe : describe.skip)('[EE] BH operations post department disablement', () => {
+	(IS_EE ? describe : describe.skip)('[EE][BH] On Department disabled', () => {
 		let defaultBusinessHour: ILivechatBusinessHour;
 		let customBusinessHour: ILivechatBusinessHour;
 		let deptLinkedToCustomBH: ILivechatDepartment;
@@ -578,7 +578,7 @@ describe('LIVECHAT - business hours', function () {
 			await deleteUser(agentLinkedToDept.user);
 		});
 	});
-	(IS_EE ? describe : describe.skip)('[EE] BH operations post department removal', () => {
+	(IS_EE ? describe : describe.skip)('[EE][BH] On Department removed', () => {
 		let defaultBusinessHour: ILivechatBusinessHour;
 		let customBusinessHour: ILivechatBusinessHour;
 		let deptLinkedToCustomBH: ILivechatDepartment;
@@ -702,7 +702,7 @@ describe('LIVECHAT - business hours', function () {
 			await deleteUser(agentLinkedToDept.user);
 		});
 	});
-	describe('BH behavior upon new agent creation/deletion', () => {
+	describe('[CE][BH] On Agent created/removed', () => {
 		let defaultBH: ILivechatBusinessHour;
 		let agent: ILivechatAgent;
 		let agentCredentials: IUserCredentialsHeader;
@@ -783,7 +783,7 @@ describe('LIVECHAT - business hours', function () {
 		});
 	});
 
-	describe('BH behavior upon user deactivation and activation', () => {
+	describe('[CE][BH] On Agent deactivated/activated', () => {
 		let defaultBH: ILivechatBusinessHour;
 		let agent: ILivechatAgent;
 
@@ -806,7 +806,7 @@ describe('LIVECHAT - business hours', function () {
 		});
 
 		it('should verify if agent becomes unavailable to take chats when user is deactivated', async () => {
-			await activateOrDeactivateUser(agent._id, false);
+			await setUserActiveStatus(agent._id, false);
 
 			const latestAgent = await getUserByUsername(agent.username);
 
@@ -817,7 +817,7 @@ describe('LIVECHAT - business hours', function () {
 		it('should verify if agent becomes available to take chats when user is activated, if business hour is active', async () => {
 			await openOrCloseBusinessHour(defaultBH, true);
 
-			await activateOrDeactivateUser(agent._id, true);
+			await setUserActiveStatus(agent._id, true);
 
 			const latestAgent = await getUserByUsername(agent.username);
 
@@ -827,8 +827,8 @@ describe('LIVECHAT - business hours', function () {
 		it('should verify if agent becomes unavailable to take chats when user is activated, if business hour is inactive', async () => {
 			await openOrCloseBusinessHour(defaultBH, false);
 
-			await activateOrDeactivateUser(agent._id, false);
-			await activateOrDeactivateUser(agent._id, true);
+			await setUserActiveStatus(agent._id, false);
+			await setUserActiveStatus(agent._id, true);
 
 			const latestAgent = await getUserByUsername(agent.username);
 
@@ -838,7 +838,7 @@ describe('LIVECHAT - business hours', function () {
 		it('should verify if managers are not able to make deactivated agents available', async () => {
 			await createManager();
 
-			await activateOrDeactivateUser(agent._id, false);
+			await setUserActiveStatus(agent._id, false);
 
 			const response = await request
 				.post(api('livechat/agent.status'))
