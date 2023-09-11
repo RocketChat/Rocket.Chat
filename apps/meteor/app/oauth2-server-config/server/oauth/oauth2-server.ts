@@ -64,7 +64,7 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 		email_verified: user.emails?.[0].verified,
 		department: '',
 		birthdate: '',
-		preffered_username: user.username,
+		preferred_username: user.username,
 		updated_at: user._updatedAt,
 		picture: `${Meteor.absoluteUrl()}avatar/${user.username}`,
 	});
