@@ -32,7 +32,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { username: 1 } },
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
 			{ key: { 'livechatData.$**': 1 } },
-			{ key: { activity: 1 } },
+			{ key: { activity: 1 }, partialFilterExpression: { activity: { $exists: true } } },
 		];
 	}
 

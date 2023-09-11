@@ -20,18 +20,22 @@ callbacks.add(
 		if (message.token) {
 			return message;
 		}
+
+		// Return YYYY-MM from moment
+		const monthYear = moment().format('YYYY-MM');
+		if (!(await LivechatVisitors.isVisitorActiveOnPeriod(room.v._id, monthYear))) {
+			await Promise.all([
+				LivechatVisitors.markVisitorActiveForPeriod(room.v._id, monthYear),
+				LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear),
+			]);
+		}
+
 		if (room.responseBy) {
 			await LivechatRooms.setAgentLastMessageTs(room._id);
 		}
 
-		// Return MMMM-YY from moment
-		const monthYear = moment().format('YYYY-MM');
-		if (!(await LivechatVisitors.isVisitorActiveOnPeriod(room.v._id, monthYear))) {
-			await LivechatVisitors.markVisitorActiveForPeriod(room.v._id, monthYear);
-		}
-
 		// check if room is yet awaiting for response
-		if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.waitingResponse)) {
+		if (!room.waitingResponse) {
 			return message;
 		}
 

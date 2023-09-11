@@ -2452,6 +2452,23 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.updateOne(query, update);
 	}
 
+	markVisitorActiveForPeriod(rid: string, period: string): Promise<UpdateResult> {
+		const query = {
+			_id: rid,
+		};
+
+		const update = {
+			$push: {
+				'v.activity': {
+					$each: [period],
+					$slice: -12,
+				},
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
