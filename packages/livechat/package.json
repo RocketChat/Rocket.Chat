@@ -11,6 +11,7 @@
 		"url": "https://github.com/RocketChat/Rocket.Chat",
 		"directory": "packages/livechat"
 	},
+	"homepage": "https://rocket.chat",
 	"scripts": {
 		"clean": "rimraf dist",
 		"build": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-cli --mode production",
@@ -111,6 +112,7 @@
 		"query-string": "^7.1.3",
 		"react-hook-form": "~7.45.4",
 		"react-i18next": "~13.2.2",
+		"storybook-dark-mode": "~3.0.1",
 		"whatwg-fetch": "^3.6.19"
 	},
 	"browserslist": [
