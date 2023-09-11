@@ -1,3 +1,2 @@
-import { PasswordPolicy } from './PasswordPolicyClass';
+export { PasswordPolicy } from './PasswordPolicyClass';
 
-export { PasswordPolicy };
