@@ -96,15 +96,14 @@ WebAppInternals.staticFilesMiddleware = function (
 	next: NextFunction,
 ) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
-	if (Meteor.isProduction) {
-		res.setHeader('cache-control', 'public, max-age=31536000');
+	if (Meteor.isProduction && !res.hasHeader('Cache-Control')) {
+		res.setHeader('Cache-Control', 'public, max-age=31536000');
 	}
 
 	// Prevent meteor_runtime_config.js to load from a different expected hash possibly causing
 	// a cache of the file for the wrong hash and start a client loop due to the mismatch
 	// of the hashes of ui versions which would be checked against a websocket response
 	const { arch, path, url } = WebApp.categorizeRequest(req);
-	// console.log(req.url);
 	if (path === '/meteor_runtime_config.js') {
 		const program = WebApp.clientPrograms[arch] as (typeof WebApp.clientPrograms)[string] & {
 			meteorRuntimeConfigHash?: string;
