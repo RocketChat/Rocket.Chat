@@ -141,6 +141,8 @@ jobs:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
+          COVERAGE_DIR: '/tmp/coverage'
+          COVERAGE_REPORTER: 'lcov'
         run: |
           docker compose -f docker-compose-ci.yml up -d
 
@@ -206,8 +208,8 @@ jobs:
               sleep 10
             done;
           done;
-          exit $s
           docker compose -f ../../docker-compose-ci.yml stop
+          exit $s
 
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
