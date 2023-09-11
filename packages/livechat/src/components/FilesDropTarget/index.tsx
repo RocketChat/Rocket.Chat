@@ -1,7 +1,5 @@
 import type { ComponentChildren, Ref } from 'preact';
-import type { TargetedEvent } from 'preact/compat';
-import { useState } from 'preact/hooks';
-import type { JSXInternal } from 'preact/src/jsx';
+import { useState, type CSSProperties, type ChangeEvent, type TargetedEvent } from 'preact/compat';
 
 import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
@@ -14,7 +12,7 @@ type FilesDropTargetProps = {
 	accept?: string;
 	multiple?: boolean;
 	className?: string;
-	style?: JSXInternal.CSSProperties;
+	style?: CSSProperties;
 	children?: ComponentChildren;
 	inputRef?: Ref<HTMLInputElement>;
 	onUpload?: (files: File[]) => void;
@@ -33,21 +31,21 @@ export const FilesDropTarget = ({
 }: FilesDropTargetProps) => {
 	const [dragLevel, setDragLevel] = useState(0);
 
-	const handleDragOver = (event: DragEvent) => {
+	const handleDragOver = (event: TargetedEvent<HTMLElement, DragEvent>) => {
 		event.preventDefault();
 	};
 
-	const handleDragEnter = (event: DragEvent) => {
+	const handleDragEnter = (event: TargetedEvent<HTMLElement, DragEvent>) => {
 		event.preventDefault();
 		setDragLevel(dragLevel + 1);
 	};
 
-	const handleDragLeave = (event: DragEvent) => {
+	const handleDragLeave = (event: TargetedEvent<HTMLElement, DragEvent>) => {
 		event.preventDefault();
 		setDragLevel(dragLevel - 1);
 	};
 
-	const handleDrop = (event: DragEvent) => {
+	const handleDrop = (event: TargetedEvent<HTMLElement, DragEvent>) => {
 		event.preventDefault();
 
 		if (dragLevel === 0 || !event?.dataTransfer?.files?.length) {
@@ -59,7 +57,7 @@ export const FilesDropTarget = ({
 		handleUpload(event?.dataTransfer?.files);
 	};
 
-	const handleInputChange = (event: TargetedEvent<HTMLInputElement>) => {
+	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
 		if (!event?.currentTarget?.files?.length) {
 			return;
 		}
