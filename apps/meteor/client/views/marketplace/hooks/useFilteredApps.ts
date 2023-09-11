@@ -49,8 +49,6 @@ export const useFilteredApps = ({
 		}
 
 		const { apps } = appsData.value;
-
-		let shouldShowSearchText = false;
 		const fallback = (apps: App[]) => apps;
 
 		const sortingMethods: Record<string, (apps: App[]) => App[]> = {
@@ -96,8 +94,7 @@ export const useFilteredApps = ({
 			sortingMethods[sortingMethod],
 		)(apps);
 
-		if (text) shouldShowSearchText = true;
-
+		const shouldShowSearchText = !!text;
 		const total = filtered.length;
 		const offset = current > total ? 0 : current;
 		const end = current + itemsPerPage;
