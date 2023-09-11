@@ -209,6 +209,8 @@ jobs:
             done;
           done;
           docker compose -f ../../docker-compose-ci.yml stop
+
+          ls -l $COVERAGE_DIR
           exit $s
 
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
