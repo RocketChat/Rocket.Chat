@@ -20,7 +20,7 @@ import { usePagination } from '../../../../components/GenericTable/hooks/usePagi
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useFilterActiveUsers } from '../hooks/useFilterActiveUsers';
 import { useFilterPendingUsers } from '../hooks/useFilterPendingUsers';
-import { useFilterUsersByRole } from '../hooks/useFilterUsersByrole';
+import { useFilterUsersByRole } from '../hooks/useFilterUsersByRole';
 import { useListUsers } from '../hooks/useListUsers';
 import UsersTableRow from './UsersTableRow';
 
@@ -135,11 +135,25 @@ const UsersTable = ({ reload, tab }: UsersTableProps): ReactElement | null => {
 					{t('Roles')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell w='x100' key='status' direction={sortDirection} active={sortBy === 'status'} onClick={setSort} sort='status'>
-				{t('Registration_status')}
-			</GenericTableHeaderCell>,
+			(tab === 'active' || tab === 'all') && (
+				<GenericTableHeaderCell
+					w='x100'
+					key='status'
+					direction={sortDirection}
+					active={sortBy === 'status'}
+					onClick={setSort}
+					sort='status'
+				>
+					{t('Registration_status')}
+				</GenericTableHeaderCell>
+			),
+			tab === 'pending' && (
+				<GenericTableHeaderCell w='x100' key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+					{t('Pending_action')}
+				</GenericTableHeaderCell>
+			),
 		],
-		[mediaQuery, setSort, sortBy, sortDirection, t],
+		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
 	);
 
 	if (error) {
@@ -152,7 +166,7 @@ const UsersTable = ({ reload, tab }: UsersTableProps): ReactElement | null => {
 				<MultiSelectCustom
 					dropdownOptions={roleFilterOptions}
 					defaultTitle='All_roles'
-					selectedOptionsTitle='Rooms'
+					selectedOptionsTitle='Roles'
 					setSelectedOptions={setRoleFilterSelectedOptions}
 					selectedOptions={roleFilterSelectedOptions}
 					customSetSelected={setRoleFilterOptions}
@@ -170,7 +184,7 @@ const UsersTable = ({ reload, tab }: UsersTableProps): ReactElement | null => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{filteredUsers.map((user) => (
-								<UsersTableRow key={user._id} onClick={handleClick} mediaQuery={mediaQuery} user={user} />
+								<UsersTableRow key={user._id} onClick={handleClick} mediaQuery={mediaQuery} user={user} tab={tab} />
 							))}
 						</GenericTableBody>
 					</GenericTable>

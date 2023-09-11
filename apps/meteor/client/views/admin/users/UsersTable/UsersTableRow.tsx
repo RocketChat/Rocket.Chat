@@ -11,15 +11,17 @@ import { UserStatus } from '../../../../components/UserStatus';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 
 type UsersTableRowProps = {
-	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'emails' | 'active' | 'avatarETag' | 'roles'>;
+	tab: string;
+	user: Partial<IUser>;
 	onClick: (id: IUser['_id']) => void;
 	mediaQuery: boolean;
 };
 
-const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): ReactElement => {
+const UsersTableRow = ({ tab, user, onClick, mediaQuery }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
-	const { _id, emails, username, name, status, roles, active, avatarETag } = user;
+	const { _id, emails, username, name, status, roles, active, avatarETag } = user as IUser;
 	const registrationStatusText = active ? t('Active') : t('Deactivated');
+	const pendingAction = user.active === false ? t('Activate') : t('User_first_log_in');
 
 	const roleNames = (roles || [])
 		.map((roleId) => (Roles.findOne(roleId, { fields: { name: 1 } }) as IRole | undefined)?.name)
@@ -65,10 +67,20 @@ const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): React
 			)}
 
 			<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
+
 			{mediaQuery && <GenericTableCell withTruncatedText>{roleNames}</GenericTableCell>}
-			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-				{registrationStatusText}
-			</GenericTableCell>
+
+			{(tab === 'active' || tab === 'all') && (
+				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+					{registrationStatusText}
+				</GenericTableCell>
+			)}
+
+			{tab === 'pending' && (
+				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+					{pendingAction}
+				</GenericTableCell>
+			)}
 		</GenericTableRow>
 	);
 };
