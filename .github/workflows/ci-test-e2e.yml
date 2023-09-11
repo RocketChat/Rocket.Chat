@@ -257,6 +257,7 @@ jobs:
         with:
           directory: /tmp/coverage
           flags: e2e-api
+          root_dir: /tmp/coverage
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
