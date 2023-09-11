@@ -1,5 +1,6 @@
 import { createHash } from 'crypto';
 import type http from 'http';
+import type { UrlWithParsedQuery } from 'url';
 import url from 'url';
 
 import { Logger } from '@rocket.chat/logger';
@@ -78,6 +79,14 @@ WebApp.rawConnectHandlers.use((_req: http.IncomingMessage, res: http.ServerRespo
 });
 
 const _staticFilesMiddleware = WebAppInternals.staticFilesMiddleware;
+declare module 'meteor/webapp' {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	namespace WebApp {
+		function categorizeRequest(
+			req: http.IncomingMessage,
+		): { arch: string; path: string; url: UrlWithParsedQuery } & Record<string, unknown>;
+	}
+}
 
 // @ts-expect-error - accessing internal property of webapp
 WebAppInternals.staticFilesMiddleware = function (
@@ -94,16 +103,21 @@ WebAppInternals.staticFilesMiddleware = function (
 	// Prevent meteor_runtime_config.js to load from a different expected hash possibly causing
 	// a cache of the file for the wrong hash and start a client loop due to the mismatch
 	// of the hashes of ui versions which would be checked against a websocket response
-	const { arch, path } = WebApp.categorizeRequest(req);
+	const { arch, path, url } = WebApp.categorizeRequest(req);
+	// console.log(req.url);
 	if (path === '/meteor_runtime_config.js') {
-		const program = WebApp.clientPrograms[arch];
+		const program = WebApp.clientPrograms[arch] as (typeof WebApp.clientPrograms)[string] & {
+			meteorRuntimeConfigHash?: string;
+			meteorRuntimeConfig: string;
+		};
+
 		if (!program?.meteorRuntimeConfigHash) {
 			program.meteorRuntimeConfigHash = createHash('sha1')
 				.update(JSON.stringify(encodeURIComponent(program.meteorRuntimeConfig)))
 				.digest('hex');
 		}
 
-		if (program.meteorRuntimeConfigHash !== req.query.hash) {
+		if (program.meteorRuntimeConfigHash !== url.query.hash) {
 			res.writeHead(404);
 			return res.end();
 		}
