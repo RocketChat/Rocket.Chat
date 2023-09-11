@@ -472,24 +472,19 @@ jobs:
         run: |
           REPO_VERSION=$(node -p "require('./package.json').version")
           if [[ '${{ github.event_name }}' = 'release' ]]; then
-            GIT_TAG="${GITHUB_REF#*tags/}"
+            RC_VERSION="${GITHUB_REF#*tags/}"
             GIT_BRANCH=""
             ARTIFACT_NAME="${REPO_VERSION}"
-            RC_VERSION=$GIT_TAG
 
             if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
-              SNAP_CHANNEL=candidate
               RC_RELEASE=candidate
             elif [[ '${{ needs.release-versions.outputs.release }}' = 'latest' ]]; then
-              SNAP_CHANNEL=stable
               RC_RELEASE=stable
             fi
           else
-            GIT_TAG=""
             GIT_BRANCH="${GITHUB_REF#*heads/}"
             ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
             RC_VERSION="${REPO_VERSION}"
-            SNAP_CHANNEL=edge
             RC_RELEASE=develop
           fi;
           ROCKET_DEPLOY_DIR="/tmp/deploy"
@@ -515,15 +510,6 @@ jobs:
 
           # Makes build fail if the release isn't there
           curl --fail https://releases.rocket.chat/$RC_VERSION/info
-
-          if [[ $GIT_TAG ]]; then
-            curl -X POST \
-              https://connect.redhat.com/api/v2/projects/$REDHAT_REGISTRY_PID/build \
-              -H "Authorization: Bearer $REDHAT_REGISTRY_KEY" \
-              -H 'Cache-Control: no-cache' \
-              -H 'Content-Type: application/json' \
-              -d '{"tag":"'$GIT_TAG'"}'
-          fi
 
   build-docker-preview:
     name: 🚢 Build Docker Image (preview)
