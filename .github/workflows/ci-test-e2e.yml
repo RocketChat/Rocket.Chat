@@ -207,6 +207,7 @@ jobs:
             done;
           done;
           exit $s
+          docker compose -f ../../docker-compose-ci.yml stop
 
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
