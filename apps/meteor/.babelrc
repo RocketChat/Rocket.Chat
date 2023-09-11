@@ -1,11 +1,15 @@
 {
-	"presets": [
-		"@babel/preset-env",
-		"@babel/preset-react"
-	],
+	"presets": ["@babel/preset-env", "@babel/preset-react"],
 	"env": {
-    "test": {
-      "plugins": ["istanbul"]
-    }
-  }
+		"coverage": {
+			"plugins": [
+				[
+					"istanbul",
+					{
+						"exclude": ["**/*.spec.js", "**/*.test.js"]
+					}
+				]
+			]
+		}
+	}
 }

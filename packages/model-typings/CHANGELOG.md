@@ -1,5 +1,12 @@
 # @rocket.chat/model-typings
 
+## 0.0.10
+
+### Patch Changes
+
+- 8a7d5d3898: fix: agent role being removed upon user deactivation
+  - @rocket.chat/core-typings@6.3.4
+
 ## 0.0.9
 
 ### Patch Changes
