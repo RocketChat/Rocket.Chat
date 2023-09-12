@@ -131,13 +131,10 @@ class PasswordPolicy {
 				data.policy.push(['get-password-policy-maxLength', { maxLength: this.maxLength }]);
 			}
 			if (this.forbidRepeatingCharacters) {
-				data.policy.push(['get-password-policy-forbidRepeatingCharacters']);
-			}
-			if (this.forbidRepeatingCharactersCount) {
-				data.policy.push([
-					'get-password-policy-forbidRepeatingCharactersCount',
-					{ forbidRepeatingCharactersCount: this.forbidRepeatingCharactersCount },
-				]);
+				data.policy.push(
+					['get-password-policy-forbidRepeatingCharacters'],
+					['get-password-policy-forbidRepeatingCharactersCount', { forbidRepeatingCharactersCount: this.forbidRepeatingCharactersCount }],
+				);
 			}
 			if (this.mustContainAtLeastOneLowercase) {
 				data.policy.push(['get-password-policy-mustContainAtLeastOneLowercase']);

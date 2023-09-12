@@ -769,7 +769,13 @@ export const createAccountSettings = () =>
 
 			await this.add('Accounts_Password_Policy_ForbidRepeatingCharactersCount', 3, {
 				type: 'int',
-				enableQuery,
+				enableQuery: [
+					enableQuery,
+					{
+						_id: 'Accounts_Password_Policy_ForbidRepeatingCharacters',
+						value: true,
+					},
+				],
 			});
 
 			await this.add('Accounts_Password_Policy_AtLeastOneLowercase', true, {
