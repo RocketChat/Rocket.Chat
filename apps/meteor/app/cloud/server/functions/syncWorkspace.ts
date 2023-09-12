@@ -35,6 +35,10 @@ const fetchSyncPayload = async (): Promise<Serialized<Cloud.SyncPayload> | undef
 		body: info,
 	});
 
+	if (!response.ok) {
+		throw new CloudWorkspaceConnectionError(`Failed to connect to Rocket.Chat Cloud: ${response.statusText}`);
+	}
+
 	const payload = await response.json();
 
 	if (!payload) {
