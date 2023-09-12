@@ -113,6 +113,7 @@ runs:
         # check if BABEL_ENV is set to coverage
         if [[ $BABEL_ENV == "coverage" ]]; then
           echo -e "rocketchat:coverage\n" >> ./apps/meteor/.meteor/packages
+          echo "Coverage enabled"
         fi
 
         yarn build:ci -- --directory /tmp/dist

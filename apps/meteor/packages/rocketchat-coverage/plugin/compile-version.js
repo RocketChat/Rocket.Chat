@@ -9,6 +9,17 @@ import libCoverage from 'istanbul-lib-coverage';
 const dir = process.env.COVERAGE_DIR;
 const reporter = process.env.COVERAGE_REPORTER || 'lcov';
 
+console.log('Coverage plugin started');
+
+if (!dir && !reporter) {
+	return console.log('Coverage plugin not configured');
+}
+
+if (!dir || !reporter) {
+	console.log('Coverage plugin not fully configured');
+	return;
+}
+
 process.on('exit', async () => {
 	try {
 		if (!dir) {
