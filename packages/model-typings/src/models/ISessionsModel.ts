@@ -145,4 +145,8 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 	}): Promise<UpdateResult | Document>;
 
 	createBatch(sessions: OptionalId<ISession>[]): Promise<BulkWriteResult | undefined>;
+
+	updateDailySessionById(_id: ISession['_id'], record: Partial<ISession>): Promise<UpdateResult>;
+
+	updateAllSessionsByDateToComputed({ start, end }: DestructuredRange): Promise<UpdateResult | Document>;
 }
