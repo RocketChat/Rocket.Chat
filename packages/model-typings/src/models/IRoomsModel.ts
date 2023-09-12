@@ -130,7 +130,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findByE2E(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
-	findE2ERoomById(roomId: IRoom['_id'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findE2ERoomById(roomId: IRoom['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	findRoomsInsideTeams(autoJoin?: boolean): FindCursor<IRoom>;
 

@@ -678,7 +678,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	findE2ERoomById(roomId: IRoom['_id'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+	findE2ERoomById(roomId: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		return this.findOne(
 			{
 				_id: roomId,
