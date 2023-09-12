@@ -77,3 +77,15 @@ export const getMe = (overrideCredential = credentials) =>
 				resolve(res.body);
 			});
 	});
+
+export const setUserActiveStatus = (userId, activeStatus = true) =>
+	new Promise((resolve) => {
+		request
+			.post(api('users.setActiveStatus'))
+			.set(credentials)
+			.send({
+				userId,
+				activeStatus,
+			})
+			.end(resolve);
+	});
