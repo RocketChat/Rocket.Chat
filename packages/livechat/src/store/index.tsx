@@ -66,6 +66,7 @@ type StoreState = {
 	lastReadMessageId?: any;
 	triggerAgent?: any;
 	queueInfo?: any;
+	connecting?: boolean;
 };
 
 export const initialState = (): StoreState => ({
