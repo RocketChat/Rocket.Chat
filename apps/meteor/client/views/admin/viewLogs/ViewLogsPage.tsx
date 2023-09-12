@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 
 import Page from '../../../components/Page';
+import AnalyticsReports from './AnalyticsReports';
 import ServerLogs from './ServerLogs';
 
 const ViewLogsPage = (): ReactElement => {
@@ -23,7 +24,7 @@ const ViewLogsPage = (): ReactElement => {
 						{t('Analytic_reports')}
 					</Tabs.Item>
 				</Tabs>
-				<ServerLogs />
+				{tab === 'Logs' ? <ServerLogs /> : <AnalyticsReports />}
 			</Page.Content>
 		</Page>
 	);
