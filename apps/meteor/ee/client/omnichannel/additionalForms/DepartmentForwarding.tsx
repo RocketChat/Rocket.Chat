@@ -28,6 +28,11 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 
 	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
+	const options = useMemo(() => {
+		const pending = value.filter(({ value }) => !departmentsItems.find((dep) => dep.value === value));
+		return [...departmentsItems, ...pending];
+	}, [departmentsItems, value]);
+
 	return (
 		<Field>
 			<Field.Label>{t(label)}</Field.Label>
@@ -41,7 +46,7 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 						filter={debouncedDepartmentsFilter}
 						setFilter={setDepartmentsFilter}
 						onChange={handler}
-						options={departmentsItems}
+						options={options}
 						value={value}
 						placeholder={t('Select_an_option')}
 						endReached={
