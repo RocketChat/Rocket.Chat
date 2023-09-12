@@ -21,8 +21,6 @@ if (!dir || !reporter) {
 }
 
 process.on('exit', async () => {
-	console.log('Coverage plugin exited');
-
 	try {
 		if (!dir) {
 			throw new Error('No coverage dir');
@@ -31,6 +29,7 @@ process.on('exit', async () => {
 		if (!reporter) {
 			throw new Error('No coverage reporter');
 		}
+		console.log('Coverage plugin triggered');
 
 		const coverageMap = libCoverage.createCoverageMap(globalThis['__coverage__']);
 
