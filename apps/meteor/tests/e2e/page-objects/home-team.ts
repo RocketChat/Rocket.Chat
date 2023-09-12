@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
+import { HomeContent, HomeFlextab, HomeSidenav } from './fragments';
 
 export class HomeTeam {
 	private readonly page: Page;
@@ -29,5 +29,13 @@ export class HomeTeam {
 
 	get btnTeamCreate(): Locator {
 		return this.page.locator('role=dialog >> role=group >> role=button[name=Create]');
+	}
+
+	get private(): Locator {
+		return this.page.locator('label > i').first();
+	}
+
+	get readonly(): Locator {
+		return this.page.locator('label > i').nth(1);
 	}
 }
