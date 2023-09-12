@@ -32,7 +32,7 @@ test.describe.serial('homepage', () => {
 			await adminPage.close();
 		});
 
-		test('layout', async () => {
+		test('expect customize button and all cards to be visible', async () => {
 			await test.step('expect show customize button', async () => {
 				await expect(adminPage.locator('role=button[name="Customize"]')).toBeVisible();
 			});
@@ -47,7 +47,7 @@ test.describe.serial('homepage', () => {
 				await expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
 			});
 
-			test('layout', async () => {
+			test('visibility and button functionality in custom body with empty custom content', async () => {
 				await test.step('expect default value in custom body', async () => {
 					await expect(
 						adminPage.locator('role=status[name="Admins may insert content html to be rendered in this white space."]'),
@@ -70,7 +70,7 @@ test.describe.serial('homepage', () => {
 				await expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
 			});
 
-			test('layout', async () => {
+			test('visibility and button functionality in custom body with custom content', async () => {
 				await test.step('expect custom body to be visible', async () => {
 					await expect(adminPage.locator('role=status[name="Hello admin"]')).toBeVisible();
 				});
@@ -122,7 +122,7 @@ test.describe.serial('homepage', () => {
 			await regularUserPage.close();
 		});
 
-		test('layout', async () => {
+		test('the option customize is not be active', async () => {
 			await test.step('expect to not show customize button', async () => {
 				await expect(regularUserPage.locator('role=button[name="Customize"]')).not.toBeVisible();
 			});
@@ -162,7 +162,7 @@ test.describe.serial('homepage', () => {
 				expect((await api.post('/settings/Layout_Home_Title', { value: 'Home' })).status()).toBe(200);
 			});
 
-			test('layout', async () => {
+			test('expect welcome text and header text to be correct', async () => {
 				await test.step('expect welcome text to be NewSiteName', async () => {
 					await expect(regularUserPage.locator('role=heading[name="Welcome to NewSiteName"]')).toBeVisible();
 				});
@@ -202,7 +202,7 @@ test.describe.serial('homepage', () => {
 					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
 				});
 
-				test('layout', async () => {
+				test('expect default layout not be visible and custom body visible', async () => {
 					await test.step('expect default layout to not be visible', async () => {
 						await expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).not.toBeVisible();
 					});
