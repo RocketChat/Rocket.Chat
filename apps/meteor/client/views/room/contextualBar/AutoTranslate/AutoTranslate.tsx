@@ -11,6 +11,7 @@ import {
 	ContextualbarIcon,
 	ContextualbarContent,
 } from '../../../../components/Contextualbar';
+import { useRoom } from '../../contexts/RoomContext';
 
 type AutoTranslateProps = {
 	language: string;
@@ -30,6 +31,7 @@ const AutoTranslate = ({
 	handleClose,
 }: AutoTranslateProps): ReactElement => {
 	const t = useTranslation();
+	const room = useRoom();
 
 	return (
 		<>
@@ -42,7 +44,12 @@ const AutoTranslate = ({
 				<FieldGroup>
 					<Field>
 						<Field.Row>
-							<ToggleSwitch id='automatic-translation' onChange={handleSwitch} defaultChecked={translateEnable} />
+							<ToggleSwitch
+								id='automatic-translation'
+								onChange={handleSwitch}
+								defaultChecked={translateEnable}
+								disabled={room.encrypted && !translateEnable}
+							/>
 							<Field.Label htmlFor='automatic-translation'>{t('Automatic_Translation')}</Field.Label>
 						</Field.Row>
 					</Field>
