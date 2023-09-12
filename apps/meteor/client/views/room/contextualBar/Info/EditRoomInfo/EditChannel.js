@@ -209,6 +209,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		canViewReadOnly,
 		canViewHideSysMes,
 		canViewJoinCode,
+		canViewReactWhenReadOnly,
 		canViewEncrypted,
 	] = useMemo(() => {
 		const isAllowed = roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange || (() => {});
@@ -360,7 +361,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
 					</Field>
 				)}
-				{readOnly && (
+				{canViewReactWhenReadOnly && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('React_when_read_only')}</Field.Label>

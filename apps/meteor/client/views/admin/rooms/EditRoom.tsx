@@ -60,21 +60,28 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { values, handlers, hasUnsavedChanges, reset } = useForm(getInitialValues(room));
-
-	const [canViewName, canViewTopic, canViewAnnouncement, canViewArchived, canViewDescription, canViewType, canViewReadOnly] =
-		useMemo(() => {
-			const isAllowed = roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange;
-			return [
-				isAllowed?.(room, RoomSettingsEnum.NAME),
-				isAllowed?.(room, RoomSettingsEnum.TOPIC),
-				isAllowed?.(room, RoomSettingsEnum.ANNOUNCEMENT),
-				isAllowed?.(room, RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE),
-				isAllowed?.(room, RoomSettingsEnum.DESCRIPTION),
-				isAllowed?.(room, RoomSettingsEnum.TYPE),
-				isAllowed?.(room, RoomSettingsEnum.READ_ONLY),
-				isAllowed?.(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY),
-			];
-		}, [room]);
+	const [
+		canViewName,
+		canViewTopic,
+		canViewAnnouncement,
+		canViewArchived,
+		canViewDescription,
+		canViewType,
+		canViewReadOnly,
+		canViewReactWhenReadOnly,
+	] = useMemo(() => {
+		const isAllowed = roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange;
+		return [
+			isAllowed?.(room, RoomSettingsEnum.NAME),
+			isAllowed?.(room, RoomSettingsEnum.TOPIC),
+			isAllowed?.(room, RoomSettingsEnum.ANNOUNCEMENT),
+			isAllowed?.(room, RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE),
+			isAllowed?.(room, RoomSettingsEnum.DESCRIPTION),
+			isAllowed?.(room, RoomSettingsEnum.TYPE),
+			isAllowed?.(room, RoomSettingsEnum.READ_ONLY),
+			isAllowed?.(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY),
+		];
+	}, [room]);
 
 	const {
 		roomName,
@@ -127,11 +134,11 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 				roomName: roomType === 'd' ? undefined : roomName,
 				roomTopic,
 				roomType,
-				readOnly,
+				readOnly: room.broadcast ? undefined : readOnly,
 				default: isDefault,
 				favorite: { defaultValue: isDefault, favorite },
 				featured,
-				reactWhenReadOnly,
+				reactWhenReadOnly: room.broadcast ? undefined : reactWhenReadOnly,
 				roomDescription,
 				roomAnnouncement,
 				roomAvatar,
@@ -287,7 +294,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 								<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
 							</Field>
 						)}
-						{readOnly && (
+						{canViewReactWhenReadOnly && (
 							<Field>
 								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 									<Field.Label>{t('React_when_read_only')}</Field.Label>
