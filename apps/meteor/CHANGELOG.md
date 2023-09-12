@@ -1,5 +1,34 @@
 # @rocket.chat/meteor
 
+## 6.3.4
+
+### Patch Changes
+
+- db919f9b23: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- ebeb088441: fix: Prevent `RoomProvider.useEffect` from subscribing to room-data stream multiple times
+- 8a7d5d3898: fix: agent role being removed upon user deactivation
+- 759fe2472a: chore: Increase cache time from 5s to 10s on `getUnits` helpers. This should reduce the number of DB calls made by this method to fetch the unit limitations for a user.
+- Updated dependencies [8a7d5d3898]
+  - @rocket.chat/model-typings@0.0.10
+  - @rocket.chat/omnichannel-services@0.0.10
+  - @rocket.chat/models@0.0.10
+  - @rocket.chat/presence@0.0.10
+  - @rocket.chat/core-services@0.1.4
+  - @rocket.chat/cron@0.0.6
+  - @rocket.chat/instance-status@0.0.10
+  - @rocket.chat/core-typings@6.3.4
+  - @rocket.chat/rest-typings@6.3.4
+  - @rocket.chat/api-client@0.1.4
+  - @rocket.chat/pdf-worker@0.0.10
+  - @rocket.chat/gazzodown@1.0.4
+  - @rocket.chat/ui-contexts@1.0.4
+  - @rocket.chat/fuselage-ui-kit@1.0.4
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.4
+  - @rocket.chat/ui-video-conf@1.0.4
+  - @rocket.chat/web-ui-registration@1.0.4
+
 ## 6.3.3
 
 ### Patch Changes

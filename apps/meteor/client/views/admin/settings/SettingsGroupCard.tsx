@@ -1,7 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Button, Box } from '@rocket.chat/fuselage';
-import { Card } from '@rocket.chat/ui-client';
+import { Card, CardBody, CardTitle, CardFooter } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -28,13 +28,13 @@ const SettingsGroupCard = ({ id, title, description }: SettingsGroupCardProps): 
 
 	return (
 		<Card data-qa-id={id}>
-			<Card.Title>{t(title)}</Card.Title>
-			<Card.Body height={88}>
+			<CardTitle>{t(title)}</CardTitle>
+			<CardBody height={88}>
 				<Box className={clampStyle}>
 					{description && t.has(description) && <MarkdownText variant='inlineWithoutBreaks' content={t(description)} />}
 				</Box>
-			</Card.Body>
-			<Card.Footer>
+			</CardBody>
+			<CardFooter>
 				<Button
 					is='a'
 					href={router.buildRoutePath({
@@ -45,7 +45,7 @@ const SettingsGroupCard = ({ id, title, description }: SettingsGroupCardProps): 
 				>
 					{t('Open')}
 				</Button>
-			</Card.Footer>
+			</CardFooter>
 		</Card>
 	);
 };

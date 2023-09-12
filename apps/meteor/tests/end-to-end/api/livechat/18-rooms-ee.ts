@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
@@ -252,6 +252,70 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			const updatedRoom = await getLivechatRoomInfo(room._id);
 			expect(updatedRoom).to.not.have.property('onHold');
+		});
+	});
+
+	describe('visitor abandonment feature', () => {
+		let room: IOmnichannelRoom;
+
+		before(async () => {
+			await updateSetting('Livechat_abandoned_rooms_action', 'Livechat_close_chat');
+			await updateSetting('Livechat_visitor_inactivity_timeout', 60);
+		});
+
+		it('should set predictedVisitorAbandonmentAt when agent sends a message', async () => {
+			const { room: newRoom } = await startANewLivechatRoomAndTakeIt();
+
+			room = newRoom;
+
+			await sendAgentMessage(room._id);
+
+			const updatedRoom = await getLivechatRoomInfo(room._id);
+
+			const lastMessageTs = updatedRoom.responseBy?.lastMessageTs;
+			const firstResponseTs = updatedRoom.responseBy?.firstResponseTs;
+			const predictedVisitorAbandonmentAt = updatedRoom.omnichannel?.predictedVisitorAbandonmentAt;
+
+			expect(predictedVisitorAbandonmentAt).to.not.be.undefined;
+			expect(lastMessageTs).to.not.be.undefined;
+			expect(firstResponseTs).to.not.be.undefined;
+
+			// expect predictedVisitorAbandonmentAt to be 60 seconds after lastMessageTs
+			const lastMessageTsDate = new Date(lastMessageTs as Date);
+			const predictedVisitorAbandonmentAtDate = new Date(predictedVisitorAbandonmentAt as Date);
+			const firstResponseTsDate = new Date(firstResponseTs as Date);
+
+			expect(predictedVisitorAbandonmentAtDate.getTime()).to.be.equal(lastMessageTsDate.getTime() + 60000);
+			expect(firstResponseTsDate.getTime()).to.be.equal(lastMessageTsDate.getTime());
+		});
+
+		it('should not update predictedVisitorAbandonmentAt when agent sends yet another message', async () => {
+			await sendAgentMessage(room._id);
+
+			const updatedRoom = await getLivechatRoomInfo(room._id);
+
+			const lastMessageTs = updatedRoom.responseBy?.lastMessageTs;
+			const firstResponseTs = updatedRoom.responseBy?.firstResponseTs;
+			const predictedVisitorAbandonmentAt = updatedRoom.omnichannel?.predictedVisitorAbandonmentAt;
+
+			expect(predictedVisitorAbandonmentAt).to.not.be.undefined;
+			expect(lastMessageTs).to.not.be.undefined;
+
+			// expect predictedVisitorAbandonmentAt to be 60 seconds after first message
+			const lastMessageTsDate = new Date(lastMessageTs as Date);
+			const predictedVisitorAbandonmentAtDate = new Date(predictedVisitorAbandonmentAt as Date);
+			const firstResponseTsDate = new Date(firstResponseTs as Date);
+
+			expect(predictedVisitorAbandonmentAtDate.getTime()).to.be.equal(firstResponseTsDate.getTime() + 60000);
+
+			// lastMessageTs should be updated
+			expect(lastMessageTsDate.getTime()).to.not.be.equal(firstResponseTsDate.getTime());
+			expect(lastMessageTsDate.getTime()).to.be.greaterThan(firstResponseTsDate.getTime());
+		});
+
+		after(async () => {
+			await updateSetting('Livechat_abandoned_rooms_action', 'none');
+			await updateSetting('Livechat_visitor_inactivity_timeout', 3600);
 		});
 	});
 });
