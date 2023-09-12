@@ -10,7 +10,7 @@ const ViewLogsPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Logs')} />
+			<Page.Header title={t('Records')} />
 			<Page.Content>
 				<ServerLogs />
 			</Page.Content>
