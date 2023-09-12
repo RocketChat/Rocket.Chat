@@ -21,6 +21,8 @@ if (!dir || !reporter) {
 }
 
 process.on('exit', async () => {
+	console.log('Coverage plugin exited');
+
 	try {
 		if (!dir) {
 			throw new Error('No coverage dir');
