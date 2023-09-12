@@ -1,4 +1,4 @@
-import type { ILicenseV2 } from '@rocket.chat/core-typings';
+import type { ILicenseV2, ILicenseV3 } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -24,7 +24,7 @@ export const isLicensesAddProps = ajv.compile<licensesAddProps>(licensesAddProps
 
 export type LicensesEndpoints = {
 	'/v1/licenses.get': {
-		GET: () => { licenses: Array<ILicenseV2> };
+		GET: () => { licenses: Array<ILicenseV2 | (ILicenseV3 & { modules: string[] })> };
 	};
 	'/v1/licenses.add': {
 		POST: (params: licensesAddProps) => void;

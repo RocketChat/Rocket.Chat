@@ -1,13 +1,13 @@
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { addLicense, setURL } from './license';
+import { setLicense, setURL } from './license';
 
 settings.watch<string>('Site_Url', (value) => {
 	if (value) {
-		setURL(value);
+		void setURL(value);
 	}
 });
 
-callbacks.add('workspaceLicenseChanged', (updatedLicense) => {
-	addLicense(updatedLicense);
+callbacks.add('workspaceLicenseChanged', async (updatedLicense) => {
+	await setLicense(updatedLicense);
 });

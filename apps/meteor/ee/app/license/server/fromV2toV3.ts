@@ -5,20 +5,31 @@
 
 import type { ILicenseV2, ILicenseV3, Module, LicenseLimit, LicensePeriod } from '@rocket.chat/core-typings';
 
+import { isBundle, getBundleFromModule, getBundleModules } from './bundles';
+import { getTagColor } from './getTagColor';
+
 export const fromV2toV3 = (v2: ILicenseV2): ILicenseV3 => {
 	return {
 		version: '3.0',
 		information: {
 			autoRenew: false,
-			visualExpiration: Date.parse(v2.expiry).toString(),
+			visualExpiration: new Date(Date.parse(v2.expiry)).toISOString(),
 			trial: v2.meta?.trial || false,
 			offline: false,
-			createdAt: Date.now().toString(),
+			createdAt: new Date().toISOString(),
 			grantedBy: {
 				method: 'manual',
 				seller: 'V2',
 			},
-			tags: v2.tag ? [v2.tag] : undefined,
+			// if no tag present, it means it is an old license, so try check for bundles and use them as tags
+			tags: v2.tag
+				? [v2.tag]
+				: [
+						...(v2.modules.filter(isBundle).map(getBundleFromModule).filter(Boolean) as string[]).map((tag) => ({
+							name: tag,
+							color: getTagColor(tag),
+						})),
+				  ],
 		},
 		validation: {
 			serverUrls: [
@@ -29,7 +40,7 @@ export const fromV2toV3 = (v2: ILicenseV2): ILicenseV3 => {
 			],
 			validPeriods: [
 				{
-					validUntil: Date.parse(v2.expiry).toString(),
+					validUntil: new Date(Date.parse(v2.expiry)).toISOString(),
 					invalidBehavior: 'invalidate_license',
 				} as LicensePeriod,
 			],
@@ -37,42 +48,65 @@ export const fromV2toV3 = (v2: ILicenseV2): ILicenseV3 => {
 				required: false,
 			},
 		},
-		grantedModules: v2.modules.map((module) => {
-			return {
-				module: module as Module,
-			};
-		}),
+		grantedModules: [
+			...new Set(
+				v2.modules
+					.map((licenseModule) => (isBundle(licenseModule) ? getBundleModules(licenseModule) : [licenseModule]))
+					.reduce((prev, curr) => [...prev, ...curr], [])
+					.map((licenseModule) => ({ module: licenseModule as Module })),
+			),
+		],
 		limits: {
-			activeUsers: [
-				{
-					max: v2.maxActiveUsers,
-					behavior: 'invalidate_license',
-				} as LicenseLimit,
-			],
-			guestUsers: [
-				{
-					max: v2.maxGuestUsers,
-					behavior: 'invalidate_license',
-				} as LicenseLimit,
-			],
-			roomsPerGuest: [
-				{
-					max: v2.maxRoomsPerGuest,
-					behavior: 'invalidate_license',
-				} as LicenseLimit,
-			],
-			privateApps: [
-				{
-					max: v2.apps?.maxPrivateApps,
-					behavior: 'prevent_installation',
-				} as LicenseLimit,
-			],
-			marketplaceApps: [
-				{
-					max: v2.apps?.maxMarketplaceApps,
-					behavior: 'prevent_installation',
-				} as LicenseLimit,
-			],
+			...(v2.maxActiveUsers
+				? {
+						activeUsers: [
+							{
+								max: v2.maxActiveUsers,
+								behavior: 'prevent_action',
+							},
+						],
+				  }
+				: {}),
+			...(v2.maxGuestUsers
+				? {
+						guestUsers: [
+							{
+								max: v2.maxGuestUsers,
+								behavior: 'prevent_action',
+							},
+						],
+				  }
+				: {}),
+			...(v2.maxRoomsPerGuest
+				? {
+						roomsPerGuest: [
+							{
+								max: v2.maxRoomsPerGuest,
+								behavior: 'prevent_action',
+							},
+						],
+				  }
+				: {}),
+			...(v2.apps?.maxPrivateApps
+				? {
+						privateApps: [
+							{
+								max: v2.apps.maxPrivateApps,
+								behavior: 'prevent_action',
+							},
+						],
+				  }
+				: {}),
+			...(v2.apps?.maxMarketplaceApps
+				? {
+						marketplaceApps: [
+							{
+								max: v2.apps.maxMarketplaceApps,
+								behavior: 'prevent_action',
+							},
+						],
+				  }
+				: {}),
 		},
 	};
 };

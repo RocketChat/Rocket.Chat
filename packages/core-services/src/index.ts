@@ -12,7 +12,7 @@ import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
 import type { IImportService } from './types/IImportService';
 import type { ILDAPService } from './types/ILDAPService';
-import type { ILicenseV2 } from './types/ILicenseV2';
+import type { ILicense } from './types/ILicense';
 import type { IMediaService, ResizeResult } from './types/IMediaService';
 import type { IMessageReadsService } from './types/IMessageReadsService';
 import type { IMessageService } from './types/IMessageService';
@@ -72,7 +72,7 @@ export {
 	IDeviceManagementService,
 	IEnterpriseSettings,
 	ILDAPService,
-	ILicenseV2,
+	ILicense,
 	IListRoomsFilter,
 	ILoginResult,
 	IMediaService,
@@ -127,7 +127,7 @@ export const Authorization = proxifyWithWait<IAuthorization>('authorization');
 export const Apps = proxifyWithWait<IAppsEngineService>('apps-engine');
 export const Presence = proxifyWithWait<IPresence>('presence');
 export const Account = proxifyWithWait<IAccount>('accounts');
-export const License = proxifyWithWait<ILicenseV2>('license');
+export const License = proxifyWithWait<ILicense>('license');
 export const MeteorService = proxifyWithWait<IMeteor>('meteor');
 export const Banner = proxifyWithWait<IBannerService>('banner');
 export const UiKitCoreApp = proxifyWithWait<IUiKitCoreAppService>('uikit-core-app');

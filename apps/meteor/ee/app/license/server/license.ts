@@ -2,45 +2,50 @@ import { EventEmitter } from 'events';
 
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { Apps } from '@rocket.chat/core-services';
-import type { ILicenseV2, ILicenseTag } from '@rocket.chat/core-typings';
+import type { ILicenseV2, ILicenseTag, ILicenseV3, Timestamp, LicenseBehavior } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
 import type { BundleFeature } from './bundles';
-import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
+import { getBundleModules, isBundle } from './bundles';
 import decrypt from './decrypt';
-import { getTagColor } from './getTagColor';
+import { fromV2toV3 } from './fromV2toV3';
 import { isUnderAppLimits } from './lib/isUnderAppLimits';
 
 const EnterpriseLicenses = new EventEmitter();
 
-interface IValidLicense {
-	valid?: boolean;
-	license: ILicenseV2;
-}
-
-let maxGuestUsers = 0;
-let maxRoomsPerGuest = 0;
-let maxActiveUsers = 0;
+const logger = new Logger('License');
 
 class LicenseClass {
 	private url: string | null = null;
 
-	private licenses: IValidLicense[] = [];
-
-	private encryptedLicenses = new Set<string>();
+	private encryptedLicense: string | undefined;
 
 	private tags = new Set<ILicenseTag>();
 
 	private modules = new Set<string>();
 
-	private appsConfig: NonNullable<ILicenseV2['apps']> = {
-		maxPrivateApps: 3,
-		maxMarketplaceApps: 5,
-	};
+	private unmodifiedLicense: ILicenseV2 | ILicenseV3 | undefined;
 
-	private _validateExpiration(expiration: string): boolean {
-		return new Date() > new Date(expiration);
+	private license: ILicenseV3 | undefined;
+
+	private valid: boolean | undefined;
+
+	private inFairPolicy: boolean | undefined;
+
+	private _isPeriodInvalid(from?: Timestamp, until?: Timestamp): boolean {
+		const now = new Date();
+
+		if (from && now < new Date(from)) {
+			return true;
+		}
+
+		if (until && now > new Date(until)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	private _validateURL(licenseURL: string, url: string): boolean {
@@ -52,55 +57,20 @@ class LicenseClass {
 		return !!regex.exec(url);
 	}
 
-	private _setAppsConfig(license: ILicenseV2): void {
-		// If the license is valid, no limit is going to be applied to apps installation for now
-		// This guarantees that upgraded workspaces won't be affected by the new limit right away
-		// and gives us time to propagate the new limit schema to all licenses
-		const { maxPrivateApps = -1, maxMarketplaceApps = -1 } = license.apps || {};
-
-		if (maxPrivateApps === -1 || maxPrivateApps > this.appsConfig.maxPrivateApps) {
-			this.appsConfig.maxPrivateApps = maxPrivateApps;
-		}
-
-		if (maxMarketplaceApps === -1 || maxMarketplaceApps > this.appsConfig.maxMarketplaceApps) {
-			this.appsConfig.maxMarketplaceApps = maxMarketplaceApps;
-		}
-	}
-
 	private _validModules(licenseModules: string[]): void {
-		licenseModules.forEach((licenseModule) => {
-			const modules = isBundle(licenseModule) ? getBundleModules(licenseModule) : [licenseModule];
-
-			modules.forEach((module) => {
-				this.modules.add(module);
-				EnterpriseLicenses.emit('module', { module, valid: true });
-				EnterpriseLicenses.emit(`valid:${module}`);
-			});
+		licenseModules.forEach((module) => {
+			this.modules.add(module);
+			EnterpriseLicenses.emit('module', { module, valid: true });
+			EnterpriseLicenses.emit(`valid:${module}`);
 		});
 	}
 
 	private _invalidModules(licenseModules: string[]): void {
-		licenseModules.forEach((licenseModule) => {
-			const modules = isBundle(licenseModule) ? getBundleModules(licenseModule) : [licenseModule];
-
-			modules.forEach((module) => {
-				EnterpriseLicenses.emit('module', { module, valid: false });
-				EnterpriseLicenses.emit(`invalid:${module}`);
-			});
+		licenseModules.forEach((module) => {
+			EnterpriseLicenses.emit('module', { module, valid: false });
+			EnterpriseLicenses.emit(`invalid:${module}`);
 		});
-	}
-
-	private _addTags(license: ILicenseV2): void {
-		// if no tag present, it means it is an old license, so try check for bundles and use them as tags
-		if (typeof license.tag === 'undefined') {
-			license.modules
-				.filter(isBundle)
-				.map(getBundleFromModule)
-				.forEach((tag) => tag && this._addTag({ name: tag, color: getTagColor(tag) }));
-			return;
-		}
-
-		this._addTag(license.tag);
+		this.modules.clear();
 	}
 
 	private _addTag(tag: ILicenseTag): void {
@@ -114,123 +84,264 @@ class LicenseClass {
 		this.tags.add(tag);
 	}
 
-	addLicense(license: ILicenseV2): void {
-		this.licenses.push({
-			valid: undefined,
-			license,
-		});
+	private removeCurrentLicense(): void {
+		const { license, valid } = this;
 
-		this.validate();
-	}
+		this.license = undefined;
+		this.unmodifiedLicense = undefined;
+		this.valid = undefined;
+		this.inFairPolicy = undefined;
 
-	lockLicense(encryptedLicense: string): void {
-		this.encryptedLicenses.add(encryptedLicense);
-	}
-
-	isLicenseDuplicate(encryptedLicense: string): boolean {
-		if (this.encryptedLicenses.has(encryptedLicense)) {
-			return true;
+		if (!license || !valid) {
+			return;
 		}
 
-		return false;
+		this.valid = false;
+		EnterpriseLicenses.emit('invalidate');
+		this._invalidModules(license.grantedModules.map(({ module }) => module));
 	}
 
-	hasModule(module: string): boolean {
+	public async setLicenseV3(license: ILicenseV3): Promise<void> {
+		this.removeCurrentLicense();
+
+		this.unmodifiedLicense = license;
+		this.license = license;
+
+		return this.validate();
+	}
+
+	public async setLicenseV2(license: ILicenseV2): Promise<void> {
+		this.removeCurrentLicense();
+
+		const licenseV3 = fromV2toV3(license);
+
+		this.unmodifiedLicense = license;
+		this.license = licenseV3;
+
+		return this.validate();
+	}
+
+	public lockLicense(encryptedLicense: string): void {
+		this.encryptedLicense = encryptedLicense;
+	}
+
+	public isLicenseDuplicate(encryptedLicense: string): boolean {
+		return Boolean(this.encryptedLicense && this.encryptedLicense === encryptedLicense);
+	}
+
+	public hasModule(module: string): boolean {
 		return this.modules.has(module);
 	}
 
-	hasAnyValidLicense(): boolean {
-		return this.licenses.some((item) => item.valid);
+	public hasValidLicense(): boolean {
+		return Boolean(this.license && this.valid);
 	}
 
-	getLicenses(): IValidLicense[] {
-		return this.licenses;
+	public getUnmodifiedLicense(): ILicenseV2 | ILicenseV3 | undefined {
+		if (this.valid) {
+			return this.unmodifiedLicense;
+		}
 	}
 
-	getModules(): string[] {
+	public getModules(): string[] {
 		return [...this.modules];
 	}
 
-	getTags(): ILicenseTag[] {
+	public getTags(): ILicenseTag[] {
 		return [...this.tags];
 	}
 
-	getAppsConfig(): NonNullable<ILicenseV2['apps']> {
-		return this.appsConfig;
-	}
-
-	setURL(url: string): void {
+	public async setURL(url: string): Promise<void> {
 		this.url = url.replace(/\/$/, '').replace(/^https?:\/\/(.*)$/, '$1');
 
-		this.validate();
+		await this.validate();
 	}
 
-	validate(): void {
-		this.licenses = this.licenses.map((item) => {
-			const { license } = item;
-
-			if (license.url) {
-				if (!this.url) {
-					return item;
-				}
-				if (!this._validateURL(license.url, this.url)) {
-					this.invalidate(item);
-					console.error(`#### License error: invalid url, licensed to ${license.url}, used on ${this.url}`);
-					this._invalidModules(license.modules);
-					return item;
-				}
-			}
-
-			if (license.expiry && this._validateExpiration(license.expiry)) {
-				this.invalidate(item);
-				console.error(`#### License error: expired, valid until ${license.expiry}`);
-				this._invalidModules(license.modules);
-				return item;
-			}
-
-			if (license.maxGuestUsers > maxGuestUsers) {
-				maxGuestUsers = license.maxGuestUsers;
-			}
-
-			if (license.maxRoomsPerGuest > maxRoomsPerGuest) {
-				maxRoomsPerGuest = license.maxRoomsPerGuest;
-			}
-
-			if (license.maxActiveUsers > maxActiveUsers) {
-				maxActiveUsers = license.maxActiveUsers;
-			}
-
-			this._setAppsConfig(license);
-
-			this._validModules(license.modules);
-
-			this._addTags(license);
-
-			console.log('#### License validated:', license.modules.join(', '));
-
-			item.valid = true;
-			return item;
-		});
-
-		EnterpriseLicenses.emit('validate');
-		this.showLicenses();
-	}
-
-	invalidate(item: IValidLicense): void {
-		item.valid = false;
-
-		EnterpriseLicenses.emit('invalidate');
-	}
-
-	async canAddNewUser(userCount = 1): Promise<boolean> {
-		if (!maxActiveUsers) {
-			return true;
+	private validateLicenseUrl(license: ILicenseV3, behaviorFilter: (behavior: LicenseBehavior) => boolean): LicenseBehavior[] {
+		if (!behaviorFilter('invalidate_license')) {
+			return [];
 		}
 
-		return maxActiveUsers > (await Users.getActiveLocalUserCount()) + userCount;
+		const {
+			validation: { serverUrls },
+		} = license;
+
+		const { url: workspaceUrl } = this;
+
+		if (!workspaceUrl) {
+			logger.error('Unable to validate license URL without knowing the workspace URL.');
+			return ['invalidate_license'];
+		}
+
+		return serverUrls
+			.filter((url) => {
+				switch (url.type) {
+					case 'regex':
+						// #TODO
+						break;
+					case 'hash':
+						// #TODO
+						break;
+					case 'url':
+						return !this._validateURL(url.value, workspaceUrl);
+				}
+
+				return false;
+			})
+			.map((url) => {
+				logger.error({
+					msg: 'Url validation failed',
+					url,
+					workspaceUrl,
+				});
+				return 'invalidate_license';
+			});
 	}
 
-	async canEnableApp(app: IAppStorageItem): Promise<boolean> {
+	private validateLicensePeriods(license: ILicenseV3, behaviorFilter: (behavior: LicenseBehavior) => boolean): LicenseBehavior[] {
+		const {
+			validation: { validPeriods },
+		} = license;
+
+		return validPeriods
+			.filter(
+				({ validFrom, validUntil, invalidBehavior }) => behaviorFilter(invalidBehavior) && this._isPeriodInvalid(validFrom, validUntil),
+			)
+			.map((period) => {
+				logger.error({
+					msg: 'Period validation failed',
+					period,
+				});
+				return period.invalidBehavior;
+			});
+	}
+
+	private async validateLicenseLimits(
+		license: ILicenseV3,
+		behaviorFilter: (behavior: LicenseBehavior) => boolean,
+	): Promise<LicenseBehavior[]> {
+		const { limits } = license;
+
+		const limitKeys = Object.keys(limits) as (keyof ILicenseV3['limits'])[];
+		return (
+			await Promise.all(
+				limitKeys.map(async (limitKey) => {
+					// Filter the limit list before running any query in the database so we don't end up loading some value we won't use.
+					const limitList = limits[limitKey]?.filter(({ behavior, max }) => max >= 0 && behaviorFilter(behavior));
+					if (!limitList?.length) {
+						return [];
+					}
+
+					const currentValue = await this.getCurrentValueForLicenseLimit(limitKey);
+					return limitList
+						.filter(({ max }) => max < currentValue)
+						.map((limit) => {
+							logger.error({
+								msg: 'Limit validation failed',
+								kind: limitKey,
+								limit,
+							});
+							return limit.behavior;
+						});
+				}),
+			)
+		).reduce((prev, curr) => [...new Set([...prev, ...curr])], []);
+	}
+
+	private async shouldPreventAction(action: keyof ILicenseV3['limits'], newCount = 1): Promise<boolean> {
+		if (!this.valid) {
+			return false;
+		}
+
+		const currentValue = (await this.getCurrentValueForLicenseLimit(action)) + newCount;
+		return Boolean(
+			this.license?.limits[action]
+				?.filter(({ behavior, max }) => behavior === 'prevent_action' && max >= 0)
+				.some(({ max }) => max < currentValue),
+		);
+	}
+
+	private async runValidation(license: ILicenseV3, behaviorsToValidate: LicenseBehavior[] = []): Promise<LicenseBehavior[]> {
+		const shouldValidateBehavior = (behavior: LicenseBehavior) => !behaviorsToValidate?.length || behaviorsToValidate.includes(behavior);
+
+		return [
+			...new Set([
+				...this.validateLicenseUrl(license, shouldValidateBehavior),
+				...this.validateLicensePeriods(license, shouldValidateBehavior),
+				...(await this.validateLicenseLimits(license, shouldValidateBehavior)),
+			]),
+		];
+	}
+
+	private async validate(): Promise<void> {
+		if (this.license) {
+			// #TODO: Only include 'prevent_installation' here if this is actually the initial installation of the license
+			const behaviorsTriggered = await this.runValidation(this.license, [
+				'invalidate_license',
+				'prevent_installation',
+				'start_fair_policy',
+			]);
+
+			if (behaviorsTriggered.includes('invalidate_license') || behaviorsTriggered.includes('prevent_installation')) {
+				return;
+			}
+
+			this.valid = true;
+			this.inFairPolicy = behaviorsTriggered.includes('start_fair_policy');
+
+			if (this.license.information.tags) {
+				for (const tag of this.license.information.tags) {
+					this._addTag(tag);
+				}
+			}
+
+			this._validModules(this.license.grantedModules.map(({ module }) => module));
+			console.log('#### License validated:', this.license.grantedModules.map(({ module }) => module).join(', '));
+		}
+
+		EnterpriseLicenses.emit('validate');
+		this.showLicense();
+	}
+
+	private async getCurrentValueForLicenseLimit(limitKey: keyof ILicenseV3['limits']): Promise<number> {
+		switch (limitKey) {
+			case 'activeUsers':
+				return this.getCurrentActiveUsers();
+			case 'guestUsers':
+				return this.getCurrentGuestUsers();
+			case 'privateApps':
+				return this.getCurrentPrivateAppsCount();
+			case 'marketplaceApps':
+				return this.getCurrentMarketplaceAppsCount();
+			default:
+				return 0;
+		}
+	}
+
+	private async getCurrentActiveUsers(): Promise<number> {
+		return Users.getActiveLocalUserCount();
+	}
+
+	private async getCurrentGuestUsers(): Promise<number> {
+		// #TODO: Load current count
+		return 0;
+	}
+
+	private async getCurrentPrivateAppsCount(): Promise<number> {
+		// #TODO: Load current count
+		return 0;
+	}
+
+	private async getCurrentMarketplaceAppsCount(): Promise<number> {
+		// #TODO: Load current count
+		return 0;
+	}
+
+	public async canAddNewUser(userCount = 1): Promise<boolean> {
+		return !(await this.shouldPreventAction('activeUsers', userCount));
+	}
+
+	public async canEnableApp(app: IAppStorageItem): Promise<boolean> {
 		if (!(await Apps.isInitialized())) {
 			return false;
 		}
@@ -241,34 +352,44 @@ class LicenseClass {
 			return true;
 		}
 
-		return isUnderAppLimits(this.appsConfig, getInstallationSourceFromAppStorageItem(app));
+		return isUnderAppLimits(getAppsConfig(), getInstallationSourceFromAppStorageItem(app));
 	}
 
-	showLicenses(): void {
+	private showLicense(): void {
 		if (!process.env.LICENSE_DEBUG || process.env.LICENSE_DEBUG === 'false') {
 			return;
 		}
 
-		this.licenses
-			.filter((item) => item.valid)
-			.forEach((item) => {
-				const { license } = item;
+		if (!this.license || !this.valid) {
+			return;
+		}
 
-				console.log('---- License enabled ----');
-				console.log('              url ->', license.url);
-				console.log('           expiry ->', license.expiry);
-				console.log('   maxActiveUsers ->', license.maxActiveUsers);
-				console.log('    maxGuestUsers ->', license.maxGuestUsers);
-				console.log(' maxRoomsPerGuest ->', license.maxRoomsPerGuest);
-				console.log('          modules ->', license.modules.join(', '));
-				console.log('-------------------------');
-			});
+		const {
+			validation: { serverUrls, validPeriods },
+			limits,
+			grantedModules,
+		} = this.license;
+
+		console.log('---- License enabled ----');
+		console.log('              url ->', JSON.stringify(serverUrls));
+		console.log('          periods ->', JSON.stringify(validPeriods));
+		console.log('           limits ->', JSON.stringify(limits));
+		console.log('          modules ->', grantedModules.map(({ module }) => module).join(', '));
+		console.log('-------------------------');
+	}
+
+	public getMaxActiveUsers(): number {
+		return (this.valid && this.license?.limits.activeUsers?.find(({ behavior }) => behavior === 'prevent_action')?.max) || 0;
+	}
+
+	public startedFairPolicy(): boolean {
+		return Boolean(this.valid && this.inFairPolicy);
 	}
 }
 
 const License = new LicenseClass();
 
-export function addLicense(encryptedLicense: string): boolean {
+export async function setLicense(encryptedLicense: string): Promise<boolean> {
 	if (!encryptedLicense || String(encryptedLicense).trim() === '' || License.isLicenseDuplicate(encryptedLicense)) {
 		return false;
 	}
@@ -285,7 +406,8 @@ export function addLicense(encryptedLicense: string): boolean {
 			console.log('##### Raw license ->', decrypted);
 		}
 
-		License.addLicense(JSON.parse(decrypted));
+		// #TODO: Check license version and call setLicenseV2 or setLicenseV3
+		await License.setLicenseV2(JSON.parse(decrypted));
 		License.lockLicense(encryptedLicense);
 
 		return true;
@@ -311,8 +433,8 @@ export function validateFormat(encryptedLicense: string): boolean {
 	return true;
 }
 
-export function setURL(url: string): void {
-	License.setURL(url);
+export async function setURL(url: string): Promise<void> {
+	await License.setURL(url);
 }
 
 export function hasLicense(feature: string): boolean {
@@ -320,23 +442,26 @@ export function hasLicense(feature: string): boolean {
 }
 
 export function isEnterprise(): boolean {
-	return License.hasAnyValidLicense();
+	return License.hasValidLicense();
 }
 
 export function getMaxGuestUsers(): number {
-	return maxGuestUsers;
+	// #TODO: Adjust any place currently using this function to stop doing so.
+	return 0;
 }
 
 export function getMaxRoomsPerGuest(): number {
-	return maxRoomsPerGuest;
+	// #TODO: Adjust any place currently using this function to stop doing so.
+	return 0;
 }
 
 export function getMaxActiveUsers(): number {
-	return maxActiveUsers;
+	// #TODO: Adjust any place currently using this function to stop doing so.
+	return License.getMaxActiveUsers();
 }
 
-export function getLicenses(): IValidLicense[] {
-	return License.getLicenses();
+export function getUnmodifiedLicense(): ILicenseV3 | ILicenseV2 | undefined {
+	return License.getUnmodifiedLicense();
 }
 
 export function getModules(): string[] {
@@ -348,7 +473,11 @@ export function getTags(): ILicenseTag[] {
 }
 
 export function getAppsConfig(): NonNullable<ILicenseV2['apps']> {
-	return License.getAppsConfig();
+	// #TODO: Adjust any place currently using this function to stop doing so.
+	return {
+		maxPrivateApps: -1,
+		maxMarketplaceApps: -1,
+	};
 }
 
 export async function canAddNewUser(userCount = 1): Promise<boolean> {

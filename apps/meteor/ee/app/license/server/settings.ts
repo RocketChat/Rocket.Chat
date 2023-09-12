@@ -2,7 +2,7 @@ import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { settings, settingsRegistry } from '../../../../app/settings/server';
-import { addLicense } from './license';
+import { setLicense } from './license';
 
 Meteor.startup(async () => {
 	await settingsRegistry.addGroup('Enterprise', async function () {
@@ -29,7 +29,7 @@ settings.watch<string>('Enterprise_License', async (license) => {
 		return;
 	}
 
-	if (!addLicense(license)) {
+	if (!(await setLicense(license))) {
 		await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
 		return;
 	}
@@ -38,7 +38,7 @@ settings.watch<string>('Enterprise_License', async (license) => {
 });
 
 if (process.env.ROCKETCHAT_LICENSE) {
-	addLicense(process.env.ROCKETCHAT_LICENSE);
+	await setLicense(process.env.ROCKETCHAT_LICENSE);
 
 	Meteor.startup(async () => {
 		if (settings.get('Enterprise_License')) {
