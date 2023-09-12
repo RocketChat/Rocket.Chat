@@ -52,7 +52,7 @@ const validateMaxChats = async ({
 	});
 
 	if (maxNumberSimultaneousChat === 0) {
-		cbLogger.info(`Chat can be taken by Agent ${agentId}: max number simultaneous chats on range`);
+		cbLogger.debug(`Chat can be taken by Agent ${agentId}: max number simultaneous chats on range`);
 		return agent;
 	}
 
