@@ -6,6 +6,7 @@ import { LivechatRooms, Users } from '@rocket.chat/models';
 import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { settings } from '../../../settings/server';
 
 callbacks.add(
 	'afterSaveMessage',
@@ -25,7 +26,11 @@ callbacks.add(
 				break;
 			}
 			case RoomVerificationState.isListeningToOTP: {
-				const bot = await Users.findOneById('rocket.cat');
+				const agent = settings.get('Livechat_verificaion_bot_assign') || 'rocket.cat';
+				const bot =
+					room?.servedBy?.username === agent
+						? await Users.findOneByUsername(settings.get('Livechat_verificaion_bot_assign'))
+						: await Users.findOneById('rocket.cat');
 				if (message.msg === 'Resend OTP') {
 					if (room.source.type === 'widget') {
 						const wrongOtpInstructionsMessage = {
@@ -51,6 +56,12 @@ callbacks.add(
 					groupable: false,
 				};
 				await sendMessage(bot, completionMessage, room);
+				if (
+					settings.get('Livechat_automate_verification_process') &&
+					room.servedBy?.username === settings.get('Livechat_verificaion_bot_assign')
+				) {
+					await OmnichannelVerification.trasferChatAfterVerificationProcess(room._id);
+				}
 				break;
 			}
 		}

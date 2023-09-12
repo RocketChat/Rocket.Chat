@@ -10,6 +10,7 @@ import './hooks/saveAnalyticsData';
 import './hooks/sendToCRM';
 import './hooks/processRoomAbandonment';
 import './hooks/saveLastVisitorMessageTs';
+import './hooks/automateVerificationProcess';
 import './hooks/markRoomNotResponded';
 import './hooks/sendEmailTranscriptOnClose';
 import './hooks/saveContactLastChat';

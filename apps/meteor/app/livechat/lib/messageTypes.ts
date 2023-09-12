@@ -58,10 +58,19 @@ MessageTypes.registerType({
 					to: message?.transferData?.transferredTo?.name || message?.transferData?.transferredTo?.username || '',
 					duration: comment,
 				}),
+			autoTransferVerifiedChatsToAgent: (): string =>
+				t(`Livechat_transfer_to_agent_auto_transfer_verified_chat`, {
+					from,
+					to: message?.transferData?.transferredTo?.name || message?.transferData?.transferredTo?.username || '',
+				}),
 			autoTransferUnansweredChatsToQueue: (): string =>
 				t(`Livechat_transfer_return_to_the_queue_auto_transfer_unanswered_chat`, {
 					from,
 					duration: comment,
+				}),
+			autoTransferVerifiedChatsToQueue: (): string =>
+				t(`Livechat_transfer_return_to_the_queue_auto_transfer_verified_chat`, {
+					from,
 				}),
 		};
 		return {

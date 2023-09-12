@@ -1,6 +1,6 @@
 import type { IOmnichannelVerification, ISetVisitorEmailResult } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IRoom, IMessage, IOmnichannelGenericRoom, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IMessage, IOmnichannelGenericRoom, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { RoomVerificationState } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
@@ -13,7 +13,10 @@ import { check } from 'meteor/check';
 import { checkEmailAvailability } from '../../../app/lib/server/functions/checkEmailAvailability';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { validateEmailDomain } from '../../../app/lib/server/lib';
+import { Livechat } from '../../../app/livechat/server';
+import { forwardRoomToAgent } from '../../../app/livechat/server/lib/Helper';
 import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
+import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import * as Mailer from '../../../app/mailer/server/api';
 import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
@@ -24,7 +27,7 @@ interface IRandomOTP {
 	expire: Date;
 }
 
-const bot = await Users.findOneById('rocket.cat');
+let bot: IUser | null;
 export class OmnichannelVerification extends ServiceClassInternal implements IOmnichannelVerification {
 	protected name = 'omnichannel-verification';
 
@@ -219,6 +222,11 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		try {
 			check(rid, String);
 			const room = await LivechatRooms.findOneById(rid);
+			const agent = settings.get('Livechat_verificaion_bot_assign') || 'rocket.cat';
+			bot =
+				room?.servedBy?.username === agent
+					? await Users.findOneByUsername(settings.get('Livechat_verificaion_bot_assign'))
+					: await Users.findOneById('rocket.cat');
 			if (room?.verificationStatus !== 'unVerified') {
 				return;
 			}
@@ -312,6 +320,60 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		} catch (error) {
 			this.logger.error({ msg: 'Failed to update email :', error });
 			return { success: false, error: error as Error };
+		}
+	}
+
+	async trasferChatAfterVerificationProcess(roomId: IRoom['_id']): Promise<void> {
+		try {
+			const room = await LivechatRooms.findOneById(roomId, {
+				_id: 1,
+				v: 1,
+				servedBy: 1,
+				open: 1,
+				departmentId: 1,
+			});
+			if (!room?.open || !room?.servedBy?._id) {
+				throw new Error('Room is not open or is not being served by an agent');
+			}
+			const {
+				departmentId,
+				servedBy: { _id: ignoreAgentId },
+			} = room;
+
+			if (!RoutingManager.getConfig()?.autoAssignAgent) {
+				this.logger.debug(`Auto-assign agent is disabled, returning room ${roomId} as inquiry`);
+
+				await Livechat.returnRoomAsInquiry(room._id, departmentId, {
+					scope: 'autoTransferVerifiedChatsToQueue',
+					transferredBy: bot,
+				});
+				return;
+			}
+
+			const agent = await RoutingManager.getNextAgent(departmentId, ignoreAgentId);
+			if (!agent) {
+				await Livechat.returnRoomAsInquiry(room._id, departmentId, {
+					scope: 'autoTransferVerifiedChatsToQueue',
+					transferredBy: bot,
+				});
+				this.logger.error(`No agent found to transfer room ${room._id}`);
+				return;
+			}
+			const transferredBy = bot;
+
+			if (!transferredBy) {
+				this.logger.error(`Error while transferring room ${room._id}: user not found`);
+				return;
+			}
+
+			await forwardRoomToAgent(room, {
+				userId: agent?.agentId,
+				transferredBy,
+				transferredTo: agent,
+				scope: 'autoTransferVerifiedChatsToAgent',
+			});
+		} catch (error) {
+			this.logger.error(`Error while transferring room`);
 		}
 	}
 }

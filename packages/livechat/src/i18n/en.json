@@ -54,6 +54,7 @@
         "leave_a_message": "Leave a message",
         "livechat_connected": "Livechat connected.",
         "livechat_is_not_connected": "Livechat is not connected.",
+        "Livechat_transfer_to_agent_auto_transfer_verified_chat":"{{from}} transferred the chat to {{to}} since it is verfied now",
         "media_types_not_accepted": "Media Types Not Accepted.",
         "message": "Message",
         "messages": "Messages",

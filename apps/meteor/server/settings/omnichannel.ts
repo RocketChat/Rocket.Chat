@@ -229,6 +229,22 @@ export const createOmniSettings = () =>
 			enableQuery: omnichannelEnabledQuery,
 		});
 
+		await this.add('Livechat_automate_verification_process', true, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			public: true,
+			i18nLabel: 'Enable_verification_process_before_routing_to_agent',
+			enableQuery: omnichannelEnabledQuery,
+		});
+
+		await this.add('Livechat_verificaion_bot_assign', '', {
+			type: 'string',
+			group: 'Omnichannel',
+			public: true,
+			i18nLabel: 'Verification_Bot',
+			enableQuery: [{ _id: 'Livechat_automate_verification_process', value: true }, omnichannelEnabledQuery],
+		});
+
 		await this.add('Livechat_webhookUrl', '', {
 			type: 'string',
 			group: 'Omnichannel',
