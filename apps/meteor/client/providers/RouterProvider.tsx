@@ -17,12 +17,6 @@ import React from 'react';
 import { appLayout } from '../lib/appLayout';
 import { queueMicrotask } from '../lib/utils/queueMicrotask';
 
-FlowRouter.wait();
-
-FlowRouter.notFound = {
-	action: () => undefined,
-};
-
 const subscribers = new Set<() => void>();
 
 const listenToRouteChange = () => {
