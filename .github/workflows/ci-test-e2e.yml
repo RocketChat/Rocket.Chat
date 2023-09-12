@@ -127,6 +127,12 @@ jobs:
 
       - run: yarn build
 
+      - name: Prepare code coverage directory
+        if: inputs.release == 'ee'
+        run: |
+          mkdir -p /tmp/coverage
+          chmod 777 /tmp/coverage
+
       - name: Start containers for CE
         if: inputs.release == 'ce'
         env:
