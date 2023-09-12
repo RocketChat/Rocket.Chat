@@ -1,3 +1,6 @@
+import type * as uikit from '@rocket.chat/ui-kit';
+import type { ComponentChild } from 'preact';
+import type { TargetedEvent } from 'preact/compat';
 import { memo, useCallback } from 'preact/compat';
 
 import { createClassName } from '../../../../helpers/createClassName';
@@ -7,9 +10,14 @@ import Menu, { PopoverMenu } from '../../../Menu';
 import { usePerformAction } from '../Block';
 import styles from './styles.scss';
 
-const OverflowTrigger = ({ loading, onClick }) => {
-	const handleMouseUp = useCallback(({ target }) => {
-		target.blur();
+type OverflowTriggerProps = {
+	loading: boolean;
+	onClick: () => void;
+};
+
+const OverflowTrigger = ({ loading, onClick }: OverflowTriggerProps) => {
+	const handleMouseUp = useCallback(({ currentTarget }: TargetedEvent<HTMLElement>) => {
+		currentTarget.blur();
 	}, []);
 
 	return (
@@ -26,9 +34,15 @@ const OverflowTrigger = ({ loading, onClick }) => {
 	);
 };
 
-const OverflowOption = ({ confirm, text, value, url, parser, onClick }) => {
+type OverflowOptionProps = uikit.Option & {
+	confirm: boolean;
+	parser: uikit.SurfaceRenderer<ComponentChild>;
+	onClick: (value: string) => void;
+};
+
+const OverflowOption = ({ confirm, text, value, url, parser, onClick }: OverflowOptionProps) => {
 	const handleClick = useCallback(
-		async (event) => {
+		async (event: TargetedEvent<HTMLElement, MouseEvent>) => {
 			event.preventDefault();
 
 			if (confirm) {
@@ -37,6 +51,9 @@ const OverflowOption = ({ confirm, text, value, url, parser, onClick }) => {
 
 			if (url) {
 				const newTab = window.open();
+				if (!newTab) {
+					throw new Error('Could not open new tab');
+				}
 				newTab.opener = null;
 				newTab.location = url;
 				return;
@@ -50,11 +67,15 @@ const OverflowOption = ({ confirm, text, value, url, parser, onClick }) => {
 	return <Menu.Item onClick={handleClick}>{parser.text(text)}</Menu.Item>;
 };
 
-const OverflowElement = ({ actionId, confirm, options, parser }) => {
+type OverflowElementProps = uikit.OverflowElement & {
+	parser: uikit.SurfaceRenderer<ComponentChild>;
+};
+
+const OverflowElement = ({ actionId, confirm, options, parser }: OverflowElementProps) => {
 	const [performAction, performingAction] = usePerformAction(actionId);
 
 	const handleClick = useCallback(
-		async (value) => {
+		async (value: TargetedEvent<HTMLElement, MouseEvent>) => {
 			await performAction({ value });
 		},
 		[performAction],

@@ -1,17 +1,24 @@
-import { BlockContext } from '@rocket.chat/ui-kit';
+import * as uikit from '@rocket.chat/ui-kit';
+import type { ComponentChild } from 'preact';
+import type { TargetedEvent } from 'preact/compat';
 import { memo, useCallback } from 'preact/compat';
 
 import { createClassName } from '../../../../helpers/createClassName';
 import { usePerformAction } from '../Block';
 import styles from './styles.scss';
 
-const handleMouseUp = ({ target }) => target.blur();
+const handleMouseUp = ({ currentTarget }: TargetedEvent<HTMLElement, MouseEvent>) => currentTarget.blur();
 
-const ButtonElement = ({ text, actionId, url, value, style, context, confirm, parser }) => {
+type ButtonElementProps = uikit.ButtonElement & {
+	context: uikit.BlockContext;
+	parser: uikit.SurfaceRenderer<ComponentChild>;
+};
+
+const ButtonElement = ({ text, actionId, url, value, style, context, confirm, parser }: ButtonElementProps) => {
 	const [performAction, performingAction] = usePerformAction(actionId);
 
 	const handleClick = useCallback(
-		async (event) => {
+		async (event: TargetedEvent<HTMLElement, MouseEvent>) => {
 			event.preventDefault();
 
 			if (confirm) {
@@ -20,6 +27,9 @@ const ButtonElement = ({ text, actionId, url, value, style, context, confirm, pa
 
 			if (url) {
 				const newTab = window.open();
+				if (!newTab) {
+					throw new Error('Failed to open new tab');
+				}
 				newTab.opener = null;
 				newTab.location = url;
 				return;
@@ -35,8 +45,8 @@ const ButtonElement = ({ text, actionId, url, value, style, context, confirm, pa
 			children={parser.text(text)}
 			className={createClassName(styles, 'uikit-button', {
 				style,
-				accessory: context === BlockContext.SECTION,
-				action: context === BlockContext.ACTION,
+				accessory: context === uikit.BlockContext.SECTION,
+				action: context === uikit.BlockContext.ACTION,
 			})}
 			disabled={performingAction}
 			type='button'

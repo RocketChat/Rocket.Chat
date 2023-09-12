@@ -27,6 +27,7 @@ type ButtonProps = {
 	style?: CSSProperties;
 	img?: string;
 	onClick?: JSXInternal.MouseEventHandler<HTMLButtonElement>;
+	onMouseUp?: JSXInternal.MouseEventHandler<HTMLButtonElement>;
 	full?: boolean;
 };
 

@@ -1,13 +1,20 @@
+import type * as uikit from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
 import { useState, useMemo, useCallback } from 'preact/compat';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { createClassName } from '../../../../helpers/createClassName';
 import { Button } from '../../../Button';
 import Block from '../Block';
 import styles from './styles.scss';
 
-const ActionsBlock = ({ appId, blockId, elements, parser, t }) => {
+type ActionsBlockProps = uikit.ActionsBlock & {
+	parser: any;
+	t: any;
+};
+
+const ActionsBlock = ({ appId, blockId, elements, parser }: ActionsBlockProps) => {
+	const { t } = useTranslation();
 	const [collapsed, setCollapsed] = useState(true);
 	const renderableElements = useMemo(() => (collapsed ? elements.slice(0, 5) : elements), [collapsed, elements]);
 	const hiddenElementsCount = elements.length - renderableElements.length;
@@ -43,4 +50,4 @@ const ActionsBlock = ({ appId, blockId, elements, parser, t }) => {
 	);
 };
 
-export default withTranslation()(ActionsBlock);
+export default ActionsBlock;

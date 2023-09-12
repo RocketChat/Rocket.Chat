@@ -1,3 +1,5 @@
+import type * as uikit from '@rocket.chat/ui-kit';
+import type { ComponentChild } from 'preact';
 import { memo, useEffect, useState, useMemo } from 'preact/compat';
 
 import { createClassName } from '../../../../helpers/createClassName';
@@ -6,7 +8,11 @@ import styles from './styles.scss';
 
 const MAX_SIZE = 360;
 
-const ImageBlock = ({ appId, blockId, title, imageUrl, altText, parser }) => {
+type ImageBlockProps = uikit.ImageBlock & {
+	parser: uikit.SurfaceRenderer<ComponentChild>;
+};
+
+const ImageBlock = ({ appId, blockId, title, imageUrl, altText, parser }: ImageBlockProps) => {
 	const [{ loading, naturalWidth, naturalHeight }, updateImageState] = useState(() => ({
 		loading: true,
 		naturalWidth: MAX_SIZE,

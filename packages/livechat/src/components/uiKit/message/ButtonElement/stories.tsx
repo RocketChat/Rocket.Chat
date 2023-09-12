@@ -14,7 +14,7 @@ export default {
 		actionId: undefined,
 		url: undefined,
 		value: undefined,
-		style: null,
+		style: undefined,
 		context: undefined,
 		confirm: undefined,
 	},

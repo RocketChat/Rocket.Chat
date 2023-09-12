@@ -1,4 +1,4 @@
-import type { Ref } from 'preact';
+import type { ComponentChild, Ref } from 'preact';
 import type { TargetedEvent } from 'preact/compat';
 import { useState } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
@@ -9,8 +9,8 @@ import styles from './styles.scss';
 
 type SelectInputProps = {
 	name?: string;
-	placeholder?: string;
-	options: { value: string; label: string }[];
+	placeholder?: ComponentChild;
+	options: { value: string; label: ComponentChild }[];
 	disabled?: boolean;
 	small?: boolean;
 	error?: boolean;
