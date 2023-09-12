@@ -2,9 +2,9 @@ import type { ILicenseTag } from './ILicenseTag';
 
 export type LicenseBehavior = 'invalidate_license' | 'start_fair_policy' | 'prevent_action' | 'prevent_installation';
 
-export type LicenseLimit = {
+export type LicenseLimit<T extends LicenseBehavior = LicenseBehavior> = {
 	max: number;
-	behavior: LicenseBehavior;
+	behavior: T;
 };
 
 export type Timestamp = string;
@@ -12,7 +12,7 @@ export type Timestamp = string;
 export type LicensePeriod = {
 	validFrom?: Timestamp;
 	validUntil?: Timestamp;
-	invalidBehavior: LicenseBehavior;
+	invalidBehavior: Exclude<LicenseBehavior, 'prevent_action'>;
 } & ({ validFrom: Timestamp } | { validUntil: Timestamp });
 
 export type Module =
@@ -84,7 +84,7 @@ export interface ILicenseV3 {
 	limits: {
 		activeUsers?: LicenseLimit[];
 		guestUsers?: LicenseLimit[];
-		roomsPerGuest?: LicenseLimit[];
+		roomsPerGuest?: LicenseLimit<'prevent_action'>[];
 		privateApps?: LicenseLimit[];
 		marketplaceApps?: LicenseLimit[];
 	};
