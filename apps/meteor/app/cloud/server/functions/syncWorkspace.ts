@@ -9,7 +9,7 @@ import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { generateWorkspaceBearerHttpHeader } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { getCachedSupportedVersionsToken } from './supportedVersionsToken';
+import { getCachedSupportedVersionsToken } from './supportedVersionsToken/supportedVersionsToken';
 
 /**
  * Rocket.Chat Cloud Sync Procedure
@@ -26,6 +26,8 @@ import { getCachedSupportedVersionsToken } from './supportedVersionsToken';
 export async function syncWorkspace(_reconnectCheck = false) {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 	if (!workspaceRegistered) {
+		return false;
+	}
 
 	const info = await buildWorkspaceRegistrationData(undefined);
 

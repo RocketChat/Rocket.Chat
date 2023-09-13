@@ -4,10 +4,11 @@ import type { CloudVersionsResponse } from '@rocket.chat/server-cloud-communicat
 import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { supportedVersions } from '../../../../ee/app/license/server/license';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { settings } from '../../../settings/server';
-import { generateWorkspaceBearerHttpHeader } from './getWorkspaceAccessToken';
+import { supportedVersions } from '../../../../../ee/app/license/server/license';
+import { SystemLogger } from '../../../../../server/lib/logger/system';
+import { settings } from '../../../../settings/server';
+import { generateWorkspaceBearerHttpHeader } from '../getWorkspaceAccessToken';
+import { supportedVersionsChooseLatest } from './supportedVersionsChooseLatest';
 
 /** HELPERS */
 
@@ -95,14 +96,6 @@ const getSupportedVersionsFromCloud = async () => {
 	return response;
 };
 
-const electSupportedVersion = async (...tokens: (CloudVersionsResponse | undefined)[]) => {
-	const [token] = (tokens.filter(Boolean) as CloudVersionsResponse[]).sort((a, b) => {
-		return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
-	});
-
-	return token?.signed ?? '';
-};
-
 const getSupportedVersionsToken = async () => {
 	if (process.env.NODE_ENV === 'development') {
 		if (process.env.MOCK_CLOUD_SUPPORTED_VERSIONS_TOKEN) {
@@ -120,7 +113,7 @@ const getSupportedVersionsToken = async () => {
 
 	// TODO: get values from jtw token
 
-	return electSupportedVersion(versionsFromLicense, (response.success && response.result) || undefined);
+	return supportedVersionsChooseLatest(versionsFromLicense, (response.success && response.result) || undefined);
 };
 
 export const getCachedSupportedVersionsToken = cacheValueInSettings('Cloud_Workspace_Supported_Versions_Token', getSupportedVersionsToken);

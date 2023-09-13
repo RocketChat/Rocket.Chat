@@ -1,5 +1,8 @@
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { getCachedSupportedVersionsToken, wrapPromise } from '../../../cloud/server/functions/supportedVersionsToken';
+import {
+	getCachedSupportedVersionsToken,
+	wrapPromise,
+} from '../../../cloud/server/functions/supportedVersionsToken/supportedVersionsToken';
 import { Info } from '../../../utils/rocketchat.info';
 
 type ServerInfo =
