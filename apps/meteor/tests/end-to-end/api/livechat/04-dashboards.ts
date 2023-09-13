@@ -87,6 +87,37 @@ describe('LIVECHAT - dashboards', function () {
 					);
 				});
 		});
+		(IS_EE ? it : it.skip)('should return analytics overview data with correct values', async () => {
+			// format: 2023-09-13T18:29:59.000Z: ISo string
+			const start = moment().subtract(1, 'days').toISOString();
+			const end = moment().toISOString();
+
+			const result = await request
+				.get(api('livechat/analytics/dashboards/conversation-totalizers'))
+				.query({ start, end, departmentId: department._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('totalizers');
+			expect(result.body.totalizers).to.be.an('array');
+			expect(result.body.totalizers).to.have.lengthOf(5);
+
+			const expectedResult = [
+				{ title: 'Total_conversations', value: 5 },
+				{ title: 'Open_conversations', value: 3 },
+				{ title: 'On_Hold_conversations', value: 1 },
+				{ title: 'Total_messages', value: 6 },
+				{ title: 'Total_visitors', value: 5 },
+			];
+
+			expectedResult.forEach((expected) => {
+				const resultItem = result.body.totalizers.find((item: any) => item.title === expected.title);
+				expect(resultItem).to.not.be.undefined;
+				expect(resultItem).to.have.property('value', expected.value);
+			});
+		});
 	});
 
 	describe('livechat/analytics/dashboards/productivity-totalizers', () => {
