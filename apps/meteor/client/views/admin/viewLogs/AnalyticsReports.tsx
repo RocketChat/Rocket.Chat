@@ -1,14 +1,12 @@
+import type { IStats, Serialized } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { Link } from '@rocket.chat/layout';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { Trans } from 'react-i18next';
 
-import { useAnalyticsObject } from './hooks/useAnalyticsObject';
-
-const AnalyticsReports = () => {
+const AnalyticsReports = ({ analytics }: { analytics: Serialized<IStats> }) => {
 	const t = useTranslation();
-	const analytics = useAnalyticsObject();
 
 	return (
 		<>
@@ -21,13 +19,12 @@ const AnalyticsReports = () => {
 				</Box>
 				<Box>
 					<Trans i18nKey='analytics.page.bySending'>
-						{"By sending your statistics, you'll help us identify how many instances of "}
+						By sending your statistics, you'll help us identify how many instances of
 						<Link href='https://rocket.chat/' target='_blank' rel='noopener noreferrer'>
 							Rocket.Chat
 						</Link>
-						{
-							"are deployed, as well as how good the system is behaving, so we can further improve it. Don'\t worry, as no user information is sent and all the information we receive is kept confidential."
-						}
+						are deployed, as well as how good the system is behaving, so we can further improve it. Don't worry, as no user information is
+						sent and all the information we receive is kept confidential.
 					</Trans>
 				</Box>
 			</Box>
