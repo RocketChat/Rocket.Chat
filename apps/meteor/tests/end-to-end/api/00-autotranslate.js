@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, describe, after, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage } from '../../data/chat.helper';
@@ -313,6 +313,43 @@ describe('AutoTranslate', function () {
 					})
 					.end(done);
 			});
+		});
+		describe('Autoenable setting', () => {
+			before(async (done) => {
+				await updateSetting('AutoTranslate_Enabled', true);
+				await updateSetting('AutoTranslate_AutoEnableOnJoinRoom', true);
+				await updateSetting('Language', 'pt-BR');
+
+				// create room
+				request
+					.post(api('channels.create'))
+					.set(credentials)
+					.send({
+						name: apiPublicChannelName,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				done();
+			});
+
+			after(async (done) => {
+				await updateSetting('AutoTranslate_AutoEnableOnJoinRoom', false);
+				await updateSetting('AutoTranslate_Enabled', false);
+				await updateSetting('Language', '');
+
+				done();
+			});
+
+			it("should do nothing if the user hasn't changed his language preference", () => {
+				request.get();
+			});
+			it("should do nothing if the user changed his language preference to be the same as the server's");
+			it('should enable autotranslate with the correct language when creating a new room');
+			it('should enable autotranslate for all the users added to the room upon creation');
+			it('should enable autotranslate with the correct language when joining a room');
+			it('should enable autotranslate with the correct language when added to a room');
+			it('should enable autotranslate with the correct language when added through slashcommands');
 		});
 	});
 });
