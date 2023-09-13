@@ -2,9 +2,8 @@ import { faker } from '@faker-js/faker';
 import { expect } from 'chai';
 import type { ILivechatDepartment, IUser, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
-import { IUserCredentialsHeader, password } from '../user';
-import { login } from '../users.helper';
-import { createAgent, makeAgentAvailable } from './rooms';
+import { IUserCredentialsHeader } from '../user';
+import { createAnOnlineAgent } from './users';
 
 export const NewDepartmentData = ((): Partial<ILivechatDepartment> => ({
     enabled: true,
@@ -61,27 +60,17 @@ export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: 
 	credentials: IUserCredentialsHeader;
 	user: IUser;
 }}> => {
-	// TODO moving here for tests
-	const username = `user.test.${Date.now()}`;
-	const email = `${username}@rocket.chat`;
-	const { body } = await request
-			.post(api('users.create'))
-			.set(credentials)
-			.send({ email, name: username, username, password });
-	const agent = body.user;
-	const createdUserCredentials = await login(agent.username, password);
-	await createAgent(agent.username);
-	await makeAgentAvailable(createdUserCredentials);
+    const { user, credentials } = await createAnOnlineAgent();
 
 	const department = await createDepartmentWithMethod() as ILivechatDepartment;
 
-	await addOrRemoveAgentFromDepartment(department._id, {agentId: agent._id, username: (agent.username as string)}, true);
+	await addOrRemoveAgentFromDepartment(department._id, {agentId: user._id, username: (user.username as string)}, true);
 
 	return {
 		department,
 		agent: {
-			credentials: createdUserCredentials,
-			user: agent,
+			credentials,
+			user,
 		}
 	};
 };

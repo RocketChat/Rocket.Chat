@@ -1,9 +1,17 @@
+/* eslint-disable no-restricted-properties */
+import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
+import moment from 'moment';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { startANewLivechatRoomAndTakeIt } from '../../../data/livechat/rooms';
+import { createAnOnlineAgent } from '../../../data/livechat/users';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import type { IUserCredentialsHeader } from '../../../data/user';
+import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - dashboards', function () {
 	this.retries(0);
@@ -12,6 +20,32 @@ describe('LIVECHAT - dashboards', function () {
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
+	});
+
+	let department: ILivechatDepartment;
+	const agents: {
+		credentials: IUserCredentialsHeader;
+		user: IUser;
+	}[] = [];
+
+	before(async () => {
+		if (!IS_EE) {
+			return;
+		}
+
+		// create dummy test data for further tests
+		const { department: createdDept, agent: agent1 } = await createDepartmentWithAnOnlineAgent();
+		department = createdDept;
+
+		const agent2 = await createAnOnlineAgent();
+		agents.push(agent1);
+		agents.push(agent2);
+
+		// agent 1 is serving 1 chat
+		// agent 2 is serving 2 chats
+		await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent1.credentials });
+		await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
+		await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
 	});
 
 	describe('livechat/analytics/dashboards/conversation-totalizers', () => {
@@ -304,6 +338,32 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body).to.have.property('data');
 			expect(result.body.head).to.be.an('array');
 			expect(result.body.data).to.be.an('array');
+		});
+		(IS_EE ? it : it.skip)('should return agent overview data with correct values', async () => {
+			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: yesterday, to: today, name: 'Total_conversations', departmentId: department._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+			expect(result.body.data).to.have.lengthOf(2);
+
+			const data1 = result.body.data.find((data: any) => data.name === agents[0].user.username);
+			const data2 = result.body.data.find((data: any) => data.name === agents[1].user.username);
+
+			expect(data1).to.not.be.undefined;
+			expect(data2).to.not.be.undefined;
+
+			expect(data1).to.have.property('value', '33.33%');
+			expect(data2).to.have.property('value', '66.67%');
 		});
 	});
 
