@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-properties */
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
@@ -7,7 +6,7 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
-import { startANewLivechatRoomAndTakeIt } from '../../../data/livechat/rooms';
+import { closeOmnichannelRoom, placeRoomOnHold, sendAgentMessage, startANewLivechatRoomAndTakeIt } from '../../../data/livechat/rooms';
 import { createAnOnlineAgent } from '../../../data/livechat/users';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import type { IUserCredentialsHeader } from '../../../data/user';
@@ -410,6 +409,44 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body).to.have.lengthOf(7);
 			expect(result.body[0]).to.have.property('title', 'Total_conversations');
 			expect(result.body[0]).to.have.property('value', 0);
+		});
+		(IS_EE ? it : it.skip)('should return analytics overview data with correct values', async () => {
+			// put a chat on hold and close a chat so we can have some data to test
+			const { room: onHoldRoom } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agents[0].credentials });
+			const { room: closeRoom } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agents[0].credentials });
+
+			await sendAgentMessage(onHoldRoom._id);
+			await placeRoomOnHold(onHoldRoom._id);
+
+			await closeOmnichannelRoom(closeRoom._id);
+
+			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+
+			const result = await request
+				.get(api('livechat/analytics/overview'))
+				.query({ from: yesterday, to: today, name: 'Conversations', departmentId: department._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.be.an('array');
+
+			const expectedResult = [
+				{ title: 'Total_conversations', value: 5 },
+				{ title: 'Open_conversations', value: 3 },
+				{ title: 'On_Hold_conversations', value: 1 },
+				{ title: 'Total_messages', value: 6 },
+				{ title: 'Busiest_day', value: 'Tuesday' },
+				{ title: 'Conversations_per_day', value: '2.50' },
+				{ title: 'Busiest_time', value: '- -' },
+			];
+
+			expectedResult.forEach((expected) => {
+				const resultItem = result.body.find((item: any) => item.title === expected.title);
+				expect(resultItem).to.not.be.undefined;
+				expect(resultItem).to.have.property('value', expected.value);
+			});
 		});
 	});
 });
