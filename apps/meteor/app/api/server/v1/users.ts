@@ -126,7 +126,9 @@ API.v1.addRoute(
 				realname: this.bodyParams.data.name,
 				username: this.bodyParams.data.username,
 				nickname: this.bodyParams.data.nickname,
+				bio: this.bodyParams.data.bio,
 				statusText: this.bodyParams.data.statusText,
+				statusType: this.bodyParams.data.statusType,
 				newPassword: this.bodyParams.data.newPassword,
 				typedPassword: this.bodyParams.data.currentPassword,
 			};
