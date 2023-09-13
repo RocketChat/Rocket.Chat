@@ -41,6 +41,33 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 	return accessToken.token;
 }
 
+export class CloudWorkspaceAccessTokenError extends Error {
+	constructor() {
+		super('Could not get workspace access token');
+	}
+}
+
+export async function getWorkspaceAccessTokenOrThrow(forceNew = false, scope = '', save = true): Promise<string> {
+	const token = await getWorkspaceAccessToken(forceNew, scope, save);
+
+	if (!token) {
+		throw new CloudWorkspaceAccessTokenError();
+	}
+
+	return token;
+}
+
+export const generateWorkspaceBearerHttpHeaderOrThrow = async (
+	forceNew = false,
+	scope = '',
+	save = true,
+): Promise<{ Authorization: string }> => {
+	const token = await getWorkspaceAccessTokenOrThrow(forceNew, scope, save);
+	return {
+		Authorization: `Bearer ${token}`,
+	};
+};
+
 export const generateWorkspaceBearerHttpHeader = async (
 	forceNew = false,
 	scope = '',

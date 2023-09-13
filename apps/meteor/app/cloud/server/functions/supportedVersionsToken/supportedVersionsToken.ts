@@ -36,7 +36,10 @@ export const handleResponse = async <T>(promise: Promise<Response>) => {
 		(async () => {
 			const request = await promise;
 			if (!request.ok) {
-				throw new Error((await request.json()).error);
+				if (request.size > 0) {
+					throw new Error((await request.json()).error);
+				}
+				throw new Error(request.statusText);
 			}
 
 			return request.json();
