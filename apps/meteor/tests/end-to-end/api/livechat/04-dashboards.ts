@@ -40,11 +40,18 @@ describe('LIVECHAT - dashboards', function () {
 		agents.push(agent1);
 		agents.push(agent2);
 
-		// agent 1 is serving 1 chat
-		// agent 2 is serving 2 chats
+		// start a few chats
 		await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent1.credentials });
 		await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
 		await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
+		// put a chat on hold and close a chat so we can have some data to test
+		const { room: onHoldRoom } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent1.credentials });
+		const { room: closeRoom } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
+
+		await sendAgentMessage(onHoldRoom._id);
+		await placeRoomOnHold(onHoldRoom._id);
+
+		await closeOmnichannelRoom(closeRoom._id);
 	});
 
 	describe('livechat/analytics/dashboards/conversation-totalizers', () => {
@@ -355,14 +362,14 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body.data).to.be.an('array');
 			expect(result.body.data).to.have.lengthOf(2);
 
-			const data1 = result.body.data.find((data: any) => data.name === agents[0].user.username);
-			const data2 = result.body.data.find((data: any) => data.name === agents[1].user.username);
+			const user1Data = result.body.data.find((data: any) => data.name === agents[0].user.username);
+			const user2Data = result.body.data.find((data: any) => data.name === agents[1].user.username);
 
-			expect(data1).to.not.be.undefined;
-			expect(data2).to.not.be.undefined;
+			expect(user1Data).to.not.be.undefined;
+			expect(user2Data).to.not.be.undefined;
 
-			expect(data1).to.have.property('value', '33.33%');
-			expect(data2).to.have.property('value', '66.67%');
+			expect(user1Data).to.have.property('value', '40.00%');
+			expect(user2Data).to.have.property('value', '60.00%');
 		});
 	});
 
@@ -411,15 +418,6 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body[0]).to.have.property('value', 0);
 		});
 		(IS_EE ? it : it.skip)('should return analytics overview data with correct values', async () => {
-			// put a chat on hold and close a chat so we can have some data to test
-			const { room: onHoldRoom } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agents[0].credentials });
-			const { room: closeRoom } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agents[0].credentials });
-
-			await sendAgentMessage(onHoldRoom._id);
-			await placeRoomOnHold(onHoldRoom._id);
-
-			await closeOmnichannelRoom(closeRoom._id);
-
 			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 
