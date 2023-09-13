@@ -27,6 +27,7 @@ export type BaseMetricOptions = {
 	labelNames?: Array<string>;
 	unit?: string;
 	aggregator?: string;
+	[key: string]: unknown;
 };
 
 export interface IServiceMetrics {

@@ -101,6 +101,7 @@ const MessageActionMenu = ({ options, onChangeMenuVisibility, ...props }: Messag
 										data-qa-type='message-action'
 										data-qa-id={option.id}
 										role={option.role ? option.role : 'button'}
+										gap={!option.icon && option.type === 'apps'}
 									/>
 								))}
 								{index !== arr.length - 1 && <OptionDivider />}
