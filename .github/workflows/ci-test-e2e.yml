@@ -57,6 +57,8 @@ on:
         required: false
       REPORTER_ROCKETCHAT_API_KEY:
         required: false
+      CODECOV_TOKEN:
+        required: false
 
 env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
@@ -237,6 +239,7 @@ jobs:
           directory: ./apps/meteor
           flags: e2e
           verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Store e2e-ee-coverage
         if: inputs.type == 'ui' && inputs.release == 'ee'

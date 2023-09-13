@@ -128,7 +128,7 @@ test.describe.serial('register', () => {
 			await page.goto('/home');
 			await poRegistration.goToRegister.click();
 	
-			const results = await makeAxeBuilder().disableRules(['landmark-one-main', 'region']).analyze();
+			const results = await makeAxeBuilder().analyze();
 	
 			expect(results.violations).toEqual([]);
 		});

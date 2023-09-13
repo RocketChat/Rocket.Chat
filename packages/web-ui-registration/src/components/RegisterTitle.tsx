@@ -9,5 +9,10 @@ export const RegisterTitle = (): ReactElement | null => {
 	if (hideTitle) {
 		return null;
 	}
-	return <Trans i18nKey='registration.component.welcome'>Welcome to {siteName} workspace</Trans>;
+
+	return (
+		<span id='welcomeTitle'>
+			<Trans i18nKey='registration.component.welcome'>Welcome to {siteName} workspace</Trans>
+		</span>
+	);
 };
