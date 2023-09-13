@@ -2402,7 +2402,7 @@ describe('Meteor.methods', function () {
 		let rid = null;
 		let channelName = null;
 		let testUser = null;
-		const testUserCredentials = {};
+		let testUserCredentials = {};
 
 		before('create test user', async () => {
 			const username = `user.test.${Date.now()}`;
