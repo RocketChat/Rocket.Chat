@@ -14,7 +14,7 @@ const TranslationContextMock = ({ children }: TranslationContextMockProps): Reac
 	const value = useMemo<ContextType<typeof TranslationContext>>(() => {
 		i18next.init({
 			fallbackLng: 'en',
-			defaultNS: 'core',
+			defaultNS: 'project',
 			resources: {
 				en: {
 					project: require('../../../packages/rocketchat-i18n/i18n/en.i18n.json'),

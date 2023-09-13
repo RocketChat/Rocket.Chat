@@ -69,7 +69,6 @@ const useI18next = (lng: string): typeof i18next => {
 			}
 
 			if (lngs && parsedCustomTranslations) {
-				applyCustomTranslations(parsedCustomTranslations);
 				for (const language of Array.isArray(lngs) ? lngs : [lngs]) {
 					if (!parsedCustomTranslations[language]) {
 						continue;
@@ -287,7 +286,7 @@ const TranslationProviderInner = ({
 			language: i18n.language,
 			languages: availableLanguages,
 			loadLanguage: async (language: string): Promise<void> => {
-				i18n.changeLanguage(language);
+				i18n.changeLanguage(language).then(() => applyCustomTranslations());
 			},
 			translate: Object.assign(addSprinfToI18n(t), {
 				has: ((key, options) => key && i18n.exists(key, options)) as TranslationContextValue['translate']['has'],
