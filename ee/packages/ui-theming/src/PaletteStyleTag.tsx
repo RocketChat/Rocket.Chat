@@ -21,7 +21,7 @@ export const PaletteStyleTag = memo(function PaletteStyleTag() {
 		}
 		return defaultPalette;
 	};
-	const palette = convertToCss(getPalette(), '.rcx-content--main');
+	const palette = convertToCss(getPalette(), '.rcx-content--main, .rcx-tile');
 
 	return createPortal(theme === 'dark' ? palette + codeBlock : palette, useCreateStyleContainer('main-palette'));
 });
