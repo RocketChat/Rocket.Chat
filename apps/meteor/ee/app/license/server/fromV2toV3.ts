@@ -3,7 +3,7 @@
  * Transform a License V2 into a V3 representation.
  */
 
-import type { ILicenseV2, ILicenseV3, Module, LicenseLimit, LicensePeriod } from '@rocket.chat/core-typings';
+import type { ILicenseV2, ILicenseV3, Module } from '@rocket.chat/core-typings';
 
 import { isBundle, getBundleFromModule, getBundleModules } from './bundles';
 import { getTagColor } from './getTagColor';
@@ -42,7 +42,7 @@ export const fromV2toV3 = (v2: ILicenseV2): ILicenseV3 => {
 				{
 					validUntil: new Date(Date.parse(v2.expiry)).toISOString(),
 					invalidBehavior: 'invalidate_license',
-				} as LicensePeriod,
+				},
 			],
 			statisticsReport: {
 				required: false,
