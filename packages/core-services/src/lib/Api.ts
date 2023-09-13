@@ -1,4 +1,4 @@
-import type { EventSignatures } from '../Events';
+import type { EventSignatures } from '../events/Events';
 import type { IApiService } from '../types/IApiService';
 import type { IBroker, IBrokerNode } from '../types/IBroker';
 import type { IServiceClass } from '../types/ServiceClass';

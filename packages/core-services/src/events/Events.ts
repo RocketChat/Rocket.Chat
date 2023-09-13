@@ -34,7 +34,7 @@ import type {
 	IBanner,
 } from '@rocket.chat/core-typings';
 
-import type { AutoUpdateRecord } from './types/IMeteor';
+import type { AutoUpdateRecord } from '../types/IMeteor';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
@@ -267,4 +267,5 @@ export type EventSignatures = {
 	'command.updated'(command: string): void;
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
+	'message.sent'(message: IMessage): void;
 };
