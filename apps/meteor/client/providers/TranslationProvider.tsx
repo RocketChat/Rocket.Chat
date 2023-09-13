@@ -79,7 +79,9 @@ const useI18next = (lng: string): typeof i18next => {
 
 						if (prefix) {
 							result[key.slice(prefix.length + 1)] = value;
+							continue;
 						}
+						result[key] = value;
 					}
 				}
 			}
