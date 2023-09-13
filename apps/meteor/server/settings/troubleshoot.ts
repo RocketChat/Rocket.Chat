@@ -44,4 +44,8 @@ export const createTroubleshootSettings = () =>
 			type: 'boolean',
 			i18nDescription: 'Troubleshoot_Disable_Workspace_Sync_Alert',
 		});
+		await this.add('Troubleshoot_Disable_Teams_Mention', false, {
+			type: 'boolean',
+			i18nDescription: 'Troubleshoot_Disable_Teams_Mention_Alert',
+		});
 	});
