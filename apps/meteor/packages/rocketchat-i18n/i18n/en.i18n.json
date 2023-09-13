@@ -2115,6 +2115,7 @@
   "Workspace_exceeded_MAC_limit_disclaimer": "The workspace has exceeded the monthly limit of active contacts. Talk to your workspace admin to address this issue.",
   "You_do_not_have_permission_to_do_this": "You do not have permission to do this",
   "You_do_not_have_permission_to_execute_this_command": "You do not have enough permissions to execute command: `/{{command}}`",
+  "You_have_reached_the_limit_active_costumers_this_month": "You have reached the limit of active customers this month",
   "Errors_and_Warnings": "Errors and Warnings",
   "Esc_to": "Esc to",
   "Estimated_wait_time": "Estimated wait time",
