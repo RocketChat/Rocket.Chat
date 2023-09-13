@@ -1,4 +1,5 @@
 import { type StorybookConfig } from '@storybook/core-common';
+import { type RuleSetRule } from 'webpack';
 
 const config: StorybookConfig = {
 	stories: ['../src/**/{*.story,story,*.stories,stories}.{js,tsx}'],
@@ -29,15 +30,25 @@ const config: StorybookConfig = {
 			[require.resolve('../src/lib/uiKit')]: require.resolve('./mocks/uiKit.ts'),
 		};
 
-		config.module.rules = config.module.rules.filter(({ loader }) => typeof loader !== 'string' || !/json-loader/.test(loader));
+		const isRuleSetRule = (rule: any): rule is RuleSetRule => typeof rule === 'object' && rule.test && rule.use;
 
-		const fileLoader = config.module.rules.find(({ loader }) => typeof loader === 'string' && /file-loader/.test(loader));
+		config.module.rules ??= [];
+
+		config.module.rules = config.module.rules.filter(
+			(rule) => isRuleSetRule(rule) && (typeof rule.loader !== 'string' || !/json-loader/.test(rule.loader)),
+		);
+
+		const fileLoader = config.module.rules.find(
+			(rule): rule is RuleSetRule => isRuleSetRule(rule) && typeof rule.loader === 'string' && /file-loader/.test(rule.loader),
+		);
 		if (!fileLoader) {
 			throw new Error('Invalid webpack config');
 		}
 		fileLoader.test = /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|cur|ani|pdf|mp3|mp4)(\?.*)?$/;
 
-		const urlLoader = config.module.rules.find(({ loader }) => typeof loader === 'string' && /url-loader/.test(loader));
+		const urlLoader = config.module.rules
+			?.filter(isRuleSetRule)
+			.find(({ loader }) => typeof loader === 'string' && /url-loader/.test(loader));
 		if (!urlLoader) {
 			throw new Error('Invalid webpack config');
 		}
