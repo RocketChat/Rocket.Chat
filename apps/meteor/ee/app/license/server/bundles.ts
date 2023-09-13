@@ -8,7 +8,6 @@ export type BundleFeature =
 	| 'engagement-dashboard'
 	| 'push-privacy'
 	| 'scalability'
-	| 'teams-mention'
 	| 'saml-enterprise'
 	| 'device-management'
 	| 'oauth-enterprise'
@@ -32,7 +31,6 @@ const bundles: IBundle = {
 		'engagement-dashboard',
 		'push-privacy',
 		'scalability',
-		'teams-mention',
 		'saml-enterprise',
 		'oauth-enterprise',
 		'device-management',
