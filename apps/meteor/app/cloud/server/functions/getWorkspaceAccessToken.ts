@@ -45,11 +45,11 @@ export const generateWorkspaceBearerHttpHeader = async (
 	forceNew = false,
 	scope = '',
 	save = true,
-): Promise<{ Authorization: string } | Record<string, never>> => {
+): Promise<{ Authorization: string } | undefined> => {
 	const token = await getWorkspaceAccessToken(forceNew, scope, save);
 
 	if (!token) {
-		return {};
+		return undefined;
 	}
 
 	return {

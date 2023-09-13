@@ -9,7 +9,7 @@ import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { generateWorkspaceBearerHttpHeader } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { cacheNewSupportedVersionsToken } from './supportedVersionsToken';
+import { getCachedSupportedVersionsToken } from './supportedVersionsToken';
 
 /**
  * Rocket.Chat Cloud Sync Procedure
@@ -114,7 +114,7 @@ export async function syncWorkspace(_reconnectCheck = false) {
 		await getWorkspaceLicense();
 	}
 
-	await cacheNewSupportedVersionsToken();
+	await getCachedSupportedVersionsToken.reset();
 
 	return true;
 }

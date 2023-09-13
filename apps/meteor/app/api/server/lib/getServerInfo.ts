@@ -1,5 +1,5 @@
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { getCachedSupportedVersionsToken } from '../../../cloud/server/functions/supportedVersionsToken';
+import { getCachedSupportedVersionsToken, wrapPromise } from '../../../cloud/server/functions/supportedVersionsToken';
 import { Info } from '../../../utils/rocketchat.info';
 
 type ServerInfo =
@@ -14,21 +14,18 @@ const removePatchInfo = (version: string): string => version.replace(/(\d+\.\d+)
 
 export async function getServerInfo(userId?: string): Promise<ServerInfo> {
 	if (userId && (await hasPermissionAsync(userId, 'get-server-info'))) {
-		try {
-			const supportedVersionsToken = await getCachedSupportedVersionsToken();
+		const supportedVersionsToken = await wrapPromise(getCachedSupportedVersionsToken());
 
-			return {
-				info: {
-					...Info,
-					supportedVersions: supportedVersionsToken,
-				},
-			};
-		} catch (e) {
-			return {
-				info: Info,
-			};
-		}
+		return {
+			info: {
+				...Info,
+				...(supportedVersionsToken.success && {
+					supportedVersions: supportedVersionsToken.result,
+				}),
+			},
+		};
 	}
+
 	return {
 		version: removePatchInfo(Info.version),
 	};
