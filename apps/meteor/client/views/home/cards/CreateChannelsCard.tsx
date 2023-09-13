@@ -1,5 +1,5 @@
 import { Button } from '@rocket.chat/fuselage';
-import { Card } from '@rocket.chat/ui-client';
+import { Card, CardBody, CardFooter, CardFooterWrapper, CardTitle } from '@rocket.chat/ui-client';
 import { useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -14,13 +14,13 @@ const CreateChannelsCard = (): ReactElement => {
 
 	return (
 		<Card data-qa-id='homepage-create-channels-card'>
-			<Card.Title>{t('Create_channels')}</Card.Title>
-			<Card.Body>{t('Create_a_public_channel_that_new_workspace_members_can_join')}</Card.Body>
-			<Card.FooterWrapper>
-				<Card.Footer>
+			<CardTitle>{t('Create_channels')}</CardTitle>
+			<CardBody>{t('Create_a_public_channel_that_new_workspace_members_can_join')}</CardBody>
+			<CardFooterWrapper>
+				<CardFooter>
 					<Button onClick={openCreateChannelModal}>{t('Create_channel')}</Button>
-				</Card.Footer>
-			</Card.FooterWrapper>
+				</CardFooter>
+			</CardFooterWrapper>
 		</Card>
 	);
 };
