@@ -112,11 +112,10 @@ export async function syncWorkspace(_reconnectCheck = false) {
 
 		return false;
 	} finally {
-		// always fetch the license
+		// aways fetch the license
 		await getWorkspaceLicense();
 	}
 
 	await getCachedSupportedVersionsToken.reset();
-
 	return true;
 }
