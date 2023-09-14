@@ -6,7 +6,7 @@ import { useLayout } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
 import React, { memo, useMemo } from 'react';
 
-import { MacActivityIcon } from '../../../ee/client/omnichannel/components/MacActivityIcon';
+import { MacActivityIcon } from '../../../ee/client/omnichannel/components/MacActivityIcon/MacActivityIcon';
 import { useOmnichannelPriorities } from '../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
 import { PriorityIcon } from '../../../ee/client/omnichannel/priorities/PriorityIcon';
 import { RoomIcon } from '../../components/RoomIcon';
