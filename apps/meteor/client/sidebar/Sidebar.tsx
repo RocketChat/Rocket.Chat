@@ -4,6 +4,7 @@ import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
+import { useIsOverMacLimit } from '../hooks/omnichannel/useIsOverMacLimit';
 import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
@@ -20,7 +21,7 @@ const Sidebar = () => {
 	const { sidebar } = useLayout();
 	const [bannerDismissed, setBannerDismissed] = useSessionStorage('presence_cap_notifier', false);
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
-	const isOverMacLimit = true; // TODO: Implement MAC limit logic
+	const isWorkspaceOverMacLimit = useIsOverMacLimit();
 
 	const sideBarBackground = css`
 		background-color: ${Palette.surface['surface-tint']};
@@ -48,7 +49,7 @@ const Sidebar = () => {
 				<SidebarHeader />
 				{presenceDisabled && !bannerDismissed && <StatusDisabledSection onDismiss={() => setBannerDismissed(true)} />}
 				{showOmnichannel && <OmnichannelSection />}
-				{isOverMacLimit && <OverMacLimitSection />}
+				{isWorkspaceOverMacLimit && <OverMacLimitSection />}
 				<SidebarRoomList />
 				<SidebarFooter />
 			</Box>

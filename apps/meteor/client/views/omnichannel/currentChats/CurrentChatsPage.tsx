@@ -23,6 +23,7 @@ import {
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
+import { useIsOverMacLimit } from '../../../hooks/omnichannel/useIsOverMacLimit';
 import CustomFieldsList from './CustomFieldsList';
 import FilterByText from './FilterByText';
 import RemoveChatButton from './RemoveChatButton';
@@ -119,7 +120,7 @@ const currentChatQuery: useQueryType = (
 };
 
 const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: string) => void }): ReactElement => {
-	const isWorkspaceOverMacLimit = true; // TODO: Implement MAC limit logic
+	const isWorkspaceOverMacLimit = useIsOverMacLimit();
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'priorityWeight' | 'ts' | 'lm' | 'open'>(
 		'ts',
 		'desc',
@@ -167,7 +168,8 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 	});
 
 	const renderRow = useCallback(
-		({ _id, fname, servedBy, ts, lm, department, open, onHold, priorityWeight, v }) => {
+		(room) => {
+			const { _id, fname, servedBy, ts, lm, department, open, onHold, priorityWeight } = room;
 			const getStatusText = (open: boolean, onHold: boolean): string => {
 				if (!open) return t('Closed');
 				return onHold ? t('On_Hold_Chats') : t('Open');
@@ -196,7 +198,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 						{moment(lm).format('L LTS')}
 					</GenericTableCell>
 					<GenericTableCell withTruncatedText data-qa='current-chats-cell-status'>
-						<MacActivityIcon visitor={v} /> {getStatusText(open, onHold)}
+						<MacActivityIcon room={room} /> {getStatusText(open, onHold)}
 					</GenericTableCell>
 					{canRemoveClosedChats && !open && <RemoveChatButton _id={_id} />}
 				</GenericTableRow>
