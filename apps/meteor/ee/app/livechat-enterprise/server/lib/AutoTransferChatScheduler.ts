@@ -79,7 +79,7 @@ class AutoTransferChatSchedulerClass {
 			departmentId: 1,
 		});
 		if (!room?.open || !room?.servedBy?._id) {
-			throw new Error('Room is not open or is not being served by an agent');
+			throw new Error('error-room-not-opened-or-serviced');
 		}
 
 		const {

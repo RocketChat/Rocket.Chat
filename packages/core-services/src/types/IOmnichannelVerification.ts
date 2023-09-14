@@ -12,5 +12,5 @@ export interface IOmnichannelVerification extends IServiceClass {
 	setVisitorEmail(room: IOmnichannelRoom, email: string): Promise<ISetVisitorEmailResult>;
 	sendVerificationCodeToVisitor(visitorId: string, room: IOmnichannelGenericRoom): Promise<void>;
 	createLivechatMessage(room: IOmnichannelRoom, text: string): Promise<IMessage['_id']>;
-	trasferChatAfterVerificationProcess(roomId: IRoom['_id']): Promise<void>;
+	transferChatAfterVerificationProcess(roomId: IRoom['_id']): Promise<void>;
 }

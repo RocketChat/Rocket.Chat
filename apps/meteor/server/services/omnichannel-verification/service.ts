@@ -323,17 +323,19 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 		}
 	}
 
-	async trasferChatAfterVerificationProcess(roomId: IRoom['_id']): Promise<void> {
+	async transferChatAfterVerificationProcess(roomId: IRoom['_id']): Promise<void> {
 		try {
 			const room = await LivechatRooms.findOneById(roomId, {
-				_id: 1,
-				v: 1,
-				servedBy: 1,
-				open: 1,
-				departmentId: 1,
+				projection: {
+					_id: 1,
+					v: 1,
+					servedBy: 1,
+					open: 1,
+					departmentId: 1,
+				},
 			});
 			if (!room?.open || !room?.servedBy?._id) {
-				throw new Error('Room is not open or is not being served by an agent');
+				throw new Error('error-room-not-opened-or-serviced');
 			}
 			const {
 				departmentId,

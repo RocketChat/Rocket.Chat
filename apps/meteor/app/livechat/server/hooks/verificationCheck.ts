@@ -60,7 +60,7 @@ callbacks.add(
 					settings.get('Livechat_automate_verification_process') &&
 					room.servedBy?.username === settings.get('Livechat_verificaion_bot_assign')
 				) {
-					await OmnichannelVerification.trasferChatAfterVerificationProcess(room._id);
+					await OmnichannelVerification.transferChatAfterVerificationProcess(room._id);
 				}
 				break;
 			}
