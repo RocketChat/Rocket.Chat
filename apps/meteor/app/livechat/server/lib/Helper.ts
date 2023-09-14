@@ -401,7 +401,10 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 	}
 };
 
-export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: TransferData) => {
+export const forwardRoomToAgent = async (
+	room: Pick<IOmnichannelRoom, '_id' | 'v' | 'servedBy' | 'open' | 'departmentId'>,
+	transferData: TransferData,
+) => {
 	if (!room?.open) {
 		return false;
 	}

@@ -325,7 +325,7 @@ export class OmnichannelVerification extends ServiceClassInternal implements IOm
 
 	async transferChatAfterVerificationProcess(roomId: IRoom['_id']): Promise<void> {
 		try {
-			const room = await LivechatRooms.findOneById(roomId, {
+			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'v' | 'servedBy' | 'open' | 'departmentId'>>(roomId, {
 				projection: {
 					_id: 1,
 					v: 1,
