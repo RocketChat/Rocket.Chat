@@ -6,7 +6,7 @@ import sinon from 'sinon';
 const hasAllPermissionAsyncMock = sinon.stub();
 const getCachedSupportedVersionsTokenMock = sinon.stub();
 
-const { getServerInfo } = proxyquire.noCallThru().load('../../../../../../app/api/server/lib/getServerInfo', {
+const { getServerInfo } = proxyquire.noCallThru().load('./getServerInfo', {
 	'../../../utils/rocketchat.info': {
 		Info: {
 			version: '3.0.1',
@@ -15,11 +15,13 @@ const { getServerInfo } = proxyquire.noCallThru().load('../../../../../../app/ap
 	'../../../authorization/server/functions/hasPermission': {
 		hasPermissionAsync: hasAllPermissionAsyncMock,
 	},
-	'../../../cloud/server/functions/supportedVersionsToken': {
+	'../../../cloud/server/functions/supportedVersionsToken/supportedVersionsToken': {
 		getCachedSupportedVersionsToken: getCachedSupportedVersionsTokenMock,
 	},
+	'../../../settings/server': {
+		settings: new Map(),
+	},
 });
-
 describe('#getServerInfo()', () => {
 	beforeEach(() => {
 		hasAllPermissionAsyncMock.reset();
