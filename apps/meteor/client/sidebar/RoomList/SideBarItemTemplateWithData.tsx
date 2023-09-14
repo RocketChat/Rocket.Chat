@@ -146,7 +146,7 @@ function SideBarItemTemplateWithData({
 				</Badge>
 			)}
 			{isOmnichannelRoom(room) && isPriorityEnabled && <PriorityIcon level={room.priorityWeight} />}
-			{isOmnichannelRoom(room) && <MacActivityIcon room={room} />}
+			{isOmnichannelRoom(room) && <MacActivityIcon visitor={room.v} />}
 		</Margins>
 	);
 
