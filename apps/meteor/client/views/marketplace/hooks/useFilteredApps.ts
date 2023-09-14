@@ -85,12 +85,12 @@ export const useFilteredApps = ({
 		};
 
 		type appsFilterFunction = (apps: App[]) => App[];
-		const composeAppsFilters =
+		const pipeAppsFilter =
 			(...functions: appsFilterFunction[]) =>
 			(initialValue: App[]) =>
 				functions.reduce((currentAppsList, currentFilterFunction) => currentFilterFunction(currentAppsList), initialValue);
 
-		const filtered = composeAppsFilters(
+		const filtered = pipeAppsFilter(
 			context ? filterByContext[context] : fallback,
 			filterByPurchaseType[purchaseType],
 			filterByStatus[status],
