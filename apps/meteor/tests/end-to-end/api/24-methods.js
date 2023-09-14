@@ -2408,16 +2408,16 @@ describe('Meteor.methods', function () {
 			const username = `user.test.${Date.now()}`;
 			const email = `${username}@rocket.chat`;
 
-			testUser = createUser({ email, name: username, username, password: username, roles: ['user'] });
+			testUser = await createUser({ email, name: username, username, password: username, roles: ['user'] });
 		});
 
 		before('create channel', async () => {
 			channelName = `methods-test-channel-${Date.now()}`;
-			rid = (await createRoom({ type: 'c', name: channelName, members: [testUser._id] })).body.channel._id;
+			rid = (await createRoom({ type: 'c', name: channelName, members: [testUser.username] })).body.channel._id;
 		});
 
 		before('login testUser', async () => {
-			testUserCredentials = await login({ username: testUser.username, password: testUser.username });
+			testUserCredentials = await login(testUser.username, testUser.username);
 		});
 
 		describe('-> standard room', () => {
@@ -2538,7 +2538,7 @@ describe('Meteor.methods', function () {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error').that.is.a('string');
-						expect(res.body.error).to.equal('You_cannot_send_messages_to_read_only_channels');
+						expect(res.body.error).to.equal(`You can't send messages because the room is readonly.`);
 					});
 			});
 
