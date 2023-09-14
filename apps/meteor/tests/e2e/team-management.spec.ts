@@ -36,7 +36,7 @@ test.describe.serial('teams-management', () => {
 	test('expect create "targetTeamNonPrivate" non private', async ({ page }) => {
 		await poHomeTeam.sidenav.openNewByLabel('Team');
 		await poHomeTeam.inputTeamName.type(targetTeamNonPrivate);
-		await poHomeTeam.private.click();
+		await poHomeTeam.checkboxPrivateChannel.click();
 		await poHomeTeam.addMember('user1');
 		await poHomeTeam.btnTeamCreate.click();
 
@@ -46,7 +46,7 @@ test.describe.serial('teams-management', () => {
 	test('expect create "targetTeamReadOnly" readonly', async ({ page }) => {
 		await poHomeTeam.sidenav.openNewByLabel('Team');
 		await poHomeTeam.inputTeamName.type(targetTeamReadOnly);
-		await poHomeTeam.readonly.click();
+		await poHomeTeam.checkboxReadOnly.click();
 		await poHomeTeam.addMember('user1');
 		await poHomeTeam.btnTeamCreate.click();
 

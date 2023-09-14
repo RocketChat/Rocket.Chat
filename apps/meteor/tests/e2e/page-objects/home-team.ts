@@ -31,11 +31,11 @@ export class HomeTeam {
 		return this.page.locator('role=dialog >> role=group >> role=button[name=Create]');
 	}
 
-	get private(): Locator {
-		return this.page.locator('label > i').first();
+	get checkboxPrivateChannel(): Locator {
+		return this.page.locator('input[type=checkbox] + i').nth(0);
 	}
 
-	get readonly(): Locator {
-		return this.page.locator('label > i').nth(1);
+	get checkboxReadOnly(): Locator {
+		return this.page.locator('input[type=checkbox] + i').nth(1);
 	}
 }
