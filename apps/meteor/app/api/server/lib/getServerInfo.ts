@@ -3,11 +3,13 @@ import {
 	getCachedSupportedVersionsToken,
 	wrapPromise,
 } from '../../../cloud/server/functions/supportedVersionsToken/supportedVersionsToken';
-import { Info } from '../../../utils/rocketchat.info';
+import { Info, minimumClientVersions } from '../../../utils/rocketchat.info';
 
 type ServerInfo =
 	| {
 			info: typeof Info;
+			supportedVersions?: string;
+			minimumClientVersions: typeof minimumClientVersions;
 	  }
 	| {
 			version: string | undefined;
@@ -22,10 +24,12 @@ export async function getServerInfo(userId?: string): Promise<ServerInfo> {
 		return {
 			info: {
 				...Info,
-				...(supportedVersionsToken.success && {
+			},
+			minimumClientVersions,
+			...(supportedVersionsToken.success &&
+				supportedVersionsToken.result && {
 					supportedVersions: supportedVersionsToken.result,
 				}),
-			},
 		};
 	}
 

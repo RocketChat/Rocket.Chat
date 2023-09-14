@@ -22,9 +22,10 @@ declare module '*.info' {
 		version: string;
 		tag?: string;
 		branch?: string;
-		minimumClientVersions: {
-			desktop: string;
-			mobile: string;
-		};
+	};
+
+	export const minimumClientVersions: {
+		desktop: string;
+		mobile: string;
 	};
 }

@@ -100,11 +100,6 @@ const getSupportedVersionsFromCloud = async () => {
 };
 
 const getSupportedVersionsToken = async () => {
-	if (process.env.NODE_ENV === 'development') {
-		if (process.env.MOCK_CLOUD_SUPPORTED_VERSIONS_TOKEN) {
-			return JSON.parse(process.env.MOCK_CLOUD_SUPPORTED_VERSIONS_TOKEN);
-		}
-	}
 	/**
 	 * Gets the supported versions from the license
 	 * Gets the supported versions from the cloud
