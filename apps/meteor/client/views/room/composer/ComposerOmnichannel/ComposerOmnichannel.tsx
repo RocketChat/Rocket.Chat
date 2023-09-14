@@ -22,8 +22,14 @@ const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement => {
 
 	const isSameAgent = servedBy?._id === userId;
 
+	const isRoomActive = false; // TODO: Infer from room visitor
+
 	if (!open) {
-		return <MessageFooterCallout>{t('This_conversation_is_already_closed')}</MessageFooterCallout>;
+		return <MessageFooterCallout color='default'>{t('This_conversation_is_already_closed')}</MessageFooterCallout>;
+	}
+
+	if (!isRoomActive) {
+		return <MessageFooterCallout color='default'>{t('Workspace_exceeded_MAC_limit_disclaimer')}</MessageFooterCallout>;
 	}
 
 	if (onHold) {
