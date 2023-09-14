@@ -6,14 +6,23 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
-import { closeOmnichannelRoom, placeRoomOnHold, sendAgentMessage, startANewLivechatRoomAndTakeIt } from '../../../data/livechat/rooms';
+import {
+	closeOmnichannelRoom,
+	placeRoomOnHold,
+	sendAgentMessage,
+	sendMessage,
+	startANewLivechatRoomAndTakeIt,
+} from '../../../data/livechat/rooms';
 import { createAnOnlineAgent } from '../../../data/livechat/users';
+import { random, sleep } from '../../../data/livechat/utils';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import type { IUserCredentialsHeader } from '../../../data/user';
 import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - dashboards', function () {
 	this.retries(0);
+	// This test is expected to take more time since we're simulating real time conversations to verify analytics
+	this.timeout(60000);
 
 	before((done) => getCredentials(done));
 
@@ -21,16 +30,66 @@ describe('LIVECHAT - dashboards', function () {
 		await updateSetting('Livechat_enabled', true);
 	});
 
+	type IChatInfo = Awaited<ReturnType<typeof startANewLivechatRoomAndTakeIt>> & { agent: Awaited<ReturnType<typeof createAnOnlineAgent>> };
+
 	let department: ILivechatDepartment;
 	const agents: {
 		credentials: IUserCredentialsHeader;
 		user: IUser & { username: string };
 	}[] = [];
+	let room5ChatDuration = 0;
+	let room6ChatDuration = 0;
+
+	const simulateRealtimeConversation = async (chatInfo: IChatInfo[]) => {
+		const totalMessages = {
+			min: 5,
+			max: 10,
+		};
+		const delayBetweenMessages = {
+			min: 1000,
+			max: 2000,
+		};
+
+		const promises = chatInfo.map(async (info) => {
+			const { room, visitor } = info;
+
+			// send a few messages
+			const numberOfMessages = random(totalMessages.min, totalMessages.max);
+
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			for await (const _ of Array(numberOfMessages).keys()) {
+				// flip a coin to decide who will send the message
+				const willSendFromAgent = random(0, 1) === 1;
+
+				if (willSendFromAgent) {
+					await sendAgentMessage(room._id);
+				} else {
+					await sendMessage(room._id, faker.lorem.sentence(), visitor.token);
+				}
+
+				const delay = random(delayBetweenMessages.min, delayBetweenMessages.max);
+				await sleep(delay);
+			}
+
+			// Last message is always from visitor so that the chat doesn't get abandoned due to
+			// "Livechat_visitor_inactivity_timeout" setting
+			await sendMessage(room._id, faker.lorem.sentence(), visitor.token);
+		});
+
+		await Promise.all(promises);
+	};
 
 	before(async () => {
 		if (!IS_EE) {
 			return;
 		}
+
+		const inactivityTimeout = 3;
+
+		await updateSetting('Livechat_visitor_inactivity_timeout', inactivityTimeout);
+		await updateSetting('Livechat_enable_business_hours', false);
+
+		const chatInfo: IChatInfo[] = [];
 
 		// create dummy test data for further tests
 		const { department: createdDept, agent: agent1 } = await createDepartmentWithAnOnlineAgent();
@@ -42,17 +101,38 @@ describe('LIVECHAT - dashboards', function () {
 		agents.push(agent2);
 
 		// start a few chats
-		await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent1.credentials });
-		await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
-		await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
-		// put a chat on hold and close a chat so we can have some data to test
-		const { room: onHoldRoom } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent1.credentials });
-		const { room: closeRoom } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
+		const { room: r1, visitor: v1 } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent1.credentials });
+		const { room: r2, visitor: v2 } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent1.credentials });
+		const { room: r3, visitor: v3 } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
+		const { room: r4, visitor: v4 } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
+		const { room: r5, visitor: v5 } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
+		const room5ChatStart = moment();
+		const { room: r6, visitor: v6 } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
+		const room6ChatStart = moment();
+		const { room: r7, visitor: v7 } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
 
-		await sendAgentMessage(onHoldRoom._id);
-		await placeRoomOnHold(onHoldRoom._id);
+		chatInfo.push({ room: r1, visitor: v1, agent: agent1 });
+		chatInfo.push({ room: r2, visitor: v2, agent: agent1 });
+		chatInfo.push({ room: r3, visitor: v3, agent: agent2 });
+		chatInfo.push({ room: r4, visitor: v4, agent: agent2 });
+		chatInfo.push({ room: r5, visitor: v5, agent: agent2 });
+		chatInfo.push({ room: r6, visitor: v6, agent: agent2 });
+		chatInfo.push({ room: r7, visitor: v7, agent: agent2 });
 
-		await closeOmnichannelRoom(closeRoom._id);
+		// simulate messages being exchanged between agents and visitors
+		await simulateRealtimeConversation(chatInfo);
+
+		// put a chat on hold
+		await sendAgentMessage(r2._id);
+		await placeRoomOnHold(r2._id);
+		// close a chat
+		await closeOmnichannelRoom(r5._id);
+		room5ChatDuration = moment().diff(room5ChatStart, 'seconds');
+		// close an abandoned chat
+		await sendAgentMessage(r6._id);
+		await sleep(inactivityTimeout * 1000); // wait for the chat to be considered abandoned
+		await closeOmnichannelRoom(r6._id);
+		room6ChatDuration = moment().diff(room6ChatStart, 'seconds');
 	});
 
 	describe('livechat/analytics/dashboards/conversation-totalizers', () => {
@@ -145,6 +225,7 @@ describe('LIVECHAT - dashboards', function () {
 					);
 				});
 		});
+		// TODO:
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
@@ -157,6 +238,16 @@ describe('LIVECHAT - dashboards', function () {
 				.expect(200);
 
 			console.log(result.body);
+
+			// const expected = {
+			// 	totalizers: [
+			// 		{ title: 'Avg_response_time', value: '00:00:00' },
+			// 		{ title: 'Avg_first_response_time', value: '00:00:00' },
+			// 		{ title: 'Avg_reaction_time', value: '00:00:00' },
+			// 		{ title: 'Avg_of_waiting_time', value: '00:00:01' },
+			// 	],
+			// 	success: true,
+			// };
 		});
 	});
 
@@ -196,7 +287,28 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200);
 
-			console.log(result.body);
+			const expected = [
+				{ title: 'Total_abandoned_chats', value: 1 },
+				{ title: 'Avg_of_abandoned_chats', value: '14%' },
+				// { title: 'Avg_of_chat_duration_time', value: '00:00:01' },
+			];
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('totalizers');
+			expect(result.body.totalizers).to.be.an('array');
+
+			expected.forEach((expected) => {
+				const resultItem = result.body.totalizers.find((item: any) => item.title === expected.title);
+				expect(resultItem).to.not.be.undefined;
+				expect(resultItem).to.have.property('value', expected.value);
+			});
+
+			const resultAverageChatDuration = result.body.totalizers.find((item: any) => item.title === 'Avg_of_chat_duration_time');
+			expect(resultAverageChatDuration).to.not.be.undefined;
+
+			const resultAverageChatDurationValue = moment.duration(resultAverageChatDuration.value).asSeconds();
+			// expect resultAverageChatDurationValue to be close to the sum of room5ChatDuration and room6ChatDuration
+			expect(resultAverageChatDurationValue).to.be.closeTo((room5ChatDuration + room6ChatDuration) / 2, 3); // Keep a margin of 3 seconds
 		});
 	});
 
@@ -229,6 +341,7 @@ describe('LIVECHAT - dashboards', function () {
 					);
 				});
 		});
+		// TODO:
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
@@ -468,7 +581,8 @@ describe('LIVECHAT - dashboards', function () {
 					expect(res.body.chatDuration).to.have.property('longest');
 				});
 		});
-		(IS_EE ? it.only : it.skip)('should return data with correct values', async () => {
+		// TODO:
+		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
 
