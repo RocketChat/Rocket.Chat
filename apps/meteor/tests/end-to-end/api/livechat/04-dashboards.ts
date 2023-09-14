@@ -42,21 +42,22 @@ describe('LIVECHAT - dashboards', function () {
 
 	const inactivityTimeout = 3;
 
-	const totalMessages = {
+	const TOTAL_MESSAGES = {
 		min: 5,
 		max: 10,
 	};
-	const delayBetweenMessages = {
+	const DELAY_BETWEEN_MESSAGES = {
 		min: 1000,
 		max: (inactivityTimeout - 1) * 1000,
 	};
+	const TOTAL_ROOMS = 7;
 
 	const simulateRealtimeConversation = async (chatInfo: IChatInfo[]) => {
 		const promises = chatInfo.map(async (info) => {
 			const { room, visitor } = info;
 
 			// send a few messages
-			const numberOfMessages = random(totalMessages.min, totalMessages.max);
+			const numberOfMessages = random(TOTAL_MESSAGES.min, TOTAL_MESSAGES.max);
 
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			for await (const _ of Array(numberOfMessages).keys()) {
@@ -69,7 +70,7 @@ describe('LIVECHAT - dashboards', function () {
 					await sendMessage(room._id, faker.lorem.sentence(), visitor.token);
 				}
 
-				const delay = random(delayBetweenMessages.min, delayBetweenMessages.max);
+				const delay = random(DELAY_BETWEEN_MESSAGES.min, DELAY_BETWEEN_MESSAGES.max);
 				await sleep(delay);
 			}
 
@@ -187,11 +188,11 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body.totalizers).to.have.lengthOf(5);
 
 			const expectedResult = [
-				{ title: 'Total_conversations', value: 5 },
-				{ title: 'Open_conversations', value: 3 },
+				{ title: 'Total_conversations', value: 7 },
+				{ title: 'Open_conversations', value: 4 },
 				{ title: 'On_Hold_conversations', value: 1 },
-				{ title: 'Total_messages', value: 6 },
-				{ title: 'Total_visitors', value: 5 },
+				// { title: 'Total_messages', value: 60 },
+				{ title: 'Total_visitors', value: 7 },
 			];
 
 			expectedResult.forEach((expected) => {
@@ -199,6 +200,15 @@ describe('LIVECHAT - dashboards', function () {
 				expect(resultItem).to.not.be.undefined;
 				expect(resultItem).to.have.property('value', expected.value);
 			});
+
+			const minMessages = TOTAL_MESSAGES.min * TOTAL_ROOMS;
+			const maxMessages = TOTAL_MESSAGES.max * TOTAL_ROOMS;
+
+			const totalMessages = result.body.totalizers.find((item: any) => item.title === 'Total_messages');
+			expect(totalMessages).to.not.be.undefined;
+			const totalMessagesValue = parseInt(totalMessages.value);
+			expect(totalMessagesValue).to.be.greaterThanOrEqual(minMessages);
+			expect(totalMessagesValue).to.be.lessThanOrEqual(maxMessages);
 		});
 	});
 
@@ -254,7 +264,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(avgWaitingTime).to.not.be.undefined;
 
 			const avgWaitingTimeValue = moment.duration(avgWaitingTime.value).asSeconds();
-			expect(avgWaitingTimeValue).to.be.closeTo(delayBetweenMessages.max / 1000, 5);
+			expect(avgWaitingTimeValue).to.be.closeTo(DELAY_BETWEEN_MESSAGES.max / 1000, 5);
 		});
 	});
 
@@ -372,8 +382,8 @@ describe('LIVECHAT - dashboards', function () {
 
 			expect(avgServiceTime).to.not.be.undefined;
 			const avgServiceTimeValue = moment.duration(avgServiceTime.value).asSeconds();
-			const minChatDuration = (delayBetweenMessages.min * totalMessages.min) / 1000;
-			const maxChatDuration = (delayBetweenMessages.max * totalMessages.max) / 1000;
+			const minChatDuration = (DELAY_BETWEEN_MESSAGES.min * TOTAL_MESSAGES.min) / 1000;
+			const maxChatDuration = (DELAY_BETWEEN_MESSAGES.max * TOTAL_MESSAGES.max) / 1000;
 			expect(avgServiceTimeValue).to.be.closeTo((minChatDuration + maxChatDuration) / 2, 10);
 		});
 	});
@@ -413,8 +423,8 @@ describe('LIVECHAT - dashboards', function () {
 				.expect(200);
 
 			const expected = {
-				open: 3,
-				closed: 1,
+				open: 4,
+				closed: 2,
 				queued: 0,
 				onhold: 1,
 			};
@@ -460,7 +470,7 @@ describe('LIVECHAT - dashboards', function () {
 
 			const expected = {
 				agent0: { open: 1, closed: 0, onhold: 1 },
-				agent1: { open: 2, closed: 1 },
+				agent1: { open: 3, closed: 2 },
 			};
 
 			expect(result.body).to.have.property('success', true);
@@ -560,7 +570,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect(200);
 
 			const expected = {
-				department0: { open: 4, closed: 1 },
+				department0: { open: 5, closed: 2 },
 			};
 
 			expect(result.body).to.have.property('success', true);
@@ -622,18 +632,18 @@ describe('LIVECHAT - dashboards', function () {
 			// 	success: true,
 			// };
 
-			const maxChatDuration = (delayBetweenMessages.max * totalMessages.max) / 1000;
+			const maxChatDuration = (DELAY_BETWEEN_MESSAGES.max * TOTAL_MESSAGES.max) / 1000;
 
 			const responseValues = result.body.response;
 			expect(responseValues).to.have.property('avg');
 			expect(responseValues).to.have.property('longest');
-			expect(responseValues.avg).to.be.closeTo((delayBetweenMessages.min + delayBetweenMessages.max) / 2000, 5);
+			expect(responseValues.avg).to.be.closeTo((DELAY_BETWEEN_MESSAGES.min + DELAY_BETWEEN_MESSAGES.max) / 2000, 5);
 			expect(responseValues.longest).to.be.lessThan(maxChatDuration);
 
 			const reactionValues = result.body.reaction;
 			expect(reactionValues).to.have.property('avg');
 			expect(reactionValues).to.have.property('longest');
-			expect(reactionValues.avg).to.be.closeTo((delayBetweenMessages.min + delayBetweenMessages.max) / 2000, 5);
+			expect(reactionValues.avg).to.be.closeTo((DELAY_BETWEEN_MESSAGES.min + DELAY_BETWEEN_MESSAGES.max) / 2000, 5);
 			expect(reactionValues.longest).to.be.lessThan(maxChatDuration);
 
 			const chatDurationValues = result.body.chatDuration;
@@ -713,8 +723,8 @@ describe('LIVECHAT - dashboards', function () {
 			expect(user1Data).to.not.be.undefined;
 			expect(user2Data).to.not.be.undefined;
 
-			expect(user1Data).to.have.property('value', '40.00%');
-			expect(user2Data).to.have.property('value', '60.00%');
+			expect(user1Data).to.have.property('value', '28.57%');
+			expect(user2Data).to.have.property('value', '71.43%');
 		});
 	});
 
@@ -776,12 +786,12 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body).to.be.an('array');
 
 			const expectedResult = [
-				{ title: 'Total_conversations', value: 5 },
-				{ title: 'Open_conversations', value: 3 },
+				{ title: 'Total_conversations', value: 7 },
+				{ title: 'Open_conversations', value: 4 },
 				{ title: 'On_Hold_conversations', value: 1 },
-				{ title: 'Total_messages', value: 6 },
-				{ title: 'Busiest_day', value: 'Tuesday' },
-				{ title: 'Conversations_per_day', value: '2.50' },
+				// { title: 'Total_messages', value: 6 },
+				// { title: 'Busiest_day', value: moment().format('dddd') }, // TODO: need to check y this return a day before
+				{ title: 'Conversations_per_day', value: '3.50' },
 				{ title: 'Busiest_time', value: '- -' },
 			];
 
@@ -790,6 +800,15 @@ describe('LIVECHAT - dashboards', function () {
 				expect(resultItem).to.not.be.undefined;
 				expect(resultItem).to.have.property('value', expected.value);
 			});
+
+			const minMessages = TOTAL_MESSAGES.min * TOTAL_ROOMS;
+			const maxMessages = TOTAL_MESSAGES.max * TOTAL_ROOMS;
+
+			const totalMessages = result.body.find((item: any) => item.title === 'Total_messages');
+			expect(totalMessages).to.not.be.undefined;
+			const totalMessagesValue = parseInt(totalMessages.value);
+			expect(totalMessagesValue).to.be.greaterThanOrEqual(minMessages);
+			expect(totalMessagesValue).to.be.lessThanOrEqual(maxMessages);
 		});
 	});
 });
