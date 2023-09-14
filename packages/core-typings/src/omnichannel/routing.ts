@@ -36,7 +36,14 @@ export type TransferData = {
 		name?: string;
 	};
 	clientAction?: boolean;
-	scope: 'agent' | 'department' | 'queue' | 'autoTransferUnansweredChatsToAgent' | 'autoTransferUnansweredChatsToQueue';
+	scope:
+		| 'agent'
+		| 'department'
+		| 'queue'
+		| 'autoTransferUnansweredChatsToAgent'
+		| 'autoTransferUnansweredChatsToQueue'
+		| 'autoTransferVerifiedChatsToQueue'
+		| 'autoTransferVerifiedChatsToAgent';
 	comment?: string;
 };
 

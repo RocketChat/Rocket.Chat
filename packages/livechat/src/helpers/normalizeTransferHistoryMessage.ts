@@ -38,6 +38,8 @@ export const normalizeTransferHistoryMessage = (
 		},
 		autoTransferUnansweredChatsToAgent: () => t('the_chat_was_transferred_to_another_agent_due_to_unanswered', { duration: comment }),
 		autoTransferUnansweredChatsToQueue: () => t('the_chat_was_moved_back_to_queue_due_to_unanswered', { duration: comment }),
+		autoTransferVerifiedChatsToAgent: () => t('the_chat_was_transferred_to_another_agent'),
+		autoTransferVerifiedChatsToQueue: () => t('from_returned_the_chat_to_the_queue', { from }),
 	};
 
 	return transferTypes[scope]();

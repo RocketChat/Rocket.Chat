@@ -85,6 +85,13 @@ settings.watch<boolean>('Omnichannel_contact_manager_routing', (value) => {
 callbacks.add(
 	'livechat.checkDefaultAgentOnNewRoom',
 	async (defaultAgent, defaultGuest) => {
+		if (settings.get('Livechat_automate_verification_process')) {
+			const bot = await Users.findOneByUsername(settings.get('Livechat_verificaion_bot_assign'));
+			const agentId = bot?._id;
+			const username = bot?.username || 'rocket.cat';
+			const agent = { agentId, username };
+			return agent;
+		}
 		if (defaultAgent || !defaultGuest) {
 			return defaultAgent;
 		}
