@@ -46,7 +46,7 @@ Meteor.methods<ServerMethods>({
 
 		switch (field) {
 			case 'autoTranslate':
-				const room = await Rooms.findE2ERoomById(rid);
+				const room = await Rooms.findE2ERoomById(rid, { projection: { _id: 1 } });
 				if (room && value === '1') {
 					throw new Meteor.Error('error-e2e-enabled', 'Enabling auto-translation in E2E encrypted rooms is not allowed', {
 						method: 'saveAutoTranslateSettings',
