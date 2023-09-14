@@ -1,5 +1,5 @@
 import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
-import { Card } from '@rocket.chat/ui-client';
+import { Card, CardFooter, CardFooterWrapper } from '@rocket.chat/ui-client';
 import { useRole, useSettingSetValue, useSetting, useToastMessageDispatch, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -63,8 +63,8 @@ const CustomContentCard = (): ReactElement | null => {
 				<Box mb={8} role='status' aria-label={isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : customContentBody}>
 					{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}
 				</Box>
-				<Card.FooterWrapper>
-					<Card.Footer>
+				<CardFooterWrapper>
+					<CardFooter>
 						<Button onClick={() => settingsRoute.push({ group: 'Layout' })} title={t('Layout_Home_Page_Content')}>
 							{t('Customize_Content')}
 						</Button>
@@ -86,8 +86,8 @@ const CustomContentCard = (): ReactElement | null => {
 						>
 							{!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
 						</Button>
-					</Card.Footer>
-				</Card.FooterWrapper>
+					</CardFooter>
+				</CardFooterWrapper>
 			</Card>
 		);
 	}

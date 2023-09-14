@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/rest-typings",
-	"version": "6.3.0",
+	"version": "6.3.4",
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/jest": "~29.5.3",
@@ -9,7 +9,7 @@
 		"jest-environment-jsdom": "~29.6.1",
 		"mongodb": "^4.12.1",
 		"ts-jest": "~29.0.5",
-		"typescript": "~5.1.6"
+		"typescript": "~5.2.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

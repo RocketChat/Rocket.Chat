@@ -32,7 +32,7 @@ export class FederationSidenav {
 	}
 
 	get btnCreateChannel(): Locator {
-		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
+		return this.page.locator('role=button[name="Create"]');
 	}
 
 	async logout(): Promise<void> {

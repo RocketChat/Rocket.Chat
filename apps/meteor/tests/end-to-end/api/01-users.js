@@ -23,7 +23,7 @@ import { imgURL } from '../../data/interactions.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user';
-import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
+import { createUser, login, deleteUser, getUserStatus, getUserByUsername } from '../../data/users.helper.js';
 
 async function createChannel(userCredentials, name) {
 	const res = await request.post(api('channels.create')).set(userCredentials).send({
@@ -3446,6 +3446,24 @@ describe('[Users]', function () {
 					})
 					.end(done);
 			});
+		});
+		it('users should retain their roles when they are deactivated', async () => {
+			const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
+
+			await request
+				.post(api('users.setActiveStatus'))
+				.set(credentials)
+				.send({
+					activeStatus: false,
+					userId: testUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const user = await getUserByUsername(testUser.username);
+			expect(user).to.have.property('roles');
+			expect(user.roles).to.be.an('array').of.length(2);
+			expect(user.roles).to.include('user', 'livechat-agent');
 		});
 	});
 
