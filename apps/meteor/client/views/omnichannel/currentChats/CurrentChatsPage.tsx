@@ -1,4 +1,4 @@
-import { Pagination } from '@rocket.chat/fuselage';
+import { Banner, Icon, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
@@ -118,6 +118,7 @@ const currentChatQuery: useQueryType = (
 };
 
 const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: string) => void }): ReactElement => {
+	const isWorkspaceOverMacLimit = true; // TODO: Implement MAC limit logic
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'priorityWeight' | 'ts' | 'lm' | 'open'>(
 		'ts',
 		'desc',
@@ -300,6 +301,17 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 							customFields={customFields}
 							hasCustomFields={hasCustomFields}
 						/>
+					)}
+					{isWorkspaceOverMacLimit && (
+						<Banner
+							variant='danger'
+							actionable
+							icon={<Icon name='warning' size='x24' />}
+							title={t('The_workspace_has_exceeded_the_monthly_limit_of_active_contacts')}
+							style={{ marginBlock: '2rem' }}
+						>
+							{t('Talk_to_your_workspace_admin_to_address_this_issue')}
+						</Banner>
 					)}
 					{isSuccess && data?.rooms.length === 0 && queryHasChanged && <GenericNoResults />}
 					{isSuccess && data?.rooms.length === 0 && !queryHasChanged && (
