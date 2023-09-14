@@ -16,7 +16,7 @@
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},
 	"main": "./src/index.ts",
-	"typings": "./dist/index.d.ts",
+	"types": "./src/index.ts",
 	"files": [
 		"/dist"
 	]
