@@ -1,5 +1,5 @@
 import { Button } from '@rocket.chat/fuselage';
-import { Card } from '@rocket.chat/ui-client';
+import { Card, CardBody, CardFooter, CardFooterWrapper, CardTitle } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -16,15 +16,15 @@ const DesktopAppsCard = (): ReactElement => {
 
 	return (
 		<Card data-qa-id='homepage-desktop-apps-card'>
-			<Card.Title>{t('Desktop_apps')}</Card.Title>
-			<Card.Body>{t('Install_rocket_chat_on_your_preferred_desktop_platform')}</Card.Body>
-			<Card.FooterWrapper>
-				<Card.Footer>
+			<CardTitle>{t('Desktop_apps')}</CardTitle>
+			<CardBody>{t('Install_rocket_chat_on_your_preferred_desktop_platform')}</CardBody>
+			<CardFooterWrapper>
+				<CardFooter>
 					<Button onClick={() => handleOpenLink(WINDOWS_APP_URL)}>{t('Platform_Windows')}</Button>
 					<Button onClick={() => handleOpenLink(LINUX_APP_URL)}>{t('Platform_Linux')}</Button>
 					<Button onClick={() => handleOpenLink(MAC_APP_URL)}>{t('Platform_Mac')}</Button>
-				</Card.Footer>
-			</Card.FooterWrapper>
+				</CardFooter>
+			</CardFooterWrapper>
 		</Card>
 	);
 };

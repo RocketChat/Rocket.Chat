@@ -62,55 +62,54 @@ const AppRow = (props: App): ReactElement => {
 	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 
 	return (
-		<Box
-			key={id}
-			role='link'
-			tabIndex={0}
-			onClick={handleNavigateToAppInfo}
-			onKeyDown={handleKeyDown}
-			display='flex'
-			flexDirection='row'
-			justifyContent='space-between'
-			alignItems='center'
-			mbe={8}
-			pb={8}
-			pi={16}
-			borderRadius='x4'
-			className={hoverClass}
-			bg='light'
-		>
-			<Box display='flex' flexDirection='row' width='80%'>
-				<AppAvatar size='x40' mie={16} alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
-				<Box display='flex' alignItems='center' fontScale='p2m' mie={16} withTruncatedText>
-					<Box withTruncatedText fontScale='h5' color='title-labels'>
+		<div role='listitem' key={id}>
+			<Box
+				role='link'
+				aria-labelledby={`${id}-title`}
+				aria-describedby={`${id}-description`}
+				tabIndex={0}
+				onClick={handleNavigateToAppInfo}
+				onKeyDown={handleKeyDown}
+				display='flex'
+				flexDirection='row'
+				justifyContent='space-between'
+				alignItems='center'
+				mbe={8}
+				pb={8}
+				pi={16}
+				borderRadius='x4'
+				className={hoverClass}
+				bg='light'
+			>
+				<Box display='flex' flexDirection='row' width='80%'>
+					<AppAvatar size='x40' mie={16} alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
+					<Box id={`${id}-title`} display='flex' alignItems='center' fontScale='h5' withTruncatedText>
 						{name}
 					</Box>
-				</Box>
-				<Box display='flex' mie={16} alignItems='center'>
-					{bundledIn && Boolean(bundledIn.length) && (
-						<Box display='flex' alignItems='center'>
-							<BundleChips bundledIn={bundledIn} />
-						</Box>
-					)}
-					{shortDescription && !isMobile && (
-						<Box is='span' mis={16} fontScale='c1'>
-							{shortDescription}
-						</Box>
-					)}
-				</Box>
-			</Box>
-			<Box display='flex' flexDirection='row' width='20%' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation}>
-				{canUpdate && (
-					<Box mie={8}>
-						<Badge small variant='primary' />
+					<Box display='flex' alignItems='center'>
+						{bundledIn && Boolean(bundledIn.length) && (
+							<Box display='flex' alignItems='center' mis={16}>
+								<BundleChips bundledIn={bundledIn} />
+							</Box>
+						)}
+						{shortDescription && !isMobile && (
+							<Box id={`${id}-description`} is='span' mi={16} fontScale='c1'>
+								{shortDescription}
+							</Box>
+						)}
 					</Box>
-				)}
-				<AppStatus app={props} isAppDetailsPage={false} installed={installed} />
-				<Box minWidth='x32'>
+				</Box>
+				<Box display='flex' flexDirection='row' width='20%' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation}>
+					{canUpdate && (
+						<Box mie={8}>
+							<Badge small variant='primary' />
+						</Box>
+					)}
+					<AppStatus app={props} isAppDetailsPage={false} installed={installed} />
 					<AppMenu app={props} isAppDetailsPage={false} mis={4} />
 				</Box>
 			</Box>
-		</Box>
+		</div>
 	);
 };
 
