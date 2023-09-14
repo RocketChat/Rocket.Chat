@@ -7,7 +7,7 @@ import moment from 'moment';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 
-import { MacActivityIcon } from '../../../../ee/client/omnichannel/components/MacActivityIcon';
+import { MacActivityIcon } from '../../../../ee/client/omnichannel/components/MacActivityIcon/MacActivityIcon';
 import { useOmnichannelPriorities } from '../../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
 import { PriorityIcon } from '../../../../ee/client/omnichannel/priorities/PriorityIcon';
 import GenericNoResults from '../../../components/GenericNoResults';
