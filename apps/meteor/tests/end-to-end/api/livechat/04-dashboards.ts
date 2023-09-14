@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
@@ -37,19 +38,20 @@ describe('LIVECHAT - dashboards', function () {
 		credentials: IUserCredentialsHeader;
 		user: IUser & { username: string };
 	}[] = [];
-	let room5ChatDuration = 0;
-	let room6ChatDuration = 0;
+	let avgClosedRoomChatDuration = 0;
+
+	const inactivityTimeout = 3;
+
+	const totalMessages = {
+		min: 5,
+		max: 10,
+	};
+	const delayBetweenMessages = {
+		min: 1000,
+		max: (inactivityTimeout - 1) * 1000,
+	};
 
 	const simulateRealtimeConversation = async (chatInfo: IChatInfo[]) => {
-		const totalMessages = {
-			min: 5,
-			max: 10,
-		};
-		const delayBetweenMessages = {
-			min: 1000,
-			max: 2000,
-		};
-
 		const promises = chatInfo.map(async (info) => {
 			const { room, visitor } = info;
 
@@ -83,8 +85,6 @@ describe('LIVECHAT - dashboards', function () {
 		if (!IS_EE) {
 			return;
 		}
-
-		const inactivityTimeout = 3;
 
 		await updateSetting('Livechat_visitor_inactivity_timeout', inactivityTimeout);
 		await updateSetting('Livechat_enable_business_hours', false);
@@ -127,12 +127,14 @@ describe('LIVECHAT - dashboards', function () {
 		await placeRoomOnHold(r2._id);
 		// close a chat
 		await closeOmnichannelRoom(r5._id);
-		room5ChatDuration = moment().diff(room5ChatStart, 'seconds');
+		const room5ChatDuration = moment().diff(room5ChatStart, 'seconds');
 		// close an abandoned chat
 		await sendAgentMessage(r6._id);
 		await sleep(inactivityTimeout * 1000); // wait for the chat to be considered abandoned
 		await closeOmnichannelRoom(r6._id);
-		room6ChatDuration = moment().diff(room6ChatStart, 'seconds');
+		const room6ChatDuration = moment().diff(room6ChatStart, 'seconds');
+
+		avgClosedRoomChatDuration = (room5ChatDuration + room6ChatDuration) / 2;
 	});
 
 	describe('livechat/analytics/dashboards/conversation-totalizers', () => {
@@ -225,7 +227,6 @@ describe('LIVECHAT - dashboards', function () {
 					);
 				});
 		});
-		// TODO:
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
@@ -237,17 +238,23 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200);
 
-			console.log(result.body);
+			expect(result.body).to.have.property('success', true);
 
-			// const expected = {
-			// 	totalizers: [
-			// 		{ title: 'Avg_response_time', value: '00:00:00' },
-			// 		{ title: 'Avg_first_response_time', value: '00:00:00' },
-			// 		{ title: 'Avg_reaction_time', value: '00:00:00' },
-			// 		{ title: 'Avg_of_waiting_time', value: '00:00:01' },
-			// 	],
-			// 	success: true,
-			// };
+			// const expected = [
+			// 	// There's a bug in the code for calculation of these 3 values.
+			// 	// Due to which it always return 0
+			// 	{ title: 'Avg_response_time', value: '00:00:00' },
+			// 	{ title: 'Avg_first_response_time', value: '00:00:00' },
+			// 	{ title: 'Avg_reaction_time', value: '00:00:00' },
+
+			// 	{ title: 'Avg_of_waiting_time', value: '00:00:03' }, // approx 3, 5 delta
+			// ];
+
+			const avgWaitingTime = result.body.totalizers.find((item: any) => item.title === 'Avg_of_waiting_time');
+			expect(avgWaitingTime).to.not.be.undefined;
+
+			const avgWaitingTimeValue = moment.duration(avgWaitingTime.value).asSeconds();
+			expect(avgWaitingTimeValue).to.be.closeTo(delayBetweenMessages.max / 1000, 5);
 		});
 	});
 
@@ -307,8 +314,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(resultAverageChatDuration).to.not.be.undefined;
 
 			const resultAverageChatDurationValue = moment.duration(resultAverageChatDuration.value).asSeconds();
-			// expect resultAverageChatDurationValue to be close to the sum of room5ChatDuration and room6ChatDuration
-			expect(resultAverageChatDurationValue).to.be.closeTo((room5ChatDuration + room6ChatDuration) / 2, 3); // Keep a margin of 3 seconds
+			expect(resultAverageChatDurationValue).to.be.closeTo(avgClosedRoomChatDuration, 5); // Keep a margin of 3 seconds
 		});
 	});
 
@@ -341,7 +347,6 @@ describe('LIVECHAT - dashboards', function () {
 					);
 				});
 		});
-		// TODO:
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
@@ -353,7 +358,23 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200);
 
-			console.log(result.body);
+			// [
+			//     { title: 'Busiest_time', value: '- -' },
+			//     { title: 'Avg_of_available_service_time', value: '00:00:00' },
+			//     { title: 'Avg_of_service_time', value: '00:00:16' } approx 17, 6 delta
+			//   ],
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('totalizers');
+			expect(result.body.totalizers).to.be.an('array');
+
+			const avgServiceTime = result.body.totalizers.find((item: any) => item.title === 'Avg_of_service_time');
+
+			expect(avgServiceTime).to.not.be.undefined;
+			const avgServiceTimeValue = moment.duration(avgServiceTime.value).asSeconds();
+			const minChatDuration = (delayBetweenMessages.min * totalMessages.min) / 1000;
+			const maxChatDuration = (delayBetweenMessages.max * totalMessages.max) / 1000;
+			expect(avgServiceTimeValue).to.be.closeTo((minChatDuration + maxChatDuration) / 2, 10);
 		});
 	});
 
@@ -581,7 +602,6 @@ describe('LIVECHAT - dashboards', function () {
 					expect(res.body.chatDuration).to.have.property('longest');
 				});
 		});
-		// TODO:
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
@@ -593,22 +613,35 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200);
 
-			console.log(result.body);
-
 			expect(result.body).to.have.property('success', true);
 
 			// const expected = {
-			// 	response: { avg: 0, longest: 0.207 },
-			// 	reaction: { avg: 0, longest: 0.221 },
-			// 	chatDuration: { avg: 0, longest: 0.18 },
+			// 	response: { avg: 0, longest: 0.207 }, // avg between delayBetweenMessage.min and delayBetweenMessage.max
+			// 	reaction: { avg: 0, longest: 0.221 }, // avg between delayBetweenMessage.min and delayBetweenMessage.max
+			// 	chatDuration: { avg: 0, longest: 0.18 }, // avg should be about avgClosedRoomChatDuration, and longest should be greater than avgClosedRoomChatDuration and within delta of 20
 			// 	success: true,
 			// };
-			// const expected2 = {
-			// 	response: { avg: 0, longest: 0.188 },
-			// 	reaction: { avg: 0, longest: 0.197 },
-			// 	chatDuration: { avg: 0, longest: 0.167 },
-			// 	success: true,
-			// };
+
+			const maxChatDuration = (delayBetweenMessages.max * totalMessages.max) / 1000;
+
+			const responseValues = result.body.response;
+			expect(responseValues).to.have.property('avg');
+			expect(responseValues).to.have.property('longest');
+			expect(responseValues.avg).to.be.closeTo((delayBetweenMessages.min + delayBetweenMessages.max) / 2000, 5);
+			expect(responseValues.longest).to.be.lessThan(maxChatDuration);
+
+			const reactionValues = result.body.reaction;
+			expect(reactionValues).to.have.property('avg');
+			expect(reactionValues).to.have.property('longest');
+			expect(reactionValues.avg).to.be.closeTo((delayBetweenMessages.min + delayBetweenMessages.max) / 2000, 5);
+			expect(reactionValues.longest).to.be.lessThan(maxChatDuration);
+
+			const chatDurationValues = result.body.chatDuration;
+			expect(chatDurationValues).to.have.property('avg');
+			expect(chatDurationValues).to.have.property('longest');
+			expect(chatDurationValues.avg).to.be.closeTo(avgClosedRoomChatDuration, 5);
+			expect(chatDurationValues.longest).to.be.greaterThan(avgClosedRoomChatDuration);
+			expect(chatDurationValues.longest).to.be.lessThan(avgClosedRoomChatDuration + 20);
 		});
 	});
 
