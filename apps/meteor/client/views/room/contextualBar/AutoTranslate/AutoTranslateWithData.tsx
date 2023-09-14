@@ -2,9 +2,11 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLanguage } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo, useEffect, useState, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { dispatchToastMessage } from '../../../../lib/toast';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import AutoTranslate from './AutoTranslate';
@@ -16,10 +18,12 @@ const AutoTranslateWithData = (): ReactElement => {
 	const userLanguage = useLanguage();
 	const [currentLanguage, setCurrentLanguage] = useState(subscription?.autoTranslateLanguage ?? '');
 	const saveSettings = useEndpointAction('POST', '/v1/autotranslate.saveSettings');
+	const { t } = useTranslation();
 
 	const { value: translateData } = useEndpointData('/v1/autotranslate.getSupportedLanguages', {
 		params: useMemo(() => ({ targetLanguage: userLanguage }), [userLanguage]),
 	});
+	const languagesDict = translateData ? Object.fromEntries(translateData.languages.map((lang) => [lang.language, lang.name])) : {};
 
 	const handleChangeLanguage = useMutableCallback((value) => {
 		setCurrentLanguage(value);
@@ -29,6 +33,10 @@ const AutoTranslateWithData = (): ReactElement => {
 			field: 'autoTranslateLanguage',
 			value,
 		});
+		dispatchToastMessage({
+			type: 'success',
+			message: t('AutoTranslate_to_language_enabled_for_room', { language: languagesDict[value], roomName: room.name }),
+		});
 	});
 
 	const handleSwitch = useMutableCallback((event) => {
@@ -36,6 +44,13 @@ const AutoTranslateWithData = (): ReactElement => {
 			roomId: room._id,
 			field: 'autoTranslate',
 			value: event.target.checked,
+		});
+		dispatchToastMessage({
+			type: 'success',
+			message: t(event.target.checked ? 'AutoTranslate_to_language_enabled_for_room' : 'AutoTranslate_Disabled_for_room', {
+				language: languagesDict[currentLanguage],
+				roomName: room.name,
+			}),
 		});
 	});
 
