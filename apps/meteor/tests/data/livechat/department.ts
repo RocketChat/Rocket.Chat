@@ -58,7 +58,7 @@ new Promise((resolve, reject) => {
 
 export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: ILivechatDepartment, agent: {
 	credentials: IUserCredentialsHeader;
-	user: IUser;
+	user: IUser & { username: string };
 }}> => {
     const { user, credentials } = await createAnOnlineAgent();
 

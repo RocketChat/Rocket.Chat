@@ -32,7 +32,7 @@ export const removeAgent = async (userId: string): Promise<void> => {
 
 export const createAnOnlineAgent = async (): Promise<{
         credentials: IUserCredentialsHeader;
-        user: IUser;
+        user: IUser & { username: string };
 }> => {
     const username = `user.test.${Date.now()}`;
     const email = `${username}@rocket.chat`;

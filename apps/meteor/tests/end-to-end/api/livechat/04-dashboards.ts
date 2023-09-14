@@ -5,7 +5,7 @@ import moment from 'moment';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
 import { closeOmnichannelRoom, placeRoomOnHold, sendAgentMessage, startANewLivechatRoomAndTakeIt } from '../../../data/livechat/rooms';
 import { createAnOnlineAgent } from '../../../data/livechat/users';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
@@ -24,7 +24,7 @@ describe('LIVECHAT - dashboards', function () {
 	let department: ILivechatDepartment;
 	const agents: {
 		credentials: IUserCredentialsHeader;
-		user: IUser;
+		user: IUser & { username: string };
 	}[] = [];
 
 	before(async () => {
@@ -37,6 +37,7 @@ describe('LIVECHAT - dashboards', function () {
 		department = createdDept;
 
 		const agent2 = await createAnOnlineAgent();
+		await addOrRemoveAgentFromDepartment(department._id, { agentId: agent2.user._id, username: agent2.user.username }, true);
 		agents.push(agent1);
 		agents.push(agent2);
 
@@ -87,8 +88,7 @@ describe('LIVECHAT - dashboards', function () {
 					);
 				});
 		});
-		(IS_EE ? it : it.skip)('should return analytics overview data with correct values', async () => {
-			// format: 2023-09-13T18:29:59.000Z: ISo string
+		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
 
@@ -145,6 +145,19 @@ describe('LIVECHAT - dashboards', function () {
 					);
 				});
 		});
+		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+			const start = moment().subtract(1, 'days').toISOString();
+			const end = moment().toISOString();
+
+			const result = await request
+				.get(api('livechat/analytics/dashboards/productivity-totalizers'))
+				.query({ start, end, departmentId: department._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			console.log(result.body);
+		});
 	});
 
 	describe('livechat/analytics/dashboards/chats-totalizers', () => {
@@ -171,6 +184,19 @@ describe('LIVECHAT - dashboards', function () {
 						(prop) => expect(expectedMetrics.includes(prop.title)).to.be.true,
 					);
 				});
+		});
+		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+			const start = moment().subtract(1, 'days').toISOString();
+			const end = moment().toISOString();
+
+			const result = await request
+				.get(api('livechat/analytics/dashboards/chats-totalizers'))
+				.query({ start, end, departmentId: department._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			console.log(result.body);
 		});
 	});
 
@@ -203,6 +229,19 @@ describe('LIVECHAT - dashboards', function () {
 					);
 				});
 		});
+		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+			const start = moment().subtract(1, 'days').toISOString();
+			const end = moment().toISOString();
+
+			const result = await request
+				.get(api('livechat/analytics/dashboards/agents-productivity-totalizers'))
+				.query({ start, end, departmentId: department._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			console.log(result.body);
+		});
 	});
 
 	describe('livechat/analytics/dashboards/charts/chats', () => {
@@ -228,6 +267,30 @@ describe('LIVECHAT - dashboards', function () {
 					expect(res.body).to.have.property('queued');
 				});
 		});
+		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+			const start = moment().subtract(1, 'days').toISOString();
+			const end = moment().toISOString();
+
+			const result = await request
+				.get(api('livechat/analytics/dashboards/charts/chats'))
+				.query({ start, end, departmentId: department._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const expected = {
+				open: 3,
+				closed: 1,
+				queued: 0,
+				onhold: 1,
+			};
+
+			expect(result.body).to.have.property('success', true);
+
+			Object.entries(expected).forEach(([key, value]) => {
+				expect(result.body).to.have.property(key, value);
+			});
+		});
 	});
 
 	describe('livechat/analytics/dashboards/charts/chats-per-agent', () => {
@@ -249,6 +312,34 @@ describe('LIVECHAT - dashboards', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				});
+		});
+		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+			const start = moment().subtract(1, 'days').toISOString();
+			const end = moment().toISOString();
+
+			const result = await request
+				.get(api('livechat/analytics/dashboards/charts/chats-per-agent'))
+				.query({ start, end, departmentId: department._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const expected = {
+				agent0: { open: 1, closed: 0, onhold: 1 },
+				agent1: { open: 2, closed: 1 },
+			};
+
+			expect(result.body).to.have.property('success', true);
+
+			const agent0 = result.body[agents[0].user.username as string];
+			const agent1 = result.body[agents[1].user.username as string];
+
+			Object.entries(expected.agent0).forEach(([key, value]) => {
+				expect(agent0).to.have.property(key, value);
+			});
+			Object.entries(expected.agent1).forEach(([key, value]) => {
+				expect(agent1).to.have.property(key, value);
+			});
 		});
 	});
 
@@ -276,6 +367,31 @@ describe('LIVECHAT - dashboards', function () {
 					expect(res.body).to.have.property('available');
 				});
 		});
+		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+			const start = moment().subtract(1, 'days').toISOString();
+			const end = moment().toISOString();
+
+			const result = await request
+				.get(api('livechat/analytics/dashboards/charts/agents-status'))
+				.query({ start, end, departmentId: department._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			// TODO: We can improve tests further by creating some agents with different status
+			const expected = {
+				offline: 0,
+				away: 0,
+				busy: 0,
+				available: 2,
+			};
+
+			expect(result.body).to.have.property('success', true);
+
+			Object.entries(expected).forEach(([key, value]) => {
+				expect(result.body).to.have.property(key, value);
+			});
+		});
 	});
 
 	describe('livechat/analytics/dashboards/charts/chats-per-department', () => {
@@ -297,6 +413,29 @@ describe('LIVECHAT - dashboards', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				});
+		});
+		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+			const start = moment().subtract(1, 'days').toISOString();
+			const end = moment().toISOString();
+
+			const result = await request
+				.get(api('livechat/analytics/dashboards/charts/chats-per-department'))
+				.query({ start, end, departmentId: department._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const expected = {
+				department0: { open: 4, closed: 1 },
+			};
+
+			expect(result.body).to.have.property('success', true);
+
+			const department0 = result.body[department.name];
+
+			Object.entries(expected.department0).forEach(([key, value]) => {
+				expect(department0).to.have.property(key, value);
+			});
 		});
 	});
 
@@ -328,6 +467,34 @@ describe('LIVECHAT - dashboards', function () {
 					expect(res.body.chatDuration).to.have.property('avg');
 					expect(res.body.chatDuration).to.have.property('longest');
 				});
+		});
+		(IS_EE ? it.only : it.skip)('should return data with correct values', async () => {
+			const start = moment().subtract(1, 'days').toISOString();
+			const end = moment().toISOString();
+
+			const result = await request
+				.get(api('livechat/analytics/dashboards/charts/timings'))
+				.query({ start, end, departmentId: department._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			console.log(result.body);
+
+			expect(result.body).to.have.property('success', true);
+
+			// const expected = {
+			// 	response: { avg: 0, longest: 0.207 },
+			// 	reaction: { avg: 0, longest: 0.221 },
+			// 	chatDuration: { avg: 0, longest: 0.18 },
+			// 	success: true,
+			// };
+			// const expected2 = {
+			// 	response: { avg: 0, longest: 0.188 },
+			// 	reaction: { avg: 0, longest: 0.197 },
+			// 	chatDuration: { avg: 0, longest: 0.167 },
+			// 	success: true,
+			// };
 		});
 	});
 
