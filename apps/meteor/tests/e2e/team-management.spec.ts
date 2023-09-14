@@ -33,20 +33,20 @@ test.describe.serial('teams-management', () => {
 		await expect(page).toHaveURL(`/group/${targetTeam}`);
 	});
 
-	test('expect create "targetTeamNonPrivate" non private', async ({ page }) => {
+	test.only('expect create "targetTeamNonPrivate" non private', async ({ page }) => {
 		await poHomeTeam.sidenav.openNewByLabel('Team');
 		await poHomeTeam.inputTeamName.type(targetTeamNonPrivate);
-		await poHomeTeam.checkboxPrivateChannel.click();
+		await poHomeTeam.textPrivate.click();
 		await poHomeTeam.addMember('user1');
 		await poHomeTeam.btnTeamCreate.click();
 
 		await expect(page).toHaveURL(`/channel/${targetTeamNonPrivate}`);
 	});
 
-	test('expect create "targetTeamReadOnly" readonly', async ({ page }) => {
+	test.only('expect create "targetTeamReadOnly" readonly', async ({ page }) => {
 		await poHomeTeam.sidenav.openNewByLabel('Team');
 		await poHomeTeam.inputTeamName.type(targetTeamReadOnly);
-		await poHomeTeam.checkboxReadOnly.click();
+		await poHomeTeam.textReadOnly.click();
 		await poHomeTeam.addMember('user1');
 		await poHomeTeam.btnTeamCreate.click();
 
