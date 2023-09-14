@@ -24,7 +24,7 @@ const ActionManagerBusyState = () => {
 	if (busy) {
 		return (
 			<Box display='flex' position='fixed' zIndex={99999} justifyContent='center' w='100vw'>
-				<Box bg='tint' p={16} fontSize='p2' elevation='2' borderRadius='0 0 4px 4px'>
+				<Box bg='tint' color='default' p={16} fontSize='p2' elevation='2' borderRadius='0 0 4px 4px'>
 					{t('Loading')}
 				</Box>
 			</Box>
