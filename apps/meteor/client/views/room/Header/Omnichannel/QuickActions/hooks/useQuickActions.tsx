@@ -22,6 +22,7 @@ import CloseChatModalData from '../../../../../../components/Omnichannel/modals/
 import ForwardChatModal from '../../../../../../components/Omnichannel/modals/ForwardChatModal';
 import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
+import { useIsRoomActive } from '../../../../../../hooks/omnichannel/useIsRoomActive';
 import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
 import { quickActionHooks } from '../../../../../../ui';
 import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
@@ -311,7 +312,7 @@ export const useQuickActions = (): {
 	const canCloseRoom = usePermission('close-livechat-room');
 	const canCloseOthersRoom = usePermission('close-others-livechat-room');
 	const canPlaceChatOnHold = Boolean(!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed);
-	const isRoomActive = false;
+	const isRoomActive = useIsRoomActive(room);
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
