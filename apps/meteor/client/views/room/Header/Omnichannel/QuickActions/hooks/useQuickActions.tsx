@@ -311,19 +311,20 @@ export const useQuickActions = (): {
 	const canCloseRoom = usePermission('close-livechat-room');
 	const canCloseOthersRoom = usePermission('close-others-livechat-room');
 	const canPlaceChatOnHold = Boolean(!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed);
+	const isRoomActive = false;
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
-				return !!roomOpen && canMoveQueue;
+				return isRoomActive && !!roomOpen && canMoveQueue;
 			case QuickActionsEnum.ChatForward:
-				return !!roomOpen && canForwardGuest;
+				return isRoomActive && !!roomOpen && canForwardGuest;
 			case QuickActionsEnum.Transcript:
-				return canSendTranscriptEmail || (hasLicense && canSendTranscriptPDF);
+				return isRoomActive && (canSendTranscriptEmail || (hasLicense && canSendTranscriptPDF));
 			case QuickActionsEnum.TranscriptEmail:
-				return canSendTranscriptEmail;
+				return isRoomActive && canSendTranscriptEmail;
 			case QuickActionsEnum.TranscriptPDF:
-				return hasLicense && canSendTranscriptPDF;
+				return hasLicense && isRoomActive && canSendTranscriptPDF && isRoomActive;
 			case QuickActionsEnum.CloseChat:
 				return !!roomOpen && (canCloseRoom || canCloseOthersRoom);
 			case QuickActionsEnum.OnHoldChat:
