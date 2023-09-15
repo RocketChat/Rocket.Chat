@@ -1,21 +1,24 @@
 import type { ILicenseTag } from './ILicenseTag';
 
-export type LicenseBehavior = 'invalidate_license' | 'start_fair_policy' | 'prevent_action' | 'prevent_installation';
+export type LicenseBehavior = 'invalidate_license' | 'start_fair_policy' | 'prevent_action' | 'prevent_installation' | 'disable_modules';
 
 export type LicenseLimit<T extends LicenseBehavior = LicenseBehavior> = {
 	max: number;
 	behavior: T;
-};
+} & (T extends 'disable_modules' ? { behavior: T; modules: LicenseModule[] } : { behavior: T });
 
 export type Timestamp = string;
+
+export type LicensePeriodBehavior = Exclude<LicenseBehavior, 'prevent_action'>;
 
 export type LicensePeriod = {
 	validFrom?: Timestamp;
 	validUntil?: Timestamp;
-	invalidBehavior: Exclude<LicenseBehavior, 'prevent_action'>;
-} & ({ validFrom: Timestamp } | { validUntil: Timestamp });
+	invalidBehavior: LicenseBehavior;
+} & ({ validFrom: Timestamp } | { validUntil: Timestamp }) &
+	({ invalidBehavior: 'disable_modules'; modules: LicenseModule[] } | { invalidBehavior: Exclude<LicenseBehavior, 'disable_modules'> });
 
-export type Module =
+export type LicenseModule =
 	| 'auditing'
 	| 'canned-responses'
 	| 'ldap-enterprise'
@@ -79,7 +82,7 @@ export interface ILicenseV3 {
 		};
 	};
 	grantedModules: {
-		module: Module;
+		module: LicenseModule;
 	}[];
 	limits: {
 		activeUsers?: LicenseLimit[];
@@ -87,6 +90,7 @@ export interface ILicenseV3 {
 		roomsPerGuest?: LicenseLimit<'prevent_action'>[];
 		privateApps?: LicenseLimit[];
 		marketplaceApps?: LicenseLimit[];
+		monthlyActiveContacts?: LicenseLimit[];
 	};
 	cloudMeta?: Record<string, any>;
 }

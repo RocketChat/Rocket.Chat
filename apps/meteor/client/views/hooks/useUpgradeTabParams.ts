@@ -16,9 +16,12 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 	const hasValidLicense = licensesData?.licenses.some((license) => license.modules.length > 0) ?? false;
 	const hadExpiredTrials = cloudWorkspaceHadTrial ?? false;
 
-	const trialLicense = licensesData?.licenses?.find(({ meta }) => meta?.trial);
-	const isTrial = licensesData?.licenses?.every(({ meta }) => meta?.trial) ?? false;
-	const trialEndDate = trialLicense?.meta ? format(new Date(trialLicense.meta.trialEnd), 'yyyy-MM-dd') : undefined;
+	// #TODO: Update to use license v3 format, load meta info from license.information
+	const licenseMeta = licensesData?.licenses?.map((license: any) => (license.meta ?? license.cloudMeta) as Record<string, any>);
+
+	const trialLicense = licenseMeta?.find((meta) => meta?.trial);
+	const isTrial = licenseMeta?.every((meta) => meta?.trial) ?? false;
+	const trialEndDate = trialLicense ? format(new Date(trialLicense.trialEnd), 'yyyy-MM-dd') : undefined;
 
 	const upgradeTabType = getUpgradeTabType({
 		registered,

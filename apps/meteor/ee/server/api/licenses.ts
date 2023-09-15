@@ -1,19 +1,9 @@
-import type { ILicenseV2, ILicenseV3 } from '@rocket.chat/core-typings';
 import { Settings, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 
 import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { getUnmodifiedLicense, validateFormat, flatModules, getMaxActiveUsers, isEnterprise } from '../../app/license/server/license';
-
-const isLicenseV2 = (license: ILicenseV2 | ILicenseV3): license is ILicenseV2 => 'modules' in license;
-
-function licenseTransform(license: ILicenseV2 | ILicenseV3): ILicenseV2 | (ILicenseV3 & { modules: string[] }) {
-	return {
-		...license,
-		modules: isLicenseV2(license) ? flatModules(license.modules) : license.grantedModules.map(({ module }) => module),
-	};
-}
+import { getUnmodifiedLicenseAndModules, validateFormat, getMaxActiveUsers, isEnterprise } from '../../app/license/server/license';
 
 API.v1.addRoute(
 	'licenses.get',
@@ -24,8 +14,8 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const license = getUnmodifiedLicense();
-			const licenses = license ? [licenseTransform(license)] : [];
+			const license = getUnmodifiedLicenseAndModules();
+			const licenses = license ? [license] : [];
 
 			return API.v1.success({ licenses });
 		},
