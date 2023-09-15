@@ -1,29 +1,42 @@
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { isEnterprise, getMaxGuestUsers } from '../../license/server';
+import { i18n } from '../../../../server/lib/i18n';
+import { isEnterprise, canAddNewGuestUser, canAddNewUser } from '../../license/server/license';
 
 export const validateUserRoles = async function (userId, userData) {
 	if (!isEnterprise()) {
 		return;
 	}
 
-	if (!userData.roles.includes('guest')) {
+	const isGuest = Boolean(userData.roles?.includes('guest') && userData.roles.length === 1);
+	const currentUserData = userData._id ? await Users.findOneById(userData._id) : null;
+	const wasGuest = Boolean(currentUserData.roles?.includes('guest') && currentUserData.roles.length === 1);
+
+	if (currentUserData?.type === 'app') {
 		return;
 	}
 
-	if (userData.roles.length >= 2) {
-		throw new Meteor.Error('error-guests-cant-have-other-roles', "Guest users can't receive any other role", {
-			method: 'insertOrUpdateUser',
-			field: 'Assign_role',
-		});
+	if (isGuest) {
+		if (wasGuest) {
+			return;
+		}
+
+		if (!(await canAddNewGuestUser())) {
+			throw new Meteor.Error('error-max-guests-number-reached', 'Maximum number of guests reached.', {
+				method: 'insertOrUpdateUser',
+				field: 'Assign_role',
+			});
+		}
+
+		return;
 	}
 
-	const guestCount = await Users.getActiveLocalGuestCount(userData._id);
-	if (guestCount >= getMaxGuestUsers()) {
-		throw new Meteor.Error('error-max-guests-number-reached', 'Maximum number of guests reached.', {
-			method: 'insertOrUpdateUser',
-			field: 'Assign_role',
-		});
+	if (!wasGuest && userData._id) {
+		return;
+	}
+
+	if (!(await canAddNewUser())) {
+		throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 	}
 };

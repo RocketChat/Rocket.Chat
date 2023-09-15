@@ -90,3 +90,5 @@ export interface ILicenseV3 {
 	};
 	cloudMeta?: Record<string, any>;
 }
+
+export type LicenseLimitKind = keyof ILicenseV3['limits'];

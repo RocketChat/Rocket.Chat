@@ -62,31 +62,7 @@ callbacks.add(
 
 callbacks.add(
 	'validateUserRoles',
-	async (userData: Partial<IUser>) => {
-		const isGuest = userData.roles?.includes('guest');
-		if (isGuest) {
-			await validateUserRoles(Meteor.userId(), userData);
-			return;
-		}
-
-		if (!userData._id) {
-			return;
-		}
-
-		const currentUserData = await Users.findOneById(userData._id);
-		if (currentUserData?.type === 'app') {
-			return;
-		}
-
-		const wasGuest = currentUserData?.roles?.length === 1 && currentUserData.roles.includes('guest');
-		if (!wasGuest) {
-			return;
-		}
-
-		if (!(await canAddNewUser())) {
-			throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
-		}
-	},
+	async (userData: Partial<IUser>) => validateUserRoles(Meteor.userId(), userData),
 	callbacks.priority.MEDIUM,
 	'check-max-user-seats',
 );
