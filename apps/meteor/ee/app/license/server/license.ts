@@ -2,20 +2,22 @@ import { EventEmitter } from 'events';
 
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { Apps } from '@rocket.chat/core-services';
-import type { ILicenseV2, ILicenseTag, ILicenseV3, Timestamp, LicenseBehavior } from '@rocket.chat/core-typings';
+import type { ILicenseV2, ILicenseTag, ILicenseV3, Timestamp, LicenseBehavior, IUser, LicenseLimitKind } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { Users } from '@rocket.chat/models';
+import { Users, Subscriptions } from '@rocket.chat/models';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
 import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle } from './bundles';
 import decrypt from './decrypt';
 import { fromV2toV3 } from './fromV2toV3';
-import { isUnderAppLimits } from './lib/isUnderAppLimits';
+import { getAppCount } from './lib/getAppCount';
 
 const EnterpriseLicenses = new EventEmitter();
 
 const logger = new Logger('License');
+
+type LimitContext<T extends LicenseLimitKind> = T extends 'roomsPerGuest' ? { userId: IUser['_id'] } : Record<string, never>;
 
 class LicenseClass {
 	private url: string | null = null;
@@ -248,12 +250,16 @@ class LicenseClass {
 		).reduce((prev, curr) => [...new Set([...prev, ...curr])], []);
 	}
 
-	private async shouldPreventAction(action: keyof ILicenseV3['limits'], newCount = 1): Promise<boolean> {
+	private async shouldPreventAction<T extends LicenseLimitKind>(
+		action: T,
+		context?: Partial<LimitContext<T>>,
+		newCount = 1,
+	): Promise<boolean> {
 		if (!this.valid) {
 			return false;
 		}
 
-		const currentValue = (await this.getCurrentValueForLicenseLimit(action)) + newCount;
+		const currentValue = (await this.getCurrentValueForLicenseLimit(action, context)) + newCount;
 		return Boolean(
 			this.license?.limits[action]
 				?.filter(({ behavior, max }) => behavior === 'prevent_action' && max >= 0)
@@ -303,7 +309,10 @@ class LicenseClass {
 		this.showLicense();
 	}
 
-	private async getCurrentValueForLicenseLimit(limitKey: keyof ILicenseV3['limits']): Promise<number> {
+	private async getCurrentValueForLicenseLimit<T extends LicenseLimitKind>(
+		limitKey: T,
+		context?: Partial<LimitContext<T>>,
+	): Promise<number> {
 		switch (limitKey) {
 			case 'activeUsers':
 				return this.getCurrentActiveUsers();
@@ -313,6 +322,11 @@ class LicenseClass {
 				return this.getCurrentPrivateAppsCount();
 			case 'marketplaceApps':
 				return this.getCurrentMarketplaceAppsCount();
+			case 'roomsPerGuest':
+				if (context?.userId) {
+					return Subscriptions.countByUserId(context.userId);
+				}
+				return 0;
 			default:
 				return 0;
 		}
@@ -323,22 +337,35 @@ class LicenseClass {
 	}
 
 	private async getCurrentGuestUsers(): Promise<number> {
-		// #TODO: Load current count
-		return 0;
+		return Users.getActiveLocalGuestCount();
 	}
 
 	private async getCurrentPrivateAppsCount(): Promise<number> {
-		// #TODO: Load current count
-		return 0;
+		return getAppCount('private');
 	}
 
 	private async getCurrentMarketplaceAppsCount(): Promise<number> {
-		// #TODO: Load current count
-		return 0;
+		return getAppCount('marketplace');
 	}
 
 	public async canAddNewUser(userCount = 1): Promise<boolean> {
-		return !(await this.shouldPreventAction('activeUsers', userCount));
+		return !(await this.shouldPreventAction('activeUsers', {}, userCount));
+	}
+
+	public async canAddNewGuestUser(guestCount = 1): Promise<boolean> {
+		return !(await this.shouldPreventAction('guestUsers', {}, guestCount));
+	}
+
+	public async canAddNewPrivateApp(appCount = 1): Promise<boolean> {
+		return !(await this.shouldPreventAction('privateApps', {}, appCount));
+	}
+
+	public async canAddNewMarketplaceApp(appCount = 1): Promise<boolean> {
+		return !(await this.shouldPreventAction('marketplaceApps', {}, appCount));
+	}
+
+	public async canAddNewGuestSubscription(guest: IUser['_id'], roomCount = 1): Promise<boolean> {
+		return !(await this.shouldPreventAction('roomsPerGuest', { userId: guest }, roomCount));
 	}
 
 	public async canEnableApp(app: IAppStorageItem): Promise<boolean> {
@@ -352,7 +379,13 @@ class LicenseClass {
 			return true;
 		}
 
-		return isUnderAppLimits(getAppsConfig(), getInstallationSourceFromAppStorageItem(app));
+		const source = getInstallationSourceFromAppStorageItem(app);
+		switch (source) {
+			case 'private':
+				return this.canAddNewPrivateApp();
+			default:
+				return this.canAddNewMarketplaceApp();
+		}
 	}
 
 	private showLicense(): void {
@@ -378,12 +411,21 @@ class LicenseClass {
 		console.log('-------------------------');
 	}
 
-	public getMaxActiveUsers(): number {
-		return (this.valid && this.license?.limits.activeUsers?.find(({ behavior }) => behavior === 'prevent_action')?.max) || 0;
-	}
-
 	public startedFairPolicy(): boolean {
 		return Boolean(this.valid && this.inFairPolicy);
+	}
+
+	public getLicenseLimit(kind: LicenseLimitKind): number | undefined {
+		if (!this.valid || !this.license) {
+			return;
+		}
+
+		const limitList = this.license.limits[kind];
+		if (!limitList?.length) {
+			return;
+		}
+
+		return Math.min(...limitList.map(({ max }) => max));
 	}
 }
 
@@ -445,19 +487,9 @@ export function isEnterprise(): boolean {
 	return License.hasValidLicense();
 }
 
-export function getMaxGuestUsers(): number {
-	// #TODO: Adjust any place currently using this function to stop doing so.
-	return 0;
-}
-
-export function getMaxRoomsPerGuest(): number {
-	// #TODO: Adjust any place currently using this function to stop doing so.
-	return 0;
-}
-
 export function getMaxActiveUsers(): number {
 	// #TODO: Adjust any place currently using this function to stop doing so.
-	return License.getMaxActiveUsers();
+	return License.getLicenseLimit('activeUsers') ?? 0;
 }
 
 export function getUnmodifiedLicense(): ILicenseV3 | ILicenseV2 | undefined {
@@ -475,13 +507,29 @@ export function getTags(): ILicenseTag[] {
 export function getAppsConfig(): NonNullable<ILicenseV2['apps']> {
 	// #TODO: Adjust any place currently using this function to stop doing so.
 	return {
-		maxPrivateApps: -1,
-		maxMarketplaceApps: -1,
+		maxPrivateApps: License.getLicenseLimit('privateApps') ?? -1,
+		maxMarketplaceApps: License.getLicenseLimit('marketplaceApps') ?? -1,
 	};
 }
 
 export async function canAddNewUser(userCount = 1): Promise<boolean> {
 	return License.canAddNewUser(userCount);
+}
+
+export async function canAddNewGuestUser(guestCount = 1): Promise<boolean> {
+	return License.canAddNewGuestUser(guestCount);
+}
+
+export async function canAddNewGuestSubscription(guest: IUser['_id'], roomCount = 1): Promise<boolean> {
+	return License.canAddNewGuestSubscription(guest, roomCount);
+}
+
+export async function canAddNewPrivateApp(appCount = 1): Promise<boolean> {
+	return License.canAddNewPrivateApp(appCount);
+}
+
+export async function canAddNewMarketplaceApp(appCount = 1): Promise<boolean> {
+	return License.canAddNewMarketplaceApp(appCount);
 }
 
 export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {
