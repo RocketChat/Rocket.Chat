@@ -1,5 +1,29 @@
 # @rocket.chat/meteor
 
+## 6.4.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.4.0-rc.1
+  - @rocket.chat/rest-typings@6.4.0-rc.1
+  - @rocket.chat/api-client@0.1.5-rc.1
+  - @rocket.chat/omnichannel-services@0.0.11-rc.1
+  - @rocket.chat/pdf-worker@0.0.11-rc.1
+  - @rocket.chat/presence@0.0.11-rc.1
+  - @rocket.chat/core-services@0.2.0-rc.1
+  - @rocket.chat/cron@0.0.7-rc.1
+  - @rocket.chat/gazzodown@2.0.0-rc.1
+  - @rocket.chat/model-typings@0.1.0-rc.1
+  - @rocket.chat/ui-contexts@2.0.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@2.0.0-rc.1
+  - @rocket.chat/models@0.0.11-rc.1
+  - @rocket.chat/ui-theming@0.1.0-rc.0
+  - @rocket.chat/ui-client@2.0.0-rc.1
+  - @rocket.chat/ui-video-conf@2.0.0-rc.1
+  - @rocket.chat/web-ui-registration@2.0.0-rc.1
+  - @rocket.chat/instance-status@0.0.11-rc.1
+
 ## 6.4.0-rc.0
 
 ### Minor Changes
