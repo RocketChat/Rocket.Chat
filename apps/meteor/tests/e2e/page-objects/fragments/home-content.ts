@@ -240,12 +240,12 @@ export class HomeContent {
 		await this.page
 			.locator('//main//aside >> [data-qa-type="message"]')
 			.last()
-			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
+			.locator('role=button[name="More"]')
 			.waitFor();
 		await this.page
 			.locator('//main//aside >> [data-qa-type="message"]')
 			.last()
-			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
+			.locator('role=button[name="More"]')
 			.click();
 	}
 
