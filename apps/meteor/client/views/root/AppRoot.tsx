@@ -1,5 +1,4 @@
 import { QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { ReactElement } from 'react';
 import React, { lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
@@ -42,7 +41,6 @@ const AppRoot = (): ReactElement => (
 				<MeteorProvider>
 					<AppLayout />
 				</MeteorProvider>
-				<ReactQueryDevtools initialIsOpen={false} position='bottom-right' />
 			</QueryClientProvider>
 		</Suspense>
 	</OutermostErrorBoundary>
