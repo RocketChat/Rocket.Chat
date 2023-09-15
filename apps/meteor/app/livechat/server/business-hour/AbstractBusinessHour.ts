@@ -1,13 +1,10 @@
-import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
-import type { ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatAgentStatus, ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/model-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 import moment from 'moment-timezone';
 import type { UpdateFilter } from 'mongodb';
 
 import type { IWorkHoursCronJobsWrapper } from '../../../../server/models/raw/LivechatBusinessHours';
-import { businessHourLogger } from '../lib/logger';
-import { filterBusinessHoursThatMustBeOpened } from './Helper';
 
 export interface IBusinessHourBehavior {
 	findHoursToCreateJobs(): Promise<IWorkHoursCronJobsWrapper[]>;
@@ -60,29 +57,6 @@ export abstract class AbstractBusinessHourBehavior {
 			{ livechatStatusSystemModified: true, statusDefault: { $ne: 'offline' } },
 			{ livechatStatusSystemModified: true },
 		);
-	}
-
-	async onNewAgentCreated(agentId: string): Promise<void> {
-		businessHourLogger.debug(`Executing onNewAgentCreated for agentId: ${agentId}`);
-
-		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour();
-		if (!defaultBusinessHour) {
-			businessHourLogger.debug(`No default business hour found for agentId: ${agentId}`);
-			return;
-		}
-
-		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([defaultBusinessHour]);
-		if (!businessHourToOpen.length) {
-			businessHourLogger.debug(
-				`No business hour to open found for agentId: ${agentId}. Default business hour is closed. Setting agentId: ${agentId} to status: ${ILivechatAgentStatus.NOT_AVAILABLE}`,
-			);
-			await Users.setLivechatStatus(agentId, ILivechatAgentStatus.NOT_AVAILABLE);
-			return;
-		}
-
-		await Users.addBusinessHourByAgentIds([agentId], defaultBusinessHour._id);
-
-		businessHourLogger.debug(`Setting agentId: ${agentId} to status: ${ILivechatAgentStatus.AVAILABLE}`);
 	}
 }
 
