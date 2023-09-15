@@ -13,7 +13,7 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private broadcastEnabled = true;
 
-	private hasLicense?: boolean;
+	private hasLicense = false;
 
 	private lostConTimeout?: NodeJS.Timeout;
 
@@ -39,9 +39,17 @@ export class Presence extends ServiceClass implements IPresence {
 			}
 		});
 
-		this.onEvent('license.module', ({ module, valid }) => {
+		this.onEvent('license.module', async ({ module, valid }) => {
 			if (module === 'scalability') {
 				this.hasLicense = valid;
+
+				if (!this.broadcastEnabled && valid) {
+					// broadcast should always be enabled if license is active (unless the troubleshoot setting is on)
+					const presenceBroadcastDisabled = await Settings.findOneById('Troubleshoot_Disable_Presence_Broadcast');
+					if (presenceBroadcastDisabled?.value === false) {
+						await this.toggleBroadcast(true);
+					}
+				}
 			}
 		});
 	}
@@ -58,9 +66,9 @@ export class Presence extends ServiceClass implements IPresence {
 		}, 10000);
 
 		try {
-			this.hasLicense = await License.hasLicense('scalability');
-
 			await Settings.updateValueById('Presence_broadcast_disabled', false);
+
+			this.hasLicense = await License.hasLicense('scalability');
 		} catch (e: unknown) {
 			// ignore
 		}
@@ -74,7 +82,7 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async toggleBroadcast(enabled: boolean): Promise<void> {
-		if (this.hasLicense === false && this.getTotalConnections() > MAX_CONNECTIONS) {
+		if (!this.hasLicense && this.getTotalConnections() > MAX_CONNECTIONS) {
 			throw new Error('Cannot enable broadcast when there are more than 200 connections');
 		}
 		this.broadcastEnabled = enabled;
@@ -232,14 +240,7 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	private async validateAvailability(): Promise<void> {
-		if (this.hasLicense !== false) {
-			if (!this.broadcastEnabled) {
-				// broadcast should always be enabled if license is active (unless the troubleshoot setting is on)
-				const presenceBroadcastDisabled = await Settings.findOneById('Troubleshoot_Disable_Presence_Broadcast');
-				if (presenceBroadcastDisabled?.value === false) {
-					await this.toggleBroadcast(true);
-				}
-			}
+		if (this.hasLicense) {
 			return;
 		}
 
