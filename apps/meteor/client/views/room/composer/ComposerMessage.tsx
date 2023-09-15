@@ -1,4 +1,5 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
@@ -52,7 +53,77 @@ const ComposerMessage = ({ rid, tmid, readOnly, onSend, ...props }: ComposerMess
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 				}
+
+				// Check mention function
+				// const regex = new RegExp(`(^|\\s|>)@(${settings.get('UTF8_User_Names_Validation')}(@(${settings.get('UTF8_User_Names_Validation')}))?(:([0-9a-zA-Z-_.]+))?)`, 'gm');
+				const mentionsList = text.match(/@[0-9a-zA-Z-_.]+/gi);
+				console.log('resp', mentionsList);
+
+				// Check if user is in the channel
+				// -- Code --
+
+				// Send message
+				await chat?.data.pushEphemeralMessage({
+					_id: Random.id(),
+					ts: new Date(),
+					msg: 'Message here',
+					u: {
+						_id: 'rocket.cat',
+						username: 'rocket.cat',
+						name: 'Rocket.Cat',
+					},
+					blocks: [
+						{
+							type: 'section',
+							text: {
+								type: 'mrkdwn',
+								text: 'You mentioned *Rachel Berry*, but they are not in this room <https://google.com|this is a link>',
+							},
+						},
+						{
+							type: 'actions',
+							elements: [
+								{
+									type: 'button',
+									appId: 'app-id',
+									blockId: 'block-id',
+									actionId: 'action-id',
+									text: {
+										type: 'plain_text',
+										text: 'Add them',
+									},
+									url: 'teste',
+								},
+								{
+									type: 'button',
+									appId: 'app-id',
+									blockId: 'block-id',
+									actionId: 'action-id',
+									text: {
+										type: 'plain_text',
+										text: 'Do nothing',
+									},
+									url: 'teste',
+								},
+								{
+									type: 'button',
+									appId: 'app-id',
+									blockId: 'block-id',
+									actionId: 'action-id',
+									text: {
+										type: 'plain_text',
+										text: 'Let them know',
+									},
+									url: 'teste',
+								},
+							],
+						},
+					],
+					private: true,
+					_updatedAt: new Date(),
+				});
 			},
+
 			onTyping: async (): Promise<void> => {
 				if (chat?.composer?.text?.trim() === '') {
 					await chat?.action.stop('typing');
