@@ -1,5 +1,5 @@
 import { Sidebar } from '@rocket.chat/fuselage';
-import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUser, useTranslation, useRole } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
@@ -12,8 +12,6 @@ import Home from './actions/Home';
 import Login from './actions/Login';
 import Search from './actions/Search';
 import Sort from './actions/Sort';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 
 /**
  * @deprecated Feature preview
@@ -24,10 +22,7 @@ import { useQuery } from '@tanstack/react-query';
 const Header = (): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();
-	// console.log(user)
-
-	const isAdmin = user?.roles?.includes('admin');
-	// console.log(isAdmin);
+	const isAdmin = useRole('admin');
 
 	return (
 		<Sidebar.TopBar.Section>
