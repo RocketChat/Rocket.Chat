@@ -14,7 +14,7 @@ const SidebarFooterDefault = (): ReactElement => {
 	// const logo = String(useSetting(theme === 'dark' ? 'Layout_Sidenav_Footer_Dark' : 'Layout_Sidenav_Footer')).trim();
 
 	const getOrgLogoList = useEndpoint('GET', '/v1/orgDetail.list');
-	const resultLogo = useQuery(['orgLogo'], () => getOrgLogoList(), {
+	const resultLogo: any = useQuery(['orgLogo'], () => getOrgLogoList(), {
 		keepPreviousData: true,
 	});
 	const finalLogo = resultLogo?.data?.orgLogo[0].logoUrl;

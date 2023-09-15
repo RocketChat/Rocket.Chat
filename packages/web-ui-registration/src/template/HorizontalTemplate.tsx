@@ -25,7 +25,7 @@ const HorizontalTemplate = ({ children }: { children: ReactNode }): ReactElement
 
 
 	const getOrgLogoList = useEndpoint('GET', '/v1/orgDetail.list');
-	const resultData = useQuery(['orgLogo'], () => getOrgLogoList(), {
+	const resultData: any = useQuery(['orgLogo'], () => getOrgLogoList(), {
 		keepPreviousData: true,
 	});
 
