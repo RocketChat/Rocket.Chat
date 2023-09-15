@@ -9,6 +9,8 @@ import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
+import { broadcastEventToServices } from '../../lib/isRunningMs';
+import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
 
 export class MessageService extends ServiceClassInternal implements IMessageService {
 	protected name = 'message';
@@ -52,7 +54,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			settings.get('Message_Read_Receipt_Enabled'),
 			extraData,
 		);
-
+		void broadcastMessageSentEvent({
+			id: result.insertedId,
+			broadcastCallback: (message) => broadcastEventToServices('message.sent', message),
+		});
 		return result.insertedId;
 	}
 }
