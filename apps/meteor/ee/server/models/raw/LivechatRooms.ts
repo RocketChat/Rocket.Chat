@@ -541,6 +541,13 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 					},
 				},
 				{
+					$match: {
+						_id: {
+							$ne: null,
+						},
+					},
+				},
+				{
 					$sort: sort || { total: 1 },
 				},
 				{
