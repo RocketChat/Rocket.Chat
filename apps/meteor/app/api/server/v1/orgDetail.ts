@@ -6,11 +6,11 @@ import { API } from '../api';
 // we are using CustomSounds collection
 
 API.v1.addRoute(
-	'orglogo.list',
+	'orgDetail.list',
 	{ authRequired: false },
 	{
 		async get() {
-			const orgLogo = await CustomSounds.find({url : "http://localhost:3000/"} ).toArray();
+			const orgLogo = await CustomSounds.find({url : "https://www.google.com/"} ).toArray();
 
 			return API.v1.success({ orgLogo });
 		},
