@@ -3,7 +3,7 @@
  * Transform a License V2 into a V3 representation.
  */
 
-import type { ILicenseV2, ILicenseV3, Module } from '@rocket.chat/core-typings';
+import type { ILicenseV2, ILicenseV3, LicenseModule } from '@rocket.chat/core-typings';
 
 import { isBundle, getBundleFromModule, getBundleModules } from './bundles';
 import { getTagColor } from './getTagColor';
@@ -53,7 +53,7 @@ export const fromV2toV3 = (v2: ILicenseV2): ILicenseV3 => {
 				v2.modules
 					.map((licenseModule) => (isBundle(licenseModule) ? getBundleModules(licenseModule) : [licenseModule]))
 					.reduce((prev, curr) => [...prev, ...curr], [])
-					.map((licenseModule) => ({ module: licenseModule as Module })),
+					.map((licenseModule) => ({ module: licenseModule as LicenseModule })),
 			),
 		],
 		limits: {
@@ -108,5 +108,6 @@ export const fromV2toV3 = (v2: ILicenseV2): ILicenseV3 => {
 				  }
 				: {}),
 		},
+		cloudMeta: v2.meta,
 	};
 };

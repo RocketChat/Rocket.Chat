@@ -2,13 +2,22 @@ import { EventEmitter } from 'events';
 
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { Apps } from '@rocket.chat/core-services';
-import type { ILicenseV2, ILicenseTag, ILicenseV3, Timestamp, LicenseBehavior, IUser, LicenseLimitKind } from '@rocket.chat/core-typings';
+import type {
+	ILicenseV2,
+	ILicenseTag,
+	ILicenseV3,
+	Timestamp,
+	LicenseBehavior,
+	IUser,
+	LicenseLimit,
+	LicensePeriod,
+	LicenseLimitKind,
+	LicenseModule,
+} from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions } from '@rocket.chat/models';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
-import type { BundleFeature } from './bundles';
-import { getBundleModules, isBundle } from './bundles';
 import decrypt from './decrypt';
 import { fromV2toV3 } from './fromV2toV3';
 import { getAppCount } from './lib/getAppCount';
@@ -19,6 +28,11 @@ const logger = new Logger('License');
 
 type LimitContext<T extends LicenseLimitKind> = T extends 'roomsPerGuest' ? { userId: IUser['_id'] } : Record<string, never>;
 
+type BehaviorWithContext = {
+	behavior: LicenseBehavior;
+	modules?: LicenseModule[];
+};
+
 class LicenseClass {
 	private url: string | null = null;
 
@@ -26,7 +40,7 @@ class LicenseClass {
 
 	private tags = new Set<ILicenseTag>();
 
-	private modules = new Set<string>();
+	private modules = new Set<LicenseModule>();
 
 	private unmodifiedLicense: ILicenseV2 | ILicenseV3 | undefined;
 
@@ -59,7 +73,7 @@ class LicenseClass {
 		return !!regex.exec(url);
 	}
 
-	private _validModules(licenseModules: string[]): void {
+	private _validModules(licenseModules: LicenseModule[]): void {
 		licenseModules.forEach((module) => {
 			this.modules.add(module);
 			EnterpriseLicenses.emit('module', { module, valid: true });
@@ -67,12 +81,12 @@ class LicenseClass {
 		});
 	}
 
-	private _invalidModules(licenseModules: string[]): void {
+	private _invalidModules(licenseModules: LicenseModule[]): void {
 		licenseModules.forEach((module) => {
 			EnterpriseLicenses.emit('module', { module, valid: false });
 			EnterpriseLicenses.emit(`invalid:${module}`);
+			this.modules.delete(module);
 		});
-		this.modules.clear();
 	}
 
 	private _addTag(tag: ILicenseTag): void {
@@ -100,7 +114,8 @@ class LicenseClass {
 
 		this.valid = false;
 		EnterpriseLicenses.emit('invalidate');
-		this._invalidModules(license.grantedModules.map(({ module }) => module));
+		this._invalidModules([...this.modules]);
+		this.modules.clear();
 	}
 
 	public async setLicenseV3(license: ILicenseV3): Promise<void> {
@@ -131,7 +146,7 @@ class LicenseClass {
 		return Boolean(this.encryptedLicense && this.encryptedLicense === encryptedLicense);
 	}
 
-	public hasModule(module: string): boolean {
+	public hasModule(module: LicenseModule): boolean {
 		return this.modules.has(module);
 	}
 
@@ -139,13 +154,22 @@ class LicenseClass {
 		return Boolean(this.license && this.valid);
 	}
 
-	public getUnmodifiedLicense(): ILicenseV2 | ILicenseV3 | undefined {
-		if (this.valid) {
-			return this.unmodifiedLicense;
+	public getUnmodifiedLicenseAndModules(): { license: ILicenseV2 | ILicenseV3; modules: LicenseModule[] } | undefined {
+		if (this.valid && this.unmodifiedLicense) {
+			return {
+				license: this.unmodifiedLicense,
+				modules: [...this.modules],
+			};
 		}
 	}
 
-	public getModules(): string[] {
+	public getLicense(): ILicenseV3 | undefined {
+		if (this.valid && this.license) {
+			return this.license;
+		}
+	}
+
+	public getModules(): LicenseModule[] {
 		return [...this.modules];
 	}
 
@@ -159,7 +183,42 @@ class LicenseClass {
 		await this.validate();
 	}
 
-	private validateLicenseUrl(license: ILicenseV3, behaviorFilter: (behavior: LicenseBehavior) => boolean): LicenseBehavior[] {
+	private getResultingBehavior(data: LicenseLimit | LicensePeriod | Partial<BehaviorWithContext>): BehaviorWithContext {
+		const behavior = 'invalidBehavior' in data ? data.invalidBehavior : data.behavior;
+
+		switch (behavior) {
+			case 'disable_modules':
+				return {
+					behavior,
+					modules: ('modules' in data && data.modules) || [],
+				};
+
+			default:
+				return {
+					behavior,
+				} as BehaviorWithContext;
+		}
+	}
+
+	private filterValidationResult(result: BehaviorWithContext[], expectedBehavior: LicenseBehavior): BehaviorWithContext[] {
+		return result.filter(({ behavior }) => behavior === expectedBehavior) as BehaviorWithContext[];
+	}
+
+	private isBehaviorsInResult(result: BehaviorWithContext[], expectedBehaviors: LicenseBehavior[]): boolean {
+		return result.some(({ behavior }) => expectedBehaviors.includes(behavior));
+	}
+
+	private getModulesToDisable(validationResult: BehaviorWithContext[]): LicenseModule[] {
+		return [
+			...new Set([
+				...this.filterValidationResult(validationResult, 'disable_modules')
+					.map(({ modules }) => modules || [])
+					.reduce((prev, curr) => [...prev, ...curr], []),
+			]),
+		];
+	}
+
+	private validateLicenseUrl(license: ILicenseV3, behaviorFilter: (behavior: LicenseBehavior) => boolean): BehaviorWithContext[] {
 		if (!behaviorFilter('invalidate_license')) {
 			return [];
 		}
@@ -172,7 +231,7 @@ class LicenseClass {
 
 		if (!workspaceUrl) {
 			logger.error('Unable to validate license URL without knowing the workspace URL.');
-			return ['invalidate_license'];
+			return [this.getResultingBehavior({ behavior: 'invalidate_license' })];
 		}
 
 		return serverUrls
@@ -196,11 +255,11 @@ class LicenseClass {
 					url,
 					workspaceUrl,
 				});
-				return 'invalidate_license';
+				return this.getResultingBehavior({ behavior: 'invalidate_license' });
 			});
 	}
 
-	private validateLicensePeriods(license: ILicenseV3, behaviorFilter: (behavior: LicenseBehavior) => boolean): LicenseBehavior[] {
+	private validateLicensePeriods(license: ILicenseV3, behaviorFilter: (behavior: LicenseBehavior) => boolean): BehaviorWithContext[] {
 		const {
 			validation: { validPeriods },
 		} = license;
@@ -214,14 +273,14 @@ class LicenseClass {
 					msg: 'Period validation failed',
 					period,
 				});
-				return period.invalidBehavior;
+				return this.getResultingBehavior(period);
 			});
 	}
 
 	private async validateLicenseLimits(
 		license: ILicenseV3,
 		behaviorFilter: (behavior: LicenseBehavior) => boolean,
-	): Promise<LicenseBehavior[]> {
+	): Promise<BehaviorWithContext[]> {
 		const { limits } = license;
 
 		const limitKeys = Object.keys(limits) as (keyof ILicenseV3['limits'])[];
@@ -243,11 +302,11 @@ class LicenseClass {
 								kind: limitKey,
 								limit,
 							});
-							return limit.behavior;
+							return this.getResultingBehavior(limit);
 						});
 				}),
 			)
-		).reduce((prev, curr) => [...new Set([...prev, ...curr])], []);
+		).reduce((prev, curr) => [...prev, ...curr], []);
 	}
 
 	private async shouldPreventAction<T extends LicenseLimitKind>(
@@ -267,7 +326,7 @@ class LicenseClass {
 		);
 	}
 
-	private async runValidation(license: ILicenseV3, behaviorsToValidate: LicenseBehavior[] = []): Promise<LicenseBehavior[]> {
+	private async runValidation(license: ILicenseV3, behaviorsToValidate: LicenseBehavior[] = []): Promise<BehaviorWithContext[]> {
 		const shouldValidateBehavior = (behavior: LicenseBehavior) => !behaviorsToValidate?.length || behaviorsToValidate.includes(behavior);
 
 		return [
@@ -286,14 +345,15 @@ class LicenseClass {
 				'invalidate_license',
 				'prevent_installation',
 				'start_fair_policy',
+				'disable_modules',
 			]);
 
-			if (behaviorsTriggered.includes('invalidate_license') || behaviorsTriggered.includes('prevent_installation')) {
+			if (this.isBehaviorsInResult(behaviorsTriggered, ['invalidate_license', 'prevent_installation'])) {
 				return;
 			}
 
 			this.valid = true;
-			this.inFairPolicy = behaviorsTriggered.includes('start_fair_policy');
+			this.inFairPolicy = this.isBehaviorsInResult(behaviorsTriggered, ['start_fair_policy']);
 
 			if (this.license.information.tags) {
 				for (const tag of this.license.information.tags) {
@@ -301,8 +361,11 @@ class LicenseClass {
 				}
 			}
 
-			this._validModules(this.license.grantedModules.map(({ module }) => module));
-			console.log('#### License validated:', this.license.grantedModules.map(({ module }) => module).join(', '));
+			const disabledModules = this.getModulesToDisable(behaviorsTriggered);
+			const modulesToEnable = this.license.grantedModules.filter(({ module }) => !disabledModules.includes(module));
+
+			this._validModules(modulesToEnable.map(({ module }) => module));
+			console.log('#### License validated:', modulesToEnable.join(', '));
 		}
 
 		EnterpriseLicenses.emit('validate');
@@ -400,14 +463,13 @@ class LicenseClass {
 		const {
 			validation: { serverUrls, validPeriods },
 			limits,
-			grantedModules,
 		} = this.license;
 
 		console.log('---- License enabled ----');
 		console.log('              url ->', JSON.stringify(serverUrls));
 		console.log('          periods ->', JSON.stringify(validPeriods));
 		console.log('           limits ->', JSON.stringify(limits));
-		console.log('          modules ->', grantedModules.map(({ module }) => module).join(', '));
+		console.log('          modules ->', [...this.modules].join(', '));
 		console.log('-------------------------');
 	}
 
@@ -480,7 +542,7 @@ export async function setURL(url: string): Promise<void> {
 }
 
 export function hasLicense(feature: string): boolean {
-	return License.hasModule(feature);
+	return License.hasModule(feature as LicenseModule);
 }
 
 export function isEnterprise(): boolean {
@@ -492,11 +554,15 @@ export function getMaxActiveUsers(): number {
 	return License.getLicenseLimit('activeUsers') ?? 0;
 }
 
-export function getUnmodifiedLicense(): ILicenseV3 | ILicenseV2 | undefined {
-	return License.getUnmodifiedLicense();
+export function getUnmodifiedLicenseAndModules(): { license: ILicenseV2 | ILicenseV3; modules: LicenseModule[] } | undefined {
+	return License.getUnmodifiedLicenseAndModules();
 }
 
-export function getModules(): string[] {
+export function getLicense(): ILicenseV3 | undefined {
+	return License.getLicense();
+}
+
+export function getModules(): LicenseModule[] {
 	return License.getModules();
 }
 
@@ -536,7 +602,7 @@ export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {
 	return License.canEnableApp(app);
 }
 
-export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void | Promise<void> {
+export function onLicense(feature: LicenseModule, cb: (...args: any[]) => void): void | Promise<void> {
 	if (hasLicense(feature)) {
 		return cb();
 	}
@@ -544,7 +610,7 @@ export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void):
 	EnterpriseLicenses.once(`valid:${feature}`, cb);
 }
 
-function onValidFeature(feature: BundleFeature, cb: () => void): () => void {
+function onValidFeature(feature: LicenseModule, cb: () => void): () => void {
 	EnterpriseLicenses.on(`valid:${feature}`, cb);
 
 	if (hasLicense(feature)) {
@@ -556,7 +622,7 @@ function onValidFeature(feature: BundleFeature, cb: () => void): () => void {
 	};
 }
 
-function onInvalidFeature(feature: BundleFeature, cb: () => void): () => void {
+function onInvalidFeature(feature: LicenseModule, cb: () => void): () => void {
 	EnterpriseLicenses.on(`invalid:${feature}`, cb);
 
 	if (!hasLicense(feature)) {
@@ -569,7 +635,7 @@ function onInvalidFeature(feature: BundleFeature, cb: () => void): () => void {
 }
 
 export function onToggledFeature(
-	feature: BundleFeature,
+	feature: LicenseModule,
 	{
 		up,
 		down,
@@ -616,22 +682,13 @@ export function onInvalidateLicense(cb: (...args: any[]) => void): void {
 	EnterpriseLicenses.on('invalidate', cb);
 }
 
-export function flatModules(modulesAndBundles: string[]): string[] {
-	const bundles = modulesAndBundles.filter(isBundle);
-	const modules = modulesAndBundles.filter((x) => !isBundle(x));
-
-	const modulesFromBundles = bundles.map(getBundleModules).flat();
-
-	return modules.concat(modulesFromBundles);
-}
-
 interface IOverrideClassProperties {
 	[key: string]: (...args: any[]) => any;
 }
 
 type Class = { new (...args: any[]): any };
 
-export async function overwriteClassOnLicense(license: BundleFeature, original: Class, overwrite: IOverrideClassProperties): Promise<void> {
+export async function overwriteClassOnLicense(license: LicenseModule, original: Class, overwrite: IOverrideClassProperties): Promise<void> {
 	await onLicense(license, () => {
 		Object.entries(overwrite).forEach(([key, value]) => {
 			const originalFn = original.prototype[key];
