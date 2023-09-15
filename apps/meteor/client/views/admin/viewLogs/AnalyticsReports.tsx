@@ -13,7 +13,7 @@ const AnalyticsReports = ({ analytics }: { analytics: Serialized<IStats> }) => {
 			<Box p={20} pbe={28} mbe={24}>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe={20}>
 					<Box display='flex' justifyContent='center' alignItems='center' borderRadius={2} p={4} mie={8} bg='status-background-info'>
-						<Icon name='info' size={20} color='pure-black' />
+						<Icon name='info' size={20} color='info' />
 					</Box>
 					<Box fontScale='h4'>{t('How_and_why_we_collect_usage_data')}</Box>
 				</Box>
