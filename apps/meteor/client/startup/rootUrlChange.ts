@@ -6,6 +6,8 @@ import { Roles } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { t } from '../../app/utils/lib/i18n';
+import FingerprintChangeModal from '../components/FingerprintChangeModal';
+import FingerprintChangeModalConfirmation from '../components/FingerprintChangeModalConfirmation';
 import UrlChangeModal from '../components/UrlChangeModal';
 import { imperativeModal } from '../lib/imperativeModal';
 import { dispatchToastMessage } from '../lib/toast';
@@ -54,6 +56,74 @@ Meteor.startup(() => {
 		if (documentDomain) {
 			window.document.domain = documentDomain;
 		}
+
+		return c.stop();
+	});
+});
+
+Meteor.startup(() => {
+	Tracker.autorun((c) => {
+		const userId = Meteor.userId();
+		if (!userId) {
+			return;
+		}
+
+		if (!Roles.ready.get() || !isSyncReady.get()) {
+			return;
+		}
+
+		if (hasRole(userId, 'admin') === false) {
+			return c.stop();
+		}
+
+		const deploymentFingerPrintVerified = settings.get('Deployment_FingerPrint_Verified');
+		if (deploymentFingerPrintVerified == null || deploymentFingerPrintVerified === true) {
+			return;
+		}
+
+		const updateWorkspace = (): void => {
+			imperativeModal.close();
+			console.log('updateWorkspace');
+		};
+
+		const setNewWorkspace = (): void => {
+			imperativeModal.close();
+			console.log('setNewWorkspace');
+			// void sdk.call('saveSetting', 'Site_Url', currentUrl).then(() => {
+			// 	dispatchToastMessage({ type: 'success', message: t('Saved') });
+			// });
+		};
+
+		const openModal = (): void => {
+			imperativeModal.open({
+				component: FingerprintChangeModal,
+				props: {
+					onConfirm: () => {
+						imperativeModal.open({
+							component: FingerprintChangeModalConfirmation,
+							props: {
+								onConfirm: setNewWorkspace,
+								onCancel: openModal,
+								newWorkspace: true,
+							},
+						});
+					},
+					onCancel: () => {
+						imperativeModal.open({
+							component: FingerprintChangeModalConfirmation,
+							props: {
+								onConfirm: updateWorkspace,
+								onCancel: openModal,
+								newWorkspace: false,
+							},
+						});
+					},
+					onClose: imperativeModal.close,
+				},
+			});
+		};
+
+		openModal();
 
 		return c.stop();
 	});
