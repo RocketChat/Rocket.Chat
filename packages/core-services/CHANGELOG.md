@@ -32,6 +32,21 @@
   - @rocket.chat/core-typings@6.4.0-rc.0
   - @rocket.chat/rest-typings@6.4.0-rc.0
   - @rocket.chat/models@0.0.11-rc.0
+## 0.1.6
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.6
+- @rocket.chat/rest-typings@6.3.6
+- @rocket.chat/models@0.0.12
+
+## 0.1.5
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.11
+- @rocket.chat/core-typings@6.3.5
+- @rocket.chat/rest-typings@6.3.5
 
 ## 0.1.4
 

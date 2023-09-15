@@ -26,6 +26,19 @@
 - Updated dependencies [93d4912e17]
   - @rocket.chat/rest-typings@6.4.0-rc.0
   - @rocket.chat/api-client@0.1.5-rc.0
+## 0.1.6
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.3.6
+- @rocket.chat/api-client@0.1.6
+
+## 0.1.5
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.3.5
+- @rocket.chat/api-client@0.1.5
 
 ## 0.1.4
 

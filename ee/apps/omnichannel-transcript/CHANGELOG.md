@@ -1,6 +1,6 @@
 # @rocket.chat/omnichannel-transcript
 
-## 0.2.5-rc.1
+## 0.2.7-rc.1
 
 ### Patch Changes
 
@@ -11,7 +11,7 @@
 - @rocket.chat/model-typings@0.1.0-rc.1
 - @rocket.chat/models@0.0.11-rc.1
 
-## 0.2.5-rc.0
+## 0.2.7-rc.0
 
 ### Patch Changes
 
