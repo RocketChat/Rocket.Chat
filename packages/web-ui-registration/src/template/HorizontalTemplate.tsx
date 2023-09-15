@@ -3,17 +3,17 @@ import {
 	HorizontalWizardLayout,
 	HorizontalWizardLayoutAside,
 	HorizontalWizardLayoutContent,
-	HorizontalWizardLayoutTitle,
-	HorizontalWizardLayoutFooter,
-	HorizontalWizardLayoutDescription,
+	// HorizontalWizardLayoutTitle,
+	// HorizontalWizardLayoutFooter,
+	// HorizontalWizardLayoutDescription,
 } from '@rocket.chat/layout';
 import { useSetting, useAssetWithDarkModePath } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 
-import LoginPoweredBy from '../components/LoginPoweredBy';
-import LoginSwitchLanguageFooter from '../components/LoginSwitchLanguageFooter';
-import LoginTerms from '../components/LoginTerms';
-import { RegisterTitle } from '../components/RegisterTitle';
+// import LoginPoweredBy from '../components/LoginPoweredBy';
+// import LoginSwitchLanguageFooter from '../components/LoginSwitchLanguageFooter';
+// import LoginTerms from '../components/LoginTerms';
+// import { RegisterTitle } from '../components/RegisterTitle';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
@@ -24,14 +24,15 @@ const HorizontalTemplate = ({ children }: { children: ReactNode }): ReactElement
 	const customBackground = useAssetWithDarkModePath('background');
 
 
-	const getOrgLogoList = useEndpoint('GET', '/v1/orglogo.list');
-	const resultLogo = useQuery(['orgLogo'], () => getOrgLogoList(), {
+	const getOrgLogoList = useEndpoint('GET', '/v1/orgDetail.list');
+	const resultData = useQuery(['orgLogo'], () => getOrgLogoList(), {
 		keepPreviousData: true,
 	});
 
-	const finalLogo = resultLogo?.data?.orgLogo[0].logoUrl;
+	const title = resultData?.data?.orgLogo[0].ibInfo;
+	const finalLogo = resultData?.data?.orgLogo[0].logoUrl;
 
-	// console.log('resultLogo sidebar -->', finalLogo);
+	// console.log('resultData sidebar -->', finalLogo);
 
 	return (
 		<HorizontalWizardLayout
@@ -39,19 +40,20 @@ const HorizontalTemplate = ({ children }: { children: ReactNode }): ReactElement
 			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' mi='neg-x8' src={finalLogo} alt='Logo' /> : <></>}
 		>
 			<HorizontalWizardLayoutAside>
-				<HorizontalWizardLayoutTitle>
+				{/* <HorizontalWizardLayoutTitle>
 					<RegisterTitle />
-				</HorizontalWizardLayoutTitle>
-				<HorizontalWizardLayoutDescription>
+				</HorizontalWizardLayoutTitle> */}
+				{/* <HorizontalWizardLayoutDescription>
 					<LoginPoweredBy />
-				</HorizontalWizardLayoutDescription>
+				</HorizontalWizardLayoutDescription> */}
+				<Box is='h1' pbs={32}><h2>{title}</h2></Box>
 			</HorizontalWizardLayoutAside>
 			<HorizontalWizardLayoutContent>
 				{children}
-				<HorizontalWizardLayoutFooter>
+				{/* <HorizontalWizardLayoutFooter>
 					<LoginTerms />
 					<LoginSwitchLanguageFooter />
-				</HorizontalWizardLayoutFooter>
+				</HorizontalWizardLayoutFooter> */}
 			</HorizontalWizardLayoutContent>
 		</HorizontalWizardLayout>
 	);
