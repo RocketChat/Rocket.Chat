@@ -8,6 +8,8 @@ export interface IStats {
 	_id: string;
 	wizard: Record<string, unknown>;
 	uniqueId: string;
+	deploymentFingerprintHash: string;
+	deploymentFingerprintVerified: boolean;
 	installedAt?: string;
 	version?: string;
 	tag?: string;

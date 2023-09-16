@@ -45,6 +45,8 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 	const npsEnabled = settings.get('NPS_survey_enabled');
 	const agreePrivacyTerms = settings.get('Cloud_Service_Agree_PrivacyTerms');
 	const setupWizardState = settings.get('Show_Setup_Wizard');
+	const deploymentFingerprintHash = settings.get('Deployment_FingerPrint_Hash');
+	const deploymentFingerprintVerified = settings.get('Deployment_FingerPrint_Verified');
 
 	const firstUser = await Users.getOldest({ projection: { name: 1, emails: 1 } });
 	const contactName = firstUser?.name || '';
@@ -54,6 +56,8 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 
 	return {
 		uniqueId: stats.uniqueId,
+		deploymentFingerprintHash
+		deploymentFingerprintVerified
 		workspaceId,
 		address,
 		contactName,

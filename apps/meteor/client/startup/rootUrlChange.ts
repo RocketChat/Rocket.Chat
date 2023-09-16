@@ -83,15 +83,16 @@ Meteor.startup(() => {
 
 		const updateWorkspace = (): void => {
 			imperativeModal.close();
-			console.log('updateWorkspace');
+			void sdk.rest.post('/v1/fingerprint', { setDeploymentAs: 'updated-configuration' }).then(() => {
+				dispatchToastMessage({ type: 'success', message: t('Saved') });
+			});
 		};
 
 		const setNewWorkspace = (): void => {
 			imperativeModal.close();
-			console.log('setNewWorkspace');
-			// void sdk.call('saveSetting', 'Site_Url', currentUrl).then(() => {
-			// 	dispatchToastMessage({ type: 'success', message: t('Saved') });
-			// });
+			void sdk.rest.post('/v1/fingerprint', { setDeploymentAs: 'new-workspace' }).then(() => {
+				dispatchToastMessage({ type: 'success', message: t('Saved') });
+			});
 		};
 
 		const openModal = (): void => {

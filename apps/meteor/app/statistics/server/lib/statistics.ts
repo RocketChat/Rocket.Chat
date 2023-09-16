@@ -89,6 +89,9 @@ export const statistics = {
 			statistics.installedAt = uniqueID.createdAt.toISOString();
 		}
 
+		statistics.deploymentFingerprintHash = settings.get('Deployment_FingerPrint_Hash');
+		statistics.deploymentFingerprintVerified = settings.get('Deployment_FingerPrint_Verified');
+
 		if (Info) {
 			statistics.version = Info.version;
 			statistics.tag = Info.tag;
