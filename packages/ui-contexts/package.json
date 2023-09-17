@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-contexts",
-	"version": "1.0.3",
+	"version": "2.0.0-rc.1",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
@@ -28,6 +28,9 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"react": "~17.0.2",
 		"use-sync-external-store": "^1.2.0"
+	},
+	"dependencies": {
+		"@rocket.chat/password-policies": "workspace:^"
 	},
 	"volta": {
 		"extends": "../../package.json"

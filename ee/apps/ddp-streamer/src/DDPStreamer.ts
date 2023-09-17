@@ -73,6 +73,15 @@ export class DDPStreamer extends ServiceClass {
 		}
 
 		metrics.register({
+			name: 'rocketchat_subscription',
+			type: 'histogram',
+			labelNames: ['subscription'],
+			description: 'Client subscriptions to Rocket.Chat',
+			unit: 'millisecond',
+			quantiles: true,
+		});
+
+		metrics.register({
 			name: 'users_connected',
 			type: 'gauge',
 			labelNames: ['nodeID'],
@@ -85,6 +94,8 @@ export class DDPStreamer extends ServiceClass {
 			labelNames: ['nodeID'],
 			description: 'Users logged by streamer',
 		});
+
+		server.setMetrics(metrics);
 
 		server.on(DDP_EVENTS.CONNECTED, () => {
 			metrics.increment('users_connected', { nodeID }, 1);

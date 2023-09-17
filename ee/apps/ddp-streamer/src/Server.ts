@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 
+import type { IServiceMetrics } from '@rocket.chat/core-services';
 import { MeteorService, isMeteorError, MeteorError } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import ejson from 'ejson';
@@ -38,6 +39,8 @@ export class Server extends EventEmitter {
 
 	private _methods = new Map<string, MethodFn>();
 
+	private metrics?: IServiceMetrics;
+
 	public readonly id = uuidv1();
 
 	serialize = ejson.stringify;
@@ -51,6 +54,10 @@ export class Server extends EventEmitter {
 		const payload = packet.startsWith('[') ? JSON.parse(packet)[0] : packet;
 		return ejson.parse(payload);
 	};
+
+	setMetrics(metrics: IServiceMetrics): void {
+		this.metrics = metrics;
+	}
 
 	async call(client: Client, packet: IPacket): Promise<void> {
 		// if client is not connected we don't need to do anything
@@ -103,9 +110,13 @@ export class Server extends EventEmitter {
 				throw new MeteorError(404, `Subscription '${packet.name}' not found`);
 			}
 
+			const end = this.metrics?.timer('rocketchat_subscription', { subscription: packet.name });
+
 			const publication = new Publication(client, packet, this);
 			const [eventName, options] = packet.params;
 			await fn.call(publication, eventName, options);
+
+			end?.();
 		} catch (err: unknown) {
 			return this.nosub(client, packet, handleInternalException(err, 'Subscription error'));
 		}
