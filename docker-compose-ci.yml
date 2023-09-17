@@ -2,10 +2,8 @@ version: '3.8'
 
 services:
   rocketchat:
+    platform: linux/amd64
     build:
-      platforms:
-        - linux/amd64
-        - linux/arm64
       dockerfile: ${RC_DOCKERFILE}
       context: /tmp/build
     image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${RC_DOCKER_TAG}
@@ -28,10 +26,8 @@ services:
       traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
 
   authorization-service:
+    platform: linux/amd64
     build:
-      platforms:
-        - linux/amd64
-        - linux/arm64
       dockerfile: ee/apps/authorization-service/Dockerfile
       context: .
       args:
@@ -47,10 +43,8 @@ services:
       - nats
 
   account-service:
+    platform: linux/amd64
     build:
-      platforms:
-        - linux/amd64
-        - linux/arm64
       dockerfile: ee/apps/account-service/Dockerfile
       context: .
       args:
@@ -66,10 +60,8 @@ services:
       - nats
 
   presence-service:
+    platform: linux/amd64
     build:
-      platforms:
-        - linux/amd64
-        - linux/arm64
       dockerfile: ee/apps/presence-service/Dockerfile
       context: .
       args:
@@ -85,10 +77,8 @@ services:
       - nats
 
   ddp-streamer-service:
+    platform: linux/amd64
     build:
-      platforms:
-        - linux/amd64
-        - linux/arm64
       dockerfile: ee/apps/ddp-streamer/Dockerfile
       context: .
       args:
@@ -110,10 +100,8 @@ services:
       traefik.http.routers.ddp-streamer-service.rule: PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)
 
   stream-hub-service:
+    platform: linux/amd64
     build:
-      platforms:
-        - linux/amd64
-        - linux/arm64
       dockerfile: ee/apps/stream-hub-service/Dockerfile
       context: .
       args:
@@ -129,10 +117,8 @@ services:
       - nats
 
   queue-worker-service:
+    platform: linux/amd64
     build:
-      platforms:
-        - linux/amd64
-        - linux/arm64
       dockerfile: ee/apps/queue-worker/Dockerfile
       context: .
       args:
@@ -148,10 +134,8 @@ services:
       - nats
 
   omnichannel-transcript-service:
+    platform: linux/amd64
     build:
-      platforms:
-        - linux/amd64
-        - linux/arm64
       dockerfile: ee/apps/omnichannel-transcript/Dockerfile
       context: .
       args:
