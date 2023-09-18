@@ -71,7 +71,7 @@ describe('AutoTranslate', function () {
 		describe('[/autotranslate.saveSettings', () => {
 			let testGroupId;
 			before(async () => {
-				await updateSetting('E2e_Enable', true);
+				await updateSetting('E2E_Enable', true);
 				await updateSetting('E2E_Enabled_Default_PrivateRooms', true);
 				const res = await createRoom({ type: 'p', name: `e2etest-autotranslate-${Date.now()}` });
 				testGroupId = res.body.group._id;
