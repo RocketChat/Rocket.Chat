@@ -5,7 +5,7 @@
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "next",
-		"@rocket.chat/fuselage-hooks": "next",
+		"@rocket.chat/fuselage-hooks": "^0.32.1",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@types/jest": "~29.5.3",
 		"@types/react": "~17.0.62",
