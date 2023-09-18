@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-properties */
 import { faker } from '@faker-js/faker';
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
@@ -22,7 +21,7 @@ import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting }
 import type { IUserCredentialsHeader } from '../../../data/user';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe.only('LIVECHAT - dashboards', function () {
+describe('LIVECHAT - dashboards', function () {
 	this.retries(0);
 	// This test is expected to take more time since we're simulating real time conversations to verify analytics
 	this.timeout(60000);
