@@ -69,7 +69,6 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 		setCustomFields(undefined);
 	});
 
-	console.log(verificationStatus, servedBy);
 	const forms = useFormsSubscription() as any;
 
 	// TODO: Refactor the formsSubscription to use components instead of hooks (since the only thing the hook does is return a component)
