@@ -1,3 +1,4 @@
+import type { ILicenseV2, ILicenseV3 } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { format } from 'date-fns';
 
@@ -16,12 +17,14 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 	const hasValidLicense = licensesData?.licenses.some((license) => license.modules.length > 0) ?? false;
 	const hadExpiredTrials = cloudWorkspaceHadTrial ?? false;
 
-	// #TODO: Update to use license v3 format, load meta info from license.information
-	const licenseMeta = licensesData?.licenses?.map((license: any) => (license.meta ?? license.cloudMeta) as Record<string, any>);
+	const licenses = (licensesData?.licenses || []) as (Partial<ILicenseV2 & ILicenseV3> & { modules: string[] })[];
 
-	const trialLicense = licenseMeta?.find((meta) => meta?.trial);
-	const isTrial = licenseMeta?.every((meta) => meta?.trial) ?? false;
-	const trialEndDate = trialLicense ? format(new Date(trialLicense.trialEnd), 'yyyy-MM-dd') : undefined;
+	const trialLicense = licenses.find(({ meta, information }) => information?.trial ?? meta?.trial);
+	const isTrial = Boolean(trialLicense);
+	const trialEndDate =
+		trialLicense?.meta?.trialEnd || trialLicense?.cloudMeta?.trialEnd
+			? format(new Date(trialLicense.meta?.trialEnd ?? trialLicense.cloudMeta?.trialEnd), 'yyyy-MM-dd')
+			: undefined;
 
 	const upgradeTabType = getUpgradeTabType({
 		registered,
