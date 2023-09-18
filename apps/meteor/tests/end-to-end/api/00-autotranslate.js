@@ -78,7 +78,7 @@ describe('AutoTranslate', function () {
 			});
 			after(async () => {
 				await updateSetting('E2E_Enabled_Default_PrivateRooms', false);
-				await updateSetting('E2e_Enable', false);
+				await updateSetting('E2E_Enable', false);
 				await deleteRoom({ type: 'p', roomId: testGroupId });
 			});
 			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
