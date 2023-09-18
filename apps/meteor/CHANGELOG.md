@@ -1,5 +1,53 @@
 # @rocket.chat/meteor
 
+## 6.4.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.4.0-rc.2
+  - @rocket.chat/rest-typings@6.4.0-rc.2
+  - @rocket.chat/api-client@0.1.7-rc.2
+  - @rocket.chat/omnichannel-services@0.0.13-rc.2
+  - @rocket.chat/pdf-worker@0.0.13-rc.2
+  - @rocket.chat/presence@0.0.13-rc.2
+  - @rocket.chat/core-services@0.2.0-rc.2
+  - @rocket.chat/cron@0.0.9-rc.2
+  - @rocket.chat/gazzodown@2.0.0-rc.2
+  - @rocket.chat/model-typings@0.1.0-rc.2
+  - @rocket.chat/ui-contexts@2.0.0-rc.2
+  - @rocket.chat/fuselage-ui-kit@2.0.0-rc.2
+  - @rocket.chat/models@0.0.13-rc.2
+  - @rocket.chat/ui-theming@0.1.0-rc.0
+  - @rocket.chat/ui-client@2.0.0-rc.2
+  - @rocket.chat/ui-video-conf@2.0.0-rc.2
+  - @rocket.chat/web-ui-registration@2.0.0-rc.2
+  - @rocket.chat/instance-status@0.0.13-rc.2
+
+## 6.4.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.4.0-rc.1
+  - @rocket.chat/rest-typings@6.4.0-rc.1
+  - @rocket.chat/api-client@0.1.5-rc.1
+  - @rocket.chat/omnichannel-services@0.0.11-rc.1
+  - @rocket.chat/pdf-worker@0.0.11-rc.1
+  - @rocket.chat/presence@0.0.11-rc.1
+  - @rocket.chat/core-services@0.2.0-rc.1
+  - @rocket.chat/cron@0.0.7-rc.1
+  - @rocket.chat/gazzodown@2.0.0-rc.1
+  - @rocket.chat/model-typings@0.1.0-rc.1
+  - @rocket.chat/ui-contexts@2.0.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@2.0.0-rc.1
+  - @rocket.chat/models@0.0.11-rc.1
+  - @rocket.chat/ui-theming@0.1.0-rc.0
+  - @rocket.chat/ui-client@2.0.0-rc.1
+  - @rocket.chat/ui-video-conf@2.0.0-rc.1
+  - @rocket.chat/web-ui-registration@2.0.0-rc.1
+  - @rocket.chat/instance-status@0.0.11-rc.1
+
 ## 6.4.0-rc.0
 
 ### Minor Changes
@@ -162,6 +210,64 @@
   - @rocket.chat/random@1.2.1
   - @rocket.chat/sha256@1.0.9
   - @rocket.chat/ui-composer@0.0.1
+
+## 6.3.6
+
+### Patch Changes
+
+- 3bbe12e850: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 285e591a73: Fix engagement dashboard not showing data
+  - @rocket.chat/core-typings@6.3.6
+  - @rocket.chat/rest-typings@6.3.6
+  - @rocket.chat/api-client@0.1.6
+  - @rocket.chat/omnichannel-services@0.0.12
+  - @rocket.chat/pdf-worker@0.0.12
+  - @rocket.chat/presence@0.0.12
+  - @rocket.chat/core-services@0.1.6
+  - @rocket.chat/cron@0.0.8
+  - @rocket.chat/gazzodown@1.0.6
+  - @rocket.chat/model-typings@0.0.12
+  - @rocket.chat/ui-contexts@1.0.6
+  - @rocket.chat/fuselage-ui-kit@1.0.6
+  - @rocket.chat/models@0.0.12
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.6
+  - @rocket.chat/ui-video-conf@1.0.6
+  - @rocket.chat/web-ui-registration@1.0.6
+  - @rocket.chat/instance-status@0.0.12
+
+## 6.3.5
+
+### Patch Changes
+
+- 4cb0b6ba6f: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- f75564c449: Fix a bug that prevented the error message from being shown in the private app installation page
+- 03923405e8: Fixed selected departments not being displayed due to pagination
+- 92d25b9c7a: Change SAU aggregation to consider only sessions from few days ago instead of the whole past.
+
+  This is particularly important for large workspaces in case the cron job did not run for some time, in that case the amount of sessions would accumulate and the aggregation would take a long time to run.
+
+- Updated dependencies [92d25b9c7a]
+  - @rocket.chat/model-typings@0.0.11
+  - @rocket.chat/omnichannel-services@0.0.11
+  - @rocket.chat/models@0.0.11
+  - @rocket.chat/presence@0.0.11
+  - @rocket.chat/core-services@0.1.5
+  - @rocket.chat/cron@0.0.7
+  - @rocket.chat/instance-status@0.0.11
+  - @rocket.chat/core-typings@6.3.5
+  - @rocket.chat/rest-typings@6.3.5
+  - @rocket.chat/api-client@0.1.5
+  - @rocket.chat/pdf-worker@0.0.11
+  - @rocket.chat/gazzodown@1.0.5
+  - @rocket.chat/ui-contexts@1.0.5
+  - @rocket.chat/fuselage-ui-kit@1.0.5
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.5
+  - @rocket.chat/ui-video-conf@1.0.5
+  - @rocket.chat/web-ui-registration@1.0.5
 
 ## 6.3.4
 

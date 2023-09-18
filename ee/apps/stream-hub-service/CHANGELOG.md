@@ -1,6 +1,24 @@
 # @rocket.chat/stream-hub-service
 
-## 0.2.5-rc.0
+## 0.2.7-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.2
+- @rocket.chat/core-services@0.2.0-rc.2
+- @rocket.chat/model-typings@0.1.0-rc.2
+- @rocket.chat/models@0.0.13-rc.2
+
+## 0.2.7-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.1
+- @rocket.chat/core-services@0.2.0-rc.1
+- @rocket.chat/model-typings@0.1.0-rc.1
+- @rocket.chat/models@0.0.11-rc.1
+
+## 0.2.7-rc.0
 
 ### Patch Changes
 
@@ -22,6 +40,25 @@
   - @rocket.chat/model-typings@0.1.0-rc.0
   - @rocket.chat/core-services@0.2.0-rc.0
   - @rocket.chat/models@0.0.11-rc.0
+
+## 0.2.6
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.6
+- @rocket.chat/core-services@0.1.6
+- @rocket.chat/model-typings@0.0.12
+- @rocket.chat/models@0.0.12
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [92d25b9c7a]
+  - @rocket.chat/model-typings@0.0.11
+  - @rocket.chat/models@0.0.11
+  - @rocket.chat/core-services@0.1.5
+  - @rocket.chat/core-typings@6.3.5
 
 ## 0.2.4
 

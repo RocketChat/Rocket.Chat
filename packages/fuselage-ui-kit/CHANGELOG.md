@@ -1,5 +1,21 @@
 # Change Log
 
+## 2.0.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.0-rc.2
+- @rocket.chat/ui-contexts@2.0.0-rc.2
+- @rocket.chat/ui-video-conf@2.0.0-rc.2
+
+## 2.0.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.0-rc.1
+- @rocket.chat/ui-contexts@2.0.0-rc.1
+- @rocket.chat/ui-video-conf@2.0.0-rc.1
+
 ## 2.0.0-rc.0
 
 ### Minor Changes
@@ -18,6 +34,22 @@
   - @rocket.chat/eslint-config@0.6.0-rc.0
   - @rocket.chat/gazzodown@2.0.0-rc.0
   - @rocket.chat/ui-video-conf@2.0.0-rc.0
+
+## 1.0.6
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.6
+- @rocket.chat/ui-contexts@1.0.6
+- @rocket.chat/ui-video-conf@1.0.6
+
+## 1.0.5
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.5
+- @rocket.chat/ui-contexts@1.0.5
+- @rocket.chat/ui-video-conf@1.0.5
 
 ## 1.0.4
 

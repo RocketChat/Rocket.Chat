@@ -1,6 +1,18 @@
 # @rocket.chat/pdf-worker
 
-## 0.0.11-rc.0
+## 0.0.13-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.2
+
+## 0.0.13-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.1
+
+## 0.0.13-rc.0
 
 ### Patch Changes
 
@@ -12,6 +24,18 @@
 - Updated dependencies [61128364d6]
 - Updated dependencies [d45365436e]
   - @rocket.chat/core-typings@6.4.0-rc.0
+
+## 0.0.12
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.6
+
+## 0.0.11
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.5
 
 ## 0.0.10
 
