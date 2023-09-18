@@ -8217,16 +8217,16 @@ __metadata:
     typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/apps-engine": "*"
-    "@rocket.chat/eslint-config": "*"
+    "@rocket.chat/eslint-config": 0.6.0-rc.0
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/fuselage-polyfills": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/prettier-config": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-contexts": 1.0.4
+    "@rocket.chat/ui-contexts": 2.0.0-rc.1
     "@rocket.chat/ui-kit": "*"
-    "@rocket.chat/ui-video-conf": 1.0.4
+    "@rocket.chat/ui-video-conf": 2.0.0-rc.1
     "@tanstack/react-query": "*"
     react: "*"
     react-dom: "*"
@@ -8308,14 +8308,14 @@ __metadata:
     ts-jest: ~29.0.5
     typescript: ~5.2.2
   peerDependencies:
-    "@rocket.chat/core-typings": 6.3.4
+    "@rocket.chat/core-typings": 6.4.0-rc.1
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-tokens": "*"
     "@rocket.chat/message-parser": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-client": "*"
-    "@rocket.chat/ui-contexts": "*"
+    "@rocket.chat/ui-client": 2.0.0-rc.1
+    "@rocket.chat/ui-contexts": 2.0.0-rc.1
     katex: "*"
     react: "*"
   languageName: unknown
@@ -9453,7 +9453,7 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-contexts": 1.0.4
+    "@rocket.chat/ui-contexts": 2.0.0-rc.1
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -9606,7 +9606,7 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-contexts": 1.0.4
+    "@rocket.chat/ui-contexts": 2.0.0-rc.1
     react: ^17.0.2
     react-dom: ^17.0.2
   languageName: unknown
@@ -9690,7 +9690,7 @@ __metadata:
     typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/layout": "*"
-    "@rocket.chat/ui-contexts": 1.0.4
+    "@rocket.chat/ui-contexts": 2.0.0-rc.1
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
