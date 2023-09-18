@@ -5,35 +5,33 @@ import {
 } from '../../../cloud/server/functions/supportedVersionsToken/supportedVersionsToken';
 import { Info, minimumClientVersions } from '../../../utils/rocketchat.info';
 
-type ServerInfo =
-	| {
-			info: typeof Info;
-			supportedVersions?: string;
-			minimumClientVersions: typeof minimumClientVersions;
-	  }
-	| {
-			version: string | undefined;
-	  };
+type ServerInfo = {
+	info?: typeof Info;
+	supportedVersions?: string;
+	minimumClientVersions: typeof minimumClientVersions;
+	version: string | undefined;
+};
 
 const removePatchInfo = (version: string): string => version.replace(/(\d+\.\d+).*/, '$1');
 
 export async function getServerInfo(userId?: string): Promise<ServerInfo> {
-	if (userId && (await hasPermissionAsync(userId, 'get-server-info'))) {
-		const supportedVersionsToken = await wrapPromise(getCachedSupportedVersionsToken());
-
-		return {
-			info: {
-				...Info,
-			},
-			minimumClientVersions,
-			...(supportedVersionsToken.success &&
-				supportedVersionsToken.result && {
-					supportedVersions: supportedVersionsToken.result,
-				}),
-		};
-	}
+	const hasPermissionToViewStatistics = userId && (await hasPermissionAsync(userId, 'view-statistics'));
+	const supportedVersionsToken = await wrapPromise(getCachedSupportedVersionsToken());
 
 	return {
 		version: removePatchInfo(Info.version),
+
+		...(hasPermissionToViewStatistics && {
+			info: {
+				...Info,
+			},
+			version: Info.version,
+		}),
+
+		minimumClientVersions,
+		...(supportedVersionsToken.success &&
+			supportedVersionsToken.result && {
+				supportedVersions: supportedVersionsToken.result,
+			}),
 	};
 }
