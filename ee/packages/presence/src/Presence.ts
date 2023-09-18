@@ -39,9 +39,14 @@ export class Presence extends ServiceClass implements IPresence {
 			}
 		});
 
-		this.onEvent('license.module', ({ module, valid }) => {
+		this.onEvent('license.module', async ({ module, valid }) => {
 			if (module === 'scalability') {
 				this.hasLicense = valid;
+
+				// broadcast should always be enabled if license is active (unless the troubleshoot setting is on)
+				if (!this.broadcastEnabled && valid) {
+					await this.toggleBroadcast(true);
+				}
 			}
 		});
 	}
@@ -58,9 +63,9 @@ export class Presence extends ServiceClass implements IPresence {
 		}, 10000);
 
 		try {
-			this.hasLicense = await License.hasLicense('scalability');
-
 			await Settings.updateValueById('Presence_broadcast_disabled', false);
+
+			this.hasLicense = await License.hasLicense('scalability');
 		} catch (e: unknown) {
 			// ignore
 		}
