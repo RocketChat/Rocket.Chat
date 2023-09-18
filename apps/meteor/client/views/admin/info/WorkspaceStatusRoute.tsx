@@ -8,9 +8,9 @@ import PageSkeleton from '../../../components/PageSkeleton';
 import { useWorkspaceInfo } from '../../../hooks/useWorkspaceInfo';
 import { downloadJsonAs } from '../../../lib/download';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
-import InformationPage from './InformationPage';
+import WorkspaceStatusPage from './WorkspaceStatusPage';
 
-const InformationRoute = (): ReactElement => {
+const WorkspaceStatusRoute = (): ReactElement => {
 	const t = useTranslation();
 	const canViewStatistics = usePermission('view-statistics');
 
@@ -54,7 +54,7 @@ const InformationRoute = (): ReactElement => {
 
 	if (canViewStatistics) {
 		return (
-			<InformationPage
+			<WorkspaceStatusPage
 				canViewStatistics={canViewStatistics}
 				serverInfo={serverInfo}
 				statistics={statistics}
@@ -68,4 +68,4 @@ const InformationRoute = (): ReactElement => {
 	return <NotAuthorizedPage />;
 };
 
-export default memo(InformationRoute);
+export default memo(WorkspaceStatusRoute);

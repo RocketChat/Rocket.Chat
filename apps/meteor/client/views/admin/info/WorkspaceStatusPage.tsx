@@ -11,7 +11,7 @@ import MessagesRoomsCard from './MessagesRoomsCard';
 import UsersUploadsCard from './UsersUploadsCard';
 import VersionCard from './VersionCard';
 
-type InformationPageProps = {
+type WorkspaceStatusPageProps = {
 	canViewStatistics: boolean;
 	serverInfo: IServerInfo;
 	statistics: IStats;
@@ -20,14 +20,14 @@ type InformationPageProps = {
 	onClickDownloadInfo: () => void;
 };
 
-const InformationPage = ({
+const WorkspaceStatusPage = ({
 	canViewStatistics,
 	serverInfo,
 	statistics,
 	instances,
 	onClickRefreshButton,
 	onClickDownloadInfo,
-}: InformationPageProps) => {
+}: WorkspaceStatusPageProps) => {
 	const t = useTranslation();
 
 	const { data } = useIsEnterprise();
@@ -36,7 +36,7 @@ const InformationPage = ({
 	const alertOplogForMultipleInstances = warningMultipleInstances && !statistics.oplogEnabled;
 
 	return (
-		<Page data-qa='admin-info' bg='tint'>
+		<Page data-qa='workspace-status' bg='tint'>
 			<Page.Header title={t('Workspace_status')}>
 				{canViewStatistics && (
 					<ButtonGroup>
@@ -99,4 +99,4 @@ const InformationPage = ({
 	);
 };
 
-export default memo(InformationPage);
+export default memo(WorkspaceStatusPage);

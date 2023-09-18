@@ -21,11 +21,11 @@ test.describe.serial('administration-menu', () => {
 		await expect(page).toHaveURL('admin/upgrade/go-fully-featured');
 	});
 
-	test('expect open info page', async ({ page }) => {
+	test('expect open Workspace status page', async ({ page }) => {
 		test.skip(!IS_EE, 'Enterprise only');
-		await poHomeDiscussion.sidenav.openAdministrationByLabel('Workspace');
+		await poHomeDiscussion.sidenav.openAdministrationByLabel('Workspace status');
 
-		await expect(page).toHaveURL('admin/workspace');
+		await expect(page).toHaveURL('admin/workspace-status');
 	});
 
 	test('expect open omnichannel page', async ({ page }) => {

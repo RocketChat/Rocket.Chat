@@ -8,7 +8,7 @@ export const {
 	subscribeToSidebarItems: subscribeToAdminSidebarItems,
 } = createSidebarItems([
 	{
-		href: '/admin/workspace',
+		href: '/admin/workspace-status',
 		i18nLabel: 'Workspace_status',
 		icon: 'info-circled',
 		permissionGranted: (): boolean => hasPermission('view-statistics'),
