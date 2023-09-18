@@ -19,7 +19,7 @@
 
 We are the ultimate **Free Open Source Solution** for team communications, enabling real-time conversations between colleagues, with other companies or with your customers, regardless of how they connect with you. The result is an increase in productivity and customer satisfaction rates.
 
-Every day, tens of millions of users in over 150 countries and in organizations such as Deutsche Bahn, The US Navy, and Credit Suisse trust Rocket.Chat to keep their communications completely private and secure.
+Every day, tens of millions of users in over 150 countries and in organizations such as Deutsche Bahn, the US Navy, and Credit Suisse trust Rocket.Chat to keep their communications completely private and secure.
 
 # 🚀 Product Offerings - Self Hosted and Cloud
 
