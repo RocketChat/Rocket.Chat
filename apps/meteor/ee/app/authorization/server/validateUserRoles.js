@@ -11,7 +11,7 @@ export const validateUserRoles = async function (userId, userData) {
 
 	const isGuest = Boolean(userData.roles?.includes('guest') && userData.roles.length === 1);
 	const currentUserData = userData._id ? await Users.findOneById(userData._id) : null;
-	const wasGuest = Boolean(currentUserData.roles?.includes('guest') && currentUserData.roles.length === 1);
+	const wasGuest = Boolean(currentUserData?.roles?.includes('guest') && currentUserData.roles.length === 1);
 
 	if (currentUserData?.type === 'app') {
 		return;
