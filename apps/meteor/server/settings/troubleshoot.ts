@@ -1,4 +1,7 @@
+import semver from 'semver';
+
 import { settingsRegistry } from '../../app/settings/server';
+import { Info } from '../../app/utils/rocketchat.info';
 
 export const createTroubleshootSettings = () =>
 	settingsRegistry.addGroup('Troubleshoot', async function () {
@@ -19,6 +22,7 @@ export const createTroubleshootSettings = () =>
 			i18nDescription: 'Troubleshoot_Disable_Presence_Broadcast_Alert',
 			enableQuery: { _id: 'Presence_broadcast_disabled', value: false },
 		});
+
 		await this.add('Troubleshoot_Disable_Instance_Broadcast', false, {
 			type: 'boolean',
 			i18nDescription: 'Troubleshoot_Disable_Instance_Broadcast_Alert',
@@ -31,13 +35,34 @@ export const createTroubleshootSettings = () =>
 			type: 'boolean',
 			i18nDescription: 'Troubleshoot_Disable_Livechat_Activity_Monitor_Alert',
 		});
+
 		await this.add('Troubleshoot_Disable_Data_Exporter_Processor', false, {
 			type: 'boolean',
 			i18nDescription: 'Troubleshoot_Disable_Data_Exporter_Processor_Alert',
 		});
-
 		await this.add('Troubleshoot_Disable_Teams_Mention', false, {
 			type: 'boolean',
 			i18nDescription: 'Troubleshoot_Disable_Teams_Mention_Alert',
+		});
+
+		if (!semver.lt(Info.version, '7.0.0')) {
+			console.log('remove troubleshoot this setting at next major (7.0.0).');
+		}
+
+		// TODO: remove this setting at next major (7.0.0)
+		await this.add('Troubleshoot_Disable_Statistics_Generator', false, {
+			type: 'boolean',
+			i18nDescription: 'Troubleshoot_Disable_Statistics_Generator_Alert',
+			private: true,
+			hidden: true,
+			readonly: true,
+		});
+		// TODO: remove this setting at next major (7.0.0)
+		await this.add('Troubleshoot_Disable_Workspace_Sync', false, {
+			type: 'boolean',
+			i18nDescription: 'Troubleshoot_Disable_Workspace_Sync_Alert',
+			private: true,
+			hidden: true,
+			readonly: true,
 		});
 	});
