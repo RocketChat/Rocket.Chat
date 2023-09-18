@@ -38,19 +38,15 @@ runs:
         tar xzf Rocket.Chat.tar.gz
         rm Rocket.Chat.tar.gz
 
-    - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+    - name: setup qemu
+      uses: docker/setup-qemu-action@v2
 
-    - name: Setup NodeJS
-      uses: ./.github/actions/setup-node
+    - name: setup buildx
+      uses: docker/setup-buildx-action@v2
       with:
-        node-version: ${{ inputs.node-version }}
-        cache-modules: true
-        install: true
+        driver: docker-container
 
-    - run: yarn build
-      shell: bash
-
-    - name: Build Docker images
+    - name: Build and push docker images
       shell: bash
       run: |
         args=(rocketchat)
@@ -59,15 +55,5 @@ runs:
           args+=($SERVICES_PUBLISH)
         fi;
 
-        docker compose -f docker-compose-ci.yml build "${args[@]}"
+        docker buildx bake -f docker-compose-ci.yml "${args[@]}" --push
 
-    - name: Publish Docker images to GitHub Container Registry
-      shell: bash
-      run: |
-        args=(rocketchat)
-
-        if [[ '${{ inputs.type }}' = 'alpine' ]]; then
-          args+=($SERVICES_PUBLISH)
-        fi;
-
-        docker compose -f docker-compose-ci.yml push "${args[@]}"

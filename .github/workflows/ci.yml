@@ -189,487 +189,487 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/build-docker
+      - uses: ./.github/actions/build-docker-test
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
           type: ${{ matrix.type }}
 
-  build-gh-docker:
-    name: 🚢 Build Docker Images for Production
-    needs: [build-prod, release-versions]
-    runs-on: ubuntu-20.04
-
-    env:
-      RC_DOCKERFILE: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
-      RC_DOCKER_TAG: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
-      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
-      SERVICES_PUBLISH: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
-
-    strategy:
-      fail-fast: false
-      matrix:
-        type: ['official', 'alpine']
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: ./.github/actions/build-docker
-        with:
-          CR_USER: ${{ secrets.CR_USER }}
-          CR_PAT: ${{ secrets.CR_PAT }}
-          node-version: ${{ needs.release-versions.outputs.node-version }}
-          type: ${{ matrix.type }}
-
-      - name: Rename official Docker tag to GitHub Container Registry
-        if: matrix.type == 'official'
-        run: |
-          IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
-
-          echo "Push Docker image: ${IMAGE_NAME_BASE}"
-          docker tag ${IMAGE_NAME_BASE}.official $IMAGE_NAME_BASE
-          docker push $IMAGE_NAME_BASE
-
-  checks:
-    needs: [release-versions, packages-build]
-
-    name: 🔎 Code Check
-    uses: ./.github/workflows/ci-code-check.yml
-    with:
-      node-version: ${{ needs.release-versions.outputs.node-version }}
-
-  test-unit:
-    name: 🔨 Test Unit
-    needs: [packages-build, release-versions]
-
-    uses: ./.github/workflows/ci-test-unit.yml
-    with:
-      node-version: ${{ needs.release-versions.outputs.node-version }}
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-  test-api:
-    name: 🔨 Test API (CE)
-    needs: [checks, build-gh-docker-coverage, release-versions]
-
-    uses: ./.github/workflows/ci-test-e2e.yml
-    with:
-      type: api
-      release: ce
-      node-version: ${{ needs.release-versions.outputs.node-version }}
-      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-      rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
-      rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
-      rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
-      rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
-      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-    secrets:
-      CR_USER: ${{ secrets.CR_USER }}
-      CR_PAT: ${{ secrets.CR_PAT }}
-
-  test-ui:
-    name: 🔨 Test UI (CE)
-    needs: [checks, build-gh-docker-coverage, release-versions]
-
-    uses: ./.github/workflows/ci-test-e2e.yml
-    with:
-      type: ui
-      release: ce
-      transporter: 'nats://nats:4222'
-      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      shard: '[1, 2, 3, 4]'
-      total-shard: 4
-      node-version: ${{ needs.release-versions.outputs.node-version }}
-      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-      rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
-      rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
-      rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
-      rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
-      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-    secrets:
-      CR_USER: ${{ secrets.CR_USER }}
-      CR_PAT: ${{ secrets.CR_PAT }}
-      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-      REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
-      REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
-
-  test-api-ee:
-    name: 🔨 Test API (EE)
-    needs: [checks, build-gh-docker-coverage, release-versions]
-
-    uses: ./.github/workflows/ci-test-e2e.yml
-    with:
-      type: api
-      release: ee
-      transporter: 'nats://nats:4222'
-      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      mongodb-version: "['4.4']"
-      node-version: ${{ needs.release-versions.outputs.node-version }}
-      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-      rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
-      rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
-      rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
-      rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
-      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-    secrets:
-      CR_USER: ${{ secrets.CR_USER }}
-      CR_PAT: ${{ secrets.CR_PAT }}
-
-  test-ui-ee:
-    name: 🔨 Test UI (EE)
-    needs: [checks, build-gh-docker-coverage, release-versions]
-
-    uses: ./.github/workflows/ci-test-e2e.yml
-    with:
-      type: ui
-      release: ee
-      transporter: 'nats://nats:4222'
-      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      shard: '[1, 2, 3, 4, 5]'
-      total-shard: 5
-      mongodb-version: "['4.4']"
-      node-version: ${{ needs.release-versions.outputs.node-version }}
-      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-      rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
-      rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
-      rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
-      rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
-      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-    secrets:
-      CR_USER: ${{ secrets.CR_USER }}
-      CR_PAT: ${{ secrets.CR_PAT }}
-      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-      REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
-      REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-  tests-done:
-    name: ✅ Tests Done
-    runs-on: ubuntu-20.04
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee]
-
-    steps:
-      - name: Test finish aggregation
-        run: |
-          echo finished
-
-  deploy:
-    name: 🚀 Publish build and update our registry
-    runs-on: ubuntu-20.04
-    if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    needs: [build-gh-docker, release-versions]
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Restore build
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-          path: /tmp/build
-
-      - name: Publish assets
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'us-east-1'
-          GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
-          REDHAT_REGISTRY_PID: ${{ secrets.REDHAT_REGISTRY_PID }}
-          REDHAT_REGISTRY_KEY: ${{ secrets.REDHAT_REGISTRY_KEY }}
-          UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
-        run: |
-          REPO_VERSION=$(node -p "require('./package.json').version")
-          if [[ '${{ github.event_name }}' = 'release' ]]; then
-            RC_VERSION="${GITHUB_REF#*tags/}"
-            GIT_BRANCH=""
-            ARTIFACT_NAME="${REPO_VERSION}"
-
-            if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
-              RC_RELEASE=candidate
-            elif [[ '${{ needs.release-versions.outputs.release }}' = 'latest' ]]; then
-              RC_RELEASE=stable
-            fi
-          else
-            GIT_BRANCH="${GITHUB_REF#*heads/}"
-            ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
-            RC_VERSION="${REPO_VERSION}"
-            RC_RELEASE=develop
-          fi;
-          ROCKET_DEPLOY_DIR="/tmp/deploy"
-          FILENAME="$ROCKET_DEPLOY_DIR/rocket.chat-$ARTIFACT_NAME.tgz";
-
-          aws s3 cp s3://rocketchat/sign.key.gpg .github/sign.key.gpg
-
-          mkdir -p $ROCKET_DEPLOY_DIR
-
-          cp .github/sign.key.gpg /tmp
-          gpg --yes --batch --passphrase=$GPG_PASSWORD /tmp/sign.key.gpg
-          gpg --allow-secret-key-import --import /tmp/sign.key
-          rm /tmp/sign.key
-
-          ln -s /tmp/build/Rocket.Chat.tar.gz "$FILENAME"
-          gpg --armor --detach-sign "$FILENAME"
-
-          aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
-
-          curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
-              https://releases.rocket.chat/update
-
-          # Makes build fail if the release isn't there
-          curl --fail https://releases.rocket.chat/$RC_VERSION/info
-
-  build-docker-preview:
-    name: 🚢 Build Docker Image (preview)
-    runs-on: ubuntu-20.04
-    needs: [build, checks, release-versions]
-    if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Restore build
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-          path: /tmp/build
-
-      - name: Unpack build
-        run: |
-          cd /tmp/build
-          tar xzf Rocket.Chat.tar.gz
-          rm Rocket.Chat.tar.gz
-
-      - name: Build Docker image
-        id: build-docker-image-preview
-        uses: ./.github/actions/build-docker-image
-        with:
-          root-dir: /tmp/build
-          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          release: preview
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
-  docker-image-publish:
-    name: 🚀 Publish Docker Image (main)
-    runs-on: ubuntu-20.04
-    needs: [deploy, build-docker-preview, release-versions]
-
-    strategy:
-      matrix:
-        # this is currently a mix of variants and different images
-        release: ['official', 'preview', 'alpine']
-
-    env:
-      IMAGE_NAME: 'rocketchat/rocket.chat'
-
-    steps:
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASS }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
-      - name: Get Docker image name
-        id: gh-docker
-        run: |
-          GH_IMAGE_NAME="ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.${{ matrix.release }}"
-
-          echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
-
-          echo "gh-image-name=${GH_IMAGE_NAME}" >> $GITHUB_OUTPUT
-
-          DOCKER_TAG_SHA="sha-${GITHUB_SHA:0:7}"
-
-          echo "DOCKER_TAG_SHA: ${DOCKER_TAG_SHA}"
-          echo "gh-docker-tag-sha=${DOCKER_TAG_SHA}" >> $GITHUB_OUTPUT
-
-      - name: Pull Docker image
-        run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
-
-      - name: Publish Docker image
-        run: |
-          if [[ '${{ matrix.release }}' = 'preview' ]]; then
-            IMAGE_NAME="${IMAGE_NAME}.preview"
-          fi;
-
-          # 'develop' or 'tag'
-          DOCKER_TAG=$GITHUB_REF_NAME
-
-          # append the variant name to docker tag
-          if [[ '${{ matrix.release }}' = 'alpine' ]]; then
-            DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
-          fi;
-
-          PUBLISHED_TAGS=()
-
-          # tag and push the specific tag version
-          docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$DOCKER_TAG
-          docker push $IMAGE_NAME:$DOCKER_TAG
-
-          PUBLISHED_TAGS+=("$IMAGE_NAME:$DOCKER_TAG")
-
-          if [[ $GITHUB_REF == refs/tags/* ]]; then
-            RELEASE="${{ needs.release-versions.outputs.release }}"
-
-            if [[ '${{ matrix.release }}' = 'alpine' ]]; then
-              RELEASE="${RELEASE}-${{ matrix.release }}"
-            fi;
-
-            echo "RELEASE: $RELEASE"
-
-            if [[ $RELEASE == 'latest' ]]; then
-              if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
-                docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
-                docker push $IMAGE_NAME:$RELEASE
-
-                PUBLISHED_TAGS+=("$IMAGE_NAME:$RELEASE")
-              fi
-            else
-              docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
-              docker push $IMAGE_NAME:$RELEASE
-
-              PUBLISHED_TAGS+=("$IMAGE_NAME:$RELEASE")
-            fi
-          fi
-
-          # commit hash
-          TAG_SHA="${{ steps.gh-docker.outputs.gh-docker-tag-sha }}"
-
-          # append the variant name to docker tag
-          if [[ '${{ matrix.release }}' = 'alpine' ]]; then
-            TAG_SHA="${TAG_SHA}-${{ matrix.release }}"
-          fi;
-
-          docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$TAG_SHA
-          docker push $IMAGE_NAME:$TAG_SHA
-
-          PUBLISHED_TAGS+=("$IMAGE_NAME:$TAG_SHA")
-
-          echo "::group::Published tags"
-
-          for TAG in ${PUBLISHED_TAGS[@]}; do
-            echo $TAG
-          done
-
-          echo "::endgroup::"
-
-  services-docker-image-publish:
-    name: 🚀 Publish Docker Image (services)
-    runs-on: ubuntu-20.04
-    needs: [deploy, release-versions]
-
-    strategy:
-      matrix:
-        service: ['account', 'authorization', 'ddp-streamer', 'presence', 'stream-hub']
-
-    steps:
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASS }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
-      - name: Get Docker image name
-        id: gh-docker
-        run: |
-          GH_IMAGE_NAME="ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/${{ matrix.service }}-service:${{ needs.release-versions.outputs.gh-docker-tag }}"
-
-          echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
-
-          echo "gh-image-name=${GH_IMAGE_NAME}" >> $GITHUB_OUTPUT
-
-          DOCKER_TAG_SHA="sha-${GITHUB_SHA:0:7}"
-
-          echo "DOCKER_TAG_SHA: ${DOCKER_TAG_SHA}"
-          echo "gh-docker-tag-sha=${DOCKER_TAG_SHA}" >> $GITHUB_OUTPUT
-
-      - name: Pull Docker image
-        run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
-
-      - name: Publish Docker images
-        run: |
-          DH_IMAGE_NAME="rocketchat/${{ matrix.service }}-service"
-
-          # 'develop' or 'tag'
-          DOCKER_TAG=$GITHUB_REF_NAME
-
-          PUBLISHED_TAGS=()
-
-          # tag and push the specific tag version
-          docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$DOCKER_TAG
-          docker push $DH_IMAGE_NAME:$DOCKER_TAG
-
-          PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$DOCKER_TAG")
-
-          if [[ $GITHUB_REF == refs/tags/* ]]; then
-            RELEASE="${{ needs.release-versions.outputs.release }}"
-
-            if [[ $RELEASE == 'latest' ]]; then
-              if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
-                docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
-                docker push $DH_IMAGE_NAME:$RELEASE
-
-                PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$RELEASE")
-              fi
-            else
-              docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
-              docker push $DH_IMAGE_NAME:$RELEASE
-
-              PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$RELEASE")
-            fi
-          fi
-
-          # commit hash
-          TAG_SHA="${{ steps.gh-docker.outputs.gh-docker-tag-sha }}"
-
-          docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$TAG_SHA
-          docker push $DH_IMAGE_NAME:$TAG_SHA
-
-          PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$TAG_SHA")
-
-          echo "::group::Published tags"
-
-          for TAG in ${PUBLISHED_TAGS[@]}; do
-            echo $TAG
-          done
-
-          echo "::endgroup::"
-
-  trigger-dependent-workflows:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release'
-    needs:
-      - services-docker-image-publish
-      - docker-image-publish
-    steps:
-      - name: Send context to seperate pipeline
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          token: ${{ secrets.DISTRIBUTION_TOKEN }}
-          event-type: new_release
-          repository: RocketChat/Release.Distributions
-          client-payload: '{"tag": "${{ github.ref_name }}"}'
-
-      - name: Update docs
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          token: ${{ secrets.DOCS_PAT }}
-          event-type: new_release
-          repository: RocketChat/docs
-          client-payload: '{"tag": "${{ github.ref_name }}"}'
+  # build-gh-docker:
+  #   name: 🚢 Build Docker Images for Production
+  #   needs: [build-prod, release-versions]
+  #   runs-on: ubuntu-20.04
+  #
+  #   env:
+  #     RC_DOCKERFILE: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
+  #     RC_DOCKER_TAG: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
+  #     DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+  #     LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+  #     SERVICES_PUBLISH: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
+  #
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       type: ['official', 'alpine']
+  #
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #
+  #     - uses: ./.github/actions/build-docker
+  #       with:
+  #         CR_USER: ${{ secrets.CR_USER }}
+  #         CR_PAT: ${{ secrets.CR_PAT }}
+  #         node-version: ${{ needs.release-versions.outputs.node-version }}
+  #         type: ${{ matrix.type }}
+  #
+  #     - name: Rename official Docker tag to GitHub Container Registry
+  #       if: matrix.type == 'official'
+  #       run: |
+  #         IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
+  #
+  #         echo "Push Docker image: ${IMAGE_NAME_BASE}"
+  #         docker tag ${IMAGE_NAME_BASE}.official $IMAGE_NAME_BASE
+  #         docker push $IMAGE_NAME_BASE
+  #
+  # checks:
+  #   needs: [release-versions, packages-build]
+  #
+  #   name: 🔎 Code Check
+  #   uses: ./.github/workflows/ci-code-check.yml
+  #   with:
+  #     node-version: ${{ needs.release-versions.outputs.node-version }}
+  #
+  # test-unit:
+  #   name: 🔨 Test Unit
+  #   needs: [packages-build, release-versions]
+  #
+  #   uses: ./.github/workflows/ci-test-unit.yml
+  #   with:
+  #     node-version: ${{ needs.release-versions.outputs.node-version }}
+  #   secrets:
+  #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  #
+  # test-api:
+  #   name: 🔨 Test API (CE)
+  #   needs: [checks, build-gh-docker-coverage, release-versions]
+  #
+  #   uses: ./.github/workflows/ci-test-e2e.yml
+  #   with:
+  #     type: api
+  #     release: ce
+  #     node-version: ${{ needs.release-versions.outputs.node-version }}
+  #     lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+  #     rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
+  #     rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
+  #     rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
+  #     rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
+  #     gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+  #   secrets:
+  #     CR_USER: ${{ secrets.CR_USER }}
+  #     CR_PAT: ${{ secrets.CR_PAT }}
+  #
+  # test-ui:
+  #   name: 🔨 Test UI (CE)
+  #   needs: [checks, build-gh-docker-coverage, release-versions]
+  #
+  #   uses: ./.github/workflows/ci-test-e2e.yml
+  #   with:
+  #     type: ui
+  #     release: ce
+  #     transporter: 'nats://nats:4222'
+  #     enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+  #     shard: '[1, 2, 3, 4]'
+  #     total-shard: 4
+  #     node-version: ${{ needs.release-versions.outputs.node-version }}
+  #     lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+  #     rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
+  #     rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
+  #     rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
+  #     rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
+  #     gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+  #   secrets:
+  #     CR_USER: ${{ secrets.CR_USER }}
+  #     CR_PAT: ${{ secrets.CR_PAT }}
+  #     QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+  #     REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
+  #     REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+  #
+  # test-api-ee:
+  #   name: 🔨 Test API (EE)
+  #   needs: [checks, build-gh-docker-coverage, release-versions]
+  #
+  #   uses: ./.github/workflows/ci-test-e2e.yml
+  #   with:
+  #     type: api
+  #     release: ee
+  #     transporter: 'nats://nats:4222'
+  #     enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+  #     mongodb-version: "['4.4']"
+  #     node-version: ${{ needs.release-versions.outputs.node-version }}
+  #     lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+  #     rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
+  #     rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
+  #     rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
+  #     rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
+  #     gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+  #   secrets:
+  #     CR_USER: ${{ secrets.CR_USER }}
+  #     CR_PAT: ${{ secrets.CR_PAT }}
+  #
+  # test-ui-ee:
+  #   name: 🔨 Test UI (EE)
+  #   needs: [checks, build-gh-docker-coverage, release-versions]
+  #
+  #   uses: ./.github/workflows/ci-test-e2e.yml
+  #   with:
+  #     type: ui
+  #     release: ee
+  #     transporter: 'nats://nats:4222'
+  #     enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+  #     shard: '[1, 2, 3, 4, 5]'
+  #     total-shard: 5
+  #     mongodb-version: "['4.4']"
+  #     node-version: ${{ needs.release-versions.outputs.node-version }}
+  #     lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+  #     rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
+  #     rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
+  #     rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
+  #     rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
+  #     gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+  #   secrets:
+  #     CR_USER: ${{ secrets.CR_USER }}
+  #     CR_PAT: ${{ secrets.CR_PAT }}
+  #     QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+  #     REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
+  #     REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+  #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  #
+  # tests-done:
+  #   name: ✅ Tests Done
+  #   runs-on: ubuntu-20.04
+  #   needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee]
+  #
+  #   steps:
+  #     - name: Test finish aggregation
+  #       run: |
+  #         echo finished
+  #
+  # deploy:
+  #   name: 🚀 Publish build and update our registry
+  #   runs-on: ubuntu-20.04
+  #   if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
+  #   needs: [build-gh-docker, release-versions]
+  #
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #
+  #     - name: Restore build
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: build
+  #         path: /tmp/build
+  #
+  #     - name: Publish assets
+  #       env:
+  #         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         AWS_DEFAULT_REGION: 'us-east-1'
+  #         GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+  #         REDHAT_REGISTRY_PID: ${{ secrets.REDHAT_REGISTRY_PID }}
+  #         REDHAT_REGISTRY_KEY: ${{ secrets.REDHAT_REGISTRY_KEY }}
+  #         UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
+  #       run: |
+  #         REPO_VERSION=$(node -p "require('./package.json').version")
+  #         if [[ '${{ github.event_name }}' = 'release' ]]; then
+  #           RC_VERSION="${GITHUB_REF#*tags/}"
+  #           GIT_BRANCH=""
+  #           ARTIFACT_NAME="${REPO_VERSION}"
+  #
+  #           if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
+  #             RC_RELEASE=candidate
+  #           elif [[ '${{ needs.release-versions.outputs.release }}' = 'latest' ]]; then
+  #             RC_RELEASE=stable
+  #           fi
+  #         else
+  #           GIT_BRANCH="${GITHUB_REF#*heads/}"
+  #           ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
+  #           RC_VERSION="${REPO_VERSION}"
+  #           RC_RELEASE=develop
+  #         fi;
+  #         ROCKET_DEPLOY_DIR="/tmp/deploy"
+  #         FILENAME="$ROCKET_DEPLOY_DIR/rocket.chat-$ARTIFACT_NAME.tgz";
+  #
+  #         aws s3 cp s3://rocketchat/sign.key.gpg .github/sign.key.gpg
+  #
+  #         mkdir -p $ROCKET_DEPLOY_DIR
+  #
+  #         cp .github/sign.key.gpg /tmp
+  #         gpg --yes --batch --passphrase=$GPG_PASSWORD /tmp/sign.key.gpg
+  #         gpg --allow-secret-key-import --import /tmp/sign.key
+  #         rm /tmp/sign.key
+  #
+  #         ln -s /tmp/build/Rocket.Chat.tar.gz "$FILENAME"
+  #         gpg --armor --detach-sign "$FILENAME"
+  #
+  #         aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
+  #
+  #         curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
+  #             "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+  #             https://releases.rocket.chat/update
+  #
+  #         # Makes build fail if the release isn't there
+  #         curl --fail https://releases.rocket.chat/$RC_VERSION/info
+  #
+  # build-docker-preview:
+  #   name: 🚢 Build Docker Image (preview)
+  #   runs-on: ubuntu-20.04
+  #   needs: [build, checks, release-versions]
+  #   if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #
+  #     - name: Restore build
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: build
+  #         path: /tmp/build
+  #
+  #     - name: Unpack build
+  #       run: |
+  #         cd /tmp/build
+  #         tar xzf Rocket.Chat.tar.gz
+  #         rm Rocket.Chat.tar.gz
+  #
+  #     - name: Build Docker image
+  #       id: build-docker-image-preview
+  #       uses: ./.github/actions/build-docker-image
+  #       with:
+  #         root-dir: /tmp/build
+  #         docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+  #         release: preview
+  #         username: ${{ secrets.CR_USER }}
+  #         password: ${{ secrets.CR_PAT }}
+  #
+  # docker-image-publish:
+  #   name: 🚀 Publish Docker Image (main)
+  #   runs-on: ubuntu-20.04
+  #   needs: [deploy, build-docker-preview, release-versions]
+  #
+  #   strategy:
+  #     matrix:
+  #       # this is currently a mix of variants and different images
+  #       release: ['official', 'preview', 'alpine']
+  #
+  #   env:
+  #     IMAGE_NAME: 'rocketchat/rocket.chat'
+  #
+  #   steps:
+  #     - name: Login to DockerHub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKER_USER }}
+  #         password: ${{ secrets.DOCKER_PASS }}
+  #
+  #     - name: Login to GitHub Container Registry
+  #       uses: docker/login-action@v2
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ secrets.CR_USER }}
+  #         password: ${{ secrets.CR_PAT }}
+  #
+  #     - name: Get Docker image name
+  #       id: gh-docker
+  #       run: |
+  #         GH_IMAGE_NAME="ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.${{ matrix.release }}"
+  #
+  #         echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
+  #
+  #         echo "gh-image-name=${GH_IMAGE_NAME}" >> $GITHUB_OUTPUT
+  #
+  #         DOCKER_TAG_SHA="sha-${GITHUB_SHA:0:7}"
+  #
+  #         echo "DOCKER_TAG_SHA: ${DOCKER_TAG_SHA}"
+  #         echo "gh-docker-tag-sha=${DOCKER_TAG_SHA}" >> $GITHUB_OUTPUT
+  #
+  #     - name: Pull Docker image
+  #       run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
+  #
+  #     - name: Publish Docker image
+  #       run: |
+  #         if [[ '${{ matrix.release }}' = 'preview' ]]; then
+  #           IMAGE_NAME="${IMAGE_NAME}.preview"
+  #         fi;
+  #
+  #         # 'develop' or 'tag'
+  #         DOCKER_TAG=$GITHUB_REF_NAME
+  #
+  #         # append the variant name to docker tag
+  #         if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+  #           DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
+  #         fi;
+  #
+  #         PUBLISHED_TAGS=()
+  #
+  #         # tag and push the specific tag version
+  #         docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$DOCKER_TAG
+  #         docker push $IMAGE_NAME:$DOCKER_TAG
+  #
+  #         PUBLISHED_TAGS+=("$IMAGE_NAME:$DOCKER_TAG")
+  #
+  #         if [[ $GITHUB_REF == refs/tags/* ]]; then
+  #           RELEASE="${{ needs.release-versions.outputs.release }}"
+  #
+  #           if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+  #             RELEASE="${RELEASE}-${{ matrix.release }}"
+  #           fi;
+  #
+  #           echo "RELEASE: $RELEASE"
+  #
+  #           if [[ $RELEASE == 'latest' ]]; then
+  #             if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
+  #               docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
+  #               docker push $IMAGE_NAME:$RELEASE
+  #
+  #               PUBLISHED_TAGS+=("$IMAGE_NAME:$RELEASE")
+  #             fi
+  #           else
+  #             docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
+  #             docker push $IMAGE_NAME:$RELEASE
+  #
+  #             PUBLISHED_TAGS+=("$IMAGE_NAME:$RELEASE")
+  #           fi
+  #         fi
+  #
+  #         # commit hash
+  #         TAG_SHA="${{ steps.gh-docker.outputs.gh-docker-tag-sha }}"
+  #
+  #         # append the variant name to docker tag
+  #         if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+  #           TAG_SHA="${TAG_SHA}-${{ matrix.release }}"
+  #         fi;
+  #
+  #         docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$TAG_SHA
+  #         docker push $IMAGE_NAME:$TAG_SHA
+  #
+  #         PUBLISHED_TAGS+=("$IMAGE_NAME:$TAG_SHA")
+  #
+  #         echo "::group::Published tags"
+  #
+  #         for TAG in ${PUBLISHED_TAGS[@]}; do
+  #           echo $TAG
+  #         done
+  #
+  #         echo "::endgroup::"
+  #
+  # services-docker-image-publish:
+  #   name: 🚀 Publish Docker Image (services)
+  #   runs-on: ubuntu-20.04
+  #   needs: [deploy, release-versions]
+  #
+  #   strategy:
+  #     matrix:
+  #       service: ['account', 'authorization', 'ddp-streamer', 'presence', 'stream-hub']
+  #
+  #   steps:
+  #     - name: Login to DockerHub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKER_USER }}
+  #         password: ${{ secrets.DOCKER_PASS }}
+  #
+  #     - name: Login to GitHub Container Registry
+  #       uses: docker/login-action@v2
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ secrets.CR_USER }}
+  #         password: ${{ secrets.CR_PAT }}
+  #
+  #     - name: Get Docker image name
+  #       id: gh-docker
+  #       run: |
+  #         GH_IMAGE_NAME="ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/${{ matrix.service }}-service:${{ needs.release-versions.outputs.gh-docker-tag }}"
+  #
+  #         echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
+  #
+  #         echo "gh-image-name=${GH_IMAGE_NAME}" >> $GITHUB_OUTPUT
+  #
+  #         DOCKER_TAG_SHA="sha-${GITHUB_SHA:0:7}"
+  #
+  #         echo "DOCKER_TAG_SHA: ${DOCKER_TAG_SHA}"
+  #         echo "gh-docker-tag-sha=${DOCKER_TAG_SHA}" >> $GITHUB_OUTPUT
+  #
+  #     - name: Pull Docker image
+  #       run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
+  #
+  #     - name: Publish Docker images
+  #       run: |
+  #         DH_IMAGE_NAME="rocketchat/${{ matrix.service }}-service"
+  #
+  #         # 'develop' or 'tag'
+  #         DOCKER_TAG=$GITHUB_REF_NAME
+  #
+  #         PUBLISHED_TAGS=()
+  #
+  #         # tag and push the specific tag version
+  #         docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$DOCKER_TAG
+  #         docker push $DH_IMAGE_NAME:$DOCKER_TAG
+  #
+  #         PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$DOCKER_TAG")
+  #
+  #         if [[ $GITHUB_REF == refs/tags/* ]]; then
+  #           RELEASE="${{ needs.release-versions.outputs.release }}"
+  #
+  #           if [[ $RELEASE == 'latest' ]]; then
+  #             if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
+  #               docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
+  #               docker push $DH_IMAGE_NAME:$RELEASE
+  #
+  #               PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$RELEASE")
+  #             fi
+  #           else
+  #             docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
+  #             docker push $DH_IMAGE_NAME:$RELEASE
+  #
+  #             PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$RELEASE")
+  #           fi
+  #         fi
+  #
+  #         # commit hash
+  #         TAG_SHA="${{ steps.gh-docker.outputs.gh-docker-tag-sha }}"
+  #
+  #         docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$TAG_SHA
+  #         docker push $DH_IMAGE_NAME:$TAG_SHA
+  #
+  #         PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$TAG_SHA")
+  #
+  #         echo "::group::Published tags"
+  #
+  #         for TAG in ${PUBLISHED_TAGS[@]}; do
+  #           echo $TAG
+  #         done
+  #
+  #         echo "::endgroup::"
+  #
+  # trigger-dependent-workflows:
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'release'
+  #   needs:
+  #     - services-docker-image-publish
+  #     - docker-image-publish
+  #   steps:
+  #     - name: Send context to seperate pipeline
+  #       uses: peter-evans/repository-dispatch@v2
+  #       with:
+  #         token: ${{ secrets.DISTRIBUTION_TOKEN }}
+  #         event-type: new_release
+  #         repository: RocketChat/Release.Distributions
+  #         client-payload: '{"tag": "${{ github.ref_name }}"}'
+  #
+  #     - name: Update docs
+  #       uses: peter-evans/repository-dispatch@v2
+  #       with:
+  #         token: ${{ secrets.DOCS_PAT }}
+  #         event-type: new_release
+  #         repository: RocketChat/docs
+  #         client-payload: '{"tag": "${{ github.ref_name }}"}'
