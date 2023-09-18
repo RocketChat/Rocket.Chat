@@ -171,7 +171,9 @@ Meteor.methods<ServerMethods>({
 								script: integration.script,
 								scriptEnabled: integration.scriptEnabled,
 						  }),
-					overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
+					...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
+						overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
+					}),
 					_updatedAt: new Date(),
 					_updatedBy: await Users.findOne({ _id: this.userId }, { projection: { username: 1 } }),
 				},

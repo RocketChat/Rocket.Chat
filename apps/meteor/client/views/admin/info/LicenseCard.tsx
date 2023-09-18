@@ -1,6 +1,6 @@
 import { ButtonGroup, Button, Skeleton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { Card } from '@rocket.chat/ui-client';
+import { Card, CardBody, CardCol, CardTitle, CardColSection, CardColTitle, CardFooter } from '@rocket.chat/ui-client';
 import { useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -43,14 +43,14 @@ const LicenseCard = (): ReactElement => {
 
 	return (
 		<Card data-qa-id='license-card'>
-			<Card.Title>{t('License')}</Card.Title>
-			<Card.Body>
-				<Card.Col>
-					<Card.Col.Section>
+			<CardTitle>{t('License')}</CardTitle>
+			<CardBody>
+				<CardCol>
+					<CardColSection>
 						<PlanTag />
-					</Card.Col.Section>
-					<Card.Col.Section>
-						<Card.Col.Title>{t('Features')}</Card.Col.Title>
+					</CardColSection>
+					<CardColSection>
+						<CardColTitle>{t('Features')}</CardColTitle>
 						{isLoading ? (
 							<>
 								<Skeleton width='40x' />
@@ -67,10 +67,10 @@ const LicenseCard = (): ReactElement => {
 								<Feature label={t('Read_Receipts')} enabled={hasReadReceipts} />
 							</>
 						)}
-					</Card.Col.Section>
-				</Card.Col>
-			</Card.Body>
-			<Card.Footer>
+					</CardColSection>
+				</CardCol>
+			</CardBody>
+			<CardFooter>
 				<ButtonGroup>
 					{isAirGapped ? (
 						<Button small onClick={handleApplyLicense}>
@@ -80,7 +80,7 @@ const LicenseCard = (): ReactElement => {
 						<Button small>{t('Cloud_connectivity')}</Button>
 					)}
 				</ButtonGroup>
-			</Card.Footer>
+			</CardFooter>
 		</Card>
 	);
 };
