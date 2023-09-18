@@ -9,7 +9,7 @@ export interface SyncPayload {
 	publicKey?: string;
 	announcements?: {
 		create: Announcement[];
-		delete: Announcement['id'][];
+		delete: Announcement['_id'][];
 	};
 	trial?: {
 		trialing: boolean;
