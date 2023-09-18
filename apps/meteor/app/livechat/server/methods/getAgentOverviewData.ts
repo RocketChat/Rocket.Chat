@@ -18,7 +18,9 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:getAgentOverviewData'(options) {
-		methodDeprecationLogger.method('livechat:getAgentOverviewData', '7.0.0', ' Use "livechat/analytics/agent-overview" instead.');
+		methodDeprecationLogger.warn(
+			'The method "livechat:getAgentOverviewData" is deprecated and will be removed after version v7.0.0. Use "livechat/analytics/agent-overview" instead.',
+		);
 
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'view-livechat-manager'))) {
