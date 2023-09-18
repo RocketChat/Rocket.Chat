@@ -1,5 +1,4 @@
-import { IconButton } from '@rocket.chat/fuselage';
-import { MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
+import { IconButton, MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode } from 'react';
 import React from 'react';
@@ -43,53 +42,51 @@ const GenericMenu = ({ title, icon = 'menu', onAction, ...props }: GenericMenuPr
 	const handleItems = (items: GenericMenuItemProps[]) =>
 		hasIcon ? items.map((item) => ({ ...item, gap: !item.icon && !item.status })) : items;
 
-	const hasNoItems = !(sections && sections.length > 0) && !(items && items.length > 0);
-  
+	const isMenuEmpty = !(sections && sections.length > 0) && !(items && items.length > 0);
+
+	if (isMenuEmpty) {
+		return <IconButton icon={icon} disabled />;
+	}
+
 	return (
 		<>
-			{hasNoItems ? (
-				<IconButton icon={icon} disabled />
-			) : (
-				<>
-					{sections && (
-						<MenuV2
-							icon={icon}
-							title={t.has(title) ? t(title) : title}
-							onAction={onAction || handleAction}
-							{...(disabledKeys && { disabledKeys })}
-							{...props}
+			{sections && (
+				<MenuV2
+					icon={icon}
+					title={t.has(title) ? t(title) : title}
+					onAction={onAction || handleAction}
+					{...(disabledKeys && { disabledKeys })}
+					{...props}
+				>
+					{sections.map(({ title, items }, key) => (
+						<MenuSection
+							title={typeof title === 'string' && t.has(title) ? t(title) : title}
+							items={handleItems(items)}
+							key={`${title}-${key}`}
 						>
-							{sections.map(({ title, items }, key) => (
-								<MenuSection
-									title={typeof title === 'string' && t.has(title) ? t(title) : title}
-									items={handleItems(items)}
-									key={`${title}-${key}`}
-								>
-									{(item) => (
-										<MenuItem key={item.id}>
-											<GenericMenuItem {...item} />
-										</MenuItem>
-									)}
-								</MenuSection>
-							))}
-						</MenuV2>
-					)}
-					{items && (
-						<MenuV2
-							icon={icon}
-							title={t.has(title) ? t(title) : title}
-							onAction={onAction || handleAction}
-							{...(disabledKeys && { disabledKeys })}
-							{...props}
-						>
-							{handleItems(items).map((item) => (
+							{(item) => (
 								<MenuItem key={item.id}>
 									<GenericMenuItem {...item} />
 								</MenuItem>
-							))}
-						</MenuV2>
-					)}
-				</>
+							)}
+						</MenuSection>
+					))}
+				</MenuV2>
+			)}
+			{items && (
+				<MenuV2
+					icon={icon}
+					title={t.has(title) ? t(title) : title}
+					onAction={onAction || handleAction}
+					{...(disabledKeys && { disabledKeys })}
+					{...props}
+				>
+					{handleItems(items).map((item) => (
+						<MenuItem key={item.id}>
+							<GenericMenuItem {...item} />
+						</MenuItem>
+					))}
+				</MenuV2>
 			)}
 		</>
 	);
