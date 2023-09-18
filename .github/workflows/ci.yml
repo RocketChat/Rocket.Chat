@@ -185,7 +185,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ['official', 'alpine']
+        type: ['official', 'alpine']
 
     steps:
       - uses: actions/checkout@v3
@@ -194,7 +194,7 @@ jobs:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
-          platform: ${{ matrix.platform }}
+          type: ${{ matrix.type }}
 
   build-gh-docker:
     name: 🚢 Build Docker Images for Production
@@ -211,7 +211,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ['official', 'alpine']
+        type: ['official', 'alpine']
 
     steps:
       - uses: actions/checkout@v3
@@ -221,10 +221,10 @@ jobs:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
-          platform: ${{ matrix.platform }}
+          type: ${{ matrix.type }}
 
       - name: Rename official Docker tag to GitHub Container Registry
-        if: matrix.platform == 'official'
+        if: matrix.type == 'official'
         run: |
           IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
 
