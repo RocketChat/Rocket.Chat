@@ -1,41 +1,7 @@
 import type { ILicenseTag } from './ILicenseTag';
-
-export type LicenseBehavior = 'invalidate_license' | 'start_fair_policy' | 'prevent_action' | 'prevent_installation' | 'disable_modules';
-
-export type LicenseLimit<T extends LicenseBehavior = LicenseBehavior> = {
-	max: number;
-	behavior: T;
-} & (T extends 'disable_modules' ? { behavior: T; modules: LicenseModule[] } : { behavior: T });
-
-export type Timestamp = string;
-
-export type LicensePeriodBehavior = Exclude<LicenseBehavior, 'prevent_action'>;
-
-export type LicensePeriod = {
-	validFrom?: Timestamp;
-	validUntil?: Timestamp;
-	invalidBehavior: LicenseBehavior;
-} & ({ validFrom: Timestamp } | { validUntil: Timestamp }) &
-	({ invalidBehavior: 'disable_modules'; modules: LicenseModule[] } | { invalidBehavior: Exclude<LicenseBehavior, 'disable_modules'> });
-
-export type LicenseModule =
-	| 'auditing'
-	| 'canned-responses'
-	| 'ldap-enterprise'
-	| 'livechat-enterprise'
-	| 'voip-enterprise'
-	| 'omnichannel-mobile-enterprise'
-	| 'engagement-dashboard'
-	| 'push-privacy'
-	| 'scalability'
-	| 'teams-mention'
-	| 'saml-enterprise'
-	| 'oauth-enterprise'
-	| 'device-management'
-	| 'federation'
-	| 'videoconference-enterprise'
-	| 'message-read-receipt'
-	| 'outlook-calendar';
+import type { LicenseLimit } from './LicenseLimit';
+import type { LicenseModule } from './LicenseModule';
+import type { LicensePeriod, Timestamp } from './LicensePeriod';
 
 export interface ILicenseV3 {
 	version: '3.0';

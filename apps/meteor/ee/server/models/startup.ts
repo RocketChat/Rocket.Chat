@@ -1,4 +1,4 @@
-import { onLicense } from '../../app/license/server/license';
+import { onLicense } from '@rocket.chat/license';
 
 // To facilitate our lives with the stream
 // Collection will be registered on CE too

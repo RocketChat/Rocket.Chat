@@ -1,8 +1,8 @@
 import { api } from '@rocket.chat/core-services';
+import { isEnterprise, onLicense } from '@rocket.chat/license';
 
 import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { FederationService } from '../../../server/services/federation/service';
-import { isEnterprise, onLicense } from '../../app/license/server';
 import { LicenseService } from '../../app/license/server/license.internalService';
 import { OmnichannelEE } from '../../app/livechat-enterprise/server/services/omnichannel.internalService';
 import { EnterpriseSettings } from '../../app/settings/server/settings.internalService';

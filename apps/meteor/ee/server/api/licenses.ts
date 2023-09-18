@@ -1,9 +1,9 @@
+import { getUnmodifiedLicenseAndModules, validateFormat, getMaxActiveUsers, isEnterprise } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 
 import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { getUnmodifiedLicenseAndModules, validateFormat, getMaxActiveUsers, isEnterprise } from '../../app/license/server/license';
 
 API.v1.addRoute(
 	'licenses.get',

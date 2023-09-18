@@ -1,8 +1,8 @@
+import { isEnterprise, preventNewGuests, preventNewUsers } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../../server/lib/i18n';
-import { isEnterprise, canAddNewGuestUser, canAddNewUser } from '../../license/server/license';
 
 export const validateUserRoles = async function (userId, userData) {
 	if (!isEnterprise()) {
@@ -22,7 +22,7 @@ export const validateUserRoles = async function (userId, userData) {
 			return;
 		}
 
-		if (!(await canAddNewGuestUser())) {
+		if (await preventNewGuests()) {
 			throw new Meteor.Error('error-max-guests-number-reached', 'Maximum number of guests reached.', {
 				method: 'insertOrUpdateUser',
 				field: 'Assign_role',
@@ -36,7 +36,7 @@ export const validateUserRoles = async function (userId, userData) {
 		return;
 	}
 
-	if (!(await canAddNewUser())) {
+	if (await preventNewUsers()) {
 		throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 	}
 };

@@ -1,4 +1,4 @@
-import type { ILicenseV2, ILicenseV3 } from '@rocket.chat/core-typings';
+import type { ILicenseV2, ILicenseV3 } from '@rocket.chat/license';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({

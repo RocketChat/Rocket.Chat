@@ -1,10 +1,10 @@
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import { isEnterprise } from '@rocket.chat/license';
 import { LivechatBusinessHours, LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 import moment from 'moment-timezone';
 
 import { businessHourLogger } from '../../../../../app/livechat/server/lib/logger';
-import { isEnterprise } from '../../../license/server/license';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 	// Fetch departments with agents excluding archived ones (disabled ones still can be tied to business hours)

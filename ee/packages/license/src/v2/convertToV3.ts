@@ -3,12 +3,13 @@
  * Transform a License V2 into a V3 representation.
  */
 
-import type { ILicenseV2, ILicenseV3, LicenseModule } from '@rocket.chat/core-typings';
-
+import type { ILicenseV2 } from '../definition/ILicenseV2';
+import type { ILicenseV3 } from '../definition/ILicenseV3';
+import type { LicenseModule } from '../definition/LicenseModule';
 import { isBundle, getBundleFromModule, getBundleModules } from './bundles';
 import { getTagColor } from './getTagColor';
 
-export const fromV2toV3 = (v2: ILicenseV2): ILicenseV3 => {
+export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 	return {
 		version: '3.0',
 		information: {

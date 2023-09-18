@@ -1,7 +1,7 @@
+import { isEnterprise } from '@rocket.chat/license';
 import { Banners, Settings } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
-import { isEnterprise } from '../../../ee/app/license/server';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({

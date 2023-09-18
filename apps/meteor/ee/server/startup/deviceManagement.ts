@@ -1,4 +1,5 @@
-import { onToggledFeature } from '../../app/license/server/license';
+import { onToggledFeature } from '@rocket.chat/license';
+
 import { addSettings } from '../settings/deviceManagement';
 
 let stopListening: (() => void) | undefined;

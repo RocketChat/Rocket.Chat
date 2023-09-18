@@ -1,12 +1,12 @@
 import type { IImportUser, ILDAPEntry, IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
+import { onLicense } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import type { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import { logger } from '../../../server/lib/ldap/Logger';
-import { onLicense } from '../../app/license/server';
 import { LDAPEEManager } from '../lib/ldap/Manager';
 import { LDAPEE } from '../sdk';
 import { addSettings, ldapIntervalValuesToCronMap } from '../settings/ldap';
