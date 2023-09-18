@@ -65,8 +65,8 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 	const isAdmin = useRole('admin');
 	const setModal = useSetModal();
 
-	const { data: registrationStatusData } = useRegistrationStatus();
-	const workspaceRegistered = registrationStatusData?.registrationStatus?.workspaceRegistered ?? false;
+	const { data } = useRegistrationStatus();
+	const workspaceRegistered = data?.workspaceRegistered ?? false;
 
 	const handleRegisterWorkspaceClick = (): void => {
 		const handleModalClose = (): void => setModal(null);

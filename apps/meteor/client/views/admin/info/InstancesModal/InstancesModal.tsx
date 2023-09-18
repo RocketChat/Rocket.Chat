@@ -1,4 +1,3 @@
-import type { Serialized } from '@rocket.chat/core-typings';
 import { Accordion } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -10,7 +9,7 @@ import DescriptionList from './DescriptionList';
 import DescriptionListEntry from './DescriptionListEntry';
 
 type InstancesModalProps = {
-	instances: Serialized<IInstance>[];
+	instances: IInstance[];
 	onClose: () => void;
 };
 

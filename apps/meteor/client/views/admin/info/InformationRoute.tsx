@@ -1,72 +1,27 @@
-import type { IStats, Serialized } from '@rocket.chat/core-typings';
 import { Callout, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import type { IInstance } from '@rocket.chat/rest-typings';
-import { usePermission, useServerInformation, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState, useEffect, memo } from 'react';
+import React, { memo } from 'react';
 
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
+import { useWorkspaceInfo } from '../../../hooks/useWorkspaceInfo';
 import { downloadJsonAs } from '../../../lib/download';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import InformationPage from './InformationPage';
-
-type fetchStatisticsCallback = ((params: { refresh: boolean }) => void) | (() => void);
 
 const InformationRoute = (): ReactElement => {
 	const t = useTranslation();
 	const canViewStatistics = usePermission('view-statistics');
 
-	const [isLoading, setLoading] = useState(true);
-	const [error, setError] = useState(false);
-	const [statistics, setStatistics] = useState<IStats>();
-	const [instances, setInstances] = useState<Serialized<IInstance[]>>([]);
-	const [fetchStatistics, setFetchStatistics] = useState<fetchStatisticsCallback>(() => (): void => undefined);
-	const getStatistics = useEndpoint('GET', '/v1/statistics');
-	const getInstances = useEndpoint('GET', '/v1/instances.get');
-
-	useEffect(() => {
-		let didCancel = false;
-
-		const fetchStatistics = async ({ refresh = false } = {}): Promise<void> => {
-			setLoading(true);
-			setError(false);
-
-			try {
-				const [statistics, instancesData] = await Promise.all([getStatistics({ refresh: refresh ? 'true' : 'false' }), getInstances()]);
-
-				if (didCancel) {
-					return;
-				}
-				setStatistics({
-					...statistics,
-					lastMessageSentAt: statistics.lastMessageSentAt ? new Date(statistics.lastMessageSentAt) : undefined,
-				});
-				setInstances(instancesData.instances);
-			} catch (error) {
-				setError(!!error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		setFetchStatistics(() => fetchStatistics);
-
-		fetchStatistics();
-
-		return (): void => {
-			didCancel = true;
-		};
-	}, [canViewStatistics, getInstances, getStatistics]);
-
-	const info = useServerInformation();
+	const { instances, statistics, serverInfo, isLoading, isError, refetchStatistics } = useWorkspaceInfo();
 
 	const handleClickRefreshButton = (): void => {
 		if (isLoading) {
 			return;
 		}
 
-		fetchStatistics({ refresh: true });
+		refetchStatistics();
 	};
 
 	const handleClickDownloadInfo = (): void => {
@@ -80,10 +35,10 @@ const InformationRoute = (): ReactElement => {
 		return <PageSkeleton />;
 	}
 
-	if (error || !statistics) {
+	if (isError || !statistics || !serverInfo) {
 		return (
 			<Page>
-				<Page.Header title={t('Workspace')}>
+				<Page.Header title={t('Workspace_status')}>
 					<ButtonGroup>
 						<Button icon='reload' primary type='button' onClick={handleClickRefreshButton}>
 							{t('Refresh')}
@@ -101,7 +56,7 @@ const InformationRoute = (): ReactElement => {
 		return (
 			<InformationPage
 				canViewStatistics={canViewStatistics}
-				info={info}
+				serverInfo={serverInfo}
 				statistics={statistics}
 				instances={instances}
 				onClickRefreshButton={handleClickRefreshButton}

@@ -1,8 +1,8 @@
-import type { IServerInfo, IStats, Serialized } from '@rocket.chat/core-typings';
+import type { IServerInfo, IStats } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { IInstance } from '@rocket.chat/rest-typings';
-import { Card, CardBody, CardCol, CardTitle, CardColSection, CardColTitle, CardFooter } from '@rocket.chat/ui-client';
+import { Card, CardBody, CardCol, CardColSection, CardColTitle, CardFooter } from '@rocket.chat/ui-client';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
@@ -11,19 +11,19 @@ import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import InstancesModal from './InstancesModal';
 
 type DeploymentCardProps = {
-	info: IServerInfo;
-	instances: Serialized<IInstance[]>;
+	serverInfo: IServerInfo;
+	instances: IInstance[];
 	statistics: IStats;
 };
 
-const DeploymentCard = ({ info, statistics, instances }: DeploymentCardProps): ReactElement => {
+const DeploymentCard = ({ serverInfo, statistics, instances }: DeploymentCardProps): ReactElement => {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const setModal = useSetModal();
 
-	const { commit = {} } = info;
+	const { commit = {} } = serverInfo?.info;
 
-	const appsEngineVersion = info?.marketplaceApiVersion;
+	const appsEngineVersion = serverInfo?.info?.marketplaceApiVersion;
 
 	const handleInstancesModal = useMutableCallback(() => {
 		setModal(<InstancesModal instances={instances} onClose={(): void => setModal()} />);
@@ -31,9 +31,11 @@ const DeploymentCard = ({ info, statistics, instances }: DeploymentCardProps): R
 
 	return (
 		<Card data-qa-id='deployment-card'>
-			<CardTitle>{t('Deployment')}</CardTitle>
-			<CardBody>
+			<CardBody m='none'>
 				<CardCol>
+					<CardColTitle fontScale='p2b' mbe={20}>
+						{t('Deployment')}
+					</CardColTitle>
 					<CardColSection>
 						<CardColTitle>{t('Version')}</CardColTitle>
 						{statistics.version}

@@ -9,7 +9,7 @@ export const {
 } = createSidebarItems([
 	{
 		href: '/admin/workspace',
-		i18nLabel: 'Workspace',
+		i18nLabel: 'Workspace_status',
 		icon: 'info-circled',
 		permissionGranted: (): boolean => hasPermission('view-statistics'),
 	},
