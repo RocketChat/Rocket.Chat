@@ -4,7 +4,7 @@ import store from '../store';
  * To normalize Language String and return language code
  * @param {String} languageString
  */
-export const normalizeLanguageString = (languageString) => {
+export const normalizeLanguageString = (languageString: string) => {
 	let [languageCode, countryCode] = languageString.split ? languageString.split(/[-_]/) : [];
 	if (!languageCode || languageCode.length !== 2) {
 		return 'en';
@@ -12,7 +12,7 @@ export const normalizeLanguageString = (languageString) => {
 	languageCode = languageCode.toLowerCase();
 
 	if (!countryCode || countryCode.length !== 2) {
-		countryCode = null;
+		countryCode = '';
 	} else {
 		countryCode = countryCode.toUpperCase();
 	}
@@ -23,7 +23,7 @@ export const normalizeLanguageString = (languageString) => {
 /**
  * To get browser Language of user
  */
-export const browserLanguage = () => navigator.userLanguage || navigator.language;
+export const browserLanguage = () => (navigator as any).userLanguage || navigator.language;
 
 /**
  * This is configured langauge
@@ -101,6 +101,5 @@ export const getDateFnsLocale = () => {
 	fullLanguage = fullLanguage.toLowerCase();
 	const [languageCode] = fullLanguage.split ? fullLanguage.split(/[-_]/) : [];
 	const locale = [fullLanguage, languageCode, 'en-US'].find((lng) => supportedLocales.indexOf(lng) > -1);
-	// eslint-disable-next-line import/no-dynamic-require
 	return import(`date-fns/locale/${locale}/index.js`);
 };

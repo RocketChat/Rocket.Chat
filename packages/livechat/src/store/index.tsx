@@ -25,6 +25,7 @@ type StoreState = {
 			showConnecting?: any;
 			limitTextLength?: any;
 			displayOfflineForm?: boolean;
+			language?: string;
 		};
 		online?: boolean;
 		departments: Department[];
@@ -42,6 +43,7 @@ type StoreState = {
 		guest: any;
 		theme: any;
 		visible: boolean;
+		language?: string;
 	};
 	gdpr: {
 		accepted: boolean;
@@ -66,6 +68,7 @@ type StoreState = {
 	lastReadMessageId?: any;
 	triggerAgent?: any;
 	queueInfo?: any;
+	connecting?: boolean;
 };
 
 export const initialState = (): StoreState => ({
