@@ -64,6 +64,7 @@ export class AgendaCronJobs {
 			mongo,
 			db: { collection: 'rocketchat_cron' },
 			defaultConcurrency: 1,
+			processEvery: '1 minute',
 		});
 		await this.scheduler.start();
 
