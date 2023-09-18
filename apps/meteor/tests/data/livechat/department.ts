@@ -4,6 +4,7 @@ import type { ILivechatDepartment, IUser, LivechatDepartmentDTO } from '@rocket.
 import { api, credentials, methodCall, request } from '../api-data';
 import { IUserCredentialsHeader } from '../user';
 import { createAnOnlineAgent } from './users';
+import { WithRequiredProperty } from './utils';
 
 export const NewDepartmentData = ((): Partial<ILivechatDepartment> => ({
     enabled: true,
@@ -58,13 +59,13 @@ new Promise((resolve, reject) => {
 
 export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: ILivechatDepartment, agent: {
 	credentials: IUserCredentialsHeader;
-	user: IUser & { username: string };
+	user: WithRequiredProperty<IUser, 'username'>;
 }}> => {
     const { user, credentials } = await createAnOnlineAgent();
 
 	const department = await createDepartmentWithMethod() as ILivechatDepartment;
 
-	await addOrRemoveAgentFromDepartment(department._id, {agentId: user._id, username: (user.username as string)}, true);
+	await addOrRemoveAgentFromDepartment(department._id, {agentId: user._id, username: user.username}, true);
 
 	return {
 		department,

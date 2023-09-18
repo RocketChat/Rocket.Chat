@@ -1,5 +1,7 @@
+/* eslint-disable no-restricted-properties */
 import { faker } from '@faker-js/faker';
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 import moment from 'moment';
@@ -15,12 +17,12 @@ import {
 	startANewLivechatRoomAndTakeIt,
 } from '../../../data/livechat/rooms';
 import { createAnOnlineAgent } from '../../../data/livechat/users';
-import { random, sleep } from '../../../data/livechat/utils';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { sleep } from '../../../data/livechat/utils';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting } from '../../../data/permissions.helper';
 import type { IUserCredentialsHeader } from '../../../data/user';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - dashboards', function () {
+describe.only('LIVECHAT - dashboards', function () {
 	this.retries(0);
 	// This test is expected to take more time since we're simulating real time conversations to verify analytics
 	this.timeout(60000);
@@ -30,8 +32,6 @@ describe('LIVECHAT - dashboards', function () {
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 	});
-
-	type IChatInfo = Awaited<ReturnType<typeof startANewLivechatRoomAndTakeIt>> & { agent: Awaited<ReturnType<typeof createAnOnlineAgent>> };
 
 	let department: ILivechatDepartment;
 	const agents: {
@@ -52,17 +52,17 @@ describe('LIVECHAT - dashboards', function () {
 	};
 	const TOTAL_ROOMS = 7;
 
-	const simulateRealtimeConversation = async (chatInfo: IChatInfo[]) => {
+	const simulateRealtimeConversation = async (chatInfo: Awaited<ReturnType<typeof startANewLivechatRoomAndTakeIt>>[]) => {
 		const promises = chatInfo.map(async (info) => {
 			const { room, visitor } = info;
 
 			// send a few messages
-			const numberOfMessages = random(TOTAL_MESSAGES.min, TOTAL_MESSAGES.max);
+			const numberOfMessages = Random.between(TOTAL_MESSAGES.min, TOTAL_MESSAGES.max);
 
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			for await (const _ of Array(numberOfMessages).keys()) {
+			for await (const _ of Array(numberOfMessages - 1).keys()) {
 				// flip a coin to decide who will send the message
-				const willSendFromAgent = random(0, 1) === 1;
+				const willSendFromAgent = Random.between(0, 1) === 1;
 
 				if (willSendFromAgent) {
 					await sendAgentMessage(room._id);
@@ -70,7 +70,7 @@ describe('LIVECHAT - dashboards', function () {
 					await sendMessage(room._id, faker.lorem.sentence(), visitor.token);
 				}
 
-				const delay = random(DELAY_BETWEEN_MESSAGES.min, DELAY_BETWEEN_MESSAGES.max);
+				const delay = Random.between(DELAY_BETWEEN_MESSAGES.min, DELAY_BETWEEN_MESSAGES.max);
 				await sleep(delay);
 			}
 
@@ -90,50 +90,45 @@ describe('LIVECHAT - dashboards', function () {
 		await updateSetting('Livechat_visitor_inactivity_timeout', inactivityTimeout);
 		await updateSetting('Livechat_enable_business_hours', false);
 
-		const chatInfo: IChatInfo[] = [];
-
 		// create dummy test data for further tests
 		const { department: createdDept, agent: agent1 } = await createDepartmentWithAnOnlineAgent();
 		department = createdDept;
+
+		console.log('department', department.name);
 
 		const agent2 = await createAnOnlineAgent();
 		await addOrRemoveAgentFromDepartment(department._id, { agentId: agent2.user._id, username: agent2.user.username }, true);
 		agents.push(agent1);
 		agents.push(agent2);
 
+		const roomCreationStart = moment();
 		// start a few chats
-		const { room: r1, visitor: v1 } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent1.credentials });
-		const { room: r2, visitor: v2 } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent1.credentials });
-		const { room: r3, visitor: v3 } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
-		const { room: r4, visitor: v4 } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
-		const { room: r5, visitor: v5 } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
-		const room5ChatStart = moment();
-		const { room: r6, visitor: v6 } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
-		const room6ChatStart = moment();
-		const { room: r7, visitor: v7 } = await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
+		const promises = Array.from(Array(TOTAL_ROOMS).keys()).map((i) => {
+			// 2 rooms by agent 1
+			if (i < 2) {
+				return startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent1.credentials });
+			}
+			return startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
+		});
 
-		chatInfo.push({ room: r1, visitor: v1, agent: agent1 });
-		chatInfo.push({ room: r2, visitor: v2, agent: agent1 });
-		chatInfo.push({ room: r3, visitor: v3, agent: agent2 });
-		chatInfo.push({ room: r4, visitor: v4, agent: agent2 });
-		chatInfo.push({ room: r5, visitor: v5, agent: agent2 });
-		chatInfo.push({ room: r6, visitor: v6, agent: agent2 });
-		chatInfo.push({ room: r7, visitor: v7, agent: agent2 });
+		const results = await Promise.all(promises);
+
+		const chatInfo = results.map((result) => ({ room: result.room, visitor: result.visitor }));
 
 		// simulate messages being exchanged between agents and visitors
 		await simulateRealtimeConversation(chatInfo);
 
 		// put a chat on hold
-		await sendAgentMessage(r2._id);
-		await placeRoomOnHold(r2._id);
+		await sendAgentMessage(chatInfo[1].room._id);
+		await placeRoomOnHold(chatInfo[1].room._id);
 		// close a chat
-		await closeOmnichannelRoom(r5._id);
-		const room5ChatDuration = moment().diff(room5ChatStart, 'seconds');
+		await closeOmnichannelRoom(chatInfo[4].room._id);
+		const room5ChatDuration = moment().diff(roomCreationStart, 'seconds');
 		// close an abandoned chat
-		await sendAgentMessage(r6._id);
+		await sendAgentMessage(chatInfo[5].room._id);
 		await sleep(inactivityTimeout * 1000); // wait for the chat to be considered abandoned
-		await closeOmnichannelRoom(r6._id);
-		const room6ChatDuration = moment().diff(room6ChatStart, 'seconds');
+		await closeOmnichannelRoom(chatInfo[5].room._id);
+		const room6ChatDuration = moment().diff(roomCreationStart, 'seconds');
 
 		avgClosedRoomChatDuration = (room5ChatDuration + room6ChatDuration) / 2;
 	});
@@ -149,7 +144,7 @@ describe('LIVECHAT - dashboards', function () {
 			'Total_visitors',
 		];
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/conversation-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
@@ -157,7 +152,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect(403);
 		});
 		it('should return an array of conversation totalizers', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
+			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/conversation-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
@@ -215,7 +210,7 @@ describe('LIVECHAT - dashboards', function () {
 	describe('livechat/analytics/dashboards/productivity-totalizers', () => {
 		const expectedMetrics = ['Avg_response_time', 'Avg_first_response_time', 'Avg_reaction_time', 'Avg_of_waiting_time'];
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
@@ -223,7 +218,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect(403);
 		});
 		it('should return an array of productivity totalizers', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
+			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
@@ -271,7 +266,7 @@ describe('LIVECHAT - dashboards', function () {
 	describe('livechat/analytics/dashboards/chats-totalizers', () => {
 		const expectedMetrics = ['Total_abandoned_chats', 'Avg_of_abandoned_chats', 'Avg_of_chat_duration_time'];
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/chats-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
@@ -279,7 +274,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect(403);
 		});
 		it('should return an array of chats totalizers', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
+			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/chats-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
@@ -331,7 +326,7 @@ describe('LIVECHAT - dashboards', function () {
 	describe('livechat/analytics/dashboards/agents-productivity-totalizers', () => {
 		const expectedMetrics = ['Busiest_time', 'Avg_of_available_service_time', 'Avg_of_service_time'];
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(
 					api('livechat/analytics/dashboards/agents-productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'),
@@ -341,7 +336,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect(403);
 		});
 		it('should return an array of agents productivity totalizers', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
+			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(
 					api('livechat/analytics/dashboards/agents-productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'),
@@ -390,7 +385,7 @@ describe('LIVECHAT - dashboards', function () {
 
 	describe('livechat/analytics/dashboards/charts/chats', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
@@ -398,7 +393,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect(403);
 		});
 		it('should return an array of productivity totalizers', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
+			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
@@ -439,7 +434,7 @@ describe('LIVECHAT - dashboards', function () {
 
 	describe('livechat/analytics/dashboards/charts/chats-per-agent', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-agent?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
@@ -447,7 +442,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect(403);
 		});
 		it('should return an object with open and closed chats by agent', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
+			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-agent?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
@@ -489,7 +484,7 @@ describe('LIVECHAT - dashboards', function () {
 
 	describe('livechat/analytics/dashboards/charts/agents-status', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/agents-status'))
 				.set(credentials)
@@ -497,7 +492,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect(403);
 		});
 		it('should return an object with agents status metrics', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
+			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/agents-status'))
 				.set(credentials)
@@ -540,7 +535,7 @@ describe('LIVECHAT - dashboards', function () {
 
 	describe('livechat/analytics/dashboards/charts/chats-per-department', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-department?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
@@ -548,7 +543,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect(403);
 		});
 		it('should return an object with open and closed chats by department', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
+			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-department?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
@@ -585,7 +580,7 @@ describe('LIVECHAT - dashboards', function () {
 
 	describe('livechat/analytics/dashboards/charts/timings', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/timings?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
@@ -593,7 +588,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect(403);
 		});
 		it('should return an object with open and closed chats by department', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
+			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/timings?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 				.set(credentials)
@@ -657,7 +652,7 @@ describe('LIVECHAT - dashboards', function () {
 
 	describe('livechat/analytics/agent-overview', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/agent-overview'))
 				.query({ from: '2020-01-01', to: '2020-01-02', name: 'Total_conversations' })
@@ -666,7 +661,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect(403);
 		});
 		it('should return an "invalid-chart-name error" when the chart name is empty', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
+			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/agent-overview'))
 				.query({ from: '2020-01-01', to: '2020-01-02', name: '' })
@@ -730,7 +725,7 @@ describe('LIVECHAT - dashboards', function () {
 
 	describe('livechat/analytics/overview', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('view-livechat-manager', []);
+			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/overview'))
 				.query({ from: '2020-01-01', to: '2020-01-02', name: 'Conversations' })
@@ -739,7 +734,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect(403);
 		});
 		it('should return an "invalid-chart-name error" when the chart name is empty', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
+			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/overview'))
 				.query({ from: '2020-01-01', to: '2020-01-02', name: '' })
