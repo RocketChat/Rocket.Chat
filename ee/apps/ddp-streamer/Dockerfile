@@ -16,6 +16,9 @@ COPY ./packages/core-typings/dist packages/core-typings/dist
 COPY ./packages/rest-typings/package.json packages/rest-typings/package.json
 COPY ./packages/rest-typings/dist packages/rest-typings/dist
 
+COPY ./packages/password-policies/package.json packages/password-policies/package.json
+COPY ./packages/password-policies/dist packages/password-policies/dist
+
 COPY ./packages/ui-contexts/package.json packages/ui-contexts/package.json
 COPY ./packages/ui-contexts/dist packages/ui-contexts/dist
 

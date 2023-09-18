@@ -51,7 +51,7 @@ export const palette = [
 			{ name: 'font-default', token: 'N400', color: '#E4E7EA' },
 			{ name: 'font-titles-labels', token: '', color: '#F2F3F5' },
 			{ name: 'font-info', token: '', color: '#739EDE' },
-			{ name: 'font-danger', token: '', color: '#CF6E7A' },
+			{ name: 'font-danger', token: '', color: '#D88892' },
 			{ name: 'font-pure-black', token: '', color: '#2F343D' },
 			{ name: 'font-pure-white', token: '', color: '#FFFFFF' },
 		],
