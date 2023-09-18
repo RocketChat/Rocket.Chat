@@ -43,12 +43,9 @@ export class Presence extends ServiceClass implements IPresence {
 			if (module === 'scalability') {
 				this.hasLicense = valid;
 
+				// broadcast should always be enabled if license is active (unless the troubleshoot setting is on)
 				if (!this.broadcastEnabled && valid) {
-					// broadcast should always be enabled if license is active (unless the troubleshoot setting is on)
-					const presenceBroadcastDisabled = await Settings.findOneById('Troubleshoot_Disable_Presence_Broadcast');
-					if (presenceBroadcastDisabled?.value === false) {
-						await this.toggleBroadcast(true);
-					}
+					await this.toggleBroadcast(true);
 				}
 			}
 		});
