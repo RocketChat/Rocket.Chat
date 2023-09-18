@@ -67,7 +67,8 @@ const DeploymentCard = ({ serverInfo, statistics, instances }: DeploymentCardPro
 					<CardColSection>
 						<CardColTitle>{t('Commit_details')}</CardColTitle>
 						{t('github_HEAD')}: ({commit.hash ? commit.hash.slice(0, 9) : ''}) <br />
-						{t('Branch')}: {commit.branch}
+						{t('Branch')}: {commit.branch} <br />
+						{commit.subject}
 					</CardColSection>
 					<CardColSection>
 						<CardColTitle>{t('PID')}</CardColTitle>

@@ -99,7 +99,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 	const renderErrorOnSubmit = (error: LoginErrors) => {
 		const { type, i18n } = LOGIN_SUBMIT_ERRORS[error];
-		return <Callout type={type}>{i18n}</Callout>;
+		return <Callout type={type}>{t(i18n)}</Callout>;
 	};
 
 	if (errors.username?.type === 'invalid-email') {
