@@ -1,5 +1,11 @@
 # @rocket.chat/model-typings
 
+## 0.1.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.2
+
 ## 0.1.0-rc.1
 
 ### Patch Changes
@@ -31,6 +37,22 @@
 - Updated dependencies [61128364d6]
 - Updated dependencies [d45365436e]
   - @rocket.chat/core-typings@6.4.0-rc.0
+
+## 0.0.12
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.6
+
+## 0.0.11
+
+### Patch Changes
+
+- 92d25b9c7a: Change SAU aggregation to consider only sessions from few days ago instead of the whole past.
+
+  This is particularly important for large workspaces in case the cron job did not run for some time, in that case the amount of sessions would accumulate and the aggregation would take a long time to run.
+
+  - @rocket.chat/core-typings@6.3.5
 
 ## 0.0.10
 

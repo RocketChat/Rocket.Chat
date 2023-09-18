@@ -1,13 +1,20 @@
 # @rocket.chat/cron
 
-## 0.0.7-rc.1
+## 0.0.9-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.2
+- @rocket.chat/models@0.0.13-rc.2
+
+## 0.0.9-rc.1
 
 ### Patch Changes
 
 - @rocket.chat/core-typings@6.4.0-rc.1
 - @rocket.chat/models@0.0.11-rc.1
 
-## 0.0.7-rc.0
+## 0.0.9-rc.0
 
 ### Patch Changes
 
@@ -21,6 +28,20 @@
   - @rocket.chat/core-typings@6.4.0-rc.0
   - @rocket.chat/models@0.0.11-rc.0
   - @rocket.chat/random@1.2.1
+
+## 0.0.8
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.6
+- @rocket.chat/models@0.0.12
+
+## 0.0.7
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.11
+- @rocket.chat/core-typings@6.3.5
 
 ## 0.0.6
 
