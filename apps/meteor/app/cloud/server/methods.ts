@@ -6,7 +6,6 @@ import { hasPermissionAsync } from '../../authorization/server/functions/hasPerm
 import { buildWorkspaceRegistrationData } from './functions/buildRegistrationData';
 import { checkUserHasCloudLogin } from './functions/checkUserHasCloudLogin';
 import { connectWorkspace } from './functions/connectWorkspace';
-import { disconnectWorkspace } from './functions/disconnectWorkspace';
 import { finishOAuthAuthorization } from './functions/finishOAuthAuthorization';
 import { getOAuthAuthorizationUrl } from './functions/getOAuthAuthorizationUrl';
 import { reconnectWorkspace } from './functions/reconnectWorkspace';
@@ -135,24 +134,6 @@ Meteor.methods<ServerMethods>({
 		}
 
 		return connectWorkspace(token);
-	},
-	async 'cloud:disconnectWorkspace'() {
-		const uid = Meteor.userId();
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'cloud:connectServer',
-			});
-		}
-
-		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
-				method: 'cloud:connectServer',
-			});
-		}
-
-		await disconnectWorkspace();
-
-		return false;
 	},
 	async 'cloud:reconnectWorkspace'() {
 		const uid = Meteor.userId();
