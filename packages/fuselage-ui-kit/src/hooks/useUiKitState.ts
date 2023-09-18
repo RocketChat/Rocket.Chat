@@ -88,13 +88,14 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
       setValue(elValue);
     }
 
-    state && (await state({ blockId, appId, actionId, value, viewId }, e));
+    state &&
+      (await state({ blockId, appId, actionId, value: elValue, viewId }, e));
     await action(
       {
         blockId,
         appId: appId || appIdFromContext,
         actionId,
-        value,
+        value: elValue,
         viewId,
       },
       e

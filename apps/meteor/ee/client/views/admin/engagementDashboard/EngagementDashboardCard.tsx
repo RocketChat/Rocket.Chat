@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { Card } from '@rocket.chat/ui-client';
+import { Card, CardBody, CardCol, CardTitle } from '@rocket.chat/ui-client';
 import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
 
@@ -13,14 +13,14 @@ type EngagementDashboardCardProps = {
 const EngagementDashboardCard = ({ children, title = undefined }: EngagementDashboardCardProps): ReactElement => (
 	<Box mb={16}>
 		<Card>
-			{title && <Card.Title>{title}</Card.Title>}
-			<Card.Body>
-				<Card.Col>
+			{title && <CardTitle>{title}</CardTitle>}
+			<CardBody>
+				<CardCol>
 					<EngagementDashboardCardErrorBoundary>
 						<Box>{children}</Box>
 					</EngagementDashboardCardErrorBoundary>
-				</Card.Col>
-			</Card.Body>
+				</CardCol>
+			</CardBody>
 		</Card>
 	</Box>
 );

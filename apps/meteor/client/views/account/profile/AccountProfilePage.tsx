@@ -17,10 +17,10 @@ import { FormProvider, useForm } from 'react-hook-form';
 
 import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
 import Page from '../../../components/Page';
+import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 import AccountProfileForm from './AccountProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
 import { getProfileInitialValues } from './getProfileInitialValues';
-import { useAllowPasswordChange } from './useAllowPasswordChange';
 
 // TODO: enforce useMutation
 const AccountProfilePage = (): ReactElement => {

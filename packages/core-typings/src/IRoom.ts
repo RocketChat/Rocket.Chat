@@ -193,8 +193,24 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	metrics?: {
 		serviceTimeDuration?: number;
 	};
+	// set to true when the room is waiting for a response from the visitor
 	waitingResponse: any;
-	responseBy: any;
+	// contains information about the last response from an agent
+	responseBy?: {
+		_id: string;
+		username: string;
+
+		// when the agent first responded to the visitor after the latest message from visitor
+		// this will reset when the visitor sends a new message
+		firstResponseTs: Date;
+
+		// when the agent last responded to the visitor
+		// This is almost the same as firstResponseTs, but here we hold the timestamp of the last response
+		// and it gets updated after each message from agent
+		// So if an agent sends multiple messages to visitor, then firstResponseTs will store timestamp
+		// of their first reply, and lastMessageTs will store timestamp of their latest response
+		lastMessageTs: Date;
+	};
 
 	livechatData: any;
 	queuedAt?: Date;

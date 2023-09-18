@@ -1,9 +1,11 @@
 import { SHA256 } from '@rocket.chat/sha256';
 import { Meteor } from 'meteor/meteor';
+import { lazy } from 'react';
 
-import TwoFactorModal from '../../components/TwoFactorModal';
 import { imperativeModal } from '../imperativeModal';
 import { isTotpInvalidError, isTotpRequiredError } from './utils';
+
+const TwoFactorModal = lazy(() => import('../../components/TwoFactorModal'));
 
 const twoFactorMethods = ['totp', 'email', 'password'] as const;
 
