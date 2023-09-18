@@ -25,6 +25,10 @@ export class MentionQueries {
 			type: 'user' as const,
 		}));
 
+		if (settings.get<boolean>('Troubleshoot_Disable_Teams_Mention')) {
+			return taggedUsers;
+		}
+
 		const taggedTeams = teams.map((team) => ({
 			...team,
 			type: 'team' as const,
