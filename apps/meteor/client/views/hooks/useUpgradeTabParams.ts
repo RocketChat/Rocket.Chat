@@ -1,4 +1,4 @@
-import type { ILicenseV2, ILicenseV3 } from '@rocket.chat/core-typings';
+import type { ILicenseV2, ILicenseV3 } from '@rocket.chat/license';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { format } from 'date-fns';
 

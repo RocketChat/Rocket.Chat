@@ -1,9 +1,9 @@
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import { getAppsConfig } from '@rocket.chat/license';
 
 import { API } from '../../../../../app/api/server';
 import type { SuccessResult } from '../../../../../app/api/server/definition';
 import { getInstallationSourceFromAppStorageItem } from '../../../../../lib/apps/getInstallationSourceFromAppStorageItem';
-import { getAppsConfig } from '../../../../app/license/server/license';
 import type { AppsRestApi } from '../rest';
 
 type AppsCountResult = {

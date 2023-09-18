@@ -1,7 +1,7 @@
 import { Federation, FederationEE } from '@rocket.chat/core-services';
+import { isEnterprise } from '@rocket.chat/license';
 import { isFederationVerifyMatrixIdProps } from '@rocket.chat/rest-typings';
 
-import { isEnterprise } from '../../../../ee/app/license/server';
 import { API } from '../api';
 
 API.v1.addRoute(

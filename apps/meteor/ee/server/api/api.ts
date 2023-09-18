@@ -1,7 +1,8 @@
+import { isEnterprise } from '@rocket.chat/license';
+
 import { API } from '../../../app/api/server/api';
 import type { NonEnterpriseTwoFactorOptions, Options } from '../../../app/api/server/definition';
 import { use } from '../../../app/settings/server/Middleware';
-import { isEnterprise } from '../../app/license/server/license';
 
 // Overwrites two factor method to enforce 2FA check for enterprise APIs when
 // no license was provided to prevent abuse on enterprise APIs.

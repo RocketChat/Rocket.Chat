@@ -1,4 +1,4 @@
-import { onLicense } from '../../license/server';
+import { onLicense } from '@rocket.chat/license';
 
 await onLicense('canned-responses', async () => {
 	const { createSettings } = await import('./settings');

@@ -1,7 +1,6 @@
+import { onValidateLicense, getLicense } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-
-import { onValidateLicenses, getLicense } from '../../app/license/server/license';
 
 const handleHadTrial = (): void => {
 	if (getLicense()?.information.trial) {
@@ -10,5 +9,5 @@ const handleHadTrial = (): void => {
 };
 
 Meteor.startup(() => {
-	onValidateLicenses(handleHadTrial);
+	onValidateLicense(handleHadTrial);
 });

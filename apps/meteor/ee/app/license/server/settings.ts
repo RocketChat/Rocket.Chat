@@ -1,8 +1,8 @@
+import { setLicense } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { settings, settingsRegistry } from '../../../../app/settings/server';
-import { setLicense } from './license';
 
 Meteor.startup(async () => {
 	await settingsRegistry.addGroup('Enterprise', async function () {

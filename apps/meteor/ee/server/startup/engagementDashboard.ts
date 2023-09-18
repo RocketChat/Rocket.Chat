@@ -1,6 +1,5 @@
+import { onToggledFeature } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
-
-import { onToggledFeature } from '../../app/license/server/license';
 
 onToggledFeature('engagement-dashboard', {
 	up: () =>

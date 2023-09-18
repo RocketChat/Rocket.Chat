@@ -1,11 +1,11 @@
 import type { IRole } from '@rocket.chat/core-typings';
+import { isEnterprise } from '@rocket.chat/license';
 import { Roles } from '@rocket.chat/models';
 import Ajv from 'ajv';
 
 import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../../app/settings/server/index';
-import { isEnterprise } from '../../app/license/server';
 import { insertRoleAsync } from '../lib/roles/insertRole';
 import { updateRole } from '../lib/roles/updateRole';
 
