@@ -4758,6 +4758,7 @@
   "webdav-account-updated": "Conta WebDAV atualizada",
   "Webhook_Details": "Detalhes do WebHook",
   "Webhook_URL": "URL do webhook",
+  "Webhook_URL_not_set": "A URL do webhook não foi definida",
   "Webhooks": "Webhooks",
   "WebRTC_Call": "Chamada WebRTC",
   "WebRTC_direct_audio_call_from_%s": "Chamada de áudio direta de %s",

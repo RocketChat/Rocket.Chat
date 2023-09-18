@@ -5672,6 +5672,7 @@
   "webdav-server-not-found": "WebDAV server not found",
   "Webhook_Details": "WebHook Details",
   "Webhook_URL": "Webhook URL",
+  "Webhook_URL_not_set": "Webhook URL is not set",
   "Webhooks": "Webhooks",
   "WebRTC": "WebRTC",
   "WebRTC_Description": "Broadcast audio and/or video material, as well as transmit arbitrary data between browsers without the need for a middleman.",
