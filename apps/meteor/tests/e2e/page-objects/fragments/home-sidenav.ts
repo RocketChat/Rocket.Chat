@@ -14,7 +14,7 @@ export class HomeSidenav {
 	}
 
 	get checkboxEncryption(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> role=checkbox[name="Encrypted"]').locator('..');
+		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Encrypted"');
 	}
 
 	get checkboxReadOnly(): Locator {
@@ -75,7 +75,10 @@ export class HomeSidenav {
 		await this.page.locator('role=navigation >> role=button[name=Search]').click();
 		await this.page.locator('role=search >> role=searchbox').type(name);
 		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
+		await this.waitForChannel();
+	}
 
+	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
 

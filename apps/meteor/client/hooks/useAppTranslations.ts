@@ -26,9 +26,13 @@ export const useAppTranslations = () => {
 		}
 	}, [result.data]);
 
-	const invalidate = useDebouncedCallback(() => {
-		queryClient.invalidateQueries(['apps', 'translations']);
-	}, 100);
+	const invalidate = useDebouncedCallback(
+		() => {
+			queryClient.invalidateQueries(['apps', 'translations']);
+		},
+		100,
+		[],
+	);
 
 	useEffect(() => {
 		if (!uid) {
