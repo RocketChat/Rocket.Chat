@@ -45,10 +45,6 @@ export const createTroubleshootSettings = () =>
 			i18nDescription: 'Troubleshoot_Disable_Teams_Mention_Alert',
 		});
 
-		if (!semver.lt(Info.version, '7.0.0')) {
-			console.log('remove troubleshoot this setting at next major (7.0.0).');
-		}
-
 		// TODO: remove this setting at next major (7.0.0)
 		await this.add('Troubleshoot_Disable_Statistics_Generator', false, {
 			type: 'boolean',
