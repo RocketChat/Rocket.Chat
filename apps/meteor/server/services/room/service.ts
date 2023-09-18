@@ -110,7 +110,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 		if (
 			isRoomWithJoinCode(room) &&
-			joinCode !== room.joinCode &&
+			(!joinCode || joinCode !== room.joinCode) &&
 			!(await Authorization.hasPermission(user._id, 'join-without-join-code'))
 		) {
 			throw new MeteorError('error-code-invalid', 'Invalid Room Password', {
