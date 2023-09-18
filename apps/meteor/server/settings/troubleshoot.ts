@@ -1,7 +1,4 @@
-import semver from 'semver';
-
 import { settingsRegistry } from '../../app/settings/server';
-import { Info } from '../../app/utils/rocketchat.info';
 
 export const createTroubleshootSettings = () =>
 	settingsRegistry.addGroup('Troubleshoot', async function () {
