@@ -168,6 +168,7 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.tabs.btnDisableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnDisableE2E.click({ force: true });
+		await poHomeChannel.toastSuccess.locator('button >> i.rcx-icon--name-cross.rcx-icon').click();
 		await page.waitForTimeout(1000);
 
 		await poHomeChannel.content.sendMessage('hello world not encrypted');
@@ -178,6 +179,7 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await poHomeChannel.toastSuccess.locator('button >> i.rcx-icon--name-cross.rcx-icon').click();
 		await page.waitForTimeout(1000);
 
 		await poHomeChannel.content.sendMessage('hello world encrypted again');
