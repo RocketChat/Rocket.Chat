@@ -1,3 +1,4 @@
+import { RoomVerificationState } from '@rocket.chat/core-typings';
 import { TextInput, Box, Select, InputBox } from '@rocket.chat/fuselage';
 import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
@@ -32,8 +33,15 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 		['onhold', t('On_Hold_Chats')],
 	];
 
+	const verificationStatusOptions: [RoomVerificationState, string][] = [
+		[RoomVerificationState.all, t('All')],
+		[RoomVerificationState.verified, t('Verified')],
+		[RoomVerificationState.unVerified, t('Unverified')],
+	];
+
 	const [guest, setGuest] = useLocalStorage('guest', '');
 	const [servedBy, setServedBy] = useLocalStorage('servedBy', 'all');
+	const [verificationStatus, setVerificationStatus] = useLocalStorage('verificationStatus', 'all');
 	const [status, setStatus] = useLocalStorage('status', 'all');
 	const [department, setDepartment] = useLocalStorage<string>('department', 'all');
 	const [from, setFrom] = useLocalStorage('from', '');
@@ -47,10 +55,12 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 	const handleFrom = useMutableCallback((e) => setFrom(e.target.value));
 	const handleTo = useMutableCallback((e) => setTo(e.target.value));
 	const handleTags = useMutableCallback((e) => setTags(e));
+	const handleVerificationStatus = useMutableCallback((e) => setVerificationStatus(e));
 
 	const reset = useMutableCallback(() => {
 		setGuest('');
 		setServedBy('all');
+		setVerificationStatus(RoomVerificationState.all);
 		setStatus('all');
 		setDepartment('all');
 		setFrom('');
@@ -76,12 +86,13 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 			servedBy,
 			status,
 			department: department && department !== 'all' ? department : '',
+			verificationStatus,
 			from: from && moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			tags: tags.map((tag) => tag.label),
 			customFields,
 		}));
-	}, [setFilter, guest, servedBy, status, department, from, to, tags, customFields]);
+	}, [setFilter, guest, servedBy, status, department, from, to, tags, customFields, verificationStatus]);
 
 	const handleClearFilters = useMutableCallback(() => {
 		reset();
@@ -140,10 +151,20 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 					hasCustomFields={hasCustomFields}
 				/>
 			</Box>
-			<Box display='flex' marginBlockStart={8} flexGrow={1} flexDirection='column'>
+			<Box display='flex' marginBlockStart={8} flexGrow={1} flexDirection='row'>
 				<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
 					<Label mb={4}>{t('Department')}</Label>
 					<AutoCompleteDepartment haveAll showArchived value={department} onChange={handleDepartment} onlyMyDepartments />
+				</Box>
+				<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
+					<Label mb={4}>{t('Verification_Check')}</Label>
+					<Select
+						options={verificationStatusOptions}
+						value={verificationStatus}
+						onChange={handleVerificationStatus}
+						placeholder={t('Verification_Check')}
+						data-qa='chat-verification-state'
+					/>
 				</Box>
 			</Box>
 			{EETagsComponent && (

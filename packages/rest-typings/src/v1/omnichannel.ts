@@ -24,7 +24,7 @@ import type {
 	ILivechatTriggerCondition,
 	ILivechatTriggerAction,
 } from '@rocket.chat/core-typings';
-import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
+import { RoomVerificationState, ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 import type { WithId } from 'mongodb';
 
@@ -2534,6 +2534,7 @@ export type GETLivechatRoomsParams = PaginatedRequest<{
 	customFields?: string;
 	closedAt?: string;
 	agents?: string[];
+	verificationStatus?: IOmnichannelRoom['verificationStatus'];
 	roomName?: string;
 	departmentId?: string;
 	open?: string | boolean;
@@ -2585,6 +2586,11 @@ const GETLivechatRoomsParamsSchema = {
 		},
 		departmentId: {
 			type: 'string',
+			nullable: true,
+		},
+		verificationStatus: {
+			type: 'string',
+			enum: Object.values(RoomVerificationState),
 			nullable: true,
 		},
 		open: {

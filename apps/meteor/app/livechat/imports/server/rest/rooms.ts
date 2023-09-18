@@ -30,7 +30,7 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields } = await this.parseJsonQuery();
-			const { agents, departmentId, open, tags, roomName, onhold } = this.queryParams;
+			const { agents, departmentId, open, tags, roomName, onhold, verificationStatus } = this.queryParams;
 			const { createdAt, customFields, closedAt } = this.queryParams;
 
 			const createdAtParam = validateDateParams('createdAt', createdAt);
@@ -63,6 +63,7 @@ API.v1.addRoute(
 					agents,
 					roomName,
 					departmentId,
+					verificationStatus,
 					...(isBoolean(open) && { open: open === 'true' }),
 					createdAt: createdAtParam,
 					closedAt: closedAtParam,

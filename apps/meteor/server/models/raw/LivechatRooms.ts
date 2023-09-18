@@ -1202,6 +1202,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		createdAt,
 		closedAt,
 		tags,
+		verificationStatus,
 		customFields,
 		visitorId,
 		roomIds,
@@ -1217,6 +1218,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		createdAt?: { start?: Date; end?: Date };
 		closedAt?: { start?: Date; end?: Date };
 		tags?: string[];
+		verificationStatus?: IOmnichannelRoom['verificationStatus'];
 		customFields?: Record<string, string>;
 		visitorId?: string;
 		roomIds?: string[];
@@ -1235,6 +1237,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			...(open !== undefined && { open: { $exists: open }, onHold: { $ne: true } }),
 			...(served !== undefined && { servedBy: { $exists: served } }),
 			...(visitorId && visitorId !== 'undefined' && { 'v._id': visitorId }),
+			...(verificationStatus && { verificationStatus }),
 		};
 
 		if (createdAt) {

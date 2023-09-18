@@ -1,3 +1,4 @@
+import { RoomVerificationState } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
@@ -37,6 +38,7 @@ type DebouncedParams = {
 	department: string;
 	status: string;
 	from: string;
+	verificationStatus: RoomVerificationState;
 	to: string;
 	tags: any[];
 };
@@ -47,6 +49,7 @@ type CurrentChatQuery = {
 	roomName?: string;
 	departmentId?: string;
 	open?: boolean;
+	verificationStatus?: RoomVerificationState;
 	createdAt?: string;
 	closedAt?: string;
 	tags?: string[];
@@ -67,7 +70,7 @@ type useQueryType = (
 const sortDir = (sortDir: 'asc' | 'desc'): 1 | -1 => (sortDir === 'asc' ? 1 : -1);
 
 const currentChatQuery: useQueryType = (
-	{ guest, servedBy, department, status, from, to, tags },
+	{ guest, servedBy, department, status, from, to, tags, verificationStatus },
 	customFields,
 	[column, direction],
 	current,
@@ -92,6 +95,9 @@ const currentChatQuery: useQueryType = (
 				end: moment(new Date(to)).set({ hour: 23, minutes: 59, seconds: 59 }).format('YYYY-MM-DDTHH:mm:ss'),
 			}),
 		});
+	}
+	if (verificationStatus !== RoomVerificationState.all) {
+		query.verificationStatus = verificationStatus;
 	}
 
 	if (status !== 'all') {
@@ -120,10 +126,9 @@ const currentChatQuery: useQueryType = (
 };
 
 const CurrentChatsRoute = (): ReactElement => {
-	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'priorityWeight' | 'ts' | 'lm' | 'open'>(
-		'ts',
-		'desc',
-	);
+	const { sortBy, sortDirection, setSort } = useSort<
+		'fname' | 'departmentId' | 'servedBy' | 'priorityWeight' | 'ts' | 'lm' | 'open' | 'verifcationStatus'
+	>('ts', 'desc');
 	const [customFields, setCustomFields] = useState<{ [key: string]: string }>();
 
 	const t = useTranslation();
@@ -142,6 +147,7 @@ const CurrentChatsRoute = (): ReactElement => {
 		guest: '',
 		fname: '',
 		servedBy: '',
+		verificationStatus: RoomVerificationState.all,
 		status: 'all',
 		department: '',
 		from: '',
