@@ -8,6 +8,7 @@ export async function findRooms({
 	agents,
 	roomName,
 	departmentId,
+	verificationStatus,
 	open,
 	createdAt,
 	closedAt,
@@ -19,6 +20,7 @@ export async function findRooms({
 	agents?: Array<string>;
 	roomName?: string;
 	departmentId?: string;
+	verificationStatus?: IOmnichannelRoom['verificationStatus'];
 	open?: boolean;
 	createdAt?: {
 		start?: string | undefined;
@@ -42,6 +44,7 @@ export async function findRooms({
 		createdAt,
 		closedAt,
 		tags,
+		verificationStatus,
 		customFields,
 		onhold: ['t', 'true', '1'].includes(`${onhold}`),
 		options: {

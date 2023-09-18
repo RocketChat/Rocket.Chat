@@ -162,6 +162,7 @@ export enum RoomVerificationState {
 	unVerified = 'unVerified',
 	verified = 'verified',
 	verifiedFalse = 'verifiedFalse',
+	all = 'all',
 }
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {

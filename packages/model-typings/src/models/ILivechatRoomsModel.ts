@@ -92,6 +92,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		createdAt: any;
 		closedAt: any;
 		tags: any;
+		verificationStatus?: RoomVerificationState;
 		customFields: any;
 		visitorId?: any;
 		roomIds?: any;
