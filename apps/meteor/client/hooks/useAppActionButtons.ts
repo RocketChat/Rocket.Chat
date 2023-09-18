@@ -29,9 +29,13 @@ export const useAppActionButtons = (context?: `${UIActionButtonContext}`) => {
 		staleTime: Infinity,
 	});
 
-	const invalidate = useDebouncedCallback(() => {
-		queryClient.invalidateQueries(['apps', 'actionButtons']);
-	}, 100);
+	const invalidate = useDebouncedCallback(
+		() => {
+			queryClient.invalidateQueries(['apps', 'actionButtons']);
+		},
+		100,
+		[],
+	);
 
 	useEffect(() => {
 		if (!uid) {
@@ -142,6 +146,7 @@ export const useMessageActionAppsActionButtons = (context?: MessageActionContext
 						label: Utilities.getI18nKeyForApp(action.labelI18n, action.appId),
 						order: 7,
 						type: 'apps',
+						variant: action.variant,
 						action: (_, params) => {
 							void actionManager.triggerActionButtonAction({
 								rid: params.message.rid,
