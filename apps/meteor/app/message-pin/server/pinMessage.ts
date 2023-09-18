@@ -213,7 +213,6 @@ Meteor.methods<ServerMethods>({
 
 		originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
 
-
 		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
 		if (isTheLastMessage(room, message)) {
