@@ -145,30 +145,30 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           coverage: true
 
-  build-prod:
-    name: 📦 Meteor Build - official
-    needs: [tests-done, release-versions, packages-build]
-    if: (github.event_name == 'release' || github.ref == 'refs/heads/develop')
-    runs-on: ubuntu-20.04
-
-    steps:
-      - name: Github Info
-        run: |
-          echo "GITHUB_ACTION: $GITHUB_ACTION"
-          echo "GITHUB_ACTOR: $GITHUB_ACTOR"
-          echo "GITHUB_REF: $GITHUB_REF"
-          echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
-          echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
-          echo "github.event_name: ${{ github.event_name }}"
-          cat $GITHUB_EVENT_PATH
-
-      - uses: actions/checkout@v3
-
-      - uses: ./.github/actions/meteor-build
-        with:
-          node-version: ${{ needs.release-versions.outputs.node-version }}
-          coverage: false
-
+  # build-prod:
+  #   name: 📦 Meteor Build - official
+  #   needs: [tests-done, release-versions, packages-build]
+  #   if: (github.event_name == 'release' || github.ref == 'refs/heads/develop')
+  #   runs-on: ubuntu-20.04
+  #
+  #   steps:
+  #     - name: Github Info
+  #       run: |
+  #         echo "GITHUB_ACTION: $GITHUB_ACTION"
+  #         echo "GITHUB_ACTOR: $GITHUB_ACTOR"
+  #         echo "GITHUB_REF: $GITHUB_REF"
+  #         echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
+  #         echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
+  #         echo "github.event_name: ${{ github.event_name }}"
+  #         cat $GITHUB_EVENT_PATH
+  #
+  #     - uses: actions/checkout@v3
+  #
+  #     - uses: ./.github/actions/meteor-build
+  #       with:
+  #         node-version: ${{ needs.release-versions.outputs.node-version }}
+  #         coverage: false
+  #
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
     needs: [build, release-versions]
