@@ -53,7 +53,7 @@ export const MessagePreview = ({ md, channels, mentions }: MessagePreviewProps):
 	return (
 		<Box style={{ padding: '12px' }}>
 			<MessageBody data-qa-type='message-body'>
-				<Box className={messageBodyAdditionalStyles}>
+				<Box className={messageBodyAdditionalStyles} style={{ overflowY: 'scroll', maxHeight: '200px' }}>
 					<GazzodownText channels={channels} mentions={mentions}>
 						<Markup tokens={md} />
 					</GazzodownText>
