@@ -36,11 +36,6 @@ export const createTroubleshootSettings = () =>
 			i18nDescription: 'Troubleshoot_Disable_Data_Exporter_Processor_Alert',
 		});
 
-		// await this.add('Troubleshoot_Disable_Workspace_Sync', false, {
-		// 	type: 'boolean',
-		// 	i18nDescription: 'Troubleshoot_Disable_Workspace_Sync_Alert',
-		// });
-
 		await this.add('Troubleshoot_Disable_Teams_Mention', false, {
 			type: 'boolean',
 			i18nDescription: 'Troubleshoot_Disable_Teams_Mention_Alert',
