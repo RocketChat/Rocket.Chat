@@ -7,9 +7,9 @@ import { Info, minimumClientVersions } from '../../../utils/rocketchat.info';
 
 type ServerInfo = {
 	info?: typeof Info;
-	supportedVersions?: string;
+	supportedVersions?: { signed: string };
 	minimumClientVersions: typeof minimumClientVersions;
-	version: string | undefined;
+	version: string;
 };
 
 const removePatchInfo = (version: string): string => version.replace(/(\d+\.\d+).*/, '$1');
@@ -31,7 +31,7 @@ export async function getServerInfo(userId?: string): Promise<ServerInfo> {
 		minimumClientVersions,
 		...(supportedVersionsToken.success &&
 			supportedVersionsToken.result && {
-				supportedVersions: supportedVersionsToken.result,
+				supportedVersions: { signed: supportedVersionsToken.result },
 			}),
 	};
 }

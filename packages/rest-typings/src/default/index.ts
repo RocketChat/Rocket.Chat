@@ -26,7 +26,7 @@ export interface DefaultEndpoints {
 				tag?: string;
 				branch?: string;
 			};
-			supportedVersions?: string;
+			supportedVersions?: { signed: string };
 			minimumClientVersions: {
 				desktop: string;
 				mobile: string;
