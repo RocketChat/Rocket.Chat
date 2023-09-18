@@ -108,7 +108,7 @@ Meteor.methods<ServerMethods>({
 			username: me.username,
 		};
 
-		originalMessage = await Message.beforeSave({ message, room, user: me });
+		originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
 
 		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
@@ -211,7 +211,8 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
 		}
 
-		originalMessage = await Message.beforeSave({ message, room, user: me });
+		originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
+
 
 		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
