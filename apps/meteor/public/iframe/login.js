@@ -1,9 +1,14 @@
 window.addEventListener('message', function (event) {
+    /**
+     * @type data.event {string}
+     * @type data.loginToken {string}
+     * @type data.path {string}
+     */
     const data = event.data;
     if (data.event === 'login' && data.loginToken) {
         localStorage.setItem('Meteor.loginToken', data.loginToken);
 
-        window.location.href = window.location.href.replace('/iframeLogin', data.location ?? '/home');
+        window.location.href = window.location.href.replace('/iframeLogin', data.path ?? '/home');
     }
 });
 
