@@ -385,6 +385,11 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 					}
 
+					// Used mostly in Cloud hosting for security reasons
+					if (!marketplaceInfo && orchestrator.shouldDisablePrivateAppInstallation()) {
+						return API.v1.internalError('private_app_install_disabled');
+					}
+
 					const user = orchestrator
 						?.getConverters()
 						?.get('users')
@@ -668,6 +673,7 @@ export class AppsRestApi {
 				async post() {
 					let buff;
 					let permissionsGranted;
+					let isPrivateAppUpload = false;
 
 					if (this.bodyParams.url) {
 						const response = await fetch(this.bodyParams.url);
@@ -710,6 +716,8 @@ export class AppsRestApi {
 							return API.v1.internalError();
 						}
 					} else {
+						isPrivateAppUpload = true;
+
 						const app = await getUploadFormData(
 							{
 								request: this.request,
@@ -732,6 +740,10 @@ export class AppsRestApi {
 
 					if (!buff) {
 						return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
+					}
+
+					if (isPrivateAppUpload && orchestrator.shouldDisablePrivateAppInstallation()) {
+						return API.v1.internalError('private_app_install_disabled');
 					}
 
 					const aff = await manager.update(buff, permissionsGranted);

@@ -1,3 +1,4 @@
+import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatRooms } from '@rocket.chat/models';
 
@@ -24,7 +25,10 @@ class DepartmentHelperClass {
 		}
 		this.logger.debug(`Department record removed: ${_id}`);
 
-		const agentsIds: string[] = await LivechatDepartmentAgents.findAgentsByDepartmentId(department._id)
+		const agentsIds: string[] = await LivechatDepartmentAgents.findAgentsByDepartmentId<Pick<ILivechatDepartmentAgents, 'agentId'>>(
+			department._id,
+			{ projection: { agentId: 1 } },
+		)
 			.cursor.map((agent) => agent.agentId)
 			.toArray();
 

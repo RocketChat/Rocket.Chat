@@ -8,16 +8,17 @@ const dayFormat = ['h:mm A', 'H:mm'] as const;
 
 export const useTimeAgo = (): ((time: Date | number | string) => string) => {
 	const clockMode = useUserPreference<1 | 2>('clockMode');
-	const timeFormat = useSetting('Message_TimeFormat') as string;
+	const timeFormat = useSetting<string>('Message_TimeFormat', 'LT');
 	const format = clockMode !== undefined ? dayFormat[clockMode - 1] : timeFormat;
 	return useCallback(
-		(time) =>
-			moment(time).calendar(null, {
+		(time) => {
+			return moment(time).calendar(null, {
 				sameDay: format,
-				lastDay: moment().localeData().calendar('lastDay').replace('LT', format),
+				lastDay: moment(time).calendar('lastDay').replace('LT', format),
 				lastWeek: `dddd ${format}`,
 				sameElse: 'LL',
-			}),
+			});
+		},
 		[format],
 	);
 };
