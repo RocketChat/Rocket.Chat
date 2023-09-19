@@ -1,18 +1,11 @@
-import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { getRedirectUri } from './getRedirectUri';
-import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { saveRegistrationData } from './saveRegistrationData';
 
 export async function connectWorkspace(token: string) {
-	const { connectToCloud } = await retrieveRegistrationStatus();
-	if (!connectToCloud) {
-		await Settings.updateValueById('Register_Server', true);
-	}
-
 	// shouldn't get here due to checking this on the method
 	// but this is just to double check
 	if (!token) {

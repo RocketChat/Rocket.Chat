@@ -25,7 +25,7 @@ const Encrypted = ({ room }: { room: IRoom }) => {
 
 		dispatchToastMessage({
 			type: 'success',
-			message: t(room.encrypted ? 'E2E_Encryption_disabled_for_room' : 'E2E_Encryption_enabled_for_room', { roomName: room.name }),
+			message: t('E2E_Encryption_disabled_for_room', { roomName: room.name }),
 		});
 	});
 	return e2eEnabled && room?.encrypted ? (
