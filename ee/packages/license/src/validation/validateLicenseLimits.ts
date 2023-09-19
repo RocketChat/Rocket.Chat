@@ -33,5 +33,5 @@ export const validateLicenseLimits = async (
 					});
 			}),
 		)
-	).reduce((prev, curr) => [...prev, ...curr], []);
+	).flat();
 };

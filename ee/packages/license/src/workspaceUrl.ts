@@ -1,11 +1,13 @@
-import { validateLicense } from './license';
+import { applyPendingLicense, hasPendingLicense } from './pendingLicense';
 
 let workspaceUrl: string | undefined;
 
 export const setWorkspaceUrl = async (url: string) => {
 	workspaceUrl = url.replace(/\/$/, '').replace(/^https?:\/\/(.*)$/, '$1');
 
-	await validateLicense();
+	if (hasPendingLicense()) {
+		await applyPendingLicense();
+	}
 };
 
 export const getWorkspaceUrl = () => workspaceUrl;

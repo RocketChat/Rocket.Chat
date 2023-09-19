@@ -9,7 +9,7 @@ export const getModulesToDisable = (validationResult: BehaviorWithContext[]): Li
 		...new Set([
 			...filterValidationResult(validationResult, 'disable_modules')
 				.map(({ modules }) => modules || [])
-				.reduce((prev, curr) => [...prev, ...curr], []),
+				.flat(),
 		]),
 	];
 };

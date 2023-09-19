@@ -13,8 +13,9 @@ export const addTag = (tag: ILicenseTag) => {
 	tags.add(tag);
 };
 
-export const addTags = (tags: ILicenseTag[]) => {
-	for (const tag of tags) {
+export const replaceTags = (newTags: ILicenseTag[]) => {
+	tags.clear();
+	for (const tag of newTags) {
 		addTag(tag);
 	}
 };
