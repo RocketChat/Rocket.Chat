@@ -6,7 +6,14 @@ export const useLicenseV2 = () => {
 	// 	keepPreviousData: true,
 	// });
 
-	return { isLoading: false, isError: false, license: LICENSE_PAYLOAD };
+	return {
+		isLoading: false,
+		isError: false,
+		license: LICENSE_PAYLOAD,
+		refetch: () => {
+			console.log('refetch');
+		},
+	};
 };
 
 const LICENSE_PAYLOAD = {

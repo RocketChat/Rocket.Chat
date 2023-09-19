@@ -15,18 +15,6 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 		<Card data-qa-id='usage-card'>
 			<CardBody flexDirection='row' m='none'>
 				<CardCol>
-					<CardColSection mbs={0} mbe={16}>
-						<CardColTitle fontScale='p2b' mbe={20}>
-							{t('Messages')}
-						</CardColTitle>
-						<TextSeparator label={t('Total_Threads')} value={statistics.totalThreads} />
-						<TextSeparator label={t('Stats_Total_Messages_Channel')} value={statistics.totalChannelMessages} />
-						<TextSeparator label={t('Stats_Total_Messages_PrivateGroup')} value={statistics.totalPrivateGroupMessages} />
-						<TextSeparator label={t('Stats_Total_Messages_Direct')} value={statistics.totalDirectMessages} />
-						<TextSeparator label={t('Stats_Total_Messages_Livechat')} value={statistics.totalLivechatMessages} />
-						<TextSeparator label={t('Total')} value={statistics.totalMessages} />
-					</CardColSection>
-
 					<CardColSection mb={16}>
 						<CardColTitle fontScale='p2b' mbe={20}>
 							{t('Total_rooms')}
@@ -34,7 +22,8 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 						<TextSeparator
 							label={
 								<>
-									<CardIcon name='hash' size='x16' /> {t('Channels')}
+									<CardIcon name='hash' size='x16' mie={4} />
+									{t('Channels')}
 								</>
 							}
 							value={statistics.totalChannels}
@@ -42,7 +31,8 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 						<TextSeparator
 							label={
 								<>
-									<CardIcon name='lock' size='x16' /> {t('Private_Groups')}
+									<CardIcon name='lock' size='x16' mie={4} />
+									{t('Private_Groups')}
 								</>
 							}
 							value={statistics.totalPrivateGroups}
@@ -50,7 +40,8 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 						<TextSeparator
 							label={
 								<>
-									<CardIcon name='balloon' size='x16' /> {t('Stats_Total_Direct_Messages')}
+									<CardIcon name='balloon' size='x16' mie={4} />
+									{t('Direct_Messages')}
 								</>
 							}
 							value={statistics.totalDirect}
@@ -58,7 +49,8 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 						<TextSeparator
 							label={
 								<>
-									<CardIcon name='discussion' size='x16' /> {t('Discussions')}
+									<CardIcon name='discussion' size='x16' mie={4} />
+									{t('Discussions')}
 								</>
 							}
 							value={statistics.totalDiscussions}
@@ -66,12 +58,56 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 						<TextSeparator
 							label={
 								<>
-									<CardIcon name='headset' size='x16' /> {t('Stats_Total_Livechat_Rooms')}
+									<CardIcon name='headset' size='x16' mie={4} />
+									{t('Omnichannel')}
 								</>
 							}
 							value={statistics.totalLivechat}
 						/>
 						<TextSeparator label={t('Total')} value={statistics.totalRooms} />
+					</CardColSection>
+
+					<CardColSection mbs={0} mbe={16}>
+						<CardColTitle fontScale='p2b' mbe={20}>
+							{t('Messages')}
+						</CardColTitle>
+						<TextSeparator
+							label={
+								<>
+									<CardIcon name='hash' size='x16' mie={4} />
+									{t('Stats_Total_Messages_Channel')}
+								</>
+							}
+							value={statistics.totalChannelMessages}
+						/>
+						<TextSeparator
+							label={
+								<>
+									<CardIcon name='lock' size='x16' mie={4} />
+									{t('Stats_Total_Messages_PrivateGroup')}
+								</>
+							}
+							value={statistics.totalPrivateGroupMessages}
+						/>
+						<TextSeparator
+							label={
+								<>
+									<CardIcon name='balloon' size='x16' mie={4} />
+									{t('Stats_Total_Messages_Direct')}
+								</>
+							}
+							value={statistics.totalDirectMessages}
+						/>
+						<TextSeparator
+							label={
+								<>
+									<CardIcon name='headset' size='x16' mie={4} />
+									{t('Stats_Total_Messages_Livechat')}
+								</>
+							}
+							value={statistics.totalLivechatMessages}
+						/>
+						<TextSeparator label={t('Total')} value={statistics.totalMessages} />
 					</CardColSection>
 				</CardCol>
 			</CardBody>

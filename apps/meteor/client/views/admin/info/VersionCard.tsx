@@ -1,14 +1,17 @@
 import type { IServerInfo } from '@rocket.chat/core-typings';
 import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
 import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { Card, CardBody, CardCol, CardColSection, CardColTitle, CardFooter } from '@rocket.chat/ui-client';
+import { Card, CardBody, CardCol, CardColSection, CardColTitle, CardFooter, ExternalLink } from '@rocket.chat/ui-client';
 import type { To } from '@rocket.chat/ui-contexts';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { CSSProperties, ReactElement } from 'react';
 import React, { memo, useCallback, useEffect, useState } from 'react';
+import { Trans } from 'react-i18next';
 
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useLicenseV2 } from '../../../hooks/useLicenseV2';
+import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
+import RegisterWorkspaceModal from '../cloud/modals/RegisterWorkspaceModal';
 
 type VersionCardProps = {
 	serverInfo: IServerInfo;
@@ -16,17 +19,21 @@ type VersionCardProps = {
 
 type ActionItem = {
 	type: 'danger' | 'info';
-	label: string;
+	label: ReactElement;
 };
 
 type ActionButton = {
 	path: string;
-	label: string;
+	label: ReactElement;
 };
+
+const SUPPORT_EXTERNAL_LINK = 'https://go.rocket.chat/i/support';
+const RELEASES_EXTERNAL_LINK = 'https://go.rocket.chat/i/releases';
 
 const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	const t = useTranslation();
 	const router = useRouter();
+	const setModal = useSetModal();
 
 	const [actionItems, setActionItems] = useState<ActionItem[]>([]);
 	const [actionButton, setActionButton] = useState<ActionButton>();
@@ -40,7 +47,10 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 		backgroundSize: mediaQuery ? 'auto' : 'contain',
 	};
 
-	const { license } = useLicenseV2();
+	const { license, refetch } = useLicenseV2();
+	const { data: regStatus } = useRegistrationStatus();
+	const isRegistered = regStatus?.registrationStatus.workspaceRegistered || false;
+	const isAirgapped = license.information.offline;
 	const licenseName = license.information.tags[0].name;
 	const isTrial = license.information.trial;
 	const serverVersion = serverInfo.info.version;
@@ -67,44 +77,74 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 			items.push({
 				type: 'info',
-				label: t('Operating_withing_plan_limits'),
+				label: <Trans i18nKey='Operating_withing_plan_limits' />,
 			});
 
-			if (versionStatus === 'outdated') {
-				items.push({
-					type: 'danger',
-					label: 'Support unavailable',
-				});
-				btn = { path: 'https://github.com/RocketChat/Rocket.Chat/releases', label: t('Update_version') };
-			} else {
+			if (versionStatus !== 'outdated' && !isAirgapped) {
 				items.push({
 					type: 'info',
-					label: t('Support_available_until', { date: formatDate(license.information.visualExpiration) }),
+					label: (
+						<Trans i18nKey='Version_supported_until' values={{ date: formatDate(license.information.visualExpiration) }}>
+							Version
+							<ExternalLink textDecorationLine='underline' color='unset' to={SUPPORT_EXTERNAL_LINK}>
+								supported
+							</ExternalLink>
+							until {formatDate(license.information.visualExpiration)}
+						</Trans>
+					),
+				});
+			} else if (!isAirgapped) {
+				items.push({
+					type: 'danger',
+					label: (
+						<Trans i18nKey='Version_not_supported'>
+							Version
+							<ExternalLink textDecorationLine='underline' color='unset' to={SUPPORT_EXTERNAL_LINK}>
+								not supported
+							</ExternalLink>
+						</Trans>
+					),
+				});
+
+				btn = { path: RELEASES_EXTERNAL_LINK, label: <Trans i18nKey='Update_version' /> };
+			} else {
+				items.push({
+					type: 'danger',
+					label: (
+						<Trans i18nKey='Check_support_availability'>
+							Check
+							<ExternalLink textDecorationLine='underline' color='unset' to={SUPPORT_EXTERNAL_LINK}>
+								support
+							</ExternalLink>
+							availability
+						</Trans>
+					),
 				});
 			}
 
-			if (!license.information.offline) {
+			if (isRegistered) {
 				items.push({
 					type: 'info',
-					label: t('Workspace_registered'),
+					label: <Trans i18nKey='Workspace_registered' />,
 				});
 			} else {
 				items.push({
 					type: 'danger',
-					label: t('Workspace_not_registered'),
+					label: <Trans i18nKey='Workspace_not_registered' />,
 				});
-				btn = { path: '/admin/registration', label: t('Manage_subscription') };
+
+				btn = { path: 'modal#registerWorkspace', label: <Trans i18nKey='RegisterWorkspace_Button' /> };
 			}
 
 			if (items.filter((item) => item.type === 'danger').length > 1) {
-				setActionButton({ path: '/admin/registration', label: t('Solve_issues') });
+				setActionButton({ path: '/admin/registration', label: <Trans i18nKey='Solve_issues' /> });
 			} else {
 				setActionButton(btn);
 			}
 
-			setActionItems(items);
+			setActionItems(items.sort((a) => (a.type === 'danger' ? -1 : 1)));
 		},
-		[formatDate, t],
+		[formatDate, isAirgapped, isRegistered],
 	);
 
 	const handleActionButton = useMutableCallback((path: string) => {
@@ -112,8 +152,21 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 			return window.open(path, '_blank');
 		}
 
+		if (path === 'modal#registerWorkspace') {
+			handleRegisterWorkspaceClick();
+			return;
+		}
+
 		router.navigate(path as To);
 	});
+
+	const handleRegisterWorkspaceClick = (): void => {
+		const handleModalClose = (): void => {
+			setModal(null);
+			refetch();
+		};
+		setModal(<RegisterWorkspaceModal onClose={handleModalClose} onStatusChange={refetch} />);
+	};
 
 	useEffect(() => {
 		const versionIndex = supportedVersions?.findIndex((v) => v.version === serverVersion);
@@ -164,7 +217,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 									borderRadius={4}
 									mie={12}
 								/>
-								{item.label}
+								<Box>{item.label}</Box>
 							</Box>
 						))}
 					</CardColSection>
