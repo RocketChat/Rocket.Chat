@@ -41,6 +41,13 @@
   - @rocket.chat/core-typings@6.4.0-rc.0
   - @rocket.chat/ui-client@2.0.0-rc.0
   - @rocket.chat/ui-contexts@2.0.0-rc.0
+## 1.0.7
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.7
+- @rocket.chat/ui-contexts@1.0.7
+- @rocket.chat/ui-client@1.0.7
 
 ## 1.0.6
 

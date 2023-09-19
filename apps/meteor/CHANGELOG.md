@@ -241,6 +241,37 @@
   - @rocket.chat/random@1.2.1
   - @rocket.chat/sha256@1.0.9
   - @rocket.chat/ui-composer@0.0.1
+## 6.3.7
+
+### Patch Changes
+
+- f1e36a5e46: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- e1acdda0a3: User information crashing for some locales
+- deffcb187c: Increase cron job check delay to 1 min from 5s.
+
+  This reduces MongoDB requests introduced on 6.3.
+
+- Updated dependencies [c655be17ca]
+- Updated dependencies [deffcb187c]
+  - @rocket.chat/presence@0.0.13
+  - @rocket.chat/cron@0.0.9
+  - @rocket.chat/core-typings@6.3.7
+  - @rocket.chat/rest-typings@6.3.7
+  - @rocket.chat/api-client@0.1.7
+  - @rocket.chat/omnichannel-services@0.0.13
+  - @rocket.chat/pdf-worker@0.0.13
+  - @rocket.chat/core-services@0.1.7
+  - @rocket.chat/gazzodown@1.0.7
+  - @rocket.chat/model-typings@0.0.13
+  - @rocket.chat/ui-contexts@1.0.7
+  - @rocket.chat/fuselage-ui-kit@1.0.7
+  - @rocket.chat/models@0.0.13
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.7
+  - @rocket.chat/ui-video-conf@1.0.7
+  - @rocket.chat/web-ui-registration@1.0.7
+  - @rocket.chat/instance-status@0.0.13
 
 ## 6.3.6
 

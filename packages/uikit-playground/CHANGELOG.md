@@ -39,6 +39,12 @@
 - Updated dependencies [b8f3d5014f]
   - @rocket.chat/fuselage-ui-kit@2.0.0-rc.0
   - @rocket.chat/ui-contexts@2.0.0-rc.0
+## 0.1.7
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@1.0.7
+- @rocket.chat/fuselage-ui-kit@1.0.7
 
 ## 0.1.6
 
