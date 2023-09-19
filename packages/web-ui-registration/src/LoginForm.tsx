@@ -97,7 +97,11 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 	const renderErrorOnSubmit = (error: LoginErrors) => {
 		const { type, i18n } = LOGIN_SUBMIT_ERRORS[error];
-		return <Callout type={type}>{t(i18n)}</Callout>;
+		return (
+			<Callout id={`${usernameId}-error`} aria-live='assertive' type={type}>
+				{t(i18n)}
+			</Callout>
+		);
 	};
 
 	if (errors.username?.type === 'invalid-email') {
@@ -177,11 +181,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								)}
 							</Field>
 						</FieldGroup>
-						{errorOnSubmit && (
-							<FieldGroup disabled={loginMutation.isLoading} id={`${usernameId}-error`} aria-live='assertive'>
-								{renderErrorOnSubmit(errorOnSubmit)}
-							</FieldGroup>
-						)}
+						{errorOnSubmit && <FieldGroup disabled={loginMutation.isLoading}>{renderErrorOnSubmit(errorOnSubmit)}</FieldGroup>}
 					</Form.Container>
 					<Form.Footer>
 						<ButtonGroup stretch>
