@@ -1,4 +1,5 @@
 import { API } from '../api';
+import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getServerInfo } from '../lib/getServerInfo';
 
 API.default.addRoute(
@@ -6,7 +7,8 @@ API.default.addRoute(
 	{ authRequired: false },
 	{
 		async get() {
-			return API.v1.success(await getServerInfo(this.userId));
+			const user = await getLoggedInUser(this.request);
+			return API.v1.success(await getServerInfo(user?._id));
 		},
 	},
 );
