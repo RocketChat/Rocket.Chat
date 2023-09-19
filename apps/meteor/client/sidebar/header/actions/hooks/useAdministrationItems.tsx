@@ -9,6 +9,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import { OmnichannelHighlight } from '../../../../../ee/client/omnichannel/components/OmnichannelHighlight';
 import type { UpgradeTabVariant } from '../../../../../lib/upgradeTab';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../../../lib/upgradeTab';
 import Emoji from '../../../../components/Emoji';
@@ -86,6 +87,7 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 		content: t('Omnichannel'),
 		icon: 'headset',
 		onClick: () => router.navigate('/omnichannel/current'),
+		addon: <OmnichannelHighlight />,
 	};
 
 	const upgradeItem: GenericMenuItemProps = {
