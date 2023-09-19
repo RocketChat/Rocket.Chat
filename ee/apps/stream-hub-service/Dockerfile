@@ -25,6 +25,12 @@ COPY ./packages/models/dist packages/models/dist
 COPY ./packages/logger/package.json packages/logger/package.json
 COPY ./packages/logger/dist packages/logger/dist
 
+COPY ./ee/packages/license/package.json packages/license/package.json
+COPY ./ee/packages/license/dist packages/license/dist
+
+COPY ./packages/logger/package.json packages/logger/package.json
+COPY ./packages/logger/dist packages/logger/dist
+
 COPY ./ee/apps/${SERVICE}/dist .
 
 COPY ./package.json .
