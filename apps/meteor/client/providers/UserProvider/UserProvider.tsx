@@ -71,7 +71,8 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
-	useCreateFontStyleElement(user?.settings?.preferences?.fontSize);
+	const createFontStyleElement = useCreateFontStyleElement();
+	createFontStyleElement(user?.settings?.preferences?.fontSize);
 
 	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
 
