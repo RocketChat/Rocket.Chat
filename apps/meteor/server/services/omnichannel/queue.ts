@@ -15,7 +15,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	private queues: (string | undefined)[] = [];
 
 	private delay() {
-		const timeout = settings.get<number>('Omnichannel_queue_delay_timeout');
+		const timeout = settings.get<number>('Omnichannel_queue_delay_timeout') ?? 5;
 		return timeout < 1 ? DEFAULT_RACE_TIMEOUT : timeout * 1000;
 	}
 
