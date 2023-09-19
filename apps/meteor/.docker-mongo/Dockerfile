@@ -1,24 +1,14 @@
+ARG MONGO_VERSION=5.0.5
+
+FROM mongo:$MONGO_VERSION
+
 FROM node:14.21.3-bullseye-slim
 
 LABEL maintainer="buildmaster@rocket.chat"
 
-# Install MongoDB and dependencies
-ENV MONGO_MAJOR=5.0 \
-    MONGO_VERSION=5.0.5
-
 RUN set -x \
     && apt-get update \
-    && apt-get install -y wget gnupg dirmngr pwgen \
-    && wget -qO - "https://www.mongodb.org/static/pgp/server-$MONGO_MAJOR.asc" | apt-key add - \
-    && echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/$MONGO_MAJOR main" | tee "/etc/apt/sources.list.d/mongodb-org-$MONGO_MAJOR.list" \
-    && apt-get update \
-    && apt-get install -y \
-    mongodb-org=$MONGO_VERSION \
-    mongodb-org-server=$MONGO_VERSION \
-    mongodb-org-shell=$MONGO_VERSION \
-    mongodb-org-mongos=$MONGO_VERSION \
-    mongodb-org-tools=$MONGO_VERSION \
-    fontconfig \
+    && apt-get install -y wget gnupg dirmngr pwgen fontconfig libcurl4 \
     && apt-get clean my room \
     && groupadd -g 65533 -r rocketchat \
     && useradd -u 65533 -r -g rocketchat rocketchat \
@@ -44,6 +34,8 @@ RUN aptMark="$(apt-mark showmanual)" \
     | xargs -r apt-mark manual \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     && npm cache clear --force
+
+COPY --from=0 /usr/bin/mongo* /usr/bin
 
 VOLUME /app/uploads
 

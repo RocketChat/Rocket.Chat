@@ -39,7 +39,9 @@ echo """
 ╚═╝  ╚═╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝       ╚═╝     ╚═╝  ╚═╝╚══════╝  ╚═══╝  ╚═╝╚══════╝ ╚══╝╚══╝
 """
 
-mongod --fork --replSet rs0 --config /etc/mongod.conf
+mkdir /data/db -p
+
+mongod --fork --replSet rs0 --dbpath /data/db -logpath /var/log/mongod.log
 
 until mongo --eval "db" &> /dev/null; do
 	echo "MongoDB still not ready, sleeping"

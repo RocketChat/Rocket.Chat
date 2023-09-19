@@ -46,3 +46,6 @@ yarn-error.log*
 .exrc
 .history
 .envrc
+
+*.tar.gz
+*.tgz
