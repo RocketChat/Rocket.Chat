@@ -7,7 +7,7 @@ import moment from 'moment';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 
-import { MacActivityIcon } from '../../../../ee/client/omnichannel/components/MacActivityIcon/MacActivityIcon';
+import { RoomActivityIcon } from '../../../../ee/client/omnichannel/components/RoomActivityIcon';
 import { useOmnichannelPriorities } from '../../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
 import { PriorityIcon } from '../../../../ee/client/omnichannel/priorities/PriorityIcon';
 import GenericNoResults from '../../../components/GenericNoResults';
@@ -198,7 +198,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 						{moment(lm).format('L LTS')}
 					</GenericTableCell>
 					<GenericTableCell withTruncatedText data-qa='current-chats-cell-status'>
-						<MacActivityIcon room={room} /> {getStatusText(open, onHold)}
+						<RoomActivityIcon room={room} /> {getStatusText(open, onHold)}
 					</GenericTableCell>
 					{canRemoveClosedChats && !open && <RemoveChatButton _id={_id} />}
 				</GenericTableRow>
