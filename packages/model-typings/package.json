@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/model-typings",
-	"version": "0.0.10",
+	"version": "0.1.0-rc.1",
 	"private": true,
 	"devDependencies": {
 		"@types/jest": "~29.5.3",
