@@ -1,7 +1,7 @@
-import { Box, MessageToolboxItem, Option, OptionDivider, OptionTitle } from '@rocket.chat/fuselage';
+import { MessageToolboxItem, Option, OptionDivider, OptionTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEvent, MouseEventHandler, ReactElement } from 'react';
-import React, { Fragment, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useRef, useState } from 'react';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
@@ -12,6 +12,7 @@ type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'contex
 };
 
 type MessageActionMenuProps = {
+	onChangeMenuVisibility: (visible: boolean) => void;
 	options: MessageActionConfigOption[];
 };
 
@@ -32,11 +33,19 @@ const getSectionOrder = (section: string): number => {
 	}
 };
 
-const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): ReactElement => {
-	const ref = useRef(null);
+const MessageActionMenu = ({ options, onChangeMenuVisibility, ...props }: MessageActionMenuProps): ReactElement => {
+	const buttonRef = useRef<HTMLButtonElement | null>(null);
 	const t = useTranslation();
 	const [visible, setVisible] = useState(false);
 	const isLayoutEmbedded = useEmbeddedLayout();
+
+	const handleChangeMenuVisibility = useCallback(
+		(visible: boolean): void => {
+			setVisible(visible);
+			onChangeMenuVisibility(visible);
+		},
+		[onChangeMenuVisibility],
+	);
 
 	const groupOptions = options.reduce((acc, option) => {
 		const { type = '' } = option;
@@ -62,20 +71,22 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 		return acc;
 	}, [] as unknown as [section: string, options: Array<MessageActionConfigOption>][]);
 
+	const handleClose = useCallback(() => {
+		handleChangeMenuVisibility(false);
+	}, [handleChangeMenuVisibility]);
 	return (
 		<>
 			<MessageToolboxItem
-				ref={ref}
+				ref={buttonRef}
 				icon='kebab'
-				onClick={(): void => setVisible(!visible)}
+				onClick={(): void => handleChangeMenuVisibility(!visible)}
 				data-qa-id='menu'
 				data-qa-type='message-action-menu'
 				title={t('More')}
 			/>
 			{visible && (
 				<>
-					<Box position='fixed' inset={0} onClick={(): void => setVisible(!visible)} />
-					<ToolboxDropdown reference={ref} {...props}>
+					<ToolboxDropdown handleClose={handleClose} reference={buttonRef} {...props}>
 						{groupOptions.map(([section, options], index, arr) => (
 							<Fragment key={index}>
 								{section === 'apps' && <OptionTitle>Apps</OptionTitle>}
@@ -90,6 +101,7 @@ const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): React
 										data-qa-type='message-action'
 										data-qa-id={option.id}
 										role={option.role ? option.role : 'button'}
+										gap={!option.icon && option.type === 'apps'}
 									/>
 								))}
 								{index !== arr.length - 1 && <OptionDivider />}
