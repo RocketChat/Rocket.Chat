@@ -58,4 +58,6 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	disableById(_id: string): Promise<UpdateResult>;
 
 	findEnabled(query: Filter<ILivechatVisitor>, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor>;
+
+	countVisitorsOnPeriod(period: string): Promise<number>;
 }

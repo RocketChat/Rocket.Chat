@@ -439,6 +439,12 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			},
 		);
 	}
+
+	countVisitorsOnPeriod(period: string): Promise<number> {
+		return this.countDocuments({
+			activity: period,
+		});
+	}
 }
 
 type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };

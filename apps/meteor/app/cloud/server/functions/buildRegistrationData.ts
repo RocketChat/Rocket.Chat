@@ -31,6 +31,8 @@ type WorkspaceRegistrationData<T> = {
 	setupComplete: boolean;
 	connectionDisable: boolean;
 	npsEnabled: SettingValue;
+	activeContactsBillingMonth: unknown;
+	activeContactsYesterday: unknown;
 };
 
 export async function buildWorkspaceRegistrationData<T extends string | undefined>(contactEmail: T): Promise<WorkspaceRegistrationData<T>> {
@@ -78,5 +80,7 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		setupComplete: setupWizardState === 'completed',
 		connectionDisable: !registerServer,
 		npsEnabled,
+		activeContactsBillingMonth: stats.omnichannelContactsBySource.contactsCount,
+		activeContactsYesterday: stats.uniqueContactsOfYesterday.contactsCount,
 	};
 }

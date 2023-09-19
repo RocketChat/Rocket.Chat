@@ -8,6 +8,7 @@ import type {
 	ILivechatPriority,
 	IOmnichannelServiceLevelAgreements,
 	ReportResult,
+	MACStats,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
@@ -2460,6 +2461,126 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	async getMACStatisticsForPeriod(period: string): Promise<MACStats[]> {
+		return this.col
+			.aggregate<MACStats>([
+				{
+					$match: {
+						't': 'l',
+						'v.activity': period,
+					},
+				},
+				{
+					$group: {
+						_id: {
+							source: {
+								$ifNull: ['$source.alias', '$source.type'],
+							},
+						},
+						contactsCount: {
+							$addToSet: '$v._id',
+						},
+						conversationsCount: {
+							$sum: 1,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: null,
+						sources: {
+							$push: {
+								source: '$_id.source',
+								contactsCount: {
+									$size: '$contactsCount',
+								},
+								conversationsCount: '$conversationsCount',
+							},
+						},
+						totalContactsCount: {
+							$sum: {
+								$size: '$contactsCount',
+							},
+						},
+						totalConversationsCount: {
+							$sum: '$conversationsCount',
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						contactsCount: '$totalContactsCount',
+						conversationsCount: '$totalConversationsCount',
+						sources: 1,
+					},
+				},
+			])
+			.toArray();
+	}
+
+	async getMACStatisticsBetweenDates(start: Date, end: Date): Promise<MACStats[]> {
+		return this.col
+			.aggregate<MACStats>([
+				{
+					$match: {
+						't': 'l',
+						'v.activity': { $exists: true },
+						'ts': {
+							$gte: start,
+							$lt: end,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: {
+							source: {
+								$ifNull: ['$source.alias', '$source.type'],
+							},
+						},
+						contactsCount: {
+							$addToSet: '$v._id',
+						},
+						conversationsCount: {
+							$sum: 1,
+						},
+					},
+				},
+				{
+					$group: {
+						_id: null,
+						sources: {
+							$push: {
+								source: '$_id.source',
+								contactsCount: {
+									$size: '$contactsCount',
+								},
+								conversationsCount: '$conversationsCount',
+							},
+						},
+						totalContactsCount: {
+							$sum: {
+								$size: '$contactsCount',
+							},
+						},
+						totalConversationsCount: {
+							$sum: '$conversationsCount',
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						contactsCount: '$totalContactsCount',
+						conversationsCount: '$totalConversationsCount',
+						sources: 1,
+					},
+				},
+			])
+			.toArray();
 	}
 
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
