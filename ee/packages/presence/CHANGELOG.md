@@ -1,5 +1,14 @@
 # @rocket.chat/presence
 
+## 0.0.13-rc.3
+
+### Patch Changes
+
+- d9a150000d: Fixed presence broadcast being disabled on server restart
+  - @rocket.chat/core-typings@6.4.0-rc.3
+  - @rocket.chat/core-services@0.2.0-rc.3
+  - @rocket.chat/models@0.0.13-rc.3
+
 ## 0.0.13-rc.2
 
 ### Patch Changes
