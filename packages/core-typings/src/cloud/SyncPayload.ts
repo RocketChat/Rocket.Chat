@@ -13,7 +13,7 @@ export interface SyncPayload {
 	};
 	trial?: {
 		trialing: boolean;
-		trialId: string;
+		trialID: string;
 		endDate: Date;
 		marketing: {
 			utmContent: string;

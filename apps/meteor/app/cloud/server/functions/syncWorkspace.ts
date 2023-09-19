@@ -1,7 +1,11 @@
+/* eslint-disable new-cap */
 import { NPS, Banner } from '@rocket.chat/core-services';
 import { type Cloud, type Serialized } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { Type } from '@sinclair/typebox';
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 
 import { CloudWorkspaceConnectionError } from '../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../lib/errors/CloudWorkspaceRegistrationError';
@@ -13,6 +17,99 @@ import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+
+const ajv = addFormats(new Ajv({}), [
+	'date-time',
+	'time',
+	'date',
+	'email',
+	'hostname',
+	'ipv4',
+	'ipv6',
+	'uri',
+	'uri-reference',
+	'uuid',
+	'uri-template',
+	'json-pointer',
+	'relative-json-pointer',
+	'regex',
+]);
+
+const isCloudSyncPayload = ajv.compile<Serialized<Cloud.SyncPayload>>(
+	Type.Object({
+		workspaceId: Type.String(),
+		publicKey: Type.Optional(Type.String()),
+		trial: Type.Optional(
+			Type.Object({
+				trialing: Type.Boolean(),
+				trialID: Type.String(),
+				endDate: Type.String({ format: 'date-time' }),
+				marketing: Type.Object({
+					utmContent: Type.String(),
+					utmMedium: Type.String(),
+					utmSource: Type.String(),
+					utmCampaign: Type.String(),
+				}),
+				DowngradesToPlan: Type.Object({
+					id: Type.String(),
+				}),
+				trialRequested: Type.Boolean(),
+			}),
+		),
+		nps: Type.Optional(
+			Type.Object({
+				id: Type.String(),
+				startAt: Type.String({ format: 'date-time' }),
+				expireAt: Type.String({ format: 'date-time' }),
+			}),
+		),
+		banners: Type.Optional(
+			Type.Array(
+				Type.Object({
+					_id: Type.String(),
+					_updatedAt: Type.String({ format: 'date-time' }),
+					platform: Type.Array(Type.Union([Type.Literal('web'), Type.Literal('mobile')])),
+					expireAt: Type.String({ format: 'date-time' }),
+					startAt: Type.String({ format: 'date-time' }),
+					roles: Type.Optional(Type.Array(Type.String())),
+					createdBy: Type.Object({
+						_id: Type.String(),
+						username: Type.Optional(Type.String()),
+					}),
+					createdAt: Type.String({ format: 'date-time' }),
+					view: Type.Object(Type.Any()),
+					active: Type.Optional(Type.Boolean()),
+					inactivedAt: Type.Optional(Type.String({ format: 'date-time' })),
+					snapshot: Type.Optional(Type.String()),
+				}),
+			),
+		),
+		announcements: Type.Optional(
+			Type.Object({
+				create: Type.Array(
+					Type.Object({
+						_id: Type.String(),
+						_updatedAt: Type.String({ format: 'date-time' }),
+						selector: Type.Optional(
+							Type.Object({
+								roles: Type.Optional(Type.Array(Type.String())),
+							}),
+						),
+						platform: Type.Array(Type.Union([Type.Literal('web'), Type.Literal('mobile')])),
+						expireAt: Type.String({ format: 'date-time' }),
+						startAt: Type.String({ format: 'date-time' }),
+						createdBy: Type.Union([Type.Literal('cloud'), Type.Literal('system')]),
+						createdAt: Type.String({ format: 'date-time' }),
+						dictionary: Type.Optional(Type.Record(Type.String(), Type.Record(Type.String(), Type.String()))),
+						view: Type.Object(Type.Any()),
+						surface: Type.Union([Type.Literal('banner'), Type.Literal('modal')]),
+					}),
+				),
+				delete: Type.Array(Type.String()),
+			}),
+		),
+	}),
+);
 
 const fetchSyncPayload = async (): Promise<Serialized<Cloud.SyncPayload> | undefined> => {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
@@ -50,6 +147,12 @@ const fetchSyncPayload = async (): Promise<Serialized<Cloud.SyncPayload> | undef
 		throw new CloudWorkspaceSyncError(payload.error);
 	}
 
+	if (!isCloudSyncPayload(payload)) {
+		throw new CloudWorkspaceSyncError(
+			`Invalid payload received from Rocket.Chat Cloud: ${isCloudSyncPayload.errors?.map((err) => err.message).join('; ')}`,
+		);
+	}
+
 	return payload;
 };
 
@@ -58,7 +161,7 @@ const consumeSyncPayload = async (result: Serialized<Cloud.SyncPayload>) => {
 		await Settings.updateValueById('Cloud_Workspace_PublicKey', result.publicKey);
 	}
 
-	if (result.trial?.trialId) {
+	if (result.trial?.trialID) {
 		await Settings.updateValueById('Cloud_Workspace_Had_Trial', true);
 	}
 

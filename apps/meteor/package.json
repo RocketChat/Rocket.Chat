@@ -274,6 +274,7 @@
 		"@rocket.chat/ui-theming": "workspace:^",
 		"@rocket.chat/ui-video-conf": "workspace:^",
 		"@rocket.chat/web-ui-registration": "workspace:^",
+		"@sinclair/typebox": "~0.31.15",
 		"@slack/rtm-api": "^6.0.0",
 		"@tanstack/react-query": "^4.16.1",
 		"@types/cookie": "^0.5.1",

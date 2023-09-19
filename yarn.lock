@@ -8634,6 +8634,7 @@ __metadata:
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@rocket.chat/web-ui-registration": "workspace:^"
     "@settlin/spacebars-loader": ^1.0.9
+    "@sinclair/typebox": ~0.31.15
     "@slack/rtm-api": ^6.0.0
     "@storybook/addon-a11y": 6.5.16
     "@storybook/addon-essentials": ~6.5.16
@@ -9758,6 +9759,13 @@ __metadata:
   version: 0.27.8
   resolution: "@sinclair/typebox@npm:0.27.8"
   checksum: 00bd7362a3439021aa1ea51b0e0d0a0e8ca1351a3d54c606b115fdcc49b51b16db6e5f43b4fe7a28c38688523e22a94d49dd31168868b655f0d4d50f032d07a1
+  languageName: node
+  linkType: hard
+
+"@sinclair/typebox@npm:~0.31.15":
+  version: 0.31.15
+  resolution: "@sinclair/typebox@npm:0.31.15"
+  checksum: 5dea8975a5a7b124252baf61c5a6871b1efc28f61550427335b0a3d522ff80db350fbda21c5a0dc69d5620ddfb9f38ccf492f0ec83b7478898f08b97d46ed387
   languageName: node
   linkType: hard
 
