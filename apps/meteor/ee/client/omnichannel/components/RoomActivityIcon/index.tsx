@@ -7,11 +7,11 @@ import React from 'react';
 import { useIsRoomActive } from '../../../../../client/hooks/omnichannel/useIsRoomActive';
 import { useOmnichannel } from '../../../../../client/hooks/omnichannel/useOmnichannel';
 
-type MacActivityIconProps = {
+type RoomActivityIconProps = {
 	room: IOmnichannelRoom;
 };
 
-export const MacActivityIcon = ({ room }: MacActivityIconProps): ReactElement | null => {
+export const RoomActivityIcon = ({ room }: RoomActivityIconProps): ReactElement | null => {
 	const t = useTranslation();
 	const { isEnterprise } = useOmnichannel();
 	const isRoomActive = useIsRoomActive(room);
