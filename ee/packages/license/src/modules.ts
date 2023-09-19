@@ -25,3 +25,23 @@ export const invalidateAll = () => {
 export const getModules = () => [...modules];
 
 export const hasModule = (module: LicenseModule) => modules.has(module);
+
+export const replaceModules = (newModules: LicenseModule[]) => {
+	for (const moduleName of newModules) {
+		if (modules.has(moduleName)) {
+			continue;
+		}
+
+		modules.add(moduleName);
+		moduleValidated(moduleName);
+	}
+
+	for (const moduleName of modules) {
+		if (newModules.includes(moduleName)) {
+			continue;
+		}
+
+		moduleRemoved(moduleName);
+		modules.delete(moduleName);
+	}
+};

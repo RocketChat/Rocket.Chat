@@ -2,6 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 
 import type { LicenseLimitKind } from '../definition/ILicenseV3';
+import { logger } from '../logger';
 
 type LimitContext<T extends LicenseLimitKind> = T extends 'roomsPerGuest' ? { userId: IUser['_id'] } : Record<string, never>;
 
@@ -22,6 +23,8 @@ export const getCurrentValueForLicenseLimit = async <T extends LicenseLimitKind>
 	if (dataCounters.has(limitKey)) {
 		return dataCounters.get(limitKey)?.(context as LimitContext<LicenseLimitKind> | undefined) ?? 0;
 	}
+
+	logger.error({ msg: 'Unable to validate license limit due to missing data counter.', limitKey });
 
 	return 0;
 };
