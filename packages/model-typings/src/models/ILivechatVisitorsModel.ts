@@ -53,10 +53,7 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	markVisitorActiveForPeriod(visitorId: string, period: string): Promise<UpdateResult>;
 
-	findOneEnabledById<T extends ILivechatVisitor = ILivechatVisitor>(
-		_id: string,
-		options?: FindOptions<ILivechatVisitor>,
-	): Promise<T | null>;
+	findOneEnabledById<T extends Document = ILivechatVisitor>(_id: string, options?: FindOptions<ILivechatVisitor>): Promise<T | null>;
 
 	disableById(_id: string): Promise<UpdateResult>;
 
