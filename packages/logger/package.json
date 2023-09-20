@@ -23,6 +23,6 @@
 	],
 	"dependencies": {
 		"@rocket.chat/emitter": "next",
-		"pino": "^8.15.0"
+		"pino": "^8.15.1"
 	}
 }

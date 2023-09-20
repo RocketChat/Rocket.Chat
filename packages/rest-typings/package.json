@@ -28,7 +28,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/message-parser": "next",
 		"@rocket.chat/ui-kit": "^0.32.1",
-		"ajv": "^8.11.0",
+		"ajv": "^8.12.0",
 		"ajv-formats": "^2.1.1"
 	},
 	"volta": {

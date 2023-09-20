@@ -4,8 +4,8 @@
 	"private": true,
 	"dependencies": {
 		"@rocket.chat/i18n": "workspace:~",
-		"i18next": "~23.4.5",
-		"react-i18next": "~13.2.1"
+		"i18next": "~23.4.9",
+		"react-i18next": "~13.2.2"
 	},
 	"devDependencies": {
 		"@rocket.chat/ui-contexts": "workspace:*",
