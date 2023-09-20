@@ -114,6 +114,16 @@ export const MultiSelectCustom = ({
 
 		// the user has disabled this option -> remove this from the selected options list
 		setSelectedOptions(selectedOptions.filter((option: OptionProp) => option.id !== item.id));
+		customSetSelected((prevItems) => {
+			const newItems = prevItems;
+			const toggledItem = newItems.find(({ id }) => id === item.id);
+
+			if (toggledItem) {
+				toggledItem.checked = !toggledItem.checked;
+			}
+
+			return [...prevItems];
+		});
 	};
 
 	const count = dropdownOptions.filter((option) => option.checked).length;
