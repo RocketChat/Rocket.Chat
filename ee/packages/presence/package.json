@@ -32,6 +32,6 @@
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
-		"mongodb": "^4.12.1"
+		"mongodb": "^4.17.1"
 	}
 }

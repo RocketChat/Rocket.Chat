@@ -4,7 +4,7 @@
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"eslint": "~8.45.0",
-		"mongodb": "^4.12.1",
+		"mongodb": "^4.17.1",
 		"prettier": "~2.8.8",
 		"typescript": "~5.2.2"
 	},
