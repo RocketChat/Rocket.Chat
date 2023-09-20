@@ -52,7 +52,7 @@ const MultiSelectCustomList = ({
 							<Box pis='x4' pb='x4' w='full' display='flex' justifyContent='space-between'>
 								{t(option.text as TranslationKey)}
 
-								<CheckBox checked={option.checked} onChange={(e): void => onSelected(option, e)} pi={0} name={option.text} />
+								<CheckBox checked={option.checked} onChange={(): void => onSelected(option)} pi={0} name={option.text} />
 							</Box>
 						</Option>
 					)}

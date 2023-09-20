@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useOutsideClick, useToggle } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { Dispatch, FormEvent, ReactElement, RefObject, SetStateAction } from 'react';
+import type { Dispatch, ReactElement, RefObject, SetStateAction } from 'react';
 import { useCallback, useRef } from 'react';
 
 import MultiSelectCustomAnchor from './MultiSelectCustomAnchor';
@@ -88,8 +88,8 @@ export const MultiSelectCustom = ({
 
 	useOutsideClick([target], onClose);
 
-	const onSelect = (item: OptionProp, e?: FormEvent<HTMLElement>): void => {
-		e?.stopPropagation();
+	const onSelect = (item: OptionProp): void => {
+		// e?.stopPropagation();
 
 		item.checked = !item.checked;
 
