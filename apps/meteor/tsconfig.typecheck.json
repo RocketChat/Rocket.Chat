@@ -3,7 +3,8 @@
 	"compilerOptions": {
 		"skipLibCheck": true,
 		"noEmit": true,
-		"incremental": true
+		"incremental": true,
+		"allowImportingTsExtensions": true
 	},
 	"exclude": [".meteor", "./packages", "./imports/client", "./ee/server/services", "public/", "private"]
 }
