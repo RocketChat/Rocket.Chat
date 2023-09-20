@@ -468,8 +468,5 @@
 	},
 	"installConfig": {
 		"hoistingLimits": "workspaces"
-	},
-	"resolutions": {
-		"mongodb@^4.17.1": "patch:mongodb@npm:4.17.1#.yarn/patches/mongodb-npm-4.17.1-a2fe811ff1.patch"
 	}
 }
