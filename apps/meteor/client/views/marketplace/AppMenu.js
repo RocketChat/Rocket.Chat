@@ -95,6 +95,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const handleAcquireApp = useCallback(() => {
 		setLoading(true);
 		appInstallationHandler();
+		setLoading(false);
 	}, [appInstallationHandler, setLoading]);
 
 	const handleSubscription = useCallback(async () => {
