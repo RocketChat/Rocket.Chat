@@ -93,9 +93,12 @@ export const MultiSelectCustom = ({
 
 		item.checked = !item.checked;
 
-		if (item.checked === true) {
+		if (item.checked) {
 			// the user has enabled this option -> add it to the selected options
-			setSelectedOptions([...new Set([...selectedOptions, item])]);
+			// [...new Set([...selectedOptions, item])]
+			setSelectedOptions((prevSelectedOptions) =>
+				prevSelectedOptions.map((option) => option.id).includes(item.id) ? prevSelectedOptions : [...prevSelectedOptions, item],
+			);
 			customSetSelected((prevItems) => {
 				const newItems = prevItems;
 				const toggledItem = newItems.find(({ id }) => id === item.id);
@@ -106,10 +109,11 @@ export const MultiSelectCustom = ({
 
 				return [...prevItems];
 			});
-		} else {
-			// the user has disabled this option -> remove this from the selected options list
-			setSelectedOptions(selectedOptions.filter((option: OptionProp) => option.id !== item.id));
+			return;
 		}
+
+		// the user has disabled this option -> remove this from the selected options list
+		setSelectedOptions(selectedOptions.filter((option: OptionProp) => option.id !== item.id));
 	};
 
 	const count = dropdownOptions.filter((option) => option.checked).length;
