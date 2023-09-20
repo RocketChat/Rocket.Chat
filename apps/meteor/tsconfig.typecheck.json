@@ -2,7 +2,9 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"skipLibCheck": true,
-		"noEmit": true
+		"noEmit": true,
+		"incremental": true,
+		"allowImportingTsExtensions": true
 	},
 	"exclude": [".meteor", "./packages", "./imports/client", "./ee/server/services", "public/", "private"]
 }
