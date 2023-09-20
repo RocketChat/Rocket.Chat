@@ -4349,6 +4349,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mongodb-js/saslprep@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@mongodb-js/saslprep@npm:1.1.0"
+  dependencies:
+    sparse-bitfield: ^3.0.3
+  checksum: 1479a43e216734672f8eb1a2a55165b6896841bd00fb5bd645390a24374ef6c29f0f6d19a43618a19b8f1912fcbd2b2cc2210a62361103d1f28dce6852cf31d4
+  languageName: node
+  linkType: hard
+
 "@mrmlnc/readdir-enhanced@npm:^2.2.1":
   version: 2.2.1
   resolution: "@mrmlnc/readdir-enhanced@npm:2.2.1"
@@ -7693,7 +7702,7 @@ __metadata:
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.29
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     nats: ^2.4.0
     pino: ^8.15.0
     polka: ^0.5.2
@@ -7728,7 +7737,7 @@ __metadata:
     human-interval: ^2.0.1
     jest: ~29.6.1
     moment-timezone: ~0.5.43
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     ts-jest: ~29.0.5
     typescript: ~5.2.2
   languageName: unknown
@@ -7815,7 +7824,7 @@ __metadata:
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.29
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     nats: ^2.4.0
     pino: ^8.15.0
     polka: ^0.5.2
@@ -7876,7 +7885,7 @@ __metadata:
     eslint: ~8.45.0
     fibers: ^5.0.3
     jest: ~29.6.1
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     prettier: ~2.8.8
     typescript: ~5.2.2
   languageName: unknown
@@ -7892,7 +7901,7 @@ __metadata:
     "@rocket.chat/message-parser": next
     "@rocket.chat/ui-kit": ^0.32.1
     eslint: ~8.45.0
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     prettier: ~2.8.8
     typescript: ~5.2.2
   languageName: unknown
@@ -7909,7 +7918,7 @@ __metadata:
     "@types/jest": ~29.5.3
     eslint: ~8.45.0
     jest: ~29.6.1
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     ts-jest: ~29.0.5
     typescript: ~5.2.2
   languageName: unknown
@@ -8014,7 +8023,7 @@ __metadata:
     jaeger-client: ^3.19.0
     mem: ^8.1.1
     moleculer: ^0.14.29
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     nats: ^2.4.0
     pino: ^8.15.0
     pino-pretty: ^7.6.1
@@ -8350,7 +8359,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     eslint: ~8.45.0
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     prettier: ~2.8.8
     typescript: ~5.2.2
   languageName: unknown
@@ -8814,8 +8823,7 @@ __metadata:
     moment: ^2.29.4
     moment-timezone: ^0.5.43
     mongo-message-queue: ^1.0.0
-    mongodb: ^4.12.1
-    mongodb-memory-server: ^7.6.3
+    mongodb: ^4.17.1
     nats: ^2.6.1
     node-abort-controller: ^3.1.1
     node-dogstatsd: ^0.0.7
@@ -8933,7 +8941,7 @@ __metadata:
     "@types/node-rsa": ^1.1.1
     eslint: ~8.45.0
     jest: ~29.6.1
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     ts-jest: ~29.0.5
     typescript: ~5.2.2
   languageName: unknown
@@ -8987,7 +8995,7 @@ __metadata:
     mem: ^8.1.1
     moment-timezone: ^0.5.43
     mongo-message-queue: ^1.0.0
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     pino: ^8.15.0
     ts-jest: ~29.0.5
     typescript: ~5.2.2
@@ -9024,7 +9032,7 @@ __metadata:
     moleculer: ^0.14.29
     moment-timezone: ^0.5.43
     mongo-message-queue: ^1.0.0
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     nats: ^2.4.0
     pino: ^8.15.0
     polka: ^0.5.2
@@ -9133,7 +9141,7 @@ __metadata:
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.29
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     nats: ^2.4.0
     pino: ^8.15.0
     polka: ^0.5.2
@@ -9159,7 +9167,7 @@ __metadata:
     babel-jest: ^29.0.3
     eslint: ~8.45.0
     jest: ~29.6.1
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     typescript: ~5.2.2
   languageName: unknown
   linkType: soft
@@ -9200,7 +9208,7 @@ __metadata:
     moleculer: ^0.14.29
     moment-timezone: ^0.5.43
     mongo-message-queue: ^1.0.0
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     nats: ^2.4.0
     pino: ^8.15.0
     polka: ^0.5.2
@@ -9261,7 +9269,7 @@ __metadata:
     eslint: ~8.45.0
     jest: ~29.6.1
     jest-environment-jsdom: ~29.6.1
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     ts-jest: ~29.0.5
     typescript: ~5.2.2
   languageName: unknown
@@ -9338,7 +9346,7 @@ __metadata:
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.29
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     nats: ^2.4.0
     pino: ^8.15.0
     polka: ^0.5.2
@@ -9507,7 +9515,7 @@ __metadata:
     eslint: ~8.45.0
     eslint-plugin-react-hooks: ^4.6.0
     jest: ~29.6.1
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     react: ~17.0.2
     ts-jest: ~29.0.5
     typescript: ~5.2.2
@@ -11908,15 +11916,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/bson@npm:*":
-  version: 4.2.0
-  resolution: "@types/bson@npm:4.2.0"
-  dependencies:
-    bson: "*"
-  checksum: 55abf60c57b7f05655c210b386392636a299a7df18b89cec2cde0aa87374d97dd4ac9632226b0f6fe135d16ad4296ae5ddc782f6e9132d38c53dd26a6df8e704
-  languageName: node
-  linkType: hard
-
 "@types/busboy@npm:^1.5.0":
   version: 1.5.0
   resolution: "@types/busboy@npm:1.5.0"
@@ -12595,16 +12594,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mongodb@npm:^3.6.20":
-  version: 3.6.20
-  resolution: "@types/mongodb@npm:3.6.20"
-  dependencies:
-    "@types/bson": "*"
-    "@types/node": "*"
-  checksum: e5397ada2ed728997f7c3f5424e8c28f682a635488be967c9c18a5de27b1641cf28bb42bc12026ac6d475c457a880e27097e13c8120350ba13219f4ccc030656
-  languageName: node
-  linkType: hard
-
 "@types/ms@npm:*":
   version: 0.7.31
   resolution: "@types/ms@npm:0.7.31"
@@ -13121,13 +13110,6 @@ __metadata:
   version: 3.0.1
   resolution: "@types/textarea-caret@npm:3.0.1"
   checksum: 18ff4275f0411187aebf4f475e318f5c62a87c056d3ff280b86e18fca6bf2c9bfab9ea885135f210131df230fc761b9f560b66dd8d3d2ebb161610f4ffbf3541
-  languageName: node
-  linkType: hard
-
-"@types/tmp@npm:^0.2.2":
-  version: 0.2.3
-  resolution: "@types/tmp@npm:0.2.3"
-  checksum: 0ca45e99b3b3c6959d5c4f4555f73c8007db540cfb0fbbb9373217f9ab85e67eef75193f51a1d6564b0ee6c6f5ffa259d1034d7f7530a5b7ce80acb94cfc4daa
   languageName: node
   linkType: hard
 
@@ -14910,15 +14892,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async-mutex@npm:^0.3.2":
-  version: 0.3.2
-  resolution: "async-mutex@npm:0.3.2"
-  dependencies:
-    tslib: ^2.3.1
-  checksum: 620b771dfdea1cad0a6b712915c31a1e3ca880a8cf1eae92b4590f435995e0260929c6ebaae0b9126b1456790ea498064b5bb9a506948cda760f48d3d0dcc4c8
-  languageName: node
-  linkType: hard
-
 "async-retry@npm:^1.3.3":
   version: 1.3.3
   resolution: "async-retry@npm:1.3.3"
@@ -15645,16 +15618,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bl@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "bl@npm:2.2.1"
-  dependencies:
-    readable-stream: ^2.3.5
-    safe-buffer: ^5.1.1
-  checksum: 4f5d9b258919646a8d02f1731379e53b6f6309e34596ae02afbc3aeb183910bd2d0b70681f889b7c620ca48f65dc1cd0992ee1266c90d6d7c3be60688d141233
-  languageName: node
-  linkType: hard
-
 "bl@npm:^4.0.3":
   version: 4.1.0
   resolution: "bl@npm:4.1.0"
@@ -16059,19 +16022,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:*, bson@npm:^4.6.4, bson@npm:^4.7.0":
-  version: 4.7.0
-  resolution: "bson@npm:4.7.0"
+"bson@npm:^4.6.4, bson@npm:^4.7.2":
+  version: 4.7.2
+  resolution: "bson@npm:4.7.2"
   dependencies:
     buffer: ^5.6.0
-  checksum: 83e7b64afdad5a505073a7e6206e7b345f59e7888fbcb1948fba72b6101a1baf58b7499314f8e24b650567665f7973eda048aabbb1ddcfbadfba7d6c6b0f5e83
-  languageName: node
-  linkType: hard
-
-"bson@npm:^1.1.4":
-  version: 1.1.6
-  resolution: "bson@npm:1.1.6"
-  checksum: 75762c9b7e0b3156cb0f38c7eb9ffcade53f0b04ac87dece9cba38f6dc570d9af91251de6a8988b294063cfaa21894c60ac9e85c34176accb3674acb092d66a7
+  checksum: f357d12c5679c8eb029a62e410ad40fb862b7b91f0fc12a3399fb3668e14aecaa63205ffeeee48735a01d393171743607dcd527eb8c058b6f2bd294079ee4125
   languageName: node
   linkType: hard
 
@@ -16506,7 +16462,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"camelcase@npm:^6.0.0, camelcase@npm:^6.1.0, camelcase@npm:^6.2.0, camelcase@npm:^6.3.0":
+"camelcase@npm:^6.0.0, camelcase@npm:^6.2.0, camelcase@npm:^6.3.0":
   version: 6.3.0
   resolution: "camelcase@npm:6.3.0"
   checksum: 8c96818a9076434998511251dcb2761a94817ea17dbdc37f47ac080bd088fc62c7369429a19e2178b993497132c8cbcf5cc1f44ba963e76782ba469c0474938d
@@ -18654,7 +18610,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.0.0, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.2.0, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:~4.3.1":
+"debug@npm:4, debug@npm:^4.0.0, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:~4.3.1":
   version: 4.3.4
   resolution: "debug@npm:4.3.4"
   dependencies:
@@ -19016,13 +18972,6 @@ __metadata:
   version: 1.0.0
   resolution: "delegates@npm:1.0.0"
   checksum: a51744d9b53c164ba9c0492471a1a2ffa0b6727451bdc89e31627fdf4adda9d51277cfcbfb20f0a6f08ccb3c436f341df3e92631a3440226d93a8971724771fd
-  languageName: node
-  linkType: hard
-
-"denque@npm:^1.4.1":
-  version: 1.5.1
-  resolution: "denque@npm:1.5.1"
-  checksum: 4375ad19d5cea99f90effa82a8cecdaa10f4eb261fbcd7e47cd753ff2737f037aac8f7f4e031cc77f3966314c491c86a0d3b20c128aeee57f791b4662c45108e
   languageName: node
   linkType: hard
 
@@ -21544,7 +21493,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"find-cache-dir@npm:^3.2.0, find-cache-dir@npm:^3.3.1, find-cache-dir@npm:^3.3.2":
+"find-cache-dir@npm:^3.2.0, find-cache-dir@npm:^3.3.1":
   version: 3.3.2
   resolution: "find-cache-dir@npm:3.3.2"
   dependencies:
@@ -22273,13 +22222,6 @@ __metadata:
   version: 0.1.0
   resolution: "get-package-type@npm:0.1.0"
   checksum: bba0811116d11e56d702682ddef7c73ba3481f114590e705fc549f4d868972263896af313c57a25c076e3c0d567e11d919a64ba1b30c879be985fc9d44f96148
-  languageName: node
-  linkType: hard
-
-"get-port@npm:^5.1.1":
-  version: 5.1.1
-  resolution: "get-port@npm:5.1.1"
-  checksum: 0162663ffe5c09e748cd79d97b74cd70e5a5c84b760a475ce5767b357fb2a57cb821cee412d646aa8a156ed39b78aab88974eddaa9e5ee926173c036c0713787
   languageName: node
   linkType: hard
 
@@ -27581,15 +27523,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"md5-file@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "md5-file@npm:5.0.0"
-  bin:
-    md5-file: cli.js
-  checksum: c606a00ff58adf5428e8e2f36d86e5d3c7029f9688126faca302cd83b5e92cac183a62e1d1f05fae7c2614e80f993326fd0a8d6a3a913c41ec7ea0eefc25aa76
-  languageName: node
-  linkType: hard
-
 "md5.js@npm:^1.3.4":
   version: 1.3.5
   resolution: "md5.js@npm:1.3.5"
@@ -28619,7 +28552,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb-connection-string-url@npm:^2.5.4":
+"mongodb-connection-string-url@npm:^2.6.0":
   version: 2.6.0
   resolution: "mongodb-connection-string-url@npm:2.6.0"
   dependencies:
@@ -28629,87 +28562,39 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb-memory-server-core@npm:7.6.3":
-  version: 7.6.3
-  resolution: "mongodb-memory-server-core@npm:7.6.3"
-  dependencies:
-    "@types/mongodb": ^3.6.20
-    "@types/tmp": ^0.2.2
-    async-mutex: ^0.3.2
-    camelcase: ^6.1.0
-    debug: ^4.2.0
-    find-cache-dir: ^3.3.2
-    get-port: ^5.1.1
-    https-proxy-agent: ^5.0.0
-    md5-file: ^5.0.0
-    mkdirp: ^1.0.4
-    mongodb: ^3.7.3
-    new-find-package-json: ^1.1.0
-    semver: ^7.3.5
-    tar-stream: ^2.1.4
-    tmp: ^0.2.1
-    tslib: ^2.3.0
-    uuid: ^8.3.1
-    yauzl: ^2.10.0
-  checksum: 2c111f7a90f72b6810e9083da40b8bbf905d1388eb8453f71225ff805a865985efef2c40a88d082baf9ece737b4d9bd3c9fd517d1fcc656aae53e9f62e44ee14
-  languageName: node
-  linkType: hard
-
-"mongodb-memory-server@npm:^7.6.3":
-  version: 7.6.3
-  resolution: "mongodb-memory-server@npm:7.6.3"
-  dependencies:
-    mongodb-memory-server-core: 7.6.3
-    tslib: ^2.3.0
-  checksum: 8161ad3be8e31012f64ac4a1ac555b10071416ee6de6a50ee1a05d76018eaadacadb34364c29bba73e0877236f2f01163cd0e2dc0432427fbbe69a1fb4eaecbc
-  languageName: node
-  linkType: hard
-
-"mongodb@npm:^3.7.3":
-  version: 3.7.3
-  resolution: "mongodb@npm:3.7.3"
-  dependencies:
-    bl: ^2.2.1
-    bson: ^1.1.4
-    denque: ^1.4.1
-    optional-require: ^1.1.8
-    safe-buffer: ^5.1.2
-    saslprep: ^1.0.0
-  dependenciesMeta:
-    saslprep:
-      optional: true
-  peerDependenciesMeta:
-    aws4:
-      optional: true
-    bson-ext:
-      optional: true
-    kerberos:
-      optional: true
-    mongodb-client-encryption:
-      optional: true
-    mongodb-extjson:
-      optional: true
-    snappy:
-      optional: true
-  checksum: ef7690fe6ee7d1752f121b14e59b3fabfddc60ff0536babce6c945703ad0010de9e6fa7de4c91b99275c256876a72a06899ce27893aba0838c2b542088bd1044
-  languageName: node
-  linkType: hard
-
-"mongodb@npm:^4.12.1, mongodb@npm:^4.3.1":
-  version: 4.12.1
-  resolution: "mongodb@npm:4.12.1"
+"mongodb@npm:4.17.1, mongodb@npm:^4.3.1":
+  version: 4.17.1
+  resolution: "mongodb@npm:4.17.1"
   dependencies:
     "@aws-sdk/credential-providers": ^3.186.0
-    bson: ^4.7.0
-    mongodb-connection-string-url: ^2.5.4
-    saslprep: ^1.0.3
+    "@mongodb-js/saslprep": ^1.1.0
+    bson: ^4.7.2
+    mongodb-connection-string-url: ^2.6.0
     socks: ^2.7.1
   dependenciesMeta:
     "@aws-sdk/credential-providers":
       optional: true
-    saslprep:
+    "@mongodb-js/saslprep":
       optional: true
-  checksum: 84590484b2c93bce849ec1e334b064e983444ed73942061c91e09556348c80db9d4a40544b927cd795bdfbfc51d1b713a7df5ced4ecf13cd00fab5e3c3e32ada
+  checksum: e7f280570d0f23d60c308b2a484ed55762ec8e523946c0de1a0b3b398f24efcf1916a745e5407f32cd1c105b2f19d8ac75474c92f73cdf651affe3430a963f54
+  languageName: node
+  linkType: hard
+
+"mongodb@patch:mongodb@npm:4.17.1#.yarn/patches/mongodb-npm-4.17.1-a2fe811ff1.patch::locator=rocket.chat%40workspace%3A.":
+  version: 4.17.1
+  resolution: "mongodb@patch:mongodb@npm%3A4.17.1#.yarn/patches/mongodb-npm-4.17.1-a2fe811ff1.patch::version=4.17.1&hash=f5fa42&locator=rocket.chat%40workspace%3A."
+  dependencies:
+    "@aws-sdk/credential-providers": ^3.186.0
+    "@mongodb-js/saslprep": ^1.1.0
+    bson: ^4.7.2
+    mongodb-connection-string-url: ^2.6.0
+    socks: ^2.7.1
+  dependenciesMeta:
+    "@aws-sdk/credential-providers":
+      optional: true
+    "@mongodb-js/saslprep":
+      optional: true
+  checksum: 7aa00b4000e8f01b18386b6d11033a3216de97ea892a7f10a9c0d0da40a51d91b1c9cbb0e51ff5691487e0fc926d06b5aebb944747153e6fbdaca08cf71d601c
   languageName: node
   linkType: hard
 
@@ -29009,16 +28894,6 @@ __metadata:
   version: 1.0.1
   resolution: "new-event-polyfill@npm:1.0.1"
   checksum: 4c58d2b0505132b2b75d47d82e6ce4f11839f9fa13f89c22bc9cbfe6a60e18df6046b86da5bc8699dae3077beb3a9e503e76bc56a797b76379db07b44bb6952c
-  languageName: node
-  linkType: hard
-
-"new-find-package-json@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "new-find-package-json@npm:1.1.0"
-  dependencies:
-    debug: ^4.3.2
-    tslib: ^2.3.0
-  checksum: 818e5a837f87c62fb9bc4893247fd9b7b2ff1bbf25b174af9e9ec22d60d44ce355e60f80ed0657652370cca06e59539c7df292354250820403fa33cd210e76ed
   languageName: node
   linkType: hard
 
@@ -29917,15 +29792,6 @@ __metadata:
   version: 0.14.7
   resolution: "opentracing@npm:0.14.7"
   checksum: 5f7e44439062d056a2a72ac89eff463c9cf5659a2aea230ff7f5a226c5e960c195ce04ec2e2cc590140bbb9c5d2be11a5a50a23484cbe2d0e132af4309d4c904
-  languageName: node
-  linkType: hard
-
-"optional-require@npm:^1.1.8":
-  version: 1.1.8
-  resolution: "optional-require@npm:1.1.8"
-  dependencies:
-    require-at: ^1.0.6
-  checksum: 437db76f713052925185ae80837b593877f75101154e8937f50d33b0b07bd500c214efc9016748642109b6e3e1197eb0513a2963eb06bcf3890f88a2724b1c87
   languageName: node
   linkType: hard
 
@@ -33943,13 +33809,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"require-at@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "require-at@npm:1.0.6"
-  checksum: 7753a6ebad99855ef015d5533a787c65e883c94c23371368eebf6f1c7e2a078811013b204823152cbab206a00e825e8e5ca09416fd835a489fa30bf064fbe6d9
-  languageName: node
-  linkType: hard
-
 "require-directory@npm:^2.1.1":
   version: 2.1.1
   resolution: "require-directory@npm:2.1.1"
@@ -34272,7 +34131,7 @@ __metadata:
     jaeger-client: ^3.19.0
     mem: ^8.1.1
     moleculer: ^0.14.29
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     nats: ^2.6.1
     npm-run-all: ^4.1.5
     pino: ^8.15.0
@@ -34441,15 +34300,6 @@ __metadata:
     parse-srcset: ^1.0.2
     postcss: ^8.3.11
   checksum: 4c15e87a411420d670412de2beb29386c8307210c170ceb716d93b4010dcf6a8ae39408d7d863752ee84cc65f5995633c7089789c5f8c0de478a7023d93a53ec
-  languageName: node
-  linkType: hard
-
-"saslprep@npm:^1.0.0, saslprep@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "saslprep@npm:1.0.3"
-  dependencies:
-    sparse-bitfield: ^3.0.3
-  checksum: 4fdc0b70fb5e523f977de405e12cca111f1f10dd68a0cfae0ca52c1a7919a94d1556598ba2d35f447655c3b32879846c77f9274c90806f6673248ae3cea6ee43
   languageName: node
   linkType: hard
 
@@ -37118,15 +36968,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tmp@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "tmp@npm:0.2.1"
-  dependencies:
-    rimraf: ^3.0.0
-  checksum: 8b1214654182575124498c87ca986ac53dc76ff36e8f0e0b67139a8d221eaecfdec108c0e6ec54d76f49f1f72ab9325500b246f562b926f85bcdfca8bf35df9e
-  languageName: node
-  linkType: hard
-
 "tmpl@npm:1.0.5":
   version: 1.0.5
   resolution: "tmpl@npm:1.0.5"
@@ -38684,7 +38525,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^8.0.0, uuid@npm:^8.3.1, uuid@npm:^8.3.2":
+"uuid@npm:^8.0.0, uuid@npm:^8.3.2":
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"
   bin:
@@ -40179,7 +40020,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yauzl@npm:^2.10.0, yauzl@npm:^2.4.2":
+"yauzl@npm:^2.4.2":
   version: 2.10.0
   resolution: "yauzl@npm:2.10.0"
   dependencies:
