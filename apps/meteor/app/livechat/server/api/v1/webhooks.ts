@@ -66,7 +66,7 @@ API.v1.addRoute(
 			const webhookUrl = settings.get<string>('Livechat_webhookUrl');
 
 			if (!webhookUrl) {
-				return API.v1.failure('Webhook URL is not set');
+				return API.v1.failure('Webhook_URL_not_set');
 			}
 
 			try {

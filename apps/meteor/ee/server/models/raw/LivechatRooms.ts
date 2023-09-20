@@ -357,7 +357,10 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 				},
 				{
 					$group: {
-						_id: '$source',
+						_id: {
+							type: '$source.type',
+							alias: '$source.alias',
+						},
 						value: { $sum: 1 },
 					},
 				},
@@ -537,6 +540,13 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 						},
 						total: {
 							$sum: '$total',
+						},
+					},
+				},
+				{
+					$match: {
+						_id: {
+							$ne: null,
 						},
 					},
 				},

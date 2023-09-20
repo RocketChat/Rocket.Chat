@@ -1986,7 +1986,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
-	setResponseByRoomId(roomId: string, response: { user: { _id: string; username: string } }) {
+	setResponseByRoomId(roomId: string, responseBy: IOmnichannelRoom['responseBy']) {
 		return this.updateOne(
 			{
 				_id: roomId,
@@ -1994,11 +1994,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			},
 			{
 				$set: {
-					responseBy: {
-						_id: response.user._id,
-						username: response.user.username,
-						lastMessageTs: new Date(),
-					},
+					responseBy,
 				},
 				$unset: {
 					waitingResponse: 1,

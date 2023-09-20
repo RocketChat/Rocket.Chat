@@ -16,7 +16,6 @@ const RegisterWorkspace = () => {
 
 	const { data: registrationStatusData, isLoading, isError, refetch } = useRegistrationStatus();
 	const isWorkspaceRegistered = registrationStatusData?.registrationStatus?.workspaceRegistered ?? false;
-	const isConnectedToCloud = registrationStatusData?.registrationStatus?.connectToCloud ?? false;
 
 	if (isLoading || isError) {
 		return null;
@@ -40,32 +39,11 @@ const RegisterWorkspace = () => {
 		setModal(<ManualWorkspaceRegistrationModal onClose={handleModalClose} />);
 	};
 
-	const handleRegistrationTag = () => {
-		if (!isWorkspaceRegistered && !isConnectedToCloud) {
-			return <Tag variant='secondary-danger'>{t('RegisterWorkspace_NotRegistered_Title')}</Tag>;
-		}
-		if (isWorkspaceRegistered && !isConnectedToCloud) {
-			return <Tag variant='secondary-danger'>{t('RegisterWorkspace_NotConnected_Title')}</Tag>;
-		}
-		return <Tag variant='primary'>{t('Workspace_registered')}</Tag>;
-	};
-
-	const handleCardsTitle = () => {
-		if (!isWorkspaceRegistered && !isConnectedToCloud) {
-			return t('RegisterWorkspace_NotRegistered_Subtitle');
-		}
-		if (isWorkspaceRegistered && !isConnectedToCloud) {
-			return t('RegisterWorkspace_NotConnected_Subtitle');
-		}
-		return t('RegisterWorkspace_Registered_Description');
-	};
-
 	return (
 		<Page background='tint'>
 			<Page.Header title={t('Registration')}>
 				<RegisterWorkspaceMenu
 					isWorkspaceRegistered={isWorkspaceRegistered}
-					isConnectedToCloud={isConnectedToCloud}
 					onClick={handleRegisterWorkspaceClick}
 					onStatusChange={refetch}
 					onClickOfflineRegistration={handleManualWorkspaceRegistrationButton}
@@ -73,11 +51,15 @@ const RegisterWorkspace = () => {
 			</Page.Header>
 
 			<Page.ScrollableContentWithShadow>
-				<Box display='flex'>{handleRegistrationTag()}</Box>
+				<Box display='flex'>
+					{!isWorkspaceRegistered && <Tag variant='secondary-danger'>{t('RegisterWorkspace_NotRegistered_Title')}</Tag>}
+					{isWorkspaceRegistered && <Tag variant='primary'>{t('Workspace_registered')}</Tag>}
+				</Box>
 
 				<Box pb={8}>
 					<Box fontSize='h3' fontWeight={700}>
-						{handleCardsTitle()}
+						{isWorkspaceRegistered && t('RegisterWorkspace_NotRegistered_Subtitle')}
+						{!isWorkspaceRegistered && t('RegisterWorkspace_Registered_Description')}
 					</Box>
 					<RegisterWorkspaceCards />
 				</Box>

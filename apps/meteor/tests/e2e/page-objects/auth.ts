@@ -19,10 +19,6 @@ export class Registration {
 		return this.page.locator('role=link[name="Create an account"]');
 	}
 
-	get main(): Locator {
-		return this.page.locator('role=main');
-	}
-
 	get backToLogin(): Locator {
 		return this.page.locator('role=link[name="Back to Login"]');
 	}
@@ -62,10 +58,6 @@ export class Registration {
 	get inputPasswordConfirm(): Locator {
 		return this.page.locator('[name=passwordConfirmation]');
 	}
-
-	// get textErrorPasswordConfirm(): Locator {
-	// 	return this.page.locator('[name=confirm-pass]~.input-error');
-	// }
 
 	get forgotPasswordEmailCallout(): Locator {
 		return this.page.locator('role=status');

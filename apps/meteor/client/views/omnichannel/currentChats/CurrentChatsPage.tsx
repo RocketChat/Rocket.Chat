@@ -117,7 +117,7 @@ const currentChatQuery: useQueryType = (
 	return query;
 };
 
-const CurrentChatsRoute = ({ id, onRowClick }: { id?: string; onRowClick: (_id: string) => void }): ReactElement => {
+const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: string) => void }): ReactElement => {
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'priorityWeight' | 'ts' | 'lm' | 'open'>(
 		'ts',
 		'desc',
@@ -347,4 +347,4 @@ const CurrentChatsRoute = ({ id, onRowClick }: { id?: string; onRowClick: (_id: 
 	);
 };
 
-export default memo(CurrentChatsRoute);
+export default memo(CurrentChatsPage);
