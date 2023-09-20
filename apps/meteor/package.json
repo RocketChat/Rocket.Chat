@@ -65,12 +65,12 @@
 	"devDependencies": {
 		"@axe-core/playwright": "^4.7.3",
 		"@babel/core": "~7.22.9",
-		"@babel/eslint-parser": "~7.22.9",
+		"@babel/eslint-parser": "~7.22.15",
 		"@babel/plugin-proposal-nullish-coalescing-operator": "~7.18.6",
 		"@babel/plugin-proposal-optional-chaining": "~7.21.0",
-		"@babel/preset-env": "~7.22.9",
-		"@babel/preset-react": "~7.22.5",
-		"@babel/register": "~7.22.5",
+		"@babel/preset-env": "~7.22.20",
+		"@babel/preset-react": "~7.22.15",
+		"@babel/register": "~7.22.15",
 		"@faker-js/faker": "~8.0.2",
 		"@playwright/test": "^1.37.1",
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -210,7 +210,7 @@
 		"typescript": "~5.2.2"
 	},
 	"dependencies": {
-		"@babel/runtime": "~7.22.6",
+		"@babel/runtime": "~7.22.15",
 		"@bugsnag/js": "~7.20.2",
 		"@bugsnag/plugin-react": "~7.19.0",
 		"@google-cloud/storage": "^6.11.0",

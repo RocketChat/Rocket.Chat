@@ -24,7 +24,7 @@
 		"@testing-library/jest-dom": "~5.16.5",
 		"@testing-library/react": "^12.1.2",
 		"@testing-library/react-hooks": "^8.0.1",
-		"@types/babel__core": "~7.20.1",
+		"@types/babel__core": "~7.20.2",
 		"@types/jest": "~29.5.3",
 		"@types/react": "~17.0.62",
 		"@types/react-dom": "~17.0.20",
