@@ -1,3 +1,4 @@
+import { Omnichannel } from '@rocket.chat/core-services';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Users } from '@rocket.chat/models';
 import { isPOSTLivechatTranscriptParams, isPOSTLivechatTranscriptRequestParams } from '@rocket.chat/rest-typings';
@@ -34,8 +35,8 @@ API.v1.addRoute(
 	{
 		async delete() {
 			const { rid } = this.urlParams;
-			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, 'open' | 'transcriptRequest'>>(rid, {
-				projection: { open: 1, transcriptRequest: 1 },
+			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, 'open' | 'transcriptRequest' | 'v'>>(rid, {
+				projection: { open: 1, transcriptRequest: 1, v: 1 },
 			});
 
 			if (!room?.open) {
@@ -43,6 +44,10 @@ API.v1.addRoute(
 			}
 			if (!room.transcriptRequest) {
 				throw new Error('error-transcript-not-requested');
+			}
+
+			if (!(await Omnichannel.isRoomEnabled(room))) {
+				throw new Error('error-mac-limit-reached');
 			}
 
 			await LivechatRooms.unsetEmailTranscriptRequestedByRoomId(rid);

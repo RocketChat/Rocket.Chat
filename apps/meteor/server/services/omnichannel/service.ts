@@ -1,6 +1,6 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IOmnichannelService } from '@rocket.chat/core-services';
-import type { IOmnichannelQueue } from '@rocket.chat/core-typings';
+import type { AtLeast, IOmnichannelQueue, IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
@@ -28,6 +28,17 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 				await Livechat.notifyAgentStatusChanged(user._id, user.status);
 			}
 		});
+
+		// TODO: Waiting for license definitions
+		/* this.onEvent('mac.limitreached', async (): Promise<void> => {
+			// void Livechat.notifyMacLimitReached();
+			await this.queueWorker.stop();
+		});
+
+		this.onEvent('license.validated', async (): Promise<void> => {
+			// void Livechat.notifyLicenseChanged();
+			await this.queueWorker.shouldStart();
+		}); */
 	}
 
 	async started() {
@@ -38,5 +49,16 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 
 	getQueueWorker(): IOmnichannelQueue {
 		return this.queueWorker;
+	}
+
+	async isRoomEnabled(_room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {
+		// const currentMonth = moment.utc().format('YYYY-MM');
+		// return license.isMacOnLimit() || room.v.activity.includes(currentMonth)
+		return true;
+	}
+
+	async checkMACLimit(): Promise<boolean> {
+		// return license.isMacOnLimit();
+		return true;
 	}
 }

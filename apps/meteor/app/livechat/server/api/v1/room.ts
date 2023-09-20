@@ -1,3 +1,4 @@
+import { Omnichannel } from '@rocket.chat/core-services';
 import type { ILivechatAgent, IOmnichannelRoom, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Subscriptions, Messages } from '@rocket.chat/models';
@@ -73,6 +74,10 @@ API.v1.addRoute('livechat/room', {
 					type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
 				},
 			};
+
+			if (!(await Omnichannel.checkMACLimit())) {
+				throw new Error('error-mac-limit-reached');
+			}
 
 			const newRoom = await getRoom({ guest, rid, agent, roomInfo, extraParams });
 			return API.v1.success(newRoom);
@@ -326,6 +331,10 @@ API.v1.addRoute(
 				throw new Error('This_conversation_is_already_closed');
 			}
 
+			if (!(await Omnichannel.isRoomEnabled(room))) {
+				throw new Error('error-mac-limit-reached');
+			}
+
 			const guest = await LivechatVisitors.findOneEnabledById(room.v?._id);
 			if (!guest) {
 				throw new Error('error-invalid-visitor');
@@ -412,6 +421,10 @@ API.v1.addRoute(
 				throw new Error('error-invalid-room');
 			}
 
+			if (!(await Omnichannel.isRoomEnabled(room))) {
+				throw new Error('error-mac-limit-reached');
+			}
+
 			if (!(await canAccessRoomAsync(room, user))) {
 				throw new Error('error-not-allowed');
 			}
@@ -432,6 +445,10 @@ API.v1.addRoute(
 			const room = await LivechatRooms.findOneById(roomData._id);
 			if (!room || !isOmnichannelRoom(room)) {
 				throw new Error('error-invalid-room');
+			}
+
+			if (!(await Omnichannel.isRoomEnabled(room))) {
+				throw new Error('error-mac-limit-reached');
 			}
 
 			if (

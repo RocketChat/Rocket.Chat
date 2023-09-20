@@ -156,6 +156,15 @@ export const RoutingManager: Routing = {
 			await Promise.all([Message.saveSystemMessage('command', rid, 'connected', user), Message.saveSystemMessage('uj', rid, '', user)]);
 		}
 
+		if (!room) {
+			logger.debug(`Cannot assign agent to inquiry ${inquiry._id}: Room not found`);
+			throw new Meteor.Error('error-room-not-found', 'Room not found');
+		}
+
+		if (!(await Omnichannel.isRoomEnabled(room))) {
+			throw new Error('error-mac-limit-reached');
+		}
+
 		await dispatchAgentDelegated(rid, agent.agentId);
 		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
 
@@ -171,6 +180,10 @@ export const RoutingManager: Routing = {
 		if (!room?.open) {
 			logger.debug(`Cannot unassign agent from inquiry ${inquiry._id}: Room already closed`);
 			return false;
+		}
+
+		if (!(await Omnichannel.isRoomEnabled(room))) {
+			throw new Error('error-mac-limit-reached');
 		}
 
 		if (departmentId && departmentId !== department) {
@@ -223,6 +236,10 @@ export const RoutingManager: Routing = {
 			return room;
 		}
 
+		if (!(await Omnichannel.isRoomEnabled(room))) {
+			throw new Error('error-mac-limit-reached');
+		}
+
 		if (room.servedBy && room.servedBy._id === agent.agentId) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Already taken by agent ${room.servedBy._id}`);
 			return room;
@@ -260,6 +277,11 @@ export const RoutingManager: Routing = {
 	},
 
 	async transferRoom(room, guest, transferData) {
+		if (!(await Omnichannel.isRoomEnabled(room))) {
+			throw new Error('error-mac-limit-reached');
+		}
+
+		logger.debug(`Transfering room ${room._id} by ${transferData.transferredBy._id}`);
 		if (transferData.departmentId) {
 			logger.debug(`Transfering room ${room._id} to department ${transferData.departmentId}`);
 			return forwardRoomToDepartment(room, guest, transferData);

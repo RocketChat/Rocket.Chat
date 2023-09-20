@@ -1,6 +1,6 @@
 // Note: Please don't add any new methods to this file, since its still in js and we are migrating to ts
 // Please add new methods to LivechatTyped.ts
-import { Message } from '@rocket.chat/core-services';
+import { Message, Omnichannel } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatVisitors,
@@ -409,6 +409,10 @@ export const Livechat = {
 
 		if (room.transcriptRequest) {
 			throw new Meteor.Error('error-transcript-already-requested', 'Transcript already requested');
+		}
+
+		if (!(await Omnichannel.isRoomEnabled(room))) {
+			throw new Error('error-mac-limit-reached');
 		}
 
 		const { _id, username, name, utcOffset } = user;
