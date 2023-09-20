@@ -40,6 +40,7 @@ export interface IStats {
 	totalChannelMessages: number;
 	totalPrivateGroupMessages: number;
 	totalDirectMessages: number;
+	totalDiscussionsMessages: number;
 	totalLivechatMessages: number;
 	totalTriggers: number;
 	totalMessages: number;

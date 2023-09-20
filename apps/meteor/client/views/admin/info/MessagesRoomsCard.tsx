@@ -101,6 +101,15 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 						<TextSeparator
 							label={
 								<>
+									<CardIcon name='discussion' size='x16' mie={4} />
+									{t('Stats_Total_Messages_Discussions')}
+								</>
+							}
+							value={statistics.totalDiscussionsMessages}
+						/>
+						<TextSeparator
+							label={
+								<>
 									<CardIcon name='headset' size='x16' mie={4} />
 									{t('Stats_Total_Messages_Livechat')}
 								</>
