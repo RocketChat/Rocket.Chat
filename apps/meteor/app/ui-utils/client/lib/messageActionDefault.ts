@@ -122,7 +122,7 @@ Meteor.startup(async () => {
 		icon: 'permalink',
 		label: 'Copy_link',
 		// classes: 'clipboard',
-		context: ['message', 'message-mobile', 'threads', 'federated'],
+		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		type: 'duplication',
 		async action(_, props) {
 			try {
