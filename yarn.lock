@@ -5650,7 +5650,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.38.0":
+"@playwright/test@npm:^1.37.1":
   version: 1.38.0
   resolution: "@playwright/test@npm:1.38.0"
   dependencies:
@@ -9217,7 +9217,7 @@ __metadata:
     "@nivo/heatmap": 0.80.0
     "@nivo/line": 0.80.0
     "@nivo/pie": 0.80.0
-    "@playwright/test": ^1.38.0
+    "@playwright/test": ^1.37.1
     "@react-aria/color": ^3.0.0-beta.15
     "@react-pdf/renderer": ^3.1.12
     "@rocket.chat/account-utils": "workspace:^"
@@ -9446,7 +9446,7 @@ __metadata:
     hljs9: "npm:highlight.js@^9.18.5"
     http-proxy-agent: ^5.0.0
     human-interval: ^2.0.1
-    i18next: ~23.4.9
+    i18next: ~23.4.5
     i18next-http-backend: ^1.4.5
     i18next-sprintf-postprocessor: ^0.2.2
     iconv-lite: ^0.6.3
@@ -24498,7 +24498,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:~23.4.9":
+"i18next@npm:~23.4.5, i18next@npm:~23.4.9":
   version: 23.4.9
   resolution: "i18next@npm:23.4.9"
   dependencies:
