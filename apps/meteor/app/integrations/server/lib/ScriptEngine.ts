@@ -276,7 +276,7 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 		}
 
 		if (!script[method]) {
-			this.logger.error(`Method "${method}" no found in the Integration "${integration.name}"`);
+			this.logger.error(`Method "${method}" not found in the Integration "${integration.name}"`);
 			await updateHistory({ historyId, step: `execute-script-no-method-${method}` });
 			return;
 		}
