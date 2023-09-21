@@ -28,7 +28,7 @@ const AnalyticsReports = ({ analytics }: { analytics: Serialized<IStats> }) => {
 					</Trans>
 				</Box>
 			</Box>
-			<Box display='flex' flexDirection='column' padding={8} flexGrow={1} color='default' bg='neutral' borderRadius='x4' overflow='scroll'>
+			<Box display='flex' flexDirection='column' padding={8} flexGrow={1} color='default' bg='neutral' borderRadius={4} overflow='scroll'>
 				<pre>{JSON.stringify(analytics, null, '\t')}</pre>
 			</Box>
 		</>
