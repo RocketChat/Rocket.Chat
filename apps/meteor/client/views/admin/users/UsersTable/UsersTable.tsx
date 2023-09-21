@@ -22,10 +22,11 @@ import UsersTableRow from './UsersTableRow';
 type UsersTableProps = {
 	reload: MutableRefObject<() => void>;
 	tab: string;
+	onReload: () => void;
 };
 
 // TODO: Missing error state
-const UsersTable = ({ reload, tab }: UsersTableProps): ReactElement | null => {
+const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const router = useRouter();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -57,15 +58,17 @@ const UsersTable = ({ reload, tab }: UsersTableProps): ReactElement | null => {
 		prevSearchTerm.current = searchTerm;
 	}, [reload, refetch, searchTerm]);
 
-	const handleClick = useMutableCallback((id): void =>
+	const handleClick = useMutableCallback((id, e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>): void => {
+		e.stopPropagation();
+
 		router.navigate({
 			name: 'admin-users',
 			params: {
 				context: 'info',
 				id,
 			},
-		}),
-	);
+		});
+	});
 
 	const headers = useMemo(
 		() => [
@@ -102,6 +105,7 @@ const UsersTable = ({ reload, tab }: UsersTableProps): ReactElement | null => {
 			<GenericTableHeaderCell w='x100' key='status' direction={sortDirection} active={sortBy === 'status'} onClick={setSort} sort='status'>
 				{t('Registration_status')}
 			</GenericTableHeaderCell>,
+			<GenericTableHeaderCell key='actions' w='x44' />,
 		],
 		[mediaQuery, setSort, sortBy, sortDirection, t],
 	);
@@ -121,7 +125,14 @@ const UsersTable = ({ reload, tab }: UsersTableProps): ReactElement | null => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{filteredUsers.map((user) => (
-								<UsersTableRow key={user._id} onClick={handleClick} mediaQuery={mediaQuery} user={user} />
+								<UsersTableRow
+									key={user._id}
+									onClick={handleClick}
+									mediaQuery={mediaQuery}
+									user={user}
+									refetchUsers={refetch}
+									onReload={onReload}
+								/>
 							))}
 						</GenericTableBody>
 					</GenericTable>

@@ -81,7 +81,7 @@ const UsersPage = (): ReactElement => {
 							{t('Deactivated')}
 						</Tabs.Item>
 					</Tabs>
-					<UsersTable reload={reload} tab={tab} />
+					<UsersTable reload={reload} tab={tab} onReload={handleReload} />
 				</Page.Content>
 			</Page>
 			{context && (
