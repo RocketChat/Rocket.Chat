@@ -8756,7 +8756,7 @@ __metadata:
     eslint-plugin-anti-trojan-source: ~1.1.1
     eslint-plugin-import: ~2.26.0
     eslint-plugin-no-floating-promise: ~1.0.2
-    eslint-plugin-playwright: ~0.15.3
+    eslint-plugin-playwright: ~0.15.0
     eslint-plugin-prettier: ~4.2.1
     eslint-plugin-react: ~7.32.2
     eslint-plugin-react-hooks: ~4.6.0
@@ -20249,7 +20249,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-playwright@npm:~0.15.3":
+"eslint-plugin-playwright@npm:~0.15.0":
   version: 0.15.3
   resolution: "eslint-plugin-playwright@npm:0.15.3"
   peerDependencies:
