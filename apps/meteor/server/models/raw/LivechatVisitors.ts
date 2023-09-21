@@ -103,6 +103,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): FindCursor<ILivechatVisitor> {
 		const query = {
+			disabled: { $ne: true },
 			_updatedAt: {
 				$gte: new Date(start),
 				$lt: new Date(end),
@@ -218,7 +219,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			disabled: { $ne: true },
 		};
 
-		console.log(JSON.stringify(query));
 		return this.findPaginated(query, options);
 	}
 

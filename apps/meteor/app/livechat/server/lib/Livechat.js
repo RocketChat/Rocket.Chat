@@ -604,7 +604,7 @@ export const Livechat = {
 	},
 
 	async removeGuest(_id) {
-		const guest = await LivechatVisitors.findOneEnabledById(_id, { projection: { _id: 1 } });
+		const guest = await LivechatVisitors.findOneEnabledById(_id, { projection: { _id: 1, token: 1 } });
 		if (!guest) {
 			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', {
 				method: 'livechat:removeGuest',
