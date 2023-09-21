@@ -3719,6 +3719,9 @@ export type OmnichannelEndpoints = {
 			value: string | number;
 		}[];
 	};
+	'/v1/omnichannel/mac/check': {
+		GET: () => { onLimit: boolean };
+	};
 } & {
 	// EE
 	'/v1/livechat/analytics/agents/average-service-time': {
