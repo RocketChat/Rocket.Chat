@@ -9,6 +9,6 @@ type RoomOwnerProps = {
 };
 function RoomOwnerTag({ roomId, userId }: RoomOwnerProps) {
 	const isOwner = useUserHasRoomRole(userId, roomId, 'owner');
-	return isOwner ? <Tag style={{ marginLeft: '4px' }} children={'Owner'}></Tag> : null;
+	return isOwner ? <Tag style={{ marginLeft: '4px' }}>Owner</Tag> : null;
 }
 export default RoomOwnerTag;
