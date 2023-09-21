@@ -238,7 +238,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			},
 		);
 
-		if (Object.keys(query).length === 0) {
+		if (Object.keys(query).length === 1) {
 			return null;
 		}
 
