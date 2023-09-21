@@ -18,7 +18,7 @@ const AnalyticsReports = ({ analytics }: { analytics: Serialized<IStats> }) => {
 					<Box fontScale='h4'>{t('How_and_why_we_collect_usage_data')}</Box>
 				</Box>
 				<Box>
-					<Trans i18nKey='analytics.page.bySending'>
+					<Trans i18nKey='Statistics_reporting_description_trans'>
 						By sending your statistics, you'll help us identify how many instances of
 						<Link href='https://rocket.chat/' target='_blank' rel='noopener noreferrer'>
 							Rocket.Chat
