@@ -1,6 +1,7 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IOmnichannelService } from '@rocket.chat/core-services';
 import type { AtLeast, IOmnichannelQueue, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import moment from 'moment';
 
 import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
@@ -51,10 +52,11 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 		return this.queueWorker;
 	}
 
-	async isRoomEnabled(_room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {
-		// const currentMonth = moment.utc().format('YYYY-MM');
+	async isRoomEnabled(room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {
+		const currentMonth = moment.utc().format('YYYY-MM');
 		// return license.isMacOnLimit() || room.v.activity.includes(currentMonth)
-		return true;
+		// @ts-expect-error - v.activity
+		return false || room.v?.activity?.includes(currentMonth);
 	}
 
 	async checkMACLimit(): Promise<boolean> {

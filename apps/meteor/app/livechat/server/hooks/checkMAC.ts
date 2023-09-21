@@ -1,4 +1,5 @@
 import { Omnichannel } from '@rocket.chat/core-services';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -16,7 +17,7 @@ callbacks.add('beforeSaveMessage', async (message, room) => {
 		return message;
 	}
 
-	const canSendMessage = await Omnichannel.isRoomEnabled(room);
+	const canSendMessage = await Omnichannel.isRoomEnabled(room as IOmnichannelRoom);
 	if (!canSendMessage) {
 		throw new Error('error-mac-limit-reached');
 	}
