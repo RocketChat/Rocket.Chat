@@ -66,6 +66,8 @@ export default {
 			_id: '',
 			wizard: {},
 			uniqueId: '',
+			deploymentFingerprintHash: '',
+			deploymentFingerprintVerified: true,
 			installedAt: '',
 			version: '1.0.0',
 			tag: '',
