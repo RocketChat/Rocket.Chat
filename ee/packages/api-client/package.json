@@ -2,8 +2,8 @@
 	"name": "@rocket.chat/api-client",
 	"version": "0.1.8-rc.4",
 	"devDependencies": {
-		"@swc/core": "^1.3.66",
-		"@swc/jest": "^0.2.26",
+		"@swc/core": "^1.3.86",
+		"@swc/jest": "^0.2.29",
 		"@types/jest": "~29.5.3",
 		"@types/strict-uri-encode": "^2.0.0",
 		"eslint": "~8.45.0",

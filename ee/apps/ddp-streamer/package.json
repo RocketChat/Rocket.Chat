@@ -41,7 +41,7 @@
 		"polka": "^0.5.2",
 		"sharp": "^0.30.7",
 		"underscore": "^1.13.6",
-		"uuid": "^7.0.3",
+		"uuid": "^9.0.1",
 		"ws": "^8.8.1"
 	},
 	"devDependencies": {
