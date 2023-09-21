@@ -18,28 +18,19 @@ const FingerprintChangeModalConfirmation = ({
 }: FingerprintChangeModalConfirmationProps): ReactElement => {
 	const t = useTranslation();
 	return (
-		<GenericModal variant='warning' title={t('Warning')} onConfirm={onConfirm} onCancel={onCancel} confirmText={t('Yes')}>
+		<GenericModal
+			variant='warning'
+			title={newWorkspace ? t('Confirm_new_workspace') : t('Confirm_configuration_update')}
+			onConfirm={onConfirm}
+			onCancel={onCancel}
+			cancelText={t('Back')}
+			confirmText={newWorkspace ? t('Confirm_new_workspace') : t('Confirm_configuration_update')}
+		>
 			<Box
 				is='p'
 				mbe={16}
 				dangerouslySetInnerHTML={{
-					__html: newWorkspace ? t('This is a new workspace') : t('This is a configuration update'),
-				}}
-			/>
-			<Box
-				is='p'
-				mbe={16}
-				dangerouslySetInnerHTML={{
-					__html: newWorkspace
-						? t('Attention, by confirming a new workspace, the identification data and cloud connection data will be reset.')
-						: t(
-								'Attention, by confirming that this is not a new workspace the references will be kept. It may generate communication conflicts if this is in fact a new workspace.',
-						  ),
-				}}
-			/>
-			<p
-				dangerouslySetInnerHTML={{
-					__html: t('Are you sure?'),
+					__html: newWorkspace ? t('Confirm_new_workspace_description') : t('Confirm_configuration_update_description'),
 				}}
 			/>
 		</GenericModal>

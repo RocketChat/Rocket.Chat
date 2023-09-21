@@ -16,32 +16,18 @@ const FingerprintChangeModal = ({ onConfirm, onCancel, onClose }: FingerprintCha
 	return (
 		<GenericModal
 			variant='warning'
-			title={t('Warning')}
+			title={t('Unique_ID_change_detected')}
 			onConfirm={onConfirm}
 			onClose={onClose}
 			onCancel={onCancel}
-			confirmText={t('This is a new workspace')}
-			cancelText={t('This is a configuration update')}
+			confirmText={t('New_workspace')}
+			cancelText={t('Configuration_update')}
 		>
 			<Box
 				is='p'
 				mbe={16}
 				dangerouslySetInnerHTML={{
-					__html: t(
-						'Apparently some of the information that identifies your deployment has changed. This can happen when information such as the configured Site URL or database connection string has changed, or when a new workspace is created from a copy of an existing database.',
-					),
-				}}
-			/>
-			<Box
-				is='p'
-				mbe={16}
-				dangerouslySetInnerHTML={{
-					__html: t('Confirmation of updating workspace data or confirming a new workspace is required.'),
-				}}
-			/>
-			<p
-				dangerouslySetInnerHTML={{
-					__html: t('Attention, when confirming a new workspace, the identification data and cloud connection data will be reset.'),
+					__html: t('Unique_ID_change_detected_description'),
 				}}
 			/>
 		</GenericModal>
