@@ -37,7 +37,7 @@ const verifyFingerPrint = async function () {
 		return;
 	}
 
-	if (fingerprint === process.env.EXPECTED_FINGERPRINT) {
+	if (process.env.AUTO_ACCEPT_FINGERPRINT === 'true') {
 		logger.info('Updating fingerprint as matched by env var EXPECTED_FINGERPRINT', fingerprint);
 		await updateFingerprint(fingerprint, true);
 	}

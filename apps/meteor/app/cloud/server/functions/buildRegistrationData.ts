@@ -7,6 +7,8 @@ import { LICENSE_VERSION } from '../license';
 
 type WorkspaceRegistrationData<T> = {
 	uniqueId: string;
+	deploymentFingerprintHash: string;
+	deploymentFingerprintVerified: boolean;
 	workspaceId: SettingValue;
 	address: SettingValue;
 	contactName: string;
@@ -56,8 +58,8 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 
 	return {
 		uniqueId: stats.uniqueId,
-		deploymentFingerprintHash
-		deploymentFingerprintVerified
+		deploymentFingerprintHash,
+		deploymentFingerprintVerified,
 		workspaceId,
 		address,
 		contactName,
