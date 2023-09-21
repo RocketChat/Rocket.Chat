@@ -208,7 +208,7 @@ Meteor.startup(async () => {
 		id: 'delete-message',
 		icon: 'trash',
 		label: 'Delete',
-		context: ['message', 'message-mobile', 'threads', 'federated'],
+		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		color: 'alert',
 		type: 'management',
 		async action(this: unknown, _, { message = messageArgs(this).msg, chat }) {
@@ -236,7 +236,7 @@ Meteor.startup(async () => {
 		id: 'report-message',
 		icon: 'report',
 		label: 'Report',
-		context: ['message', 'message-mobile', 'threads', 'federated'],
+		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		color: 'alert',
 		type: 'management',
 		action(this: unknown, _, { message = messageArgs(this).msg }) {
@@ -264,7 +264,7 @@ Meteor.startup(async () => {
 		id: 'reaction-list',
 		icon: 'emoji',
 		label: 'Reactions',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'videoconf', 'videoconf-threads'],
 		type: 'interaction',
 		action(this: unknown, _, { message: { reactions = {} } = messageArgs(this).msg }) {
 			imperativeModal.open({
