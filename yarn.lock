@@ -8395,6 +8395,7 @@ __metadata:
   resolution: "@rocket.chat/license@workspace:ee/packages/license"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/jwt": "workspace:^"
     "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@types/jest": ~29.5.3
