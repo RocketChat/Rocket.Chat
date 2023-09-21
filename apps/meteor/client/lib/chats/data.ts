@@ -217,9 +217,6 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 	const deleteMessage = async (mid: IMessage['_id']): Promise<void> => {
 		await sdk.call('deleteMessage', { _id: mid });
-		if (!settings.get('Message_ShowDeletedStatus')) {
-			Messages.remove({ _id: mid });
-		}
 	};
 
 	const drafts = new Map<IMessage['_id'] | undefined, string>();
