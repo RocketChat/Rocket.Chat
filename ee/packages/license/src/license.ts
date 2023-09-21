@@ -128,8 +128,9 @@ export const setLicense = async (encryptedLicense: string, forceSet = false): Pr
 			logger.debug({ msg: 'license', decrypted });
 		}
 
-		// #TODO: Check license version and call setLicenseV2 or setLicenseV3
-		await setLicenseV2(JSON.parse(decrypted), encryptedLicense);
+		encryptedLicense.startsWith('RCV3_')
+			? await setLicenseV3(JSON.parse(decrypted), encryptedLicense)
+			: await setLicenseV2(JSON.parse(decrypted), encryptedLicense);
 
 		return true;
 	} catch (e) {
