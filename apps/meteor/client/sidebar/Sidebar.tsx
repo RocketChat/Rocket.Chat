@@ -18,6 +18,9 @@ const Sidebar = () => {
 
 	const sideBarBackground = css`
 		background-color: ${Palette.surface['surface-tint']};
+		a {
+			text-decoration: none;
+		}
 	`;
 
 	return (
