@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { preventNewUsers, getMaxActiveUsers, onValidateLicense } from '@rocket.chat/license';
+import * as License from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { throttle } from 'underscore';
@@ -22,7 +22,7 @@ callbacks.add(
 			return;
 		}
 
-		if (await preventNewUsers()) {
+		if (await License.preventNewUsers()) {
 			throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 		}
 	},
@@ -33,7 +33,7 @@ callbacks.add(
 callbacks.add(
 	'beforeUserImport',
 	async ({ userCount }) => {
-		if (await preventNewUsers(userCount)) {
+		if (await License.preventNewUsers(userCount)) {
 			throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 		}
 	},
@@ -52,7 +52,7 @@ callbacks.add(
 			return;
 		}
 
-		if (await preventNewUsers()) {
+		if (await License.preventNewUsers()) {
 			throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 		}
 	},
@@ -68,7 +68,7 @@ callbacks.add(
 );
 
 const handleMaxSeatsBanners = throttle(async function _handleMaxSeatsBanners() {
-	const maxActiveUsers = getMaxActiveUsers();
+	const maxActiveUsers = License.getMaxActiveUsers();
 
 	if (!maxActiveUsers) {
 		await disableWarningBannerDiscardingDismissal();
@@ -113,5 +113,5 @@ Meteor.startup(async () => {
 
 	await handleMaxSeatsBanners();
 
-	onValidateLicense(handleMaxSeatsBanners);
+	License.onValidateLicense(handleMaxSeatsBanners);
 });

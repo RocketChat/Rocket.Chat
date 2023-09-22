@@ -1,4 +1,4 @@
-import { isEnterprise } from '@rocket.chat/license';
+import * as License from '@rocket.chat/license';
 import { Banners, Settings } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
@@ -16,7 +16,7 @@ addMigration({
 		const LDAPEnabled = settings.get('LDAP_Enable');
 		const SAMLEnabled = settings.get('SAML_Custom_Default');
 
-		const isEE = isEnterprise();
+		const isEE = License.hasValidLicense();
 
 		if (!isEE && (isCustomOAuthEnabled || LDAPEnabled || SAMLEnabled)) {
 			return;

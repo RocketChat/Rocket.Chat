@@ -1,5 +1,5 @@
 import { Federation, FederationEE } from '@rocket.chat/core-services';
-import { isEnterprise } from '@rocket.chat/license';
+import * as License from '@rocket.chat/license';
 import { isFederationVerifyMatrixIdProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
@@ -14,7 +14,7 @@ API.v1.addRoute(
 		async get() {
 			const { matrixIds } = this.queryParams;
 
-			const federationService = isEnterprise() ? FederationEE : Federation;
+			const federationService = License.hasValidLicense() ? FederationEE : Federation;
 
 			const results = await federationService.verifyMatrixIds(matrixIds);
 

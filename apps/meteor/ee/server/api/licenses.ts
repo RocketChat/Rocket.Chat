@@ -1,4 +1,4 @@
-import { getUnmodifiedLicenseAndModules, validateFormat, getMaxActiveUsers, isEnterprise } from '@rocket.chat/license';
+import * as License from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 
@@ -14,7 +14,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const license = getUnmodifiedLicenseAndModules();
+			const license = License.getUnmodifiedLicenseAndModules();
 			const licenses = license ? [license] : [];
 
 			return API.v1.success({ licenses });
@@ -36,7 +36,7 @@ API.v1.addRoute(
 			}
 
 			const { license } = this.bodyParams;
-			if (!validateFormat(license)) {
+			if (!License.validateFormat(license)) {
 				return API.v1.failure('Invalid license');
 			}
 
@@ -52,7 +52,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const maxActiveUsers = getMaxActiveUsers() || null;
+			const maxActiveUsers = License.getMaxActiveUsers() || null;
 			const activeUsers = await Users.getActiveLocalUserCount();
 
 			return API.v1.success({ maxActiveUsers, activeUsers });
@@ -65,7 +65,7 @@ API.v1.addRoute(
 	{ authOrAnonRequired: true },
 	{
 		get() {
-			const isEnterpriseEdtion = isEnterprise();
+			const isEnterpriseEdtion = License.hasValidLicense();
 			return API.v1.success({ isEnterprise: isEnterpriseEdtion });
 		},
 	},

@@ -1,5 +1,5 @@
 import type { IMessage, ReadReceipt } from '@rocket.chat/core-typings';
-import { hasModule } from '@rocket.chat/license';
+import * as License from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../app/api/server/api';
@@ -24,7 +24,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			if (!hasModule('message-read-receipt')) {
+			if (!License.hasModule('message-read-receipt')) {
 				throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
 			}
 

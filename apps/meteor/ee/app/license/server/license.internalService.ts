@@ -1,6 +1,6 @@
 import type { ILicense } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
-import { getModules, hasModule, isEnterprise, onModule, onValidateLicense, type LicenseModule } from '@rocket.chat/license';
+import * as License from '@rocket.chat/license';
 
 import { guestPermissions } from '../../authorization/lib/guestPermissions';
 import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
@@ -11,8 +11,8 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 	constructor() {
 		super();
 
-		onValidateLicense((): void => {
-			if (!isEnterprise()) {
+		License.onValidateLicense((): void => {
+			if (!License.hasValidLicense()) {
 				return;
 			}
 
@@ -20,13 +20,13 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 			void resetEnterprisePermissions();
 		});
 
-		onModule((licenseModule) => {
+		License.onModule((licenseModule) => {
 			void api.broadcast('license.module', licenseModule);
 		});
 	}
 
 	async started(): Promise<void> {
-		if (!isEnterprise()) {
+		if (!License.hasValidLicense()) {
 			return;
 		}
 
@@ -34,16 +34,16 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 		await resetEnterprisePermissions();
 	}
 
-	hasLicense(feature: LicenseModule): boolean {
-		return hasModule(feature);
+	hasModule(feature: License.LicenseModule): boolean {
+		return License.hasModule(feature);
 	}
 
-	isEnterprise(): boolean {
-		return isEnterprise();
+	hasValidLicense(): boolean {
+		return License.hasValidLicense();
 	}
 
 	getModules(): string[] {
-		return getModules();
+		return License.getModules();
 	}
 
 	getGuestPermissions(): string[] {

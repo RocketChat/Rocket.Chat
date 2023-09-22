@@ -1,5 +1,5 @@
-import { onLicense } from '@rocket.chat/license';
+import * as License from '@rocket.chat/license';
 
-await onLicense('canned-responses', async () => {
+await License.onLicense('canned-responses', async () => {
 	await import('./canned-responses');
 });

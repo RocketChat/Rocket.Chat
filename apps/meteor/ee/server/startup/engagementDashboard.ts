@@ -1,7 +1,7 @@
-import { onToggledFeature } from '@rocket.chat/license';
+import * as License from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
-onToggledFeature('engagement-dashboard', {
+License.onToggledFeature('engagement-dashboard', {
 	up: () =>
 		Meteor.startup(async () => {
 			const { prepareAnalytics, attachCallbacks } = await import('../lib/engagementDashboard/startup');
