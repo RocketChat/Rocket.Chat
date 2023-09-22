@@ -1,4 +1,3 @@
-import type { IStats, Serialized } from '@rocket.chat/core-typings';
 import { Tabs } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -7,11 +6,9 @@ import React, { useState } from 'react';
 import Page from '../../../components/Page';
 import AnalyticsReports from './AnalyticsReports';
 import ServerLogs from './ServerLogs';
-import { useAnalyticsObject } from './hooks/useAnalyticsObject';
 
 const ViewLogsPage = (): ReactElement => {
 	const t = useTranslation();
-	const { data, isSuccess } = useAnalyticsObject();
 
 	const [tab, setTab] = useState('Logs');
 
@@ -27,7 +24,7 @@ const ViewLogsPage = (): ReactElement => {
 						{t('Analytic_reports')}
 					</Tabs.Item>
 				</Tabs>
-				{tab === 'Logs' ? <ServerLogs /> : <AnalyticsReports analytics={isSuccess ? data : ({} as Serialized<IStats>)} />}
+				{tab === 'Logs' ? <ServerLogs /> : <AnalyticsReports />}
 			</Page.Content>
 		</Page>
 	);

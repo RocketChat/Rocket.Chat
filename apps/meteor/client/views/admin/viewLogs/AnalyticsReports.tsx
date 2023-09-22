@@ -1,12 +1,15 @@
-import type { IStats, Serialized } from '@rocket.chat/core-typings';
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Box, Icon, Skeleton } from '@rocket.chat/fuselage';
 import { Link } from '@rocket.chat/layout';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { Trans } from 'react-i18next';
 
-const AnalyticsReports = ({ analytics }: { analytics: Serialized<IStats> }) => {
+import { useAnalyticsObject } from './hooks/useAnalyticsObject';
+
+const AnalyticsReports = () => {
 	const t = useTranslation();
+
+	const { data, isLoading, isSuccess, isError } = useAnalyticsObject();
 
 	return (
 		<>
@@ -29,7 +32,15 @@ const AnalyticsReports = ({ analytics }: { analytics: Serialized<IStats> }) => {
 				</Box>
 			</Box>
 			<Box display='flex' flexDirection='column' padding={8} flexGrow={1} color='default' bg='neutral' borderRadius={4} overflow='scroll'>
-				<pre>{JSON.stringify(analytics, null, '\t')}</pre>
+				{isSuccess && <pre>{JSON.stringify(data, null, '\t')}</pre>}
+				{isError && t('Something_went_wrong_try_again_later')}
+				{isLoading && (
+					<>
+						<Skeleton />
+						<Skeleton />
+						<Skeleton />
+					</>
+				)}
 			</Box>
 		</>
 	);

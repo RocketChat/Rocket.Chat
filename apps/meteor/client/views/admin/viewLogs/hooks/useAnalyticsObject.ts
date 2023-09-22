@@ -4,5 +4,5 @@ import { useQuery } from '@tanstack/react-query';
 export const useAnalyticsObject = () => {
 	const getAnalytics = useEndpoint('GET', '/v1/statistics');
 
-	return useQuery(['analytics'], () => getAnalytics({}));
+	return useQuery(['analytics'], () => getAnalytics({}), { refetchOnMount: false });
 };
