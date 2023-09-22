@@ -1,13 +1,13 @@
 {
 	"name": "@rocket.chat/rest-typings",
-	"version": "6.3.4",
+	"version": "6.4.0-rc.4",
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/jest": "~29.5.3",
 		"eslint": "~8.45.0",
 		"jest": "~29.6.1",
 		"jest-environment-jsdom": "~29.6.1",
-		"mongodb": "^4.12.1",
+		"mongodb": "^4.17.1",
 		"ts-jest": "~29.0.5",
 		"typescript": "~5.2.2"
 	},
@@ -27,7 +27,7 @@
 		"@rocket.chat/apps-engine": "1.41.0-alpha.290",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/message-parser": "next",
-		"@rocket.chat/ui-kit": "next",
+		"@rocket.chat/ui-kit": "^0.32.1",
 		"ajv": "^8.11.0",
 		"ajv-formats": "^2.1.1"
 	},

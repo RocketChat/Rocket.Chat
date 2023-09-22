@@ -1,5 +1,73 @@
 # @rocket.chat/api-client
 
+## 0.1.8-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.4
+- @rocket.chat/rest-typings@6.4.0-rc.4
+
+## 0.1.8-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.3
+- @rocket.chat/rest-typings@6.4.0-rc.3
+
+## 0.1.8-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.2
+- @rocket.chat/rest-typings@6.4.0-rc.2
+
+## 0.1.8-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.1
+- @rocket.chat/rest-typings@6.4.0-rc.1
+
+## 0.1.8-rc.0
+
+### Patch Changes
+
+- Updated dependencies [239a34e877]
+- Updated dependencies [203304782f]
+- Updated dependencies [4186eecf05]
+- Updated dependencies [2db32f0d4a]
+- Updated dependencies [ba24f3c21f]
+- Updated dependencies [19aec23cda]
+- Updated dependencies [ebab8c4dd8]
+- Updated dependencies [357a3a50fa]
+- Updated dependencies [61128364d6]
+- Updated dependencies [9496f1eb97]
+- Updated dependencies [d45365436e]
+- Updated dependencies [93d4912e17]
+  - @rocket.chat/core-typings@6.4.0-rc.0
+  - @rocket.chat/rest-typings@6.4.0-rc.0
+
+## 0.1.7
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.7
+- @rocket.chat/rest-typings@6.3.7
+
+## 0.1.6
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.6
+- @rocket.chat/rest-typings@6.3.6
+
+## 0.1.5
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.5
+- @rocket.chat/rest-typings@6.3.5
+
 ## 0.1.4
 
 ### Patch Changes

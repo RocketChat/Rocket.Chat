@@ -3607,7 +3607,7 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 	'/v1/livechat/integrations.settings': {
-		GET: () => { settings: ISetting[] };
+		GET: () => { settings: ISetting[]; success: boolean };
 	};
 	'/v1/livechat/upload/:rid': {
 		POST: (params: { file: File }) => IMessage & { newRoom: boolean; showConnecting: boolean };
@@ -3803,5 +3803,8 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-agent': {
 		GET: (params: GETDashboardConversationsByType) => ReportWithUnmatchingElements;
+	};
+	'/v1/livechat/webhook.test': {
+		POST: () => void;
 	};
 };

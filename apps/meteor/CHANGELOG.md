@@ -1,5 +1,361 @@
 # @rocket.chat/meteor
 
+## 6.4.0-rc.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.4.0-rc.4
+  - @rocket.chat/rest-typings@6.4.0-rc.4
+  - @rocket.chat/api-client@0.1.8-rc.4
+  - @rocket.chat/omnichannel-services@0.0.14-rc.4
+  - @rocket.chat/pdf-worker@0.0.14-rc.4
+  - @rocket.chat/presence@0.0.14-rc.4
+  - @rocket.chat/core-services@0.2.0-rc.4
+  - @rocket.chat/cron@0.0.10-rc.4
+  - @rocket.chat/gazzodown@2.0.0-rc.4
+  - @rocket.chat/model-typings@0.1.0-rc.4
+  - @rocket.chat/ui-contexts@2.0.0-rc.4
+  - @rocket.chat/fuselage-ui-kit@2.0.0-rc.4
+  - @rocket.chat/models@0.0.14-rc.4
+  - @rocket.chat/ui-theming@0.1.0-rc.0
+  - @rocket.chat/ui-client@2.0.0-rc.4
+  - @rocket.chat/ui-video-conf@2.0.0-rc.4
+  - @rocket.chat/web-ui-registration@2.0.0-rc.4
+  - @rocket.chat/instance-status@0.0.14-rc.4
+
+## 6.4.0-rc.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- 614a9b8fc8: Show correct date for last day time
+- 61a106fbf2: Increase cron job check delay to 1 min from 5s.
+
+  This reduces MongoDB requests introduced on 6.3.
+
+- Updated dependencies [d9a150000d]
+- Updated dependencies [61a106fbf2]
+  - @rocket.chat/presence@0.0.13-rc.3
+  - @rocket.chat/cron@0.0.9-rc.3
+  - @rocket.chat/core-typings@6.4.0-rc.3
+  - @rocket.chat/rest-typings@6.4.0-rc.3
+  - @rocket.chat/api-client@0.1.7-rc.3
+  - @rocket.chat/omnichannel-services@0.0.13-rc.3
+  - @rocket.chat/pdf-worker@0.0.13-rc.3
+  - @rocket.chat/core-services@0.2.0-rc.3
+  - @rocket.chat/gazzodown@2.0.0-rc.3
+  - @rocket.chat/model-typings@0.1.0-rc.3
+  - @rocket.chat/ui-contexts@2.0.0-rc.3
+  - @rocket.chat/fuselage-ui-kit@2.0.0-rc.3
+  - @rocket.chat/models@0.0.13-rc.3
+  - @rocket.chat/ui-theming@0.1.0-rc.0
+  - @rocket.chat/ui-client@2.0.0-rc.3
+  - @rocket.chat/ui-video-conf@2.0.0-rc.3
+  - @rocket.chat/web-ui-registration@2.0.0-rc.3
+  - @rocket.chat/instance-status@0.0.13-rc.3
+
+## 6.4.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.4.0-rc.2
+  - @rocket.chat/rest-typings@6.4.0-rc.2
+  - @rocket.chat/api-client@0.1.7-rc.2
+  - @rocket.chat/omnichannel-services@0.0.13-rc.2
+  - @rocket.chat/pdf-worker@0.0.13-rc.2
+  - @rocket.chat/presence@0.0.13-rc.2
+  - @rocket.chat/core-services@0.2.0-rc.2
+  - @rocket.chat/cron@0.0.9-rc.2
+  - @rocket.chat/gazzodown@2.0.0-rc.2
+  - @rocket.chat/model-typings@0.1.0-rc.2
+  - @rocket.chat/ui-contexts@2.0.0-rc.2
+  - @rocket.chat/fuselage-ui-kit@2.0.0-rc.2
+  - @rocket.chat/models@0.0.13-rc.2
+  - @rocket.chat/ui-theming@0.1.0-rc.0
+  - @rocket.chat/ui-client@2.0.0-rc.2
+  - @rocket.chat/ui-video-conf@2.0.0-rc.2
+  - @rocket.chat/web-ui-registration@2.0.0-rc.2
+  - @rocket.chat/instance-status@0.0.13-rc.2
+
+## 6.4.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.4.0-rc.1
+  - @rocket.chat/rest-typings@6.4.0-rc.1
+  - @rocket.chat/api-client@0.1.5-rc.1
+  - @rocket.chat/omnichannel-services@0.0.11-rc.1
+  - @rocket.chat/pdf-worker@0.0.11-rc.1
+  - @rocket.chat/presence@0.0.11-rc.1
+  - @rocket.chat/core-services@0.2.0-rc.1
+  - @rocket.chat/cron@0.0.7-rc.1
+  - @rocket.chat/gazzodown@2.0.0-rc.1
+  - @rocket.chat/model-typings@0.1.0-rc.1
+  - @rocket.chat/ui-contexts@2.0.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@2.0.0-rc.1
+  - @rocket.chat/models@0.0.11-rc.1
+  - @rocket.chat/ui-theming@0.1.0-rc.0
+  - @rocket.chat/ui-client@2.0.0-rc.1
+  - @rocket.chat/ui-video-conf@2.0.0-rc.1
+  - @rocket.chat/web-ui-registration@2.0.0-rc.1
+  - @rocket.chat/instance-status@0.0.11-rc.1
+
+## 6.4.0-rc.0
+
+### Minor Changes
+
+- 239a34e877: new: ring mobile users on direct conference calls
+- 04fe492555: Added new Omnichannel's trigger condition "After starting a chat".
+- 4186eecf05: Introduce the ability to report an user
+- 92b690d206: fix: Wrong toast message while creating a new custom sound with an existing name
+- f83ea5d6e8: Added support for threaded conversation in Federated rooms.
+- 682d0bc05a: fix: Time format of Retention Policy
+- 1b42dfc6c1: Added a new Roles bridge to RC Apps-Engine for reading and retrieving role details.
+- 2db32f0d4a: Add option to select what URL previews should be generated for each message.
+- 982ef6f459: Add new event to notify users directly about new banners
+- 19aec23cda: New AddUser workflow for Federated Rooms
+- ebab8c4dd8: Added Reports Metrics Dashboard to Omnichannel
+- 85a936220c: feat: remove enforce password fallback dependency
+- 5832be2e1b: Reorganized the message menu
+- 074db3b419: UX improvement for the Moderation Console Context bar for viewing the reported messages. The Report reason is now displayed in the reported messages context bar.
+  The Moderation Action Modal confirmation description is updated to be more clear and concise.
+- 357a3a50fa: feat: high-contrast theme
+- 7070f00b05: feat: return all broken password policies at once
+- ead7c7bef2: Fixed read receipts not getting deleted after corresponding message is deleted
+- ad08c26b46: Introduced upsells for the engagement dashboard and device management admin sidebar items in CE workspaces. Additionally, restructured the admin sidebar items to enhance organization.
+- 93d4912e17: fix: missing params on updateOwnBasicInfo endpoint
+- ee3815fce4: feat: add ChangePassword field to Account/Security
+- 1000b9b317: Fixed the issue of apps icon uneven alignment in case of missing icons inside message composer toolbar & message toolbar menu.
+
+### Patch Changes
+
+- 6d453f71ac: Translation files are requested multiple times
+- cada29b6ce: fix: Managers allowed to make deactivated agent's available
+- 470c29d7e9: Fixed an issue causing `queue time` to be calculated from current time when a room was closed without being served.
+  Now:
+  - For served rooms: queue time = servedBy time - queuedAt
+  - For not served, but open rooms = now - queuedAt
+  - For not served and closed rooms = closedAt - queuedAt
+- ea8998602b: fix: Performance issue on `Messages.countByType` aggregation caused by unindexed property on messages collection
+- a08006c9f0: feat: add sections to room header and user infos menus with menuV2
+- 203304782f: Fixed `overrideDestinationChannelEnabled` treated as a required param in `integrations.create` and `integration.update` endpoints
+- 9edca67b9b: feat(apps): `ActionManagerBusyState` component for apps `ui.interaction`
+- 6fa30ddcd1: Hide Reset TOTP option if 2FA is disabled
+- ff7e181464: Added ability to freeze or completely disable integration scripts through envvars
+- 4ce8ea89a8: fix: custom emoji upload with FileSystem method
+- 87570d0fb7: New filters to the Rooms Table at `Workspace > Rooms`
+- 8a59855fcf: When setting a room as read-only, do not allow previously unmuted users to send messages.
+- c73f5373b8: fix: finnish translation
+- f5a886a144: fixed an issue where 2fa was not working after an OAuth redirect
+- 459c8574ed: Fixed issue with custom OAuth services' settings not being be fully removed
+- 42644a6e44: fix: Prevent `RoomProvider.useEffect` from subscribing to room-data stream multiple times
+- 9bdbc9b086: load sounds right before playing them
+- 6154979119: Fix users being created without the `roles` field
+- 6bcdd88531: Fixed CAS login after popup closes
+- 839789c988: Fix moment timestamps language change
+- f0025d4d92: Fixed message fetching method in LivechatBridge for Apps
+- 9c957b9d9a: Fix pruning messages in a room results in an incorrect message counter
+- 583a3149fe: fix: rejected conference calls continue to ring
+- b59fd5d7fb: User information crashing for some locales
+- 4349443629: Fix performance issue on Engagement Dashboard aggregation
+- 69447e1864: Added ability to disable private app installation via envvar (DISABLE_PRIVATE_APP_INSTALLATION)
+- 52a1aa94eb: improve: System messages for omni-visitor abandonment feature
+- 7dffec2e2f: chore: Add danger variant to apps action button menus
+- f0c8867bb9: Disabled call to tags enterprise endpoint when on community license
+- 5e89694bfa: Fixes SAML full name updates not being mirrored to DM rooms.
+- d6f0c6afe2: Fixed Importer Progress Bar progress indicator
+- 177506ea91: Make user default role setting public
+- 3fb2124166: Fixed misleading of 'total' in team members list inside Channel
+- 5cee21468e: Fix spotlight search does not find rooms with special or non-latin characters
+- cf59c8abe3: Fix engagement dashboard not showing data
+- dfb9a075b3: fixed wrong user status displayed during mentioning a user in a channel
+- 1fbbb6241a: Don't allow to report self messages
+- 53e0c346e2: fixed scrollbar over content in Federated Room List
+- 5321e87363: Fix seat counter including bots users
+- 7137a193a7: feat: Add flag to disable teams mention via troubleshoot page
+- 59e6fe3d2a: fixed layout changing from embedded view when navigating
+- 3245a0a318: Fix LinkedIn OAuth broken
+- 45a8943ed4: Removed old/deprecated Rocket.Chat Federation card from Info page
+- 6eea189ec8: Fix the code that was setting email URL to an invalid value when SMTP was not set
+- f5a886a144: fixed an issue where oauth login was not working with some providers
+- ba24f3c21f: Fixed `default` field not being returned from the `setDefault` endpoints when setting to false
+- a79f61461d: Fixed an issue where timeout for http requests in Apps-Engine bridges was too short
+- 51b988b3df: Fix importer filters not working
+- 5d857f462c: fix: stop blinking "Room not found" before dm creation
+- db26f8a8ee: fixed an issue with the positioning of the message menu
+- aaefe865a7: fix: agent role being removed upon user deactivation
+- 306a5830c3: Fix `mention-here` and `mention-all` permissions not being honored
+- 761cad4382: Fix CORS headers not being set for assets
+- 9e5718002a: Fixed Slackbridge was not handling correctly received events from Slack anymore. Events: (Send, edit, delete, react meassages)
+- 54ef89c9a7: fix: show requested filters only on requested apps view
+- 1589279b79: Fix users not able to login after block time perdiod has passed
+- 880ab5689c: Fixed selected departments not being displayed due to pagination
+- a81bad24e0: Fixed Apps-Engine event `IPostUserCreated` execution
+- 7a4fdf41f8: Fix validation in app status call that allowed Enterprise apps to be enabled in invalid environments
+- e28f8d95f0: Fixed inviter not informed when inviting member to room via `/invite` slashcommand
+- d47d2021ac: Fixed "teams" icon not being displayed on spotlight sidebar search
+- 93d5a5ceb8: fix: User timezone not being respected on Current Chat's filter
+- f556518fa1: Change SAU aggregation to consider only sessions from few days ago instead of the whole past.
+
+  This is particularly important for large workspaces in case the cron job did not run for some time, in that case the amount of sessions would accumulate and the aggregation would take a long time to run.
+
+- b747f3d3bc: Fixed unable to create admin user using ADMIN\_\* environment variables
+- 2cf2643399: Fixed failing user data exports
+- ace35997a6: chore: Increase cache time from 5s to 10s on `getUnits` helpers. This should reduce the number of DB calls made by this method to fetch the unit limitations for a user.
+- f5a886a144: fixed an issue on oauth login that caused missing emails to be detected as changed data
+- 61128364d6: Fixes a problem where the calculated time for considering the visitor abandonment was the first message from the visitor and not the visitor's reply to the agent.
+- 9496f1eb97: Deprecate `livechat:getOverviewData` and `livechat:getAgentOverviewData` methods and create API endpoints `livechat/analytics/overview` and `livechat/analytics/agent-overview` to fetch analytics data
+- 01dec055a0: Fixed Accounts profile form name change was not working
+- e4837a15ed: Fixed user mentioning when prepending the username with `>`
+- d45365436e: Use group filter when set to LDAP sync process
+- c536a4a237: fix: Missing padding on Omnichannel contacts Contextualbar loading state
+- 87e4a4aa56: Fixes a problem that allowed users to send empty spaces as comment to bypass the "comment required" setting
+- 69a5213afc: Fixed an issue where a mailer error was being sent to customers using offline message's form on Omnichannel instead of the translated one
+- b8f3d5014f: Fixed the login page language switcher, now the component has a new look, is reactive and the language selection becomes concrete upon login in. Also changed the default language of the login page to be the browser language.
+- 22cf158c43: fixed the unread messages mark not showing
+- 72a34a02f7: fixed the video recorder window not closing after permission is denied.
+- Updated dependencies [239a34e877]
+- Updated dependencies [203304782f]
+- Updated dependencies [1246a21648]
+- Updated dependencies [4186eecf05]
+- Updated dependencies [8a59855fcf]
+- Updated dependencies [f9a748526d]
+- Updated dependencies [5cee21468e]
+- Updated dependencies [dc1d8ce92e]
+- Updated dependencies [2db32f0d4a]
+- Updated dependencies [982ef6f459]
+- Updated dependencies [ba24f3c21f]
+- Updated dependencies [19aec23cda]
+- Updated dependencies [ebab8c4dd8]
+- Updated dependencies [aaefe865a7]
+- Updated dependencies [074db3b419]
+- Updated dependencies [357a3a50fa]
+- Updated dependencies [f556518fa1]
+- Updated dependencies [ead7c7bef2]
+- Updated dependencies [61128364d6]
+- Updated dependencies [9496f1eb97]
+- Updated dependencies [dce4a829fa]
+- Updated dependencies [d45365436e]
+- Updated dependencies [b8f3d5014f]
+- Updated dependencies [93d4912e17]
+- Updated dependencies [ee3815fce4]
+  - @rocket.chat/core-typings@6.4.0-rc.0
+  - @rocket.chat/rest-typings@6.4.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@2.0.0-rc.0
+  - @rocket.chat/model-typings@0.1.0-rc.0
+  - @rocket.chat/core-services@0.2.0-rc.0
+  - @rocket.chat/ui-client@2.0.0-rc.0
+  - @rocket.chat/ui-contexts@2.0.0-rc.0
+  - @rocket.chat/ui-theming@0.1.0-rc.0
+  - @rocket.chat/i18n@0.0.2-rc.0
+  - @rocket.chat/web-ui-registration@2.0.0-rc.0
+  - @rocket.chat/api-client@0.1.5-rc.0
+  - @rocket.chat/omnichannel-services@0.0.11-rc.0
+  - @rocket.chat/pdf-worker@0.0.11-rc.0
+  - @rocket.chat/presence@0.0.11-rc.0
+  - @rocket.chat/cron@0.0.7-rc.0
+  - @rocket.chat/gazzodown@2.0.0-rc.0
+  - @rocket.chat/models@0.0.11-rc.0
+  - @rocket.chat/ui-video-conf@2.0.0-rc.0
+  - @rocket.chat/base64@1.0.12
+  - @rocket.chat/instance-status@0.0.11-rc.0
+  - @rocket.chat/random@1.2.1
+  - @rocket.chat/sha256@1.0.9
+  - @rocket.chat/ui-composer@0.0.1
+
+## 6.3.7
+
+### Patch Changes
+
+- f1e36a5e46: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- e1acdda0a3: User information crashing for some locales
+- deffcb187c: Increase cron job check delay to 1 min from 5s.
+
+  This reduces MongoDB requests introduced on 6.3.
+
+- Updated dependencies [c655be17ca]
+- Updated dependencies [deffcb187c]
+  - @rocket.chat/presence@0.0.13
+  - @rocket.chat/cron@0.0.9
+  - @rocket.chat/core-typings@6.3.7
+  - @rocket.chat/rest-typings@6.3.7
+  - @rocket.chat/api-client@0.1.7
+  - @rocket.chat/omnichannel-services@0.0.13
+  - @rocket.chat/pdf-worker@0.0.13
+  - @rocket.chat/core-services@0.1.7
+  - @rocket.chat/gazzodown@1.0.7
+  - @rocket.chat/model-typings@0.0.13
+  - @rocket.chat/ui-contexts@1.0.7
+  - @rocket.chat/fuselage-ui-kit@1.0.7
+  - @rocket.chat/models@0.0.13
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.7
+  - @rocket.chat/ui-video-conf@1.0.7
+  - @rocket.chat/web-ui-registration@1.0.7
+  - @rocket.chat/instance-status@0.0.13
+
+## 6.3.6
+
+### Patch Changes
+
+- 3bbe12e850: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 285e591a73: Fix engagement dashboard not showing data
+  - @rocket.chat/core-typings@6.3.6
+  - @rocket.chat/rest-typings@6.3.6
+  - @rocket.chat/api-client@0.1.6
+  - @rocket.chat/omnichannel-services@0.0.12
+  - @rocket.chat/pdf-worker@0.0.12
+  - @rocket.chat/presence@0.0.12
+  - @rocket.chat/core-services@0.1.6
+  - @rocket.chat/cron@0.0.8
+  - @rocket.chat/gazzodown@1.0.6
+  - @rocket.chat/model-typings@0.0.12
+  - @rocket.chat/ui-contexts@1.0.6
+  - @rocket.chat/fuselage-ui-kit@1.0.6
+  - @rocket.chat/models@0.0.12
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.6
+  - @rocket.chat/ui-video-conf@1.0.6
+  - @rocket.chat/web-ui-registration@1.0.6
+  - @rocket.chat/instance-status@0.0.12
+
+## 6.3.5
+
+### Patch Changes
+
+- 4cb0b6ba6f: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- f75564c449: Fix a bug that prevented the error message from being shown in the private app installation page
+- 03923405e8: Fixed selected departments not being displayed due to pagination
+- 92d25b9c7a: Change SAU aggregation to consider only sessions from few days ago instead of the whole past.
+
+  This is particularly important for large workspaces in case the cron job did not run for some time, in that case the amount of sessions would accumulate and the aggregation would take a long time to run.
+
+- Updated dependencies [92d25b9c7a]
+  - @rocket.chat/model-typings@0.0.11
+  - @rocket.chat/omnichannel-services@0.0.11
+  - @rocket.chat/models@0.0.11
+  - @rocket.chat/presence@0.0.11
+  - @rocket.chat/core-services@0.1.5
+  - @rocket.chat/cron@0.0.7
+  - @rocket.chat/instance-status@0.0.11
+  - @rocket.chat/core-typings@6.3.5
+  - @rocket.chat/rest-typings@6.3.5
+  - @rocket.chat/api-client@0.1.5
+  - @rocket.chat/pdf-worker@0.0.11
+  - @rocket.chat/gazzodown@1.0.5
+  - @rocket.chat/ui-contexts@1.0.5
+  - @rocket.chat/fuselage-ui-kit@1.0.5
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.5
+  - @rocket.chat/ui-video-conf@1.0.5
+  - @rocket.chat/web-ui-registration@1.0.5
+
 ## 6.3.4
 
 ### Patch Changes

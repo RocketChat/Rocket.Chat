@@ -8,11 +8,11 @@ import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationIn
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
 export async function getWorkspaceAccessTokenWithScope(scope = '') {
-	const { connectToCloud, workspaceRegistered } = await retrieveRegistrationStatus();
+	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
 	const tokenResponse = { token: '', expiresAt: new Date() };
 
-	if (!connectToCloud || !workspaceRegistered) {
+	if (!workspaceRegistered) {
 		return tokenResponse;
 	}
 
