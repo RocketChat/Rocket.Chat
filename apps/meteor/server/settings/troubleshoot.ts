@@ -32,20 +32,30 @@ export const createTroubleshootSettings = () =>
 			type: 'boolean',
 			i18nDescription: 'Troubleshoot_Disable_Livechat_Activity_Monitor_Alert',
 		});
-		await this.add('Troubleshoot_Disable_Statistics_Generator', false, {
-			type: 'boolean',
-			i18nDescription: 'Troubleshoot_Disable_Statistics_Generator_Alert',
-		});
+
 		await this.add('Troubleshoot_Disable_Data_Exporter_Processor', false, {
 			type: 'boolean',
 			i18nDescription: 'Troubleshoot_Disable_Data_Exporter_Processor_Alert',
 		});
-		await this.add('Troubleshoot_Disable_Workspace_Sync', false, {
-			type: 'boolean',
-			i18nDescription: 'Troubleshoot_Disable_Workspace_Sync_Alert',
-		});
 		await this.add('Troubleshoot_Disable_Teams_Mention', false, {
 			type: 'boolean',
 			i18nDescription: 'Troubleshoot_Disable_Teams_Mention_Alert',
+		});
+
+		// TODO: remove this setting at next major (7.0.0)
+		await this.add('Troubleshoot_Disable_Statistics_Generator', false, {
+			type: 'boolean',
+			i18nDescription: 'Troubleshoot_Disable_Statistics_Generator_Alert',
+			private: true,
+			hidden: true,
+			readonly: true,
+		});
+		// TODO: remove this setting at next major (7.0.0)
+		await this.add('Troubleshoot_Disable_Workspace_Sync', false, {
+			type: 'boolean',
+			i18nDescription: 'Troubleshoot_Disable_Workspace_Sync_Alert',
+			private: true,
+			hidden: true,
+			readonly: true,
 		});
 	});

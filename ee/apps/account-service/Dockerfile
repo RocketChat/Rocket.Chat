@@ -29,6 +29,7 @@ COPY ./yarn.lock .
 COPY ./.yarnrc.yml .
 COPY ./.yarn/plugins .yarn/plugins
 COPY ./.yarn/releases .yarn/releases
+COPY ./.yarn/patches .yarn/patches
 COPY ./ee/apps/${SERVICE}/package.json ee/apps/${SERVICE}/package.json
 
 ENV NODE_ENV=production \

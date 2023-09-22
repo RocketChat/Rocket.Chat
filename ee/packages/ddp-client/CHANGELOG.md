@@ -1,11 +1,32 @@
 # @rocket.chat/ddp-client
 
+## 0.2.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.4.0-rc.4
+- @rocket.chat/api-client@0.1.8-rc.4
+
+## 0.2.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.4.0-rc.3
+- @rocket.chat/api-client@0.1.8-rc.3
+
+## 0.2.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.4.0-rc.2
+- @rocket.chat/api-client@0.1.8-rc.2
+
 ## 0.2.0-rc.1
 
 ### Patch Changes
 
 - @rocket.chat/rest-typings@6.4.0-rc.1
-- @rocket.chat/api-client@0.1.5-rc.1
+- @rocket.chat/api-client@0.1.8-rc.1
 
 ## 0.2.0-rc.0
 
@@ -26,6 +47,14 @@
 - Updated dependencies [93d4912e17]
   - @rocket.chat/rest-typings@6.4.0-rc.0
   - @rocket.chat/api-client@0.1.5-rc.0
+
+## 0.1.7
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.3.7
+- @rocket.chat/api-client@0.1.7
+
 ## 0.1.6
 
 ### Patch Changes
