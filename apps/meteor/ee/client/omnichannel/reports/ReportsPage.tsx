@@ -1,14 +1,20 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import Page from '../../../../client/components/Page';
+import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
 import { ResizeObserver } from './components/ResizeObserver';
 import { AgentsSection, ChannelsSection, DepartmentsSection, StatusSection, TagsSection } from './sections';
 
 const ReportsPage = () => {
 	const t = useTranslation();
 
+	const canViewReports = usePermission('view-livechat-reports');
+
+	if (!canViewReports) {
+		return <NotAuthorizedPage />;
+	}
 	return (
 		<Page background='tint'>
 			<Page.Header title={t('Reports')} />
