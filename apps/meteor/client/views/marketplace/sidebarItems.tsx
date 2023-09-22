@@ -19,7 +19,7 @@ export const {
 	{
 		href: '/marketplace/enterprise',
 		icon: 'lightning',
-		i18nLabel: 'Enterprise',
+		i18nLabel: 'Premium',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
 	{

@@ -18,17 +18,21 @@ const BundleChips = ({ bundledIn }: BundleChipsProps): ReactElement => {
 
 	return (
 		<>
-			{bundledIn.map((bundle) => (
-				<Tag
-					key={bundle.bundleId}
-					variant='featured'
-					title={t('this_app_is_included_with_subscription', {
-						bundleName: bundle.bundleName,
-					})}
-				>
-					{bundle.bundleName}
-				</Tag>
-			))}
+			{bundledIn.map(({ bundleId, bundleName }) => {
+				// TODO NBJ: Remove this when enterprise is renamed to premium in the Apps data
+				const handleBundleName = bundleName === 'Enterprise' ? 'Premium' : bundleName;
+				return (
+					<Tag
+						key={bundleId}
+						variant='featured'
+						title={t('this_app_is_included_with_subscription', {
+							bundleName: handleBundleName,
+						})}
+					>
+						{handleBundleName}
+					</Tag>
+				);
+			})}
 		</>
 	);
 };

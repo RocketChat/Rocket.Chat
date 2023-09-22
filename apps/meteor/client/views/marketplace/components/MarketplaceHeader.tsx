@@ -25,8 +25,11 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 		return null;
 	}
 
+	// TODO NBJ: Remove this when enterprise is renamed to premium in the Apps data
+	const handleMarketplacePremiumTitle = title === t('Enterprise') ? t('Premium') : title;
+
 	return (
-		<Page.Header title={title}>
+		<Page.Header title={handleMarketplacePremiumTitle}>
 			<ButtonGroup flexWrap='wrap' justifyContent='flex-end'>
 				{result.isLoading && <GenericResourceUsageSkeleton />}
 				{result.isSuccess && !result.data.hasUnlimitedApps && <EnabledAppsCount {...result.data} context={context} />}

@@ -528,6 +528,7 @@
   "Apps_context_installed": "Installed",
   "Apps_context_requested": "Requested",
   "Apps_context_private": "Private Apps",
+  "Apps_context_premium": "Premium",
   "Apps_Count_Enabled": "{{count}} app enabled",
   "Apps_Count_Enabled_plural": "{{count}} apps enabled",
   "Private_Apps_Count_Enabled": "{{count}} private app enabled",
@@ -4527,6 +4528,7 @@
   "Search_Installed_Apps": "Search installed apps",
   "Search_Private_apps": "Search private apps",
   "Search_Requested_Apps": "Search requested apps",
+  "Search_Premium_Apps": "Search Premium apps",
   "Search_by_file_name": "Search by file name",
   "Search_by_username": "Search by username",
   "Search_by_category": "Search by category",
@@ -6050,5 +6052,6 @@
   "All_visible": "All visible",
   "Filter_by_room": "Filter by room type",
   "Filter_by_visibility": "Filter by visibility",
-  "Theme_Appearence": "Theme Appearence"
+  "Theme_Appearence": "Theme Appearence",
+  "Premium": "Premium"
 }
