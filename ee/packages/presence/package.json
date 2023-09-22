@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/presence",
-	"version": "0.0.10",
+	"version": "0.0.14-rc.4",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.9",
@@ -32,6 +32,6 @@
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
-		"mongodb": "^4.12.1"
+		"mongodb": "^4.17.1"
 	}
 }
