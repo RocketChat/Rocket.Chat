@@ -1,0 +1,130 @@
+diff --git a/dist/generateDocgenCodeBlock.js b/dist/generateDocgenCodeBlock.js
+index 0993ac13e4b2aae6d24cf408d6a585b4ddeb7337..1405896291288eb1322d6c42144afd3b4fbd1abf 100644
+--- a/dist/generateDocgenCodeBlock.js
++++ b/dist/generateDocgenCodeBlock.js
+@@ -34,7 +34,7 @@ function insertTsIgnoreBeforeStatement(statement) {
+  * ```
+  */
+ function setDisplayName(d) {
+-    return insertTsIgnoreBeforeStatement(typescript_1.default.createExpressionStatement(typescript_1.default.createBinary(typescript_1.default.createPropertyAccess(typescript_1.default.createIdentifier(d.displayName), typescript_1.default.createIdentifier("displayName")), typescript_1.default.SyntaxKind.EqualsToken, typescript_1.default.createLiteral(d.displayName))));
++    return insertTsIgnoreBeforeStatement(typescript_1.default.factory.createExpressionStatement(typescript_1.default.factory.createBinaryExpression(typescript_1.default.factory.createPropertyAccessExpression(typescript_1.default.factory.createIdentifier(d.displayName), typescript_1.default.factory.createIdentifier("displayName")), typescript_1.default.SyntaxKind.EqualsToken, typescript_1.default.factory.createStringLiteral(d.displayName))));
+ }
+ /**
+  * Set a component prop description.
+@@ -65,7 +65,7 @@ function createPropDefinition(propName, prop, options) {
+      *
+      * @param defaultValue Default prop value or null if not set.
+      */
+-    const setDefaultValue = (defaultValue) => typescript_1.default.createPropertyAssignment(typescript_1.default.createLiteral("defaultValue"), 
++    const setDefaultValue = (defaultValue) => typescript_1.default.factory.createPropertyAssignment(typescript_1.default.factory.createStringLiteral("defaultValue"),
+     // Use a more extensive check on defaultValue. Sometimes the parser
+     // returns an empty object.
+     defaultValue !== null &&
+@@ -75,12 +75,19 @@ function createPropDefinition(propName, prop, options) {
+         (typeof defaultValue.value === "string" ||
+             typeof defaultValue.value === "number" ||
+             typeof defaultValue.value === "boolean")
+-        ? typescript_1.default.createObjectLiteral([
+-            typescript_1.default.createPropertyAssignment(typescript_1.default.createIdentifier("value"), typescript_1.default.createLiteral(defaultValue.value)),
++        ? typescript_1.default.factory.createObjectLiteralExpression([
++            typescript_1.default.factory.createPropertyAssignment(typescript_1.default.factory.createIdentifier("value"), typeof defaultValue.value === "string"
++            ? typescript_1.default.factory.createStringLiteral(defaultValue.value)
++            : // eslint-disable-next-line no-nested-ternary
++            typeof defaultValue.value === "number"
++            ? typescript_1.default.factory.createNumericLiteral(defaultValue.value)
++            : defaultValue.value
++            ? typescript_1.default.factory.createTrue()
++            : typescript_1.default.factory.createFalse()),
+         ])
+-        : typescript_1.default.createNull());
++        : typescript_1.default.factory.createNull());
+     /** Set a property with a string value */
+-    const setStringLiteralField = (fieldName, fieldValue) => typescript_1.default.createPropertyAssignment(typescript_1.default.createLiteral(fieldName), typescript_1.default.createLiteral(fieldValue));
++    const setStringLiteralField = (fieldName, fieldValue) => typescript_1.default.factory.createPropertyAssignment(typescript_1.default.factory.createStringLiteral(fieldName), typescript_1.default.factory.createStringLiteral(fieldValue));
+     /**
+      * ```
+      * SimpleComponent.__docgenInfo.props.someProp.description = "Prop description.";
+@@ -101,7 +108,7 @@ function createPropDefinition(propName, prop, options) {
+      * ```
+      * @param required Whether prop is required or not.
+      */
+-    const setRequired = (required) => typescript_1.default.createPropertyAssignment(typescript_1.default.createLiteral("required"), required ? typescript_1.default.createTrue() : typescript_1.default.createFalse());
++    const setRequired = (required) => typescript_1.default.factory.createPropertyAssignment(typescript_1.default.factory.createStringLiteral("required"), required ? typescript_1.default.factory.createTrue() : typescript_1.default.factory.createFalse());
+     /**
+      * ```
+      * SimpleComponent.__docgenInfo.props.someProp.type = {
+@@ -113,7 +120,7 @@ function createPropDefinition(propName, prop, options) {
+      */
+     const setValue = (typeValue) => Array.isArray(typeValue) &&
+         typeValue.every((value) => typeof value.value === "string")
+-        ? typescript_1.default.createPropertyAssignment(typescript_1.default.createLiteral("value"), typescript_1.default.createArrayLiteral(typeValue.map((value) => typescript_1.default.createObjectLiteral([
++        ? typescript_1.default.factory.createPropertyAssignment(typescript_1.default.factory.createStringLiteral("value"), typescript_1.default.factory.createArrayLiteralExpression(typeValue.map((value) => typescript_1.default.factory.createObjectLiteralExpression([
+             setStringLiteralField("value", value.value),
+         ]))))
+         : undefined;
+@@ -130,9 +137,9 @@ function createPropDefinition(propName, prop, options) {
+         if (valueField) {
+             objectFields.push(valueField);
+         }
+-        return typescript_1.default.createPropertyAssignment(typescript_1.default.createLiteral(options.typePropName), typescript_1.default.createObjectLiteral(objectFields));
++        return typescript_1.default.factory.createPropertyAssignment(typescript_1.default.factory.createStringLiteral(options.typePropName), typescript_1.default.factory.createObjectLiteralExpression(objectFields));
+     };
+-    return typescript_1.default.createPropertyAssignment(typescript_1.default.createLiteral(propName), typescript_1.default.createObjectLiteral([
++    return typescript_1.default.factory.createPropertyAssignment(typescript_1.default.factory.createStringLiteral(propName), typescript_1.default.factory.createObjectLiteralExpression([
+         setDefaultValue(prop.defaultValue),
+         setDescription(prop.description),
+         setName(prop.name),
+@@ -158,10 +165,10 @@ function createPropDefinition(propName, prop, options) {
+  * @param relativeFilename Relative file path of the component source file.
+  */
+ function insertDocgenIntoGlobalCollection(d, docgenCollectionName, relativeFilename) {
+-    return insertTsIgnoreBeforeStatement(typescript_1.default.createIf(typescript_1.default.createBinary(typescript_1.default.createTypeOf(typescript_1.default.createIdentifier(docgenCollectionName)), typescript_1.default.SyntaxKind.ExclamationEqualsEqualsToken, typescript_1.default.createLiteral("undefined")), insertTsIgnoreBeforeStatement(typescript_1.default.createStatement(typescript_1.default.createBinary(typescript_1.default.createElementAccess(typescript_1.default.createIdentifier(docgenCollectionName), typescript_1.default.createLiteral(`${relativeFilename}#${d.displayName}`)), typescript_1.default.SyntaxKind.EqualsToken, typescript_1.default.createObjectLiteral([
+-        typescript_1.default.createPropertyAssignment(typescript_1.default.createIdentifier("docgenInfo"), typescript_1.default.createPropertyAccess(typescript_1.default.createIdentifier(d.displayName), typescript_1.default.createIdentifier("__docgenInfo"))),
+-        typescript_1.default.createPropertyAssignment(typescript_1.default.createIdentifier("name"), typescript_1.default.createLiteral(d.displayName)),
+-        typescript_1.default.createPropertyAssignment(typescript_1.default.createIdentifier("path"), typescript_1.default.createLiteral(`${relativeFilename}#${d.displayName}`)),
++    return insertTsIgnoreBeforeStatement(typescript_1.default.factory.createIfStatement(typescript_1.default.factory.createBinaryExpression(typescript_1.default.factory.createTypeOfExpression(typescript_1.default.factory.createIdentifier(docgenCollectionName)), typescript_1.default.SyntaxKind.ExclamationEqualsEqualsToken, typescript_1.default.factory.createStringLiteral("undefined")), insertTsIgnoreBeforeStatement(typescript_1.default.factory.createExpressionStatement(typescript_1.default.factory.createBinaryExpression(typescript_1.default.factory.createElementAccessExpression(typescript_1.default.factory.createIdentifier(docgenCollectionName), typescript_1.default.factory.createStringLiteral(`${relativeFilename}#${d.displayName}`)), typescript_1.default.SyntaxKind.EqualsToken, typescript_1.default.factory.createObjectLiteralExpression([
++        typescript_1.default.factory.createPropertyAssignment(typescript_1.default.factory.createIdentifier("docgenInfo"), typescript_1.default.factory.createPropertyAccessExpression(typescript_1.default.factory.createIdentifier(d.displayName), typescript_1.default.factory.createIdentifier("__docgenInfo"))),
++        typescript_1.default.factory.createPropertyAssignment(typescript_1.default.factory.createIdentifier("name"), typescript_1.default.factory.createStringLiteral(d.displayName)),
++        typescript_1.default.factory.createPropertyAssignment(typescript_1.default.factory.createIdentifier("path"), typescript_1.default.factory.createStringLiteral(`${relativeFilename}#${d.displayName}`)),
+     ]))))));
+ }
+ /**
+@@ -180,15 +187,15 @@ function insertDocgenIntoGlobalCollection(d, docgenCollectionName, relativeFilen
+  * @param options Generator options.
+  */
+ function setComponentDocGen(d, options) {
+-    return insertTsIgnoreBeforeStatement(typescript_1.default.createStatement(typescript_1.default.createBinary(
++    return insertTsIgnoreBeforeStatement(typescript_1.default.factory.createExpressionStatement(typescript_1.default.factory.createBinaryExpression(
+     // SimpleComponent.__docgenInfo
+-    typescript_1.default.createPropertyAccess(typescript_1.default.createIdentifier(d.displayName), typescript_1.default.createIdentifier("__docgenInfo")), typescript_1.default.SyntaxKind.EqualsToken, typescript_1.default.createObjectLiteral([
++    typescript_1.default.factory.createPropertyAccessExpression(typescript_1.default.factory.createIdentifier(d.displayName), typescript_1.default.factory.createIdentifier("__docgenInfo")), typescript_1.default.SyntaxKind.EqualsToken, typescript_1.default.factory.createObjectLiteralExpression([
+         // SimpleComponent.__docgenInfo.description
+-        typescript_1.default.createPropertyAssignment(typescript_1.default.createLiteral("description"), typescript_1.default.createLiteral(d.description)),
++        typescript_1.default.factory.createPropertyAssignment(typescript_1.default.factory.createStringLiteral("description"), typescript_1.default.factory.createStringLiteral(d.description)),
+         // SimpleComponent.__docgenInfo.displayName
+-        typescript_1.default.createPropertyAssignment(typescript_1.default.createLiteral("displayName"), typescript_1.default.createLiteral(d.displayName)),
++        typescript_1.default.factory.createPropertyAssignment(typescript_1.default.factory.createStringLiteral("displayName"), typescript_1.default.factory.createStringLiteral(d.displayName)),
+         // SimpleComponent.__docgenInfo.props
+-        typescript_1.default.createPropertyAssignment(typescript_1.default.createLiteral("props"), typescript_1.default.createObjectLiteral(Object.entries(d.props).map(([propName, prop]) => createPropDefinition(propName, prop, options)))),
++        typescript_1.default.factory.createPropertyAssignment(typescript_1.default.factory.createStringLiteral("props"), typescript_1.default.factory.createObjectLiteralExpression(Object.entries(d.props).map(([propName, prop]) => createPropDefinition(propName, prop, options)))),
+     ]))));
+ }
+ function generateDocgenCodeBlock(options) {
+@@ -196,7 +203,7 @@ function generateDocgenCodeBlock(options) {
+     const relativeFilename = path_1.default
+         .relative("./", path_1.default.resolve("./", options.filename))
+         .replace(/\\/g, "/");
+-    const wrapInTryStatement = (statements) => typescript_1.default.createTry(typescript_1.default.createBlock(statements, true), typescript_1.default.createCatchClause(typescript_1.default.createVariableDeclaration(typescript_1.default.createIdentifier("__react_docgen_typescript_loader_error")), typescript_1.default.createBlock([])), undefined);
++    const wrapInTryStatement = (statements) => typescript_1.default.factory.createTryStatement(typescript_1.default.factory.createBlock(statements, true), typescript_1.default.factory.createCatchClause(typescript_1.default.factory.createVariableDeclaration(typescript_1.default.factory.createIdentifier("__react_docgen_typescript_loader_error")), typescript_1.default.factory.createBlock([])), undefined);
+     const codeBlocks = options.componentDocs.map((d) => wrapInTryStatement([
+         options.setDisplayName ? setDisplayName(d) : null,
+         setComponentDocGen(d, options),
+@@ -208,7 +215,7 @@ function generateDocgenCodeBlock(options) {
+     const printer = typescript_1.default.createPrinter({ newLine: typescript_1.default.NewLineKind.LineFeed });
+     const printNode = (sourceNode) => printer.printNode(typescript_1.default.EmitHint.Unspecified, sourceNode, sourceFile);
+     // Concat original source code with code from generated code blocks.
+-    const result = codeBlocks.reduce((acc, node) => `${acc}\n${printNode(node)}`, 
++    const result = codeBlocks.reduce((acc, node) => `${acc}\n${printNode(node)}`,
+     // Use original source text rather than using printNode on the parsed form
+     // to prevent issue where literals are stripped within components.
+     // Ref: https://github.com/strothj/react-docgen-typescript-loader/issues/7

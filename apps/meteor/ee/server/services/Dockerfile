@@ -10,6 +10,7 @@ COPY ./yarn.lock .
 COPY ./.yarnrc.yml .
 COPY ./.yarn/plugins .yarn/plugins
 COPY ./.yarn/releases .yarn/releases
+COPY ./.yarn/patches .yarn/patches
 
 COPY ./packages/core-services packages/core-services
 COPY ./packages/core-typings packages/core-typings
@@ -56,6 +57,7 @@ COPY ./yarn.lock .
 COPY ./.yarnrc.yml .
 COPY ./.yarn/plugins .yarn/plugins
 COPY ./.yarn/releases .yarn/releases
+COPY ./.yarn/patches .yarn/patches
 COPY ./apps/meteor/ee/server/services/package.json ./apps/meteor/ee/server/services/package.json
 
 ENV NODE_ENV=production \
