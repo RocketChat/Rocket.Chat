@@ -1,6 +1,6 @@
 import { NPS, Banner } from '@rocket.chat/core-services';
 import { type Cloud, type Serialized } from '@rocket.chat/core-typings';
-import { Settings } from '@rocket.chat/models';
+import { CloudAnnouncents, Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { v, compile } from 'suretype';
 
@@ -122,6 +122,66 @@ const fetchWorkspaceSyncPayload = async ({
 	return payload;
 };
 
+const handleNpsOnWorkspaceSync = async (nps: Exclude<Serialized<Cloud.WorkspaceSyncPayload>['nps'], undefined>) => {
+	const { id: npsId, expireAt } = nps;
+
+	const startAt = new Date(nps.startAt);
+
+	await NPS.create({
+		npsId,
+		startAt,
+		expireAt: new Date(expireAt),
+		createdBy: {
+			_id: 'rocket.cat',
+			username: 'rocket.cat',
+		},
+	});
+
+	const now = new Date();
+
+	if (startAt.getFullYear() === now.getFullYear() && startAt.getMonth() === now.getMonth() && startAt.getDate() === now.getDate()) {
+		await getAndCreateNpsSurvey(npsId);
+	}
+};
+
+const handleBannerOnWorkspaceSync = async (banners: Exclude<Serialized<Cloud.WorkspaceSyncPayload>['banners'], undefined>) => {
+	for await (const banner of banners) {
+		const { createdAt, expireAt, startAt, inactivedAt, _updatedAt, ...rest } = banner;
+
+		await Banner.create({
+			...rest,
+			createdAt: new Date(createdAt),
+			expireAt: new Date(expireAt),
+			startAt: new Date(startAt),
+			...(inactivedAt && { inactivedAt: new Date(inactivedAt) }),
+		});
+	}
+};
+
+const deserializeAnnouncement = (announcement: Serialized<Cloud.Announcement>): Cloud.Announcement => ({
+	...announcement,
+	_updatedAt: new Date(announcement._updatedAt),
+	expireAt: new Date(announcement.expireAt),
+	startAt: new Date(announcement.startAt),
+	createdAt: new Date(announcement.createdAt),
+});
+
+const handleAnnouncementsOnWorkspaceSync = async (
+	announcements: Exclude<Serialized<Cloud.WorkspaceSyncPayload>['announcements'], undefined>,
+) => {
+	const { create, delete: deleteIds } = announcements;
+
+	if (deleteIds) {
+		await CloudAnnouncents.deleteMany({ _id: { $in: deleteIds } });
+	}
+
+	for await (const announcement of create.map(deserializeAnnouncement)) {
+		const { _id, ...rest } = announcement;
+
+		await CloudAnnouncents.updateOne({ _id }, { $set: rest }, { upsert: true });
+	}
+};
+
 const consumeWorkspaceSyncPayload = async (result: Serialized<Cloud.WorkspaceSyncPayload>) => {
 	if (result.publicKey) {
 		await Settings.updateValueById('Cloud_Workspace_PublicKey', result.publicKey);
@@ -132,40 +192,16 @@ const consumeWorkspaceSyncPayload = async (result: Serialized<Cloud.WorkspaceSyn
 	}
 
 	if (result.nps) {
-		const { id: npsId, expireAt } = result.nps;
-
-		const startAt = new Date(result.nps.startAt);
-
-		await NPS.create({
-			npsId,
-			startAt,
-			expireAt: new Date(expireAt),
-			createdBy: {
-				_id: 'rocket.cat',
-				username: 'rocket.cat',
-			},
-		});
-
-		const now = new Date();
-
-		if (startAt.getFullYear() === now.getFullYear() && startAt.getMonth() === now.getMonth() && startAt.getDate() === now.getDate()) {
-			await getAndCreateNpsSurvey(npsId);
-		}
+		await handleNpsOnWorkspaceSync(result.nps);
 	}
 
 	// add banners
 	if (result.banners) {
-		for await (const banner of result.banners) {
-			const { createdAt, expireAt, startAt, inactivedAt, _updatedAt, ...rest } = banner;
+		await handleBannerOnWorkspaceSync(result.banners);
+	}
 
-			await Banner.create({
-				...rest,
-				createdAt: new Date(createdAt),
-				expireAt: new Date(expireAt),
-				startAt: new Date(startAt),
-				...(inactivedAt && { inactivedAt: new Date(inactivedAt) }),
-			});
-		}
+	if (result.announcements) {
+		await handleAnnouncementsOnWorkspaceSync(result.announcements);
 	}
 };
 
