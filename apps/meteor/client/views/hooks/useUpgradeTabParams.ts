@@ -21,10 +21,8 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 
 	const trialLicense = licenses.find(({ meta, information }) => information?.trial ?? meta?.trial);
 	const isTrial = Boolean(trialLicense);
-	const trialEndDate =
-		trialLicense?.meta?.trialEnd || trialLicense?.cloudMeta?.trialEnd
-			? format(new Date(trialLicense.meta?.trialEnd ?? trialLicense.cloudMeta?.trialEnd), 'yyyy-MM-dd')
-			: undefined;
+	const trialEndDateStr = trialLicense?.information?.visualExpiration || trialLicense?.meta?.trialEnd || trialLicense?.cloudMeta?.trialEnd;
+	const trialEndDate = trialEndDateStr ? format(new Date(trialEndDateStr), 'yyyy-MM-dd') : undefined;
 
 	const upgradeTabType = getUpgradeTabType({
 		registered,
