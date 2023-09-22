@@ -42,7 +42,7 @@ class CustomSoundsClass {
 
 		const audio = document.createElement('audio');
 		audio.id = getCustomSoundId(sound._id);
-		audio.preload = 'auto';
+		audio.preload = 'none';
 		audio.appendChild(source);
 
 		document.body.appendChild(audio);

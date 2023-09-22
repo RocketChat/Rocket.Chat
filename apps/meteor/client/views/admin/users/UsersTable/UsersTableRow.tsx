@@ -1,7 +1,9 @@
-import { UserStatus as Status } from '@rocket.chat/core-typings';
+import { UserStatus as Status, isUserFederated } from '@rocket.chat/core-typings';
 import type { IRole, IUser } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Menu, Option } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -9,29 +11,79 @@ import { Roles } from '../../../../../app/models/client';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { UserStatus } from '../../../../components/UserStatus';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { useChangeAdminStatusAction } from '../hooks/useChangeAdminStatusAction';
+import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
+import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
+import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
+import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 
 type UsersTableRowProps = {
-	tab: string;
-	user: Partial<IUser>;
-	onClick: (id: IUser['_id']) => void;
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'emails' | 'active' | 'avatarETag' | 'roles'>;
+	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
 	mediaQuery: boolean;
+	refetchUsers: ReturnType<typeof useQuery>['refetch'];
+	onReload: () => void;
 };
 
-const UsersTableRow = ({ tab, user, onClick, mediaQuery }: UsersTableRowProps): ReactElement => {
+const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
 	const { _id, emails, username, name, status, roles, active, avatarETag } = user as IUser;
 	const registrationStatusText = active ? t('Active') : t('Deactivated');
-	const pendingAction = user.active === false ? t('Activate') : t('User_first_log_in');
+	// const pendingAction = user.active === false ? t('Activate') : t('User_first_log_in');
 
 	const roleNames = (roles || [])
 		.map((roleId) => (Roles.findOne(roleId, { fields: { name: 1 } }) as IRole | undefined)?.name)
 		.filter((roleName): roleName is string => !!roleName)
 		.join(', ');
 
+	const userId = user._id;
+	const isAdmin = user.roles?.includes('admin');
+	const isActive = user.active;
+	const isFederatedUser = isUserFederated(user);
+
+	const onChange = useMutableCallback(() => {
+		onReload();
+		refetchUsers();
+	});
+
+	const changeAdminStatusAction = useChangeAdminStatusAction(userId, isAdmin, onChange);
+	const changeUserStatusAction = useChangeUserStatusAction(userId, isActive, onChange);
+	const deleteUserAction = useDeleteUserAction(userId, onChange, onReload);
+	const resetTOTPAction = useResetTOTPAction(userId);
+	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
+
+	const menuOptions = {
+		...(changeAdminStatusAction &&
+			!isFederatedUser && {
+				makeAdmin: {
+					label: { label: changeAdminStatusAction.label, icon: changeAdminStatusAction.icon },
+					action: changeAdminStatusAction.action,
+				},
+			}),
+		...(resetE2EKeyAction &&
+			!isFederatedUser && {
+				resetE2EKey: { label: { label: resetE2EKeyAction.label, icon: resetE2EKeyAction.icon }, action: resetE2EKeyAction.action },
+			}),
+		...(resetTOTPAction &&
+			!isFederatedUser && {
+				resetTOTP: { label: { label: resetTOTPAction.label, icon: resetTOTPAction.icon }, action: resetTOTPAction.action },
+			}),
+		...(deleteUserAction && {
+			delete: { label: { label: deleteUserAction.label, icon: deleteUserAction.icon }, action: deleteUserAction.action },
+		}),
+		...(changeUserStatusAction &&
+			!isFederatedUser && {
+				changeActiveStatus: {
+					label: { label: changeUserStatusAction.label, icon: changeUserStatusAction.icon },
+					action: changeUserStatusAction.action,
+				},
+			}),
+	};
+
 	return (
 		<GenericTableRow
-			onKeyDown={(): void => onClick(_id)}
-			onClick={(): void => onClick(_id)}
+			onKeyDown={(e): void => onClick(_id, e)}
+			onClick={(e): void => onClick(_id, e)}
 			tabIndex={0}
 			role='link'
 			action
@@ -69,18 +121,19 @@ const UsersTableRow = ({ tab, user, onClick, mediaQuery }: UsersTableRowProps): 
 			<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
 
 			{mediaQuery && <GenericTableCell withTruncatedText>{roleNames}</GenericTableCell>}
-
-			{(tab === 'active' || tab === 'all') && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-					{registrationStatusText}
-				</GenericTableCell>
-			)}
-
-			{tab === 'pending' && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-					{pendingAction}
-				</GenericTableCell>
-			)}
+			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				{registrationStatusText}
+			</GenericTableCell>
+			<GenericTableCell>
+				<Menu
+					mi={4}
+					placement='bottom-start'
+					flexShrink={0}
+					key='menu'
+					renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option label={label} title={label} icon={icon} {...props} />}
+					options={menuOptions}
+				/>
+			</GenericTableCell>
 		</GenericTableRow>
 	);
 };

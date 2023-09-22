@@ -1,5 +1,5 @@
 import { Button } from '@rocket.chat/fuselage';
-import { Card } from '@rocket.chat/ui-client';
+import { Card, CardBody, CardFooter, CardFooterWrapper, CardTitle } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -14,13 +14,13 @@ const DocumentationCard = (): ReactElement => {
 
 	return (
 		<Card data-qa-id='homepage-documentation-card'>
-			<Card.Title>{t('Documentation')}</Card.Title>
-			<Card.Body>{t('Learn_how_to_unlock_the_myriad_possibilities_of_rocket_chat')}</Card.Body>
-			<Card.FooterWrapper>
-				<Card.Footer>
+			<CardTitle>{t('Documentation')}</CardTitle>
+			<CardBody>{t('Learn_how_to_unlock_the_myriad_possibilities_of_rocket_chat')}</CardBody>
+			<CardFooterWrapper>
+				<CardFooter>
 					<Button onClick={() => handleOpenLink(DOCS_URL)}>{t('See_documentation')}</Button>
-				</Card.Footer>
-			</Card.FooterWrapper>
+				</CardFooter>
+			</CardFooterWrapper>
 		</Card>
 	);
 };

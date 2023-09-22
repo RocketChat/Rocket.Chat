@@ -83,11 +83,11 @@ const UsersPage = (): ReactElement => {
 							{t('Invited')}
 						</Tabs.Item>
 					</Tabs>
-					<UsersTable reload={reload} tab={tab} setPendingActionsCount={setPendingActionsCount} />
+					<UsersTable reload={reload} tab={tab} onReload={handleReload} />
 				</Page.Content>
 			</Page>
 			{context && (
-				<Contextualbar>
+				<Contextualbar is='aside' aria-labelledby=''>
 					<ContextualbarHeader>
 						<ContextualbarTitle>
 							{context === 'info' && t('User_Info')}

@@ -1,9 +1,7 @@
-import { Pagination } from '@rocket.chat/fuselage';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import type { OptionProp } from '@rocket.chat/ui-client';
-import { MultiSelectCustom } from '@rocket.chat/ui-client';
-import { useEndpoint, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MutableRefObject, Dispatch, SetStateAction } from 'react';
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 
@@ -20,49 +18,22 @@ import { usePagination } from '../../../../components/GenericTable/hooks/usePagi
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useFilterActiveUsers } from '../hooks/useFilterActiveUsers';
 import { useFilterPendingUsers } from '../hooks/useFilterPendingUsers';
-import { useFilterUsersByRole } from '../hooks/useFilterUsersByRole';
 import { useListUsers } from '../hooks/useListUsers';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
-	setPendingActionsCount: Dispatch<SetStateAction<any>>;
 	reload: MutableRefObject<() => void>;
 	tab: string;
+	onReload: () => void;
 };
 
 // TODO: Missing error state
-const UsersTable = ({ setPendingActionsCount, reload, tab }: UsersTableProps): ReactElement | null => {
+const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
-	const usersRoute = useRoute('admin-users');
+	const router = useRouter();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
-	const getRoles = useEndpoint('GET', '/v1/roles.list');
-	const { data: roleData, isSuccess: hasRoleData } = useQuery(['roles'], async () => getRoles());
-
-	const roleFilterStructure = useMemo(
-		() =>
-			[
-				{
-					id: 'filter_by_role',
-					text: 'Filter_by_role',
-					isGroupTitle: true,
-				},
-				{
-					id: 'all',
-					text: 'All_roles',
-					isGroupTitle: false,
-				},
-				...((hasRoleData && roleData.roles) || []).map((currentRole) => ({
-					id: currentRole._id,
-					text: currentRole.name,
-					isGroupTitle: false,
-				})),
-			] as OptionProp[],
-		[hasRoleData, roleData?.roles],
-	);
 
 	const [text, setText] = useState('');
-	const [roleFilterOptions, setRoleFilterOptions] = useState<OptionProp[]>([]);
-	const [roleFilterSelectedOptions, setRoleFilterSelectedOptions] = useState<OptionProp[]>([]);
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'status'>('name');
@@ -70,7 +41,7 @@ const UsersTable = ({ setPendingActionsCount, reload, tab }: UsersTableProps): R
 	const searchTerm = useDebouncedValue(text, 500);
 	const prevSearchTerm = useRef('');
 
-	const { data, isLoading, isSuccess, error, refetch } = useListUsers(
+	const { data, isLoading, isSuccess, isError, refetch } = useListUsers(
 		searchTerm,
 		prevSearchTerm,
 		setCurrent,
@@ -80,36 +51,26 @@ const UsersTable = ({ setPendingActionsCount, reload, tab }: UsersTableProps): R
 		current,
 	);
 
-	const useAllUsers = () => (tab === 'all' && isSuccess ? data?.users : []);
+	const useAllUsers = () => (tab === 'all' && isSuccess ? (data?.users as Partial<IUser>[]) : []);
 
-	const currentTabUsers = [...useAllUsers(), ...useFilterActiveUsers(data?.users, tab), ...useFilterPendingUsers(data?.users, tab)];
-	const filteredUsers = useFilterUsersByRole(
-		currentTabUsers,
-		roleFilterSelectedOptions.map((currentRole) => currentRole.id),
-	);
-
-	// TODO: how to call this function and display the count even when not clicked?
-	const pendingActionsCount = useFilterPendingUsers(data?.users, tab).length;
-	useEffect(() => {
-		// console.log('pendingActionsCount: ', pendingActionsCount);
-		setPendingActionsCount(pendingActionsCount);
-	}, [pendingActionsCount, setPendingActionsCount]);
+	const filteredUsers = [...useAllUsers(), ...useFilterActiveUsers(data?.users, tab), ...useFilterPendingUsers(data?.users, tab)];
 
 	useEffect(() => {
 		reload.current = refetch;
 		prevSearchTerm.current = searchTerm;
 	}, [reload, refetch, searchTerm]);
 
-	useEffect(() => {
-		setRoleFilterOptions(roleFilterStructure);
-	}, [roleFilterStructure]);
+	const handleClick = useMutableCallback((id, e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>): void => {
+		e.stopPropagation();
 
-	const handleClick = useMutableCallback((id): void =>
-		usersRoute.push({
-			context: 'info',
-			id,
-		}),
-	);
+		router.navigate({
+			name: 'admin-users',
+			params: {
+				context: 'info',
+				id,
+			},
+		});
+	});
 
 	const headers = useMemo(
 		() => [
@@ -164,22 +125,9 @@ const UsersTable = ({ setPendingActionsCount, reload, tab }: UsersTableProps): R
 		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
 	);
 
-	if (error) {
-		return null;
-	}
-
 	return (
 		<>
-			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)}>
-				<MultiSelectCustom
-					dropdownOptions={roleFilterOptions}
-					defaultTitle='All_roles'
-					selectedOptionsTitle='Roles'
-					setSelectedOptions={setRoleFilterSelectedOptions}
-					selectedOptions={roleFilterSelectedOptions}
-					customSetSelected={setRoleFilterOptions}
-				/>
-			</FilterByText>
+			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -192,7 +140,14 @@ const UsersTable = ({ setPendingActionsCount, reload, tab }: UsersTableProps): R
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{filteredUsers.map((user) => (
-								<UsersTableRow key={user._id} onClick={handleClick} mediaQuery={mediaQuery} user={user} tab={tab} />
+								<UsersTableRow
+									key={user._id}
+									onClick={handleClick}
+									mediaQuery={mediaQuery}
+									user={user}
+									refetchUsers={refetch}
+									onReload={onReload}
+								/>
 							))}
 						</GenericTableBody>
 					</GenericTable>
@@ -208,6 +163,15 @@ const UsersTable = ({ setPendingActionsCount, reload, tab }: UsersTableProps): R
 				</>
 			)}
 			{isSuccess && data?.count === 0 && <GenericNoResults />}
+			{isError && (
+				<States>
+					<StatesIcon name='warning' variation='danger' />
+					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+					<StatesActions>
+						<StatesAction onClick={() => refetch()}>{t('Reload_page')}</StatesAction>
+					</StatesActions>
+				</States>
+			)}
 		</>
 	);
 };
