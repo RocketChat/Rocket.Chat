@@ -57,7 +57,6 @@ type DropDownProps = {
 	selectedOptionsTitle: TranslationKey;
 	selectedOptions: OptionProp[];
 	setSelectedOptions: Dispatch<SetStateAction<OptionProp[]>>;
-	customSetSelected: Dispatch<SetStateAction<OptionProp[]>>;
 	searchBarText?: TranslationKey;
 };
 
@@ -93,10 +92,11 @@ export const MultiSelectCustom = ({
 
 		if (item.checked === true) {
 			setSelectedOptions([...new Set([...selectedOptions, item])]);
-		} else {
-			// the user has disabled this option -> remove this from the selected options list
-			setSelectedOptions(selectedOptions.filter((option: OptionProp) => option.id !== item.id));
+			return;
 		}
+
+		// the user has disabled this option -> remove this from the selected options list
+		setSelectedOptions(selectedOptions.filter((option: OptionProp) => option.id !== item.id));
 	};
 
 	const count = dropdownOptions.filter((option) => option.checked).length;
@@ -114,14 +114,7 @@ export const MultiSelectCustom = ({
 			/>
 			{collapsed && (
 				<MultiSelectCustomListWrapper ref={target}>
-					<MultiSelectCustomList
-						options={dropdownOptions.map((item) => {
-							item.checked = selectedOptions.some((option) => option.id === item.id);
-							return item;
-						})}
-						onSelected={onSelect}
-						searchBarText={searchBarText}
-					/>
+					<MultiSelectCustomList options={dropdownOptions} onSelected={onSelect} searchBarText={searchBarText} />
 				</MultiSelectCustomListWrapper>
 			)}
 		</Box>

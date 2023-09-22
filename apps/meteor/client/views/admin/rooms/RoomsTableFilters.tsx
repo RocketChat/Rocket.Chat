@@ -47,7 +47,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 	const t = useTranslation();
 	const [text, setText] = useState('');
 
-	const [roomTypeSelectedOptions, setRoomTypeSelectedOptions] = useState<OptionProp[]>(roomTypeFilterStructure);
+	const [roomTypeSelectedOptions, setRoomTypeSelectedOptions] = useState<OptionProp[]>([]);
 
 	const handleSearchTextChange = useCallback(
 		(event) => {
