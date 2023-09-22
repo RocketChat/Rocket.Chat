@@ -1,4 +1,4 @@
-.import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
