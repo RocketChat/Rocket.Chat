@@ -10,6 +10,7 @@ import { clearPendingLicense, hasPendingLicense, isPendingLicense, setPendingLic
 import { showLicense } from './showLicense';
 import { replaceTags } from './tags';
 import { convertToV3 } from './v2/convertToV3';
+import { hasAllDataCounters } from './validation/getCurrentValueForLicenseLimit';
 import { getModulesToDisable } from './validation/getModulesToDisable';
 import { isBehaviorsInResult } from './validation/isBehaviorsInResult';
 import { runValidation } from './validation/runValidation';
@@ -88,8 +89,8 @@ const setLicenseV3 = async (newLicense: ILicenseV3, encryptedLicense: string, or
 const setLicenseV2 = async (newLicense: ILicenseV2, encryptedLicense: string) =>
 	setLicenseV3(convertToV3(newLicense), encryptedLicense, newLicense);
 
-// Can only validate licenses once the workspace URL is set
-export const isReadyForValidation = () => Boolean(getWorkspaceUrl());
+// Can only validate licenses once the workspace URL and the data counter functions are set
+export const isReadyForValidation = () => Boolean(getWorkspaceUrl() && hasAllDataCounters());
 
 export const setLicense = async (encryptedLicense: string, forceSet = false): Promise<boolean> => {
 	if (!encryptedLicense || String(encryptedLicense).trim() === '') {

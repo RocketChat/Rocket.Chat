@@ -1,4 +1,5 @@
 import * as License from '@rocket.chat/license';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../lib/callbacks';
@@ -14,5 +15,10 @@ callbacks.add('workspaceLicenseChanged', async (updatedLicense) => {
 	await License.setLicense(updatedLicense);
 });
 
+License.setLicenseLimitCounter('activeUsers', () => Users.getActiveLocalUserCount());
+License.setLicenseLimitCounter('guestUsers', () => Users.getActiveLocalGuestCount());
+License.setLicenseLimitCounter('roomsPerGuest', async (context) => (context?.userId ? Subscriptions.countByUserId(context.userId) : 0));
 License.setLicenseLimitCounter('privateApps', () => getAppCount('private'));
 License.setLicenseLimitCounter('marketplaceApps', () => getAppCount('marketplace'));
+// #TODO: Get real value
+License.setLicenseLimitCounter('monthlyActiveContacts', async () => 0);

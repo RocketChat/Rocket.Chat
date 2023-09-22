@@ -13,7 +13,7 @@ export const setPendingLicense = (encryptedLicense: string) => {
 export const applyPendingLicense = async () => {
 	if (pendingLicense) {
 		logger.info('Applying pending license.');
-		await setLicense(pendingLicense, true);
+		await setLicense(pendingLicense);
 	}
 };
 
