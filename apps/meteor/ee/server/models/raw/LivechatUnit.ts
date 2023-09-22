@@ -1,11 +1,11 @@
 import type { IOmnichannelBusinessUnit, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatUnitModel } from '@rocket.chat/model-typings';
-import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
 import { LivechatUnitMonitors, LivechatDepartment, LivechatRooms } from '@rocket.chat/models';
+import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
 
-import { getUnitsFromUser } from '../../../app/livechat-enterprise/server/lib/units';
-import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
+import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
+import { getUnitsFromUser } from '../../../app/livechat-enterprise/server/lib/units';
 
 const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUnit> = {}) => {
 	const query: FilterOperators<IOmnichannelBusinessUnit> = { ...originalQuery, type: 'u' };
@@ -116,7 +116,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 			});
 		}
 
-		const savedDepartments = (await LivechatDepartment.find({ parentId: _id }).toArray()).map(({ _id }) => _id);
+		const savedDepartments = (await LivechatDepartment.findByParentId(_id, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
 		const departmentsToSave = departments.map(({ departmentId }) => departmentId);
 
 		// remove other departments
@@ -135,7 +135,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		}
 
 		for await (const departmentId of departmentsToSave) {
-			await LivechatDepartment.update(
+			await LivechatDepartment.updateOne(
 				{ _id: departmentId },
 				{
 					$set: {
@@ -200,9 +200,13 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		return monitoredUnits.map((u) => u.unitId);
 	}
 
-	async findMonitoredDepartmentsByMonitorId(monitorId: string): Promise<ILivechatDepartment[]> {
+	async findMonitoredDepartmentsByMonitorId(monitorId: string, includeDisabled: boolean): Promise<ILivechatDepartment[]> {
 		const monitoredUnits = await this.findByMonitorId(monitorId);
-		return LivechatDepartment.findByUnitIds(monitoredUnits, {}).toArray();
+
+		if (includeDisabled) {
+			return LivechatDepartment.findByUnitIds(monitoredUnits, {}).toArray();
+		}
+		return LivechatDepartment.findActiveByUnitIds(monitoredUnits, {}).toArray();
 	}
 
 	countUnits(): Promise<number> {

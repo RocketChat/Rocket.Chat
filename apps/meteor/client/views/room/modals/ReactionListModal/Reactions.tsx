@@ -17,9 +17,9 @@ const Reactions = ({ reactions, onClick }: ReactionsProps): ReactElement => {
 	return (
 		<Box display='flex' flexDirection='column'>
 			{Object.entries(reactions).map(([reaction, { names = [], usernames }]) => (
-				<Box key={reaction} display='flex' alignItems='center' flexDirection='row' overflowX='hidden' mb='x8'>
+				<Box key={reaction} display='flex' alignItems='center' flexDirection='row' overflowX='hidden' mb={8}>
 					<Emoji emojiHandle={reaction} />
-					<Box display='flex' flexWrap='wrap' paddingBlock='x4' mis='x4'>
+					<Box display='flex' flexWrap='wrap' paddingBlock={4} mis={4}>
 						{usernames.map((username, i: number) => (
 							<ReactionUserTag
 								key={username}

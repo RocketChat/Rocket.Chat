@@ -11,9 +11,9 @@ import { test, expect } from '../utils/test';
 
 const getRoomId = (page: Page): string => {
 	// url is of the form: http://localhost:3000/live/:rid/room-info
-	const url = page.url();
+	const url = page?.url();
 	// rid comes after /live/ and before /room-info (or /)
-	const rid = url.split('/live/')[1].split('/')[0];
+	const rid = url?.split('/live/')[1].split('/')[0];
 	if (!rid) {
 		throw new Error(`Could not get room id from url: ${page.url()}`);
 	}

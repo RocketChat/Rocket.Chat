@@ -4,7 +4,7 @@ import { settings } from '../../../settings/server';
 
 const hideMessagesOfTypeServer = new Set<MessageTypesValues>();
 
-settings.watch<MessageTypesValues[]>('Hide_System_Messages', function (values) {
+settings.watch<MessageTypesValues[]>('Hide_System_Messages', (values) => {
 	if (!values || !Array.isArray(values)) {
 		return;
 	}

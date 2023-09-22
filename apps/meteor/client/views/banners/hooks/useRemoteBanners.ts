@@ -11,6 +11,7 @@ export const useRemoteBanners = () => {
 	const serverContext = useContext(ServerContext);
 	const getBanners = useEndpoint('GET', '/v1/banners');
 	const subscribeToNotifyLoggedIn = useStream('notify-logged');
+	const subscribeToNotifyUser = useStream('notify-user');
 
 	useEffect(() => {
 		if (!uid) {
@@ -63,11 +64,17 @@ export const useRemoteBanners = () => {
 			});
 		});
 
+		const unsubscribeBanners = subscribeToNotifyUser(`${uid}/banners`, async (banner) => {
+			banners.open(banner.view);
+		});
+
 		return () => {
 			controller.abort();
 
 			unsubscribeFromBannerChanged();
+			unsubscribeBanners();
+
 			banners.clear();
 		};
-	}, [getBanners, serverContext, subscribeToNotifyLoggedIn, uid]);
+	}, [getBanners, serverContext, subscribeToNotifyLoggedIn, uid, subscribeToNotifyUser]);
 };

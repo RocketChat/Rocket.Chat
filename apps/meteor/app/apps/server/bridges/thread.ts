@@ -1,10 +1,9 @@
-import { ThreadBridge } from '@rocket.chat/apps-engine/server/bridges/ThreadBridge';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import { ThreadBridge } from '@rocket.chat/apps-engine/server/bridges/ThreadBridge';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class AppThreadBridge extends ThreadBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}

@@ -9,7 +9,7 @@ import { isEnterprise } from '../../app/license/server/license';
 const isNonEnterpriseTwoFactorOptions = (options?: Options): options is NonEnterpriseTwoFactorOptions =>
 	!!options && 'forceTwoFactorAuthenticationForNonEnterprise' in options && Boolean(options.forceTwoFactorAuthenticationForNonEnterprise);
 
-API.v1.processTwoFactor = use(API.v1.processTwoFactor, function ([params, ...context], next) {
+API.v1.processTwoFactor = use(API.v1.processTwoFactor, ([params, ...context], next) => {
 	if (isNonEnterpriseTwoFactorOptions(params.options) && !isEnterprise()) {
 		const options: NonEnterpriseTwoFactorOptions = {
 			...params.options,

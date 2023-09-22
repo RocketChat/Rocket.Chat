@@ -988,10 +988,6 @@
 			font-size: 12px;
 			font-weight: 300;
 		}
-
-		& div.switch-language {
-			margin-top: 20px;
-		}
 	}
 
 	& .share {
@@ -1106,9 +1102,9 @@
 }
 
 .rc-old .code-colors {
-	color: #333333;
-	border-color: #cccccc;
-	background-color: #f8f8f8;
+	color: var(--rcx-color-font-default, #1f2329);
+	border-color: var(--rcx-color-stroke-extra-light, #ebecef);
+	background-color: var(--rcx-color-surface-neutral, #e4e7ea);
 }
 
 .rc-old .powered-by {

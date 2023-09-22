@@ -1,8 +1,8 @@
-import { SAMLUtils } from '../Utils';
-import { defaultLogoutResponseTemplate, defaultIdentifierFormat } from '../constants';
-import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 import type { ILogoutResponse } from '../../definition/ILogoutResponse';
 import type { ILogoutResponseVariables } from '../../definition/ILogoutResponseVariables';
+import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
+import { SAMLUtils } from '../Utils';
+import { defaultLogoutResponseTemplate, defaultIdentifierFormat } from '../constants';
 
 /*
 	A Logout Response is used when the Identity Provider (IdP) sends us a Logout Request.

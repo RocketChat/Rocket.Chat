@@ -1,4 +1,5 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import { type IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
@@ -13,27 +14,31 @@ const wasAgent = (user: Pick<IUser, 'roles'> | null) => user?.roles?.includes('l
 const isAgent = (user: Pick<IUser, 'roles'> | null) => user?.roles?.includes('livechat-agent');
 
 const handleAgentUpdated = async (userData: IAfterSaveUserProps) => {
-	const {
-		user: { _id: userId, username },
-		user: newUser,
-		oldUser,
-	} = userData;
+	const { user: newUser, oldUser } = userData;
 
 	if (wasAgent(oldUser) && !isAgent(newUser)) {
-		callbackLogger.debug('Removing agent', userId);
-		await Livechat.removeAgent(username);
+		await Livechat.afterRemoveAgent(newUser);
 	}
 
 	if (!wasAgent(oldUser) && isAgent(newUser)) {
-		callbackLogger.debug('Adding agent', userId);
-		await Livechat.addAgent(username);
+		await Livechat.afterAgentAdded(newUser);
+	}
+};
+
+const handleAgentCreated = async (user: IUser) => {
+	// created === no prev roles :)
+	if (isAgent(user)) {
+		await Livechat.afterAgentAdded(user);
 	}
 };
 
 const handleDeactivateUser = async (user: IUser) => {
 	if (wasAgent(user)) {
-		callbackLogger.debug('Removing agent', user._id);
-		await Livechat.removeAgent(user.username);
+		callbackLogger.debug({
+			msg: 'Removing agent extension & making agent unavailable',
+			userId: user._id,
+		});
+		await Users.makeAgentUnavailableAndUnsetExtension(user._id);
 	}
 };
 
@@ -43,6 +48,8 @@ const handleActivateUser = async (user: IUser) => {
 		await Livechat.addAgent(user.username);
 	}
 };
+
+callbacks.add('afterCreateUser', handleAgentCreated, callbacks.priority.LOW, 'livechat-after-create-user-update-agent');
 
 callbacks.add('afterSaveUser', handleAgentUpdated, callbacks.priority.LOW, 'livechat-after-save-user-update-agent');
 

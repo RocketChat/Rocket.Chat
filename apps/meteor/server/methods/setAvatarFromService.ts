@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { setAvatarFromServiceWithValidation } from '../../app/lib/server/functions/setUserAvatar';
 

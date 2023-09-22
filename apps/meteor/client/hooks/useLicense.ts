@@ -9,6 +9,5 @@ export const useLicense = (): UseQueryResult<OperationResult<'GET', '/v1/license
 	return useQuery(['licenses', 'getLicenses'], () => getLicenses(), {
 		staleTime: Infinity,
 		keepPreviousData: true,
-		refetchOnWindowFocus: false,
 	});
 };

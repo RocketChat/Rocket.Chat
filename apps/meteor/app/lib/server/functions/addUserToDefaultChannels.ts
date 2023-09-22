@@ -1,6 +1,6 @@
+import { Message } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../../lib/callbacks';
 

@@ -1,10 +1,10 @@
-import { VerticalWizardLayout, VerticalWizardLayoutTitle, VerticalWizardLayoutFooter } from '@rocket.chat/layout';
-import type { ReactElement, ReactNode } from 'react';
 import { Box } from '@rocket.chat/fuselage';
+import { VerticalWizardLayout, VerticalWizardLayoutTitle, VerticalWizardLayoutFooter } from '@rocket.chat/layout';
 import { useSetting, useAssetWithDarkModePath } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ReactNode } from 'react';
 
-import LoginSwitchLanguageFooter from '../components/LoginSwitchLanguageFooter';
 import LoginPoweredBy from '../components/LoginPoweredBy';
+import LoginSwitchLanguageFooter from '../components/LoginSwitchLanguageFooter';
 import LoginTerms from '../components/LoginTerms';
 import { RegisterTitle } from '../components/RegisterTitle';
 

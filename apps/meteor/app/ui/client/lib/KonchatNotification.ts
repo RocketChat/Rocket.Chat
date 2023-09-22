@@ -1,18 +1,18 @@
 import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 
+import { RoomManager } from '../../../../client/lib/RoomManager';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
-import { getUserPreference } from '../../../utils/client';
-import { getUserAvatarURL } from '../../../utils/client/getUserAvatarURL';
+import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
+import { router } from '../../../../client/providers/RouterProvider';
+import { stripTags } from '../../../../lib/utils/stringUtils';
+import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
 import { e2e } from '../../../e2e/client';
 import { ChatSubscription } from '../../../models/client';
-import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
-import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
-import { stripTags } from '../../../../lib/utils/stringUtils';
-import { RoomManager } from '../../../../client/lib/RoomManager';
+import { getUserPreference } from '../../../utils/client';
+import { getUserAvatarURL } from '../../../utils/client/getUserAvatarURL';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 declare global {
@@ -111,41 +111,41 @@ class KonchatNotification {
 
 			switch (notification.payload?.type) {
 				case 'd':
-					return FlowRouter.go(
-						'direct',
-						{
+					return router.navigate({
+						pattern: '/direct/:rid/:tab?/:context?',
+						params: {
 							rid: notification.payload.rid,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
 						},
-						{ ...FlowRouter.current().queryParams, jump: notification.payload._id },
-					);
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
+					});
 				case 'c':
-					return FlowRouter.go(
-						'channel',
-						{
+					return router.navigate({
+						pattern: '/channel/:name/:tab?/:context?',
+						params: {
 							name: notification.payload.name,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
 						},
-						{ ...FlowRouter.current().queryParams, jump: notification.payload._id },
-					);
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
+					});
 				case 'p':
-					return FlowRouter.go(
-						'group',
-						{
+					return router.navigate({
+						pattern: '/group/:name/:tab?/:context?',
+						params: {
 							name: notification.payload.name,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
 						},
-						{ ...FlowRouter.current().queryParams, jump: notification.payload._id },
-					);
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
+					});
 			}
 		};
 	}

@@ -1,5 +1,6 @@
-import { Meteor } from 'meteor/meteor';
+import { Team } from '@rocket.chat/core-services';
 import type { IRoom, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
+import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
 	isChannelsAddAllProps,
 	isChannelsArchiveProps,
@@ -18,29 +19,28 @@ import {
 	isChannelsSetReadOnlyProps,
 	isChannelsDeleteProps,
 } from '@rocket.chat/rest-typings';
-import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { Team } from '@rocket.chat/core-services';
+import { Meteor } from 'meteor/meteor';
 
+import { isTruthy } from '../../../../lib/isTruthy';
+import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { hideRoomMethod } from '../../../../server/methods/hideRoom';
+import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
+import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
+import { addUsersToRoomMethod } from '../../../lib/server/methods/addUsersToRoom';
+import { createChannelMethod } from '../../../lib/server/methods/createChannel';
+import { joinRoomMethod } from '../../../lib/server/methods/joinRoom';
+import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
+import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
-import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
-import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
-import { settings } from '../../../settings/server';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
-import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
-import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
-import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
-import { createChannelMethod } from '../../../lib/server/methods/createChannel';
-import { hideRoomMethod } from '../../../../server/methods/hideRoom';
-import { addUsersToRoomMethod } from '../../../lib/server/methods/addUsersToRoom';
-import { isTruthy } from '../../../../lib/isTruthy';
-import { joinRoomMethod } from '../../../lib/server/methods/joinRoom';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findChannelByIdOrName({

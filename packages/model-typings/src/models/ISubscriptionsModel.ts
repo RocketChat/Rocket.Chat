@@ -1,5 +1,5 @@
-import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Document, AggregateOptions, Filter, InsertOneResult } from 'mongodb';
 import type { ISubscription, IRole, IUser, IRoom, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
+import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Document, AggregateOptions, Filter, InsertOneResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 

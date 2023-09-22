@@ -25,7 +25,7 @@ test.describe.serial('administration-menu', () => {
 		test.skip(!IS_EE, 'Enterprise only');
 		await poHomeDiscussion.sidenav.openAdministrationByLabel('Workspace');
 
-		await expect(page).toHaveURL('admin/info');
+		await expect(page).toHaveURL('admin/workspace');
 	});
 
 	test('expect open omnichannel page', async ({ page }) => {

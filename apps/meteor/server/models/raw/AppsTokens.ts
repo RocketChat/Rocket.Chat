@@ -1,6 +1,6 @@
-import type { Db } from 'mongodb';
 import type { IAppsTokens } from '@rocket.chat/core-typings';
 import type { IAppsTokensModel } from '@rocket.chat/model-typings';
+import type { Db } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 

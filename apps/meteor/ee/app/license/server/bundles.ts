@@ -8,13 +8,13 @@ export type BundleFeature =
 	| 'engagement-dashboard'
 	| 'push-privacy'
 	| 'scalability'
-	| 'teams-mention'
 	| 'saml-enterprise'
 	| 'device-management'
 	| 'oauth-enterprise'
 	| 'federation'
 	| 'videoconference-enterprise'
-	| 'message-read-receipt';
+	| 'message-read-receipt'
+	| 'outlook-calendar';
 
 interface IBundle {
 	[key: string]: BundleFeature[];
@@ -31,13 +31,13 @@ const bundles: IBundle = {
 		'engagement-dashboard',
 		'push-privacy',
 		'scalability',
-		'teams-mention',
 		'saml-enterprise',
 		'oauth-enterprise',
 		'device-management',
 		'federation',
 		'videoconference-enterprise',
 		'message-read-receipt',
+		'outlook-calendar',
 	],
 	pro: [],
 };

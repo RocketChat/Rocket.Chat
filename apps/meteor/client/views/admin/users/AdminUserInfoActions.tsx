@@ -110,7 +110,7 @@ const AdminUserInfoActions = ({
 
 		return (
 			<Menu
-				mi='x4'
+				mi={4}
 				placement='bottom-start'
 				small={false}
 				secondary

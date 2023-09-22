@@ -23,7 +23,7 @@ const BurgerMenuButton = ({ open, badge, onClick }: BurgerMenuButtonProps): Reac
 			aria-label={open ? t('Close_menu') : t('Open_menu')}
 			type='button'
 			position='relative'
-			marginInlineEnd='x8'
+			marginInlineEnd={8}
 			className={css`
 				cursor: pointer;
 			`}

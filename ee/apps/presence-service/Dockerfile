@@ -35,6 +35,7 @@ COPY ./yarn.lock .
 COPY ./.yarnrc.yml .
 COPY ./.yarn/plugins .yarn/plugins
 COPY ./.yarn/releases .yarn/releases
+COPY ./.yarn/patches .yarn/patches
 COPY ./ee/apps/${SERVICE}/package.json ee/apps/${SERVICE}/package.json
 
 ENV NODE_ENV=production \
@@ -42,7 +43,11 @@ ENV NODE_ENV=production \
 
 WORKDIR /app/ee/apps/${SERVICE}
 
-RUN yarn workspaces focus --production
+RUN apk update && \
+    apk --no-cache --virtual build-dependencies add g++ python3 make && \
+    yarn workspaces focus --production && \
+    rm -rf /var/cache/apk/* && \
+    apk del build-dependencies
 
 EXPOSE 3000 9458
 

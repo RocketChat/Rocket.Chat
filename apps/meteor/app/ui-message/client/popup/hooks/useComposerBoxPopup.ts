@@ -28,6 +28,7 @@ type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 			commandsRef: ComposerBoxPopupImperativeCommands<T>;
 			suspended: boolean;
 			filter: unknown;
+			clearPopup: () => void;
 	  }
 	| {
 			popup: undefined;
@@ -39,6 +40,7 @@ type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 			commandsRef: ComposerBoxPopupImperativeCommands<T>;
 			suspended: boolean;
 			filter: unknown;
+			clearPopup: () => void;
 	  };
 
 const keys = {
@@ -140,6 +142,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 			setFocused(undefined);
 			setFilter('');
 		}
+
 		if (configuration) {
 			const selector =
 				configuration.matchSelectorRegex ??
@@ -232,6 +235,16 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		}
 	});
 
+	const clearPopup = useMutableCallback(() => {
+		if (!popup) {
+			return;
+		}
+
+		setPopup(undefined);
+		setFocused(undefined);
+		setFilter('');
+	});
+
 	const callbackRef = useCallback(
 		(node: HTMLElement | null) => {
 			if (!node) {
@@ -256,6 +269,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 			suspended: true,
 			commandsRef,
 			filter: undefined,
+			clearPopup,
 		};
 	}
 
@@ -269,5 +283,6 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		suspended,
 		commandsRef,
 		callbackRef,
+		clearPopup,
 	};
 };

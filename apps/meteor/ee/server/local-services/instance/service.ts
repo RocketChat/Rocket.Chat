@@ -1,15 +1,15 @@
 import os from 'os';
 
+import { License, ServiceClassInternal } from '@rocket.chat/core-services';
+import { InstanceStatus } from '@rocket.chat/instance-status';
+import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
 import type { BrokerNode } from 'moleculer';
 import { ServiceBroker, Transporters } from 'moleculer';
-import { License, ServiceClassInternal } from '@rocket.chat/core-services';
-import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
-import { InstanceStatus } from '@rocket.chat/instance-status';
 
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
-import { getTransporter } from './getTransporter';
 import { getLogger } from './getLogger';
+import { getTransporter } from './getTransporter';
 
 const hostIP = process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost';
 

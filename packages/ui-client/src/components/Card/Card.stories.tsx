@@ -1,21 +1,21 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { TextSeparator } from '@rocket.chat/ui-client';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 
-import Card from '.';
+import { Card, CardBody, CardCol, CardColSection, CardColTitle, CardDivider, CardFooter, CardIcon, CardTitle } from '.';
+import TextSeparator from '../TextSeparator';
 import { UserStatus } from '../UserStatus';
 
 export default {
 	title: 'Components/Card',
 	component: Card,
 	subcomponents: {
-		'Card.Title': Card.Title,
-		'Card.Body': Card.Body,
-		'Card.Col': Card.Col,
-		'Card.Col.Section': Card.Col.Section,
-		'Card.Col.Title': Card.Col.Title,
-		'Card.Footer': Card.Footer,
-		'Card.Divider': Card.Divider,
+		CardTitle,
+		CardBody,
+		CardCol,
+		CardColSection,
+		CardColTitle,
+		CardFooter,
+		CardDivider,
 	},
 	parameters: {
 		layout: 'centered',
@@ -25,14 +25,14 @@ export default {
 
 export const Example: ComponentStory<typeof Card> = () => (
 	<Card>
-		<Card.Title>Usage</Card.Title>
-		<Card.Body flexDirection='column'>
-			<Card.Col.Section>
-				<Card.Col.Title>Users</Card.Col.Title>
+		<CardTitle>Usage</CardTitle>
+		<CardBody flexDirection='column'>
+			<CardColSection>
+				<CardColTitle>Users</CardColTitle>
 				<TextSeparator
 					label={
 						<>
-							<Card.Icon name='dialpad' /> Total
+							<CardIcon name='dialpad' /> Total
 						</>
 					}
 					value={123}
@@ -40,9 +40,9 @@ export const Example: ComponentStory<typeof Card> = () => (
 				<TextSeparator
 					label={
 						<>
-							<Card.Icon>
+							<CardIcon>
 								<UserStatus status='online' />
-							</Card.Icon>{' '}
+							</CardIcon>{' '}
 							Online
 						</>
 					}
@@ -51,9 +51,9 @@ export const Example: ComponentStory<typeof Card> = () => (
 				<TextSeparator
 					label={
 						<>
-							<Card.Icon>
+							<CardIcon>
 								<UserStatus status='busy' />
-							</Card.Icon>{' '}
+							</CardIcon>{' '}
 							Busy
 						</>
 					}
@@ -62,9 +62,9 @@ export const Example: ComponentStory<typeof Card> = () => (
 				<TextSeparator
 					label={
 						<>
-							<Card.Icon>
+							<CardIcon>
 								<UserStatus status='away' />
-							</Card.Icon>{' '}
+							</CardIcon>{' '}
 							Away
 						</>
 					}
@@ -73,111 +73,111 @@ export const Example: ComponentStory<typeof Card> = () => (
 				<TextSeparator
 					label={
 						<>
-							<Card.Icon>
+							<CardIcon>
 								<UserStatus status='offline' />
-							</Card.Icon>{' '}
+							</CardIcon>{' '}
 							Offline
 						</>
 					}
 					value={123}
 				/>
-			</Card.Col.Section>
-			<Card.Col.Section>
-				<Card.Col.Title>Types and Distribution</Card.Col.Title>
+			</CardColSection>
+			<CardColSection>
+				<CardColTitle>Types and Distribution</CardColTitle>
 				<TextSeparator label='Connected' value={123} />
 				<TextSeparator label='Active Users' value={123} />
 				<TextSeparator label='Active Guests' value={123} />
 				<TextSeparator label='Non-Active Users' value={123} />
 				<TextSeparator label='App Users' value={123} />
-			</Card.Col.Section>
-			<Card.Col.Section>
-				<Card.Col.Title>Uploads</Card.Col.Title>
+			</CardColSection>
+			<CardColSection>
+				<CardColTitle>Uploads</CardColTitle>
 				<TextSeparator label='Total Uploads' value={123} />
 				<TextSeparator label='Total Uploads (size)' value='123 GB' />
-			</Card.Col.Section>
-		</Card.Body>
+			</CardColSection>
+		</CardBody>
 	</Card>
 );
 
 export const Single: ComponentStory<typeof Card> = () => (
 	<Card>
-		<Card.Title>A card</Card.Title>
-		<Card.Body>
-			<Card.Col>
+		<CardTitle>A card</CardTitle>
+		<CardBody>
+			<CardCol>
 				<Box>
-					<Card.Col.Title>A Section</Card.Col.Title>
+					<CardColTitle>A Section</CardColTitle>
 					<div>A bunch of stuff</div>
 					<div>A bunch of stuff</div>
 					<div>A bunch of stuff</div>
 					<div>A bunch of stuff</div>
 				</Box>
 				<Box>
-					<Card.Col.Title>Another Section</Card.Col.Title>
+					<CardColTitle>Another Section</CardColTitle>
 					<div>A bunch of stuff</div>
 					<div>A bunch of stuff</div>
 					<div>A bunch of stuff</div>
 					<div>A bunch of stuff</div>
 				</Box>
-			</Card.Col>
-		</Card.Body>
-		<Card.Footer>
+			</CardCol>
+		</CardBody>
+		<CardFooter>
 			<ButtonGroup align='end'>
 				<Button small>I'm a button in a footer</Button>
 			</ButtonGroup>
-		</Card.Footer>
+		</CardFooter>
 	</Card>
 );
 
 export const Double: ComponentStory<typeof Card> = () => (
 	<Card>
-		<Card.Title>A card</Card.Title>
-		<Card.Body>
-			<Card.Col>
+		<CardTitle>A card</CardTitle>
+		<CardBody>
+			<CardCol>
 				<Box>
-					<Card.Col.Title>A Section</Card.Col.Title>
+					<CardColTitle>A Section</CardColTitle>
 					<div>A bunch of stuff</div>
 					<div>A bunch of stuff</div>
 					<div>A bunch of stuff</div>
 					<div>A bunch of stuff</div>
 				</Box>
 				<Box>
-					<Card.Col.Title>Another Section</Card.Col.Title>
+					<CardColTitle>Another Section</CardColTitle>
 					<div>A bunch of stuff</div>
 					<div>A bunch of stuff</div>
 					<div>A bunch of stuff</div>
 					<div>A bunch of stuff</div>
 				</Box>
-			</Card.Col>
-			<Card.Divider />
-			<Card.Col>
+			</CardCol>
+			<CardDivider />
+			<CardCol>
 				<Box>
-					<Card.Col.Title>A Section</Card.Col.Title>
+					<CardColTitle>A Section</CardColTitle>
 					<Box display='flex' flexDirection='row' alignItems='center'>
-						<Card.Icon name='document-eye' />A bunch of stuff
+						<CardIcon name='document-eye' />A bunch of stuff
 					</Box>
 					<Box display='flex' flexDirection='row' alignItems='center'>
-						<Card.Icon name='pencil' />A bunch of stuff
+						<CardIcon name='pencil' />A bunch of stuff
 					</Box>
 					<Box display='flex' flexDirection='row' alignItems='center'>
-						<Card.Icon name='cross' />A bunch of stuff
+						<CardIcon name='cross' />A bunch of stuff
 					</Box>
 					<Box display='flex' flexDirection='row' alignItems='center'>
-						<Card.Icon name='dialpad' />A bunch of stuff
+						<CardIcon name='dialpad' />A bunch of stuff
 					</Box>
 				</Box>
 				<Box>
-					<Card.Col.Title>Another Section</Card.Col.Title>
+					<CardColTitle>Another Section</CardColTitle>
 					<div>A bunch of stuff</div>
 					<div>A bunch of stuff</div>
 					<div>A bunch of stuff</div>
 					<div>A bunch of stuff</div>
 				</Box>
-			</Card.Col>
-		</Card.Body>
-		<Card.Footer>
+			</CardCol>
+		</CardBody>
+		<CardFooter>
 			<ButtonGroup align='end'>
 				<Button small>I'm a button in a footer</Button>
 			</ButtonGroup>
-		</Card.Footer>
+		</CardFooter>
 	</Card>
 );

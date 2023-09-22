@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import { LivechatPriority, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 import type { ILivechatInquiryRecord, ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import { LivechatPriority, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';

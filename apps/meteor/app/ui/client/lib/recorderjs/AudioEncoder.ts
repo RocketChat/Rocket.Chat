@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { Emitter } from '@rocket.chat/emitter';
+import { Meteor } from 'meteor/meteor';
 
 export class AudioEncoder extends Emitter {
 	private worker: Worker;

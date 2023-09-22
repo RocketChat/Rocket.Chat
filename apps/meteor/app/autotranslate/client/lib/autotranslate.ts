@@ -1,6 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-import mem from 'mem';
 import type {
 	IRoom,
 	ISubscription,
@@ -10,13 +7,16 @@ import type {
 	MessageAttachmentDefault,
 } from '@rocket.chat/core-typings';
 import { isTranslatedMessageAttachment } from '@rocket.chat/core-typings';
+import mem from 'mem';
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
-import { Subscriptions, Messages } from '../../../models/client';
-import { hasPermission } from '../../../authorization/client';
 import {
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
 } from '../../../../client/views/room/MessageList/lib/autoTranslate';
+import { hasPermission } from '../../../authorization/client';
+import { Subscriptions, Messages } from '../../../models/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 let userLanguage = 'en';

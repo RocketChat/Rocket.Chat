@@ -5,7 +5,6 @@ import { Settings } from '@rocket.chat/models';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class AppSettingBridge extends ServerSettingBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}

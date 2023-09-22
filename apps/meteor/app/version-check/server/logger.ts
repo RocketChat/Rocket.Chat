@@ -1,3 +1,3 @@
-import { Logger } from '../../logger/server';
+import { Logger } from '@rocket.chat/logger';
 
 export default new Logger('VersionCheck');

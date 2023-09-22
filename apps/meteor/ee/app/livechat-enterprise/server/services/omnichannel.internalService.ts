@@ -2,13 +2,13 @@ import { ServiceClassInternal, Message } from '@rocket.chat/core-services';
 import type { IOmnichannelEEService } from '@rocket.chat/core-services';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IOmnichannelRoom, IUser, ILivechatInquiryRecord, IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Subscriptions, LivechatInquiry } from '@rocket.chat/models';
 
-import { Logger } from '../../../../../app/logger/server';
-import { callbacks } from '../../../../../lib/callbacks';
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
+import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { callbacks } from '../../../../../lib/callbacks';
 
 export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelEEService {
 	protected name = 'omnichannel-ee';
@@ -149,6 +149,10 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		const { _id: inquiryId } = inquiry;
 		const newInquiry = await LivechatInquiry.findOneById(inquiryId);
 
+		if (!newInquiry) {
+			this.logger.error(`No inquiry found for id ${inquiryId}`);
+			throw new Error('error-invalid-inquiry');
+		}
 		await queueInquiry(newInquiry);
 
 		this.logger.debug('Room queued successfully');
@@ -173,7 +177,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			RoutingManager.removeAllRoomSubscriptions(room),
 		]);
 
-		await dispatchAgentDelegated(roomId, null);
+		await dispatchAgentDelegated(roomId);
 
 		this.logger.debug(`Current agent removed from room ${room._id} successfully`);
 	}

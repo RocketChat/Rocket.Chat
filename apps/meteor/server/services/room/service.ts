@@ -1,9 +1,14 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
 import { ServiceClassInternal, Authorization } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
+import type { AtLeast, IRoom, IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
+import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
+import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
+import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { createDirectMessage } from '../../methods/createDirectMessage';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
@@ -34,10 +39,14 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			Users.findOneById(from, { projection: { _id: 1 } }),
 		]);
 
-		if (!toUser || !fromUser) {
+		if (!toUser?.username || !fromUser) {
 			throw new Error('error-invalid-user');
 		}
-		return createDirectMessage([toUser.username], fromUser._id);
+		return this.createDirectMessageWithMultipleUsers([toUser.username], fromUser._id);
+	}
+
+	async createDirectMessageWithMultipleUsers(members: string[], creatorId: string): Promise<{ rid: string }> {
+		return createDirectMessage(members, creatorId);
 	}
 
 	async addMember(uid: string, rid: string): Promise<boolean> {
@@ -47,5 +56,42 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		return true;
+	}
+
+	async addUserToRoom(
+		roomId: string,
+		user: Pick<IUser, '_id' | 'username'> | string,
+		inviter?: Pick<IUser, '_id' | 'username'>,
+		silenced?: boolean,
+	): Promise<boolean | undefined> {
+		return addUserToRoom(roomId, user, inviter, silenced);
+	}
+
+	async removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: Pick<IUser, '_id' | 'username'> }): Promise<void> {
+		return removeUserFromRoom(roomId, user, options);
+	}
+
+	async getValidRoomName(
+		displayName: string,
+		roomId = '',
+		options: { allowDuplicates?: boolean; nameValidationRegex?: string } = {},
+	): Promise<string> {
+		return getValidRoomName(displayName, roomId, options);
+	}
+
+	async saveRoomTopic(
+		roomId: string,
+		roomTopic: string | undefined,
+		user: {
+			username: string;
+			_id: string;
+		},
+		sendMessage = true,
+	): Promise<void> {
+		await saveRoomTopic(roomId, roomTopic, user, sendMessage);
+	}
+
+	async getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean> {
+		return roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name });
 	}
 }

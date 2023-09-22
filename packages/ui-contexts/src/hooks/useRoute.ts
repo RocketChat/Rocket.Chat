@@ -1,11 +1,9 @@
 import { useContext, useMemo } from 'react';
 
-import type { QueryStringParameters, RouteParameters } from '../RouterContext';
+import type { RouteName, RouteParameters } from '../RouterContext';
 import { RouterContext } from '../RouterContext';
 
 type Route = {
-	getPath: (parameters?: RouteParameters, queryStringParameters?: QueryStringParameters) => string | undefined;
-	getUrl: (parameters?: RouteParameters, queryStringParameters?: QueryStringParameters) => string | undefined;
 	push: (
 		parameters?: RouteParameters,
 		queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
@@ -16,16 +14,23 @@ type Route = {
 	) => void;
 };
 
-export const useRoute = (name: string): Route => {
-	const { queryRoutePath, queryRouteUrl, pushRoute, replaceRoute } = useContext(RouterContext);
+/** @deprecated prefer `useRouter` */
+export const useRoute = (name: RouteName): Route => {
+	const router = useContext(RouterContext);
 
 	return useMemo<Route>(
 		() => ({
-			getPath: (parameters, queryStringParameters) => queryRoutePath(name, parameters, queryStringParameters)[1](),
-			getUrl: (parameters, queryStringParameters) => queryRouteUrl(name, parameters, queryStringParameters)[1](),
-			push: (parameters, queryStringParameters) => pushRoute(name, parameters, queryStringParameters),
-			replace: (parameters, queryStringParameters) => replaceRoute(name, parameters, queryStringParameters),
+			push: (params, queryStringParameters) => {
+				const search =
+					typeof queryStringParameters === 'function' ? queryStringParameters(router.getSearchParameters()) : queryStringParameters;
+				router.navigate({ name, params, search }, { replace: false });
+			},
+			replace: (params, queryStringParameters) => {
+				const search =
+					typeof queryStringParameters === 'function' ? queryStringParameters(router.getSearchParameters()) : queryStringParameters;
+				router.navigate({ name, params, search }, { replace: true });
+			},
 		}),
-		[queryRoutePath, queryRouteUrl, name, pushRoute, replaceRoute],
+		[name, router],
 	);
 };

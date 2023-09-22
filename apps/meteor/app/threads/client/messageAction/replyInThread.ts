@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import { messageArgs } from '../../../../client/lib/utils/messageArgs';
+import { router } from '../../../../client/providers/RouterProvider';
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
-import { messageArgs } from '../../../../client/lib/utils/messageArgs';
-import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (!settings.get('Threads_enabled')) {
 			return MessageAction.removeButton('reply-in-thread');
@@ -16,13 +16,17 @@ Meteor.startup(function () {
 			id: 'reply-in-thread',
 			icon: 'thread',
 			label: 'Reply_in_thread',
-			context: ['message', 'message-mobile'],
+			context: ['message', 'message-mobile', 'federated', 'videoconf'],
 			action(e, props) {
 				const { message = messageArgs(this).msg } = props;
 				e.stopPropagation();
-				FlowRouter.setParams({
-					tab: 'thread',
-					context: message.tmid || message._id,
+				router.navigate({
+					name: router.getRouteName()!,
+					params: {
+						...router.getRouteParameters(),
+						tab: 'thread',
+						context: message.tmid || message._id,
+					},
 				});
 			},
 			condition({ subscription, room }) {
@@ -33,7 +37,7 @@ Meteor.startup(function () {
 				return Boolean(subscription);
 			},
 			order: -1,
-			group: ['message', 'menu'],
+			group: 'message',
 		});
 	});
 });

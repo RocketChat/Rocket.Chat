@@ -2,11 +2,11 @@ import { Text } from '@react-pdf/renderer';
 import type * as MessageParser from '@rocket.chat/message-parser';
 
 import BoldSpan from './BoldSpan';
+import CodeSpan from './CodeSpan';
+import EmojiSpan from './EmojiSpan';
 import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import StrikeSpan from './StrikeSpan';
-import EmojiSpan from './EmojiSpan';
-import CodeSpan from './CodeSpan';
 
 type InlineElementsProps = {
 	children: MessageParser.Inlines[];

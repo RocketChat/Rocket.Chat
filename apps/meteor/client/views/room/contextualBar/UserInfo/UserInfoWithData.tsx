@@ -99,17 +99,12 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			)}
 
 			{error && !user && (
-				<ContextualbarContent pb='x16'>
+				<ContextualbarContent pb={16}>
 					<Callout type='danger'>{t('User_not_found')}</Callout>
 				</ContextualbarContent>
 			)}
 
-			{!isLoading && user && (
-				<UserInfo
-					{...user}
-					actions={<UserInfoActions user={{ _id: user?._id, username: user?.username }} rid={rid} backToList={onClickBack} />}
-				/>
-			)}
+			{!isLoading && user && <UserInfo {...user} actions={<UserInfoActions user={user} rid={rid} backToList={onClickBack} />} />}
 		</>
 	);
 };

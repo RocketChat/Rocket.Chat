@@ -1,8 +1,8 @@
-import { capitalize } from '@rocket.chat/string-helpers';
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import { Settings } from '@rocket.chat/models';
+import { capitalize } from '@rocket.chat/string-helpers';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
@@ -61,6 +61,7 @@ Meteor.methods<ServerMethods>({
 			Settings.removeById(`Accounts_OAuth_Custom-${name}-channels_admin`),
 			Settings.removeById(`Accounts_OAuth_Custom-${name}-map_channels`),
 			Settings.removeById(`Accounts_OAuth_Custom-${name}-groups_channel_map`),
+			Settings.removeById(`Accounts_OAuth_Custom-${name}-merge_users_distinct_services`),
 		]);
 	},
 });

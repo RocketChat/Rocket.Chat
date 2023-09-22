@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../lib/callbacks';
-import { settings } from '../../settings/server';
 import { SystemLogger } from '../../../server/lib/logger/system';
+import { settings } from '../../settings/server';
 import { addWebdavAccountByToken } from '../../webdav/server/methods/addWebdavAccount';
 
 Meteor.startup(() => {

@@ -38,7 +38,7 @@ function AddAgent({ agentList, onAdd }: { agentList: IDepartmentAgent[]; onAdd: 
 	return (
 		<Box display='flex' alignItems='center'>
 			<AutoCompleteAgent value={userId} onChange={handleAgent} />
-			<Button disabled={!userId} onClick={handleSave} mis='x8' primary>
+			<Button disabled={!userId} onClick={handleSave} mis={8} primary>
 				{t('Add')}
 			</Button>
 		</Box>

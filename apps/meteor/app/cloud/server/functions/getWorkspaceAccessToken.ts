@@ -1,8 +1,8 @@
 import { Settings } from '@rocket.chat/models';
 
-import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
 import { settings } from '../../../settings/server';
+import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
+import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
 /**
  * @param {boolean} forceNew
@@ -11,9 +11,9 @@ import { settings } from '../../../settings/server';
  * @returns string
  */
 export async function getWorkspaceAccessToken(forceNew = false, scope = '', save = true) {
-	const { connectToCloud, workspaceRegistered } = await retrieveRegistrationStatus();
+	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
-	if (!connectToCloud || !workspaceRegistered) {
+	if (!workspaceRegistered) {
 		return '';
 	}
 

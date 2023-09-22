@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Roles, Subscriptions, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { removeUserFromRoom } from '../functions';
-import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { removeUserFromRoom } from '../functions/removeUserFromRoom';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

@@ -1,6 +1,7 @@
 import { onToggledFeature } from '../../app/license/server/license';
 import { addSettings } from '../settings/deviceManagement';
 
+let stopListening: (() => void) | undefined;
 onToggledFeature('device-management', {
 	up: async () => {
 		const { createPermissions, createEmailTemplates } = await import('../lib/deviceManagement/startup');
@@ -9,6 +10,10 @@ onToggledFeature('device-management', {
 		await addSettings();
 		await createPermissions();
 		await createEmailTemplates();
-		await listenSessionLogin();
+		stopListening = await listenSessionLogin();
+	},
+	down: async () => {
+		stopListening?.();
+		stopListening = undefined;
 	},
 });

@@ -1,5 +1,5 @@
-import type { Db } from 'mongodb';
 import type { IAppsModel } from '@rocket.chat/model-typings';
+import type { Db } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 

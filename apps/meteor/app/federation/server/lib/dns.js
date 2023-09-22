@@ -4,9 +4,9 @@ import util from 'util';
 import mem from 'mem';
 
 import * as federationErrors from '../functions/errors';
-import { dnsLogger } from './logger';
-import { isFederationEnabled } from './isFederationEnabled';
 import { federationRequest } from './http';
+import { isFederationEnabled } from './isFederationEnabled';
+import { dnsLogger } from './logger';
 
 const dnsResolveSRV = util.promisify(dnsResolver.resolveSrv);
 const dnsResolveTXT = util.promisify(dnsResolver.resolveTxt);

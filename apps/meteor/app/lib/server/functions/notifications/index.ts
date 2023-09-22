@@ -1,11 +1,11 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { callbacks } from '../../../../../lib/callbacks';
+import { i18n } from '../../../../../server/lib/i18n';
 import { settings } from '../../../../settings/server';
 import { joinRoomMethod } from '../../methods/joinRoom';
-import { i18n } from '../../../../../server/lib/i18n';
 
 /**
  * This function returns a string ready to be shown in the notification
