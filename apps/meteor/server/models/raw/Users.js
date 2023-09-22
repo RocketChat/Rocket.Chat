@@ -1,3 +1,4 @@
+import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -6,6 +7,8 @@ import { BaseRaw } from './BaseRaw';
 const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdle) => ({
 	statusLivechat: 'available',
 	roles: 'livechat-agent',
+	// ignore deactivated users
+	active: true,
 	...(!isLivechatEnabledWhenAgentIdle && {
 		$or: [
 			{
@@ -1016,7 +1019,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateMany(query, update);
+		return this.updateOne(query, update);
 	}
 
 	addBusinessHourByAgentIds(agentIds = [], businessHourId) {
@@ -1114,6 +1117,8 @@ export class UsersRaw extends BaseRaw {
 		const query = {
 			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
 			roles: 'livechat-agent',
+			// exclude deactivated users
+			active: true,
 			// Avoid unnecessary updates
 			statusLivechat: 'available',
 			...(Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } }),
@@ -1764,6 +1769,24 @@ export class UsersRaw extends BaseRaw {
 			$set: {
 				statusLivechat: status,
 				livechatStatusSystemModified: false,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	makeAgentUnavailableAndUnsetExtension(userId) {
+		const query = {
+			_id: userId,
+			roles: 'livechat-agent',
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: ILivechatAgentStatus.NOT_AVAILABLE,
+			},
+			$unset: {
+				extension: 1,
 			},
 		};
 
@@ -3004,13 +3027,13 @@ export class UsersRaw extends BaseRaw {
 			this.col.countDocuments({
 				active: true,
 			}),
-			// Count all active that are guests, apps or federated
+			// Count all active that are guests, apps, bots or federated
 			// Fast based on indexes, usually based on guest index as is usually small
 			this.col.countDocuments({
 				active: true,
-				$or: [{ roles: ['guest'] }, { type: 'app' }, { federated: true }, { isRemote: true }],
+				$or: [{ roles: ['guest'] }, { type: { $in: ['app', 'bot'] } }, { federated: true }, { isRemote: true }],
 			}),
-			// Get all active and remove the guests, apps, federated, etc
+			// Get all active and remove the guests, apps, bots and federated
 		]).then((results) => results.reduce((a, b) => a - b));
 	}
 

@@ -11,7 +11,7 @@ const ContactHistory = () => {
 	return (
 		<>
 			{chatId && chatId !== '' ? (
-				<ContactHistoryMessagesList chatId={chatId} setChatId={setChatId} close={close} />
+				<ContactHistoryMessagesList chatId={chatId} setChatId={setChatId} close={closeTab} />
 			) : (
 				<ContactHistoryList setChatId={setChatId} close={closeTab} />
 			)}

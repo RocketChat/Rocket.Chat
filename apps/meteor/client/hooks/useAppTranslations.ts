@@ -26,9 +26,13 @@ export const useAppTranslations = () => {
 		}
 	}, [result.data]);
 
-	const invalidate = useDebouncedCallback(() => {
-		queryClient.invalidateQueries(['apps', 'translations']);
-	}, 100);
+	const invalidate = useDebouncedCallback(
+		() => {
+			queryClient.invalidateQueries(['apps', 'translations']);
+		},
+		100,
+		[],
+	);
 
 	useEffect(() => {
 		if (!uid) {
@@ -61,7 +65,7 @@ export const useAppTranslations = () => {
 			// Translations keys must be scoped under app id
 			const scopedTranslations = Object.entries(translations).reduce<Record<string, string>>((acc, [key, value]) => {
 				acc[Utilities.getI18nKeyForApp(key, appId)] = value;
-				return translations;
+				return acc;
 			}, {});
 
 			i18n.addResourceBundle(normalizedLanguage, 'core', scopedTranslations);

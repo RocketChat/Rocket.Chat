@@ -47,6 +47,12 @@ test.describe.parallel('administration', () => {
 			await expect(poAdmin.tabs.users.userRole).toBeVisible();
 			await poAdmin.tabs.users.btnSave.click();
 		});
+
+		test('expect SMTP setup warning and routing to email settings', async ({ page }) => {
+			await poAdmin.tabs.users.btnInvite.click();
+			await poAdmin.tabs.users.setupSmtpLink.click();
+			await expect(page).toHaveURL('/admin/settings/Email');
+		});
 	});
 
 	test.describe('Rooms', () => {
@@ -71,6 +77,17 @@ test.describe.parallel('administration', () => {
 			await page.waitForSelector('role=dialog[name="Custom roles"]');
 		});
 	});
+
+	test.describe('Mailer', () => {
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/admin/mailer');
+		})
+
+		test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
+			const results = await makeAxeBuilder().analyze();
+			expect(results.violations).toEqual([]);
+		})
+	})
 
 	test.describe('Settings', () => {
 		test.describe('General', () => {

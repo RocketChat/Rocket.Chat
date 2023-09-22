@@ -11,9 +11,13 @@ export const useAppSlashCommands = () => {
 	const apps = useSingleStream('apps');
 	const uid = useUserId();
 
-	const invalidate = useDebouncedCallback(() => {
-		queryClient.invalidateQueries(['apps', 'slashCommands']);
-	}, 100);
+	const invalidate = useDebouncedCallback(
+		() => {
+			queryClient.invalidateQueries(['apps', 'slashCommands']);
+		},
+		100,
+		[],
+	);
 
 	useEffect(() => {
 		if (!uid) {
