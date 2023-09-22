@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 
+import type { LicenseLimitKind } from '../definition/ILicenseV3';
 import type { LicenseModule } from '../definition/LicenseModule';
 import { logger } from '../logger';
 
@@ -36,5 +37,13 @@ export const moduleRemoved = (module: LicenseModule) => {
 		EnterpriseLicenses.emit(`invalid:${module}`);
 	} catch (error) {
 		logger.error({ msg: 'Error running module removed event', error });
+	}
+};
+
+export const limitReached = (limitKind: LicenseLimitKind) => {
+	try {
+		EnterpriseLicenses.emit(`limitReached:${limitKind}`);
+	} catch (error) {
+		logger.error({ msg: 'Error running limit reached event', error });
 	}
 };
