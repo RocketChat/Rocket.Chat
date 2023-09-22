@@ -89,7 +89,6 @@ export const MultiSelectCustom = ({
 
 	const onSelect = (item: OptionProp, e?: FormEvent<HTMLElement>): void => {
 		e?.stopPropagation();
-		console.log('onSelect', item);
 		item.checked = !item.checked;
 
 		if (item.checked === true) {
