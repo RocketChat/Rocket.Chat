@@ -1,4 +1,5 @@
 import { overwriteClassOnLicense } from './events/overwriteClassOnLicense';
+import { getLicenseInfo } from './info';
 import { getLicense, getUnmodifiedLicenseAndModules, hasValidLicense, setLicense } from './license';
 import { hasModule, getModules } from './modules';
 import { getTags } from './tags';
@@ -33,4 +34,5 @@ export {
 	overwriteClassOnLicense,
 	setLicenseLimitCounter,
 	getCurrentValueForLicenseLimit,
+	getLicenseInfo,
 };
