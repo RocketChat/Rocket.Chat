@@ -46,14 +46,28 @@ const roomTypeFilterStructure = [
 const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction<any>> }): ReactElement => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
-	const [roomTypeOptions, setRoomTypeOptions] = useState<OptionProp[]>(roomTypeFilterStructure);
-	const [roomTypeSelectedOptions, setRoomTypeSelectedOptions] = useState<OptionProp[]>([]);
 
-	useEffect(() => {
-		return setFilters({ searchText: text, types: roomTypeSelectedOptions });
-	}, [setFilters, roomTypeSelectedOptions, text]);
+	const [roomTypeSelectedOptions, setRoomTypeSelectedOptions] = useState<OptionProp[]>(roomTypeFilterStructure);
 
-	const handleSearchTextChange = useCallback((event) => setText(event.currentTarget.value), []);
+	const handleSearchTextChange = useCallback(
+		(event) => {
+			const text = event.currentTarget.value;
+
+			console.log('TEXT', { searchText: text, types: roomTypeSelectedOptions });
+			setFilters({ searchText: text, types: roomTypeSelectedOptions });
+			setText(text);
+		},
+		[roomTypeSelectedOptions, setFilters],
+	);
+
+	const handleRoomTypeChange = useCallback(
+		(options: OptionProp[]) => {
+			console.log('OPTION', { searchText: text, types: options });
+			setFilters({ searchText: text, types: options });
+			setRoomTypeSelectedOptions(options);
+		},
+		[text, setFilters],
+	) as Dispatch<SetStateAction<OptionProp[]>>;
 
 	return (
 		<Box
@@ -77,12 +91,12 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 			</Box>
 			<Box minWidth='x224' m='x4'>
 				<MultiSelectCustom
-					dropdownOptions={roomTypeOptions}
+					dropdownOptions={roomTypeFilterStructure}
 					defaultTitle={'All_rooms' as any}
 					selectedOptionsTitle='Rooms'
-					setSelectedOptions={setRoomTypeSelectedOptions}
+					setSelectedOptions={handleRoomTypeChange}
 					selectedOptions={roomTypeSelectedOptions}
-					customSetSelected={setRoomTypeOptions}
+					customSetSelected={console.log}
 				/>
 			</Box>
 		</Box>

@@ -67,7 +67,6 @@ export const MultiSelectCustom = ({
 	selectedOptionsTitle,
 	selectedOptions,
 	setSelectedOptions,
-	customSetSelected,
 	searchBarText,
 }: DropDownProps): ReactElement => {
 	const reference = useRef<HTMLInputElement>(null);
@@ -90,22 +89,11 @@ export const MultiSelectCustom = ({
 
 	const onSelect = (item: OptionProp, e?: FormEvent<HTMLElement>): void => {
 		e?.stopPropagation();
-
+		console.log('onSelect', item);
 		item.checked = !item.checked;
 
 		if (item.checked === true) {
-			// the user has enabled this option -> add it to the selected options
 			setSelectedOptions([...new Set([...selectedOptions, item])]);
-			customSetSelected((prevItems) => {
-				const newItems = prevItems;
-				const toggledItem = newItems.find(({ id }) => id === item.id);
-
-				if (toggledItem) {
-					toggledItem.checked = !toggledItem.checked;
-				}
-
-				return [...prevItems];
-			});
 		} else {
 			// the user has disabled this option -> remove this from the selected options list
 			setSelectedOptions(selectedOptions.filter((option: OptionProp) => option.id !== item.id));
@@ -127,7 +115,14 @@ export const MultiSelectCustom = ({
 			/>
 			{collapsed && (
 				<MultiSelectCustomListWrapper ref={target}>
-					<MultiSelectCustomList options={dropdownOptions} onSelected={onSelect} searchBarText={searchBarText} />
+					<MultiSelectCustomList
+						options={dropdownOptions.map((item) => {
+							item.checked = selectedOptions.some((option) => option.id === item.id);
+							return item;
+						})}
+						onSelected={onSelect}
+						searchBarText={searchBarText}
+					/>
 				</MultiSelectCustomListWrapper>
 			)}
 		</Box>
