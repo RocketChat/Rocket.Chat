@@ -19,6 +19,9 @@ COPY ./packages/rest-typings/dist packages/rest-typings/dist
 COPY ./packages/model-typings/package.json packages/model-typings/package.json
 COPY ./packages/model-typings/dist packages/model-typings/dist
 
+COPY ./packages/jwt/package.json packages/jwt/package.json
+COPY ./packages/jwt/dist packages/jwt/dist
+
 COPY ./packages/models/package.json packages/models/package.json
 COPY ./packages/models/dist packages/models/dist
 
@@ -36,9 +39,6 @@ COPY ./ee/packages/pdf-worker/dist ee/packages/pdf-worker/dist
 
 COPY ./packages/tools/package.json packages/tools/package.json
 COPY ./packages/tools/dist packages/tools/dist
-
-COPY ./packages/logger/package.json packages/logger/package.json
-COPY ./packages/logger/dist packages/logger/dist
 
 COPY ./ee/apps/${SERVICE}/dist .
 
