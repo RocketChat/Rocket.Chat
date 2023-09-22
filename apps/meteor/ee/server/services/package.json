@@ -1,7 +1,7 @@
 {
 	"name": "rocketchat-services",
 	"private": true,
-	"version": "1.1.4",
+	"version": "1.1.8-rc.4",
 	"description": "Rocket.Chat Authorization service",
 	"main": "index.js",
 	"scripts": {
@@ -27,7 +27,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "next",
-		"@rocket.chat/ui-kit": "next",
+		"@rocket.chat/ui-kit": "^0.32.1",
 		"ajv": "^8.11.0",
 		"bcrypt": "^5.0.1",
 		"body-parser": "^1.20.2",
@@ -41,7 +41,7 @@
 		"jaeger-client": "^3.19.0",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.29",
-		"mongodb": "^4.12.1",
+		"mongodb": "^4.17.1",
 		"nats": "^2.6.1",
 		"pino": "^8.15.0",
 		"sodium-native": "^3.3.0",
@@ -50,7 +50,7 @@
 		"ws": "^8.8.1"
 	},
 	"devDependencies": {
-		"@rocket.chat/icons": "next",
+		"@rocket.chat/icons": "^0.32.0",
 		"@types/cookie": "^0.5.1",
 		"@types/cookie-parser": "^1.4.3",
 		"@types/ejson": "^2.2.0",

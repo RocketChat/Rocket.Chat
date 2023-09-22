@@ -10,9 +10,9 @@ import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
-export async function syncWorkspace(reconnectCheck = false) {
-	const { workspaceRegistered, connectToCloud } = await retrieveRegistrationStatus();
-	if (!workspaceRegistered || (!connectToCloud && !reconnectCheck)) {
+export async function syncWorkspace(_reconnectCheck = false) {
+	const { workspaceRegistered } = await retrieveRegistrationStatus();
+	if (!workspaceRegistered) {
 		return false;
 	}
 
