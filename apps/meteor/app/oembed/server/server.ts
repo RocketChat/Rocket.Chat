@@ -1,8 +1,15 @@
 import querystring from 'querystring';
 import URL from 'url';
 
-import type { OEmbedUrlContentResult, OEmbedUrlWithMetadata, IMessage, MessageAttachment, OEmbedMeta } from '@rocket.chat/core-typings';
-import { isOEmbedUrlContentResult, isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
+import type {
+	OEmbedUrlContentResult,
+	OEmbedUrlWithMetadata,
+	IMessage,
+	MessageAttachment,
+	OEmbedMeta,
+	MessageUrl,
+} from '@rocket.chat/core-typings';
+import { isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, OEmbedCache } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -98,11 +105,6 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 		urlObj,
 		parsedUrl,
 	});
-
-	/*  This prop is neither passed or returned by the callback, so I'll just comment it for now
-	if (data.attachments != null) {
-		return data;
-	} */
 
 	const url = URL.format(data.urlObj);
 
@@ -249,6 +251,34 @@ const getUrlMetaWithCache = async function (
 	}
 };
 
+const parseUrl = async function (url: string): Promise<{ urlPreview: MessageUrl; foundMeta: boolean }> {
+	const parsedUrlObject: MessageUrl = { url, meta: {} };
+	let foundMeta = false;
+	if (!isURL(url)) {
+		return { urlPreview: parsedUrlObject, foundMeta };
+	}
+
+	const data = await getUrlMetaWithCache(url);
+	if (data != null) {
+		if (isOEmbedUrlWithMetadata(data) && data.meta != null) {
+			parsedUrlObject.meta = getRelevantMetaTags(data.meta) || {};
+			if (parsedUrlObject.meta?.oembedHtml) {
+				parsedUrlObject.meta.oembedHtml = insertMaxWidthInOembedHtml(parsedUrlObject.meta.oembedHtml) || '';
+			}
+		}
+		if (data.headers != null) {
+			const relevantHeaders = getRelevantHeaders(data.headers);
+			if (relevantHeaders) {
+				parsedUrlObject.headers = relevantHeaders;
+			}
+		}
+		parsedUrlObject.parsedUrl = data.parsedUrl;
+		foundMeta = true;
+	}
+
+	return { urlPreview: parsedUrlObject, foundMeta };
+};
+
 const hasOnlyContentLength = (obj: any): obj is { contentLength: string } => 'contentLength' in obj && Object.keys(obj).length === 1;
 const hasOnlyContentType = (obj: any): obj is { contentType: string } => 'contentType' in obj && Object.keys(obj).length === 1;
 const hasContentLengthAndContentType = (obj: any): obj is { contentLength: string; contentType: string } =>
@@ -305,30 +335,10 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 				log.debug('URL ignored', item.url);
 				continue;
 			}
-			if (!isURL(item.url)) {
-				continue;
-			}
-			const data = await getUrlMetaWithCache(item.url);
-			if (data != null) {
-				if (isOEmbedUrlContentResult(data) && data.attachments) {
-					attachments.push(...data.attachments);
-					break;
-				}
-				if (isOEmbedUrlWithMetadata(data) && data.meta != null) {
-					item.meta = getRelevantMetaTags(data.meta) || {};
-					if (item.meta?.oembedHtml) {
-						item.meta.oembedHtml = insertMaxWidthInOembedHtml(item.meta.oembedHtml) || '';
-					}
-				}
-				if (data.headers != null) {
-					const headers = getRelevantHeaders(data.headers);
-					if (headers) {
-						item.headers = headers;
-					}
-				}
-				item.parsedUrl = data.parsedUrl;
-				changed = true;
-			}
+			const { urlPreview, foundMeta } = await parseUrl(item.url);
+
+			Object.assign(item, urlPreview);
+			changed = changed || foundMeta;
 		}
 		if (attachments.length > 0) {
 			await Messages.setMessageAttachments(message._id, attachments);
@@ -344,10 +354,12 @@ const OEmbed: {
 	getUrlMeta: (url: string, withFragment?: boolean) => Promise<OEmbedUrlWithMetadata | undefined | OEmbedUrlContentResult>;
 	getUrlMetaWithCache: (url: string, withFragment?: boolean) => Promise<OEmbedUrlWithMetadata | OEmbedUrlContentResult | undefined>;
 	rocketUrlParser: (message: IMessage) => Promise<IMessage>;
+	parseUrl: (url: string) => Promise<{ urlPreview: MessageUrl; foundMeta: boolean }>;
 } = {
 	rocketUrlParser,
 	getUrlMetaWithCache,
 	getUrlMeta,
+	parseUrl,
 };
 
 settings.watch('API_Embed', (value) => {

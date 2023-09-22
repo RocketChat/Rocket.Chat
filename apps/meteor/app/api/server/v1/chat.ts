@@ -15,6 +15,7 @@ import { deleteMessageValidatingPermission } from '../../../lib/server/functions
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage';
+import { OEmbed } from '../../../oembed/server/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -819,6 +820,33 @@ API.v1.addRoute(
 			await Message.saveSystemMessage(otrType, roomId, username, { _id: this.userId, username });
 
 			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'chat.getURLPreview',
+	{ authRequired: true },
+	{
+		async get() {
+			const { roomId, url } = this.queryParams;
+
+			if (!roomId) {
+				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
+			}
+
+			if (!url) {
+				throw new Meteor.Error('error-url-param-not-provided', 'The required "url" query param is missing.');
+			}
+
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed');
+			}
+
+			const { urlPreview } = await OEmbed.parseUrl(url);
+			urlPreview.ignoreParse = true;
+
+			return API.v1.success({ urlPreview });
 		},
 	},
 );

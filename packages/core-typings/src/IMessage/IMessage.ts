@@ -15,7 +15,7 @@ import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 
 type MentionType = 'user' | 'team';
 
-type MessageUrl = {
+export type MessageUrl = {
 	url: string;
 	source?: string;
 	meta: Record<string, string>;
