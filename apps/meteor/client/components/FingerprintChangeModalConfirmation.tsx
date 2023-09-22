@@ -33,6 +33,13 @@ const FingerprintChangeModalConfirmation = ({
 					__html: newWorkspace ? t('Confirm_new_workspace_description') : t('Confirm_configuration_update_description'),
 				}}
 			/>
+			<Box
+				is='p'
+				mbe={16}
+				dangerouslySetInnerHTML={{
+					__html: t('Unique_ID_change_detected_learn_more_link'),
+				}}
+			/>
 		</GenericModal>
 	);
 };

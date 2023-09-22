@@ -30,6 +30,13 @@ const FingerprintChangeModal = ({ onConfirm, onCancel, onClose }: FingerprintCha
 					__html: t('Unique_ID_change_detected_description'),
 				}}
 			/>
+			<Box
+				is='p'
+				mbe={16}
+				dangerouslySetInnerHTML={{
+					__html: t('Unique_ID_change_detected_learn_more_link'),
+				}}
+			/>
 		</GenericModal>
 	);
 };

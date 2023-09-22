@@ -5246,6 +5246,7 @@
   "Units": "Units",
   "Unit_removed": "Unit Removed",
   "Unique_ID_change_detected_description": "Information that identifies this workspace has changed. This can happen when the site URL or database connection string are changed or when a new workspace is created from a copy of an existing database.<br/><br/>Would you like to proceed with a configuration update to the existing workspace or create a new workspace and unique ID?",
+  "Unique_ID_change_detected_learn_more_link": "<a href=\"https://go.rocket.chat/i/fingerprint-changed-faq\" target=\"_blank\">Learn more</a>",
   "Unique_ID_change_detected": "Unique ID change detected",
   "Unknown_Import_State": "Unknown Import State",
   "Unknown_User": "Unknown User",

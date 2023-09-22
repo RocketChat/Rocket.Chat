@@ -28,7 +28,7 @@ const verifyFingerPrint = async function () {
 	const fingerprint = generateFingerprint();
 
 	if (!DeploymentFingerPrintRecordHash) {
-		logger.warn('Generating fingerprint for the first time', fingerprint);
+		logger.info('Generating fingerprint for the first time', fingerprint);
 		await updateFingerprint(fingerprint, true);
 		return;
 	}
@@ -38,7 +38,7 @@ const verifyFingerPrint = async function () {
 	}
 
 	if (process.env.AUTO_ACCEPT_FINGERPRINT === 'true') {
-		logger.warn('Updating fingerprint as matched by env var EXPECTED_FINGERPRINT', fingerprint);
+		logger.info('Updating fingerprint as matched by env var EXPECTED_FINGERPRINT', fingerprint);
 		await updateFingerprint(fingerprint, true);
 	}
 
