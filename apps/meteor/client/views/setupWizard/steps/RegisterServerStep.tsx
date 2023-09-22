@@ -11,8 +11,7 @@ const SERVER_OPTIONS = {
 };
 
 const RegisterServerStep = (): ReactElement => {
-	const { goToPreviousStep, currentStep, setSetupWizardData, registerServer, maxSteps, offline, completeSetupWizard } =
-		useSetupWizardContext();
+	const { currentStep, setSetupWizardData, registerServer, maxSteps, offline, completeSetupWizard } = useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
 
 	const router = useRoute('cloud');
@@ -49,7 +48,6 @@ const RegisterServerStep = (): ReactElement => {
 	return (
 		<RegisterServerPage
 			onClickRegisterLater={(): void => setServerOption(SERVER_OPTIONS.STANDALONE)}
-			onBackButtonClick={goToPreviousStep}
 			stepCount={maxSteps}
 			onSubmit={offline ? handleRegisterOffline : handleRegister}
 			currentStep={currentStep}
