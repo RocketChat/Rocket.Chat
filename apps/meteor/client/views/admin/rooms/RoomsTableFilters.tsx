@@ -1,4 +1,4 @@
-import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
+.import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -52,8 +52,6 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 	const handleSearchTextChange = useCallback(
 		(event) => {
 			const text = event.currentTarget.value;
-
-			console.log('TEXT', { searchText: text, types: roomTypeSelectedOptions });
 			setFilters({ searchText: text, types: roomTypeSelectedOptions });
 			setText(text);
 		},
@@ -62,7 +60,6 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 
 	const handleRoomTypeChange = useCallback(
 		(options: OptionProp[]) => {
-			console.log('OPTION', { searchText: text, types: options });
 			setFilters({ searchText: text, types: options });
 			setRoomTypeSelectedOptions(options);
 		},
@@ -96,7 +93,6 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 					selectedOptionsTitle='Rooms'
 					setSelectedOptions={handleRoomTypeChange}
 					selectedOptions={roomTypeSelectedOptions}
-					customSetSelected={console.log}
 				/>
 			</Box>
 		</Box>
