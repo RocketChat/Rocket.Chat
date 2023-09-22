@@ -71,7 +71,7 @@ AcceptingMultipleFiles.args = {
 
 export const TriggeringBrowseAction = Template.bind({});
 TriggeringBrowseAction.storyName = 'triggering browse action';
-const ref = createRef();
+const inputRef = createRef();
 TriggeringBrowseAction.args = {
 	children: (
 		<div
@@ -84,8 +84,8 @@ TriggeringBrowseAction.args = {
 				flexDirection: 'column',
 			}}
 		>
-			<Button onClick={() => ref.current.browse()}>Browse</Button>
+			<Button onClick={() => inputRef.current.browse()}>Browse</Button>
 		</div>
 	),
-	ref,
+	inputRef,
 };
