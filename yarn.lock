@@ -7901,7 +7901,7 @@ __metadata:
     "@rocket.chat/message-parser": next
     "@rocket.chat/ui-kit": ^0.32.1
     eslint: ~8.45.0
-    mongodb: ^4.17.1
+    mongodb: ^4.12.1
     prettier: ~2.8.8
     typescript: ~5.2.2
   languageName: unknown
@@ -8727,6 +8727,7 @@ __metadata:
     "@xmldom/xmldom": ^0.8.8
     adm-zip: 0.5.10
     ajv: ^8.11.0
+    ajv-formats: ~2.1.1
     apn: 2.2.0
     archiver: ^3.1.1
     asterisk-manager: ^0.2.0
@@ -14128,7 +14129,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv-formats@npm:^2.1.1":
+"ajv-formats@npm:^2.1.1, ajv-formats@npm:~2.1.1":
   version: 2.1.1
   resolution: "ajv-formats@npm:2.1.1"
   dependencies:
@@ -28633,7 +28634,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:4.17.1, mongodb@npm:^4.3.1":
+"mongodb@npm:4.17.1, mongodb@npm:^4.12.1, mongodb@npm:^4.3.1":
   version: 4.17.1
   resolution: "mongodb@npm:4.17.1"
   dependencies:
@@ -36442,23 +36443,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supports-hyperlinks@npm:^2.0.0":
+"supports-hyperlinks@npm:^2.0.0, supports-hyperlinks@npm:^2.2.0":
   version: 2.3.0
   resolution: "supports-hyperlinks@npm:2.3.0"
   dependencies:
     has-flag: ^4.0.0
     supports-color: ^7.0.0
   checksum: 9ee0de3c8ce919d453511b2b1588a8205bd429d98af94a01df87411391010fe22ca463f268c84b2ce2abad019dfff8452aa02806eeb5c905a8d7ad5c4f4c52b8
-  languageName: node
-  linkType: hard
-
-"supports-hyperlinks@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "supports-hyperlinks@npm:2.2.0"
-  dependencies:
-    has-flag: ^4.0.0
-    supports-color: ^7.0.0
-  checksum: aef04fb41f4a67f1bc128f7c3e88a81b6cf2794c800fccf137006efe5bafde281da3e42e72bf9206c2fcf42e6438f37e3a820a389214d0a88613ca1f2d36076a
   languageName: node
   linkType: hard
 

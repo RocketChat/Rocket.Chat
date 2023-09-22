@@ -4,7 +4,7 @@ import type { IBanner } from '../IBanner';
 import type { Announcement } from './Announcement';
 import type { NpsSurveyAnnouncement } from './NpsSurveyAnnouncement';
 
-export interface SyncPayload {
+export interface WorkspaceSyncPayload {
 	workspaceId: string;
 	publicKey?: string;
 	announcements?: {

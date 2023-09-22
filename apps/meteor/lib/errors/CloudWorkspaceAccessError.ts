@@ -1,8 +1,8 @@
 import { CloudWorkspaceError } from './CloudWorkspaceError';
 
-export class CloudWorkspaceSyncError extends CloudWorkspaceError {
+export class CloudWorkspaceAccessError extends CloudWorkspaceError {
 	constructor(message: string) {
 		super(message);
-		this.name = CloudWorkspaceSyncError.name;
+		this.name = CloudWorkspaceAccessError.name;
 	}
 }

@@ -5,7 +5,7 @@ import { settings } from '../../../settings/server';
 import { statistics } from '../../../statistics/server';
 import { LICENSE_VERSION } from '../license';
 
-type WorkspaceRegistrationData<T> = {
+export type WorkspaceRegistrationData<T> = {
 	uniqueId: string;
 	workspaceId: SettingValue;
 	address: SettingValue;

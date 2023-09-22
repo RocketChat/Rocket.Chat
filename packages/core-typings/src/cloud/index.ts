@@ -1,3 +1,4 @@
 export { Announcement } from './Announcement';
 export { NpsSurveyAnnouncement } from './NpsSurveyAnnouncement';
-export { SyncPayload } from './SyncPayload';
+export { WorkspaceLicensePayload } from './WorkspaceLicensePayload';
+export { WorkspaceSyncPayload } from './WorkspaceSyncPayload';
