@@ -1,4 +1,4 @@
-import { isEnterprise } from '@rocket.chat/license';
+import * as License from '@rocket.chat/license';
 
 import { API } from '../../../app/api/server/api';
 import type { NonEnterpriseTwoFactorOptions, Options } from '../../../app/api/server/definition';
@@ -11,7 +11,7 @@ const isNonEnterpriseTwoFactorOptions = (options?: Options): options is NonEnter
 	!!options && 'forceTwoFactorAuthenticationForNonEnterprise' in options && Boolean(options.forceTwoFactorAuthenticationForNonEnterprise);
 
 API.v1.processTwoFactor = use(API.v1.processTwoFactor, ([params, ...context], next) => {
-	if (isNonEnterpriseTwoFactorOptions(params.options) && !isEnterprise()) {
+	if (isNonEnterpriseTwoFactorOptions(params.options) && !License.hasValidLicense()) {
 		const options: NonEnterpriseTwoFactorOptions = {
 			...params.options,
 			twoFactorOptions: {

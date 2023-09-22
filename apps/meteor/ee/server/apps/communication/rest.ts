@@ -3,7 +3,7 @@ import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { AppInstallationSource } from '@rocket.chat/apps-engine/server/storage';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
-import { isEnterprise } from '@rocket.chat/license';
+import * as License from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
@@ -1150,7 +1150,7 @@ export class AppsRestApi {
 					const storedApp = prl.getStorageItem();
 					const { installationSource, marketplaceInfo } = storedApp;
 
-					if (!isEnterprise() && installationSource === AppInstallationSource.MARKETPLACE) {
+					if (!License.hasValidLicense() && installationSource === AppInstallationSource.MARKETPLACE) {
 						try {
 							const baseUrl = orchestrator.getMarketplaceUrl() as string;
 							const headers = getDefaultHeaders();

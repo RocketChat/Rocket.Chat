@@ -1,5 +1,5 @@
 import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
-import { hasModule } from '@rocket.chat/license';
+import * as License from '@rocket.chat/license';
 import {
 	Users,
 	LivechatDepartment as LivechatDepartmentRaw,
@@ -195,7 +195,7 @@ export const LivechatEnterprise = {
 
 		const department = _id ? await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1 } }) : null;
 
-		if (!hasModule('livechat-enterprise')) {
+		if (!License.hasModule('livechat-enterprise')) {
 			const totalDepartments = await LivechatDepartmentRaw.countTotal();
 			if (!department && totalDepartments >= 1) {
 				throw new Meteor.Error('error-max-departments-number-reached', 'Maximum number of departments reached', {
@@ -279,6 +279,6 @@ export const LivechatEnterprise = {
 	},
 
 	async isDepartmentCreationAvailable() {
-		return hasModule('livechat-enterprise') || (await LivechatDepartmentRaw.countTotal()) === 0;
+		return License.hasModule('livechat-enterprise') || (await LivechatDepartmentRaw.countTotal()) === 0;
 	},
 };

@@ -1,5 +1,5 @@
 import { overwriteClassOnLicense } from './events/overwriteClassOnLicense';
-import { getLicense, getUnmodifiedLicenseAndModules, isEnterprise, setLicense } from './license';
+import { getLicense, getUnmodifiedLicenseAndModules, hasValidLicense, setLicense } from './license';
 import { hasModule, getModules } from './modules';
 import { getTags } from './tags';
 import { setLicenseLimitCounter, getCurrentValueForLicenseLimit } from './validation/getCurrentValueForLicenseLimit';
@@ -25,7 +25,7 @@ export {
 	validateFormat,
 	setWorkspaceUrl,
 	hasModule,
-	isEnterprise,
+	hasValidLicense,
 	getUnmodifiedLicenseAndModules,
 	getLicense,
 	getModules,

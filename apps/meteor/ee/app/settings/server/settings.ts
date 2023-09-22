@@ -1,5 +1,5 @@
 import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
-import { isEnterprise, hasModule, onValidateLicense, type LicenseModule } from '@rocket.chat/license';
+import * as License from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -11,7 +11,7 @@ export function changeSettingValue(record: ISetting): SettingValue {
 		return record.value;
 	}
 
-	if (!isEnterprise()) {
+	if (!License.hasValidLicense()) {
 		return record.invalidValue;
 	}
 
@@ -20,7 +20,7 @@ export function changeSettingValue(record: ISetting): SettingValue {
 	}
 
 	for (const moduleName of record.modules) {
-		if (!hasModule(moduleName as LicenseModule)) {
+		if (!License.hasModule(moduleName as License.LicenseModule)) {
 			return record.invalidValue;
 		}
 	}
@@ -58,5 +58,5 @@ async function updateSettings(): Promise<void> {
 Meteor.startup(async () => {
 	await updateSettings();
 
-	onValidateLicense(updateSettings);
+	License.onValidateLicense(updateSettings);
 });

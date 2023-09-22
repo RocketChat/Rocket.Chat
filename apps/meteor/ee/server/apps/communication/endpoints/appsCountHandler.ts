@@ -1,5 +1,5 @@
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-import { getAppsConfig } from '@rocket.chat/license';
+import * as License from '@rocket.chat/license';
 
 import { API } from '../../../../../app/api/server';
 import type { SuccessResult } from '../../../../../app/api/server/definition';
@@ -23,7 +23,7 @@ export const appsCountHandler = (apiManager: AppsRestApi) =>
 				const manager = apiManager._manager as AppManager;
 
 				const apps = manager.get({ enabled: true });
-				const { maxMarketplaceApps, maxPrivateApps } = getAppsConfig();
+				const { maxMarketplaceApps, maxPrivateApps } = License.getAppsConfig();
 
 				return API.v1.success({
 					totalMarketplaceEnabled: apps.filter((app) => getInstallationSourceFromAppStorageItem(app.getStorageItem()) === 'marketplace')

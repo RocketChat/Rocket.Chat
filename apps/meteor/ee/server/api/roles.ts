@@ -1,5 +1,5 @@
 import type { IRole } from '@rocket.chat/core-typings';
-import { isEnterprise } from '@rocket.chat/license';
+import * as License from '@rocket.chat/license';
 import { Roles } from '@rocket.chat/models';
 import Ajv from 'ajv';
 
@@ -96,7 +96,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!isEnterprise()) {
+			if (!License.hasValidLicense()) {
 				throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
 			}
 
@@ -154,7 +154,7 @@ API.v1.addRoute(
 
 			const role = await Roles.findOne(roleId);
 
-			if (!isEnterprise() && !role?.protected) {
+			if (!License.hasValidLicense() && !role?.protected) {
 				throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
 			}
 

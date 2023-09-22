@@ -67,7 +67,7 @@ export const validateLicense = async () => {
 };
 
 const setLicenseV3 = async (newLicense: ILicenseV3, encryptedLicense: string, originalLicense?: ILicenseV2 | ILicenseV3) => {
-	const hadValidLicense = isEnterprise();
+	const hadValidLicense = hasValidLicense();
 	clearLicenseData();
 
 	try {
@@ -78,7 +78,7 @@ const setLicenseV3 = async (newLicense: ILicenseV3, encryptedLicense: string, or
 		await validateLicense();
 		lockLicense(encryptedLicense);
 	} finally {
-		if (hadValidLicense && !isEnterprise()) {
+		if (hadValidLicense && !hasValidLicense()) {
 			licenseRemoved();
 			invalidateAll();
 		}
@@ -142,7 +142,7 @@ export const setLicense = async (encryptedLicense: string, forceSet = false): Pr
 	}
 };
 
-export const isEnterprise = () => Boolean(license && valid);
+export const hasValidLicense = () => Boolean(license && valid);
 
 export const getUnmodifiedLicenseAndModules = () => {
 	if (valid && unmodifiedLicense) {

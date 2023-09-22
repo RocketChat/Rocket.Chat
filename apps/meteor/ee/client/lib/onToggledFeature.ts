@@ -1,11 +1,11 @@
-import type { LicenseModule } from '@rocket.chat/license';
+import type * as License from '@rocket.chat/license';
 import { QueryObserver } from '@tanstack/react-query';
 
 import { queryClient } from '../../../client/lib/queryClient';
 import { fetchFeatures } from './fetchFeatures';
 
 export const onToggledFeature = (
-	feature: LicenseModule,
+	feature: License.LicenseModule,
 	{
 		up,
 		down,

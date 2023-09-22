@@ -1,9 +1,9 @@
 import { Apps } from '@rocket.chat/core-services';
-import type { LicenseAppSources } from '@rocket.chat/license';
+import type * as License from '@rocket.chat/license';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../../../lib/apps/getInstallationSourceFromAppStorageItem';
 
-export async function getAppCount(source: LicenseAppSources): Promise<number> {
+export async function getAppCount(source: License.LicenseAppSources): Promise<number> {
 	if (!(await Apps.isInitialized())) {
 		return 0;
 	}

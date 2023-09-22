@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { onLicense } from '@rocket.chat/license';
+import * as License from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Roles } from '@rocket.chat/models';
 import { capitalize } from '@rocket.chat/string-helpers';
@@ -54,7 +54,7 @@ function getChannelsMap(channelsMap: string): Record<string, any> | undefined {
 	}
 }
 
-await onLicense('oauth-enterprise', () => {
+await License.onLicense('oauth-enterprise', () => {
 	callbacks.add('afterProcessOAuthUser', async (auth: IOAuthUserService) => {
 		auth.serviceName = capitalize(auth.serviceName);
 		const settings = getOAuthSettings(auth.serviceName);
