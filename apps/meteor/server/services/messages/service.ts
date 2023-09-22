@@ -22,10 +22,6 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	}
 
 	private async configureBadWords() {
-		if (!this.isBadWordsFilterEnabled()) {
-			return;
-		}
-
 		settings.watchMultiple(
 			['Message_AllowBadWordsFilter', 'Message_BadWordsFilterList', 'Message_BadWordsWhitelist'],
 			async ([enabled, badWordsList, whiteList]) => {
