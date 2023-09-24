@@ -180,7 +180,6 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 
 			uids: [],
 			autoTranslateLanguage: '',
-			responseBy: '',
 			livechatData: '',
 			u: {
 				_id: agent.agentId,

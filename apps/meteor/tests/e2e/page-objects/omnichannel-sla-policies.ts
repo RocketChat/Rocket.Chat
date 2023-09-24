@@ -72,7 +72,7 @@ export class OmnichannelSlaPolicies {
 	}
 
 	get txtDeleteModalTitle() {
-		return this.page.locator('div.rcx-modal__title >> text="Are you sure?"');
+		return this.page.locator('role=dialog >> text="Are you sure?"');
 	}
 
 	get txtEmptyState() {

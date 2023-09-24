@@ -8,8 +8,8 @@ import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
 
 export async function startRegisterWorkspace(resend = false) {
-	const { workspaceRegistered, connectToCloud } = await retrieveRegistrationStatus();
-	if ((workspaceRegistered && connectToCloud) || process.env.TEST_MODE) {
+	const { workspaceRegistered } = await retrieveRegistrationStatus();
+	if (workspaceRegistered || process.env.TEST_MODE) {
 		await syncWorkspace(true);
 
 		return true;
