@@ -1,5 +1,43 @@
 # @rocket.chat/livechat Change Log
 
+## 1.14.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.0-rc.4
+
+## 1.14.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.0-rc.3
+
+## 1.14.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.0-rc.2
+
+## 1.14.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.0-rc.1
+
+## 1.14.0-rc.0
+
+### Minor Changes
+
+- 04fe492555: Added new Omnichannel's trigger condition "After starting a chat".
+
+### Patch Changes
+
+- 62a13ed97d: chore: (Livechat) Replace all `dangerouslySetInnerHTML` with `gazzodown`
+- 817141dcab: fix: Issue caused by spaces in the `config.url` setting
+- b8f3d5014f: Fixed the login page language switcher, now the component has a new look, is reactive and the language selection becomes concrete upon login in. Also changed the default language of the login page to be the browser language.
+  - @rocket.chat/gazzodown@2.0.0-rc.0
+  - @rocket.chat/random@1.2.1
+
 ## 1.13.4
 
 ### Patch Changes
