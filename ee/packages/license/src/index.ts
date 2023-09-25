@@ -1,9 +1,21 @@
-import { licenseData } from './data';
+import type { LicenseLimitKind } from './definition/ILicenseV3';
+import type { LimitContext } from './definition/LimitContext';
+import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
+import { onLicense } from './events/deprecated';
+import {
+	onInvalidFeature,
+	onInvalidateLicense,
+	onLimitReached,
+	onModule,
+	onToggledFeature,
+	onValidFeature,
+	onValidateLicense,
+} from './events/listeners';
 import { overwriteClassOnLicense } from './events/overwriteClassOnLicense';
-import { getLicense, hasValidLicense, setLicense } from './license';
-import { modules as modulesData, hasModule, getModules } from './modules';
-import { tags as tagsData, getTags } from './tags';
-import { setLicenseLimitCounter, getCurrentValueForLicenseLimit } from './validation/getCurrentValueForLicenseLimit';
+import { LicenseManager } from './license';
+import { getModules, hasModule } from './modules';
+import { getTags } from './tags';
+import { getCurrentValueForLicenseLimit, setLicenseLimitCounter } from './validation/getCurrentValueForLicenseLimit';
 import { validateFormat } from './validation/validateFormat';
 import { setWorkspaceUrl } from './workspaceUrl';
 
@@ -16,28 +28,88 @@ export * from './definition/LicenseModule';
 export * from './definition/LicensePeriod';
 export * from './definition/LimitContext';
 
-export * from './events/deprecated';
-export * from './events/listeners';
-export * from './deprecated';
-export * from './actionBlockers';
+export class License extends LicenseManager {
+	public static validateFormat(...args: Parameters<typeof validateFormat>) {
+		return validateFormat(...args);
+	}
 
-const { modules, tags, data } = process.env.TEST_MODE
-	? { modules: modulesData, tags: tagsData, data: licenseData }
-	: { modules: undefined, tags: undefined, data: undefined };
+	public static async setWorkspaceUrl(...args: Parameters<typeof setWorkspaceUrl>) {
+		return setWorkspaceUrl(...args);
+	}
 
-export {
-	setLicense,
-	validateFormat,
-	setWorkspaceUrl,
-	hasModule,
-	hasValidLicense,
-	getLicense,
-	modules,
-	getModules,
-	tags,
-	getTags,
-	overwriteClassOnLicense,
-	setLicenseLimitCounter,
-	getCurrentValueForLicenseLimit,
-	data,
-};
+	public static hasModule(...args: Parameters<typeof hasModule>) {
+		return hasModule(...args);
+	}
+
+	public static getModules(...args: Parameters<typeof getModules>) {
+		return getModules(...args);
+	}
+
+	public static getTags(...args: Parameters<typeof getTags>) {
+		return getTags(...args);
+	}
+
+	public static async overwriteClassOnLicense(...args: Parameters<typeof overwriteClassOnLicense>) {
+		return overwriteClassOnLicense(...args);
+	}
+
+	public static setLicenseLimitCounter(...args: Parameters<typeof setLicenseLimitCounter>) {
+		return setLicenseLimitCounter(...args);
+	}
+
+	public static async getCurrentValueForLicenseLimit(...args: Parameters<typeof getCurrentValueForLicenseLimit>) {
+		return getCurrentValueForLicenseLimit(...args);
+	}
+
+	public static async isLimitReached<T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>) {
+		return this.shouldPreventAction(action, context, 0);
+	}
+
+	public static onValidFeature(...args: Parameters<typeof onValidFeature>) {
+		return onValidFeature(...args);
+	}
+
+	public static onInvalidFeature(...args: Parameters<typeof onInvalidFeature>) {
+		return onInvalidFeature(...args);
+	}
+
+	public static onToggledFeature(...args: Parameters<typeof onToggledFeature>) {
+		return onToggledFeature(...args);
+	}
+
+	public static onModule(...args: Parameters<typeof onModule>) {
+		return onModule(...args);
+	}
+
+	public static onValidateLicense(...args: Parameters<typeof onValidateLicense>) {
+		return onValidateLicense(...args);
+	}
+
+	public static onInvalidateLicense(...args: Parameters<typeof onInvalidateLicense>) {
+		return onInvalidateLicense(...args);
+	}
+
+	public static onLimitReached(...args: Parameters<typeof onLimitReached>) {
+		return onLimitReached(...args);
+	}
+
+	// Deprecated:
+	public static onLicense(...args: Parameters<typeof onLicense>) {
+		return onLicense(...args);
+	}
+
+	// Deprecated:
+	public static getMaxActiveUsers() {
+		return getMaxActiveUsers();
+	}
+
+	// Deprecated:
+	public static getAppsConfig() {
+		return getAppsConfig();
+	}
+
+	// Deprecated:
+	public static getUnmodifiedLicenseAndModules() {
+		return getUnmodifiedLicenseAndModules();
+	}
+}

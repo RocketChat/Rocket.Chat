@@ -1,4 +1,4 @@
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 
 // To facilitate our lives with the stream
 // Collection will be registered on CE too

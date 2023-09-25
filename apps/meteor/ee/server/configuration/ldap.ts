@@ -1,6 +1,6 @@
 import type { IImportUser, ILDAPEntry, IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../app/settings/server';

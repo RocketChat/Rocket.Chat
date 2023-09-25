@@ -1,6 +1,6 @@
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import { LivechatBusinessHours, LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 import moment from 'moment-timezone';
 

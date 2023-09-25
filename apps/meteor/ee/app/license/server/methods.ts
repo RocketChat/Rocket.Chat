@@ -1,4 +1,4 @@
-import * as License from '@rocket.chat/license';
+import { License, type ILicenseTag, type LicenseModule } from '@rocket.chat/license';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -8,7 +8,7 @@ declare module '@rocket.chat/ui-contexts' {
 	interface ServerMethods {
 		'license:hasLicense'(feature: string): boolean;
 		'license:getModules'(): string[];
-		'license:getTags'(): License.ILicenseTag[];
+		'license:getTags'(): ILicenseTag[];
 		'license:isEnterprise'(): boolean;
 	}
 }
@@ -17,7 +17,7 @@ Meteor.methods<ServerMethods>({
 	'license:hasLicense'(feature: string) {
 		check(feature, String);
 
-		return License.hasModule(feature as License.LicenseModule);
+		return License.hasModule(feature as LicenseModule);
 	},
 	'license:getModules'() {
 		return License.getModules();

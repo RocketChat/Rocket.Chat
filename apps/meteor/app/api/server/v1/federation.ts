@@ -1,5 +1,5 @@
 import { Federation, FederationEE } from '@rocket.chat/core-services';
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import { isFederationVerifyMatrixIdProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';

@@ -1,7 +1,7 @@
 import { log } from 'console';
 
 import { Analytics } from '@rocket.chat/core-services';
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import { CannedResponse, OmnichannelServiceLevelAgreements, LivechatRooms, LivechatTag, LivechatUnit, Users } from '@rocket.chat/models';
 
 type ENTERPRISE_STATISTICS = GenericStats & Partial<EEOnlyStats>;

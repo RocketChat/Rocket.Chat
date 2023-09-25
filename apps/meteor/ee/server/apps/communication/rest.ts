@@ -3,7 +3,7 @@ import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { AppInstallationSource } from '@rocket.chat/apps-engine/server/storage';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';

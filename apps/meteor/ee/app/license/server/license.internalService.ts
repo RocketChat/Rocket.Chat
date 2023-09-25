@@ -1,6 +1,6 @@
 import type { ILicense } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
-import * as License from '@rocket.chat/license';
+import { License, type LicenseModule } from '@rocket.chat/license';
 
 import { guestPermissions } from '../../authorization/lib/guestPermissions';
 import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
@@ -34,7 +34,7 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 		await resetEnterprisePermissions();
 	}
 
-	hasModule(feature: License.LicenseModule): boolean {
+	hasModule(feature: LicenseModule): boolean {
 		return License.hasModule(feature);
 	}
 
