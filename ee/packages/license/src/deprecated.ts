@@ -1,5 +1,7 @@
+import { licenseData } from './data';
 import type { LicenseLimitKind } from './definition/ILicenseV3';
 import { getLicense } from './license';
+import { getModules } from './modules';
 
 const getLicenseLimit = (kind: LicenseLimitKind) => {
 	const license = getLicense();
@@ -23,3 +25,12 @@ export const getAppsConfig = () => ({
 	maxPrivateApps: getLicenseLimit('privateApps') ?? -1,
 	maxMarketplaceApps: getLicenseLimit('marketplaceApps') ?? -1,
 });
+
+export const getUnmodifiedLicenseAndModules = () => {
+	if (licenseData.valid && licenseData.unmodifiedLicense) {
+		return {
+			license: licenseData.unmodifiedLicense,
+			modules: getModules(),
+		};
+	}
+};

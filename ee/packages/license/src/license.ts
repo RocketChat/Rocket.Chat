@@ -1,80 +1,24 @@
+import { clearLicenseData, licenseData } from './data';
 import decrypt from './decrypt';
 import type { ILicenseV2 } from './definition/ILicenseV2';
 import type { ILicenseV3 } from './definition/ILicenseV3';
-import type { BehaviorWithContext } from './definition/LicenseBehavior';
 import { isLicenseDuplicate, lockLicense } from './encryptedLicense';
-import { licenseRemoved, licenseValidated } from './events/emitter';
+import { licenseRemoved } from './events/emitter';
 import { logger } from './logger';
-import { getModules, invalidateAll, replaceModules } from './modules';
+import { invalidateAll } from './modules';
 import { clearPendingLicense, hasPendingLicense, isPendingLicense, setPendingLicense } from './pendingLicense';
-import { showLicense } from './showLicense';
-import { replaceTags } from './tags';
 import { convertToV3 } from './v2/convertToV3';
-import { hasAllDataCounters } from './validation/getCurrentValueForLicenseLimit';
-import { getModulesToDisable } from './validation/getModulesToDisable';
-import { isBehaviorsInResult } from './validation/isBehaviorsInResult';
-import { runValidation } from './validation/runValidation';
+import { isReadyForValidation } from './validation/isReadyForValidation';
 import { validateFormat } from './validation/validateFormat';
-import { getWorkspaceUrl } from './workspaceUrl';
-
-let unmodifiedLicense: ILicenseV2 | ILicenseV3 | undefined;
-let license: ILicenseV3 | undefined;
-let valid: boolean | undefined;
-let inFairPolicy: boolean | undefined;
-
-const clearLicenseData = () => {
-	license = undefined;
-	unmodifiedLicense = undefined;
-	valid = undefined;
-	inFairPolicy = undefined;
-	valid = false;
-};
-
-const processValidationResult = (result: BehaviorWithContext[]) => {
-	if (!license || isBehaviorsInResult(result, ['invalidate_license', 'prevent_installation'])) {
-		return;
-	}
-
-	valid = true;
-	inFairPolicy = isBehaviorsInResult(result, ['start_fair_policy']);
-
-	if (license.information.tags) {
-		replaceTags(license.information.tags);
-	}
-
-	const disabledModules = getModulesToDisable(result);
-	const modulesToEnable = license.grantedModules.filter(({ module }) => !disabledModules.includes(module));
-
-	replaceModules(modulesToEnable.map(({ module }) => module));
-	logger.log({ msg: 'License validated', modules: modulesToEnable });
-
-	licenseValidated();
-	showLicense(license, valid);
-};
-
-export const validateLicense = async () => {
-	if (!license || !getWorkspaceUrl()) {
-		return;
-	}
-
-	// #TODO: Only include 'prevent_installation' here if this is actually the initial installation of the license
-	const validationResult = await runValidation(license, [
-		'invalidate_license',
-		'prevent_installation',
-		'start_fair_policy',
-		'disable_modules',
-	]);
-	processValidationResult(validationResult);
-};
+import { validateLicense } from './validation/validateLicense';
 
 const setLicenseV3 = async (newLicense: ILicenseV3, encryptedLicense: string, originalLicense?: ILicenseV2 | ILicenseV3) => {
 	const hadValidLicense = hasValidLicense();
 	clearLicenseData();
 
 	try {
-		unmodifiedLicense = originalLicense || newLicense;
-		license = newLicense;
-		clearPendingLicense();
+		licenseData.unmodifiedLicense = originalLicense || newLicense;
+		licenseData.license = newLicense;
 
 		await validateLicense();
 		lockLicense(encryptedLicense);
@@ -88,9 +32,6 @@ const setLicenseV3 = async (newLicense: ILicenseV3, encryptedLicense: string, or
 
 const setLicenseV2 = async (newLicense: ILicenseV2, encryptedLicense: string) =>
 	setLicenseV3(convertToV3(newLicense), encryptedLicense, newLicense);
-
-// Can only validate licenses once the workspace URL and the data counter functions are set
-export const isReadyForValidation = () => Boolean(getWorkspaceUrl() && hasAllDataCounters());
 
 export const setLicense = async (encryptedLicense: string, forceSet = false): Promise<boolean> => {
 	if (!encryptedLicense || String(encryptedLicense).trim() === '') {
@@ -143,21 +84,10 @@ export const setLicense = async (encryptedLicense: string, forceSet = false): Pr
 	}
 };
 
-export const hasValidLicense = () => Boolean(license && valid);
-
-export const getUnmodifiedLicenseAndModules = () => {
-	if (valid && unmodifiedLicense) {
-		return {
-			license: unmodifiedLicense,
-			modules: getModules(),
-		};
-	}
-};
+export const hasValidLicense = () => Boolean(licenseData.license && licenseData.valid);
 
 export const getLicense = () => {
-	if (valid && license) {
-		return license;
+	if (licenseData.valid && licenseData.license) {
+		return licenseData.license;
 	}
 };
-
-export const startedFairPolicy = () => Boolean(inFairPolicy);
