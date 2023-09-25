@@ -302,9 +302,10 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'create-p'))) {
-				return API.v1.unauthorized();
-			}
+			// TODO check error returned by createPrivateGroupMethod
+			// if (!(await hasPermissionAsync(this.userId, 'create-p'))) {
+			// 	return API.v1.unauthorized();
+			// }
 
 			if (!this.bodyParams.name) {
 				return API.v1.failure('Body param "name" is required');
@@ -324,7 +325,7 @@ API.v1.addRoute(
 			const readOnly = typeof this.bodyParams.readOnly !== 'undefined' ? this.bodyParams.readOnly : false;
 
 			const result = await createPrivateGroupMethod(
-				this.userId,
+				this.user,
 				this.bodyParams.name,
 				this.bodyParams.members ? this.bodyParams.members : [],
 				readOnly,

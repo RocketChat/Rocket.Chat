@@ -17,6 +17,7 @@ import type {
 	IndexDescription,
 	UpdateFilter,
 	InsertOneResult,
+	InsertManyResult,
 } from 'mongodb';
 
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
@@ -1601,6 +1602,38 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		if (!['d', 'l'].includes(room.t)) {
 			await Users.addRoomByUserId(user._id, room._id);
 		}
+
+		return result;
+	}
+
+	async createWithRoomAndManyUsers(
+		room: IRoom,
+		users: { user: IUser; extraData: Record<string, any> }[] = [],
+	): Promise<InsertManyResult<ISubscription>> {
+		const subscriptions = users.map(({ user, extraData }) => ({
+			open: false,
+			alert: false,
+			unread: 0,
+			userMentions: 0,
+			groupMentions: 0,
+			ts: room.ts,
+			rid: room._id,
+			name: room.name,
+			fname: room.fname,
+			...(room.customFields && { customFields: room.customFields }),
+			t: room.t,
+			u: {
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+			},
+			...(room.prid && { prid: room.prid }),
+			...getDefaultSubscriptionPref(user),
+			...extraData,
+		}));
+
+		// @ts-expect-error - types not good :(
+		const result = await this.insertMany(subscriptions);
 
 		return result;
 	}

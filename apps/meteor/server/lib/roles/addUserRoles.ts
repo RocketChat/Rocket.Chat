@@ -9,10 +9,11 @@ export const addUserRolesAsync = async (userId: IUser['_id'], roleIds: IRole['_i
 		return false;
 	}
 
-	const user = await Users.findOneById(userId, { projection: { _id: 1 } });
-	if (!user) {
-		throw new MeteorError('error-invalid-user', 'Invalid user');
-	}
+	// TODO remove this
+	// const user = await Users.findOneById(userId, { projection: { _id: 1 } });
+	// if (!user) {
+	// 	throw new MeteorError('error-invalid-user', 'Invalid user');
+	// }
 
 	if (!(await validateRoleList(roleIds))) {
 		throw new MeteorError('error-invalid-role', 'Invalid role');

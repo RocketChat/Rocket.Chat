@@ -19,10 +19,86 @@ const isValidName = (name: unknown): name is string => {
 const onlyUsernames = (members: unknown): members is string[] =>
 	Array.isArray(members) && members.every((member) => typeof member === 'string');
 
+async function createUsersSubscriptions({
+	room,
+	shouldBeHandledByFederation,
+	members,
+	now,
+	owner,
+	options,
+}: {
+	room: IRoom;
+	shouldBeHandledByFederation: boolean;
+	members: string[];
+	now: Date;
+	owner: IUser;
+	options?: ICreateRoomParams['options'];
+}) {
+	if (shouldBeHandledByFederation) {
+		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
+		extra.open = true;
+		extra.ls = now;
+
+		if (room.prid) {
+			extra.prid = room.prid;
+		}
+
+		await Subscriptions.createWithRoomAndUser(room, owner, extra);
+
+		return;
+	}
+
+	const membersCursor = Users.findUsersByUsernames(members, {
+		projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1, 'roles': 1 },
+	});
+
+	let total = 0;
+
+	const subs = [];
+
+	for await (const member of membersCursor) {
+		try {
+			await callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
+			await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
+		} catch (error) {
+			continue;
+		}
+
+		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
+
+		extra.open = true;
+
+		if (room.prid) {
+			extra.prid = room.prid;
+		}
+
+		if (member.username === owner.username) {
+			extra.ls = now;
+			extra.roles = ['owner'];
+		}
+
+		total++;
+
+		// TODO move this to outside the loop
+		if (!['d', 'l'].includes(room.t)) {
+			await Users.addRoomByUserId(member._id, room._id);
+		}
+
+		subs.push({
+			user: member,
+			extraData: extra,
+		});
+	}
+
+	await Subscriptions.createWithRoomAndManyUsers(room, subs);
+
+	await Rooms.incUsersCountById(room._id, total);
+}
+
 export const createRoom = async <T extends RoomType>(
 	type: T,
 	name: T extends 'd' ? undefined : string,
-	ownerUsername: string | undefined,
+	owner: IUser | undefined,
 	members: T extends 'd' ? IUser[] : string[] = [],
 	excludeSelf?: boolean,
 	readOnly?: boolean,
@@ -45,7 +121,7 @@ export const createRoom = async <T extends RoomType>(
 		// options,
 	});
 	if (type === 'd') {
-		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername });
+		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || owner?.username });
 	}
 
 	if (!onlyUsernames(members)) {
@@ -61,15 +137,13 @@ export const createRoom = async <T extends RoomType>(
 		});
 	}
 
-	if (!ownerUsername) {
+	if (!owner) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			function: 'RocketChat.createRoom',
 		});
 	}
 
-	const owner = await Users.findOneByUsernameIgnoringCase(ownerUsername, { projection: { username: 1, name: 1 } });
-
-	if (!ownerUsername || !owner) {
+	if (!owner?.username) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			function: 'RocketChat.createRoom',
 		});
@@ -138,51 +212,15 @@ export const createRoom = async <T extends RoomType>(
 	if (type === 'c') {
 		await callbacks.run('beforeCreateChannel', owner, roomProps);
 	}
+
 	const room = await Rooms.createWithFullRoomData(roomProps);
-	const shouldBeHandledByFederation = room.federated === true || ownerUsername.includes(':');
-	if (shouldBeHandledByFederation) {
-		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
-		extra.open = true;
-		extra.ls = now;
 
-		if (room.prid) {
-			extra.prid = room.prid;
-		}
+	const shouldBeHandledByFederation = room.federated === true || owner.username.includes(':');
 
-		await Subscriptions.createWithRoomAndUser(room, owner, extra);
-	} else {
-		for await (const username of [...new Set(members)]) {
-			const member = await Users.findOneByUsername(username, {
-				projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1, 'roles': 1 },
-			});
-			if (!member) {
-				continue;
-			}
+	await createUsersSubscriptions({ room, members, now, owner, options, shouldBeHandledByFederation });
 
-			try {
-				await callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
-				await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
-			} catch (error) {
-				continue;
-			}
-
-			const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
-
-			extra.open = true;
-
-			if (room.prid) {
-				extra.prid = room.prid;
-			}
-
-			if (username === owner.username) {
-				extra.ls = now;
-			}
-
-			await Subscriptions.createWithRoomAndUser(room, member, extra);
-		}
-	}
-
-	await addUserRolesAsync(owner._id, ['owner'], room._id);
+	// TODO remove this and add logic to createUsersSubscriptions
+	// await addUserRolesAsync(owner._id, ['owner'], room._id);
 
 	if (type === 'c') {
 		if (room.teamId) {
@@ -191,7 +229,7 @@ export const createRoom = async <T extends RoomType>(
 				await Message.saveSystemMessage('user-added-room-to-team', team.roomId, room.name || '', owner);
 			}
 		}
-		await callbacks.run('afterCreateChannel', owner, room);
+		callbacks.runAsync('afterCreateChannel', owner, room);
 	} else if (type === 'p') {
 		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
 	}
