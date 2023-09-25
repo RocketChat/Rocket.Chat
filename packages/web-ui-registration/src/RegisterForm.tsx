@@ -222,7 +222,9 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					</Field>
 					{requiresPasswordConfirmation && (
 						<Field>
-							<Field.Label htmlFor={passwordConfirmationId}>{t('registration.component.form.confirmPassword')}</Field.Label>
+							<Field.Label required htmlFor={passwordConfirmationId}>
+								{t('registration.component.form.confirmPassword')}
+							</Field.Label>
 							<Field.Row>
 								<PasswordInput
 									{...register('passwordConfirmation', {
