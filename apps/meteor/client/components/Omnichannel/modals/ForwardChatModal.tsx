@@ -66,7 +66,7 @@ const ForwardChatModal = ({
 
 	const endReached = useCallback(
 		(start) => {
-			if (departmentsPhase === AsyncStatePhase.LOADING) {
+			if (departmentsPhase !== AsyncStatePhase.LOADING) {
 				loadMoreDepartments(start, Math.min(50, departmentsTotal));
 			}
 		},
