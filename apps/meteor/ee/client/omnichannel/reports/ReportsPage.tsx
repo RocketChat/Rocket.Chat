@@ -4,17 +4,20 @@ import React from 'react';
 
 import Page from '../../../../client/components/Page';
 import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { ResizeObserver } from './components/ResizeObserver';
 import { AgentsSection, ChannelsSection, DepartmentsSection, StatusSection, TagsSection } from './sections';
 
 const ReportsPage = () => {
 	const t = useTranslation();
 
-	const canViewReports = usePermission('view-livechat-reports');
+	const hasPermission = usePermission('view-livechat-reports');
+	const isEnterprise = useHasLicenseModule('livechat-enterprise');
 
-	if (!canViewReports) {
+	if (!hasPermission || !isEnterprise) {
 		return <NotAuthorizedPage />;
 	}
+
 	return (
 		<Page background='tint'>
 			<Page.Header title={t('Reports')} />
