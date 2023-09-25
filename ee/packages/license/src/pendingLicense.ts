@@ -1,30 +1,29 @@
+import { licenseData } from './data';
 import { setLicense } from './license';
 import { logger } from './logger';
 
-let pendingLicense: string;
-
 export const setPendingLicense = (encryptedLicense: string) => {
-	pendingLicense = encryptedLicense;
-	if (pendingLicense) {
+	licenseData.pendingLicense = encryptedLicense;
+	if (licenseData.pendingLicense) {
 		logger.info('Storing license as pending validation.');
 	}
 };
 
 export const applyPendingLicense = async () => {
-	if (pendingLicense) {
+	if (licenseData.pendingLicense) {
 		logger.info('Applying pending license.');
-		await setLicense(pendingLicense);
+		await setLicense(licenseData.pendingLicense);
 	}
 };
 
-export const hasPendingLicense = () => Boolean(pendingLicense);
+export const hasPendingLicense = () => Boolean(licenseData.pendingLicense);
 
-export const isPendingLicense = (encryptedLicense: string) => !!pendingLicense && pendingLicense === encryptedLicense;
+export const isPendingLicense = (encryptedLicense: string) => hasPendingLicense() && licenseData.pendingLicense === encryptedLicense;
 
 export const clearPendingLicense = () => {
-	if (pendingLicense) {
+	if (licenseData.pendingLicense) {
 		logger.info('Removing pending license.');
 	}
 
-	pendingLicense = '';
+	licenseData.pendingLicense = '';
 };

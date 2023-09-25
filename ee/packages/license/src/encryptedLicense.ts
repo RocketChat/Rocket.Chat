@@ -1,7 +1,8 @@
-let lockedLicense: string | undefined;
+import { licenseData } from './data';
 
 export const lockLicense = (encryptedLicense: string) => {
-	lockedLicense = encryptedLicense;
+	licenseData.lockedLicense = encryptedLicense;
 };
 
-export const isLicenseDuplicate = (encryptedLicense: string) => Boolean(lockedLicense && lockedLicense === encryptedLicense);
+export const isLicenseDuplicate = (encryptedLicense: string) =>
+	Boolean(licenseData.lockedLicense && licenseData.lockedLicense === encryptedLicense);

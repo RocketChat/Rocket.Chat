@@ -1,7 +1,7 @@
 import type { LicenseModule } from './definition/LicenseModule';
 import { moduleRemoved, moduleValidated } from './events/emitter';
 
-const modules = new Set<LicenseModule>();
+export const modules = new Set<LicenseModule>();
 
 export const notifyValidatedModules = (licenseModules: LicenseModule[]) => {
 	licenseModules.forEach((module) => {

@@ -1,6 +1,6 @@
 import type { ILicenseTag } from './definition/ILicenseTag';
 
-const tags = new Set<ILicenseTag>();
+export const tags = new Set<ILicenseTag>();
 
 export const addTag = (tag: ILicenseTag) => {
 	// make sure to not add duplicated tag names
