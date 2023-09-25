@@ -44,7 +44,7 @@ export async function getUserCloudAccessToken(userId: string, forceNew = false, 
 		return accessToken;
 	}
 
-	const cloudUrl = settings.get('Cloud_Url');
+	const cloudUrl = settings.get<string>('Cloud_Url');
 	const redirectUri = getRedirectUri();
 
 	if (scope === '') {
@@ -53,9 +53,9 @@ export async function getUserCloudAccessToken(userId: string, forceNew = false, 
 
 	let authTokenResult;
 	try {
-		const request = await fetch(`${cloudUrl}/api/oauth/token`, {
-			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+		const response = await fetch(`${cloudUrl}/api/oauth/token`, {
 			method: 'POST',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			params: new URLSearchParams({
 				client_id: clientId,
 				client_secret: clientSecret,
@@ -66,11 +66,11 @@ export async function getUserCloudAccessToken(userId: string, forceNew = false, 
 			}),
 		});
 
-		if (!request.ok) {
-			throw new Error((await request.json()).error);
+		if (!response.ok) {
+			throw new Error((await response.json()).error);
 		}
 
-		authTokenResult = await request.json();
+		authTokenResult = await response.json();
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to get User AccessToken from Rocket.Chat Cloud',
