@@ -58,17 +58,31 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 		prevSearchTerm.current = searchTerm;
 	}, [reload, refetch, searchTerm]);
 
-	const handleClick = useMutableCallback((id, e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>): void => {
-		e.stopPropagation();
+	const isKeyboardEvent = (
+		event: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>,
+	): event is React.KeyboardEvent<HTMLElement> => {
+		return (event as React.KeyboardEvent<HTMLElement>).key !== undefined;
+	};
 
-		router.navigate({
-			name: 'admin-users',
-			params: {
-				context: 'info',
-				id,
-			},
-		});
-	});
+	const handleClickOrKeyDown = useMutableCallback(
+		(id, e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>): void => {
+			e.stopPropagation();
+
+			const keyboardSubmitKeys = ['Enter', ' '];
+
+			if (isKeyboardEvent(e) && !keyboardSubmitKeys.includes(e.key)) {
+				return;
+			}
+
+			router.navigate({
+				name: 'admin-users',
+				params: {
+					context: 'info',
+					id,
+				},
+			});
+		},
+	);
 
 	const headers = useMemo(
 		() => [
@@ -127,7 +141,7 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 							{filteredUsers.map((user) => (
 								<UsersTableRow
 									key={user._id}
-									onClick={handleClick}
+									onClick={handleClickOrKeyDown}
 									mediaQuery={mediaQuery}
 									user={user}
 									refetchUsers={refetch}

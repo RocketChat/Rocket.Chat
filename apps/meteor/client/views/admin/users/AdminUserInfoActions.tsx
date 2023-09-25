@@ -83,8 +83,8 @@ const AdminUserInfoActions = ({
 			...(changeAdminStatusAction && !isFederatedUser && { makeAdmin: changeAdminStatusAction }),
 			...(resetE2EKeyAction && !isFederatedUser && { resetE2EKey: resetE2EKeyAction }),
 			...(resetTOTPAction && !isFederatedUser && { resetTOTP: resetTOTPAction }),
-			...(deleteUserAction && { delete: deleteUserAction }),
 			...(changeUserStatusAction && !isFederatedUser && { changeActiveStatus: changeUserStatusAction }),
+			...(deleteUserAction && { delete: deleteUserAction }),
 		}),
 		[
 			t,
@@ -116,7 +116,13 @@ const AdminUserInfoActions = ({
 				secondary
 				flexShrink={0}
 				key='menu'
-				renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option label={label} title={label} icon={icon} {...props} />}
+				renderItem={({ label: { label, icon }, ...props }): ReactElement =>
+					label === 'Delete' ? (
+						<Option label={label} title={label} icon={icon} variant='danger' {...props} />
+					) : (
+						<Option label={label} title={label} icon={icon} {...props} />
+					)
+				}
 				options={menuOptions}
 			/>
 		);
