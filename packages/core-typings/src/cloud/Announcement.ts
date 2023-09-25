@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type { IRocketChatRecord } from '../IRocketChatRecord';
-import { type UiKitPayload } from '../UIKit';
-
-type TargetPlatform = 'web' | 'mobile';
+import type { UiKitPayload } from '../UIKit';
+import type { TargetPlatform } from './TargetPlatform';
 
 type Dictionary = {
 	[lng: string]: {

@@ -1,3 +1,4 @@
+import { CloudAnnouncents } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -119,6 +120,24 @@ API.v1.addRoute(
 			const registrationStatus = await retrieveRegistrationStatus();
 
 			return API.v1.success({ registrationStatus });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'cloud.announcements',
+	{ authRequired: true },
+	{
+		async get() {
+			if (!(await hasRoleAsync(this.userId, 'admin'))) {
+				return API.v1.unauthorized();
+			}
+
+			const announcements = await CloudAnnouncents.find({
+				$or: [{ 'selector.roles': { $in: ['admin'] } }, { 'selector.roles': { $exists: false } }],
+			}).toArray();
+
+			return API.v1.success({ announcements });
 		},
 	},
 );

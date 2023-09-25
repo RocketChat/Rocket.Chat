@@ -1,4 +1,4 @@
-import type { CloudRegistrationIntentData, CloudConfirmationPollData, CloudRegistrationStatus } from '@rocket.chat/core-typings';
+import type { CloudRegistrationIntentData, CloudConfirmationPollData, CloudRegistrationStatus, Cloud } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -66,6 +66,12 @@ const CloudConfirmationPollSchema = {
 
 export const isCloudConfirmationPollProps = ajv.compile<CloudConfirmationPoll>(CloudConfirmationPollSchema);
 
+type CloudAnnouncementsParams = {
+	platform: Cloud.TargetPlatform;
+};
+
+type CloudAnnouncementsResponse = Cloud.Announcement[];
+
 export type CloudEndpoints = {
 	'/v1/cloud.manualRegister': {
 		POST: (params: CloudManualRegister) => void;
@@ -87,5 +93,8 @@ export type CloudEndpoints = {
 	};
 	'/v1/cloud.registrationStatus': {
 		GET: () => { registrationStatus: CloudRegistrationStatus };
+	};
+	'/v1/cloud.announcements': {
+		GET: (params: CloudAnnouncementsParams) => CloudAnnouncementsResponse;
 	};
 };
