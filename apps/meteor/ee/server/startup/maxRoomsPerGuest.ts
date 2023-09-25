@@ -3,12 +3,13 @@ import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../../server/lib/i18n';
+import { isEnterprise } from '../../app/license/server';
 import { getMaxRoomsPerGuest } from '../../app/license/server/license';
 
 callbacks.add(
 	'beforeAddedToRoom',
 	async ({ user }) => {
-		if (user.roles?.includes('guest')) {
+		if (isEnterprise() && user.roles?.includes('guest')) {
 			const totalSubscriptions = await Subscriptions.countByUserId(user._id);
 
 			if (totalSubscriptions >= getMaxRoomsPerGuest()) {
