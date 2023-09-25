@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 
 import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { FederationService } from '../../../server/services/federation/service';

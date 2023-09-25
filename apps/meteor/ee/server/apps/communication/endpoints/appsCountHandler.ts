@@ -1,5 +1,5 @@
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 
 import { API } from '../../../../../app/api/server';
 import type { SuccessResult } from '../../../../../app/api/server/definition';

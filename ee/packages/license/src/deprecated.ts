@@ -1,10 +1,11 @@
-import { licenseData } from './data';
 import type { LicenseLimitKind } from './definition/ILicenseV3';
-import { getLicense } from './license';
+import { LicenseManager } from './license';
 import { getModules } from './modules';
 
 const getLicenseLimit = (kind: LicenseLimitKind) => {
-	const license = getLicense();
+	const manager = LicenseManager.getLicenseManager();
+
+	const license = manager.getLicense();
 	if (!license) {
 		return;
 	}
@@ -27,9 +28,11 @@ export const getAppsConfig = () => ({
 });
 
 export const getUnmodifiedLicenseAndModules = () => {
-	if (licenseData.valid && licenseData.unmodifiedLicense) {
+	const manager = LicenseManager.getLicenseManager();
+
+	if (manager.valid && manager.unmodifiedLicense) {
 		return {
-			license: licenseData.unmodifiedLicense,
+			license: manager.unmodifiedLicense,
 			modules: getModules(),
 		};
 	}

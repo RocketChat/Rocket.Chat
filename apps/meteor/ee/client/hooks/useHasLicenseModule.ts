@@ -1,8 +1,8 @@
-import type * as License from '@rocket.chat/license';
+import type { LicenseModule } from '@rocket.chat/license';
 import { useMethod, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
-export const useHasLicenseModule = (licenseName: License.LicenseModule): 'loading' | boolean => {
+export const useHasLicenseModule = (licenseName: LicenseModule): 'loading' | boolean => {
 	const method = useMethod('license:getModules');
 	const uid = useUserId();
 

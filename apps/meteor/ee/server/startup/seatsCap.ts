@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { throttle } from 'underscore';
@@ -22,7 +22,7 @@ callbacks.add(
 			return;
 		}
 
-		if (await License.preventNewUsers()) {
+		if (await License.shouldPreventAction('activeUsers')) {
 			throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 		}
 	},
@@ -33,7 +33,7 @@ callbacks.add(
 callbacks.add(
 	'beforeUserImport',
 	async ({ userCount }) => {
-		if (await License.preventNewUsers(userCount)) {
+		if (await License.shouldPreventAction('activeUsers', {}, userCount)) {
 			throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 		}
 	},
@@ -52,7 +52,7 @@ callbacks.add(
 			return;
 		}
 
-		if (await License.preventNewUsers()) {
+		if (await License.shouldPreventAction('activeUsers')) {
 			throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 		}
 	},

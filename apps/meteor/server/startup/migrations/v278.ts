@@ -1,4 +1,4 @@
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import { Banners, Settings } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';

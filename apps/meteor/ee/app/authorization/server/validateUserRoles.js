@@ -1,4 +1,4 @@
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 

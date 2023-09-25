@@ -1,4 +1,4 @@
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import { Roles, Users } from '@rocket.chat/models';
 
 import type { ISAMLUser } from '../../../app/meteor-accounts-saml/server/definition/ISAMLUser';

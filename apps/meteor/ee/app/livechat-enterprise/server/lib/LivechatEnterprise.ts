@@ -1,5 +1,5 @@
 import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import {
 	Users,
 	LivechatDepartment as LivechatDepartmentRaw,
