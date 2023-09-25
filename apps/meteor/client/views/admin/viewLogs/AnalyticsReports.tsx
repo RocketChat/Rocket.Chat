@@ -1,8 +1,6 @@
 import { Box, Icon, Skeleton } from '@rocket.chat/fuselage';
-import { Link } from '@rocket.chat/layout';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
-import { Trans } from 'react-i18next';
 
 import { useAnalyticsObject } from './hooks/useAnalyticsObject';
 
@@ -20,16 +18,7 @@ const AnalyticsReports = () => {
 					</Box>
 					<Box fontScale='h4'>{t('How_and_why_we_collect_usage_data')}</Box>
 				</Box>
-				<Box>
-					<Trans i18nKey='Statistics_reporting_description_trans'>
-						By sending your statistics, you'll help us identify how many instances of
-						<Link href='https://rocket.chat/' target='_blank' rel='noopener noreferrer'>
-							Rocket.Chat
-						</Link>
-						are deployed, as well as how good the system is behaving, so we can further improve it. Don't worry, as no user information is
-						sent and all the information we receive is kept confidential.
-					</Trans>
-				</Box>
+				<Box fontScale='p1'>{t('Analytics_page_briefing')}</Box>
 			</Box>
 			<Box display='flex' flexDirection='column' padding={8} flexGrow={1} color='default' bg='neutral' borderRadius={4} overflow='scroll'>
 				{isSuccess && <pre>{JSON.stringify(data, null, '\t')}</pre>}

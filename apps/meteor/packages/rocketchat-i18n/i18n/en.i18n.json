@@ -424,7 +424,7 @@
   "Analytics_features_users_Description": "Tracks custom events related to actions related to users (password reset times, profile picture change, etc).",
   "Analytics_Google": "Google Analytics",
   "Analytics_Google_id": "Tracking ID",
-  "Statistics_reporting_description_trans": "By sending your statistics, you'll help us identify how many instances of <1>Rocket.Chat</1> are deployed, as well as how good the system is behaving, so we can further improve it. Don't worry, as no user information is sent and all the information we receive is kept confidential.",
+  "Analytics_page_briefing": "Rocket.Chat collects anonymous usage data to identify how many instances are deployed and to improve the product for all users. We take your privacy seriously, so the usage data is encrypted and stored securely.",
   "Analyze_practical_usage": "Analyze practical usage statistics about users, messages and channels",
   "and": "and",
   "And_more": "And {{length}} more",
