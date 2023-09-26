@@ -1,46 +1,47 @@
 import type { LicenseLimitKind } from '../definition/ILicenseV3';
 import type { LicenseModule } from '../definition/LicenseModule';
+import type { LicenseManager } from '../license';
 import { hasModule } from '../modules';
-import { EnterpriseLicenses } from './emitter';
 
-export const onValidFeature = (feature: LicenseModule, cb: () => void) => {
-	EnterpriseLicenses.on(`valid:${feature}`, cb);
+export function onValidFeature(this: LicenseManager, feature: LicenseModule, cb: () => void) {
+	this.on(`valid:${feature}`, cb);
 
-	if (hasModule(feature)) {
+	if (hasModule.call(this, feature)) {
 		cb();
 	}
 
 	return (): void => {
-		EnterpriseLicenses.off(`valid:${feature}`, cb);
+		this.off(`valid:${feature}`, cb);
 	};
-};
+}
 
-export const onInvalidFeature = (feature: LicenseModule, cb: () => void) => {
-	EnterpriseLicenses.on(`invalid:${feature}`, cb);
+export function onInvalidFeature(this: LicenseManager, feature: LicenseModule, cb: () => void) {
+	this.on(`invalid:${feature}`, cb);
 
-	if (!hasModule(feature)) {
+	if (!hasModule.call(this, feature)) {
 		cb();
 	}
 
 	return (): void => {
-		EnterpriseLicenses.off(`invalid:${feature}`, cb);
+		this.off(`invalid:${feature}`, cb);
 	};
-};
+}
 
-export const onToggledFeature = (
+export function onToggledFeature(
+	this: LicenseManager,
 	feature: LicenseModule,
 	{ up, down }: { up?: () => Promise<void> | void; down?: () => Promise<void> | void },
-): (() => void) => {
-	let enabled = hasModule(feature);
+): () => void {
+	let enabled = hasModule.call(this, feature);
 
-	const offValidFeature = onValidFeature(feature, () => {
+	const offValidFeature = onValidFeature.bind(this)(feature, () => {
 		if (!enabled) {
 			void up?.();
 			enabled = true;
 		}
 	});
 
-	const offInvalidFeature = onInvalidFeature(feature, () => {
+	const offInvalidFeature = onInvalidFeature.bind(this)(feature, () => {
 		if (enabled) {
 			void down?.();
 			enabled = false;
@@ -55,20 +56,20 @@ export const onToggledFeature = (
 		offValidFeature();
 		offInvalidFeature();
 	};
-};
+}
 
-export const onModule = (cb: (...args: any[]) => void) => {
-	EnterpriseLicenses.on('module', cb);
-};
+export function onModule(this: LicenseManager, cb: (...args: any[]) => void) {
+	this.on('module', cb);
+}
 
-export const onValidateLicense = (cb: (...args: any[]) => void) => {
-	EnterpriseLicenses.on('validate', cb);
-};
+export function onValidateLicense(this: LicenseManager, cb: (...args: any[]) => void) {
+	this.on('validate', cb);
+}
 
-export const onInvalidateLicense = (cb: (...args: any[]) => void) => {
-	EnterpriseLicenses.on('invalidate', cb);
-};
+export function onInvalidateLicense(this: LicenseManager, cb: (...args: any[]) => void) {
+	this.on('invalidate', cb);
+}
 
-export const onLimitReached = (limitKind: LicenseLimitKind, cb: (...args: any[]) => void) => {
-	EnterpriseLicenses.on(`limitReached:${limitKind}`, cb);
-};
+export function onLimitReached(this: LicenseManager, limitKind: LicenseLimitKind, cb: (...args: any[]) => void) {
+	this.on(`limitReached:${limitKind}`, cb);
+}

@@ -1,12 +1,16 @@
+import { Emitter } from '@rocket.chat/emitter';
+
 import decrypt from './decrypt';
 import type { ILicenseV2 } from './definition/ILicenseV2';
 import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
 import type { BehaviorWithContext } from './definition/LicenseBehavior';
+import type { LicenseModule } from './definition/LicenseModule';
 import type { LimitContext } from './definition/LimitContext';
-import { licenseRemoved, licenseValidated } from './events/emitter';
+import { InvalidLicenseError } from './errors/InvalidLicenseError';
+import { NotReadyForValidation } from './errors/NotReadyForValidation';
 import { logger } from './logger';
 import { invalidateAll, replaceModules } from './modules';
-import { clearPendingLicense, hasPendingLicense, isPendingLicense, setPendingLicense } from './pendingLicense';
+import { applyPendingLicense, clearPendingLicense, hasPendingLicense, isPendingLicense, setPendingLicense } from './pendingLicense';
 import { showLicense } from './showLicense';
 import { replaceTags } from './tags';
 import { convertToV3 } from './v2/convertToV3';
@@ -17,9 +21,21 @@ import { isReadyForValidation } from './validation/isReadyForValidation';
 import { runValidation } from './validation/runValidation';
 import { validateFormat } from './validation/validateFormat';
 
-let licenseManager: LicenseManager | undefined;
+export class LicenseManager extends Emitter<
+	Record<`limitReached:${LicenseLimitKind}` | `${'invalid' | 'valid'}:${LicenseModule}`, undefined> & {
+		validate: undefined;
+		invalidate: undefined;
+		module: { module: LicenseModule; valid: boolean };
+	}
+> {
+	dataCounters = new Map<LicenseLimitKind, (context?: LimitContext<LicenseLimitKind>) => Promise<number>>();
 
-export class LicenseManager {
+	pendingLicense = '';
+
+	modules = new Set<LicenseModule>();
+
+	private workspaceUrl: string | undefined;
+
 	private _license: ILicenseV3 | undefined;
 
 	private _unmodifiedLicense: ILicenseV2 | ILicenseV3 | undefined;
@@ -29,34 +45,6 @@ export class LicenseManager {
 	private _inFairPolicy: boolean | undefined;
 
 	private _lockedLicense: string | undefined;
-
-	public static getLicenseManager(): LicenseManager {
-		if (!licenseManager) {
-			licenseManager = new LicenseManager();
-		}
-
-		return licenseManager;
-	}
-
-	public static async setLicense(encryptedLicense: string): Promise<boolean> {
-		return this.getLicenseManager().setLicense(encryptedLicense);
-	}
-
-	public static hasValidLicense(): boolean {
-		return this.getLicenseManager().hasValidLicense();
-	}
-
-	public static getLicense(): ILicenseV3 | undefined {
-		return this.getLicenseManager().getLicense();
-	}
-
-	public static async shouldPreventAction<T extends LicenseLimitKind>(
-		action: T,
-		context?: Partial<LimitContext<T>>,
-		newCount = 1,
-	): Promise<boolean> {
-		return this.getLicenseManager().shouldPreventAction(action, context, newCount);
-	}
 
 	public get license(): ILicenseV3 | undefined {
 		return this._license;
@@ -74,13 +62,25 @@ export class LicenseManager {
 		return Boolean(this._inFairPolicy);
 	}
 
+	public async setWorkspaceUrl(url: string) {
+		this.workspaceUrl = url.replace(/\/$/, '').replace(/^https?:\/\/(.*)$/, '$1');
+
+		if (hasPendingLicense.call(this)) {
+			await applyPendingLicense.call(this);
+		}
+	}
+
+	public getWorkspaceUrl() {
+		return this.workspaceUrl;
+	}
+
 	private clearLicenseData(): void {
 		this._license = undefined;
 		this._unmodifiedLicense = undefined;
 		this._inFairPolicy = undefined;
 		this._valid = false;
 		this._lockedLicense = undefined;
-		clearPendingLicense();
+		clearPendingLicense.call(this);
 	}
 
 	private async setLicenseV3(newLicense: ILicenseV3, encryptedLicense: string, originalLicense?: ILicenseV2 | ILicenseV3): Promise<void> {
@@ -92,11 +92,12 @@ export class LicenseManager {
 			this._license = newLicense;
 
 			await this.validateLicense();
+
 			this._lockedLicense = encryptedLicense;
 		} finally {
 			if (hadValidLicense && !this.hasValidLicense()) {
-				licenseRemoved();
-				invalidateAll();
+				this.emit('invalidate');
+				invalidateAll.call(this);
 			}
 		}
 	}
@@ -124,20 +125,23 @@ export class LicenseManager {
 		const disabledModules = getModulesToDisable(result);
 		const modulesToEnable = this._license.grantedModules.filter(({ module }) => !disabledModules.includes(module));
 
-		replaceModules(modulesToEnable.map(({ module }) => module));
+		replaceModules.call(
+			this,
+			modulesToEnable.map(({ module }) => module),
+		);
 		logger.log({ msg: 'License validated', modules: modulesToEnable });
 
-		licenseValidated();
-		showLicense(this._license, this._valid);
+		this.emit('validate');
+		showLicense.call(this, this._license, this._valid);
 	}
 
 	private async validateLicense(): Promise<void> {
-		if (!this._license || !isReadyForValidation()) {
+		if (!this._license || !isReadyForValidation.call(this)) {
 			return;
 		}
 
 		// #TODO: Only include 'prevent_installation' here if this is actually the initial installation of the license
-		const validationResult = await runValidation(this._license, [
+		const validationResult = await runValidation.bind(this)(this._license, [
 			'invalidate_license',
 			'prevent_installation',
 			'start_fair_policy',
@@ -147,34 +151,30 @@ export class LicenseManager {
 	}
 
 	public async setLicense(encryptedLicense: string): Promise<boolean> {
-		if (!encryptedLicense || String(encryptedLicense).trim() === '') {
-			return false;
+		if (!(await validateFormat(encryptedLicense))) {
+			throw new InvalidLicenseError();
 		}
 
 		if (this.isLicenseDuplicate(encryptedLicense)) {
 			// If there is a pending license but the user is trying to revert to the license that is currently active
-			if (hasPendingLicense() && !isPendingLicense(encryptedLicense)) {
+			if (hasPendingLicense.call(this) && !isPendingLicense.call(this, encryptedLicense)) {
 				// simply remove the pending license
-				clearPendingLicense();
+				clearPendingLicense.call(this);
 				return true;
 			}
 
 			return false;
 		}
 
-		if (!isReadyForValidation()) {
+		if (!isReadyForValidation.call(this)) {
 			// If we can't validate the license data yet, but is a valid license string, store it to validate when we can
-			if (validateFormat(encryptedLicense)) {
-				setPendingLicense(encryptedLicense);
-				return true;
-			}
-
-			return false;
+			setPendingLicense.call(this, encryptedLicense);
+			throw new NotReadyForValidation();
 		}
 
 		logger.info('New Enterprise License');
 		try {
-			const decrypted = decrypt(encryptedLicense);
+			const decrypted = await decrypt(encryptedLicense);
 			if (!decrypted) {
 				return false;
 			}
@@ -193,12 +193,12 @@ export class LicenseManager {
 			if (process.env.LICENSE_DEBUG && process.env.LICENSE_DEBUG !== 'false') {
 				logger.error({ msg: 'Invalid raw license', encryptedLicense, e });
 			}
-			return false;
+			throw new InvalidLicenseError();
 		}
 	}
 
 	public hasValidLicense(): boolean {
-		return Boolean(this._license && this._valid);
+		return Boolean(this.getLicense());
 	}
 
 	public getLicense(): ILicenseV3 | undefined {
@@ -217,7 +217,7 @@ export class LicenseManager {
 			return false;
 		}
 
-		const currentValue = (await getCurrentValueForLicenseLimit(action, context)) + newCount;
+		const currentValue = (await getCurrentValueForLicenseLimit.call(this, action, context)) + newCount;
 		return Boolean(
 			license.limits[action]
 				?.filter(({ behavior, max }) => behavior === 'prevent_action' && max >= 0)

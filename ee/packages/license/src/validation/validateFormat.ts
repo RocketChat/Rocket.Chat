@@ -1,13 +1,15 @@
 import decrypt from '../decrypt';
+import { InvalidLicenseError } from '../errors/InvalidLicenseError';
 
-export const validateFormat = (encryptedLicense: string): boolean => {
+export const validateFormat = async (encryptedLicense: string): Promise<boolean> => {
 	if (!encryptedLicense || String(encryptedLicense).trim() === '') {
-		return false;
+		throw new InvalidLicenseError('Empty license');
 	}
 
-	const decrypted = decrypt(encryptedLicense);
-	if (!decrypted) {
-		return false;
+	try {
+		await decrypt(encryptedLicense);
+	} catch (e) {
+		throw new InvalidLicenseError();
 	}
 
 	return true;
