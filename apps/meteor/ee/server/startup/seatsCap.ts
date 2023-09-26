@@ -62,7 +62,7 @@ callbacks.add(
 
 callbacks.add(
 	'validateUserRoles',
-	async (userData: Partial<IUser>) => validateUserRoles(Meteor.userId(), userData),
+	async (userData: Partial<IUser>) => validateUserRoles(userData),
 	callbacks.priority.MEDIUM,
 	'check-max-user-seats',
 );

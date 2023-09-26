@@ -1,10 +1,11 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../../server/lib/i18n';
 
-export const validateUserRoles = async function (userId, userData) {
+export const validateUserRoles = async function (userData: Partial<IUser>) {
 	if (!License.hasValidLicense()) {
 		return;
 	}
@@ -22,7 +23,7 @@ export const validateUserRoles = async function (userId, userData) {
 			return;
 		}
 
-		if (await License.preventNewGuests()) {
+		if (await License.shouldPreventAction('guestUsers')) {
 			throw new Meteor.Error('error-max-guests-number-reached', 'Maximum number of guests reached.', {
 				method: 'insertOrUpdateUser',
 				field: 'Assign_role',
@@ -36,7 +37,7 @@ export const validateUserRoles = async function (userId, userData) {
 		return;
 	}
 
-	if (await License.preventNewUsers()) {
+	if (await License.shouldPreventAction('activeUsers')) {
 		throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 	}
 };
