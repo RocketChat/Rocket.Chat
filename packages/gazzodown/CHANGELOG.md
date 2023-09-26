@@ -1,5 +1,79 @@
 # @rocket.chat/gazzodown
 
+## 2.0.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.4
+- @rocket.chat/ui-contexts@2.0.0-rc.4
+- @rocket.chat/ui-client@2.0.0-rc.4
+
+## 2.0.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.3
+- @rocket.chat/ui-contexts@2.0.0-rc.3
+- @rocket.chat/ui-client@2.0.0-rc.3
+
+## 2.0.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.2
+- @rocket.chat/ui-contexts@2.0.0-rc.2
+- @rocket.chat/ui-client@2.0.0-rc.2
+
+## 2.0.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.1
+- @rocket.chat/ui-contexts@2.0.0-rc.1
+- @rocket.chat/ui-client@2.0.0-rc.1
+
+## 2.0.0-rc.0
+
+### Patch Changes
+
+- Updated dependencies [239a34e877]
+- Updated dependencies [203304782f]
+- Updated dependencies [4186eecf05]
+- Updated dependencies [ba24f3c21f]
+- Updated dependencies [ebab8c4dd8]
+- Updated dependencies [074db3b419]
+- Updated dependencies [61128364d6]
+- Updated dependencies [d45365436e]
+- Updated dependencies [b8f3d5014f]
+- Updated dependencies [ee3815fce4]
+  - @rocket.chat/core-typings@6.4.0-rc.0
+  - @rocket.chat/ui-client@2.0.0-rc.0
+  - @rocket.chat/ui-contexts@2.0.0-rc.0
+
+## 1.0.7
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.7
+- @rocket.chat/ui-contexts@1.0.7
+- @rocket.chat/ui-client@1.0.7
+
+## 1.0.6
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.6
+- @rocket.chat/ui-contexts@1.0.6
+- @rocket.chat/ui-client@1.0.6
+
+## 1.0.5
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.5
+- @rocket.chat/ui-contexts@1.0.5
+- @rocket.chat/ui-client@1.0.5
+
 ## 1.0.4
 
 ### Patch Changes

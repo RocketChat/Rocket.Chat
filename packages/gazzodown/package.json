@@ -1,12 +1,12 @@
 {
 	"name": "@rocket.chat/gazzodown",
-	"version": "1.0.4",
+	"version": "2.0.0-rc.4",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.9",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "next",
-		"@rocket.chat/fuselage": "next",
+		"@rocket.chat/fuselage": "^0.32.1",
 		"@rocket.chat/fuselage-tokens": "next",
 		"@rocket.chat/message-parser": "next",
 		"@rocket.chat/styled": "next",
@@ -65,14 +65,14 @@
 		"/dist"
 	],
 	"peerDependencies": {
-		"@rocket.chat/core-typings": "6.3.4",
+		"@rocket.chat/core-typings": "6.4.0-rc.4",
 		"@rocket.chat/css-in-js": "*",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-tokens": "*",
 		"@rocket.chat/message-parser": "*",
 		"@rocket.chat/styled": "*",
-		"@rocket.chat/ui-client": "*",
-		"@rocket.chat/ui-contexts": "*",
+		"@rocket.chat/ui-client": "2.0.0-rc.4",
+		"@rocket.chat/ui-contexts": "2.0.0-rc.4",
 		"katex": "*",
 		"react": "*"
 	},

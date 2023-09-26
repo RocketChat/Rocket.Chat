@@ -32,28 +32,10 @@ async function generateStatistics(logger: Logger): Promise<void> {
 }
 
 export async function statsCron(logger: Logger): Promise<void> {
-	if (settings.get('Troubleshoot_Disable_Statistics_Generator')) {
-		return;
-	}
-
 	const name = 'Generate and save statistics';
+	await generateStatistics(logger);
 
-	let previousValue: boolean;
-	settings.watch<boolean>('Troubleshoot_Disable_Statistics_Generator', async (value) => {
-		if (value === previousValue) {
-			return;
-		}
-		previousValue = value;
+	const now = new Date();
 
-		if (value) {
-			await cronJobs.remove(name);
-			return;
-		}
-
-		await generateStatistics(logger);
-
-		const now = new Date();
-
-		await cronJobs.add(name, `12 ${now.getHours()} * * *`, async () => generateStatistics(logger));
-	});
+	await cronJobs.add(name, `12 ${now.getHours()} * * *`, async () => generateStatistics(logger));
 }

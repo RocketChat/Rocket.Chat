@@ -1,5 +1,77 @@
 # @rocket.chat/model-typings
 
+## 0.1.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.4
+
+## 0.1.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.3
+
+## 0.1.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.2
+
+## 0.1.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.0-rc.1
+
+## 0.1.0-rc.0
+
+### Minor Changes
+
+- 4186eecf05: Introduce the ability to report an user
+- ead7c7bef2: Fixed read receipts not getting deleted after corresponding message is deleted
+
+### Patch Changes
+
+- 8a59855fcf: When setting a room as read-only, do not allow previously unmuted users to send messages.
+- 5cee21468e: Fix spotlight search does not find rooms with special or non-latin characters
+- aaefe865a7: fix: agent role being removed upon user deactivation
+- f556518fa1: Change SAU aggregation to consider only sessions from few days ago instead of the whole past.
+
+  This is particularly important for large workspaces in case the cron job did not run for some time, in that case the amount of sessions would accumulate and the aggregation would take a long time to run.
+
+- 61128364d6: Fixes a problem where the calculated time for considering the visitor abandonment was the first message from the visitor and not the visitor's reply to the agent.
+- Updated dependencies [239a34e877]
+- Updated dependencies [203304782f]
+- Updated dependencies [4186eecf05]
+- Updated dependencies [ba24f3c21f]
+- Updated dependencies [ebab8c4dd8]
+- Updated dependencies [61128364d6]
+- Updated dependencies [d45365436e]
+  - @rocket.chat/core-typings@6.4.0-rc.0
+
+## 0.0.13
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.7
+
+## 0.0.12
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.6
+
+## 0.0.11
+
+### Patch Changes
+
+- 92d25b9c7a: Change SAU aggregation to consider only sessions from few days ago instead of the whole past.
+
+  This is particularly important for large workspaces in case the cron job did not run for some time, in that case the amount of sessions would accumulate and the aggregation would take a long time to run.
+
+  - @rocket.chat/core-typings@6.3.5
+
 ## 0.0.10
 
 ### Patch Changes
