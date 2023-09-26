@@ -100,6 +100,24 @@ const AppsPageContent = (): ReactElement => {
 		}
 	}, [context, marketplaceApps, installedApps, privateApps]);
 
+	const findSort = () => {
+		const possibleSort = sortFilterStructure.items.find(({ checked }) => checked);
+
+		return possibleSort ? possibleSort.id : 'mru';
+	};
+
+	const findPurchaseType = () => {
+		const possiblePurchaseType = freePaidFilterStructure.items.find(({ checked }) => checked);
+
+		return possiblePurchaseType ? possiblePurchaseType.id : 'all';
+	};
+
+	const findStatus = () => {
+		const possibleStatus = statusFilterStructure.items.find(({ checked }) => checked);
+
+		return possibleStatus ? possibleStatus.id : 'all';
+	};
+
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 	const appsResult = useFilteredApps({
 		appsData: getAppsData(),
@@ -107,9 +125,9 @@ const AppsPageContent = (): ReactElement => {
 		current,
 		itemsPerPage,
 		categories: useMemo(() => selectedCategories.map(({ label }) => label), [selectedCategories]),
-		purchaseType: useMemo(() => freePaidFilterStructure.items.find(({ checked }) => checked)?.id, [freePaidFilterStructure]),
-		sortingMethod: useMemo(() => sortFilterStructure.items.find(({ checked }) => checked)?.id, [sortFilterStructure]),
-		status: useMemo(() => statusFilterStructure.items.find(({ checked }) => checked)?.id, [statusFilterStructure]),
+		purchaseType: useMemo(findPurchaseType, [freePaidFilterStructure]),
+		sortingMethod: useMemo(findSort, [sortFilterStructure]),
+		status: useMemo(findStatus, [statusFilterStructure]),
 		context,
 	});
 
