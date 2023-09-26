@@ -16,7 +16,6 @@ type FindUsersParam = {
 export async function findUsersOfRoomByHighestRole({
 	rid,
 	status,
-	skip = 0,
 	limit = 0,
 	filter = '',
 	sort,
@@ -36,7 +35,6 @@ export async function findUsersOfRoomByHighestRole({
 			statusConnection: -1 as const,
 			...(sort || { ...(settings.get('UI_Use_Real_Name') && { name: 1 }), username: 1 }),
 		},
-		skip,
 		limit,
 	};
 

@@ -753,14 +753,13 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+			const { count: limit } = await getPaginationItems(this.queryParams);
 			const { sort = {} } = await this.parseJsonQuery();
 			const { status, filter } = this.queryParams;
 
 			const cursor = await findUsersOfRoomByHighestRole({
 				rid: findResult.rid,
 				...(status && { status: { $in: status } }),
-				skip,
 				limit,
 				filter,
 				...(sort?.username && { sort: { username: sort.username } }),
@@ -778,7 +777,6 @@ API.v1.addRoute(
 			return API.v1.success({
 				members,
 				count: members.length,
-				offset: skip,
 				total,
 			});
 		},
