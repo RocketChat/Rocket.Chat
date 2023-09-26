@@ -8,7 +8,6 @@ import { Meteor } from 'meteor/meteor';
 import { Apps } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
-import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { createDirectRoom } from './createDirectRoom';
 
@@ -48,15 +47,19 @@ async function createUsersSubscriptions({
 		return;
 	}
 
-	const membersCursor = Users.findUsersByUsernames(members, {
-		projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1, 'roles': 1 },
-	});
-
 	let total = 0;
 
 	const subs = [];
 
+	const memberIds = [];
+
+	const membersCursor = Users.findUsersByUsernames(members, {
+		projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1, 'roles': 1 },
+	});
+
 	for await (const member of membersCursor) {
+		memberIds.push(member._id);
+
 		try {
 			await callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
 			await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
@@ -79,15 +82,14 @@ async function createUsersSubscriptions({
 
 		total++;
 
-		// TODO move this to outside the loop
-		if (!['d', 'l'].includes(room.t)) {
-			await Users.addRoomByUserId(member._id, room._id);
-		}
-
 		subs.push({
 			user: member,
 			extraData: extra,
 		});
+	}
+
+	if (!['d', 'l'].includes(room.t)) {
+		await Users.addRoomByUserIds(memberIds, room._id);
 	}
 
 	await Subscriptions.createWithRoomAndManyUsers(room, subs);
@@ -98,7 +100,7 @@ async function createUsersSubscriptions({
 export const createRoom = async <T extends RoomType>(
 	type: T,
 	name: T extends 'd' ? undefined : string,
-	owner: IUser | undefined,
+	owner: T extends 'd' ? IUser | undefined : IUser,
 	members: T extends 'd' ? IUser[] : string[] = [],
 	excludeSelf?: boolean,
 	readOnly?: boolean,
