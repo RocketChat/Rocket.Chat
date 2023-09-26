@@ -35,7 +35,7 @@ const AutoTranslateWithData = (): ReactElement => {
 		});
 		dispatchToastMessage({
 			type: 'success',
-			message: t('AutoTranslate_to_language_enabled_for_room', { language: languagesDict[value], roomName: room.name }),
+			message: t('AutoTranslate_language_set_to', { language: languagesDict[value] }),
 		});
 	});
 
@@ -47,11 +47,14 @@ const AutoTranslateWithData = (): ReactElement => {
 		});
 		dispatchToastMessage({
 			type: 'success',
-			message: t(event.target.checked ? 'AutoTranslate_to_language_enabled_for_room' : 'AutoTranslate_Disabled_for_room', {
-				language: languagesDict[currentLanguage],
-				roomName: room.name,
-			}),
+			message: t(event.target.checked ? 'AutoTranslate_Enabled_for_room' : 'AutoTranslate_Disabled_for_room', { roomName: room.name }),
 		});
+		if (event.target.checked) {
+			dispatchToastMessage({
+				type: 'success',
+				message: t('AutoTranslate_language_set_to', { language: languagesDict[currentLanguage] }),
+			});
+		}
 	});
 
 	useEffect(() => {
