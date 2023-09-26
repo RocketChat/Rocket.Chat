@@ -12,6 +12,7 @@ export const addQueryRestrictionsToDepartmentsModel = async (originalQuery: Filt
 	const units = await getUnitsFromUser();
 	if (Array.isArray(units)) {
 		query.ancestors = { $in: units };
+		query._id = { $in: units };
 	}
 
 	return query;

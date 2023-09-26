@@ -2362,7 +2362,9 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			$unset: { servedBy: 1 },
 		};
 
-		return this.updateOne(query, update);
+		// Bypass any units filters that may be applied
+		// Removing an agent from a room should not be blocked by any filter
+		return this.col.updateOne(query, update);
 	}
 
 	removeByVisitorToken(token: string) {
