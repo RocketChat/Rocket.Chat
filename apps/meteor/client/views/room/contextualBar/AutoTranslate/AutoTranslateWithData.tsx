@@ -49,7 +49,7 @@ const AutoTranslateWithData = (): ReactElement => {
 			type: 'success',
 			message: t(event.target.checked ? 'AutoTranslate_Enabled_for_room' : 'AutoTranslate_Disabled_for_room', { roomName: room.name }),
 		});
-		if (event.target.checked) {
+		if (event.target.checked && currentLanguage) {
 			dispatchToastMessage({
 				type: 'success',
 				message: t('AutoTranslate_language_set_to', { language: languagesDict[currentLanguage] }),
