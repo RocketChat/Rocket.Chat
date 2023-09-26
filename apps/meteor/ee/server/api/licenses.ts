@@ -36,7 +36,7 @@ API.v1.addRoute(
 			}
 
 			const { license } = this.bodyParams;
-			if (!License.validateFormat(license)) {
+			if (!(await License.validateFormat(license))) {
 				return API.v1.failure('Invalid license');
 			}
 
