@@ -17,7 +17,6 @@ import { getModules, hasModule } from './modules';
 import { getTags } from './tags';
 import { getCurrentValueForLicenseLimit, setLicenseLimitCounter } from './validation/getCurrentValueForLicenseLimit';
 import { validateFormat } from './validation/validateFormat';
-import { setWorkspaceUrl } from './workspaceUrl';
 
 export * from './definition/ILicenseTag';
 export * from './definition/ILicenseV2';
@@ -28,88 +27,79 @@ export * from './definition/LicenseModule';
 export * from './definition/LicensePeriod';
 export * from './definition/LimitContext';
 
-export class License extends LicenseManager {
-	public static validateFormat(...args: Parameters<typeof validateFormat>) {
-		return validateFormat(...args);
-	}
+// eslint-disable-next-line @typescript-eslint/naming-convention
+interface License {
+	validateFormat: typeof validateFormat;
+	hasModule: typeof hasModule;
+	getModules: typeof getModules;
+	getTags: typeof getTags;
+	overwriteClassOnLicense: typeof overwriteClassOnLicense;
+	setLicenseLimitCounter: typeof setLicenseLimitCounter;
+	getCurrentValueForLicenseLimit: typeof getCurrentValueForLicenseLimit;
+	isLimitReached: <T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>) => Promise<boolean>;
+	onValidFeature: typeof onValidFeature;
+	onInvalidFeature: typeof onInvalidFeature;
+	onToggledFeature: typeof onToggledFeature;
+	onModule: typeof onModule;
+	onValidateLicense: typeof onValidateLicense;
+	onInvalidateLicense: typeof onInvalidateLicense;
+	onLimitReached: typeof onLimitReached;
+	// Deprecated:
+	onLicense: typeof onLicense;
+	// Deprecated:
+	getMaxActiveUsers: typeof getMaxActiveUsers;
+	// Deprecated:
+	getAppsConfig: typeof getAppsConfig;
+	// Deprecated:
+	getUnmodifiedLicenseAndModules: typeof getUnmodifiedLicenseAndModules;
+}
 
-	public static async setWorkspaceUrl(...args: Parameters<typeof setWorkspaceUrl>) {
-		return setWorkspaceUrl(...args);
-	}
+export class LicenseImp extends LicenseManager implements License {
+	validateFormat = validateFormat;
 
-	public static hasModule(...args: Parameters<typeof hasModule>) {
-		return hasModule(...args);
-	}
+	hasModule = hasModule;
 
-	public static getModules(...args: Parameters<typeof getModules>) {
-		return getModules(...args);
-	}
+	getModules = getModules;
 
-	public static getTags(...args: Parameters<typeof getTags>) {
-		return getTags(...args);
-	}
+	getTags = getTags;
 
-	public static async overwriteClassOnLicense(...args: Parameters<typeof overwriteClassOnLicense>) {
-		return overwriteClassOnLicense(...args);
-	}
+	overwriteClassOnLicense = overwriteClassOnLicense;
 
-	public static setLicenseLimitCounter(...args: Parameters<typeof setLicenseLimitCounter>) {
-		return setLicenseLimitCounter(...args);
-	}
+	public setLicenseLimitCounter = setLicenseLimitCounter;
 
-	public static async getCurrentValueForLicenseLimit(...args: Parameters<typeof getCurrentValueForLicenseLimit>) {
-		return getCurrentValueForLicenseLimit(...args);
-	}
+	getCurrentValueForLicenseLimit = getCurrentValueForLicenseLimit;
 
-	public static async isLimitReached<T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>) {
+	public async isLimitReached<T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>) {
 		return this.shouldPreventAction(action, context, 0);
 	}
 
-	public static onValidFeature(...args: Parameters<typeof onValidFeature>) {
-		return onValidFeature(...args);
-	}
+	onValidFeature = onValidFeature;
 
-	public static onInvalidFeature(...args: Parameters<typeof onInvalidFeature>) {
-		return onInvalidFeature(...args);
-	}
+	onInvalidFeature = onInvalidFeature;
 
-	public static onToggledFeature(...args: Parameters<typeof onToggledFeature>) {
-		return onToggledFeature(...args);
-	}
+	onToggledFeature = onToggledFeature;
 
-	public static onModule(...args: Parameters<typeof onModule>) {
-		return onModule(...args);
-	}
+	onModule = onModule;
 
-	public static onValidateLicense(...args: Parameters<typeof onValidateLicense>) {
-		return onValidateLicense(...args);
-	}
+	onValidateLicense = onValidateLicense;
 
-	public static onInvalidateLicense(...args: Parameters<typeof onInvalidateLicense>) {
-		return onInvalidateLicense(...args);
-	}
+	onInvalidateLicense = onInvalidateLicense;
 
-	public static onLimitReached(...args: Parameters<typeof onLimitReached>) {
-		return onLimitReached(...args);
-	}
+	onLimitReached = onLimitReached;
 
 	// Deprecated:
-	public static onLicense(...args: Parameters<typeof onLicense>) {
-		return onLicense(...args);
-	}
+	onLicense = onLicense;
 
 	// Deprecated:
-	public static getMaxActiveUsers() {
-		return getMaxActiveUsers();
-	}
+	getMaxActiveUsers = getMaxActiveUsers;
 
 	// Deprecated:
-	public static getAppsConfig() {
-		return getAppsConfig();
-	}
+	getAppsConfig = getAppsConfig;
 
 	// Deprecated:
-	public static getUnmodifiedLicenseAndModules() {
-		return getUnmodifiedLicenseAndModules();
-	}
+	getUnmodifiedLicenseAndModules = getUnmodifiedLicenseAndModules;
 }
+
+const license = new LicenseImp();
+
+export { license as License };

@@ -1,7 +1,8 @@
 import type { ILicenseV3 } from './definition/ILicenseV3';
+import type { LicenseManager } from './license';
 import { getModules } from './modules';
 
-export const showLicense = (license: ILicenseV3 | undefined, valid: boolean | undefined) => {
+export function showLicense(this: LicenseManager, license: ILicenseV3 | undefined, valid: boolean | undefined) {
 	if (!process.env.LICENSE_DEBUG || process.env.LICENSE_DEBUG === 'false') {
 		return;
 	}
@@ -15,7 +16,7 @@ export const showLicense = (license: ILicenseV3 | undefined, valid: boolean | un
 		limits,
 	} = license;
 
-	const modules = getModules();
+	const modules = getModules.call(this);
 
 	console.log('---- License enabled ----');
 	console.log('              url ->', JSON.stringify(serverUrls));
@@ -23,4 +24,4 @@ export const showLicense = (license: ILicenseV3 | undefined, valid: boolean | un
 	console.log('           limits ->', JSON.stringify(limits));
 	console.log('          modules ->', modules.join(', '));
 	console.log('-------------------------');
-};
+}

@@ -1,49 +1,30 @@
-import { EventEmitter } from 'events';
-
 import type { LicenseLimitKind } from '../definition/ILicenseV3';
 import type { LicenseModule } from '../definition/LicenseModule';
+import type { LicenseManager } from '../license';
 import { logger } from '../logger';
 
-export const EnterpriseLicenses = new EventEmitter();
-
-export const licenseValidated = () => {
+export function moduleValidated(this: LicenseManager, module: LicenseModule) {
 	try {
-		EnterpriseLicenses.emit('validate');
-	} catch (error) {
-		logger.error({ msg: 'Error running license validated event', error });
-	}
-};
-
-export const licenseRemoved = () => {
-	try {
-		EnterpriseLicenses.emit('invalidate');
-	} catch (error) {
-		logger.error({ msg: 'Error running license invalidated event', error });
-	}
-};
-
-export const moduleValidated = (module: LicenseModule) => {
-	try {
-		EnterpriseLicenses.emit('module', { module, valid: true });
-		EnterpriseLicenses.emit(`valid:${module}`);
+		this.emit('module', { module, valid: true });
+		// this.emit(`valid:${module}`);
 	} catch (error) {
 		logger.error({ msg: 'Error running module added event', error });
 	}
-};
+}
 
-export const moduleRemoved = (module: LicenseModule) => {
+export function moduleRemoved(this: LicenseManager, module: LicenseModule) {
 	try {
-		EnterpriseLicenses.emit('module', { module, valid: false });
-		EnterpriseLicenses.emit(`invalid:${module}`);
+		this.emit('module', { module, valid: false });
+		this.emit(`invalid:${module}`);
 	} catch (error) {
 		logger.error({ msg: 'Error running module removed event', error });
 	}
-};
+}
 
-export const limitReached = (limitKind: LicenseLimitKind) => {
+export function limitReached(this: LicenseManager, limitKind: LicenseLimitKind) {
 	try {
-		EnterpriseLicenses.emit(`limitReached:${limitKind}`);
+		this.emit(`limitReached:${limitKind}`);
 	} catch (error) {
 		logger.error({ msg: 'Error running limit reached event', error });
 	}
-};
+}
