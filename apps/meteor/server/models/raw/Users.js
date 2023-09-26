@@ -1488,6 +1488,18 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	addRoomByUserIds(uids, rid) {
+		return this.updateMany(
+			{
+				_id: { $in: uids },
+				__rooms: { $ne: rid },
+			},
+			{
+				$addToSet: { __rooms: rid },
+			},
+		);
+	}
+
 	removeRoomByRoomIds(rids) {
 		return this.updateMany(
 			{
