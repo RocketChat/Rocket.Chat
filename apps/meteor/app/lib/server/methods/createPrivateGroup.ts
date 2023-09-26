@@ -56,7 +56,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = await Users.findOneById(uid, { projection: { username: 1 } });
+		const user = await Users.findOneById(uid);
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'createPrivateGroup',

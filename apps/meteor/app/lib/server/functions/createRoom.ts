@@ -47,8 +47,6 @@ async function createUsersSubscriptions({
 		return;
 	}
 
-	let total = 0;
-
 	const subs = [];
 
 	const memberIds = [];
@@ -80,8 +78,6 @@ async function createUsersSubscriptions({
 			extra.roles = ['owner'];
 		}
 
-		total++;
-
 		subs.push({
 			user: member,
 			extraData: extra,
@@ -94,7 +90,7 @@ async function createUsersSubscriptions({
 
 	await Subscriptions.createWithRoomAndManyUsers(room, subs);
 
-	await Rooms.incUsersCountById(room._id, total);
+	await Rooms.incUsersCountById(room._id, subs.length);
 }
 
 export const createRoom = async <T extends RoomType>(
@@ -220,9 +216,6 @@ export const createRoom = async <T extends RoomType>(
 	const shouldBeHandledByFederation = room.federated === true || owner.username.includes(':');
 
 	await createUsersSubscriptions({ room, members, now, owner, options, shouldBeHandledByFederation });
-
-	// TODO remove this and add logic to createUsersSubscriptions
-	// await addUserRolesAsync(owner._id, ['owner'], room._id);
 
 	if (type === 'c') {
 		if (room.teamId) {
