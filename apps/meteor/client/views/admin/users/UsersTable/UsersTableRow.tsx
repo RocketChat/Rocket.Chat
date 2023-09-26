@@ -68,9 +68,6 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload }: Us
 			!isFederatedUser && {
 				resetTOTP: { label: { label: resetTOTPAction.label, icon: resetTOTPAction.icon }, action: resetTOTPAction.action },
 			}),
-		...(deleteUserAction && {
-			delete: { label: { label: deleteUserAction.label, icon: deleteUserAction.icon }, action: deleteUserAction.action },
-		}),
 		...(changeUserStatusAction &&
 			!isFederatedUser && {
 				changeActiveStatus: {
@@ -78,6 +75,9 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload }: Us
 					action: changeUserStatusAction.action,
 				},
 			}),
+		...(deleteUserAction && {
+			delete: { label: { label: deleteUserAction.label, icon: deleteUserAction.icon }, action: deleteUserAction.action },
+		}),
 	};
 
 	return (
@@ -124,13 +124,23 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload }: Us
 			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 				{registrationStatusText}
 			</GenericTableCell>
-			<GenericTableCell>
+			<GenericTableCell
+				onClick={(e): void => {
+					e.stopPropagation();
+				}}
+			>
 				<Menu
 					mi={4}
 					placement='bottom-start'
 					flexShrink={0}
 					key='menu'
-					renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option label={label} title={label} icon={icon} {...props} />}
+					renderItem={({ label: { label, icon }, ...props }): ReactElement =>
+						label === 'Delete' ? (
+							<Option label={label} title={label} icon={icon} variant='danger' {...props} />
+						) : (
+							<Option label={label} title={label} icon={icon} {...props} />
+						)
+					}
 					options={menuOptions}
 				/>
 			</GenericTableCell>
