@@ -1,27 +1,23 @@
-type ValueMaybePromiseMaybeUndefined<T> = T extends Promise<any> ? Promise<Awaited<T> | undefined> : T | undefined;
-type ValueMaybeAwaited<T> = T extends Promise<any> ? Awaited<T> : T;
-type ErrorWrapper<T> = T extends Promise<any> ? ((error: any) => T) | ((error: any) => Awaited<T>) : (error: any) => T;
+const isPromise = <T>(value: unknown): value is Promise<T> => !!value && value instanceof Promise;
 
-export const wrapExceptions = <T = any>(getter: () => T) => {
-	const catcher = (errorWrapper: ErrorWrapper<T>): T => {
+export function wrapExceptions<T = any>(
+	getter: () => T,
+): {
+	catch: (errorWrapper: (error: any) => T) => T;
+	suppress: (errorWrapper?: (error: any) => void) => T | undefined;
+};
+export function wrapExceptions<T = any>(
+	getter: () => Promise<T>,
+): {
+	catch: (errorWrapper: (error: any) => T | Awaited<T>) => Promise<T>;
+	suppress: (errorWrapper?: (error: any) => void) => Promise<T | undefined>;
+};
+export function wrapExceptions<T>(getter: () => T) {
+	const doCatch = (errorWrapper: (error: any) => T | Awaited<T>): T => {
 		try {
 			const value = getter();
-			if (value && value instanceof Promise) {
-				return new Promise((resolve, reject) => {
-					value.then(resolve, (error) => {
-						try {
-							const newResult = errorWrapper(error);
-
-							if (newResult && newResult instanceof Promise) {
-								newResult.then(resolve, reject);
-							} else {
-								resolve(newResult);
-							}
-						} catch (newError) {
-							reject(newError);
-						}
-					});
-				}) as T;
+			if (isPromise(value)) {
+				return value.catch(errorWrapper) as T;
 			}
 
 			return value;
@@ -30,41 +26,24 @@ export const wrapExceptions = <T = any>(getter: () => T) => {
 		}
 	};
 
-	const suppress = (errorWrapper?: (error: any) => void): ValueMaybePromiseMaybeUndefined<T> => {
+	const doSuppress = (errorWrapper?: (error: any) => void) => {
 		try {
 			const value = getter();
-			if (value && value instanceof Promise) {
-				return new Promise((resolve, reject) => {
-					value.then(resolve, (error) => {
-						if (!errorWrapper) {
-							return resolve(undefined);
-						}
-
-						try {
-							const newResult = errorWrapper(error) as undefined | Promise<undefined>;
-							if (newResult && newResult instanceof Promise) {
-								newResult.then(() => resolve(undefined), reject);
-							}
-						} catch (newError) {
-							reject(newError);
-						}
-					});
-				}) as ValueMaybePromiseMaybeUndefined<T>;
+			if (isPromise(value)) {
+				return value.catch((error) => errorWrapper?.(error));
 			}
 
-			return value as ValueMaybeAwaited<T>;
+			return value;
 		} catch (error) {
-			if (errorWrapper) {
-				errorWrapper(error);
-			}
+			errorWrapper?.(error);
 
 			// It won't reach this point if it was a promise
-			return undefined as ValueMaybePromiseMaybeUndefined<T>;
+			return undefined;
 		}
 	};
 
 	return {
-		catch: catcher,
-		suppress,
+		catch: doCatch,
+		suppress: doSuppress,
 	};
-};
+}
