@@ -137,17 +137,22 @@ export class LicenseManager extends Emitter<
 	}
 
 	private async validateLicense(): Promise<void> {
-		if (!this._license || !isReadyForValidation.call(this)) {
-			return;
+		if (!this._license) {
+			throw new InvalidLicenseError();
+		}
+
+		if (!isReadyForValidation.call(this)) {
+			throw new NotReadyForValidation();
 		}
 
 		// #TODO: Only include 'prevent_installation' here if this is actually the initial installation of the license
-		const validationResult = await runValidation.bind(this)(this._license, [
+		const validationResult = await runValidation.call(this, this._license, [
 			'invalidate_license',
 			'prevent_installation',
 			'start_fair_policy',
 			'disable_modules',
 		]);
+
 		this.processValidationResult(validationResult);
 	}
 

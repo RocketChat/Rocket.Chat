@@ -44,6 +44,23 @@ describe('License set license procedures', () => {
 		});
 	});
 
+	it('should throw an error if the license is duplicated', async () => {
+		const license = await getReadyLicenseManager();
+
+		await expect(license.setLicense(VALID_LICENSE)).resolves.toBe(true);
+		await expect(license.setLicense(VALID_LICENSE)).rejects.toThrow(DuplicatedLicenseError);
+	});
+
+	it('should keep a valid license if a new invalid license is applied', async () => {
+		const license = await getReadyLicenseManager();
+
+		await expect(license.setLicense(VALID_LICENSE)).resolves.toBe(true);
+		await expect(license.hasValidLicense()).toBe(true);
+
+		await expect(license.setLicense('invalid')).rejects.toThrow(InvalidLicenseError);
+		await expect(license.hasValidLicense()).toBe(true);
+	});
+
 	describe('Pending cases', () => {
 		it('should return an error if the license is not ready for validation yet - missing workspace url', async () => {
 			const license = new LicenseImp();
@@ -66,13 +83,6 @@ describe('License set license procedures', () => {
 
 			await expect(license.setLicense(VALID_LICENSE)).resolves.toBe(true);
 			await expect(license.hasValidLicense()).toBe(true);
-		});
-
-		it('should throw an error if the license is duplicated', async () => {
-			const license = await getReadyLicenseManager();
-
-			await expect(license.setLicense(VALID_LICENSE)).resolves.toBe(true);
-			await expect(license.setLicense(VALID_LICENSE)).rejects.toThrow(DuplicatedLicenseError);
 		});
 	});
 });
