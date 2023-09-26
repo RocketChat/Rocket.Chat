@@ -1,4 +1,4 @@
-import type { IRoom, AtLeast } from '@rocket.chat/core-typings';
+import type { AtLeast } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -42,7 +42,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	async allowMemberAction(room: IRoom, action, userId) {
+	async allowMemberAction(room, action, userId) {
 		if (isRoomFederated(room)) {
 			return Federation.actionAllowed(room, action, userId);
 		}

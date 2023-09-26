@@ -23,7 +23,6 @@ import './methods/deleteUserOwnAccount';
 import './methods/executeSlashCommandPreview';
 import './startup/filterATAllTag';
 import './startup/filterATHereTag';
-import './methods/filterBadWords';
 import './methods/getChannelHistory';
 import './methods/getRoomJoinCode';
 import './methods/getRoomRoles';
