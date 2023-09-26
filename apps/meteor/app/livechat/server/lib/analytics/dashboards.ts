@@ -375,15 +375,15 @@ const findAllResponseTimeMetricsAsync = async ({
 	};
 };
 
-export const getConversationsMetricsAsyncCached = mem(getConversationsMetricsAsync, { maxAge: 60000, cacheKey: JSON.stringify });
-export const getAgentsProductivityMetricsAsyncCached = mem(getAgentsProductivityMetricsAsync, { maxAge: 60000, cacheKey: JSON.stringify });
-export const getChatsMetricsAsyncCached = mem(getChatsMetricsAsync, { maxAge: 60000, cacheKey: JSON.stringify });
-export const getProductivityMetricsAsyncCached = mem(getProductivityMetricsAsync, { maxAge: 60000, cacheKey: JSON.stringify });
-export const findAllChatsStatusAsyncCached = mem(findAllChatsStatusAsync, { maxAge: 60000, cacheKey: JSON.stringify });
-export const findAllChatMetricsByAgentAsyncCached = mem(findAllChatMetricsByAgentAsync, { maxAge: 60000, cacheKey: JSON.stringify });
-export const findAllAgentsStatusAsyncCached = mem(findAllAgentsStatusAsync, { maxAge: 60000, cacheKey: JSON.stringify });
+export const getConversationsMetricsAsyncCached = mem(getConversationsMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const getAgentsProductivityMetricsAsyncCached = mem(getAgentsProductivityMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const getChatsMetricsAsyncCached = mem(getChatsMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const getProductivityMetricsAsyncCached = mem(getProductivityMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const findAllChatsStatusAsyncCached = mem(findAllChatsStatusAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const findAllChatMetricsByAgentAsyncCached = mem(findAllChatMetricsByAgentAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const findAllAgentsStatusAsyncCached = mem(findAllAgentsStatusAsync, { maxAge: 5000, cacheKey: JSON.stringify });
 export const findAllChatMetricsByDepartmentAsyncCached = mem(findAllChatMetricsByDepartmentAsync, {
-	maxAge: 60000,
+	maxAge: 5000,
 	cacheKey: JSON.stringify,
 });
-export const findAllResponseTimeMetricsAsyncCached = mem(findAllResponseTimeMetricsAsync, { maxAge: 60000, cacheKey: JSON.stringify });
+export const findAllResponseTimeMetricsAsyncCached = mem(findAllResponseTimeMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
