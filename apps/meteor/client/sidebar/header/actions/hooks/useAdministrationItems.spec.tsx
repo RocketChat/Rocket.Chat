@@ -19,6 +19,8 @@ it('should not show upgrade item if has license and not have trial', async () =>
 					workspaceRegistered: false,
 				} as any,
 			}))
+			.withPermission('view-privileged-setting')
+			.withPermission('manage-cloud')
 			.build(),
 	});
 
@@ -42,6 +44,8 @@ it('should return an upgrade item if not have license or if have a trial', async
 					workspaceRegistered: false,
 				} as any,
 			}))
+			.withPermission('view-privileged-setting')
+			.withPermission('manage-cloud')
 			.build(),
 	});
 
