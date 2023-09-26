@@ -1,11 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
 // import type { Keys as IconName } from '@rocket.chat/icons';
-import type { FC } from 'react';
+import type { FC, ReactNode } from 'react';
 import React from 'react';
 
 type InfoPanelTitleProps = {
 	title: string;
-	// icon: ReactNode;
+	icon?: ReactNode;
 };
 
 // const isValidIcon = (icon: ReactNode): icon is IconName => typeof icon === 'string';
