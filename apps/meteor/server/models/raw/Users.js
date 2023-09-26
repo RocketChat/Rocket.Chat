@@ -384,6 +384,10 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	findOneByUsernameIgnoringCase(username, options) {
+		if (!username) {
+			throw new Error('invalid username');
+		}
+
 		const query = { username };
 
 		return this.findOne(query, {
