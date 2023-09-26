@@ -1,12 +1,12 @@
 {
 	"name": "@rocket.chat/ui-theming",
-	"version": "0.0.1",
+	"version": "0.1.0-rc.0",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/css-in-js": "next",
-		"@rocket.chat/fuselage": "next",
-		"@rocket.chat/fuselage-hooks": "next",
-		"@rocket.chat/icons": "next",
+		"@rocket.chat/fuselage": "^0.32.1",
+		"@rocket.chat/fuselage-hooks": "^0.32.1",
+		"@rocket.chat/icons": "^0.32.0",
 		"@rocket.chat/ui-contexts": "workspace:~",
 		"@storybook/addon-actions": "~6.5.16",
 		"@storybook/addon-docs": "~6.5.16",
@@ -29,7 +29,7 @@
 		"react": "~17.0.2",
 		"react-docgen-typescript-plugin": "~1.0.5",
 		"ts-jest": "~29.0.5",
-		"typescript": "~5.1.6"
+		"typescript": "~5.2.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

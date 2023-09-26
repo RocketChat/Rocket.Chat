@@ -1,5 +1,4 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { usePermission, useStream, useUserId, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode, ContextType, ReactElement } from 'react';
@@ -35,17 +34,18 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	const queryClient = useQueryClient();
 	const userId = useUserId();
 	const isLivechatAdmin = usePermission('view-livechat-rooms');
+	const { t: roomType } = room ?? {};
 
 	// TODO: move this to omnichannel context only
 	useEffect(() => {
-		if (!room || !isOmnichannelRoom(room)) {
+		if (roomType !== 'l') {
 			return;
 		}
 
 		return subscribeToRoom(rid, (room) => {
 			queryClient.setQueryData(['rooms', rid], room);
 		});
-	}, [subscribeToRoom, rid, queryClient, room]);
+	}, [subscribeToRoom, rid, queryClient, roomType]);
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const router = useRouter();
@@ -55,19 +55,21 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		}
 	}, [isSuccess, room, router]);
 
+	const { _id: servedById } = room?.servedBy ?? {};
+
 	// TODO: Review the necessity of this effect when we move away from cached collections
 	useEffect(() => {
-		if (!room || !isOmnichannelRoom(room) || !room.servedBy) {
+		if (roomType !== 'l' || !servedById) {
 			return;
 		}
 
-		if (!isLivechatAdmin && room.servedBy._id !== userId) {
-			ChatRoom.remove(room._id);
-			queryClient.removeQueries(['rooms', room._id]);
-			queryClient.removeQueries(['rooms', { reference: room._id, type: 'l' }]);
-			queryClient.removeQueries(['/v1/rooms.info', room._id]);
+		if (!isLivechatAdmin && servedById !== userId) {
+			ChatRoom.remove(rid);
+			queryClient.removeQueries(['rooms', rid]);
+			queryClient.removeQueries(['rooms', { reference: rid, type: 'l' }]);
+			queryClient.removeQueries(['/v1/rooms.info', rid]);
 		}
-	}, [isLivechatAdmin, queryClient, userId, room]);
+	}, [isLivechatAdmin, queryClient, userId, rid, roomType, servedById]);
 
 	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
 

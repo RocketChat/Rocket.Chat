@@ -40,6 +40,8 @@ type UserPreferences = {
 	fontSize?: FontSize;
 	receiveLoginDetectionEmail: boolean;
 	notifyCalendarEvents: boolean;
+	enableMobileRinging: boolean;
+	mentionsWithSymbol?: boolean;
 };
 
 declare module '@rocket.chat/ui-contexts' {
@@ -85,6 +87,8 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		omnichannelTranscriptEmail: Match.Optional(Boolean),
 		omnichannelTranscriptPDF: Match.Optional(Boolean),
 		notifyCalendarEvents: Match.Optional(Boolean),
+		enableMobileRinging: Match.Optional(Boolean),
+		mentionsWithSymbol: Match.Optional(Boolean),
 	};
 	check(settings, Match.ObjectIncluding(keys));
 	const user = await Users.findOneById(userId);

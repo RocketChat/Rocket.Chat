@@ -221,8 +221,8 @@ export class SAML {
 			},
 		);
 
-		if (username && fullName && (username !== user.username || fullName !== user.name)) {
-			await saveUserIdentity({ _id: user._id, name: fullName, username });
+		if ((username && username !== user.username) || (fullName && fullName !== user.name)) {
+			await saveUserIdentity({ _id: user._id, name: fullName || undefined, username });
 		}
 
 		// sending token along with the userId
@@ -430,7 +430,7 @@ export class SAML {
 				};
 
 				await this.storeCredential(credentialToken, loginResult);
-				const url = `${Meteor.absoluteUrl('saml')}/${credentialToken}`;
+				const url = Meteor.absoluteUrl(SAMLUtils.getValidationActionRedirectPath(credentialToken));
 				res.writeHead(302, {
 					Location: url,
 				});
