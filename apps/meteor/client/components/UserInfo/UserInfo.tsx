@@ -54,7 +54,7 @@ const UserInfo = ({
 	email,
 	verified,
 	createdAt,
-	status,
+	// status,
 	statusText,
 	customFields,
 	canViewAllInfo,
@@ -78,26 +78,26 @@ const UserInfo = ({
 				{actions && <InfoPanel.Section>{actions}</InfoPanel.Section>}
 
 				<InfoPanel.Section>
-					{userDisplayName && <InfoPanel.Title icon={status} title={userDisplayName} />}
+					{userDisplayName && <InfoPanel.Title title={userDisplayName} />}
 					{statusText && (
 						<InfoPanel.Text>
-							<MarkdownText content={statusText} parseEmoji={true} />
+							<MarkdownText content={statusText} parseEmoji={true} variant='inline' />
 						</InfoPanel.Text>
 					)}
 				</InfoPanel.Section>
 
 				<InfoPanel.Section>
+					{nickname && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Nickname')}</InfoPanel.Label>
+							<InfoPanel.Text>{nickname}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)}
+
 					{roles.length !== 0 && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Roles')}</InfoPanel.Label>
 							<UserCard.Roles>{roles}</UserCard.Roles>
-						</InfoPanel.Field>
-					)}
-
-					{Number.isInteger(utcOffset) && (
-						<InfoPanel.Field>
-							<InfoPanel.Label>{t('Local_Time')}</InfoPanel.Label>
-							<InfoPanel.Text>{utcOffset && <UTCClock utcOffset={utcOffset} />}</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
 
@@ -108,24 +108,10 @@ const UserInfo = ({
 						</InfoPanel.Field>
 					)}
 
-					{canViewAllInfo && (
+					{Number.isInteger(utcOffset) && (
 						<InfoPanel.Field>
-							<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
-							<InfoPanel.Text>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanel.Text>
-						</InfoPanel.Field>
-					)}
-
-					{name && (
-						<InfoPanel.Field>
-							<InfoPanel.Label>{t('Full_Name')}</InfoPanel.Label>
-							<InfoPanel.Text>{name}</InfoPanel.Text>
-						</InfoPanel.Field>
-					)}
-
-					{nickname && (
-						<InfoPanel.Field>
-							<InfoPanel.Label>{t('Nickname')}</InfoPanel.Label>
-							<InfoPanel.Text>{nickname}</InfoPanel.Text>
+							<InfoPanel.Label>{t('Local_Time')}</InfoPanel.Label>
+							<InfoPanel.Text>{utcOffset && <UTCClock utcOffset={utcOffset} />}</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
 
@@ -137,6 +123,20 @@ const UserInfo = ({
 							</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
+
+					{canViewAllInfo && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
+							<InfoPanel.Text>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)}
+
+					{/* {name && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Full_Name')}</InfoPanel.Label>
+							<InfoPanel.Text>{name}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)} */}
 
 					{phone && (
 						<InfoPanel.Field>

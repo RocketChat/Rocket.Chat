@@ -6,7 +6,7 @@ import UserCardInfo from './UserCardInfo';
 
 const UserCardRoles = ({ children }: { children: ReactNode }): ReactElement => (
 	<Box m='neg-x2'>
-		<UserCardInfo flexWrap='wrap' display='flex' flexShrink={0}>
+		<UserCardInfo mb={8} flexWrap='wrap' display='flex' flexShrink={0}>
 			{children}
 		</UserCardInfo>
 	</Box>
