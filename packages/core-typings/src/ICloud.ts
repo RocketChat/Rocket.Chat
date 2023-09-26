@@ -1,5 +1,4 @@
 export type CloudRegistrationStatus = {
-	connectToCloud: boolean;
 	email: string;
 	token: string;
 	uniqueId: string;

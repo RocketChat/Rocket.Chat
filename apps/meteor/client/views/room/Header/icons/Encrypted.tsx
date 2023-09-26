@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { HeaderState } from '@rocket.chat/ui-client';
-import { useSetting, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import { dispatchToastMessage } from '../../../../lib/toast';
@@ -18,7 +18,7 @@ const Encrypted = ({ room }: { room: IRoom }) => {
 			return;
 		}
 
-		const { success } = await toggleE2E({ rid: room._id, encrypted: !room?.encrypted });
+		const { success } = await toggleE2E({ rid: room._id, encrypted: !room.encrypted });
 		if (!success) {
 			return;
 		}
