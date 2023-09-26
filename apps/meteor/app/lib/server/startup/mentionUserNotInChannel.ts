@@ -1,4 +1,5 @@
 import { api } from '@rocket.chat/core-services';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isEditedMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import type { ActionsBlock } from '@rocket.chat/ui-kit';
@@ -14,13 +15,14 @@ import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../autho
 const permissionsToAddUserToRoom = ['add-user-to-joined-room', 'add-user-to-any-c-room', 'add-user-to-any-p-room'];
 
 const APP_ID = 'mention-core';
-const getBlocks = (commaSeparatedMentions: string) => {
+const getBlocks = (mentions: IMessage['mentions'], messageId: string) => {
+	const strigifiedMentions = JSON.stringify(mentions);
 	return {
 		addUsersBlock: {
 			type: 'button',
 			appId: APP_ID,
-			blockId: 'actionBlock',
-			value: commaSeparatedMentions,
+			blockId: messageId,
+			value: strigifiedMentions,
 			actionId: 'add-users',
 			text: {
 				type: 'plain_text',
@@ -30,7 +32,8 @@ const getBlocks = (commaSeparatedMentions: string) => {
 		dismissBlock: {
 			type: 'button',
 			appId: APP_ID,
-			blockId: 'actionBlock',
+			blockId: messageId,
+			value: strigifiedMentions,
 			actionId: 'dismiss',
 			text: {
 				type: 'plain_text',
@@ -40,8 +43,8 @@ const getBlocks = (commaSeparatedMentions: string) => {
 		dmBlock: {
 			type: 'button',
 			appId: APP_ID,
-			value: commaSeparatedMentions,
-			blockId: 'actionBlock',
+			value: strigifiedMentions,
+			blockId: messageId,
 			actionId: 'share-message',
 			text: {
 				type: 'plain_text',
@@ -89,8 +92,8 @@ callbacks.add(
 		const canDMUsers = await hasPermissionAsync(message.u._id, 'create-d'); // TODO: Perhaps check if user has DM with mentioned user (might be too expensive)
 
 		const usernames = mentionsUsersNotInChannel.map(({ username }) => username);
-		const actionBlocks = getBlocks(usernames.join(','));
-
+		const actionBlocks = getBlocks(mentionsUsersNotInChannel, message._id);
+		console.log(actionBlocks);
 		const elements: ActionsBlock['elements'] = [
 			canAddUsers && actionBlocks.addUsersBlock,
 			(canAddUsers || canDMUsers) && actionBlocks.dismissBlock,
@@ -109,7 +112,7 @@ callbacks.add(
 					type: 'section',
 					text: {
 						type: 'mrkdwn',
-						text: i18n.t(messageLabel, { mentions: `@${usernames.join(', @')}` }), // TODO: i18n
+						text: i18n.t(messageLabel, { mentions: `@${usernames.join(', @')}` }),
 					},
 				} as const,
 				Boolean(elements.length) &&
