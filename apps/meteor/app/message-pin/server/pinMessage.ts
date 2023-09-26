@@ -1,6 +1,6 @@
 import { Message } from '@rocket.chat/core-services';
-import { isQuoteAttachment } from '@rocket.chat/core-typings';
-import type { IMessage, IUser, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import { isQuoteAttachment, isRegisterUser } from '@rocket.chat/core-typings';
+import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
@@ -82,15 +82,13 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
-		const me = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name'>>>(userId, {
-			projection: { username: 1, name: 1 },
-		});
+		const me = await Users.findOneById(userId);
 		if (!me) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'pinMessage' });
 		}
 
 		// If we keep history of edits, insert a new message to store history information
-		if (settings.get('Message_KeepHistory') && me.username) {
+		if (settings.get('Message_KeepHistory') && isRegisterUser(me)) {
 			await Messages.cloneAndSaveAsHistoryById(message._id, me);
 		}
 
@@ -109,6 +107,8 @@ Meteor.methods<ServerMethods>({
 			_id: userId,
 			username: me.username,
 		};
+
+		originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
 
 		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
@@ -186,15 +186,13 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
 		}
 
-		const me = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name'>>>(userId, {
-			projection: { username: 1, name: 1 },
-		});
+		const me = await Users.findOneById(userId);
 		if (!me) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'unpinMessage' });
 		}
 
 		// If we keep history of edits, insert a new message to store history information
-		if (settings.get('Message_KeepHistory') && me.username) {
+		if (settings.get('Message_KeepHistory') && isRegisterUser(me)) {
 			await Messages.cloneAndSaveAsHistoryById(originalMessage._id, me);
 		}
 
@@ -203,7 +201,6 @@ Meteor.methods<ServerMethods>({
 			_id: userId,
 			username: me.username,
 		};
-		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
 		const room = await Rooms.findOneById(originalMessage.rid, { projection: { ...roomAccessAttributes, lastMessage: 1 } });
 		if (!room) {
@@ -213,6 +210,10 @@ Meteor.methods<ServerMethods>({
 		if (!(await canAccessRoomAsync(room, { _id: userId }))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
 		}
+
+		originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
+
+		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
 
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
