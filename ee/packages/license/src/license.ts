@@ -6,6 +6,7 @@ import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
 import type { BehaviorWithContext } from './definition/LicenseBehavior';
 import type { LicenseModule } from './definition/LicenseModule';
 import type { LimitContext } from './definition/LimitContext';
+import { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
 import { InvalidLicenseError } from './errors/InvalidLicenseError';
 import { NotReadyForValidation } from './errors/NotReadyForValidation';
 import { logger } from './logger';
@@ -163,7 +164,7 @@ export class LicenseManager extends Emitter<
 				return true;
 			}
 
-			return false;
+			throw new DuplicatedLicenseError();
 		}
 
 		if (!isReadyForValidation.call(this)) {
@@ -175,13 +176,8 @@ export class LicenseManager extends Emitter<
 		logger.info('New Enterprise License');
 		try {
 			const decrypted = await decrypt(encryptedLicense);
-			if (!decrypted) {
-				return false;
-			}
 
-			if (process.env.LICENSE_DEBUG && process.env.LICENSE_DEBUG !== 'false') {
-				logger.debug({ msg: 'license', decrypted });
-			}
+			logger.debug({ msg: 'license', decrypted });
 
 			encryptedLicense.startsWith('RCV3_')
 				? await this.setLicenseV3(JSON.parse(decrypted), encryptedLicense)
@@ -190,9 +186,8 @@ export class LicenseManager extends Emitter<
 			return true;
 		} catch (e) {
 			logger.error('Invalid license');
-			if (process.env.LICENSE_DEBUG && process.env.LICENSE_DEBUG !== 'false') {
-				logger.error({ msg: 'Invalid raw license', encryptedLicense, e });
-			}
+
+			logger.error({ msg: 'Invalid raw license', encryptedLicense, e });
 			throw new InvalidLicenseError();
 		}
 	}
