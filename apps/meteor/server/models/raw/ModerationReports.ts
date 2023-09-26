@@ -9,6 +9,7 @@ import type {
 import type { FindPaginated, IModerationReportsModel, PaginationParams } from '@rocket.chat/model-typings';
 import type { AggregationCursor, Collection, Db, Document, FindCursor, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
 
 export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements IModerationReportsModel {
@@ -81,7 +82,18 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			{ $match: query },
 			{
 				$group: {
-					_id: { user: '$message.u._id' },
+					_id: {
+						$ifNull: [
+							{
+								$cond: {
+									if: { $ne: ['$message.u._id', undefined] },
+									then: '$message.u._id',
+									else: '$reportedUser._id',
+								},
+							},
+							null,
+						],
+					},
 					reports: { $first: '$$ROOT' },
 					rooms: { $addToSet: '$room' }, // to be replaced with room
 					count: { $sum: 1 },
@@ -130,6 +142,66 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		];
 
 		return this.col.aggregate(params, { allowDiskUse: true });
+	}
+
+	findUserReports(
+		latest: Date,
+		oldest: Date,
+		selector: string,
+		pagination: PaginationParams<IModerationReport>,
+	): AggregationCursor<Pick<UserReport, '_id' | 'reportedUser' | 'ts'> & { count: number }> {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			ts: {
+				$lt: latest,
+				$gt: oldest,
+			},
+			message: {
+				$exists: false,
+			},
+			...this.getSearchQueryForSelectorUsers(selector),
+		};
+
+		const { sort, offset, count } = pagination;
+
+		const pipeline = [
+			{ $match: query },
+			{
+				$sort: {
+					ts: -1,
+				},
+			},
+			{
+				$group: {
+					_id: '$reportedUser._id',
+					count: { $sum: 1 },
+					reports: { $first: '$$ROOT' },
+				},
+			},
+			{
+				$sort: sort || {
+					'reports.ts': -1,
+				},
+			},
+			{
+				$skip: offset,
+			},
+			{
+				$limit: count,
+			},
+			{
+				$project: {
+					_id: 0,
+					reportedUser: '$reports.reportedUser',
+					ts: '$reports.ts',
+					count: 1,
+				},
+			},
+		];
+
+		return this.col.aggregate(pipeline, { allowDiskUse: true, readPreference: readSecondaryPreferred() });
 	}
 
 	countMessageReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number> {
@@ -274,6 +346,28 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 				},
 				{
 					'message.u.name': {
+						$regex: selector,
+						$options: 'i',
+					},
+				},
+			],
+		};
+	}
+
+	private getSearchQueryForSelectorUsers(selector?: string): any {
+		if (!selector) {
+			return {};
+		}
+		return {
+			$or: [
+				{
+					username: {
+						$regex: selector,
+						$options: 'i',
+					},
+				},
+				{
+					name: {
 						$regex: selector,
 						$options: 'i',
 					},

@@ -19,6 +19,14 @@ export type ModerationEndpoints = {
 			total: number;
 		}>;
 	};
+	'/v1/moderation.user.reports': {
+		GET: (params: ReportHistoryPropsGET) => PaginatedResult<{
+			reports: Pick<IModerationReport, '_id' | 'reportedUser' | 'ts'> & { count: number }[];
+			count: number;
+			offset: number;
+			total: number;
+		}>;
+	};
 	'/v1/moderation.user.reportedMessages': {
 		GET: (params: ReportMessageHistoryParamsGET) => PaginatedResult<{
 			user: Pick<IUser, 'username' | 'name' | '_id'> | null;

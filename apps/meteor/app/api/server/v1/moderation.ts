@@ -64,6 +64,54 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'moderation.user.reports',
+	{
+		authRequired: true,
+		validateParams: isReportHistoryProps,
+		permissionsRequired: ['view-moderation-console'],
+	},
+	{
+		async get() {
+			const { latest: _latest, oldest: _oldest, selector = '' } = this.queryParams;
+
+			const { count = 20, offset = 0 } = await getPaginationItems(this.queryParams);
+
+			const { sort } = await this.parseJsonQuery();
+
+			const latest = _latest ? new Date(_latest) : new Date();
+
+			const oldest = _oldest ? new Date(_oldest) : new Date(0);
+
+			const escapedSelector = escapeRegExp(selector);
+
+			const reports = await ModerationReports.findUserReports(latest, oldest, escapedSelector, {
+				offset,
+				count,
+				sort,
+			}).toArray();
+
+			if (reports.length === 0) {
+				return API.v1.success({
+					reports,
+					count: 0,
+					offset,
+					total: 0,
+				});
+			}
+
+			const total = await ModerationReports.countMessageReportsInRange(latest, oldest, escapedSelector);
+
+			return API.v1.success({
+				reports,
+				count: reports.length,
+				offset,
+				total,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
 	'moderation.user.reportedMessages',
 	{
 		authRequired: true,
