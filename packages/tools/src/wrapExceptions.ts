@@ -36,9 +36,6 @@ export function wrapExceptions<T>(getter: () => T) {
 			return value;
 		} catch (error) {
 			errorWrapper?.(error);
-
-			// It won't reach this point if it was a promise
-			return undefined;
 		}
 	};
 
