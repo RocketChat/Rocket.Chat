@@ -331,6 +331,7 @@ API.v1.addRoute(
 				readOnly,
 				this.bodyParams.customFields,
 				this.bodyParams.extraData,
+				this.bodyParams.excludeSelf ?? false,
 			);
 
 			const room = await Rooms.findOneById(result.rid, { projection: API.v1.defaultFieldsToExclude });
