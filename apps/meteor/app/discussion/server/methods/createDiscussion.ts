@@ -156,7 +156,7 @@ const create = async ({
 	const discussion = await createRoom(
 		type,
 		name,
-		user.username as string,
+		user,
 		[...new Set(invitedUsers)].filter(Boolean),
 		false,
 		false,
