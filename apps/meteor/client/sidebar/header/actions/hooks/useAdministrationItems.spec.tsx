@@ -49,7 +49,8 @@ it('should return an upgrade item if not have license or if have a trial', async
 			.build(),
 	});
 
-	await waitFor(() => !!result.current[0]);
+	// Workspace admin is also expected to be here
+	await waitFor(() => result.current.length > 1);
 
 	expect(result.current[0]).toEqual(
 		expect.objectContaining({
