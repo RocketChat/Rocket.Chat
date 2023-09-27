@@ -190,7 +190,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 	}
 
 	async unsetPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult> {
-		return this.updateOne(
+		return this.col.updateOne(
 			{
 				_id: roomId,
 			},
@@ -262,7 +262,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			_id: rid,
 		};
 		const update = departmentAncestors ? { $set: { departmentAncestors } } : { $unset: { departmentAncestors: 1 } };
-		return this.updateOne(query, update);
+		return this.col.updateOne(query, update);
 	}
 
 	/** @deprecated Use updateOne or updateMany instead */

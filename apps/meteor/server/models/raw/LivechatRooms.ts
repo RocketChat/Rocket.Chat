@@ -2070,7 +2070,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			update.$set!['metrics.servedBy.lr'] = message.ts;
 		}
 
-		return this.updateOne(
+		return this.col.updateOne(
 			{
 				_id: room._id,
 				t: 'l',
@@ -2319,7 +2319,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			},
 		};
 
-		return this.updateOne(query, update);
+		return this.col.updateOne(query, update);
 	}
 
 	saveCRMDataByRoomId(roomId: string, crmData: unknown) {
