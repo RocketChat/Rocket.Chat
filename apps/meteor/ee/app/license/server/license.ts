@@ -223,7 +223,7 @@ class LicenseClass {
 		EnterpriseLicenses.emit('invalidate');
 	}
 
-	async canAddNewUser(userCount = 1): Promise<boolean> {
+	async canAddNewUser(userCount = 0): Promise<boolean> {
 		if (!maxActiveUsers) {
 			return true;
 		}
@@ -352,7 +352,7 @@ export function getAppsConfig(): NonNullable<ILicense['apps']> {
 	return License.getAppsConfig();
 }
 
-export async function canAddNewUser(userCount = 1): Promise<boolean> {
+export async function canAddNewUser(userCount = 0): Promise<boolean> {
 	return License.canAddNewUser(userCount);
 }
 
