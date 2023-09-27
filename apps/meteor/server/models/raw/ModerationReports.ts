@@ -82,18 +82,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			{ $match: query },
 			{
 				$group: {
-					_id: {
-						$ifNull: [
-							{
-								$cond: {
-									if: { $ne: ['$message.u._id', undefined] },
-									then: '$message.u._id',
-									else: '$reportedUser._id',
-								},
-							},
-							null,
-						],
-					},
+					_id: { user: '$message.u._id' },
 					reports: { $first: '$$ROOT' },
 					rooms: { $addToSet: '$room' }, // to be replaced with room
 					count: { $sum: 1 },
