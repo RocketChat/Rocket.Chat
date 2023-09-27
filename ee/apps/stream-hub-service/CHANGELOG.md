@@ -1,5 +1,15 @@
 # @rocket.chat/stream-hub-service
 
+## 0.2.9-rc.5
+
+### Patch Changes
+
+- Updated dependencies [1041d4d361]
+  - @rocket.chat/core-typings@6.4.0-rc.5
+  - @rocket.chat/core-services@0.2.0-rc.5
+  - @rocket.chat/model-typings@0.1.0-rc.5
+  - @rocket.chat/models@0.0.15-rc.5
+
 ## 0.2.8-rc.4
 
 ### Patch Changes

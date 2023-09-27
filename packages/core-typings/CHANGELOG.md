@@ -1,5 +1,11 @@
 # @rocket.chat/core-typings
 
+## 6.4.0-rc.5
+
+### Minor Changes
+
+- 1041d4d361: Added option to select between two script engine options for the integrations
+
 ## 6.4.0-rc.4
 
 ## 6.4.0-rc.3

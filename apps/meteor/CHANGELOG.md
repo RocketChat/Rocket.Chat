@@ -1,5 +1,36 @@
 # @rocket.chat/meteor
 
+## 6.4.0-rc.5
+
+### Minor Changes
+
+- 1041d4d361: Added option to select between two script engine options for the integrations
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- ec60dbe8f5: Fixed custom translations not being displayed
+- Updated dependencies [1041d4d361]
+  - @rocket.chat/core-typings@6.4.0-rc.5
+  - @rocket.chat/rest-typings@6.4.0-rc.5
+  - @rocket.chat/tools@0.1.0-rc.0
+  - @rocket.chat/api-client@0.1.9-rc.5
+  - @rocket.chat/omnichannel-services@0.0.15-rc.5
+  - @rocket.chat/pdf-worker@0.0.15-rc.5
+  - @rocket.chat/presence@0.0.15-rc.5
+  - @rocket.chat/core-services@0.2.0-rc.5
+  - @rocket.chat/cron@0.0.11-rc.5
+  - @rocket.chat/gazzodown@2.0.0-rc.5
+  - @rocket.chat/model-typings@0.1.0-rc.5
+  - @rocket.chat/ui-contexts@2.0.0-rc.5
+  - @rocket.chat/fuselage-ui-kit@2.0.0-rc.5
+  - @rocket.chat/models@0.0.15-rc.5
+  - @rocket.chat/ui-theming@0.1.0-rc.0
+  - @rocket.chat/ui-client@2.0.0-rc.5
+  - @rocket.chat/ui-video-conf@2.0.0-rc.5
+  - @rocket.chat/web-ui-registration@2.0.0-rc.5
+  - @rocket.chat/instance-status@0.0.15-rc.5
+
 ## 6.4.0-rc.4
 
 ### Patch Changes
