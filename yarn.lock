@@ -8796,6 +8796,7 @@ __metadata:
     imap: ^0.8.19
     ip-range-check: ^0.2.0
     is-svg: ^4.3.2
+    isolated-vm: 4.4.2
     jest: ~29.6.1
     jquery: ^3.6.0
     jschardet: ^3.0.0
@@ -25269,6 +25270,15 @@ __metadata:
   version: 4.0.0
   resolution: "isobject@npm:4.0.0"
   checksum: bbcb522e46d54fb22418ba49fb9a82057ffa201c8401fb6e018c042e2c98cf7d9c7b185aff88e035ec8adea0814506dc2aeff2d08891bbc158e1671a49e99c06
+  languageName: node
+  linkType: hard
+
+"isolated-vm@npm:4.4.2":
+  version: 4.4.2
+  resolution: "isolated-vm@npm:4.4.2"
+  dependencies:
+    node-gyp: latest
+  checksum: 86d12d96f90ceef74a3fc096439c71b0c115235ae3053d600eb8f7c678443d9ca3c8a2805dcd7f97463d11eb7d2e667868946b90e377a3e6d50fdd4085506fbc
   languageName: node
   linkType: hard
 
