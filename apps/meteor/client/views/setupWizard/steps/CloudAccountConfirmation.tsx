@@ -10,6 +10,8 @@ const setIntervalTime = (interval?: number): number => (interval ? interval * 10
 const CloudAccountConfirmation = (): ReactElement => {
 	const {
 		registerServer,
+		currentStep,
+		maxSteps,
 		goToStep,
 		setupWizardData: { registrationData },
 		saveWorkspaceData,
@@ -43,6 +45,8 @@ const CloudAccountConfirmation = (): ReactElement => {
 
 	return (
 		<AwaitingConfirmationPage
+			currentStep={currentStep}
+			stepCount={maxSteps}
 			emailAddress={registrationData.cloudEmail}
 			securityCode={registrationData.user_code}
 			onResendEmailRequest={(): Promise<void> => registerServer({ email: registrationData.cloudEmail, resend: true })}

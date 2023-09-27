@@ -11,7 +11,7 @@ const SERVER_OPTIONS = {
 };
 
 const RegisterServerStep = (): ReactElement => {
-	const { goToPreviousStep, currentStep, setSetupWizardData, registerServer, maxSteps, offline, completeSetupWizard } =
+	const { goToPreviousStep, currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, offline, completeSetupWizard } =
 		useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
 
@@ -24,6 +24,7 @@ const RegisterServerStep = (): ReactElement => {
 
 	const handleRegister: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async (data) => {
 		if (data.registerType !== 'standalone') {
+			goToNextStep();
 			setSetupWizardData((prevState) => ({ ...prevState, serverData: data }));
 			await registerServer(data);
 		}
