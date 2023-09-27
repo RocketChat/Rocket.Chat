@@ -23,6 +23,7 @@ const defaultData = {
 	avatar: '',
 	emoji: '',
 	scriptEnabled: false,
+	scriptEngine: 'isolated-vm',
 	script: '',
 	retryFailedCalls: true,
 	retryCount: 6,
