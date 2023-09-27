@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-edit: Remove back step in server registration
+feat: Remove back step in server registration
