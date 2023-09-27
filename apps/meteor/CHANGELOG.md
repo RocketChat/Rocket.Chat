@@ -1,5 +1,84 @@
 # @rocket.chat/meteor
 
+## 6.4.0-rc.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.4.0-rc.4
+  - @rocket.chat/rest-typings@6.4.0-rc.4
+  - @rocket.chat/api-client@0.1.8-rc.4
+  - @rocket.chat/omnichannel-services@0.0.14-rc.4
+  - @rocket.chat/pdf-worker@0.0.14-rc.4
+  - @rocket.chat/presence@0.0.14-rc.4
+  - @rocket.chat/core-services@0.2.0-rc.4
+  - @rocket.chat/cron@0.0.10-rc.4
+  - @rocket.chat/gazzodown@2.0.0-rc.4
+  - @rocket.chat/model-typings@0.1.0-rc.4
+  - @rocket.chat/ui-contexts@2.0.0-rc.4
+  - @rocket.chat/fuselage-ui-kit@2.0.0-rc.4
+  - @rocket.chat/models@0.0.14-rc.4
+  - @rocket.chat/ui-theming@0.1.0-rc.0
+  - @rocket.chat/ui-client@2.0.0-rc.4
+  - @rocket.chat/ui-video-conf@2.0.0-rc.4
+  - @rocket.chat/web-ui-registration@2.0.0-rc.4
+  - @rocket.chat/instance-status@0.0.14-rc.4
+
+## 6.4.0-rc.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- 614a9b8fc8: Show correct date for last day time
+- 61a106fbf2: Increase cron job check delay to 1 min from 5s.
+
+  This reduces MongoDB requests introduced on 6.3.
+
+- Updated dependencies [d9a150000d]
+- Updated dependencies [61a106fbf2]
+  - @rocket.chat/presence@0.0.13-rc.3
+  - @rocket.chat/cron@0.0.9-rc.3
+  - @rocket.chat/core-typings@6.4.0-rc.3
+  - @rocket.chat/rest-typings@6.4.0-rc.3
+  - @rocket.chat/api-client@0.1.7-rc.3
+  - @rocket.chat/omnichannel-services@0.0.13-rc.3
+  - @rocket.chat/pdf-worker@0.0.13-rc.3
+  - @rocket.chat/core-services@0.2.0-rc.3
+  - @rocket.chat/gazzodown@2.0.0-rc.3
+  - @rocket.chat/model-typings@0.1.0-rc.3
+  - @rocket.chat/ui-contexts@2.0.0-rc.3
+  - @rocket.chat/fuselage-ui-kit@2.0.0-rc.3
+  - @rocket.chat/models@0.0.13-rc.3
+  - @rocket.chat/ui-theming@0.1.0-rc.0
+  - @rocket.chat/ui-client@2.0.0-rc.3
+  - @rocket.chat/ui-video-conf@2.0.0-rc.3
+  - @rocket.chat/web-ui-registration@2.0.0-rc.3
+  - @rocket.chat/instance-status@0.0.13-rc.3
+
+## 6.4.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.4.0-rc.2
+  - @rocket.chat/rest-typings@6.4.0-rc.2
+  - @rocket.chat/api-client@0.1.7-rc.2
+  - @rocket.chat/omnichannel-services@0.0.13-rc.2
+  - @rocket.chat/pdf-worker@0.0.13-rc.2
+  - @rocket.chat/presence@0.0.13-rc.2
+  - @rocket.chat/core-services@0.2.0-rc.2
+  - @rocket.chat/cron@0.0.9-rc.2
+  - @rocket.chat/gazzodown@2.0.0-rc.2
+  - @rocket.chat/model-typings@0.1.0-rc.2
+  - @rocket.chat/ui-contexts@2.0.0-rc.2
+  - @rocket.chat/fuselage-ui-kit@2.0.0-rc.2
+  - @rocket.chat/models@0.0.13-rc.2
+  - @rocket.chat/ui-theming@0.1.0-rc.0
+  - @rocket.chat/ui-client@2.0.0-rc.2
+  - @rocket.chat/ui-video-conf@2.0.0-rc.2
+  - @rocket.chat/web-ui-registration@2.0.0-rc.2
+  - @rocket.chat/instance-status@0.0.13-rc.2
+
 ## 6.4.0-rc.1
 
 ### Patch Changes
@@ -186,6 +265,39 @@
   - @rocket.chat/random@1.2.1
   - @rocket.chat/sha256@1.0.9
   - @rocket.chat/ui-composer@0.0.1
+
+## 6.3.7
+
+### Patch Changes
+
+- f1e36a5e46: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- e1acdda0a3: User information crashing for some locales
+- deffcb187c: Increase cron job check delay to 1 min from 5s.
+
+  This reduces MongoDB requests introduced on 6.3.
+
+- Updated dependencies [c655be17ca]
+- Updated dependencies [deffcb187c]
+  - @rocket.chat/presence@0.0.13
+  - @rocket.chat/cron@0.0.9
+  - @rocket.chat/core-typings@6.3.7
+  - @rocket.chat/rest-typings@6.3.7
+  - @rocket.chat/api-client@0.1.7
+  - @rocket.chat/omnichannel-services@0.0.13
+  - @rocket.chat/pdf-worker@0.0.13
+  - @rocket.chat/core-services@0.1.7
+  - @rocket.chat/gazzodown@1.0.7
+  - @rocket.chat/model-typings@0.0.13
+  - @rocket.chat/ui-contexts@1.0.7
+  - @rocket.chat/fuselage-ui-kit@1.0.7
+  - @rocket.chat/models@0.0.13
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.7
+  - @rocket.chat/ui-video-conf@1.0.7
+  - @rocket.chat/web-ui-registration@1.0.7
+  - @rocket.chat/instance-status@0.0.13
+
 ## 6.3.6
 
 ### Patch Changes
