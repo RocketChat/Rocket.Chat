@@ -1,5 +1,13 @@
 # @rocket.chat/ui-video-conf
 
+## 2.0.0
+
+### Patch Changes
+
+- Updated dependencies [074db3b419]
+- Updated dependencies [b8f3d5014f]
+  - @rocket.chat/ui-contexts@2.0.0
+
 ## 2.0.0-rc.5
 
 ### Patch Changes
