@@ -51,7 +51,7 @@ it('should return an upgrade item if not have license or if have a trial', async
 
 	await waitFor(() => !!result.current[0]);
 
-	expect(result.current[1]).toEqual(
+	expect(result.current[0]).toEqual(
 		expect.objectContaining({
 			id: 'showUpgradeItem',
 		}),
