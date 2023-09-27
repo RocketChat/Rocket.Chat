@@ -11,11 +11,11 @@ const getPage = (nonce: string, receiveOrigins: string[], sendOrigin: string) =>
 			<title>embedded login</title>
 		</head>
 		<body>
-			<script type="text/javascript" nonce=${nonce}>
+			<script type="text/javascript" nonce="${nonce}">
 				window.addEventListener('message', function (event) {
 					const data = event.data;
-					const origins = JSON.parse(${JSON.stringify(receiveOrigins)});
-					if (origins[0] !== '*' || !origins.some((origin) => origin === event.origin)) {
+					const origins = ${JSON.stringify(receiveOrigins)};
+					if (origins[0] !== '*' && !origins.some((origin) => origin === event.origin)) {
 						console.error('Origin not allowed', event.origin);
 						return;
 					}
@@ -26,7 +26,7 @@ const getPage = (nonce: string, receiveOrigins: string[], sendOrigin: string) =>
 					}
 				});
 				
-				window.parent.postMessage({ type: 'pageLoad' }, ${sendOrigin});
+				window.parent.postMessage({ type: 'pageLoad' }, '${sendOrigin}');
 			</script>
 		</body>
 	</html>
