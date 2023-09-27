@@ -12,7 +12,11 @@ settings.watch<string>('Site_Url', (value) => {
 });
 
 callbacks.add('workspaceLicenseChanged', async (updatedLicense) => {
-	await License.setLicense(updatedLicense);
+	try {
+		await License.setLicense(updatedLicense);
+	} catch (_error) {
+		// Ignore
+	}
 });
 
 License.setLicenseLimitCounter('activeUsers', () => Users.getActiveLocalUserCount());
