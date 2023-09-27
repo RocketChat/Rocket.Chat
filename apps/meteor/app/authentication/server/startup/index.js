@@ -1,25 +1,26 @@
-import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
-import { Accounts } from 'meteor/accounts-base';
-import _ from 'underscore';
-import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Roles, Settings, Users } from '@rocket.chat/models';
+import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
+import { Accounts } from 'meteor/accounts-base';
+import { Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
-import * as Mailer from '../../../mailer/server/api';
-import { settings } from '../../../settings/server';
-import { callbacks } from '../../../../lib/callbacks';
-import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
-import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
-import { parseCSV } from '../../../../lib/utils/parseCSV';
-import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
-import { getClientAddress } from '../../../../server/lib/getClientAddress';
-import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
-import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
+import { callbacks } from '../../../../lib/callbacks';
+import { beforeCreateUserCallback } from '../../../../lib/callbacks/beforeCreateUserCallback';
+import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
+import { getClientAddress } from '../../../../server/lib/getClientAddress';
+import { i18n } from '../../../../server/lib/i18n';
+import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
+import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
+import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { joinDefaultChannels } from '../../../lib/server/functions/joinDefaultChannels';
 import { setAvatarFromServiceWithValidation } from '../../../lib/server/functions/setUserAvatar';
-import { i18n } from '../../../../server/lib/i18n';
+import * as Mailer from '../../../mailer/server/api';
+import { settings } from '../../../settings/server';
+import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
+import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -183,7 +184,7 @@ const validateEmailDomain = (user) => {
 
 const onCreateUserAsync = async function (options, user = {}) {
 	if (!options.skipBeforeCreateUserCallback) {
-		await callbacks.run('beforeCreateUser', options, user);
+		await beforeCreateUserCallback.run(options, user);
 	}
 
 	user.status = 'offline';
@@ -248,11 +249,6 @@ const onCreateUserAsync = async function (options, user = {}) {
 		await callbacks.run('onCreateUser', options, user);
 	}
 
-	if (!options.skipAppsEngineEvent) {
-		// App IPostUserCreated event hook
-		await Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() });
-	}
-
 	if (!options.skipEmailValidation && !validateEmailDomain(user)) {
 		throw new Meteor.Error(403, 'User validation failed');
 	}
@@ -297,6 +293,11 @@ const insertUserDocAsync = async function (options, user) {
 		};
 	}
 
+	// Make sure that the user has the field 'roles'
+	if (!user.roles) {
+		user.roles = [];
+	}
+
 	const _id = insertUserDoc.call(Accounts, options, user);
 
 	user = await Users.findOne({
@@ -331,7 +332,7 @@ const insertUserDocAsync = async function (options, user) {
 		}
 
 		if (!options.skipAfterCreateUserCallback && user.type !== 'visitor') {
-			setImmediate(function () {
+			setImmediate(() => {
 				return callbacks.run('afterCreateUser', user);
 			});
 		}
@@ -345,6 +346,13 @@ const insertUserDocAsync = async function (options, user) {
 				}
 			}
 		}
+	}
+
+	if (!options.skipAppsEngineEvent) {
+		// `post` triggered events don't need to wait for the promise to resolve
+		Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() }).catch((e) => {
+			Apps.getRocketChatLogger().error('Error while executing post user created event:', e);
+		});
 	}
 
 	return _id;
@@ -406,7 +414,7 @@ const validateLoginAttemptAsync = async function (login) {
 	login = await callbacks.run('onValidateLogin', login);
 
 	await Users.updateLastLoginById(login.user._id);
-	setImmediate(function () {
+	setImmediate(() => {
 		return callbacks.run('afterValidateLogin', login);
 	});
 
@@ -427,7 +435,7 @@ Accounts.validateLoginAttempt(function (...args) {
 	return Promise.await(validateLoginAttemptAsync.call(this, ...args));
 });
 
-Accounts.validateNewUser(function (user) {
+Accounts.validateNewUser((user) => {
 	if (user.type === 'visitor') {
 		return true;
 	}
@@ -438,6 +446,30 @@ Accounts.validateNewUser(function (user) {
 		!(user.services && user.services.password)
 	) {
 		throw new Meteor.Error('registration-disabled-authentication-services', 'User registration is disabled for authentication services');
+	}
+
+	return true;
+});
+
+Accounts.validateNewUser((user) => {
+	if (user.type === 'visitor') {
+		return true;
+	}
+
+	let domainWhiteList = settings.get('Accounts_AllowedDomainsList');
+	if (_.isEmpty(domainWhiteList?.trim())) {
+		return true;
+	}
+
+	domainWhiteList = domainWhiteList.split(',').map((domain) => domain.trim());
+
+	if (user.emails && user.emails.length > 0) {
+		const email = user.emails[0].address;
+		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${escapeRegExp(domain)}$`));
+
+		if (inWhiteList === false) {
+			throw new Meteor.Error('error-invalid-domain');
+		}
 	}
 
 	return true;

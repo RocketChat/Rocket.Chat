@@ -18,7 +18,7 @@ const CustomFieldsPage = ({ reload }: { reload: MutableRefObject<() => void> }) 
 			<Page>
 				<Page.Header title={t('Custom_Fields')}>
 					<Button data-qa-id='CustomFieldPageBtnNew' onClick={onAddNew}>
-						{t('New')}
+						{t('Create_custom_field')}
 					</Button>
 				</Page.Header>
 				<Page.Content>

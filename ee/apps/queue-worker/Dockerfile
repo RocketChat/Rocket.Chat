@@ -31,6 +31,9 @@ COPY ./ee/packages/pdf-worker/dist ee/packages/pdf-worker/dist
 COPY ./packages/tools/package.json packages/tools/package.json
 COPY ./packages/tools/dist packages/tools/dist
 
+COPY ./packages/logger/package.json packages/logger/package.json
+COPY ./packages/logger/dist packages/logger/dist
+
 COPY ./ee/apps/${SERVICE}/dist .
 
 COPY ./package.json .
@@ -38,6 +41,7 @@ COPY ./yarn.lock .
 COPY ./.yarnrc.yml .
 COPY ./.yarn/plugins .yarn/plugins
 COPY ./.yarn/releases .yarn/releases
+COPY ./.yarn/patches .yarn/patches
 COPY ./ee/apps/${SERVICE}/package.json ee/apps/${SERVICE}/package.json
 
 ENV NODE_ENV=production \

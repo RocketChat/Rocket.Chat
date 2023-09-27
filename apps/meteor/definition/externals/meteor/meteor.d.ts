@@ -1,5 +1,5 @@
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
 
 type StringifyBuffers<T extends unknown[]> = {

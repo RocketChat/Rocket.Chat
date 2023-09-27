@@ -1,5 +1,5 @@
-import { isGETDashboardTotalizerParams, isGETDashboardsAgentStatusParams } from '@rocket.chat/rest-typings';
 import { Users } from '@rocket.chat/models';
+import { isGETDashboardTotalizerParams, isGETDashboardsAgentStatusParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
 import {

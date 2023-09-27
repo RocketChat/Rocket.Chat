@@ -1,17 +1,17 @@
-import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
-import moment from 'moment';
 import { api } from '@rocket.chat/core-services';
-import { Users } from '@rocket.chat/models';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+import moment from 'moment';
+import _ from 'underscore';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 callbacks.add(
 	'beforeSaveMessage',
-	async function (message) {
+	async (message) => {
 		// If the message was edited, or is older than 60 seconds (imported)
 		// the notifications will be skipped, so we can also skip this validation
 		if (isEditedMessage(message) || (message.ts && Math.abs(moment(message.ts).diff(moment())) > 60000)) {
@@ -46,6 +46,6 @@ callbacks.add(
 
 		return message;
 	},
-	callbacks.priority.HIGH,
+	callbacks.priority.MEDIUM,
 	'filterATAllTag',
 );

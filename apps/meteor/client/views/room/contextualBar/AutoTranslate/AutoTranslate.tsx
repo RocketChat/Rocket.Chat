@@ -38,7 +38,7 @@ const AutoTranslate = ({
 				<ContextualbarTitle>{t('Auto_Translate')}</ContextualbarTitle>
 				{handleClose && <ContextualbarClose onClick={handleClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent pbs='x24'>
+			<ContextualbarContent pbs={24}>
 				<FieldGroup>
 					<Field>
 						<Field.Row>
@@ -49,7 +49,13 @@ const AutoTranslate = ({
 					<Field>
 						<Field.Label htmlFor='language'>{t('Language')}</Field.Label>
 						<Field.Row verticalAlign='middle'>
-							<Select id='language' value={language} disabled={!translateEnable} onChange={handleChangeLanguage} options={languages} />
+							<Select
+								id='language'
+								value={language}
+								disabled={!translateEnable}
+								onChange={(value) => handleChangeLanguage(String(value))}
+								options={languages}
+							/>
 						</Field.Row>
 					</Field>
 				</FieldGroup>

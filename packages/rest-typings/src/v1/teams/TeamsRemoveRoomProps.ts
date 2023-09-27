@@ -1,5 +1,5 @@
-import Ajv from 'ajv';
 import type { IRoom } from '@rocket.chat/core-typings';
+import Ajv from 'ajv';
 
 const ajv = new Ajv();
 

@@ -1,14 +1,14 @@
-import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
-import { UserStatus, isSettingColor, isSettingEnterprise } from '@rocket.chat/core-typings';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings } from '@rocket.chat/core-services';
+import { UserStatus, isSettingColor, isSettingEnterprise } from '@rocket.chat/core-typings';
 import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
 
-import type { NotificationsModule } from '../notifications/notifications.module';
 import { settings } from '../../../app/settings/server/cached';
-import { Logger } from '../../lib/logger/Logger';
+import type { NotificationsModule } from '../notifications/notifications.module';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
@@ -278,6 +278,7 @@ export class ListenersModule {
 
 			if (setting.public === true) {
 				notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
+				notifications.notifyAllInThisInstance('public-info', ['public-settings-changed', [clientAction, value]]);
 			}
 
 			notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, value);
@@ -399,10 +400,12 @@ export class ListenersModule {
 
 		service.onEvent('notify.deleteCustomSound', (data): void => {
 			notifications.notifyAllInThisInstance('deleteCustomSound', data);
+			notifications.notifyAllInThisInstance('public-info', ['deleteCustomSound', [data]]);
 		});
 
 		service.onEvent('notify.updateCustomSound', (data): void => {
 			notifications.notifyAllInThisInstance('updateCustomSound', data);
+			notifications.notifyAllInThisInstance('public-info', ['updateCustomSound', [data]]);
 		});
 
 		service.onEvent('notify.calendar', (uid, data): void => {
@@ -421,42 +424,52 @@ export class ListenersModule {
 
 		service.onEvent('apps.added', (appId: string) => {
 			notifications.streamApps.emitWithoutBroadcast('app/added', appId);
+			notifications.streamApps.emitWithoutBroadcast('apps', ['app/added', [appId]]);
 		});
 
 		service.onEvent('apps.removed', (appId: string) => {
 			notifications.streamApps.emitWithoutBroadcast('app/removed', appId);
+			notifications.streamApps.emitWithoutBroadcast('apps', ['app/removed', [appId]]);
 		});
 
 		service.onEvent('apps.updated', (appId: string) => {
 			notifications.streamApps.emitWithoutBroadcast('app/updated', appId);
+			notifications.streamApps.emitWithoutBroadcast('apps', ['app/updated', [appId]]);
 		});
 
 		service.onEvent('apps.statusUpdate', (appId: string, status: AppStatus) => {
 			notifications.streamApps.emitWithoutBroadcast('app/statusUpdate', { appId, status });
+			notifications.streamApps.emitWithoutBroadcast('apps', ['app/statusUpdate', [{ appId, status }]]);
 		});
 
 		service.onEvent('apps.settingUpdated', (appId: string, setting: AppsSetting) => {
 			notifications.streamApps.emitWithoutBroadcast('app/settingUpdated', { appId, setting });
+			notifications.streamApps.emitWithoutBroadcast('apps', ['app/settingUpdated', [{ appId, setting }]]);
 		});
 
 		service.onEvent('command.added', (command: string) => {
 			notifications.streamApps.emitWithoutBroadcast('command/added', command);
+			notifications.streamApps.emitWithoutBroadcast('apps', ['command/added', [command]]);
 		});
 
 		service.onEvent('command.disabled', (command: string) => {
 			notifications.streamApps.emitWithoutBroadcast('command/disabled', command);
+			notifications.streamApps.emitWithoutBroadcast('apps', ['command/disabled', [command]]);
 		});
 
 		service.onEvent('command.updated', (command: string) => {
 			notifications.streamApps.emitWithoutBroadcast('command/updated', command);
+			notifications.streamApps.emitWithoutBroadcast('apps', ['command/updated', [command]]);
 		});
 
 		service.onEvent('command.removed', (command: string) => {
 			notifications.streamApps.emitWithoutBroadcast('command/removed', command);
+			notifications.streamApps.emitWithoutBroadcast('apps', ['command/removed', [command]]);
 		});
 
 		service.onEvent('actions.changed', () => {
 			notifications.streamApps.emitWithoutBroadcast('actions/changed');
+			notifications.streamApps.emitWithoutBroadcast('apps', ['actions/changed', []]);
 		});
 	}
 }

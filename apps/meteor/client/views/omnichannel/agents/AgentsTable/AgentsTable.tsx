@@ -1,6 +1,7 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import { hashQueryKey } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
@@ -36,6 +37,9 @@ const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	const query = useQuery({ text: debouncedFilter, current, itemsPerPage }, debouncedSort);
 	const { data, isSuccess, isLoading, refetch } = useAgentsQuery(query);
+
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
 
 	useEffect(() => {
 		reload.current = refetch;
@@ -75,7 +79,7 @@ const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	return (
 		<>
 			<AddAgent reload={refetch} />
-			<FilterByText onChange={({ text }) => setFilter(text)} />
+			{((isSuccess && data?.users.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }) => setFilter(text)} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -84,7 +88,16 @@ const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data.users.length === 0 && <GenericNoResults />}
+			{isSuccess && data?.users.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data.users.length === 0 && !queryHasChanged && (
+				<GenericNoResults
+					icon='headset'
+					title={t('No_agents_yet')}
+					description={t('No_agents_yet_description')}
+					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkText={t('Learn_more_about_agents')}
+				/>
+			)}
 			{isSuccess && data?.users.length > 0 && (
 				<>
 					<GenericTable>

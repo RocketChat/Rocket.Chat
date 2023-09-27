@@ -9,9 +9,9 @@ on:
         default: next
         required: true
         options:
-        - next
-        - patch
-        - cut
+          - next
+          - patch
+          - cut
       base-ref:
         description: Base version
         default: develop
@@ -25,29 +25,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: ${{ github.event.inputs.base-ref }}
-        fetch-depth: 0
-        token: ${{ secrets.CI_PAT }}
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.base-ref }}
+          fetch-depth: 0
+          token: ${{ secrets.CI_PAT }}
 
-    - name: Setup NodeJS
-      uses: ./.github/actions/setup-node
-      with:
-        node-version: 14.21.3
-        cache-modules: true
-        install: true
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: 14.21.3
+          cache-modules: true
+          install: true
 
-    - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-    - name: Build packages
-      run: yarn build
+      - name: Build packages
+        run: yarn build
 
-    - name: "Start release: ${{ github.event.inputs.name }}"
-      uses: ./packages/release-action
-      with:
-        action: ${{ github.event.inputs.name }}
-        base-ref: ${{ github.event.inputs.base-ref }}
-      env:
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.CI_PAT }}
+      - name: 'Start release: ${{ github.event.inputs.name }}'
+        uses: ./packages/release-action
+        with:
+          action: ${{ github.event.inputs.name }}
+          base-ref: ${{ github.event.inputs.base-ref }}
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CI_PAT }}

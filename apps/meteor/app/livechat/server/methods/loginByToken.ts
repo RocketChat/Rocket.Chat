@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import { LivechatVisitors } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 

@@ -11,6 +11,10 @@ $button-group-margin: math.div($default-gap, 4);
 	align-items: center;
 	flex-flow: row wrap;
 
+	&--full {
+		width: 100%;
+	}
+
 	&__item {
 		margin: $button-group-margin;
 		flex-grow: 1;

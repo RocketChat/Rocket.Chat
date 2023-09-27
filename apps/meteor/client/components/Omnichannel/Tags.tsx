@@ -71,7 +71,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 
 	return (
 		<>
-			<Field.Label required={tagRequired} mb='x4'>
+			<Field.Label required={tagRequired} mb={4}>
 				{t('Tags')}
 			</Field.Label>
 
@@ -96,7 +96,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 							flexGrow={1}
 							placeholder={t('Enter_a_tag')}
 						/>
-						<Button disabled={!tagValue} mis='x8' title={t('Add')} onClick={handleTagTextSubmit}>
+						<Button disabled={!tagValue} mis={8} title={t('Add')} onClick={handleTagTextSubmit}>
 							{t('Add')}
 						</Button>
 					</Field.Row>
@@ -106,7 +106,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 			{customTags.length > 0 && (
 				<Field.Row justifyContent='flex-start'>
 					{customTags?.map((tag, i) => (
-						<Chip key={i} onClick={(): void => removeTag(tag)} mie='x8'>
+						<Chip key={i} onClick={(): void => removeTag(tag)} mie={8}>
 							{tag}
 						</Chip>
 					))}

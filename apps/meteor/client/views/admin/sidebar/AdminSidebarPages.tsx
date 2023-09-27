@@ -18,7 +18,7 @@ const AdminSidebarPages: FC<AdminSidebarPagesProps> = ({ currentPath }) => {
 	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
 
 	return (
-		<Box display='flex' flexDirection='column' flexShrink={0} pb='x8'>
+		<Box display='flex' flexDirection='column' flexShrink={0} pb={8}>
 			{!isLoading && tabType && <UpgradeTab type={tabType} currentPath={currentPath} trialEndDate={trialEndDate} />}
 			<SidebarItemsAssembler items={items} currentPath={currentPath} />
 		</Box>

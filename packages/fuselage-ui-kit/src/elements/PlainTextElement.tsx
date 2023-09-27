@@ -1,8 +1,7 @@
-import type { TextObject } from '@rocket.chat/ui-kit';
-import { Fragment } from 'react';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { TextObject } from '@rocket.chat/ui-kit';
 
-import { useUiKitContext } from '../contexts/kitContext';
+import { useUiKitContext } from '../hooks/useUiKitContext';
 
 const PlainTextElement = ({ textObject }: { textObject: TextObject }) => {
   const t = useTranslation() as (
@@ -14,12 +13,10 @@ const PlainTextElement = ({ textObject }: { textObject: TextObject }) => {
   const { i18n } = textObject;
 
   if (i18n) {
-    return (
-      <Fragment>{t(`apps-${appId}-${i18n.key}`, { ...i18n.args })}</Fragment>
-    );
+    return <>{t(`apps-${appId}-${i18n.key}`, { ...i18n.args })}</>;
   }
 
-  return <Fragment>{textObject.text}</Fragment>;
+  return <>{textObject.text}</>;
 };
 
 export default PlainTextElement;

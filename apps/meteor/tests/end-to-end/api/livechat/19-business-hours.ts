@@ -1,9 +1,9 @@
-/* eslint-env mocha */
-
 import type { ILivechatAgent, ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourBehaviors, LivechatBusinessHourTypes, ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
+import { sleep } from '../../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import {
 	getDefaultBusinessHour,
@@ -14,8 +14,6 @@ import {
 	getCustomBusinessHourById,
 	getWorkHours,
 } from '../../../data/livechat/businessHours';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting, updateEESetting } from '../../../data/permissions.helper';
-import { IS_EE } from '../../../e2e/config/constants';
 import {
 	addOrRemoveAgentFromDepartment,
 	archiveDepartment,
@@ -24,12 +22,13 @@ import {
 	getDepartmentById,
 	deleteDepartment,
 } from '../../../data/livechat/department';
-import { sleep } from '../../../../lib/utils/sleep';
-import { createUser, deleteUser, getMe, login } from '../../../data/users.helper';
-import { createAgent, makeAgentAvailable } from '../../../data/livechat/rooms';
+import { createAgent, createManager, makeAgentAvailable } from '../../../data/livechat/rooms';
+import { removeAgent } from '../../../data/livechat/users';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting, updateEESetting } from '../../../data/permissions.helper';
 import type { IUserCredentialsHeader } from '../../../data/user';
 import { password } from '../../../data/user';
-import { removeAgent } from '../../../data/livechat/users';
+import { setUserActiveStatus, createUser, deleteUser, getMe, getUserByUsername, login } from '../../../data/users.helper';
+import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - business hours', function () {
 	this.retries(0);
@@ -250,7 +249,7 @@ describe('LIVECHAT - business hours', function () {
 		});
 	});
 
-	(IS_EE ? describe : describe.skip)('[EE] BH operations upon creation', () => {
+	(IS_EE ? describe : describe.skip)('[EE][BH] On Business Hour created', () => {
 		let defaultBusinessHour: ILivechatBusinessHour;
 
 		before(async () => {
@@ -289,7 +288,7 @@ describe('LIVECHAT - business hours', function () {
 	//  and "dep2" and both these depts are connected to same BH, then in this case after
 	//  archiving "dep1", we'd still need to BH within this user's cache since he's part of
 	//  "dep2" which is linked to BH
-	(IS_EE ? describe : describe.skip)('[EE] BH operations post department archiving', () => {
+	(IS_EE ? describe : describe.skip)('[EE][BH] On Department archived', () => {
 		let defaultBusinessHour: ILivechatBusinessHour;
 		let customBusinessHour: ILivechatBusinessHour;
 		let deptLinkedToCustomBH: ILivechatDepartment;
@@ -414,7 +413,7 @@ describe('LIVECHAT - business hours', function () {
 			expect(latestCustomBH?.departments?.[0]?._id).to.be.equal(department._id);
 
 			// verify if overlapping agent still has BH within his cache
-			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials as any);
+			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials);
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
 			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(customBusinessHour._id);
@@ -435,7 +434,7 @@ describe('LIVECHAT - business hours', function () {
 			await deleteUser(agentLinkedToDept.user);
 		});
 	});
-	(IS_EE ? describe : describe.skip)('[EE] BH operations post department disablement', () => {
+	(IS_EE ? describe : describe.skip)('[EE][BH] On Department disabled', () => {
 		let defaultBusinessHour: ILivechatBusinessHour;
 		let customBusinessHour: ILivechatBusinessHour;
 		let deptLinkedToCustomBH: ILivechatDepartment;
@@ -579,7 +578,7 @@ describe('LIVECHAT - business hours', function () {
 			await deleteUser(agentLinkedToDept.user);
 		});
 	});
-	(IS_EE ? describe : describe.skip)('[EE] BH operations post department removal', () => {
+	(IS_EE ? describe : describe.skip)('[EE][BH] On Department removed', () => {
 		let defaultBusinessHour: ILivechatBusinessHour;
 		let customBusinessHour: ILivechatBusinessHour;
 		let deptLinkedToCustomBH: ILivechatDepartment;
@@ -703,7 +702,7 @@ describe('LIVECHAT - business hours', function () {
 			await deleteUser(agentLinkedToDept.user);
 		});
 	});
-	describe('BH behavior upon new agent creation/deletion', () => {
+	describe('[CE][BH] On Agent created/removed', () => {
 		let defaultBH: ILivechatBusinessHour;
 		let agent: ILivechatAgent;
 		let agentCredentials: IUserCredentialsHeader;
@@ -781,6 +780,77 @@ describe('LIVECHAT - business hours', function () {
 
 		after(async () => {
 			await deleteUser(agent._id);
+		});
+	});
+
+	describe('[CE][BH] On Agent deactivated/activated', () => {
+		let defaultBH: ILivechatBusinessHour;
+		let agent: ILivechatAgent;
+
+		before(async () => {
+			await updateSetting('Livechat_enable_business_hours', true);
+			await updateEESetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.SINGLE);
+			// wait for callbacks to run
+			await sleep(2000);
+
+			defaultBH = await getDefaultBusinessHour();
+			await openOrCloseBusinessHour(defaultBH, true);
+
+			agent = await createUser();
+			await createAgent(agent.username);
+		});
+
+		after(async () => {
+			await deleteUser(agent);
+			await updateSetting('Livechat_enable_business_hours', false);
+		});
+
+		it('should verify if agent becomes unavailable to take chats when user is deactivated', async () => {
+			await setUserActiveStatus(agent._id, false);
+
+			const latestAgent = await getUserByUsername(agent.username);
+
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
+		});
+
+		it('should verify if agent becomes available to take chats when user is activated, if business hour is active', async () => {
+			await openOrCloseBusinessHour(defaultBH, true);
+
+			await setUserActiveStatus(agent._id, true);
+
+			const latestAgent = await getUserByUsername(agent.username);
+
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.AVAILABLE);
+		});
+		it('should verify if agent becomes unavailable to take chats when user is activated, if business hour is inactive', async () => {
+			await openOrCloseBusinessHour(defaultBH, false);
+
+			await setUserActiveStatus(agent._id, false);
+			await setUserActiveStatus(agent._id, true);
+
+			const latestAgent = await getUserByUsername(agent.username);
+
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
+		});
+		it('should verify if managers are not able to make deactivated agents available', async () => {
+			await createManager();
+
+			await setUserActiveStatus(agent._id, false);
+
+			const response = await request
+				.post(api('livechat/agent.status'))
+				.set(credentials)
+				.send({
+					status: 'available',
+					agentId: agent._id,
+				})
+				.expect(400);
+
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error', 'error-user-deactivated');
 		});
 	});
 });

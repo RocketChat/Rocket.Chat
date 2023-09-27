@@ -1,17 +1,3 @@
-import type { ISessionsModel } from '@rocket.chat/model-typings';
-import type {
-	AggregationCursor,
-	AnyBulkWriteOperation,
-	BulkWriteResult,
-	Collection,
-	Document,
-	FindCursor,
-	Db,
-	Filter,
-	IndexDescription,
-	UpdateResult,
-	OptionalId,
-} from 'mongodb';
 import type {
 	ISession,
 	UserSessionAggregation,
@@ -25,11 +11,25 @@ import type {
 	IUser,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import type { PaginatedResult, WithItemCount } from '@rocket.chat/rest-typings';
+import type { ISessionsModel } from '@rocket.chat/model-typings';
 import { getCollectionName } from '@rocket.chat/models';
+import type { PaginatedResult, WithItemCount } from '@rocket.chat/rest-typings';
+import type {
+	AggregationCursor,
+	AnyBulkWriteOperation,
+	BulkWriteResult,
+	Collection,
+	Document,
+	FindCursor,
+	Db,
+	Filter,
+	IndexDescription,
+	UpdateResult,
+	OptionalId,
+} from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { BaseRaw } from './BaseRaw';
 
 type DestructuredDate = { year: number; month: number; day: number };
 type DestructuredDateWithType = {

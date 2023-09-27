@@ -390,6 +390,7 @@ export const createAccountSettings = () =>
 			});
 			await this.add('Accounts_Registration_Users_Default_Roles', 'user', {
 				type: 'string',
+				public: true,
 			});
 			await this.add('Accounts_PasswordReset', true, {
 				type: 'boolean',
@@ -695,6 +696,12 @@ export const createAccountSettings = () =>
 				type: 'boolean',
 				public: true,
 				i18nLabel: 'Notify_Calendar_Events',
+			});
+
+			await this.add('Accounts_Default_User_Preferences_enableMobileRinging', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'VideoConf_Mobile_Ringing',
 			});
 		});
 

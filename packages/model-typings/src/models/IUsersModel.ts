@@ -1,4 +1,3 @@
-import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult } from 'mongodb';
 import type {
 	IUser,
 	IRole,
@@ -10,6 +9,7 @@ import type {
 	AtLeast,
 	ILivechatAgentStatus,
 } from '@rocket.chat/core-typings';
+import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -380,4 +380,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countRemote(options?: FindOptions<IUser>): Promise<number>;
 	findOneByImportId(importId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	removeAgent(_id: string): Promise<UpdateResult>;
+	findAgentsWithDepartments<T = ILivechatAgent>(
+		role: string,
+		query: Filter<IUser>,
+		options: FindOptions<IUser>,
+	): Promise<{ sortedResults: (T & { departments: string[] })[]; totalCount: { total: number }[] }[]>;
+	countByRole(roleName: string): Promise<number>;
 }

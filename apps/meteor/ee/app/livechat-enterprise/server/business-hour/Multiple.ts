@@ -1,8 +1,8 @@
-import moment from 'moment';
-import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import type { ILivechatDepartment, ILivechatBusinessHour } from '@rocket.chat/core-typings';
+import { type ILivechatDepartment, type ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
+import moment from 'moment';
 
+import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 import type { IBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { AbstractBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import {
@@ -11,9 +11,8 @@ import {
 } from '../../../../../app/livechat/server/business-hour/Helper';
 import { settings } from '../../../../../app/settings/server';
 import { isTruthy } from '../../../../../lib/isTruthy';
-import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 import { bhLogger } from '../lib/logger';
-import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
+import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 
 interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 	timezoneName: string;

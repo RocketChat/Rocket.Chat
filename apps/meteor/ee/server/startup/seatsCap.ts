@@ -1,9 +1,11 @@
-import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 import { throttle } from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
+import { i18n } from '../../../server/lib/i18n';
+import { validateUserRoles } from '../../app/authorization/server/validateUserRoles';
 import { canAddNewUser, getMaxActiveUsers, onValidateLicenses } from '../../app/license/server/license';
 import {
 	createSeatsLimitBanners,
@@ -12,8 +14,6 @@ import {
 	enableDangerBanner,
 	enableWarningBanner,
 } from '../../app/license/server/maxSeatsBanners';
-import { validateUserRoles } from '../../app/authorization/server/validateUserRoles';
-import { i18n } from '../../../server/lib/i18n';
 
 callbacks.add(
 	'onCreateUser',

@@ -1,9 +1,9 @@
-import { Readable } from 'stream';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
+import { Readable } from 'stream';
 
-import { Meteor } from 'meteor/meteor';
 import { Settings } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { Base, ProgressStep } from '../../importer/server';
 

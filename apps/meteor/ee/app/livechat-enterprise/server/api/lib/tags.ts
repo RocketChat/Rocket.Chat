@@ -1,11 +1,11 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { LivechatTag } from '@rocket.chat/models';
 import type { ILivechatTag } from '@rocket.chat/core-typings';
+import { LivechatTag } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Filter, FindOptions } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-import { getDepartmentsWhichUserCanAccess } from './departments';
 import { helperLogger } from '../../lib/logger';
+import { getDepartmentsWhichUserCanAccess } from './departments';
 
 type FindTagsParams = {
 	userId: string;

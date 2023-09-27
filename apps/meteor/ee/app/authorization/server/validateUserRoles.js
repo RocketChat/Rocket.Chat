@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { isEnterprise, getMaxGuestUsers } from '../../license/server';
 

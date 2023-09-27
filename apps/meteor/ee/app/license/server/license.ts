@@ -1,17 +1,17 @@
 import { EventEmitter } from 'events';
 
-import { Apps } from '@rocket.chat/core-services';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import { Apps } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
+import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
+import type { ILicense } from '../definition/ILicense';
+import type { ILicenseTag } from '../definition/ILicenseTag';
 import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
-import type { ILicense } from '../definition/ILicense';
-import type { ILicenseTag } from '../definition/ILicenseTag';
 import { isUnderAppLimits } from './lib/isUnderAppLimits';
-import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
 
 const EnterpriseLicenses = new EventEmitter();
 

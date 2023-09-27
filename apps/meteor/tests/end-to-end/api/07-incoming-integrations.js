@@ -1,11 +1,12 @@
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { updatePermission } from '../../data/permissions.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
-import { createUser, login } from '../../data/users.helper';
-import { password } from '../../data/user';
+import { updatePermission } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper.js';
+import { password } from '../../data/user';
+import { createUser, login } from '../../data/users.helper';
 
 describe('[Incoming Integrations]', function () {
 	this.retries(0);
@@ -141,6 +142,31 @@ describe('[Incoming Integrations]', function () {
 					})
 					.end(() => removeIntegration(integrationId, 'incoming').then(done));
 			});
+		});
+
+		it('should set overrideDestinationChannelEnabled setting to false when it is not provided', async () => {
+			let integrationId;
+			await request
+				.post(api('integrations.create'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test',
+					enabled: true,
+					alias: 'test',
+					username: 'rocket.cat',
+					scriptEnabled: false,
+					channel: '#general',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration').and.to.be.an('object');
+					expect(res.body.integration).to.have.property('overrideDestinationChannelEnabled', false);
+					integrationId = res.body.integration._id;
+				});
+			await removeIntegration(integrationId, 'incoming');
 		});
 
 		it('should add the integration successfully when the user ONLY has the permission "manage-own-incoming-integrations" to add an incoming integration', (done) => {

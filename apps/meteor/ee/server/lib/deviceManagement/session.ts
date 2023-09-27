@@ -1,15 +1,15 @@
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
-import { UAParser } from 'ua-parser-js';
 import type { ISocketConnection } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
+import { UAParser } from 'ua-parser-js';
 
 import * as Mailer from '../../../../app/mailer/server/api';
 import { settings } from '../../../../app/settings/server';
 import { UAParserDesktop, UAParserMobile } from '../../../../app/statistics/server/lib/UAParserCustom';
-import { deviceManagementEvents } from '../../../../server/services/device-management/events';
-import { getUserPreference } from '../../../../app/utils/server';
 import { t } from '../../../../app/utils/lib/i18n';
+import { getUserPreference } from '../../../../app/utils/server/lib/getUserPreference';
+import { deviceManagementEvents } from '../../../../server/services/device-management/events';
 
 let mailTemplates: string;
 

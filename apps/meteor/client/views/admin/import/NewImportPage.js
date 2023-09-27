@@ -5,7 +5,6 @@ import {
 	Callout,
 	Chip,
 	Field,
-	Icon,
 	Margins,
 	Select,
 	InputBox,
@@ -168,8 +167,8 @@ function NewImportPage() {
 		<Page className='page-settings'>
 			<Page.Header title={t('Import_New_File')}>
 				<ButtonGroup>
-					<Button secondary onClick={handleBackToImportsButtonClick}>
-						<Icon name='back' /> {t('Back_to_imports')}
+					<Button icon='back' secondary onClick={handleBackToImportsButtonClick}>
+						{t('Back_to_imports')}
 					</Button>
 					{importer && (
 						<Button primary minHeight='x40' disabled={isLoading} onClick={handleImportButtonClick}>

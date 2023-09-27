@@ -1,13 +1,13 @@
-import semver from 'semver';
-import { Settings, Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Settings, Users } from '@rocket.chat/models';
+import semver from 'semver';
 
-import { getNewUpdates } from './getNewUpdates';
-import { settings } from '../../../settings/server';
-import { Info } from '../../../utils/server';
-import logger from '../logger';
-import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 import { i18n } from '../../../../server/lib/i18n';
+import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
+import { settings } from '../../../settings/server';
+import { Info } from '../../../utils/rocketchat.info';
+import logger from '../logger';
+import { getNewUpdates } from './getNewUpdates';
 // import getNewUpdates from '../sampleUpdateData';
 
 const getMessagesToSendToAdmins = async (

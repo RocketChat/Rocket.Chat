@@ -1,9 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
-import { Logger } from '../../../logger/server';
-import { settings } from '../../../settings/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { settings } from '../../../settings/server';
 
 const logger = new Logger('getFullUserData');
 
@@ -21,6 +21,7 @@ const defaultFields = {
 	avatarETag: 1,
 	extension: 1,
 	federated: 1,
+	statusLivechat: 1,
 } as const;
 
 const fullFields = {

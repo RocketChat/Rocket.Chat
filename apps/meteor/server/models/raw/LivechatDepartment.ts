@@ -1,5 +1,7 @@
 import type { ILivechatDepartment, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
+import { LivechatDepartmentAgents, LivechatUnitMonitors } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	Collection,
 	FindCursor,
@@ -12,8 +14,6 @@ import type {
 	DeleteResult,
 	UpdateFilter,
 } from 'mongodb';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { LivechatDepartmentAgents, LivechatUnitMonitors } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -164,6 +164,11 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, options);
 	}
 
+	findEnabledInIds(departmentsIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+		const query = { _id: { $in: departmentsIds }, enabled: true };
+		return this.find(query, options);
+	}
+
 	addBusinessHourToDepartmentsByIds(ids: string[] = [], businessHourId: string): Promise<Document | UpdateResult> {
 		const query = {
 			_id: { $in: ids },
@@ -269,6 +274,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 
 	updateNumAgentsById(_id: string, numAgents: number): Promise<Document | UpdateResult> {
 		return this.updateOne({ _id }, { $set: { numAgents } });
+	}
+
+	decreaseNumberOfAgentsByIds(_ids: string[]): Promise<Document | UpdateResult> {
+		return this.updateMany({ _id: { $in: _ids } }, { $inc: { numAgents: -1 } });
 	}
 
 	findEnabledWithAgents(projection: FindOptions<ILivechatDepartment>['projection'] = {}): FindCursor<ILivechatDepartment> {
@@ -428,5 +437,13 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		];
 
 		return this.col.aggregate(aggregation).hasNext();
+	}
+
+	countArchived(): Promise<number> {
+		return this.col.countDocuments({ archived: true });
+	}
+
+	findByParentId(_parentId: string, _options?: FindOptions<ILivechatDepartment> | undefined): FindCursor<ILivechatDepartment> {
+		throw new Error('Method not implemented in CE');
 	}
 }

@@ -1,5 +1,5 @@
-import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 export class AppListenerBridge {
 	constructor(orch) {
@@ -7,7 +7,6 @@ export class AppListenerBridge {
 	}
 
 	async handleEvent(event, ...payload) {
-		// eslint-disable-next-line complexity
 		const method = (() => {
 			switch (event) {
 				case AppInterface.IPreMessageSentPrevent:

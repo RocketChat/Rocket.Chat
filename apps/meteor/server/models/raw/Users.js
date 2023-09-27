@@ -1,6 +1,6 @@
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Subscriptions } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -186,6 +186,52 @@ export class UsersRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
+	findAgentsWithDepartments(role, query, options) {
+		const roles = [].concat(role);
+
+		Object.assign(query, { roles: { $in: roles } });
+
+		const aggregate = [
+			{
+				$match: query,
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_livechat_department_agents',
+					localField: '_id',
+					foreignField: 'agentId',
+					as: 'departments',
+				},
+			},
+			{
+				$unwind: {
+					path: '$departments',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
+				$group: {
+					_id: '$_id',
+					username: { $first: '$username' },
+					status: { $first: '$status' },
+					statusLivechat: { $first: '$statusLivechat' },
+					name: { $first: '$name' },
+					emails: { $first: '$emails' },
+					livechat: { $first: '$livechat' },
+					departments: { $push: '$departments.departmentId' },
+				},
+			},
+			{
+				$facet: {
+					sortedResults: [{ $sort: options.sort }, { $skip: options.skip }, options.limit && { $limit: options.limit }],
+					totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+				},
+			},
+		];
+
+		return this.col.aggregate(aggregate).toArray();
+	}
+
 	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
@@ -221,7 +267,7 @@ export class UsersRaw extends BaseRaw {
 
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
-		const orStmt = (searchFields || []).reduce(function (acc, el) {
+		const orStmt = (searchFields || []).reduce((acc, el) => {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
@@ -264,7 +310,7 @@ export class UsersRaw extends BaseRaw {
 
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
-		const orStmt = (searchFields || []).reduce(function (acc, el) {
+		const orStmt = (searchFields || []).reduce((acc, el) => {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
@@ -2898,13 +2944,13 @@ export class UsersRaw extends BaseRaw {
 			this.col.countDocuments({
 				active: true,
 			}),
-			// Count all active that are guests, apps or federated
+			// Count all active that are guests, apps, bots or federated
 			// Fast based on indexes, usually based on guest index as is usually small
 			this.col.countDocuments({
 				active: true,
-				$or: [{ roles: ['guest'] }, { type: 'app' }, { federated: true }, { isRemote: true }],
+				$or: [{ roles: ['guest'] }, { type: { $in: ['app', 'bot'] } }, { federated: true }, { isRemote: true }],
 			}),
-			// Get all active and remove the guests, apps, federated, etc
+			// Get all active and remove the guests, apps, bots and federated
 		]).then((results) => results.reduce((a, b) => a - b));
 	}
 
@@ -2972,5 +3018,9 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.updateOne({ _id }, update);
+	}
+
+	countByRole(role) {
+		return this.col.countDocuments({ roles: role });
 	}
 }

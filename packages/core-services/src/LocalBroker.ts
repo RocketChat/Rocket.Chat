@@ -2,10 +2,10 @@ import { EventEmitter } from 'events';
 
 import { InstanceStatus } from '@rocket.chat/models';
 
-import type { IBroker, IBrokerNode } from './types/IBroker';
-import type { ServiceClass, IServiceClass } from './types/ServiceClass';
 import { asyncLocalStorage } from '.';
 import type { EventSignatures } from './Events';
+import type { IBroker, IBrokerNode } from './types/IBroker';
+import type { ServiceClass, IServiceClass } from './types/ServiceClass';
 
 export class LocalBroker implements IBroker {
 	private methods = new Map<string, (...params: any) => any>();

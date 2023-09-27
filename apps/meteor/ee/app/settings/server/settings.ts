@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { isEnterprise, hasLicense, onValidateLicenses } from '../../license/server/license';
-import { use } from '../../../../app/settings/server/Middleware';
 import { settings, SettingsEvents } from '../../../../app/settings/server';
+import { use } from '../../../../app/settings/server/Middleware';
+import { isEnterprise, hasLicense, onValidateLicenses } from '../../license/server/license';
 
 export function changeSettingValue(record: ISetting): SettingValue {
 	if (!record.enterprise) {

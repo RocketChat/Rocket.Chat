@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
-import { t } from '../../utils/lib/i18n';
 import { process2faReturn } from '../../../client/lib/2fa/process2faReturn';
 import { isTotpInvalidError, reportError } from '../../../client/lib/2fa/utils';
 import { dispatchToastMessage } from '../../../client/lib/toast';
+import { t } from '../../utils/lib/i18n';
 
 Meteor.loginWithPasswordAndTOTP = function (selector, password, code, callback) {
 	if (typeof selector === 'string') {

@@ -1,13 +1,18 @@
-import type { IEditedMessage, IMessage, IUser } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
+import type { IEditedMessage, IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
-import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../ee/server/apps';
+import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
-export const updateMessage = async function (message: IMessage, user: IUser, originalMsg?: IMessage): Promise<void> {
+export const updateMessage = async function (
+	message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>,
+	user: IUser,
+	originalMsg?: IMessage,
+	previewUrls?: string[],
+): Promise<void> {
 	const originalMessage = originalMsg || (await Messages.findOneById(message._id));
 
 	// For the Rocket.Chat Apps :)
@@ -33,7 +38,7 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 		await Messages.cloneAndSaveAsHistoryById(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
 	}
 
-	Object.assign<IMessage, Omit<IEditedMessage, keyof IMessage>>(message, {
+	Object.assign<AtLeast<IMessage, '_id' | 'rid' | 'msg'>, Omit<IEditedMessage, keyof IMessage>>(message, {
 		editedAt: new Date(),
 		editedBy: {
 			_id: user._id,
@@ -41,7 +46,7 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 		},
 	});
 
-	parseUrlsInMessage(message);
+	parseUrlsInMessage(message, previewUrls);
 
 	message = await callbacks.run('beforeSaveMessage', message);
 
@@ -74,7 +79,7 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageUpdated', message);
 	}
 
-	setImmediate(async function () {
+	setImmediate(async () => {
 		const msg = await Messages.findOneById(_id);
 		if (msg) {
 			await callbacks.run('afterSaveMessage', msg, room, user._id);

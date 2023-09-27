@@ -1,7 +1,7 @@
-import type { ILivechatBusinessHoursModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, Document, FindOptions } from 'mongodb';
 import type { ILivechatBusinessHour, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHoursModel } from '@rocket.chat/model-typings';
+import type { Collection, Db, Document, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 

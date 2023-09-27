@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
+import type { ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { ISubscription, IUser } from '@rocket.chat/core-typings';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
+import type { IRawSearchResult } from '../../app/search/server/model/ISearchResult';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { parseMessageSearchQuery } from '../lib/parseMessageSearchQuery';
-import type { IRawSearchResult } from '../../app/search/server/model/ISearchResult';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

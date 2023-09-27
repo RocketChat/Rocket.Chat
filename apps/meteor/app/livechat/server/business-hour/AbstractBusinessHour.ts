@@ -1,7 +1,7 @@
-import moment from 'moment-timezone';
 import type { ILivechatAgentStatus, ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/model-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
+import moment from 'moment-timezone';
 import type { UpdateFilter } from 'mongodb';
 
 import type { IWorkHoursCronJobsWrapper } from '../../../../server/models/raw/LivechatBusinessHours';

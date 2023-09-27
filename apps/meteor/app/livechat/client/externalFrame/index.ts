@@ -1,2 +1,1 @@
 import './generateNewKey';
-import './tabBar';

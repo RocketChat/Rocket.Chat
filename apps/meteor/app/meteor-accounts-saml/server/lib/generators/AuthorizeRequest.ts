@@ -1,3 +1,6 @@
+import type { IAuthorizeRequestVariables } from '../../definition/IAuthorizeRequestVariables';
+import type { ISAMLRequest } from '../../definition/ISAMLRequest';
+import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 import { SAMLUtils } from '../Utils';
 import {
 	defaultIdentifierFormat,
@@ -6,9 +9,6 @@ import {
 	defaultNameIDTemplate,
 	defaultAuthnContextTemplate,
 } from '../constants';
-import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
-import type { ISAMLRequest } from '../../definition/ISAMLRequest';
-import type { IAuthorizeRequestVariables } from '../../definition/IAuthorizeRequestVariables';
 
 /*
 	An Authorize Request is used to show the Identity Provider login form when the user clicks on the Rocket.Chat SAML login button

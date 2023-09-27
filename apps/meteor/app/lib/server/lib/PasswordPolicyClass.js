@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import generator from 'generate-password';
+import { Meteor } from 'meteor/meteor';
 
 class PasswordPolicy {
 	constructor({
@@ -43,15 +43,16 @@ class PasswordPolicy {
 		return this._forbidRepeatingCharactersCount;
 	}
 
-	error(error, message) {
+	error(error, message, reasons) {
 		if (this.throwError) {
-			throw new Meteor.Error(error, message);
+			throw new Meteor.Error(error, message, reasons);
 		}
 
 		return false;
 	}
 
 	validate(password) {
+		const reasons = [];
 		if (typeof password !== 'string' || !password.trim().length) {
 			return this.error('error-password-policy-not-met', "The password provided does not meet the server's password policy.");
 		}
@@ -61,46 +62,56 @@ class PasswordPolicy {
 		}
 
 		if (this.minLength >= 1 && password.length < this.minLength) {
-			return this.error('error-password-policy-not-met-minLength', 'The password does not meet the minimum length password policy.');
+			reasons.push({
+				error: 'error-password-policy-not-met-minLength',
+				message: 'The password does not meet the minimum length password policy.',
+			});
 		}
 
 		if (this.maxLength >= 1 && password.length > this.maxLength) {
-			return this.error('error-password-policy-not-met-maxLength', 'The password does not meet the maximum length password policy.');
+			reasons.push({
+				error: 'error-password-policy-not-met-maxLength',
+				message: 'The password does not meet the maximum length password policy.',
+			});
 		}
 
 		if (this.forbidRepeatingCharacters && this.regex.forbiddingRepeatingCharacters.test(password)) {
-			return this.error(
-				'error-password-policy-not-met-repeatingCharacters',
-				'The password contains repeating characters which is against the password policy.',
-			);
+			reasons.push({
+				error: 'error-password-policy-not-met-repeatingCharacters',
+				message: 'The password contains repeating characters which is against the password policy.',
+			});
 		}
 
 		if (this.mustContainAtLeastOneLowercase && !this.regex.mustContainAtLeastOneLowercase.test(password)) {
-			return this.error(
-				'error-password-policy-not-met-oneLowercase',
-				'The password does not contain at least one lowercase character which is against the password policy.',
-			);
+			reasons.push({
+				error: 'error-password-policy-not-met-oneLowercase',
+				message: 'The password does not contain at least one lowercase character which is against the password policy.',
+			});
 		}
 
 		if (this.mustContainAtLeastOneUppercase && !this.regex.mustContainAtLeastOneUppercase.test(password)) {
-			return this.error(
-				'error-password-policy-not-met-oneUppercase',
-				'The password does not contain at least one uppercase character which is against the password policy.',
-			);
+			reasons.push({
+				error: 'error-password-policy-not-met-oneUppercase',
+				message: 'The password does not contain at least one uppercase character which is against the password policy.',
+			});
 		}
 
 		if (this.mustContainAtLeastOneNumber && !this.regex.mustContainAtLeastOneNumber.test(password)) {
-			return this.error(
-				'error-password-policy-not-met-oneNumber',
-				'The password does not contain at least one numerical character which is against the password policy.',
-			);
+			reasons.push({
+				error: 'error-password-policy-not-met-oneNumber',
+				message: 'The password does not contain at least one numerical character which is against the password policy.',
+			});
 		}
 
 		if (this.mustContainAtLeastOneSpecialCharacter && !this.regex.mustContainAtLeastOneSpecialCharacter.test(password)) {
-			return this.error(
-				'error-password-policy-not-met-oneSpecial',
-				'The password does not contain at least one special character which is against the password policy.',
-			);
+			reasons.push({
+				error: 'error-password-policy-not-met-oneSpecial',
+				message: 'The password does not contain at least one special character which is against the password policy.',
+			});
+		}
+
+		if (reasons.length) {
+			return this.error('error-password-policy-not-met', `The password provided does not meet the server's password policy.`, reasons);
 		}
 
 		return true;
