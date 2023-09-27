@@ -6054,6 +6054,9 @@
   "Filter_by_visibility": "Filter by visibility",
   "Registration_status": "Registration status",
   "Pending_action": "Pending action",
+  "Pending": "Pending",
   "User_first_log_in": "User first log in",
+  "Resend_welcome_email": "Resend welcome email",
+  "Activation": "Activation",
   "Theme_Appearence": "Theme Appearence"
 }

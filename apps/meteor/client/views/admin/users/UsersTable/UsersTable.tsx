@@ -1,8 +1,7 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, MutableRefObject, Dispatch, SetStateAction } from 'react';
+import type { ReactElement, MutableRefObject } from 'react';
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
@@ -51,7 +50,7 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 		current,
 	);
 
-	const useAllUsers = () => (tab === 'all' && isSuccess ? (data?.users as Partial<IUser>[]) : []);
+	const useAllUsers = () => (tab === 'all' && isSuccess ? data?.users : []);
 
 	const filteredUsers = [...useAllUsers(), ...useFilterActiveUsers(data?.users, tab), ...useFilterPendingUsers(data?.users, tab)];
 
@@ -91,18 +90,17 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 			<GenericTableHeaderCell w='x200' key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>,
-			mediaQuery && (
-				<GenericTableHeaderCell
-					w='x140'
-					key='username'
-					direction={sortDirection}
-					active={sortBy === 'username'}
-					onClick={setSort}
-					sort='username'
-				>
-					{t('Username')}
-				</GenericTableHeaderCell>
-			),
+
+			<GenericTableHeaderCell
+				w='x140'
+				key='username'
+				direction={sortDirection}
+				active={sortBy === 'username'}
+				onClick={setSort}
+				sort='username'
+			>
+				{t('Username')}
+			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell
 				w='x120'
 				key='email'
@@ -113,14 +111,13 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 			>
 				{t('Email')}
 			</GenericTableHeaderCell>,
-			mediaQuery && (
-				<GenericTableHeaderCell w='x120' key='roles' onClick={setSort}>
-					{t('Roles')}
-				</GenericTableHeaderCell>
-			),
-			(tab === 'active' || tab === 'all') && (
+
+			<GenericTableHeaderCell w='x120' key='roles' onClick={setSort}>
+				{t('Roles')}
+			</GenericTableHeaderCell>,
+			tab === 'all' && (
 				<GenericTableHeaderCell
-					w='x100'
+					w='x200'
 					key='status'
 					direction={sortDirection}
 					active={sortBy === 'status'}
@@ -130,13 +127,20 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 					{t('Registration_status')}
 				</GenericTableHeaderCell>
 			),
+
+			tab === 'all' && (
+				<GenericTableHeaderCell w='full' key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+					{t('Token')}
+				</GenericTableHeaderCell>
+			),
+
 			tab === 'pending' && (
-				<GenericTableHeaderCell w='x100' key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+				<GenericTableHeaderCell w='full' key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 					{t('Pending_action')}
 				</GenericTableHeaderCell>
 			),
 		],
-		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
+		[setSort, sortBy, sortDirection, t, tab],
 	);
 
 	return (
@@ -148,17 +152,34 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
 				</GenericTable>
 			)}
+
+			{/* TODO: finish error state -> improve tab verification and add translations */}
+			{!isLoading && !isSuccess && tab !== 'all' && tab !== 'active' && (
+				<GenericTable>
+					<GenericTableHeader>{headers}</GenericTableHeader>
+					<GenericTableBody>
+						<States>
+							<StatesIcon name='user' />
+							<StatesTitle>No deactivated users</StatesTitle>
+							<StatesSubtitle>Deactivated users appear here</StatesSubtitle>
+						</States>
+					</GenericTableBody>
+				</GenericTable>
+			)}
+
 			{isSuccess && !!data && !!filteredUsers && data.count > 0 && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
+							{/* TODO: fix user type */}
 							{filteredUsers.map((user) => (
 								<UsersTableRow
 									key={user._id}
 									onClick={handleClickOrKeyDown}
 									mediaQuery={mediaQuery}
-									user={user}
+									user={user as any}
+									tab={tab}
 									refetchUsers={refetch}
 									onReload={onReload}
 								/>
