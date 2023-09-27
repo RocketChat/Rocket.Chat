@@ -5,6 +5,7 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import * as banners from '../../lib/banners';
 import LegacyBanner from './LegacyBanner';
 import UiKitBanner from './UiKitBanner';
+import { useCloudAnnouncementBanners } from './hooks/useCloudAnnouncementBanners';
 import { useRemoteBanners } from './hooks/useRemoteBanners';
 import { useUserBanners } from './hooks/useUserBanners';
 
@@ -13,6 +14,7 @@ const BannerRegion = (): ReactElement | null => {
 
 	useRemoteBanners();
 	useUserBanners();
+	useCloudAnnouncementBanners();
 
 	if (!payload) {
 		return null;

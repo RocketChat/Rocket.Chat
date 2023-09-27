@@ -70,7 +70,9 @@ type CloudAnnouncementsParams = {
 	platform: Cloud.TargetPlatform;
 };
 
-type CloudAnnouncementsResponse = Cloud.Announcement[];
+type CloudAnnouncementsResponse = {
+	announcements: Cloud.Announcement[];
+};
 
 export type CloudEndpoints = {
 	'/v1/cloud.manualRegister': {

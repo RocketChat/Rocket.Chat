@@ -133,9 +133,16 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const announcements = await CloudAnnouncents.find({
-				$or: [{ 'selector.roles': { $in: ['admin'] } }, { 'selector.roles': { $exists: false } }],
-			}).toArray();
+			const announcements = await CloudAnnouncents.find(
+				{
+					$or: [{ 'selector.roles': { $in: ['admin'] } }, { 'selector.roles': { $exists: false } }],
+				},
+				{
+					sort: {
+						createdAt: -1,
+					},
+				},
+			).toArray();
 
 			return API.v1.success({ announcements });
 		},

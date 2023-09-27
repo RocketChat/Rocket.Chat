@@ -1,19 +1,28 @@
+import type { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
-import type { ContextType, ReactElement, ReactEventHandler } from 'react';
+import type { ContextType, ReactEventHandler } from 'react';
 import React from 'react';
 
 import { useUiKitActionManager } from '../../../hooks/useUiKitActionManager';
 import { detectEmoji } from '../../../lib/utils/detectEmoji';
 import ModalBlock from './ModalBlock';
-import type { ActionManagerState } from './hooks/useActionManagerState';
 import { useActionManagerState } from './hooks/useActionManagerState';
 import { useValues } from './hooks/useValues';
 
-const UiKitModal = (props: ActionManagerState): ReactElement => {
+type UiKitModalProps = {
+	viewId: string;
+	type: 'errors' | string;
+	appId: string;
+	mid: string;
+	errors: Record<string, string>;
+	view: IUIKitSurface;
+};
+
+const UiKitModal = (props: UiKitModalProps) => {
 	const actionManager = useUiKitActionManager();
 	const state = useActionManagerState(props);
 
