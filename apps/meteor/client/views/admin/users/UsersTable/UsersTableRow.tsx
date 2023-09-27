@@ -92,7 +92,7 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 				>
 					<Box display='flex' flexDirection='row' alignContent='flex-end'>
 						{active ? t('User_first_log_in') : t('Activation')}
-						{active ? (
+						{/* {active ? (
 							<Button small secondary mi='x32'>
 								{t('Resend_welcome_email')}
 							</Button>
@@ -100,12 +100,22 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 							<Button small primary mi='x32'>
 								{t('Activate')}
 							</Button>
-						)}
+						)} */}
 					</Box>
 				</GenericTableCell>
 			)}
 
-			<GenericTableCell justifyContent='center'>
+			<GenericTableCell display='flex' flexDirection='row'>
+				{tab === 'pending' &&
+					(active ? (
+						<Button small secondary mie='x16'>
+							{t('Resend_welcome_email')}
+						</Button>
+					) : (
+						<Button small primary mie='x16'>
+							{t('Activate')}
+						</Button>
+					))}
 				<ActionsMenu user={user} refetchUsers={refetchUsers} onReload={onReload} tab={tab} />
 			</GenericTableCell>
 		</GenericTableRow>

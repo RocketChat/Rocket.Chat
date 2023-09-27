@@ -137,7 +137,7 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 				</GenericTableHeaderCell>
 			),
 
-			<GenericTableHeaderCell key='menu' w='x40' justifyItems='center' />,
+			<GenericTableHeaderCell key='menu' />,
 		],
 		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
 	);
