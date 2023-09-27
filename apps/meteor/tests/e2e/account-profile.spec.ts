@@ -64,6 +64,15 @@ test.describe.serial('settings-account-profile', () => {
 		});
 	});
 
+	test.describe('Security', () => {
+		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
+			await page.goto('/account/security');
+
+			const results = await makeAxeBuilder().analyze();
+			expect(results.violations).toEqual([]);
+		})
+	})
+
 	test('Personal Access Tokens', async ({ page }) => {
 		const response = page.waitForResponse('**/api/v1/users.getPersonalAccessTokens');
 		await page.goto('/account/tokens');

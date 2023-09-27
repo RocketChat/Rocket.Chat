@@ -1,3 +1,4 @@
+import type { IMessage } from './IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface IIntegrationHistory extends IRocketChatRecord {
@@ -17,10 +18,10 @@ export interface IIntegrationHistory extends IRocketChatRecord {
 	finished: boolean;
 
 	triggerWord?: string;
-	prepareSentMessage?: string;
-	processSentMessage?: string;
+	prepareSentMessage?: { channel: string; message: Partial<IMessage> }[];
+	processSentMessage?: { channel: string; message: Partial<IMessage> }[];
 	url?: string;
-	httpCallData?: string;
+	httpCallData?: Record<string, any>;
 	httpError?: any;
 	httpResult?: string;
 	error?: any;
