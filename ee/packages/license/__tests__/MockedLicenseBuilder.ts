@@ -147,6 +147,12 @@ export class MockedLicenseBuilder {
 		return this;
 	}
 
+	withNoGratedModules(modules: LicenseModule[]): this {
+		this.grantedModules = this.grantedModules ?? [];
+		this.grantedModules = this.grantedModules.filter(({ module }) => !modules.includes(module));
+		return this;
+	}
+
 	public withLimits<K extends keyof ILicenseV3['limits']>(key: K, value: ILicenseV3['limits'][K]): this {
 		this.limits[key] = value;
 		return this;
