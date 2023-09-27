@@ -86,26 +86,32 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
-				{t('Name')}
-			</GenericTableHeaderCell>,
+			mediaQuery && (
+				<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+					{t('Name')}
+				</GenericTableHeaderCell>
+			),
 
 			<GenericTableHeaderCell key='username' direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
 				{t('Username')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell
-				key='email'
-				direction={sortDirection}
-				active={sortBy === 'emails.address'}
-				onClick={setSort}
-				sort='emails.address'
-			>
-				{t('Email')}
-			</GenericTableHeaderCell>,
+			mediaQuery && (
+				<GenericTableHeaderCell
+					key='email'
+					direction={sortDirection}
+					active={sortBy === 'emails.address'}
+					onClick={setSort}
+					sort='emails.address'
+				>
+					{t('Email')}
+				</GenericTableHeaderCell>
+			),
 
-			<GenericTableHeaderCell key='roles' onClick={setSort}>
-				{t('Roles')}
-			</GenericTableHeaderCell>,
+			mediaQuery && (
+				<GenericTableHeaderCell key='roles' onClick={setSort}>
+					{t('Roles')}
+				</GenericTableHeaderCell>
+			),
 			tab === 'all' && (
 				<GenericTableHeaderCell
 					w='x200'
@@ -126,14 +132,14 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 			),
 
 			tab === 'pending' && (
-				<GenericTableHeaderCell key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+				<GenericTableHeaderCell key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x320'>
 					{t('Pending_action')}
 				</GenericTableHeaderCell>
 			),
 
-			<GenericTableHeaderCell key='menu' />,
+			<GenericTableHeaderCell key='menu' w='x40' justifyItems='center' />,
 		],
-		[setSort, sortBy, sortDirection, t, tab],
+		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
 	);
 
 	return (

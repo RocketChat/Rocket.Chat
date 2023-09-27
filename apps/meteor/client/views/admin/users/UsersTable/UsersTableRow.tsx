@@ -88,15 +88,16 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 					onClick={(e): void => {
 						e.stopPropagation();
 					}}
+					w='fit-content'
 				>
 					<Box display='flex' flexDirection='row' alignContent='flex-end'>
 						{active ? t('User_first_log_in') : t('Activation')}
 						{active ? (
-							<Button small secondary>
+							<Button small secondary mi='x32'>
 								{t('Resend_welcome_email')}
 							</Button>
 						) : (
-							<Button small primary>
+							<Button small primary mi='x32'>
 								{t('Activate')}
 							</Button>
 						)}
@@ -104,7 +105,7 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 				</GenericTableCell>
 			)}
 
-			<GenericTableCell alignContent='flex-start' w='x8'>
+			<GenericTableCell justifyContent='center'>
 				<ActionsMenu user={user} refetchUsers={refetchUsers} onReload={onReload} tab={tab} />
 			</GenericTableCell>
 		</GenericTableRow>
