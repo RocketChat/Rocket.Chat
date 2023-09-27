@@ -46,7 +46,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 				},
 			],
 			statisticsReport: {
-				required: false,
+				required: true,
 			},
 		},
 		grantedModules: [

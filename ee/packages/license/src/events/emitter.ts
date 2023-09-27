@@ -6,7 +6,7 @@ import { logger } from '../logger';
 export function moduleValidated(this: LicenseManager, module: LicenseModule) {
 	try {
 		this.emit('module', { module, valid: true });
-		// this.emit(`valid:${module}`);
+		this.emit(`valid:${module}`);
 	} catch (error) {
 		logger.error({ msg: 'Error running module added event', error });
 	}
