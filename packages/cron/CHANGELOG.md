@@ -51,6 +51,13 @@
 
 ### Patch Changes
 
+- @rocket.chat/core-typings@6.3.8
+- @rocket.chat/models@0.0.14
+
+## 0.0.9
+
+### Patch Changes
+
 - deffcb187c: Increase cron job check delay to 1 min from 5s.
 
   This reduces MongoDB requests introduced on 6.3.

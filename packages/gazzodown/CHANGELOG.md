@@ -50,6 +50,14 @@
   - @rocket.chat/ui-client@2.0.0-rc.0
   - @rocket.chat/ui-contexts@2.0.0-rc.0
 
+## 1.0.8
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.8
+- @rocket.chat/ui-contexts@1.0.8
+- @rocket.chat/ui-client@1.0.8
+
 ## 1.0.7
 
 ### Patch Changes

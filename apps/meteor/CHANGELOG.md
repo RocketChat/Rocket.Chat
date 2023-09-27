@@ -266,6 +266,31 @@
   - @rocket.chat/sha256@1.0.9
   - @rocket.chat/ui-composer@0.0.1
 
+## 6.3.8
+
+### Patch Changes
+
+- ff8e9d9f54: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.3.8
+  - @rocket.chat/rest-typings@6.3.8
+  - @rocket.chat/api-client@0.1.8
+  - @rocket.chat/omnichannel-services@0.0.14
+  - @rocket.chat/pdf-worker@0.0.14
+  - @rocket.chat/presence@0.0.14
+  - @rocket.chat/core-services@0.1.8
+  - @rocket.chat/cron@0.0.10
+  - @rocket.chat/gazzodown@1.0.8
+  - @rocket.chat/model-typings@0.0.14
+  - @rocket.chat/ui-contexts@1.0.8
+  - @rocket.chat/fuselage-ui-kit@1.0.8
+  - @rocket.chat/models@0.0.14
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.8
+  - @rocket.chat/ui-video-conf@1.0.8
+  - @rocket.chat/web-ui-registration@1.0.8
+  - @rocket.chat/instance-status@0.0.14
+
 ## 6.3.7
 
 ### Patch Changes

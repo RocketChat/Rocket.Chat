@@ -23,6 +23,8 @@
 - 61128364d6: Fixes a problem where the calculated time for considering the visitor abandonment was the first message from the visitor and not the visitor's reply to the agent.
 - d45365436e: Use group filter when set to LDAP sync process
 
+## 6.3.8
+
 ## 6.3.7
 
 ## 6.3.6

@@ -48,6 +48,13 @@
   - @rocket.chat/rest-typings@6.4.0-rc.0
   - @rocket.chat/api-client@0.1.5-rc.0
 
+## 0.1.8
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.3.8
+- @rocket.chat/api-client@0.1.8
+
 ## 0.1.7
 
 ### Patch Changes

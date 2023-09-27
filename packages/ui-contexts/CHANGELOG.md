@@ -59,6 +59,14 @@
   - @rocket.chat/rest-typings@6.4.0-rc.0
   - @rocket.chat/ddp-client@0.2.0-rc.0
 
+## 1.0.8
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.8
+- @rocket.chat/rest-typings@6.3.8
+- @rocket.chat/ddp-client@0.1.8
+
 ## 1.0.7
 
 ### Patch Changes

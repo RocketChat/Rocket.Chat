@@ -1,6 +1,6 @@
 # @rocket.chat/api-client
 
-## 0.1.8-rc.4
+## 0.1.9-rc.4
 
 ### Patch Changes
 

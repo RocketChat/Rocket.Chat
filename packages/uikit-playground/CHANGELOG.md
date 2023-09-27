@@ -47,6 +47,13 @@
   - @rocket.chat/fuselage-ui-kit@2.0.0-rc.0
   - @rocket.chat/ui-contexts@2.0.0-rc.0
 
+## 0.1.8
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@1.0.8
+- @rocket.chat/fuselage-ui-kit@1.0.8
+
 ## 0.1.7
 
 ### Patch Changes
