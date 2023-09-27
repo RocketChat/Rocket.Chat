@@ -26,7 +26,6 @@ type UsersTableProps = {
 	onReload: () => void;
 };
 
-// TODO: Missing error state
 const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const router = useRouter();
@@ -87,22 +86,14 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell w='x200' key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>,
 
-			<GenericTableHeaderCell
-				w='x140'
-				key='username'
-				direction={sortDirection}
-				active={sortBy === 'username'}
-				onClick={setSort}
-				sort='username'
-			>
+			<GenericTableHeaderCell key='username' direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
 				{t('Username')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell
-				w='x120'
 				key='email'
 				direction={sortDirection}
 				active={sortBy === 'emails.address'}
@@ -112,7 +103,7 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 				{t('Email')}
 			</GenericTableHeaderCell>,
 
-			<GenericTableHeaderCell w='x120' key='roles' onClick={setSort}>
+			<GenericTableHeaderCell key='roles' onClick={setSort}>
 				{t('Roles')}
 			</GenericTableHeaderCell>,
 			tab === 'all' && (
@@ -129,16 +120,18 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 			),
 
 			tab === 'all' && (
-				<GenericTableHeaderCell w='full' key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+				<GenericTableHeaderCell key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 					{t('Token')}
 				</GenericTableHeaderCell>
 			),
 
 			tab === 'pending' && (
-				<GenericTableHeaderCell w='full' key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+				<GenericTableHeaderCell key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 					{t('Pending_action')}
 				</GenericTableHeaderCell>
 			),
+
+			<GenericTableHeaderCell key='menu' />,
 		],
 		[setSort, sortBy, sortDirection, t, tab],
 	);

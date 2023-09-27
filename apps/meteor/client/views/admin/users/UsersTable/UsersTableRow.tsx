@@ -85,28 +85,28 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 				<GenericTableCell
 					fontScale='p2'
 					color='hint'
-					withTruncatedText
 					onClick={(e): void => {
 						e.stopPropagation();
 					}}
 				>
 					<Box display='flex' flexDirection='row' alignContent='flex-end'>
-						{active
-							? t('User_first_log_in') && (
-									<Button small secondary>
-										{t('Resend_welcome_email')}
-									</Button>
-							  )
-							: t('Activation') && (
-									<Button small primary>
-										{t('Activate')}
-									</Button>
-							  )}
+						{active ? t('User_first_log_in') : t('Activation')}
+						{active ? (
+							<Button small secondary>
+								{t('Resend_welcome_email')}
+							</Button>
+						) : (
+							<Button small primary>
+								{t('Activate')}
+							</Button>
+						)}
 					</Box>
 				</GenericTableCell>
 			)}
 
-			<ActionsMenu user={user} refetchUsers={refetchUsers} onReload={onReload} tab={tab} />
+			<GenericTableCell alignContent='flex-start' w='x8'>
+				<ActionsMenu user={user} refetchUsers={refetchUsers} onReload={onReload} tab={tab} />
+			</GenericTableCell>
 		</GenericTableRow>
 	);
 };
