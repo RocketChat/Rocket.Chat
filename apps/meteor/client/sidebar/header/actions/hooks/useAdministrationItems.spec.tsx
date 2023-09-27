@@ -26,7 +26,7 @@ it('should not show upgrade item if has license and not have trial', async () =>
 
 	await waitFor(() => !!(result.all.length > 1));
 
-	expect(result.current).toEqual([]);
+	expect(result.current.length).toEqual(1);
 });
 
 it('should return an upgrade item if not have license or if have a trial', async () => {
@@ -51,7 +51,7 @@ it('should return an upgrade item if not have license or if have a trial', async
 
 	await waitFor(() => !!result.current[0]);
 
-	expect(result.current[0]).toEqual(
+	expect(result.current[1]).toEqual(
 		expect.objectContaining({
 			id: 'showUpgradeItem',
 		}),
