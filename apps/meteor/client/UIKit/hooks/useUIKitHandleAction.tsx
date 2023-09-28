@@ -1,10 +1,10 @@
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
-import type { UiKitPayload, UIKitActionEvent } from '@rocket.chat/core-typings';
+import type { UiKitPayload, UIKitActionEvent, UiKit } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
 
-const useUIKitHandleAction = <S extends UiKitPayload>(state: S): ((event: UIKitActionEvent) => Promise<void>) => {
+const useUIKitHandleAction = <S extends UiKitPayload | UiKit.Payload>(state: S): ((event: UIKitActionEvent) => Promise<void>) => {
 	const actionManager = useUiKitActionManager();
 	return useMutableCallback(async ({ blockId, value, appId, actionId }) => {
 		if (!appId) {

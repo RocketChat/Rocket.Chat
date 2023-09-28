@@ -1,11 +1,11 @@
-import type { UIKitUserInteractionResult, UiKitPayload } from '@rocket.chat/core-typings';
+import type { UIKitUserInteractionResult, UiKit, UiKitPayload } from '@rocket.chat/core-typings';
 import { isErrorType } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useEffect, useState } from 'react';
 
 import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
 
-const useUIKitStateManager = <S extends UiKitPayload>(initialState: S): S => {
+const useUIKitStateManager = <S extends UiKitPayload | UiKit.Payload>(initialState: S): S => {
 	const actionManager = useUiKitActionManager();
 	const [state, setState] = useSafely(useState(initialState));
 
@@ -28,7 +28,7 @@ const useUIKitStateManager = <S extends UiKitPayload>(initialState: S): S => {
 		return (): void => {
 			actionManager.off(viewId, handleUpdate);
 		};
-	}, [setState, viewId]);
+	}, [actionManager, setState, viewId]);
 
 	return state;
 };

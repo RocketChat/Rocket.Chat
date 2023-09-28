@@ -7,6 +7,9 @@ import type {
 	IInputBlock,
 } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type * as UiKit from '.';
+
 enum UIKitInteractionTypeExtended {
 	BANNER_OPEN = 'banner.open',
 	BANNER_UPDATE = 'banner.update',
@@ -20,26 +23,16 @@ export const UIKitInteractionTypes = {
 	...UIKitInteractionTypeExtended,
 };
 
+/** @deprecated use {@link UiKit.Payload} instead */
 export type UiKitPayload = {
 	viewId: string;
 	appId: string;
 	blocks: (IDividerBlock | ISectionBlock | IActionsBlock | IContextBlock | IInputBlock)[];
 };
 
-export type UiKitBannerPayload = UiKitPayload & {
-	inline?: boolean;
-	variant?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
-	icon?: string;
-	title?: string;
-};
-
 export type UIKitUserInteraction = {
 	type: UIKitInteractionType;
 } & UiKitPayload;
-
-export type UiKitBannerProps = {
-	payload: UiKitBannerPayload;
-};
 
 export type UIKitUserInteractionResult = UIKitUserInteractionResultError | UIKitUserInteraction;
 

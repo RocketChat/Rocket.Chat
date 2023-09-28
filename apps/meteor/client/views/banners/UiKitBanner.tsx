@@ -1,9 +1,9 @@
-import type { UIKitActionEvent, UiKitBannerProps } from '@rocket.chat/core-typings';
+import type { UIKitActionEvent, UiKit } from '@rocket.chat/core-typings';
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import { UiKitContext, bannerParser, UiKitBanner as UiKitBannerSurfaceRender, UiKitComponent } from '@rocket.chat/fuselage-ui-kit';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
-import type { FC, ReactElement, ContextType } from 'react';
+import type { ReactElement, ContextType } from 'react';
 import React, { useMemo } from 'react';
 
 import { useUIKitHandleAction } from '../../UIKit/hooks/useUIKitHandleAction';
@@ -15,7 +15,11 @@ import * as banners from '../../lib/banners';
 // TODO: move this to fuselage-ui-kit itself
 bannerParser.mrkdwn = ({ text }): ReactElement => <MarkdownText variant='inline' content={text} />;
 
-const UiKitBanner: FC<UiKitBannerProps> = ({ payload }) => {
+type UiKitBannerProps = {
+	payload: UiKit.BannerPayload;
+};
+
+const UiKitBanner = ({ payload }: UiKitBannerProps) => {
 	const state = useUIKitStateManager(payload);
 
 	const icon = useMemo(() => {

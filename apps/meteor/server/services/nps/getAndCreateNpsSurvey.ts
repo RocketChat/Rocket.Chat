@@ -1,5 +1,5 @@
 import { Banner } from '@rocket.chat/core-services';
-import type { UiKitBannerPayload, IBanner, BannerPlatform } from '@rocket.chat/core-typings';
+import type { UiKit, IBanner, BannerPlatform } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
@@ -10,7 +10,7 @@ type NpsSurveyData = {
 	id: string;
 	platform: BannerPlatform[];
 	roles: string[];
-	survey: UiKitBannerPayload;
+	survey: UiKit.BannerPayload;
 	createdAt: Date;
 	startAt: Date;
 	expireAt: Date;

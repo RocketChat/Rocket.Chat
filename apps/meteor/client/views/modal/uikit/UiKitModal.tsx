@@ -7,10 +7,10 @@ import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import type { ContextType, ReactEventHandler } from 'react';
 import React from 'react';
 
+import { useUIKitStateManager } from '../../../UIKit/hooks/useUIKitStateManager';
 import { useUiKitActionManager } from '../../../hooks/useUiKitActionManager';
 import { detectEmoji } from '../../../lib/utils/detectEmoji';
 import ModalBlock from './ModalBlock';
-import { useActionManagerState } from './hooks/useActionManagerState';
 import { useValues } from './hooks/useValues';
 
 type UiKitModalProps = {
@@ -24,7 +24,7 @@ type UiKitModalProps = {
 
 const UiKitModal = (props: UiKitModalProps) => {
 	const actionManager = useUiKitActionManager();
-	const state = useActionManagerState(props);
+	const state = useUIKitStateManager(props as any);
 
 	const { appId, viewId, mid: _mid, errors, view } = state;
 

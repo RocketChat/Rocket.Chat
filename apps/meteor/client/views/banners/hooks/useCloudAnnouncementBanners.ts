@@ -1,4 +1,4 @@
-import type { Serialized, Cloud, UiKitBannerPayload } from '@rocket.chat/core-typings';
+import type { Serialized, Cloud, UiKit } from '@rocket.chat/core-typings';
 import { useEffect } from 'react';
 
 import { useCloudAnnouncementsQuery } from '../../../hooks/useCloudAnnouncementsQuery';
@@ -6,7 +6,7 @@ import * as banners from '../../../lib/banners';
 
 const isBannerCarryingAnnouncement = (
 	announcement: Serialized<Cloud.Announcement>,
-): announcement is Serialized<Cloud.Announcement> & { surface: 'banner'; view: UiKitBannerPayload } => announcement.surface === 'banner';
+): announcement is Serialized<Cloud.Announcement & { surface: 'banner'; view: UiKit.BannerPayload }> => announcement.surface === 'banner';
 
 export const useCloudAnnouncementBanners = () => {
 	const queryResult = useCloudAnnouncementsQuery({

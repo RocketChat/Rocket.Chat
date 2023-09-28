@@ -1,5 +1,5 @@
 import { BannerPlatform } from '@rocket.chat/core-typings';
-import type { IBanner, Serialized, UiKitBannerPayload } from '@rocket.chat/core-typings';
+import type { IBanner, Serialized, UiKit } from '@rocket.chat/core-typings';
 import { useEndpoint, useStream, useUserId, ServerContext } from '@rocket.chat/ui-contexts';
 import { useContext, useEffect } from 'react';
 
@@ -22,7 +22,7 @@ export const useRemoteBanners = () => {
 
 		const { signal } = controller;
 
-		const mapBanner = (banner: Serialized<IBanner>): UiKitBannerPayload => ({
+		const mapBanner = (banner: Serialized<IBanner>): UiKit.BannerPayload => ({
 			...banner.view,
 			viewId: banner.view.viewId || banner._id,
 		});
