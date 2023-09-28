@@ -1159,7 +1159,7 @@ describe('[Groups]', function () {
 				.post(api('groups.create'))
 				.set(credentials)
 				.send({
-					name: `channel.type.${ Date.now() }`,
+					name: `channel.type.${Date.now()}`,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
