@@ -10,7 +10,7 @@ type NpsSurveyData = {
 	id: string;
 	platform: BannerPlatform[];
 	roles: string[];
-	survey: UiKit.BannerPayload;
+	survey: UiKit.BannerView;
 	createdAt: Date;
 	startAt: Date;
 	expireAt: Date;

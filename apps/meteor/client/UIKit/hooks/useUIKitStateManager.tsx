@@ -5,7 +5,9 @@ import { useEffect, useState } from 'react';
 
 import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
 
-const useUIKitStateManager = <S extends UiKitPayload | UiKit.Payload>(initialState: S): S => {
+export function useUIKitStateManager(initialState: UiKit.ModalView): any;
+export function useUIKitStateManager<S extends UiKitPayload | UiKit.View>(initialState: S): S;
+export function useUIKitStateManager<S extends UiKitPayload | UiKit.View>(initialState: S): S {
 	const actionManager = useUiKitActionManager();
 	const [state, setState] = useSafely(useState(initialState));
 
@@ -31,6 +33,4 @@ const useUIKitStateManager = <S extends UiKitPayload | UiKit.Payload>(initialSta
 	}, [actionManager, setState, viewId]);
 
 	return state;
-};
-
-export { useUIKitStateManager };
+}

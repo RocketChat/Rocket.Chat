@@ -24,7 +24,7 @@ const BannerRegion = (): ReactElement | null => {
 		return <LegacyBanner config={payload} />;
 	}
 
-	return <UiKitBanner payload={payload} />;
+	return <UiKitBanner view={payload} />;
 };
 
 export default BannerRegion;

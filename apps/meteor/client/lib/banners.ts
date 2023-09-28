@@ -15,7 +15,7 @@ export type LegacyBannerPayload = {
 	onClose?: () => Promise<void> | void;
 };
 
-type BannerPayload = LegacyBannerPayload | UiKit.BannerPayload;
+type BannerPayload = LegacyBannerPayload | UiKit.BannerView;
 
 export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBannerPayload => !('blocks' in payload);
 
@@ -35,7 +35,7 @@ export const open = (payload: BannerPayload): void => {
 		if (isLegacyPayload(_payload)) {
 			return _payload.id === (payload as LegacyBannerPayload).id;
 		}
-		return _payload.viewId === (payload as UiKit.BannerPayload).viewId;
+		return _payload.viewId === (payload as UiKit.BannerView).viewId;
 	});
 
 	if (index === -1) {

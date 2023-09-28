@@ -16,11 +16,11 @@ import * as banners from '../../lib/banners';
 bannerParser.mrkdwn = ({ text }): ReactElement => <MarkdownText variant='inline' content={text} />;
 
 type UiKitBannerProps = {
-	payload: UiKit.BannerPayload;
+	view: UiKit.BannerView;
 };
 
-const UiKitBanner = ({ payload }: UiKitBannerProps) => {
-	const state = useUIKitStateManager(payload);
+const UiKitBanner = ({ view }: UiKitBannerProps) => {
+	const state = useUIKitStateManager(view);
 
 	const icon = useMemo(() => {
 		if (state.icon) {

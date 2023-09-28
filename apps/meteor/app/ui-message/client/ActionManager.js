@@ -75,9 +75,7 @@ export const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...d
 		return UIKitInteractionTypes.ERRORS;
 	}
 
-	if (
-		[UIKitInteractionTypes.BANNER_UPDATE, UIKitInteractionTypes.MODAL_UPDATE, UIKitInteractionTypes.CONTEXTUAL_BAR_UPDATE].includes(type)
-	) {
+	if ([UIKitInteractionTypes.BANNER_UPDATE, UIKitInteractionTypes.CONTEXTUAL_BAR_UPDATE].includes(type)) {
 		events.emit(viewId, {
 			type,
 			triggerId,
@@ -88,14 +86,19 @@ export const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...d
 		return type;
 	}
 
-	if ([UIKitInteractionTypes.MODAL_OPEN].includes(type)) {
+	if (type === UIKitInteractionTypes.MODAL_OPEN) {
 		const instance = imperativeModal.open({
 			component: UiKitModal,
 			props: {
-				triggerId,
-				viewId,
-				appId,
-				...data,
+				view: {
+					viewId: data.view.id,
+					appId: data.view.appId,
+					blocks: data.view.blocks,
+					title: data.view.title,
+					close: data.view.close,
+					showIcon: data.view.showIcon,
+					submit: data.view.submit,
+				},
 			},
 		});
 
@@ -106,7 +109,23 @@ export const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...d
 			},
 		});
 
-		return UIKitInteractionTypes.MODAL_OPEN;
+		return type;
+	}
+
+	if (type === UIKitInteractionTypes.MODAL_UPDATE) {
+		events.emit(viewId, {
+			type,
+			triggerId,
+			viewId: data.view.id,
+			appId: data.view.appId,
+			blocks: data.view.blocks,
+			title: data.view.title,
+			close: data.view.close,
+			showIcon: data.view.showIcon,
+			submit: data.view.submit,
+		});
+
+		return type;
 	}
 
 	if ([UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN].includes(type)) {

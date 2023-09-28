@@ -22,7 +22,7 @@ export const useRemoteBanners = () => {
 
 		const { signal } = controller;
 
-		const mapBanner = (banner: Serialized<IBanner>): UiKit.BannerPayload => ({
+		const mapBanner = (banner: Serialized<IBanner>): UiKit.BannerView => ({
 			...banner.view,
 			viewId: banner.view.viewId || banner._id,
 		});

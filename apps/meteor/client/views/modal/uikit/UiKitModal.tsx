@@ -1,9 +1,8 @@
-import type { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
+import type { UiKit } from '@rocket.chat/core-typings';
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
-import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import type { ContextType, ReactEventHandler } from 'react';
 import React from 'react';
 
@@ -14,21 +13,16 @@ import ModalBlock from './ModalBlock';
 import { useValues } from './hooks/useValues';
 
 type UiKitModalProps = {
-	viewId: string;
-	type: 'errors' | string;
-	appId: string;
-	mid: string;
-	errors: Record<string, string>;
-	view: IUIKitSurface;
+	view: UiKit.ModalView;
 };
 
-const UiKitModal = (props: UiKitModalProps) => {
+const UiKitModal = ({ view }: UiKitModalProps) => {
 	const actionManager = useUiKitActionManager();
-	const state = useUIKitStateManager(props as any);
+	const state = useUIKitStateManager(view);
 
-	const { appId, viewId, mid: _mid, errors, view } = state;
+	const { appId, errors, viewId, blocks } = state;
 
-	const [values, updateValues] = useValues(view.blocks as LayoutBlock[]);
+	const [values, updateValues] = useValues(blocks);
 
 	const groupStateByBlockId = (values: { value: unknown; blockId: string }[]) =>
 		Object.entries(values).reduce<any>((obj, [key, { blockId, value }]) => {
@@ -63,7 +57,7 @@ const UiKitModal = (props: UiKitModalProps) => {
 	// TODO: this structure is atrociously wrong; we should revisit this
 	const context: ContextType<typeof UiKitContext> = {
 		// @ts-expect-error Property 'mid' does not exist on type 'ActionParams'.
-		action: ({ actionId, appId, value, blockId, mid = _mid, dispatchActionConfig }) => {
+		action: ({ actionId, appId, value, blockId, mid, dispatchActionConfig }) => {
 			if (Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes('on_character_entered')) {
 				debouncedBlockAction(actionId, appId, value, blockId, mid);
 			} else {
@@ -101,7 +95,7 @@ const UiKitModal = (props: UiKitModalProps) => {
 			appId,
 			payload: {
 				view: {
-					...view,
+					...state,
 					id: viewId,
 					state: groupStateByBlockId(values),
 				},
@@ -115,7 +109,7 @@ const UiKitModal = (props: UiKitModalProps) => {
 			viewId,
 			appId,
 			view: {
-				...view,
+				...state,
 				id: viewId,
 				state: groupStateByBlockId(values),
 			},
@@ -127,7 +121,7 @@ const UiKitModal = (props: UiKitModalProps) => {
 			viewId,
 			appId,
 			view: {
-				...view,
+				...state,
 				id: viewId,
 				state: groupStateByBlockId(values),
 			},
@@ -142,7 +136,7 @@ const UiKitModal = (props: UiKitModalProps) => {
 					detectEmoji,
 				}}
 			>
-				<ModalBlock view={view} errors={errors} appId={appId} onSubmit={handleSubmit} onCancel={handleCancel} onClose={handleClose} />
+				<ModalBlock view={state} errors={errors} appId={appId} onSubmit={handleSubmit} onCancel={handleCancel} onClose={handleClose} />
 			</MarkupInteractionContext.Provider>
 		</UiKitContext.Provider>
 	);

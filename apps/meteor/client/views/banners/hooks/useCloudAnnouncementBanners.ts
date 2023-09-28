@@ -6,7 +6,7 @@ import * as banners from '../../../lib/banners';
 
 const isBannerCarryingAnnouncement = (
 	announcement: Serialized<Cloud.Announcement>,
-): announcement is Serialized<Cloud.Announcement & { surface: 'banner'; view: UiKit.BannerPayload }> => announcement.surface === 'banner';
+): announcement is Serialized<Cloud.Announcement & { surface: 'banner'; view: UiKit.BannerView }> => announcement.surface === 'banner';
 
 export const useCloudAnnouncementBanners = () => {
 	const queryResult = useCloudAnnouncementsQuery({

@@ -8,10 +8,7 @@ import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const emptyFn = (_error: any, _result: UIKitInteractionType | void): void => undefined;
 
-const useUIKitHandleClose = <S extends UiKitPayload | UiKit.Payload>(
-	state: S,
-	fn = emptyFn,
-): (() => Promise<void | UIKitInteractionType>) => {
+const useUIKitHandleClose = <S extends UiKitPayload | UiKit.View>(state: S, fn = emptyFn): (() => Promise<void | UIKitInteractionType>) => {
 	const actionManager = useUiKitActionManager();
 	const dispatchToastMessage = useToastMessageDispatch();
 	return useMutableCallback(() =>
