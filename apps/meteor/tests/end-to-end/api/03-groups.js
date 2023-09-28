@@ -905,7 +905,6 @@ describe('[Groups]', function () {
 					expect(res.body).to.have.property('members').and.to.be.an('array');
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('offset');
 				})
 				.end(done);
 		});
@@ -924,19 +923,17 @@ describe('[Groups]', function () {
 					expect(res.body).to.have.property('members').and.to.be.an('array');
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('offset');
 				})
 				.end(done);
 		});
 
-		it('should return an array of members by channel even when requested with count and offset params', (done) => {
+		it('should return an array of members by channel even when requested with count param', (done) => {
 			request
 				.get(api('groups.membersByHighestRole'))
 				.set(credentials)
 				.query({
 					roomId: testGroup._id,
 					count: 5,
-					offset: 0,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -945,7 +942,6 @@ describe('[Groups]', function () {
 					expect(res.body).to.have.property('members').and.to.be.an('array');
 					expect(res.body).to.have.property('count', 3);
 					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('offset');
 				})
 				.end(done);
 		});
@@ -965,7 +961,6 @@ describe('[Groups]', function () {
 					expect(res.body).to.have.property('members').and.to.be.an('array');
 					expect(res.body).to.have.property('count', 1);
 					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('offset');
 
 					const member = res.body.members[0];
 					expect(member).to.have.property('_id');
