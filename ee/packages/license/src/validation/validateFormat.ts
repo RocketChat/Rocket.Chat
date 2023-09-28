@@ -1,5 +1,5 @@
-import decrypt from '../decrypt';
 import { InvalidLicenseError } from '../errors/InvalidLicenseError';
+import { decrypt } from '../token';
 
 export const validateFormat = async (encryptedLicense: string): Promise<boolean> => {
 	if (!encryptedLicense || String(encryptedLicense).trim() === '') {

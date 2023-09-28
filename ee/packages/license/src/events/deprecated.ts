@@ -8,5 +8,5 @@ export function onLicense(this: LicenseManager, feature: LicenseModule, cb: (...
 		return cb();
 	}
 
-	this.on(`valid:${feature}`, cb);
+	this.once(`valid:${feature}`, cb);
 }

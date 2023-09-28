@@ -4,7 +4,7 @@ import type { Timestamp } from '../definition/LicensePeriod';
 import { logger } from '../logger';
 import { getResultingBehavior } from './getResultingBehavior';
 
-export const isPeriodInvalid = (from?: Timestamp, until?: Timestamp) => {
+export const isPeriodInvalid = (from: Timestamp | undefined, until: Timestamp | undefined) => {
 	const now = new Date();
 
 	if (from && now < new Date(from)) {

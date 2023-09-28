@@ -1,6 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import decrypt from './decrypt';
 import type { ILicenseV2 } from './definition/ILicenseV2';
 import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
 import type { BehaviorWithContext } from './definition/LicenseBehavior';
@@ -14,6 +13,7 @@ import { invalidateAll, replaceModules } from './modules';
 import { applyPendingLicense, clearPendingLicense, hasPendingLicense, isPendingLicense, setPendingLicense } from './pendingLicense';
 import { showLicense } from './showLicense';
 import { replaceTags } from './tags';
+import { decrypt } from './token';
 import { convertToV3 } from './v2/convertToV3';
 import { getCurrentValueForLicenseLimit } from './validation/getCurrentValueForLicenseLimit';
 import { getModulesToDisable } from './validation/getModulesToDisable';
@@ -107,33 +107,8 @@ export class LicenseManager extends Emitter<
 		return this.setLicenseV3(convertToV3(newLicense), encryptedLicense, newLicense);
 	}
 
-	private isLicenseDuplicate(encryptedLicense: string): boolean {
+	private isLicenseDuplicated(encryptedLicense: string): boolean {
 		return Boolean(this._lockedLicense && this._lockedLicense === encryptedLicense);
-	}
-
-	private processValidationResult(result: BehaviorWithContext[]): void {
-		if (!this._license || isBehaviorsInResult(result, ['invalidate_license', 'prevent_installation'])) {
-			return;
-		}
-
-		this._valid = true;
-		this._inFairPolicy = isBehaviorsInResult(result, ['start_fair_policy']);
-
-		if (this._license.information.tags) {
-			replaceTags(this._license.information.tags);
-		}
-
-		const disabledModules = getModulesToDisable(result);
-		const modulesToEnable = this._license.grantedModules.filter(({ module }) => !disabledModules.includes(module));
-
-		replaceModules.call(
-			this,
-			modulesToEnable.map(({ module }) => module),
-		);
-		logger.log({ msg: 'License validated', modules: modulesToEnable });
-
-		this.emit('validate');
-		showLicense.call(this, this._license, this._valid);
 	}
 
 	private async validateLicense(): Promise<void> {
@@ -161,12 +136,12 @@ export class LicenseManager extends Emitter<
 			throw new InvalidLicenseError();
 		}
 
-		if (this.isLicenseDuplicate(encryptedLicense)) {
+		if (this.isLicenseDuplicated(encryptedLicense)) {
 			// If there is a pending license but the user is trying to revert to the license that is currently active
 			if (hasPendingLicense.call(this) && !isPendingLicense.call(this, encryptedLicense)) {
 				// simply remove the pending license
 				clearPendingLicense.call(this);
-				return true;
+				throw new Error('Invalid license 1');
 			}
 
 			throw new DuplicatedLicenseError();
@@ -180,21 +155,49 @@ export class LicenseManager extends Emitter<
 
 		logger.info('New Enterprise License');
 		try {
-			const decrypted = await decrypt(encryptedLicense);
+			const decrypted = JSON.parse(await decrypt(encryptedLicense));
 
 			logger.debug({ msg: 'license', decrypted });
 
-			encryptedLicense.startsWith('RCV3_')
-				? await this.setLicenseV3(JSON.parse(decrypted), encryptedLicense)
-				: await this.setLicenseV2(JSON.parse(decrypted), encryptedLicense);
+			if (!encryptedLicense.startsWith('RCV3_')) {
+				await this.setLicenseV2(decrypted, encryptedLicense);
+				return true;
+			}
+			await this.setLicenseV3(decrypted, encryptedLicense);
 
 			return true;
 		} catch (e) {
 			logger.error('Invalid license');
 
 			logger.error({ msg: 'Invalid raw license', encryptedLicense, e });
+
 			throw new InvalidLicenseError();
 		}
+	}
+
+	private processValidationResult(result: BehaviorWithContext[]): void {
+		if (!this._license || isBehaviorsInResult(result, ['invalidate_license', 'prevent_installation'])) {
+			return;
+		}
+
+		this._valid = true;
+		this._inFairPolicy = isBehaviorsInResult(result, ['start_fair_policy']);
+
+		if (this._license.information.tags) {
+			replaceTags(this._license.information.tags);
+		}
+
+		const disabledModules = getModulesToDisable(result);
+		const modulesToEnable = this._license.grantedModules.filter(({ module }) => !disabledModules.includes(module));
+
+		replaceModules.call(
+			this,
+			modulesToEnable.map(({ module }) => module),
+		);
+		logger.log({ msg: 'License validated', modules: modulesToEnable });
+
+		this.emit('validate');
+		showLicense.call(this, this._license, this._valid);
 	}
 
 	public hasValidLicense(): boolean {

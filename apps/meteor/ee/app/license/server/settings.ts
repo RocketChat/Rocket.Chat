@@ -29,16 +29,24 @@ settings.watch<string>('Enterprise_License', async (license) => {
 		return;
 	}
 
-	if (!(await License.setLicense(license))) {
-		await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
-		return;
+	try {
+		if (!(await License.setLicense(license))) {
+			await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
+			return;
+		}
+	} catch (_error) {
+		// do nothing
 	}
 
 	await Settings.updateValueById('Enterprise_License_Status', 'Valid');
 });
 
 if (process.env.ROCKETCHAT_LICENSE) {
-	await License.setLicense(process.env.ROCKETCHAT_LICENSE);
+	try {
+		await License.setLicense(process.env.ROCKETCHAT_LICENSE);
+	} catch (_error) {
+		// do nothing
+	}
 
 	Meteor.startup(async () => {
 		if (settings.get('Enterprise_License')) {
