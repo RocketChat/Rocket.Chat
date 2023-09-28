@@ -1,3 +1,4 @@
+import { Message } from '@rocket.chat/core-services';
 import type { IEditedMessage, IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -48,6 +49,14 @@ export const updateMessage = async function (
 
 	parseUrlsInMessage(message, previewUrls);
 
+	const room = await Rooms.findOneById(message.rid);
+	if (!room) {
+		return;
+	}
+
+	// TODO remove type cast
+	message = await Message.beforeSave({ message: message as IMessage, room, user });
+
 	message = await callbacks.run('beforeSaveMessage', message);
 
 	const { _id, ...editedMessage } = message;
@@ -66,12 +75,6 @@ export const updateMessage = async function (
 			...(!editedMessage.md && { $unset: { md: 1 } }),
 		},
 	);
-
-	const room = await Rooms.findOneById(message.rid);
-
-	if (!room) {
-		return;
-	}
 
 	if (Apps?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message

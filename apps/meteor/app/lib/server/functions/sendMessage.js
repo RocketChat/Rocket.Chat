@@ -1,3 +1,4 @@
+import { Message } from '@rocket.chat/core-services';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
@@ -246,6 +247,8 @@ export const sendMessage = async function (user, message, room, upsert = false, 
 	cleanupMessageObject(message);
 
 	parseUrlsInMessage(message, previewUrls);
+
+	message = await Message.beforeSave({ message, room, user });
 
 	message = await callbacks.run('beforeSaveMessage', message, room);
 	if (message) {
