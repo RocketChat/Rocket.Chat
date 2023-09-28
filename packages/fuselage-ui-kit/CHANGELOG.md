@@ -1,5 +1,228 @@
 # Change Log
 
+## 2.0.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.0-rc.4
+- @rocket.chat/ui-contexts@2.0.0-rc.4
+- @rocket.chat/ui-video-conf@2.0.0-rc.4
+
+## 2.0.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.0-rc.3
+- @rocket.chat/ui-contexts@2.0.0-rc.3
+- @rocket.chat/ui-video-conf@2.0.0-rc.3
+
+## 2.0.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.0-rc.2
+- @rocket.chat/ui-contexts@2.0.0-rc.2
+- @rocket.chat/ui-video-conf@2.0.0-rc.2
+
+## 2.0.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.0-rc.1
+- @rocket.chat/ui-contexts@2.0.0-rc.1
+- @rocket.chat/ui-video-conf@2.0.0-rc.1
+
+## 2.0.0-rc.0
+
+### Minor Changes
+
+- 1246a21648: feat: Add missing variants to UIKit button
+- f9a748526d: feat: Adding new UIKit components: Callout, Checkbox, Radio Button, Time Picker, Toast Bar, Toggle Switch, Tab Navigation
+
+### Patch Changes
+
+- dc1d8ce92e: feat(fuselage-ui-kit): Introduce `TabsNavigationBlock`
+- dce4a829fa: Handle invalid context on `VideoConferenceBlock` component
+- Updated dependencies [074db3b419]
+- Updated dependencies [b8f3d5014f]
+- Updated dependencies [0f56aacc4d]
+  - @rocket.chat/ui-contexts@2.0.0-rc.0
+  - @rocket.chat/eslint-config@0.6.0-rc.0
+  - @rocket.chat/gazzodown@2.0.0-rc.0
+  - @rocket.chat/ui-video-conf@2.0.0-rc.0
+
+## 1.0.7
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.7
+- @rocket.chat/ui-contexts@1.0.7
+- @rocket.chat/ui-video-conf@1.0.7
+
+## 1.0.6
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.6
+- @rocket.chat/ui-contexts@1.0.6
+- @rocket.chat/ui-video-conf@1.0.6
+
+## 1.0.5
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.5
+- @rocket.chat/ui-contexts@1.0.5
+- @rocket.chat/ui-video-conf@1.0.5
+
+## 1.0.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.4
+- @rocket.chat/ui-contexts@1.0.4
+- @rocket.chat/ui-video-conf@1.0.4
+
+## 1.0.3
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.3
+- @rocket.chat/ui-contexts@1.0.3
+- @rocket.chat/ui-video-conf@1.0.3
+
+## 1.0.2
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.2
+- @rocket.chat/ui-contexts@1.0.2
+- @rocket.chat/ui-video-conf@1.0.2
+
+## 1.0.1
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.1
+- @rocket.chat/ui-contexts@1.0.1
+- @rocket.chat/ui-video-conf@1.0.1
+
+## 1.0.0
+
+### Minor Changes
+
+- dbdf45b0e5: feat: Introduce contextualBar surface renderer for UiKit blocks
+- c0fa567246: Introducing i18n to UiKit text renderers
+
+### Patch Changes
+
+- Updated dependencies [e14ec50816]
+- Updated dependencies [9ea8088f06]
+- Updated dependencies [e01bbcca54]
+- Updated dependencies [f76d514341]
+- Updated dependencies [cde2539619]
+  - @rocket.chat/ui-contexts@1.0.0
+  - @rocket.chat/gazzodown@1.0.0
+  - @rocket.chat/ui-video-conf@1.0.0
+
+## 1.0.0-rc.10
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@1.0.0-rc.10
+- @rocket.chat/gazzodown@1.0.0-rc.10
+- @rocket.chat/ui-video-conf@1.0.0-rc.10
+
+## 1.0.0-rc.9
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.0-rc.9
+- @rocket.chat/ui-contexts@1.0.0-rc.9
+- @rocket.chat/ui-video-conf@1.0.0-rc.9
+
+## 1.0.0-rc.8
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.0-rc.8
+- @rocket.chat/ui-contexts@1.0.0-rc.8
+- @rocket.chat/ui-video-conf@1.0.0-rc.8
+
+## 1.0.0-rc.7
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.0-rc.7
+- @rocket.chat/ui-contexts@1.0.0-rc.7
+- @rocket.chat/ui-video-conf@1.0.0-rc.7
+
+## 1.0.0-rc.6
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.0-rc.6
+- @rocket.chat/ui-contexts@1.0.0-rc.6
+- @rocket.chat/ui-video-conf@1.0.0-rc.6
+
+## 1.0.0-rc.5
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.0-rc.5
+- @rocket.chat/ui-contexts@1.0.0-rc.5
+- @rocket.chat/ui-video-conf@1.0.0-rc.5
+
+## 1.0.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.0-rc.4
+- @rocket.chat/ui-contexts@1.0.0-rc.4
+- @rocket.chat/ui-video-conf@1.0.0-rc.4
+
+## 1.0.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.0-rc.3
+- @rocket.chat/ui-contexts@1.0.0-rc.3
+- @rocket.chat/ui-video-conf@1.0.0-rc.3
+
+## 1.0.0-rc.2
+
+### Patch Changes
+
+- Updated dependencies [f76d514341]
+  - @rocket.chat/ui-contexts@1.0.0-rc.2
+  - @rocket.chat/gazzodown@1.0.0-rc.2
+  - @rocket.chat/ui-video-conf@1.0.0-rc.2
+
+## 1.0.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.0-rc.1
+- @rocket.chat/ui-contexts@1.0.0-rc.1
+- @rocket.chat/ui-video-conf@1.0.0-rc.1
+
+## 1.0.0-rc.0
+
+### Minor Changes
+
+- dbdf45b0e5: feat: Introduce contextualBar surface renderer for UiKit blocks
+- c0fa567246: Introducing i18n to UiKit text renderers
+
+### Patch Changes
+
+- Updated dependencies [e14ec50816]
+- Updated dependencies [9ea8088f06]
+- Updated dependencies [e01bbcca54]
+- Updated dependencies [cde2539619]
+  - @rocket.chat/ui-contexts@1.0.0-rc.0
+  - @rocket.chat/gazzodown@1.0.0-rc.0
+  - @rocket.chat/ui-video-conf@1.0.0-rc.0
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 

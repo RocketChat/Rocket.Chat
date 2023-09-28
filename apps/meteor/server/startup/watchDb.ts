@@ -1,12 +1,12 @@
-import { MongoInternals } from 'meteor/mongo';
 import { api } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
+import { MongoInternals } from 'meteor/mongo';
 
+import { metrics } from '../../app/metrics/server/lib/metrics';
 import { DatabaseWatcher } from '../database/DatabaseWatcher';
 import { db } from '../database/utils';
-import { initWatchers } from '../modules/watchers/watchers.module';
-import { metrics } from '../../app/metrics/server/lib/metrics';
 import { SystemLogger } from '../lib/logger/system';
-import { Logger } from '../lib/logger/Logger';
+import { initWatchers } from '../modules/watchers/watchers.module';
 
 const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 

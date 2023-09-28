@@ -2,7 +2,6 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import _ from 'underscore';
 import type {
 	IMessage,
 	IDeepLTranslation,
@@ -12,11 +11,12 @@ import type {
 	ISupportedLanguage,
 } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import _ from 'underscore';
 
-import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
+import { i18n } from '../../../server/lib/i18n';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
-import { i18n } from '../../../server/lib/i18n';
+import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 
 /**
  * DeepL translation service provider class representation.

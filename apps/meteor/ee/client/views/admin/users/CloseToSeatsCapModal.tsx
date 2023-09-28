@@ -24,7 +24,7 @@ const CloseToSeatsCapModal = ({ members, limit, title, onConfirm, onClose, reque
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
-				<Box is='p' mbe='x24'>
+				<Box is='p' mbe={24}>
 					{t('Close_to_seat_limit_warning')} <ExternalLink to={requestSeatsLink}>{t('Request_more_seats')}</ExternalLink>
 				</Box>
 				<MemberCapUsage members={members} limit={limit} />

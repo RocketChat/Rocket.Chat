@@ -8,13 +8,13 @@ import type { ISubscription, SlashCommand, SlashCommandCallbackParams } from '@r
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings/server';
+import { isTruthy } from '../../../lib/isTruthy';
 import { i18n } from '../../../server/lib/i18n';
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
 import { createChannelMethod } from '../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../lib/server/methods/createPrivateGroup';
-import { isTruthy } from '../../../lib/isTruthy';
-import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
+import { settings } from '../../settings/server';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 	return async function inviteAll({ command, params, message, userId }: SlashCommandCallbackParams<T>): Promise<void> {

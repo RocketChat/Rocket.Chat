@@ -15,7 +15,7 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
 import type { ReactNode } from 'react';
 
-import { kitContext, UiKitModal } from '..';
+import { UiKitContext, UiKitModal } from '..';
 import * as payloads from './payloads';
 
 type VisibilityType = 'hidden' | 'visible' | 'hiding' | 'unhiding' | undefined;
@@ -73,7 +73,7 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[], errors = {}) => {
     visible: boolean;
   }) => (
     <DemoModal visible={visible}>
-      <kitContext.Provider
+      <UiKitContext.Provider
         value={{
           action: action('action'),
           state: action('state'),
@@ -83,7 +83,7 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[], errors = {}) => {
         }}
       >
         {UiKitModal(blocks)}
-      </kitContext.Provider>
+      </UiKitContext.Provider>
     </DemoModal>
   );
   story.args = {

@@ -1,10 +1,10 @@
-import moment from 'moment';
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
+import moment from 'moment';
 
-import { createDefaultBusinessHourRow } from './LivechatBusinessHours';
 import { businessHourLogger } from '../lib/logger';
+import { createDefaultBusinessHourRow } from './LivechatBusinessHours';
 
 export const filterBusinessHoursThatMustBeOpened = async (
 	businessHours: ILivechatBusinessHour[],

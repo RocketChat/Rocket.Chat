@@ -19,7 +19,6 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 			setModal();
 		},
 		onSuccess: async () => {
-			dispatchToastMessage({ type: 'success', message: t('Deleted') });
 			await handleDismissMessage.mutateAsync({ msgId: mid });
 		},
 	});
@@ -30,7 +29,7 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Moderation_Reports_dismissed') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_Message_deleted') });
 		},
 		onSettled: () => {
 			onChange();

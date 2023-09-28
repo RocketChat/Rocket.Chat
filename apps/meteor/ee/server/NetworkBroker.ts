@@ -1,6 +1,6 @@
-import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 import { asyncLocalStorage } from '@rocket.chat/core-services';
 import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
+import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { EnterpriseCheck } from './lib/EnterpriseCheck';
 

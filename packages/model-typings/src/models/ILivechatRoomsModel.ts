@@ -1,4 +1,4 @@
-import type { IMessage, IOmnichannelRoom, IOmnichannelRoomClosingInfo, ISetting, IVisitor } from '@rocket.chat/core-typings';
+import type { IMessage, IOmnichannelRoom, IOmnichannelRoomClosingInfo, ISetting, ILivechatVisitor } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter } from 'mongodb';
 
 import type { FindPaginated } from '..';
@@ -196,7 +196,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		options?: FindOptions<IOmnichannelRoom>,
 		extraQuery?: Filter<IOmnichannelRoom>,
 	): FindCursor<IOmnichannelRoom>;
-	setResponseByRoomId(roomId: string, response: { user: { _id: string; username: string } }): Promise<UpdateResult>;
+	setResponseByRoomId(roomId: string, responseBy: IOmnichannelRoom['responseBy']): Promise<UpdateResult>;
 	setNotResponseByRoomId(roomId: string): Promise<UpdateResult>;
 	setAgentLastMessageTs(roomId: string): Promise<UpdateResult>;
 	saveAnalyticsDataByRoomId(
@@ -226,7 +226,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	changeAgentByRoomId(roomId: string, newAgent: { agentId: string; username: string }): Promise<UpdateResult>;
 	changeDepartmentIdByRoomId(roomId: string, departmentId: string): Promise<UpdateResult>;
 	saveCRMDataByRoomId(roomId: string, crmData: unknown): Promise<UpdateResult>;
-	updateVisitorStatus(token: string, status: IVisitor['status']): Promise<UpdateResult | Document>;
+	updateVisitorStatus(token: string, status: ILivechatVisitor['status']): Promise<UpdateResult | Document>;
 	removeAgentByRoomId(roomId: string): Promise<UpdateResult>;
 	removeByVisitorToken(token: string): Promise<DeleteResult>;
 	removeById(_id: string): Promise<DeleteResult>;

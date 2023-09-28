@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -8,7 +8,6 @@ import RegisteredWorkspaceModal from '../modals/RegisteredWorkspaceModal';
 
 type RegisterWorkspaceMenuProps = {
 	isWorkspaceRegistered: boolean | string;
-	isConnectedToCloud: boolean | string;
 	onClick: () => void;
 	onClickOfflineRegistration: () => void;
 	onStatusChange?: () => void;
@@ -16,7 +15,6 @@ type RegisterWorkspaceMenuProps = {
 
 const RegisterWorkspaceMenu = ({
 	isWorkspaceRegistered,
-	isConnectedToCloud,
 	onClick,
 	onClickOfflineRegistration,
 	onStatusChange,
@@ -33,24 +31,17 @@ const RegisterWorkspaceMenu = ({
 
 	return (
 		<ButtonGroup>
-			{isWorkspaceRegistered && isConnectedToCloud && (
+			{isWorkspaceRegistered && (
 				<>
-					<Button role='link' onClick={() => handleLinkClick(CLOUD_CONSOLE_URL)}>
-						<Icon name='new-window' size='x20' pie={4} />
+					<Button icon='new-window' role='link' onClick={() => handleLinkClick(CLOUD_CONSOLE_URL)}>
 						{t('Cloud')}
 					</Button>
-					<Button onClick={handleManageButton}>
-						<Icon name='customize' size='x20' pie={4} />
+					<Button icon='customize' onClick={handleManageButton}>
 						{t('Manage')}
 					</Button>
 				</>
 			)}
 
-			{isWorkspaceRegistered && !isConnectedToCloud && (
-				<Button primary onClick={onClick}>
-					{t('ConnectWorkspace_Button')}
-				</Button>
-			)}
 			{!isWorkspaceRegistered && (
 				<>
 					<Button onClick={onClickOfflineRegistration}>{t('Cloud_Register_manually')}</Button>

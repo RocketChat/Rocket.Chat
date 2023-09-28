@@ -1,16 +1,16 @@
+import type { ISession, ISessionDevice, ISocketConnectionLogged, IUser } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
+import { Logger } from '@rocket.chat/logger';
+import { Sessions, Users } from '@rocket.chat/models';
+import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import UAParser from 'ua-parser-js';
-import mem from 'mem';
-import type { ISession, ISessionDevice, ISocketConnectionLogged, IUser } from '@rocket.chat/core-typings';
-import { Sessions, Users } from '@rocket.chat/models';
-import { cronJobs } from '@rocket.chat/cron';
 
-import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
-import { aggregates } from '../../../../server/models/raw/Sessions';
-import { Logger } from '../../../../server/lib/logger/Logger';
 import { getMostImportantRole } from '../../../../lib/roles/getMostImportantRole';
-import { sauEvents } from '../../../../server/services/sauMonitor/events';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
+import { aggregates } from '../../../../server/models/raw/Sessions';
+import { sauEvents } from '../../../../server/services/sauMonitor/events';
+import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 
 type DateObj = { day: number; month: number; year: number };
 
@@ -46,7 +46,7 @@ export class SAUMonitorClass {
 	constructor() {
 		this._started = false;
 		this._dailyComputeJobName = 'aggregate-sessions';
-		this._dailyFinishSessionsJobName = 'aggregate-sessions';
+		this._dailyFinishSessionsJobName = 'finish-sessions';
 	}
 
 	async start(): Promise<void> {
@@ -318,33 +318,19 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		logger.info('[aggregate] - Aggregating data.');
+		const today = new Date();
 
-		const date = new Date();
-		date.setDate(date.getDate() - 0); // yesterday
-		const yesterday = getDateObj(date);
+		// get sessions from 3 days ago to make sure even if a few cron jobs were skipped, we still have the data
+		const threeDaysAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 3, 0, 0, 0, 0);
 
-		for await (const record of aggregates.dailySessionsOfYesterday(Sessions.col, yesterday)) {
-			await Sessions.updateOne(
-				{ _id: `${record.userId}-${record.year}-${record.month}-${record.day}` },
-				{ $set: record },
-				{ upsert: true },
-			);
+		const period = { start: getDateObj(threeDaysAgo), end: getDateObj(today) };
+
+		logger.info({ msg: '[aggregate] - Aggregating data.', period });
+
+		for await (const record of aggregates.dailySessions(Sessions.col, period)) {
+			await Sessions.updateDailySessionById(`${record.userId}-${record.year}-${record.month}-${record.day}`, record);
 		}
 
-		await Sessions.updateMany(
-			{
-				type: 'session',
-				year: { $lte: yesterday.year },
-				month: { $lte: yesterday.month },
-				day: { $lte: yesterday.day },
-			},
-			{
-				$set: {
-					type: 'computed-session',
-					_computedAt: new Date(),
-				},
-			},
-		);
+		await Sessions.updateAllSessionsByDateToComputed(period);
 	}
 }

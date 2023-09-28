@@ -6,7 +6,7 @@ export const fileUploadMediaWhiteList = function (customWhiteList: string): stri
 	if (!mediaTypeWhiteList || mediaTypeWhiteList === '*') {
 		return;
 	}
-	return _.map(mediaTypeWhiteList.split(','), function (item) {
+	return _.map(mediaTypeWhiteList.split(','), (item) => {
 		return item.trim();
 	});
 };
@@ -25,7 +25,7 @@ const isTypeOnList = function (type: string, list: string[]): boolean | undefine
 		return true;
 	}
 	const wildCardGlob = '/*';
-	const wildcards = _.filter(list, function (item) {
+	const wildcards = _.filter(list, (item) => {
 		return item.indexOf(wildCardGlob) > 0;
 	});
 	if (_.contains(wildcards, type.replace(/(\/.*)$/, wildCardGlob))) {

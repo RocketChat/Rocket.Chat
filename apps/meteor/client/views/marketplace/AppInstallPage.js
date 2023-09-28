@@ -18,7 +18,8 @@ import { useForm } from '../../hooks/useForm';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import AppUpdateModal from './AppUpdateModal';
 import AppInstallModal from './components/AppInstallModal/AppInstallModal';
-import { handleAPIError, handleInstallError } from './helpers';
+import { handleAPIError } from './helpers/handleAPIError';
+import { handleInstallError } from './helpers/handleInstallError';
 import { useAppsCountQuery } from './hooks/useAppsCountQuery';
 import { getManifestFromZippedApp } from './lib/getManifestFromZippedApp';
 
@@ -76,23 +77,23 @@ function AppInstallPage() {
 			} else {
 				app = await uploadAppEndpoint(fileData);
 			}
+
+			router.navigate({
+				name: 'marketplace',
+				params: {
+					context: 'private',
+					page: 'info',
+					id: appId || app.app.id,
+				},
+			});
+
+			reload();
 		} catch (e) {
 			handleAPIError(e);
+		} finally {
+			setInstalling(false);
+			setModal(null);
 		}
-
-		router.navigate({
-			name: 'marketplace',
-			params: {
-				context: 'private',
-				page: 'info',
-				id: appId || app.app.id,
-			},
-		});
-
-		reload();
-
-		setInstalling(false);
-		setModal(null);
 	};
 
 	const cancelAction = useCallback(() => {
@@ -216,8 +217,7 @@ function AppInstallPage() {
 							<TextInput
 								value={file.name || ''}
 								addon={
-									<Button small primary onClick={handleUploadButtonClick} mb='neg-x4' mie='neg-x8'>
-										<Icon name='upload' size='x12' />
+									<Button icon='upload' small primary onClick={handleUploadButtonClick} mb='neg-x4' mie='neg-x8'>
 										{t('Browse_Files')}
 									</Button>
 								}

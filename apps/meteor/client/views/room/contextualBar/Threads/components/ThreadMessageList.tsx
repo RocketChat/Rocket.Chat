@@ -12,11 +12,10 @@ import ScrollableContentWrapper from '../../../../../components/ScrollableConten
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';
 import ThreadMessage from '../../../../../components/message/variants/ThreadMessage';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
-import { isMessageFirstUnread } from '../../../MessageList/lib/isMessageFirstUnread';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
-import LoadingMessagesIndicator from '../../../components/body/LoadingMessagesIndicator';
-import { useRoomSubscription } from '../../../contexts/RoomContext';
+import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
+import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useScrollMessageList } from '../../../hooks/useScrollMessageList';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
@@ -62,12 +61,13 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
-	const subscription = useRoomSubscription();
 	const formatDate = useFormatDate();
 	const t = useTranslation();
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 
 	const scrollMessageList = useScrollMessageList(listWrapperScrollRef);
+
+	const firstUnreadMessageId = useFirstUnreadMessageId();
 
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
@@ -86,7 +86,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 							{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
 								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 								const newDay = isMessageNewDay(message, previous);
-								const firstUnread = isMessageFirstUnread(subscription, message, previous);
+								const firstUnread = firstUnreadMessageId === message._id;
 								const showDivider = newDay || firstUnread;
 
 								const shouldShowAsSequential = sequential && !newDay;

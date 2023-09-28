@@ -111,26 +111,26 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 	});
 
 	return (
-		<Box mb='x16' is='form' onSubmit={onSubmit} display='flex' flexDirection='column' {...props}>
+		<Box mb={16} is='form' onSubmit={onSubmit} display='flex' flexDirection='column' {...props}>
 			<Box display='flex' flexDirection='row' flexWrap='wrap' {...props}>
-				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-					<Label mb='x4'>{t('Guest')}</Label>
+				<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
+					<Label mb={4}>{t('Guest')}</Label>
 					<TextInput placeholder={t('Guest')} onChange={handleGuest} value={guest} data-qa='current-chats-guest' />
 				</Box>
-				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column' data-qa='current-chats-servedBy'>
-					<Label mb='x4'>{t('Served_By')}</Label>
+				<Box display='flex' mie={8} flexGrow={1} flexDirection='column' data-qa='current-chats-servedBy'>
+					<Label mb={4}>{t('Served_By')}</Label>
 					<AutoCompleteAgent haveAll value={servedBy} onChange={handleServedBy} />
 				</Box>
-				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-					<Label mb='x4'>{t('Status')}</Label>
+				<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
+					<Label mb={4}>{t('Status')}</Label>
 					<Select options={statusOptions} value={status} onChange={handleStatus} placeholder={t('Status')} data-qa='current-chats-status' />
 				</Box>
-				<Box display='flex' mie='x8' flexGrow={0} flexDirection='column'>
-					<Label mb='x4'>{t('From')}</Label>
+				<Box display='flex' mie={8} flexGrow={0} flexDirection='column'>
+					<Label mb={4}>{t('From')}</Label>
 					<InputBox type='date' placeholder={t('From')} onChange={handleFrom} value={from} data-qa='current-chats-from' color='default' />
 				</Box>
-				<Box display='flex' mie='x8' flexGrow={0} flexDirection='column'>
-					<Label mb='x4'>{t('To')}</Label>
+				<Box display='flex' mie={8} flexGrow={0} flexDirection='column'>
+					<Label mb={4}>{t('To')}</Label>
 					<InputBox type='date' placeholder={t('To')} onChange={handleTo} value={to} data-qa='current-chats-to' color='default' />
 				</Box>
 
@@ -140,16 +140,16 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 					hasCustomFields={hasCustomFields}
 				/>
 			</Box>
-			<Box display='flex' marginBlockStart='x8' flexGrow={1} flexDirection='column'>
-				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-					<Label mb='x4'>{t('Department')}</Label>
+			<Box display='flex' marginBlockStart={8} flexGrow={1} flexDirection='column'>
+				<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
+					<Label mb={4}>{t('Department')}</Label>
 					<AutoCompleteDepartment haveAll showArchived value={department} onChange={handleDepartment} onlyMyDepartments />
 				</Box>
 			</Box>
 			{EETagsComponent && (
-				<Box display='flex' flexDirection='row' marginBlockStart='x8' {...props}>
-					<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-						<Label mb='x4'>{t('Tags')}</Label>
+				<Box display='flex' flexDirection='row' marginBlockStart={8} {...props}>
+					<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
+						<Label mb={4}>{t('Tags')}</Label>
 						<EETagsComponent value={tags} handler={handleTags} viewAll />
 					</Box>
 				</Box>

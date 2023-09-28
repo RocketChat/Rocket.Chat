@@ -9,12 +9,12 @@ Meteor.startup(() => {
 		id: 'jump-to-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['mentions', 'threads'],
+		context: ['mentions', 'threads', 'videoconf-threads'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			setMessageJumpQueryStringParameter(message._id);
 		},
 		order: 100,
-		group: ['message', 'menu'],
+		group: 'message',
 	});
 });

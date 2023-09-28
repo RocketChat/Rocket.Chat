@@ -1,10 +1,10 @@
 import type { IAnalytic, IRoom } from '@rocket.chat/core-typings';
 import type { IAnalyticsModel } from '@rocket.chat/model-typings';
-import type { AggregationCursor, FindCursor, Db, IndexDescription, FindOptions, UpdateResult, Document } from 'mongodb';
 import { Random } from '@rocket.chat/random';
+import type { AggregationCursor, FindCursor, Db, IndexDescription, FindOptions, UpdateResult, Document } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { BaseRaw } from './BaseRaw';
 
 export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel {
 	constructor(db: Db) {

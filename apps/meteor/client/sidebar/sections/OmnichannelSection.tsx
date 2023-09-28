@@ -1,15 +1,13 @@
-import type { Box } from '@rocket.chat/fuselage';
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
 import { useOmnichannelShowQueueLink } from '../../hooks/omnichannel/useOmnichannelShowQueueLink';
 import { OmniChannelCallDialPad, OmnichannelCallToggle, OmnichannelLivechatToggle } from './actions';
 
-const OmnichannelSection = (props: typeof Box): ReactElement => {
+const OmnichannelSection = () => {
 	const t = useTranslation();
 	const isCallEnabled = useIsCallEnabled();
 	const isCallReady = useIsCallReady();
@@ -34,7 +32,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 
 	// The className is a paliative while we make TopBar.ToolBox optional on fuselage
 	return (
-		<Sidebar.TopBar.ToolBox className='omnichannel-sidebar' {...props}>
+		<Sidebar.TopBar.ToolBox className='omnichannel-sidebar'>
 			<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
 			<Sidebar.TopBar.Actions>
 				{showOmnichannelQueueLink && (
@@ -56,6 +54,4 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	);
 };
 
-export default Object.assign(memo(OmnichannelSection), {
-	size: 56,
-});
+export default memo(OmnichannelSection);

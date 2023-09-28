@@ -39,7 +39,7 @@ const TriggersPage = () => {
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={t('Livechat_Triggers')}>
-					<Button onClick={handleAdd}>{t('New')}</Button>
+					<Button onClick={handleAdd}>{t('Create_trigger')}</Button>
 				</Page.Header>
 				<Page.Content>
 					<TriggersTable reload={reload} />

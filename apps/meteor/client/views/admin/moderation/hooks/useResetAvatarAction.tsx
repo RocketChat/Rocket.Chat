@@ -2,9 +2,10 @@ import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } fro
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import GenericModal from '../../../../components/GenericModal';
 
-const useResetAvatarAction = (userId: string) => {
+const useResetAvatarAction = (userId: string): GenericMenuItemProps => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -18,7 +19,7 @@ const useResetAvatarAction = (userId: string) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Moderation_Avatar_reset_successfully') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_Avatar_reset_success') });
 		},
 	});
 
@@ -43,8 +44,10 @@ const useResetAvatarAction = (userId: string) => {
 	};
 
 	return {
-		label: { label: t('Moderation_Reset_user_avatar'), icon: 'reload' },
-		action: () => confirmResetAvatar(),
+		id: 'resetAvatar',
+		content: t('Moderation_Reset_user_avatar'),
+		icon: 'reload',
+		onClick: () => confirmResetAvatar(),
 	};
 };
 

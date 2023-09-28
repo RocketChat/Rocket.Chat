@@ -9,10 +9,10 @@ const VideoConfMessageUserStack = ({ users }: { users: Serialized<IVideoConferen
 	const getUserAvatarPath = useUserAvatarPath();
 
 	return (
-		<Box mi='x4'>
+		<Box mi={4}>
 			<Box display='flex' alignItems='center' mi='neg-x2'>
 				{users.slice(0, MAX_USERS).map(({ username }, index) => (
-					<Box mi='x2' key={index}>
+					<Box mi={2} key={index}>
 						<Avatar size='x28' data-tooltip={username} url={getUserAvatarPath(username as string)} />
 					</Box>
 				))}

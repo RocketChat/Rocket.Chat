@@ -37,12 +37,12 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 
 	if (isLoading) {
 		return (
-			<Box pb='x20'>
-				<Skeleton mbs='x8' />
+			<Box pb={20}>
+				<Skeleton mbs={8} />
 				<InputBox.Skeleton w='full' />
-				<Skeleton mbs='x8' />
+				<Skeleton mbs={8} />
 				<InputBox.Skeleton w='full' />
-				<ButtonGroup stretch w='full' mbs='x8'>
+				<ButtonGroup stretch w='full' mbs={8}>
 					<Button disabled>
 						<Throbber inheritColor />
 					</Button>
@@ -50,7 +50,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 						<Throbber inheritColor />
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup stretch w='full' mbs='x8'>
+				<ButtonGroup stretch w='full' mbs={8}>
 					<Button danger disabled>
 						<Throbber inheritColor />
 					</Button>

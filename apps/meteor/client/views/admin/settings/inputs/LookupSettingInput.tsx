@@ -60,7 +60,7 @@ function LookupSettingInput({
 					disabled={disabled}
 					readOnly={readonly}
 					autoComplete={autocomplete === false ? 'off' : undefined}
-					onChange={handleChange}
+					onChange={(value) => handleChange(String(value))}
 					options={values.map(({ key, label }) => [key, label])}
 				/>
 			</Field.Row>

@@ -1,13 +1,14 @@
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, apiPublicChannelName, channel, reservedWords } from '../../data/api-data.js';
-import { adminUsername, password } from '../../data/user';
-import { createUser, login, deleteUser } from '../../data/users.helper';
+import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
+import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
-import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { testFileUploads } from '../../data/uploads.helper';
-import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
+import { adminUsername, password } from '../../data/user';
+import { createUser, login, deleteUser } from '../../data/users.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve /* , reject*/) => {
@@ -378,7 +379,7 @@ describe('[Channels]', function () {
 		});
 	});
 
-	describe('[/channels.files]', async function () {
+	describe('[/channels.files]', async () => {
 		await testFileUploads('channels.files', channel);
 	});
 
@@ -1572,25 +1573,49 @@ describe('[Channels]', function () {
 			});
 	});
 
-	it('/channels.setDefault', async () => {
-		const roomInfo = await getRoomInfo(channel._id);
+	describe('/channels.setDefault', () => {
+		it('should set channel as default', async () => {
+			const roomInfo = await getRoomInfo(channel._id);
 
-		return request
-			.post(api('channels.setDefault'))
-			.set(credentials)
-			.send({
-				roomId: channel._id,
-				default: true,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('channel._id');
-				expect(res.body).to.have.nested.property('channel.name', `EDITED${apiPublicChannelName}`);
-				expect(res.body).to.have.nested.property('channel.t', 'c');
-				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
-			});
+			return request
+				.post(api('channels.setDefault'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					default: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', `EDITED${apiPublicChannelName}`);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
+					expect(res.body).to.have.nested.property('channel.default', true);
+				});
+		});
+		it('should unset channel as default', async () => {
+			const roomInfo = await getRoomInfo(channel._id);
+
+			return request
+				.post(api('channels.setDefault'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					default: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', `EDITED${apiPublicChannelName}`);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
+					expect(res.body).to.have.nested.property('channel.default', false);
+				});
+		});
 	});
 
 	it('/channels.leave', async () => {
@@ -2069,7 +2094,7 @@ describe('[Channels]', function () {
 		});
 	});
 
-	context("Setting: 'Use Real Name': true", () => {
+	describe("Setting: 'Use Real Name': true", () => {
 		before(async () => {
 			await updateSetting('UI_Use_Real_Name', true);
 

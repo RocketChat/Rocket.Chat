@@ -1,5 +1,5 @@
 import { Box, Icon, Tag } from '@rocket.chat/fuselage';
-import type { IconProps } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { FC, ReactElement } from 'react';
 import React, { memo } from 'react';
 
@@ -8,7 +8,7 @@ import SidebarGenericItem from './SidebarGenericItem';
 type SidebarNavigationItemProps = {
 	permissionGranted?: (() => boolean) | boolean;
 	pathSection: string;
-	icon?: IconProps['name'];
+	icon?: IconName;
 	label?: string;
 	tag?: string;
 	currentPath?: string;
@@ -36,11 +36,11 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 
 	return (
 		<SidebarGenericItem active={isActive} href={path} externalUrl={externalUrl}>
-			{icon && <Icon name={icon} size='x20' mi='x4' />}
+			{icon && <Icon name={icon} size='x20' mi={4} />}
 			<Box
 				withTruncatedText
 				fontScale='p2'
-				mi='x4'
+				mi={4}
 				flexGrow={1}
 				display='flex'
 				alignItems='center'

@@ -23,7 +23,7 @@ const UnitsPage = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 				<Page.Header title={t('Units')}>
 					<ButtonGroup>
 						<Button onClick={handleClick} title={t('New_Unit')}>
-							{t('New')}
+							{t('Create_unit')}
 						</Button>
 					</ButtonGroup>
 				</Page.Header>

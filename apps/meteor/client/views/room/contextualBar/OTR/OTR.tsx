@@ -40,7 +40,7 @@ const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh,
 				return (
 					<Box>
 						<Box fontScale='p2'>{t('Please_wait_while_OTR_is_being_established')}</Box>
-						<Box mb='x16'>
+						<Box mb={16}>
 							<Throbber />
 						</Box>
 					</Box>
@@ -84,7 +84,7 @@ const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh,
 				<ContextualbarTitle>{t('OTR')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent p='x24' color='default'>
+			<ContextualbarScrollableContent p={24} color='default'>
 				<Box fontScale='h4'>{t('Off_the_record_conversation')}</Box>
 				{isOnline ? renderOTRState() : <Box fontScale='p2m'>{t('OTR_is_only_available_when_both_users_are_online')}</Box>}
 			</ContextualbarScrollableContent>

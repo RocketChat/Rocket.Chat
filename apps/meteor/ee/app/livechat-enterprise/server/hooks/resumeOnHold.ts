@@ -1,11 +1,11 @@
+import { OmnichannelEEService } from '@rocket.chat/core-services';
 import type { ILivechatVisitor, IMessage, IOmnichannelRoom, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatVisitors, Users } from '@rocket.chat/models';
-import { OmnichannelEEService } from '@rocket.chat/core-services';
 
+import { callbackLogger } from '../../../../../app/livechat/server/lib/logger';
 import { callbacks } from '../../../../../lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
-import { callbackLogger } from '../../../../../app/livechat/server/lib/logger';
 
 const resumeOnHoldCommentAndUser = async (room: IOmnichannelRoom): Promise<{ comment: string; resumedBy: IUser }> => {
 	const {

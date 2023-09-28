@@ -1,4 +1,3 @@
-import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult } from 'mongodb';
 import type {
 	IUser,
 	IRole,
@@ -10,6 +9,7 @@ import type {
 	AtLeast,
 	ILivechatAgentStatus,
 } from '@rocket.chat/core-typings';
+import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -258,6 +258,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<IUser>): Promise<{ agentId: string; username: string } | null>;
 	getNextBotAgent(ignoreAgentId?: string): Promise<{ agentId: string; username: string } | null>;
 	setLivechatStatus(userId: string, status: ILivechatAgentStatus): Promise<UpdateResult>;
+	makeAgentUnavailableAndUnsetExtension(userId: string): Promise<UpdateResult>;
 	setLivechatData(userId: string, data?: Record<string, any>): Promise<UpdateResult>;
 	closeOffice(): Promise<void>;
 	openOffice(): Promise<void>;
@@ -326,7 +327,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	getSAMLByIdAndSAMLProvider(userId: string, samlProvider: string): Promise<IUser | null>;
 	findBySAMLNameIdOrIdpSession(samlNameId: string, idpSession: string): FindCursor<IUser>;
 	findBySAMLInResponseTo(inResponseTo: string): FindCursor<IUser>;
-	addImportIds(userId: string, importIds: Array<{ service: string; id: string }>): Promise<UpdateResult>;
+	addImportIds(userId: string, importIds: string | string[]): Promise<UpdateResult>;
 	updateInviteToken(userId: string, token: string): Promise<UpdateResult>;
 	updateLastLoginById(userId: string): Promise<UpdateResult>;
 	addPasswordToHistory(userId: string, password: string, passwordHistoryAmount: number): Promise<UpdateResult>;
@@ -371,7 +372,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	getUsersToSendOfflineEmail(userIds: string[]): FindCursor<Pick<IUser, 'name' | 'username' | 'emails' | 'settings' | 'language'>>;
 	countActiveUsersByService(service: string, options?: FindOptions<IUser>): Promise<number>;
 	getActiveLocalUserCount(): Promise<number>;
-	getActiveLocalGuestCount(): Promise<number>;
+	getActiveLocalGuestCount(exceptions?: IUser['_id'] | IUser['_id'][]): Promise<number>;
 	removeOlderResumeTokensByUserId(userId: string, fromDate: Date): Promise<UpdateResult>;
 	findAllUsersWithPendingAvatar(): FindCursor<IUser>;
 	updateCustomFieldsById(userId: string, customFields: Record<string, unknown>): Promise<UpdateResult>;
@@ -379,4 +380,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countRemote(options?: FindOptions<IUser>): Promise<number>;
 	findOneByImportId(importId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	removeAgent(_id: string): Promise<UpdateResult>;
+	findAgentsWithDepartments<T = ILivechatAgent>(
+		role: string,
+		query: Filter<IUser>,
+		options: FindOptions<IUser>,
+	): Promise<{ sortedResults: (T & { departments: string[] })[]; totalCount: { total: number }[] }[]>;
+	countByRole(roleName: string): Promise<number>;
 }

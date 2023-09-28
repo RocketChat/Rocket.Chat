@@ -1,5 +1,6 @@
-import { Meteor } from 'meteor/meteor';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
@@ -18,7 +19,9 @@ callbacks.add(
 			return options;
 		}
 		const { department: departmentToTransfer } = transferData;
-		const currentDepartment = await LivechatDepartment.findOneById(departmentId);
+		const currentDepartment = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'departmentsAllowedToForward'>>(departmentId, {
+			projection: { departmentsAllowedToForward: 1 },
+		});
 		if (!currentDepartment) {
 			cbLogger.debug('Skipping callback. Current department does not exists');
 			return options;

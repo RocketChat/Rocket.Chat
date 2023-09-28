@@ -5,13 +5,13 @@ import * as constants from './tests/e2e/config/constants';
 export default {
 	globalSetup: require.resolve('./tests/e2e/config/global-setup.ts'),
 	use: {
+		channel: 'chromium',
 		headless: true,
 		ignoreHTTPSErrors: true,
 		trace: 'retain-on-failure',
 		baseURL: constants.BASE_URL,
 		screenshot: process.env.CI ? 'off' : 'only-on-failure',
 		video: process.env.CI ? 'off' : 'retain-on-failure',
-		channel: 'chrome',
 		launchOptions: {
 			// force GPU hardware acceleration
 			// (even in headless mode)
@@ -28,6 +28,7 @@ export default {
 				url: process.env.REPORTER_ROCKETCHAT_URL,
 				apiKey: process.env.REPORTER_ROCKETCHAT_API_KEY,
 				branch: process.env.REPORTER_ROCKETCHAT_BRANCH,
+				run: Number(process.env.REPORTER_ROCKETCHAT_RUN),
 				draft: process.env.REPORTER_ROCKETCHAT_DRAFT === 'true',
 			},
 		],
@@ -51,4 +52,6 @@ export default {
 	timeout: 60 * 1000,
 	globalTimeout: (process.env.IS_EE === 'true' ? 50 : 40) * 60 * 1000,
 	maxFailures: process.env.CI ? 5 : undefined,
+	// Retry on CI only.
+	retries: process.env.CI ? 2 : 0,
 } as PlaywrightTestConfig;

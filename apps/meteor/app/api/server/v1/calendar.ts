@@ -1,3 +1,4 @@
+import { Calendar } from '@rocket.chat/core-services';
 import {
 	isCalendarEventListProps,
 	isCalendarEventCreateProps,
@@ -6,7 +7,6 @@ import {
 	isCalendarEventUpdateProps,
 	isCalendarEventDeleteProps,
 } from '@rocket.chat/rest-typings';
-import { Calendar } from '@rocket.chat/core-services';
 
 import { API } from '../api';
 

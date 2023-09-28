@@ -1,5 +1,5 @@
-import type { ICallerInfo } from './ICallerInfo';
 import type { ICallDetails } from './ICallDetails';
+import type { ICallerInfo } from './ICallerInfo';
 
 export type VoipEvents = {
 	registered: undefined;

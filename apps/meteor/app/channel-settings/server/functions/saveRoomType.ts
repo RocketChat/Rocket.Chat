@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
-import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
+import { Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 import type { UpdateResult, Document } from 'mongodb';
 
-import { settings } from '../../../settings/server';
-import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import { i18n } from '../../../../server/lib/i18n';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { settings } from '../../../settings/server';
 
 export const saveRoomType = async function (
 	rid: string,

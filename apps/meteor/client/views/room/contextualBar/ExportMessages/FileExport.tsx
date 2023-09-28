@@ -82,7 +82,7 @@ const FileExport: FC<FileExportProps> = ({ onCancel, rid }) => {
 					<Select value={format} onChange={handleFormat} placeholder={t('Format')} options={outputOptions} />
 				</Field.Row>
 			</Field>
-			<ButtonGroup stretch mb='x12'>
+			<ButtonGroup stretch mb={12}>
 				<Button onClick={onCancel}>{t('Cancel')}</Button>
 				<Button primary onClick={(): Promise<void> => handleSubmit()}>
 					{t('Export')}

@@ -1,10 +1,11 @@
+import { AppDepartmentsConverter } from './departments';
 import { AppMessagesConverter } from './messages';
+import { AppRolesConverter } from './roles';
 import { AppRoomsConverter } from './rooms';
 import { AppSettingsConverter } from './settings';
+import { AppUploadsConverter } from './uploads';
 import { AppUsersConverter } from './users';
 import { AppVideoConferencesConverter } from './videoConferences';
-import { AppDepartmentsConverter } from './departments';
-import { AppUploadsConverter } from './uploads';
 import { AppVisitorsConverter } from './visitors';
 
 export {
@@ -16,4 +17,5 @@ export {
 	AppDepartmentsConverter,
 	AppUploadsConverter,
 	AppVisitorsConverter,
+	AppRolesConverter,
 };

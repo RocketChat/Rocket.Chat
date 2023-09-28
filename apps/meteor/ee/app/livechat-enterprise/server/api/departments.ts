@@ -1,4 +1,3 @@
-import { Match, check } from 'meteor/check';
 import {
 	isLivechatAnalyticsDepartmentsAmountOfChatsProps,
 	isLivechatAnalyticsDepartmentsAverageServiceTimeProps,
@@ -9,8 +8,10 @@ import {
 	isLivechatAnalyticsDepartmentsTotalAbandonedChatsProps,
 	isLivechatAnalyticsDepartmentsPercentageAbandonedChatsProps,
 } from '@rocket.chat/rest-typings';
+import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../../app/api/server';
+import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import {
 	findAllRoomsAsync,
 	findAllAverageServiceTimeAsync,
@@ -21,7 +22,6 @@ import {
 	findPercentageOfAbandonedRoomsAsync,
 	findAllAverageOfChatDurationTimeAsync,
 } from '../../../../../app/livechat/server/lib/analytics/departments';
-import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'livechat/analytics/departments/amount-of-chats',

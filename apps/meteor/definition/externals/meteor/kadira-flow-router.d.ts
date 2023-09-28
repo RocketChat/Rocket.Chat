@@ -164,14 +164,20 @@ declare module 'meteor/kadira:flow-router' {
 		_current: Current;
 	}
 
+	namespace page {
+		function start(): void;
+		function stop(): void;
+		function show(path: string): void;
+		function dispatch(ctx: page.Context): void;
+
+		class Context {
+			constructor(path: string, state?: object): Context;
+		}
+	}
+
 	const FlowRouter: Router & {
 		Route: typeof Route;
 		Router: typeof Router;
-		_page: {
-			start(): void;
-			stop(): void;
-			show(path: string): void;
-			dispatch(ctx: { path: string; params: any }): void;
-		};
+		_page: typeof page;
 	};
 }

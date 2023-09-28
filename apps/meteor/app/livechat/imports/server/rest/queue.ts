@@ -1,8 +1,8 @@
 import { isGETLivechatQueueParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
-import { findQueueMetrics } from '../../../server/api/lib/queue';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { findQueueMetrics } from '../../../server/api/lib/queue';
 
 API.v1.addRoute(
 	'livechat/queue',

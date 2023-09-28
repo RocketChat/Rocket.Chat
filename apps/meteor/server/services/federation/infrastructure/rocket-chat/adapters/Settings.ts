@@ -2,12 +2,12 @@ import crypto from 'crypto';
 import fs from 'fs';
 import { resolve } from 'path';
 
+import { Settings } from '@rocket.chat/models';
 import yaml from 'js-yaml';
 import { v4 as uuidv4 } from 'uuid';
-import { Settings } from '@rocket.chat/models';
 
-import type { IFederationBridgeRegistrationFile } from '../../../domain/IFederationBridge';
 import { settings, settingsRegistry } from '../../../../../../app/settings/server';
+import type { IFederationBridgeRegistrationFile } from '../../../domain/IFederationBridge';
 
 const EVERYTHING_REGEX = '.*';
 const LISTEN_RULES = EVERYTHING_REGEX;

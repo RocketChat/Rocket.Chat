@@ -4,7 +4,7 @@ type OutlookEventsResponse = { status: 'success' | 'canceled' };
 interface Window {
 	RocketChatDesktop:
 		| {
-				openInternalVideoChatWindow?: (url: string, options: undefined) => void;
+				openInternalVideoChatWindow?: (url: string, options: { providerName: string | undefined }) => void;
 				getOutlookEvents?: (date: Date) => Promise<OutlookEventsResponse>;
 				setOutlookExchangeUrl?: (url: string, userId: string) => Promise<void>;
 				hasOutlookCredentials?: () => Promise<boolean>;

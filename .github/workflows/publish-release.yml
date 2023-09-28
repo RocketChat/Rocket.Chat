@@ -3,7 +3,7 @@ name: Publish Final Release
 on:
   push:
     branches:
-      - release-automation
+      - master
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -30,8 +30,8 @@ jobs:
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-      - name: Build
-        run: yarn build --filter=@rocket.chat/release-action
+      - name: Build packages
+        run: yarn build
 
       - name: Publish final release
         uses: ./packages/release-action

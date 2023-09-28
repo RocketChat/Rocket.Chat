@@ -1,4 +1,19 @@
 import type {
+	IOmnichannelRoom,
+	RocketChatRecordDeleted,
+	IOmnichannelRoomClosingInfo,
+	DeepWritable,
+	ISetting,
+	IMessage,
+	ILivechatPriority,
+	IOmnichannelServiceLevelAgreements,
+	ReportResult,
+} from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
+import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import { Settings } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type {
 	Db,
 	Collection,
 	IndexDescription,
@@ -9,24 +24,12 @@ import type {
 	SortDirection,
 	FindCursor,
 	UpdateResult,
+	AggregationCursor,
 } from 'mongodb';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Settings } from '@rocket.chat/models';
-import type {
-	IOmnichannelRoom,
-	RocketChatRecordDeleted,
-	IOmnichannelRoomClosingInfo,
-	DeepWritable,
-	ISetting,
-	IMessage,
-	ILivechatPriority,
-	IOmnichannelServiceLevelAgreements,
-} from '@rocket.chat/core-typings';
-import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 
-import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { BaseRaw } from './BaseRaw';
 
 /**
  * @extends BaseRaw<ILivechatRoom>
@@ -67,6 +70,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { callStatus: 1 }, sparse: true }, // used on statistics
 			{ key: { priorityId: 1 }, sparse: true },
 			{ key: { slaId: 1 }, sparse: true },
+			{ key: { source: 1, ts: 1 }, partialFilterExpression: { source: { $exists: true }, t: 'l' } },
+			{ key: { departmentId: 1, ts: 1 }, partialFilterExpression: { departmentId: { $exists: true }, t: 'l' } },
+			{ key: { 'tags.0': 1, 'ts': 1 }, partialFilterExpression: { 'tags.0': { $exists: true }, 't': 'l' } },
+			{ key: { servedBy: 1, ts: 1 }, partialFilterExpression: { servedBy: { $exists: true }, t: 'l' } },
 		];
 	}
 
@@ -179,7 +186,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		const params = [...firstParams, usersGroup, project, facet];
-		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred(), allowDiskUse: true }).toArray();
 	}
 
 	async findAllNumberOfAbandonedRooms({
@@ -1597,7 +1604,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					closedAt,
 					'metrics.chatDuration': chatDuration,
 					'metrics.serviceTimeDuration': serviceTimeDuration,
-					'v.status': 'offline',
+					'v.status': UserStatus.OFFLINE,
 					...(closer && { closer }),
 					...(closedBy && { closedBy }),
 					...(tags && { tags }),
@@ -1979,7 +1986,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
-	setResponseByRoomId(roomId: string, response: { user: { _id: string; username: string } }) {
+	setResponseByRoomId(roomId: string, responseBy: IOmnichannelRoom['responseBy']) {
 		return this.updateOne(
 			{
 				_id: roomId,
@@ -1987,11 +1994,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			},
 			{
 				$set: {
-					responseBy: {
-						_id: response.user._id,
-						username: response.user.username,
-						lastMessageTs: new Date(),
-					},
+					responseBy,
 				},
 				$unset: {
 					waitingResponse: 1,
@@ -2336,7 +2339,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.updateOne(query, update);
 	}
 
-	updateVisitorStatus(token: string, status: 'online' | 'busy' | 'away' | 'offline') {
+	updateVisitorStatus(token: string, status: UserStatus) {
 		const query: Filter<IOmnichannelRoom> = {
 			'v.token': token,
 			'open': true,
@@ -2513,6 +2516,69 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	async updateDepartmentAncestorsById(_rid: string, _departmentAncestors?: string[]): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	countPrioritizedRooms(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	countRoomsWithSla(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	countRoomsWithPdfTranscriptRequested(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	countRoomsWithTranscriptSent(): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsBySource(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsByStatus(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsByDepartment(
+		_start: Date,
+		_end: Date,
+		_sort: Record<string, 1 | -1>,
+		_extraQuery: Filter<IOmnichannelRoom>,
+	): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsByTags(
+		_start: Date,
+		_end: Date,
+		_sort: Record<string, 1 | -1>,
+		_extraQuery: Filter<IOmnichannelRoom>,
+	): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsByAgents(
+		_start: Date,
+		_end: Date,
+		_sort: Record<string, 1 | -1>,
+		_extraQuery: Filter<IOmnichannelRoom>,
+	): AggregationCursor<ReportResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	getConversationsWithoutTagsBetweenDate(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	getTotalConversationsWithoutAgentsBetweenDate(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	getTotalConversationsWithoutDepartmentBetweenDates(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
 		throw new Error('Method not implemented.');
 	}
 }

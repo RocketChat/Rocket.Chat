@@ -2,7 +2,7 @@ import type { IUIKitContextualBarInteraction } from '@rocket.chat/apps-engine/de
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useEffect, useState } from 'react';
 
-import { getUserInteractionPayloadByViewId } from '../../../../app/ui-message/client/ActionManager';
+import { useUiKitActionManager } from '../../../hooks/useUiKitActionManager';
 import { useRoom } from '../contexts/RoomContext';
 
 type AppsContextualBarData = {
@@ -14,6 +14,7 @@ type AppsContextualBarData = {
 
 export const useAppsContextualBar = (): AppsContextualBarData | undefined => {
 	const [payload, setPayload] = useState<IUIKitContextualBarInteraction>();
+	const actionManager = useUiKitActionManager();
 	const [appId, setAppId] = useState<string>();
 
 	const { _id: roomId } = useRoom();
@@ -22,7 +23,7 @@ export const useAppsContextualBar = (): AppsContextualBarData | undefined => {
 
 	useEffect(() => {
 		if (viewId) {
-			setPayload(getUserInteractionPayloadByViewId(viewId) as IUIKitContextualBarInteraction);
+			setPayload(actionManager.getUserInteractionPayloadByViewId(viewId) as IUIKitContextualBarInteraction);
 		}
 
 		if (payload?.appId) {
@@ -33,7 +34,7 @@ export const useAppsContextualBar = (): AppsContextualBarData | undefined => {
 			setPayload(undefined);
 			setAppId(undefined);
 		};
-	}, [viewId, payload?.appId]);
+	}, [viewId, payload?.appId, actionManager]);
 
 	if (viewId && payload && appId) {
 		return {

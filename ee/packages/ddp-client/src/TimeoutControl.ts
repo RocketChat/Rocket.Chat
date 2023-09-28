@@ -1,7 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { DDPClient } from './types/DDPClient';
 import type { Connection } from './Connection';
+import type { DDPClient } from './types/DDPClient';
 
 export interface TimeoutControlEvents
 	extends Emitter<{

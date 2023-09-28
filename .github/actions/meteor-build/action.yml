@@ -1,0 +1,129 @@
+name: 'Meteor Build'
+
+inputs:
+  coverage:
+    required: false
+    description: 'Enable coverage'
+    type: boolean
+  reset-meteor:
+    required: false
+    description: 'Reset Meteor'
+    type: boolean
+  node-version:
+    required: true
+    description: 'Node version'
+    type: string
+
+runs:
+  using: composite
+
+  steps:
+    - name: Set Swap Space
+      uses: pierotofy/set-swap-space@master
+      with:
+        swap-size-gb: 4
+
+    - name: Setup NodeJS
+      uses: ./.github/actions/setup-node
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache-modules: true
+        install: true
+
+    # - name: Free disk space
+    #   run: |
+    #     sudo apt clean
+    #     docker rmi $(docker image ls -aq)
+    #     df -h
+
+    - name: Cache vite
+      uses: actions/cache@v3
+      with:
+        path: ./node_modules/.vite
+        key: vite-local-cache-${{ runner.OS }}-${{ hashFiles('package.json') }}
+        restore-keys: |
+          vite-local-cache-${{ runner.os }}-
+
+    - name: Cache meteor local
+      uses: actions/cache@v3
+      with:
+        path: ./apps/meteor/.meteor/local
+        key: meteor-local-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/versions') }}
+        restore-keys: |
+          meteor-local-cache-${{ runner.os }}-
+
+    - name: Cache meteor
+      uses: actions/cache@v3
+      with:
+        path: ~/.meteor
+        key: meteor-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/release') }}
+        restore-keys: |
+          meteor-cache-${{ runner.os }}-
+
+    - name: Install Meteor
+      shell: bash
+      run: |
+        # Restore bin from cache
+        set +e
+        METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
+        METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
+        set -e
+        LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
+        if [ -e $LAUNCHER ]
+        then
+          echo "Cached Meteor bin found, restoring it"
+          sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
+        else
+          echo "No cached Meteor bin found."
+        fi
+
+        # only install meteor if bin isn't found
+        command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
+
+    - name: Versions
+      shell: bash
+      run: |
+        npm --versions
+        yarn -v
+        node -v
+        meteor --version
+        meteor npm --versions
+        meteor node -v
+        git version
+
+    - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+    - name: Translation check
+      shell: bash
+      run: yarn turbo run translation-check
+
+    - name: Reset Meteor
+      shell: bash
+      if: ${{ inputs.reset-meteor == 'true' }}
+      working-directory: ./apps/meteor
+      run: meteor reset
+
+    - name: Build Rocket.Chat From Pull Request
+      shell: bash
+      if: startsWith(github.ref, 'refs/pull/') == true
+      env:
+        METEOR_PROFILE: 1000
+        BABEL_ENV: ${{ inputs.coverage == 'true' && 'coverage' || '' }}
+      run: yarn build:ci -- --directory /tmp/dist
+
+    - name: Build Rocket.Chat
+      shell: bash
+      if: startsWith(github.ref, 'refs/pull/') != true
+      run: yarn build:ci -- --directory /tmp/dist
+
+    - name: Prepare build
+      shell: bash
+      run: |
+        cd /tmp/dist
+        tar czf /tmp/Rocket.Chat.tar.gz bundle
+
+    - name: Store build
+      uses: actions/upload-artifact@v3
+      with:
+        name: build
+        path: /tmp/Rocket.Chat.tar.gz

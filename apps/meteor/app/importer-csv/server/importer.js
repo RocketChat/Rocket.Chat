@@ -4,8 +4,8 @@ import { Random } from '@rocket.chat/random';
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
 
 export class CsvImporter extends Base {
-	constructor(info, importRecord) {
-		super(info, importRecord);
+	constructor(info, importRecord, converterOptions = {}) {
+		super(info, importRecord, converterOptions);
 
 		const { parse } = require('csv-parse/lib/sync');
 
@@ -59,13 +59,15 @@ export class CsvImporter extends Base {
 			// Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
 			if (entry.entryName.indexOf('__MACOSX') > -1) {
 				this.logger.debug(`Ignoring the file: ${entry.entryName}`);
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			// Directories are ignored, since they are "virtual" in a zip file
 			if (entry.isDirectory) {
 				this.logger.debug(`Ignoring the directory entry: ${entry.entryName}`);
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			// Parse the channels
@@ -97,7 +99,8 @@ export class CsvImporter extends Base {
 				}
 
 				await super.updateRecord({ 'count.channels': channelsCount });
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			// Parse the users
@@ -114,6 +117,7 @@ export class CsvImporter extends Base {
 					const name = u[2].trim();
 
 					await this.converter.addUser({
+						type: 'user',
 						importIds: [username],
 						emails: [email],
 						username,
@@ -122,7 +126,8 @@ export class CsvImporter extends Base {
 				}
 
 				await super.updateRecord({ 'count.users': usersCount });
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			// Parse the messages
@@ -140,7 +145,8 @@ export class CsvImporter extends Base {
 					msgs = this.csvParser(entry.getData().toString());
 				} catch (e) {
 					this.logger.warn(`The file ${entry.entryName} contains invalid syntax`, e);
-					return increaseProgressCount();
+					increaseProgressCount();
+					continue;
 				}
 
 				let data;
@@ -211,7 +217,8 @@ export class CsvImporter extends Base {
 				}
 
 				await super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			increaseProgressCount();
@@ -243,7 +250,8 @@ export class CsvImporter extends Base {
 		if (usersCount === 0 && channelsCount === 0 && messagesCount === 0) {
 			this.logger.error('No users, channels, or messages found in the import file.');
 			await super.updateProgress(ProgressStep.ERROR);
-			return super.getProgress();
 		}
+
+		return super.getProgress();
 	}
 }

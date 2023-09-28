@@ -1,5 +1,5 @@
-import { assert } from 'chai';
 import { isFederationJoinExternalPublicRoomProps } from '@rocket.chat/rest-typings';
+import { assert } from 'chai';
 
 describe('FederationJoinExternalPublicRoomProps (definition/rest/v1)', () => {
 	describe('isFederationJoinExternalPublicRoomProps', () => {

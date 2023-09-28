@@ -1,5 +1,5 @@
-import type { FindOptions, UpdateResult, Document, FindCursor } from 'mongodb';
 import type { IVoipRoom, IVoipRoomClosingInfo } from '@rocket.chat/core-typings';
+import type { FindOptions, UpdateResult, Document, FindCursor } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 

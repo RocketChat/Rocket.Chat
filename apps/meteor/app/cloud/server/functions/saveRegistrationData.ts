@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Settings } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';

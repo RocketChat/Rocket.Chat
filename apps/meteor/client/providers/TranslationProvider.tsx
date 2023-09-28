@@ -36,6 +36,8 @@ const parseToJSON = (customTranslations: string): Record<string, Record<string, 
 	}
 };
 
+const localeCache = new Map<string, Promise<string>>();
+
 const useI18next = (lng: string): typeof i18next => {
 	const basePath = useAbsoluteUrl()('/i18n');
 
@@ -101,9 +103,27 @@ const useI18next = (lng: string): typeof i18next => {
 				loadPath: `${basePath}/{{lng}}.json`,
 				parse: (data: string, lngs?: string | string[], namespaces: string | string[] = []) =>
 					extractKeys(JSON.parse(data), lngs, namespaces),
+				request: (_options, url, _payload, callback) => {
+					const params = url.split('/');
+					const lng = params[params.length - 1];
+
+					let promise = localeCache.get(lng);
+
+					if (!promise) {
+						promise = fetch(url).then((res) => res.text());
+						localeCache.set(lng, promise);
+					}
+
+					promise.then(
+						(res) => callback(null, { data: res, status: 200 }),
+						() => callback(null, { data: '', status: 500 }),
+					);
+				},
 			},
 			react: {
 				useSuspense: true,
+				bindI18n: 'languageChanged loaded',
+				bindI18nStore: 'added removed',
 			},
 			interpolation: {
 				escapeValue: false,
@@ -156,7 +176,7 @@ type TranslationProviderProps = {
 const useAutoLanguage = () => {
 	const serverLanguage = useSetting<string>('Language');
 	const browserLanguage = filterLanguage(window.navigator.userLanguage ?? window.navigator.language);
-	const defaultUserLanguage = serverLanguage || browserLanguage || 'en';
+	const defaultUserLanguage = browserLanguage || serverLanguage || 'en';
 
 	// if the language is supported, if not remove the region
 	const suggestedLanguage = languages.includes(defaultUserLanguage) ? defaultUserLanguage : defaultUserLanguage.split('-').shift() ?? 'en';
@@ -191,11 +211,13 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 			{
 				en: 'Default',
 				name: i18nextInstance.t('Default'),
+				ogName: i18nextInstance.t('Default'),
 				key: '',
 			},
 			...[...new Set([...i18nextInstance.languages, ...languages])].map((key) => ({
 				en: key,
 				name: getLanguageName(key, language),
+				ogName: getLanguageName(key, key),
 				key,
 			})),
 		],
@@ -204,6 +226,7 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 
 	useEffect(() => {
 		if (moment.locales().includes(language.toLowerCase())) {
+			moment.locale(language);
 			return;
 		}
 
@@ -252,6 +275,7 @@ const TranslationProviderInner = ({
 	availableLanguages: {
 		en: string;
 		name: string;
+		ogName: string;
 		key: string;
 	}[];
 }): ReactElement => {

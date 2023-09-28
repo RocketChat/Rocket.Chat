@@ -3,7 +3,7 @@ import { useQueries } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 import type { ComposerPopupOption } from '../../../../../client/views/room/contexts/ComposerPopupContext';
-import { slashCommands } from '../../../../utils/client';
+import { slashCommands } from '../../../../utils/lib/slashCommand';
 import { useEnablePopupPreview } from './useEnablePopupPreview';
 
 export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: number }>(filter: unknown, popup?: ComposerPopupOption<T>) => {
