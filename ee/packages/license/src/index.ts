@@ -44,6 +44,7 @@ interface License {
 	onValidateLicense: typeof onValidateLicense;
 	onInvalidateLicense: typeof onInvalidateLicense;
 	onLimitReached: typeof onLimitReached;
+
 	// Deprecated:
 	onLicense: typeof onLicense;
 	// Deprecated:

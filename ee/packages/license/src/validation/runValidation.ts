@@ -10,7 +10,7 @@ export async function runValidation(
 	license: ILicenseV3,
 	behaviorsToValidate: LicenseBehavior[] = [],
 ): Promise<BehaviorWithContext[]> {
-	const shouldValidateBehavior = (behavior: LicenseBehavior) => !behaviorsToValidate?.length || behaviorsToValidate.includes(behavior);
+	const shouldValidateBehavior = (behavior: LicenseBehavior) => !behaviorsToValidate.length || behaviorsToValidate.includes(behavior);
 
 	return [
 		...new Set([

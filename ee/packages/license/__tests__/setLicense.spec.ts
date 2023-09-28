@@ -6,25 +6,11 @@ import { LicenseImp } from '../src';
 import { DuplicatedLicenseError } from '../src/errors/DuplicatedLicenseError';
 import { InvalidLicenseError } from '../src/errors/InvalidLicenseError';
 import { NotReadyForValidation } from '../src/errors/NotReadyForValidation';
-import { MockedLicenseBuilder } from './MockedLicenseBuilder';
+import { MockedLicenseBuilder, getReadyLicenseManager } from './MockedLicenseBuilder';
 
 // Same license used on ci tasks so no I didnt leak it
 const VALID_LICENSE =
 	'WMa5i+/t/LZbYOj8u3XUkivRhWBtWO6ycUjaZoVAw2DxMfdyBIAa2gMMI4x7Z2BrTZIZhFEImfOxcXcgD0QbXHGBJaMI+eYG+eofnVWi2VA7RWbpvWTULgPFgyJ4UEFeCOzVjcBLTQbmMSam3u0RlekWJkfAO0KnmLtsaEYNNA2rz1U+CLI/CdNGfdqrBu5PZZbGkH0KEzyIZMaykOjzvX+C6vd7fRxh23HecwhkBbqE8eQsCBt2ad0qC4MoVXsDaSOmSzGW+aXjuXt/9zjvrLlsmWQTSlkrEHdNkdywm0UkGxqz3+CP99n0WggUBioUiChjMuNMoceWvDvmxYP9Ml2NpYU7SnfhjmMFyXOah8ofzv8w509Y7XODvQBz+iB4Co9YnF3vT96HDDQyAV5t4jATE+0t37EAXmwjTi3qqyP7DLGK/revl+mlcwJ5kS4zZBsm1E4519FkXQOZSyWRnPdjqvh4mCLqoispZ49wKvklDvjPxCSP9us6cVXLDg7NTJr/4pfxLPOkvv7qCgugDvlDx17bXpQFPSDxmpw66FLzvb5Id0dkWjOzrRYSXb0bFWoUQjtHFzmcpFkyVhOKrQ9zA9+Zm7vXmU9Y2l2dK79EloOuHMSYAqsPEag8GMW6vI/cT4iIjHGGDePKnD0HblvTEKzql11cfT/abf2IiaY=';
-
-const getReadyLicenseManager = async () => {
-	const license = new LicenseImp();
-	await license.setWorkspaceUrl('http://localhost:3000');
-	await license.setWorkspaceUrl('http://localhost:3000');
-
-	license.setLicenseLimitCounter('activeUsers', () => 0);
-	license.setLicenseLimitCounter('guestUsers', () => 0);
-	license.setLicenseLimitCounter('roomsPerGuest', async () => 0);
-	license.setLicenseLimitCounter('privateApps', () => 0);
-	license.setLicenseLimitCounter('marketplaceApps', () => 0);
-	license.setLicenseLimitCounter('monthlyActiveContacts', async () => 0);
-	return license;
-};
 
 describe('License set license procedures', () => {
 	describe('Invalid formats', () => {

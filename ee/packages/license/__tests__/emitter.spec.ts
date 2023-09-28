@@ -2,24 +2,9 @@
  * @jest-environment node
  */
 
-import { LicenseImp } from '../src';
-import { MockedLicenseBuilder } from './MockedLicenseBuilder';
+import { MockedLicenseBuilder, getReadyLicenseManager } from './MockedLicenseBuilder';
 
-const getReadyLicenseManager = async () => {
-	const license = new LicenseImp();
-	await license.setWorkspaceUrl('http://localhost:3000');
-	await license.setWorkspaceUrl('http://localhost:3000');
-
-	license.setLicenseLimitCounter('activeUsers', () => 0);
-	license.setLicenseLimitCounter('guestUsers', () => 0);
-	license.setLicenseLimitCounter('roomsPerGuest', async () => 0);
-	license.setLicenseLimitCounter('privateApps', () => 0);
-	license.setLicenseLimitCounter('marketplaceApps', () => 0);
-	license.setLicenseLimitCounter('monthlyActiveContacts', async () => 0);
-	return license;
-};
-
-describe('Module License behaviors', () => {
+describe('Event License behaviors', () => {
 	it('should call the module as they are enabled/disabled', async () => {
 		const license = await getReadyLicenseManager();
 		const validFn = jest.fn();
@@ -63,5 +48,19 @@ describe('Module License behaviors', () => {
 		await expect(license.hasModule('livechat-enterprise')).toBe(false);
 		await expect(validFn).toBeCalledTimes(0);
 		await expect(invalidFn).toBeCalledTimes(1);
+	});
+
+	it('should call `onValidateLicense` when a valid license is applied', async () => {
+		const license = await getReadyLicenseManager();
+		const fn = jest.fn();
+
+		license.onValidateLicense(fn);
+
+		const mocked = await new MockedLicenseBuilder();
+		const token = await mocked.sign();
+
+		await expect(license.setLicense(token)).resolves.toBe(true);
+		await expect(license.hasValidLicense()).toBe(true);
+		await expect(fn).toBeCalledTimes(1);
 	});
 });

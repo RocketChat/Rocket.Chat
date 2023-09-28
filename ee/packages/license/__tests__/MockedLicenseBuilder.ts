@@ -1,3 +1,4 @@
+import { LicenseImp } from '../src';
 import type { ILicenseTag } from '../src/definition/ILicenseTag';
 import type { ILicenseV3 } from '../src/definition/ILicenseV3';
 import type { LicenseLimit } from '../src/definition/LicenseLimit';
@@ -109,6 +110,16 @@ export class MockedLicenseBuilder {
 		};
 	}
 
+	public resetValidPeriods(): this {
+		this.validation.validPeriods = [];
+		return this;
+	}
+
+	public withValidPeriod(period: LicensePeriod): this {
+		this.validation.validPeriods.push(period);
+		return this;
+	}
+
 	public withGrantedTo(grantedTo: { name?: string; company?: string; email?: string }): this {
 		this.information.grantedTo = grantedTo;
 		return this;
@@ -154,6 +165,7 @@ export class MockedLicenseBuilder {
 	}
 
 	public withLimits<K extends keyof ILicenseV3['limits']>(key: K, value: ILicenseV3['limits'][K]): this {
+		this.limits = this.limits ?? {};
 		this.limits[key] = value;
 		return this;
 	}
@@ -181,3 +193,17 @@ export class MockedLicenseBuilder {
 		return encrypt(this.build());
 	}
 }
+
+export const getReadyLicenseManager = async () => {
+	const license = new LicenseImp();
+	await license.setWorkspaceUrl('http://localhost:3000');
+	await license.setWorkspaceUrl('http://localhost:3000');
+
+	license.setLicenseLimitCounter('activeUsers', () => 0);
+	license.setLicenseLimitCounter('guestUsers', () => 0);
+	license.setLicenseLimitCounter('roomsPerGuest', async () => 0);
+	license.setLicenseLimitCounter('privateApps', () => 0);
+	license.setLicenseLimitCounter('marketplaceApps', () => 0);
+	license.setLicenseLimitCounter('monthlyActiveContacts', async () => 0);
+	return license;
+};
