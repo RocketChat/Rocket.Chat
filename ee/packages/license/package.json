@@ -25,6 +25,7 @@
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",
+		"testunit": "jest",
 		"build": "npm run build:types && npm run build:js",
 		"build:types": "tsc --emitDeclarationOnly",
 		"build:js": "babel src --out-dir dist --extensions \".ts,.tsx\" --source-maps inline",
