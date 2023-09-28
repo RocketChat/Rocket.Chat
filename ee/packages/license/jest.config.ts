@@ -12,6 +12,5 @@ export default {
 		'^jose$': require.resolve('jose'),
 	},
 	collectCoverage: true,
-	coverageReporters: ['text', 'html'],
 	collectCoverageFrom: ['src/**/*.{js,jsx,ts,tsx}'],
 };
