@@ -1,5 +1,4 @@
-import { RegisterServerPage, StandaloneServerPage } from '@rocket.chat/onboarding-ui';
-import { useRoute } from '@rocket.chat/ui-contexts';
+import { RegisterServerPage, RegisterOfflinePage } from '@rocket.chat/onboarding-ui';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { useState } from 'react';
 
@@ -7,51 +6,37 @@ import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 const SERVER_OPTIONS = {
 	REGISTERED: 'REGISTERED',
-	STANDALONE: 'STANDALONE',
+	OFFLINE: 'OFFLINE',
 };
 
 const RegisterServerStep = (): ReactElement => {
-	const { goToPreviousStep, currentStep, setSetupWizardData, registerServer, maxSteps, offline, completeSetupWizard } =
+	const { goToPreviousStep, currentStep, goToNextStep, goToStep, setSetupWizardData, registerServer, maxSteps, offline } =
 		useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
 
-	const router = useRoute('cloud');
-
-	const handleRegisterOffline: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async () => {
-		await completeSetupWizard();
-		router.push({}, { register: 'true' });
+	const handleRegister: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async (data: { email: string; resend?: boolean }) => {
+		goToNextStep();
+		setSetupWizardData((prevState) => ({ ...prevState, serverData: data }));
+		await registerServer(data);
 	};
 
-	const handleRegister: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async (data) => {
-		if (data.registerType !== 'standalone') {
-			setSetupWizardData((prevState) => ({ ...prevState, serverData: data }));
-			await registerServer(data);
-		}
+	const handleConfirmOffline: ComponentProps<typeof RegisterOfflinePage>['onSubmit'] = async (/* data: unknown*/) => {
+		// TODO: CALL REGISTER WITH TOKEN
+		return goToStep(4);
 	};
 
-	const handleConfirmStandalone: ComponentProps<typeof StandaloneServerPage>['onSubmit'] = async ({ registerType }) => {
-		if (registerType !== 'registered') {
-			return completeSetupWizard();
-		}
-	};
-
-	if (serverOption === SERVER_OPTIONS.STANDALONE) {
+	if (serverOption === SERVER_OPTIONS.OFFLINE) {
 		return (
-			<StandaloneServerPage
-				currentStep={currentStep}
-				onBackButtonClick={(): void => setServerOption(SERVER_OPTIONS.REGISTERED)}
-				onSubmit={handleConfirmStandalone}
-				stepCount={maxSteps}
-			/>
+			<RegisterOfflinePage onBackButtonClick={(): void => setServerOption(SERVER_OPTIONS.REGISTERED)} onSubmit={handleConfirmOffline} />
 		);
 	}
 
 	return (
 		<RegisterServerPage
-			onClickRegisterLater={(): void => setServerOption(SERVER_OPTIONS.STANDALONE)}
+			onClickRegisterOffline={(): void => setServerOption(SERVER_OPTIONS.OFFLINE)}
 			onBackButtonClick={goToPreviousStep}
 			stepCount={maxSteps}
-			onSubmit={offline ? handleRegisterOffline : handleRegister}
+			onSubmit={handleRegister}
 			currentStep={currentStep}
 			offline={offline}
 		/>
