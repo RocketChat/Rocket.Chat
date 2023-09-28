@@ -17,5 +17,6 @@
 '@rocket.chat/meteor': minor
 ---
 
-feat new `package/jwt` with `sign` and `veriy` functions to create a JWT given a JS object. By default uses algorithm RS256 for the public/private keys.
-feat new `ee/package/license`. Contains new V3 definition and previous License definition renamed as LicenseV2. Package handles both versions.
+Implemented the License library, it is used to handle the functionality like expiration date, modules, limits, etc.
+Also added a version v3 of the license, which contains an extended list of features.
+v2 is still supported, since we convert it to v3 on the fly.
