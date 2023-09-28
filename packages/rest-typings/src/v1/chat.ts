@@ -697,8 +697,8 @@ const ChatGetDeletedMessagesSchema = {
 export const isChatGetDeletedMessagesProps = ajv.compile<ChatGetDeletedMessages>(ChatGetDeletedMessagesSchema);
 
 type ChatPostMessage =
-	| { roomId: string; text?: string; alias?: string; emoji?: string; avatar?: string; attachments?: MessageAttachment[] }
-	| { channel: string; text?: string; alias?: string; emoji?: string; avatar?: string; attachments?: MessageAttachment[] };
+	| { roomId: string | string[]; text?: string; alias?: string; emoji?: string; avatar?: string; attachments?: MessageAttachment[] }
+	| { channel: string | string[]; text?: string; alias?: string; emoji?: string; avatar?: string; attachments?: MessageAttachment[] };
 
 const ChatPostMessageSchema = {
 	oneOf: [
@@ -706,7 +706,15 @@ const ChatPostMessageSchema = {
 			type: 'object',
 			properties: {
 				roomId: {
-					type: 'string',
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
 				},
 				text: {
 					type: 'string',
@@ -738,8 +746,16 @@ const ChatPostMessageSchema = {
 		{
 			type: 'object',
 			properties: {
-				channel: {
-					type: 'string',
+				roomId: {
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
 				},
 				text: {
 					type: 'string',
