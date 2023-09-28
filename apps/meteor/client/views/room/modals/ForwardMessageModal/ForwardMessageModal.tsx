@@ -38,6 +38,7 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 			const optionalMessage = '';
 			const curMsg = await prependReplies(optionalMessage, [message]);
 
+			// TODO: chat.postMessage accepts an array of rooms
 			return Promise.all(
 				rooms.map(async (roomId) => {
 					const sendPayload = {

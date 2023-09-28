@@ -3,9 +3,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isEditedMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import type { ActionsBlock } from '@rocket.chat/ui-kit';
-// import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-// import _ from 'underscore';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
@@ -93,7 +91,6 @@ callbacks.add(
 
 		const usernames = mentionsUsersNotInChannel.map(({ username }) => username);
 		const actionBlocks = getBlocks(mentionsUsersNotInChannel, message._id);
-		console.log(actionBlocks);
 		const elements: ActionsBlock['elements'] = [
 			canAddUsers && actionBlocks.addUsersBlock,
 			(canAddUsers || canDMUsers) && actionBlocks.dismissBlock,
@@ -104,6 +101,8 @@ callbacks.add(
 			? 'You_mentioned___mentions__but_theyre_not_in_this_room'
 			: 'You_mentioned___mentions__but_theyre_not_in_this_room_You_can_ask_a_room_admin_to_add_them';
 
+		// TODO: Mentions style
+		// TODO: Use real name setting
 		void api.broadcast('notify.ephemeralMessage', message.u._id, message.rid, {
 			msg: '',
 			mentions: mentionsUsersNotInChannel,
