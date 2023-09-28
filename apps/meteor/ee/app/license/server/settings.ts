@@ -29,9 +29,13 @@ settings.watch<string>('Enterprise_License', async (license) => {
 		return;
 	}
 
-	if (!(await License.setLicense(license))) {
-		await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
-		return;
+	try {
+		if (!(await License.setLicense(license))) {
+			await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
+			return;
+		}
+	} catch (_error) {
+		// do nothing
 	}
 
 	await Settings.updateValueById('Enterprise_License_Status', 'Valid');
