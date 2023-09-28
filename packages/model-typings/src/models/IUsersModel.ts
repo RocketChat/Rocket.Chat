@@ -8,19 +8,8 @@ import type {
 	IPersonalAccessToken,
 	AtLeast,
 	ILivechatAgentStatus,
-	IUserWithRoleInfo,
 } from '@rocket.chat/core-typings';
-import type {
-	Document,
-	UpdateResult,
-	FindCursor,
-	FindOptions,
-	Filter,
-	FilterOperators,
-	InsertOneResult,
-	DeleteResult,
-	AggregationCursor,
-} from 'mongodb';
+import type { Document, UpdateResult, FindCursor, FindOptions, Filter, FilterOperators, InsertOneResult, DeleteResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -55,16 +44,21 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		extraQuery?: any,
 		params?: { startsWith?: boolean; endsWith?: boolean },
 	): FindPaginated<FindCursor<T>>;
-	findPaginatedActiveUsersByRoomIdWithHighestRole<T = IUserWithRoleInfo>(
+	countActiveUsersExcept(
 		searchTerm: string,
-		rid: string,
+		exceptions: IUser['_id'][],
 		searchFields: string[],
-		ownersIds: IUser['_id'][],
-		moderatorsIds: IUser['_id'][],
+		extraQuery?: FilterOperators<string>[],
+		params?: { startsWith?: boolean; endsWith?: boolean },
+	): Promise<number>;
+	findPaginatedActiveUsersByIds<T = IUser>(
+		searchTerm: string,
+		searchFields: string[],
+		ids: IUser['_id'][],
 		options?: FindOptions<IUser>,
 		extraQuery?: FilterOperators<string>[],
 		params?: { startsWith?: boolean; endsWith?: boolean },
-	): Promise<AggregationCursor<{ members: T[]; totalCount: { total: number }[] }>>;
+	): FindPaginated<FindCursor<T>>;
 
 	findPaginatedByActiveLocalUsersExcept<T = IUser>(
 		searchTerm: any,

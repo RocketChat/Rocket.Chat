@@ -311,10 +311,8 @@ export class UsersRaw extends BaseRaw {
 			$and: [
 				{
 					active: true,
-					username: {
-						$exists: true,
-						...(exceptions.length && { $nin: exceptions }),
-					},
+					...(exceptions.length && { _id: { $nin: exceptions } }),
+					username: { $exists: true },
 					// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
 					...(searchTerm && orStmt.length && { $or: orStmt }),
 				},
@@ -325,12 +323,39 @@ export class UsersRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findPaginatedActiveUsersByRoomIdWithHighestRole(
+	countActiveUsersExcept(searchTerm, exceptions, searchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
+		if (exceptions == null) {
+			exceptions = [];
+		}
+		if (!Array.isArray(exceptions)) {
+			exceptions = [exceptions];
+		}
+
+		const regexString = (startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : '');
+		const termRegex = new RegExp(regexString, 'i');
+
+		const orStmt = (searchFields || []).map((el) => ({ [el.trim()]: termRegex }));
+
+		const query = {
+			$and: [
+				{
+					active: true,
+					...(exceptions.length && { _id: { $nin: exceptions } }),
+					username: { $exists: true },
+					// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
+					...(searchTerm && orStmt.length && { $or: orStmt }),
+				},
+				...extraQuery,
+			],
+		};
+
+		return this.col.countDocuments(query);
+	}
+
+	findPaginatedActiveUsersByIds(
 		searchTerm,
-		rid,
 		searchFields,
-		ownersIds,
-		moderatorsIds,
+		ids = [],
 		options = {},
 		extraQuery = [],
 		{ startsWith = false, endsWith = false } = {},
@@ -339,81 +364,21 @@ export class UsersRaw extends BaseRaw {
 		const termRegex = new RegExp(regexString, 'i');
 
 		const orStmt = (searchFields || []).map((el) => ({ [el.trim()]: termRegex }));
-		const userSearchConditions = [
-			{
-				active: true,
-				__rooms: rid,
-				username: { $exists: true },
-				// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
-				...(searchTerm && orStmt.length && { $or: orStmt }),
-			},
-			...extraQuery,
-		];
 
-		const ownerQuery = { $and: [...userSearchConditions, { _id: { $in: ownersIds } }] };
-		const moderatorQuery = { $and: [...userSearchConditions, { _id: { $in: moderatorsIds } }] };
-		const memberQuery = { $and: [...userSearchConditions, { _id: { $nin: [...ownersIds, ...moderatorsIds] } }] };
-
-		const skip =
-			options.skip !== 0
-				? [
-						{
-							$skip: options.skip,
-						},
-				  ]
-				: [];
-
-		const limit =
-			options.limit !== 0
-				? [
-						{
-							$limit: options.limit,
-						},
-				  ]
-				: [];
-
-		return this.col.aggregate(
-			[
+		const query = {
+			$and: [
 				{
-					$facet: {
-						owners: [
-							{ $match: ownerQuery },
-							{ $project: options.projection },
-							{ $addFields: { highestRole: { role: 'owner', level: 0 } } },
-						],
-						moderators: [
-							{ $match: moderatorQuery },
-							{ $project: options.projection },
-							{ $addFields: { highestRole: { role: 'moderator', level: 1 } } },
-						],
-						members: [
-							{ $match: memberQuery },
-							{ $project: options.projection },
-							{ $addFields: { highestRole: { role: 'member', level: 2 } } },
-						],
-					},
+					active: true,
+					...(ids.length && { _id: { $in: ids } }),
+					username: { $exists: true },
+					// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
+					...(searchTerm && orStmt.length && { $or: orStmt }),
 				},
-				{ $project: { allMembers: { $concatArrays: ['$owners', '$moderators', '$members'] } } },
-				{ $unwind: '$allMembers' },
-				{ $replaceRoot: { newRoot: '$allMembers' } },
-				{
-					$facet: {
-						members: [
-							{
-								$sort: {
-									'highestRole.level': 1,
-									...options.sort,
-								},
-							},
-							...skip,
-							...limit,
-						],
-						totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
-					},
-				},
+				...extraQuery,
 			],
-			{ allowDiskUse: true },
-		);
+		};
+
+		return this.findPaginated(query, options);
 	}
 
 	findPaginatedByActiveLocalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {

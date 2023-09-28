@@ -943,20 +943,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options);
 	}
 
-	findByRoomIdAndHighestRole(roomId: string, role: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
-		// roles ordered from lowest to highest
-		const mainRoles = ['moderator', 'owner'];
-
-		const roleIndex = mainRoles.indexOf(role || '');
-		const rolesToExclude = mainRoles.slice(roleIndex + 1);
-		const query = {
-			rid: roomId,
-			roles: { $eq: role, $nin: rolesToExclude },
-		};
-
-		return this.find(query, options);
-	}
-
 	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number> {
 		roles = ([] as string[]).concat(roles);
 		const query = {

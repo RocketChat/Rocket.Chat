@@ -757,22 +757,13 @@ API.v1.addRoute(
 			const { sort = {} } = await this.parseJsonQuery();
 			const { status, filter } = this.queryParams;
 
-			const cursor = await findUsersOfRoomByHighestRole({
+			const { members, total } = await findUsersOfRoomByHighestRole({
 				rid: findResult.rid,
 				...(status && { status: { $in: status } }),
 				limit,
 				filter,
 				...(sort?.username && { sort: { username: sort.username } }),
 			});
-
-			const result = await cursor.toArray();
-			if (!result?.[0]) {
-				return API.v1.failure('No user info could be found for the group provided');
-			}
-			const {
-				members,
-				totalCount: [{ total } = { total: 0 }],
-			} = result[0];
 
 			return API.v1.success({
 				members,
