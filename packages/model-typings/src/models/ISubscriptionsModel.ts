@@ -1,4 +1,4 @@
-import type { ISubscription, IRole, IUser, IRoom, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
+import type { ISubscription, IRole, IUser, IRoom, RoomType, SpotlightUser, IUserWithRoleInfo } from '@rocket.chat/core-typings';
 import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Document, AggregateOptions, Filter, InsertOneResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -75,6 +75,15 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		{ startsWith, endsWith }?: { startsWith?: string | false; endsWith?: string | false },
 		options?: AggregateOptions,
 	): Promise<SpotlightUser[]>;
+
+	findPaginatedActiveHighestRoleUsers(
+		searchTerm: string,
+		rid: IRoom['_id'],
+		searchFields: string[],
+		options?: FindOptions<IUser>,
+		extraQuery?: Filter<IUser & { __rooms: IRoom['_id'][] }>,
+		{ startsWith = false, endsWith = false }?: { startsWith?: string | false; endsWith?: string | false },
+	): Promise<{ members: IUserWithRoleInfo[]; totalCount: { total: number }; ids: { allMembersIds: string[] } }[]>;
 
 	incUnreadForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc: number): Promise<UpdateResult | Document>;
 
