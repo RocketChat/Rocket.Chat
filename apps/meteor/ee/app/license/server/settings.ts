@@ -38,7 +38,11 @@ settings.watch<string>('Enterprise_License', async (license) => {
 });
 
 if (process.env.ROCKETCHAT_LICENSE) {
-	await License.setLicense(process.env.ROCKETCHAT_LICENSE);
+	try {
+		await License.setLicense(process.env.ROCKETCHAT_LICENSE);
+	} catch (_error) {
+		// do nothing
+	}
 
 	Meteor.startup(async () => {
 		if (settings.get('Enterprise_License')) {
