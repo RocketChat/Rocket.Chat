@@ -86,15 +86,21 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 
 	const headers = useMemo(
 		() => [
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x140'>
+				{t('Name')}
+			</GenericTableHeaderCell>,
 			mediaQuery && (
-				<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
-					{t('Name')}
+				<GenericTableHeaderCell
+					key='username'
+					direction={sortDirection}
+					active={sortBy === 'username'}
+					onClick={setSort}
+					sort='username'
+					w='x140'
+				>
+					{t('Username')}
 				</GenericTableHeaderCell>
 			),
-
-			<GenericTableHeaderCell key='username' direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
-				{t('Username')}
-			</GenericTableHeaderCell>,
 			mediaQuery && (
 				<GenericTableHeaderCell
 					key='email'
@@ -113,14 +119,7 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 				</GenericTableHeaderCell>
 			),
 			tab === 'all' && (
-				<GenericTableHeaderCell
-					w='x200'
-					key='status'
-					direction={sortDirection}
-					active={sortBy === 'status'}
-					onClick={setSort}
-					sort='status'
-				>
+				<GenericTableHeaderCell key='status' direction={sortDirection} active={sortBy === 'status'} onClick={setSort} sort='status'>
 					{t('Registration_status')}
 				</GenericTableHeaderCell>
 			),
@@ -132,7 +131,7 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 			),
 
 			tab === 'pending' && (
-				<GenericTableHeaderCell key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x320'>
+				<GenericTableHeaderCell key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 					{t('Pending_action')}
 				</GenericTableHeaderCell>
 			),
@@ -152,50 +151,44 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 				</GenericTable>
 			)}
 
-			{/* TODO: finish error state -> improve tab verification and add translations */}
-			{!isLoading && !isSuccess && tab !== 'all' && tab !== 'active' && (
-				<GenericTable>
-					<GenericTableHeader>{headers}</GenericTableHeader>
-					<GenericTableBody>
+			<GenericTable>
+				<GenericTableHeader>{headers}</GenericTableHeader>
+				<GenericTableBody>
+					{!isLoading && !isSuccess && tab !== 'all' && tab !== 'active' && (
 						<States>
 							<StatesIcon name='user' />
-							<StatesTitle>No deactivated users</StatesTitle>
-							<StatesSubtitle>Deactivated users appear here</StatesSubtitle>
+							<StatesTitle>{tab === 'pending' ? t('No_pending_users') : t('No_deactivated_users')}</StatesTitle>
+							<StatesSubtitle>{tab === 'pending' ? t('Users_who_are_pending') : t('Deactivated_users_appear_here')}</StatesSubtitle>
 						</States>
-					</GenericTableBody>
-				</GenericTable>
-			)}
+					)}
 
-			{isSuccess && !!data && !!filteredUsers && data.count > 0 && (
-				<>
-					<GenericTable>
-						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>
-							{/* TODO: fix user type */}
+					{isSuccess && !!data && !!filteredUsers && data.count > 0 && (
+						<>
 							{filteredUsers.map((user) => (
 								<UsersTableRow
 									key={user._id}
 									onClick={handleClickOrKeyDown}
 									mediaQuery={mediaQuery}
-									user={user as any}
+									user={user}
 									tab={tab}
 									refetchUsers={refetch}
 									onReload={onReload}
 								/>
 							))}
-						</GenericTableBody>
-					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
-				</>
-			)}
+						</>
+					)}
+				</GenericTableBody>
+			</GenericTable>
+			<Pagination
+				divider
+				current={current}
+				itemsPerPage={itemsPerPage}
+				count={data?.total || 0}
+				onSetItemsPerPage={setItemsPerPage}
+				onSetCurrent={setCurrent}
+				{...paginationProps}
+			/>
+
 			{isSuccess && data?.count === 0 && <GenericNoResults />}
 			{isError && (
 				<States>

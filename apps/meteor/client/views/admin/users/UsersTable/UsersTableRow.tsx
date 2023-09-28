@@ -13,7 +13,7 @@ import UserAvatar from '../../../../components/avatar/UserAvatar';
 import ActionsMenu from './ActionsMenu';
 
 type UsersTableRowProps = {
-	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'emails' | 'active' | 'avatarETag' | 'roles'>;
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag' | 'lastLogin'>;
 	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
 	mediaQuery: boolean;
 	refetchUsers: ReturnType<typeof useQuery>['refetch'];
@@ -92,15 +92,6 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 				>
 					<Box display='flex' flexDirection='row' alignContent='flex-end'>
 						{active ? t('User_first_log_in') : t('Activation')}
-						{/* {active ? (
-							<Button small secondary mi='x32'>
-								{t('Resend_welcome_email')}
-							</Button>
-						) : (
-							<Button small primary mi='x32'>
-								{t('Activate')}
-							</Button>
-						)} */}
 					</Box>
 				</GenericTableCell>
 			)}
