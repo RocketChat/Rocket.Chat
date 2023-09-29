@@ -6044,5 +6044,18 @@
   "All_visible": "All visible",
   "Filter_by_room": "Filter by room type",
   "Filter_by_visibility": "Filter by visibility",
-  "Theme_Appearence": "Theme Appearence"
+  "Theme_Appearence": "Theme Appearence",
+  "Manage_subscription": "Manage subscription",
+  "Concurrent_users": "Concurrent users",
+  "Concurrent_users_available": "concurrent users available",
+  "Concurrent_users_peak": "Concurrent users peak (last 30 days)",
+  "Monthly_active_contacts": "Monthly active contacts",
+  "Monthly_usage": "Monthly usage",
+  "Upgrade": "Upgrade",
+  "Seats": "Seats",
+  "Marketplace_apps": "Marketplace apps",
+  "Private_apps": "Private apps",
+  "Finish_your_purchase": "Finish your purchase to avoid <1>downgrade consequences.</1>",
+  "Why_has_a_trial_been_applied_to_this_workspace": "<0>Why has a trial been applied to this workspace?</0>",
+  "Compare_plans": "<0>Compare plans</0>"
 }

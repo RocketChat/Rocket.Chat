@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react';
 import React from 'react';
 
 import { useAutoSequence } from '../../../stories/hooks/useAutoSequence';
-import UsagePieGraph from './UsagePieGraph';
+import UsagePieGraph from '../manageSubscription/UsagePieGraph';
 
 export default {
 	title: 'Admin/Info/UsagePieGraph',

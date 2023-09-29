@@ -4,10 +4,10 @@ import type { IInstance } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
-import SeatsCard from '../../../../ee/client/views/admin/info/SeatsCard';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import SeatsCard from '../manageSubscription/components/cards/SeatsCard';
 import DeploymentCard from './DeploymentCard';
 import LicenseCard from './LicenseCard';
 import UsageCard from './UsageCard';

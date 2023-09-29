@@ -61,7 +61,8 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const maxActiveUsers = getMaxActiveUsers() || null;
+			// const maxActiveUsers = getMaxActiveUsers() || null;
+			const maxActiveUsers = 50;
 			const activeUsers = await Users.getActiveLocalUserCount();
 
 			return API.v1.success({ maxActiveUsers, activeUsers });
