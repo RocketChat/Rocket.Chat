@@ -21,7 +21,6 @@ callbacks.add(
 	'livechat.applyDepartmentRestrictions',
 	async (originalQuery: FilterOperators<ILivechatDepartment> = {}, { userId }: { userId?: string | null } = { userId: null }) => {
 		if (!userId || !(await hasRoleAsync(userId, 'livechat-monitor'))) {
-			cbLogger.debug('Skipping callback. No user id provided or user is not a monitor');
 			return originalQuery;
 		}
 
