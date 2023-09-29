@@ -309,7 +309,7 @@ export const useQuickActions = (): {
 	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
 	const canCloseRoom = usePermission('close-livechat-room');
 	const canCloseOthersRoom = usePermission('close-others-livechat-room');
-	const canPlaceChatOnHold = Boolean(!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed);
+	const canPlaceChatOnHold = Boolean(!room.onHold && room.u && manualOnHoldAllowed);
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
