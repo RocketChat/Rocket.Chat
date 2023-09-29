@@ -42,7 +42,11 @@ const getReceiveOrigins = (origins: string) => {
 };
 
 WebApp.rawConnectHandlers.use('/embeddedLogin', async (_req, res) => {
-	if (!settings.get('Iframe_Integration_send_enable') || !settings.get('Iframe_Integration_receive_enable')) {
+	if (
+		!settings.get('Iframe_Integration_send_enable') ||
+		!settings.get('Iframe_Integration_receive_enable') ||
+		!settings.get('Accounts_iframe_enabled')
+	) {
 		res.writeHead(403);
 		res.end();
 	}
