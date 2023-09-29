@@ -35,15 +35,6 @@ export interface SupportedVersions {
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export interface CloudVersionsResponse {
+export interface SignedSupportedVersions extends SupportedVersions {
 	signed: string; // SerializedJWT<SupportedVersions>;
-	timestamp: string;
-	messages?: Message[];
-	versions: Version[];
-	exceptions?: {
-		domain: string;
-		uniqueId: string;
-		messages?: Message[];
-		versions: Version[];
-	};
 }

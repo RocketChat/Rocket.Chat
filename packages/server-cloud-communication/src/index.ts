@@ -1,3 +1,3 @@
-import type { CloudVersionsResponse } from './definitions';
+import type { SupportedVersions, SignedSupportedVersions } from './definitions';
 
-export { CloudVersionsResponse };
+export { SupportedVersions, SignedSupportedVersions };

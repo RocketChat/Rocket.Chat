@@ -1,10 +1,10 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
-import type { CloudVersionsResponse } from '@rocket.chat/server-cloud-communication';
+import type { SupportedVersions } from '@rocket.chat/server-cloud-communication';
 import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { supportedVersions } from '../../../../../ee/app/license/server/license';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { settings } from '../../../../settings/server';
 import { generateWorkspaceBearerHttpHeader } from '../getWorkspaceAccessToken';
@@ -80,9 +80,17 @@ const cacheValueInSettings = <T extends SettingValue>(
 /** CODE */
 
 const getSupportedVersionsFromCloud = async () => {
+	if (process.env.CLOUD_SUPPORTED_VERSIONS_TOKEN) {
+		return {
+			success: true,
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			result: JSON.parse(process.env.CLOUD_SUPPORTED_VERSIONS!),
+		};
+	}
+
 	const headers = await generateWorkspaceBearerHttpHeader();
 
-	const response = await handleResponse<CloudVersionsResponse>(
+	const response = await handleResponse<SupportedVersions>(
 		fetch('https://releases.rocket.chat/supported/server', {
 			headers,
 		}),
@@ -107,11 +115,9 @@ const getSupportedVersionsToken = async () => {
 	 * return the token
 	 */
 
-	const [versionsFromLicense, response] = await Promise.all([supportedVersions(), getSupportedVersionsFromCloud()]);
+	const [versionsFromLicense, response] = await Promise.all([License.supportedVersions(), getSupportedVersionsFromCloud()]);
 
-	// TODO: get values from jtw token
-
-	return supportedVersionsChooseLatest(versionsFromLicense, (response.success && response.result) || undefined);
+	return (await supportedVersionsChooseLatest(versionsFromLicense, (response.success && response.result) || undefined))?.signed;
 };
 
 export const getCachedSupportedVersionsToken = cacheValueInSettings('Cloud_Workspace_Supported_Versions_Token', getSupportedVersionsToken);
