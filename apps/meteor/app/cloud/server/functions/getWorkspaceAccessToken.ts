@@ -4,7 +4,13 @@ import { settings } from '../../../settings/server';
 import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
-export async function getWorkspaceAccessToken(forceNew = false, scope = '', save = true) {
+/**
+ * @param {boolean} forceNew
+ * @param {string} scope
+ * @param {boolean} save
+ * @returns string
+ */
+export async function getWorkspaceAccessToken(forceNew = false, scope = '', save = true): Promise<string> {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
 	if (!workspaceRegistered) {
@@ -16,6 +22,7 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 	if (expires === null) {
 		throw new Error('Cloud_Workspace_Access_Token_Expires_At is not set');
 	}
+
 	const now = new Date();
 
 	if (expires.value && now < expires.value && !forceNew) {
@@ -33,3 +40,46 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 
 	return accessToken.token;
 }
+
+export class CloudWorkspaceAccessTokenError extends Error {
+	constructor() {
+		super('Could not get workspace access token');
+	}
+}
+
+export async function getWorkspaceAccessTokenOrThrow(forceNew = false, scope = '', save = true): Promise<string> {
+	const token = await getWorkspaceAccessToken(forceNew, scope, save);
+
+	if (!token) {
+		throw new CloudWorkspaceAccessTokenError();
+	}
+
+	return token;
+}
+
+export const generateWorkspaceBearerHttpHeaderOrThrow = async (
+	forceNew = false,
+	scope = '',
+	save = true,
+): Promise<{ Authorization: string }> => {
+	const token = await getWorkspaceAccessTokenOrThrow(forceNew, scope, save);
+	return {
+		Authorization: `Bearer ${token}`,
+	};
+};
+
+export const generateWorkspaceBearerHttpHeader = async (
+	forceNew = false,
+	scope = '',
+	save = true,
+): Promise<{ Authorization: string } | undefined> => {
+	const token = await getWorkspaceAccessToken(forceNew, scope, save);
+
+	if (!token) {
+		return undefined;
+	}
+
+	return {
+		Authorization: `Bearer ${token}`,
+	};
+};

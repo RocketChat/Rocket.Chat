@@ -79,7 +79,7 @@ export async function getWorkspaceLicense(): Promise<{ updated: boolean; license
 
 		await Settings.updateValueById('Cloud_Workspace_License', payload.license);
 
-		callbacks.run('workspaceLicenseChanged', payload.license);
+		await callbacks.run('workspaceLicenseChanged', payload.license);
 
 		return { updated: true, license: payload.license };
 	} catch (err) {

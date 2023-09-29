@@ -27,7 +27,7 @@ import {
 } from '@rocket.chat/models';
 import { MongoInternals } from 'meteor/mongo';
 
-import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
+import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server/getStatistics';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
 import { getControl } from '../../../../server/lib/migrations';

@@ -1,20 +1,13 @@
+import { License } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { onValidateLicenses, getLicenses } from '../../app/license/server/license';
-
 const handleHadTrial = (): void => {
-	getLicenses().forEach(({ valid, license }): void => {
-		if (!valid) {
-			return;
-		}
-
-		if (license.meta?.trial) {
-			void Settings.updateValueById('Cloud_Workspace_Had_Trial', true);
-		}
-	});
+	if (License.getLicense()?.information.trial) {
+		void Settings.updateValueById('Cloud_Workspace_Had_Trial', true);
+	}
 };
 
 Meteor.startup(() => {
-	onValidateLicenses(handleHadTrial);
+	License.onValidateLicense(handleHadTrial);
 });
