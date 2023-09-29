@@ -1,4 +1,4 @@
-import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, FieldGroup, Margins } from '@rocket.chat/fuselage';
+import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, FieldGroup, Margins, Select } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback } from 'react';
 
@@ -11,7 +11,8 @@ export default function IncomingWebhookForm({ formValues, formHandlers, extraDat
 
 	const absoluteUrl = useAbsoluteUrl();
 
-	const { enabled, channel, username, name, alias, avatar, emoji, scriptEnabled, script, overrideDestinationChannelEnabled } = formValues;
+	const { enabled, channel, username, name, alias, avatar, emoji, scriptEnabled, script, scriptEngine, overrideDestinationChannelEnabled } =
+		formValues;
 
 	const {
 		handleEnabled,
@@ -24,6 +25,7 @@ export default function IncomingWebhookForm({ formValues, formHandlers, extraDat
 		handleScriptEnabled,
 		handleOverrideDestinationChannelEnabled,
 		handleScript,
+		handleScriptEngine,
 	} = formHandlers;
 
 	const url = absoluteUrl(`hooks/${extraData._id}/${extraData.token}`);
@@ -41,6 +43,14 @@ export default function IncomingWebhookForm({ formValues, formHandlers, extraDat
 		additionalFields,
 		url,
 	});
+
+	const scriptEngineOptions = useMemo(
+		() => [
+			['vm2', t('Script_Engine_vm2')],
+			['isolated-vm', t('Script_Engine_isolated_vm')],
+		],
+		[t],
+	);
 
 	const hilightedExampleJson = useHighlightedCode('json', JSON.stringify(exampleData, null, 2));
 
@@ -171,6 +181,18 @@ export default function IncomingWebhookForm({ formValues, formHandlers, extraDat
 								</Field>
 							),
 							[t, scriptEnabled, handleScriptEnabled],
+						)}
+						{useMemo(
+							() => (
+								<Field>
+									<Field.Label>{t('Script_Engine')}</Field.Label>
+									<Field.Row>
+										<Select flexGrow={1} value={scriptEngine} options={scriptEngineOptions} onChange={handleScriptEngine} />
+									</Field.Row>
+									<Field.Hint>{t('Script_Engine_Description')}</Field.Hint>
+								</Field>
+							),
+							[scriptEngine, scriptEngineOptions, handleScriptEngine, t],
 						)}
 						{useMemo(
 							() => (
