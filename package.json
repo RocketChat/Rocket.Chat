@@ -21,7 +21,7 @@
 		"@types/chart.js": "^2.9.37",
 		"@types/js-yaml": "^4.0.5",
 		"husky": "^7.0.4",
-		"turbo": "^1.10.13"
+		"turbo": "~1.10.14"
 	},
 	"workspaces": [
 		"apps/*",
