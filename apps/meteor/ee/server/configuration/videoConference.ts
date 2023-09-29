@@ -1,16 +1,16 @@
 import { VideoConf } from '@rocket.chat/core-services';
 import type { IRoom, IUser, VideoConference } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../lib/callbacks';
 import { videoConfTypes } from '../../../server/lib/videoConfTypes';
-import { onLicense } from '../../app/license/server';
 import { addSettings } from '../settings/video-conference';
 
 Meteor.startup(async () => {
-	await onLicense('videoconference-enterprise', async () => {
+	await License.onLicense('videoconference-enterprise', async () => {
 		await addSettings();
 
 		videoConfTypes.registerVideoConferenceType(

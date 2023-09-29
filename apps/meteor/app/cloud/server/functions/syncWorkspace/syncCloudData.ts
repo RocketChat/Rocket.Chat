@@ -2,60 +2,37 @@ import { NPS, Banner } from '@rocket.chat/core-services';
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { getAndCreateNpsSurvey } from '../../../../server/services/nps/getAndCreateNpsSurvey';
-import { settings } from '../../../settings/server';
-import { buildWorkspaceRegistrationData } from './buildRegistrationData';
-import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
-import { getWorkspaceLicense } from './getWorkspaceLicense';
-import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+import { SystemLogger } from '../../../../../server/lib/logger/system';
+import { getAndCreateNpsSurvey } from '../../../../../server/services/nps/getAndCreateNpsSurvey';
+import { settings } from '../../../../settings/server';
+import { buildWorkspaceRegistrationData } from '../buildRegistrationData';
+import { generateWorkspaceBearerHttpHeaderOrThrow } from '../getWorkspaceAccessToken';
+import { handleResponse } from '../supportedVersionsToken/supportedVersionsToken';
 
-export async function syncWorkspace(_reconnectCheck = false) {
-	const { workspaceRegistered } = await retrieveRegistrationStatus();
-	if (!workspaceRegistered) {
-		return false;
-	}
-
+export async function syncCloudData() {
 	const info = await buildWorkspaceRegistrationData(undefined);
 
-	const workspaceUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
+	const token = await generateWorkspaceBearerHttpHeaderOrThrow(true);
 
-	let result;
-	try {
-		const headers: Record<string, string> = {};
-		const token = await getWorkspaceAccessToken(true);
-
-		if (token) {
-			headers.Authorization = `Bearer ${token}`;
-		} else {
-			return false;
-		}
-
-		const request = await fetch(`${workspaceUrl}/client`, {
-			headers,
+	const request = await handleResponse(
+		fetch(`${settings.get('Cloud_Workspace_Registration_Client_Uri')}/client`, {
+			headers: {
+				...token,
+			},
 			body: info,
 			method: 'POST',
-		});
+		}),
+	);
 
-		if (!request.ok) {
-			throw new Error((await request.json()).error);
-		}
-
-		result = await request.json();
-	} catch (err: any) {
-		SystemLogger.error({
+	if (!request.success) {
+		return SystemLogger.error({
 			msg: 'Failed to sync with Rocket.Chat Cloud',
 			url: '/client',
-			err,
+			err: request.error,
 		});
-
-		return false;
-	} finally {
-		// aways fetch the license
-		await getWorkspaceLicense();
 	}
 
-	const data = result;
+	const data = request.result as any;
 	if (!data) {
 		return true;
 	}

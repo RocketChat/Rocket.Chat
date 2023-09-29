@@ -143,7 +143,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 		await InstanceStatus.registerInstance('rocket.chat', instance);
 
-		const hasLicense = await License.hasLicense('scalability');
+		const hasLicense = await License.hasModule('scalability');
 		if (!hasLicense) {
 			return;
 		}

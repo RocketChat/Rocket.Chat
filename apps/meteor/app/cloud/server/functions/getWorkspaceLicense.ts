@@ -5,64 +5,52 @@ import { callbacks } from '../../../../lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { LICENSE_VERSION } from '../license';
-import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
+import { generateWorkspaceBearerHttpHeaderOrThrow } from './getWorkspaceAccessToken';
+import { handleResponse } from './supportedVersionsToken/supportedVersionsToken';
 
-export async function getWorkspaceLicense(): Promise<{ updated: boolean; license: string }> {
+export async function getWorkspaceLicense() {
+	const token = await generateWorkspaceBearerHttpHeaderOrThrow();
+
 	const currentLicense = await Settings.findOne('Cloud_Workspace_License');
 
-	const cachedLicenseReturn = async () => {
-		const license = currentLicense?.value as string;
-		if (license) {
-			await callbacks.run('workspaceLicenseChanged', license);
-		}
-
-		return { updated: false, license };
-	};
-
-	const token = await getWorkspaceAccessToken();
-	if (!token) {
-		return cachedLicenseReturn();
+	// TODO: check if this is the correct way to handle this
+	// If there is no license, in theory, it should be a new workspace non registered
+	// in this case the `generateWorkspaceBearerHttpHeaderOrThrow` show throw an error before
+	// so in theory, this should never happen
+	if (!currentLicense?._updatedAt) {
+		throw new Error('Failed to retrieve current license');
 	}
 
-	let licenseResult;
-	try {
-		const request = await fetch(`${settings.get('Cloud_Workspace_Registration_Client_Uri')}/license`, {
+	const request = await handleResponse(
+		fetch(`${settings.get('Cloud_Workspace_Registration_Client_Uri')}/license`, {
 			headers: {
-				Authorization: `Bearer ${token}`,
+				...token,
 			},
 			params: {
 				version: LICENSE_VERSION,
 			},
-		});
+		}),
+	);
 
-		if (!request.ok) {
-			throw new Error((await request.json()).error);
-		}
-
-		licenseResult = await request.json();
-	} catch (err: any) {
+	if (!request.success) {
 		SystemLogger.error({
 			msg: 'Failed to update license from Rocket.Chat Cloud',
 			url: '/license',
-			err,
+			err: request.error,
 		});
-
-		return cachedLicenseReturn();
+		if (currentLicense.value) {
+			return callbacks.run('workspaceLicenseChanged', currentLicense.value);
+		}
+		return;
 	}
 
-	const remoteLicense = licenseResult;
-
-	if (!currentLicense || !currentLicense._updatedAt) {
-		throw new Error('Failed to retrieve current license');
-	}
+	const remoteLicense = request.result as any;
 
 	if (remoteLicense.updatedAt <= currentLicense._updatedAt) {
-		return cachedLicenseReturn();
+		return callbacks.run('workspaceLicenseChanged', currentLicense.value);
 	}
 
 	await Settings.updateValueById('Cloud_Workspace_License', remoteLicense.license);
 
 	await callbacks.run('workspaceLicenseChanged', remoteLicense.license);
-
-	return { updated: true, license: remoteLicense.license };
 }
