@@ -20,6 +20,7 @@ type AdminUserInfoActionsProps = {
 	isAdmin: boolean;
 	onChange: () => void;
 	onReload: () => void;
+	tab: 'all' | 'invited' | 'new' | 'active' | 'deactivated';
 };
 
 const AdminUserInfoActions = ({
@@ -30,6 +31,7 @@ const AdminUserInfoActions = ({
 	isAdmin,
 	onChange,
 	onReload,
+	tab,
 }: AdminUserInfoActionsProps): ReactElement => {
 	const t = useTranslation();
 	const directRoute = useRoute('direct');
@@ -80,24 +82,25 @@ const AdminUserInfoActions = ({
 					disabled: isFederatedUser,
 				},
 			}),
-			...(changeAdminStatusAction && !isFederatedUser && { makeAdmin: changeAdminStatusAction }),
-			...(resetE2EKeyAction && !isFederatedUser && { resetE2EKey: resetE2EKeyAction }),
-			...(resetTOTPAction && !isFederatedUser && { resetTOTP: resetTOTPAction }),
+			...(changeAdminStatusAction && !isFederatedUser && tab !== 'deactivated' && { makeAdmin: changeAdminStatusAction }),
+			...(resetE2EKeyAction && !isFederatedUser && tab !== 'deactivated' && { resetE2EKey: resetE2EKeyAction }),
+			...(resetTOTPAction && !isFederatedUser && tab !== 'deactivated' && { resetTOTP: resetTOTPAction }),
 			...(changeUserStatusAction && !isFederatedUser && { changeActiveStatus: changeUserStatusAction }),
 			...(deleteUserAction && { delete: deleteUserAction }),
 		}),
 		[
-			t,
 			canDirectMessage,
+			t,
 			directMessageClick,
 			canEditOtherUserInfo,
+			isFederatedUser,
 			editUserClick,
 			changeAdminStatusAction,
-			changeUserStatusAction,
-			deleteUserAction,
+			tab,
 			resetE2EKeyAction,
 			resetTOTPAction,
-			isFederatedUser,
+			changeUserStatusAction,
+			deleteUserAction,
 		],
 	);
 

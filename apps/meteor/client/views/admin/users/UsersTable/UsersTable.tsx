@@ -15,7 +15,7 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import { useFilterActiveUsers } from '../hooks/useFilterActiveUsers';
+import { useFilterActiveOrDeactivatedUsers } from '../hooks/useFilterActiveOrDeactivatedUsers';
 import { useListUsers } from '../hooks/useListUsers';
 import UsersTableRow from './UsersTableRow';
 
@@ -51,7 +51,7 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 
 	const useAllUsers = () => (tab === 'all' && isSuccess ? data?.users : []);
 
-	const filteredUsers = [...useAllUsers(), ...useFilterActiveUsers(data?.users, tab)];
+	const filteredUsers = [...useAllUsers(), ...useFilterActiveOrDeactivatedUsers(data?.users, tab)];
 
 	useEffect(() => {
 		reload.current = refetch;

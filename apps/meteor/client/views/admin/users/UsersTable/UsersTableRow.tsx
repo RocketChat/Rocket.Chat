@@ -54,18 +54,21 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 
 	const menuOptions = {
 		...(changeAdminStatusAction &&
-			!isFederatedUser && {
+			!isFederatedUser &&
+			tab !== 'deactivated' && {
 				makeAdmin: {
 					label: { label: changeAdminStatusAction.label, icon: changeAdminStatusAction.icon },
 					action: changeAdminStatusAction.action,
 				},
 			}),
 		...(resetE2EKeyAction &&
-			!isFederatedUser && {
+			!isFederatedUser &&
+			tab !== 'deactivated' && {
 				resetE2EKey: { label: { label: resetE2EKeyAction.label, icon: resetE2EKeyAction.icon }, action: resetE2EKeyAction.action },
 			}),
 		...(resetTOTPAction &&
-			!isFederatedUser && {
+			!isFederatedUser &&
+			tab !== 'deactivated' && {
 				resetTOTP: { label: { label: resetTOTPAction.label, icon: resetTOTPAction.icon }, action: resetTOTPAction.action },
 			}),
 		...(changeUserStatusAction &&
