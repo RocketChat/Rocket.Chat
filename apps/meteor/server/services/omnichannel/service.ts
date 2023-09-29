@@ -1,6 +1,7 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IOmnichannelService } from '@rocket.chat/core-services';
 import type { AtLeast, IOmnichannelQueue, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import moment from 'moment';
 
 import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
@@ -30,16 +31,15 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 			}
 		});
 
-		// TODO: Waiting for license definitions
-		/* this.onEvent('mac.limitreached', async (): Promise<void> => {
-			// void Livechat.notifyMacLimitReached();
+		License.onLimitReached('monthlyActiveContacts', async (): Promise<void> => {
+			void this.api?.broadcast('mac.LimitReached', {});
 			await this.queueWorker.stop();
 		});
 
-		this.onEvent('license.validated', async (): Promise<void> => {
-			// void Livechat.notifyLicenseChanged();
+		License.onValidateLicense(async (): Promise<void> => {
+			void this.api?.broadcast('mac.limitRestored', {});
 			await this.queueWorker.shouldStart();
-		}); */
+		});
 	}
 
 	async started() {
@@ -54,13 +54,12 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 
 	async isRoomEnabled(room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {
 		const currentMonth = moment.utc().format('YYYY-MM');
-		// return license.isMacOnLimit() || room.v.activity.includes(currentMonth)
 		// @ts-expect-error - v.activity
-		return false || room.v?.activity?.includes(currentMonth);
+		return room.v?.activity?.includes(currentMonth) || !(await License.shouldPreventAction('monthlyActiveContacts'));
 	}
 
 	async checkMACLimit(): Promise<boolean> {
 		// return license.isMacOnLimit();
-		return true;
+		return !(await License.shouldPreventAction('monthlyActiveContacts'));
 	}
 }

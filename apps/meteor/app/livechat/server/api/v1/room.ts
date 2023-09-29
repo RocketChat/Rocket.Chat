@@ -75,10 +75,6 @@ API.v1.addRoute('livechat/room', {
 				},
 			};
 
-			if (!(await Omnichannel.checkMACLimit())) {
-				throw new Error('error-mac-limit-reached');
-			}
-
 			const newRoom = await getRoom({ guest, rid, agent, roomInfo, extraParams });
 			return API.v1.success(newRoom);
 		}
