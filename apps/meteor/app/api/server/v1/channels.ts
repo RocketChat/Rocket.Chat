@@ -1,5 +1,5 @@
 import { Team } from '@rocket.chat/core-services';
-import type { IRoom, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, IUser, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
 	isChannelsAddAllProps,
@@ -1065,7 +1065,7 @@ API.v1.addRoute(
 
 			const { members, total } = await findUsersOfRoomByHighestRole({
 				rid: findResult._id,
-				...(status && { status: { $in: status } }),
+				...(status && { status: { $in: status as UserStatus[] } }),
 				limit,
 				filter,
 				...(sort?.username && { sort: { username: sort.username } }),

@@ -1,5 +1,5 @@
 import { Team } from '@rocket.chat/core-services';
-import type { IIntegration, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
+import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -759,7 +759,7 @@ API.v1.addRoute(
 
 			const { members, total } = await findUsersOfRoomByHighestRole({
 				rid: findResult.rid,
-				...(status && { status: { $in: status } }),
+				...(status && { status: { $in: status as UserStatus[] } }),
 				limit,
 				filter,
 				...(sort?.username && { sort: { username: sort.username } }),
