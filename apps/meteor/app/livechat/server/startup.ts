@@ -62,14 +62,12 @@ Meteor.startup(async () => {
 	await createDefaultBusinessHourIfNotExists();
 
 	settings.watch<boolean>('Livechat_enable_business_hours', async (value) => {
-		Livechat.logger.debug(`Changing business hour type to ${value}`);
+		Livechat.logger.info(`Changing business hour type to ${value}`);
 		if (value) {
 			await businessHourManager.startManager();
-			Livechat.logger.debug(`Business hour manager started`);
 			return;
 		}
 		await businessHourManager.stopManager();
-		Livechat.logger.debug(`Business hour manager stopped`);
 	});
 
 	settings.watch<string>('Livechat_Routing_Method', (value) => {

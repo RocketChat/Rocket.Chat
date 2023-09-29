@@ -1,9 +1,8 @@
 import { log } from 'console';
 
 import { Analytics } from '@rocket.chat/core-services';
+import { License } from '@rocket.chat/license';
 import { CannedResponse, OmnichannelServiceLevelAgreements, LivechatRooms, LivechatTag, LivechatUnit, Users } from '@rocket.chat/models';
-
-import { getModules, getTags, hasLicense } from './license';
 
 type ENTERPRISE_STATISTICS = GenericStats & Partial<EEOnlyStats>;
 
@@ -28,8 +27,8 @@ type EEOnlyStats = {
 
 export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 	const genericStats: GenericStats = {
-		modules: getModules(),
-		tags: getTags().map(({ name }) => name),
+		modules: License.getModules(),
+		tags: License.getTags().map(({ name }) => name),
 		seatRequests: await Analytics.getSeatRequestCount(),
 	};
 
@@ -45,7 +44,7 @@ export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 
 // These models are only available on EE license so don't import them inside CE license as it will break the build
 async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
-	if (!hasLicense('livechat-enterprise')) {
+	if (!License.hasModule('livechat-enterprise')) {
 		return;
 	}
 
