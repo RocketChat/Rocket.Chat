@@ -40,6 +40,8 @@ test.describe.serial('message-actions', () => {
 		await page.locator('[data-qa-id="edit-message"]').click();
 		await page.locator('[name="msg"]').fill('this message was edited');
 		await page.keyboard.press('Enter');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('this message was edited');
 	});
 
 	test('expect message is deleted', async ({ page }) => {
@@ -47,6 +49,8 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('[data-qa-id="delete-message"]').click();
 		await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
+
+		await expect(poHomeChannel.content.lastUserMessageBody).not.toBeVisible();
 	});
 
 	test('expect quote the message', async ({ page }) => {
