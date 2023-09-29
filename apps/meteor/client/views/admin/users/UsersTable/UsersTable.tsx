@@ -86,18 +86,11 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x140'>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>,
 			mediaQuery && (
-				<GenericTableHeaderCell
-					key='username'
-					direction={sortDirection}
-					active={sortBy === 'username'}
-					onClick={setSort}
-					sort='username'
-					w='x140'
-				>
+				<GenericTableHeaderCell key='username' direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
 					{t('Username')}
 				</GenericTableHeaderCell>
 			),

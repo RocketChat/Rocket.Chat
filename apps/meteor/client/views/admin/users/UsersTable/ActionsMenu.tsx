@@ -1,37 +1,29 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Menu, Option } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import type { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
+import type { Action } from '../../../hooks/useActionSpread';
 import { useChangeAdminStatusAction } from '../hooks/useChangeAdminStatusAction';
-import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
 import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 
 type ActionsMenuProps = {
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'emails' | 'active' | 'avatarETag' | 'roles'>;
-	refetchUsers: ReturnType<typeof useQuery>['refetch'];
-	onReload: () => void;
 	tab: string;
+	changeUserStatusAction: Action | undefined;
+	onChange: () => void;
+	onReload: () => void;
 };
 
-const ActionsMenu = ({ user, refetchUsers, onReload, tab }: ActionsMenuProps): ReactElement | null => {
+const ActionsMenu = ({ user, tab, changeUserStatusAction, onChange, onReload }: ActionsMenuProps): ReactElement | null => {
 	const userId = user._id;
 	const isAdmin = user.roles?.includes('admin');
-	const isActive = user.active;
 	const isFederatedUser = isUserFederated(user);
 
-	const onChange = useMutableCallback(() => {
-		onReload();
-		refetchUsers();
-	});
-
 	const changeAdminStatusAction = useChangeAdminStatusAction(userId, isAdmin, onChange);
-	const changeUserStatusAction = useChangeUserStatusAction(userId, isActive, onChange);
 	const deleteUserAction = useDeleteUserAction(userId, onChange, onReload);
 	const resetTOTPAction = useResetTOTPAction(userId);
 	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
@@ -84,7 +76,6 @@ const ActionsMenu = ({ user, refetchUsers, onReload, tab }: ActionsMenuProps): R
 
 		return (
 			<Menu
-				mi={4}
 				placement='bottom-start'
 				flexShrink={0}
 				key='menu'

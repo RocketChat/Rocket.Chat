@@ -1,6 +1,7 @@
 import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { UserStatus as Status } from '@rocket.chat/core-typings';
 import { Box, Button } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -10,6 +11,7 @@ import { Roles } from '../../../../../app/models/client';
 import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
 import { UserStatus } from '../../../../components/UserStatus';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
 import ActionsMenu from './ActionsMenu';
 
 type UsersTableRowProps = {
@@ -23,13 +25,20 @@ type UsersTableRowProps = {
 
 const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
-	const { _id, emails, username, name, status, roles, active, avatarETag } = user as IUser;
+	const { _id, emails, username, name, status, roles, active, avatarETag } = user;
 	const registrationStatusText = active ? t('Active') : t('Deactivated');
 
 	const roleNames = (roles || [])
 		.map((roleId) => (Roles.findOne(roleId, { fields: { name: 1 } }) as IRole | undefined)?.name)
 		.filter((roleName): roleName is string => !!roleName)
 		.join(', ');
+
+	const onChange = useMutableCallback(() => {
+		onReload();
+		refetchUsers();
+	});
+
+	const changeUserStatusAction = useChangeUserStatusAction(user._id, user.active, onChange);
 
 	return (
 		<GenericTableRow
@@ -82,32 +91,32 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 				</GenericTableCell>
 			)}
 			{tab === 'pending' && (
-				<GenericTableCell
-					fontScale='p2'
-					color='hint'
-					onClick={(e): void => {
-						e.stopPropagation();
-					}}
-					w='fit-content'
-				>
+				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 					<Box display='flex' flexDirection='row' alignContent='flex-end'>
 						{active ? t('User_first_log_in') : t('Activation')}
 					</Box>
 				</GenericTableCell>
 			)}
 
-			<GenericTableCell display='flex' flexDirection='row'>
+			<GenericTableCell
+				display='flex'
+				flexDirection='row'
+				justifyContent='flex-end'
+				onClick={(e): void => {
+					e.stopPropagation();
+				}}
+			>
 				{tab === 'pending' &&
 					(active ? (
-						<Button small secondary mie='x16'>
+						<Button small secondary mie={8}>
 							{t('Resend_welcome_email')}
 						</Button>
 					) : (
-						<Button small primary mie='x16'>
+						<Button small primary mie={8} onClick={changeUserStatusAction?.action}>
 							{t('Activate')}
 						</Button>
 					))}
-				<ActionsMenu user={user} refetchUsers={refetchUsers} onReload={onReload} tab={tab} />
+				<ActionsMenu user={user} tab={tab} changeUserStatusAction={changeUserStatusAction} onChange={onChange} onReload={onReload} />
 			</GenericTableCell>
 		</GenericTableRow>
 	);
