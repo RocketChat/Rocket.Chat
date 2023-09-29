@@ -78,7 +78,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	async started(): Promise<void> {
 		try {
-			this.shouldWork = await licenseService.hasLicense('scalability');
+			this.shouldWork = await licenseService.hasModule('scalability');
 		} catch (e: unknown) {
 			// ignore
 		}
