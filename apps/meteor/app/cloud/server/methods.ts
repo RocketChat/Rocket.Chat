@@ -108,7 +108,9 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return syncWorkspace();
+		await syncWorkspace();
+
+		return true;
 	},
 	async 'cloud:connectWorkspace'(token) {
 		check(token, String);

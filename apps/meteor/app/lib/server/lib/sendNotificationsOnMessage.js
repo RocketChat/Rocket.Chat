@@ -1,3 +1,4 @@
+import { Room } from '@rocket.chat/core-services';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
@@ -7,12 +8,7 @@ import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { settings } from '../../../settings/server';
-import {
-	callJoinRoom,
-	messageContainsHighlight,
-	parseMessageTextPerUser,
-	replaceMentionedUsernamesWithFullNames,
-} from '../functions/notifications';
+import { messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { getEmailData, shouldNotifyEmail } from '../functions/notifications/email';
 import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
@@ -365,7 +361,7 @@ export async function sendAllNotifications(message, room) {
 
 		const users = await Promise.all(
 			mentions.map(async (userId) => {
-				await callJoinRoom(userId, room._id);
+				await Room.join({ room, user: { _id: userId } });
 
 				return userId;
 			}),
