@@ -105,6 +105,10 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/admin/moderation${`/${string}` | ''}${`/${string}` | ''}`;
 			pattern: '/admin/moderation/:context?/:id?';
 		};
+		'manage-subscription': {
+			pathname: `/admin/manage-subscription`;
+			pattern: '/admin/manage-subscription';
+		};
 	}
 }
 
@@ -236,4 +240,9 @@ registerAdminRoute('/engagement/:tab?', {
 registerAdminRoute('/device-management/:context?/:id?', {
 	name: 'device-management',
 	component: lazy(() => import('../../../ee/client/views/admin/deviceManagement/DeviceManagementAdminRoute')),
+});
+
+registerAdminRoute('/manage-subscription', {
+	name: 'manage-subscription',
+	component: lazy(() => import('./manageSubscription/ManageSubscriptionRoute')),
 });
