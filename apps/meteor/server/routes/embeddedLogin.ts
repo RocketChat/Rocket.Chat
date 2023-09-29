@@ -22,7 +22,7 @@ const getPage = (nonce: string, receiveOrigins: string[], sendOrigin: string) =>
 					if (data.event === 'login-with-token' && data.loginToken) {
 						localStorage.setItem('Meteor.loginToken', data.loginToken);
 				
-						window.location.href = window.location.href.replace('/iframeLogin', data.path ?? '/home');
+						window.location.href = window.location.href.replace('/embeddedLogin', data.path ?? '/home');
 					}
 				});
 				
