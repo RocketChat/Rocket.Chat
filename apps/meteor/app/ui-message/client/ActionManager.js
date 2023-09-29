@@ -13,14 +13,18 @@ import { t } from '../../utils/lib/i18n';
 
 const UiKitModal = lazy(() => import('../../../client/views/modal/uikit/UiKitModal'));
 
+/** @typedef {Exclude<import('react').ContextType<typeof import('@rocket.chat/ui-contexts').ActionManagerContext>, undefined>} ActionManager */
+
 export const events = new Emitter();
 
-export const on = (...args) => {
-	events.on(...args);
+/** @type {ActionManager['on']} */
+export const on = (viewId, listener) => {
+	events.on(viewId, listener);
 };
 
-export const off = (...args) => {
-	events.off(...args);
+/** @type {ActionManager['off']} */
+export const off = (viewId, listener) => {
+	events.off(viewId, listener);
 };
 
 const TRIGGER_TIMEOUT = 5000;
@@ -29,6 +33,7 @@ const TRIGGER_TIMEOUT_ERROR = 'TRIGGER_TIMEOUT_ERROR';
 
 const triggersId = new Map();
 
+/** @type {Map<string, { close: () => void }>} */
 const instances = new Map();
 
 const invalidateTriggerId = (id) => {
@@ -44,6 +49,7 @@ export const generateTriggerId = (appId) => {
 	return triggerId;
 };
 
+/** @type {ActionManager['handlePayloadUserInteraction']} */
 export const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) => {
 	if (!triggersId.has(triggerId)) {
 		return;
@@ -154,13 +160,14 @@ export const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...d
 		return UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN;
 	}
 
-	if ([UIKitInteractionTypes.BANNER_OPEN].includes(type)) {
+	if (type === UIKitInteractionTypes.BANNER_OPEN) {
 		banners.open(data);
 		instances.set(viewId, {
 			close() {
 				banners.closeById(viewId);
 			},
 		});
+
 		return UIKitInteractionTypes.BANNER_OPEN;
 	}
 
@@ -185,6 +192,7 @@ export const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...d
 	return UIKitInteractionTypes.MODAL_ClOSE;
 };
 
+/** @type {ActionManager['triggerAction']} */
 export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, container, tmid, ...rest }) =>
 	new Promise(async (resolve, reject) => {
 		events.emit('busy', { busy: true });
@@ -219,8 +227,10 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, c
 		return resolve(handlePayloadUserInteraction(interactionType, data));
 	});
 
+/** @type {ActionManager['triggerBlockAction']} */
 export const triggerBlockAction = (options) => triggerAction({ type: UIKitIncomingInteractionType.BLOCK, ...options });
 
+/** @type {ActionManager['triggerActionButtonAction']} */
 export const triggerActionButtonAction = (options) =>
 	triggerAction({ type: UIKitIncomingInteractionType.ACTION_BUTTON, ...options }).catch(async (reason) => {
 		if (Array.isArray(reason) && reason[0] === TRIGGER_TIMEOUT_ERROR) {
@@ -231,6 +241,7 @@ export const triggerActionButtonAction = (options) =>
 		}
 	});
 
+/** @type {ActionManager['triggerSubmitView']} */
 export const triggerSubmitView = async ({ viewId, ...options }) => {
 	const close = () => {
 		const instance = instances.get(viewId);
@@ -254,6 +265,7 @@ export const triggerSubmitView = async ({ viewId, ...options }) => {
 	}
 };
 
+/** @type {ActionManager['triggerCancel']} */
 export const triggerCancel = async ({ view, ...options }) => {
 	const instance = instances.get(view.id);
 	try {
@@ -265,6 +277,7 @@ export const triggerCancel = async ({ view, ...options }) => {
 	}
 };
 
+/** @type {ActionManager['getUserInteractionPayloadByViewId']} */
 export const getUserInteractionPayloadByViewId = (viewId) => {
 	if (!viewId) {
 		throw new Error('No viewId provided when checking for `user interaction payload`');
