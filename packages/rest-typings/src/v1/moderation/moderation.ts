@@ -39,6 +39,9 @@ export type ModerationEndpoints = {
 	'/v1/moderation.dismissReports': {
 		POST: (params: ArchiveReportPropsPOST) => void;
 	};
+	'/v1/moderation.dismissUserReports': {
+		POST: (params: ArchiveReportPropsPOST) => void;
+	};
 	'/v1/moderation.reports': {
 		GET: (params: ReportsByMsgIdParamsGET) => PaginatedResult<{
 			reports: Pick<IModerationReport, '_id' | 'description' | 'reportedBy' | 'ts' | 'room'>[];

@@ -244,6 +244,29 @@ API.v1.addRoute(
 	},
 );
 
+// api endpoint to hide user reports
+API.v1.addRoute(
+	'moderation.dismissUserReports',
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-moderation-actions'],
+	},
+	{
+		async post() {
+			const { userId, reason, action: actionParam } = this.bodyParams;
+
+			const sanitizedReason: string = reason ?? 'No reason provided';
+			const action: string = actionParam ?? 'None';
+
+			const { userId: moderatorId } = this;
+
+			await ModerationReports.hideUserReportsByUserId(userId, moderatorId, sanitizedReason, action);
+
+			return API.v1.success();
+		},
+	},
+);
+
 API.v1.addRoute(
 	'moderation.reports',
 	{

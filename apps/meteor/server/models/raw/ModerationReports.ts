@@ -307,6 +307,21 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return this.updateMany(query, update);
 	}
 
+	async hideUserReportsByUserId(userId: string, moderatorId: string, reason: string, action: string): Promise<UpdateResult | Document> {
+		const query = {
+			'reportedUser._id': userId,
+		};
+
+		const update = {
+			$set: {
+				_hidden: true,
+				moderationInfo: { hiddenAt: new Date(), moderatedBy: moderatorId, reason, action },
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
 	private getSearchQueryForSelector(selector?: string): any {
 		const messageExistsQuery = { message: { $exists: true } };
 		if (!selector) {

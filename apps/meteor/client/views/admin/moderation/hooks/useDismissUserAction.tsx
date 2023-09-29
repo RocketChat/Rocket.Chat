@@ -5,14 +5,18 @@ import React from 'react';
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import GenericModal from '../../../../components/GenericModal';
 
-const useDismissUserAction = (userId: string): GenericMenuItemProps => {
+const useDismissUserAction = (userId: string, isUserReport?: boolean): GenericMenuItemProps => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const moderationRoute = useRouter();
 	const queryClient = useQueryClient();
 
-	const dismissUser = useEndpoint('POST', '/v1/moderation.dismissReports');
+	const dismissMsgReports = useEndpoint('POST', '/v1/moderation.dismissReports');
+
+	const dismissUserReports = useEndpoint('POST', '/v1/moderation.dismissUserReports');
+
+	const dismissUser = isUserReport ? dismissUserReports : dismissMsgReports;
 
 	const handleDismissUser = useMutation({
 		mutationFn: dismissUser,
@@ -26,7 +30,7 @@ const useDismissUserAction = (userId: string): GenericMenuItemProps => {
 
 	const onDismissUser = async () => {
 		await handleDismissUser.mutateAsync({ userId });
-		queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
+		queryClient.invalidateQueries({ queryKey: [isUserReport ? 'moderation.userReports' : 'moderation.reports'] });
 		setModal();
 		moderationRoute.navigate('/admin/moderation', { replace: true });
 	};
