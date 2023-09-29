@@ -7972,7 +7972,7 @@ __metadata:
     "@rocket.chat/message-parser": next
     "@rocket.chat/ui-kit": ^0.32.1
     eslint: ~8.45.0
-    mongodb: ^4.12.1
+    mongodb: ^4.17.1
     prettier: ~2.8.8
     typescript: ~5.2.2
   languageName: unknown
@@ -28786,7 +28786,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:4.17.1, mongodb@npm:^4.12.1, mongodb@npm:^4.3.1":
+"mongodb@npm:4.17.1, mongodb@npm:^4.3.1":
   version: 4.17.1
   resolution: "mongodb@npm:4.17.1"
   dependencies:
