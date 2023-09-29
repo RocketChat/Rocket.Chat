@@ -205,7 +205,7 @@ const consumeWorkspaceSyncPayload = async (result: Serialized<Cloud.WorkspaceSyn
 	}
 };
 
-export async function syncWorkspace() {
+export async function syncCloudData() {
 	try {
 		const { workspaceRegistered } = await retrieveRegistrationStatus();
 		if (!workspaceRegistered) {
