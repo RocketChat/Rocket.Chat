@@ -11,7 +11,7 @@ export async function reconnectWorkspace() {
 
 	await Settings.updateValueById('Register_Server', true);
 
-	await syncWorkspace(true);
+	await syncWorkspace();
 
 	return true;
 }
