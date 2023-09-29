@@ -71,101 +71,109 @@ describe('[Groups]', function () {
 			await deleteUser(guestUser);
 		});
 
-		it('should not add guest users to more rooms than defined in the license', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (!process.env.IS_EE) {
-				this.skip();
-			}
-			const promises = [];
+		describe('guest users', () => {
+			it('should not add guest users to more rooms than defined in the license', async function () {
+				// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+				// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+				if (!process.env.IS_EE) {
+					this.skip();
+				}
+				const promises = [];
 
-			for (let i = 0; i < maxRoomsPerGuest; i++) {
-				promises.push(
-					createRoom({
-						type: 'p',
+				for (let i = 0; i < maxRoomsPerGuest; i++) {
+					promises.push(
+						createRoom({
+							type: 'p',
+							name: `channel.test.${Date.now()}-${Math.random()}`,
+							members: [guestUser.username],
+						}),
+					);
+				}
+				await Promise.all(promises);
+
+				await request
+					.post(api('groups.create'))
+					.set(credentials)
+					.send({
 						name: `channel.test.${Date.now()}-${Math.random()}`,
 						members: [guestUser.username],
-					}),
-				);
-			}
-			await Promise.all(promises);
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						room = res.body.group;
+					});
 
-			await request
-				.post(api('groups.create'))
-				.set(credentials)
-				.send({
-					name: `channel.test.${Date.now()}-${Math.random()}`,
-					members: [guestUser.username],
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					room = res.body.group;
-				});
-
-			await request
-				.get(api('groups.members'))
-				.set(credentials)
-				.query({
-					roomId: room._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('members').and.to.be.an('array');
-					expect(res.body.members).to.have.lengthOf(1);
-				});
+				await request
+					.get(api('groups.members'))
+					.set(credentials)
+					.query({
+						roomId: room._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('members').and.to.be.an('array');
+						expect(res.body.members).to.have.lengthOf(1);
+					});
+			});
 		});
 
-		it('should create a new encrypted group', async () => {
-			await request
-				.post(api('groups.create'))
-				.set(credentials)
-				.send({
-					name: `encrypted-${apiPrivateChannelName}`,
-					extraData: {
-						encrypted: true,
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('group.name', `encrypted-${apiPrivateChannelName}`);
-					expect(res.body).to.have.nested.property('group.t', 'p');
-					expect(res.body).to.have.nested.property('group.msgs', 0);
-					expect(res.body).to.have.nested.property('group.encrypted', true);
-				});
+		describe('validate E2E rooms', () => {
+			it('should create a new encrypted group', async () => {
+				await request
+					.post(api('groups.create'))
+					.set(credentials)
+					.send({
+						name: `encrypted-${apiPrivateChannelName}`,
+						extraData: {
+							encrypted: true,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('group.name', `encrypted-${apiPrivateChannelName}`);
+						expect(res.body).to.have.nested.property('group.t', 'p');
+						expect(res.body).to.have.nested.property('group.msgs', 0);
+						expect(res.body).to.have.nested.property('group.encrypted', true);
+					});
+			});
 		});
 
-		it('should create the encrypted room by default', async () => {
-			await updateSetting('E2E_Enable', true);
-			await updateSetting('E2E_Enabled_Default_PrivateRooms', true);
+		describe('E2E enabled by default', () => {
+			before(async () => {
+				await Promise.all([updateSetting('E2E_Enable', true), updateSetting('E2E_Enabled_Default_PrivateRooms', true)]);
+			});
 
-			await request
-				.post(api('groups.create'))
-				.set(credentials)
-				.send({
-					name: `default-encrypted-${apiPrivateChannelName}`,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('group.name', `default-encrypted-${apiPrivateChannelName}`);
-					expect(res.body).to.have.nested.property('group.t', 'p');
-					expect(res.body).to.have.nested.property('group.msgs', 0);
-					expect(res.body).to.have.nested.property('group.encrypted', true);
-				});
+			after(async () => {
+				await Promise.all([updateSetting('E2E_Enable', false), updateSetting('E2E_Enabled_Default_PrivateRooms', false)]);
+			});
 
-			await updateSetting('E2E_Enable', false);
-			await updateSetting('E2E_Enabled_Default_PrivateRooms', false);
+			it('should create the encrypted room by default', async () => {
+				await request
+					.post(api('groups.create'))
+					.set(credentials)
+					.send({
+						name: `default-encrypted-${apiPrivateChannelName}`,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('group.name', `default-encrypted-${apiPrivateChannelName}`);
+						expect(res.body).to.have.nested.property('group.t', 'p');
+						expect(res.body).to.have.nested.property('group.msgs', 0);
+						expect(res.body).to.have.nested.property('group.encrypted', true);
+					});
+			});
 		});
 	});
 
-	describe('[/groups.info]', () => {
+	describe('/groups.info', () => {
 		let testGroup = {};
 		let groupMessage = {};
 
@@ -345,7 +353,7 @@ describe('[Groups]', function () {
 		});
 
 		it('should invite user to group', async () => {
-			return request
+			await request
 				.post(api('groups.invite'))
 				.set(credentials)
 				.send({
@@ -733,7 +741,7 @@ describe('[Groups]', function () {
 		it('should return a list of zero length if not a member of any group', async () => {
 			const user = await createUser();
 			const newCreds = await login(user.username, password);
-			return request
+			await request
 				.get(api('groups.list'))
 				.set(newCreds)
 				.expect('Content-Type', 'application/json')
@@ -829,7 +837,7 @@ describe('[Groups]', function () {
 
 			const { room } = await createUserAndChannel();
 
-			return request
+			await request
 				.get(api('groups.online'))
 				.set(outsiderCredentials)
 				.query(`query={"_id": "${room._id}"}`)
@@ -882,7 +890,7 @@ describe('[Groups]', function () {
 		});
 	});
 
-	describe('[/groups.files]', async () => {
+	describe('/groups.files', async () => {
 		await testFileUploads('groups.files', group);
 	});
 
@@ -948,7 +956,7 @@ describe('[Groups]', function () {
 		});
 
 		it('should return the group rename with an additional message', async () => {
-			return request
+			await request
 				.post(api('groups.rename'))
 				.set(credentials)
 				.send({
@@ -969,115 +977,116 @@ describe('[Groups]', function () {
 
 	describe('/groups.getIntegrations', () => {
 		let integrationCreatedByAnUser;
-		let userCredentials;
 		let createdGroup;
-		before((done) => {
-			createRoom({ name: `test-integration-group-${Date.now()}`, type: 'p' }).end((err, res) => {
-				createdGroup = res.body.group;
-				createUser().then((createdUser) => {
-					const user = createdUser;
-					login(user.username, password).then((credentials) => {
-						userCredentials = credentials;
-						updatePermission('manage-incoming-integrations', ['user']).then(() => {
-							updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
-								createIntegration(
-									{
-										type: 'webhook-incoming',
-										name: 'Incoming test',
-										enabled: true,
-										alias: 'test',
-										username: 'rocket.cat',
-										scriptEnabled: false,
-										overrideDestinationChannelEnabled: true,
-										channel: `#${createdGroup.name}`,
-									},
-									userCredentials,
-								).then((integration) => {
-									integrationCreatedByAnUser = integration;
-									done();
-								});
-							});
-						});
-					});
+
+		before(async () => {
+			const resRoom = await createRoom({ name: `test-integration-group-${Date.now()}`, type: 'p' });
+
+			createdGroup = resRoom.body.group;
+
+			const user = await createUser();
+
+			const userCredentials = await login(user.username, password);
+
+			await Promise.all([
+				updatePermission('manage-incoming-integrations', ['user']),
+				updatePermission('manage-own-incoming-integrations', ['user']),
+			]);
+
+			integrationCreatedByAnUser = await createIntegration(
+				{
+					type: 'webhook-incoming',
+					name: 'Incoming test',
+					enabled: true,
+					alias: 'test',
+					username: 'rocket.cat',
+					scriptEnabled: false,
+					overrideDestinationChannelEnabled: true,
+					channel: `#${createdGroup.name}`,
+				},
+				userCredentials,
+			);
+		});
+
+		after(async () => {
+			await removeIntegration(integrationCreatedByAnUser._id, 'incoming');
+
+			await Promise.all([
+				updatePermission('manage-incoming-integrations', ['admin']),
+				updatePermission('manage-outgoing-integrations', ['admin']),
+				updatePermission('manage-own-incoming-integrations', ['admin']),
+				updatePermission('manage-own-outgoing-integrations', ['admin']),
+			]);
+		});
+
+		it('should return the list of integrations of create group and it should contain the integration created by user when the admin DOES have the permission', async () => {
+			await updatePermission('manage-incoming-integrations', ['admin']);
+
+			await request
+				.get(api('groups.getIntegrations'))
+				.set(credentials)
+				.query({
+					roomId: createdGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const integrationCreated = res.body.integrations.find(
+						(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
+					);
+					expect(integrationCreated).to.be.an('object');
+					expect(integrationCreated._id).to.be.equal(integrationCreatedByAnUser._id);
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
 				});
-			});
 		});
 
-		after((done) => {
-			removeIntegration(integrationCreatedByAnUser._id, 'incoming').then(done);
-		});
+		it('should return the list of integrations created by the user only', async () => {
+			await Promise.all([
+				updatePermission('manage-own-incoming-integrations', ['admin']),
+				updatePermission('manage-incoming-integrations', []),
+			]);
 
-		it('should return the list of integrations of create group and it should contain the integration created by user when the admin DOES have the permission', (done) => {
-			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
-				request
-					.get(api('groups.getIntegrations'))
-					.set(credentials)
-					.query({
-						roomId: createdGroup._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						const integrationCreated = res.body.integrations.find(
-							(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
-						);
-						expect(integrationCreated).to.be.an('object');
-						expect(integrationCreated._id).to.be.equal(integrationCreatedByAnUser._id);
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('total');
-					})
-					.end(done);
-			});
-		});
-
-		it('should return the list of integrations created by the user only', (done) => {
-			updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
-				updatePermission('manage-incoming-integrations', []).then(() => {
-					request
-						.get(api('groups.getIntegrations'))
-						.set(credentials)
-						.query({
-							roomId: createdGroup._id,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							const integrationCreated = res.body.integrations.find(
-								(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
-							);
-							expect(integrationCreated).to.be.equal(undefined);
-							expect(res.body).to.have.property('offset');
-							expect(res.body).to.have.property('total');
-						})
-						.end(done);
+			await request
+				.get(api('groups.getIntegrations'))
+				.set(credentials)
+				.query({
+					roomId: createdGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const integrationCreated = res.body.integrations.find(
+						(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
+					);
+					expect(integrationCreated).to.be.equal(undefined);
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
 				});
-			});
 		});
 
-		it('should return unauthorized error when the user does not have any integrations permissions', (done) => {
-			updatePermission('manage-incoming-integrations', []).then(() => {
-				updatePermission('manage-own-incoming-integrations', []).then(() => {
-					updatePermission('manage-outgoing-integrations', []).then(() => {
-						updatePermission('manage-own-outgoing-integrations', []).then(() => {
-							request
-								.get(api('groups.getIntegrations'))
-								.set(credentials)
-								.query({
-									roomId: createdGroup._id,
-								})
-								.expect('Content-Type', 'application/json')
-								.expect(403)
-								.expect((res) => {
-									expect(res.body).to.have.property('success', false);
-									expect(res.body).to.have.property('error', 'unauthorized');
-								})
-								.end(done);
-						});
-					});
+		it('should return unauthorized error when the user does not have any integrations permissions', async () => {
+			await Promise.all([
+				updatePermission('manage-incoming-integrations', []),
+				updatePermission('manage-outgoing-integrations', []),
+				updatePermission('manage-own-incoming-integrations', []),
+				updatePermission('manage-own-outgoing-integrations', []),
+			]);
+
+			await request
+				.get(api('groups.getIntegrations'))
+				.set(credentials)
+				.query({
+					roomId: createdGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'unauthorized');
 				});
-			});
 		});
 	});
 
@@ -1264,7 +1273,7 @@ describe('[Groups]', function () {
 		});
 		it('change customFields', async () => {
 			const customFields = { field9: 'value9' };
-			return request
+			await request
 				.post(api('groups.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -1300,7 +1309,7 @@ describe('[Groups]', function () {
 
 		it('set customFields with one nested field', async () => {
 			const customFields = { field1: 'value1' };
-			return request
+			await request
 				.post(api('groups.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -1320,7 +1329,7 @@ describe('[Groups]', function () {
 		it('set customFields with multiple nested fields', async () => {
 			const customFields = { field2: 'value2', field3: 'value3', field4: 'value4' };
 
-			return request
+			await request
 				.post(api('groups.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -1343,7 +1352,7 @@ describe('[Groups]', function () {
 		it('set customFields to empty object', async () => {
 			const customFields = {};
 
-			return request
+			await request
 				.post(api('groups.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -1383,19 +1392,21 @@ describe('[Groups]', function () {
 
 	describe('/groups.delete', () => {
 		let testGroup;
-		it('/groups.create', (done) => {
-			request
+		before(async () => {
+			await request
 				.post(api('groups.create'))
 				.set(credentials)
 				.send({
 					name: `group.test.${Date.now()}`,
 				})
-				.end((err, res) => {
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
 					testGroup = res.body.group;
-					done();
 				});
 		});
-		it('/groups.delete', (done) => {
+
+		it('should delete group', (done) => {
 			request
 				.post(api('groups.delete'))
 				.set(credentials)
@@ -1409,7 +1420,8 @@ describe('[Groups]', function () {
 				})
 				.end(done);
 		});
-		it('/groups.info', (done) => {
+
+		it('should return group not found', (done) => {
 			request
 				.get(api('groups.info'))
 				.set(credentials)
