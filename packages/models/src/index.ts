@@ -171,4 +171,4 @@ export const AuditLog = proxify<IAuditLogModel>('IAuditLogModel');
 export const CronHistory = proxify<ICronHistoryModel>('ICronHistoryModel');
 export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
-export const CloudAnnouncents = proxify<ICloudAnnouncementsModel>('ICloudAnnouncementsModel');
+export const CloudAnnouncements = proxify<ICloudAnnouncementsModel>('ICloudAnnouncementsModel');

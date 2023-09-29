@@ -1,6 +1,6 @@
 import { NPS, Banner } from '@rocket.chat/core-services';
 import { type Cloud, type Serialized } from '@rocket.chat/core-typings';
-import { CloudAnnouncents, Settings } from '@rocket.chat/models';
+import { CloudAnnouncements, Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { v, compile } from 'suretype';
 
@@ -172,13 +172,13 @@ const handleAnnouncementsOnWorkspaceSync = async (
 	const { create, delete: deleteIds } = announcements;
 
 	if (deleteIds) {
-		await CloudAnnouncents.deleteMany({ _id: { $in: deleteIds } });
+		await CloudAnnouncements.deleteMany({ _id: { $in: deleteIds } });
 	}
 
 	for await (const announcement of create.map(deserializeAnnouncement)) {
 		const { _id, ...rest } = announcement;
 
-		await CloudAnnouncents.updateOne({ _id }, { $set: rest }, { upsert: true });
+		await CloudAnnouncements.updateOne({ _id }, { $set: rest }, { upsert: true });
 	}
 };
 
