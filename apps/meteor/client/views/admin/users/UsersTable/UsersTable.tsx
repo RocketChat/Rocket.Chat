@@ -116,12 +116,21 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 					{t('Roles')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell w='x100' key='status' direction={sortDirection} active={sortBy === 'status'} onClick={setSort} sort='status'>
-				{t('Registration_status')}
-			</GenericTableHeaderCell>,
+			tab === 'all' && (
+				<GenericTableHeaderCell
+					w='x100'
+					key='status'
+					direction={sortDirection}
+					active={sortBy === 'status'}
+					onClick={setSort}
+					sort='status'
+				>
+					{t('Registration_status')}
+				</GenericTableHeaderCell>
+			),
 			<GenericTableHeaderCell key='actions' w='x44' />,
 		],
-		[mediaQuery, setSort, sortBy, sortDirection, t],
+		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
 	);
 
 	return (
@@ -146,6 +155,7 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 									user={user}
 									refetchUsers={refetch}
 									onReload={onReload}
+									tab={tab}
 								/>
 							))}
 						</GenericTableBody>

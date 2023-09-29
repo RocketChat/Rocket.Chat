@@ -23,9 +23,10 @@ type UsersTableRowProps = {
 	mediaQuery: boolean;
 	refetchUsers: ReturnType<typeof useQuery>['refetch'];
 	onReload: () => void;
+	tab: string;
 };
 
-const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload }: UsersTableRowProps): ReactElement => {
+const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
 	const { _id, emails, username, name, status, roles, active, avatarETag } = user;
 	const registrationStatusText = active ? t('Active') : t('Deactivated');
@@ -119,10 +120,14 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload }: Us
 
 			<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
 			{mediaQuery && <GenericTableCell withTruncatedText>{roleNames}</GenericTableCell>}
-			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-				{registrationStatusText}
-			</GenericTableCell>
+			{tab === 'all' && (
+				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+					{registrationStatusText}
+				</GenericTableCell>
+			)}
 			<GenericTableCell
+				display='flex'
+				justifyContent='flex-end'
 				onClick={(e): void => {
 					e.stopPropagation();
 				}}
