@@ -91,7 +91,7 @@ const getSupportedVersionsFromCloud = async () => {
 	const headers = await generateWorkspaceBearerHttpHeader();
 
 	const response = await handleResponse<SupportedVersions>(
-		fetch('https://releases.rocket.chat/supported/server', {
+		fetch('https://releases.rocket.chat/v2/server/supportedVersions', {
 			headers,
 		}),
 	);
@@ -99,7 +99,7 @@ const getSupportedVersionsFromCloud = async () => {
 	if (!response.success) {
 		SystemLogger.error({
 			msg: 'Failed to communicate with Rocket.Chat Cloud',
-			url: 'https://releases.rocket.chat/supported/server',
+			url: 'https://releases.rocket.chat/v2/server/supportedVersions',
 			err: response.error,
 		});
 	}
