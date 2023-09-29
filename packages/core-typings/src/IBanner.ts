@@ -13,7 +13,7 @@ export interface IBanner extends IRocketChatRecord {
 	roles?: string[]; // only show the banner to this roles
 	createdBy: Pick<IUser, '_id' | 'username'>;
 	createdAt: Date;
-	view: UiKit.BannerPayload;
+	view: UiKit.BannerView;
 	active?: boolean;
 	inactivedAt?: Date;
 	snapshot?: string;

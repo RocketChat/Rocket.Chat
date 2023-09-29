@@ -23,7 +23,7 @@ export const UIKitInteractionTypes = {
 	...UIKitInteractionTypeExtended,
 };
 
-/** @deprecated use {@link UiKit.Payload} instead */
+/** @deprecated use {@link UiKit.View} instead */
 export type UiKitPayload = {
 	viewId: string;
 	appId: string;

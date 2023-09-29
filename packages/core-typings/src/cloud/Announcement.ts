@@ -22,6 +22,6 @@ export interface Announcement extends IRocketChatRecord {
 	createdBy: Creator;
 	createdAt: Date;
 	dictionary?: Dictionary;
-	view: UiKit.Payload;
+	view: UiKit.View;
 	surface: 'banner' | 'modal';
 }

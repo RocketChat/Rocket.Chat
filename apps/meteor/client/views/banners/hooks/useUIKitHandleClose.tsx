@@ -3,7 +3,7 @@ import type { UiKit, UiKitPayload } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 
-import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
+import { useUiKitActionManager } from '../../../hooks/useUiKitActionManager';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const emptyFn = (_error: any, _result: UIKitInteractionType | void): void => undefined;

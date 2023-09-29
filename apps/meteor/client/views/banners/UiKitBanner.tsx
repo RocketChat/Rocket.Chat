@@ -1,59 +1,66 @@
-import type { UIKitActionEvent, UiKit } from '@rocket.chat/core-typings';
+import type { UiKit } from '@rocket.chat/core-typings';
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import { UiKitContext, bannerParser, UiKitBanner as UiKitBannerSurfaceRender, UiKitComponent } from '@rocket.chat/fuselage-ui-kit';
-import type { Keys as IconName } from '@rocket.chat/icons';
-import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import type { ReactElement, ContextType } from 'react';
 import React, { useMemo } from 'react';
 
-import { useUIKitHandleAction } from '../../UIKit/hooks/useUIKitHandleAction';
-import { useUIKitHandleClose } from '../../UIKit/hooks/useUIKitHandleClose';
-import { useUIKitStateManager } from '../../UIKit/hooks/useUIKitStateManager';
+import { useUiKitView } from '../../UIKit/hooks/useUiKitView';
 import MarkdownText from '../../components/MarkdownText';
+import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
 import * as banners from '../../lib/banners';
+import { useUIKitHandleClose } from './hooks/useUIKitHandleClose';
 
 // TODO: move this to fuselage-ui-kit itself
 bannerParser.mrkdwn = ({ text }): ReactElement => <MarkdownText variant='inline' content={text} />;
 
 type UiKitBannerProps = {
-	view: UiKit.BannerView;
+	key: UiKit.BannerView['viewId']; // force re-mount when viewId changes
+	initialView: UiKit.BannerView;
 };
 
-const UiKitBanner = ({ view }: UiKitBannerProps) => {
-	const state = useUIKitStateManager(view);
+const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
+	const { view } = useUiKitView(initialView);
 
 	const icon = useMemo(() => {
-		if (state.icon) {
-			return <Icon name={state.icon as IconName} size='x20' />;
+		if (view.icon) {
+			return <Icon name={view.icon} size='x20' />;
 		}
 
 		return null;
-	}, [state.icon]);
+	}, [view.icon]);
 
-	const handleClose = useUIKitHandleClose(state, () => banners.close());
+	const handleClose = useUIKitHandleClose(view, () => banners.close());
 
-	const action = useUIKitHandleAction(state);
+	const actionManager = useUiKitActionManager();
 
-	const contextValue = useMemo<ContextType<typeof UiKitContext>>(
-		() => ({
-			action: async (event): Promise<void> => {
-				if (!event.viewId) {
+	const contextValue = useMemo(
+		(): ContextType<typeof UiKitContext> => ({
+			action: async ({ appId, viewId, actionId }): Promise<void> => {
+				if (!appId || !viewId) {
 					return;
 				}
-				await action(event as UIKitActionEvent);
-				banners.closeById(state.viewId);
+
+				await actionManager.triggerBlockAction({
+					container: {
+						type: 'view',
+						id: viewId,
+					},
+					actionId,
+					appId,
+				});
+				banners.closeById(view.viewId);
 			},
 			state: (): void => undefined,
-			appId: state.appId,
+			appId: view.appId,
 			values: {},
 		}),
-		[action, state.appId, state.viewId],
+		[actionManager, view.appId, view.viewId],
 	);
 
 	return (
-		<Banner closeable icon={icon} inline={state.inline} title={state.title} variant={state.variant} onClose={handleClose}>
+		<Banner icon={icon} inline={view.inline} title={view.title} variant={view.variant} closeable onClose={handleClose}>
 			<UiKitContext.Provider value={contextValue}>
-				<UiKitComponent render={UiKitBannerSurfaceRender} blocks={state.blocks as LayoutBlock[]} />
+				<UiKitComponent render={UiKitBannerSurfaceRender} blocks={view.blocks} />
 			</UiKitContext.Provider>
 		</Banner>
 	);

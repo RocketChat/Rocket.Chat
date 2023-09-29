@@ -96,7 +96,8 @@ export const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...d
 		const instance = imperativeModal.open({
 			component: UiKitModal,
 			props: {
-				view: {
+				key: data.view.id,
+				initialView: {
 					viewId: data.view.id,
 					appId: data.view.appId,
 					blocks: data.view.blocks,

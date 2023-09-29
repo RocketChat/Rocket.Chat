@@ -1,4 +1,3 @@
-import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageBlock } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -29,13 +28,12 @@ const patchMessageParser = () => {
 };
 
 type UiKitMessageBlockProps = {
+	rid: IRoom['_id'];
 	mid: IMessage['_id'];
 	blocks: MessageSurfaceLayout;
-	rid: IRoom['_id'];
-	appId?: string | boolean; // TODO: this is a hack while the context value is not properly typed
 };
 
-const UiKitMessageBlock = ({ mid: _mid, blocks, rid, appId }: UiKitMessageBlockProps): ReactElement => {
+const UiKitMessageBlock = ({ rid, mid, blocks }: UiKitMessageBlockProps): ReactElement => {
 	const joinCall = useVideoConfJoinCall();
 	const setPreferences = useVideoConfSetPreferences();
 	const isCalling = useVideoConfIsCalling();
@@ -62,8 +60,7 @@ const UiKitMessageBlock = ({ mid: _mid, blocks, rid, appId }: UiKitMessageBlockP
 
 	// TODO: this structure is attrociously wrong; we should revisit this
 	const context: ContextType<typeof UiKitContext> = {
-		// @ts-ignore Property 'mid' does not exist on type 'ActionParams'.
-		action: ({ actionId, value, blockId, mid = _mid, appId }, event) => {
+		action: ({ actionId, blockId, appId }, event) => {
 			if (appId === 'videoconf-core') {
 				event.preventDefault();
 				setPreferences({ mic: true, cam: false });
@@ -77,21 +74,20 @@ const UiKitMessageBlock = ({ mid: _mid, blocks, rid, appId }: UiKitMessageBlockP
 			}
 
 			actionManager?.triggerBlockAction({
-				blockId,
 				actionId,
-				value,
-				mid,
-				rid,
 				appId,
 				container: {
-					type: UIKitIncomingInteractionContainerType.MESSAGE,
+					type: 'message',
 					id: mid,
 				},
+				rid,
+				mid,
 			});
 		},
-		// @ts-ignore Type 'string | boolean | undefined' is not assignable to type 'string'.
-		appId,
+		appId: '', // TODO: this is a hack
 		rid,
+		state: () => undefined, // TODO: this is a hack
+		values: {}, // TODO: this is a hack
 	};
 
 	patchMessageParser(); // TODO: this is a hack

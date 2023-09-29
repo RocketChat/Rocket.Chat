@@ -22,7 +22,7 @@ export const useCloudAnnouncementModals = () => {
 		}
 
 		for (const announcement of queryResult.data) {
-			setModal(<UiKitModal view={announcement.view} />);
+			setModal(<UiKitModal key={announcement.view.viewId} initialView={announcement.view} />);
 		}
 	}, [queryResult.data, queryResult.isSuccess, setModal]);
 };
