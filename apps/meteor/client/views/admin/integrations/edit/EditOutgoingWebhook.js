@@ -24,6 +24,7 @@ const getInitialValue = (data) => {
 		avatar: data.avatar ?? '',
 		emoji: data.emoji ?? '',
 		scriptEnabled: data.scriptEnabled ?? false,
+		scriptEngine: data.scriptEngine ?? 'vm2',
 		script: data.script ?? '',
 		retryFailedCalls: data.retryFailedCalls ?? true,
 		retryCount: data.retryCount ?? 5,
