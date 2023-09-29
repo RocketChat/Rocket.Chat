@@ -26,6 +26,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 		token,
 		scriptEnabled,
 		script,
+		scriptEngine,
 		retryFailedCalls,
 		retryCount,
 		retryDelay,
@@ -48,6 +49,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 		handleEmoji,
 		handleToken,
 		handleScriptEnabled,
+		handleScriptEngine,
 		handleScript,
 		handleRetryFailedCalls,
 		handleRetryCount,
@@ -66,6 +68,13 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 	);
 
 	const eventOptions = useMemo(() => Object.entries(outgoingEvents).map(([key, val]) => [key, t(val.label)]), [t]);
+	const scriptEngineOptions = useMemo(
+		() => [
+			['vm2', t('Script_Engine_vm2')],
+			['isolated-vm', t('Script_Engine_isolated_vm')],
+		],
+		[t],
+	);
 
 	const showChannel = useMemo(() => outgoingEvents[event].use.channel, [event]);
 	const showTriggerWords = useMemo(() => outgoingEvents[event].use.triggerWords, [event]);
@@ -289,6 +298,18 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 									</Field>
 								),
 								[handleScriptEnabled, scriptEnabled, t],
+							)}
+							{useMemo(
+								() => (
+									<Field>
+										<Field.Label>{t('Script_Engine')}</Field.Label>
+										<Field.Row>
+											<Select flexGrow={1} value={scriptEngine} options={scriptEngineOptions} onChange={handleScriptEngine} />
+										</Field.Row>
+										<Field.Hint>{t('Script_Engine_Description')}</Field.Hint>
+									</Field>
+								),
+								[scriptEngine, scriptEngineOptions, handleScriptEngine, t],
 							)}
 							{useMemo(
 								() => (
