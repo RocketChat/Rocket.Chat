@@ -4,7 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { UiKitComponent, UiKitMessage as UiKitMessageSurfaceRender, UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import type { ContextType, ReactElement } from 'react';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import {
 	useVideoConfDispatchOutgoing,
@@ -17,15 +17,6 @@ import {
 import { useUiKitActionManager } from '../../../hooks/useUiKitActionManager';
 import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 import GazzodownText from '../../GazzodownText';
-
-let patched = false;
-const patchMessageParser = () => {
-	if (patched) {
-		return;
-	}
-
-	patched = true;
-};
 
 type UiKitMessageBlockProps = {
 	rid: IRoom['_id'];
@@ -59,42 +50,43 @@ const UiKitMessageBlock = ({ rid, mid, blocks }: UiKitMessageBlockProps): ReactE
 	const actionManager = useUiKitActionManager();
 
 	// TODO: this structure is attrociously wrong; we should revisit this
-	const context: ContextType<typeof UiKitContext> = {
-		action: ({ actionId, blockId, appId }, event) => {
-			if (appId === 'videoconf-core') {
-				event.preventDefault();
-				setPreferences({ mic: true, cam: false });
-				if (actionId === 'join') {
-					return joinCall(blockId);
+	const contextValue = useMemo(
+		(): ContextType<typeof UiKitContext> => ({
+			action: ({ actionId, blockId, appId }, event) => {
+				if (appId === 'videoconf-core') {
+					event.preventDefault();
+					setPreferences({ mic: true, cam: false });
+					if (actionId === 'join') {
+						return joinCall(blockId);
+					}
+
+					if (actionId === 'callBack') {
+						return handleOpenVideoConf(blockId);
+					}
 				}
 
-				if (actionId === 'callBack') {
-					return handleOpenVideoConf(blockId);
-				}
-			}
-
-			actionManager?.triggerBlockAction({
-				actionId,
-				appId,
-				container: {
-					type: 'message',
-					id: mid,
-				},
-				rid,
-				mid,
-			});
-		},
-		appId: '', // TODO: this is a hack
-		rid,
-		state: () => undefined, // TODO: this is a hack
-		values: {}, // TODO: this is a hack
-	};
-
-	patchMessageParser(); // TODO: this is a hack
+				actionManager?.triggerBlockAction({
+					actionId,
+					appId,
+					container: {
+						type: 'message',
+						id: mid,
+					},
+					rid,
+					mid,
+				});
+			},
+			appId: '', // TODO: this is a hack
+			rid,
+			state: () => undefined, // TODO: this is a hack
+			values: {}, // TODO: this is a hack
+		}),
+		[actionManager, handleOpenVideoConf, joinCall, mid, rid, setPreferences],
+	);
 
 	return (
 		<MessageBlock fixedWidth>
-			<UiKitContext.Provider value={context}>
+			<UiKitContext.Provider value={contextValue}>
 				<GazzodownText>
 					<UiKitComponent render={UiKitMessageSurfaceRender} blocks={blocks} />
 				</GazzodownText>
