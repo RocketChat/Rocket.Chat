@@ -1,6 +1,6 @@
 import type { ILicenseTag } from './ILicenseTag';
 
-export interface ILicense {
+export interface ILicenseV2 {
 	url: string;
 	expiry: string;
 	maxActiveUsers: number;
