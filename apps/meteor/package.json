@@ -265,6 +265,7 @@
 		"@rocket.chat/presence": "workspace:^",
 		"@rocket.chat/random": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
+		"@rocket.chat/server-cloud-communication": "workspace:^",
 		"@rocket.chat/server-fetch": "workspace:^",
 		"@rocket.chat/sha256": "workspace:^",
 		"@rocket.chat/string-helpers": "next",
@@ -471,5 +472,11 @@
 	},
 	"installConfig": {
 		"hoistingLimits": "workspaces"
+	},
+	"rocketchat": {
+		"minimumClientVersions": {
+			"desktop": "3.9.6",
+			"mobile": "4.39.0"
+		}
 	}
 }
