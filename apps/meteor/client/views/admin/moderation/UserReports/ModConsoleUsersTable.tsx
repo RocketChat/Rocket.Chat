@@ -5,22 +5,22 @@ import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useMemo, useState } from 'react';
 
-import FilterByText from '../../../components/FilterByText';
-import GenericNoResults from '../../../components/GenericNoResults';
+import FilterByText from '../../../../components/FilterByText';
+import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableLoadingTable,
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableHeader,
-} from '../../../components/GenericTable';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import ModerationConsoleTableRow from './ModerationConsoleTableRow';
-import DateRangePicker from './helpers/DateRangePicker';
+} from '../../../../components/GenericTable';
+import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
+import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import DateRangePicker from '../helpers/DateRangePicker';
+import ModConsoleUserTableRow from './ModConsoleUserTableRow';
 
 // TODO: Missing error state
-const ModerationConsoleTable: FC = () => {
+const ModConsoleUsersTable: FC = () => {
 	const [text, setText] = useState('');
 	const moderationRoute = useRoute('moderation-console');
 	const t = useTranslation();
@@ -52,16 +52,18 @@ const ModerationConsoleTable: FC = () => {
 		500,
 	);
 
-	const getReports = useEndpoint('GET', '/v1/moderation.reportsByUsers');
+	const getReports = useEndpoint('GET', '/v1/moderation.user.reports');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { data, isLoading, isSuccess } = useQuery(['moderation.reports', query], async () => getReports(query), {
+	const { data, isLoading, isSuccess } = useQuery(['moderation.userReports', query], async () => getReports(query), {
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		keepPreviousData: true,
 	});
+
+	console.log('data', data);
 
 	const handleClick = useMutableCallback((id): void => {
 		moderationRoute.push({
@@ -82,18 +84,11 @@ const ModerationConsoleTable: FC = () => {
 			>
 				{t('User')}
 			</GenericTableHeaderCell>,
-
-			<GenericTableHeaderCell
-				key='reportedMessage'
-				direction={sortDirection}
-				active={sortBy === 'reports.description'}
-				onClick={setSort}
-				sort='reports.description'
-			>
-				{t('Moderation_Reported_message')}
+			<GenericTableHeaderCell key='created' direction={sortDirection}>
+				{t('Created')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key='room' direction={sortDirection}>
-				{t('Room')}
+			<GenericTableHeaderCell key='email' direction={sortDirection}>
+				{t('Email')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key='postdate' direction={sortDirection} active={sortBy === 'reports.ts'} onClick={setSort} sort='reports.ts'>
 				{t('Moderation_Report_date')}
@@ -103,7 +98,7 @@ const ModerationConsoleTable: FC = () => {
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key='actions' width='x48' />,
 		],
-		[sortDirection, sortBy, setSort, t, isDesktopOrLarger],
+		[sortDirection, sortBy, setSort, t],
 	);
 
 	return (
@@ -129,8 +124,8 @@ const ModerationConsoleTable: FC = () => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.reports.map((report) => (
-								<ModerationConsoleTableRow
-									key={report.userId}
+								<ModConsoleUserTableRow
+									key={report.reportedUser?._id}
 									report={report}
 									onClick={handleClick}
 									isDesktopOrLarger={isDesktopOrLarger}
@@ -154,4 +149,4 @@ const ModerationConsoleTable: FC = () => {
 	);
 };
 
-export default ModerationConsoleTable;
+export default ModConsoleUsersTable;
