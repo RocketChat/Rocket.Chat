@@ -25,18 +25,10 @@ const language = settings.get<string>('Language') || 'en';
 const t = (s: string): string => i18n.t(s, { lng: language });
 
 async function getGuestByEmail(email: string, name: string, department = ''): Promise<ILivechatVisitor | null> {
-	logger.debug(`Attempt to register a guest for ${email} on department: ${department}`);
 	const guest = await LivechatVisitors.findOneGuestByEmailAddress(email);
 
 	if (guest) {
-		logger.debug(`Guest with email ${email} found with id ${guest._id}`);
 		if (guest.department !== department) {
-			logger.debug({
-				msg: 'Switching departments for guest',
-				guest,
-				previousDepartment: guest.department,
-				newDepartment: department,
-			});
 			if (!department) {
 				await LivechatVisitors.removeDepartmentById(guest._id);
 				delete guest.department;
@@ -48,10 +40,6 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 		return guest;
 	}
 
-	logger.debug({
-		msg: 'Creating a new Omnichannel guest for visitor with email',
-		email,
-	});
 	const userId = await LivechatTyped.registerGuest({
 		token: Random.id(),
 		name: name || email,
@@ -60,7 +48,6 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 	});
 
 	const newGuest = await LivechatVisitors.findOneById(userId);
-	logger.debug(`Guest ${userId} for visitor ${email} created`);
 	if (newGuest) {
 		return newGuest;
 	}
@@ -111,7 +98,7 @@ async function uploadAttachment(attachmentParam: Attachment, rid: string, visito
 }
 
 export async function onEmailReceived(email: ParsedMail, inbox: string, department = ''): Promise<void> {
-	logger.debug(`New email conversation received on inbox ${inbox}. Will be assigned to department ${department}`);
+	logger.info(`New email conversation received on inbox ${inbox}. Will be assigned to department ${department}`);
 	if (!email.from?.value?.[0]?.address) {
 		return;
 	}
@@ -119,18 +106,12 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	const references = typeof email.references === 'string' ? [email.references] : email.references;
 	const initialRef = [email.messageId, email.inReplyTo].filter(Boolean) as string[];
 	const thread = (references?.length ? references : []).flatMap((t: string) => t.split(',')).concat(initialRef);
-
-	logger.debug(`Received new email conversation with thread ${thread} on inbox ${inbox} from ${email.from.value[0].address}`);
-
-	logger.debug(`Fetching guest for visitor ${email.from.value[0].address}`);
 	const guest = await getGuestByEmail(email.from.value[0].address, email.from.value[0].name, department);
 
 	if (!guest) {
-		logger.debug(`No visitor found for ${email.from.value[0].address}`);
+		logger.error(`No visitor found for ${email.from.value[0].address}`);
 		return;
 	}
-
-	logger.debug(`Guest ${guest._id} obtained. Attempting to find or create a room on department ${department}`);
 
 	let room: IOmnichannelRoom | null = await LivechatRooms.findOneByVisitorTokenAndEmailThreadAndDepartment(
 		guest.token,
@@ -146,7 +127,6 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	});
 
 	if (room?.closedAt) {
-		logger.debug(`Room ${room?._id} is closed. Reopening`);
 		room = await QueueManager.unarchiveRoom(room);
 	}
 
@@ -165,8 +145,6 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 
 	const rid = room?._id ?? Random.id();
 	const msgId = Random.id();
-
-	logger.debug(`Sending email message to room ${rid} for visitor ${guest._id}. Conversation assigned to department ${department}`);
 
 	Livechat.sendMessage({
 		guest,
@@ -242,7 +220,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 				try {
 					attachments.push(await uploadAttachment(attachment, rid, guest.token));
 				} catch (err) {
-					Livechat.logger.error({ msg: 'Error uploading attachment from email', err });
+					logger.error({ msg: 'Error uploading attachment from email', err });
 				}
 			}
 
@@ -259,7 +237,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 			room && (await LivechatRooms.updateEmailThreadByRoomId(room._id, thread));
 		})
 		.catch((err) => {
-			Livechat.logger.error({
+			logger.error({
 				msg: 'Error receiving email',
 				err,
 			});

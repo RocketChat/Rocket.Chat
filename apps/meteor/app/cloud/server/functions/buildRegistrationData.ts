@@ -5,7 +5,7 @@ import { settings } from '../../../settings/server';
 import { statistics } from '../../../statistics/server';
 import { LICENSE_VERSION } from '../license';
 
-type WorkspaceRegistrationData<T> = {
+export type WorkspaceRegistrationData<T> = {
 	uniqueId: string;
 	workspaceId: SettingValue;
 	address: SettingValue;
@@ -14,11 +14,11 @@ type WorkspaceRegistrationData<T> = {
 	seats: number;
 	allowMarketing: SettingValue;
 	accountName: SettingValue;
-	organizationType: unknown;
-	industry: unknown;
-	orgSize: unknown;
-	country: unknown;
-	language: unknown;
+	organizationType: string;
+	industry: string;
+	orgSize: string;
+	country: string;
+	language: string;
 	agreePrivacyTerms: SettingValue;
 	website: SettingValue;
 	siteName: SettingValue;
@@ -61,15 +61,15 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		seats,
 		allowMarketing,
 		accountName,
-		organizationType,
-		industry,
-		orgSize,
-		country,
-		language,
+		organizationType: String(organizationType),
+		industry: String(industry),
+		orgSize: String(orgSize),
+		country: String(country),
+		language: String(language),
 		agreePrivacyTerms,
 		website,
 		siteName,
-		workspaceType,
+		workspaceType: String(workspaceType),
 		deploymentMethod: stats.deploy.method,
 		deploymentPlatform: stats.deploy.platform,
 		version: stats.version,
