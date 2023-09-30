@@ -1,6 +1,6 @@
+import type { IncomingMessage } from 'http';
 import https from 'https';
 import url from 'url';
-import type { IncomingMessage } from 'http';
 
 import type { Cheerio, CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';

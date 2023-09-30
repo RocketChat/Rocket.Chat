@@ -3,20 +3,22 @@ import {
 	useSetModal,
 	useEndpoint,
 	useTranslation,
-	useRoute,
 	useRouteParameter,
 	useToastMessageDispatch,
-	useCurrentRoute,
 	usePermission,
+	useRouter,
 } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
 import WarningModal from '../../components/WarningModal';
+import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import IframeModal from './IframeModal';
 import UninstallGrandfatheredAppModal from './components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
-import { appEnabledStatuses, handleAPIError, appButtonProps, warnEnableDisableApp } from './helpers';
+import { appEnabledStatuses, appButtonProps } from './helpers';
+import { handleAPIError } from './helpers/handleAPIError';
 import { marketplaceActions } from './helpers/marketplaceActions';
+import { warnEnableDisableApp } from './helpers/warnEnableDisableApp';
 import { useAppInstallationHandler } from './hooks/useAppInstallationHandler';
 import { useAppsCountQuery } from './hooks/useAppsCountQuery';
 import { useOpenAppPermissionsReviewModal } from './hooks/useOpenAppPermissionsReviewModal';
@@ -26,12 +28,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
-
-	const [currentRouteName, currentRouteParams] = useCurrentRoute();
-	if (!currentRouteName) {
-		throw new Error('No current route name');
-	}
-	const router = useRoute(currentRouteName);
+	const router = useRouter();
 
 	const context = useRouteParameter('context');
 	const currentTab = useRouteParameter('tab');
@@ -40,6 +37,9 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const buildExternalUrl = useEndpoint('GET', '/apps');
 	const syncApp = useEndpoint('POST', `/apps/${app.id}/sync`);
 	const uninstallApp = useEndpoint('DELETE', `/apps/${app.id}`);
+	const { data } = useIsEnterprise();
+
+	const isEnterpriseLicense = !!data?.isEnterprise;
 
 	const [loading, setLoading] = useState(false);
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
@@ -128,7 +128,16 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	}, [app, isSubscribed, setModal, closeModal, openIncompatibleModal, buildExternalUrl, syncApp]);
 
 	const handleViewLogs = useCallback(() => {
-		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
+		router.navigate({
+			name: 'marketplace',
+			params: {
+				context,
+				page: 'info',
+				id: app.id,
+				version: app.version,
+				tab: 'logs',
+			},
+		});
 	}, [app.id, app.version, context, router]);
 
 	const handleDisable = useCallback(() => {
@@ -163,7 +172,13 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				if (success) {
 					dispatchToastMessage({ type: 'success', message: `${app.name} uninstalled` });
 					if (context === 'details' && currentTab !== 'details') {
-						router.replace({ ...currentRouteParams, tab: 'details' });
+						router.navigate(
+							{
+								name: 'marketplace',
+								params: { ...router.getRouteParameters(), tab: 'details' },
+							},
+							{ replace: true },
+						);
 					}
 				}
 			} catch (error) {
@@ -209,10 +224,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			<WarningModal close={closeModal} confirm={uninstall} text={t('Apps_Marketplace_Uninstall_App_Prompt')} confirmText={t('Yes')} />,
 		);
 	}, [
+		isSubscribed,
 		appCountQuery.data,
 		app.migrated,
 		app.name,
-		isSubscribed,
 		setModal,
 		closeModal,
 		t,
@@ -221,7 +236,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		context,
 		currentTab,
 		router,
-		currentRouteParams,
 		handleSubscription,
 	]);
 
@@ -270,7 +284,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					subscribe: {
 						label: (
 							<>
-								<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' marginInlineEnd='x4' />
+								<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' mie={4} />
 								{t('Subscription')}
 							</>
 						),
@@ -280,19 +294,25 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		};
 
 		const nonInstalledAppOptions = {
-			...(!app.installed && {
-				acquire: {
-					label: (
-						<>
-							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' marginInlineEnd='x4' />}
-							{t(button.label.replace(' ', '_'))}
-						</>
-					),
-					action: handleAcquireApp,
-					disabled: requestedEndUser,
-				},
-			}),
+			...(!app.installed &&
+				button && {
+					acquire: {
+						label: (
+							<>
+								{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' mie={4} />}
+								{t(button.label.replace(' ', '_'))}
+							</>
+						),
+						action: handleAcquireApp,
+						disabled: requestedEndUser,
+					},
+				}),
 		};
+
+		const isEnterpriseOrNot = (app.isEnterpriseOnly && isEnterpriseLicense) || !app.isEnterpriseOnly;
+		const isPossibleToEnableApp = app.installed && isAdminUser && !isAppEnabled && isEnterpriseOrNot;
+		const doesItReachedTheLimit =
+			!app.migrated && !appCountQuery?.data?.hasUnlimitedApps && appCountQuery?.data?.enabled >= appCountQuery?.data?.limit;
 
 		const installedAppOptions = {
 			...(context !== 'details' &&
@@ -301,7 +321,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					viewLogs: {
 						label: (
 							<>
-								<Icon name='desktop-text' size='x16' marginInlineEnd='x4' />
+								<Icon name='desktop-text' size='x16' mie={4} />
 								{t('View_Logs')}
 							</>
 						),
@@ -314,7 +334,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					update: {
 						label: (
 							<>
-								<Icon name={incompatibleIconName(app, 'update')} size='x16' marginInlineEnd='x4' />
+								<Icon name={incompatibleIconName(app, 'update')} size='x16' mie={4} />
 								{t('Update')}
 							</>
 						),
@@ -327,27 +347,25 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					disable: {
 						label: (
 							<Box color='status-font-on-warning'>
-								<Icon name='ban' size='x16' marginInlineEnd='x4' />
+								<Icon name='ban' size='x16' mie={4} />
 								{t('Disable')}
 							</Box>
 						),
 						action: handleDisable,
 					},
 				}),
-			...(app.installed &&
-				isAdminUser &&
-				!isAppEnabled && {
-					enable: {
-						label: (
-							<>
-								<Icon name='check' size='x16' marginInlineEnd='x4' />
-								{t('Enable')}
-							</>
-						),
-						disabled: !app.migrated && !appCountQuery?.data?.hasUnlimitedApps && appCountQuery?.data?.enabled >= appCountQuery?.data?.limit,
-						action: handleEnable,
-					},
-				}),
+			...(isPossibleToEnableApp && {
+				enable: {
+					label: (
+						<>
+							<Icon name='check' size='x16' marginInlineEnd='x4' />
+							{t('Enable')}
+						</>
+					),
+					disabled: doesItReachedTheLimit,
+					action: handleEnable,
+				},
+			}),
 			...(app.installed &&
 				isAdminUser && {
 					divider: {
@@ -359,7 +377,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					uninstall: {
 						label: (
 							<Box color='status-font-on-danger'>
-								<Icon name='trash' size='x16' marginInlineEnd='x4' />
+								<Icon name='trash' size='x16' mie={4} />
 								{t('Uninstall')}
 							</Box>
 						),
@@ -381,19 +399,20 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		app,
 		t,
 		handleSubscription,
-		requestedEndUser,
-		button?.label,
+		button,
 		handleAcquireApp,
+		requestedEndUser,
+		isEnterpriseLicense,
+		isAppEnabled,
+		appCountQuery?.data?.hasUnlimitedApps,
+		appCountQuery?.data?.enabled,
+		appCountQuery?.data?.limit,
 		context,
 		handleViewLogs,
 		canUpdate,
 		isAppDetailsPage,
 		handleUpdate,
-		isAppEnabled,
 		handleDisable,
-		appCountQuery?.data?.hasUnlimitedApps,
-		appCountQuery?.data?.enabled,
-		appCountQuery?.data?.limit,
 		handleEnable,
 		handleUninstall,
 	]);
@@ -406,7 +425,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		return null;
 	}
 
-	return <Menu options={menuOptions} placement='bottom-start' maxHeight='initial' {...props} />;
+	return <Menu title={t('More_options')} options={menuOptions} placement='bottom-start' maxHeight='initial' {...props} />;
 }
 
 export default AppMenu;

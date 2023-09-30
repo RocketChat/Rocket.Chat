@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 const util = require('util');
 
 // Convert fs.readFile into Promise version of same

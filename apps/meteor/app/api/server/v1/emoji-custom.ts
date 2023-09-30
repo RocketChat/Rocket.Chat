@@ -1,13 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-import { EmojiCustom } from '@rocket.chat/models';
 import { Media } from '@rocket.chat/core-services';
+import { EmojiCustom } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { API } from '../api';
-import { getUploadFormData } from '../lib/getUploadFormData';
-import { findEmojisCustom } from '../lib/emoji-custom';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
+import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { findEmojisCustom } from '../lib/emoji-custom';
+import { getUploadFormData } from '../lib/getUploadFormData';
 
 API.v1.addRoute(
 	'emoji-custom.list',

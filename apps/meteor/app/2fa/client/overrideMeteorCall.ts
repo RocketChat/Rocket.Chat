@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
-import { t } from '../../utils/lib/i18n';
 import { process2faAsyncReturn } from '../../../client/lib/2fa/process2faReturn';
 import { isTotpInvalidError } from '../../../client/lib/2fa/utils';
+import { t } from '../../utils/lib/i18n';
 
 const { callAsync } = Meteor;
 

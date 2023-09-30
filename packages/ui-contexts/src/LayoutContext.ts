@@ -9,6 +9,7 @@ export type LayoutContextValue = {
 	isEmbedded: boolean;
 	showTopNavbarEmbeddedLayout: boolean;
 	isMobile: boolean;
+	roomToolboxExpanded: boolean;
 	sidebar: {
 		isCollapsed: boolean;
 		toggle: () => void;
@@ -25,6 +26,7 @@ export const LayoutContext = createContext<LayoutContextValue>({
 	isEmbedded: false,
 	showTopNavbarEmbeddedLayout: false,
 	isMobile: false,
+	roomToolboxExpanded: true,
 	sidebar: {
 		isCollapsed: false,
 		toggle: () => undefined,

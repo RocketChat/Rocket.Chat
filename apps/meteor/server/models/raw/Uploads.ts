@@ -1,8 +1,8 @@
 // TODO: Lib imports should not exists inside the raw models
 import type { IUpload, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, IUploadsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions } from 'mongodb';
 
 import { BaseUploadModelRaw } from './BaseUploadModel';
 

@@ -1,18 +1,18 @@
-import type Mail from 'nodemailer/lib/mailer';
-import { Match } from 'meteor/check';
 import { isIMessageInbox } from '@rocket.chat/core-typings';
 import type { IEmailInbox, IUser, IMessage, IOmnichannelRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/models';
+import { Match } from 'meteor/check';
+import type Mail from 'nodemailer/lib/mailer';
 
-import { callbacks } from '../../../lib/callbacks';
 import { FileUpload } from '../../../app/file-upload/server';
-import { slashCommands } from '../../../app/utils/server';
-import type { Inbox } from './EmailInbox';
-import { inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
-import { logger } from './logger';
+import { slashCommands } from '../../../app/utils/server/slashCommand';
+import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
+import { inboxes } from './EmailInbox';
+import type { Inbox } from './EmailInbox';
+import { logger } from './logger';
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
 
@@ -75,7 +75,7 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 			...mail,
 		})
 		.then((info) => {
-			logger.info('Message sent: %s', info.messageId);
+			logger.info({ msg: 'Message sent', info });
 			return info;
 		})
 		.catch(async (err) => {
@@ -92,7 +92,6 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 slashCommands.add({
 	command: 'sendEmailAttachment',
 	callback: async ({ command, params }: SlashCommandCallbackParams<'sendEmailAttachment'>) => {
-		logger.debug('sendEmailAttachment command: ', command, params);
 		if (command !== 'sendEmailAttachment' || !Match.test(params, String)) {
 			return;
 		}
@@ -187,7 +186,7 @@ slashCommands.add({
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message: IMessage, room: any) {
+	async (message: IMessage, room: any) => {
 		if (!room?.email?.inbox) {
 			return message;
 		}
@@ -318,7 +317,6 @@ export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: 
 		throw new Error('user-without-verified-email');
 	}
 
-	logger.info(`Sending testing email to ${address}`);
 	void sendEmail(inbox, {
 		to: address,
 		subject: 'Test of inbox configuration',

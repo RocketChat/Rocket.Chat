@@ -1,6 +1,6 @@
+import type { ICustomSound } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import type { ICustomSound } from '@rocket.chat/core-typings';
 
 import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { getURL } from '../../../utils/client';
@@ -42,7 +42,7 @@ class CustomSoundsClass {
 
 		const audio = document.createElement('audio');
 		audio.id = getCustomSoundId(sound._id);
-		audio.preload = 'auto';
+		audio.preload = 'none';
 		audio.appendChild(source);
 
 		document.body.appendChild(audio);

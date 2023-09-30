@@ -2,7 +2,7 @@ import { CheckBox } from '@rocket.chat/fuselage';
 import { useEndpoint, useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 
 export const useGroupingListItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
@@ -25,19 +25,19 @@ export const useGroupingListItems = (): GenericMenuItemProps[] => {
 			id: 'unread',
 			content: t('Unread'),
 			icon: 'flag',
-			addon: <CheckBox mi='x16' onChange={handleChangeShowUnread} checked={sidebarShowUnread} />,
+			addon: <CheckBox onChange={handleChangeShowUnread} checked={sidebarShowUnread} />,
 		},
 		{
 			id: 'favorites',
 			content: t('Favorites'),
 			icon: 'star',
-			addon: <CheckBox mi='x16' onChange={handleChangeShoFavorite} checked={sidebarShowFavorites} />,
+			addon: <CheckBox onChange={handleChangeShoFavorite} checked={sidebarShowFavorites} />,
 		},
 		{
 			id: 'types',
 			content: t('Types'),
 			icon: 'group-by-type',
-			addon: <CheckBox mi='x16' onChange={handleChangeGroupByType} checked={sidebarGroupByType} />,
+			addon: <CheckBox onChange={handleChangeGroupByType} checked={sidebarGroupByType} />,
 		},
 	];
 };

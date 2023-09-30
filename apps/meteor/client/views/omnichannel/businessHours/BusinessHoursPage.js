@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { lazy, useMemo } from 'react';
@@ -21,8 +21,8 @@ const BusinessHoursPage = () => {
 		<Page>
 			<Page.Header title={t('Business_Hours')}>
 				<ButtonGroup>
-					<Button onClick={handleNew}>
-						<Icon name='plus' /> {t('New')}
+					<Button icon='plus' onClick={handleNew}>
+						{t('New')}
 					</Button>
 				</ButtonGroup>
 			</Page.Header>

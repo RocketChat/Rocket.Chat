@@ -1,26 +1,25 @@
-import { Meteor } from 'meteor/meteor';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import { cbLogger } from '../lib/logger';
 
 callbacks.add(
 	'livechat.beforeForwardRoomToDepartment',
 	async (options) => {
 		const { room, transferData } = options;
 		if (!room || !transferData) {
-			cbLogger.debug('Skipping callback. No room provided');
 			return options;
 		}
 		const { departmentId } = room;
 		if (!departmentId) {
-			cbLogger.debug('Skipping callback. No department provided');
 			return options;
 		}
 		const { department: departmentToTransfer } = transferData;
-		const currentDepartment = await LivechatDepartment.findOneById(departmentId);
+		const currentDepartment = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'departmentsAllowedToForward'>>(departmentId, {
+			projection: { departmentsAllowedToForward: 1 },
+		});
 		if (!currentDepartment) {
-			cbLogger.debug('Skipping callback. Current department does not exists');
 			return options;
 		}
 		const { departmentsAllowedToForward } = currentDepartment;
@@ -28,7 +27,6 @@ callbacks.add(
 			!departmentsAllowedToForward?.length ||
 			(Array.isArray(departmentsAllowedToForward) && departmentsAllowedToForward.includes(departmentToTransfer._id));
 		if (isAllowedToTransfer) {
-			cbLogger.debug(`Callback success. Room ${room._id} can be forwarded to department ${departmentToTransfer._id}`);
 			return options;
 		}
 		throw new Meteor.Error('error-forwarding-department-target-not-allowed', 'The forwarding to the target department is not allowed.');

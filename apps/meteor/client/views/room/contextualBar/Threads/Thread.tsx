@@ -15,7 +15,7 @@ import {
 	ContextualbarBack,
 	ContextualbarInnerContent,
 } from '../../../../components/Contextualbar';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import { useGoToThreadList } from '../../hooks/useGoToThreadList';
 import ChatProvider from '../../providers/ChatProvider';
 import ThreadChat from './components/ThreadChat';
@@ -30,11 +30,11 @@ type ThreadProps = {
 
 const Thread: VFC<ThreadProps> = ({ tmid }) => {
 	const goToThreadList = useGoToThreadList({ replace: true });
-	const closeTabBar = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 
 	const mainMessageQueryResult = useThreadMainMessageQuery(tmid, {
 		onDelete: () => {
-			closeTabBar();
+			closeTab();
 		},
 	});
 
@@ -53,7 +53,7 @@ const Thread: VFC<ThreadProps> = ({ tmid }) => {
 	});
 
 	const handleBackdropClick = () => {
-		closeTabBar();
+		closeTab();
 	};
 
 	const handleGoBack = () => {
@@ -75,7 +75,7 @@ const Thread: VFC<ThreadProps> = ({ tmid }) => {
 	};
 
 	const handleClose = () => {
-		closeTabBar();
+		closeTab();
 	};
 
 	return (

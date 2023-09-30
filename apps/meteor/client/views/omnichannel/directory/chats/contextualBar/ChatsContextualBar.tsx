@@ -2,7 +2,8 @@ import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-con
 import React, { useMemo } from 'react';
 
 import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../../components/Contextualbar';
-import { useTabBarClose } from '../../../../room/contexts/ToolboxContext';
+import { useRoom } from '../../../../room/contexts/RoomContext';
+import { useRoomToolbox } from '../../../../room/contexts/RoomToolboxContext';
 import ChatInfo from './ChatInfo';
 import { RoomEditWithData } from './RoomEdit';
 
@@ -13,19 +14,16 @@ const HEADER_DATA = {
 	edit: { icon: 'pencil', title: 'edit-room' },
 } as const;
 
-type ChatsContextualBarProps = {
-	rid: string;
-};
-
-const ChatsContextualBar = ({ rid }: ChatsContextualBarProps) => {
+const ChatsContextualBar = () => {
 	const t = useTranslation();
 
 	const context = useRouteParameter('context') as 'edit' | 'info' | undefined;
 	const directoryRoute = useRoute(PATH);
-	const closeContextualBar = useTabBarClose();
+	const room = useRoom();
+	const { closeTab } = useRoomToolbox();
 
 	const handleRoomEditBarCloseButtonClick = () => {
-		directoryRoute.push({ id: rid, tab: 'room-info' });
+		directoryRoute.push({ id: room._id, tab: 'room-info' });
 	};
 
 	const { icon, title } = useMemo(() => HEADER_DATA[context ?? 'info'] || HEADER_DATA.info, [context]);
@@ -35,9 +33,13 @@ const ChatsContextualBar = ({ rid }: ChatsContextualBarProps) => {
 			<ContextualbarHeader>
 				<ContextualbarIcon name={icon} />
 				<ContextualbarTitle>{t(title)}</ContextualbarTitle>
-				<ContextualbarClose onClick={closeContextualBar} />
+				<ContextualbarClose onClick={closeTab} />
 			</ContextualbarHeader>
-			{context === 'edit' ? <RoomEditWithData id={rid} onClose={handleRoomEditBarCloseButtonClick} /> : <ChatInfo route={PATH} id={rid} />}
+			{context === 'edit' ? (
+				<RoomEditWithData id={room._id} onClose={handleRoomEditBarCloseButtonClick} />
+			) : (
+				<ChatInfo route={PATH} id={room._id} />
+			)}
 		</>
 	);
 };

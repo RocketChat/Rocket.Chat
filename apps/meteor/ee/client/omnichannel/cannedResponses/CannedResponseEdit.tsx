@@ -1,5 +1,5 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse, Serialized } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, Icon, FieldGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
@@ -39,10 +39,7 @@ const CannedResponseEdit: FC<{
 		_id: data?.cannedResponse ? data.cannedResponse._id : '',
 		shortcut: data ? data.cannedResponse.shortcut : '',
 		text: data ? data.cannedResponse.text : '',
-		tags:
-			data?.cannedResponse?.tags && Array.isArray(data.cannedResponse.tags)
-				? data.cannedResponse.tags.map((tag) => ({ label: tag, value: tag }))
-				: [],
+		tags: data?.cannedResponse?.tags ?? [],
 		scope: data ? data.cannedResponse.scope : 'user',
 		departmentId: data?.cannedResponse?.departmentId ? data.cannedResponse.departmentId : '',
 	});
@@ -100,13 +97,12 @@ const CannedResponseEdit: FC<{
 				tags: any;
 				departmentId: string;
 			};
-			const mappedTags = tags.map((tag: string | { value: string; label: string }) => (typeof tag === 'object' ? tag?.value : tag));
 			await saveCannedResponse({
 				...(_id && { _id }),
 				shortcut,
 				text,
 				scope,
-				...(mappedTags.length > 0 && { tags: mappedTags }),
+				tags,
 				...(departmentId && { departmentId }),
 			});
 			dispatchToastMessage({
@@ -137,8 +133,8 @@ const CannedResponseEdit: FC<{
 		<Page>
 			<Page.Header title={isNew ? t('New_CannedResponse') : t('Edit_CannedResponse')}>
 				<ButtonGroup>
-					<Button onClick={handleReturn}>
-						<Icon name='back' /> {t('Back')}
+					<Button icon='back' onClick={handleReturn}>
+						{t('Back')}
 					</Button>
 					<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={onSave}>
 						{t('Save')}

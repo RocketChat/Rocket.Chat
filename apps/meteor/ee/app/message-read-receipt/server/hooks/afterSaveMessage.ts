@@ -1,9 +1,9 @@
-import { Subscriptions } from '@rocket.chat/models';
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadReceipt';
 import { callbacks } from '../../../../../lib/callbacks';
+import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadReceipt';
 
 callbacks.add(
 	'afterSaveMessage',

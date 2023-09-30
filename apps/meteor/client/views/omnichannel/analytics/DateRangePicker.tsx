@@ -111,7 +111,7 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 	return (
 		<Box {...props}>
 			<Box mi='neg-x4' height='full' display='flex' flexDirection='row'>
-				<Field mi='x4' flexShrink={1} flexGrow={1}>
+				<Field mi={4} flexShrink={1} flexGrow={1}>
 					<Field.Label>{t('Start')}</Field.Label>
 					<Field.Row>
 						<Box height='x40' display='flex' width='full'>
@@ -119,13 +119,13 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 						</Box>
 					</Field.Row>
 				</Field>
-				<Field mi='x4' flexShrink={1} flexGrow={1}>
+				<Field mi={4} flexShrink={1} flexGrow={1}>
 					<Field.Label>{t('End')}</Field.Label>
 					<Field.Row>
 						<Box height='x40' display='flex' width='full'>
 							<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end} />
 						</Box>
-						<Menu mis='x8' options={options} />
+						<Menu mis={8} options={options} />
 					</Field.Row>
 				</Field>
 			</Box>

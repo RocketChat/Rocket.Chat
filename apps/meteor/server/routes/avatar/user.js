@@ -1,8 +1,8 @@
 import { Avatars, Users } from '@rocket.chat/models';
 
-import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
 import { FileUpload } from '../../../app/file-upload/server';
 import { settings } from '../../../app/settings/server';
+import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
 
 // request /avatar/@name forces returning the svg
 export const userAvatar = async function (req, res) {

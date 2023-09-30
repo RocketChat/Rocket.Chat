@@ -1,5 +1,5 @@
-import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Filter, Document } from 'mongodb';
 import type { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
+import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Filter, Document } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 

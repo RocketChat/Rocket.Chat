@@ -4,14 +4,16 @@ import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, MatrixBridgedRoom, Users } from '@rocket.chat/models';
 
 import { saveRoomTopic } from '../../../../../../app/channel-settings/server';
-import { addUserToRoom, createRoom, removeUserFromRoom } from '../../../../../../app/lib/server';
+import { addUserToRoom } from '../../../../../../app/lib/server/functions/addUserToRoom';
+import { createRoom } from '../../../../../../app/lib/server/functions/createRoom';
+import { removeUserFromRoom } from '../../../../../../app/lib/server/functions/removeUserFromRoom';
 import { settings } from '../../../../../../app/settings/server';
+import { getValidRoomName } from '../../../../../../app/utils/server/lib/getValidRoomName';
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import type { FederatedUser } from '../../../domain/FederatedUser';
+import { extractServerNameFromExternalIdentifier } from '../../matrix/converters/room/RoomReceiver';
 import type { ROCKET_CHAT_FEDERATION_ROLES } from '../definitions/FederatedRoomInternalRoles';
 import { getFederatedUserByInternalUsername } from './User';
-import { getValidRoomName } from '../../../../../../app/utils/server';
-import { extractServerNameFromExternalIdentifier } from '../../matrix/converters/room/RoomReceiver';
 
 type WithRequiredProperty<Type, Key extends keyof Type> = Type & {
 	[Property in Key]-?: Type[Property];

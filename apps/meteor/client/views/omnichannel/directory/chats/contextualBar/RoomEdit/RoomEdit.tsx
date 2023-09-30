@@ -134,7 +134,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 				</Field>
 
 				<Field>
-					<Tags tags={tagsField.value} handler={tagsField.onChange} />
+					<Tags tags={tagsField.value} handler={tagsField.onChange} department={room.departmentId} />
 				</Field>
 
 				{SlaPoliciesSelect && !!slaPolicies?.length && (

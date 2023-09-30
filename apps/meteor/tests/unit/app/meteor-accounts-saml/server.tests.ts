@@ -1,13 +1,14 @@
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 
+import { SAMLUtils } from '../../../../app/meteor-accounts-saml/server/lib/Utils';
 import { AuthorizeRequest } from '../../../../app/meteor-accounts-saml/server/lib/generators/AuthorizeRequest';
 import { LogoutRequest } from '../../../../app/meteor-accounts-saml/server/lib/generators/LogoutRequest';
 import { LogoutResponse } from '../../../../app/meteor-accounts-saml/server/lib/generators/LogoutResponse';
 import { LogoutRequestParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/LogoutRequest';
 import { LogoutResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/LogoutResponse';
 import { ResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/Response';
-import { SAMLUtils } from '../../../../app/meteor-accounts-saml/server/lib/Utils';
+import { isTruthy } from '../../../../lib/isTruthy';
 import {
 	serviceProviderOptions,
 	simpleMetadata,
@@ -34,7 +35,6 @@ import {
 	privateKeyCert,
 	privateKey,
 } from './data';
-import { isTruthy } from '../../../../lib/isTruthy';
 
 const { ServiceProviderMetadata } = proxyquire
 	.noCallThru()
@@ -962,6 +962,15 @@ describe('SAML', () => {
 				const map = new Map();
 				map.set('epa', 'group1');
 			});
+		});
+	});
+
+	describe('[Utils]', () => {
+		it('should return correct validation action redirect path', () => {
+			const credentialToken = SAMLUtils.generateUniqueID();
+			expect(SAMLUtils.getValidationActionRedirectPath(credentialToken)).to.be.equal(
+				`saml/${credentialToken}?saml_idp_credentialToken=${credentialToken}`,
+			);
 		});
 	});
 });

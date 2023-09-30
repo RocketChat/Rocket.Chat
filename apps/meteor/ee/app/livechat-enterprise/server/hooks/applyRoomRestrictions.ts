@@ -1,8 +1,8 @@
-import type { FilterOperators } from 'mongodb';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatDepartment } from '@rocket.chat/models';
+import type { FilterOperators } from 'mongodb';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import { cbLogger } from '../lib/logger';
 import { getUnitsFromUser } from '../lib/units';
 
 export const restrictQuery = async (originalQuery: FilterOperators<IOmnichannelRoom> = {}) => {
@@ -12,10 +12,11 @@ export const restrictQuery = async (originalQuery: FilterOperators<IOmnichannelR
 	if (!Array.isArray(units)) {
 		return query;
 	}
+	const departments = await LivechatDepartment.find({ ancestors: { $in: units } }, { projection: { _id: 1 } }).toArray();
 
 	const expressions = query.$and || [];
 	const condition = {
-		$or: [{ departmentAncestors: { $in: units } }, { departmentId: { $in: units } }],
+		$or: [{ departmentAncestors: { $in: units } }, { departmentId: { $in: departments.map(({ _id }) => _id) } }],
 	};
 	query.$and = [condition, ...expressions];
 
@@ -25,7 +26,6 @@ export const restrictQuery = async (originalQuery: FilterOperators<IOmnichannelR
 callbacks.add(
 	'livechat.applyRoomRestrictions',
 	async (originalQuery: FilterOperators<IOmnichannelRoom> = {}) => {
-		cbLogger.debug('Applying room query restrictions');
 		return restrictQuery(originalQuery);
 	},
 	callbacks.priority.HIGH,

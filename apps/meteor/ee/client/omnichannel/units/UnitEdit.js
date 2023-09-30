@@ -1,4 +1,4 @@
-import { Field, TextInput, Button, PaginatedMultiSelectFiltered, Select, ButtonGroup, Icon, FieldGroup } from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, PaginatedMultiSelectFiltered, Select, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState } from 'react';
@@ -32,17 +32,6 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 	);
 
 	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
-
-	const departmentsSortedByName = departmentsItems.sort((a, b) => {
-		if (a.name > b.name) {
-			return 1;
-		}
-		if (a.name < b.name) {
-			return -1;
-		}
-
-		return 0;
-	});
 
 	const unit = data || {};
 
@@ -81,6 +70,16 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 
 	const { handleName, handleVisibility, handleDepartments, handleMonitors } = handlers;
 	const { name, visibility, departments, monitors } = values;
+
+	const departmentsOptions = useMemo(() => {
+		const pending = departments.filter(({ value }) => !departmentsItems.find((dep) => dep.value === value));
+		return [...departmentsItems, ...pending];
+	}, [departments, departmentsItems]);
+
+	const monitorsOptions = useMemo(() => {
+		const pending = monitors.filter(({ value }) => !monitorsItems.find((mon) => mon.value === value));
+		return [...monitorsItems, ...pending];
+	}, [monitors, monitorsItems]);
 
 	const nameError = useMemo(() => (!name || name.length === 0 ? t('The_field_is_required', t('name')) : undefined), [name, t]);
 	const visibilityError = useMemo(
@@ -136,8 +135,8 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 			<Page>
 				<Page.Header title={title}>
 					<ButtonGroup>
-						<Button onClick={handleReturn}>
-							<Icon name='back' /> {t('Back')}
+						<Button icon='back' onClick={handleReturn}>
+							{t('Back')}
 						</Button>
 						<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={handleSave}>
 							{t('Save')}
@@ -172,7 +171,7 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 									withTitle
 									filter={departmentsFilter}
 									setFilter={setDepartmentsFilter}
-									options={departmentsSortedByName}
+									options={departmentsOptions}
 									value={departments}
 									error={hasUnsavedChanges && departmentError}
 									maxWidth='100%'
@@ -194,7 +193,7 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 									withTitle
 									filter={monitorsFilter}
 									setFilter={setMonitorsFilter}
-									options={monitorsItems}
+									options={monitorsOptions}
 									value={monitors}
 									error={hasUnsavedChanges && unitMonitorsError}
 									maxWidth='100%'

@@ -41,7 +41,7 @@ const AppSettings: FC<AppSettingsProps> = ({ settings, setHasUnsavedChanges, set
 	return (
 		<>
 			<Box display='flex' flexDirection='column' maxWidth='x640' w='full' marginInline='auto'>
-				<Box fontScale='h4' mb='x12'>
+				<Box fontScale='h4' mb={12}>
 					{t('Settings')}
 				</Box>
 				<AppSettingsAssembler settings={settings} values={values} handlers={handlers} />

@@ -1,18 +1,19 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useUserSubscription, useLanguage } from '@rocket.chat/ui-contexts';
+import { useLanguage } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo, useEffect, useState, memo } from 'react';
 
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import AutoTranslate from './AutoTranslate';
 
-const AutoTranslateWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
-	const handleClose = useTabBarClose();
+const AutoTranslateWithData = (): ReactElement => {
+	const room = useRoom();
+	const subscription = useRoomSubscription();
+	const { closeTab } = useRoomToolbox();
 	const userLanguage = useLanguage();
-	const subscription = useUserSubscription(rid);
 	const [currentLanguage, setCurrentLanguage] = useState(subscription?.autoTranslateLanguage ?? '');
 	const saveSettings = useEndpointAction('POST', '/v1/autotranslate.saveSettings');
 
@@ -24,7 +25,7 @@ const AutoTranslateWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => 
 		setCurrentLanguage(value);
 
 		saveSettings({
-			roomId: rid,
+			roomId: room._id,
 			field: 'autoTranslateLanguage',
 			value,
 		});
@@ -32,7 +33,7 @@ const AutoTranslateWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => 
 
 	const handleSwitch = useMutableCallback((event) => {
 		saveSettings({
-			roomId: rid,
+			roomId: room._id,
 			field: 'autoTranslate',
 			value: event.target.checked,
 		});
@@ -55,7 +56,7 @@ const AutoTranslateWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => 
 			handleSwitch={handleSwitch}
 			handleChangeLanguage={handleChangeLanguage}
 			translateEnable={!!subscription?.autoTranslate}
-			handleClose={handleClose}
+			handleClose={closeTab}
 		/>
 	);
 };

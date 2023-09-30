@@ -46,7 +46,7 @@ const updateUser = async (userData: IUser): Promise<void> => {
 	Object.keys(user).forEach((key) => {
 		delete userData[key as keyof IUser];
 	});
-	await Users.updateAsync({ _id: user._id }, { $set: userData });
+	await Users.updateAsync({ _id: user._id }, { $set: { ...userData } });
 };
 
 let cancel: undefined | (() => void);
@@ -69,7 +69,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 				break;
 
 			case 'updated':
-				await Users.upsertAsync({ _id: uid }, { $set: data.diff, $unset: data.unset });
+				await Users.upsertAsync({ _id: uid }, { $set: data.diff, $unset: data.unset as any });
 				break;
 
 			case 'removed':

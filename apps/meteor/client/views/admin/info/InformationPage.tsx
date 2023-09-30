@@ -5,10 +5,10 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import SeatsCard from '../../../../ee/client/views/admin/info/SeatsCard';
+import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import DeploymentCard from './DeploymentCard';
-import FederationCard from './FederationCard';
 import LicenseCard from './LicenseCard';
 import UsageCard from './UsageCard';
 
@@ -31,6 +31,9 @@ const InformationPage = memo(function InformationPage({
 }: InformationPageProps) {
 	const t = useTranslation();
 
+	const seatsCap = useSeatsCap();
+	const showSeatCap = seatsCap && seatsCap.maxActiveUsers === Infinity;
+
 	const { data } = useIsEnterprise();
 
 	if (!info) {
@@ -42,7 +45,7 @@ const InformationPage = memo(function InformationPage({
 
 	return (
 		<Page data-qa='admin-info' bg='tint'>
-			<Page.Header title={t('Info')}>
+			<Page.Header title={t('Workspace')}>
 				{canViewStatistics && (
 					<ButtonGroup>
 						<Button type='button' onClick={onClickDownloadInfo}>
@@ -58,13 +61,13 @@ const InformationPage = memo(function InformationPage({
 			<Page.ScrollableContentWithShadow>
 				<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 					{warningMultipleInstances && (
-						<Callout type='warning' title={t('Multiple_monolith_instances_alert')} marginBlockEnd='x16'></Callout>
+						<Callout type='warning' title={t('Multiple_monolith_instances_alert')} marginBlockEnd={16}></Callout>
 					)}
 					{alertOplogForMultipleInstances && (
 						<Callout
 							type='danger'
 							title={t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances')}
-							marginBlockEnd='x16'
+							marginBlockEnd={16}
 						>
 							<Box withRichContent>
 								<p>{t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details')}</p>
@@ -85,20 +88,21 @@ const InformationPage = memo(function InformationPage({
 					)}
 
 					<Grid>
-						<Grid.Item xl={3}>
+						<Grid.Item xl={4}>
 							<DeploymentCard info={info} statistics={statistics} instances={instances} />
 						</Grid.Item>
-						<Grid.Item xl={3}>
-							<LicenseCard />
+						<Grid.Item xl={4} p={0}>
+							<Grid.Item xl={12} height={!showSeatCap ? '50%' : 'full'}>
+								<LicenseCard />
+							</Grid.Item>
+							{!showSeatCap && (
+								<Grid.Item xl={12} height='50%'>
+									<SeatsCard seatsCap={seatsCap} />
+								</Grid.Item>
+							)}
 						</Grid.Item>
-						<Grid.Item xl={6} md={8} xs={4} sm={8}>
+						<Grid.Item xl={4} md={8} xs={4} sm={8}>
 							<UsageCard vertical={false} statistics={statistics} />
-						</Grid.Item>
-						<Grid.Item xl={6}>
-							<FederationCard />
-						</Grid.Item>
-						<Grid.Item xl={3}>
-							<SeatsCard />
 						</Grid.Item>
 					</Grid>
 				</Box>

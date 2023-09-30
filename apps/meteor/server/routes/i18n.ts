@@ -1,8 +1,8 @@
 import type { ServerResponse } from 'http';
 
-import { match } from 'path-to-regexp';
 import type { IncomingMessage } from 'connect';
 import { WebApp } from 'meteor/webapp';
+import { match } from 'path-to-regexp';
 
 const matchRoute = match<{ lng: string }>('/:lng.json', { decode: decodeURIComponent });
 

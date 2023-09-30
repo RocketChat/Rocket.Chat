@@ -36,35 +36,35 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
 	return (
-		<Box color='default' display='flex' flexDirection='row' mbe='x20' w='full'>
-			<AppAvatar size='x124' mie='x32' iconFileContent={iconFileContent} iconFileData={iconFileData} />
+		<Box color='default' display='flex' flexDirection='row' mbe={20} w='full'>
+			<AppAvatar size='x124' mie={32} iconFileContent={iconFileContent} iconFileData={iconFileData} />
 			<Box display='flex' flexDirection='column'>
-				<Box display='flex' flexDirection='row' alignItems='center' mbe='x8'>
-					<Box fontScale='h1' mie='x8'>
+				<Box display='flex' flexDirection='row' alignItems='center' mbe={8}>
+					<Box fontScale='h1' mie={8}>
 						{name}
 					</Box>
 					{bundledIn && Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
 				</Box>
 
 				{shortDescription && (
-					<Box fontScale='p1' mbe='x16'>
+					<Box fontScale='p1' mbe={16}>
 						{shortDescription}
 					</Box>
 				)}
 
-				<Box display='flex' flexDirection='row' alignItems='center' mbe='x16'>
+				<Box display='flex' flexDirection='row' alignItems='center' mbe={16}>
 					<AppStatus app={app} installed={installed} isAppDetailsPage />
 					{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage />}
 				</Box>
 				<Box fontScale='c1' display='flex' flexDirection='row' color='hint' alignItems='center'>
 					{author?.name}
-					<Box mi='x16' color='disabled'>
+					<Box mi={16} color='disabled'>
 						|
 					</Box>
 					<Box>{t('Version_version', { version: versioni18nKey(app) })}</Box>
 					{lastUpdated && (
 						<>
-							<Box mi='x16' color='disabled'>
+							<Box mi={16} color='disabled'>
 								|
 							</Box>
 							<Box>
@@ -77,7 +77,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 
 					{versionIncompatible && (
 						<>
-							<Box mi='x16' color='disabled'>
+							<Box mi={16} color='disabled'>
 								|
 							</Box>
 

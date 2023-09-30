@@ -5,12 +5,12 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
+import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import {
 	findAllAverageServiceTimeAsync,
 	findAllServiceTimeAsync,
 	findAvailableServiceTimeHistoryAsync,
 } from '../../../../../app/livechat/server/lib/analytics/agents';
-import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'livechat/analytics/agents/average-service-time',

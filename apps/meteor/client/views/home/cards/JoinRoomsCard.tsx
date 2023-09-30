@@ -1,26 +1,26 @@
 import { Button } from '@rocket.chat/fuselage';
-import { Card } from '@rocket.chat/ui-client';
-import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
+import { Card, CardBody, CardFooter, CardFooterWrapper, CardTitle } from '@rocket.chat/ui-client';
+import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 const JoinRoomsCard = (): ReactElement => {
 	const t = useTranslation();
 
-	const directoryRoute = useRoute('directory');
+	const router = useRouter();
 	const handleDirectory = (): void => {
-		directoryRoute.push({});
+		router.navigate('/directory');
 	};
 
 	return (
 		<Card data-qa-id='homepage-join-rooms-card'>
-			<Card.Title>{t('Join_rooms')}</Card.Title>
-			<Card.Body>{t('Discover_public_channels_and_teams_in_the_workspace_directory')}</Card.Body>
-			<Card.FooterWrapper>
-				<Card.Footer>
+			<CardTitle>{t('Join_rooms')}</CardTitle>
+			<CardBody>{t('Discover_public_channels_and_teams_in_the_workspace_directory')}</CardBody>
+			<CardFooterWrapper>
+				<CardFooter>
 					<Button onClick={handleDirectory}>{t('Open_directory')}</Button>
-				</Card.Footer>
-			</Card.FooterWrapper>
+				</CardFooter>
+			</CardFooterWrapper>
 		</Card>
 	);
 };

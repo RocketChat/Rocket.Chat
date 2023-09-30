@@ -1,10 +1,10 @@
-import { LivechatVisitors } from '@rocket.chat/models';
 import type { IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings/server';
 import { isTruthy } from '../../../../lib/isTruthy';
+import { settings } from '../../../settings/server';
 
 function validateMessage(message: IMessage, room: IOmnichannelRoom) {
 	// skips this callback if the message was edited
@@ -32,7 +32,7 @@ function validateMessage(message: IMessage, room: IOmnichannelRoom) {
 
 callbacks.add(
 	'afterSaveMessage',
-	async function (message, room) {
+	async (message, room) => {
 		if (!isOmnichannelRoom(room)) {
 			return message;
 		}

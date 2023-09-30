@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import type {
 	IMessage,
 	SlashCommand,
@@ -7,6 +6,7 @@ import type {
 	SlashCommandPreviewItem,
 	SlashCommandPreviews,
 } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
 interface ISlashCommandAddParams<T extends string> {
 	command: string;

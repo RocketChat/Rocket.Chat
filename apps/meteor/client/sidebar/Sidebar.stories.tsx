@@ -6,7 +6,7 @@ import type { ObjectId } from 'mongodb';
 import type { ContextType } from 'react';
 import React from 'react';
 
-import Sidebar from './Sidebar';
+import Sidebar from './SidebarRegion';
 
 export default {
 	title: 'Sidebar',

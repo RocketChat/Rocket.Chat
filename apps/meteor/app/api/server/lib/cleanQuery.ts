@@ -16,7 +16,6 @@ export const removeDangerousProps = (v: Query): Query => {
 export function clean(v: Query, allowList: string[] = []): Query {
 	const typedParam = removeDangerousProps(v);
 	if (v instanceof Object) {
-		/* eslint-disable guard-for-in */
 		for (const key in typedParam) {
 			if (key.startsWith('$') && !allowList.includes(key)) {
 				delete typedParam[key];

@@ -36,12 +36,12 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 	const headers = useMemo(
 		() =>
 			[
-				<GenericTableHeaderCell key={'name'} direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+				<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 					{t('Name')}
 				</GenericTableHeaderCell>,
 				mediaQuery && canViewFullOtherUserInfo && (
 					<GenericTableHeaderCell
-						key={'email'}
+						key='email'
 						direction={sortDirection}
 						active={sortBy === 'email'}
 						onClick={setSort}

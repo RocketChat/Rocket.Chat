@@ -1,7 +1,7 @@
-import SlackAdapter from './SlackAdapter.js';
-import RocketAdapter from './RocketAdapter.js';
-import { classLogger, connLogger } from './logger';
 import { settings } from '../../settings/server';
+import RocketAdapter from './RocketAdapter.js';
+import SlackAdapter from './SlackAdapter.js';
+import { classLogger, connLogger } from './logger';
 
 /**
  * SlackBridge interfaces between this Rocket installation and a remote Slack installation.

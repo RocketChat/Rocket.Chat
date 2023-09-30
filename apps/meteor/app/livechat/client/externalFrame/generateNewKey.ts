@@ -1,8 +1,8 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { generateKey } from './crypto';
 import { sdk } from '../../../utils/client/lib/SDKClient';
+import { generateKey } from './crypto';
 
 Meteor.methods<ServerMethods>({
 	async omnichannelExternalFrameGenerateKey() {

@@ -1,9 +1,9 @@
-import URL from 'url';
 import QueryString from 'querystring';
+import URL from 'url';
 
+import type { OEmbedMeta, OEmbedUrlContent, ParsedUrl, OEmbedProvider } from '@rocket.chat/core-typings';
 import { camelCase } from 'change-case';
 import _ from 'underscore';
-import type { OEmbedMeta, OEmbedUrlContent, ParsedUrl, OEmbedProvider } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../lib/callbacks';
 import { SystemLogger } from '../../../server/lib/logger/system';
@@ -31,9 +31,9 @@ class Providers {
 	}
 
 	getProviderForUrl(url: string): OEmbedProvider | undefined {
-		return this.providers?.find(function (provider) {
+		return this.providers?.find((provider) => {
 			return (
-				provider.urls?.some(function (re) {
+				provider.urls?.some((re) => {
 					return re.test(url);
 				}) ?? false
 			);
@@ -94,7 +94,7 @@ providers.registerProvider({
 
 callbacks.add(
 	'oembed:beforeGetUrlContent',
-	function (data) {
+	(data) => {
 		if (data.parsedUrl != null) {
 			const url = URL.format(data.parsedUrl);
 			const provider = providers.getProviderForUrl(url);
@@ -147,7 +147,7 @@ const cleanupOembed = (data: {
 
 callbacks.add(
 	'oembed:afterParseContent',
-	function (data) {
+	(data) => {
 		if (!data?.url || !data.content?.body || !data.parsedUrl?.query) {
 			return cleanupOembed(data);
 		}

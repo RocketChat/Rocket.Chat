@@ -1,6 +1,6 @@
-import type { IImportUser } from './IImportUser';
 import type { IImportChannel } from './IImportChannel';
 import type { IImportMessage } from './IImportMessage';
+import type { IImportUser } from './IImportUser';
 
 export type IImportRecordType = 'user' | 'channel' | 'message';
 export type IImportData = IImportUser | IImportChannel | IImportMessage;
@@ -9,7 +9,7 @@ export interface IImportRecord {
 	data: IImportData;
 	dataType: IImportRecordType;
 	_id: string;
-	options?: Record<string, unknown>;
+	options?: Record<string, any>;
 	errors?: Array<{
 		message: string;
 		stack?: string;

@@ -1,5 +1,5 @@
-import { LivechatRooms, Messages, LivechatPriority, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
+import { LivechatRooms, Messages, LivechatPriority, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
 
