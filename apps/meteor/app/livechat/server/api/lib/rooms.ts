@@ -3,7 +3,7 @@ import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
 import { callbacks } from '../../../../../lib/callbacks';
-
+import type {Filter} from 'mongodb'
 export async function findRooms({
 	agents,
 	roomName,
@@ -15,6 +15,7 @@ export async function findRooms({
 	customFields,
 	onhold,
 	options: { offset, count, fields, sort },
+	customQuery,
 }: {
 	agents?: Array<string>;
 	roomName?: string;
@@ -32,6 +33,7 @@ export async function findRooms({
 	customFields?: Record<string, string>;
 	onhold?: string | boolean;
 	options: { offset: number; count: number; fields: Record<string, number>; sort: Record<string, number> };
+	customQuery?:Filter<IOmnichannelRoom>;
 }): Promise<PaginatedResult<{ rooms: Array<IOmnichannelRoom> }>> {
 	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 	const { cursor, totalCount } = LivechatRooms.findRoomsWithCriteria({
@@ -50,7 +52,7 @@ export async function findRooms({
 			count,
 			fields,
 		},
-		extraQuery,
+		extraQuery:{...extraQuery,...customQuery},
 	});
 
 	const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);

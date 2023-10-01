@@ -6,6 +6,9 @@ import { getPaginationItems } from '../../../../api/server/helpers/getPagination
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { findRooms } from '../../../server/api/lib/rooms';
 
+import { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type {Filter} from 'mongodb'
+
 const validateDateParams = (property: string, date?: string) => {
 	let parsedDate: { start?: string; end?: string } | undefined = undefined;
 	if (date) {
@@ -32,6 +35,9 @@ API.v1.addRoute(
 			const { sort, fields } = await this.parseJsonQuery();
 			const { agents, departmentId, open, tags, roomName, onhold } = this.queryParams;
 			const { createdAt, customFields, closedAt } = this.queryParams;
+			
+			const {query}=this.queryParams;
+			
 
 			const createdAtParam = validateDateParams('createdAt', createdAt);
 			const closedAtParam = validateDateParams('closedAt', closedAt);
@@ -57,6 +63,19 @@ API.v1.addRoute(
 					throw new Error('The "customFields" query parameter must be a valid JSON.');
 				}
 			}
+			let parsedQ : Filter<IOmnichannelRoom>|undefined=undefined;
+			if(query){
+				try{
+					const customQuery=JSON.parse(query) as Filter<IOmnichannelRoom>;
+					parsedQ=customQuery;
+				
+				}
+				catch(e){
+					throw new Error('The "customQuery" is not defined');
+				}
+				
+				
+			}
 
 			return API.v1.success(
 				await findRooms({
@@ -70,6 +89,7 @@ API.v1.addRoute(
 					customFields: parsedCf,
 					onhold,
 					options: { offset, count, sort, fields },
+					customQuery:parsedQ,
 				}),
 			);
 		},
