@@ -27,7 +27,7 @@ import {
 } from '@rocket.chat/models';
 import { MongoInternals } from 'meteor/mongo';
 
-import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
+import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server/getStatistics';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
 import { getControl } from '../../../../server/lib/migrations';
@@ -40,8 +40,6 @@ import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
-
-const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
 const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: number }> => {
 	const result = await Users.getUserLanguages();
@@ -70,17 +68,29 @@ export const statistics = {
 		const statistics = {} as IStats;
 		const statsPms = [];
 
+		const fetchWizardSettingValue = async <T>(settingName: string): Promise<T | undefined> => {
+			return ((await Settings.findOne(settingName))?.value as T | undefined) ?? undefined;
+		};
+
 		// Setup Wizard
-		statistics.wizard = {};
-		await Promise.all(
-			wizardFields.map(async (field) => {
-				const record = await Settings.findOne(field);
-				if (record) {
-					const wizardField = field.replace(/_/g, '').replace(field[0], field[0].toLowerCase());
-					statistics.wizard[wizardField] = record.value;
-				}
-			}),
-		);
+		const [organizationType, industry, size, country, language, serverType, registerServer] = await Promise.all([
+			fetchWizardSettingValue<string>('Organization_Type'),
+			fetchWizardSettingValue<string>('Industry'),
+			fetchWizardSettingValue<string>('Size'),
+			fetchWizardSettingValue<string>('Country'),
+			fetchWizardSettingValue<string>('Language'),
+			fetchWizardSettingValue<string>('Server_Type'),
+			fetchWizardSettingValue<boolean>('Register_Server'),
+		]);
+		statistics.wizard = {
+			organizationType,
+			industry,
+			size,
+			country,
+			language,
+			serverType,
+			registerServer,
+		};
 
 		// Version
 		const uniqueID = await Settings.findOne('uniqueID');
