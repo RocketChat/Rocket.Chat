@@ -151,6 +151,10 @@ export interface IMessage extends IRocketChatRecord {
 	pinnedBy?: Pick<IUser, '_id' | 'username'>;
 	unread?: boolean;
 	temp?: boolean;
+	delta?: {
+		update?: Record<string, any>;
+		removeFields?: string[];
+	};
 	drid?: RoomID;
 	tlm?: Date;
 
@@ -284,8 +288,17 @@ export interface IMessageReactionsNormalized extends IMessage {
 	};
 }
 
-export const isMessageReactionsNormalized = (message: IMessage): message is IMessageReactionsNormalized =>
-	Boolean('reactions' in message && message.reactions && message.reactions[0] && 'names' in message.reactions[0]);
+export const isMessageReactionsNormalized = (message: IMessage): message is IMessageReactionsNormalized => {
+	if (!message.reactions) {
+		return false;
+	}
+	const maybeOneReaction = Object.values(message.reactions)[0];
+	if (!maybeOneReaction) {
+		return false;
+	}
+
+	return 'names' in maybeOneReaction;
+};
 
 export interface IOmnichannelSystemMessage extends IMessage {
 	navigation?: {

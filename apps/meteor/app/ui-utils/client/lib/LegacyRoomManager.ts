@@ -142,22 +142,74 @@ const computation = Tracker.autorun(() => {
 							// 	return;
 							// }
 							// Do not load command messages into channel
+							let cachedMessage: any;
 							if (msg.t !== 'command') {
-								const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
-								const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
-								await upsertMessage({ msg, subscription });
+								if (msg.delta) {
+									const set: Record<string, any> = {};
 
-								if (isNew) {
+									for (const [key, value] of Object.entries(msg.delta.update ?? {})) {
+										if (key.startsWith('reactions.') && Array.isArray(value)) {
+											const emoji = key.split('.')[1];
+											const map = new Map();
+
+											value.forEach((username) => map.set(username, true));
+
+											cachedMessage = ChatMessage.findOne({ _id: msg._id });
+											if (!cachedMessage) {
+												console.warn('[WARN] no message found in cache while delta was sent');
+												return;
+											}
+
+											const emojiReactions = cachedMessage.reactions?.[emoji];
+											const { names, usernames } = emojiReactions as any;
+
+											for (let i = 0; i < usernames.length; i++) {
+												if (!map.has(usernames[i])) {
+													usernames.splice(i, 1);
+													names.splice(i, 1);
+												}
+											}
+
+											set[`reactions.${emoji}.usernames`] = usernames;
+											set[`reactions.${emoji}.names`] = names;
+
+											continue;
+										}
+
+										set[key] = value;
+									}
+
+									const unset =
+										msg.delta.removeFields?.reduce((acc, curr) => {
+											return { ...acc, [curr]: 1 };
+										}, {}) ?? {};
+
+									const n = ChatMessage.update(
+										{ _id: msg._id },
+										{ ...(msg.delta.update && { $set: set }), ...(msg.delta.removeFields?.length && { $unset: unset }) },
+									);
+									if (n !== 1) {
+										console.warn('[WARN] no message found in cache while delta was sent');
+										return;
+									}
+
+									cachedMessage = ChatMessage.findOne({ _id: msg._id });
+								} else {
+									const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
+									await upsertMessage({ msg, subscription });
+
 									await callbacks.run('streamNewMessage', msg);
 								}
 							}
 
-							handleTrackSettingsChange({ ...msg });
+							cachedMessage = cachedMessage ?? msg;
 
-							await callbacks.run('streamMessage', { ...msg, name: room.name || '' });
+							handleTrackSettingsChange({ ...cachedMessage });
+
+							await callbacks.run('streamMessage', { ...cachedMessage, name: room.name || '' });
 
 							fireGlobalEvent('new-message', {
-								...msg,
+								...cachedMessage,
 								name: room.name || '',
 								room: {
 									type,
@@ -260,4 +312,4 @@ export const LegacyRoomManager = {
 	},
 
 	open,
-};
+}; //

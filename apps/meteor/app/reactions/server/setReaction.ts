@@ -13,18 +13,6 @@ import { hasPermissionAsync } from '../../authorization/server/functions/hasPerm
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
 
-const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
-	if (!message.reactions) {
-		return message;
-	}
-
-	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
-	if (message.reactions[reaction].usernames.length === 0) {
-		delete message.reactions[reaction];
-	}
-	return message;
-};
-
 async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction: string, shouldReact?: boolean) {
 	reaction = `:${reaction.replace(/:/g, '')}:`;
 
@@ -51,40 +39,61 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 	// 	return;
 	// }
 
-	const userAlreadyReacted =
-		message.reactions &&
-		Boolean(message.reactions[reaction]) &&
-		message.reactions[reaction].usernames.indexOf(user.username as string) !== -1;
-	// When shouldReact was not informed, toggle the reaction.
+	const reactedUsernamesForEmoji = message.reactions?.[reaction]?.usernames ?? [];
+
+	const userIndexInReactionList = reactedUsernamesForEmoji.indexOf(user.username as string);
+
+	const userAlreadyReacted = userIndexInReactionList !== -1;
+
 	if (shouldReact === undefined) {
 		shouldReact = !userAlreadyReacted;
 	}
 
-	if (userAlreadyReacted === shouldReact) {
+	if (shouldReact === userAlreadyReacted) {
 		return;
 	}
 
-	let isReacted;
+	let didReact;
 
 	if (userAlreadyReacted) {
+		// 1. remove username from reaction list
+		// 2. if reaction list for that emoji was already 1, remove the reaction entry (for frontend)
+		// 3. if reaction list now is empty, remove 'reactions' field altogether
+
 		const oldMessage = JSON.parse(JSON.stringify(message));
-		removeUserReaction(message, reaction, user.username as string);
-		if (_.isEmpty(message.reactions)) {
-			delete message.reactions;
-			if (isTheLastMessage(room, message)) {
-				await Rooms.unsetReactionsInLastMessage(room._id);
+
+		if (reactedUsernamesForEmoji?.length === 1) {
+			// we can just pull the whole 'emoji' field
+			// @ts-ignore
+			delete message.reactions[reaction];
+			if (message.reactions && Object.keys(message.reactions).length === 0) {
+				// remove the whole reactions
+				delete message.reactions;
+				await Messages.updateOne({ _id: message._id }, { $unset: { reactions: 1 } });
+
+				if (isTheLastMessage(room, message)) {
+					await Rooms.unsetReactionsInLastMessage(room._id);
+				}
+			} else {
+				await Messages.updateOne(
+					{ _id: message._id },
+					{
+						$unset: { [`reactions.${reaction}`]: 1 },
+					},
+				);
+
+				if (isTheLastMessage(room, message)) {
+					await Rooms.setReactionsInLastMessage(room._id, message.reactions);
+				}
 			}
-			await Messages.unsetReactions(message._id);
 		} else {
-			await Messages.setReactions(message._id, message.reactions);
-			if (isTheLastMessage(room, message)) {
-				await Rooms.setReactionsInLastMessage(room._id, message.reactions);
-			}
+			await Messages.updateOne({ _id: message._id }, { $pull: { [`reactions.${reaction}.usernames`]: user.username } });
 		}
+
 		await callbacks.run('unsetReaction', message._id, reaction);
 		await callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact, oldMessage });
 
-		isReacted = false;
+		didReact = false;
 	} else {
 		if (!message.reactions) {
 			message.reactions = {};
@@ -94,18 +103,21 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 				usernames: [],
 			};
 		}
+
 		message.reactions[reaction].usernames.push(user.username as string);
-		await Messages.setReactions(message._id, message.reactions);
+
+		await Messages.updateOne({ _id: message._id }, { $push: { [`reactions.${reaction}.usernames`]: user.username } });
+
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
 		}
 		await callbacks.run('setReaction', message._id, reaction);
 		await callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
 
-		isReacted = true;
+		didReact = true;
 	}
 
-	await Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
+	await Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, didReact);
 }
 
 export async function executeSetReaction(userId: string, reaction: string, messageId: IMessage['_id'], shouldReact?: boolean) {

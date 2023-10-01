@@ -68,45 +68,148 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
 
 	const getUserNameCached = mem(
-		async (userId: string): Promise<string | undefined> => {
-			const user = await Users.findOne<Pick<IUser, 'name'>>(userId, { projection: { name: 1 } });
+		async (query: { _id: string } | { username: string }): Promise<string | undefined> => {
+			const user = await Users.findOne<Pick<IUser, 'name'>>(query, { projection: { name: 1 } });
 			return user?.name;
 		},
 		{ maxAge: 10000 },
 	);
 
-	watcher.on<IMessage>(Messages.getCollectionName(), async ({ clientAction, id, data }) => {
+	watcher.on<IMessage>(Messages.getCollectionName(), async ({ clientAction, id, data, diff, oplog }) => {
 		switch (clientAction) {
 			case 'inserted':
-			case 'updated':
-				const message = data ?? (await Messages.findOneById(id));
-				if (!message) {
+				if (!data || data._hidden || data.imported) {
 					return;
 				}
 
-				if (message._hidden !== true && message.imported == null) {
-					const UseRealName = (await getSettingCached('UI_Use_Real_Name')) === true;
-
-					if (UseRealName) {
-						if (message.u?._id) {
-							const name = await getUserNameCached(message.u._id);
-							if (name) {
-								message.u.name = name;
-							}
-						}
-
-						if (message.mentions?.length) {
-							for await (const mention of message.mentions) {
-								const name = await getUserNameCached(mention._id);
-								if (name) {
-									mention.name = name;
-								}
-							}
+				if (await getSettingCached('UI_Use_Real_Name')) {
+					if (!data.u.name) {
+						const name = await getUserNameCached({ _id: data.u._id });
+						if (name) {
+							data.u.name = name;
 						}
 					}
 
-					void broadcast('watch.messages', { clientAction, message });
+					if (data.mentions?.length) {
+						for await (const mention of data.mentions) {
+							if ('name' in mention) {
+								continue;
+							}
+							const name = await getUserNameCached({ _id: mention._id });
+							if (name) {
+								mention.name = name;
+							}
+						}
+					}
 				}
+
+				void broadcast('watch.messages', { clientAction, message: data });
+				break;
+			case 'updated':
+				// debugger;
+				const message = data ?? (await Messages.findOneById(id));
+
+				if (!message || message._hidden || message.imported || !diff) {
+					return;
+				}
+
+				const delta: {
+					update: Record<string, unknown>;
+					removeFields: string[];
+				} = {
+					update: {},
+					removeFields: [],
+				};
+
+				if (oplog) {
+					// TODO:
+					throw new Error('oplog is not supported');
+				} else {
+					// process changestream specific fields
+					await Promise.all(
+						Object.entries(diff).map(async ([key, value]: [string, unknown]) => {
+							delta.update[key] = value;
+
+							if (key === 'u.username' && typeof value === 'string') {
+								if ('u.name' in diff) {
+									return;
+								}
+								const name = await getUserNameCached({ username: value });
+								if (name) {
+									delta.update['u.name'] = name;
+								}
+								return;
+							}
+
+							if (key === 'mentions' && Array.isArray(value)) {
+								for await (const mention of value) {
+									if ('name' in mention) {
+										continue;
+									}
+									const name = await getUserNameCached({ _id: mention._id });
+									if (name) {
+										mention.name = name;
+									}
+								}
+							}
+
+							// debugger;
+
+							if (key === 'reactions') {
+								if (value === undefined) {
+									delta.removeFields.push(key);
+									delete delta.update[key];
+									return;
+								}
+
+								if (typeof value === 'object' && value !== null) {
+									const reaction = Object.values(value)[0] as { usernames: string[]; names: string[] };
+									const username = reaction.usernames[0];
+									const realName = await getUserNameCached({ username });
+									if (realName) {
+										reaction.names = [realName];
+									}
+									delta.update[key] = value;
+									return;
+								}
+							}
+
+							if (key.startsWith('reactions.')) {
+								if (value === undefined) {
+									delta.removeFields.push(key);
+									delete delta.update[key];
+									return;
+								}
+
+								if (typeof value === 'string') {
+									const name = await getUserNameCached({ username: value });
+									if (!name) {
+										return;
+									}
+									const nestedKeys = key.split('.');
+									nestedKeys[2] = 'names';
+									delta.update[nestedKeys.join('.')] = name;
+									return;
+								}
+
+								if (typeof value === 'object' && value && 'usernames' in value) {
+									// fresh new reaction
+									delta.update[key] = value;
+									const name = await getUserNameCached({ username: (value.usernames as string[])[0] });
+									if (name) {
+										(delta.update[key] as any).names = [name];
+									}
+								}
+
+								console.log('unknown changestream diff for reactions');
+							}
+						}),
+					);
+				}
+
+				message.delta = delta;
+
+				void broadcast('watch.messages', { clientAction, message });
 				break;
 		}
 	});
