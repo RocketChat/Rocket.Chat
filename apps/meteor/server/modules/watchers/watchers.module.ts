@@ -153,16 +153,32 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 								}
 							}
 
-							// debugger;
+							/*
+							 * understanding the op information
+							 * operations are in $pull, $push and $unset
+							 * all are read as $set, except for when value is undefined, that is an $unset, which would happen
+							 * on only two occassions: 1. all reactions for an emoji is removed, 2. all reactions are gone
+							 * everything else is $set
+							 * example of a $pull: `reactions.${emoji}.usernames`
+							 * example of a $push: `reactions.${emoji}.usernames`
+							 * start from the outer most field and work your way in, the first field that doesn't exist already is te whole object being set.
+							 * for example if no reaction exist already, then the whole `{ [${emoji}]: { usernames: [${username}] } }` is the object being set to the `reaction` field
+							 * let's say there is another reaction being added now, this time `reaction key exists but the next `${emoji}` doesn't, then the object being set to that key is `{ usernames: [${username}] }`
+							 * if everything exists, even `usernames` array, then convert push to indexed set, `reactions.${emoji}.usernames.0` for first element,
+							 * `reactions.${emoji}.usernames.1` for second element and so on
+							 * lastly, a $pull isn't an $unset but a $set with all the elements excluding the one being pulled, like a new list being created.
+							 */
 
 							if (key === 'reactions') {
 								if (value === undefined) {
+									// all reactions are gone
 									delta.removeFields.push(key);
 									delete delta.update[key];
 									return;
 								}
 
 								if (typeof value === 'object' && value !== null) {
+									// the very first reaction, whole reactions object is created
 									const reaction = Object.values(value)[0] as { usernames: string[]; names: string[] };
 									const username = reaction.usernames[0];
 									const realName = await getUserNameCached({ username });
@@ -176,12 +192,14 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 
 							if (key.startsWith('reactions.')) {
 								if (value === undefined) {
+									// an emoji field is being removed, e.g. all reactions for :joy: is lifted.
 									delta.removeFields.push(key);
 									delete delta.update[key];
 									return;
 								}
 
 								if (typeof value === 'string') {
+									// a reaction is being appended, i.e. at least one reaction for this emoji already exists
 									const name = await getUserNameCached({ username: value });
 									if (!name) {
 										return;
@@ -193,7 +211,7 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 								}
 
 								if (typeof value === 'object' && value && 'usernames' in value) {
-									// fresh new reaction
+									// fresh new reaction, first reaction of this emoji.
 									delta.update[key] = value;
 									const name = await getUserNameCached({ username: (value.usernames as string[])[0] });
 									if (name) {
