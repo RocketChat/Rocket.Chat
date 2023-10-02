@@ -1,5 +1,6 @@
 import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
+import { isLicensesInfoProps } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
 import { API } from '../../../app/api/server/api';
@@ -24,14 +25,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'licenses.info',
-	{ authRequired: true, validateParams: isLicensesInfoProps },
+	{ authRequired: true, validateParams: isLicensesInfoProps, permissionsRequired: ['view-privileged-setting'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
-				return API.v1.unauthorized();
-			}
-
-			const data = await License.getLicenseInfo(Boolean(this.queryParams.loadValues));
+			const data = await License.getInfo(Boolean(this.queryParams.loadValues));
 
 			return API.v1.success({ data });
 		},
