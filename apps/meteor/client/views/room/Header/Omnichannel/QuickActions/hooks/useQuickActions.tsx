@@ -309,8 +309,9 @@ export const useQuickActions = (): {
 	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
 	const canCloseRoom = usePermission('close-livechat-room');
 	const canCloseOthersRoom = usePermission('close-others-livechat-room');
-	const canPlaceChatOnHold = Boolean(!room.onHold && room.u && manualOnHoldAllowed);
-
+	const allowManualOnHoldUponAgentEngagement = useSetting('Livechat_allow_manual_on_hold_upon_agent_engagement_only');
+	const canPlaceChatOnHold = !room.onHold && room.u && manualOnHoldAllowed &&
+							   (allowManualOnHoldUponAgentEngagement ? !(room as any).lastMessage?.token : true);
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
