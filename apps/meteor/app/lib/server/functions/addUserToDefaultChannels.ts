@@ -12,7 +12,7 @@ export const addUserToDefaultChannels = async function (user: IUser, silenced?: 
 	}).toArray();
 	for await (const room of defaultRooms) {
 		if (!(await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { _id: 1 } }))) {
-			const autoTranslateConfig = await getSubscriptionAutotranslateDefaultConfig(user);
+			const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(user);
 			// Add a subscription to this user
 			await Subscriptions.createWithRoomAndUser(room, user, {
 				ts: new Date(),

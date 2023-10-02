@@ -80,7 +80,7 @@ async function createUsersSubscriptions({
 			extra.roles = ['owner'];
 		}
 
-		const autoTranslateConfig = await getSubscriptionAutotranslateDefaultConfig(member);
+		const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(member);
 
 		subs.push({
 			user: member,
