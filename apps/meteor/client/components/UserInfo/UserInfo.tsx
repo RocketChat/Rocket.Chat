@@ -54,7 +54,7 @@ const UserInfo = ({
 	email,
 	verified,
 	createdAt,
-	// status,
+	status,
 	statusText,
 	customFields,
 	canViewAllInfo,
@@ -78,7 +78,7 @@ const UserInfo = ({
 				{actions && <InfoPanel.Section>{actions}</InfoPanel.Section>}
 
 				<InfoPanel.Section>
-					{userDisplayName && <InfoPanel.Title title={userDisplayName} />}
+					{userDisplayName && <InfoPanel.Title icon={status} title={userDisplayName} />}
 					{statusText && (
 						<InfoPanel.Text>
 							<MarkdownText content={statusText} parseEmoji={true} variant='inline' />
@@ -131,12 +131,12 @@ const UserInfo = ({
 						</InfoPanel.Field>
 					)}
 
-					{/* {name && (
+					{name && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Full_Name')}</InfoPanel.Label>
 							<InfoPanel.Text>{name}</InfoPanel.Text>
 						</InfoPanel.Field>
-					)} */}
+					)}
 
 					{phone && (
 						<InfoPanel.Field>
