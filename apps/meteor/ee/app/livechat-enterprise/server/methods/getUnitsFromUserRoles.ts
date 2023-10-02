@@ -4,42 +4,32 @@ import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 
 import { hasAnyRoleAsync } from '../../../../../app/authorization/server/functions/hasRole';
+import { logger } from '../lib/logger';
 
-async function getUnitsFromUserRoles(user: string | null): Promise<string[] | undefined> {
-	if (!user || (await hasAnyRoleAsync(user, ['admin', 'livechat-manager']))) {
-		return;
-	}
-
-	if (!(await hasAnyRoleAsync(user, ['livechat-monitor']))) {
-		return;
-	}
-
+async function getUnitsFromUserRoles(user: string): Promise<string[]> {
 	return LivechatUnit.findByMonitorId(user);
 }
 
-async function getDepartmentsFromUserRoles(user: string | null): Promise<string[] | undefined> {
-	if (!user || (await hasAnyRoleAsync(user, ['admin', 'livechat-manager']))) {
-		return;
-	}
-
-	if (!(await hasAnyRoleAsync(user, ['livechat-monitor']))) {
-		return;
-	}
-
+async function getDepartmentsFromUserRoles(user: string): Promise<string[]> {
 	return (await LivechatDepartmentAgents.findByAgentId(user).toArray()).map((department) => department.departmentId);
 }
 
 const memoizedGetUnitFromUserRoles = mem(getUnitsFromUserRoles, { maxAge: 10000 });
 const memoizedGetDepartmentsFromUserRoles = mem(getDepartmentsFromUserRoles, { maxAge: 5000 });
 
-export const getUnitsFromUser = async (user: string | null) => {
-	const units = await memoizedGetUnitFromUserRoles(user);
-	if (!units?.length) {
+export const getUnitsFromUser = async (user: string): Promise<string[] | undefined> => {
+	if (!user || (await hasAnyRoleAsync(user, ['admin', 'livechat-manager']))) {
 		return;
 	}
 
-	const departments = (await memoizedGetDepartmentsFromUserRoles(user)) || [];
-	return [...units, ...departments];
+	if (!(await hasAnyRoleAsync(user, ['livechat-monitor']))) {
+		return;
+	}
+
+	const unitsAndDepartments = [...(await memoizedGetUnitFromUserRoles(user)), ...(await memoizedGetDepartmentsFromUserRoles(user))];
+	logger.debug({ msg: 'Calculating units for monitor', user, unitsAndDepartments });
+
+	return unitsAndDepartments;
 };
 
 declare module '@rocket.chat/ui-contexts' {
@@ -52,6 +42,9 @@ declare module '@rocket.chat/ui-contexts' {
 Meteor.methods<ServerMethods>({
 	async 'livechat:getUnitsFromUser'(): Promise<string[] | undefined> {
 		const user = Meteor.userId();
+		if (!user) {
+			return;
+		}
 		return getUnitsFromUser(user);
 	},
 });
