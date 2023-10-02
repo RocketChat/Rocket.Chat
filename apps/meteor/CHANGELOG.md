@@ -1,5 +1,33 @@
 # @rocket.chat/meteor
 
+## 6.3.9
+
+### Patch Changes
+
+- 8f5c8bf22a: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 649157a180: fix: Monitors now able to forward a chat without taking it first
+- b986f5842c: fix: Remove model-level query restrictions for monitors
+  fix: `onAssignmentFailed` & `onTransferFailure` callbacks not working properly
+  - @rocket.chat/core-typings@6.3.9
+  - @rocket.chat/rest-typings@6.3.9
+  - @rocket.chat/api-client@0.1.9
+  - @rocket.chat/omnichannel-services@0.0.15
+  - @rocket.chat/pdf-worker@0.0.15
+  - @rocket.chat/presence@0.0.15
+  - @rocket.chat/core-services@0.1.9
+  - @rocket.chat/cron@0.0.11
+  - @rocket.chat/gazzodown@1.0.9
+  - @rocket.chat/model-typings@0.0.15
+  - @rocket.chat/ui-contexts@1.0.9
+  - @rocket.chat/fuselage-ui-kit@1.0.9
+  - @rocket.chat/models@0.0.15
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.9
+  - @rocket.chat/ui-video-conf@1.0.9
+  - @rocket.chat/web-ui-registration@1.0.9
+  - @rocket.chat/instance-status@0.0.15
+
 ## 6.3.8
 
 ### Patch Changes
