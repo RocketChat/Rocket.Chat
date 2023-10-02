@@ -55,7 +55,7 @@ export async function getWorkspaceLicense(): Promise<{ updated: boolean; license
 	const fromCurrentLicense = async () => {
 		const license = currentLicense?.value as string | undefined;
 		if (license) {
-			callbacks.run('workspaceLicenseChanged', license);
+			await callbacks.run('workspaceLicenseChanged', license);
 		}
 
 		return { updated: false, license: license ?? '' };
