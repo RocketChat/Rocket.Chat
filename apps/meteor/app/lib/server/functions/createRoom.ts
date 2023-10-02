@@ -58,14 +58,14 @@ async function createUsersSubscriptions({
 	});
 
 	for await (const member of membersCursor) {
-		memberIds.push(member._id);
-
 		try {
 			await callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
 			await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
 		} catch (error) {
 			continue;
 		}
+
+		memberIds.push(member._id);
 
 		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
 
