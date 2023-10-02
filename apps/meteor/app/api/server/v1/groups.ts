@@ -48,9 +48,9 @@ async function getRoomFromParams(params: { roomId?: string } | { roomName?: stri
 	};
 
 	const room = await (() => {
-	if ('roomId' in params) {
+		if ('roomId' in params) {
 			return Rooms.findOneById(params.roomId || '', roomOptions);
-	}
+		}
 		if ('roomName' in params) {
 			return Rooms.findOneByName(params.roomName || '', roomOptions);
 		}
