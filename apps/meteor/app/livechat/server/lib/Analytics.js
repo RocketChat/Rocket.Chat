@@ -43,8 +43,6 @@ export const Analytics = {
 		const from = moment.tz(fDate, 'YYYY-MM-DD', timezone).startOf('day').utc();
 		const to = moment.tz(tDate, 'YYYY-MM-DD', timezone).endOf('day').utc();
 
-		logger.debug(`getAgentOverviewData[${name}] -> Using timezone ${timezone} with date range ${from} - ${to}`);
-
 		if (!(moment(from).isValid() && moment(to).isValid())) {
 			logger.error('livechat:getAgentOverviewData => Invalid dates');
 			return;
@@ -78,8 +76,6 @@ export const Analytics = {
 		const from = moment.tz(fDate, 'YYYY-MM-DD', timezone).startOf('day').utc();
 		const to = moment.tz(tDate, 'YYYY-MM-DD', timezone).endOf('day').utc();
 		const isSameDay = from.diff(to, 'days') === 0;
-
-		logger.debug(`getAnalyticsChartData[${name}] -> Using timezone ${timezone} with date range ${from} - ${to}`);
 
 		if (!(moment(from).isValid() && moment(to).isValid())) {
 			logger.error('livechat:getAnalyticsChartData => Invalid dates');
@@ -132,8 +128,6 @@ export const Analytics = {
 		const timezone = getTimezone({ utcOffset });
 		const from = moment.tz(fDate, 'YYYY-MM-DD', timezone).startOf('day').utc();
 		const to = moment.tz(tDate, 'YYYY-MM-DD', timezone).endOf('day').utc();
-
-		logger.debug(`getAnalyticsOverviewData[${name}] -> Using timezone ${timezone} with date range ${from} - ${to}`);
 
 		if (!(moment(from).isValid() && moment(to).isValid())) {
 			logger.error('livechat:getAnalyticsOverviewData => Invalid dates');

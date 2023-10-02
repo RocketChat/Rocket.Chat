@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
@@ -8,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { Apps } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
+import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { createDirectRoom } from './createDirectRoom';
 
@@ -78,9 +80,14 @@ async function createUsersSubscriptions({
 			extra.roles = ['owner'];
 		}
 
+		const autoTranslateConfig = await getSubscriptionAutotranslateDefaultConfig(member);
+
 		subs.push({
 			user: member,
-			extraData: extra,
+			extraData: {
+				...extra,
+				...autoTranslateConfig,
+			},
 		});
 	}
 
