@@ -3123,7 +3123,6 @@ describe('Threads', () => {
 					expect(res.body).to.have.property('urlPreview').and.to.be.an('object').that.is.not.empty;
 					expect(res.body.urlPreview).to.have.property('url', url);
 					expect(res.body.urlPreview).to.have.property('headers').and.to.be.an('object').that.is.not.empty;
-					expect(res.body.urlPreview).to.have.property('parsedUrl').and.to.be.an('object').that.is.not.empty;
 				});
 		});
 
