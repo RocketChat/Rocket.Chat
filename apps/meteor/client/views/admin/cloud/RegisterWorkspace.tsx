@@ -57,9 +57,9 @@ const RegisterWorkspace = () => {
 				</Box>
 
 				<Box pb={8}>
-					<Box fontSize='h3' fontWeight={700}>
-						{isWorkspaceRegistered && t('RegisterWorkspace_NotRegistered_Subtitle')}
-						{!isWorkspaceRegistered && t('RegisterWorkspace_Registered_Description')}
+					<Box fontScale='h3'>
+						{!isWorkspaceRegistered && t('RegisterWorkspace_NotRegistered_Subtitle')}
+						{isWorkspaceRegistered && t('RegisterWorkspace_Registered_Description')}
 					</Box>
 					<RegisterWorkspaceCards />
 				</Box>
