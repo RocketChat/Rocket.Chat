@@ -1,12 +1,13 @@
+import { FederationEE } from '@rocket.chat/core-services';
 import {
 	isFederationAddServerProps,
 	isFederationRemoveServerProps,
 	isFederationSearchPublicRoomsProps,
 	isFederationJoinExternalPublicRoomProps,
 } from '@rocket.chat/rest-typings';
-import { FederationEE } from '@rocket.chat/core-services';
 
 import { API } from '../../../../app/api/server';
+import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'federation/searchPublicRooms',
@@ -16,7 +17,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { count } = this.getPaginationItems();
+			const { count } = await getPaginationItems(this.queryParams);
 			const { serverName, roomName, pageToken } = this.queryParams;
 
 			const result = await FederationEE.searchPublicRooms(serverName, roomName, pageToken, count);
@@ -84,9 +85,9 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { externalRoomId } = this.bodyParams;
+			const { externalRoomId, roomName, pageToken } = this.bodyParams;
 
-			await FederationEE.joinExternalPublicRoom(this.userId, externalRoomId);
+			await FederationEE.scheduleJoinExternalPublicRoom(this.userId, externalRoomId, roomName, decodeURIComponent(pageToken || ''));
 
 			return API.v1.success();
 		},

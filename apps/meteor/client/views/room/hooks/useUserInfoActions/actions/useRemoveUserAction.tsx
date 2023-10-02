@@ -1,6 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { usePermission, useSetModal, useTranslation, useUser, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
@@ -10,12 +9,16 @@ import GenericModal from '../../../../../components/GenericModal';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import * as Federation from '../../../../../lib/federation/Federation';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import type { Action } from '../../../../hooks/useActionSpread';
 import RemoveUsersModal from '../../../../teams/contextualBar/members/RemoveUsersModal';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
+import type { UserInfoAction } from '../useUserInfoActions';
 
 // TODO: Remove endpoint concatenation
-export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id'], reload?: () => void): Action | undefined => {
+export const useRemoveUserAction = (
+	user: Pick<IUser, '_id' | 'username'>,
+	rid: IRoom['_id'],
+	reload?: () => void,
+): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const currentUser = useUser();
@@ -88,13 +91,11 @@ export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 		() =>
 			roomCanRemove && userCanRemove
 				? {
-						label: (
-							<Box color='status-font-on-danger'>
-								<Icon mie='x4' name='cross' size='x20' />
-								{room?.teamMain ? t('Remove_from_team') : t('Remove_from_room')}
-							</Box>
-						),
-						action: removeUserOptionAction,
+						content: room?.teamMain ? t('Remove_from_team') : t('Remove_from_room'),
+						icon: 'cross' as const,
+						onClick: removeUserOptionAction,
+						type: 'moderation' as const,
+						variant: 'danger' as const,
 				  }
 				: undefined,
 		[room, roomCanRemove, userCanRemove, removeUserOptionAction, t],

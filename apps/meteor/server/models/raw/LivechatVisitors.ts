@@ -1,5 +1,7 @@
 import type { ILivechatVisitor, ISetting, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
+import { Settings } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
 	Collection,
@@ -13,8 +15,6 @@ import type {
 	DeleteResult,
 	UpdateFilter,
 } from 'mongodb';
-import { Settings } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -79,7 +79,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query, options);
 	}
 
-	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department: string }): FindCursor<ILivechatVisitor> {
+	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): FindCursor<ILivechatVisitor> {
 		const query = {
 			_updatedAt: {
 				$gte: new Date(start),
@@ -113,7 +113,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return `guest-${livechatCount.value.value}`;
 	}
 
-	findByNameRegexWithExceptionsAndConditions<P = ILivechatVisitor>(
+	findByNameRegexWithExceptionsAndConditions<P extends Document = ILivechatVisitor>(
 		searchTerm: string,
 		exceptions: string[] = [],
 		conditions: Filter<ILivechatVisitor> = {},
@@ -327,33 +327,28 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	}
 
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void> {
-		const update: DeepWriteable<UpdateFilter<ILivechatVisitor>> = {
-			$addToSet: {},
-		};
-
 		const saveEmail = ([] as string[])
 			.concat(emails)
 			.filter((email) => email?.trim())
 			.map((email) => ({ address: email }));
-
-		if (update.$addToSet && saveEmail.length > 0) {
-			update.$addToSet.visitorEmails = { $each: saveEmail };
-		}
 
 		const savePhone = ([] as string[])
 			.concat(phones)
 			.filter((phone) => phone?.trim().replace(/[^\d]/g, ''))
 			.map((phone) => ({ phoneNumber: phone }));
 
-		if (update.$addToSet && savePhone.length > 0) {
-			update.$addToSet.phone = { $each: savePhone };
-		}
+		const update: UpdateFilter<ILivechatVisitor> = {
+			$addToSet: {
+				...(saveEmail.length && { visitorEmails: { $each: saveEmail } }),
+				...(savePhone.length && { phone: { $each: savePhone } }),
+			},
+		};
 
-		if (!Object.keys(update).length) {
+		if (!Object.keys(update.$addToSet as Record<string, any>).length) {
 			return Promise.resolve();
 		}
 
-		return this.updateOne({ _id }, update as UpdateFilter<ILivechatVisitor>);
+		return this.updateOne({ _id }, update);
 	}
 
 	removeContactManagerByUsername(manager: string): Promise<Document | UpdateResult> {

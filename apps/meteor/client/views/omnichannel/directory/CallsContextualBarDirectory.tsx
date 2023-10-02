@@ -1,10 +1,10 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, useQueryStringParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter, useSearchParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useMemo } from 'react';
 
-import VerticalBar from '../../../components/VerticalBar';
+import { Contextualbar } from '../../../components/Contextualbar';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import Call from './calls/Call';
@@ -16,11 +16,11 @@ const CallsContextualBarDirectory: FC = () => {
 
 	const bar = useRouteParameter('bar') || 'info';
 	const id = useRouteParameter('id');
-	const token = useQueryStringParameter('token');
+	const token = useSearchParameter('token');
 
 	const t = useTranslation();
 
-	const handleCallsVerticalBarCloseButtonClick = (): void => {
+	const handleCallsContextualbarCloseButtonClick = (): void => {
 		directoryRoute.push({ page: 'calls' });
 	};
 
@@ -40,19 +40,21 @@ const CallsContextualBarDirectory: FC = () => {
 
 	if (state === AsyncStatePhase.LOADING) {
 		return (
-			<Box pi='x24'>
+			<Box pi={24}>
 				<FormSkeleton />
 			</Box>
 		);
 	}
 
 	if (error || !data || !data.room) {
-		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
+		return <Box mbs={16}>{t('Room_not_found')}</Box>;
 	}
 
 	const room = data.room as unknown as IVoipRoom; // TODO Check why types are incompatible even though the endpoint returns an IVoipRooms
 
-	return <VerticalBar>{bar === 'info' && <VoipInfo room={room} onClickClose={handleCallsVerticalBarCloseButtonClick} />}</VerticalBar>;
+	return (
+		<Contextualbar>{bar === 'info' && <VoipInfo room={room} onClickClose={handleCallsContextualbarCloseButtonClick} />}</Contextualbar>
+	);
 };
 
 export default CallsContextualBarDirectory;

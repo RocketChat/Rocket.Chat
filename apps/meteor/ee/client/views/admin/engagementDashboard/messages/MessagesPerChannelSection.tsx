@@ -1,14 +1,28 @@
 import { ResponsivePie } from '@nivo/pie';
-import { Box, Flex, Icon, Margins, Skeleton, Table, Tile, Palette } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Flex,
+	Icon,
+	Margins,
+	Skeleton,
+	Table,
+	Tile,
+	Palette,
+	Tooltip,
+	TableHead,
+	TableRow,
+	TableBody,
+	TableCell,
+} from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
+import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
+import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
+import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
-import DownloadDataButton from '../dataView/DownloadDataButton';
 import LegendSymbol from '../dataView/LegendSymbol';
-import PeriodSelector from '../dataView/PeriodSelector';
-import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useMessageOrigins } from './useMessageOrigins';
 import { useTopFivePopularChannels } from './useTopFivePopularChannels';
 
@@ -58,14 +72,14 @@ const MessagesPerChannelSection = (): ReactElement => {
 			<Flex.Container>
 				<Margins inline='neg-x12'>
 					<Box>
-						<Margins inline='x12'>
+						<Margins inline={12}>
 							<Flex.Item grow={1} shrink={0} basis='0'>
 								<Box>
 									<Flex.Container alignItems='center' wrap='no-wrap'>
 										{pie ? (
 											<Box>
 												<Flex.Item grow={1} shrink={1}>
-													<Margins inline='x24'>
+													<Margins inline={24}>
 														<Box
 															style={{
 																position: 'relative',
@@ -102,12 +116,8 @@ const MessagesPerChannelSection = (): ReactElement => {
 																	]}
 																	innerRadius={0.6}
 																	colors={[colors.warning, colors.success, colors.info]}
-																	// @ts-ignore
-																	enableRadialLabels={false}
-																	enableSlicesLabels={false}
 																	animate={true}
-																	motionStiffness={90}
-																	motionDamping={15}
+																	motionConfig='stiff'
 																	theme={{
 																		// TODO: Get it from theme
 																		axis: {
@@ -124,19 +134,8 @@ const MessagesPerChannelSection = (): ReactElement => {
 																				},
 																			},
 																		},
-																		tooltip: {
-																			container: {
-																				backgroundColor: '#1F2329',
-																				boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
-																				borderRadius: 2,
-																			},
-																		},
 																	}}
-																	tooltip={({ datum }): ReactElement => (
-																		<Box fontScale='p1m' color='white'>
-																			{t('Value_messages', { value: datum.value })}
-																		</Box>
-																	)}
+																	tooltip={({ datum }) => <Tooltip>{t('Value_messages', { value: datum.value })}</Tooltip>}
 																/>
 															</Box>
 														</Box>
@@ -145,7 +144,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 												<Flex.Item basis='auto'>
 													<Margins block='neg-x4'>
 														<Box>
-															<Margins block='x4'>
+															<Margins block={4}>
 																<Box color='hint' fontScale='p1'>
 																	<LegendSymbol color={colors.warning} />
 																	{t('Private_Chats')}
@@ -171,7 +170,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 							</Flex.Item>
 							<Flex.Item grow={1} shrink={0} basis='0'>
 								<Box>
-									<Margins blockEnd='x16'>
+									<Margins blockEnd={16}>
 										{table ? <Box fontScale='p1'>{t('Most_popular_channels_top_5')}</Box> : <Skeleton width='50%' />}
 									</Margins>
 									{table && !table.length && (
@@ -181,43 +180,43 @@ const MessagesPerChannelSection = (): ReactElement => {
 									)}
 									{(!table || !!table.length) && (
 										<Table>
-											<Table.Head>
-												<Table.Row>
-													<Table.Cell>{'#'}</Table.Cell>
-													<Table.Cell>{t('Channel')}</Table.Cell>
-													<Table.Cell align='end'>{t('Number_of_messages')}</Table.Cell>
-												</Table.Row>
-											</Table.Head>
-											<Table.Body>
+											<TableHead>
+												<TableRow>
+													<TableCell>#</TableCell>
+													<TableCell>{t('Channel')}</TableCell>
+													<TableCell align='end'>{t('Number_of_messages')}</TableCell>
+												</TableRow>
+											</TableHead>
+											<TableBody>
 												{table?.map(({ i, t, name, messages }) => (
-													<Table.Row key={i}>
-														<Table.Cell>{i + 1}.</Table.Cell>
-														<Table.Cell>
-															<Margins inlineEnd='x4'>
+													<TableRow key={i}>
+														<TableCell>{i + 1}.</TableCell>
+														<TableCell>
+															<Margins inlineEnd={4}>
 																{(t === 'd' && <Icon name='at' />) ||
 																	(t === 'p' && <Icon name='lock' />) ||
 																	(t === 'c' && <Icon name='hashtag' />)}
 															</Margins>
 															{name}
-														</Table.Cell>
-														<Table.Cell align='end'>{messages}</Table.Cell>
-													</Table.Row>
+														</TableCell>
+														<TableCell align='end'>{messages}</TableCell>
+													</TableRow>
 												))}
 												{!table &&
 													Array.from({ length: 5 }, (_, i) => (
-														<Table.Row key={i}>
-															<Table.Cell>
+														<TableRow key={i}>
+															<TableCell>
 																<Skeleton width='100%' />
-															</Table.Cell>
-															<Table.Cell>
+															</TableCell>
+															<TableCell>
 																<Skeleton width='100%' />
-															</Table.Cell>
-															<Table.Cell align='end'>
+															</TableCell>
+															<TableCell align='end'>
 																<Skeleton width='100%' />
-															</Table.Cell>
-														</Table.Row>
+															</TableCell>
+														</TableRow>
 													))}
-											</Table.Body>
+											</TableBody>
 										</Table>
 									)}
 								</Box>

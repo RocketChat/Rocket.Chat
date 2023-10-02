@@ -11,7 +11,7 @@ import StringSettingInput from '../../../../client/views/admin/settings/inputs/S
 
 export type PriorityFormData = { name: string; reset: boolean };
 
-export type ILivechatClientPriority = Serialized<ILivechatPriority> & {
+type ILivechatClientPriority = Serialized<ILivechatPriority> & {
 	i18n: TranslationKey;
 };
 
@@ -80,7 +80,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 					rules={{ required: t('The_field_is_required', t('Name')), validate: (v) => v?.trim() !== '' }}
 					render={({ field: { value, onChange } }): ReactElement => (
 						<StringSettingInput
-							_id={''}
+							_id=''
 							disabled={isSaving}
 							error={errors.name?.message}
 							label={`${t('Name')}*`}

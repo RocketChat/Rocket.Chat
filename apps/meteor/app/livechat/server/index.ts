@@ -1,5 +1,4 @@
 import './livechat';
-import './config';
 import './startup';
 import '../lib/messageTypes';
 import './hooks/beforeDelegateAgent';
@@ -16,6 +15,7 @@ import './hooks/sendEmailTranscriptOnClose';
 import './hooks/saveContactLastChat';
 import './hooks/saveLastMessageToInquiry';
 import './hooks/afterUserActions';
+import './hooks/afterAgentRemoved';
 import './methods/addAgent';
 import './methods/addManager';
 import './methods/changeLivechatStatus';

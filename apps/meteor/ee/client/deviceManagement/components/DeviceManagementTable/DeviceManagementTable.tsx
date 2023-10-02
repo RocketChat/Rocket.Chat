@@ -5,6 +5,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
+import GenericNoResults from '../../../../../client/components/GenericNoResults/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -27,6 +28,7 @@ type DeviceManagementTableProps<T> = {
 	paginationProps?: Partial<ComponentProps<typeof Pagination>>;
 };
 
+// TODO: Missing error state
 const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagementPopulatedSession>({
 	data,
 	phase,
@@ -60,12 +62,7 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 
 	return (
 		<>
-			{data?.sessions.length === 0 && phase === AsyncStatePhase.RESOLVED && (
-				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
-				</States>
-			)}
+			{data?.sessions.length === 0 && phase === AsyncStatePhase.RESOLVED && <GenericNoResults />}
 			<GenericTable>
 				{data?.sessions && data.sessions.length > 0 && headers && <GenericTableHeader>{headers}</GenericTableHeader>}
 				<GenericTableBody>

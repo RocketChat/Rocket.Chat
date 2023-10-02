@@ -6,10 +6,17 @@ import AttachmentDownload from './content/attachments/structure/AttachmentDownlo
 import AttachmentSize from './content/attachments/structure/AttachmentSize';
 import { useCollapse } from './hooks/useCollapse';
 
-type MessageCollapsibleProps = { children?: ReactNode; title?: string; hasDownload?: boolean; link?: string; size?: number };
+type MessageCollapsibleProps = {
+	children?: ReactNode;
+	title?: string;
+	hasDownload?: boolean;
+	link?: string;
+	size?: number;
+	isCollapsed?: boolean;
+};
 
-const MessageCollapsible = ({ children, title, hasDownload, link, size }: MessageCollapsibleProps): ReactElement => {
-	const [collapsed, collapse] = useCollapse(false);
+const MessageCollapsible = ({ children, title, hasDownload, link, size, isCollapsed }: MessageCollapsibleProps): ReactElement => {
+	const [collapsed, collapse] = useCollapse(isCollapsed);
 
 	return (
 		<>

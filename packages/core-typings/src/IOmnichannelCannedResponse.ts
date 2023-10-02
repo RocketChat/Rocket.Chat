@@ -6,8 +6,9 @@ export interface IOmnichannelCannedResponse extends IRocketChatRecord {
 	shortcut: string;
 	text: string;
 	scope: string;
-	tags: any;
-	userId: IUser['_id'];
+	tags: string[];
+	// userId is optional, its only required when scope === 'user'
+	userId?: IUser['_id'];
 	departmentId?: ILivechatDepartment['_id'];
 	createdBy: {
 		_id: IUser['_id'];

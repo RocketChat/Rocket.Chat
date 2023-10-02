@@ -1,5 +1,5 @@
-import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
@@ -39,7 +39,7 @@ export type AppsEndpoints = {
 			app: App;
 			success: boolean;
 		};
-		POST: (params: { marketplace: boolean; version: string; permissionsGranted?: IPermission[]; appId: string }) => {
+		POST: (params: { marketplace: boolean; version: string; permissionsGranted?: IPermission[]; appId: string; url?: string }) => {
 			app: App;
 		};
 	};
@@ -60,7 +60,7 @@ export type AppsEndpoints = {
 						Setting_Description: string;
 					};
 				};
-			};
+			}[];
 		};
 	};
 
@@ -75,6 +75,13 @@ export type AppsEndpoints = {
 		POST: (params: { settings: ISetting[] }) => { updated: ISetting[]; success: boolean };
 	};
 
+	'/apps/:id/settings/:settingId': {
+		GET: () => {
+			setting: ISetting;
+		};
+		POST: (params: { setting: ISetting }) => { success: boolean };
+	};
+
 	'/apps/:id/screenshots': {
 		GET: () => {
 			screenshots: AppScreenshot[];
@@ -84,7 +91,12 @@ export type AppsEndpoints = {
 	'/apps/:id/languages': {
 		GET: () => {
 			languages: {
-				[key: string]: object;
+				[key: string]: {
+					Params: string;
+					Description: string;
+					Setting_Name: string;
+					Setting_Description: string;
+				};
 			};
 		};
 	};
@@ -114,6 +126,9 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/:id/status': {
+		GET: () => {
+			status: string;
+		};
 		POST: (params: { status: AppStatus }) => {
 			status: string;
 		};
@@ -122,6 +137,17 @@ export type AppsEndpoints = {
 	'/apps/:id/versions': {
 		GET: () => {
 			apps: App[];
+		};
+	};
+
+	'/apps/:id/icon': {
+		GET: () => {
+			statusCode: 200;
+			headers: {
+				'Content-Length': number;
+				'Content-Type': string;
+			};
+			body: Buffer;
 		};
 	};
 
@@ -183,7 +209,13 @@ export type AppsEndpoints = {
 		POST: (params: { appId: string; appName: string; appVersion: string; message: string }) => void;
 	};
 
-	'/apps': {
+	'/apps/externalComponentEvent': {
+		POST: (params: { externalComponent: string; event: 'IPostExternalComponentOpened' | 'IPostExternalComponentClosed' }) => {
+			result: any;
+		};
+	};
+
+	'/apps/': {
 		GET:
 			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {
 					url: string;
@@ -213,8 +245,28 @@ export type AppsEndpoints = {
 			  }[])
 			| (() => { apps: App[] });
 
-		POST: (params: { appId: string; marketplace: boolean; version: string; permissionsGranted?: IPermission[] }) => {
+		POST: (params: {
+			appId: string;
+			marketplace: boolean;
+			version: string;
+			permissionsGranted?: IPermission[];
+			url?: string;
+			downloadOnly?: boolean;
+		}) => {
 			app: App;
 		};
+	};
+
+	'/apps/ui.interaction/:id': {
+		POST: (params: {
+			type: string;
+			actionId: string;
+			rid: string;
+			mid: string;
+			viewId: string;
+			container: string;
+			triggerId: string;
+			payload: any;
+		}) => any;
 	};
 };

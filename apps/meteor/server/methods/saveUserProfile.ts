@@ -1,17 +1,23 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import { Accounts } from 'meteor/accounts-base';
+import type { UserStatus } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Accounts } from 'meteor/accounts-base';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { saveCustomFields, passwordPolicy } from '../../app/lib/server';
-import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
-import { Users } from '../../app/models/server';
-import { settings as rcSettings } from '../../app/settings/server';
 import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
+import { saveCustomFields } from '../../app/lib/server/functions/saveCustomFields';
+import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
+import { passwordPolicy } from '../../app/lib/server/lib/passwordPolicy';
+import { settings as rcSettings } from '../../app/settings/server';
+import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
+import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
-import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
+
+const MAX_BIO_LENGTH = 260;
+const MAX_NICKNAME_LENGTH = 120;
 
 async function saveUserProfile(
 	this: Meteor.MethodThisType,
@@ -49,7 +55,7 @@ async function saveUserProfile(
 		statusText: settings.statusText,
 	});
 
-	const user = Users.findOneById(this.userId);
+	const user = await Users.findOneById(this.userId);
 
 	if (settings.realname || settings.username) {
 		if (
@@ -66,47 +72,57 @@ async function saveUserProfile(
 	}
 
 	if (settings.statusText || settings.statusText === '') {
-		Meteor.call('setUserStatus', null, settings.statusText);
+		await setUserStatusMethod(this.userId, undefined, settings.statusText);
 	}
 
 	if (settings.statusType) {
-		Meteor.call('setUserStatus', settings.statusType, null);
+		await setUserStatusMethod(this.userId, settings.statusType as UserStatus, undefined);
 	}
 
-	if (settings.bio) {
-		if (typeof settings.bio !== 'string' || settings.bio.length > 260) {
+	if (user && settings.bio) {
+		if (typeof settings.bio !== 'string') {
 			throw new Meteor.Error('error-invalid-field', 'bio', {
 				method: 'saveUserProfile',
 			});
 		}
-		Users.setBio(user._id, settings.bio.trim());
+		if (settings.bio.length > MAX_BIO_LENGTH) {
+			throw new Meteor.Error('error-bio-size-exceeded', `Bio size exceeds ${MAX_BIO_LENGTH} characters`, {
+				method: 'saveUserProfile',
+			});
+		}
+		await Users.setBio(user._id, settings.bio.trim());
 	}
 
-	if (settings.nickname) {
-		if (typeof settings.nickname !== 'string' || settings.nickname.length > 120) {
+	if (user && settings.nickname) {
+		if (typeof settings.nickname !== 'string') {
 			throw new Meteor.Error('error-invalid-field', 'nickname', {
 				method: 'saveUserProfile',
 			});
 		}
-		Users.setNickname(user._id, settings.nickname.trim());
+		if (settings.nickname.length > MAX_NICKNAME_LENGTH) {
+			throw new Meteor.Error('error-nickname-size-exceeded', `Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters`, {
+				method: 'saveUserProfile',
+			});
+		}
+		await Users.setNickname(user._id, settings.nickname.trim());
 	}
 
 	if (settings.email) {
-		Meteor.call('setEmail', settings.email);
+		await Meteor.callAsync('setEmail', settings.email);
 	}
 
 	const canChangePasswordForOAuth = rcSettings.get<boolean>('Accounts_AllowPasswordChangeForOAuthUsers');
-	if (canChangePasswordForOAuth || user.services?.password) {
+	if (canChangePasswordForOAuth || user?.services?.password) {
 		// Should be the last check to prevent error when trying to check password for users without password
-		if (settings.newPassword && rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true) {
+		if (settings.newPassword && rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true && user?.services?.password?.bcrypt) {
 			// don't let user change to same password
-			if (compareUserPassword(user, { plain: settings.newPassword })) {
+			if (user && (await compareUserPassword(user, { plain: settings.newPassword }))) {
 				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
 					method: 'saveUserProfile',
 				});
 			}
 
-			if (user.services?.passwordHistory && !compareUserPasswordHistory(user, { plain: settings.newPassword })) {
+			if (user?.services?.passwordHistory && !(await compareUserPasswordHistory(user, { plain: settings.newPassword }))) {
 				throw new Meteor.Error('error-password-in-history', 'Entered password has been previously used', {
 					method: 'saveUserProfile',
 				});
@@ -114,28 +130,32 @@ async function saveUserProfile(
 
 			passwordPolicy.validate(settings.newPassword);
 
-			Accounts.setPassword(this.userId, settings.newPassword, {
+			await Accounts.setPasswordAsync(this.userId, settings.newPassword, {
 				logout: false,
 			});
 
-			Users.addPasswordToHistory(this.userId, user.services?.password.bcrypt);
+			await Users.addPasswordToHistory(
+				this.userId,
+				user.services?.password.bcrypt,
+				rcSettings.get<number>('Accounts_Password_History_Amount'),
+			);
 
 			try {
-				Meteor.call('removeOtherTokens');
+				await Meteor.callAsync('removeOtherTokens');
 			} catch (e) {
 				Accounts._clearAllLoginTokens(this.userId);
 			}
 		}
 	}
 
-	Users.setProfile(this.userId, {});
+	await Users.setProfile(this.userId, {});
 
 	if (customFields && Object.keys(customFields).length) {
-		saveCustomFields(this.userId, customFields);
+		await saveCustomFields(this.userId, customFields);
 	}
 
 	// App IPostUserUpdated event hook
-	const updatedUser = Users.findOneById(this.userId);
+	const updatedUser = await Users.findOneById(this.userId);
 	await Apps.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
 
 	return true;

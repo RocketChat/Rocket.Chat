@@ -1,9 +1,11 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
 
+export type IntegrationScriptEngine = 'vm2' | 'isolated-vm';
+
 export interface IIncomingIntegration extends IRocketChatRecord {
 	type: 'webhook-incoming';
-	_createdBy: Pick<IUser, 'username' | '_id'>;
+	_createdBy: Pick<IUser, 'username' | '_id'> | null;
 	_createdAt: Date;
 	userId: IUser['_id'];
 	username: string;
@@ -18,9 +20,12 @@ export interface IIncomingIntegration extends IRocketChatRecord {
 	name: string;
 	enabled: boolean;
 
+	overrideDestinationChannelEnabled?: boolean;
 	alias?: string;
 	avatar?: string;
 	emoji?: string;
+
+	scriptEngine?: IntegrationScriptEngine;
 }
 
 export type OutgoingIntegrationEvent =
@@ -34,7 +39,7 @@ export type OutgoingIntegrationEvent =
 
 export interface IOutgoingIntegration extends IRocketChatRecord {
 	type: 'webhook-outgoing';
-	_createdBy: Pick<IUser, 'username' | '_id'>;
+	_createdBy: Pick<IUser, 'username' | '_id'> | null;
 	_createdAt: Date;
 	userId: IUser['_id'];
 	username: string;
@@ -64,6 +69,8 @@ export interface IOutgoingIntegration extends IRocketChatRecord {
 	alias?: string;
 	avatar?: string;
 	emoji?: string;
+
+	scriptEngine?: IntegrationScriptEngine;
 }
 
 export type IIntegration = IIncomingIntegration | IOutgoingIntegration;
@@ -84,7 +91,7 @@ export type INewOutgoingIntegration = Omit<
 };
 
 export type IUpdateIncomingIntegration = Omit<
-	IOutgoingIntegration,
+	IIncomingIntegration,
 	'type' | 'channel' | 'scriptCompiled' | 'scriptError' | '_createdBy' | '_createdAt' | 'userId' | 'token' | 'username'
 > & {
 	channel?: string;

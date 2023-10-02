@@ -1,17 +1,17 @@
-import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { getStatusText } from '../../../lib/server';
+import { getStatusText } from '../../../lib/server/functions/getStatusText';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getUserStatusText(userId: string): string | undefined;
+		getUserStatusText(userId: string): Promise<string | undefined>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	getUserStatusText(userId) {
+	async getUserStatusText(userId) {
 		const currentUserId = Meteor.userId();
 		if (!currentUserId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUserStatusText' });

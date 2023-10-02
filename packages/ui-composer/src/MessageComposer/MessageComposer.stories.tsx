@@ -18,7 +18,7 @@ export default {
 	component: MessageComposer,
 } as ComponentMeta<typeof MessageComposer>;
 
-export const messageComposer: ComponentStory<typeof MessageComposer> = () => (
+export const _MessageComposer: ComponentStory<typeof MessageComposer> = () => (
 	<MessageComposer>
 		<MessageComposerInput placeholder='Text' />
 		<MessageComposerToolbar>
@@ -39,7 +39,7 @@ export const messageComposer: ComponentStory<typeof MessageComposer> = () => (
 	</MessageComposer>
 );
 
-export const messageComposerWithSubmitActions: ComponentStory<typeof MessageComposer> = () => (
+export const MessageComposerWithSubmitActions: ComponentStory<typeof MessageComposer> = () => (
 	<MessageComposer>
 		<MessageComposerInput placeholder='Text' />
 		<MessageComposerToolbar>
@@ -66,4 +66,4 @@ export const messageComposerWithSubmitActions: ComponentStory<typeof MessageComp
 	</MessageComposer>
 );
 
-export const messageComposerLoading: ComponentStory<typeof MessageComposer> = () => <MessageComposerSkeleton />;
+export const MessageComposerLoading: ComponentStory<typeof MessageComposer> = () => <MessageComposerSkeleton />;

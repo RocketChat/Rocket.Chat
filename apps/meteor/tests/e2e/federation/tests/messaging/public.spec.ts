@@ -1,5 +1,5 @@
 /* eslint no-await-in-loop: 0 */
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
 import * as constants from '../../config/constants';
@@ -109,7 +109,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			});
 
 			test.describe('With multiple users', () => {
-				const createdChannel = faker.datatype.uuid();
+				const createdChannel = faker.string.uuid();
 
 				test('expect to send a message from Server A (creator) to Server B', async ({ browser, page }) => {
 					const page2 = await browser.newPage();
@@ -171,15 +171,9 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2)');
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2) message 2');
 
-					await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText(
-						'hello world from server A (user 2) message 2',
-					);
-					await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText(
-						'hello world from server A (user 2) message 2',
-					);
-					await expect(poFederationChannel1ForUser2.content.lastUserMessageBody).toHaveText(
-						'hello world from server A (user 2) message 2',
-					);
+					await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('hello world from server A (user 2) message 2');
+					await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('hello world from server A (user 2) message 2');
+					await expect(poFederationChannel1ForUser2.content.lastUserMessageBody).toHaveText('hello world from server A (user 2) message 2');
 
 					await page2.close();
 					await pageForServer2.close();
@@ -437,12 +431,20 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
 
 				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`, { delay: 100 });
-				await poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`).waitFor();
-				await expect(poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)).toBeVisible();
+				await poFederationChannelServer1.content.messagePopUpItems
+					.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)
+					.waitFor();
+				await expect(
+					poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`),
+				).toBeVisible();
 
 				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`, { delay: 100 });
-				await poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`).waitFor();
-				await expect(poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)).toBeVisible();
+				await poFederationChannelServer2.content.messagePopUpItems
+					.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)
+					.waitFor();
+				await expect(
+					poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`),
+				).toBeVisible();
 
 				await poFederationChannelServer1.content.inputMessage.fill('');
 				await poFederationChannelServer2.content.inputMessage.fill('');
@@ -467,12 +469,20 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
 
 				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`, { delay: 100 });
-				await poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`).waitFor();
-				await expect(poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)).toBeVisible();
+				await poFederationChannelServer2.content.messagePopUpItems
+					.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)
+					.waitFor();
+				await expect(
+					poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`),
+				).toBeVisible();
 
 				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`, { delay: 100 });
-				await poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`).waitFor();
-				await expect(poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)).toBeVisible();
+				await poFederationChannelServer1.content.messagePopUpItems
+					.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)
+					.waitFor();
+				await expect(
+					poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`),
+				).toBeVisible();
 
 				await poFederationChannelServer1.content.inputMessage.fill('');
 				await poFederationChannelServer2.content.inputMessage.fill('');
@@ -512,7 +522,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to send a message quoting a message from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -531,7 +541,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to send a message quoting a message Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -550,7 +560,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to react a message from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -577,7 +587,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to react a message from Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -604,7 +614,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to unreact a message from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -673,7 +683,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to unreact a message from Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -742,7 +752,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to edit a message from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -763,7 +773,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to edit a message from Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -784,7 +794,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to delete a message from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -806,7 +816,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to delete a message from Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -828,7 +838,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to reply a message in DM from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -852,7 +862,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to reply a message in DM Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -876,7 +886,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to star a message on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -899,7 +909,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to star a message on Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -919,48 +929,10 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await expect(poFederationChannelServer2.content.lastUserMessage.locator('.rcx-icon--name-star-filled')).toBeVisible();
 			});
 
-			test('expect to not be able to reply in thread in Server A', async ({ page }) => {
+			test('expect to not be able to start a discussion from a message in Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
-
-				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
-
-				await poFederationChannelServer1.sidenav.openChat(channelName);
-				await poFederationChannelServer2.sidenav.openChat(channelName);
-
-				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
-
-				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
-				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
-
-				await poFederationChannelServer1.content.openLastMessageMenu();
-				await expect(poFederationChannelServer1.content.btnOptionReplyInThread).not.toBeVisible();
-			});
-
-			test('expect to not be able to reply in thread in Server B', async ({ page }) => {
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
-
-				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
-
-				await poFederationChannelServer1.sidenav.openChat(channelName);
-				await poFederationChannelServer2.sidenav.openChat(channelName);
-
-				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
-
-				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
-				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
-
-				await poFederationChannelServer2.content.openLastMessageMenu();
-				await expect(poFederationChannelServer2.content.btnOptionReplyInThread).not.toBeVisible();
-			});
-
-			test('expect to not be able to start a discussion from a message in thread in Server A', async ({ page }) => {
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -976,10 +948,10 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await expect(poFederationChannelServer1.content.btnOptionStartDiscussion).not.toBeVisible();
 			});
 
-			test('expect to not be able to start a discussion from a message in thread in Server B', async ({ page }) => {
+			test('expect to not be able to start a discussion from a message in Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -998,7 +970,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to not be able to pin a message in Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
@@ -1017,7 +989,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to not be able to pin a message in Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 

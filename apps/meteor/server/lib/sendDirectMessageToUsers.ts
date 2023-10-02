@@ -1,9 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { SystemLogger } from './logger/system';
 import { executeSendMessage } from '../../app/lib/server/methods/sendMessage';
 import { createDirectMessage } from '../methods/createDirectMessage';
+import { SystemLogger } from './logger/system';
 
 export async function sendDirectMessageToUsers(
 	fromId = 'rocket.cat',
@@ -23,7 +23,7 @@ export async function sendDirectMessageToUsers(
 			const { rid } = await createDirectMessage([user.username], fromId);
 			const msg = typeof messageFn === 'function' ? messageFn(user) : messageFn;
 
-			executeSendMessage(fromId, { rid, msg });
+			await executeSendMessage(fromId, { rid, msg });
 			success.push(user._id);
 		} catch (error) {
 			SystemLogger.error(error);

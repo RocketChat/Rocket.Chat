@@ -17,7 +17,7 @@ type CallPageProps = {
 	visitorId: any;
 	status: any;
 	setStatus: any;
-	layout: any;
+	isLayoutEmbedded: boolean;
 	visitorName: any;
 	agentName: any;
 	callStartTime: any;
@@ -29,7 +29,7 @@ const CallPage: FC<CallPageProps> = ({
 	visitorId,
 	status,
 	setStatus,
-	layout,
+	isLayoutEmbedded,
 	visitorName,
 	agentName,
 	callStartTime,
@@ -45,7 +45,7 @@ const CallPage: FC<CallPageProps> = ({
 	let iconSize = 'x21';
 	let buttonSize = 'x40';
 	const avatarSize = 'x48';
-	if (layout === 'embedded') {
+	if (isLayoutEmbedded) {
 		iconSize = 'x19';
 		buttonSize = 'x35';
 	}
@@ -55,7 +55,7 @@ const CallPage: FC<CallPageProps> = ({
 		if (visitorToken) {
 			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId, visitorId);
 			const isMobileDevice = (): boolean => {
-				if (layout === 'embedded') {
+				if (isLayoutEmbedded) {
 					setCallInIframe(true);
 				}
 				if (window.innerWidth <= 450 && window.innerHeight >= 629 && window.innerHeight <= 900) {
@@ -71,36 +71,33 @@ const CallPage: FC<CallPageProps> = ({
 				}
 				return false;
 			};
-			Notifications.onUser(
-				WEB_RTC_EVENTS.WEB_RTC,
-				(type: any, data: any) => {
-					if (data.room == null) {
-						return;
-					}
-					webrtcInstance.onUserStream(type, data);
-				},
-				visitorId,
-			);
-			Notifications.onRoom(roomId, 'webrtc', (type: any, data: any) => {
+			Notifications.onVisitor(WEB_RTC_EVENTS.WEB_RTC, visitorId, (type: any, data: any) => {
+				if (data.room == null) {
+					return;
+				}
+				webrtcInstance.onUserStream(type, data);
+			});
+
+			Notifications.onRoom(roomId, 'webrtc' as any, (type: any, data: any) => {
 				if (type === 'callStatus' && data.callStatus === 'ended') {
 					webrtcInstance.stop();
 					setStatus(data.callStatus);
 				} else if (type === 'getDeviceType') {
-					Notifications.notifyRoom(roomId, 'webrtc', 'deviceType', {
+					Notifications.notifyRoom(roomId, 'webrtc' as any, 'deviceType', {
 						isMobileDevice: isMobileDevice(),
 					});
 				} else if (type === 'cameraStatus') {
 					setIsRemoteCameraOn(data.isCameraOn);
 				}
 			});
-			Notifications.notifyRoom(roomId, 'webrtc', 'deviceType', {
+			Notifications.notifyRoom(roomId, 'webrtc' as any, 'deviceType', {
 				isMobileDevice: isMobileDevice(),
 			});
-			Notifications.notifyRoom(roomId, 'webrtc', 'callStatus', { callStatus: 'inProgress' });
+			Notifications.notifyRoom(roomId, 'webrtc' as any, 'callStatus', { callStatus: 'inProgress' });
 		} else if (!isAgentActive) {
 			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId);
 			if (status === 'inProgress') {
-				Notifications.notifyRoom(roomId, 'webrtc', 'getDeviceType');
+				Notifications.notifyRoom(roomId, 'webrtc' as any, 'getDeviceType');
 				webrtcInstance.startCall({
 					audio: true,
 					video: {
@@ -109,7 +106,7 @@ const CallPage: FC<CallPageProps> = ({
 					},
 				});
 			}
-			Notifications.onRoom(roomId, 'webrtc', (type: any, data: any) => {
+			Notifications.onRoom(roomId, 'webrtc' as any, (type: any, data: any) => {
 				if (type === 'callStatus') {
 					switch (data.callStatus) {
 						case 'ended':
@@ -133,7 +130,7 @@ const CallPage: FC<CallPageProps> = ({
 			});
 			setIsAgentActive(true);
 		}
-	}, [isAgentActive, status, setStatus, visitorId, roomId, visitorToken, layout]);
+	}, [isAgentActive, status, setStatus, visitorId, roomId, visitorToken, isLayoutEmbedded]);
 
 	const toggleButton = (control: any): any => {
 		if (control === 'mic') {
@@ -142,11 +139,11 @@ const CallPage: FC<CallPageProps> = ({
 		}
 		WebRTC.getInstanceByRoomId(roomId, visitorToken).toggleVideo();
 		setIsCameraOn(!isCameraOn);
-		Notifications.notifyRoom(roomId, 'webrtc', 'cameraStatus', { isCameraOn: !isCameraOn });
+		Notifications.notifyRoom(roomId, 'webrtc' as any, 'cameraStatus', { isCameraOn: !isCameraOn });
 	};
 
 	const closeWindow = (): void => {
-		if (layout === 'embedded') {
+		if (isLayoutEmbedded) {
 			return (parent as any)?.handleIframeClose();
 		}
 		return window.close();
@@ -216,7 +213,7 @@ const CallPage: FC<CallPageProps> = ({
 					>
 						{isCameraOn ? <Icon name='video' size={iconSize} /> : <Icon name='video-off' size={iconSize} />}
 					</Button>
-					{layout === 'embedded' && (
+					{isLayoutEmbedded && (
 						<Button
 							square
 							backgroundColor='dark'
@@ -327,7 +324,7 @@ const CallPage: FC<CallPageProps> = ({
 								size='x124'
 							/>
 							<Box color='white' fontSize={16} margin={15}>
-								{'Calling...'}
+								Calling...
 							</Box>
 							<Box
 								style={{

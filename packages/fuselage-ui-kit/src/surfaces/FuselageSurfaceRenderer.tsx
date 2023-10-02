@@ -1,8 +1,8 @@
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
-import { Fragment } from 'react';
 
 import ActionsBlock from '../blocks/ActionsBlock';
+import CalloutBlock from '../blocks/CalloutBlock';
 import ContextBlock from '../blocks/ContextBlock';
 import DividerBlock from '../blocks/DividerBlock';
 import ImageBlock from '../blocks/ImageBlock';
@@ -10,15 +10,21 @@ import InputBlock from '../blocks/InputBlock';
 import PreviewBlock from '../blocks/PreviewBlock';
 import SectionBlock from '../blocks/SectionBlock';
 import ButtonElement from '../elements/ButtonElement';
+import CheckboxElement from '../elements/CheckboxElement';
 import DatePickerElement from '../elements/DatePickerElement';
 import ImageElement from '../elements/ImageElement';
 import LinearScaleElement from '../elements/LinearScaleElement';
+import MarkdownTextElement from '../elements/MarkdownTextElement';
 import MultiStaticSelectElement from '../elements/MultiStaticSelectElement';
 import OverflowElement from '../elements/OverflowElement';
+import PlainTextElement from '../elements/PlainTextElement';
 import PlainTextInputElement from '../elements/PlainTextInputElement';
+import RadioButtonElement from '../elements/RadioButtonElement';
 import StaticSelectElement from '../elements/StaticSelectElement';
+import TimePickerElement from '../elements/TimePickerElement';
+import ToggleSwitchElement from '../elements/ToggleSwitchElement';
 
-type FuselageSurfaceRendererProps = ConstructorParameters<
+export type FuselageSurfaceRendererProps = ConstructorParameters<
   typeof UiKit.SurfaceRenderer
 >[0];
 
@@ -38,7 +44,7 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
   }
 
   public plain_text(
-    { text = '' }: UiKit.PlainText,
+    textObject: UiKit.TextObject,
     context: UiKit.BlockContext,
     index: number
   ): ReactElement | null {
@@ -46,11 +52,11 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
       return null;
     }
 
-    return text ? <Fragment key={index}>{text}</Fragment> : null;
+    return <PlainTextElement key={index} textObject={textObject} />;
   }
 
   public mrkdwn(
-    { text = '' }: UiKit.Markdown,
+    textObject: UiKit.TextObject,
     context: UiKit.BlockContext,
     index: number
   ): ReactElement | null {
@@ -58,7 +64,19 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
       return null;
     }
 
-    return text ? <Fragment key={index}>{text}</Fragment> : null;
+    return <MarkdownTextElement key={index} textObject={textObject} />;
+  }
+
+  public text(
+    textObject: UiKit.TextObject,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (textObject.type === 'mrkdwn') {
+      return this.mrkdwn(textObject, context, index);
+    }
+
+    return this.plain_text(textObject, context, index);
   }
 
   actions(
@@ -339,6 +357,106 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
 
     return (
       <LinearScaleElement
+        key={block.actionId || index}
+        block={block}
+        context={context}
+        index={index}
+        surfaceRenderer={this}
+      />
+    );
+  }
+
+  toggle_switch(
+    block: UiKit.ToggleSwitchElement,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.BLOCK) {
+      return null;
+    }
+
+    return (
+      <ToggleSwitchElement
+        key={block.actionId || index}
+        block={block}
+        context={context}
+        index={index}
+        surfaceRenderer={this}
+      />
+    );
+  }
+
+  radio_button(
+    block: UiKit.RadioButtonElement,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.BLOCK) {
+      return null;
+    }
+
+    return (
+      <RadioButtonElement
+        key={block.actionId || index}
+        block={block}
+        context={context}
+        index={index}
+        surfaceRenderer={this}
+      />
+    );
+  }
+
+  checkbox(
+    block: UiKit.CheckboxElement,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.BLOCK) {
+      return null;
+    }
+
+    return (
+      <CheckboxElement
+        key={block.actionId || index}
+        block={block}
+        context={context}
+        index={index}
+        surfaceRenderer={this}
+      />
+    );
+  }
+
+  callout(
+    block: UiKit.CalloutBlock,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.BLOCK) {
+      return (
+        <CalloutBlock
+          key={index}
+          block={block}
+          context={context}
+          index={index}
+          surfaceRenderer={this}
+        />
+      );
+    }
+
+    return null;
+  }
+
+  time_picker(
+    block: UiKit.TimePickerElement,
+    context: UiKit.BlockContext,
+    index: number
+  ): ReactElement | null {
+    if (context === UiKit.BlockContext.BLOCK) {
+      return null;
+    }
+
+    return (
+      <TimePickerElement
         key={block.actionId || index}
         block={block}
         context={context}

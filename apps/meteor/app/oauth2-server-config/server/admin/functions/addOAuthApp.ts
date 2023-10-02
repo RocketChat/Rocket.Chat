@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import { Random } from '@rocket.chat/random';
-import { OAuthApps, Users } from '@rocket.chat/models';
-import type { OauthAppsAddParams } from '@rocket.chat/rest-typings';
 import type { IOAuthApps, IUser } from '@rocket.chat/core-typings';
+import { OAuthApps, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import type { OauthAppsAddParams } from '@rocket.chat/rest-typings';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { parseUriList } from './parseUriList';
@@ -12,7 +12,7 @@ export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IU
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addOAuthApp' });
 	}
 
-	const user = await Users.findOne(uid, { projection: { username: 1 } });
+	const user = await Users.findOneById(uid, { projection: { username: 1 } });
 
 	if (!user?.username) {
 		// TODO: username is required, but not always present

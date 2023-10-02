@@ -34,22 +34,22 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 
 	return (
 		<Page background='tint'>
-			<Page.Header title={t('Engagement_Dashboard')}>
-				<Select options={timezoneOptions} value={timezoneId} onChange={handleTimezoneChange} />
+			<Page.Header title={t('Engagement')}>
+				<Select options={timezoneOptions} value={timezoneId} onChange={(value) => handleTimezoneChange(String(value))} />
 			</Page.Header>
 			<Tabs>
-				<Tabs.Item data-qa-id='EngagementDashboardPage-usersTab' selected={tab === 'users'} onClick={handleTabClick('users')}>
+				<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
 					{t('Users')}
 				</Tabs.Item>
-				<Tabs.Item data-qa-id='EngagementDashboardPage-messagesTab' selected={tab === 'messages'} onClick={handleTabClick('messages')}>
+				<Tabs.Item selected={tab === 'messages'} onClick={handleTabClick('messages')}>
 					{t('Messages')}
 				</Tabs.Item>
-				<Tabs.Item data-qa-id='EngagementDashboardPage-channelsTab' selected={tab === 'channels'} onClick={handleTabClick('channels')}>
+				<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
 					{t('Channels')}
 				</Tabs.Item>
 			</Tabs>
 			<Page.ScrollableContent padding={0}>
-				<Box m='x24'>
+				<Box m={24}>
 					{(tab === 'users' && <UsersTab timezone={timezoneId} />) ||
 						(tab === 'messages' && <MessagesTab />) ||
 						(tab === 'channels' && <ChannelsTab />)}

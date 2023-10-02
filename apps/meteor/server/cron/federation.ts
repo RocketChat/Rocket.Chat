@@ -1,23 +1,24 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
-import { Users, Settings } from '@rocket.chat/models';
 import { eventTypes } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
+import { Users, Settings } from '@rocket.chat/models';
 
 import { resolveSRV, resolveTXT } from '../../app/federation/server/functions/resolveDNS';
-import { settings, settingsRegistry } from '../../app/settings/server';
 import { dispatchEvent } from '../../app/federation/server/handler';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
+import { settings, settingsRegistry } from '../../app/settings/server';
 
-function updateSetting(id: string, value: SettingValue | null): void {
+async function updateSetting(id: string, value: SettingValue | null): Promise<void> {
 	if (value !== null) {
 		const setting = settings.get(id);
 
 		if (setting === undefined) {
-			void settingsRegistry.add(id, value);
+			await settingsRegistry.add(id, value);
 		} else {
-			void Settings.updateValueById(id, value);
+			await Settings.updateValueById(id, value);
 		}
 	} else {
-		void Settings.updateValueById(id, null);
+		await Settings.updateValueById(id, null);
 	}
 }
 
@@ -32,17 +33,17 @@ async function runFederation(): Promise<void> {
 	// Load public key info
 	try {
 		const resolvedTXT = await resolveTXT(`rocketchat-public-key.${federationDomain}`);
-		updateSetting('FEDERATION_ResolvedPublicKeyTXT', resolvedTXT);
+		await updateSetting('FEDERATION_ResolvedPublicKeyTXT', resolvedTXT);
 	} catch (err) {
-		updateSetting('FEDERATION_ResolvedPublicKeyTXT', null);
+		await updateSetting('FEDERATION_ResolvedPublicKeyTXT', null);
 	}
 
 	// Load legacy tcp protocol info
 	try {
 		const resolvedTXT = await resolveTXT(`rocketchat-tcp-protocol.${federationDomain}`);
-		updateSetting('FEDERATION_ResolvedProtocolTXT', resolvedTXT);
+		await updateSetting('FEDERATION_ResolvedProtocolTXT', resolvedTXT);
 	} catch (err) {
-		updateSetting('FEDERATION_ResolvedProtocolTXT', null);
+		await updateSetting('FEDERATION_ResolvedProtocolTXT', null);
 	}
 
 	// Load SRV info
@@ -51,9 +52,9 @@ async function runFederation(): Promise<void> {
 		const protocol = (settings.get('FEDERATION_ResolvedProtocolTXT') as string) ? 'tcp' : rocketChatProtocol;
 
 		const resolvedSRV = await resolveSRV(`_rocketchat._${protocol}.${federationDomain}`);
-		updateSetting('FEDERATION_ResolvedSRV', JSON.stringify(resolvedSRV));
+		await updateSetting('FEDERATION_ResolvedSRV', JSON.stringify(resolvedSRV));
 	} catch (err) {
-		updateSetting('FEDERATION_ResolvedSRV', '{}');
+		await updateSetting('FEDERATION_ResolvedSRV', '{}');
 	}
 
 	// Test if federation is healthy
@@ -62,31 +63,28 @@ async function runFederation(): Promise<void> {
 			type: eventTypes.PING,
 		});
 
-		updateSetting('FEDERATION_Healthy', true);
+		await updateSetting('FEDERATION_Healthy', true);
 	} catch (err) {
-		updateSetting('FEDERATION_Healthy', false);
+		await updateSetting('FEDERATION_Healthy', false);
 	}
 
 	// If federation is healthy, check if there are remote users
 	if (settings.get('FEDERATION_Healthy') as boolean) {
 		const user = await Users.findOne({ isRemote: true });
 
-		updateSetting('FEDERATION_Populated', !!user);
+		await updateSetting('FEDERATION_Populated', !!user);
 	}
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export function federationCron(SyncedCron: any): void {
-	settings.watch('FEDERATION_Enabled', (value) => {
+export async function federationCron(): Promise<void> {
+	const name = 'Federation';
+
+	settings.watch('FEDERATION_Enabled', async (value) => {
 		if (!value) {
-			return SyncedCron.remove('Federation');
+			return cronJobs.remove(name);
 		}
-		SyncedCron.add({
-			name: 'Federation',
-			schedule(parser: any) {
-				return parser.cron('* * * * *');
-			},
-			job: runFederation,
-		});
+
+		await cronJobs.add(name, '* * * * *', async () => runFederation());
 	});
 }

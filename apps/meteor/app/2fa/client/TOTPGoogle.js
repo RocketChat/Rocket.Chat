@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Google } from 'meteor/google-oauth';
+import { Meteor } from 'meteor/meteor';
 
 import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod';
 

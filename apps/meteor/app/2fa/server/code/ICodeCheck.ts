@@ -12,7 +12,7 @@ export interface ICodeCheck {
 
 	isEnabled(user: IUser, force?: boolean): boolean;
 
-	verify(user: IUser, code: string, force?: boolean): boolean;
+	verify(user: IUser, code: string, force?: boolean): Promise<boolean>;
 
-	processInvalidCode(user: IUser): IProcessInvalidCodeResult;
+	processInvalidCode(user: IUser): Promise<IProcessInvalidCodeResult>;
 }

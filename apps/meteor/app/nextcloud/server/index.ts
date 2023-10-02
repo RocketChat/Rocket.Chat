@@ -1,3 +1,2 @@
-import './startup';
-import '../lib/common';
+import './lib';
 import './addWebdavServer';

@@ -11,12 +11,18 @@
 		{
 			"pattern": "ee/apps/*",
 			"changeProcessCWD": true
+		},
+		{
+			"pattern": "ee/packages/*",
+			"changeProcessCWD": true
 		}
 	],
 	"typescript.tsdk": "./node_modules/typescript/lib",
 	"cSpell.words": [
 		"autotranslate",
-    "fname",
+		"Contextualbar",
+		"fname",
+		"Gazzodown",
 		"katex",
 		"listbox",
 		"livechat",
@@ -25,6 +31,6 @@
 		"photoswipe",
 		"searchbox",
 		"tmid",
-    "tshow"
+		"tshow"
 	]
 }

@@ -21,7 +21,7 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 	const t = useTranslation();
 	const { status } = contact;
 	const { fname, t: type } = room;
-	const avatarUrl = roomCoordinator.getRoomDirectives(type)?.getAvatarPath(room) || '';
+	const avatarUrl = roomCoordinator.getRoomDirectives(type).getAvatarPath(room) || '';
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
 	const { data, isLoading, isError } = useQuery(['/v1/livechat/visitors.info', contact._id], () =>
@@ -33,7 +33,7 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 	}
 
 	if (isError || !data?.visitor) {
-		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
+		return <Box mbs={16}>{t('Contact_not_found')}</Box>;
 	}
 
 	const {
@@ -47,7 +47,7 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 			<Label>{t('Contact')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<Avatar size='x40' title={fname} url={avatarUrl} />
-				<AgentInfoDetails mis='x10' name={displayName} shortName={username} status={<UserStatus status={status} />} />
+				<AgentInfoDetails mis={10} name={displayName} shortName={username} status={<UserStatus status={status} />} />
 			</Info>
 		</Field>
 	);

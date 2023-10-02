@@ -1,13 +1,13 @@
+import { Team } from '@rocket.chat/core-services';
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated, TEAM_TYPE } from '@rocket.chat/core-typings';
-import { Team } from '@rocket.chat/core-services';
 
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
-import { roomCoordinator } from '../roomCoordinator';
 import { Federation } from '../../../services/federation/Federation';
+import { roomCoordinator } from '../roomCoordinator';
 
 const PublicRoomType = getPublicRoomType(roomCoordinator);
 
@@ -31,7 +31,7 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	allowMemberAction(_room, action, userId) {
+	async allowMemberAction(_room, action, userId) {
 		if (isRoomFederated(_room as IRoom)) {
 			return Federation.actionAllowed(_room, action, userId);
 		}
@@ -43,7 +43,7 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	roomName(room, _userId?) {
+	async roomName(room, _userId?) {
 		if (room.prid || isRoomFederated(room)) {
 			return room.fname;
 		}

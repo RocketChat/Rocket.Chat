@@ -1,5 +1,5 @@
-import type { FindCursor, UpdateFilter, UpdateResult, Document } from 'mongodb';
 import type { ISetting, ISettingColor, ISettingSelectOption } from '@rocket.chat/core-typings';
+import type { FindCursor, UpdateFilter, UpdateResult, Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 

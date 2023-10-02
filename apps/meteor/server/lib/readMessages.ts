@@ -4,7 +4,7 @@ import { NotificationQueue, Subscriptions } from '@rocket.chat/models';
 import { callbacks } from '../../lib/callbacks';
 
 export async function readMessages(rid: IRoom['_id'], uid: IUser['_id'], readThreads: boolean): Promise<void> {
-	callbacks.run('beforeReadMessages', rid, uid);
+	await callbacks.run('beforeReadMessages', rid, uid);
 
 	const projection = { ls: 1, tunread: 1, alert: 1 };
 	const sub = await Subscriptions.findOneByRoomIdAndUserId(rid, uid, { projection });

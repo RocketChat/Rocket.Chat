@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Modal, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ComponentProps, FC } from 'react';
 import React, { useState, memo } from 'react';
 
 import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
@@ -21,7 +21,9 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 
 	const createDirect = useEndpointAction('POST', '/v1/dm.create');
 
-	const onCreate = useMutableCallback(async () => {
+	const onCreate = useMutableCallback(async (e) => {
+		e.preventDefault();
+		if (!users.length) return;
 		try {
 			const {
 				room: { rid },
@@ -35,21 +37,24 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 	});
 
 	return (
-		<Modal data-qa='create-direct-modal'>
+		<Modal
+			data-qa='create-direct-modal'
+			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={onCreate} {...props} />}
+		>
 			<Modal.Header>
 				<Modal.Title>{t('Direct_Messages')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
-			<Modal.Content mbe='x2'>
+			<Modal.Content mbe={2}>
 				<Box>{t('Direct_message_creation_description')}</Box>
-				<Box mbs='x16' display='flex' flexDirection='column' width='full'>
+				<Box mbs={16} display='flex' flexDirection='column' width='full'>
 					<UserAutoCompleteMultipleFederated value={users} onChange={setUsers} />
 				</Box>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={users.length < 1} onClick={onCreate} primary>
+					<Button disabled={users.length < 1} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

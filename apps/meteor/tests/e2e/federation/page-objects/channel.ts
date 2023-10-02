@@ -28,8 +28,8 @@ export class FederationChannel {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--error');
 	}
 
-	get btnVerticalBarClose(): Locator {
-		return this.page.locator('[data-qa="VerticalBarActionClose"]');
+	get btnContextualbarClose(): Locator {
+		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
 	async getFederationServerName(): Promise<string> {

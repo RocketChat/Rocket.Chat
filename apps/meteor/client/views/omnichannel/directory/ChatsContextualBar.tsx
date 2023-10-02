@@ -3,7 +3,14 @@ import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-con
 import type { FC } from 'react';
 import React from 'react';
 
-import VerticalBar from '../../../components/VerticalBar';
+import {
+	Contextualbar,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarAction,
+	ContextualbarClose,
+} from '../../../components/Contextualbar';
 import Chat from './chats/Chat';
 import ChatInfoDirectory from './chats/contextualBar/ChatInfoDirectory';
 import { RoomEditWithData } from './chats/contextualBar/RoomEdit';
@@ -22,11 +29,11 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 		id && directoryRoute.push({ page: 'chats', id, bar: 'view' });
 	};
 
-	const handleChatsVerticalBarCloseButtonClick = (): void => {
+	const handleChatsContextualbarCloseButtonClick = (): void => {
 		directoryRoute.push({ page: 'chats' });
 	};
 
-	const handleChatsVerticalBarBackButtonClick = (): void => {
+	const handleChatsContextualbarBackButtonClick = (): void => {
 		id && directoryRoute.push({ page: 'chats', id, bar: 'info' });
 	};
 
@@ -38,39 +45,39 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 
 	if (isLoading) {
 		return (
-			<Box pi='x24'>
+			<Box pi={24}>
 				<FormSkeleton />
 			</Box>
 		);
 	}
 
 	if (isError || !room) {
-		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
+		return <Box mbs={16}>{t('Room_not_found')}</Box>;
 	}
 
 	return (
-		<VerticalBar>
-			<VerticalBar.Header expanded>
+		<Contextualbar>
+			<ContextualbarHeader expanded>
 				{bar === 'info' && (
 					<>
-						<VerticalBar.Icon name='info-circled' />
-						<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
-						<VerticalBar.Action title={t('View_full_conversation')} name={'new-window'} onClick={openInRoom} />
+						<ContextualbarIcon name='info-circled' />
+						<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
+						<ContextualbarAction title={t('View_full_conversation')} name='new-window' onClick={openInRoom} />
 					</>
 				)}
 				{bar === 'edit' && (
 					<>
-						<VerticalBar.Icon name='pencil' />
-						<VerticalBar.Text>{t('edit-room')}</VerticalBar.Text>
+						<ContextualbarIcon name='pencil' />
+						<ContextualbarTitle>{t('edit-room')}</ContextualbarTitle>
 					</>
 				)}
-				<VerticalBar.Close onClick={handleChatsVerticalBarCloseButtonClick} />
-			</VerticalBar.Header>
+				<ContextualbarClose onClick={handleChatsContextualbarCloseButtonClick} />
+			</ContextualbarHeader>
 			{bar === 'info' && <ChatInfoDirectory id={id} room={room} />}
 			{bar === 'edit' && (
-				<RoomEditWithData id={id} reload={chatReload} reloadInfo={reloadInfo} onClose={handleChatsVerticalBarBackButtonClick} />
+				<RoomEditWithData id={id} reload={chatReload} reloadInfo={reloadInfo} onClose={handleChatsContextualbarBackButtonClick} />
 			)}
-		</VerticalBar>
+		</Contextualbar>
 	);
 };
 

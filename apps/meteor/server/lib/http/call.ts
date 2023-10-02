@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { HTTP } from 'meteor/http';
 import { URL, URLSearchParams } from 'meteor/url';
 
 import { truncate } from '../../../lib/utils/stringUtils';
-import { fetch } from './fetch';
 
 // Code extracted from https://github.com/meteor/meteor/blob/master/packages/deprecated/http
 // Modified to:
@@ -25,10 +25,17 @@ type HttpCallOptions = {
 	integrity?: string;
 };
 
-type callbackFn = {
-	(error: unknown): void;
-	(error: unknown, result: unknown): void;
-};
+// eslint-disable-next-line @typescript-eslint/naming-convention
+interface HTTPResponse {
+	statusCode?: number;
+	headers?: { [id: string]: string };
+	content?: string;
+	data?: any;
+	ok?: boolean;
+	redirected?: boolean;
+}
+
+type callbackFn = (error: Error | undefined, result?: HTTPResponse) => void;
 
 // Fill in `response.data` if the content-type is JSON.
 function populateData(response: Record<string, any>): void {
@@ -49,7 +56,7 @@ function populateData(response: Record<string, any>): void {
 	}
 }
 
-function makeErrorByStatus(statusCode: string, content: string): Error {
+function makeErrorByStatus(statusCode: number, content: string): Error {
 	let message = `failed [${statusCode}]`;
 
 	if (content) {
@@ -110,16 +117,16 @@ function _call(httpMethod: string, url: string, options: HttpCallOptions, callba
 	const { headers: receivedHeaders } = options;
 
 	if (receivedHeaders) {
-		Object.keys(receivedHeaders).forEach(function (key) {
+		Object.keys(receivedHeaders).forEach((key) => {
 			headers[key] = receivedHeaders[key];
 		});
 	}
 
 	// wrap callback to add a 'response' property on an error, in case
 	// we have both (http 4xx/5xx error, which has a response payload)
-	const wrappedCallback = ((cb: callbackFn): { (error: unknown, response?: unknown): void } => {
+	const wrappedCallback = ((cb: callbackFn): { (error: Error | undefined, response?: HTTPResponse): void } => {
 		let called = false;
-		return (error: unknown, response: unknown): void => {
+		return (error: Error | undefined, response?: HTTPResponse): void => {
 			if (!called) {
 				called = true;
 				if (error && response) {
@@ -147,7 +154,7 @@ function _call(httpMethod: string, url: string, options: HttpCallOptions, callba
 	fetch(newUrl, requestOptions)
 		.then(async (res) => {
 			const content = await res.text();
-			const response: Record<string, any> = {};
+			const response: HTTPResponse = {};
 			response.statusCode = res.status;
 			response.content = `${content}`;
 
@@ -177,7 +184,7 @@ function _call(httpMethod: string, url: string, options: HttpCallOptions, callba
 function httpCallAsync(httpMethod: string, url: string, options: HttpCallOptions, callback: callbackFn): void;
 function httpCallAsync(httpMethod: string, url: string, callback: callbackFn): void;
 function httpCallAsync(httpMethod: string, url: string, optionsOrCallback: HttpCallOptions | callbackFn = {}, callback?: callbackFn): void {
-	// If the options argument was ommited, adjust the arguments:
+	// If the options argument was omitted, adjust the arguments:
 	if (!callback && typeof optionsOrCallback === 'function') {
 		return _call(httpMethod, url, {}, optionsOrCallback as callbackFn);
 	}
@@ -185,4 +192,13 @@ function httpCallAsync(httpMethod: string, url: string, optionsOrCallback: HttpC
 	return _call(httpMethod, url, optionsOrCallback as HttpCallOptions, callback as callbackFn);
 }
 
-export const httpCall = Meteor.wrapAsync(httpCallAsync);
+export const httpCall = async (httpMethod: string, url: string, options: HttpCallOptions) => {
+	return new Promise((resolve, reject) => {
+		httpCallAsync.bind(HTTP)(httpMethod, url, options, (error, result) => {
+			if (error) {
+				return reject(error);
+			}
+			resolve(result);
+		});
+	});
+};

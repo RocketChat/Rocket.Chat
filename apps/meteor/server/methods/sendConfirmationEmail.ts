@@ -1,20 +1,20 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { Accounts } from 'meteor/accounts-base';
+import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Accounts } from 'meteor/accounts-base';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { Users } from '../../app/models/server';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods<ServerMethods>({
-	sendConfirmationEmail(to) {
+	async sendConfirmationEmail(to) {
 		check(to, String);
 
-		methodDeprecationLogger.warn('sendConfirmationEmail will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('sendConfirmationEmail', '7.0.0');
 
 		const email = to.trim();
 
-		const user = Users.findOneByEmailAddress(email, { fields: { _id: 1 } });
+		const user = await Users.findOneByEmailAddress(email, { projection: { _id: 1 } });
 
 		if (!user) {
 			return false;

@@ -10,7 +10,7 @@ import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
 import { PrioritiesResetModal } from './PrioritiesResetModal';
 import { PrioritiesTable } from './PrioritiesTable';
 import type { PriorityFormData } from './PriorityEditForm';
-import { PriorityVerticalBar } from './PriorityVerticalBar';
+import PriorityList from './PriorityList';
 
 type PrioritiesPageProps = {
 	priorityId: string;
@@ -30,7 +30,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 	const savePriority = useEndpoint('PUT', `/v1/livechat/priorities/:priorityId`, { priorityId });
 	const resetPriorities = useEndpoint('POST', '/v1/livechat/priorities.reset');
 
-	const { data: priorities } = useOmnichannelPriorities();
+	const { data: priorities, isLoading } = useOmnichannelPriorities();
 
 	const isPrioritiesDirty = useMemo(() => !!priorities.length && priorities.some((p) => p.dirty), [priorities]);
 
@@ -59,7 +59,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 		prioritiesRoute.push({ context: 'edit', id });
 	});
 
-	const onVerticalBarClose = (): void => {
+	const onContextualbarClose = (): void => {
 		prioritiesRoute.push({});
 	};
 
@@ -83,12 +83,12 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 					</ButtonGroup>
 				</Page.Header>
 				<Page.Content>
-					<PrioritiesTable data={priorities} onRowClick={onRowClick} />
+					<PrioritiesTable priorities={priorities} isLoading={isLoading} onRowClick={onRowClick} />
 				</Page.Content>
 			</Page>
 
 			{context === 'edit' && (
-				<PriorityVerticalBar priorityId={priorityId} context={context} onSave={onSavePriority} onClose={onVerticalBarClose} />
+				<PriorityList priorityId={priorityId} context={context} onSave={onSavePriority} onClose={onContextualbarClose} />
 			)}
 		</Page>
 	);

@@ -27,7 +27,8 @@ const Item: FC<{
 			pbs={16}
 			pbe={12}
 			pi={24}
-			borderBlockEndWidth='2px'
+			color='default'
+			borderBlockEndWidth={1}
 			borderBlockEndColor='light'
 			borderBlockEndStyle='solid'
 			onClick={onClickItem}
@@ -54,7 +55,7 @@ const Item: FC<{
 					>
 						{t('Use')}
 					</Button>
-					<Icon name='chevron-left' size={24} color='hint' />
+					<Icon name='chevron-left' size='x24' color='hint' />
 				</Box>
 			</Box>
 			<Box fontScale='p2' mbs='8px' color='hint' withTruncatedText>

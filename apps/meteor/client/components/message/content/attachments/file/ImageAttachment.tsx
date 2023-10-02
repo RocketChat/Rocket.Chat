@@ -22,6 +22,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	descriptionMd,
 	title_link: link,
 	title_link_download: hasDownload,
+	collapsed,
 }) => {
 	const [loadImage, setLoadImage] = useLoadImage();
 	const getURL = useMediaUrl();
@@ -29,7 +30,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	return (
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
-			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size}>
+			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<AttachmentImage
 					{...imageDimensions}
 					loadImage={loadImage}

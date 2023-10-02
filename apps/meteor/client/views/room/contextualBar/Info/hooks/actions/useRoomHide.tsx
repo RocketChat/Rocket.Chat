@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { UiTextContext } from '../../../../../../../definition/IRoomTypeConfig';
@@ -13,20 +13,20 @@ export const useRoomHide = (room: IRoom) => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const hideRoom = useMethod('hideRoom');
-	const router = useRoute('home');
+	const router = useRouter();
 
 	const handleHide = useMutableCallback(async () => {
 		const hide = async () => {
 			try {
 				await hideRoom(room._id);
-				router.push({});
+				router.navigate('/home');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 			setModal(null);
 		};
 
-		const warnText = roomCoordinator.getRoomDirectives(room.t)?.getUiText(UiTextContext.HIDE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(room.t).getUiText(UiTextContext.HIDE_WARNING);
 
 		setModal(
 			<WarningModal

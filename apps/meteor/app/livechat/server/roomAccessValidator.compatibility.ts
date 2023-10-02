@@ -1,16 +1,15 @@
-import type { IUser, ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatDepartmentAgents, LivechatInquiry } from '@rocket.chat/models';
+import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
-import { hasRole } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { LivechatDepartment, LivechatRooms } from '../../models/server';
+import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
 import { RoutingManager } from './lib/RoutingManager';
 
 type OmnichannelRoomAccessValidator = (
 	room: IOmnichannelRoom,
 	user?: Pick<IUser, '_id'>,
 	extraData?: Record<string, any>,
-) => Promise<boolean> | boolean;
+) => boolean | Promise<boolean>;
 
 export const validators: OmnichannelRoomAccessValidator[] = [
 	async function (_room, user) {
@@ -28,27 +27,30 @@ export const validators: OmnichannelRoomAccessValidator[] = [
 		const { servedBy: { _id: agentId } = {} } = room;
 		return userId === agentId || (!room.open && hasPermissionAsync(user._id, 'view-livechat-room-closed-by-another-agent'));
 	},
-	function (room, _user, extraData) {
+	async function (room, _user, extraData) {
 		if (extraData?.rid) {
-			room = LivechatRooms.findOneById(extraData.rid);
+			const dbRoom = await LivechatRooms.findOneById(extraData.rid);
+			if (dbRoom) {
+				room = dbRoom;
+			}
 		}
-		return extraData?.visitorToken && room.v && room.v.token === extraData.visitorToken;
+
+		return extraData?.visitorToken && room.v && room.v.token === extraData.visitorToken && room.open === true;
 	},
 	async function (room, user) {
 		if (!user?._id) {
 			return false;
 		}
-		const { previewRoom } = RoutingManager.getConfig();
-		if (!previewRoom) {
+		if (!RoutingManager.getConfig()?.previewRoom) {
 			return;
 		}
 
 		let departmentIds;
-		if (!hasRole(user._id, 'livechat-manager')) {
-			const departmentAgents = (await LivechatDepartmentAgents.findByAgentId(user._id).toArray()).map((d) => d.departmentId);
-			departmentIds = LivechatDepartment.find({ _id: { $in: departmentAgents }, enabled: true })
-				.fetch()
-				.map((d: ILivechatDepartment) => d._id);
+		if (!(await hasRoleAsync(user._id, 'livechat-manager'))) {
+			const departmentAgents = (await LivechatDepartmentAgents.findByAgentId(user._id, { projection: { departmentId: 1 } }).toArray()).map(
+				(d) => d.departmentId,
+			);
+			departmentIds = (await LivechatDepartment.findEnabledInIds(departmentAgents, { projection: { _id: 1 } }).toArray()).map((d) => d._id);
 		}
 
 		const filter = {
@@ -73,7 +75,9 @@ export const validators: OmnichannelRoomAccessValidator[] = [
 		if (!room.departmentId || room.open || !user?._id) {
 			return;
 		}
-		const agentOfDepartment = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(user._id, room.departmentId);
+		const agentOfDepartment = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(user._id, room.departmentId, {
+			projection: { _id: 1 },
+		});
 		if (!agentOfDepartment) {
 			return;
 		}

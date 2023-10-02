@@ -1,7 +1,7 @@
-import { Table } from '@rocket.chat/fuselage';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo } from 'react';
 
+import { GenericTableRow, GenericTableCell } from '../../../client/components/GenericTable';
 import RemoveBusinessHourButton from './RemoveBusinessHourButton';
 
 function BusinessHoursRow(props) {
@@ -43,17 +43,17 @@ function BusinessHoursRow(props) {
 	};
 
 	return (
-		<Table.Row key={_id} role='link' action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
-			<Table.Cell withTruncatedText>{name || t('Default')}</Table.Cell>
-			<Table.Cell withTruncatedText>{t(timezone.name)}</Table.Cell>
-			<Table.Cell withTruncatedText>{openDays.join(', ')}</Table.Cell>
-			<Table.Cell withTruncatedText>{active ? t('Yes') : t('No')}</Table.Cell>
+		<GenericTableRow key={_id} role='link' action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
+			<GenericTableCell withTruncatedText>{name || t('Default')}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{t(timezone.name)}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{openDays.join(', ')}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{active ? t('Yes') : t('No')}</GenericTableCell>
 			{name && (
-				<Table.Cell withTruncatedText onClick={preventClickPropagation}>
+				<GenericTableCell withTruncatedText onClick={preventClickPropagation}>
 					<RemoveBusinessHourButton _id={_id} reload={reload} type={type} />
-				</Table.Cell>
+				</GenericTableCell>
 			)}
-		</Table.Row>
+		</GenericTableRow>
 	);
 }
 

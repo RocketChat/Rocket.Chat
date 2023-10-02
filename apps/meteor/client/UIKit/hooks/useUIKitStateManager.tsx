@@ -3,9 +3,10 @@ import { isErrorType } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useEffect, useState } from 'react';
 
-import * as ActionManager from '../../../app/ui-message/client/ActionManager';
+import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
 
 const useUIKitStateManager = <S extends UiKitPayload>(initialState: S): S => {
+	const actionManager = useUiKitActionManager();
 	const [state, setState] = useSafely(useState(initialState));
 
 	const { viewId } = state;
@@ -22,10 +23,10 @@ const useUIKitStateManager = <S extends UiKitPayload>(initialState: S): S => {
 			setState(rest as any);
 		};
 
-		ActionManager.on(viewId, handleUpdate);
+		actionManager.on(viewId, handleUpdate);
 
 		return (): void => {
-			ActionManager.off(viewId, handleUpdate);
+			actionManager.off(viewId, handleUpdate);
 		};
 	}, [setState, viewId]);
 

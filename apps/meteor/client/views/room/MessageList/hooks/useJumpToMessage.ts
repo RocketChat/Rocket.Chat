@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { RouterContext } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import type { RefObject } from 'react';
-import { useContext, useLayoutEffect } from 'react';
+import { useLayoutEffect } from 'react';
 
 import { useMessageListJumpToMessageParam, useMessageListScroll } from '../../../../components/message/list/MessageListContext';
 import { setHighlightMessage, clearHighlightMessage } from '../providers/messageHighlightSubscription';
@@ -12,7 +12,7 @@ const SCROLL_EXTRA_OFFSET = 60;
 export const useJumpToMessage = (messageId: IMessage['_id'], messageRef: RefObject<HTMLDivElement>): void => {
 	const jumpToMessageParam = useMessageListJumpToMessageParam();
 	const scroll = useMessageListScroll();
-	const router = useContext(RouterContext);
+	const router = useRouter();
 
 	useLayoutEffect(() => {
 		if (jumpToMessageParam !== messageId || !messageRef.current || !scroll) {
@@ -34,7 +34,15 @@ export const useJumpToMessage = (messageId: IMessage['_id'], messageRef: RefObje
 				return { top: newScrollPosition, behavior: 'smooth' };
 			});
 
-			router.setQueryString(({ msg: _, ...params }) => params);
+			const search = router.getSearchParameters();
+			delete search.msg;
+			router.navigate(
+				{
+					pathname: router.getLocationPathname(),
+					search,
+				},
+				{ replace: true },
+			);
 
 			setHighlightMessage(messageId);
 			setTimeout(clearHighlightMessage, 2000);

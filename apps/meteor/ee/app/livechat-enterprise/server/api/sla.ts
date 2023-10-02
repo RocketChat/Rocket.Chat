@@ -1,9 +1,10 @@
-import { isLivechatPrioritiesProps, isCreateOrUpdateLivechatSlaProps } from '@rocket.chat/rest-typings';
 import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
+import { isLivechatPrioritiesProps, isCreateOrUpdateLivechatSlaProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
-import { findSLA } from './lib/sla';
+import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
+import { findSLA } from './lib/sla';
 
 API.v1.addRoute(
 	'livechat/sla',
@@ -20,8 +21,8 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
 
 			return API.v1.success(

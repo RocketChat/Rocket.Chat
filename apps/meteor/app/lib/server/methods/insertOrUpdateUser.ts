@@ -1,19 +1,19 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { saveUser } from '../functions';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
+import { saveUser } from '../functions/saveUser';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		insertOrUpdateUser(userData: Record<string, unknown>): string | boolean;
+		insertOrUpdateUser(userData: Record<string, unknown>): Promise<string | boolean>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	insertOrUpdateUser: twoFactorRequired(async function (userData) {
+	insertOrUpdateUser: twoFactorRequired(async (userData) => {
 		check(userData, Object);
 
 		if (!Meteor.userId()) {

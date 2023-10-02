@@ -1,37 +1,92 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitle } from '@rocket.chat/fuselage';
+import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../client/components/FilterByText';
-import GenericTable from '../../../client/components/GenericTable';
-import { useResizeInlineBreakpoint } from '../../../client/hooks/useResizeInlineBreakpoint';
+import GenericNoResults from '../../../client/components/GenericNoResults';
+import {
+	GenericTable,
+	GenericTableBody,
+	GenericTableHeaderCell,
+	GenericTableHeader,
+	GenericTableLoadingRow,
+} from '../../../client/components/GenericTable';
+import { usePagination } from '../../../client/components/GenericTable/hooks/usePagination';
 import BusinessHoursRow from './BusinessHoursRow';
 
-function BusinessHoursTable({ businessHours, totalbusinessHours, params, onChangeParams, reload }) {
+const BusinessHoursTable = () => {
 	const t = useTranslation();
+	const [text, setText] = useState('');
 
-	const [ref, onMediumBreakpoint] = useResizeInlineBreakpoint([600], 200);
+	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+
+	const query = useMemo(
+		() => ({
+			count: itemsPerPage,
+			offset: current,
+			name: text,
+		}),
+		[itemsPerPage, current, text],
+	);
+
+	const getBusinessHours = useEndpoint('GET', '/v1/livechat/business-hours');
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery(['livechat-buiness-hours', query], async () => getBusinessHours(query));
+
+	const headers = (
+		<>
+			<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell>{t('Timezone')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell>{t('Open_Days')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell width='x100'>{t('Enabled')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell width='x100'>{t('Remove')}</GenericTableHeaderCell>
+		</>
+	);
 
 	return (
-		<GenericTable
-			ref={ref}
-			header={
+		<>
+			<FilterByText onChange={({ text }) => setText(text)} />
+			{isLoading && (
+				<GenericTable>
+					<GenericTableHeader>{headers}</GenericTableHeader>
+					<GenericTableBody>
+						<GenericTableLoadingRow cols={5} />
+					</GenericTableBody>
+				</GenericTable>
+			)}
+			{isSuccess && data?.businessHours.length === 0 && <GenericNoResults />}
+			{isSuccess && data?.businessHours.length > 0 && (
 				<>
-					<GenericTable.HeaderCell>{t('Name')}</GenericTable.HeaderCell>
-					<GenericTable.HeaderCell>{t('Timezone')}</GenericTable.HeaderCell>
-					<GenericTable.HeaderCell>{t('Open_Days')}</GenericTable.HeaderCell>
-					<GenericTable.HeaderCell width='x100'>{t('Enabled')}</GenericTable.HeaderCell>
-					<GenericTable.HeaderCell width='x100'>{t('Remove')}</GenericTable.HeaderCell>
+					<GenericTable>
+						<GenericTableHeader>{headers}</GenericTableHeader>
+						<GenericTableBody>
+							{data?.businessHours.map((businessHour) => (
+								<BusinessHoursRow key={businessHour._id} reload={refetch} {...businessHour} />
+							))}
+						</GenericTableBody>
+					</GenericTable>
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
-			}
-			results={businessHours}
-			total={totalbusinessHours}
-			params={params}
-			setParams={onChangeParams}
-			renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
-		>
-			{(props) => <BusinessHoursRow key={props._id} medium={onMediumBreakpoint} reload={reload} {...props} />}
-		</GenericTable>
+			)}
+			{isError && (
+				<States>
+					<StatesIcon name='warning' variation='danger' />
+					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+					<StatesActions>
+						<StatesAction onClick={() => refetch()}>{t('Reload_page')}</StatesAction>
+					</StatesActions>
+				</States>
+			)}
+		</>
 	);
-}
+};
 
 export default BusinessHoursTable;

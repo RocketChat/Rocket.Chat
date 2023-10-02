@@ -1,12 +1,11 @@
-import { FederationRoomEvents } from '@rocket.chat/models';
+import { FederationRoomEvents, Subscriptions } from '@rocket.chat/models';
 
-import { clientLogger } from '../lib/logger';
 import { getFederatedRoomData, hasExternalDomain, isLocalUser, checkRoomType, checkRoomDomainsLength } from '../functions/helpers';
-import { Subscriptions } from '../../../models/server';
+import { dispatchEvent } from '../handler';
+import { getFederationDomain } from '../lib/getFederationDomain';
+import { clientLogger } from '../lib/logger';
 import { normalizers } from '../normalizers';
 import { doAfterCreateRoom } from './afterCreateRoom';
-import { getFederationDomain } from '../lib/getFederationDomain';
-import { dispatchEvent } from '../handler';
 
 async function afterAddedToRoom(involvedUsers, room) {
 	const { user: addedUser } = involvedUsers;
@@ -20,10 +19,10 @@ async function afterAddedToRoom(involvedUsers, room) {
 	clientLogger.debug({ msg: 'afterAddedToRoom', involvedUsers, room });
 
 	// If there are not federated users on this room, ignore it
-	const { users, subscriptions } = getFederatedRoomData(room);
+	const { users, subscriptions } = await getFederatedRoomData(room);
 
 	// Load the subscription
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, addedUser._id);
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, addedUser._id);
 
 	try {
 		// If the room is not on the allowed types, ignore
@@ -62,7 +61,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 			// Create the user add event
 			//
 
-			const normalizedSourceUser = normalizers.normalizeUser(addedUser);
+			const normalizedSourceUser = await normalizers.normalizeUser(addedUser);
 			const normalizedSourceSubscription = normalizers.normalizeSubscription(subscription);
 
 			const addUserEvent = await FederationRoomEvents.createAddUserEvent(

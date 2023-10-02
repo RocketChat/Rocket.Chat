@@ -9,7 +9,6 @@
 		"forceConsistentCasingInFileNames": true,
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
-		"importsNotUsedAsValues": "error",
 
 		"noImplicitAny": true,
 		"noUnusedLocals": true,

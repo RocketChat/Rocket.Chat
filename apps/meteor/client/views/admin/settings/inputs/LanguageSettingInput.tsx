@@ -8,7 +8,7 @@ import ResetSettingButton from '../ResetSettingButton';
 type LanguageSettingInputProps = {
 	_id: string;
 	label: string;
-	value: string | number | string[];
+	value: string;
 	placeholder?: string;
 	readonly?: boolean;
 	autocomplete?: boolean;
@@ -55,7 +55,7 @@ function LanguageSettingInput({
 					disabled={disabled}
 					readOnly={readonly}
 					autoComplete={autocomplete === false ? 'off' : undefined}
-					onChange={handleChange}
+					onChange={(value) => handleChange(String(value))}
 					options={languages.map(({ key, name }) => [key, name])}
 				/>
 			</Field.Row>

@@ -1,21 +1,21 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import moment from 'moment';
 import { api } from '@rocket.chat/core-services';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
+import { Messages, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import moment from 'moment';
 
-import { canSendMessage } from '../../../authorization/server';
+import { i18n } from '../../../../server/lib/i18n';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
-import { Users, Messages } from '../../../models/server';
-import { sendMessage } from '../functions';
+import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
-import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>) {
+export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>, previewUrls?: string[]) {
 	if (message.tshow && !message.tmid) {
 		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
 			method: 'sendMessage',
@@ -44,27 +44,34 @@ export function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage,
 	}
 
 	if (message.msg) {
-		if (message.msg.length > (settings.get('Message_MaxAllowedSize') ?? 0)) {
+		if (message.msg.length > (settings.get<number>('Message_MaxAllowedSize') ?? 0)) {
 			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
 				method: 'sendMessage',
 			});
 		}
 	}
 
-	const user = Users.findOneById(uid, {
-		fields: {
+	const user = await Users.findOneById(uid, {
+		projection: {
 			username: 1,
 			type: 1,
 			name: 1,
 		},
 	});
+	if (!user?.username) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+	}
+
 	let { rid } = message;
 
 	// do not allow nested threads
 	if (message.tmid) {
-		const parentMessage = Messages.findOneById(message.tmid);
-		message.tmid = parentMessage.tmid || message.tmid;
-		rid = parentMessage.rid;
+		const parentMessage = await Messages.findOneById(message.tmid, { projection: { rid: 1, tmid: 1 } });
+		message.tmid = parentMessage?.tmid || message.tmid;
+
+		if (parentMessage?.rid) {
+			rid = parentMessage?.rid;
+		}
 	}
 
 	if (!rid) {
@@ -72,16 +79,16 @@ export function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage,
 	}
 
 	try {
-		const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
+		const room = await canSendMessageAsync(rid, { uid, username: user.username, type: user.type });
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-		return sendMessage(user, message, room, false);
+		return sendMessage(user, message, room, false, previewUrls);
 	} catch (err: any) {
 		SystemLogger.error({ msg: 'Error sending message:', err });
 
 		const errorMessage = typeof err === 'string' ? err : err.error || err.message;
 		void api.broadcast('notify.ephemeralMessage', uid, message.rid, {
-			msg: TAPi18n.__(errorMessage, {}, user.language),
+			msg: i18n.t(errorMessage, { lng: user.language }),
 		});
 
 		if (typeof err === 'string') {
@@ -95,12 +102,12 @@ export function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage,
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>): any;
+		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>, previewUrls?: string[]): any;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	sendMessage(message) {
+	sendMessage(message, previewUrls) {
 		check(message, Object);
 
 		const uid = Meteor.userId();
@@ -111,7 +118,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		try {
-			return executeSendMessage(uid, message);
+			return executeSendMessage(uid, message, previewUrls);
 		} catch (error: any) {
 			if ((error.error || error.message) === 'error-not-allowed') {
 				throw new Meteor.Error(error.error || error.message, error.reason, {

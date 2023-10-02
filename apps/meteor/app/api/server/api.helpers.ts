@@ -65,7 +65,7 @@ export async function checkPermissionsForInvocation(
 }
 
 // We'll assume options only contains permissionsRequired, as we don't care of the other elements
-export function checkPermissions(options: { permissionsRequired: PermissionsRequiredKey }) {
+export function checkPermissions(options: { permissionsRequired?: PermissionsRequiredKey }) {
 	if (!options.permissionsRequired) {
 		return false;
 	}

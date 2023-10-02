@@ -1,5 +1,5 @@
-import { onLicense } from '../../license/server';
+import { License } from '@rocket.chat/license';
 
-onLicense('message-read-receipt', async () => {
+await License.onLicense('message-read-receipt', async () => {
 	await import('./hooks');
 });

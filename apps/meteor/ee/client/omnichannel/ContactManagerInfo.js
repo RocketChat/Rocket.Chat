@@ -26,7 +26,7 @@ function ContactManagerInfo({ username }) {
 		<>
 			<Info className={wordBreak} style={{ display: 'flex' }}>
 				<UserAvatar title={username} username={username} />
-				<AgentInfoDetails mis='x10' name={name} shortName={username} status={<UserStatus status={status} />} />
+				<AgentInfoDetails mis={10} name={name} shortName={username} status={<UserStatus status={status} />} />
 			</Info>
 		</>
 	);

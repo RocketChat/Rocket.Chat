@@ -12,16 +12,16 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:getDepartmentForwardRestrictions'(departmentId) {
-		methodDeprecationLogger.warn('livechat:getDepartmentForwardRestrictions will be deprecated in future versions of Rocket.Chat');
+	async 'livechat:getDepartmentForwardRestrictions'(departmentId) {
+		methodDeprecationLogger.method('livechat:getDepartmentForwardRestrictions', '7.0.0');
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'livechat:getDepartmentForwardRestrictions',
 			});
 		}
 
-		const options = callbacks.run('livechat.onLoadForwardDepartmentRestrictions', { departmentId });
-		const { restrictions } = options as { restrictions?: unknown };
+		const options = await callbacks.run('livechat.onLoadForwardDepartmentRestrictions', { departmentId });
+		const { restrictions } = options;
 
 		return restrictions;
 	},

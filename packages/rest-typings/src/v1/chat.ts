@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, MessageAttachment, ReadReceipt } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, MessageAttachment, ReadReceipt, OtrSystemMessages } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -9,6 +9,7 @@ const ajv = new Ajv({
 
 type ChatSendMessage = {
 	message: Partial<IMessage>;
+	previewUrls?: string[];
 };
 
 const chatSendMessageSchema = {
@@ -63,6 +64,13 @@ const chatSendMessageSchema = {
 					nullable: true,
 				},
 			},
+		},
+		previewUrls: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
 		},
 	},
 	required: ['message'],
@@ -430,6 +438,7 @@ type ChatUpdate = {
 	roomId: IRoom['_id'];
 	msgId: string;
 	text: string;
+	previewUrls?: string[];
 };
 
 const ChatUpdateSchema = {
@@ -443,6 +452,13 @@ const ChatUpdateSchema = {
 		},
 		text: {
 			type: 'string',
+		},
+		previewUrls: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
 		},
 	},
 	required: ['roomId', 'msgId', 'text'],
@@ -899,5 +915,8 @@ export type ChatEndpoints = {
 			offset: number;
 			total: number;
 		};
+	};
+	'/v1/chat.otr': {
+		POST: (params: { roomId: string; type: OtrSystemMessages }) => void;
 	};
 };

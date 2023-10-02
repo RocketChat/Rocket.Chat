@@ -1,13 +1,12 @@
-import { Meteor } from 'meteor/meteor';
+import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import filesize from 'filesize';
-import { LivechatVisitors } from '@rocket.chat/models';
 
-import { settings } from '../../../../settings/server';
-import { LivechatRooms } from '../../../../models/server';
-import { fileUploadIsValidContentType } from '../../../../utils/server';
-import { FileUpload } from '../../../../file-upload/server';
 import { API } from '../../../../api/server';
 import { getUploadFormData } from '../../../../api/server/lib/getUploadFormData';
+import { FileUpload } from '../../../../file-upload/server';
+import { settings } from '../../../../settings/server';
+import { fileUploadIsValidContentType } from '../../../../utils/server/restrictions';
+import { sendFileLivechatMessage } from '../../../server/methods/sendFileLivechatMessage';
 
 API.v1.addRoute('livechat/upload/:rid', {
 	async post() {
@@ -22,7 +21,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 			return API.v1.unauthorized();
 		}
 
-		const room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken);
+		const room = await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken as string);
 		if (!room) {
 			return API.v1.unauthorized();
 		}
@@ -72,6 +71,6 @@ API.v1.addRoute('livechat/upload/:rid', {
 		uploadedFile.description = fields.description;
 
 		delete fields.description;
-		return API.v1.success(Meteor.call('sendFileLivechatMessage', this.urlParams.rid, visitorToken, uploadedFile, fields));
+		return API.v1.success(await sendFileLivechatMessage({ roomId: this.urlParams.rid, visitorToken, file: uploadedFile, msgData: fields }));
 	},
 });

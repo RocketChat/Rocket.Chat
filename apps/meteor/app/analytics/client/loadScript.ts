@@ -1,63 +1,81 @@
 import { Meteor } from 'meteor/meteor';
-import { Template } from 'meteor/templating';
+import { useEffect } from 'react';
 
+import { useReactiveValue } from '../../../client/hooks/useReactiveValue';
 import { settings } from '../../settings/client';
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
-		_paq: [string, ...unknown[]][];
+		_paq?: [string, ...unknown[]][];
 		GoogleAnalyticsObject: unknown;
-		ga: qa;
+		ga?: qa;
 	}
 
 	type qa = {
 		(...args: unknown[]): void;
-		l: number;
-		q: unknown[];
+		l?: number;
+		q?: unknown[];
 	};
 }
 
-Template.body.onRendered(function () {
-	this.autorun(() => {
-		const uid = Meteor.userId();
+export const useAnalytics = (): void => {
+	const uid = useReactiveValue(() => Meteor.userId());
+
+	const googleId = useReactiveValue(() => settings.get('GoogleAnalytics_enabled') && settings.get('GoogleAnalytics_ID'));
+	const piwikUrl = useReactiveValue(() => settings.get('PiwikAnalytics_enabled') && settings.get('PiwikAnalytics_url'));
+
+	useEffect(() => {
 		if (uid) {
 			window._paq = window._paq || [];
 			window._paq.push(['setUserId', uid]);
 		}
 	});
 
-	this.autorun((c) => {
-		const googleId = settings.get('GoogleAnalytics_enabled') && settings.get('GoogleAnalytics_ID');
-		if (googleId) {
-			c.stop();
-
-			if (googleId) {
-				/*eslint-disable */
-				(function (i, s, o, g, r: 'ga', a?: any, m?: any) {
-					i['GoogleAnalyticsObject'] = r;
-					(i[r] =
-						i[r] ||
-						function () {
-							(i[r].q = i[r].q || []).push(arguments);
-						}),
-						(i[r].l = new Date().getTime());
-					(a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
-					a.async = 1;
-					a.src = g;
-					m.parentNode.insertBefore(a, m);
-				})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
-
-				window.ga('create', googleId, 'auto');
-				window.ga('send', 'pageview');
-				/* eslint-enable */
-			}
+	useEffect(() => {
+		if (!googleId) {
+			return;
 		}
-	});
+		if (googleId.startsWith('G-')) {
+			// Google Analytics 4
+			const f = document.getElementsByTagName('script')[0];
+			const j = document.createElement('script');
+			j.async = true;
+			j.src = `//www.googletagmanager.com/gtag/js?id=${googleId}`;
+			f.parentNode?.insertBefore(j, f);
 
-	this.autorun(() => {
-		const piwikUrl = settings.get('PiwikAnalytics_enabled') && settings.get('PiwikAnalytics_url');
+			// injecting the dataLayer into the windows global object
+			const w: Window & { dataLayer?: any } = window;
+			const dataLayer = w.dataLayer || [];
+			const gtag = (key: string, value: any) => {
+				dataLayer.push(key, value);
+			};
+			gtag('js', new Date());
+			gtag('config', googleId);
+		} else {
+			// Google Analytics 3
+			(function (i, s, o, g, r: 'ga', a?: any, m?: any) {
+				i.GoogleAnalyticsObject = r;
+				(i[r] =
+					i[r] ||
+					function (...args) {
+						((i[r] as any).q = (i[r] as any).q || []).push(args);
+						// eslint-disable-next-line no-sequences
+					}),
+					((i[r] as any).l = new Date().getTime());
+				// eslint-disable-next-line no-sequences
+				(a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+				a.async = 1;
+				a.src = g;
+				m.parentNode.insertBefore(a, m);
+			})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
+			window.ga?.('create', googleId, 'auto');
+			window.ga?.('send', 'pageview');
+		}
+	}, [googleId, uid]);
+
+	useEffect(() => {
 		if (!piwikUrl) {
 			document.getElementById('piwik-analytics')?.remove();
 			window._paq = [];
@@ -118,5 +136,5 @@ Template.body.onRendered(function () {
 			g.src = `${piwikUrl}js/`;
 			s.parentNode?.insertBefore(g, s);
 		})();
-	});
-});
+	}, [piwikUrl]);
+};

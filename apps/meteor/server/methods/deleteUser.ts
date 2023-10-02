@@ -1,13 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { Users } from '../../app/models/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { callbacks } from '../../lib/callbacks';
-import { deleteUser } from '../../app/lib/server';
+import { deleteUser } from '../../app/lib/server/functions/deleteUser';
 import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
+import { callbacks } from '../../lib/callbacks';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -26,7 +26,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById(userId);
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user to delete', {
 				method: 'deleteUser',
@@ -39,7 +39,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const adminCount = Meteor.users.find({ roles: 'admin' }).count();
+		const adminCount = await Users.col.countDocuments({ roles: 'admin' });
 
 		const userIsAdmin = user.roles?.indexOf('admin') > -1;
 
@@ -50,12 +50,12 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await deleteUser(userId, confirmRelinquish);
+		await deleteUser(userId, confirmRelinquish, uid);
 
-		callbacks.run('afterDeleteUser', user);
+		await callbacks.run('afterDeleteUser', user);
 
 		// App IPostUserDeleted event hook
-		await Apps.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: Meteor.user() });
+		await Apps.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: await Meteor.userAsync() });
 
 		return true;
 	},

@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { triggerHandler } from '../../lib/triggerHandler';
@@ -45,7 +45,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		triggerHandler.replay(integration, history);
+		await triggerHandler.replay(integration, history);
 
 		return true;
 	},

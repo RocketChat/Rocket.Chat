@@ -19,7 +19,8 @@ Meteor.startup(() => {
 			id: 'receipt-detail',
 			icon: 'info-circled',
 			label: 'Info',
-			context: ['starred', 'message', 'message-mobile', 'threads'],
+			context: ['starred', 'message', 'message-mobile', 'threads', 'videoconf', 'videoconf-threads'],
+			type: 'duplication',
 			action(_, props) {
 				const { message = messageArgs(this).msg } = props;
 				imperativeModal.open({

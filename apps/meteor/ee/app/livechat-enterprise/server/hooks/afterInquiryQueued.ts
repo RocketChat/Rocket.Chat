@@ -1,27 +1,25 @@
 import moment from 'moment';
 
+import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { OmnichannelQueueInactivityMonitor } from '../lib/QueueInactivityMonitor';
-import { settings } from '../../../../../app/settings/server';
 import { cbLogger } from '../lib/logger';
 
 let timer = 0;
 
-const scheduleInquiry = (inquiry: any): void => {
+const scheduleInquiry = async (inquiry: any): Promise<void> => {
 	if (!inquiry?._id) {
-		cbLogger.debug('Skipping callback. No inquiry provided');
 		return;
 	}
 
 	if (!inquiry?._updatedAt || !inquiry?._createdAt) {
-		cbLogger.debug('Skipping callback. Inquiry doesnt have timestamps');
 		return;
 	}
 
 	// schedule individual jobs instead of property for close inactivty
 	const newQueueTime = moment(inquiry._updatedAt || inquiry._createdAt).add(timer, 'minutes');
 	cbLogger.debug(`Scheduling estimated close time at ${newQueueTime} for queued inquiry ${inquiry._id}`);
-	OmnichannelQueueInactivityMonitor.scheduleInquiry(inquiry._id, new Date(newQueueTime.format()));
+	await OmnichannelQueueInactivityMonitor.scheduleInquiry(inquiry._id, new Date(newQueueTime.format()));
 };
 
 settings.watch('Livechat_max_queue_wait_time', (value) => {

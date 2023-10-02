@@ -1,18 +1,18 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { generateUsernameSuggestion } from '../functions';
+import { generateUsernameSuggestion } from '../functions/getUsernameSuggestion';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getUsernameSuggestion(): string | undefined;
+		getUsernameSuggestion(): Promise<string | undefined>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	getUsernameSuggestion() {
-		const user = Meteor.user();
+	async getUsernameSuggestion() {
+		const user = await Meteor.userAsync();
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

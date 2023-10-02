@@ -90,7 +90,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 						<Box is='p' fontSize='c1' pis={8}>
 							<Trans i18nKey='RegisterWorkspace_Setup_Terms_Privacy'>
 								I agree with <ExternalLink to='https://rocket.chat/terms'>Terms and Conditions </ExternalLink>
-								and {''}
+								and
 								<ExternalLink to='https://rocket.chat/privacy'>Privacy Policy</ExternalLink>
 							</Trans>
 						</Box>

@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
-import TeamsTable from './TeamsTable/TeamsTable';
+import TeamsTable from './TeamsTable';
 
 const TeamsTab = (): ReactElement => {
 	const canViewPublicRooms = usePermission('view-c-room');

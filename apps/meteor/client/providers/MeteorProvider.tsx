@@ -9,6 +9,7 @@ import { CallProvider } from './CallProvider';
 import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import { DeviceProvider } from './DeviceProvider/DeviceProvider';
+import EmojiPickerProvider from './EmojiPickerProvider';
 import LayoutProvider from './LayoutProvider';
 import ModalProvider from './ModalProvider';
 import OmnichannelProvider from './OmnichannelProvider';
@@ -39,17 +40,19 @@ const MeteorProvider: FC = ({ children }) => (
 													<DeviceProvider>
 														<ModalProvider>
 															<AuthorizationProvider>
-																<OmnichannelRoomIconProvider>
-																	<UserPresenceProvider>
-																		<ActionManagerProvider>
-																			<VideoConfProvider>
-																				<CallProvider>
-																					<OmnichannelProvider>{children}</OmnichannelProvider>
-																				</CallProvider>
-																			</VideoConfProvider>
-																		</ActionManagerProvider>
-																	</UserPresenceProvider>
-																</OmnichannelRoomIconProvider>
+																<EmojiPickerProvider>
+																	<OmnichannelRoomIconProvider>
+																		<UserPresenceProvider>
+																			<ActionManagerProvider>
+																				<VideoConfProvider>
+																					<CallProvider>
+																						<OmnichannelProvider>{children}</OmnichannelProvider>
+																					</CallProvider>
+																				</VideoConfProvider>
+																			</ActionManagerProvider>
+																		</UserPresenceProvider>
+																	</OmnichannelRoomIconProvider>
+																</EmojiPickerProvider>
 															</AuthorizationProvider>
 														</ModalProvider>
 													</DeviceProvider>

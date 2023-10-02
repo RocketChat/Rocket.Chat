@@ -1,4 +1,3 @@
-import ldapjs from 'ldapjs';
 import type {
 	ILDAPConnectionOptions,
 	LDAPEncryptionType,
@@ -7,13 +6,15 @@ import type {
 	ILDAPCallback,
 	ILDAPPageCallback,
 } from '@rocket.chat/core-typings';
+import ldapjs from 'ldapjs';
 
 import { settings } from '../../../app/settings/server';
+import { ensureArray } from '../../../lib/utils/arrayUtils';
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 
 interface ILDAPEntryCallback<T> {
-	(entry: ldapjs.SearchEntry): Promise<T | undefined>;
+	(entry: ldapjs.SearchEntry): T | undefined;
 }
 
 interface ILDAPSearchEndCallback {
@@ -221,16 +222,16 @@ export class LDAPConnection {
 				this.options.baseDN,
 				searchOptions,
 				this.options.searchPageSize,
-				async (error, entries: ldapjs.SearchEntry[], { end, next } = { end: false, next: undefined }) => {
+				(error, entries: ldapjs.SearchEntry[], { end, next } = { end: false, next: undefined }) => {
 					if (error) {
-						await endCallback?.(error);
+						endCallback?.(error);
 						return;
 					}
 
 					count += entries.length;
 					dataCallback?.(entries);
 					if (end) {
-						await endCallback?.();
+						endCallback?.();
 					}
 
 					if (next) {
@@ -269,11 +270,11 @@ export class LDAPConnection {
 	}
 
 	public async search(baseDN: string, searchOptions: ldapjs.SearchOptions): Promise<ILDAPEntry[]> {
-		return this.doCustomSearch<ILDAPEntry>(baseDN, searchOptions, async (entry) => this.extractLdapEntryData(entry));
+		return this.doCustomSearch<ILDAPEntry>(baseDN, searchOptions, (entry) => this.extractLdapEntryData(entry));
 	}
 
 	public async searchRaw(baseDN: string, searchOptions: ldapjs.SearchOptions): Promise<ldapjs.SearchEntry[]> {
-		return this.doCustomSearch<ldapjs.SearchEntry>(baseDN, searchOptions, async (entry) => entry);
+		return this.doCustomSearch<ldapjs.SearchEntry>(baseDN, searchOptions, (entry) => entry);
 	}
 
 	public async searchAndCount(baseDN: string, searchOptions: ldapjs.SearchOptions): Promise<number> {
@@ -351,7 +352,7 @@ export class LDAPConnection {
 
 				res.on('searchEntry', (entry) => {
 					try {
-						const result = Promise.await(entryCallback(entry));
+						const result = entryCallback(entry);
 						if (result) {
 							entries.push(result as T);
 						}
@@ -389,6 +390,49 @@ export class LDAPConnection {
 		}
 
 		return `(&${filter.join('')})`;
+	}
+
+	public async searchMembersOfGroupFilter(): Promise<string[]> {
+		if (!this.options.groupFilterEnabled) {
+			return [];
+		}
+
+		if (!this.options.groupFilterGroupMemberAttribute) {
+			return [];
+		}
+
+		if (!this.options.groupFilterGroupMemberFormat) {
+			searchLogger.debug(`LDAP Group Filter is enabled but no group member format is set.`);
+			return [];
+		}
+
+		const filter = ['(&'];
+
+		if (this.options.groupFilterObjectClass) {
+			filter.push(`(objectclass=${this.options.groupFilterObjectClass})`);
+		}
+
+		if (this.options.groupFilterGroupIdAttribute) {
+			filter.push(`(${this.options.groupFilterGroupIdAttribute}=${this.options.groupFilterGroupName})`);
+		}
+		filter.push(')');
+		const searchOptions: ldapjs.SearchOptions = {
+			filter: filter.join(''),
+			scope: 'sub',
+		};
+
+		searchLogger.debug({ msg: 'Group filter LDAP:', filter: searchOptions.filter });
+
+		const result = await this.searchRaw(this.options.baseDN, searchOptions);
+
+		if (!Array.isArray(result) || result.length === 0) {
+			searchLogger.debug({ msg: 'No groups found', result });
+			return [];
+		}
+
+		const members = this.extractLdapAttribute(result[0].raw[this.options.groupFilterGroupMemberAttribute]) as string | string[];
+
+		return ensureArray<string>(members);
 	}
 
 	public async isUserAcceptedByGroupFilter(username: string, userdn: string): Promise<boolean> {
@@ -483,7 +527,7 @@ export class LDAPConnection {
 
 			res.on('searchEntry', (entry) => {
 				try {
-					const result = entryCallback ? Promise.await(entryCallback(entry)) : entry;
+					const result = entryCallback ? entryCallback(entry) : entry;
 					entries.push(result as T);
 				} catch (e) {
 					searchLogger.error(e);
@@ -549,7 +593,7 @@ export class LDAPConnection {
 
 			res.on('searchEntry', (entry) => {
 				try {
-					const result = entryCallback ? Promise.await(entryCallback(entry)) : entry;
+					const result = entryCallback ? entryCallback(entry) : entry;
 					entries.push(result as T);
 
 					if (entries.length >= internalPageSize) {
@@ -612,7 +656,7 @@ export class LDAPConnection {
 	}
 
 	private _updateIdle(override?: boolean): void {
-		// @ts-ignore calling a private method
+		// @ts-expect-error use a private function to signal to the lib that we're still working
 		this.client._updateIdle(override);
 	}
 

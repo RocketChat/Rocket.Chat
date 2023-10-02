@@ -1,17 +1,17 @@
 import type { UrlWithStringQuery } from 'url';
 
 import type Icons from '@rocket.chat/icons';
-import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import type { Root } from '@rocket.chat/message-parser';
+import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 
-import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { IUser } from '../IUser';
-import type { IRoom, RoomID } from '../IRoom';
-import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
-import type { FileProp } from './MessageAttachment/Files/FileProp';
+import type { ILivechatPriority } from '../ILivechatPriority';
 import type { ILivechatVisitor } from '../ILivechatVisitor';
 import type { IOmnichannelServiceLevelAgreements } from '../IOmnichannelServiceLevelAgreements';
-import type { ILivechatPriority } from '../ILivechatPriority';
+import type { IRocketChatRecord } from '../IRocketChatRecord';
+import type { IRoom, RoomID } from '../IRoom';
+import type { IUser } from '../IUser';
+import type { FileProp } from './MessageAttachment/Files/FileProp';
+import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 
 type MentionType = 'user' | 'team';
 
@@ -61,7 +61,7 @@ type OmnichannelTypesValues = 'omnichannel_placed_chat_on_hold' | 'omnichannel_o
 
 type OtrMessageTypeValues = 'otr' | 'otr-ack';
 
-type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
+export type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
 export type MessageTypesValues =
 	| 'e2e'
@@ -100,6 +100,7 @@ export type MessageTypesValues =
 	| 'owner-removed'
 	| 'new-leader'
 	| 'leader-removed'
+	| 'discussion-created'
 	| LivechatMessageTypes
 	| TeamMessageTypes
 	| VoipMessageTypesValues
@@ -130,9 +131,9 @@ export interface IMessage extends IRocketChatRecord {
 		type: MentionType;
 	} & Pick<IUser, '_id' | 'username' | 'name'>)[];
 
-	groupable?: false;
+	groupable?: boolean;
 	channels?: Pick<IRoom, '_id' | 'name'>[];
-	u: Required<Pick<IUser, '_id' | 'username' | 'name'>>;
+	u: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>;
 	blocks?: MessageSurfaceLayout;
 	alias?: string;
 	md?: Root;
@@ -172,6 +173,11 @@ export interface IMessage extends IRocketChatRecord {
 
 	/** @deprecated Deprecated in favor of files */
 	file?: FileProp;
+	fileUpload?: {
+		publicFilePath: string;
+		type?: string;
+		size?: number;
+	};
 	files?: FileProp[];
 	attachments?: MessageAttachment[];
 
@@ -310,7 +316,7 @@ export interface IOmnichannelSystemMessage extends IMessage {
 	requestData?: {
 		type: 'visitor' | 'user';
 		visitor?: ILivechatVisitor;
-		user?: IUser;
+		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
 	};
 	webRtcCallEndTs?: Date;
 	comment?: string;
@@ -336,6 +342,7 @@ export type IMessageInbox = IMessage & {
 	email?: {
 		references?: string[];
 		messageId?: string;
+		thread?: string[];
 	};
 };
 
@@ -358,3 +365,17 @@ export type IVideoConfMessage = IMessage & {
 export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
 export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr' || message.t === 'otr-ack';
 export const isVideoConfMessage = (message: IMessage): message is IVideoConfMessage => message.t === 'videoconf';
+
+export type IMessageWithPendingFileImport = IMessage & {
+	_importFile: {
+		downloadUrl: string;
+		id: string;
+		size: number;
+		name: string;
+		external: boolean;
+		source: 'slack' | 'hipchat-enterprise';
+		original: Record<string, any>;
+		rocketChatUrl?: string;
+		downloaded?: boolean;
+	};
+};

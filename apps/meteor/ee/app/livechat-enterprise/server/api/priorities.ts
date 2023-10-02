@@ -2,6 +2,7 @@ import { LivechatPriority } from '@rocket.chat/models';
 import { isGETLivechatPrioritiesParams, isPUTLivechatPriority } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
+import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import { findPriority, updatePriority } from './lib/priorities';
 
 API.v1.addRoute(
@@ -13,8 +14,8 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
 
 			return API.v1.success(
@@ -54,7 +55,7 @@ API.v1.addRoute(
 		},
 		async put() {
 			const { priorityId } = this.urlParams;
-			await updatePriority(priorityId, this.requestParams());
+			await updatePriority(priorityId, this.bodyParams);
 			return API.v1.success();
 		},
 	},

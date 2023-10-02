@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
-import { handleIdentityToken } from '../lib/handleIdentityToken';
 import { settings } from '../../settings/server';
+import { handleIdentityToken } from '../lib/handleIdentityToken';
 
-Accounts.registerLoginHandler('apple', (loginRequest) => {
+Accounts.registerLoginHandler('apple', async (loginRequest) => {
 	if (!loginRequest.identityToken) {
 		return;
 	}
@@ -16,7 +16,7 @@ Accounts.registerLoginHandler('apple', (loginRequest) => {
 	const { identityToken, fullName, email } = loginRequest;
 
 	try {
-		const serviceData = handleIdentityToken(identityToken);
+		const serviceData = await handleIdentityToken(identityToken);
 
 		if (!serviceData.email && email) {
 			serviceData.email = email;

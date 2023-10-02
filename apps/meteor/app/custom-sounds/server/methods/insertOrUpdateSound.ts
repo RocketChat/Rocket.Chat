@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { CustomSounds } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import { CustomSounds } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
@@ -83,7 +83,7 @@ Meteor.methods<ServerMethods>({
 
 		// update sound
 		if (soundData.newFile) {
-			RocketChatFileCustomSoundsInstance.deleteFile(`${soundData._id}.${soundData.previousExtension}`);
+			await RocketChatFileCustomSoundsInstance.deleteFile(`${soundData._id}.${soundData.previousExtension}`);
 		}
 
 		if (soundData.name !== soundData.previousName) {

@@ -1,8 +1,7 @@
 import { useDarkMode } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useUserPreference } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
-
-type ThemeMode = 'light' | 'dark' | 'auto';
+import type { ThemePreference as ThemeMode, Themes } from '@rocket.chat/ui-theming/src/types/themes';
+import { useCallback, useState } from 'react';
 
 /**
  * Returns the current option set by the user, the theme mode resolved given the user configuration and OS (if applies) and a function to set it.
@@ -10,13 +9,30 @@ type ThemeMode = 'light' | 'dark' | 'auto';
  * @returns [currentThemeMode, setThemeMode, resolvedThemeMode]
  */
 
-export const useThemeMode = (): [ThemeMode, (value: ThemeMode) => () => void, 'light' | 'dark'] => {
-	const theme = useUserPreference<ThemeMode>('themeAppearence') || 'auto';
+export const useThemeMode = (): [ThemeMode, (value: ThemeMode) => () => void, Themes] => {
+	const themeMode = useUserPreference<ThemeMode>('themeAppearence') || 'auto';
 
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
-	const setTheme = (value: ThemeMode): (() => void) =>
-		useCallback(() => saveUserPreferences({ data: { themeAppearence: value } }), [value]);
+	const [updaters] = useState(
+		(): Record<ThemeMode, () => void> => ({
+			'light': () => saveUserPreferences({ data: { themeAppearence: 'light' } }),
+			'dark': () => saveUserPreferences({ data: { themeAppearence: 'dark' } }),
+			'auto': () => saveUserPreferences({ data: { themeAppearence: 'auto' } }),
+			'high-contrast': () => saveUserPreferences({ data: { themeAppearence: 'high-contrast' } }),
+		}),
+	);
 
-	return [theme, setTheme, useDarkMode(theme === 'auto' ? undefined : theme === 'dark') ? 'dark' : 'light'];
+	const setTheme = useCallback((value: ThemeMode): (() => void) => updaters[value], [updaters]);
+
+	const useTheme = () => {
+		if (useDarkMode(themeMode === 'auto' ? undefined : themeMode === 'dark')) {
+			return 'dark';
+		}
+		if (themeMode === 'high-contrast') {
+			return 'high-contrast';
+		}
+		return 'light';
+	};
+	return [themeMode, setTheme, useTheme()];
 };

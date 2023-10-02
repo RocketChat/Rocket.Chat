@@ -12,7 +12,7 @@ if (Meteor.isClient) {
 			options = null;
 		}
 		const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback);
-		Linkedin.requestCredential(options, credentialRequestCompleteCallback);
+		void Linkedin.requestCredential(options, credentialRequestCompleteCallback).catch(credentialRequestCompleteCallback);
 	};
 	Accounts.registerClientLoginFunction('linkedin', loginWithLinkedin);
 

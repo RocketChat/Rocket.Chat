@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
-import { Messages as MessagesSync } from '../../app/models/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -42,7 +42,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const options = {
+		const options: FindOptions<IMessage> = {
 			sort: {
 				ts: -1,
 			},
@@ -55,11 +55,11 @@ Meteor.methods<ServerMethods>({
 						ts: -1,
 					},
 				}).toArray(),
-				deleted: MessagesSync.trashFindDeletedAfter(lastUpdate, { rid }, { ...options, fields: { _id: 1, _deletedAt: 1 } }).fetch(),
+				deleted: await Messages.trashFindDeletedAfter(lastUpdate, { rid }, { ...options, projection: { _id: 1, _deletedAt: 1 } }).toArray(),
 			};
 		}
 
-		return Meteor.call('getChannelHistory', {
+		return Meteor.callAsync('getChannelHistory', {
 			rid,
 			latest: latestDate,
 			oldest: oldestDate,

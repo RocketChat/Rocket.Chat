@@ -1,9 +1,10 @@
-import { isGETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { LivechatRooms } from '@rocket.chat/models';
+import { isGETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
-import { findRooms } from '../../../server/api/lib/rooms';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { findRooms } from '../../../server/api/lib/rooms';
 
 const validateDateParams = (property: string, date?: string) => {
 	let parsedDate: { start?: string; end?: string } | undefined = undefined;
@@ -27,10 +28,10 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isGETLivechatRoomsParams },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields } = this.parseJsonQuery();
-			const { agents, departmentId, open, tags, roomName, onhold } = this.requestParams();
-			const { createdAt, customFields, closedAt } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields } = await this.parseJsonQuery();
+			const { agents, departmentId, open, tags, roomName, onhold } = this.queryParams;
+			const { createdAt, customFields, closedAt } = this.queryParams;
 
 			const createdAtParam = validateDateParams('createdAt', createdAt);
 			const closedAtParam = validateDateParams('closedAt', closedAt);

@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ReadReceipt as ReadReceiptType, IMessage } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
+import { Messages } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { Messages } from '../../../app/models/server';
 import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { hasLicense } from '../../app/license/server/license';
 import { ReadReceipt } from '../lib/message-read-receipt/ReadReceipt';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -17,7 +17,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async getReadReceipts({ messageId }) {
-		if (!hasLicense('message-read-receipt')) {
+		if (!License.hasModule('message-read-receipt')) {
 			throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature', { method: 'getReadReceipts' });
 		}
 
@@ -32,8 +32,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getReadReceipts' });
 		}
 
-		const message = Messages.findOneById(messageId);
-
+		const message = await Messages.findOneById(messageId);
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
 				method: 'getReadReceipts',

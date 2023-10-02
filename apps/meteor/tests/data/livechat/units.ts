@@ -1,4 +1,4 @@
-import faker from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 import type { IOmnichannelBusinessUnit } from "@rocket.chat/core-typings";
 import { methodCall, credentials, request } from "../api-data";
 import type { DummyResponse } from "./utils";
@@ -33,7 +33,7 @@ export const createUnit = async (monitorId: string, username: string, department
             .send({
                 message: JSON.stringify({
                     method: 'livechat:saveUnit',
-                    params: [null, { name: faker.name.firstName(), visibility: faker.helpers.arrayElement(['public', 'private']) }, [{ monitorId, username }], departmentIds.map((departmentId) => ({ departmentId }))],
+                    params: [null, { name: faker.person.firstName(), visibility: faker.helpers.arrayElement(['public', 'private']) }, [{ monitorId, username }], departmentIds.map((departmentId) => ({ departmentId }))],
                     id: '101',
                     msg: 'method',
                 }),

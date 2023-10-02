@@ -9,7 +9,12 @@ export const createUser = (userData = {}) =>
 			.post(api('users.create'))
 			.set(credentials)
 			.send({ email, name: username, username, password, ...userData })
-			.end((err, res) => resolve(res.body.user));
+			.end((err, res) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body.user);
+			});
 	});
 
 export const login = (username, password) =>
@@ -71,4 +76,16 @@ export const getMe = (overrideCredential = credentials) =>
 			.end((end, res) => {
 				resolve(res.body);
 			});
+	});
+
+export const setUserActiveStatus = (userId, activeStatus = true) =>
+	new Promise((resolve) => {
+		request
+			.post(api('users.setActiveStatus'))
+			.set(credentials)
+			.send({
+				userId,
+				activeStatus,
+			})
+			.end(resolve);
 	});

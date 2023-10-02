@@ -1,8 +1,8 @@
 import POP3Lib from '@rocket.chat/poplib';
 import { simpleParser } from 'mailparser';
 
-import { settings } from '../../../settings';
 import { IMAPInterceptor } from '../../../../server/email/IMAPInterceptor';
+import { settings } from '../../../settings/server';
 import { processDirectEmail } from './processDirectEmail';
 
 export class DirectReplyIMAPInterceptor extends IMAPInterceptor {
@@ -66,14 +66,14 @@ class POP3Intercepter {
 		});
 
 		// on retrieved email
-		this.pop3.on('retr', (status, msgnumber, data) => {
+		this.pop3.on('retr', async (status, msgnumber, data) => {
 			if (!status) {
 				return console.log('Cannot Retrieve Message ....');
 			}
 
 			// parse raw email data to  JSON object
 			simpleParser(data, (err, mail) => {
-				Promise.await(processDirectEmail(mail));
+				processDirectEmail(mail);
 			});
 
 			this.currentMsgCount += 1;
@@ -98,16 +98,16 @@ class POP3Intercepter {
 		});
 
 		// invalid server state
-		this.pop3.on('invalid-state', function (cmd) {
+		this.pop3.on('invalid-state', (cmd) => {
 			console.log(`Invalid state. You tried calling ${cmd}`);
 		});
 
-		this.pop3.on('error', function (cmd) {
+		this.pop3.on('error', (cmd) => {
 			console.log(`error state. You tried calling ${cmd}`);
 		});
 
 		// locked => command already running, not finished yet
-		this.pop3.on('locked', function (cmd) {
+		this.pop3.on('locked', (cmd) => {
 			console.log(`Current command has not finished yet. You tried calling ${cmd}`);
 		});
 	}

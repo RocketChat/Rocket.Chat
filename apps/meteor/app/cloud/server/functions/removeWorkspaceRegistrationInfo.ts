@@ -3,7 +3,7 @@ import { Settings } from '@rocket.chat/models';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
 export async function removeWorkspaceRegistrationInfo() {
-	const { workspaceRegistered } = retrieveRegistrationStatus();
+	const { workspaceRegistered } = await retrieveRegistrationStatus();
 	if (!workspaceRegistered) {
 		return true;
 	}

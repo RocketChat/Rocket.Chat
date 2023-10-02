@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { ChatSubscription } from '../../app/models/client';
 
 Meteor.methods<ServerMethods>({
-	toggleFavorite(rid, f) {
+	async toggleFavorite(rid, f) {
 		if (!Meteor.userId()) {
 			return 0;
 		}

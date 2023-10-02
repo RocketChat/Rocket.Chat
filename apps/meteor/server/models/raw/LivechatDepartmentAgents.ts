@@ -1,5 +1,6 @@
 import type { ILivechatDepartmentAgents, RocketChatRecordDeleted, IUser } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
+import { Users } from '@rocket.chat/models';
 import type {
 	Collection,
 	FindCursor,
@@ -12,7 +13,6 @@ import type {
 	IndexDescription,
 	SortDirection,
 } from 'mongodb';
-import { Users } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -50,12 +50,12 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 
 	findUsersInQueue(usersList: string[], options: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
 
-	findUsersInQueue<P>(
+	findUsersInQueue<P extends Document>(
 		usersList: string[],
 		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
 	): FindCursor<P>;
 
-	findUsersInQueue<P>(
+	findUsersInQueue<P extends Document>(
 		usersList: string[],
 		options?:
 			| undefined
@@ -78,8 +78,8 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.find(query, options);
 	}
 
-	findByAgentId(agentId: string): FindCursor<ILivechatDepartmentAgents> {
-		return this.find({ agentId });
+	findByAgentId(agentId: string, options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents> {
+		return this.find({ agentId }, options);
 	}
 
 	findAgentsByDepartmentId(departmentId: string): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
@@ -89,7 +89,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		options: FindOptions<ILivechatDepartmentAgents>,
 	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
 
-	findAgentsByDepartmentId<P>(
+	findAgentsByDepartmentId<P extends Document>(
 		departmentId: string,
 		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
 	): FindPaginated<FindCursor<P>>;
@@ -111,12 +111,12 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 
 	findActiveDepartmentsByAgentId(agentId: string, options: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
 
-	findActiveDepartmentsByAgentId<P>(
+	findActiveDepartmentsByAgentId<P extends Document>(
 		agentId: string,
 		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
 	): FindCursor<P>;
 
-	findActiveDepartmentsByAgentId<P>(
+	findActiveDepartmentsByAgentId<P extends Document>(
 		agentId: string,
 		options?:
 			| undefined
@@ -151,12 +151,16 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.deleteOne({ departmentId });
 	}
 
-	findByDepartmentId(departmentId: string): FindCursor<ILivechatDepartmentAgents> {
-		return this.find({ departmentId });
+	findByDepartmentId(departmentId: string, options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents> {
+		return this.find({ departmentId }, options);
 	}
 
-	findOneByAgentIdAndDepartmentId(agentId: string, departmentId: string): Promise<ILivechatDepartmentAgents | null> {
-		return this.findOne({ agentId, departmentId });
+	findOneByAgentIdAndDepartmentId(
+		agentId: string,
+		departmentId: string,
+		options?: FindOptions<ILivechatDepartmentAgents>,
+	): Promise<ILivechatDepartmentAgents | null> {
+		return this.findOne({ agentId, departmentId }, options);
 	}
 
 	saveAgent(agent: {
@@ -212,7 +216,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		const onlineUsernames = onlineUsers.map((user) => user.username).filter(isStringValue);
 
 		// get fully booked agents, to ignore them from the query
-		const currentUnavailableAgents = (await Users.getUnavailableAgents(departmentId, extraQuery)).map((u: { username: any }) => u.username);
+		const currentUnavailableAgents = (await Users.getUnavailableAgents(departmentId, extraQuery)).map((u) => u.username);
 
 		const query: Filter<ILivechatDepartmentAgents> = {
 			departmentId,
@@ -351,6 +355,22 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		};
 
 		return this.updateMany(query, update);
+	}
+
+	countByDepartmentId(departmentId: string): Promise<number> {
+		return this.col.countDocuments({ departmentId });
+	}
+
+	disableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document> {
+		return this.updateMany({ departmentId }, { $set: { departmentEnabled: false } });
+	}
+
+	enableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document> {
+		return this.updateMany({ departmentId }, { $set: { departmentEnabled: true } });
+	}
+
+	findAllAgentsConnectedToListOfDepartments(departmentIds: string[]): Promise<string[]> {
+		return this.col.distinct('agentId', { departmentId: { $in: departmentIds }, departmentEnabled: true });
 	}
 }
 

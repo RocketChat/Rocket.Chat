@@ -1,13 +1,13 @@
+import { faker } from '@faker-js/faker';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IEditedMessage, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import sinon from 'sinon';
 import proxyquire from 'proxyquire';
-import faker from '@faker-js/faker';
+import sinon from 'sinon';
 
 import type * as RoomServiceSenderModule from '../../../../../../../server/services/federation/application/room/sender/RoomServiceSender';
-import type * as FederatedUserModule from '../../../../../../../server/services/federation/domain/FederatedUser';
 import type * as FederatedRoomModule from '../../../../../../../server/services/federation/domain/FederatedRoom';
+import type * as FederatedUserModule from '../../../../../../../server/services/federation/domain/FederatedUser';
 import { MATRIX_POWER_LEVELS } from '../../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixPowerLevels';
 import { createFakeMessage, createFakeUser } from '../../../../../../mocks/data';
 
@@ -408,13 +408,28 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			sinon.assert.notCalled(bridge.leaveRoom);
 		});
 
-		it('should remove the user from the room if the room and the user exists', async () => {
+		it('should not remove the user from the room if the  who executed the action is not from the same homeserver', async () => {
+			const user = FederatedUser.createInstance('externalInviterId', {
+				name: 'normalizedInviterId',
+				username: 'normalizedInviterId',
+				existsOnlyOnProxyServer: false,
+			});
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+			roomAdapter.getFederatedRoomByInternalId.resolves({});
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			await service.afterUserLeaveRoom({} as any);
+
+			sinon.assert.notCalled(bridge.leaveRoom);
+		});
+
+		it('should remove the user from the room if the room and the user exists, and is from the same homeserver', async () => {
 			const user = FederatedUser.createInstance('externalInviterId', {
 				name: 'normalizedInviterId',
 				username: 'normalizedInviterId',
 				existsOnlyOnProxyServer: true,
 			});
 			const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+			bridge.extractHomeserverOrigin.returns('localDomain');
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			await service.afterUserLeaveRoom({} as any);
@@ -448,13 +463,24 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			sinon.assert.notCalled(bridge.kickUserFromRoom);
 		});
 
-		it('should remove the user from the room if the room, user and the user who executed the action exists', async () => {
+		it('should not kick the user from the room if the user who executed the action is not from the same homeserver', async () => {
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+			roomAdapter.getFederatedRoomByInternalId.resolves({});
+			userAdapter.getFederatedUserByInternalId.onCall(0).resolves({});
+			userAdapter.getFederatedUserByInternalId.onCall(1).resolves(undefined);
+			await service.onUserRemovedFromRoom({} as any);
+
+			sinon.assert.notCalled(bridge.kickUserFromRoom);
+		});
+
+		it('should remove the user from the room if the room, user and the user who executed the action exists, and is from the same homeserver', async () => {
 			const user = FederatedUser.createInstance('externalInviterId', {
 				name: 'normalizedInviterId',
 				username: 'normalizedInviterId',
 				existsOnlyOnProxyServer: true,
 			});
 			const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+			bridge.extractHomeserverOrigin.returns('localDomain');
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			await service.onUserRemovedFromRoom({} as any);
@@ -595,7 +621,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				t: 'rm',
 				u: createFakeUser<Required<IUser>>({
 					username: faker.internet.userName(),
-					name: faker.name.findName(),
+					name: faker.person.fullName(),
 				}),
 			});
 
@@ -692,7 +718,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				editedBy: createFakeUser(),
 				u: createFakeUser<Required<IUser>>({
 					username: faker.internet.userName(),
-					name: faker.name.findName(),
+					name: faker.person.fullName(),
 				}),
 			});
 
@@ -714,7 +740,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				u: createFakeUser<Required<IUser>>({
 					_id: 'internalUserId',
 					username: faker.internet.userName(),
-					name: faker.name.findName(),
+					name: faker.person.fullName(),
 				}),
 			});
 

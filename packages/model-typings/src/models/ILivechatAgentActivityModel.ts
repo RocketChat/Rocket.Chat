@@ -1,5 +1,5 @@
-import type { AggregationCursor, FindCursor, Document, ModifyResult, UpdateResult } from 'mongodb';
 import type { ILivechatAgentActivity, IServiceHistory } from '@rocket.chat/core-typings';
+import type { AggregationCursor, FindCursor, Document, ModifyResult, UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -20,7 +20,11 @@ export interface ILivechatAgentActivityModel extends IBaseModel<ILivechatAgentAc
 
 	findOpenSessions(): FindCursor<ILivechatAgentActivity>;
 
-	findAllAverageAvailableServiceTime(params: { date: Date; departmentId: string }): Promise<ILivechatAgentActivity[]>;
+	findAllAverageAvailableServiceTime(params: { date: Date; departmentId?: string }): Promise<
+		{
+			averageAvailableServiceTimeInSeconds: number;
+		}[]
+	>;
 
 	findAvailableServiceTimeHistory(params: {
 		start: string;

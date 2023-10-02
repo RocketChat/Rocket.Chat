@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addOAuthService } from '../functions/addOAuthService';
@@ -29,6 +29,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		addOAuthService(name);
+		await addOAuthService(name);
 	},
 });

@@ -9,9 +9,9 @@ import React, { useCallback, useMemo } from 'react';
 import GenericModal from '../../../../../components/GenericModal';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import type { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
+import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
 const getWarningModalForFederatedRooms = (
 	closeModalFn: () => void,
@@ -33,7 +33,7 @@ const getWarningModalForFederatedRooms = (
 );
 
 // TODO: Remove endpoint concatenation
-export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
+export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const { _id: uid } = user;
@@ -106,9 +106,10 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 		() =>
 			(isRoomFederated(room) && roomCanSetOwner) || (!isRoomFederated(room) && roomCanSetOwner && userCanSetOwner)
 				? {
-						label: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
+						content: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
 						icon: 'shield-check' as const,
-						action: changeOwnerAction,
+						onClick: changeOwnerAction,
+						type: 'privileges' as UserInfoActionType,
 				  }
 				: undefined,
 		[changeOwnerAction, roomCanSetOwner, userCanSetOwner, isOwner, t, room],

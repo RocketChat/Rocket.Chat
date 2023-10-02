@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { settings, settingsRegistry } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings, settingsRegistry } from '../../../settings/server';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { SAMLUtils } from './Utils';
 import {
@@ -101,7 +101,7 @@ const configureSamlService = function (samlConfigs: Record<string, any>): IServi
 	};
 };
 
-export const loadSamlServiceProviders = function (): void {
+export const loadSamlServiceProviders = async function (): Promise<void> {
 	const serviceName = 'saml';
 	const services = settings.getByRegexp(/^(SAML_Custom_)[a-z]+$/i);
 
@@ -109,27 +109,29 @@ export const loadSamlServiceProviders = function (): void {
 		return SAMLUtils.setServiceProvidersList([]);
 	}
 
-	const providers = services
-		.map(([key, value]) => {
-			if (value === true) {
-				const samlConfigs = getSamlConfigs(key);
-				SAMLUtils.log(key);
-				ServiceConfiguration.configurations.upsert(
-					{
-						service: serviceName.toLowerCase(),
-					},
-					{
-						$set: samlConfigs,
-					},
-				);
-				return configureSamlService(samlConfigs);
-			}
-			ServiceConfiguration.configurations.remove({
-				service: serviceName.toLowerCase(),
-			});
-			return false;
-		})
-		.filter((e) => e) as IServiceProviderOptions[];
+	const providers = (
+		await Promise.all(
+			services.map(async ([key, value]) => {
+				if (value === true) {
+					const samlConfigs = getSamlConfigs(key);
+					SAMLUtils.log(key);
+					await ServiceConfiguration.configurations.upsertAsync(
+						{
+							service: serviceName.toLowerCase(),
+						},
+						{
+							$set: samlConfigs,
+						},
+					);
+					return configureSamlService(samlConfigs);
+				}
+				await ServiceConfiguration.configurations.removeAsync({
+					service: serviceName.toLowerCase(),
+				});
+				return false;
+			}),
+		)
+	).filter((e) => e) as IServiceProviderOptions[];
 
 	SAMLUtils.setServiceProvidersList(providers);
 };
@@ -138,51 +140,51 @@ export const addSamlService = function (name: string): void {
 	SystemLogger.warn(`Adding ${name} is deprecated`);
 };
 
-export const addSettings = function (name: string): void {
-	void settingsRegistry.addGroup('SAML', function () {
-		this.with(
+export const addSettings = async function (name: string): Promise<void> {
+	await settingsRegistry.addGroup('SAML', async function () {
+		await this.with(
 			{
 				tab: 'SAML_Connection',
 			},
-			function () {
-				this.add(`SAML_Custom_${name}`, false, {
+			async function () {
+				await this.add(`SAML_Custom_${name}`, false, {
 					type: 'boolean',
 					i18nLabel: 'Accounts_OAuth_Custom_Enable',
 				});
-				this.add(`SAML_Custom_${name}_provider`, 'provider-name', {
+				await this.add(`SAML_Custom_${name}_provider`, 'provider-name', {
 					type: 'string',
 					i18nLabel: 'SAML_Custom_Provider',
 				});
-				this.add(`SAML_Custom_${name}_entry_point`, 'https://example.com/simplesaml/saml2/idp/SSOService.php', {
+				await this.add(`SAML_Custom_${name}_entry_point`, 'https://example.com/simplesaml/saml2/idp/SSOService.php', {
 					type: 'string',
 					i18nLabel: 'SAML_Custom_Entry_point',
 				});
-				this.add(`SAML_Custom_${name}_idp_slo_redirect_url`, 'https://example.com/simplesaml/saml2/idp/SingleLogoutService.php', {
+				await this.add(`SAML_Custom_${name}_idp_slo_redirect_url`, 'https://example.com/simplesaml/saml2/idp/SingleLogoutService.php', {
 					type: 'string',
 					i18nLabel: 'SAML_Custom_IDP_SLO_Redirect_URL',
 				});
-				this.add(`SAML_Custom_${name}_issuer`, 'https://your-rocket-chat/_saml/metadata/provider-name', {
+				await this.add(`SAML_Custom_${name}_issuer`, 'https://your-rocket-chat/_saml/metadata/provider-name', {
 					type: 'string',
 					i18nLabel: 'SAML_Custom_Issuer',
 				});
-				this.add(`SAML_Custom_${name}_debug`, false, {
+				await this.add(`SAML_Custom_${name}_debug`, false, {
 					type: 'boolean',
 					i18nLabel: 'SAML_Custom_Debug',
 				});
 
-				this.section('SAML_Section_2_Certificate', function () {
-					this.add(`SAML_Custom_${name}_cert`, '', {
+				await this.section('SAML_Section_2_Certificate', async function () {
+					await this.add(`SAML_Custom_${name}_cert`, '', {
 						type: 'string',
 						i18nLabel: 'SAML_Custom_Cert',
 						multiline: true,
 						secret: true,
 					});
-					this.add(`SAML_Custom_${name}_public_cert`, '', {
+					await this.add(`SAML_Custom_${name}_public_cert`, '', {
 						type: 'string',
 						multiline: true,
 						i18nLabel: 'SAML_Custom_Public_Cert',
 					});
-					this.add(`SAML_Custom_${name}_signature_validation_type`, 'All', {
+					await this.add(`SAML_Custom_${name}_signature_validation_type`, 'All', {
 						type: 'select',
 						values: [
 							{ key: 'Response', i18nLabel: 'SAML_Custom_signature_validation_response' },
@@ -193,7 +195,7 @@ export const addSettings = function (name: string): void {
 						i18nLabel: 'SAML_Custom_signature_validation_type',
 						i18nDescription: 'SAML_Custom_signature_validation_type_description',
 					});
-					this.add(`SAML_Custom_${name}_private_key`, '', {
+					await this.add(`SAML_Custom_${name}_private_key`, '', {
 						type: 'string',
 						multiline: true,
 						i18nLabel: 'SAML_Custom_Private_Key',
@@ -203,33 +205,33 @@ export const addSettings = function (name: string): void {
 			},
 		);
 
-		this.with(
+		await this.with(
 			{
 				tab: 'SAML_General',
 			},
-			function () {
-				this.section('SAML_Section_1_User_Interface', function () {
-					this.add(`SAML_Custom_${name}_button_label_text`, 'SAML', {
+			async function () {
+				await this.section('SAML_Section_1_User_Interface', async function () {
+					await this.add(`SAML_Custom_${name}_button_label_text`, 'SAML', {
 						type: 'string',
 						i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text',
 					});
-					this.add(`SAML_Custom_${name}_button_label_color`, '#FFFFFF', {
+					await this.add(`SAML_Custom_${name}_button_label_color`, '#FFFFFF', {
 						type: 'string',
 						i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
 					});
-					this.add(`SAML_Custom_${name}_button_color`, '#1d74f5', {
+					await this.add(`SAML_Custom_${name}_button_color`, '#1d74f5', {
 						type: 'string',
 						i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
 					});
 				});
 
-				this.section('SAML_Section_3_Behavior', function () {
+				await this.section('SAML_Section_3_Behavior', async function () {
 					// Settings to customize behavior
-					this.add(`SAML_Custom_${name}_generate_username`, false, {
+					await this.add(`SAML_Custom_${name}_generate_username`, false, {
 						type: 'boolean',
 						i18nLabel: 'SAML_Custom_Generate_Username',
 					});
-					this.add(`SAML_Custom_${name}_username_normalize`, 'None', {
+					await this.add(`SAML_Custom_${name}_username_normalize`, 'None', {
 						type: 'select',
 						values: [
 							{ key: 'None', i18nLabel: 'SAML_Custom_Username_Normalize_None' },
@@ -237,7 +239,7 @@ export const addSettings = function (name: string): void {
 						],
 						i18nLabel: 'SAML_Custom_Username_Normalize',
 					});
-					this.add(`SAML_Custom_${name}_immutable_property`, 'EMail', {
+					await this.add(`SAML_Custom_${name}_immutable_property`, 'EMail', {
 						type: 'select',
 						values: [
 							{ key: 'Username', i18nLabel: 'SAML_Custom_Immutable_Property_Username' },
@@ -245,15 +247,15 @@ export const addSettings = function (name: string): void {
 						],
 						i18nLabel: 'SAML_Custom_Immutable_Property',
 					});
-					this.add(`SAML_Custom_${name}_name_overwrite`, false, {
+					await this.add(`SAML_Custom_${name}_name_overwrite`, false, {
 						type: 'boolean',
 						i18nLabel: 'SAML_Custom_name_overwrite',
 					});
-					this.add(`SAML_Custom_${name}_mail_overwrite`, false, {
+					await this.add(`SAML_Custom_${name}_mail_overwrite`, false, {
 						type: 'boolean',
 						i18nLabel: 'SAML_Custom_mail_overwrite',
 					});
-					this.add(`SAML_Custom_${name}_logout_behaviour`, 'SAML', {
+					await this.add(`SAML_Custom_${name}_logout_behaviour`, 'SAML', {
 						type: 'select',
 						values: [
 							{ key: 'SAML', i18nLabel: 'SAML_Custom_Logout_Behaviour_Terminate_SAML_Session' },
@@ -261,24 +263,24 @@ export const addSettings = function (name: string): void {
 						],
 						i18nLabel: 'SAML_Custom_Logout_Behaviour',
 					});
-					this.add(`SAML_Custom_${name}_channels_update`, false, {
+					await this.add(`SAML_Custom_${name}_channels_update`, false, {
 						type: 'boolean',
 						i18nLabel: 'SAML_Custom_channels_update',
 						i18nDescription: 'SAML_Custom_channels_update_description',
 					});
-					this.add(`SAML_Custom_${name}_include_private_channels_update`, false, {
+					await this.add(`SAML_Custom_${name}_include_private_channels_update`, false, {
 						type: 'boolean',
 						i18nLabel: 'SAML_Custom_include_private_channels_update',
 						i18nDescription: 'SAML_Custom_include_private_channels_update_description',
 					});
 
-					this.add(`SAML_Custom_${name}_default_user_role`, 'user', {
+					await this.add(`SAML_Custom_${name}_default_user_role`, 'user', {
 						type: 'string',
 						i18nLabel: 'SAML_Default_User_Role',
 						i18nDescription: 'SAML_Default_User_Role_Description',
 					});
 
-					this.add(`SAML_Custom_${name}_allowed_clock_drift`, 0, {
+					await this.add(`SAML_Custom_${name}_allowed_clock_drift`, 0, {
 						type: 'int',
 						invalidValue: 0,
 						i18nLabel: 'SAML_Allowed_Clock_Drift',
@@ -286,9 +288,9 @@ export const addSettings = function (name: string): void {
 					});
 				});
 
-				this.section('SAML_Section_5_Mapping', function () {
+				await this.section('SAML_Section_5_Mapping', async function () {
 					// Data Mapping Settings
-					this.add(`SAML_Custom_${name}_user_data_fieldmap`, '{"username":"username", "email":"email", "name": "cn"}', {
+					await this.add(`SAML_Custom_${name}_user_data_fieldmap`, '{"username":"username", "email":"email", "name": "cn"}', {
 						type: 'string',
 						i18nLabel: 'SAML_Custom_user_data_fieldmap',
 						i18nDescription: 'SAML_Custom_user_data_fieldmap_description',

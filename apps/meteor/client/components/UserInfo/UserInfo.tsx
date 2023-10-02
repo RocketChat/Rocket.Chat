@@ -8,11 +8,11 @@ import React, { memo } from 'react';
 import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
+import { ContextualbarScrollableContent } from '../Contextualbar';
 import InfoPanel from '../InfoPanel';
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
 import UserCard from '../UserCard';
-import VerticalBar from '../VerticalBar';
 import UserInfoAvatar from './UserInfoAvatar';
 
 type UserInfoDataProps = Serialized<
@@ -67,7 +67,7 @@ const UserInfo = ({
 	const userCustomFields = useUserCustomFields(customFields);
 
 	return (
-		<VerticalBar.ScrollableContent p='x24' {...props}>
+		<ContextualbarScrollableContent p={24} {...props}>
 			<InfoPanel>
 				{username && (
 					<InfoPanel.Avatar>
@@ -156,7 +156,7 @@ const UserInfo = ({
 								<Box is='a' withTruncatedText href={`mailto:${email}`}>
 									{email}
 								</Box>
-								<Margins inline='x4'>
+								<Margins inline={4}>
 									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
 								</Margins>
 							</InfoPanel.Text>
@@ -183,7 +183,7 @@ const UserInfo = ({
 					)}
 				</InfoPanel.Section>
 			</InfoPanel>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 };
 

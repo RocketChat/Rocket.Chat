@@ -1,24 +1,24 @@
-import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { RateLimiter } from '../lib';
 import { saveCustomFields } from '../functions/saveCustomFields';
+import { RateLimiter } from '../lib';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		saveCustomFields: (fields: IUser['customFields']) => void;
+		saveCustomFields: (fields: IUser['customFields']) => Promise<void>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	saveCustomFields(fields = {}) {
+	async saveCustomFields(fields = {}) {
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'saveCustomFields' });
 		}
-		saveCustomFields(uid, fields);
+		await saveCustomFields(uid, fields);
 	},
 });
 

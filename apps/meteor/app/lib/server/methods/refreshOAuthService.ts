@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 import { Settings } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
@@ -29,7 +29,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		ServiceConfiguration.configurations.remove({});
+		await ServiceConfiguration.configurations.removeAsync({});
 
 		await Settings.update({ _id: /^(Accounts_OAuth_|SAML_|CAS_).+/ }, { $set: { _updatedAt: new Date() } }, { multi: true });
 	},

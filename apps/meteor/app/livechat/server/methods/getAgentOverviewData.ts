@@ -1,9 +1,10 @@
-import { Meteor } from 'meteor/meteor';
+import { Users } from '@rocket.chat/models';
 import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { Livechat } from '../lib/Livechat';
-import { Users } from '../../../models/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -17,6 +18,8 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:getAgentOverviewData'(options) {
+		methodDeprecationLogger.method('livechat:getAgentOverviewData', '7.0.0', ' Use "livechat/analytics/agent-overview" instead.');
+
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -29,7 +32,7 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		const user = Users.findOneById(uid, { fields: { _id: 1, utcOffset: 1 } });
+		const user = await Users.findOneById(uid, { projection: { _id: 1, utcOffset: 1 } });
 		return Livechat.Analytics.getAgentOverviewData({ ...options, utcOffset: user?.utcOffset || 0 });
 	},
 });

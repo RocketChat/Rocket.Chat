@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { imgURL } from '../../data/interactions';
@@ -277,6 +278,82 @@ describe('[EmojiCustom]', function () {
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
+	});
+
+	describe('Accessing custom emojis', () => {
+		let uploadDate;
+
+		it('should return forbidden if the there is no fileId on the url', (done) => {
+			request
+				.get('/emoji-custom/')
+				.set(credentials)
+				.expect(403)
+				.expect((res) => {
+					expect(res.text).to.be.equal('Forbidden');
+				})
+				.end(done);
+		});
+
+		it('should return success if the file does not exists with some specific headers', (done) => {
+			request
+				.get('/emoji-custom/invalid')
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.headers).to.have.property('last-modified', 'Thu, 01 Jan 2015 00:00:00 GMT');
+					expect(res.headers).to.have.property('content-type', 'image/svg+xml');
+					expect(res.headers).to.have.property('cache-control', 'public, max-age=0');
+					expect(res.headers).to.have.property('expires', '-1');
+					expect(res.headers).to.have.property('content-disposition', 'inline');
+				})
+				.end(done);
+		});
+
+		it('should return not modified if the file does not exists and if-modified-since is equal to the Thu, 01 Jan 2015 00:00:00 GMT', (done) => {
+			request
+				.get('/emoji-custom/invalid')
+				.set(credentials)
+				.set({
+					'if-modified-since': 'Thu, 01 Jan 2015 00:00:00 GMT',
+				})
+				.expect(304)
+				.expect((res) => {
+					expect(res.headers).to.have.property('last-modified', 'Thu, 01 Jan 2015 00:00:00 GMT');
+				})
+				.end(done);
+		});
+
+		it('should return success if the the requested exists', (done) => {
+			request
+				.get(`/emoji-custom/${customEmojiName}.png`)
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.headers).to.have.property('last-modified');
+					expect(res.headers).to.have.property('content-type', 'image/png');
+					expect(res.headers).to.have.property('cache-control', 'public, max-age=31536000');
+					expect(res.headers).to.have.property('content-disposition', 'inline');
+					uploadDate = res.headers['last-modified'];
+				})
+				.end(done);
+		});
+
+		it('should return not modified if the the requested file contains a valid-since equal to the upload date', (done) => {
+			request
+				.get(`/emoji-custom/${customEmojiName}.png`)
+				.set(credentials)
+				.set({
+					'if-modified-since': uploadDate,
+				})
+				.expect(304)
+				.expect((res) => {
+					expect(res.headers).to.have.property('last-modified', uploadDate);
+					expect(res.headers).not.to.have.property('content-type');
+					expect(res.headers).not.to.have.property('content-length');
+					expect(res.headers).not.to.have.property('cache-control');
 				})
 				.end(done);
 		});

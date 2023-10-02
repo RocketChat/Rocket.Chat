@@ -6,7 +6,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { AudioRecorder } from '../../../../app/ui/client';
+import { AudioRecorder } from '../../../../app/ui/client/lib/recorderjs/AudioRecorder';
 import type { ChatAPI } from '../../../lib/chats/ChatAPI';
 import { useChat } from '../../room/contexts/ChatContext';
 
@@ -113,7 +113,7 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 	}
 
 	return (
-		<Box position='absolute' pi='x4' pb='x12' className={`rc-message-box__audio-message ${stateClass}`}>
+		<Box position='absolute' pi={4} pb={12} className={`rc-message-box__audio-message ${stateClass}`}>
 			{state === 'recording' && (
 				<>
 					<MessageComposerAction

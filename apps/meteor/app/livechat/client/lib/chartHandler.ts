@@ -1,5 +1,6 @@
 import type { ChartItem, Chart as ChartType, ChartConfiguration } from 'chart.js';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
+import { t } from '../../../utils/lib/i18n';
 
 type LineChartConfigOptions = Partial<{
 	legends: boolean;
@@ -141,9 +142,9 @@ export const drawLineChart = async (
 
 	const datasets: ChartDataSet[] = [];
 
-	chartLabels.forEach(function (chartLabel: string, index: number) {
+	chartLabels.forEach((chartLabel: string, index: number) => {
 		datasets.push({
-			label: TAPi18n.__(chartLabel), // chart label
+			label: t(chartLabel), // chart label
 			data: dataSets[index], // data points corresponding to data labels, x-axis points
 			backgroundColor: colors[index],
 			borderColor: colors[index],

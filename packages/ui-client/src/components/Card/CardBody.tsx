@@ -7,7 +7,7 @@ type CardBodyProps = {
 };
 
 const CardBody: FC<CardBodyProps> = ({ children, flexDirection = 'row', height }) => (
-	<Box mb='x8' display='flex' flexDirection={flexDirection} flexGrow={1} height={height}>
+	<Box mb={8} display='flex' flexDirection={flexDirection} flexGrow={1} height={height}>
 		{children}
 	</Box>
 );

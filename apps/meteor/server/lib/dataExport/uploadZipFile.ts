@@ -2,15 +2,15 @@ import { createReadStream } from 'fs';
 import { open, stat } from 'fs/promises';
 
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../../app/models/server';
 import { FileUpload } from '../../../app/file-upload/server';
 
 export const uploadZipFile = async (filePath: string, userId: IUser['_id'], exportType: 'json' | 'html'): Promise<any> => {
 	const contentType = 'application/zip';
 	const { size } = await stat(filePath);
 
-	const user = Users.findOneById(userId);
+	const user = await Users.findOneById(userId);
 	let userDisplayName = userId;
 	if (user) {
 		userDisplayName = user.name || user.username || userId;
@@ -34,7 +34,7 @@ export const uploadZipFile = async (filePath: string, userId: IUser['_id'], expo
 
 	const userDataStore = FileUpload.getStore('UserDataFiles');
 
-	const file = userDataStore.insertSync(details, stream);
+	const file = await userDataStore.insert(details, stream);
 
 	return file;
 };

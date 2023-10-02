@@ -1,3 +1,11 @@
+import type {
+	ILivechatInquiryRecord,
+	IMessage,
+	RocketChatRecordDeleted,
+	OmnichannelSortingMechanismSettingType,
+	ILivechatPriority,
+} from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
 import type {
 	Collection,
@@ -13,18 +21,10 @@ import type {
 	FindCursor,
 	UpdateFilter,
 } from 'mongodb';
-import type {
-	ILivechatInquiryRecord,
-	IMessage,
-	RocketChatRecordDeleted,
-	OmnichannelSortingMechanismSettingType,
-	ILivechatPriority,
-} from '@rocket.chat/core-typings';
-import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 
-import { BaseRaw } from './BaseRaw';
-import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { BaseRaw } from './BaseRaw';
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
@@ -112,7 +112,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOne(query) as unknown as Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null>;
 	}
 
-	findOneByRoomId<T = ILivechatInquiryRecord>(
+	findOneByRoomId<T extends Document = ILivechatInquiryRecord>(
 		rid: string,
 		options: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null> {
@@ -122,7 +122,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOne(query, options);
 	}
 
-	getDistinctQueuedDepartments(options: DistinctOptions): Promise<string[]> {
+	getDistinctQueuedDepartments(options: DistinctOptions): Promise<(string | undefined)[]> {
 		return this.col.distinct('department', { status: LivechatInquiryStatus.QUEUED }, options);
 	}
 
@@ -140,7 +140,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		const result = await this.col.findOneAndUpdate(
 			{
 				status: LivechatInquiryStatus.QUEUED,
-				...(department && { department }),
+				...(department ? { department } : { department: { $exists: false } }),
 				$or: [
 					{
 						locked: true,
@@ -172,13 +172,16 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}
 
 	async unlock(inquiryId: string): Promise<UpdateResult> {
-		return this.updateOne({ _id: inquiryId }, { $unset: { locked: 1, lockedAt: 1 } });
+		return this.updateOne(
+			{ _id: inquiryId },
+			{ $unset: { locked: 1, lockedAt: 1 }, $set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() } },
+		);
 	}
 
 	async unlockAll(): Promise<UpdateResult | Document> {
 		return this.updateMany(
 			{ $or: [{ lockedAt: { $exists: true } }, { locked: { $exists: true } }] },
-			{ $unset: { locked: 1, lockedAt: 1 } },
+			{ $unset: { locked: 1, lockedAt: 1 }, $set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() } },
 		);
 	}
 
@@ -188,7 +191,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		queueSortBy,
 	}: {
 		inquiryId?: string;
-		department: string;
+		department?: string;
 		queueSortBy: OmnichannelSortingMechanismSettingType;
 	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]> {
 		const filter: Filter<ILivechatInquiryRecord>[] = [

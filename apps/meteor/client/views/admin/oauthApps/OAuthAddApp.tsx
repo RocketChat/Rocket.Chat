@@ -5,7 +5,7 @@ import React, { useCallback } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
 
-import VerticalBar from '../../../components/VerticalBar';
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 
 type OAuthAddAppPayload = {
 	name: string;
@@ -41,7 +41,7 @@ const OAuthAddApp = (): ReactElement => {
 	};
 
 	return (
-		<VerticalBar.ScrollableContent w='full'>
+		<ContextualbarScrollableContent w='full'>
 			<FieldGroup maxWidth='x600' alignSelf='center' w='full'>
 				<Field>
 					<Field.Label display='flex' justifyContent='space-between' w='full'>
@@ -81,7 +81,7 @@ const OAuthAddApp = (): ReactElement => {
 					</Field.Row>
 				</Field>
 			</FieldGroup>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 };
 

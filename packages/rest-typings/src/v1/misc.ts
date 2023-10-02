@@ -12,6 +12,9 @@ type ShieldSvg = {
 	icon?: 'true' | 'false';
 	channel: string;
 	name: string;
+	userId?: string;
+	username?: string;
+	user?: string;
 };
 
 const ShieldSvgSchema = {
@@ -203,7 +206,7 @@ export type MiscEndpoints = {
 	'/v1/pw.getPolicy': {
 		GET: () => {
 			enabled: boolean;
-			policy: [name: string, options?: Record<string, unknown>][];
+			policy: [name: string, value?: Record<string, number>][];
 		};
 	};
 
@@ -223,6 +226,12 @@ export type MiscEndpoints = {
 	'/v1/method.callAnon/:method': {
 		POST: (params: { message: string }) => {
 			message: unknown;
+		};
+	};
+
+	'/v1/smtp.check': {
+		GET: () => {
+			isSMTPConfigured: boolean;
 		};
 	};
 };

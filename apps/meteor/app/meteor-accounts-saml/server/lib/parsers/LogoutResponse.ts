@@ -1,8 +1,8 @@
 import xmldom from '@xmldom/xmldom';
 
-import { SAMLUtils } from '../Utils';
 import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 import type { ILogoutResponseValidateCallback } from '../../definition/callbacks';
+import { SAMLUtils } from '../Utils';
 
 export class LogoutResponseParser {
 	serviceProviderOptions: IServiceProviderOptions;
@@ -11,7 +11,7 @@ export class LogoutResponseParser {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
-	public validate(xmlString: string, callback: ILogoutResponseValidateCallback): void {
+	public async validate(xmlString: string, callback: ILogoutResponseValidateCallback): Promise<void> {
 		SAMLUtils.log(`LogoutResponse: ${xmlString}`);
 
 		const doc = new xmldom.DOMParser().parseFromString(xmlString, 'text/xml');

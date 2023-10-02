@@ -1,31 +1,41 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { FileProp } from '@rocket.chat/core-typings';
-import { Integrations, FederationServers, LivechatVisitors, LivechatDepartmentAgents, Messages as MessagesRaw } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
+import {
+	Integrations,
+	FederationServers,
+	LivechatVisitors,
+	LivechatDepartmentAgents,
+	Messages,
+	Rooms,
+	Subscriptions,
+	Users,
+	ReadReceipts,
+	LivechatUnitMonitors,
+	ModerationReports,
+} from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
+import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
-import { Users, Subscriptions, Messages, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { updateGroupDMsName } from './updateGroupDMsName';
-import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
-import { LivechatUnitMonitors } from '../../../../ee/app/models/server';
+import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
+import { updateGroupDMsName } from './updateGroupDMsName';
 
-export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
-	const user = Users.findOneById(userId, {
-		fields: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
+export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<void> {
+	const user = await Users.findOneById(userId, {
+		projection: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
 	});
 
 	if (!user) {
 		return;
 	}
 
-	const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);
+	const subscribedRooms = await getSubscribedRoomsForUserWithDetails(userId);
 
 	if (shouldRemoveOrChangeOwner(subscribedRooms) && !confirmRelinquish) {
-		const rooms = getUserSingleOwnedRooms(subscribedRooms);
+		const rooms = await getUserSingleOwnedRooms(subscribedRooms);
 		throw new Meteor.Error('user-last-owner', '', rooms);
 	}
 
@@ -37,22 +47,40 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 		switch (messageErasureType) {
 			case 'Delete':
 				const store = FileUpload.getStore('Uploads');
-				Messages.findFilesByUserId(userId).forEach(function ({ file }: { file: FileProp }) {
-					store.deleteById(file._id);
-				});
-				await MessagesRaw.removeByUserId(userId);
+				const cursor = Messages.findFilesByUserId(userId);
+
+				for await (const { file } of cursor) {
+					if (!file) {
+						continue;
+					}
+					await store.deleteById(file._id);
+				}
+
+				await Messages.removeByUserId(userId);
+				await ReadReceipts.removeByUserId(userId);
+
+				await ModerationReports.hideMessageReportsByUserId(
+					userId,
+					deletedBy || userId,
+					deletedBy === userId ? 'user deleted own account' : 'user account deleted',
+					'DELETE_USER',
+				);
+
 				break;
 			case 'Unlink':
-				const rocketCat = Users.findOneById('rocket.cat');
-				const nameAlias = TAPi18n.__('Removed_User');
-				await MessagesRaw.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);
+				const rocketCat = await Users.findOneById('rocket.cat');
+				const nameAlias = i18n.t('Removed_User');
+				if (!rocketCat?._id || !rocketCat?.username) {
+					break;
+				}
+				await Messages.unlinkUserId(userId, rocketCat?._id, rocketCat?.username, nameAlias);
 				break;
 		}
 
-		Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
-		Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
+		await Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
+		await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
-		Subscriptions.removeByUserId(userId); // Remove user subscriptions
+		await Subscriptions.removeByUserId(userId); // Remove user subscriptions
 
 		if (user.roles.includes('livechat-agent')) {
 			// Remove user as livechat agent
@@ -61,7 +89,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 		if (user.roles.includes('livechat-monitor')) {
 			// Remove user as Unit Monitor
-			LivechatUnitMonitors.removeByMonitorId(userId);
+			await LivechatUnitMonitors.removeByMonitorId(userId);
 		}
 
 		// This is for compatibility. Since we allowed any user to be contact manager b4, we need to have the same logic
@@ -70,7 +98,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 		// removes user's avatar
 		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url' || user.avatarOrigin === 'rest') {
-			FileUpload.getStore('Avatars').deleteByName(user.username);
+			await FileUpload.getStore('Avatars').deleteByName(user.username);
 		}
 
 		await Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
@@ -82,10 +110,10 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 	}
 
 	// Remove user from users database
-	Users.removeById(userId);
+	await Users.removeById(userId);
 
 	// update name and fname of group direct messages
-	updateGroupDMsName(user);
+	await updateGroupDMsName(user);
 
 	// Refresh the servers list
 	await FederationServers.refreshServers();
