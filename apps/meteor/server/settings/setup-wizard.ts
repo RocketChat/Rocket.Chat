@@ -1204,6 +1204,13 @@ export const createSetupWSettings = () =>
 				secret: true,
 			});
 
+			await this.add('Cloud_Workspace_Supported_Versions_Token', '', {
+				type: 'string',
+				hidden: true,
+				readonly: true,
+				secret: true,
+			});
+
 			await this.add('Cloud_Url', 'https://cloud.rocket.chat', {
 				type: 'string',
 				hidden: true,

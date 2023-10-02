@@ -35,7 +35,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 
 	async started(): Promise<void> {
 		try {
-			this.shouldWork = await License.hasLicense('scalability');
+			this.shouldWork = await License.hasModule('scalability');
 		} catch (e: unknown) {
 			// ignore
 		}
