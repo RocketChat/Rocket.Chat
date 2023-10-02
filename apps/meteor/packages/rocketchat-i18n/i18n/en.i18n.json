@@ -715,6 +715,8 @@
   "AutoTranslate_DeepL": "DeepL",
   "AutoTranslate_Enabled": "Enable Auto-Translate",
   "AutoTranslate_Enabled_Description": "Enabling auto-translation will allow people with the `auto-translate` permission to have all messages automatically translated into their selected language. Fees may apply.",
+  "AutoTranslate_AutoEnableOnJoinRoom": "Auto-Translate for non-default language members",
+  "AutoTranslate_AutoEnableOnJoinRoom_Description": "If enabled, whenever a user with a language preference different than the workspace default joins a room, it will be automatically translated for them.",
   "AutoTranslate_Google": "Google",
   "AutoTranslate_Microsoft": "Microsoft",
   "AutoTranslate_Microsoft_API_Key": "Ocp-Apim-Subscription-Key",

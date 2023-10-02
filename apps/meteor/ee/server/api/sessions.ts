@@ -1,4 +1,5 @@
 import type { IUser, ISession, DeviceManagementSession, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Users, Sessions } from '@rocket.chat/models';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -7,7 +8,6 @@ import Ajv from 'ajv';
 import { API } from '../../../app/api/server/api';
 import { getPaginationItems } from '../../../app/api/server/helpers/getPaginationItems';
 import { Notifications } from '../../../app/notifications/server';
-import { hasLicense } from '../../app/license/server/license';
 
 const ajv = new Ajv({ coerceTypes: true });
 
@@ -85,7 +85,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isSessionsPaginateProps },
 	{
 		async get() {
-			if (!hasLicense('device-management')) {
+			if (!License.hasModule('device-management')) {
 				return API.v1.unauthorized();
 			}
 
@@ -108,7 +108,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isSessionsProps },
 	{
 		async get() {
-			if (!hasLicense('device-management')) {
+			if (!License.hasModule('device-management')) {
 				return API.v1.unauthorized();
 			}
 
@@ -127,7 +127,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isSessionsProps },
 	{
 		async post() {
-			if (!hasLicense('device-management')) {
+			if (!License.hasModule('device-management')) {
 				return API.v1.unauthorized();
 			}
 
@@ -153,7 +153,7 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true, validateParams: isSessionsPaginateProps, permissionsRequired: ['view-device-management'] },
 	{
 		async get() {
-			if (!hasLicense('device-management')) {
+			if (!License.hasModule('device-management')) {
 				return API.v1.unauthorized();
 			}
 
@@ -193,7 +193,7 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true, validateParams: isSessionsProps, permissionsRequired: ['view-device-management'] },
 	{
 		async get() {
-			if (!hasLicense('device-management')) {
+			if (!License.hasModule('device-management')) {
 				return API.v1.unauthorized();
 			}
 
@@ -212,7 +212,7 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true, validateParams: isSessionsProps, permissionsRequired: ['logout-device-management'] },
 	{
 		async post() {
-			if (!hasLicense('device-management')) {
+			if (!License.hasModule('device-management')) {
 				return API.v1.unauthorized();
 			}
 
