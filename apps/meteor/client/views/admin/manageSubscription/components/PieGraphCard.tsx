@@ -2,7 +2,7 @@ import { Skeleton } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { memo } from 'react';
 
 import type { FeatureUsageCardProps } from './FeatureUsageCard';
 import FeatureUsageCard from './FeatureUsageCard';
@@ -21,7 +21,12 @@ const PieGraphCard = ({ pieGraph, card }: PieGraphCardProps): ReactElement => {
 	const color = pieGraph && pieGraph.used / pieGraph.total >= 0.8 ? colors.d500 : undefined;
 
 	return (
-		<FeatureUsageCard title={card.title} showUpgradeButton={card.showUpgradeButton} infoText={card.infoText}>
+		<FeatureUsageCard
+			title={card.title}
+			infoText={card.infoText}
+			showUpgradeButton={card.showUpgradeButton}
+			upgradeButtonText={card.upgradeButtonText}
+		>
 			{pieGraph ? (
 				<UsagePieGraph label={`${quantityAvailable} ${t('Available')}`} used={pieGraph.used} total={pieGraph.total} color={color} />
 			) : (
@@ -31,4 +36,4 @@ const PieGraphCard = ({ pieGraph, card }: PieGraphCardProps): ReactElement => {
 	);
 };
 
-export default PieGraphCard;
+export default memo(PieGraphCard);

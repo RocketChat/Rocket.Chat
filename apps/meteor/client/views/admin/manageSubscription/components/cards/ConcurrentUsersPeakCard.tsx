@@ -6,13 +6,13 @@ import { useTranslation } from 'react-i18next';
 import { useSeatsCap } from '../../../../../../ee/client/views/admin/users/useSeatsCap';
 import FeatureUsageCard from '../FeatureUsageCard';
 
-const ConcurrentUsersCard = (): ReactElement => {
+const ConcurrentUsersPeakCard = (): ReactElement => {
 	const { t } = useTranslation();
 	const seatsCap = useSeatsCap();
 
 	const card = {
-		title: t('Concurrent_users'),
-		infoText: t('ConcurrentUsers_InfoText'),
+		title: t('Concurrent_users_peak'),
+		infoText: t('ConcurrentUsersPeak_InfoText'),
 	};
 
 	const total = seatsCap?.maxActiveUsers || 0;
@@ -38,4 +38,4 @@ const ConcurrentUsersCard = (): ReactElement => {
 		</FeatureUsageCard>
 	);
 };
-export default ConcurrentUsersCard;
+export default ConcurrentUsersPeakCard;

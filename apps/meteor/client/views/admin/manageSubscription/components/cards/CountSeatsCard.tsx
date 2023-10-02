@@ -6,13 +6,13 @@ import { useTranslation } from 'react-i18next';
 import { useSeatsCap } from '../../../../../../ee/client/views/admin/users/useSeatsCap';
 import FeatureUsageCard from '../FeatureUsageCard';
 
-const MaxSeatsCard = (): ReactElement => {
+const CountSeatsCard = (): ReactElement => {
 	const { t } = useTranslation();
 	const seatsCap = useSeatsCap();
 
 	const card = {
 		title: t('Seats'),
-		infoText: 'teste',
+		infoText: t('CountSeats_InfoText'),
 	};
 
 	const maxSeats = seatsCap?.maxActiveUsers;
@@ -30,4 +30,4 @@ const MaxSeatsCard = (): ReactElement => {
 		</FeatureUsageCard>
 	);
 };
-export default MaxSeatsCard;
+export default CountSeatsCard;

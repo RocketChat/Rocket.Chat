@@ -1,6 +1,6 @@
 import { Modal } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { memo } from 'react';
 
 type CardInfoModalProps = {
 	title: string;
@@ -23,4 +23,4 @@ const CardInfoModal = ({ title, text, close }: CardInfoModalProps): ReactElement
 	);
 };
 
-export default CardInfoModal;
+export default memo(CardInfoModal);

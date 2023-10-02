@@ -12,7 +12,7 @@ const MobilePushNotificationCard = (): ReactElement => {
 
 	const card = {
 		title: t('RegisterWorkspace_Features_MobileNotifications_Title'),
-		infoText: 'teste',
+		infoText: t('MobilePush_InfoText'),
 	};
 
 	// const total = seatsCap?.maxActiveUsers || 0;

@@ -3,9 +3,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSeatsCap } from '../../../../../../ee/client/views/admin/users/useSeatsCap';
+import { PlanName } from '../../../../../lib/utils/getPlanName';
 import PieGraphCard from '../PieGraphCard';
 
-const SeatsCard = (): ReactElement => {
+type SeatsCardProps = {
+	plan: PlanName;
+};
+
+const SeatsCard = ({ plan }: SeatsCardProps): ReactElement => {
 	const { t } = useTranslation();
 	const seatsCap = useSeatsCap();
 
@@ -14,13 +19,16 @@ const SeatsCard = (): ReactElement => {
 		total: seatsCap.maxActiveUsers,
 	};
 
+	const nearLimit = pieGraph && pieGraph.used / pieGraph.total >= 0.8;
+
 	const card = {
 		title: t('Seats'),
-		infoText:
-			'Monthly Active Contacts (MAC) are contacts that have sent or received a message over the billing month. We count a single contact, regardless of how many messages or channels that single contact uses within the billing month.',
-		showUpgradeButton: pieGraph && pieGraph.used / pieGraph.total >= 0.8,
+		infoText: t('Seats_InfoText'),
+		showUpgradeButton: nearLimit,
+		upgradeButtonText: plan === PlanName.STARTER ? 'Upgrade' : 'Buy_more_seats',
 	};
 
 	return <PieGraphCard pieGraph={pieGraph} card={card} />;
 };
+
 export default SeatsCard;

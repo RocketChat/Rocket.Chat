@@ -12,7 +12,7 @@ const AppsUsageCard = (): ReactElement => {
 
 	const card = {
 		title: t('Apps'),
-		infoText: 'teste',
+		infoText: t('Apps_InfoText'),
 	};
 
 	// const total = seatsCap?.maxActiveUsers || 0;

@@ -2,7 +2,7 @@ import type { DatumId } from '@nivo/pie';
 import { Pie } from '@nivo/pie';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactElement, CSSProperties, ReactNode } from 'react';
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, memo } from 'react';
 
 import { useLocalePercentage } from '../../../../hooks/useLocalePercentage';
 
@@ -94,4 +94,4 @@ const UsagePieGraph = ({ used = 0, total = 0, label, color, size = 140 }: UsageP
 	);
 };
 
-export default UsagePieGraph;
+export default memo(UsagePieGraph);

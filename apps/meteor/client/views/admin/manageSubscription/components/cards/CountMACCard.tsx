@@ -6,16 +6,18 @@ import { useTranslation } from 'react-i18next';
 import { useSeatsCap } from '../../../../../../ee/client/views/admin/users/useSeatsCap';
 import FeatureUsageCard from '../FeatureUsageCard';
 
-const MaxMACCard = (): ReactElement => {
+const CountMACCard = (): ReactElement => {
 	const { t } = useTranslation();
 	const seatsCap = useSeatsCap();
 
 	const card = {
 		title: t('Monthly_active_contacts'),
-		infoText: 'teste',
+		infoText: t('CountMAC_InfoText'),
 	};
 
 	const maxSeats = seatsCap?.maxActiveUsers;
+
+	// TODO: waiting this implementation: https://github.com/RocketChat/Rocket.Chat/pull/30439/
 
 	return (
 		<FeatureUsageCard title={card.title} infoText={card.infoText}>
@@ -30,4 +32,4 @@ const MaxMACCard = (): ReactElement => {
 		</FeatureUsageCard>
 	);
 };
-export default MaxMACCard;
+export default CountMACCard;

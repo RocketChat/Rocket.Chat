@@ -3,9 +3,15 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSeatsCap } from '../../../../../../ee/client/views/admin/users/useSeatsCap';
+import { PlanName } from '../../../../../lib/utils/getPlanName';
 import PieGraphCard from '../PieGraphCard';
 
-const MACCard = (): ReactElement => {
+type MACCardProps = {
+	plan: PlanName;
+};
+
+// TODO: waiting this implementation: https://github.com/RocketChat/Rocket.Chat/pull/30439/
+const MACCard = ({ plan }: MACCardProps): ReactElement => {
 	const { t } = useTranslation();
 	const seatsCap = useSeatsCap();
 
@@ -14,12 +20,16 @@ const MACCard = (): ReactElement => {
 		total: seatsCap.maxActiveUsers,
 	};
 
+	const nearLimit = pieGraph && pieGraph.used / pieGraph.total >= 0.8;
+
 	const card = {
 		title: t('Monthly_active_contacts'),
-		infoText: 'teste',
-		showUpgradeButton: pieGraph && pieGraph.used / pieGraph.total >= 0.8,
+		infoText: t('MAC_InfoText'),
+		showUpgradeButton: nearLimit,
+		upgradeButtonText: plan === PlanName.STARTER ? 'Upgrade' : 'Buy_MAC_packs',
 	};
 
 	return <PieGraphCard pieGraph={pieGraph} card={card} />;
 };
+
 export default MACCard;

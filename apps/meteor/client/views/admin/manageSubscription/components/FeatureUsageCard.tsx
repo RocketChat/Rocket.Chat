@@ -1,34 +1,31 @@
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { Card, CardBody, CardColSection, CardTitle } from '@rocket.chat/ui-client';
-import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
+import React, { memo } from 'react';
 
-import CardInfoModal from './CardInfoModal';
 import CardUpgradeButton from './CardUpgradeButton';
+import InfoTextIconModal from './InfoTextIconModal';
 
 export type FeatureUsageCardProps = {
 	title: string;
 	children?: ReactNode;
 	infoText?: string;
 	showUpgradeButton?: boolean;
+	upgradeButtonText?: string;
 };
 
-const FeatureUsageCard = ({ children, title, infoText, showUpgradeButton }: FeatureUsageCardProps): ReactElement => {
-	const setModal = useSetModal();
-
-	const handleInfoClick = () => {
-		if (!infoText) {
-			setModal(null);
-			return;
-		}
-		setModal(<CardInfoModal title={title} text={infoText} close={() => setModal(null)} />);
-	};
+const FeatureUsageCard = ({
+	children,
+	title,
+	infoText,
+	showUpgradeButton,
+	upgradeButtonText = 'Upgrade',
+}: FeatureUsageCardProps): ReactElement => {
 	return (
 		<Card minHeight={280}>
 			<CardTitle fontScale='p2b'>
 				<Box display='flex' alignItems='center'>
-					{title} {infoText && <IconButton icon='info' mini title={infoText} onClick={() => handleInfoClick()} />}
+					{title} {infoText && <InfoTextIconModal title={title} infoText={infoText} />}
 				</Box>
 			</CardTitle>
 			<CardBody>
@@ -36,9 +33,9 @@ const FeatureUsageCard = ({ children, title, infoText, showUpgradeButton }: Feat
 					{children}
 				</CardColSection>
 			</CardBody>
-			{showUpgradeButton && <CardUpgradeButton />}
+			{showUpgradeButton && <CardUpgradeButton i18nKey={upgradeButtonText} />}
 		</Card>
 	);
 };
 
-export default FeatureUsageCard;
+export default memo(FeatureUsageCard);
