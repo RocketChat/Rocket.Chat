@@ -88,6 +88,9 @@ declare module 'meteor/webapp' {
 	}
 }
 
+// These routes already handle cache control on their own
+const cacheControlledRoutes: Array<string> = ['/assets', '/custom-sounds', '/emoji-custom', '/avatar', '/file-upload'];
+
 // @ts-expect-error - accessing internal property of webapp
 WebAppInternals.staticFilesMiddleware = function (
 	staticFiles: StaticFiles,
@@ -96,14 +99,20 @@ WebAppInternals.staticFilesMiddleware = function (
 	next: NextFunction,
 ) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
-	if (Meteor.isProduction && !res.hasHeader('Cache-Control')) {
+	const { arch, path, url } = WebApp.categorizeRequest(req);
+
+	if (
+		Meteor.isProduction ||
+		!cacheControlledRoutes.some((route) => {
+			return new RegExp(`^${route}`, 'gi').test(path);
+		})
+	) {
 		res.setHeader('Cache-Control', 'public, max-age=31536000');
 	}
 
 	// Prevent meteor_runtime_config.js to load from a different expected hash possibly causing
 	// a cache of the file for the wrong hash and start a client loop due to the mismatch
 	// of the hashes of ui versions which would be checked against a websocket response
-	const { arch, path, url } = WebApp.categorizeRequest(req);
 	if (path === '/meteor_runtime_config.js') {
 		const program = WebApp.clientPrograms[arch] as (typeof WebApp.clientPrograms)[string] & {
 			meteorRuntimeConfigHash?: string;
