@@ -1,8 +1,8 @@
-import type { LicenseLimitKind } from './definition/ILicenseV3';
-import { getLicense } from './license';
+import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
+import type { LicenseManager } from './license';
+import { getModules } from './modules';
 
-const getLicenseLimit = (kind: LicenseLimitKind) => {
-	const license = getLicense();
+const getLicenseLimit = (license: ILicenseV3 | undefined, kind: LicenseLimitKind) => {
 	if (!license) {
 		return;
 	}
@@ -17,9 +17,22 @@ const getLicenseLimit = (kind: LicenseLimitKind) => {
 
 // #TODO: Remove references to those functions
 
-export const getMaxActiveUsers = () => getLicenseLimit('activeUsers') ?? 0;
+export function getMaxActiveUsers(this: LicenseManager) {
+	return getLicenseLimit(this.getLicense(), 'activeUsers') ?? 0;
+}
 
-export const getAppsConfig = () => ({
-	maxPrivateApps: getLicenseLimit('privateApps') ?? -1,
-	maxMarketplaceApps: getLicenseLimit('marketplaceApps') ?? -1,
-});
+export function getAppsConfig(this: LicenseManager) {
+	return {
+		maxPrivateApps: getLicenseLimit(this.getLicense(), 'privateApps') ?? -1,
+		maxMarketplaceApps: getLicenseLimit(this.getLicense(), 'marketplaceApps') ?? -1,
+	};
+}
+
+export function getUnmodifiedLicenseAndModules(this: LicenseManager) {
+	if (this.valid && this.unmodifiedLicense) {
+		return {
+			license: this.unmodifiedLicense,
+			modules: getModules.call(this),
+		};
+	}
+}

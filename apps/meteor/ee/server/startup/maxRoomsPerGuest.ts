@@ -1,4 +1,4 @@
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../lib/callbacks';
@@ -8,7 +8,7 @@ callbacks.add(
 	'beforeAddedToRoom',
 	async ({ user }) => {
 		if (user.roles?.includes('guest')) {
-			if (await License.preventNewGuestSubscriptions(user._id)) {
+			if (await License.shouldPreventAction('roomsPerGuest', { userId: user._id })) {
 				throw new Meteor.Error('error-max-rooms-per-guest-reached', i18n.t('error-max-rooms-per-guest-reached'));
 			}
 		}

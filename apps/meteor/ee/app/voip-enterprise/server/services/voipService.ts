@@ -1,5 +1,5 @@
 import type { ILivechatAgent, ILivechatVisitor, IVoipRoomClosingInfo, IUser, IVoipRoom } from '@rocket.chat/core-typings';
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 
 import type { IOmniRoomClosingMessage } from '../../../../../server/services/omnichannel-voip/internalTypes';
 import { OmnichannelVoipService } from '../../../../../server/services/omnichannel-voip/service';

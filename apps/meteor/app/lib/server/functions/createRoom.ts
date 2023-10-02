@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
@@ -8,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { Apps } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
+import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { createDirectRoom } from './createDirectRoom';
@@ -178,7 +180,9 @@ export const createRoom = async <T extends RoomType>(
 				extra.ls = now;
 			}
 
-			await Subscriptions.createWithRoomAndUser(room, member, extra);
+			const autoTranslateConfig = await getSubscriptionAutotranslateDefaultConfig(member);
+
+			await Subscriptions.createWithRoomAndUser(room, member, { ...extra, ...autoTranslateConfig });
 		}
 	}
 

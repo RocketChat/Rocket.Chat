@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Roles } from '@rocket.chat/models';
 import { capitalize } from '@rocket.chat/string-helpers';

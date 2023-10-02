@@ -1,6 +1,6 @@
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { Apps } from '@rocket.chat/core-services';
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
 
@@ -18,8 +18,8 @@ export const canEnableApp = async (app: IAppStorageItem): Promise<boolean> => {
 	const source = getInstallationSourceFromAppStorageItem(app);
 	switch (source) {
 		case 'private':
-			return !(await License.preventNewPrivateApps());
+			return !(await License.shouldPreventAction('privateApps'));
 		default:
-			return !(await License.preventNewMarketplaceApps());
+			return !(await License.shouldPreventAction('marketplaceApps'));
 	}
 };

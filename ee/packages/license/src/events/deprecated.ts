@@ -1,12 +1,12 @@
 import type { LicenseModule } from '../definition/LicenseModule';
+import type { LicenseManager } from '../license';
 import { hasModule } from '../modules';
-import { EnterpriseLicenses } from './emitter';
 
 // #TODO: Remove this onLicense handler
-export const onLicense = (feature: LicenseModule, cb: (...args: any[]) => void): void | Promise<void> => {
-	if (hasModule(feature)) {
+export function onLicense(this: LicenseManager, feature: LicenseModule, cb: (...args: any[]) => void): void | Promise<void> {
+	if (hasModule.call(this, feature)) {
 		return cb();
 	}
 
-	EnterpriseLicenses.once(`valid:${feature}`, cb);
-};
+	this.once(`valid:${feature}`, cb);
+}

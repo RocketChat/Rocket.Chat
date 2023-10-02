@@ -1,4 +1,4 @@
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 
 import { API } from '../../../app/api/server/api';
 import type { NonEnterpriseTwoFactorOptions, Options } from '../../../app/api/server/definition';

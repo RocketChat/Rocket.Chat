@@ -1,7 +1,7 @@
 import { VideoConf } from '@rocket.chat/core-services';
 import type { IRoom, IUser, VideoConference } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 

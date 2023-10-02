@@ -1,5 +1,5 @@
 import type { IMessage, ReadReceipt } from '@rocket.chat/core-typings';
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../app/api/server/api';

@@ -1,7 +1,7 @@
 import type { ILicenseV3 } from '../definition/ILicenseV3';
 import type { BehaviorWithContext, LicenseBehavior } from '../definition/LicenseBehavior';
+import type { LicenseManager } from '../license';
 import { logger } from '../logger';
-import { getWorkspaceUrl } from '../workspaceUrl';
 import { getResultingBehavior } from './getResultingBehavior';
 
 export const validateUrl = (licenseURL: string, url: string) => {
@@ -13,7 +13,11 @@ export const validateUrl = (licenseURL: string, url: string) => {
 	return !!regex.exec(url);
 };
 
-export const validateLicenseUrl = (license: ILicenseV3, behaviorFilter: (behavior: LicenseBehavior) => boolean): BehaviorWithContext[] => {
+export function validateLicenseUrl(
+	this: LicenseManager,
+	license: ILicenseV3,
+	behaviorFilter: (behavior: LicenseBehavior) => boolean,
+): BehaviorWithContext[] {
 	if (!behaviorFilter('invalidate_license')) {
 		return [];
 	}
@@ -22,7 +26,7 @@ export const validateLicenseUrl = (license: ILicenseV3, behaviorFilter: (behavio
 		validation: { serverUrls },
 	} = license;
 
-	const workspaceUrl = getWorkspaceUrl();
+	const workspaceUrl = this.getWorkspaceUrl();
 
 	if (!workspaceUrl) {
 		logger.error('Unable to validate license URL without knowing the workspace URL.');
@@ -52,4 +56,4 @@ export const validateLicenseUrl = (license: ILicenseV3, behaviorFilter: (behavio
 			});
 			return getResultingBehavior({ behavior: 'invalidate_license' });
 		});
-};
+}

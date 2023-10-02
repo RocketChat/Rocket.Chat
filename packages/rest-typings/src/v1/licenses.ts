@@ -1,4 +1,4 @@
-import type * as License from '@rocket.chat/license';
+import type { ILicenseV2, ILicenseV3, LicenseLimitKind } from '@rocket.chat/license';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -41,14 +41,14 @@ export const isLicensesInfoProps = ajv.compile<licensesInfoProps>(licensesInfoPr
 
 export type LicensesEndpoints = {
 	'/v1/licenses.get': {
-		GET: () => { licenses: Array<License.ILicenseV2 | (License.ILicenseV3 & { modules: string[] })> };
+		GET: () => { licenses: Array<ILicenseV2 | (ILicenseV3 & { modules: string[] })> };
 	};
 	'/v1/licenses.info': {
 		GET: (params: licensesInfoProps) => {
 			data: {
-				license: License.ILicenseV3 | undefined;
+				license: ILicenseV3 | undefined;
 				activeModules: string[];
-				limits: Record<License.LicenseLimitKind, { max: number; value?: number }>;
+				limits: Record<LicenseLimitKind, { max: number; value?: number }>;
 				inFairPolicy: boolean;
 			};
 		};

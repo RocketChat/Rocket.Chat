@@ -31,6 +31,8 @@ COPY ./packages/models/dist packages/models/dist
 COPY ./packages/logger/package.json packages/logger/package.json
 COPY ./packages/logger/dist packages/logger/dist
 
+COPY ./packages/server-cloud-communication/ packages/server-cloud-communication/
+
 COPY ./ee/packages/license/package.json packages/license/package.json
 COPY ./ee/packages/license/dist packages/license/dist
 

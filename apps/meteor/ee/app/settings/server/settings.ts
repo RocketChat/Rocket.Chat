@@ -1,5 +1,5 @@
 import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
-import * as License from '@rocket.chat/license';
+import { License, type LicenseModule } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -20,7 +20,7 @@ export function changeSettingValue(record: ISetting): SettingValue {
 	}
 
 	for (const moduleName of record.modules) {
-		if (!License.hasModule(moduleName as License.LicenseModule)) {
+		if (!License.hasModule(moduleName as LicenseModule)) {
 			return record.invalidValue;
 		}
 	}

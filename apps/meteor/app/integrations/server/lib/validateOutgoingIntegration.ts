@@ -1,18 +1,17 @@
 import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import { pick } from '@rocket.chat/tools';
 import { Babel } from 'meteor/babel-compiler';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { outgoingEvents } from '../../lib/outgoingEvents';
+import { isScriptEngineFrozen } from './validateScriptEngine';
 
 const scopedChannels = ['all_public_channels', 'all_private_groups', 'all_direct_messages'];
 const validChannelChars = ['@', '#'];
-
-const FREEZE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.FREEZE_INTEGRATION_SCRIPTS).toLowerCase());
 
 function _verifyRequiredFields(integration: INewOutgoingIntegration | IUpdateOutgoingIntegration): void {
 	if (
@@ -152,6 +151,7 @@ export const validateOutgoingIntegration = async function (
 
 	const integrationData: IOutgoingIntegration = {
 		...integration,
+		scriptEngine: integration.scriptEngine ?? 'isolated-vm',
 		type: 'webhook-outgoing',
 		channel: channels,
 		userId: user._id,
@@ -171,7 +171,13 @@ export const validateOutgoingIntegration = async function (
 		delete integrationData.triggerWords;
 	}
 
-	if (!FREEZE_INTEGRATION_SCRIPTS && integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
+	// Only compile the script if it is enabled and using a sandbox that is not frozen
+	if (
+		!isScriptEngineFrozen(integrationData.scriptEngine) &&
+		integration.scriptEnabled === true &&
+		integration.script &&
+		integration.script.trim() !== ''
+	) {
 		try {
 			const babelOptions = Object.assign(Babel.getDefaultOptions({ runtime: false }), {
 				compact: true,
@@ -183,7 +189,7 @@ export const validateOutgoingIntegration = async function (
 			integrationData.scriptError = undefined;
 		} catch (e) {
 			integrationData.scriptCompiled = undefined;
-			integrationData.scriptError = e instanceof Error ? _.pick(e, 'name', 'message', 'stack') : undefined;
+			integrationData.scriptError = e instanceof Error ? pick(e, 'name', 'message', 'stack') : undefined;
 		}
 	}
 

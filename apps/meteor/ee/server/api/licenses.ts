@@ -1,6 +1,5 @@
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
-import { isLicensesInfoProps } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
 import { API } from '../../../app/api/server/api';
@@ -53,7 +52,7 @@ API.v1.addRoute(
 			}
 
 			const { license } = this.bodyParams;
-			if (!License.validateFormat(license)) {
+			if (!(await License.validateFormat(license))) {
 				return API.v1.failure('Invalid license');
 			}
 

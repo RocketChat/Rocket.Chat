@@ -1,5 +1,5 @@
 import type { IRole } from '@rocket.chat/core-typings';
-import * as License from '@rocket.chat/license';
+import { License } from '@rocket.chat/license';
 import { Roles } from '@rocket.chat/models';
 import Ajv from 'ajv';
 
