@@ -1,4 +1,4 @@
-import { LivechatUnit } from '@rocket.chat/models';
+import { LivechatUnit, LivechatDepartmentAgents } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
@@ -17,7 +17,30 @@ async function getUnitsFromUserRoles(user: string | null): Promise<string[] | un
 	return LivechatUnit.findByMonitorId(user);
 }
 
+async function getDepartmentsFromUserRoles(user: string | null): Promise<string[] | undefined> {
+	if (!user || (await hasAnyRoleAsync(user, ['admin', 'livechat-manager']))) {
+		return;
+	}
+
+	if (!(await hasAnyRoleAsync(user, ['livechat-monitor']))) {
+		return;
+	}
+
+	return (await LivechatDepartmentAgents.findByAgentId(user).toArray()).map((department) => department.departmentId);
+}
+
 const memoizedGetUnitFromUserRoles = mem(getUnitsFromUserRoles, { maxAge: 10000 });
+const memoizedGetDepartmentsFromUserRoles = mem(getDepartmentsFromUserRoles, { maxAge: 5000 });
+
+export const getUnitsFromUser = async (user: string | null) => {
+	const units = await memoizedGetUnitFromUserRoles(user);
+	if (!units?.length) {
+		return;
+	}
+
+	const departments = (await memoizedGetDepartmentsFromUserRoles(user)) || [];
+	return [...units, ...departments];
+};
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -27,8 +50,8 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:getUnitsFromUser'(): Promise<string[] | undefined> {
+	async 'livechat:getUnitsFromUser'(): Promise<string[] | undefined> {
 		const user = Meteor.userId();
-		return memoizedGetUnitFromUserRoles(user);
+		return getUnitsFromUser(user);
 	},
 });
