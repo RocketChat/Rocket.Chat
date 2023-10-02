@@ -3,6 +3,11 @@
 "@rocket.chat/core-typings": minor
 ---
 
-Added `pushEnabled` and `pushGatewayChanged` statistics.
- - `pushEnabled`: mirrors the value of the `Push_enable` setting;
- - `pushGatewayChanged`: a boolean value to indicate whether the `Push_gateway` setting is set as default or not;
+Added `push` statistic, containing three bits. Each bit represents a boolean:
+```
+1 1 1
+| | |
+| | +- push enabled = 0b1 = 1
+| +--- push gateway enabled = 0b10 = 2
++----- push gateway changed = 0b100 = 4
+```
