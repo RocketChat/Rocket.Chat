@@ -21,10 +21,8 @@ const onTransferFailure = async (
 		return false;
 	}
 
-	cbLogger.debug(`Attempting to transfer room ${room._id} using fallback departments`);
 	const { departmentId } = transferData;
 	if (!departmentId) {
-		cbLogger.debug(`No departmentId found in transferData`);
 		return false;
 	}
 
@@ -39,14 +37,12 @@ const onTransferFailure = async (
 		return false;
 	}
 
-	cbLogger.debug(`Fallback department ${department.fallbackForwardDepartment} found for department ${department._id}. Redirecting`);
 	// TODO: find enabled not archived here
 	const fallbackDepartment = await LivechatDepartment.findOneById(department.fallbackForwardDepartment, {
 		projection: { name: 1, _id: 1 },
 	});
 
 	if (!fallbackDepartment) {
-		cbLogger.debug(`Fallback department ${department.fallbackForwardDepartment} not found`);
 		return false;
 	}
 
@@ -80,6 +76,7 @@ const onTransferFailure = async (
 		);
 	}
 
+	cbLogger.info(`Fallback department ${department.fallbackForwardDepartment} found for department ${department._id}. Chat transfered`);
 	return forwardSuccess;
 };
 

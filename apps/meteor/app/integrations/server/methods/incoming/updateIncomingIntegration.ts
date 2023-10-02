@@ -1,15 +1,15 @@
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
 import { Integrations, Roles, Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import { wrapExceptions } from '@rocket.chat/tools';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Babel } from 'meteor/babel-compiler';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateScriptEngine';
 
 const validChannelChars = ['@', '#'];
-
-const FREEZE_INTEGRATION_SCRIPTS = ['yes', 'true'].includes(String(process.env.FREEZE_INTEGRATION_SCRIPTS).toLowerCase());
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -66,11 +66,20 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (FREEZE_INTEGRATION_SCRIPTS) {
-			if (currentIntegration.script?.trim() !== integration.script?.trim()) {
-				throw new Meteor.Error('integration-scripts-disabled');
-			}
-		} else {
+		const oldScriptEngine = currentIntegration.scriptEngine ?? 'vm2';
+		const scriptEngine = integration.scriptEngine ?? oldScriptEngine;
+		if (
+			integration.script?.trim() &&
+			(scriptEngine !== oldScriptEngine || integration.script?.trim() !== currentIntegration.script?.trim())
+		) {
+			wrapExceptions(() => validateScriptEngine(scriptEngine)).catch((e) => {
+				throw new Meteor.Error(e.message);
+			});
+		}
+
+		const isFrozen = isScriptEngineFrozen(scriptEngine);
+
+		if (!isFrozen) {
 			let scriptCompiled: string | undefined;
 			let scriptError: Pick<Error, 'name' | 'message' | 'stack'> | undefined;
 
@@ -165,11 +174,12 @@ Meteor.methods<ServerMethods>({
 					emoji: integration.emoji,
 					alias: integration.alias,
 					channel: channels,
-					...(FREEZE_INTEGRATION_SCRIPTS
+					...(isFrozen
 						? {}
 						: {
 								script: integration.script,
 								scriptEnabled: integration.scriptEnabled,
+								scriptEngine,
 						  }),
 					...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
 						overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
