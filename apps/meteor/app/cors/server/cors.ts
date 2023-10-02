@@ -102,7 +102,7 @@ WebAppInternals.staticFilesMiddleware = function (
 	const { arch, path, url } = WebApp.categorizeRequest(req);
 
 	if (
-		Meteor.isProduction ||
+		Meteor.isProduction &&
 		!cacheControlledRoutes.some((route) => {
 			return new RegExp(`^${route}`, 'gi').test(path);
 		})
