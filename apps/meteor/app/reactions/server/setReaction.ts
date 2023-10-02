@@ -3,7 +3,6 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../lib/callbacks';
@@ -65,7 +64,6 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		if (reactedUsernamesForEmoji?.length === 1) {
 			// we can just pull the whole 'emoji' field
 			// @ts-ignore
-			delete message.reactions[reaction];
 			if (message.reactions && Object.keys(message.reactions).length === 0) {
 				// remove the whole reactions
 				delete message.reactions;
@@ -75,6 +73,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 					await Rooms.unsetReactionsInLastMessage(room._id);
 				}
 			} else {
+				delete message.reactions[reaction];
 				await Messages.updateOne(
 					{ _id: message._id },
 					{
@@ -87,6 +86,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 				}
 			}
 		} else {
+			message.reaction[reaction].usernames.splice(userIndexInReactionList, 1);
 			await Messages.updateOne({ _id: message._id }, { $pull: { [`reactions.${reaction}.usernames`]: user.username } });
 		}
 

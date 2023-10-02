@@ -167,6 +167,7 @@ const computation = Tracker.autorun(() => {
 												if (!map.has(usernames[i])) {
 													usernames.splice(i, 1);
 													names.splice(i, 1);
+													break;
 												}
 											}
 
