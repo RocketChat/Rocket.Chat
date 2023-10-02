@@ -1,5 +1,3 @@
-import type { UrlWithParsedQuery } from 'url';
-
 import type {
 	IMessage,
 	IRoom,
@@ -10,7 +8,6 @@ import type {
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
 	VideoConference,
-	ParsedUrl,
 	OEmbedMeta,
 	OEmbedUrlContent,
 	Username,
@@ -167,24 +164,13 @@ type ChainedCallbackSignatures = {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
-	'oembed:beforeGetUrlContent': (data: {
-		urlObj: Omit<UrlWithParsedQuery, 'host' | 'search'> & { host?: unknown; search?: unknown };
-		parsedUrl: ParsedUrl;
-	}) => {
-		urlObj: UrlWithParsedQuery;
-		parsedUrl: ParsedUrl;
+	'oembed:beforeGetUrlContent': (data: { urlObj: URL }) => {
+		urlObj: URL;
 	};
-	'oembed:afterParseContent': (data: {
+	'oembed:afterParseContent': (data: { url: string; meta: OEmbedMeta; headers: { [k: string]: string }; content: OEmbedUrlContent }) => {
 		url: string;
 		meta: OEmbedMeta;
 		headers: { [k: string]: string };
-		parsedUrl: ParsedUrl;
-		content: OEmbedUrlContent;
-	}) => {
-		url: string;
-		meta: OEmbedMeta;
-		headers: { [k: string]: string };
-		parsedUrl: ParsedUrl;
 		content: OEmbedUrlContent;
 	};
 	'livechat.beforeListTags': () => ILivechatTag[];
