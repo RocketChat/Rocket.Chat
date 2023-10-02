@@ -1,5 +1,4 @@
-import type { IconButton } from '@rocket.chat/fuselage';
-import { MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
+import { IconButton, MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode } from 'react';
 import React from 'react';
@@ -42,6 +41,12 @@ const GenericMenu = ({ title, icon = 'menu', onAction, ...props }: GenericMenuPr
 	const hasIcon = itemsList.some(({ icon }) => icon);
 	const handleItems = (items: GenericMenuItemProps[]) =>
 		hasIcon ? items.map((item) => ({ ...item, gap: !item.icon && !item.status })) : items;
+
+	const isMenuEmpty = !(sections && sections.length > 0) && !(items && items.length > 0);
+
+	if (isMenuEmpty) {
+		return <IconButton icon={icon} disabled />;
+	}
 
 	return (
 		<>
