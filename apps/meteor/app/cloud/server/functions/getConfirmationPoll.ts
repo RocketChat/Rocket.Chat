@@ -5,16 +5,16 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 
 export async function getConfirmationPoll(deviceCode: string): Promise<CloudConfirmationPollData> {
-	const cloudUrl = settings.get('Cloud_Url');
-
-	let result;
+	let payload;
 	try {
-		const request = await fetch(`${cloudUrl}/api/v2/register/workspace/poll`, { params: { token: deviceCode } });
-		if (!request.ok) {
-			throw new Error((await request.json()).error);
+		const cloudUrl = settings.get<string>('Cloud_Url');
+		const response = await fetch(`${cloudUrl}/api/v2/register/workspace/poll`, { params: { token: deviceCode } });
+
+		if (!response.ok) {
+			throw new Error((await response.json()).error);
 		}
 
-		result = await request.json();
+		payload = await response.json();
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to get confirmation poll from Rocket.Chat Cloud',
@@ -25,9 +25,9 @@ export async function getConfirmationPoll(deviceCode: string): Promise<CloudConf
 		throw err;
 	}
 
-	if (!result) {
+	if (!payload) {
 		throw new Error('Failed to retrieve registration confirmation poll data');
 	}
 
-	return result;
+	return payload;
 }

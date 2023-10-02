@@ -9,12 +9,10 @@ let timer = 0;
 
 const scheduleInquiry = async (inquiry: any): Promise<void> => {
 	if (!inquiry?._id) {
-		cbLogger.debug('Skipping callback. No inquiry provided');
 		return;
 	}
 
 	if (!inquiry?._updatedAt || !inquiry?._createdAt) {
-		cbLogger.debug('Skipping callback. Inquiry doesnt have timestamps');
 		return;
 	}
 

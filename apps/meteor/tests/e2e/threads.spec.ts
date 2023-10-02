@@ -104,6 +104,7 @@ test.describe.serial('Threads', () => {
 			await page.locator('[data-qa-id="edit-message"]').click();
 			await page.locator('[name="msg"]').last().fill('this message was edited');
 			await page.keyboard.press('Enter');
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('this message was edited');
 		});
 
 		test('expect quote the thread message', async ({ page }) => {
@@ -118,6 +119,9 @@ test.describe.serial('Threads', () => {
 		test('expect star the thread message', async ({ page }) => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await page.locator('[data-qa-id="star-message"]').click();
+			await page.getByRole('button').and(page.getByTitle('Options')).click();
+			await page.locator('[data-key="starred-messages"]').click();
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('this is a message for reply');
 		});
 
 		test('expect copy the message', async ({ page }) => {
