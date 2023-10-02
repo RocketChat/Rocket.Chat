@@ -1,6 +1,8 @@
-import { Component } from 'preact';
-import { withTranslation } from 'react-i18next';
+import type { ComponentChildren } from 'preact';
+import { useRef } from 'preact/hooks';
+import { useTranslation, withTranslation } from 'react-i18next';
 
+import type { Agent } from '../../definitions/agents';
 import MinimizeIcon from '../../icons/arrowDown.svg';
 import RestoreIcon from '../../icons/arrowUp.svg';
 import NotificationsEnabledIcon from '../../icons/bell.svg';
@@ -11,70 +13,84 @@ import { Avatar } from '../Avatar';
 import Header from '../Header';
 import Tooltip from '../Tooltip';
 
-class ScreenHeader extends Component {
-	largeHeader = () => {
-		const { agent } = this.props;
-		return !!(agent && agent.email && agent.phone);
+type screenHeaderProps = {
+	alerts: { id: string; children: ComponentChildren; [key: string]: unknown }[];
+	agent: Agent;
+	notificationsEnabled: boolean;
+	minimized: boolean;
+	expanded: boolean;
+	windowed: boolean;
+	onDismissAlert?: (id?: string) => void;
+	onEnableNotifications: () => unknown;
+	onDisableNotifications: () => unknown;
+	onMinimize: () => unknown;
+	onRestore: () => unknown;
+	onOpenWindow: () => unknown;
+	queueInfo: {
+		spot: number;
+	};
+	title: string;
+};
+
+const ScreenHeader = ({
+	alerts,
+	agent,
+	notificationsEnabled,
+	minimized,
+	expanded,
+	windowed,
+	onDismissAlert,
+	onEnableNotifications,
+	onDisableNotifications,
+	onMinimize,
+	onRestore,
+	onOpenWindow,
+	queueInfo,
+	title,
+}: screenHeaderProps) => {
+	const { t } = useTranslation();
+	const headerRef = useRef<HTMLElement>(null);
+
+	const largeHeader = () => {
+		return !!(agent?.email && agent.phone);
 	};
 
-	headerTitle = (t) => {
-		const { agent, queueInfo, title } = this.props;
-		if (agent && agent.name) {
+	const headerTitle = () => {
+		if (agent?.name) {
 			return agent.name;
 		}
 
-		if (queueInfo && queueInfo.spot && queueInfo.spot > 0) {
+		if (queueInfo?.spot && queueInfo.spot > 0) {
 			return t('waiting_queue');
 		}
 
 		return title;
 	};
 
-	render = ({
-		alerts,
-		agent,
-		notificationsEnabled,
-		minimized,
-		expanded,
-		windowed,
-		onDismissAlert,
-		onEnableNotifications,
-		onDisableNotifications,
-		onMinimize,
-		onRestore,
-		onOpenWindow,
-		t,
-	}) => (
+	return (
 		<Header
-			ref={this.handleRef}
+			ref={headerRef}
 			post={
 				<Header.Post>
-					{alerts &&
-						alerts.map((alert) => (
-							<Alert {...alert} onDismiss={onDismissAlert}>
-								{alert.children}
-							</Alert>
-						))}
+					{alerts?.map((alert) => (
+						<Alert {...alert} onDismiss={onDismissAlert}>
+							{alert.children}
+						</Alert>
+					))}
 				</Header.Post>
 			}
-			large={this.largeHeader()}
+			large={largeHeader()}
 		>
-			{agent && agent.avatar && (
+			{agent?.avatar && (
 				<Header.Picture>
-					<Avatar
-						src={agent.avatar.src}
-						description={agent.avatar.description}
-						status={agent.status}
-						large={this.largeHeader()}
-						statusBorder
-					/>
+					<Avatar src={agent.avatar.src} description={agent.avatar.description} status={agent.status} large={largeHeader()} />
 				</Header.Picture>
 			)}
 
 			<Header.Content>
-				<Header.Title>{this.headerTitle(t)}</Header.Title>
-				{agent && agent.email && <Header.SubTitle>{agent.email}</Header.SubTitle>}
-				{agent && agent.phone && <Header.CustomField>{agent.phone}</Header.CustomField>}
+				<Header.Title>{headerTitle()}</Header.Title>
+				{agent?.email && <Header.SubTitle>{agent.email}</Header.SubTitle>}
+				{agent?.phone && <Header.CustomField>{agent.phone}</Header.CustomField>}
 			</Header.Content>
 			<Tooltip.Container>
 				<Header.Actions>
@@ -108,6 +124,6 @@ class ScreenHeader extends Component {
 			</Tooltip.Container>
 		</Header>
 	);
-}
+};
 
 export default withTranslation()(ScreenHeader);
