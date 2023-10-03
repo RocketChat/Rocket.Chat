@@ -9,9 +9,10 @@ import './importPackages';
 import '../imports/startup/server';
 import '../app/lib/server/startup';
 
+import '../ee/server/startup';
+import './startup';
 import '../ee/server';
 import './lib/pushConfig';
-import './startup';
 import './configuration/accounts_meld';
 import './configuration/ldap';
 import './methods/OEmbedCacheCleanup';
