@@ -97,6 +97,14 @@ jobs:
           cache-modules: true
           install: true
 
+      # if we are testing a PR from a fork, we need to build the docker image at this point
+      - uses: ./.github/actions/build-docker
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          node-version: ${{ inputs.node-version }}
+
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Start httpbin container and wait for it to be ready
