@@ -517,6 +517,15 @@ export const statistics = {
 		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
 		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');
 
+		const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
+
+		// one bit for each of the following:
+		const pushEnabled = settings.get('Push_enable') ? 1 : 0;
+		const pushGatewayEnabled = settings.get('Push_enable_gateway') ? 2 : 0;
+		const pushGatewayChanged = settings.get('Push_gateway') !== defaultGateway ? 4 : 0;
+
+		statistics.push = pushEnabled | pushGatewayEnabled | pushGatewayChanged;
+
 		const defaultHomeTitle = (await Settings.findOneById('Layout_Home_Title'))?.packageValue;
 		statistics.homeTitleChanged = settings.get('Layout_Home_Title') !== defaultHomeTitle;
 
