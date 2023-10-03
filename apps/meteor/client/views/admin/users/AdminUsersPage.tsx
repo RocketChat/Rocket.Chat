@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Tabs } from '@rocket.chat/fuselage';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
@@ -12,8 +12,9 @@ import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
 import UsersTable from './UsersTable';
+import { usePendingUsersStats } from './usePendingUsersStats';
 
-const UsersPage = (): ReactElement => {
+const UsersPage = async (): Promise<ReactElement> => {
 	const t = useTranslation();
 	const seatsCap = useSeatsCap();
 	const reload = useRef(() => null);
@@ -43,6 +44,17 @@ const UsersPage = (): ReactElement => {
 	};
 
 	const [pendingActionsCount, setPendingActionsCount] = useState<number>(0);
+
+	useCallback(() => {
+		const usePending = async () => {
+			const users = await usePendingUsersStats();
+			return users?.length;
+		};
+	}, []);
+
+	useEffect(() => {
+		setPendingActionsCount(pending);
+	}, [pending]);
 
 	return (
 		<Page flexDirection='row'>
