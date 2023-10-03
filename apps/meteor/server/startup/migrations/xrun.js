@@ -1,5 +1,5 @@
 import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
-import { migrateDatabase, onUpgrade } from '../../lib/migrations';
+import { migrateDatabase, onServerVersionChange } from '../../lib/migrations';
 
 const { MIGRATION_VERSION = 'latest' } = process.env;
 
