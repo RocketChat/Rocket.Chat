@@ -32,12 +32,12 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 		});
 
 		License.onLimitReached('monthlyActiveContacts', async (): Promise<void> => {
-			void this.api?.broadcast('mac.LimitReached', {});
+			void this.api?.broadcast('mac.limitReached');
 			await this.queueWorker.stop();
 		});
 
 		License.onValidateLicense(async (): Promise<void> => {
-			void this.api?.broadcast('mac.limitRestored', {});
+			void this.api?.broadcast('mac.limitRestored');
 			await this.queueWorker.shouldStart();
 		});
 	}
