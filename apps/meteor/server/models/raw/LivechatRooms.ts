@@ -75,6 +75,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { departmentId: 1, ts: 1 }, partialFilterExpression: { departmentId: { $exists: true }, t: 'l' } },
 			{ key: { 'tags.0': 1, 'ts': 1 }, partialFilterExpression: { 'tags.0': { $exists: true }, 't': 'l' } },
 			{ key: { servedBy: 1, ts: 1 }, partialFilterExpression: { servedBy: { $exists: true }, t: 'l' } },
+			{ key: { 'v.activity': 1, 'ts': 1 }, partialFilterExpression: { 'v.activity': { $exists: true }, 't': 'l' } },
 		];
 	}
 
