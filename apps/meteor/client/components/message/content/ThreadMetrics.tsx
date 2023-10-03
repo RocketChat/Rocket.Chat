@@ -47,7 +47,7 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 				<MessageMetricsReply data-rid={rid} data-mid={mid} onClick={() => goToThread({ rid, tmid: mid })}>
 					{t('Reply')}
 				</MessageMetricsReply>
-				<MessageMetricsItem title={t('Replies')}>
+				<MessageMetricsItem title={t('Replies')} onClick={() => goToThread({ rid, tmid: mid })} style={{ cursor: 'pointer' }}>
 					<MessageMetricsItem.Icon name='thread' />
 					<MessageMetricsItem.Label>{counter}</MessageMetricsItem.Label>
 				</MessageMetricsItem>
