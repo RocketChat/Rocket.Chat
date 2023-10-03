@@ -24,9 +24,10 @@ type UsersTableProps = {
 	reload: MutableRefObject<() => void>;
 	tab: string;
 	onReload: () => void;
+	setPendingActionsCount: React.Dispatch<React.SetStateAction<number>>;
 };
 
-const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | null => {
+const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const router = useRouter();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -47,11 +48,13 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 		sortDirection,
 		itemsPerPage,
 		current,
+		setPendingActionsCount,
 	);
 
 	const useAllUsers = () => (tab === 'all' && isSuccess ? data?.users : []);
 
-	const filteredUsers = [...useAllUsers(), ...useFilterActiveUsers(data?.users, tab), ...useFilterPendingUsers(data?.users, tab)];
+	// TODO: fix types
+	const filteredUsers = [...useAllUsers(), ...useFilterActiveUsers(data?.users, tab), ...useFilterPendingUsers(data?.users as any, tab)];
 
 	useEffect(() => {
 		reload.current = refetch;

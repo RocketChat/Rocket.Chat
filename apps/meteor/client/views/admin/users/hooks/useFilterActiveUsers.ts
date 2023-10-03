@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
 export const useFilterActiveUsers = (
-	users: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag' | 'lastLogin'>[] | undefined,
+	users: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>[] | undefined,
 	tab: string,
 ) => {
 	if (!users || tab !== 'active') return [];

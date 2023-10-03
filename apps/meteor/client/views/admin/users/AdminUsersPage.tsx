@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Tabs } from '@rocket.chat/fuselage';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
@@ -12,7 +12,6 @@ import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
 import UsersTable from './UsersTable';
-import { usePendingUsersStats } from './usePendingUsersStats';
 
 const UsersPage = async (): Promise<ReactElement> => {
 	const t = useTranslation();
@@ -28,6 +27,8 @@ const UsersPage = async (): Promise<ReactElement> => {
 
 	const [tab, setTab] = useState<'all' | 'invited' | 'pending' | 'active' | 'deactivated'>('all');
 
+	const [pendingActionsCount, setPendingActionsCount] = useState<number>(0);
+
 	useEffect(() => {
 		if (!context || !seatsCap) {
 			return;
@@ -42,19 +43,6 @@ const UsersPage = async (): Promise<ReactElement> => {
 		seatsCap?.reload();
 		reload.current();
 	};
-
-	const [pendingActionsCount, setPendingActionsCount] = useState<number>(0);
-
-	useCallback(() => {
-		const usePending = async () => {
-			const users = await usePendingUsersStats();
-			return users?.length;
-		};
-	}, []);
-
-	useEffect(() => {
-		setPendingActionsCount(pending);
-	}, [pending]);
 
 	return (
 		<Page flexDirection='row'>
@@ -95,7 +83,7 @@ const UsersPage = async (): Promise<ReactElement> => {
 							{t('Invited')}
 						</Tabs.Item>
 					</Tabs>
-					<UsersTable reload={reload} tab={tab} onReload={handleReload} />
+					<UsersTable reload={reload} tab={tab} onReload={handleReload} setPendingActionsCount={setPendingActionsCount} />
 				</Page.Content>
 			</Page>
 			{context && (
