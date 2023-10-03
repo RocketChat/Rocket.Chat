@@ -1,4 +1,4 @@
-import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
+import type { LicenseLimitKind } from './definition/ILicenseV3';
 import type { LimitContext } from './definition/LimitContext';
 import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
 import { onLicense } from './events/deprecated';
@@ -45,8 +45,6 @@ interface License {
 	onInvalidateLicense: typeof onInvalidateLicense;
 	onLimitReached: typeof onLimitReached;
 
-	supportedVersions(): ILicenseV3['supportedVersions'];
-
 	// Deprecated:
 	onLicense: typeof onLicense;
 	// Deprecated:
@@ -58,10 +56,6 @@ interface License {
 }
 
 export class LicenseImp extends LicenseManager implements License {
-	supportedVersions() {
-		return this.getLicense()?.supportedVersions;
-	}
-
 	validateFormat = validateFormat;
 
 	hasModule = hasModule;
