@@ -1,7 +1,10 @@
 import { RegisterServerPage, RegisterOfflinePage } from '@rocket.chat/onboarding-ui';
+import { useEndpoint, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
+import { queryClient } from '../../../lib/queryClient';
+import { dispatchToastMessage } from '../../../lib/toast';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 const SERVER_OPTIONS = {
@@ -10,7 +13,8 @@ const SERVER_OPTIONS = {
 };
 
 const RegisterServerStep = (): ReactElement => {
-	const { goToPreviousStep, currentStep, goToNextStep, goToStep, setSetupWizardData, registerServer, maxSteps, offline } =
+	const t = useTranslation();
+	const { goToPreviousStep, currentStep, goToNextStep, completeSetupWizard, setSetupWizardData, registerServer, maxSteps, offline } =
 		useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
 
@@ -20,14 +24,38 @@ const RegisterServerStep = (): ReactElement => {
 		await registerServer(data);
 	};
 
-	const handleConfirmOffline: ComponentProps<typeof RegisterOfflinePage>['onSubmit'] = async (/* data: unknown*/) => {
-		// TODO: CALL REGISTER WITH TOKEN
-		return goToStep(4);
+	const [clientKey, setClientKey] = useState('');
+
+	const registerManually = useEndpoint('POST', '/v1/cloud.manualRegister');
+	const getWorkspaceRegisterData = useMethod('cloud:getWorkspaceRegisterData');
+
+	useEffect(() => {
+		const loadWorkspaceRegisterData = async (): Promise<void> => {
+			const clientKey = await getWorkspaceRegisterData();
+			setClientKey(clientKey);
+		};
+
+		loadWorkspaceRegisterData();
+	}, [getWorkspaceRegisterData]);
+
+	const handleConfirmOffline: ComponentProps<typeof RegisterOfflinePage>['onSubmit'] = async ({ token }) => {
+		try {
+			await registerManually({ cloudBlob: token });
+			queryClient.invalidateQueries(['licenses']);
+
+			return completeSetupWizard();
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
+		}
 	};
 
 	if (serverOption === SERVER_OPTIONS.OFFLINE) {
 		return (
-			<RegisterOfflinePage onBackButtonClick={(): void => setServerOption(SERVER_OPTIONS.REGISTERED)} onSubmit={handleConfirmOffline} />
+			<RegisterOfflinePage
+				clientKey={clientKey}
+				onBackButtonClick={(): void => setServerOption(SERVER_OPTIONS.REGISTERED)}
+				onSubmit={handleConfirmOffline}
+			/>
 		);
 	}
 
