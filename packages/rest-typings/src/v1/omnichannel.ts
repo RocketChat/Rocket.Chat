@@ -2550,6 +2550,10 @@ const GETLivechatRoomsParamsSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
 		fields: {
 			type: 'string',
 			nullable: true,
@@ -2582,12 +2586,16 @@ const GETLivechatRoomsParamsSchema = {
 			nullable: true,
 		},
 		open: {
-			type: ['string', 'boolean'],
-			nullable: true,
+			anyOf: [
+				{ type: 'string', nullable: true },
+				{ type: 'boolean', nullable: true },
+			],
 		},
 		onhold: {
-			type: ['string', 'boolean'],
-			nullable: true,
+			anyOf: [
+				{ type: 'string', nullable: true },
+				{ type: 'boolean', nullable: true },
+			],
 		},
 		tags: {
 			type: 'array',
@@ -3112,7 +3120,7 @@ const POSTLivechatAppearanceParamsSchema = {
 				type: 'string',
 			},
 			value: {
-				type: ['string', 'boolean', 'number'],
+				anyOf: [{ type: 'string' }, { type: 'boolean' }, { type: 'number' }],
 			},
 		},
 		required: ['_id', 'value'],

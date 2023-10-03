@@ -10,7 +10,7 @@ type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
 	onChange(range: { start: string; end: string }): void;
 };
 
-const formatToDateInput = (date: Moment) => date.format('YYYY-MM-DD');
+const formatToDateInput = (date: Moment) => date.locale('en').format('YYYY-MM-DD');
 
 const todayDate = formatToDateInput(moment());
 
