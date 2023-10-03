@@ -141,7 +141,7 @@ const MessageBox = ({
 		[chat, storageID],
 	);
 
-	const autofocusRef = useMessageBoxAutoFocus();
+	const autofocusRef = useMessageBoxAutoFocus(!isMobile);
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
