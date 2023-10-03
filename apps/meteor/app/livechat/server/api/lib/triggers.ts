@@ -29,3 +29,7 @@ export async function findTriggers({
 export async function findTriggerById({ triggerId }: { triggerId: string }): Promise<ILivechatTrigger | null> {
 	return LivechatTrigger.findOneById(triggerId);
 }
+
+export async function deleteTrigger({ triggerId }: { triggerId: string }): Promise<void> {
+	await LivechatTrigger.removeById(triggerId);
+}
