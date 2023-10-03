@@ -3,7 +3,6 @@ import { LivechatPriority, OmnichannelServiceLevelAgreements } from '@rocket.cha
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import { cbLogger } from '../lib/logger';
 
 type Props = {
 	sla?: string;
@@ -14,7 +13,6 @@ type Props = {
 const beforeNewInquiry = async (extraData: Props) => {
 	const { sla: slaSearchTerm, priority: prioritySearchTerm, ...props } = extraData;
 	if (!slaSearchTerm && !prioritySearchTerm) {
-		cbLogger.debug('Skipping callback. No sla or priority provided');
 		return extraData;
 	}
 
@@ -54,7 +52,6 @@ const beforeNewInquiry = async (extraData: Props) => {
 		changes.priorityId = priority._id;
 		changes.priorityWeight = priority.sortItem;
 	}
-	cbLogger.debug('Callback success. Queue timing properties added to inquiry', changes);
 	return { ...props, ...changes };
 };
 
