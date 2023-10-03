@@ -1,4 +1,5 @@
 import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
+import type { LicenseBehavior } from './definition/LicenseBehavior';
 import type { LicenseModule } from './definition/LicenseModule';
 import type { LimitContext } from './definition/LimitContext';
 import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
@@ -37,7 +38,11 @@ interface License {
 	overwriteClassOnLicense: typeof overwriteClassOnLicense;
 	setLicenseLimitCounter: typeof setLicenseLimitCounter;
 	getCurrentValueForLicenseLimit: typeof getCurrentValueForLicenseLimit;
-	isLimitReached: <T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>) => Promise<boolean>;
+	isLimitReached: <T extends LicenseLimitKind>(
+		action: T,
+		behaviors: LicenseBehavior[],
+		context?: Partial<LimitContext<T>>,
+	) => Promise<boolean>;
 	onValidFeature: typeof onValidFeature;
 	onInvalidFeature: typeof onInvalidFeature;
 	onToggledFeature: typeof onToggledFeature;
@@ -45,6 +50,8 @@ interface License {
 	onValidateLicense: typeof onValidateLicense;
 	onInvalidateLicense: typeof onInvalidateLicense;
 	onLimitReached: typeof onLimitReached;
+	revalidateLicense: () => Promise<void>;
+	revalidateLimits: () => Promise<void>;
 
 	getInfo: (loadCurrentValues: boolean) => Promise<{
 		license: ILicenseV3 | undefined;
@@ -78,8 +85,12 @@ export class LicenseImp extends LicenseManager implements License {
 
 	getCurrentValueForLicenseLimit = getCurrentValueForLicenseLimit;
 
-	public async isLimitReached<T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>) {
-		return this.shouldPreventAction(action, context, 0);
+	public async isLimitReached<T extends LicenseLimitKind>(
+		action: T,
+		behaviors: LicenseBehavior[],
+		context?: Partial<LimitContext<T>>,
+	): Promise<boolean> {
+		return super.isLimitReached(action, behaviors, context);
 	}
 
 	onValidFeature = onValidFeature;

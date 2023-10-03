@@ -1,3 +1,4 @@
+import { cronJobs } from '@rocket.chat/cron';
 import { License } from '@rocket.chat/license';
 import { Subscriptions, Users } from '@rocket.chat/models';
 
@@ -26,3 +27,19 @@ License.setLicenseLimitCounter('privateApps', () => getAppCount('private'));
 License.setLicenseLimitCounter('marketplaceApps', () => getAppCount('marketplace'));
 // #TODO: Get real value
 License.setLicenseLimitCounter('monthlyActiveContacts', async () => 0);
+
+const updateCronJob = async () => {
+	if (License.hasValidLicense() === (await cronJobs.has('licenseLimitChecker'))) {
+		return;
+	}
+
+	if (License.hasValidLicense()) {
+		await cronJobs.add('licenseLimitChecker', '*/30 * * * *', () => License.revalidateLimits());
+	} else {
+		await cronJobs.remove('licenseLimitChecker');
+	}
+};
+
+License.onValidateLicense(async () => updateCronJob());
+License.onInvalidateLicense(async () => updateCronJob());
+void updateCronJob();

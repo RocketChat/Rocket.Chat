@@ -1,4 +1,4 @@
-import type { ILicenseV3 } from '../definition/ILicenseV3';
+import type { ILicenseV3, LicenseLimitKind } from '../definition/ILicenseV3';
 import type { BehaviorWithContext, LicenseBehavior } from '../definition/LicenseBehavior';
 import type { LicenseManager } from '../license';
 import { logger } from '../logger';
@@ -9,10 +9,11 @@ export async function validateLicenseLimits(
 	this: LicenseManager,
 	license: ILicenseV3,
 	behaviorFilter: (behavior: LicenseBehavior) => boolean,
+	limitFilter: (limit: LicenseLimitKind) => boolean,
 ): Promise<BehaviorWithContext[]> {
 	const { limits } = license;
 
-	const limitKeys = Object.keys(limits) as (keyof ILicenseV3['limits'])[];
+	const limitKeys = (Object.keys(limits) as LicenseLimitKind[]).filter(limitFilter || (() => true));
 	return (
 		await Promise.all(
 			limitKeys.map(async (limitKey) => {
