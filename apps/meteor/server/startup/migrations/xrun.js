@@ -8,4 +8,4 @@ const [version, ...subcommands] = MIGRATION_VERSION.split(',');
 await migrateDatabase(version === 'latest' ? version : parseInt(version), subcommands);
 
 // if the server is starting with a different version we update the permissions
-await onUpgrade(() => upsertPermissions());
+await onServerVersionChange(() => upsertPermissions());

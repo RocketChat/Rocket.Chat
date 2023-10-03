@@ -292,7 +292,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 	return true;
 }
 
-export async function onUpgrade(cb: () => Promise<void>): Promise<void> {
+export async function onServerVersionChange(cb: () => Promise<void>): Promise<void> {
 	const result = await Migrations.findOneAndUpdate(
 		{
 			_id: 'upgrade',
