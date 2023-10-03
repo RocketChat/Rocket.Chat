@@ -2629,7 +2629,7 @@
   "Livechat_Agents": "Agentes",
   "Livechat_allow_manual_on_hold": "Permitir que agentes coloquem a conversa em espera manualmente",
   "Livechat_allow_manual_on_hold_upon_agent_engagement_only": "Permitir que agentes coloquem a conversa em espera manualmente, sempre que o agente tenha enviado a última mensagem",
-  "Livechat_allow_manual_on_hold__upon_agent_engagement_only_Description": "Se habilitado, o agente terá uma nova opção para colocar a conversa em espera, desde que o agente tenha enviado a última mensagem. Caso contrário poderá sempre colocar a conversa em espera.",
+  "Livechat_allow_manual_on_hold_upon_agent_engagement_only_Description": "Se habilitado, o agente terá uma nova opção para colocar a conversa em espera, desde que o agente tenha enviado a última mensagem. Caso contrário poderá sempre colocar a conversa em espera.",
   "Livechat_AllowedDomainsList": "Domínios permitidos em Livechat",
   "Livechat_Appearance": "Aparência do livechat",
   "Livechat_auto_close_on_hold_chats_custom_message": "Mensagem personalizada para conversas encerradas na fila em espera",

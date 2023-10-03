@@ -3052,7 +3052,7 @@
   "Livechat_Agents": "Agents",
   "Livechat_allow_manual_on_hold": "Allow agents to manually place chat On Hold",
   "Livechat_allow_manual_on_hold_upon_agent_engagement_only": "Allow agents to manually place chat On Hold, provided the agent has sent the last message",
-  "Livechat_allow_manual_on_hold__upon_agent_engagement_only_Description": "If enabled, the agent will get a new option to place a chat On Hold, provided the agent has sent the last message, otherwise Agents are able to place chats onHold irrespective",
+  "Livechat_allow_manual_on_hold_upon_agent_engagement_only_Description": "If enabled, the agent will get a new option to place a chat On Hold, provided the agent has sent the last message, otherwise Agents are able to place chats onHold irrespective",
   "Livechat_AllowedDomainsList": "Livechat Allowed Domains",
   "Livechat_Appearance": "Livechat Appearance",
   "Livechat_auto_close_on_hold_chats_custom_message": "Custom message for closed chats in On Hold queue",

@@ -209,7 +209,6 @@ export const createSettings = async (): Promise<void> => {
         enableQuery: { _id: 'Livechat_allow_manual_on_hold', value: true },
     });
 
-
 	await settingsRegistry.add('Livechat_auto_transfer_chat_timeout', 0, {
 		type: 'int',
 		group: 'Omnichannel',
