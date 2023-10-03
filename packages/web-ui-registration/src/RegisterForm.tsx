@@ -5,7 +5,7 @@ import { Form, ActionLink } from '@rocket.chat/layout';
 import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -63,6 +63,14 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	const { password } = watch();
 	const passwordIsValid = useValidatePassword(password);
 
+	const registerFormRef = useRef<HTMLElement>(null);
+
+	useEffect(() => {
+		if (registerFormRef.current) {
+			registerFormRef.current.focus();
+		}
+	}, []);
+
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
 		registerUser.mutate(
 			{ pass: password, ...formData },
@@ -102,7 +110,13 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	}
 
 	return (
-		<Form aria-labelledby={formLabelId} onSubmit={handleSubmit(handleRegister)}>
+		<Form
+			tabIndex={-1}
+			ref={registerFormRef}
+			aria-labelledby={formLabelId}
+			aria-describedby='welcomeTitle'
+			onSubmit={handleSubmit(handleRegister)}
+		>
 			<Form.Header>
 				<Form.Title id={formLabelId}>{t('registration.component.form.createAnAccount')}</Form.Title>
 			</Form.Header>
@@ -115,9 +129,10 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						<Field.Row>
 							<TextInput
 								{...register('name', {
-									required: requireNameForRegister,
+									required: requireNameForRegister ? t('registration.component.form.requiredField') : false,
 								})}
-								error={errors.name && t('registration.component.form.requiredField')}
+								error={errors?.name?.message}
+								aria-required={requireNameForRegister}
 								aria-invalid={errors.name ? 'true' : 'false'}
 								placeholder={t('onboarding.form.adminInfoForm.fields.fullName.placeholder')}
 								aria-describedby={`${nameId}-error`}
@@ -126,7 +141,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						</Field.Row>
 						{errors.name && (
 							<Field.Error aria-live='assertive' id={`${nameId}-error`}>
-								{t('registration.component.form.requiredField')}
+								{errors.name.message}
 							</Field.Error>
 						)}
 					</Field>
@@ -145,6 +160,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								})}
 								placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 								error={errors?.email?.message}
+								aria-required='true'
 								aria-invalid={errors.email ? 'true' : 'false'}
 								aria-describedby={`${emailId}-error`}
 								id={emailId}
@@ -166,6 +182,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 									required: t('registration.component.form.requiredField'),
 								})}
 								error={errors?.username?.message}
+								aria-required='true'
 								aria-invalid={errors.username ? 'true' : 'false'}
 								aria-describedby={`${usernameId}-error`}
 								id={usernameId}
@@ -188,7 +205,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 									required: t('registration.component.form.requiredField'),
 									validate: () => (!passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
 								})}
-								error={errors.password && (errors.password?.message || t('registration.component.form.requiredField'))}
+								error={errors.password?.message}
+								aria-required='true'
 								aria-invalid={errors.password ? 'true' : undefined}
 								id={passwordId}
 								placeholder={passwordPlaceholder || t('Create_a_password')}
@@ -204,7 +222,9 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					</Field>
 					{requiresPasswordConfirmation && (
 						<Field>
-							<Field.Label htmlFor={passwordConfirmationId}>{t('registration.component.form.confirmPassword')}</Field.Label>
+							<Field.Label required htmlFor={passwordConfirmationId}>
+								{t('registration.component.form.confirmPassword')}
+							</Field.Label>
 							<Field.Row>
 								<PasswordInput
 									{...register('passwordConfirmation', {
@@ -213,6 +233,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 										validate: (val: string) => (watch('password') === val ? true : t('registration.component.form.invalidConfirmPass')),
 									})}
 									error={errors.passwordConfirmation?.message}
+									aria-required='true'
 									aria-invalid={errors.passwordConfirmation ? 'true' : 'false'}
 									id={passwordConfirmationId}
 									aria-describedby={`${passwordConfirmationId}-error`}
@@ -238,6 +259,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 										required: t('registration.component.form.requiredField'),
 									})}
 									error={errors?.reason?.message}
+									aria-required='true'
 									aria-invalid={errors.reason ? 'true' : 'false'}
 									aria-describedby={`${reasonId}-error`}
 									id={reasonId}
@@ -245,7 +267,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							</Field.Row>
 							{errors.reason && (
 								<Field.Error aria-live='assertive' id={`${reasonId}-error`}>
-									{t('registration.component.form.requiredField')}
+									{errors.reason.message}
 								</Field.Error>
 							)}
 						</Field>
