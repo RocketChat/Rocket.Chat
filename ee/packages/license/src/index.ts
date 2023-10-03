@@ -1,4 +1,5 @@
-import type { LicenseLimitKind } from './definition/ILicenseV3';
+import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
+import type { LicenseModule } from './definition/LicenseModule';
 import type { LimitContext } from './definition/LimitContext';
 import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
 import { onLicense } from './events/deprecated';
@@ -44,6 +45,13 @@ interface License {
 	onValidateLicense: typeof onValidateLicense;
 	onInvalidateLicense: typeof onInvalidateLicense;
 	onLimitReached: typeof onLimitReached;
+
+	getInfo: (loadCurrentValues: boolean) => Promise<{
+		license: ILicenseV3 | undefined;
+		activeModules: LicenseModule[];
+		limits: Record<LicenseLimitKind, { value?: number; max: number }>;
+		inFairPolicy: boolean;
+	}>;
 
 	// Deprecated:
 	onLicense: typeof onLicense;
