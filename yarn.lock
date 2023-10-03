@@ -9426,6 +9426,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/server-cloud-communication@workspace:packages/server-cloud-communication"
   dependencies:
+    "@rocket.chat/license": "workspace:^"
     "@types/jest": ~29.5.3
     eslint: ~8.45.0
     jest: ~29.6.1
