@@ -372,7 +372,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	getUsersToSendOfflineEmail(userIds: string[]): FindCursor<Pick<IUser, 'name' | 'username' | 'emails' | 'settings' | 'language'>>;
 	countActiveUsersByService(service: string, options?: FindOptions<IUser>): Promise<number>;
 	getActiveLocalUserCount(): Promise<number>;
-	getActiveLocalGuestCount(): Promise<number>;
+	getActiveLocalGuestCount(exceptions?: IUser['_id'] | IUser['_id'][]): Promise<number>;
 	removeOlderResumeTokensByUserId(userId: string, fromDate: Date): Promise<UpdateResult>;
 	findAllUsersWithPendingAvatar(): FindCursor<IUser>;
 	updateCustomFieldsById(userId: string, customFields: Record<string, unknown>): Promise<UpdateResult>;
