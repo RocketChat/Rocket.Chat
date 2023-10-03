@@ -46,8 +46,6 @@ interface License {
 	onInvalidateLicense: typeof onInvalidateLicense;
 	onLimitReached: typeof onLimitReached;
 
-	supportedVersions(): ILicenseV3['supportedVersions'];
-
 	getInfo: (loadCurrentValues: boolean) => Promise<{
 		license: ILicenseV3 | undefined;
 		activeModules: LicenseModule[];
@@ -66,10 +64,6 @@ interface License {
 }
 
 export class LicenseImp extends LicenseManager implements License {
-	supportedVersions() {
-		return this.getLicense()?.supportedVersions;
-	}
-
 	validateFormat = validateFormat;
 
 	hasModule = hasModule;
