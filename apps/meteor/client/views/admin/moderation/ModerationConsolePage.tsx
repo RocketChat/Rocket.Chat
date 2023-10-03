@@ -1,12 +1,11 @@
 import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useTranslation, useRouteParameter, useToastMessageDispatch, type TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
-import { Contextualbar } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
 import { getPermaLink } from '../../../lib/getPermaLink';
+import ModConsoleReportDetails from './ModConsoleReportDetails';
 import ModerationConsoleTable from './ModerationConsoleTable';
-import UserMessages from './UserMessages';
 import ModConsoleUsersTable from './UserReports/ModConsoleUsersTable';
 
 const tabs = ['Reported_Messages', 'Reported_Users'];
@@ -18,17 +17,19 @@ const ModerationConsolePage = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [tab, setTab] = useState('Reported_Users');
 
-	const handleRedirect = async (mid: string) => {
-		try {
-			const permalink = await getPermaLink(mid);
-			// open the permalink in same tab
-			window.open(permalink, '_self');
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	};
+	const handleRedirect = useCallback(
+		async (mid: string) => {
+			try {
+				const permalink = await getPermaLink(mid);
+				window.open(permalink, '_self');
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		},
+		[dispatchToastMessage],
+	);
 
-	const handleTabClick = useMemo(() => (tab: string) => (): void => setTab(tab), [setTab]);
+	const handleTabClick = useCallback((tab: string) => () => setTab(tab), [setTab]);
 
 	return (
 		<Page flexDirection='row'>
@@ -45,7 +46,7 @@ const ModerationConsolePage = () => {
 					{tab === 'Reported_Messages' && <ModerationConsoleTable />} {tab === 'Reported_Users' && <ModConsoleUsersTable />}
 				</Page.Content>
 			</Page>
-			{context && <Contextualbar>{context === 'info' && id && <UserMessages userId={id} onRedirect={handleRedirect} />}</Contextualbar>}
+			{context === 'info' && id && <ModConsoleReportDetails userId={id} onRedirect={handleRedirect} />}
 		</Page>
 	);
 };

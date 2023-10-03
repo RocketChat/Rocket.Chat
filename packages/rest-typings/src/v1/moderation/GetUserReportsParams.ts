@@ -1,12 +1,12 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajv } from '../Ajv';
 
-type ReportMessageHistoryParams = {
+type GetUserReportsParams = {
 	userId: string;
 	selector?: string;
 };
 
-export type ReportMessageHistoryParamsGET = PaginatedRequest<ReportMessageHistoryParams>;
+export type GetUserReportsParamsGET = PaginatedRequest<GetUserReportsParams>;
 
 const ajvParams = {
 	type: 'object',
@@ -37,4 +37,4 @@ const ajvParams = {
 	additionalProperties: false,
 };
 
-export const isReportMessageHistoryParams = ajv.compile<ReportMessageHistoryParamsGET>(ajvParams);
+export const isGetUserReportsParams = ajv.compile<GetUserReportsParamsGET>(ajvParams);

@@ -1,10 +1,10 @@
-import type { IModerationReport, IUser } from '@rocket.chat/core-typings';
+import type { IModerationReport, IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { ModerationReports, Users } from '@rocket.chat/models';
 import {
 	isReportHistoryProps,
 	isArchiveReportProps,
 	isReportInfoParams,
-	isReportMessageHistoryParams,
+	isGetUserReportsParams,
 	isModerationReportUserPost,
 	isModerationDeleteMsgHistoryParams,
 	isReportsByMsgIdParams,
@@ -115,7 +115,7 @@ API.v1.addRoute(
 	'moderation.user.reportedMessages',
 	{
 		authRequired: true,
-		validateParams: isReportMessageHistoryParams,
+		validateParams: isGetUserReportsParams,
 		permissionsRequired: ['view-moderation-console'],
 	},
 	{
@@ -155,6 +155,61 @@ API.v1.addRoute(
 				messages: uniqueMessages,
 				count: reports.length,
 				total,
+				offset,
+			});
+		},
+	},
+);
+
+// api endpoint to get user reports of a userid
+
+API.v1.addRoute(
+	'moderation.user.reportsByUserId',
+	{
+		authRequired: true,
+		validateParams: isGetUserReportsParams,
+		permissionsRequired: ['view-moderation-console'],
+	},
+	{
+		async get() {
+			const { userId, selector = '' } = this.queryParams;
+			const { sort } = await this.parseJsonQuery();
+			const { count = 50, offset = 0 } = await getPaginationItems(this.queryParams);
+
+			const user = await Users.findOneById<IUser>(userId, {
+				projection: {
+					_id: 1,
+					username: 1,
+					name: 1,
+					avatarETag: 1,
+					active: 1,
+					roles: 1,
+					emails: 1,
+					createdAt: 1,
+				},
+			});
+
+			const escapedSelector = escapeRegExp(selector);
+			const { cursor, totalCount } = ModerationReports.findUserReportsByReportedUserId(userId, escapedSelector, {
+				offset,
+				count,
+				sort,
+			});
+
+			const reports = await cursor.toArray();
+			const emailSet = new Map<IUserEmail['address'], IUserEmail>();
+
+			reports.flatMap((report) => report.reportedUser?.emails ?? []).forEach((email) => emailSet.set(email.address, email));
+
+			if (user) {
+				user.emails = Array.from(emailSet.values());
+			}
+
+			return API.v1.success({
+				user,
+				reports,
+				count: reports.length,
+				total: totalCount,
 				offset,
 			});
 		},
@@ -249,6 +304,7 @@ API.v1.addRoute(
 	'moderation.dismissUserReports',
 	{
 		authRequired: true,
+		validateParams: isArchiveReportProps,
 		permissionsRequired: ['manage-moderation-actions'],
 	},
 	{
@@ -259,6 +315,10 @@ API.v1.addRoute(
 			const action: string = actionParam ?? 'None';
 
 			const { userId: moderatorId } = this;
+
+			if (!userId) {
+				return API.v1.failure('error-user-id-param-not-provided');
+			}
 
 			await ModerationReports.hideUserReportsByUserId(userId, moderatorId, sanitizedReason, action);
 

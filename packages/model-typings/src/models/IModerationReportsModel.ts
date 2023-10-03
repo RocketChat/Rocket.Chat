@@ -53,6 +53,13 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 		options?: FindOptions<IModerationReport>,
 	): FindPaginated<FindCursor<Pick<MessageReport, '_id' | 'message' | 'ts' | 'room'>>>;
 
+	findUserReportsByReportedUserId(
+		userId: string,
+		selector: string,
+		pagination: PaginationParams<IModerationReport>,
+		options?: FindOptions<IModerationReport>,
+	): FindPaginated<FindCursor<Omit<UserReport, 'moderationInfo'>>>;
+
 	hideMessageReportsByMessageId(
 		messageId: IMessage['_id'],
 		userId: string,

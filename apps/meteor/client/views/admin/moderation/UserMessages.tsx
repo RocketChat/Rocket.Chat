@@ -1,10 +1,9 @@
-import { Box, Callout, Message, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Box, Callout, Message, StatesAction, StatesActions, StatesIcon, StatesTitle, ContextualbarFooter } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
-import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericNoResults from '../../../components/GenericNoResults';
 import MessageContextFooter from './MessageContextFooter';
 import ContextMessage from './helpers/ContextMessage';
@@ -13,7 +12,6 @@ import ContextMessage from './helpers/ContextMessage';
 const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid: string) => void }): JSX.Element => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const moderationRoute = useRouter();
 	const getUserMessages = useEndpoint('GET', '/v1/moderation.user.reportedMessages');
 
 	const {
@@ -41,10 +39,6 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 
 	return (
 		<>
-			<ContextualbarHeader>
-				<ContextualbarTitle>{t('Moderation_Message_context_header')}</ContextualbarTitle>
-				<ContextualbarClose onClick={() => moderationRoute.navigate('/admin/moderation', { replace: true })} />
-			</ContextualbarHeader>
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
 				{isLoadingUserMessages && <Message>{t('Loading')}</Message>}
 

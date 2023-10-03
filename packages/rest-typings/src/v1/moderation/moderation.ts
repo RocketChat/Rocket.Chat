@@ -2,11 +2,11 @@ import type { IModerationAudit, IModerationReport, IUser, MessageReport, UserRep
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ArchiveReportPropsPOST } from './ArchiveReportProps';
+import type { GetUserReportsParamsGET } from './GetUserReportsParams';
 import type { ModerationDeleteMsgHistoryParamsPOST } from './ModerationDeleteMsgHistoryParams';
 import type { ModerationReportUserPOST } from './ModerationReportUserPOST';
 import type { ReportHistoryPropsGET } from './ReportHistoryProps';
 import type { ReportInfoParams } from './ReportInfoParams';
-import type { ReportMessageHistoryParamsGET } from './ReportMessageHistoryParams';
 import type { ReportsByMsgIdParamsGET } from './ReportsByMsgIdParams';
 
 export type ModerationEndpoints = {
@@ -28,9 +28,15 @@ export type ModerationEndpoints = {
 		}>;
 	};
 	'/v1/moderation.user.reportedMessages': {
-		GET: (params: ReportMessageHistoryParamsGET) => PaginatedResult<{
+		GET: (params: GetUserReportsParamsGET) => PaginatedResult<{
 			user: Pick<IUser, 'username' | 'name' | '_id'> | null;
 			messages: Pick<MessageReport, 'message' | 'ts' | 'room' | '_id'>[];
+		}>;
+	};
+	'/v1/moderation.user.reportsByUserId': {
+		GET: (params: GetUserReportsParamsGET) => PaginatedResult<{
+			user: IUser | null;
+			reports: Omit<UserReport, 'moderationInfo'>[];
 		}>;
 	};
 	'/v1/moderation.user.deleteReportedMessages': {

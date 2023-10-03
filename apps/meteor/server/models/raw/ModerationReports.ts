@@ -243,6 +243,41 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return this.findPaginated({ ...query, ...fuzzyQuery }, params);
 	}
 
+	findUserReportsByReportedUserId(
+		userId: string,
+		selector: string,
+		pagination: PaginationParams<IModerationReport>,
+		options: FindOptions<IModerationReport> = {},
+	): FindPaginated<FindCursor<Omit<UserReport, 'moderationInfo'>>> {
+		const query = {
+			'_hidden': {
+				$ne: true,
+			},
+			'reportedUser._id': userId,
+			...this.getSearchQueryForSelectorUsers(selector),
+		};
+
+		const { count, offset, sort } = pagination;
+
+		const opts = {
+			sort: sort || {
+				ts: -1,
+			},
+			skip: offset,
+			limit: count,
+			projection: {
+				_id: 1,
+				description: 1,
+				ts: 1,
+				reportedBy: 1,
+				reportedUser: 1,
+			},
+			...options,
+		};
+
+		return this.findPaginated(query, opts);
+	}
+
 	findReportsByMessageId(
 		messageId: string,
 		selector: string,
@@ -365,13 +400,13 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return {
 			$or: [
 				{
-					username: {
+					'reportedUser.username': {
 						$regex: selector,
 						$options: 'i',
 					},
 				},
 				{
-					name: {
+					'reportedUser.name': {
 						$regex: selector,
 						$options: 'i',
 					},
