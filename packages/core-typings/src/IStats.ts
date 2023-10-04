@@ -212,6 +212,7 @@ export interface IStats {
 	totalWebRTCCalls: number;
 	uncaughtExceptionsCount: number;
 	push: number;
+	dailyPeakConnections: number;
 	matrixFederation: {
 		enabled: boolean;
 	};

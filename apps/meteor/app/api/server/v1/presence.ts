@@ -15,6 +15,18 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'presence.getMonthlyPeakConnections',
+	{ authRequired: true, permissionsRequired: ['manage-user-status'] },
+	{
+		async get() {
+			const result = await Presence.getMonthlyPeakConnections();
+
+			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
 	'presence.enableBroadcast',
 	{ authRequired: true, permissionsRequired: ['manage-user-status'], twoFactorRequired: true },
 	{

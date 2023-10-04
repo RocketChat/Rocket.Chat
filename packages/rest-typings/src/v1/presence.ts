@@ -5,6 +5,13 @@ export type PresenceEndpoints = {
 			max: number;
 		};
 	};
+	'/v1/presence.getMonthlyPeakConnections': {
+		GET: () => {
+			peak: number;
+			date: Date;
+			max: number;
+		};
+	};
 	'/v1/presence.enableBroadcast': {
 		POST: () => void;
 	};

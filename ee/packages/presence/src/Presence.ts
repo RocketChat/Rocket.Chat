@@ -1,8 +1,8 @@
 import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
 import { License, ServiceClass } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, IStats } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import { Settings, Users, UsersSessions } from '@rocket.chat/models';
+import { Settings, Users, UsersSessions, Statistics } from '@rocket.chat/models';
 
 import { processPresenceAndStatus } from './lib/processConnectionStatus';
 
@@ -18,6 +18,10 @@ export class Presence extends ServiceClass implements IPresence {
 	private lostConTimeout?: NodeJS.Timeout;
 
 	private connsPerInstance = new Map<string, number>();
+
+	private monthlyPeakConnections: Pick<IStats, 'dailyPeakConnections' | 'createdAt'>;
+
+	private dailyPeakConnections = this.getTotalConnections();
 
 	constructor() {
 		super();
@@ -35,6 +39,10 @@ export class Presence extends ServiceClass implements IPresence {
 			if (diff?.hasOwnProperty('extraInformation.conns')) {
 				this.connsPerInstance.set(id, diff['extraInformation.conns']);
 
+				this.dailyPeakConnections = Math.max(this.dailyPeakConnections, this.getTotalConnections());
+				if (this.dailyPeakConnections > this.monthlyPeakConnections.dailyPeakConnections) {
+					this.setDailyPeakAsMonthly();
+				}
 				this.validateAvailability();
 			}
 		});
@@ -57,6 +65,7 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async started(): Promise<void> {
+		await this.resetPeakConnections();
 		this.lostConTimeout = setTimeout(async () => {
 			const affectedUsers = await this.removeLostConnections();
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
@@ -93,6 +102,14 @@ export class Presence extends ServiceClass implements IPresence {
 	getConnectionCount(): { current: number; max: number } {
 		return {
 			current: this.getTotalConnections(),
+			max: MAX_CONNECTIONS,
+		};
+	}
+
+	getMonthlyPeakConnections(): { peak: number; date: Date; max: number } {
+		return {
+			peak: this.monthlyPeakConnections.dailyPeakConnections,
+			date: new Date(this.monthlyPeakConnections.createdAt),
 			max: MAX_CONNECTIONS,
 		};
 	}
@@ -250,5 +267,25 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private getTotalConnections(): number {
 		return Array.from(this.connsPerInstance.values()).reduce((acc, conns) => acc + conns, 0);
+	}
+
+	private setDailyPeakAsMonthly(): void {
+		this.monthlyPeakConnections = {
+			dailyPeakConnections: this.dailyPeakConnections,
+			createdAt: new Date(),
+		};
+	}
+
+	getDailyPeakConnections(): number {
+		return this.dailyPeakConnections;
+	}
+
+	async resetPeakConnections(): Promise<void> {
+		this.dailyPeakConnections = this.getTotalConnections();
+		const monthlyPeakConnections = await Statistics.findMaxMonthlyPeakConnections();
+		if (!monthlyPeakConnections || this.dailyPeakConnections > monthlyPeakConnections.dailyPeakConnections) {
+			return this.setDailyPeakAsMonthly();
+		}
+		this.monthlyPeakConnections = monthlyPeakConnections;
 	}
 }
