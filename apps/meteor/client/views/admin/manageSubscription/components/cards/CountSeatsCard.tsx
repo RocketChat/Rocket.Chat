@@ -15,7 +15,7 @@ const CountSeatsCard = (): ReactElement => {
 		infoText: t('CountSeats_InfoText'),
 	};
 
-	const maxSeats = seatsCap?.maxActiveUsers;
+	const maxSeats = seatsCap?.activeUsers || 0;
 
 	return (
 		<FeatureUsageCard title={card.title} infoText={card.infoText}>
