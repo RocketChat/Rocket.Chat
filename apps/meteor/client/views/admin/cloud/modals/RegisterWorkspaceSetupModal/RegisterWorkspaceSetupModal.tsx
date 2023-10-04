@@ -11,7 +11,7 @@ type RegisterWorkspaceSetupModalProps = {
 	onStatusChange?: () => void;
 };
 
-const RegisterWorkspaceSetupModal = ({ onClose }: RegisterWorkspaceSetupModalProps) => {
+const RegisterWorkspaceSetupModal = ({ onClose, onStatusChange }: RegisterWorkspaceSetupModalProps) => {
 	const setModal = useSetModal();
 
 	const [step, setStep] = useState(1);
@@ -36,8 +36,11 @@ const RegisterWorkspaceSetupModal = ({ onClose }: RegisterWorkspaceSetupModalPro
 	}, [email, terms]);
 
 	const onSuccess = () => {
-		const handleModalClose = (): void => setModal(null);
-		setModal(<RegisteredWorkspaceModal onClose={handleModalClose} />);
+		const handleModalClose = (): void => {
+			onStatusChange?.();
+			setModal(null);
+		};
+		setModal(<RegisteredWorkspaceModal onClose={handleModalClose} onStatusChange={onStatusChange} />);
 	};
 
 	return (

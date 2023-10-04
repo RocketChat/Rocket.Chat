@@ -1,8 +1,10 @@
 import type { App } from '@rocket.chat/core-typings';
 import { useEndpoint, useRoute, useRouteParameter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback } from 'react';
 
 import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
+import RegisterWorkspaceModal from '../../admin/cloud/modals/RegisterWorkspaceModal';
 import IframeModal from '../IframeModal';
 import AppInstallModal from '../components/AppInstallModal/AppInstallModal';
 import type { Actions } from '../helpers';
@@ -10,9 +12,8 @@ import { handleAPIError } from '../helpers/handleAPIError';
 import { isMarketplaceRouteContext, useAppsCountQuery } from './useAppsCountQuery';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
+
 import { useRegistrationStatus } from '/client/hooks/useRegistrationStatus';
-import ConnectWorkspaceModal from '../../admin/cloud/modals/ConnectWorkspaceModal';
-import RegisterWorkspaceModal from '../../admin/cloud/modals/RegisterWorkspaceModal';
 
 export type AppInstallationHandlerParams = {
 	app: App;
@@ -25,6 +26,7 @@ export type AppInstallationHandlerParams = {
 export function useAppInstallationHandler({ app, action, isAppPurchased, onDismiss, onSuccess }: AppInstallationHandlerParams) {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
+	const queryClient = useQueryClient();
 
 	const upgradeRoute = useRoute('upgrade');
 	const routeContext = String(useRouteParameter('context'));
@@ -35,30 +37,26 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 	const notifyAdmins = useEndpoint('POST', `/apps/notify-admins`);
 
 	const openIncompatibleModal = useOpenIncompatibleModal();
+
 	const { data: registrationStatusData, refetch } = useRegistrationStatus();
 	const isWorkspaceRegistered = registrationStatusData?.registrationStatus?.workspaceRegistered ?? false;
-	const isConnectedToCloud = registrationStatusData?.registrationStatus?.connectToCloud ?? false;
-	
+
 	const handleWorkspaceRegistration = (callback: () => void): void => {
 		const handleModalClose = (): void => {
 			setModal(null);
 			refetch();
 		};
 
-		const modalProps = {
-			onClose: handleModalClose,
-			onStatusChange: () => {
-				refetch();
-				console.log('onStatusChange')
-				callback();
-			},
-		};
-		
-		if (isWorkspaceRegistered) {
-			setModal(<ConnectWorkspaceModal { ...modalProps } />);
-		} else {
-			setModal(<RegisterWorkspaceModal { ...modalProps } />);
-		}
+		setModal(
+			<RegisterWorkspaceModal
+				onClose={handleModalClose}
+				onStatusChange={() => {
+					queryClient.invalidateQueries(['getRegistrationStatus']);
+					refetch();
+					callback();
+				}}
+			/>,
+		);
 	};
 
 	const closeModal = useCallback(() => {
@@ -79,12 +77,12 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 	const acquireApp = useCallback(async () => {
 		if (action === 'purchase' && !isAppPurchased) {
 			try {
-				if (!isWorkspaceRegistered || !isConnectedToCloud) {
+				if (!isWorkspaceRegistered) {
 					const handleAppInstallation = async () => {
 						const data = await AppClientOrchestratorInstance.buildExternalUrl(app.id, app.purchaseType, false);
 						setModal(<IframeModal url={data.url} cancel={onDismiss} confirm={openPermissionModal} />);
 					};
-	
+
 					handleWorkspaceRegistration(handleAppInstallation);
 					return;
 				}
