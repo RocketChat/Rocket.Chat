@@ -3,4 +3,4 @@
 "@rocket.chat/model-typings": patch
 ---
 
-fix: Re-activated user's omnichannel status is turned on, leading to chat's being routed to an offline agent
+fix: Re-activated user's omnichannel status is turned on, leading to chats being routed to an offline agent
