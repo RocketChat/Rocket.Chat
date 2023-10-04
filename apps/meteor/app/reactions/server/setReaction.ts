@@ -86,7 +86,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 				}
 			}
 		} else {
-			message.reaction[reaction].usernames.splice(userIndexInReactionList, 1);
+			message.reactions[reaction].usernames.splice(userIndexInReactionList, 1);
 			await Messages.updateOne({ _id: message._id }, { $pull: { [`reactions.${reaction}.usernames`]: user.username } });
 		}
 
