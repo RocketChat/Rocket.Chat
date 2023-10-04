@@ -1,4 +1,4 @@
-import { Field, TextInput, Chip, Button } from '@rocket.chat/fuselage';
+import { TextInput, Chip, Button, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
@@ -71,12 +71,12 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 
 	return (
 		<>
-			<Field.Label required={tagRequired} mb={4}>
+			<FieldLabel required={tagRequired} mb={4}>
 				{t('Tags')}
-			</Field.Label>
+			</FieldLabel>
 
 			{EETagsComponent && tagsResult?.tags && tagsResult?.tags.length ? (
-				<Field.Row>
+				<FieldRow>
 					<EETagsComponent
 						value={paginatedTagValue}
 						handler={(tags: { label: string; value: string }[]): void => {
@@ -85,10 +85,10 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 						department={department}
 						viewAll={!department}
 					/>
-				</Field.Row>
+				</FieldRow>
 			) : (
 				<>
-					<Field.Row>
+					<FieldRow>
 						<TextInput
 							error={error}
 							value={tagValue}
@@ -99,18 +99,18 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 						<Button disabled={!tagValue} mis={8} title={t('Add')} onClick={handleTagTextSubmit}>
 							{t('Add')}
 						</Button>
-					</Field.Row>
+					</FieldRow>
 				</>
 			)}
 
 			{customTags.length > 0 && (
-				<Field.Row justifyContent='flex-start'>
+				<FieldRow justifyContent='flex-start'>
 					{customTags?.map((tag, i) => (
 						<Chip key={i} onClick={(): void => removeTag(tag)} mie={8}>
 							{tag}
 						</Chip>
 					))}
-				</Field.Row>
+				</FieldRow>
 			)}
 		</>
 	);

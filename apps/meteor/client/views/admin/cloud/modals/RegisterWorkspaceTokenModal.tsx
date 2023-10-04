@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Field, Modal, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Field, FieldLabel, FieldRow, FieldError, Modal, TextInput } from '@rocket.chat/fuselage';
 import { useMethod, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import React, { useState } from 'react';
@@ -79,11 +79,11 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: Regi
 				</Box>
 				<Box is='p' fontSize='p2'>{`2. ${t('RegisterWorkspace_Token_Step_Two')}`}</Box>
 				<Field pbs={10}>
-					<Field.Label>{t('Registration_Token')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Registration_Token')}</FieldLabel>
+					<FieldRow>
 						<TextInput onChange={handleTokenChange} value={token} />
-					</Field.Row>
-					{error && <Field.Error>{t('Token_Not_Recognized')}</Field.Error>}
+					</FieldRow>
+					{error && <FieldError>{t('Token_Not_Recognized')}</FieldError>}
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>
