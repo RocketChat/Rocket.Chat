@@ -1,5 +1,3 @@
-import type { SignedSupportedVersions } from '@rocket.chat/server-cloud-communication';
-
 import type { ILicenseTag } from './ILicenseTag';
 import type { LicenseLimit } from './LicenseLimit';
 import type { LicenseModule } from './LicenseModule';
@@ -61,8 +59,6 @@ export interface ILicenseV3 {
 		monthlyActiveContacts?: LicenseLimit[];
 	};
 	cloudMeta?: Record<string, any>;
-
-	supportedVersions?: SignedSupportedVersions;
 }
 
 export type LicenseLimitKind = keyof ILicenseV3['limits'];
