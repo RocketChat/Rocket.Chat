@@ -244,6 +244,7 @@ export default {
 			totalWebRTCCalls: 0,
 			uncaughtExceptionsCount: 0,
 			push: 0,
+			dailyPeakConnections: 0,
 			matrixFederation: {
 				enabled: false,
 			},
