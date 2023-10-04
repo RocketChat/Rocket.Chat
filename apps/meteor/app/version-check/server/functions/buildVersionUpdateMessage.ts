@@ -11,7 +11,7 @@ export const buildVersionUpdateMessage = async (
 		version: string;
 		security: boolean;
 		infoUrl: string;
-	}[],
+	}[] = [],
 ) => {
 	const lastCheckedVersion = settings.get<string>('Update_LatestAvailableVersion');
 
