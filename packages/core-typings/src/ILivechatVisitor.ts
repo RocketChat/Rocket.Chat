@@ -48,6 +48,7 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 		username: string;
 	};
 	activity?: string[];
+	disabled?: boolean;
 }
 
 export interface ILivechatVisitorDTO {

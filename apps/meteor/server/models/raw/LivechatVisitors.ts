@@ -33,6 +33,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
 			{ key: { 'livechatData.$**': 1 } },
 			{ key: { activity: 1 }, partialFilterExpression: { activity: { $exists: true } } },
+			{ key: { disabled: 1 }, partialFilterExpression: { disabled: { $exists: true } } },
 		];
 	}
 
@@ -64,9 +65,29 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.find(query, options);
 	}
 
+	findEnabled(query: Filter<ILivechatVisitor>, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
+		return this.find(
+			{
+				...query,
+				disabled: { $ne: true },
+			},
+			options,
+		);
+	}
+
+	findOneEnabledById<T extends Document = ILivechatVisitor>(_id: string, options?: FindOptions<ILivechatVisitor>): Promise<T | null> {
+		const query = {
+			_id,
+			disabled: { $ne: true },
+		};
+
+		return this.findOne<T>(query, options);
+	}
+
 	findVisitorByToken(token: string): FindCursor<ILivechatVisitor> {
 		const query = {
 			token,
+			disabled: { $ne: true },
 		};
 
 		return this.find(query);
@@ -82,6 +103,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): FindCursor<ILivechatVisitor> {
 		const query = {
+			disabled: { $ne: true },
 			_updatedAt: {
 				$gte: new Date(start),
 				$lt: new Date(end),
@@ -167,7 +189,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		options?: FindOptions<ILivechatVisitor>,
 	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>> {
 		if (!emailOrPhone && !nameOrUsername && allowedCustomFields.length === 0) {
-			return this.findPaginated({}, options);
+			return this.findPaginated({ disabled: { $ne: true } }, options);
 		}
 
 		const query: Filter<ILivechatVisitor> = {
@@ -194,6 +216,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 					: []),
 				...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
 			],
+			disabled: { $ne: true },
 		};
 
 		return this.findPaginated(query, options);
@@ -205,7 +228,9 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		customFields?: { [key: string]: RegExp },
 	): Promise<ILivechatVisitor | null> {
 		const query = Object.assign(
-			{},
+			{
+				disabled: { $ne: true },
+			},
 			{
 				...(email && { visitorEmails: { address: email } }),
 				...(phone && { phone: { phoneNumber: phone } }),
@@ -213,7 +238,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			},
 		);
 
-		if (Object.keys(query).length === 0) {
+		if (Object.keys(query).length === 1) {
 			return null;
 		}
 
@@ -391,6 +416,34 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	disableById(_id: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id },
+			{
+				$set: { disabled: true },
+				$unset: {
+					department: 1,
+					contactManager: 1,
+					token: 1,
+					visitorEmails: 1,
+					phone: 1,
+					name: 1,
+					livechatData: 1,
+					lastChat: 1,
+					ip: 1,
+					host: 1,
+					userAgent: 1,
+				},
+			},
+		);
+	}
+
+	countVisitorsOnPeriod(period: string): Promise<number> {
+		return this.countDocuments({
+			activity: period,
+		});
 	}
 }
 
