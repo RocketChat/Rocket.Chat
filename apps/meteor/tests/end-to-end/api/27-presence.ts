@@ -120,7 +120,8 @@ describe('[Presence]', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('current').to.be.a('number');
+					expect(res.body).to.have.property('peak').to.be.a('number');
+					expect(res.body).to.have.property('date');
 					expect(res.body).to.have.property('max').to.be.a('number').and.to.be.equal(200);
 				});
 		});
