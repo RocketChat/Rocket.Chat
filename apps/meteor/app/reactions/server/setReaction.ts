@@ -63,8 +63,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 
 		if (reactedUsernamesForEmoji?.length === 1) {
 			// we can just pull the whole 'emoji' field
-			// @ts-ignore
-			if (message.reactions && Object.keys(message.reactions).length === 0) {
+			if (message.reactions && Object.keys(message.reactions).length === 1) {
 				// remove the whole reactions
 				delete message.reactions;
 				await Messages.updateOne({ _id: message._id }, { $unset: { reactions: 1 } });
@@ -73,6 +72,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 					await Rooms.unsetReactionsInLastMessage(room._id);
 				}
 			} else {
+				// @ts-ignore
 				delete message.reactions[reaction];
 				await Messages.updateOne(
 					{ _id: message._id },
