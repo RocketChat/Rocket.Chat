@@ -139,7 +139,5 @@ table {
 }
 
 a {
-	text-decoration: underline;
-
 	color: var(--rcx-color-font-info, #095ad2);
 }
