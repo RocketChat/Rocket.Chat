@@ -5,6 +5,7 @@ import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { PlanName } from '../../../../../lib/utils/getPlanName';
+import { PRICING_LINK } from '../../utils/links';
 import FeatureUsageCard from '../FeatureUsageCard';
 import InfoTextIconModal from '../InfoTextIconModal';
 
@@ -166,7 +167,7 @@ const FeaturesCard = ({ plan }: FeaturesCardProps): ReactElement => {
 				</CardCol>
 				<CardFooter>
 					<Trans i18nKey='Compare_plans'>
-						<Box is='a' target='_blank' rel='noopener noreferrer' href='https://go.rocket.chat/i/downgrade' textDecorationLine='underline'>
+						<Box is='a' target='_blank' rel='noopener noreferrer' href={PRICING_LINK} textDecorationLine='underline'>
 							Compare plans
 						</Box>
 					</Trans>

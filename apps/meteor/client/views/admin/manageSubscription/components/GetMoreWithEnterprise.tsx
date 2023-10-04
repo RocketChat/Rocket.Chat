@@ -4,6 +4,8 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { PRICING_LINK } from '../utils/links';
+
 const GetMoreWithEnterprise = (): ReactElement => {
 	const { t } = useTranslation();
 
@@ -58,7 +60,7 @@ const GetMoreWithEnterprise = (): ReactElement => {
 					</Grid.Item>
 				))}
 			</Grid>
-			<Button is='a' target='_blank' rel='noopener noreferrer' href='https://go.rocket.chat/i/undefined'>
+			<Button is='a' external href={PRICING_LINK}>
 				{t('Learn_more_about_enterprise')}
 			</Button>
 		</Box>

@@ -9,6 +9,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { useIsSelfHosted } from '../../../../../hooks/useIsSelfHosted';
 import { getDaysLeft } from '../../../../../lib/utils/getDaysLeft';
+import { CONTACT_SALES_LINK, DOWNGRADE_LINK, TRIAL_LINK } from '../../utils/links';
+import UpgradeButton from '../UpgradeButton';
 
 type PlanCardProps = {
 	isEnterprise: boolean;
@@ -38,22 +40,26 @@ const PlanCard = ({ isEnterprise, license }: PlanCardProps): ReactElement => {
 						{isSalesAssisted ? (
 							<Trans i18nKey='Contact_sales_trial'>
 								Contact sales to finish your purchase and avoid
-								<ExternalLink to='https://go.rocket.chat/i/downgrade'>downgrade consequences.</ExternalLink>
+								<ExternalLink to={DOWNGRADE_LINK}>downgrade consequences.</ExternalLink>
 							</Trans>
 						) : (
 							<Trans i18nKey='Finish_your_purchase_trial'>
-								Finish your purchase to avoid <ExternalLink to='https://go.rocket.chat/i/downgrade'>downgrade consequences.</ExternalLink>
+								Finish your purchase to avoid <ExternalLink to={DOWNGRADE_LINK}>downgrade consequences.</ExternalLink>
 							</Trans>
 						)}
 					</Box>
 					<Box fontScale='p2' mb={6}>
 						<Trans i18nKey='Why_has_a_trial_been_applied_to_this_workspace'>
-							<ExternalLink to='https://go.rocket.chat/i/downgrade'>Why has a trial been applied to this workspace?</ExternalLink>
+							<ExternalLink to={TRIAL_LINK}>Why has a trial been applied to this workspace?</ExternalLink>
 						</Trans>
 					</Box>
-					<Button mbs='auto' primary w='full' is='a' href='https://go.rocket.chat/i/purchase' target='_blank' rel='noopener noreferrer'>
-						{isSalesAssisted ? t('Contact_sales') : t('Finish_purchase')}
-					</Button>
+					{isSalesAssisted ? (
+						<Button mbs='auto' primary w='full' is='a' href={CONTACT_SALES_LINK} external>
+							{t('Contact_sales')}
+						</Button>
+					) : (
+						<UpgradeButton i18nKey='Finish_purchase' primary mbs='auto' w='full' />
+					)}
 				</Box>
 			);
 		}
@@ -80,7 +86,7 @@ const PlanCard = ({ isEnterprise, license }: PlanCardProps): ReactElement => {
 							t('Renews_DATE', { date: formatDate(visualExpiration) })
 						) : (
 							<Trans i18nKey='Contact_sales_renew_date'>
-								<ExternalLink to='https://go.rocket.chat/i/downgrade'>Contact sales</ExternalLink> to check plan renew date.
+								<ExternalLink to={CONTACT_SALES_LINK}>Contact sales</ExternalLink> to check plan renew date.
 							</Trans>
 						)}
 					</Box>

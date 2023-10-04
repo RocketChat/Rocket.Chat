@@ -18,8 +18,7 @@ import MACCard from './components/cards/MACCard';
 import MobilePushNotificationCard from './components/cards/MobilePushNotificationCard';
 import PlanCard from './components/cards/PlanCard';
 import SeatsCard from './components/cards/SeatsCard';
-
-const CONTACT_SALES_LINK = 'https://go.rocket.chat/i/contact-sales';
+import { CONTACT_SALES_LINK } from './utils/links';
 
 const ManageSubscriptionPage = () => {
 	const { data } = useIsEnterprise();

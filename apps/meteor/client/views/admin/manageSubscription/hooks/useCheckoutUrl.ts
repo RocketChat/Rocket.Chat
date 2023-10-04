@@ -3,7 +3,7 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-const DEFAULT_URL = 'https://go.rocket.chat/i/contact-sales';
+import { CONTACT_SALES_LINK } from '../utils/links';
 
 export const useCheckoutUrl = (): { isLoading: boolean; isError: boolean; url: string } => {
 	const getCheckoutUrl = useEndpoint('GET', '/v1/billing.checkoutUrl');
@@ -17,7 +17,7 @@ export const useCheckoutUrl = (): { isLoading: boolean; isError: boolean; url: s
 		},
 	);
 
-	const url = data?.url || DEFAULT_URL;
+	const url = data?.url || CONTACT_SALES_LINK;
 
 	return { isLoading, isError, url };
 };
