@@ -1,4 +1,4 @@
-import { Box, Field, Flex, Select } from '@rocket.chat/fuselage';
+import { Box, FieldLabel, FieldRow, Flex, Select } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -43,13 +43,13 @@ function SelectSettingInput({
 		<>
 			<Flex.Container>
 				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
+					<FieldLabel htmlFor={_id} title={_id}>
 						{label}
-					</Field.Label>
+					</FieldLabel>
 					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 				</Box>
 			</Flex.Container>
-			<Field.Row>
+			<FieldRow>
 				<Select
 					data-qa-setting-id={_id}
 					id={_id}
@@ -61,7 +61,7 @@ function SelectSettingInput({
 					onChange={(value) => handleChange(String(value))}
 					options={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)])}
 				/>
-			</Field.Row>
+			</FieldRow>
 		</>
 	);
 }
