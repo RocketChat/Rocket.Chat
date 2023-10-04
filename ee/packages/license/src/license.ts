@@ -297,10 +297,10 @@ export class LicenseManager extends Emitter<
 		context?: Partial<LimitContext<T>>,
 		newCount = 1,
 	): Promise<boolean> {
-		return this.isLimitReached(action, ['prevent_action'], context, newCount);
+		return this._isLimitReached(action, ['prevent_action'], context, newCount);
 	}
 
-	protected async isLimitReached<T extends LicenseLimitKind>(
+	protected async _isLimitReached<T extends LicenseLimitKind>(
 		action: T,
 		behaviorsToConsider?: LicenseBehavior[],
 		context?: Partial<LimitContext<T>>,

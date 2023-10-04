@@ -90,7 +90,7 @@ export class LicenseImp extends LicenseManager implements License {
 		behaviors: LicenseBehavior[],
 		context?: Partial<LimitContext<T>>,
 	): Promise<boolean> {
-		return super.isLimitReached(action, behaviors, context);
+		return this._isLimitReached(action, behaviors, context);
 	}
 
 	onValidFeature = onValidFeature;
