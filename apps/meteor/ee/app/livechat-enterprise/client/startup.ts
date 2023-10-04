@@ -2,14 +2,14 @@ import { Meteor } from 'meteor/meteor';
 
 import { businessHourManager } from '../../../../app/livechat/client/views/app/business-hours/BusinessHours';
 import type { IBusinessHourBehavior } from '../../../../app/livechat/client/views/app/business-hours/IBusinessHourBehavior';
+import { SingleBusinessHourBehavior } from '../../../../app/livechat/client/views/app/business-hours/Single';
 import { settings } from '../../../../app/settings/client';
 import { hasLicense } from '../../license/client';
-import { EESingleBusinessHourBehaviour } from './SingleBusinessHour';
 import { MultipleBusinessHoursBehavior } from './views/business-hours/Multiple';
 
 const businessHours: Record<string, IBusinessHourBehavior> = {
 	multiple: new MultipleBusinessHoursBehavior(),
-	single: new EESingleBusinessHourBehaviour(),
+	single: new SingleBusinessHourBehavior(),
 };
 
 Meteor.startup(() => {
