@@ -1,8 +1,7 @@
-import type { Cloud, Serialized } from '@rocket.chat/core-typings';
+import { type Cloud, type Serialized } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { v, compile } from 'suretype';
 
-import { callbacks } from '../../../../../lib/callbacks';
 import { CloudWorkspaceAccessError } from '../../../../../lib/errors/CloudWorkspaceAccessError';
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
@@ -11,25 +10,50 @@ import { settings } from '../../../../settings/server';
 import { buildWorkspaceRegistrationData } from '../buildRegistrationData';
 import { getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
 import { retrieveRegistrationStatus } from '../retrieveRegistrationStatus';
+import { handleAnnouncementsOnWorkspaceSync, handleNpsOnWorkspaceSync } from './handleCommsSync';
 import { legacySyncWorkspace } from './legacySyncWorkspace';
 
-const workspaceSyncPayloadSchema = v.object({
+const workspaceCommPayloadSchema = v.object({
 	workspaceId: v.string().required(),
 	publicKey: v.string(),
-	license: v.string().required(),
+	nps: v.object({
+		id: v.string().required(),
+		startAt: v.string().format('date-time').required(),
+		expireAt: v.string().format('date-time').required(),
+	}),
+	announcements: v.object({
+		create: v.array(
+			v.object({
+				_id: v.string().required(),
+				_updatedAt: v.string().format('date-time').required(),
+				selector: v.object({
+					roles: v.array(v.string()),
+				}),
+				platform: v.array(v.string().enum('web', 'mobile')).required(),
+				expireAt: v.string().format('date-time').required(),
+				startAt: v.string().format('date-time').required(),
+				createdBy: v.string().enum('cloud', 'system').required(),
+				createdAt: v.string().format('date-time').required(),
+				dictionary: v.object({}).additional(v.object({}).additional(v.string())),
+				view: v.any(),
+				surface: v.string().enum('banner', 'modal').required(),
+			}),
+		),
+		delete: v.array(v.string()),
+	}),
 });
 
-const assertWorkspaceSyncPayload = compile(workspaceSyncPayloadSchema);
+const assertWorkspaceCommPayload = compile(workspaceCommPayloadSchema);
 
-const fetchWorkspaceSyncPayload = async ({
+const fetchCloudAnnouncementsSync = async ({
 	token,
 	data,
 }: {
 	token: string;
 	data: Cloud.WorkspaceSyncRequestPayload;
-}): Promise<Serialized<Cloud.WorkspaceSyncResponse>> => {
-	const workspaceRegistrationClientUri = settings.get<string>('Cloud_Workspace_Registration_Client_Uri');
-	const response = await fetch(`${workspaceRegistrationClientUri}/sync`, {
+}): Promise<Serialized<Cloud.WorkspaceCommsResponsePayload>> => {
+	const cloudUrl = settings.get<string>('Cloud_Url');
+	const response = await fetch(`${cloudUrl}/api/v3/comms/workspace`, {
 		method: 'POST',
 		headers: {
 			Authorization: `Bearer ${token}`,
@@ -48,12 +72,11 @@ const fetchWorkspaceSyncPayload = async ({
 
 	const payload = await response.json();
 
-	assertWorkspaceSyncPayload(payload);
-
+	assertWorkspaceCommPayload(payload);
 	return payload;
 };
 
-export async function syncCloudData() {
+export async function announcementSync() {
 	try {
 		const { workspaceRegistered } = await retrieveRegistrationStatus();
 		if (!workspaceRegistered) {
@@ -67,12 +90,18 @@ export async function syncCloudData() {
 
 		const workspaceRegistrationData = await buildWorkspaceRegistrationData(undefined);
 
-		const { license } = await fetchWorkspaceSyncPayload({
+		const { nps, announcements } = await fetchCloudAnnouncementsSync({
 			token,
 			data: workspaceRegistrationData,
 		});
 
-		await callbacks.run('workspaceLicenseChanged', license);
+		if (nps) {
+			await handleNpsOnWorkspaceSync(nps);
+		}
+
+		if (announcements) {
+			await handleAnnouncementsOnWorkspaceSync(announcements);
+		}
 
 		return true;
 	} catch (err) {
