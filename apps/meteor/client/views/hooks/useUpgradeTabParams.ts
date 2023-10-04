@@ -1,4 +1,3 @@
-import type { ILicenseV2, ILicenseV3 } from '@rocket.chat/license';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { format } from 'date-fns';
 
@@ -14,14 +13,16 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 	const { data: registrationStatusData, isSuccess: isSuccessRegistrationStatus } = useRegistrationStatus();
 
 	const registered = registrationStatusData?.registrationStatus?.workspaceRegistered ?? false;
-	const hasValidLicense = licensesData?.licenses.some((license) => license.modules.length > 0) ?? false;
+
+	const license = licensesData?.data.license;
+	const activeModules = licensesData?.data.activeModules || [];
+
+	const hasValidLicense = activeModules.length > 0 || (license?.grantedModules?.length || 0) > 0;
 	const hadExpiredTrials = cloudWorkspaceHadTrial ?? false;
 
-	const licenses = (licensesData?.licenses || []) as (Partial<ILicenseV2 & ILicenseV3> & { modules: string[] })[];
-
-	const trialLicense = licenses.find(({ meta, information }) => information?.trial ?? meta?.trial);
+	const trialLicense = license?.information?.trial || false;
 	const isTrial = Boolean(trialLicense);
-	const trialEndDateStr = trialLicense?.information?.visualExpiration || trialLicense?.meta?.trialEnd || trialLicense?.cloudMeta?.trialEnd;
+	const trialEndDateStr = license?.information?.visualExpiration || license?.cloudMeta?.trialEnd;
 	const trialEndDate = trialEndDateStr ? format(new Date(trialEndDateStr), 'yyyy-MM-dd') : undefined;
 
 	const upgradeTabType = getUpgradeTabType({
