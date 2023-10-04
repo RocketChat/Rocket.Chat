@@ -5,7 +5,7 @@ import type { Response } from 'supertest';
 
 import { getCredentials, request, credentials, methodCall } from '../../../../data/api-data';
 import { disableDefaultBusinessHour, makeDefaultBusinessHourActiveAndClosed } from '../../../../data/livechat/businessHours';
-import { createAgent } from '../../../../data/livechat/rooms';
+import { createAgent, makeAgentAvailable } from '../../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../../data/permissions.helper';
 import { password } from '../../../../data/user';
 import { createUser, deleteUser, getMe, login } from '../../../../data/users.helper';
@@ -23,6 +23,7 @@ describe('livechat:changeLivechatStatus', function () {
 		const user: IUser = await createUser();
 		const userCredentials = await login(user.username, password);
 		await createAgent(user.username);
+		await makeAgentAvailable(userCredentials);
 
 		agent = {
 			user,
