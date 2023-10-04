@@ -30,6 +30,9 @@
 	"files": [
 		"/dist"
 	],
+	"volta": {
+		"extends": "../../package.json"
+	},
 	"dependencies": {
 		"@rocket.chat/apps-engine": "1.41.0-alpha.290",
 		"@rocket.chat/core-typings": "workspace:^",

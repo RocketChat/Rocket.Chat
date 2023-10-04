@@ -29,7 +29,7 @@ import {
 import { MongoInternals } from 'meteor/mongo';
 import moment from 'moment';
 
-import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
+import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server/getStatistics';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
 import { getControl } from '../../../../server/lib/migrations';
@@ -42,8 +42,6 @@ import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
-
-const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
 const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: number }> => {
 	const result = await Users.getUserLanguages();
@@ -72,17 +70,29 @@ export const statistics = {
 		const statistics = {} as IStats;
 		const statsPms = [];
 
+		const fetchWizardSettingValue = async <T>(settingName: string): Promise<T | undefined> => {
+			return ((await Settings.findOne(settingName))?.value as T | undefined) ?? undefined;
+		};
+
 		// Setup Wizard
-		statistics.wizard = {};
-		await Promise.all(
-			wizardFields.map(async (field) => {
-				const record = await Settings.findOne(field);
-				if (record) {
-					const wizardField = field.replace(/_/g, '').replace(field[0], field[0].toLowerCase());
-					statistics.wizard[wizardField] = record.value;
-				}
-			}),
-		);
+		const [organizationType, industry, size, country, language, serverType, registerServer] = await Promise.all([
+			fetchWizardSettingValue<string>('Organization_Type'),
+			fetchWizardSettingValue<string>('Industry'),
+			fetchWizardSettingValue<string>('Size'),
+			fetchWizardSettingValue<string>('Country'),
+			fetchWizardSettingValue<string>('Language'),
+			fetchWizardSettingValue<string>('Server_Type'),
+			fetchWizardSettingValue<boolean>('Register_Server'),
+		]);
+		statistics.wizard = {
+			organizationType,
+			industry,
+			size,
+			country,
+			language,
+			serverType,
+			registerServer,
+		};
 
 		// Version
 		const uniqueID = await Settings.findOne('uniqueID');
@@ -538,6 +548,15 @@ export const statistics = {
 		statistics.totalCustomRoles = await RolesRaw.findCustomRoles({ readPreference }).count();
 		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
 		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');
+
+		const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
+
+		// one bit for each of the following:
+		const pushEnabled = settings.get('Push_enable') ? 1 : 0;
+		const pushGatewayEnabled = settings.get('Push_enable_gateway') ? 2 : 0;
+		const pushGatewayChanged = settings.get('Push_gateway') !== defaultGateway ? 4 : 0;
+
+		statistics.push = pushEnabled | pushGatewayEnabled | pushGatewayChanged;
 
 		const defaultHomeTitle = (await Settings.findOneById('Layout_Home_Title'))?.packageValue;
 		statistics.homeTitleChanged = settings.get('Layout_Home_Title') !== defaultHomeTitle;

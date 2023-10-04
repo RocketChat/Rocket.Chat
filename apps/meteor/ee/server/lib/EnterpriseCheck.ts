@@ -41,7 +41,7 @@ export const EnterpriseCheck: ServiceSchema = {
 	async started(): Promise<void> {
 		setInterval(async () => {
 			try {
-				const hasLicense = await this.broker.call('license.hasLicense', ['scalability']);
+				const hasLicense = await this.broker.call('license.hasValidLicense', ['scalability']);
 				if (hasLicense) {
 					checkFails = 0;
 					return;
