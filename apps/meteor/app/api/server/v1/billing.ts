@@ -1,4 +1,3 @@
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getCheckoutUrl } from '../../../cloud/server/functions/getCheckoutUrl';
 import { getWorkspaceAccessTokenWithScope } from '../../../cloud/server/functions/getWorkspaceAccessTokenWithScope';
 import { getURL } from '../../../utils/server/getURL';
@@ -6,13 +5,9 @@ import { API } from '../api';
 
 API.v1.addRoute(
 	'billing.checkoutUrl',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-cloud'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { token } = await getWorkspaceAccessTokenWithScope('workspace:billing');
 			if (!token) {
 				return API.v1.unauthorized();
