@@ -59,7 +59,6 @@ export const openBusinessHourDefault = async (): Promise<void> => {
 		await Users.makeAgentsWithinBusinessHourAvailable();
 	}
 	await Users.updateLivechatStatusBasedOnBusinessHours();
-	businessHourLogger.debug('Done opening default business hours');
 };
 
 export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {
