@@ -21,13 +21,13 @@ const LicenseCard = (): ReactElement => {
 
 	const { data, isError, isLoading } = useLicense();
 
-	const { modules = [] } = isLoading || isError || !data?.licenses?.length ? {} : data?.licenses[0];
+	const { activeModules = [] } = isLoading || isError || !data?.data.activeModules ? {} : data.data;
 
-	const hasEngagement = modules.includes('engagement-dashboard');
-	const hasOmnichannel = modules.includes('livechat-enterprise');
-	const hasAuditing = modules.includes('auditing');
-	const hasCannedResponses = modules.includes('canned-responses');
-	const hasReadReceipts = modules.includes('message-read-receipt');
+	const hasEngagement = activeModules.includes('engagement-dashboard');
+	const hasOmnichannel = activeModules.includes('livechat-enterprise');
+	const hasAuditing = activeModules.includes('auditing');
+	const hasCannedResponses = activeModules.includes('canned-responses');
+	const hasReadReceipts = activeModules.includes('message-read-receipt');
 
 	const handleApplyLicense = useMutableCallback(() =>
 		setModal(
