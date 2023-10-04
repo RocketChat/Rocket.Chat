@@ -50,7 +50,10 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 			<RegisterWorkspaceModal
 				onClose={handleModalClose}
 				onStatusChange={() => {
-					queryClient.invalidateQueries(['getRegistrationStatus']);
+					queryClient.invalidateQueries({
+						queryKey: ['getRegistrationStatus'],
+						exact: true,
+					});
 					refetch();
 					callback();
 				}}
