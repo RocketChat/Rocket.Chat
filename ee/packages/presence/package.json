@@ -28,6 +28,9 @@
 	"files": [
 		"/dist"
 	],
+	"volta": {
+		"extends": "../../../package.json"
+	},
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
