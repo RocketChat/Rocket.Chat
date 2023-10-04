@@ -1,5 +1,16 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { FieldDescription, FieldLabel, Accordion, Field, Select, FieldGroup, ToggleSwitch, Box } from '@rocket.chat/fuselage';
+import {
+	Field,
+	FieldRow,
+	FieldDescription,
+	FieldLabel,
+	FieldGroup,
+	FieldHint,
+	Accordion,
+	Select,
+	ToggleSwitch,
+	Box,
+} from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
@@ -47,8 +58,8 @@ const PreferencesMessagesSection = () => {
 			<FieldGroup>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label htmlFor={unreadAlertId}>{t('Unread_Tray_Icon_Alert')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={unreadAlertId}>{t('Unread_Tray_Icon_Alert')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								name='unreadAlert'
 								control={control}
@@ -56,13 +67,13 @@ const PreferencesMessagesSection = () => {
 									<ToggleSwitch id={unreadAlertId} ref={ref} checked={value} onChange={onChange} />
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Box>
 				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label htmlFor={showThreadsInMainChannelId}>{t('Always_show_thread_replies_in_main_channel')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={showThreadsInMainChannelId}>{t('Always_show_thread_replies_in_main_channel')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								name='showThreadsInMainChannel'
 								control={control}
@@ -76,15 +87,15 @@ const PreferencesMessagesSection = () => {
 									/>
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Box>
-					<Field.Hint id={`${showThreadsInMainChannelId}-hint`}>
+					<FieldHint id={`${showThreadsInMainChannelId}-hint`}>
 						{t('Accounts_Default_User_Preferences_showThreadsInMainChannel_Description')}
-					</Field.Hint>
+					</FieldHint>
 				</Field>
 				<Field>
-					<Field.Label htmlFor={alsoSendThreadToChannelId}>{t('Also_send_thread_message_to_channel_behavior')}</Field.Label>
-					<Field.Row>
+					<FieldLabel htmlFor={alsoSendThreadToChannelId}>{t('Also_send_thread_message_to_channel_behavior')}</FieldLabel>
+					<FieldRow>
 						<Controller
 							name='alsoSendThreadToChannel'
 							control={control}
@@ -98,10 +109,10 @@ const PreferencesMessagesSection = () => {
 								/>
 							)}
 						/>
-					</Field.Row>
-					<Field.Hint id={`${alsoSendThreadToChannelId}-hint`}>
+					</FieldRow>
+					<FieldHint id={`${alsoSendThreadToChannelId}-hint`}>
 						{t('Accounts_Default_User_Preferences_alsoSendThreadToChannel_Description')}
-					</Field.Hint>
+					</FieldHint>
 				</Field>
 				<Field>
 					<FieldLabel>{t('Message_TimeFormat')}</FieldLabel>
@@ -111,8 +122,8 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label htmlFor={useEmojisId}>{t('Use_Emojis')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={useEmojisId}>{t('Use_Emojis')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								name='useEmojis'
 								control={control}
@@ -120,13 +131,13 @@ const PreferencesMessagesSection = () => {
 									<ToggleSwitch id={useEmojisId} ref={ref} checked={value} onChange={onChange} />
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Box>
 				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label htmlFor={convertAsciiEmojiId}>{t('Convert_Ascii_Emojis')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={convertAsciiEmojiId}>{t('Convert_Ascii_Emojis')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								name='convertAsciiEmoji'
 								control={control}
@@ -134,13 +145,13 @@ const PreferencesMessagesSection = () => {
 									<ToggleSwitch id={convertAsciiEmojiId} ref={ref} checked={value} onChange={onChange} />
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Box>
 				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label htmlFor={autoImageLoadId}>{t('Auto_Load_Images')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={autoImageLoadId}>{t('Auto_Load_Images')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								name='autoImageLoad'
 								control={control}
@@ -148,13 +159,13 @@ const PreferencesMessagesSection = () => {
 									<ToggleSwitch id={autoImageLoadId} ref={ref} checked={value} onChange={onChange} />
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Box>
 				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label htmlFor={saveMobileBandwidthId}>{t('Save_Mobile_Bandwidth')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={saveMobileBandwidthId}>{t('Save_Mobile_Bandwidth')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								name='saveMobileBandwidth'
 								control={control}
@@ -162,13 +173,13 @@ const PreferencesMessagesSection = () => {
 									<ToggleSwitch id={saveMobileBandwidthId} ref={ref} checked={value} onChange={onChange} />
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Box>
 				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label htmlFor={collapseMediaByDefaultId}>{t('Collapse_Embedded_Media_By_Default')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={collapseMediaByDefaultId}>{t('Collapse_Embedded_Media_By_Default')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								name='collapseMediaByDefault'
 								control={control}
@@ -176,7 +187,7 @@ const PreferencesMessagesSection = () => {
 									<ToggleSwitch id={collapseMediaByDefaultId} ref={ref} checked={value} onChange={onChange} />
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Box>
 				</Field>
 				<Field>
@@ -193,8 +204,8 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label htmlFor={hideFlexTabId}>{t('Hide_flextab')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={hideFlexTabId}>{t('Hide_flextab')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								name='hideFlexTab'
 								control={control}
@@ -202,13 +213,13 @@ const PreferencesMessagesSection = () => {
 									<ToggleSwitch id={hideFlexTabId} ref={ref} checked={value} onChange={onChange} />
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Box>
 				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label htmlFor={displayAvatarsId}>{t('Display_avatars')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={displayAvatarsId}>{t('Display_avatars')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								name='displayAvatars'
 								control={control}
@@ -216,12 +227,12 @@ const PreferencesMessagesSection = () => {
 									<ToggleSwitch id={displayAvatarsId} ref={ref} checked={value} onChange={onChange} />
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Box>
 				</Field>
 				<Field>
-					<Field.Label htmlFor={sendOnEnterId}>{t('Enter_Behaviour')}</Field.Label>
-					<Field.Row>
+					<FieldLabel htmlFor={sendOnEnterId}>{t('Enter_Behaviour')}</FieldLabel>
+					<FieldRow>
 						<Controller
 							name='sendOnEnter'
 							control={control}
@@ -229,8 +240,8 @@ const PreferencesMessagesSection = () => {
 								<Select id={sendOnEnterId} value={value} onChange={onChange} options={sendOnEnterOptions} />
 							)}
 						/>
-					</Field.Row>
-					<Field.Hint>{t('Enter_Behaviour_Description')}</Field.Hint>
+					</FieldRow>
+					<FieldHint>{t('Enter_Behaviour_Description')}</FieldHint>
 				</Field>
 			</FieldGroup>
 		</Accordion.Item>
