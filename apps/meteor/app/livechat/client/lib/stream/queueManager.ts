@@ -13,13 +13,18 @@ const events = {
 	},
 	changed: async (inquiry: ILivechatInquiryRecord) => {
 		if (inquiry.status !== 'queued' || (inquiry.department && !departments.has(inquiry.department))) {
-			return LivechatInquiry.remove(inquiry._id);
+			return removeInquiry(inquiry);
 		}
 
 		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
 		await queryClient.invalidateQueries(['/v1/rooms.info', inquiry.rid]);
 	},
-	removed: (inquiry: ILivechatInquiryRecord) => LivechatInquiry.remove(inquiry._id),
+	removed: (inquiry: ILivechatInquiryRecord) => removeInquiry(inquiry),
+};
+
+const removeInquiry = async (inquiry: ILivechatInquiryRecord) => {
+	await queryClient.invalidateQueries(['rooms', { reference: inquiry.rid, type: 'l' }]);
+	return LivechatInquiry.remove(inquiry._id);
 };
 
 const getInquiriesFromAPI = async () => {
