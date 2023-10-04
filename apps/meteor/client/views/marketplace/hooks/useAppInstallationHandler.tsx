@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback } from 'react';
 
 import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
+import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 import RegisterWorkspaceModal from '../../admin/cloud/modals/RegisterWorkspaceModal';
 import IframeModal from '../IframeModal';
 import AppInstallModal from '../components/AppInstallModal/AppInstallModal';
@@ -12,8 +13,6 @@ import { handleAPIError } from '../helpers/handleAPIError';
 import { isMarketplaceRouteContext, useAppsCountQuery } from './useAppsCountQuery';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
-
-import { useRegistrationStatus } from '/client/hooks/useRegistrationStatus';
 
 export type AppInstallationHandlerParams = {
 	app: App;
