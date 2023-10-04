@@ -1,27 +1,13 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import {
-	Field,
-	FieldRow,
-	FieldDescription,
-	FieldLabel,
-	FieldGroup,
-	FieldHint,
-	Accordion,
-	Select,
-	ToggleSwitch,
-	Box,
-} from '@rocket.chat/fuselage';
+import { FieldRow, FieldLink, FieldHint, FieldLabel, Accordion, Field, Select, FieldGroup, ToggleSwitch, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 const PreferencesMessagesSection = () => {
 	const t = useTranslation();
 	const { control } = useFormContext();
-	const router = useRouter();
-
-	const handleGoToAccessibilityPage = () => router.navigate('/account/accessibility-and-appearance');
 
 	const alsoSendThreadMessageToChannelOptions = useMemo(
 		(): SelectOption[] => [
@@ -116,9 +102,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldLabel>{t('Message_TimeFormat')}</FieldLabel>
-					<FieldDescription is='a' color='info' onClick={handleGoToAccessibilityPage}>
-						{t('Go_to_accessibility_and_appearance')}
-					</FieldDescription>
+					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
 				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
@@ -192,15 +176,11 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldLabel>{t('Hide_usernames')}</FieldLabel>
-					<FieldDescription is='a' color='info' onClick={handleGoToAccessibilityPage}>
-						{t('Go_to_accessibility_and_appearance')}
-					</FieldDescription>
+					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
 				</Field>
 				<Field>
 					<FieldLabel>{t('Hide_roles')}</FieldLabel>
-					<FieldDescription is='a' color='info' onClick={handleGoToAccessibilityPage}>
-						{t('Go_to_accessibility_and_appearance')}
-					</FieldDescription>
+					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
 				</Field>
 				<Field>
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
