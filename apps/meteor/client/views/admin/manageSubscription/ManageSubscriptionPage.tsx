@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Grid } from '@rocket.chat/fuselage';
+import { Box, Button, Grid } from '@rocket.chat/fuselage';
 import type { ILicenseV3 } from '@rocket.chat/license';
 import { t } from 'i18next';
 import React, { memo } from 'react';
@@ -8,9 +8,9 @@ import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { useLicense } from '../../../hooks/useLicense';
 import { PlanName, getPlanName } from '../../../lib/utils/getPlanName';
 import GetMoreWithEnterprise from './components/GetMoreWithEnterprise';
+import UpgradeButton from './components/UpgradeButton';
 import AppsUsageCard from './components/cards/AppsUsageCard';
 import ConcurrentUsersCard from './components/cards/ConcurrentUsersCard';
-import ConcurrentUsersPeakCard from './components/cards/ConcurrentUsersPeakCard';
 import CountMACCard from './components/cards/CountMACCard';
 import CountSeatsCard from './components/cards/CountSeatsCard';
 import FeaturesCard from './components/cards/FeaturesCard';
@@ -18,6 +18,8 @@ import MACCard from './components/cards/MACCard';
 import MobilePushNotificationCard from './components/cards/MobilePushNotificationCard';
 import PlanCard from './components/cards/PlanCard';
 import SeatsCard from './components/cards/SeatsCard';
+
+const CONTACT_SALES_LINK = 'https://go.rocket.chat/i/contact-sales';
 
 const ManageSubscriptionPage = () => {
 	const { data } = useIsEnterprise();
@@ -28,15 +30,25 @@ const ManageSubscriptionPage = () => {
 
 	const plan = getPlanName(isEnterprise, license);
 
+	const getHeaderButton = () => {
+		if (plan === PlanName.COMMUNITY || plan === PlanName.STARTER) {
+			return <UpgradeButton primary i18nKey='Upgrade_to_Pro' />;
+		}
+
+		if (plan === PlanName.PRO || plan === PlanName.PRO_TRIAL) {
+			return (
+				<Button is='a' type='button' primary external href={CONTACT_SALES_LINK}>
+					{t('Start_Enterprise_trial')}
+				</Button>
+			);
+		}
+
+		return null;
+	};
+
 	return (
 		<Page bg='tint'>
-			<Page.Header title={t('Manage_subscription')}>
-				<ButtonGroup>
-					<Button type='button' primary>
-						Upgrade to PRO
-					</Button>
-				</ButtonGroup>
-			</Page.Header>
+			<Page.Header title={t('Manage_subscription')}>{getHeaderButton()}</Page.Header>
 
 			<Page.ScrollableContentWithShadow p={16}>
 				<Box marginBlock='none' marginInline='auto' width='full' color='default'>
@@ -70,25 +82,19 @@ const ManageSubscriptionPage = () => {
 									<CountMACCard />
 								</Grid.Item>
 								<Grid.Item lg={4} xs={4} p={8}>
-									<MobilePushNotificationCard />
-								</Grid.Item>
-								<Grid.Item lg={4} xs={4} p={8}>
 									<ConcurrentUsersCard />
 								</Grid.Item>
-								<Grid.Item lg={4} xs={4} p={8}>
-									<ConcurrentUsersCard />
-								</Grid.Item>
-								<Grid.Item lg={4} xs={4} p={8}>
-									<ConcurrentUsersPeakCard />
-								</Grid.Item>
-								<Grid.Item lg={4} xs={4} p={8}>
+								<Grid.Item lg={6} xs={4} p={8}>
 									<AppsUsageCard />
+								</Grid.Item>
+								<Grid.Item lg={6} xs={4} p={8}>
+									<MobilePushNotificationCard />
 								</Grid.Item>
 							</>
 						)}
 					</Grid>
+					{plan !== PlanName.ENTERPRISE && plan !== PlanName.ENTERPRISE_TRIAL && <GetMoreWithEnterprise />}
 				</Box>
-				{plan !== PlanName.ENTERPRISE && plan !== PlanName.ENTERPRISE_TRIAL && <GetMoreWithEnterprise />}
 			</Page.ScrollableContentWithShadow>
 		</Page>
 	);

@@ -12,19 +12,20 @@ export enum PlanName {
 }
 
 export const getPlanName = (isEnterprise: boolean, license: ILicenseV3): PlanName => {
+	const isTrial = license?.information?.trial ?? false;
 	const hasWhiteLabelModule = hasLicenseModule(license, 'white-label');
 	const hasScalabilityModule = hasLicenseModule(license, 'scalability');
 
 	switch (true) {
 		case !isEnterprise:
 			return PlanName.COMMUNITY;
-		case hasScalabilityModule && license.information.trial:
+		case hasScalabilityModule && isTrial:
 			return PlanName.ENTERPRISE_TRIAL;
 		case hasScalabilityModule:
 			return PlanName.ENTERPRISE;
 		case hasWhiteLabelModule:
 			return PlanName.PRO;
-		case license.information.trial:
+		case isTrial:
 			return PlanName.PRO_TRIAL;
 		default:
 			return PlanName.STARTER;

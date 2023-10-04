@@ -35,7 +35,7 @@ const GetMoreWithEnterprise = (): ReactElement => {
 	];
 
 	return (
-		<Box w='full' textAlign='center'>
+		<Box w='full' textAlign='center' p={8} mbs={40}>
 			<States>
 				<StatesIcon name='lightning' />
 				<StatesTitle>{t('Get_more_with_Enterprise')}</StatesTitle>

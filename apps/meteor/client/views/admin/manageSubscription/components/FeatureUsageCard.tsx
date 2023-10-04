@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import { Card, CardBody, CardColSection, CardTitle } from '@rocket.chat/ui-client';
+import { Card, CardBody, CardColSection, CardFooter, CardTitle } from '@rocket.chat/ui-client';
 import type { ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
-import CardUpgradeButton from './CardUpgradeButton';
 import InfoTextIconModal from './InfoTextIconModal';
+import UpgradeButton from './UpgradeButton';
 
 export type FeatureUsageCardProps = {
 	title: string;
@@ -22,7 +22,7 @@ const FeatureUsageCard = ({
 	upgradeButtonText = 'Upgrade',
 }: FeatureUsageCardProps): ReactElement => {
 	return (
-		<Card minHeight={280}>
+		<Card minHeight={220}>
 			<CardTitle fontScale='p2b'>
 				<Box display='flex' alignItems='center'>
 					{title} {infoText && <InfoTextIconModal title={title} infoText={infoText} />}
@@ -33,7 +33,7 @@ const FeatureUsageCard = ({
 					{children}
 				</CardColSection>
 			</CardBody>
-			{showUpgradeButton && <CardUpgradeButton i18nKey={upgradeButtonText} />}
+			<CardFooter>{showUpgradeButton && <UpgradeButton small i18nKey={upgradeButtonText} />}</CardFooter>
 		</Card>
 	);
 };
