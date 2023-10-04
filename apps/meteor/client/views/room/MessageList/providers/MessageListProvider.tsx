@@ -67,7 +67,7 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 							reactions?.[reaction]?.usernames.filter((user) => user !== username).map((username) => `@${username}`) || []
 					: (reaction: string): string[] => {
 							const reactedUsernames = reactions?.[reaction]?.usernames || [];
-							const reactedNames = reactions?.[reaction]?.names?.filter(Boolean) as string[] || [];
+							const reactedNames = (reactions?.[reaction]?.names?.filter(Boolean) as string[]) || [];
 
 							if (!reactions?.[reaction]) {
 								return [];
