@@ -1,15 +1,14 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Icon, Palette } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 
 type MultiSelectCustomAnchorProps = {
 	onClick?: (value: boolean) => void;
 	collapsed: boolean;
-	defaultTitle: TranslationKey;
-	selectedOptionsTitle: TranslationKey;
+	defaultTitle: string;
+	selectedOptionsTitle: string;
 	selectedOptionsCount: number;
 	maxCount: number;
 } & ComponentProps<typeof Button>;
@@ -59,7 +58,7 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			className={inputStyle}
 			{...props}
 		>
-			{isDirty ? `${t(selectedOptionsTitle)} (${selectedOptionsCount})` : t(defaultTitle)}
+			{isDirty ? `${t(selectedOptionsTitle as TranslationKey)} (${selectedOptionsCount})` : t(defaultTitle as TranslationKey)}
 			<Icon name='chevron-down' fontSize='x20' color='hint' />
 		</Box>
 	);

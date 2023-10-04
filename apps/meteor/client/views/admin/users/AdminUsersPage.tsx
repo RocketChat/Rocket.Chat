@@ -25,7 +25,7 @@ const UsersPage = (): ReactElement => {
 	const canCreateUser = usePermission('create-user');
 	const canBulkCreateUser = usePermission('bulk-register-user');
 
-	const [tab, setTab] = useState<string>('all');
+	const [tab, setTab] = useState<'all' | 'invited' | 'new' | 'active' | 'deactivated'>('all');
 
 	useEffect(() => {
 		if (!context || !seatsCap) {
@@ -68,20 +68,20 @@ const UsersPage = (): ReactElement => {
 						<Tabs.Item selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
 							{t('All')}
 						</Tabs.Item>
-						<Tabs.Item selected={tab === 'tab-invited'} onClick={() => setTab('tab-invited')}>
+						<Tabs.Item selected={tab === 'invited'} onClick={() => setTab('invited')}>
 							{t('Invited')}
 						</Tabs.Item>
-						<Tabs.Item selected={tab === 'tab-new'} onClick={() => setTab('tab-new')}>
+						<Tabs.Item selected={tab === 'new'} onClick={() => setTab('new')}>
 							{t('New_users')}
 						</Tabs.Item>
-						<Tabs.Item selected={tab === 'tab-active'} onClick={() => setTab('tab-active')}>
+						<Tabs.Item selected={tab === 'active'} onClick={() => setTab('active')}>
 							{t('Active')}
 						</Tabs.Item>
-						<Tabs.Item selected={tab === 'tab-deactivated'} onClick={() => setTab('tab-deactivated')}>
+						<Tabs.Item selected={tab === 'deactivated'} onClick={() => setTab('deactivated')}>
 							{t('Deactivated')}
 						</Tabs.Item>
 					</Tabs>
-					<UsersTable reload={reload} />
+					<UsersTable reload={reload} tab={tab} onReload={handleReload} />
 				</Page.Content>
 			</Page>
 			{context && (
