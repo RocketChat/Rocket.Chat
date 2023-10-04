@@ -786,6 +786,7 @@ describe('LIVECHAT - business hours', function () {
 	describe('[CE][BH] On Agent deactivated/activated', () => {
 		let defaultBH: ILivechatBusinessHour;
 		let agent: ILivechatAgent;
+		let agentCredentials: IUserCredentialsHeader;
 
 		before(async () => {
 			await updateSetting('Livechat_enable_business_hours', true);
@@ -798,6 +799,7 @@ describe('LIVECHAT - business hours', function () {
 
 			agent = await createUser();
 			await createAgent(agent.username);
+			agentCredentials = await login(agent.username, password);
 		});
 
 		after(async () => {
@@ -819,6 +821,10 @@ describe('LIVECHAT - business hours', function () {
 
 			await setUserActiveStatus(agent._id, true);
 
+			agentCredentials = await login(agent.username, password);
+
+			await makeAgentAvailable(agentCredentials);
+
 			const latestAgent = await getUserByUsername(agent.username);
 
 			expect(latestAgent).to.be.an('object');
@@ -830,10 +836,12 @@ describe('LIVECHAT - business hours', function () {
 			await setUserActiveStatus(agent._id, false);
 			await setUserActiveStatus(agent._id, true);
 
-			const latestAgent = await getUserByUsername(agent.username);
+			agentCredentials = await login(agent.username, password);
 
-			expect(latestAgent).to.be.an('object');
-			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
+			const { body } = await makeAgentAvailable(agentCredentials);
+
+			expect(body).to.have.property('success', false);
+			expect(body.error).to.be.equal('error-business-hours-are-closed');
 		});
 		it('should verify if managers are not able to make deactivated agents available', async () => {
 			await createManager();
