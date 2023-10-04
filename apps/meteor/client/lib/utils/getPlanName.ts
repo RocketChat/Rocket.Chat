@@ -1,5 +1,3 @@
-import type { ILicenseV3 } from '@rocket.chat/license';
-
 export enum PlanName {
 	COMMUNITY = 'Community',
 	STARTER = 'Starter',
@@ -9,8 +7,7 @@ export enum PlanName {
 	ENTERPRISE_TRIAL = 'Enterprise_trial',
 }
 
-export const getPlanName = (isEnterprise: boolean, activeModules: string[], license?: ILicenseV3): PlanName => {
-	const isTrial = license?.information?.trial ?? false;
+export const getPlanName = (isEnterprise: boolean, activeModules: string[], isTrial: boolean): PlanName => {
 	const hasWhiteLabelModule = activeModules.includes('white-label');
 	const hasScalabilityModule = activeModules.includes('scalability');
 

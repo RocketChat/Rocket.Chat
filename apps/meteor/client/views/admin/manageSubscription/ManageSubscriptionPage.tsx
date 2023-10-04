@@ -25,8 +25,9 @@ const ManageSubscriptionPage = () => {
 
 	const { activeModules = [], license } = licensesData?.data || {};
 	const isEnterprise = data?.isEnterprise || false;
+	const isTrial = license?.information?.trial ?? false;
 
-	const plan = getPlanName(isEnterprise, activeModules, license);
+	const plan = getPlanName(isEnterprise, activeModules, isTrial);
 
 	const getHeaderButton = () => {
 		if (plan === PlanName.COMMUNITY || plan === PlanName.STARTER) {
