@@ -5921,6 +5921,7 @@
   "onboarding.form.registeredServerForm.registerLater": "Register later",
   "onboarding.form.registeredServerForm.notConnectedToInternet": "The server is not connected to the internet, so you’ll have to do an offline registration for this workspace.",
   "onboarding.form.registeredServerForm.registrationEngagement": "Registration allows automatic license updates, notifications of critical vulnerabilities and access to Rocket.Chat Cloud services. No sensitive workspace data is shared; statistics sent to Rocket.Chat is made visible to you within the administration area.",
+  "onboarding.form.registeredServerForm.registrationKeepInformed": "By submitting this form you consent to receive more information about Rocket.Chat products, events and updates, according to our <1>privacy policy</1>. You may unsubscribe at any time.",
   "onboarding.form.standaloneServerForm.title": "Standalone Server Confirmation",
   "onboarding.form.standaloneServerForm.servicesUnavailable": "Some of the services will be unavailable or will require manual setup",
   "onboarding.form.standaloneServerForm.publishOwnApp": "In order to send push notitications you need to compile and publish your own app to Google Play and App Store",
