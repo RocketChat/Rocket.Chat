@@ -54,7 +54,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 
 	let didReact;
 
-	if (userAlreadyReacted) {
+	if (userAlreadyReacted && message.reactions) {
 		// 1. remove username from reaction list
 		// 2. if reaction list for that emoji was already 1, remove the reaction entry (for frontend)
 		// 3. if reaction list now is empty, remove 'reactions' field altogether
