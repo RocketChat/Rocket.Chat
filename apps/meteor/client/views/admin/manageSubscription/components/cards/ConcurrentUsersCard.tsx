@@ -3,27 +3,29 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSeatsCap } from '../../../../../../ee/client/views/admin/users/useSeatsCap';
+import { useActiveConnections } from '../../../../hooks/useActiveConnections';
 import FeatureUsageCard from '../FeatureUsageCard';
 
 const ConcurrentUsersCard = (): ReactElement => {
 	const { t } = useTranslation();
-	const seatsCap = useSeatsCap();
+	const { data: activeConnections, isLoading } = useActiveConnections();
+
+	const { max, current } = activeConnections || {};
 
 	const card = {
 		title: t('Concurrent_users'),
 		infoText: t('ConcurrentUsers_InfoText'),
 	};
 
-	const total = seatsCap?.maxActiveUsers || 0;
-	const used = seatsCap?.activeUsers || 0;
+	const total = max || 0;
+	const used = current || 0;
 	const available = total - used;
 
 	const exceedLimit = used >= total;
 
 	return (
 		<FeatureUsageCard title={card.title} infoText={card.infoText} showUpgradeButton={exceedLimit}>
-			{seatsCap ? (
+			{!isLoading && activeConnections ? (
 				<Box textAlign='center'>
 					<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'}>
 						{used} / {total}
