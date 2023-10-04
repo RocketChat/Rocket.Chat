@@ -1,16 +1,29 @@
+import crypto from 'crypto';
+
+import bcrypt from 'bcrypt';
+
 import type { ILicenseV3 } from '../definition/ILicenseV3';
 import type { BehaviorWithContext, LicenseBehavior } from '../definition/LicenseBehavior';
 import type { LicenseManager } from '../license';
 import { logger } from '../logger';
 import { getResultingBehavior } from './getResultingBehavior';
 
-export const validateUrl = (licenseURL: string, url: string) => {
+const validateRegex = (licenseURL: string, url: string) => {
 	licenseURL = licenseURL
 		.replace(/\./g, '\\.') // convert dots to literal
 		.replace(/\*/g, '.*'); // convert * to .*
 	const regex = new RegExp(`^${licenseURL}$`, 'i');
 
 	return !!regex.exec(url);
+};
+
+const validateUrl = (licenseURL: string, url: string) => {
+	return licenseURL.toLowerCase() === url.toLowerCase();
+};
+
+const validateHash = (licenseURL: string, url: string) => {
+	const value = crypto.createHash('sha256').update(url).digest('hex');
+	return bcrypt.compareSync(value, licenseURL);
 };
 
 export function validateLicenseUrl(
@@ -37,11 +50,9 @@ export function validateLicenseUrl(
 		.filter((url) => {
 			switch (url.type) {
 				case 'regex':
-					// #TODO
-					break;
+					return !validateRegex(url.value, workspaceUrl);
 				case 'hash':
-					// #TODO
-					break;
+					return !validateHash(url.value, workspaceUrl);
 				case 'url':
 					return !validateUrl(url.value, workspaceUrl);
 			}
