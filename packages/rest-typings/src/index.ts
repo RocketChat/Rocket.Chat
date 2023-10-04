@@ -8,6 +8,7 @@ import type { AssetsEndpoints } from './v1/assets';
 import type { AuthEndpoints } from './v1/auth';
 import type { AutoTranslateEndpoints } from './v1/autoTranslate';
 import type { BannersEndpoints } from './v1/banners';
+import type { BillingEndpoints } from './v1/billing';
 import type { CalendarEndpoints } from './v1/calendar';
 import type { ChannelsEndpoints } from './v1/channels';
 import type { ChatEndpoints } from './v1/chat';
@@ -55,6 +56,7 @@ export interface Endpoints
 		MeEndpoints,
 		ModerationEndpoints,
 		BannersEndpoints,
+		BillingEndpoints,
 		ChatEndpoints,
 		CommandsEndpoints,
 		CloudEndpoints,
