@@ -103,7 +103,7 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 	}
 
 	if (active === false) {
-		await Users.unsetLoginTokens(userId);
+		await Users.unsetLoginTokensAndSetUserOffline(userId);
 		await Rooms.setDmReadOnlyByUserId(userId, undefined, true, false);
 	} else {
 		await Users.unsetReason(userId);

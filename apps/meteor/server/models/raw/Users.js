@@ -1133,6 +1133,20 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	unsetLoginTokensAndSetUserOffline(userId) {
+		return this.col.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$set: {
+					'services.resume.loginTokens': [],
+					'status': 'offline',
+				},
+			},
+		);
+	}
+
 	removeNonPATLoginTokensExcept(userId, authToken) {
 		return this.col.updateOne(
 			{

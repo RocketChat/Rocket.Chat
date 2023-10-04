@@ -154,6 +154,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	unsetLoginTokens(userId: any): any;
 
+	unsetLoginTokensAndSetUserOffline(userId: string): Promise<UpdateResult>;
+
 	unsetOneLoginToken(userId: IUser['_id'], token: string): Promise<UpdateResult>;
 
 	removeNonPATLoginTokensExcept(userId: any, authToken: any): any;

@@ -1,4 +1,4 @@
-import type { ILivechatAgent, ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, type ILivechatAgent, type ILivechatDepartment, type IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
@@ -15,8 +15,9 @@ import {
 	makeAgentAvailable,
 } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import type { IUserCredentialsHeader } from '../../../data/user';
 import { password } from '../../../data/user';
-import { createUser, deleteUser, getMe, login } from '../../../data/users.helper';
+import { createUser, deleteUser, getMe, getUserByUsername, login, setUserActiveStatus } from '../../../data/users.helper';
 
 describe('LIVECHAT - Agents', function () {
 	this.retries(0);
@@ -479,6 +480,43 @@ describe('LIVECHAT - Agents', function () {
 				});
 
 			await disableDefaultBusinessHour();
+		});
+	});
+
+	describe('[CE] On Agent deactivated/activated', () => {
+		let agent: ILivechatAgent;
+		let agentCredentials: IUserCredentialsHeader;
+
+		before(async () => {
+			await updateSetting('Livechat_enable_business_hours', false);
+
+			agent = await createUser();
+			await createAgent(agent.username);
+			agentCredentials = await login(agent.username, password);
+		});
+
+		after(async () => {
+			await deleteUser(agent);
+		});
+
+		it('should verify if agent becomes unavailable to take chats when user is deactivated', async () => {
+			await makeAgentAvailable(agentCredentials);
+
+			await setUserActiveStatus(agent._id, false);
+
+			const latestAgent = await getUserByUsername(agent.username);
+
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
+		});
+
+		it('should verify if agent is still unavailable to take chat upon re-activation', async () => {
+			await setUserActiveStatus(agent._id, true);
+
+			const latestAgent = await getUserByUsername(agent.username);
+
+			expect(latestAgent).to.be.an('object');
+			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
 		});
 	});
 });
