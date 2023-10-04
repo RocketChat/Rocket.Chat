@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Field, Select, ButtonGroup, Button, FieldGroup, InputBox } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, Select, ButtonGroup, Button, FieldGroup, InputBox } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, MouseEventHandler } from 'react';
 import React, { useMemo } from 'react';
@@ -65,22 +65,22 @@ const FileExport: FC<FileExportProps> = ({ onCancel, rid }) => {
 	return (
 		<FieldGroup>
 			<Field>
-				<Field.Label>{t('Date_From')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Date_From')}</FieldLabel>
+				<FieldRow>
 					<InputBox type='date' value={dateFrom} onChange={handleDateFrom} />
-				</Field.Row>
+				</FieldRow>
 			</Field>
 			<Field>
-				<Field.Label>{t('Date_to')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Date_to')}</FieldLabel>
+				<FieldRow>
 					<InputBox type='date' value={dateTo} onChange={handleDateTo} />
-				</Field.Row>
+				</FieldRow>
 			</Field>
 			<Field>
-				<Field.Label>{t('Output_format')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Output_format')}</FieldLabel>
+				<FieldRow>
 					<Select value={format} onChange={handleFormat} placeholder={t('Format')} options={outputOptions} />
-				</Field.Row>
+				</FieldRow>
 			</Field>
 			<ButtonGroup stretch mb={12}>
 				<Button onClick={onCancel}>{t('Cancel')}</Button>

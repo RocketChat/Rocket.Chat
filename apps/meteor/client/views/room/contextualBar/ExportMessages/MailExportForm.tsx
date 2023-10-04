@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Field, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useUserRoom, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, MouseEventHandler } from 'react';
@@ -116,27 +116,27 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 				</Callout>
 			</Field>
 			<Field>
-				<Field.Label>{t('To_users')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('To_users')}</FieldLabel>
+				<FieldRow>
 					<UserAutoCompleteMultiple value={toUsers} onChange={handleToUsers} />
-				</Field.Row>
+				</FieldRow>
 			</Field>
 			<Field>
-				<Field.Label>{t('To_additional_emails')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('To_additional_emails')}</FieldLabel>
+				<FieldRow>
 					<TextInput
 						placeholder={t('Email_Placeholder_any')}
 						value={additionalEmails}
 						onChange={handleAdditionalEmails}
 						addon={<Icon name='mail' size='x20' />}
 					/>
-				</Field.Row>
+				</FieldRow>
 			</Field>
 			<Field>
-				<Field.Label>{t('Subject')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Subject')}</FieldLabel>
+				<FieldRow>
 					<TextInput value={subject} onChange={handleSubject} addon={<Icon name='edit' size='x20' />} />
-				</Field.Row>
+				</FieldRow>
 			</Field>
 
 			{errorMessage && <Callout type='danger'>{errorMessage}</Callout>}
