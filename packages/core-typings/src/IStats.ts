@@ -6,7 +6,15 @@ import type { ITeamStats } from './ITeam';
 
 export interface IStats {
 	_id: string;
-	wizard: Record<string, unknown>;
+	wizard: {
+		organizationType?: string;
+		industry?: string;
+		size?: string;
+		country?: string;
+		language?: string;
+		serverType?: string;
+		registerServer?: boolean;
+	};
 	uniqueId: string;
 	installedAt?: string;
 	version?: string;
@@ -203,6 +211,7 @@ export interface IStats {
 	totalCustomRoles: number;
 	totalWebRTCCalls: number;
 	uncaughtExceptionsCount: number;
+	push: number;
 	matrixFederation: {
 		enabled: boolean;
 	};

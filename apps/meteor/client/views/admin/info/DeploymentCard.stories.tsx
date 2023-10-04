@@ -265,6 +265,7 @@ export default {
 			totalCustomRoles: 0,
 			totalWebRTCCalls: 0,
 			uncaughtExceptionsCount: 0,
+			push: 0,
 			matrixFederation: {
 				enabled: false,
 			},

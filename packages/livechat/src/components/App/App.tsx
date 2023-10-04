@@ -75,7 +75,26 @@ type AppState = {
 	poppedOut: boolean;
 };
 
-// eslint-disable-next-line react/prefer-stateless-function
+export type ScreenPropsType = {
+	notificationsEnabled: boolean;
+	minimized: boolean;
+	expanded: boolean;
+	windowed: boolean;
+	sound: unknown;
+	alerts: unknown;
+	modal: unknown;
+	nameDefault: string;
+	emailDefault: string;
+	departmentDefault: string;
+	onEnableNotifications: () => unknown;
+	onDisableNotifications: () => unknown;
+	onMinimize: () => unknown;
+	onRestore: () => unknown;
+	onOpenWindow: () => unknown;
+	onDismissAlert: () => unknown;
+	dismissNotification: () => void;
+};
+
 export class App extends Component<AppProps, AppState> {
 	state = {
 		initialized: false,
