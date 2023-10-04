@@ -1353,5 +1353,15 @@ export const createSetupWSettings = () =>
 				},
 				secret: true,
 			});
+			await this.add('Cloud_Billing_Url', 'https://billing.rocket.chat', {
+				type: 'string',
+				hidden: true,
+				readonly: true,
+				enableQuery: {
+					_id: 'Register_Server',
+					value: true,
+				},
+				secret: true,
+			});
 		});
 	});
