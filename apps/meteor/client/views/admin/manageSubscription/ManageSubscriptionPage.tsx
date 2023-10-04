@@ -1,5 +1,4 @@
 import { Box, Button, Grid } from '@rocket.chat/fuselage';
-import type { ILicenseV3 } from '@rocket.chat/license';
 import { t } from 'i18next';
 import React, { memo } from 'react';
 
@@ -24,10 +23,10 @@ const ManageSubscriptionPage = () => {
 	const { data } = useIsEnterprise();
 	const { data: licensesData } = useLicense();
 
-	const license = licensesData?.licenses[0] as ILicenseV3;
+	const { activeModules = [], license } = licensesData?.data || {};
 	const isEnterprise = data?.isEnterprise || false;
 
-	const plan = getPlanName(isEnterprise, license);
+	const plan = getPlanName(isEnterprise, activeModules, license);
 
 	const getHeaderButton = () => {
 		if (plan === PlanName.COMMUNITY || plan === PlanName.STARTER) {
