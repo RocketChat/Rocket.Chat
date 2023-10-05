@@ -137,10 +137,27 @@ function SideBarItemTemplateWithData({
 	const isUnread = unread > 0 || threadUnread;
 	const showBadge = !hideUnreadStatus || (!hideMentionStatus && (Boolean(userMentions) || tunreadUser.length > 0));
 
+	const getBadgeTitle = () => {
+		const title = [];
+		if (userMentions) {
+			title.push(`${userMentions} mention(s)`);
+		}
+		if (threadUnread) {
+			title.push(`${tunread.length} unread threaded message(s)`);
+		}
+		if (groupMentions) {
+			title.push(`${groupMentions} group mention(s)`);
+		}
+		if (!userMentions && !threadUnread && !groupMentions && unread) {
+			title.push(`${unread} unread message(s)`);
+		}
+		return title.join(', ');
+	};
+
 	const badges = (
 		<Margins inlineStart={8}>
 			{showBadge && isUnread && (
-				<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant}>
+				<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant} title={getBadgeTitle()}>
 					{unread + tunread?.length}
 				</Badge>
 			)}
