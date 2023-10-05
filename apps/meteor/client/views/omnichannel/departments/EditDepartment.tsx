@@ -168,7 +168,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			requestTagBeforeClosingChat,
 			email,
 			chatClosingTags,
-			offlineMessageChannelName,
+			offlineMessageChannelName: roomsItems.some((room) => room.value === offlineMessageChannelName) ? offlineMessageChannelName : '',
 			maxNumberSimultaneousChat,
 			visitorInactivityTimeoutInSeconds,
 			abandonedRoomsCloseCustomMessage,
