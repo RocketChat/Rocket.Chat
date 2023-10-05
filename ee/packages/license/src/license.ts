@@ -9,7 +9,7 @@ import { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
 import { InvalidLicenseError } from './errors/InvalidLicenseError';
 import { NotReadyForValidation } from './errors/NotReadyForValidation';
 import { logger } from './logger';
-import { invalidateAll, replaceModules } from './modules';
+import { getModules, invalidateAll, replaceModules } from './modules';
 import { applyPendingLicense, clearPendingLicense, hasPendingLicense, isPendingLicense, setPendingLicense } from './pendingLicense';
 import { showLicense } from './showLicense';
 import { replaceTags } from './tags';
@@ -226,5 +226,44 @@ export class LicenseManager extends Emitter<
 				?.filter(({ behavior, max }) => behavior === 'prevent_action' && max >= 0)
 				.some(({ max }) => max < currentValue),
 		);
+	}
+
+	public async getInfo(loadCurrentValues = false): Promise<{
+		license: ILicenseV3 | undefined;
+		activeModules: LicenseModule[];
+		limits: Record<LicenseLimitKind, { value?: number; max: number }>;
+		inFairPolicy: boolean;
+	}> {
+		const activeModules = getModules.call(this);
+		const license = this.getLicense();
+
+		// Get all limits present in the license and their current value
+		const limits = (
+			(license &&
+				(await Promise.all(
+					(['activeUsers', 'guestUsers', 'privateApps', 'marketplaceApps', 'monthlyActiveContacts'] as LicenseLimitKind[])
+						.map((limitKey) => ({
+							limitKey,
+							max: Math.max(-1, Math.min(...Array.from(license.limits[limitKey as LicenseLimitKind] || [])?.map(({ max }) => max))),
+						}))
+						.filter(({ max }) => max >= 0 && max < Infinity)
+						.map(async ({ max, limitKey }) => {
+							return {
+								[limitKey as LicenseLimitKind]: {
+									...(loadCurrentValues ? { value: await getCurrentValueForLicenseLimit.call(this, limitKey as LicenseLimitKind) } : {}),
+									max,
+								},
+							};
+						}),
+				))) ||
+			[]
+		).reduce((prev, curr) => ({ ...prev, ...curr }), {});
+
+		return {
+			license,
+			activeModules,
+			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
+			inFairPolicy: this.inFairPolicy,
+		};
 	}
 }
