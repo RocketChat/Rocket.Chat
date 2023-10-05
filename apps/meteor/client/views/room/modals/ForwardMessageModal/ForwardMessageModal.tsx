@@ -1,5 +1,5 @@
 import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
-import { Modal, Field, FieldGroup, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Modal, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useClipboard } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -89,8 +89,8 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 			<Modal.Content>
 				<FieldGroup>
 					<Field>
-						<Field.Label>{t('Person_Or_Channel')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Person_Or_Channel')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								name='rooms'
 								control={control}
@@ -98,8 +98,8 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 									<UserAndRoomAutoCompleteMultiple value={value} onChange={onChange} />
 								)}
 							/>
-						</Field.Row>
-						{!rooms.length && <Field.Hint>{t('Select_atleast_one_channel_to_forward_the_messsage_to')}</Field.Hint>}
+						</FieldRow>
+						{!rooms.length && <FieldHint>{t('Select_atleast_one_channel_to_forward_the_messsage_to')}</FieldHint>}
 					</Field>
 					<Field>
 						<QuoteAttachment attachment={attachment} />
