@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-fix: Business hour timezone gets changed upon server restart and move timezone field to CE
+feat: Community users will now be able to customize their Business hour timezone
