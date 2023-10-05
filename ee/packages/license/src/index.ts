@@ -4,7 +4,7 @@ import type { LimitContext } from './definition/LimitContext';
 import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
 import { onLicense } from './events/deprecated';
 import {
-    onBehaviorTriggered,
+	onBehaviorTriggered,
 	onInvalidFeature,
 	onInvalidateLicense,
 	onLimitReached,

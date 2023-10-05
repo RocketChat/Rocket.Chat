@@ -76,14 +76,14 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		return this.workspaceUrl;
 	}
 
-	public async revalidateLicense(): Promise<void> {
+	public async revalidateLicense(options: Omit<LicenseValidationOptions, 'isNewLicense'> = {}): Promise<void> {
 		if (!this.hasValidLicense()) {
 			return;
 		}
 
 		try {
 			this.countersCache.clear();
-			await this.validateLicense({ isNewLicense: false });
+			await this.validateLicense({ ...options, isNewLicense: false });
 		} finally {
 			this.maybeInvalidateLicense();
 		}
@@ -149,7 +149,9 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 		const validationResult = await runValidation.call(this, this._license, options);
 		this.processValidationResult(validationResult, options);
-		this.triggerBehaviorEvents(validationResult);
+		if (!options.isNewLicense) {
+			this.triggerBehaviorEvents(validationResult);
+		}
 	}
 
 	public async setLicense(encryptedLicense: string): Promise<boolean> {
