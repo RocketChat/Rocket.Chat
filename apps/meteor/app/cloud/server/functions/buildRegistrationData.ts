@@ -32,7 +32,10 @@ export type WorkspaceRegistrationData<T> = {
 	setupComplete: boolean;
 	connectionDisable: boolean;
 	npsEnabled: string;
+	// TODO: Evaluate naming
 	MAC: number;
+	// activeContactsBillingMonth: number;
+	// activeContactsYesterday: number;
 };
 
 export async function buildWorkspaceRegistrationData<T extends string | undefined>(contactEmail: T): Promise<WorkspaceRegistrationData<T>> {
@@ -80,7 +83,8 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		setupComplete: setupWizardState === 'completed',
 		connectionDisable: !registerServer,
 		npsEnabled,
-		// TODO: add MAC count
-		MAC: 0,
+		MAC: stats.omnichannelContactsBySource.contactsCount,
+		// activeContactsBillingMonth: stats.omnichannelContactsBySource.contactsCount,
+		// activeContactsYesterday: stats.uniqueContactsOfYesterday.contactsCount,
 	};
 }
