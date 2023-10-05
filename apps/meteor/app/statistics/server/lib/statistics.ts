@@ -544,7 +544,7 @@ export const statistics = {
 		const defaultLoggedInCustomScript = (await Settings.findOneById('Custom_Script_Logged_In'))?.packageValue;
 		statistics.loggedInCustomScriptChanged = settings.get('Custom_Script_Logged_In') !== defaultLoggedInCustomScript;
 
-		statistics.dailyPeakConnections = await Presence.getDailyPeakConnections();
+		statistics.dailyPeakConnections = (await Presence.getDailyPeakConnections()).peak;
 
 		statistics.matrixFederation = await getMatrixFederationStatistics();
 
@@ -561,7 +561,7 @@ export const statistics = {
 		const rcStatistics = await statistics.get();
 		rcStatistics.createdAt = new Date();
 		await Statistics.insertOne(rcStatistics);
-		await Presence.resetPeakConnections();
+		await Presence.resetDailyPeakConnections();
 		return rcStatistics;
 	},
 };

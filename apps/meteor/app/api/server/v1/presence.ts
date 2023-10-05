@@ -1,4 +1,5 @@
 import { Presence } from '@rocket.chat/core-services';
+import { Statistics } from '@rocket.chat/models';
 
 import { API } from '../api';
 
@@ -19,9 +20,21 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-user-status'] },
 	{
 		async get() {
-			const result = await Presence.getMonthlyPeakConnections();
+			const maxMonthlyPeakConnections = await Statistics.findMonthlyPeakConnections();
+			const { peak: currentDailyPeakConnections, max } = await Presence.getDailyPeakConnections();
+			if (!maxMonthlyPeakConnections || currentDailyPeakConnections > maxMonthlyPeakConnections.dailyPeakConnections) {
+				return API.v1.success({
+					peak: currentDailyPeakConnections,
+					date: new Date(),
+					max,
+				});
+			}
 
-			return API.v1.success(result);
+			return API.v1.success({
+				peak: maxMonthlyPeakConnections.dailyPeakConnections,
+				date: maxMonthlyPeakConnections.createdAt,
+				max,
+			});
 		},
 	},
 );

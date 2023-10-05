@@ -26,7 +26,7 @@ export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 		return records?.[0];
 	}
 
-	async findMaxMonthlyPeakConnections(): Promise<Pick<IStats, 'dailyPeakConnections' | 'createdAt'> | undefined> {
+	async findMonthlyPeakConnections(): Promise<Pick<IStats, 'dailyPeakConnections' | 'createdAt'> | undefined> {
 		const oneMonthAgo = new Date();
 		oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
 		oneMonthAgo.setHours(0, 0, 0, 0);
