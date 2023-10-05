@@ -53,7 +53,7 @@ async function createUsersSubscriptions({
 
 	const memberIds = [];
 
-	const membersCursor = Users.findUsersByUsernames(members, {
+	const membersCursor = Users.findUsersByUsernames<Pick<IUser, '_id' | 'username' | 'settings' | 'federated' | 'roles'>>(members, {
 		projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1, 'roles': 1 },
 	});
 

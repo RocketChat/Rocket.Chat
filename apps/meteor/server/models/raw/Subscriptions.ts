@@ -1,4 +1,13 @@
-import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
+import type {
+	AtLeast,
+	IRole,
+	IRoom,
+	ISubscription,
+	IUser,
+	RocketChatRecordDeleted,
+	RoomType,
+	SpotlightUser,
+} from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -1608,7 +1617,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 	async createWithRoomAndManyUsers(
 		room: IRoom,
-		users: { user: IUser; extraData: Record<string, any> }[] = [],
+		users: { user: AtLeast<IUser, '_id' | 'username' | 'name' | 'settings'>; extraData: Record<string, any> }[] = [],
 	): Promise<InsertManyResult<ISubscription>> {
 		const subscriptions = users.map(({ user, extraData }) => ({
 			open: false,

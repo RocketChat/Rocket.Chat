@@ -1,4 +1,4 @@
-import type { ISubscription, IRole, IUser, IRoom, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
+import type { ISubscription, IRole, IUser, IRoom, RoomType, SpotlightUser, AtLeast } from '@rocket.chat/core-typings';
 import type {
 	FindOptions,
 	FindCursor,
@@ -228,7 +228,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	createWithRoomAndUser(room: IRoom, user: IUser, extraData?: Record<string, any>): Promise<InsertOneResult<ISubscription>>;
 	createWithRoomAndManyUsers(
 		room: IRoom,
-		users: { user: IUser; extraData: Record<string, any> }[],
+		users: { user: AtLeast<IUser, '_id' | 'username' | 'name' | 'settings'>; extraData: Record<string, any> }[],
 	): Promise<InsertManyResult<ISubscription>>;
 	removeByRoomIdsAndUserId(rids: string[], userId: string): Promise<number>;
 	removeByRoomIdAndUserId(roomId: string, userId: string): Promise<number>;

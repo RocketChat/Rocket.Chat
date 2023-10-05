@@ -1,8 +1,8 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../app/settings/server';
 
-export function getSubscriptionAutotranslateDefaultConfig(user: IUser):
+export function getSubscriptionAutotranslateDefaultConfig(user: AtLeast<IUser, 'settings'>):
 	| {
 			autoTranslate: boolean;
 			autoTranslateLanguage: string;
