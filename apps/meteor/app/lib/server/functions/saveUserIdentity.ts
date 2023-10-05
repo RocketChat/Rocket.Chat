@@ -1,3 +1,4 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../file-upload/server';
@@ -11,7 +12,17 @@ import { validateName } from './validateName';
  * @param {object} changes changes to the user
  */
 
-export async function saveUserIdentity({ _id, name: rawName, username: rawUsername }: { _id: string; name?: string; username?: string }) {
+export async function saveUserIdentity({
+	_id,
+	name: rawName,
+	username: rawUsername,
+	updateUsernameInBackground = false,
+}: {
+	_id: string;
+	name?: string;
+	username?: string;
+	updateUsernameInBackground?: boolean; // TODO: remove this
+}) {
 	if (!_id) {
 		return false;
 	}
@@ -49,31 +60,11 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 	// if coming from old username, update all references
 	if (previousUsername) {
 		if (usernameChanged && typeof rawUsername !== 'undefined') {
-			const fileStore = FileUpload.getStore('Avatars');
-			const previousFile = await fileStore.model.findOneByName(previousUsername);
-			const file = await fileStore.model.findOneByName(username);
-			if (file) {
-				await fileStore.model.deleteFile(file._id);
+			if (updateUsernameInBackground) {
+				setImmediate(() => updateUsernameReferences(previousUsername, username, user));
+			} else {
+				await updateUsernameReferences(previousUsername, username, user);
 			}
-			if (previousFile) {
-				await fileStore.model.updateFileNameById(previousFile._id, username);
-			}
-
-			await Messages.updateAllUsernamesByUserId(user._id, username);
-			await Messages.updateUsernameOfEditByUserId(user._id, username);
-
-			const cursor = Messages.findByMention(previousUsername);
-			for await (const msg of cursor) {
-				const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
-				await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
-			}
-
-			await Rooms.replaceUsername(previousUsername, username);
-			await Rooms.replaceMutedUsername(previousUsername, username);
-			await Rooms.replaceUsernameOfUserByUserId(user._id, username);
-			await Subscriptions.setUserUsernameByUserId(user._id, username);
-
-			await LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 		}
 
 		// update other references if either the name or username has changed
@@ -90,4 +81,32 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 	}
 
 	return true;
+}
+
+async function updateUsernameReferences(previousUsername: string, username: string, user: IUser): Promise<void> {
+	const fileStore = FileUpload.getStore('Avatars');
+	const previousFile = await fileStore.model.findOneByName(previousUsername);
+	const file = await fileStore.model.findOneByName(username);
+	if (file) {
+		await fileStore.model.deleteFile(file._id);
+	}
+	if (previousFile) {
+		await fileStore.model.updateFileNameById(previousFile._id, username);
+	}
+
+	await Messages.updateAllUsernamesByUserId(user._id, username);
+	await Messages.updateUsernameOfEditByUserId(user._id, username);
+
+	const cursor = Messages.findByMention(previousUsername);
+	for await (const msg of cursor) {
+		const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
+		await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
+	}
+
+	await Rooms.replaceUsername(previousUsername, username);
+	await Rooms.replaceMutedUsername(previousUsername, username);
+	await Rooms.replaceUsernameOfUserByUserId(user._id, username);
+	await Subscriptions.setUserUsernameByUserId(user._id, username);
+
+	await LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 }

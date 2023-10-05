@@ -8,7 +8,6 @@ import _ from 'underscore';
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
-import { SystemLogger } from '../../../../server/lib/logger/system';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { getRoles } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -362,17 +361,18 @@ export const saveUser = async function (userId, userData) {
 
 	// update user
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
-		setImmediate(async () => {
-			const isUsernameUpdated = await saveUserIdentity({
+		if (
+			!(await saveUserIdentity({
 				_id: userData._id,
 				username: userData.username,
 				name: userData.name,
+				updateUsernameInBackground: true,
+			}))
+		) {
+			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {
+				method: 'saveUser',
 			});
-
-			if (!isUsernameUpdated) {
-				SystemLogger.error('Could not update username', { method: 'saveUser', userId });
-			}
-		});
+		}
 	}
 
 	if (typeof userData.statusText === 'string') {
