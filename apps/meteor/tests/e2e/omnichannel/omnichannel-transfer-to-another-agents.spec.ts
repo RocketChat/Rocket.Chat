@@ -13,6 +13,15 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 	let agent1: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 	let agent2: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 	test.beforeAll(async ({ api, browser }) => {
+
+        const { page: pageUser1 } = await createAuxContext(browser, Users.user1);
+        const poHomeChannelUser1 = new HomeOmnichannel(pageUser1);
+        await poHomeChannelUser1.sidenav.switchStatus('online');
+
+        const { page: pageUser2 } = await createAuxContext(browser, Users.user2);
+        const poHomeChannelUser2 = new HomeOmnichannel(pageUser2);
+        await poHomeChannelUser2.sidenav.switchStatus('online');
+
 		await Promise.all([
 			api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
 			api.post('/livechat/users/agent', { username: 'user2' }).then((res) => expect(res.status()).toBe(200)),
@@ -20,11 +29,8 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 			api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
 		]);
 
-		const { page } = await createAuxContext(browser, Users.user1);
-		agent1 = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
-
-		const { page: page2 } = await createAuxContext(browser, Users.user2);
-		agent2 = { page: page2, poHomeOmnichannel: new HomeOmnichannel(page2) };
+		agent1 = { page: pageUser1, poHomeOmnichannel: poHomeChannelUser1 };
+		agent2 = { page: pageUser2, poHomeOmnichannel: poHomeChannelUser2 };
 	});
 
 	test.afterAll(async ({ api }) => {

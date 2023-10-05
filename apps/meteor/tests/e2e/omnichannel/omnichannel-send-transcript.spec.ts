@@ -4,26 +4,29 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
+import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-transcript', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newUser: { email: string; name: string };
 
-	let agent: { page: Page; poHomeChannel: HomeChannel };
+	let agent: { page: Page; poHomeChannel: HomeOmnichannel };
 	test.beforeAll(async ({ api, browser }) => {
 		newUser = {
 			name: faker.person.firstName(),
 			email: faker.internet.email(),
 		};
 
+        const { page } = await createAuxContext(browser, Users.user1);
+        const poHomeChannel = new HomeOmnichannel(page);
+        await poHomeChannel.sidenav.switchStatus('online');
+
 		// Set user user 1 as manager and agent
 		await api.post('/livechat/users/agent', { username: 'user1' });
 		await api.post('/livechat/users/manager', { username: 'user1' });
 
-		const { page } = await createAuxContext(browser, Users.user1);
-		agent = { page, poHomeChannel: new HomeChannel(page) };
+		agent = { page, poHomeChannel };
 	});
 	test.beforeEach(async ({ page, api }) => {
 		poLiveChat = new OmnichannelLiveChat(page, api);

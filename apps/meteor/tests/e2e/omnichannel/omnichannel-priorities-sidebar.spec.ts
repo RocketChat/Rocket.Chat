@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { HomeChannel, OmnichannelLiveChat } from '../page-objects';
+import { HomeChannel, HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
 import { OmnichannelRoomInfo } from '../page-objects/omnichannel-room-info';
 import { test, expect } from '../utils/test';
 
@@ -23,10 +23,14 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 	let poHomeChannel: HomeChannel;
 	let poRoomInfo: OmnichannelRoomInfo;
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ browser, api }) => {
+        const { page: user1Page } = await createAuxContext(browser, Users.user1);
+        const poHomeOmnichannel = new HomeOmnichannel(user1Page);
+        await poHomeOmnichannel.sidenav.switchStatus('online');
+
 		(
 			await Promise.all([
-				api.post('/livechat/users/agent', { username: 'user1' }),
+                api.post('/livechat/users/agent', { username: 'user1' }),
 				api.post('/livechat/users/manager', { username: 'user1' }),
 				api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }),
 			])

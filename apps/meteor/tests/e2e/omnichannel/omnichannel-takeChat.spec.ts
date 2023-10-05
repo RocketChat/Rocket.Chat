@@ -3,24 +3,28 @@ import type { Page } from '@playwright/test';
 
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
+import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-takeChat', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
 
-	let agent: { page: Page; poHomeChannel: HomeChannel };
+	let agent: { page: Page; poHomeChannel: HomeOmnichannel };
 
 	test.beforeAll(async ({ api, browser }) => {
+
+        const { page } = await createAuxContext(browser, Users.user1);
+        const poHomeChannel = new HomeOmnichannel(page);
+        await poHomeChannel.sidenav.switchStatus('online');
+
 		await Promise.all([
 			await api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
 			await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }).then((res) => expect(res.status()).toBe(200)),
 			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
 		]);
 
-		const { page } = await createAuxContext(browser, Users.user1);
-		agent = { page, poHomeChannel: new HomeChannel(page) };
+        agent = { page, poHomeChannel };
 	});
 
 	test.afterAll(async ({ api }) => {

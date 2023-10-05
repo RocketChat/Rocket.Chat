@@ -18,6 +18,11 @@ test.describe.serial('Omnichannel Triggers', () => {
 			name: faker.person.firstName(),
 			email: faker.internet.email(),
 		};
+
+        const { page } = await createAuxContext(browser, Users.user1);
+        const poHomeOmnichannel = new HomeOmnichannel(page);
+        await poHomeOmnichannel.sidenav.switchStatus('online');
+
 		triggersName = faker.string.uuid();
 		triggerMessage = 'This is a trigger message';
 		const requests = await Promise.all([
@@ -27,8 +32,7 @@ test.describe.serial('Omnichannel Triggers', () => {
 		]);
 		requests.every((e) => expect(e.status()).toBe(200));
 
-		const { page } = await createAuxContext(browser, Users.user1, '/omnichannel/triggers');
-		agent = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
+		agent = { page, poHomeOmnichannel };
 		await page.emulateMedia({ reducedMotion: 'reduce' });
 	});
 
@@ -69,6 +73,7 @@ test.describe.serial('Omnichannel Triggers', () => {
 
 	test('create and edit trigger', async () => {
 		await test.step('expect create new trigger', async () => {
+            await agent.page.goto('/omnichannel/triggers');
 			await agent.poHomeOmnichannel.triggers.createTrigger(triggersName, triggerMessage);
 			await agent.poHomeOmnichannel.triggers.btnCloseToastMessage.click();
 		});
