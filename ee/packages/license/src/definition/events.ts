@@ -3,10 +3,7 @@ import type { BehaviorWithContext, LicenseBehavior } from './LicenseBehavior';
 import type { LicenseModule } from './LicenseModule';
 
 type ModuleValidation = Record<`${'invalid' | 'valid'}:${LicenseModule}`, undefined>;
-type BehaviorTriggered = Record<
-	`behavior:${Exclude<LicenseBehavior, 'prevent_installation'>}`,
-	{ reason: BehaviorWithContext['reason']; limit?: LicenseLimitKind }
->;
+type BehaviorTriggered = Record<`behavior:${LicenseBehavior}`, { reason: BehaviorWithContext['reason']; limit?: LicenseLimitKind }>;
 type LimitReached = Record<`limitReached:${LicenseLimitKind}`, undefined>;
 
 export type LicenseEvents = ModuleValidation &

@@ -3,9 +3,15 @@ import type { LicenseModule } from './LicenseModule';
 
 export type LicenseBehavior = 'invalidate_license' | 'start_fair_policy' | 'prevent_action' | 'prevent_installation' | 'disable_modules';
 
-export type BehaviorWithContext = {
-	behavior: LicenseBehavior;
-	modules?: LicenseModule[];
-	reason: 'limit' | 'period' | 'url';
-	limit?: LicenseLimitKind;
-};
+export type BehaviorWithContext =
+	| {
+			behavior: LicenseBehavior;
+			modules?: LicenseModule[];
+			reason: 'limit';
+			limit?: LicenseLimitKind;
+	  }
+	| {
+			behavior: LicenseBehavior;
+			modules?: LicenseModule[];
+			reason: 'period' | 'url';
+	  };

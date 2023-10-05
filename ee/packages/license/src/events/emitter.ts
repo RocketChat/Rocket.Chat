@@ -21,23 +21,27 @@ export function moduleRemoved(this: LicenseManager, module: LicenseModule) {
 	}
 }
 
-export function behaviorTriggered(this: LicenseManager, { behavior, reason, limit }: BehaviorWithContext) {
-	if (behavior === 'prevent_installation') {
-		return;
-	}
-
+export function behaviorTriggered(this: LicenseManager, options: BehaviorWithContext) {
+	const { behavior, reason, modules: _, ...rest } = options;
 	try {
-		this.emit(`behavior:${behavior}`, { reason, limit });
+		this.emit(`behavior:${behavior}`, {
+			reason,
+			...rest,
+		});
 	} catch (error) {
 		logger.error({ msg: 'Error running behavior triggered event', error });
 	}
 
-	if (behavior !== 'prevent_action' || reason !== 'limit' || !limit) {
+	if (behavior !== 'prevent_action') {
+		return;
+	}
+
+	if (reason !== 'limit' || !(`limit` in rest) || !rest.limit) {
 		return;
 	}
 
 	try {
-		this.emit(`limitReached:${limit}`);
+		this.emit(`limitReached:${rest.limit}`);
 	} catch (error) {
 		logger.error({ msg: 'Error running limit reached event', error });
 	}
