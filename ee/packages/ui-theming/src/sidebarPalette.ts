@@ -44,7 +44,7 @@ export const palette = [
 		description: "Use as component's outline, stroke, dividers",
 		list: [
 			{ name: 'stroke-light', token: '', color: '#333842' },
-			{ name: 'stroke-medium', token: '', color: '#324677' },
+			{ name: 'stroke-medium', token: '', color: '#D1EBFE' },
 		],
 	},
 	{
