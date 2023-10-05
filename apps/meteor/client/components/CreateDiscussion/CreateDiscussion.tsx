@@ -1,5 +1,19 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, Button, Icon, Box } from '@rocket.chat/fuselage';
+import {
+	Modal,
+	Field,
+	FieldGroup,
+	ToggleSwitch,
+	TextInput,
+	TextAreaInput,
+	Button,
+	Icon,
+	Box,
+	FieldDescription,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+} from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ComponentProps, ReactElement } from 'react';
@@ -79,11 +93,11 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 			<Modal.Content>
 				<FieldGroup>
 					<Field>
-						<Field.Description>{t('Discussion_description')}</Field.Description>
+						<FieldDescription>{t('Discussion_description')}</FieldDescription>
 					</Field>
 					<Field>
-						<Field.Label>{t('Discussion_target_channel')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Discussion_target_channel')}</FieldLabel>
+						<FieldRow>
 							{defaultParentRoom && (
 								<Controller
 									control={control}
@@ -107,12 +121,12 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 									)}
 								/>
 							)}
-						</Field.Row>
-						{errors.parentRoom && <Field.Error>{errors.parentRoom.message}</Field.Error>}
+						</FieldRow>
+						{errors.parentRoom && <FieldError>{errors.parentRoom.message}</FieldError>}
 					</Field>
 					<Field display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 						<Box display='flex' flexDirection='column' width='full'>
-							<Field.Label>{t('Encrypted')}</Field.Label>
+							<FieldLabel>{t('Encrypted')}</FieldLabel>
 						</Box>
 						<Controller
 							control={control}
@@ -128,19 +142,19 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 						/>
 					</Field>
 					<Field>
-						<Field.Label>{t('Discussion_name')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Discussion_name')}</FieldLabel>
+						<FieldRow>
 							<TextInput
 								{...register('name', { required: t('Field_required') })}
 								placeholder={t('New_discussion_name')}
 								addon={<Icon name='baloons' size='x20' />}
 							/>
-						</Field.Row>
-						{errors.name && <Field.Error>{errors.name.message}</Field.Error>}
+						</FieldRow>
+						{errors.name && <FieldError>{errors.name.message}</FieldError>}
 					</Field>
 					<Field>
-						<Field.Label>{t('Invite_Users')}</Field.Label>
-						<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>
+						<FieldLabel>{t('Invite_Users')}</FieldLabel>
+						<FieldRow w='full' display='flex' flexDirection='column' alignItems='stretch'>
 							<Controller
 								control={control}
 								name='usernames'
@@ -148,14 +162,14 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 									<UserAutoCompleteMultiple value={value} onChange={onChange} placeholder={t('Username_Placeholder')} />
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Field.Label>{t('Discussion_first_message_title')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Discussion_first_message_title')}</FieldLabel>
+						<FieldRow>
 							<TextAreaInput {...register('firstMessage')} placeholder={t('New_discussion_first_message')} rows={5} disabled={encrypted} />
-						</Field.Row>
-						{encrypted && <Field.Description>{t('Discussion_first_message_disabled_due_to_e2e')}</Field.Description>}
+						</FieldRow>
+						{encrypted && <FieldDescription>{t('Discussion_first_message_disabled_due_to_e2e')}</FieldDescription>}
 					</Field>
 				</FieldGroup>
 			</Modal.Content>

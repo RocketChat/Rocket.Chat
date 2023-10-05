@@ -148,7 +148,7 @@ export class VisitorInactivityMonitor {
 	}
 
 	private async getDefaultAbandonedCustomMessage(abandonmentAction: 'close' | 'on-hold', visitorId: string) {
-		const visitor = await LivechatVisitors.findOneById<Pick<ILivechatVisitor, 'name' | 'username'>>(visitorId, {
+		const visitor = await LivechatVisitors.findOneEnabledById<Pick<ILivechatVisitor, 'name' | 'username'>>(visitorId, {
 			projection: {
 				name: 1,
 				username: 1,

@@ -24,16 +24,10 @@ const AutoCompleteTagMultiple = (props) => {
 
 	const { phase: tagsPhase, items: tagsItems, itemCount: tagsTotal } = useRecordList(tagsList);
 
-	const sortedByName = tagsItems.sort((a, b) => {
-		if (a.name > b.name) {
-			return 1;
-		}
-		if (a.name < b.name) {
-			return -1;
-		}
-
-		return 0;
-	});
+	const tagsOptions = useMemo(() => {
+		const pending = value.filter(({ value }) => !tagsItems.find((tag) => tag.value === value));
+		return [...tagsItems, ...pending];
+	}, [tagsItems, value]);
 
 	return (
 		<PaginatedMultiSelectFiltered
@@ -42,7 +36,7 @@ const AutoCompleteTagMultiple = (props) => {
 			onChange={onChange}
 			filter={tagsFilter}
 			setFilter={setTagsFilter}
-			options={sortedByName}
+			options={tagsOptions}
 			width='100%'
 			flexShrink={0}
 			flexGrow={0}
