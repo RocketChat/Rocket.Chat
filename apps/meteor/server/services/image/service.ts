@@ -1,12 +1,12 @@
 import type { Readable } from 'stream';
 import stream from 'stream';
 
-import ft from 'file-type';
-import sharp from 'sharp';
-import isSvg from 'is-svg';
-import ExifTransformer from 'exif-be-gone';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IMediaService, ResizeResult } from '@rocket.chat/core-services';
+import ExifTransformer from 'exif-be-gone';
+import ft from 'file-type';
+import isSvg from 'is-svg';
+import sharp from 'sharp';
 
 export class MediaService extends ServiceClassInternal implements IMediaService {
 	protected name = 'media';

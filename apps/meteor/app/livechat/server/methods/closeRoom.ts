@@ -1,11 +1,11 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 import { Users, LivechatRooms, Subscriptions as SubscriptionRaw } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Livechat } from '../lib/LivechatTyped';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { Livechat } from '../lib/LivechatTyped';
 
 type CloseRoomOptions = {
 	clientAction?: boolean;

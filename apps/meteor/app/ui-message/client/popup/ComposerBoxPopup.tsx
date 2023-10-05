@@ -1,9 +1,9 @@
 import { Box, Option, OptionSkeleton, Tile } from '@rocket.chat/fuselage';
 import { useUniqueId, useContentBoxSize } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useEffect, memo, useMemo, useRef } from 'react';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 
 export type ComposerBoxPopupProps<
 	T extends {
@@ -77,13 +77,13 @@ const ComposerBoxPopup = <
 
 	return (
 		<Box className='message-popup-position' position='relative'>
-			<Tile ref={composerBoxPopupRef} className='message-popup' padding={0} role='menu' mbe='x8' overflow='hidden' aria-labelledby={id}>
+			<Tile ref={composerBoxPopupRef} className='message-popup' padding={0} role='menu' mbe={8} overflow='hidden' aria-labelledby={id}>
 				{title && (
-					<Box bg='tint' pi='x16' pb='x8' id={id}>
+					<Box bg='tint' pi={16} pb={8} id={id}>
 						{title}
 					</Box>
 				)}
-				<Box pb='x8' maxHeight='x320'>
+				<Box pb={8} maxHeight='x320'>
 					{!isLoading && itemsFlat.length === 0 && <Option>{t('No_results_found')}</Option>}
 					{isLoading && <OptionSkeleton />}
 					{itemsFlat.map((item, index) => {

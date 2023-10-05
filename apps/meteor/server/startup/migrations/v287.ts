@@ -1,7 +1,7 @@
 import { Settings, Messages } from '@rocket.chat/models';
 
-import { addMigration } from '../../lib/migrations';
 import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
+import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 287,

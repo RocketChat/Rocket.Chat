@@ -1,7 +1,7 @@
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import { Messages } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 import type { DeleteResult } from 'mongodb';
 
 import { FileUpload } from '../../app/file-upload/server';

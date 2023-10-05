@@ -23,7 +23,7 @@ const ChannelDesertionTableRow = ({ room, onChange, selected, lastOwnerWarning }
 		<GenericTableRow action>
 			<GenericTableCell maxWidth='x300' withTruncatedText>
 				<CheckBox checked={selected} onChange={handleChange} disabled={room.isLastOwner} />
-				<Margins inline='x8'>
+				<Margins inline={8}>
 					<Icon name={room.t === 'p' ? 'hashtag-lock' : 'hashtag'} />
 					{fname ?? name}
 					{isLastOwner && <Icon size='x16' name='info-circled' color='status-font-on-danger' title={lastOwnerWarning} />}

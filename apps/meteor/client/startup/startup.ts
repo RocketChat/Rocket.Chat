@@ -71,10 +71,12 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const { connectToCloud, workspaceRegistered } = await sdk.call('cloud:checkRegisterStatus');
+		const {
+			registrationStatus: { workspaceRegistered },
+		} = await sdk.rest.get('/v1/cloud.registrationStatus');
 		c.stop();
 
-		if (connectToCloud === true && workspaceRegistered !== true) {
+		if (workspaceRegistered !== true) {
 			banners.open({
 				id: 'cloud-registration',
 				title: () => t('Cloud_registration_pending_title'),

@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import { EmojiCustom } from '@rocket.chat/models';
-import { check, Match } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IEmojiCustom } from '@rocket.chat/core-typings';
+import { EmojiCustom } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check, Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 

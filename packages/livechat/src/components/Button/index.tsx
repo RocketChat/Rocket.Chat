@@ -3,7 +3,7 @@ import type { CSSProperties } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
 import { useTranslation } from 'react-i18next';
 
-import { createClassName } from '../helpers';
+import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
 
 const handleMouseUp: JSXInternal.EventHandler<JSXInternal.TargetedMouseEvent<HTMLButtonElement>> = ({ target }) =>
@@ -12,6 +12,7 @@ const handleMouseUp: JSXInternal.EventHandler<JSXInternal.TargetedMouseEvent<HTM
 type ButtonProps = {
 	children?: ComponentChildren;
 	submit?: boolean;
+	form?: string;
 	disabled?: boolean;
 	outline?: boolean;
 	nude?: boolean;
@@ -26,10 +27,12 @@ type ButtonProps = {
 	style?: CSSProperties;
 	img?: string;
 	onClick?: JSXInternal.MouseEventHandler<HTMLButtonElement>;
+	full?: boolean;
 };
 
 export const Button = ({
 	submit,
+	form,
 	disabled,
 	outline,
 	nude,
@@ -45,11 +48,13 @@ export const Button = ({
 	style = {},
 	children,
 	img,
+	full,
 }: ButtonProps) => {
 	const { t } = useTranslation();
 	return (
 		<button
 			type={submit ? 'submit' : 'button'}
+			form={form}
 			disabled={disabled}
 			onClick={onClick}
 			onMouseUp={handleMouseUp}
@@ -68,6 +73,7 @@ export const Button = ({
 					loading,
 					icon: !!icon,
 					img,
+					full,
 				},
 				[className],
 			)}

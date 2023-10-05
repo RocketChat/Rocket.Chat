@@ -1,13 +1,13 @@
-import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.chat/rest-typings';
-import { Users } from '@rocket.chat/models';
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
-import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../../lib/Livechat';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
 	async get() {
@@ -73,14 +73,19 @@ API.v1.addRoute(
 
 			const agentId = inputAgentId || this.userId;
 
-			const agent = await Users.findOneAgentById<Pick<ILivechatAgent, 'status' | 'statusLivechat'>>(agentId, {
+			const agent = await Users.findOneAgentById<Pick<ILivechatAgent, 'status' | 'statusLivechat' | 'active'>>(agentId, {
 				projection: {
 					status: 1,
 					statusLivechat: 1,
+					active: 1,
 				},
 			});
 			if (!agent) {
 				return API.v1.notFound('Agent not found');
+			}
+
+			if (!agent.active) {
+				return API.v1.failure('error-user-deactivated');
 			}
 
 			const newStatus: ILivechatAgentStatus =

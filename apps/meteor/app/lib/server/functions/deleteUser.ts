@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import {
 	Integrations,
@@ -9,18 +9,19 @@ import {
 	Rooms,
 	Subscriptions,
 	Users,
+	ReadReceipts,
 	LivechatUnitMonitors,
 	ModerationReports,
 } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-services';
+import { Meteor } from 'meteor/meteor';
 
+import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { updateGroupDMsName } from './updateGroupDMsName';
-import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
-import { i18n } from '../../../../server/lib/i18n';
+import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
+import { updateGroupDMsName } from './updateGroupDMsName';
 
 export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<void> {
 	const user = await Users.findOneById(userId, {
@@ -56,8 +57,9 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 				}
 
 				await Messages.removeByUserId(userId);
+				await ReadReceipts.removeByUserId(userId);
 
-				await ModerationReports.hideReportsByUserId(
+				await ModerationReports.hideMessageReportsByUserId(
 					userId,
 					deletedBy || userId,
 					deletedBy === userId ? 'user deleted own account' : 'user account deleted',

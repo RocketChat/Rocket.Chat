@@ -1,9 +1,9 @@
 import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent } from '@rocket.chat/core-typings';
 
-import { LivechatInquiry } from '../../collections/LivechatInquiry';
-import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
 import { queryClient } from '../../../../../client/lib/queryClient';
+import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
 import { sdk } from '../../../../utils/client/lib/SDKClient';
+import { LivechatInquiry } from '../../collections/LivechatInquiry';
 
 const departments = new Set();
 

@@ -1,9 +1,9 @@
 import { Component } from 'preact';
 import { withTranslation } from 'react-i18next';
 
+import { createClassName } from '../../helpers/createClassName';
 import { Button } from '../Button';
 import { ButtonGroup } from '../ButtonGroup';
-import { createClassName } from '../helpers';
 import styles from './styles.scss';
 
 export class Modal extends Component {

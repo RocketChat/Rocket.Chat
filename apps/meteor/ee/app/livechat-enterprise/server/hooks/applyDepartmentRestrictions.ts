@@ -1,8 +1,8 @@
-import type { FilterOperators } from 'mongodb';
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { FilterOperators } from 'mongodb';
 
-import { callbacks } from '../../../../../lib/callbacks';
 import { hasRoleAsync } from '../../../../../app/authorization/server/functions/hasRole';
+import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 import { getUnitsFromUser } from '../lib/units';
 
@@ -21,7 +21,6 @@ callbacks.add(
 	'livechat.applyDepartmentRestrictions',
 	async (originalQuery: FilterOperators<ILivechatDepartment> = {}, { userId }: { userId?: string | null } = { userId: null }) => {
 		if (!userId || !(await hasRoleAsync(userId, 'livechat-monitor'))) {
-			cbLogger.debug('Skipping callback. No user id provided or user is not a monitor');
 			return originalQuery;
 		}
 

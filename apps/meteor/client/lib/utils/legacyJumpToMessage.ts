@@ -9,10 +9,6 @@ import { goToRoomById } from './goToRoomById';
 
 /** @deprecated */
 export const legacyJumpToMessage = async (message: IMessage) => {
-	if (matchMedia('(max-width: 500px)').matches) {
-		(Template.instance() as any)?.tabBar?.close();
-	}
-
 	if (isThreadMessage(message) || message.tcount) {
 		const { tab, context } = router.getRouteParameters();
 

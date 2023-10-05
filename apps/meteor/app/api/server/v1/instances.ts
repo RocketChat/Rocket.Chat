@@ -1,9 +1,9 @@
 import { InstanceStatus } from '@rocket.chat/models';
 
 import { Instance as InstanceService } from '../../../../ee/server/sdk';
+import { isRunningMs } from '../../../../server/lib/isRunningMs';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
-import { isRunningMs } from '../../../../server/lib/isRunningMs';
 
 const getMatrixInstances = (() => {
 	if (isRunningMs()) {

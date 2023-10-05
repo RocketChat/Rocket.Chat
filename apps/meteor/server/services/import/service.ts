@@ -1,14 +1,14 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import { Imports, ImportData } from '@rocket.chat/models';
-import type { IImportUser, IImport, ImportStatus } from '@rocket.chat/core-typings';
 import type { IImportService } from '@rocket.chat/core-services';
+import type { IImportUser, IImport, ImportStatus } from '@rocket.chat/core-typings';
+import { Imports, ImportData } from '@rocket.chat/models';
 import { ObjectId } from 'mongodb';
 
 import { Importers } from '../../../app/importer/lib/Importers';
 import { Selection } from '../../../app/importer/server/classes/ImporterSelection';
-import { getNewUserRoles } from '../user/lib/getNewUserRoles';
-import { validateRoleList } from '../../lib/roles/validateRoleList';
 import { settings } from '../../../app/settings/server';
+import { validateRoleList } from '../../lib/roles/validateRoleList';
+import { getNewUserRoles } from '../user/lib/getNewUserRoles';
 
 export class ImportService extends ServiceClassInternal implements IImportService {
 	protected name = 'import';

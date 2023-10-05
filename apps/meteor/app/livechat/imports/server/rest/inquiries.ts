@@ -1,3 +1,5 @@
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import { LivechatInquiry, LivechatDepartment, Users } from '@rocket.chat/models';
 import {
 	isGETLivechatInquiriesListParams,
 	isPOSTLivechatInquiriesTakeParams,
@@ -5,12 +7,10 @@ import {
 	isGETLivechatInquiriesQueuedForUserParams,
 	isGETLivechatInquiriesGetOneParams,
 } from '@rocket.chat/rest-typings';
-import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
-import { LivechatInquiry, LivechatDepartment, Users } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
-import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
 import { takeInquiry } from '../../../server/methods/takeInquiry';
 
 API.v1.addRoute(

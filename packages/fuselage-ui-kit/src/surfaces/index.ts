@@ -1,12 +1,12 @@
 import BannerSurface from './BannerSurface';
+import ContextualBarSurface from './ContextualBarSurface';
+import { FuselageContextualBarSurfaceRenderer } from './FuselageContextualBarRenderer';
+import { FuselageModalSurfaceRenderer } from './FuselageModalSurfaceRenderer';
 import { FuselageSurfaceRenderer } from './FuselageSurfaceRenderer';
 import MessageSurface from './MessageSurface';
+import { FuselageMessageSurfaceRenderer } from './MessageSurfaceRenderer';
 import ModalSurface from './ModalSurface';
 import { createSurfaceRenderer } from './createSurfaceRenderer';
-import { FuselageMessageSurfaceRenderer } from './MessageSurfaceRenderer';
-import { FuselageModalSurfaceRenderer } from './FuselageModalSurfaceRenderer';
-import { FuselageContextualBarSurfaceRenderer } from './FuselageContextualBarRenderer';
-import ContextualBarSurface from './ContextualBarSurface';
 
 // export const attachmentParser = new FuselageSurfaceRenderer();
 export const bannerParser = new FuselageSurfaceRenderer();

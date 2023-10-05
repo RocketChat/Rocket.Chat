@@ -1,12 +1,12 @@
+import { InstanceStatus } from '@rocket.chat/instance-status';
+import { Logger } from '@rocket.chat/logger';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { InstanceStatus } from '@rocket.chat/instance-status';
 import _ from 'underscore';
 
-import { settings } from '../../../settings/server';
-import { metrics } from '../../../metrics/server';
-import { Logger } from '../../../../server/lib/logger/Logger';
 import { getMethodArgs } from '../../../../server/lib/logger/logPayloads';
+import { metrics } from '../../../metrics/server';
+import { settings } from '../../../settings/server';
 
 const logger = new Logger('Meteor');
 
@@ -80,7 +80,7 @@ const wrapMethods = function (name, originalHandler, methodsMap) {
 const originalMeteorMethods = Meteor.methods;
 
 Meteor.methods = function (methodMap) {
-	_.each(methodMap, function (handler, name) {
+	_.each(methodMap, (handler, name) => {
 		wrapMethods(name, handler, methodMap);
 	});
 	originalMeteorMethods(methodMap);
@@ -113,7 +113,7 @@ Meteor.publish = function (name, func) {
 	});
 };
 
-WebApp.rawConnectHandlers.use(function (req, res, next) {
+WebApp.rawConnectHandlers.use((req, res, next) => {
 	res.setHeader('X-Instance-ID', InstanceStatus.id());
 	return next();
 });

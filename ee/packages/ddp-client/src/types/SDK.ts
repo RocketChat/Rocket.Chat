@@ -1,9 +1,9 @@
 import type { RestClient } from '@rocket.chat/api-client';
 
-import type { ClientStream } from './ClientStream';
 import type { Connection } from '../Connection';
 import type { TimeoutControl } from '../TimeoutControl';
 import type { Account } from './Account';
+import type { ClientStream } from './ClientStream';
 
 /*
 * The following procedure is used for streaming data:

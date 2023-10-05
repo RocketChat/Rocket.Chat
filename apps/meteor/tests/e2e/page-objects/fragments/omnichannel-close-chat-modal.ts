@@ -12,6 +12,6 @@ export class OmnichannelCloseChatModal {
 	}
 
 	get btnConfirm(): Locator {
-		return this.page.locator('//button[contains(text(), "Confirm")]');
+		return this.page.locator('role=button[name="Confirm"]');
 	}
 }

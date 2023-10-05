@@ -2,7 +2,6 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import _ from 'underscore';
 import type {
 	IMessage,
 	IProviderMetadata,
@@ -12,11 +11,12 @@ import type {
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import _ from 'underscore';
 
-import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
+import { i18n } from '../../../server/lib/i18n';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
-import { i18n } from '../../../server/lib/i18n';
+import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
 
 /**
  * Represents google translate class

@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
+import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { LivechatCustomField } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { ILivechatCustomField } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 

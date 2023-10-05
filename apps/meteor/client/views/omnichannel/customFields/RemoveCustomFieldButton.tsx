@@ -32,7 +32,7 @@ const RemoveCustomFieldButton = ({ _id, reload }: { _id: ILivechatCustomField['_
 
 	return (
 		<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-			<IconButton icon='trash' mini title={t('Remove')} onClick={handleDelete} />
+			<IconButton icon='trash' small title={t('Remove')} onClick={handleDelete} />
 		</GenericTableCell>
 	);
 };

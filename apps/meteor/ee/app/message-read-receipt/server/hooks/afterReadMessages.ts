@@ -1,9 +1,9 @@
-import type { IUser, IRoom, IMessage } from '@rocket.chat/core-typings';
 import { MessageReads } from '@rocket.chat/core-services';
+import type { IUser, IRoom, IMessage } from '@rocket.chat/core-typings';
 
-import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadReceipt';
-import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
+import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadReceipt';
 
 callbacks.add(
 	'afterReadMessages',

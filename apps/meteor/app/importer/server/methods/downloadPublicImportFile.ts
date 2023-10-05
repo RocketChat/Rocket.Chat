@@ -1,20 +1,20 @@
+import fs from 'fs';
 import http from 'http';
 import https from 'https';
-import fs from 'fs';
 
-import { Meteor } from 'meteor/meteor';
 import { Import } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { RocketChatImportFileInstance } from '../startup/store';
-import { ProgressStep } from '../../lib/ImporterProgressStep';
+import { Importers } from '..';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Importers } from '../../lib/Importers';
+import { ProgressStep } from '../../lib/ImporterProgressStep';
+import { RocketChatImportFileInstance } from '../startup/store';
 
 function downloadHttpFile(fileUrl: string, writeStream: fs.WriteStream): void {
 	const protocol = fileUrl.startsWith('https') ? https : http;
-	protocol.get(fileUrl, function (response) {
+	protocol.get(fileUrl, (response) => {
 		response.pipe(writeStream);
 	});
 }

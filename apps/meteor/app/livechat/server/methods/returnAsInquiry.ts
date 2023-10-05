@@ -1,7 +1,7 @@
 import type { ILivechatDepartment, IRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import { LivechatRooms } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../lib/Livechat';

@@ -1,11 +1,20 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 
-import type { IMessage, Serialized } from '@rocket.chat/core-typings';
-import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
-import { Emitter } from '@rocket.chat/emitter';
 import { RestClient } from '@rocket.chat/api-client';
+import type { IMessage, Serialized } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
+import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
+import { ClientStreamImpl } from '../ClientStream';
+import { ConnectionImpl } from '../Connection';
+import { DDPDispatcher } from '../DDPDispatcher';
 import { DDPSDK } from '../DDPSDK';
+import { TimeoutControl } from '../TimeoutControl';
+import { AccountImpl } from '../types/Account';
+import type { ClientStream } from '../types/ClientStream';
+import type { DDPDispatchOptions } from '../types/DDPClient';
+import type { ServerMethodReturn, ServerMethods } from '../types/methods';
+import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '../types/streams';
 import type {
 	APILegacy,
 	DPPLegacy,
@@ -13,15 +22,6 @@ import type {
 	RocketchatSdkLegacyEventsKeys,
 	RocketchatSdkLegacyEventsValues,
 } from './types/SDKLegacy';
-import type { DDPDispatchOptions } from '../types/DDPClient';
-import { DDPDispatcher } from '../DDPDispatcher';
-import { ConnectionImpl } from '../Connection';
-import { ClientStreamImpl } from '../ClientStream';
-import { AccountImpl } from '../types/Account';
-import { TimeoutControl } from '../TimeoutControl';
-import type { ClientStream } from '../types/ClientStream';
-import type { ServerMethodReturn, ServerMethods } from '../types/methods';
-import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '../types/streams';
 
 declare module '../ClientStream' {
 	interface ClientStream {

@@ -1,6 +1,6 @@
-import type { UpdateResult, DeleteResult } from 'mongodb';
 import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
+import type { UpdateResult, DeleteResult } from 'mongodb';
 
 export interface ICalendarService {
 	create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent'>): Promise<ICalendarEvent['_id']>;

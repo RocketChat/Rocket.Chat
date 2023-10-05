@@ -1,10 +1,10 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
-import { settings } from '../../../settings/server';
-import { Livechat } from '../../../livechat/server/lib/LivechatTyped';
-import { i18n } from '../../../../server/lib/i18n';
 import { callbacks } from '../../../../lib/callbacks';
+import { i18n } from '../../../../server/lib/i18n';
+import { Livechat } from '../../../livechat/server/lib/LivechatTyped';
+import { settings } from '../../../settings/server';
 
 type SubscribedRooms = {
 	rid: string;

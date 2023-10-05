@@ -1,5 +1,5 @@
 import { Grid } from '@rocket.chat/fuselage';
-import { Card } from '@rocket.chat/ui-client';
+import { Card, CardBody, CardTitle } from '@rocket.chat/ui-client';
 import React from 'react';
 
 import useFeatureBullets from '../hooks/useFeatureBullets';
@@ -12,8 +12,8 @@ const RegisterWorkspaceCards = () => {
 			{bulletFeatures.map((card) => (
 				<Grid.Item key={card.key} xs={4} sm={4} md={4} lg={4} xl={3}>
 					<Card>
-						<Card.Title>{card.title}</Card.Title>
-						<Card.Body height='x88'>{card.description}</Card.Body>
+						<CardTitle>{card.title}</CardTitle>
+						<CardBody height='x88'>{card.description}</CardBody>
 					</Card>
 				</Grid.Item>
 			))}

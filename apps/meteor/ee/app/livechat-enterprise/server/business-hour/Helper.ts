@@ -1,9 +1,9 @@
-import moment from 'moment-timezone';
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { LivechatBusinessHours, LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
+import moment from 'moment-timezone';
 
-import { isEnterprise } from '../../../license/server/license';
 import { businessHourLogger } from '../../../../../app/livechat/server/lib/logger';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
@@ -105,7 +105,7 @@ export const removeBusinessHourByAgentIds = async (agentIds: string[], businessH
 };
 
 export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
-	if (isEnterprise()) {
+	if (License.hasValidLicense()) {
 		return;
 	}
 

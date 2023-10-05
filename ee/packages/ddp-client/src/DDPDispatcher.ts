@@ -2,8 +2,8 @@
  * A queue of ddp blocking methods that are waiting to be sent to the server.
  */
 
-import type { MethodPayload } from './types/methodsPayloads';
 import { MinimalDDPClient } from './MinimalDDPClient';
+import type { MethodPayload } from './types/methodsPayloads';
 
 type Blocks = {
 	wait: boolean;

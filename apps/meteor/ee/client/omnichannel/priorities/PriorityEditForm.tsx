@@ -1,5 +1,5 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
-import { Field, Button, Box, ButtonGroup, Throbber } from '@rocket.chat/fuselage';
+import { Field, FieldError, Button, Box, ButtonGroup, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
@@ -80,7 +80,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 					rules={{ required: t('The_field_is_required', t('Name')), validate: (v) => v?.trim() !== '' }}
 					render={({ field: { value, onChange } }): ReactElement => (
 						<StringSettingInput
-							_id={''}
+							_id=''
 							disabled={isSaving}
 							error={errors.name?.message}
 							label={`${t('Name')}*`}
@@ -93,7 +93,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 						/>
 					)}
 				/>
-				<Field.Error>{errors.name?.message}</Field.Error>
+				<FieldError>{errors.name?.message}</FieldError>
 			</Field>
 
 			<ButtonGroup stretch>

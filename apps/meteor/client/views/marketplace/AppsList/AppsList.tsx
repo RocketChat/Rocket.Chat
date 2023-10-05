@@ -7,20 +7,25 @@ import AppRow from './AppRow';
 
 type AppsListProps = {
 	apps: App[];
-	title: string;
+	title?: string;
+	appsListId: string;
 };
 
-const AppsList = ({ apps, title }: AppsListProps): ReactElement => (
-	<>
-		<Box is='h3' fontScale='h3' color='default' mbe='x20'>
-			{title}
-		</Box>
-		<Box mbe='x24'>
-			{apps.map((app) => (
-				<AppRow key={app.id} {...app} />
-			))}
-		</Box>
-	</>
-);
+const AppsList = ({ apps, title, appsListId }: AppsListProps): ReactElement => {
+	return (
+		<>
+			{title && (
+				<Box is='h2' id={appsListId} fontScale='h3' color='default' mbe={20}>
+					{title}
+				</Box>
+			)}
+			<Box aria-labelledby={appsListId} mbe={24} role='list'>
+				{apps.map((app) => (
+					<AppRow key={app.id} {...app} />
+				))}
+			</Box>
+		</>
+	);
+};
 
 export default AppsList;

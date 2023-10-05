@@ -45,9 +45,9 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 				<Modal.Title>{t('Direct_Messages')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
-			<Modal.Content mbe='x2'>
+			<Modal.Content mbe={2}>
 				<Box>{t('Direct_message_creation_description')}</Box>
-				<Box mbs='x16' display='flex' flexDirection='column' width='full'>
+				<Box mbs={16} display='flex' flexDirection='column' width='full'>
 					<UserAutoCompleteMultipleFederated value={users} onChange={setUsers} />
 				</Box>
 			</Modal.Content>

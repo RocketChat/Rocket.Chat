@@ -1,4 +1,3 @@
-import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions } from 'mongodb';
 import type {
 	IGroupVideoConference,
 	ILivechatVideoConference,
@@ -7,6 +6,7 @@ import type {
 	VideoConference,
 	VideoConferenceStatus,
 } from '@rocket.chat/core-typings';
+import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 

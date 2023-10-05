@@ -1,6 +1,6 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 
 import {
 	ContextualbarClose,
@@ -9,7 +9,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarIcon,
 } from '../../../../components/Contextualbar';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import MessageSearch from './components/MessageSearch';
 import MessageSearchForm from './components/MessageSearchForm';
 import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQuery';
@@ -17,10 +17,7 @@ import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQ
 const MessageSearchTab = () => {
 	const providerQuery = useMessageSearchProviderQuery();
 
-	const tabBarClose = useTabBarClose();
-	const handleCloseButtonClick = useCallback(() => {
-		tabBarClose();
-	}, [tabBarClose]);
+	const { closeTab } = useRoomToolbox();
 
 	const [{ searchText, globalSearch }, handleSearch] = useState({ searchText: '', globalSearch: false });
 
@@ -31,7 +28,7 @@ const MessageSearchTab = () => {
 			<ContextualbarHeader>
 				<ContextualbarIcon name='magnifier' />
 				<ContextualbarTitle>{t('Search_Messages')}</ContextualbarTitle>
-				<ContextualbarClose onClick={handleCloseButtonClick} />
+				<ContextualbarClose onClick={closeTab} />
 			</ContextualbarHeader>
 			<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0}>
 				{providerQuery.isSuccess && (

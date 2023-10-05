@@ -1,22 +1,20 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
-import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
+import { i18n } from '../../../../../server/lib/i18n';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
 import { cbLogger } from '../lib/logger';
-import { i18n } from '../../../../../server/lib/i18n';
 
 let autoCloseOnHoldChatTimeout = 0;
 
 const handleAfterOnHold = async (room: Pick<IOmnichannelRoom, '_id'>): Promise<any> => {
 	const { _id: rid } = room;
 	if (!rid) {
-		cbLogger.debug('Skipping callback. No room provided');
 		return;
 	}
 
 	if (!autoCloseOnHoldChatTimeout || autoCloseOnHoldChatTimeout <= 0) {
-		cbLogger.debug('Skipping callback. Autoclose on hold disabled by setting');
 		return;
 	}
 

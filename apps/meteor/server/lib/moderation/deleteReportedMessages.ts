@@ -1,8 +1,8 @@
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
-import { Messages, Uploads } from '@rocket.chat/models';
+import { Messages, Uploads, ReadReceipts } from '@rocket.chat/models';
 
-import { settings } from '../../../app/settings/server';
 import { FileUpload } from '../../../app/file-upload/server';
+import { settings } from '../../../app/settings/server';
 
 // heavily inspired from message delete taking place in the user deletion process
 // in this path we don't care about the apps engine events - it's a "raw" bulk action
@@ -39,6 +39,7 @@ export async function deleteReportedMessages(messages: IMessage[], user: IUser):
 		if (!showDeletedStatus) {
 			await Messages.deleteMany({ _id: { $in: messageIds } });
 		}
+		await ReadReceipts.removeByMessageIds(messageIds);
 
 		const store = FileUpload.getStore('Uploads');
 		await Promise.all(files.map((file) => store.deleteById(file)));

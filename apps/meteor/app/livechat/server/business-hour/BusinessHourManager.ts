@@ -1,14 +1,13 @@
-import moment from 'moment';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import type { AgendaCronJobs } from '@rocket.chat/cron';
 import { LivechatDepartment, Users } from '@rocket.chat/models';
+import moment from 'moment';
 
-import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
-import { settings } from '../../../settings/server';
-import { callbacks } from '../../../../lib/callbacks';
 import { closeBusinessHour } from '../../../../ee/app/livechat-enterprise/server/business-hour/Helper';
-import { businessHourLogger } from '../lib/logger';
+import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
+import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 
 export class BusinessHourManager {
 	private types: Map<string, IBusinessHourType> = new Map();
@@ -27,7 +26,6 @@ export class BusinessHourManager {
 
 	async startManager(): Promise<void> {
 		await this.createCronJobsForWorkHours();
-		businessHourLogger.debug('Cron jobs created, setting up callbacks');
 		this.setupCallbacks();
 		await this.cleanupDisabledDepartmentReferences();
 		await this.behavior.onStartBusinessHours();

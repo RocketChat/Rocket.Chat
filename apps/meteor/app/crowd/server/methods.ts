@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { logger } from './logger';
+import { settings } from '../../settings/server';
 import { CROWD } from './crowd';
+import { logger } from './logger';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

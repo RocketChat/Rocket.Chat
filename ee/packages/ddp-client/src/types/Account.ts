@@ -47,7 +47,7 @@ export class AccountImpl
 				return;
 			}
 
-			if (!('fields' in data) || !('username' in data.fields!)) {
+			if (!('fields' in data) || !(data.fields && 'username' in data.fields)) {
 				return;
 			}
 

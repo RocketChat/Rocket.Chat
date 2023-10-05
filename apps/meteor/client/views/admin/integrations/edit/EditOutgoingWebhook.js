@@ -24,6 +24,7 @@ const getInitialValue = (data) => {
 		avatar: data.avatar ?? '',
 		emoji: data.emoji ?? '',
 		scriptEnabled: data.scriptEnabled ?? false,
+		scriptEngine: data.scriptEngine ?? 'vm2',
 		script: data.script ?? '',
 		retryFailedCalls: data.retryFailedCalls ?? true,
 		retryCount: data.retryCount ?? 5,
@@ -104,7 +105,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 							</Button>
 						</Margins>
 					</Box>
-					<Button mbs='x4' danger w='full' onClick={handleDeleteIntegration}>
+					<Button mbs={4} danger w='full' onClick={handleDeleteIntegration}>
 						{t('Delete')}
 					</Button>
 				</Field.Row>

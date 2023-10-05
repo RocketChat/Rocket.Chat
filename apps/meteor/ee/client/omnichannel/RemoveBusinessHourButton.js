@@ -38,7 +38,7 @@ function RemoveBusinessHourButton({ _id, type, reload }) {
 
 	return (
 		<GenericTableCell fontScale='p2' color='hint' onClick={handleDelete} withTruncatedText>
-			<IconButton icon='trash' mini title={t('Remove')} onClick={handleDelete} />
+			<IconButton icon='trash' small title={t('Remove')} onClick={handleDelete} />
 		</GenericTableCell>
 	);
 }

@@ -1,11 +1,11 @@
-import type { IconProps } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
 export type Item = {
 	i18nLabel: string;
 	href?: LocationPathname | `https://go.rocket.chat/i/${string}`;
-	icon?: IconProps['name'];
+	icon?: IconName;
 	tag?: 'Alpha' | 'Beta';
 	permissionGranted?: () => boolean;
 	pathSection?: string;

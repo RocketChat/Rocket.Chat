@@ -1,6 +1,6 @@
-import type { Request, Response, NextFunction } from 'express';
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Users } from '@rocket.chat/models';
+import type { Request, Response, NextFunction } from 'express';
 
 import { oAuth2ServerAuth } from '../../../oauth2-server-config/server/oauth/oauth2-server';
 
