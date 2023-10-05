@@ -561,7 +561,6 @@ export const statistics = {
 		const rcStatistics = await statistics.get();
 		rcStatistics.createdAt = new Date();
 		await Statistics.insertOne(rcStatistics);
-		await Presence.resetDailyPeakConnections();
 		return rcStatistics;
 	},
 };
