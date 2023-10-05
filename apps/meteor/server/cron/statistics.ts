@@ -1,3 +1,4 @@
+import { Presence } from '@rocket.chat/core-services';
 import { cronJobs } from '@rocket.chat/cron';
 import type { Logger } from '@rocket.chat/logger';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -37,5 +38,8 @@ export async function statsCron(logger: Logger): Promise<void> {
 
 	const now = new Date();
 
-	await cronJobs.add(name, `12 ${now.getHours()} * * *`, async () => generateStatistics(logger));
+	await cronJobs.add(name, `12 ${now.getHours()} * * *`, async () => {
+		await generateStatistics(logger);
+		await Presence.resetDailyPeakConnections();
+	});
 }
