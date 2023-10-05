@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
 import { MockedLicenseBuilder, getReadyLicenseManager } from '../../__tests__/MockedLicenseBuilder';
 import { validateLicenseUrl } from './validateLicenseUrl';
@@ -91,7 +91,8 @@ describe('Url Validation', () => {
 	describe('hash method', () => {
 		it('should return a behavior if the license does not match the hash', async () => {
 			const licenseManager = await getReadyLicenseManager();
-			const hash = bcrypt.hashSync('localhost:3001', 10);
+
+			const hash = crypto.createHash('sha256').update('localhost:3001').digest('hex');
 			const license = await new MockedLicenseBuilder().withServerUrls({
 				value: hash,
 				type: 'hash',
@@ -113,8 +114,7 @@ describe('Url Validation', () => {
 		it('should return an empty array if the license matches the hash', async () => {
 			const licenseManager = await getReadyLicenseManager();
 
-			const hash = bcrypt.hashSync('localhost:3000', 10);
-
+			const hash = crypto.createHash('sha256').update('localhost:3000').digest('hex');
 			const license = await new MockedLicenseBuilder().withServerUrls({
 				value: hash,
 				type: 'hash',

@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
 import type { ILicenseV3 } from '../definition/ILicenseV3';
 import type { BehaviorWithContext } from '../definition/LicenseBehavior';
@@ -22,7 +22,8 @@ const validateUrl = (licenseURL: string, url: string) => {
 };
 
 const validateHash = (licenseURL: string, url: string) => {
-	return bcrypt.compareSync(url, licenseURL);
+	const value = crypto.createHash('sha256').update(url).digest('hex');
+	return licenseURL === value;
 };
 
 export function validateLicenseUrl(this: LicenseManager, license: ILicenseV3, options: LicenseValidationOptions): BehaviorWithContext[] {
@@ -55,11 +56,13 @@ export function validateLicenseUrl(this: LicenseManager, license: ILicenseV3, op
 			return false;
 		})
 		.map((url) => {
-			logger.error({
-				msg: 'Url validation failed',
-				url,
-				workspaceUrl,
-			});
+			if (!options.suppressLog) {
+				logger.error({
+					msg: 'Url validation failed',
+					url,
+					workspaceUrl,
+				});
+			}
 			return getResultingBehavior({ behavior: 'invalidate_license' }, { reason: 'url' });
 		});
 }
