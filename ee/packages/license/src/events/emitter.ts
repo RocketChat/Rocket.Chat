@@ -1,5 +1,4 @@
-import type { LicenseLimitKind } from '../definition/ILicenseV3';
-import type { LicenseBehavior } from '../definition/LicenseBehavior';
+import type { BehaviorWithContext } from '../definition/LicenseBehavior';
 import type { LicenseModule } from '../definition/LicenseModule';
 import type { LicenseManager } from '../license';
 import { logger } from '../logger';
@@ -22,14 +21,23 @@ export function moduleRemoved(this: LicenseManager, module: LicenseModule) {
 	}
 }
 
-export function limitReached(
-	this: LicenseManager,
-	limitKind: Exclude<LicenseLimitKind, 'roomsPerGuest'>,
-	limitBehavior: Exclude<LicenseBehavior, 'prevent_installation'>,
-) {
+export function behaviorTriggered(this: LicenseManager, { behavior, reason, limit }: BehaviorWithContext) {
+	if (behavior === 'prevent_installation') {
+		return;
+	}
+
 	try {
-		// This will never be emitted for limits that fallback to "not reached" when missing context params (eg: roomsPerGuest)
-		this.emit(`limitReached:${limitKind}:${limitBehavior}`);
+		this.emit(`behavior:${behavior}`, { reason, limit });
+	} catch (error) {
+		logger.error({ msg: 'Error running behavior triggered event', error });
+	}
+
+	if (behavior !== 'prevent_action' || reason !== 'limit' || !limit) {
+		return;
+	}
+
+	try {
+		this.emit(`limitReached:${limit}`);
 	} catch (error) {
 		logger.error({ msg: 'Error running limit reached event', error });
 	}

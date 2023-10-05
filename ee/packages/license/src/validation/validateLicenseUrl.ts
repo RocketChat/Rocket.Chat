@@ -3,7 +3,9 @@ import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 
 import type { ILicenseV3 } from '../definition/ILicenseV3';
-import type { BehaviorWithContext, LicenseBehavior } from '../definition/LicenseBehavior';
+import type { BehaviorWithContext } from '../definition/LicenseBehavior';
+import type { LicenseValidationOptions } from '../definition/LicenseValidationOptions';
+import { isBehaviorAllowed } from '../isItemAllowed';
 import type { LicenseManager } from '../license';
 import { logger } from '../logger';
 import { getResultingBehavior } from './getResultingBehavior';
@@ -26,12 +28,8 @@ const validateHash = (licenseURL: string, url: string) => {
 	return bcrypt.compareSync(value, licenseURL);
 };
 
-export function validateLicenseUrl(
-	this: LicenseManager,
-	license: ILicenseV3,
-	behaviorFilter: (behavior: LicenseBehavior) => boolean,
-): BehaviorWithContext[] {
-	if (!behaviorFilter('invalidate_license')) {
+export function validateLicenseUrl(this: LicenseManager, license: ILicenseV3, options: LicenseValidationOptions): BehaviorWithContext[] {
+	if (!isBehaviorAllowed('invalidate_license', options)) {
 		return [];
 	}
 
@@ -43,7 +41,7 @@ export function validateLicenseUrl(
 
 	if (!workspaceUrl) {
 		logger.error('Unable to validate license URL without knowing the workspace URL.');
-		return [getResultingBehavior({ behavior: 'invalidate_license' })];
+		return [getResultingBehavior({ behavior: 'invalidate_license' }, { reason: 'url' })];
 	}
 
 	return serverUrls
@@ -65,6 +63,6 @@ export function validateLicenseUrl(
 				url,
 				workspaceUrl,
 			});
-			return getResultingBehavior({ behavior: 'invalidate_license' });
+			return getResultingBehavior({ behavior: 'invalidate_license' }, { reason: 'url' });
 		});
 }

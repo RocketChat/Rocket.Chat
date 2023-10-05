@@ -2,13 +2,15 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import type { ILicenseV2 } from './definition/ILicenseV2';
 import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
-import type { BehaviorWithContext, LicenseBehavior } from './definition/LicenseBehavior';
+import type { BehaviorWithContext } from './definition/LicenseBehavior';
 import type { LicenseModule } from './definition/LicenseModule';
+import type { LicenseValidationOptions } from './definition/LicenseValidationOptions';
 import type { LimitContext } from './definition/LimitContext';
+import type { LicenseEvents } from './definition/events';
 import { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
 import { InvalidLicenseError } from './errors/InvalidLicenseError';
 import { NotReadyForValidation } from './errors/NotReadyForValidation';
-import { licenseInvalidated, licenseValidated, limitReached } from './events/emitter';
+import { behaviorTriggered, licenseInvalidated, licenseValidated } from './events/emitter';
 import { logger } from './logger';
 import { getModules, invalidateAll, replaceModules } from './modules';
 import { applyPendingLicense, clearPendingLicense, hasPendingLicense, isPendingLicense, setPendingLicense } from './pendingLicense';
@@ -23,19 +25,9 @@ import { isReadyForValidation } from './validation/isReadyForValidation';
 import { runValidation } from './validation/runValidation';
 import { validateFormat } from './validation/validateFormat';
 
-const invalidLicenseBehaviors: LicenseBehavior[] = ['invalidate_license', 'prevent_installation'];
-const generalValidationBehaviors: LicenseBehavior[] = ['start_fair_policy', 'disable_modules'];
-const behaviorsWithLimitEvents = ['invalidate_license', 'start_fair_policy', 'disable_modules', 'custom', 'prevent_action'] as const;
 const globalLimitKinds: LicenseLimitKind[] = ['activeUsers', 'guestUsers', 'privateApps', 'marketplaceApps', 'monthlyActiveContacts'];
 
-export class LicenseManager extends Emitter<
-	Record<`limitReached:${Exclude<LicenseLimitKind, 'roomsPerGuest'>}:${Exclude<LicenseBehavior, 'prevent_installation'>}`, undefined> &
-		Record<`${'invalid' | 'valid'}:${LicenseModule}`, undefined> & {
-			validate: undefined;
-			invalidate: undefined;
-			module: { module: LicenseModule; valid: boolean };
-		}
-> {
+export class LicenseManager extends Emitter<LicenseEvents> {
 	dataCounters = new Map<LicenseLimitKind, (context?: LimitContext<LicenseLimitKind>) => Promise<number>>();
 
 	countersCache = new Map<LicenseLimitKind, number>();
@@ -52,11 +44,9 @@ export class LicenseManager extends Emitter<
 
 	private _valid: boolean | undefined;
 
-	private _inFairPolicy: boolean | undefined;
+	private _inFairPolicy = false;
 
 	private _lockedLicense: string | undefined;
-
-	private _accessedLimits = new Set<Exclude<LicenseLimitKind, 'roomsPerGuest'>>();
 
 	public get license(): ILicenseV3 | undefined {
 		return this._license;
@@ -71,7 +61,7 @@ export class LicenseManager extends Emitter<
 	}
 
 	public get inFairPolicy(): boolean {
-		return Boolean(this._inFairPolicy);
+		return this._inFairPolicy;
 	}
 
 	public async setWorkspaceUrl(url: string) {
@@ -86,29 +76,6 @@ export class LicenseManager extends Emitter<
 		return this.workspaceUrl;
 	}
 
-	public async revalidateLimits(): Promise<void> {
-		this.countersCache.clear();
-		await this.triggerLimitEvents();
-	}
-
-	private async triggerLimitEvents(): Promise<void> {
-		const license = this.getLicense();
-		if (!license) {
-			return;
-		}
-
-		const limits = [...this._accessedLimits];
-		this._accessedLimits.clear();
-
-		for await (const limit of limits) {
-			for await (const behavior of behaviorsWithLimitEvents) {
-				if (this.has(`limitReached:${limit}:${behavior}`) && (await this.isLimitReached(limit, [behavior], undefined, 0, false))) {
-					limitReached.call(this, limit, behavior);
-				}
-			}
-		}
-	}
-
 	public async revalidateLicense(): Promise<void> {
 		if (!this.hasValidLicense()) {
 			return;
@@ -116,7 +83,7 @@ export class LicenseManager extends Emitter<
 
 		try {
 			this.countersCache.clear();
-			await this.validateLicense(false);
+			await this.validateLicense({ isNewLicense: false });
 		} finally {
 			this.maybeInvalidateLicense();
 		}
@@ -125,7 +92,7 @@ export class LicenseManager extends Emitter<
 	private clearLicenseData(): void {
 		this._license = undefined;
 		this._unmodifiedLicense = undefined;
-		this._inFairPolicy = undefined;
+		this._inFairPolicy = false;
 		this._valid = false;
 		this._lockedLicense = undefined;
 		this.countersCache.clear();
@@ -149,7 +116,7 @@ export class LicenseManager extends Emitter<
 			this._unmodifiedLicense = originalLicense || newLicense;
 			this._license = newLicense;
 
-			await this.validateLicense(encryptedLicense !== this._lockedLicense);
+			await this.validateLicense({ isNewLicense: encryptedLicense !== this._lockedLicense });
 			this._lockedLicense = encryptedLicense;
 
 			if (this.valid) {
@@ -171,7 +138,7 @@ export class LicenseManager extends Emitter<
 		return Boolean(this._lockedLicense && this._lockedLicense === encryptedLicense);
 	}
 
-	private async validateLicenseBehaviors(behaviorsToConsider: LicenseBehavior[]): Promise<void> {
+	private async validateLicense(options: LicenseValidationOptions = {}): Promise<void> {
 		if (!this._license) {
 			throw new InvalidLicenseError();
 		}
@@ -180,34 +147,9 @@ export class LicenseManager extends Emitter<
 			throw new NotReadyForValidation();
 		}
 
-		// Run the `invalidate_license` behavior first and skip everything else if it's already invalid.
-		const validationResult = await runValidation.call(
-			this,
-			this._license,
-			behaviorsToConsider.filter((behavior) => invalidLicenseBehaviors.includes(behavior)),
-		);
-
-		if (isBehaviorsInResult(validationResult, invalidLicenseBehaviors)) {
-			this._valid = false;
-			return;
-		}
-
-		const generalResult = await runValidation.call(
-			this,
-			this._license,
-			behaviorsToConsider.filter((behavior) => generalValidationBehaviors.includes(behavior)),
-		);
-
-		this.processValidationResult(generalResult, behaviorsToConsider.includes('prevent_installation'));
-	}
-
-	private async validateLicense(isNewLicense: boolean): Promise<void> {
-		return this.validateLicenseBehaviors([
-			'invalidate_license',
-			'start_fair_policy',
-			'disable_modules',
-			...(isNewLicense ? ['prevent_installation' as LicenseBehavior] : []),
-		]);
+		const validationResult = await runValidation.call(this, this._license, options);
+		this.processValidationResult(validationResult, options);
+		this.triggerBehaviorEvents(validationResult);
 	}
 
 	public async setLicense(encryptedLicense: string): Promise<boolean> {
@@ -254,16 +196,18 @@ export class LicenseManager extends Emitter<
 		}
 	}
 
-	private processValidationResult(result: BehaviorWithContext[], isNewLicense: boolean): void {
-		if (!this._license || isBehaviorsInResult(result, invalidLicenseBehaviors)) {
+	private processValidationResult(result: BehaviorWithContext[], options: LicenseValidationOptions): void {
+		if (!this._license || isBehaviorsInResult(result, ['invalidate_license', 'prevent_installation'])) {
 			this._valid = false;
 			return;
 		}
 
-		const shouldLogModules = !this._valid || isNewLicense;
+		const shouldLogModules = !this._valid || options.isNewLicense;
 
 		this._valid = true;
-		this._inFairPolicy = isBehaviorsInResult(result, ['start_fair_policy']);
+		if (isBehaviorsInResult(result, ['start_fair_policy'])) {
+			this._inFairPolicy = true;
+		}
 
 		if (this._license.information.tags) {
 			replaceTags(this._license.information.tags);
@@ -282,6 +226,12 @@ export class LicenseManager extends Emitter<
 		}
 	}
 
+	private triggerBehaviorEvents(validationResult: BehaviorWithContext[]): void {
+		for (const { behavior, reason, limit } of validationResult) {
+			behaviorTriggered.call(this, { behavior, reason, limit });
+		}
+	}
+
 	public hasValidLicense(): boolean {
 		return Boolean(this.getLicense());
 	}
@@ -294,37 +244,32 @@ export class LicenseManager extends Emitter<
 
 	public async shouldPreventAction<T extends LicenseLimitKind>(
 		action: T,
-		context?: Partial<LimitContext<T>>,
+		context: Partial<LimitContext<T>> = {},
 		newCount = 1,
-	): Promise<boolean> {
-		return this._isLimitReached(action, ['prevent_action'], context, newCount);
-	}
-
-	protected async _isLimitReached<T extends LicenseLimitKind>(
-		action: T,
-		behaviorsToConsider?: LicenseBehavior[],
-		context?: Partial<LimitContext<T>>,
-		extraCount = 0,
-		flagAsAccessed = true,
+		{ suppressLog }: Pick<LicenseValidationOptions, 'suppressLog'> = {},
 	): Promise<boolean> {
 		const license = this.getLicense();
 		if (!license) {
 			return false;
 		}
 
-		if (action !== 'roomsPerGuest' && flagAsAccessed) {
-			this._accessedLimits.add(action);
-		}
+		const options: LicenseValidationOptions = {
+			behaviors: ['prevent_action'],
+			isNewLicense: false,
+			suppressLog: !!suppressLog,
+			context: {
+				[action]: {
+					extraCount: newCount,
+					...context,
+				},
+			},
+		};
 
-		const filteredLimits = license.limits[action]?.filter(
-			({ behavior, max }) => max >= 0 && (!behaviorsToConsider || behaviorsToConsider.includes(behavior)),
-		);
-		if (!filteredLimits?.length) {
-			return false;
-		}
+		this.countersCache.clear();
+		const validationResult = await runValidation.call(this, license, options);
+		this.triggerBehaviorEvents(validationResult);
 
-		const currentValue = (await getCurrentValueForLicenseLimit.call(this, action, context)) + extraCount;
-		return Boolean(filteredLimits.some(({ max }) => max < currentValue));
+		return isBehaviorsInResult(validationResult, ['prevent_action']);
 	}
 
 	public async getInfo(loadCurrentValues = false): Promise<{
