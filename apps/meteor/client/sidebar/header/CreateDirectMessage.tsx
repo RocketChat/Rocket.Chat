@@ -19,7 +19,7 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 	const {
 		control,
 		handleSubmit,
-		formState: { isSubmitting, isValidating, errors },
+		formState: { isDirty, isSubmitting, isValidating, errors },
 	} = useForm({ mode: 'onBlur', defaultValues: { users: [] } });
 
 	const mutateDirectMessage = useMutation({
@@ -46,7 +46,7 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 				<Modal.Close tabIndex={-1} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content mbe={2}>
-				<Box mbe={16}>{t('Direct_message_creation_description')}</Box>
+				<Box mbe={24}>{t('Direct_message_creation_description')}</Box>
 				<FieldGroup>
 					<Field>
 						<FieldLabel htmlFor={membersFieldId} required>
@@ -57,9 +57,12 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 								name='users'
 								rules={{ required: t('error-the-field-is-required', { field: t('Members') }) }}
 								control={control}
-								render={({ field }) => (
+								render={({ field: { name, onChange, value, onBlur } }) => (
 									<UserAutoCompleteMultipleFederated
-										{...field}
+										name={name}
+										onChange={onChange}
+										value={value}
+										onBlur={onBlur}
 										id={membersFieldId}
 										aria-describedby={`${membersFieldId}-error`}
 										aria-required='true'
@@ -79,7 +82,7 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={isSubmitting || isValidating} type='submit' primary>
+					<Button disabled={!isDirty || isSubmitting || isValidating} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>
