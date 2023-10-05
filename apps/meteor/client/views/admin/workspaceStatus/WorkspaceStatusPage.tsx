@@ -1,4 +1,4 @@
-import type { IServerInfo, IStats } from '@rocket.chat/core-typings';
+import type { IWorkspaceInfo, IStats } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Callout, Grid } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -6,14 +6,14 @@ import React, { memo } from 'react';
 
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import DeploymentCard from './DeploymentCard';
-import MessagesRoomsCard from './MessagesRoomsCard';
-import UsersUploadsCard from './UsersUploadsCard';
-import VersionCard from './VersionCard';
+import DeploymentCard from './DeploymentCard/DeploymentCard';
+import MessagesRoomsCard from './MessagesRoomsCard/MessagesRoomsCard';
+import UsersUploadsCard from './UsersUploadsCard/UsersUploadsCard';
+import VersionCard from './VersionCard/VersionCard';
 
 type WorkspaceStatusPageProps = {
 	canViewStatistics: boolean;
-	serverInfo: IServerInfo;
+	serverInfo: IWorkspaceInfo;
 	statistics: IStats;
 	instances: IInstance[];
 	onClickRefreshButton: () => void;

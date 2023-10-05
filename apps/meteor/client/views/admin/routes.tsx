@@ -121,7 +121,7 @@ registerAdminRoute('/sounds/:context?/:id?', {
 
 registerAdminRoute('/workspace-status', {
 	name: 'workspace-status',
-	component: lazy(() => import('./info/WorkspaceStatusRoute')),
+	component: lazy(() => import('./workspaceStatus/WorkspaceStatusRoute')),
 });
 
 registerAdminRoute('/import', {

@@ -1,4 +1,4 @@
-import type { IStats } from '@rocket.chat/core-typings';
+import type { IWorkspaceInfo, IStats } from '@rocket.chat/core-typings';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueries } from '@tanstack/react-query';
@@ -20,7 +20,8 @@ export const useWorkspaceInfo = () => {
 
 	const instances: IInstance[] | undefined = instancesQuery?.data?.instances as IInstance[];
 	const statistics: IStats | undefined = statisticsQuery?.data as IStats;
-	const serverInfo = serverInfoQuery.data;
+	const serverInfo: IWorkspaceInfo | undefined = serverInfoQuery?.data as IWorkspaceInfo;
+
 	const isLoading = results.some((query) => query.isLoading);
 	const isError = results.some((query) => query.isError);
 

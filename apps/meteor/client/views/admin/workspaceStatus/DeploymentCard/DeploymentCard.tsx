@@ -1,4 +1,4 @@
-import type { IServerInfo, IStats } from '@rocket.chat/core-typings';
+import type { IWorkspaceInfo, IStats } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { IInstance } from '@rocket.chat/rest-typings';
@@ -7,11 +7,11 @@ import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-import InstancesModal from './InstancesModal';
+import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import InstancesModal from './components/InstancesModal';
 
 type DeploymentCardProps = {
-	serverInfo: IServerInfo;
+	serverInfo: IWorkspaceInfo;
 	instances: IInstance[];
 	statistics: IStats;
 };
@@ -21,7 +21,7 @@ const DeploymentCard = ({ serverInfo, statistics, instances }: DeploymentCardPro
 	const formatDateAndTime = useFormatDateAndTime();
 	const setModal = useSetModal();
 
-	const { commit = {} } = serverInfo?.info;
+	const { commit = {} } = serverInfo?.info || {};
 
 	const appsEngineVersion = serverInfo?.info?.marketplaceApiVersion;
 

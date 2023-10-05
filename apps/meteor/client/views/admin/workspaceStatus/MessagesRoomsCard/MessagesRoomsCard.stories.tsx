@@ -1,37 +1,15 @@
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import DeploymentCard from './DeploymentCard';
+import MessagesRoomsCard from './MessagesRoomsCard';
 
 export default {
-	title: 'Admin/Info/DeploymentCard',
-	component: DeploymentCard,
+	title: 'Admin/Info/MessagesRoomsCard',
+	component: MessagesRoomsCard,
 	parameters: {
 		layout: 'centered',
 	},
 	args: {
-		info: {
-			build: {
-				arch: 'x64',
-				cpus: 1,
-				platform: 'linux',
-				osRelease: 'Ubuntu 18.04.1 LTS',
-				date: '2020-01-01T00:00:00.000Z',
-				freeMemory: 1.3 * 1024 * 1024 * 1024,
-				nodeVersion: 'v12.0.0',
-				totalMemory: 2.4 * 1024 * 1024 * 1024,
-			},
-			version: '1.0.0',
-			marketplaceApiVersion: '1.0.0',
-			commit: {
-				author: 'John Doe',
-				date: '2020-01-01T00:00:00.000Z',
-				branch: 'master',
-				hash: '1234567890',
-				subject: 'This is a commit',
-				tag: 'v1.0.0',
-			},
-		},
 		statistics: {
 			// Users
 			totalUsers: 123,
@@ -61,13 +39,14 @@ export default {
 			totalChannelMessages: 213,
 			totalPrivateGroupMessages: 21,
 			totalDirectMessages: 23,
+			totalDiscussionsMessages: 32,
 			totalLivechatMessages: 31,
 			// -
 			_id: '',
 			wizard: {},
 			uniqueId: '',
 			installedAt: '',
-			version: '1.0.0',
+			version: '',
 			tag: '',
 			branch: '',
 			userLanguages: {},
@@ -118,7 +97,7 @@ export default {
 				uptime: 0,
 			},
 			deploy: {
-				method: 'tar',
+				method: '',
 				platform: '',
 			},
 			enterpriseReady: false,
@@ -270,11 +249,11 @@ export default {
 				enabled: false,
 			},
 		},
-		instances: [],
 	},
-} as ComponentMeta<typeof DeploymentCard>;
+} as ComponentMeta<typeof MessagesRoomsCard>;
 
-const Template: ComponentStory<typeof DeploymentCard> = (args) => <DeploymentCard {...args} />;
+const Template: ComponentStory<typeof MessagesRoomsCard> = (args) => <MessagesRoomsCard {...args} />;
 
 export const Example = Template.bind({});
-Example.storyName = 'DeploymentCard';
+
+export const Vertical = Template.bind({});

@@ -6,9 +6,9 @@ import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
-import { UserStatus } from '../../../components/UserStatus';
-import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
+import { useHasLicenseModule } from '../../../../../ee/client/hooks/useHasLicenseModule';
+import { UserStatus } from '../../../../components/UserStatus';
+import { useFormatMemorySize } from '../../../../hooks/useFormatMemorySize';
 
 type UsersUploadsCardProps = {
 	statistics: IStats;
@@ -27,7 +27,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps): ReactElement =
 	const canViewEngagement = useHasLicenseModule('engagement-dashboard');
 
 	return (
-		<Card data-qa-id='usage-card'>
+		<Card>
 			<CardBody flexDirection='row' m='none'>
 				<CardCol>
 					<CardColSection mbs={0} mbe={16}>

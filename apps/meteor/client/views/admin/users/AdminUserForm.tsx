@@ -344,6 +344,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 								<Controller
 									control={control}
 									name='password'
+									onChange={([, value]) => value}
 									rules={{ required: !userData?._id && t('The_field_is_required', t('Password')) }}
 									render={({ field }) => (
 										<PasswordInput

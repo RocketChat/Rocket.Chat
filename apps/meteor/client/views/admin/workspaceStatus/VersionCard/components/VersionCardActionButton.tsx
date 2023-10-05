@@ -4,19 +4,14 @@ import { useRouter, type To, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import RegisterWorkspaceModal from '../cloud/modals/RegisterWorkspaceModal';
-
-export type ActionButton = {
-	path: string;
-	label: ReactElement;
-};
+import RegisterWorkspaceModal from '../../../cloud/modals/RegisterWorkspaceModal';
+import type { VersionActionButton } from '../types/VersionActionButton';
 
 type VersionCardActionButtonProps = {
-	actionButton: ActionButton;
-	refetch: () => void;
+	actionButton: VersionActionButton;
 };
 
-const VersionCardActionButton = ({ actionButton, refetch }: VersionCardActionButtonProps): ReactElement => {
+const VersionCardActionButton = ({ actionButton }: VersionCardActionButtonProps): ReactElement => {
 	const router = useRouter();
 	const setModal = useSetModal();
 
@@ -46,6 +41,10 @@ const VersionCardActionButton = ({ actionButton, refetch }: VersionCardActionBut
 			{actionButton.label}
 		</Button>
 	);
+};
+
+const refetch = (): void => {
+	window.location.reload();
 };
 
 export default memo(VersionCardActionButton);

@@ -12,10 +12,10 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 	const t = useTranslation();
 
 	return (
-		<Card data-qa-id='usage-card'>
+		<Card>
 			<CardBody flexDirection='row' m='none'>
 				<CardCol>
-					<CardColSection mb={16}>
+					<CardColSection mbs={0} mbe={16}>
 						<CardColTitle fontScale='p2b' mbe={20}>
 							{t('Total_rooms')}
 						</CardColTitle>
