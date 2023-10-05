@@ -1,4 +1,4 @@
-import { Field, TextInput } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
@@ -12,10 +12,10 @@ export const DepartmentBusinessHours = ({ bhId }: { bhId: string | undefined }) 
 
 	return (
 		<Field>
-			<Field.Label>{t('Business_Hour')}</Field.Label>
-			<Field.Row>
+			<FieldLabel>{t('Business_Hour')}</FieldLabel>
+			<FieldRow>
 				<TextInput disabled value={name || ''} />
-			</Field.Row>
+			</FieldRow>
 		</Field>
 	);
 };
