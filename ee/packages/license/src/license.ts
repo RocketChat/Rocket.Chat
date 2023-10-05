@@ -30,8 +30,6 @@ const globalLimitKinds: LicenseLimitKind[] = ['activeUsers', 'guestUsers', 'priv
 export class LicenseManager extends Emitter<LicenseEvents> {
 	dataCounters = new Map<LicenseLimitKind, (context?: LimitContext<LicenseLimitKind>) => Promise<number>>();
 
-	countersCache = new Map<LicenseLimitKind, number>();
-
 	pendingLicense = '';
 
 	modules = new Set<LicenseModule>();
@@ -82,7 +80,6 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		}
 
 		try {
-			this.countersCache.clear();
 			await this.validateLicense({ ...options, isNewLicense: false });
 		} finally {
 			this.maybeInvalidateLicense();
@@ -95,7 +92,6 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		this._inFairPolicy = false;
 		this._valid = false;
 		this._lockedLicense = undefined;
-		this.countersCache.clear();
 		clearPendingLicense.call(this);
 	}
 
@@ -229,8 +225,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 	}
 
 	private triggerBehaviorEvents(validationResult: BehaviorWithContext[]): void {
-		for (const { behavior, reason, limit } of validationResult) {
-			behaviorTriggered.call(this, { behavior, reason, limit });
+		for (const { ...options } of validationResult) {
+			behaviorTriggered.call(this, { ...options });
 		}
 	}
 
@@ -267,7 +263,6 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			},
 		};
 
-		this.countersCache.clear();
 		const validationResult = await runValidation.call(this, license, options);
 		this.triggerBehaviorEvents(validationResult);
 

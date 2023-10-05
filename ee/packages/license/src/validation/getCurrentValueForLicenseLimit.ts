@@ -29,12 +29,7 @@ export async function getCurrentValueForLicenseLimit<T extends LicenseLimitKind>
 
 	const extraCount = context?.extraCount || 0;
 
-	if (this.countersCache.has(limitKey)) {
-		return (this.countersCache.get(limitKey) as number) + extraCount;
-	}
-
 	const count = await counterFn(context as LimitContext<LicenseLimitKind> | undefined);
-	this.countersCache.set(limitKey, count);
 
 	return count + extraCount;
 }
