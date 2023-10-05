@@ -58,7 +58,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const guest = await LivechatVisitors.findOneById(room.v?._id);
+		const guest = await LivechatVisitors.findOneEnabledById(room.v?._id);
 
 		const user = await Meteor.userAsync();
 
