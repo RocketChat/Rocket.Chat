@@ -1674,7 +1674,7 @@
   "Discussion_target_channel": "Parent channel or group",
   "Discussion_target_channel_description": "Select a channel which is related to what you want to ask",
   "Discussion_target_channel_prefix": "You are creating a discussion in",
-  "Discussion_title": "Create a new discussion",
+  "Discussion_title": "Create discussion",
   "Discussions_unavailable_for_federation": "Discussions are unavailable for Federated rooms",
   "discussion-created": "{{message}}",
   "Discussions": "Discussions",
