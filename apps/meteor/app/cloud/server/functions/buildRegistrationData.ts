@@ -8,7 +8,7 @@ import { LICENSE_VERSION } from '../license';
 export type WorkspaceRegistrationData<T> = {
 	uniqueId: string;
 	deploymentFingerprintHash: string;
-	deploymentFingerprintVerified: string;
+	deploymentFingerprintVerified: boolean;
 	workspaceId: string;
 	address: string;
 	contactName: string;
