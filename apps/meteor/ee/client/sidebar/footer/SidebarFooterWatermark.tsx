@@ -11,9 +11,9 @@ export const SidebarFooterWatermark = (): ReactElement | null => {
 	const { data: { license, activeModules = [] } = {} } = useLicense();
 	const [planTag] = license?.information?.tags ?? [];
 
-	const isWatermarkVisible = activeModules.includes('watermark');
+	const isWatermarkHidden = activeModules.includes('hide-watermark');
 
-	if (!isWatermarkVisible) {
+	if (isWatermarkHidden) {
 		return null;
 	}
 
