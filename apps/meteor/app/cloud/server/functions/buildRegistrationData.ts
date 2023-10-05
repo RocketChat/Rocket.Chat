@@ -52,7 +52,7 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 	const npsEnabled = settings.get<string>('NPS_survey_enabled');
 	const agreePrivacyTerms = settings.get<string>('Cloud_Service_Agree_PrivacyTerms');
 	const setupWizardState = settings.get<string>('Show_Setup_Wizard');
-  const deploymentFingerprintHash = settings.get<string>('Deployment_FingerPrint_Hash');
+	const deploymentFingerprintHash = settings.get<string>('Deployment_FingerPrint_Hash');
 	const deploymentFingerprintVerified = settings.get<boolean>('Deployment_FingerPrint_Verified');
 
 	const firstUser = await Users.getOldest({ projection: { name: 1, emails: 1 } });
