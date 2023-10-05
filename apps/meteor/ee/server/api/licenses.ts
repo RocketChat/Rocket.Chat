@@ -18,7 +18,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const license = License.getLicense(); // TODO: temporary, remover after #30473 is merged
+			const license = License.getUnmodifiedLicenseAndModules();
 			const licenses = license ? [license] : [];
 
 			return API.v1.success({ licenses });
