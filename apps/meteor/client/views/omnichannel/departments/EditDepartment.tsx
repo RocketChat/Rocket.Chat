@@ -15,7 +15,7 @@ import {
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -140,6 +140,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
+	const [fallbackFilter, setFallbackFilter] = useState('');
+
 	const handleSave = useMutableCallback(async (data: FormValues) => {
 		const {
 			agentList,
@@ -168,7 +170,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			requestTagBeforeClosingChat,
 			email,
 			chatClosingTags,
-			offlineMessageChannelName: roomsItems.some((room) => room.value === offlineMessageChannelName) ? offlineMessageChannelName : '',
+			offlineMessageChannelName,
 			maxNumberSimultaneousChat,
 			visitorInactivityTimeoutInSeconds,
 			abandonedRoomsCloseCustomMessage,
@@ -321,8 +323,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 											value={value}
 											onChange={onChange}
 											flexShrink={0}
-											filter={value}
-											setFilter={onChange}
+											filter={fallbackFilter}
+											setFilter={setFallbackFilter as (value?: string | number) => void}
 											options={roomsItems}
 											placeholder={t('Channel_name')}
 											endReached={
