@@ -1522,6 +1522,31 @@ describe('[Users]', function () {
 				});
 			});
 		});
+
+		function failUpdateUser(name) {
+			it(`should not update an user if the new username is the reserved word ${name}`, (done) => {
+				request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: targetUser._id,
+						data: {
+							username: name,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Could not save user identity [error-could-not-save-identity]');
+					})
+					.end(done);
+			});
+		}
+
+		reservedWords.forEach((name) => {
+			failUpdateUser(name);
+		});
 	});
 
 	describe('[/users.updateOwnBasicInfo]', () => {
