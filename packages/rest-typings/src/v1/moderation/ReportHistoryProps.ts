@@ -10,6 +10,7 @@ type ReportHistoryProps = {
 export type ReportHistoryPropsGET = PaginatedRequest<ReportHistoryProps>;
 
 const reportHistoryPropsSchema = {
+	type: 'object',
 	properties: {
 		latest: {
 			type: 'string',

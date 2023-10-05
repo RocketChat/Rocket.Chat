@@ -3,10 +3,19 @@ import type { CpuInfo } from 'os';
 import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
 import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
+import type { MACStats } from './omnichannel';
 
 export interface IStats {
 	_id: string;
-	wizard: Record<string, unknown>;
+	wizard: {
+		organizationType?: string;
+		industry?: string;
+		size?: string;
+		country?: string;
+		language?: string;
+		serverType?: string;
+		registerServer?: boolean;
+	};
 	uniqueId: string;
 	installedAt?: string;
 	version?: string;
@@ -85,6 +94,10 @@ export interface IStats {
 	mongoStorageEngine: string;
 	pushQueue: number;
 	omnichannelSources: { [key: string]: number | string }[];
+	omnichannelContactsBySource: MACStats;
+	uniqueContactsOfLastMonth: MACStats;
+	uniqueContactsOfLastWeek: MACStats;
+	uniqueContactsOfYesterday: MACStats;
 	departments: number;
 	archivedDepartments: number;
 	routingAlgorithm: string;
@@ -203,6 +216,7 @@ export interface IStats {
 	totalCustomRoles: number;
 	totalWebRTCCalls: number;
 	uncaughtExceptionsCount: number;
+	push: number;
 	matrixFederation: {
 		enabled: boolean;
 	};
