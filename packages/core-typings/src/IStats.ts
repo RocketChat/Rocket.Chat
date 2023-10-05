@@ -211,6 +211,7 @@ export interface IStats {
 	totalCustomRoles: number;
 	totalWebRTCCalls: number;
 	uncaughtExceptionsCount: number;
+	push: number;
 	matrixFederation: {
 		enabled: boolean;
 	};
