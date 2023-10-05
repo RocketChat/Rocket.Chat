@@ -1,6 +1,6 @@
 import type { IWebdavAccountIntegration } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { SelectLegacy, Box, Field, Button } from '@rocket.chat/fuselage';
+import { SelectLegacy, Box, Button, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -38,8 +38,8 @@ const AccountIntegrationsPage = (): ReactElement => {
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<Field>
-						<Field.Label>{t('WebDAV_Accounts')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('WebDAV_Accounts')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								control={control}
 								name='accountSelected'
@@ -57,7 +57,7 @@ const AccountIntegrationsPage = (): ReactElement => {
 							<Button danger onClick={handleSubmit(handleClickRemove)}>
 								{t('Remove')}
 							</Button>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				</Box>
 			</Page.ScrollableContentWithShadow>

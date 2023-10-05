@@ -2,6 +2,13 @@ import { hasPermission, hasAtLeastOnePermission } from '../../../../../app/autho
 import { registerOmnichannelSidebarItem } from '../../../../../client/views/omnichannel/sidebarItems';
 
 registerOmnichannelSidebarItem({
+	href: '/omnichannel/reports',
+	icon: 'file',
+	i18nLabel: 'Reports',
+	permissionGranted: (): boolean => hasPermission('view-livechat-reports'),
+});
+
+registerOmnichannelSidebarItem({
 	href: '/omnichannel/monitors',
 	icon: 'shield-blank',
 	i18nLabel: 'Livechat_Monitors',

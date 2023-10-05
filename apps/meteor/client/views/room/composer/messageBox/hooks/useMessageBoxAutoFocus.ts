@@ -1,13 +1,13 @@
 import type { Ref } from 'react';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 /**
  * if the user is types outside the message box and its not actually typing in any input field
  * then the message box should be focused
  * @returns callbackRef to bind the logic to the message box
  */
-export const useMessageBoxAutoFocus = (): Ref<HTMLElement> => {
-	const ref = useRef<HTMLElement>(null);
+export const useMessageBoxAutoFocus = (enabled: boolean): Ref<HTMLElement> => {
+	const ref = useRef<HTMLElement>();
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -43,5 +43,22 @@ export const useMessageBoxAutoFocus = (): Ref<HTMLElement> => {
 		};
 	}, []);
 
-	return ref;
+	return useCallback(
+		(node: HTMLElement | null) => {
+			if (!node) {
+				return;
+			}
+
+			ref.current = node;
+
+			if (!enabled) {
+				return;
+			}
+
+			if (ref.current) {
+				ref.current.focus();
+			}
+		},
+		[enabled, ref],
+	);
 };

@@ -1,5 +1,5 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
-import { Field, TextInput, Button, Margins, Box, NumberInput } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, Margins, Box, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -78,32 +78,32 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 	return (
 		<ContextualbarScrollableContent is='form' {...props}>
 			<Field>
-				<Field.Label>{t('Name')}*</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Name')}*</FieldLabel>
+				<FieldRow>
 					<TextInput placeholder={t('Name')} flexGrow={1} {...nameField} error={errors.name?.message} />
-				</Field.Row>
-				<Field.Error>{errors.name?.message}</Field.Error>
+				</FieldRow>
+				<FieldError>{errors.name?.message}</FieldError>
 			</Field>
 			<Field>
-				<Field.Label>{t('Description')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Description')}</FieldLabel>
+				<FieldRow>
 					<TextInput placeholder={t('Description')} flexGrow={1} {...descField} />
-				</Field.Row>
+				</FieldRow>
 			</Field>
 			<Field>
-				<Field.Label>{t('Estimated_wait_time_in_minutes')}*</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Estimated_wait_time_in_minutes')}*</FieldLabel>
+				<FieldRow>
 					<NumberInput
 						placeholder={t('Estimated_wait_time_in_minutes')}
 						flexGrow={1}
 						{...dueTimeField}
 						error={errors.dueTimeInMinutes?.message}
 					/>
-				</Field.Row>
-				<Field.Error>{errors.dueTimeInMinutes?.message}</Field.Error>
+				</FieldRow>
+				<FieldError>{errors.dueTimeInMinutes?.message}</FieldError>
 			</Field>
 			<Field>
-				<Field.Row>
+				<FieldRow>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 						<Margins inlineEnd={4}>
 							{!isNew && (
@@ -116,7 +116,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 							</Button>
 						</Margins>
 					</Box>
-				</Field.Row>
+				</FieldRow>
 			</Field>
 		</ContextualbarScrollableContent>
 	);
