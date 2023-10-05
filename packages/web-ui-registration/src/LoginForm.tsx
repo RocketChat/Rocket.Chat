@@ -94,8 +94,6 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 			}
 
 			setErrorOnSubmit('user-not-found');
-			setError('username', { type: 'user-not-found', message: t('registration.component.login.userNotFound') });
-			setError('password', { type: 'user-not-found', message: t('registration.component.login.incorrectPassword') });
 		},
 	});
 
@@ -107,11 +105,15 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		if (loginFormRef.current) {
 			loginFormRef.current.focus();
 		}
-	}, []);
+	}, [errorOnSubmit]);
 
 	const renderErrorOnSubmit = (error: LoginErrors) => {
 		const { type, i18n } = LOGIN_SUBMIT_ERRORS[error];
-		return <Callout type={type}>{t(i18n)}</Callout>;
+		return (
+			<Callout id={`${usernameId}-error`} aria-live='assertive' type={type}>
+				{t(i18n)}
+			</Callout>
+		);
 	};
 
 	if (errors.username?.type === 'invalid-email') {
@@ -144,7 +146,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 										})}
 										placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 										error={errors.username?.message}
-										aria-invalid={errors.username ? 'true' : 'false'}
+										aria-invalid={errors.username || errorOnSubmit ? 'true' : 'false'}
 										aria-describedby={`${usernameId}-error`}
 										id={usernameId}
 									/>
@@ -166,7 +168,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 										})}
 										placeholder={passwordPlaceholder}
 										error={errors.password?.message}
-										aria-invalid={errors.password ? 'true' : 'false'}
+										aria-invalid={errors.password || errorOnSubmit ? 'true' : 'false'}
 										aria-describedby={`${passwordId}-error`}
 										id={passwordId}
 									/>
