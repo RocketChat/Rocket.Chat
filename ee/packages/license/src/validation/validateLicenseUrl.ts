@@ -1,5 +1,3 @@
-import crypto from 'crypto';
-
 import bcrypt from 'bcrypt';
 
 import type { ILicenseV3 } from '../definition/ILicenseV3';
@@ -24,8 +22,7 @@ const validateUrl = (licenseURL: string, url: string) => {
 };
 
 const validateHash = (licenseURL: string, url: string) => {
-	const value = crypto.createHash('sha256').update(url).digest('hex');
-	return bcrypt.compareSync(value, licenseURL);
+	return bcrypt.compareSync(url, licenseURL);
 };
 
 export function validateLicenseUrl(this: LicenseManager, license: ILicenseV3, options: LicenseValidationOptions): BehaviorWithContext[] {
