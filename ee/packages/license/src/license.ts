@@ -82,7 +82,9 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		try {
 			await this.validateLicense({ ...options, isNewLicense: false });
 		} finally {
-			this.maybeInvalidateLicense();
+			if (!this.hasValidLicense()) {
+				this.invalidateLicense();
+			}
 		}
 	}
 
@@ -95,11 +97,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		clearPendingLicense.call(this);
 	}
 
-	private maybeInvalidateLicense(): void {
-		if (this.hasValidLicense()) {
-			return;
-		}
-
+	private invalidateLicense(): void {
 		licenseInvalidated.call(this);
 		invalidateAll.call(this);
 	}
@@ -120,8 +118,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 				showLicense.call(this, this._license, this._valid);
 			}
 		} finally {
-			if (hadValidLicense) {
-				this.maybeInvalidateLicense();
+			if (hadValidLicense && !this.hasValidLicense()) {
+				this.invalidateLicense();
 			}
 		}
 	}
