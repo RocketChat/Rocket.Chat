@@ -1,4 +1,4 @@
-import { Box, Field, Flex, PasswordInput } from '@rocket.chat/fuselage';
+import { Box, FieldLabel, FieldRow, Flex, PasswordInput } from '@rocket.chat/fuselage';
 import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
 import React from 'react';
 
@@ -37,13 +37,13 @@ function PasswordSettingInput({
 		<>
 			<Flex.Container>
 				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
+					<FieldLabel htmlFor={_id} title={_id}>
 						{label}
-					</Field.Label>
+					</FieldLabel>
 					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 				</Box>
 			</Flex.Container>
-			<Field.Row>
+			<FieldRow>
 				<PasswordInput
 					data-qa-setting-id={_id}
 					id={_id}
@@ -54,7 +54,7 @@ function PasswordSettingInput({
 					autoComplete={autocomplete === false ? 'new-password' : undefined}
 					onChange={handleChange}
 				/>
-			</Field.Row>
+			</FieldRow>
 		</>
 	);
 }
