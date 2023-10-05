@@ -42,7 +42,7 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 	return (
 		<Modal data-qa='create-direct-modal' wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}>
 			<Modal.Header>
-				<Modal.Title>{t('Direct_Messages')}</Modal.Title>
+				<Modal.Title>{t('Create_direct_message')}</Modal.Title>
 				<Modal.Close tabIndex={-1} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content mbe={2}>
