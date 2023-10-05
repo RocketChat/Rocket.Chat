@@ -1,5 +1,6 @@
+import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelAgents } from '../page-objects';
+import { HomeChannel, OmnichannelAgents } from '../page-objects';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -7,8 +8,12 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('omnichannel-agents', () => {
 	let poOmnichannelAgents: OmnichannelAgents;
 
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ page, browser }) => {
 		poOmnichannelAgents = new OmnichannelAgents(page);
+
+        const { page: user1Page } = await createAuxContext(browser, Users.user1);
+        const poUser1Omnichannel = new HomeChannel(user1Page);
+        await poUser1Omnichannel.sidenav.switchStatus('online');
 
 		await page.goto('/omnichannel');
 		await poOmnichannelAgents.sidenav.linkAgents.click();
