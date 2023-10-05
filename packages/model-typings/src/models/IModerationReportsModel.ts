@@ -39,6 +39,8 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 
 	countMessageReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number>;
 
+	countUserReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number>;
+
 	findReportsByMessageId(
 		messageId: IMessage['_id'],
 		selector: string,

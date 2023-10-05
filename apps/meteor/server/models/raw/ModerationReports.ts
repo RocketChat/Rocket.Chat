@@ -25,6 +25,8 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			{ key: { 'message.rid': 1, 'ts': 1 } },
 			{ key: { userId: 1, ts: 1 } },
 			{ key: { 'message._id': 1, 'ts': 1 } },
+			{ key: { 'ts': 1, '_hidden': 1, 'message.u._id': 1 } },
+			{ key: { 'ts': 1, '_hidden': 1, 'reportedUser._id': 1 } },
 		];
 	}
 
@@ -194,11 +196,36 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 	}
 
 	countMessageReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number> {
-		return this.col.countDocuments({
-			_hidden: { $ne: true },
-			ts: { $lt: latest, $gt: oldest },
-			...this.getSearchQueryForSelector(selector),
-		});
+		return this.col
+			.distinct('message.u._id', {
+				_hidden: {
+					$ne: true,
+				},
+				ts: {
+					$lt: latest,
+					$gt: oldest,
+				},
+				...this.getSearchQueryForSelector(selector),
+			})
+			.then((ids) => ids.length);
+	}
+
+	countUserReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number> {
+		return this.col
+			.distinct('reportedUser._id', {
+				_hidden: {
+					$ne: true,
+				},
+				ts: {
+					$lt: latest,
+					$gt: oldest,
+				},
+				message: {
+					$exists: false,
+				},
+				...this.getSearchQueryForSelectorUsers(selector),
+			})
+			.then((ids) => ids.length);
 	}
 
 	findReportedMessagesByReportedUserId(

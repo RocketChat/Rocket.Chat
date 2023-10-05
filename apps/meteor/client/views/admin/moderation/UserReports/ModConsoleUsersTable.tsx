@@ -17,7 +17,7 @@ import {
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import DateRangePicker from '../helpers/DateRangePicker';
-import ModConsoleUserTableRow from './ModConsoleUserTableRow';
+import ModConsoleUserTableRow, { type ModConsoleUserRowProps } from './ModConsoleUserTableRow';
 
 // TODO: Missing error state
 const ModConsoleUsersTable: FC = () => {
@@ -126,7 +126,7 @@ const ModConsoleUsersTable: FC = () => {
 							{data.reports.map((report) => (
 								<ModConsoleUserTableRow
 									key={report.reportedUser?._id}
-									report={report}
+									report={report as unknown as ModConsoleUserRowProps['report']}
 									onClick={handleClick}
 									isDesktopOrLarger={isDesktopOrLarger}
 								/>

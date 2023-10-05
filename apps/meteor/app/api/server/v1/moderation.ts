@@ -99,7 +99,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const total = await ModerationReports.countMessageReportsInRange(latest, oldest, escapedSelector);
+			const total = await ModerationReports.countUserReportsInRange(latest, oldest, escapedSelector);
 
 			return API.v1.success({
 				reports,
@@ -196,7 +196,8 @@ API.v1.addRoute(
 				sort,
 			});
 
-			const reports = await cursor.toArray();
+			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
+
 			const emailSet = new Map<IUserEmail['address'], IUserEmail>();
 
 			reports.flatMap((report) => report.reportedUser?.emails ?? []).forEach((email) => emailSet.set(email.address, email));
@@ -209,7 +210,7 @@ API.v1.addRoute(
 				user,
 				reports,
 				count: reports.length,
-				total: totalCount,
+				total,
 				offset,
 			});
 		},

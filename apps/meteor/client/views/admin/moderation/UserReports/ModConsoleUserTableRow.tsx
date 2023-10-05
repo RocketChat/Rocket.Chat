@@ -7,7 +7,7 @@ import UserColumn from '../helpers/UserColumn';
 import ModConsoleUserActions from './ModConsoleUserActions';
 
 export type ModConsoleUserRowProps = {
-	report: UserReport & { count: number };
+	report: Pick<UserReport, '_id' | 'reportedUser' | 'ts'> & { count: number };
 	onClick: (id: IUser['_id']) => void;
 	isDesktopOrLarger: boolean;
 };

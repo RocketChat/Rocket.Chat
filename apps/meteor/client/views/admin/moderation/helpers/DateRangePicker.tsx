@@ -75,7 +75,7 @@ const DateRangePicker = ({ onChange }: DateRangePickerProps) => {
 		}
 	});
 
-	return <Select value='alldates' width='100%' options={timeOptions} onChange={handleOptionClick} />;
+	return <Select defaultSelectedKey='alldates' width='100%' options={timeOptions} onChange={handleOptionClick} />;
 };
 
 export default DateRangePicker;
