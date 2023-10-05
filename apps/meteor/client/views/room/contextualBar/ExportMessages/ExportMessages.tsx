@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Field, Select, FieldGroup } from '@rocket.chat/fuselage';
+import { Field, Select, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo } from 'react';
 
@@ -40,10 +40,10 @@ const ExportMessages = () => {
 			<ContextualbarScrollableContent>
 				<FieldGroup>
 					<Field>
-						<Field.Label>{t('Method')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Method')}</FieldLabel>
+						<FieldRow>
 							<Select value={type} onChange={(value) => setType(String(value))} placeholder={t('Type')} options={exportOptions} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				</FieldGroup>
 				{type && type === 'file' && <FileExport rid={room._id} onCancel={closeTab} />}

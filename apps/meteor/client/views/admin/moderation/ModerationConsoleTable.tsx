@@ -1,4 +1,4 @@
-import { Pagination, Field } from '@rocket.chat/fuselage';
+import { Pagination, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -121,10 +121,10 @@ const ModerationConsoleTable: FC = () => {
 		<>
 			<FilterByText autoFocus placeholder={t('Search')} onChange={({ text }): void => setText(text)} />
 			<Field alignSelf='stretch'>
-				<Field.Label>{t('Date')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Date')}</FieldLabel>
+				<FieldRow>
 					<DateRangePicker display='flex' flexGrow={1} onChange={setDateRange} />
-				</Field.Row>
+				</FieldRow>
 			</Field>
 			{isLoading && (
 				<GenericTable>
