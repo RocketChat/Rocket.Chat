@@ -19,6 +19,7 @@ import { showLicense } from './showLicense';
 import { replaceTags } from './tags';
 import { decrypt } from './token';
 import { convertToV3 } from './v2/convertToV3';
+import { filterBehaviorsResult } from './validation/filterBehaviorsResult';
 import { getCurrentValueForLicenseLimit } from './validation/getCurrentValueForLicenseLimit';
 import { getModulesToDisable } from './validation/getModulesToDisable';
 import { isBehaviorsInResult } from './validation/isBehaviorsInResult';
@@ -143,7 +144,10 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			throw new NotReadyForValidation();
 		}
 
-		const validationResult = await runValidation.call(this, this._license, options);
+		const validationResult = await runValidation.call(this, this._license, {
+			behaviors: ['invalidate_license', 'start_fair_policy', 'prevent_installation', 'disable_modules'],
+			...options,
+		});
 
 		if (isBehaviorsInResult(validationResult, ['invalidate_license', 'prevent_installation'])) {
 			throw new InvalidLicenseError();
@@ -238,8 +242,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 	public async shouldPreventAction<T extends LicenseLimitKind>(
 		action: T,
+		extraCount = 0,
 		context: Partial<LimitContext<T>> = {},
-		newCount = 0,
 		{ suppressLog }: Pick<LicenseValidationOptions, 'suppressLog'> = {},
 	): Promise<boolean> {
 		const license = this.getLicense();
@@ -248,12 +252,12 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		}
 
 		const options: LicenseValidationOptions = {
-			behaviors: ['prevent_action', 'invalidate_license', 'start_fair_policy'],
+			...(extraCount && { behaviors: ['prevent_action'] }),
 			isNewLicense: false,
 			suppressLog: !!suppressLog,
 			context: {
 				[action]: {
-					extraCount: newCount,
+					extraCount,
 					...context,
 				},
 			},
@@ -261,11 +265,16 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 		const validationResult = await runValidation.call(this, license, options);
 
-		this.triggerBehaviorEvents(validationResult);
+		// extra values should not call events since they are not actually reaching the limit just checking if they would
+		if (extraCount) {
+			return isBehaviorsInResult(validationResult, ['prevent_action']);
+		}
 
-		if (isBehaviorsInResult(validationResult, ['invalidate_license'])) {
+		if (isBehaviorsInResult(validationResult, ['invalidate_license', 'disable_modules', 'start_fair_policy'])) {
 			await this.revalidateLicense();
 		}
+
+		this.triggerBehaviorEvents(filterBehaviorsResult(validationResult, ['prevent_action']));
 
 		return isBehaviorsInResult(validationResult, ['prevent_action']);
 	}
