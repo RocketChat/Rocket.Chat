@@ -6,7 +6,7 @@ export const useIsOverMacLimit = (): boolean => {
 	const queryClient = useQueryClient();
 	const notifyLogged = useStream('notify-logged');
 	const getMacLimit = useEndpoint('GET', '/v1/omnichannel/mac/check');
-	const { data: isOverMacLimit } = useQuery(['/v1/omnichannel/mac/check'], () => getMacLimit());
+	const { data: { onLimit: isOverMacLimit = false } = {} } = useQuery(['/v1/omnichannel/mac/check'], () => getMacLimit());
 
 	useEffect(() => {
 		return notifyLogged(`mac.limit`, ({ limitReached }) => {
