@@ -58,18 +58,18 @@ export async function saveUserIdentity({
 	}
 
 	// if coming from old username, update all references
-	const handleUpdateParams = {
-		username,
-		previousUsername,
-		rawUsername,
-		usernameChanged,
-		user,
-		name,
-		previousName,
-		rawName,
-		nameChanged,
-	};
 	if (previousUsername) {
+		const handleUpdateParams = {
+			username,
+			previousUsername,
+			rawUsername,
+			usernameChanged,
+			user,
+			name,
+			previousName,
+			rawName,
+			nameChanged,
+		};
 		if (updateUsernameInBackground) {
 			setImmediate(() => updateUsernameReferences(handleUpdateParams));
 		} else {
@@ -92,7 +92,7 @@ async function updateUsernameReferences({
 	nameChanged,
 }: {
 	username: string;
-	previousUsername: string | undefined;
+	previousUsername: string;
 	rawUsername?: string;
 	usernameChanged: boolean;
 	user: IUser;
