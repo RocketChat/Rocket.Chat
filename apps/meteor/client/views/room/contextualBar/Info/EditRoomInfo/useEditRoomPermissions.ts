@@ -22,7 +22,6 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		useMemo(() => ['archive-room', 'unarchive-room'], []),
 		room._id,
 	);
-	const canDeleteRoom = usePermission(`delete-${room.t}`);
 	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || e2e.isReady());
 
 	const [
@@ -63,7 +62,6 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canSetReactWhenReadOnly,
 		canEditRoomRetentionPolicy,
 		canArchiveOrUnarchive,
-		canDeleteRoom,
 		canToggleEncryption,
 		canViewName,
 		canViewTopic,
