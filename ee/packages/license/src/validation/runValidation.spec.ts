@@ -22,16 +22,16 @@ describe('Validation behaviors', () => {
 		});
 
 		await expect(
-			runValidation.call(licenseManager, await license.build(), [
-				'invalidate_license',
-				'prevent_installation',
-				'start_fair_policy',
-				'disable_modules',
-			]),
+			runValidation.call(licenseManager, await license.build(), {
+				behaviors: ['invalidate_license', 'prevent_installation', 'start_fair_policy', 'disable_modules'],
+				suppressLog: true,
+			}),
 		).resolves.toStrictEqual([
 			{
 				behavior: 'disable_modules',
+				limit: undefined,
 				modules: ['livechat-enterprise'],
+				reason: 'period',
 			},
 		]);
 	});

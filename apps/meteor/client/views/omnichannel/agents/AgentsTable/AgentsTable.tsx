@@ -100,7 +100,7 @@ const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			)}
 			{isSuccess && data?.users.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable aria-busy={filter !== debouncedFilter} aria-live='assertive'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody data-qa='GenericTableAgentInfoBody'>
 							{data?.users.map((user) => (
