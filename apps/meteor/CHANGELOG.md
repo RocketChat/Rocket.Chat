@@ -1,5 +1,32 @@
 # @rocket.chat/meteor
 
+## 6.3.10
+
+### Patch Changes
+
+- 63ca4cc670: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- ea64d71ffa: fix: Bad query on departments filter
+  fix: Callback not passing userId to applyDepartmentRestrictions
+  - @rocket.chat/core-typings@6.3.10
+  - @rocket.chat/rest-typings@6.3.10
+  - @rocket.chat/api-client@0.1.10
+  - @rocket.chat/omnichannel-services@0.0.16
+  - @rocket.chat/pdf-worker@0.0.16
+  - @rocket.chat/presence@0.0.16
+  - @rocket.chat/core-services@0.1.10
+  - @rocket.chat/cron@0.0.12
+  - @rocket.chat/gazzodown@1.0.10
+  - @rocket.chat/model-typings@0.0.16
+  - @rocket.chat/ui-contexts@1.0.10
+  - @rocket.chat/fuselage-ui-kit@1.0.10
+  - @rocket.chat/models@0.0.16
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.10
+  - @rocket.chat/ui-video-conf@1.0.10
+  - @rocket.chat/web-ui-registration@1.0.10
+  - @rocket.chat/instance-status@0.0.16
+
 ## 6.3.9
 
 ### Patch Changes
