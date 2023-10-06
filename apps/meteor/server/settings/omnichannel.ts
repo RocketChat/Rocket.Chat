@@ -778,7 +778,7 @@ await settingsRegistry.addGroup('SMS', async function () {
 			i18nLabel: 'Mobex_sms_gateway_password',
 		});
 		await this.add('SMS_Mobex_from_number', '', {
-			type: 'int',
+			type: 'string',
 			enableQuery: {
 				_id: 'SMS_Service',
 				value: 'mobex',
