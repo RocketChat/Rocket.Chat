@@ -285,7 +285,7 @@ export const Livechat = {
 		Livechat.logger.debug(`Closing open chats for user ${userId}`);
 		const user = await Users.findOneById(userId);
 
-		const extraQuery = await callbacks.run('livechat.applyDepartmentRestrictions', {});
+		const extraQuery = await callbacks.run('livechat.applyDepartmentRestrictions', {}, { userId });
 		const openChats = LivechatRooms.findOpenByAgent(userId, extraQuery);
 		const promises = [];
 		await openChats.forEach((room) => {
