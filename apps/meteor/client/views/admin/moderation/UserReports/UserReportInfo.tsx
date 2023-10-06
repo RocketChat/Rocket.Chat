@@ -20,9 +20,9 @@ import React, { useMemo } from 'react';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import UserCard from '../../../../components/UserCard';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import MessageContextFooter from '../MessageContextFooter';
 import ReportReason from '../helpers/ReportReason';
 import UserProfile from '../helpers/UserProfile';
+import UserContextFooter from './UserContextFooter';
 
 // TODO: Missing Error State
 const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
@@ -37,6 +37,7 @@ const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
 		isLoading: isLoadingUsersReports,
 		isSuccess: isSuccessUsersReports,
 		isError,
+		dataUpdatedAt,
 	} = useQuery(
 		['moderation.usersReport', { userId }],
 		async () => {
@@ -82,7 +83,7 @@ const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
 					<Box paddingInlineStart={16} marginBlock='x24'>
 						<FieldGroup>
 							<Field>
-								<UserProfile username={report.user.username} name={report.user.name} />
+								<UserProfile key={dataUpdatedAt} username={report.user.username} name={report.user.name} />
 							</Field>
 							<Field>
 								<FieldLabel>{t('Roles')}</FieldLabel>
@@ -119,7 +120,7 @@ const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
 					))}
 			</Box>
 			<ContextualbarFooter display='flex'>
-				{isSuccessUsersReports && report.reports.length > 0 && <MessageContextFooter userId={userId} deleted={!report.user} />}
+				{isSuccessUsersReports && report.reports.length > 0 && <UserContextFooter userId={userId} deleted={!report.user} />}
 			</ContextualbarFooter>
 		</>
 	);

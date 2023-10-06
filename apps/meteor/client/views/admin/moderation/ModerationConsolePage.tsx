@@ -8,14 +8,14 @@ import ModConsoleReportDetails from './ModConsoleReportDetails';
 import ModerationConsoleTable from './ModerationConsoleTable';
 import ModConsoleUsersTable from './UserReports/ModConsoleUsersTable';
 
-const tabs = ['Reported_Messages', 'Reported_Users'];
+const tabs = ['Messages', 'Users'];
 
 const ModerationConsolePage = () => {
 	const t = useTranslation();
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const dispatchToastMessage = useToastMessageDispatch();
-	const [tab, setTab] = useState('Reported_Users');
+	const [tab, setTab] = useState('Users');
 
 	const handleRedirect = useCallback(
 		async (mid: string) => {
@@ -39,14 +39,14 @@ const ModerationConsolePage = () => {
 					<Tabs>
 						{tabs.map((tabName) => (
 							<TabsItem key={tabName || ''} selected={tab === tabName} onClick={handleTabClick(tabName)}>
-								{t(tabName as TranslationKey)}
+								{t(`Reported_${tabName}` as TranslationKey)}
 							</TabsItem>
 						))}
 					</Tabs>
-					{tab === 'Reported_Messages' && <ModerationConsoleTable />} {tab === 'Reported_Users' && <ModConsoleUsersTable />}
+					{tab === 'Messages' && <ModerationConsoleTable />} {tab === 'Users' && <ModConsoleUsersTable />}
 				</Page.Content>
 			</Page>
-			{context === 'info' && id && <ModConsoleReportDetails userId={id} onRedirect={handleRedirect} />}
+			{context === 'info' && id && <ModConsoleReportDetails userId={id} onRedirect={handleRedirect} default={tab} />}
 		</Page>
 	);
 };

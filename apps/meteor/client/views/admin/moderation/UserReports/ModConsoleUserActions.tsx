@@ -23,7 +23,7 @@ const ModConsoleUserActions = ({ report, onClick }: Omit<ModConsoleUserRowProps,
 						items: [
 							{
 								id: 'seeReports',
-								content: t('Moderation_See_messages'),
+								content: t('Moderation_See_reports'),
 								icon: 'document-eye',
 								onClick: () => onClick(uid),
 							},

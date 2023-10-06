@@ -9,14 +9,15 @@ import UserReportInfo from './UserReports/UserReportInfo';
 
 type ModConsoleReportDetailsProps = {
 	userId: IUser['_id'];
+	default: string;
 	onRedirect: (mid: string) => void;
 };
 
 const tabs = ['Messages', 'Users'];
 
-const ModConsoleReportDetails = ({ userId, onRedirect }: ModConsoleReportDetailsProps): JSX.Element => {
+const ModConsoleReportDetails = ({ userId, default: defaultTab, onRedirect }: ModConsoleReportDetailsProps): JSX.Element => {
 	const t = useTranslation();
-	const [tab, setTab] = useState('Messages');
+	const [tab, setTab] = useState<string>(defaultTab);
 	const moderationRoute = useRouter();
 
 	const handleTabClick = useMemo(() => (tab: string) => (): void => setTab(tab), [setTab]);

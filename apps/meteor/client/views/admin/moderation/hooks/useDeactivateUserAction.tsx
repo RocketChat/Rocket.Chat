@@ -40,6 +40,7 @@ const useDeactivateUserAction = (userId: string): GenericMenuItemProps => {
 		await handleDeleteMessages.mutateAsync({ userId });
 		await handleDeactivateUser.mutateAsync({ userId, activeStatus: false, confirmRelinquish: true });
 		queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
+		queryClient.invalidateQueries({ queryKey: ['moderation.userReports'] });
 		moderationRoute.push({});
 	};
 
