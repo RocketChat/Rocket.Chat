@@ -1,7 +1,7 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
-import type { SupportedVersions } from '@rocket.chat/server-cloud-communication';
+import type { SignedSupportedVersions, SupportedVersions } from '@rocket.chat/server-cloud-communication';
 import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
@@ -9,6 +9,12 @@ import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { settings } from '../../../../settings/server';
 import { generateWorkspaceBearerHttpHeader } from '../getWorkspaceAccessToken';
 import { supportedVersionsChooseLatest } from './supportedVersionsChooseLatest';
+
+declare module '@rocket.chat/license' {
+	interface ILicenseV3 {
+		supportedVersions?: SignedSupportedVersions;
+	}
+}
 
 /** HELPERS */
 
@@ -115,9 +121,10 @@ const getSupportedVersionsToken = async () => {
 	 * return the token
 	 */
 
-	const [versionsFromLicense, response] = await Promise.all([License.supportedVersions(), getSupportedVersionsFromCloud()]);
+	const [versionsFromLicense, response] = await Promise.all([License.getLicense(), getSupportedVersionsFromCloud()]);
 
-	return (await supportedVersionsChooseLatest(versionsFromLicense, (response.success && response.result) || undefined))?.signed;
+	return (await supportedVersionsChooseLatest(versionsFromLicense?.supportedVersions, (response.success && response.result) || undefined))
+		?.signed;
 };
 
 export const getCachedSupportedVersionsToken = cacheValueInSettings('Cloud_Workspace_Supported_Versions_Token', getSupportedVersionsToken);

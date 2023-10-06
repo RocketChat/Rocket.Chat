@@ -1,4 +1,4 @@
-import { Team } from '@rocket.chat/core-services';
+import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
@@ -302,10 +302,6 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'create-p'))) {
-				return API.v1.unauthorized();
-			}
-
 			if (!this.bodyParams.name) {
 				return API.v1.failure('Body param "name" is required');
 			}
@@ -323,24 +319,32 @@ API.v1.addRoute(
 
 			const readOnly = typeof this.bodyParams.readOnly !== 'undefined' ? this.bodyParams.readOnly : false;
 
-			const result = await createPrivateGroupMethod(
-				this.userId,
-				this.bodyParams.name,
-				this.bodyParams.members ? this.bodyParams.members : [],
-				readOnly,
-				this.bodyParams.customFields,
-				this.bodyParams.extraData,
-			);
+			try {
+				const result = await createPrivateGroupMethod(
+					this.user,
+					this.bodyParams.name,
+					this.bodyParams.members ? this.bodyParams.members : [],
+					readOnly,
+					this.bodyParams.customFields,
+					this.bodyParams.extraData,
+					this.bodyParams.excludeSelf ?? false,
+				);
 
-			const room = await Rooms.findOneById(result.rid, { projection: API.v1.defaultFieldsToExclude });
+				const room = await Rooms.findOneById(result.rid, { projection: API.v1.defaultFieldsToExclude });
+				if (!room) {
+					throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+				}
 
-			if (!room) {
-				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+				return API.v1.success({
+					group: await composeRoomWithLastMessage(room, this.userId),
+				});
+			} catch (error: unknown) {
+				if (isMeteorError(error) && error.reason === 'error-not-allowed') {
+					return API.v1.unauthorized();
+				}
 			}
 
-			return API.v1.success({
-				group: await composeRoomWithLastMessage(room, this.userId),
-			});
+			return API.v1.internalError();
 		},
 	},
 );
