@@ -29,7 +29,7 @@ export async function validateLicenseLimits(
 				return limitList
 					.filter(({ max }) => max <= currentValue)
 					.map((limit) => {
-						if (options.suppressLog) {
+						if (!options.suppressLog) {
 							logger.error({
 								msg: 'Limit validation failed',
 								kind: limitKey,
