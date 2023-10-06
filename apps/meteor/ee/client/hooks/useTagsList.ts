@@ -38,6 +38,7 @@ export const useTagsList = (options: TagsListOptions): UseTagsListResult => {
 				count: end + start,
 				...(viewAll && { viewAll: 'true' }),
 				...(department && { department }),
+				sort: JSON.stringify({ name: 1 }),
 			});
 
 			return {
@@ -45,7 +46,6 @@ export const useTagsList = (options: TagsListOptions): UseTagsListResult => {
 					_id: tag._id,
 					label: tag.name,
 					value: tag.name,
-					_updatedAt: new Date(tag._updatedAt),
 				})),
 				itemCount: total,
 			};

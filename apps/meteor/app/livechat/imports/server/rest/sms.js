@@ -56,7 +56,7 @@ const defineVisitor = async (smsNumber, targetDepartment) => {
 	}
 
 	const id = await LivechatTyped.registerGuest(data);
-	return LivechatVisitors.findOneById(id);
+	return LivechatVisitors.findOneEnabledById(id);
 };
 
 const normalizeLocationSharing = (payload) => {

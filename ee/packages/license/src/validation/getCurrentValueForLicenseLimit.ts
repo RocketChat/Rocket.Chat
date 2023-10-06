@@ -1,11 +1,8 @@
-import type { IUser } from '@rocket.chat/core-typings';
-
 import type { LicenseLimitKind } from '../definition/ILicenseV3';
+import type { LimitContext } from '../definition/LimitContext';
 import type { LicenseManager } from '../license';
 import { logger } from '../logger';
 import { applyPendingLicense, hasPendingLicense } from '../pendingLicense';
-
-type LimitContext<T extends LicenseLimitKind> = T extends 'roomsPerGuest' ? { userId: IUser['_id'] } : Record<string, never>;
 
 export function setLicenseLimitCounter<T extends LicenseLimitKind>(
 	this: LicenseManager,
