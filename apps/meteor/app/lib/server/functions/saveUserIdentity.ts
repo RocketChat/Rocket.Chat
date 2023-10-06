@@ -1,6 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { FileUpload } from '../../../file-upload/server';
 import { _setRealName } from './setRealName';
 import { _setUsername } from './setUsername';
@@ -71,7 +72,13 @@ export async function saveUserIdentity({
 			nameChanged,
 		};
 		if (updateUsernameInBackground) {
-			setImmediate(() => updateUsernameReferences(handleUpdateParams));
+			setImmediate(async () => {
+				try {
+					await updateUsernameReferences(handleUpdateParams);
+				} catch (err) {
+					SystemLogger.error(err);
+				}
+			});
 		} else {
 			await updateUsernameReferences(handleUpdateParams);
 		}
