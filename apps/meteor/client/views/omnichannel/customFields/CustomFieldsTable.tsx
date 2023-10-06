@@ -43,7 +43,9 @@ const CustomFieldsTable = ({ reload }: { reload: MutableRefObject<() => void> })
 	);
 
 	const getCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
-	const { data, isSuccess, isLoading, refetch } = useQuery(['livechat-customFields', query], async () => getCustomFields(query));
+	const { data, isSuccess, isLoading, refetch } = useQuery(['livechat-customFields', query, debouncedFilter], async () =>
+		getCustomFields(query),
+	);
 
 	const [defaultQuery] = useState(hashQueryKey([query]));
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
@@ -105,7 +107,7 @@ const CustomFieldsTable = ({ reload }: { reload: MutableRefObject<() => void> })
 
 			{isSuccess && data.customFields.length > 0 && (
 				<>
-					<GenericTable data-qa='GenericTableCustomFieldsInfoBody'>
+					<GenericTable data-qa='GenericTableCustomFieldsInfoBody' aria-busy={filter !== debouncedFilter} aria-live='assertive'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.customFields.map(({ label, _id, scope, visibility }) => (

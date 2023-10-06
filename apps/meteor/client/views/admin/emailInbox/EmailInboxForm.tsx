@@ -12,6 +12,10 @@ import {
 	Margins,
 	NumberInput,
 	PasswordInput,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldHint,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
@@ -169,7 +173,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 					<Accordion.Item defaultExpanded title={t('Inbox_Info')}>
 						<FieldGroup>
 							<Field>
-								<Field.Label display='flex' justifyContent='space-between' w='full'>
+								<FieldLabel display='flex' justifyContent='space-between' w='full'>
 									{t('Active')}
 									<Controller
 										control={control}
@@ -178,21 +182,21 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 											<ToggleSwitch ref={ref} checked={value} onChange={onChange} />
 										)}
 									/>
-								</Field.Label>
+								</FieldLabel>
 							</Field>
 							<Field>
-								<Field.Label>{t('Name')}*</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Name')}*</FieldLabel>
+								<FieldRow>
 									<TextInput
 										{...register('name', { required: t('error-the-field-is-required', { field: t('Name') }) })}
 										error={errors.name?.message}
 									/>
-								</Field.Row>
-								{errors.name && <Field.Error>{errors.name?.message}</Field.Error>}
+								</FieldRow>
+								{errors.name && <FieldError>{errors.name?.message}</FieldError>}
 							</Field>
 							<Field>
-								<Field.Label>{t('Email')}*</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Email')}*</FieldLabel>
+								<FieldRow>
 									<TextInput
 										{...register('email', {
 											required: t('error-the-field-is-required', { field: t('Email') }),
@@ -200,79 +204,79 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 										})}
 										error={errors.email?.message}
 									/>
-								</Field.Row>
-								{errors.email && <Field.Error>{errors.email?.message}</Field.Error>}
+								</FieldRow>
+								{errors.email && <FieldError>{errors.email?.message}</FieldError>}
 							</Field>
 							<Field>
-								<Field.Label>{t('Description')}</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Description')}</FieldLabel>
+								<FieldRow>
 									<TextAreaInput {...register('description')} rows={4} />
-								</Field.Row>
+								</FieldRow>
 							</Field>
 							<Field>
-								<Field.Label>{t('Sender_Info')}</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Sender_Info')}</FieldLabel>
+								<FieldRow>
 									<TextInput {...register('senderInfo')} placeholder={t('Optional')} />
-								</Field.Row>
-								<Field.Hint>{t('Will_Appear_In_From')}</Field.Hint>
+								</FieldRow>
+								<FieldHint>{t('Will_Appear_In_From')}</FieldHint>
 							</Field>
 							<Field>
-								<Field.Label>{t('Department')}</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Department')}</FieldLabel>
+								<FieldRow>
 									<Controller
 										control={control}
 										name='department'
 										render={({ field: { onChange, value } }): ReactElement => <AutoCompleteDepartment value={value} onChange={onChange} />}
 									/>
-								</Field.Row>
-								<Field.Hint>{t('Only_Members_Selected_Department_Can_View_Channel')}</Field.Hint>
+								</FieldRow>
+								<FieldHint>{t('Only_Members_Selected_Department_Can_View_Channel')}</FieldHint>
 							</Field>
 						</FieldGroup>
 					</Accordion.Item>
 					<Accordion.Item defaultExpanded={!inboxData?._id} title={t('Configure_Outgoing_Mail_SMTP')}>
 						<FieldGroup>
 							<Field>
-								<Field.Label>{t('Server')}*</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Server')}*</FieldLabel>
+								<FieldRow>
 									<TextInput
 										{...register('smtpServer', { required: t('error-the-field-is-required', { field: t('Server') }) })}
 										error={errors.smtpServer?.message}
 									/>
-								</Field.Row>
-								{errors.smtpServer && <Field.Error>{errors.smtpServer?.message}</Field.Error>}
+								</FieldRow>
+								{errors.smtpServer && <FieldError>{errors.smtpServer?.message}</FieldError>}
 							</Field>
 							<Field>
-								<Field.Label>{t('Port')}*</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Port')}*</FieldLabel>
+								<FieldRow>
 									<NumberInput
 										{...register('smtpPort', { required: t('error-the-field-is-required', { field: t('Port') }) })}
 										error={errors.smtpPort?.message}
 									/>
-								</Field.Row>
-								{errors.smtpPort && <Field.Error>{errors.smtpPort?.message}</Field.Error>}
+								</FieldRow>
+								{errors.smtpPort && <FieldError>{errors.smtpPort?.message}</FieldError>}
 							</Field>
 							<Field>
-								<Field.Label>{t('Username')}*</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Username')}*</FieldLabel>
+								<FieldRow>
 									<TextInput
 										{...register('smtpUsername', { required: t('error-the-field-is-required', { field: t('Username') }) })}
 										error={errors.smtpUsername?.message}
 									/>
-								</Field.Row>
-								{errors.smtpUsername && <Field.Error>{errors.smtpUsername?.message}</Field.Error>}
+								</FieldRow>
+								{errors.smtpUsername && <FieldError>{errors.smtpUsername?.message}</FieldError>}
 							</Field>
 							<Field>
-								<Field.Label>{t('Password')}*</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Password')}*</FieldLabel>
+								<FieldRow>
 									<PasswordInput
 										{...register('smtpPassword', { required: t('error-the-field-is-required', { field: t('Password') }) })}
 										error={errors.smtpPassword?.message}
 									/>
-								</Field.Row>
-								{errors.smtpPassword && <Field.Error>{errors.smtpPassword?.message}</Field.Error>}
+								</FieldRow>
+								{errors.smtpPassword && <FieldError>{errors.smtpPassword?.message}</FieldError>}
 							</Field>
 							<Field>
-								<Field.Label display='flex' justifyContent='space-between' w='full'>
+								<FieldLabel display='flex' justifyContent='space-between' w='full'>
 									{t('Connect_SSL_TLS')}
 									<Controller
 										control={control}
@@ -281,64 +285,64 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 											<ToggleSwitch ref={ref} checked={value} onChange={onChange} />
 										)}
 									/>
-								</Field.Label>
+								</FieldLabel>
 							</Field>
 						</FieldGroup>
 					</Accordion.Item>
 					<Accordion.Item defaultExpanded={!inboxData?._id} title={t('Configure_Incoming_Mail_IMAP')}>
 						<FieldGroup>
 							<Field>
-								<Field.Label>{t('Server')}*</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Server')}*</FieldLabel>
+								<FieldRow>
 									<TextInput
 										{...register('imapServer', { required: t('error-the-field-is-required', { field: t('Server') }) })}
 										error={errors.imapServer?.message}
 									/>
-								</Field.Row>
-								{errors.imapServer && <Field.Error>{errors.imapServer?.message}</Field.Error>}
+								</FieldRow>
+								{errors.imapServer && <FieldError>{errors.imapServer?.message}</FieldError>}
 							</Field>
 							<Field>
-								<Field.Label>{t('Port')}*</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Port')}*</FieldLabel>
+								<FieldRow>
 									<NumberInput
 										{...register('imapPort', { required: t('error-the-field-is-required', { field: t('Port') }) })}
 										error={errors.imapPort?.message}
 									/>
-								</Field.Row>
-								{errors.imapPort && <Field.Error>{errors.imapPort?.message}</Field.Error>}
+								</FieldRow>
+								{errors.imapPort && <FieldError>{errors.imapPort?.message}</FieldError>}
 							</Field>
 							<Field>
-								<Field.Label>{t('Username')}*</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Username')}*</FieldLabel>
+								<FieldRow>
 									<TextInput
 										{...register('imapUsername', { required: t('error-the-field-is-required', { field: t('Username') }) })}
 										error={errors.imapUsername?.message}
 									/>
-								</Field.Row>
-								{errors.imapUsername && <Field.Error>{errors.imapUsername?.message}</Field.Error>}
+								</FieldRow>
+								{errors.imapUsername && <FieldError>{errors.imapUsername?.message}</FieldError>}
 							</Field>
 							<Field>
-								<Field.Label>{t('Password')}*</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Password')}*</FieldLabel>
+								<FieldRow>
 									<PasswordInput
 										{...register('imapPassword', { required: t('error-the-field-is-required', { field: t('Password') }) })}
 										error={errors.imapPassword?.message}
 									/>
-								</Field.Row>
-								{errors.imapPassword && <Field.Error>{errors.imapPassword?.message}</Field.Error>}
+								</FieldRow>
+								{errors.imapPassword && <FieldError>{errors.imapPassword?.message}</FieldError>}
 							</Field>
 							<Field>
-								<Field.Label>{t('Max_Retry')}*</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Max_Retry')}*</FieldLabel>
+								<FieldRow>
 									<NumberInput
 										{...register('imapRetries', { required: t('error-the-field-is-required', { field: t('Max_Retry') }) })}
 										error={errors.imapRetries?.message}
 									/>
-								</Field.Row>
-								{errors.imapRetries && <Field.Error>{errors.imapRetries?.message}</Field.Error>}
+								</FieldRow>
+								{errors.imapRetries && <FieldError>{errors.imapRetries?.message}</FieldError>}
 							</Field>
 							<Field>
-								<Field.Label display='flex' justifyContent='space-between' w='full'>
+								<FieldLabel display='flex' justifyContent='space-between' w='full'>
 									{t('Connect_SSL_TLS')}
 									<Controller
 										control={control}
@@ -347,20 +351,20 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 											<ToggleSwitch ref={ref} checked={value} onChange={onChange} />
 										)}
 									/>
-								</Field.Label>
+								</FieldLabel>
 							</Field>
 						</FieldGroup>
 					</Accordion.Item>
 					<Field>
-						<Field.Row>
+						<FieldRow>
 							<ButtonGroup stretch w='full'>
 								<Button onClick={handleBack}>{t('Cancel')}</Button>
 								<Button disabled={!isDirty} primary onClick={handleSubmit(handleSave)}>
 									{t('Save')}
 								</Button>
 							</ButtonGroup>
-						</Field.Row>
-						<Field.Row>
+						</FieldRow>
+						<FieldRow>
 							<Margins blockStart={16}>
 								<ButtonGroup stretch w='full'>
 									{inboxData?._id && (
@@ -370,7 +374,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 									)}
 								</ButtonGroup>
 							</Margins>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				</Accordion>
 			</Box>
