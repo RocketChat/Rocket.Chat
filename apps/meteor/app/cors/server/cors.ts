@@ -89,7 +89,9 @@ declare module 'meteor/webapp' {
 }
 
 // These routes already handle cache control on their own
-const cacheControlledRoutes: Array<string> = ['/assets', '/custom-sounds', '/emoji-custom', '/avatar', '/file-upload'];
+const cacheControlledRoutes: Array<RegExp> = ['/assets', '/custom-sounds', '/emoji-custom', '/avatar', '/file-upload'].map(
+	(route) => new RegExp(`^${route}`, 'i'),
+);
 
 // @ts-expect-error - accessing internal property of webapp
 WebAppInternals.staticFilesMiddleware = function (
@@ -101,12 +103,7 @@ WebAppInternals.staticFilesMiddleware = function (
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	const { arch, path, url } = WebApp.categorizeRequest(req);
 
-	if (
-		Meteor.isProduction &&
-		!cacheControlledRoutes.some((route) => {
-			return new RegExp(`^${route}`, 'gi').test(path);
-		})
-	) {
+	if (Meteor.isProduction && !cacheControlledRoutes.some((regexp) => regexp.test(path))) {
 		res.setHeader('Cache-Control', 'public, max-age=31536000');
 	}
 
