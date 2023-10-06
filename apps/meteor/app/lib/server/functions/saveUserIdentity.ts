@@ -58,55 +58,86 @@ export async function saveUserIdentity({
 	}
 
 	// if coming from old username, update all references
+	const handleUpdateParams = {
+		username,
+		previousUsername,
+		rawUsername,
+		usernameChanged,
+		user,
+		name,
+		previousName,
+		rawName,
+		nameChanged,
+	};
 	if (previousUsername) {
-		if (usernameChanged && typeof rawUsername !== 'undefined') {
-			if (updateUsernameInBackground) {
-				setImmediate(() => updateUsernameReferences(previousUsername, username, user));
-			} else {
-				await updateUsernameReferences(previousUsername, username, user);
-			}
-		}
-
-		// update other references if either the name or username has changed
-		if (usernameChanged || nameChanged) {
-			// update name and fname of 1-on-1 direct messages
-			await Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
-
-			// update name and fname of group direct messages
-			await updateGroupDMsName(user);
-
-			// update name and username of users on video conferences
-			await VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName);
+		if (updateUsernameInBackground) {
+			setImmediate(() => updateUsernameReferences(handleUpdateParams));
+		} else {
+			await updateUsernameReferences(handleUpdateParams);
 		}
 	}
 
 	return true;
 }
 
-async function updateUsernameReferences(previousUsername: string, username: string, user: IUser): Promise<void> {
-	const fileStore = FileUpload.getStore('Avatars');
-	const previousFile = await fileStore.model.findOneByName(previousUsername);
-	const file = await fileStore.model.findOneByName(username);
-	if (file) {
-		await fileStore.model.deleteFile(file._id);
+async function updateUsernameReferences({
+	username,
+	previousUsername,
+	rawUsername,
+	usernameChanged,
+	user,
+	name,
+	previousName,
+	rawName,
+	nameChanged,
+}: {
+	username: string;
+	previousUsername: string | undefined;
+	rawUsername?: string;
+	usernameChanged: boolean;
+	user: IUser;
+	name: string;
+	previousName: string | undefined;
+	rawName?: string;
+	nameChanged: boolean;
+}): Promise<void> {
+	if (usernameChanged && typeof rawUsername !== 'undefined') {
+		const fileStore = FileUpload.getStore('Avatars');
+		const previousFile = await fileStore.model.findOneByName(previousUsername);
+		const file = await fileStore.model.findOneByName(username);
+		if (file) {
+			await fileStore.model.deleteFile(file._id);
+		}
+		if (previousFile) {
+			await fileStore.model.updateFileNameById(previousFile._id, username);
+		}
+
+		await Messages.updateAllUsernamesByUserId(user._id, username);
+		await Messages.updateUsernameOfEditByUserId(user._id, username);
+
+		const cursor = Messages.findByMention(previousUsername);
+		for await (const msg of cursor) {
+			const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
+			await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
+		}
+
+		await Rooms.replaceUsername(previousUsername, username);
+		await Rooms.replaceMutedUsername(previousUsername, username);
+		await Rooms.replaceUsernameOfUserByUserId(user._id, username);
+		await Subscriptions.setUserUsernameByUserId(user._id, username);
+
+		await LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 	}
-	if (previousFile) {
-		await fileStore.model.updateFileNameById(previousFile._id, username);
+
+	// update other references if either the name or username has changed
+	if (usernameChanged || nameChanged) {
+		// update name and fname of 1-on-1 direct messages
+		await Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
+
+		// update name and fname of group direct messages
+		await updateGroupDMsName(user);
+
+		// update name and username of users on video conferences
+		await VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName);
 	}
-
-	await Messages.updateAllUsernamesByUserId(user._id, username);
-	await Messages.updateUsernameOfEditByUserId(user._id, username);
-
-	const cursor = Messages.findByMention(previousUsername);
-	for await (const msg of cursor) {
-		const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
-		await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
-	}
-
-	await Rooms.replaceUsername(previousUsername, username);
-	await Rooms.replaceMutedUsername(previousUsername, username);
-	await Rooms.replaceUsernameOfUserByUserId(user._id, username);
-	await Subscriptions.setUserUsernameByUserId(user._id, username);
-
-	await LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 }
