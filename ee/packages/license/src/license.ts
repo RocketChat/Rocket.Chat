@@ -32,6 +32,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 	pendingLicense = '';
 
+	tags = new Set<ILicenseTag>();
+
 	modules = new Set<LicenseModule>();
 
 	private workspaceUrl: string | undefined;
@@ -206,7 +208,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		}
 
 		if (this._license.information.tags) {
-			replaceTags(this._license.information.tags);
+			replaceTags.call(this, this._license.information.tags);
 		}
 
 		const disabledModules = getModulesToDisable(result);
