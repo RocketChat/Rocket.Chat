@@ -19,8 +19,8 @@ import type { VersionActionButton } from './types/VersionActionButton';
 import type { VersionActionItem } from './types/VersionActionItem';
 import type { VersionStatus } from './types/VersionStatus';
 
-const SUPPORT_EXTERNAL_LINK = 'https://go.rocket.chat/version-support';
-const RELEASES_EXTERNAL_LINK = 'https://go.rocket.chat/update';
+const SUPPORT_EXTERNAL_LINK = 'https://go.rocket.chat/i/version-support';
+const RELEASES_EXTERNAL_LINK = 'https://go.rocket.chat/i/update-product';
 
 type VersionCardProps = {
 	serverInfo: IWorkspaceInfo;
