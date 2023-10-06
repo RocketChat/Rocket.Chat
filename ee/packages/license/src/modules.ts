@@ -29,7 +29,8 @@ export function hasModule(this: LicenseManager, module: LicenseModule) {
 	return this.modules.has(module);
 }
 
-export function replaceModules(this: LicenseManager, newModules: LicenseModule[]) {
+export function replaceModules(this: LicenseManager, newModules: LicenseModule[]): boolean {
+	let anyChange = false;
 	for (const moduleName of newModules) {
 		if (this.modules.has(moduleName)) {
 			continue;
@@ -37,6 +38,7 @@ export function replaceModules(this: LicenseManager, newModules: LicenseModule[]
 
 		this.modules.add(moduleName);
 		moduleValidated.call(this, moduleName);
+		anyChange = true;
 	}
 
 	for (const moduleName of this.modules) {
@@ -46,5 +48,8 @@ export function replaceModules(this: LicenseManager, newModules: LicenseModule[]
 
 		moduleRemoved.call(this, moduleName);
 		this.modules.delete(moduleName);
+		anyChange = true;
 	}
+
+	return anyChange;
 }
