@@ -42,6 +42,33 @@ it('should prevent if the counter is equal or over the limit', async () => {
 });
 
 describe('Validate License Limits', () => {
+	describe('fair usage behavior', () => {
+		it('should change the flag to true if the counter is equal or over the limit', async () => {
+			const licenseManager = await getReadyLicenseManager();
+
+			const fairUsageCallback = jest.fn();
+
+			licenseManager.onBehaviorTriggered('start_fair_policy', fairUsageCallback);
+
+			const license = await new MockedLicenseBuilder().withLimits('activeUsers', [
+				{
+					max: 10,
+					behavior: 'start_fair_policy',
+				},
+			]);
+
+			await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+
+			licenseManager.setLicenseLimitCounter('activeUsers', () => 10);
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
+
+			licenseManager.setLicenseLimitCounter('activeUsers', () => 11);
+
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
+
+			expect(fairUsageCallback).toHaveBeenCalledTimes(2);
+		});
+	});
 	describe('invalidate_license behavior', () => {
 		it('should invalidate the license if the counter is equal or over the limit', async () => {
 			const licenseManager = await getReadyLicenseManager();

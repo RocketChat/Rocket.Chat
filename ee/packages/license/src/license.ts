@@ -45,8 +45,6 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 	private _valid: boolean | undefined;
 
-	private _inFairPolicy = false;
-
 	private _lockedLicense: string | undefined;
 
 	constructor() {
@@ -65,10 +63,6 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 	public get valid(): boolean | undefined {
 		return this._valid;
-	}
-
-	public get inFairPolicy(): boolean {
-		return this._inFairPolicy;
 	}
 
 	public async setWorkspaceUrl(url: string) {
@@ -100,7 +94,6 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 	private clearLicenseData(): void {
 		this._license = undefined;
 		this._unmodifiedLicense = undefined;
-		this._inFairPolicy = false;
 		this._valid = false;
 		this._lockedLicense = undefined;
 		clearPendingLicense.call(this);
@@ -159,7 +152,6 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		const shouldLogModules = !this._valid || options.isNewLicense;
 
 		this._valid = true;
-		this._inFairPolicy = isBehaviorsInResult(validationResult, ['start_fair_policy']);
 
 		if (this._license.information.tags) {
 			replaceTags.call(this, this._license.information.tags);
@@ -256,7 +248,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		}
 
 		const options: LicenseValidationOptions = {
-			behaviors: ['prevent_action', 'invalidate_license'],
+			behaviors: ['prevent_action', 'invalidate_license', 'start_fair_policy'],
 			isNewLicense: false,
 			suppressLog: !!suppressLog,
 			context: {
@@ -282,7 +274,6 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		license: ILicenseV3 | undefined;
 		activeModules: LicenseModule[];
 		limits: Record<LicenseLimitKind, { value?: number; max: number }>;
-		inFairPolicy: boolean;
 	}> {
 		const activeModules = getModules.call(this);
 		const license = this.getLicense();
@@ -313,7 +304,6 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			license,
 			activeModules,
 			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
-			inFairPolicy: this.inFairPolicy,
 		};
 	}
 }

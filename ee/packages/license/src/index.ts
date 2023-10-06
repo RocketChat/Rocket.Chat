@@ -53,7 +53,6 @@ interface License {
 		license: ILicenseV3 | undefined;
 		activeModules: LicenseModule[];
 		limits: Record<LicenseLimitKind, { value?: number; max: number }>;
-		inFairPolicy: boolean;
 	}>;
 
 	// Deprecated:
