@@ -40,3 +40,45 @@ it('should prevent if the counter is equal or over the limit', async () => {
 	licenseManager.setLicenseLimitCounter('activeUsers', () => 11);
 	await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
 });
+
+describe('Validate License Limits', () => {
+	describe('invalidate_license behavior', () => {
+		it('should invalidate the license if the counter is equal or over the limit', async () => {
+			const licenseManager = await getReadyLicenseManager();
+
+			const invalidateCallback = jest.fn();
+
+			const license = await new MockedLicenseBuilder().withLimits('activeUsers', [
+				{
+					max: 10,
+					behavior: 'prevent_action',
+				},
+				{
+					max: 10,
+					behavior: 'invalidate_license',
+				},
+			]);
+
+			licenseManager.on('invalidate', invalidateCallback);
+
+			await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
+			await expect(licenseManager.hasValidLicense()).toBe(true);
+
+			licenseManager.setLicenseLimitCounter('activeUsers', () => 5);
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
+			await expect(licenseManager.hasValidLicense()).toBe(true);
+
+			await licenseManager.setLicenseLimitCounter('activeUsers', () => 10);
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
+			await expect(licenseManager.hasValidLicense()).toBe(false);
+
+			expect(invalidateCallback).toHaveBeenCalledTimes(1);
+
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
+
+			expect(invalidateCallback).toHaveBeenCalledTimes(1);
+		});
+	});
+});

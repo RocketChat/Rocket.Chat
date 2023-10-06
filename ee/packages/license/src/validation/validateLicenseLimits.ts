@@ -27,16 +27,15 @@ export async function validateLicenseLimits(
 				const currentValue = await getCurrentValueForLicenseLimit.call(this, limitKey, options.context?.[limitKey]);
 
 				return limitList
-					.filter(({ max }) => max < currentValue)
+					.filter(({ max }) => max <= currentValue)
 					.map((limit) => {
-						if (!options.suppressLog) {
+						if (options.suppressLog) {
 							logger.error({
 								msg: 'Limit validation failed',
 								kind: limitKey,
 								limit,
 							});
 						}
-
 						return getResultingBehavior(limit, { reason: 'limit', limit: limitKey });
 					});
 			}),
