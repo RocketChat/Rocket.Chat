@@ -14,11 +14,11 @@ import {
 	ButtonGroup,
 	Button,
 	Callout,
-	RadioButton,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useUniqueId, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { CustomFieldsForm } from '@rocket.chat/ui-client';
+import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
+import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
 	useSetting,
@@ -38,12 +38,18 @@ import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
+import AdminUserSetRandomPassword from './AdminUserSetRandomPassword';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 
 type AdminUserFormProps = {
 	userData?: Serialized<IUser>;
 	onReload: () => void;
 };
+
+export type userFormProps = Omit<
+	UserCreateParamsPOST & { setPasswordManually: boolean; avatar: AvatarObject; passwordConfirmation: string },
+	'fields'
+>;
 
 const getInitialValue = ({
 	data,
@@ -53,7 +59,7 @@ const getInitialValue = ({
 	data?: Serialized<IUser>;
 	defaultUserRoles?: IUser['roles'];
 	isSmtpEnabled?: boolean;
-}) => ({
+}): userFormProps => ({
 	roles: data?.roles ?? defaultUserRoles,
 	name: data?.name ?? '',
 	password: '',
@@ -63,13 +69,14 @@ const getInitialValue = ({
 	email: (data?.emails?.length && data.emails[0].address) || '',
 	verified: (data?.emails?.length && data.emails[0].verified) || false,
 	setRandomPassword: true,
-	setRandomPasswordManually: false,
+	setPasswordManually: false,
 	requirePasswordChange: data?.requirePasswordChange || false,
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
 	joinDefaultChannels: true,
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
+	passwordConfirmation: '',
 });
 
 const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
@@ -79,6 +86,9 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 
 	const customFieldsMetadata = useAccountsCustomFields();
 	const defaultRoles = useSetting<string>('Accounts_Registration_Users_Default_Roles') || '';
+	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
+	const passwordPlaceholder = String(useSetting('Accounts_PasswordPlaceholder'));
+	const passwordConfirmationPlaceholder = String(useSetting('Accounts_ConfirmPasswordPlaceholder'));
 
 	const defaultUserRoles = parseCSV(defaultRoles);
 	const { data } = useSmtpQuery();
@@ -99,7 +109,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 		control,
 		watch,
 		handleSubmit,
-		reset,
+		// reset,
 		formState: { errors, isDirty },
 		setValue,
 	} = useForm({
@@ -107,7 +117,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 		mode: 'onBlur',
 	});
 
-	const { avatar, username, setRandomPassword } = watch();
+	const { avatar, username, setRandomPassword, password } = watch();
 
 	const updateAvatar = useUpdateAvatar(avatar, userData?._id || '');
 
@@ -139,12 +149,12 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 		},
 	});
 
-	const handleSaveUser = useMutableCallback(async (userFormPayload) => {
-		const { avatar, ...userFormData } = userFormPayload;
+	const handleSaveUser = useMutableCallback(async (userFormPayload: userFormProps) => {
+		const { avatar, setPasswordManually, passwordConfirmation, ...userFormData } = userFormPayload;
 		if (userData?._id) {
 			return handleUpdateUser.mutateAsync({ userId: userData?._id, data: userFormData });
 		}
-		return handleCreateUser.mutateAsync(userFormData);
+		return handleCreateUser.mutateAsync({ ...userFormData, fields: '' });
 	});
 
 	const nameId = useUniqueId();
@@ -155,12 +165,13 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 	const bioId = useUniqueId();
 	const nicknameId = useUniqueId();
 	const passwordId = useUniqueId();
+	const passwordConfirmationId = useUniqueId();
 	const requirePasswordChangeId = useUniqueId();
-	const setRandomPasswordId = useUniqueId();
-	const setRandomPasswordManuallyId = useUniqueId();
 	const rolesId = useUniqueId();
 	const joinDefaultChannelsId = useUniqueId();
 	const sendWelcomeEmailId = useUniqueId();
+	const setRandomPasswordId = useUniqueId();
+	const passwordVerifierId = useUniqueId();
 
 	return (
 		<>
@@ -273,18 +284,6 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 						)}
 					</Field>
 					<Field>
-						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
-							<Field.Label htmlFor={verifiedId}>{t('Verified')}</Field.Label>
-							<Field.Row>
-								<Controller
-									control={control}
-									name='verified'
-									render={({ field: { onChange, value } }) => <ToggleSwitch id={verifiedId} checked={value} onChange={onChange} />}
-								/>
-							</Field.Row>
-						</Box>
-					</Field>
-					<Field>
 						<Field.Label htmlFor={statusTextId}>{t('StatusMessage')}</Field.Label>
 						<Field.Row>
 							<Controller
@@ -355,60 +354,19 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 						<Field.Label htmlFor={passwordId} mbe={8}>
 							{t('Password')}
 						</Field.Label>
-						<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1} mbe={8}>
-							<Field.Row mie={8}>
-								<Controller
-									control={control}
-									name='setRandomPassword'
-									render={({ field: { ref, onChange, value } }) => (
-										<RadioButton
-											ref={ref}
-											id={setRandomPasswordId}
-											aria-describedby={`${setRandomPasswordId}-hint`}
-											checked={value}
-											onChange={() => {
-												setValue('setRandomPasswordManually', false);
-												onChange(true);
-											}}
-											disabled={!isSmtpEnabled}
-										/>
-									)}
-								/>
-							</Field.Row>
-							<Field.Label htmlFor={setRandomPasswordId} alignSelf='center' fontScale='p2'>
-								{t('Set_randomly_and_send_by_email')}
-							</Field.Label>
-						</Box>
-						<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1} mbe={12}>
-							<Field.Row mie={8}>
-								<Controller
-									control={control}
-									name='setRandomPasswordManually'
-									render={({ field: { ref, onChange, value } }) => (
-										<RadioButton
-											ref={ref}
-											id={setRandomPasswordManuallyId}
-											aria-describedby={`${setRandomPasswordManuallyId}-hint`}
-											checked={value || !setRandomPassword}
-											onChange={() => {
-												setValue('setRandomPassword', false);
-												onChange(true);
-											}}
-											disabled={!isSmtpEnabled}
-										/>
-									)}
-								/>
-							</Field.Row>
-							<Field.Label htmlFor={setRandomPasswordManuallyId} alignSelf='center' fontScale='p2'>
-								{t('Set_manually')}
-							</Field.Label>
-						</Box>
-						{/* {!isSmtpEnabled && (
-								<Field.Hint
-									id={`${setRandomPasswordId}-hint`}
-									dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }}
-								/>
-							)} */}
+						<AdminUserSetRandomPassword
+							setRandomPasswordId={setRandomPasswordId}
+							control={control}
+							isSmtpEnabled={isSmtpEnabled || false}
+							setRandomPassword={setRandomPassword || false}
+							setValue={setValue}
+						/>
+						{!isSmtpEnabled && (
+							<Field.Hint
+								id={`${setRandomPasswordId}-hint`}
+								dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }}
+							/>
+						)}
 						{!setRandomPassword && (
 							<>
 								<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} mbe={8}>
@@ -442,8 +400,8 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 												aria-describedby={`${passwordId}-error`}
 												error={errors.password?.message}
 												flexGrow={1}
-												addon={<Icon name='key' size='x20' />}
-												placeholder='Password'
+												addon={<Icon name='eye-off' size='x20' />}
+												placeholder={passwordPlaceholder || t('Password')}
 											/>
 										)}
 									/>
@@ -453,6 +411,37 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 										{errors.password.message}
 									</Field.Error>
 								)}
+								{requiresPasswordConfirmation && (
+									<Field.Row>
+										<Controller
+											control={control}
+											name='passwordConfirmation'
+											rules={{
+												required: !userData?._id && t('The_field_is_required', t('Confirm_password')),
+												deps: ['password'],
+												validate: (val: string) => (watch('password') === val ? true : t('Invalid_confirm_pass')),
+											}}
+											render={({ field }) => (
+												<PasswordInput
+													{...field}
+													id={passwordConfirmationId}
+													aria-invalid={errors.passwordConfirmation ? 'true' : 'false'}
+													aria-describedby={`${passwordConfirmationId}-error`}
+													error={errors.passwordConfirmation?.message}
+													flexGrow={1}
+													addon={<Icon name='eye-off' size='x20' />}
+													placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
+												/>
+											)}
+										/>
+									</Field.Row>
+								)}
+								{errors?.passwordConfirmation && (
+									<Field.Error aria-live='assertive' id={`${passwordConfirmationId}-error`}>
+										{errors.passwordConfirmation.message}
+									</Field.Error>
+								)}
+								<PasswordVerifier password={password} id={passwordVerifierId} vertical />
 							</>
 						)}
 					</Field>
@@ -531,15 +520,15 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button
+					{/* <Button
 						type='reset'
 						disabled={!isDirty}
 						onClick={() => reset(getInitialValue({ data: userData, defaultUserRoles, isSmtpEnabled }))}
 					>
 						{t('Reset')}
-					</Button>
+					</Button> */}
 					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)}>
-						{t('Save')}
+						{t('Add_user')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
