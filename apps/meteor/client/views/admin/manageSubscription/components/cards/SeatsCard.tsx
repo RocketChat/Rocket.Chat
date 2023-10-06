@@ -28,7 +28,7 @@ const SeatsCard = ({ plan }: SeatsCardProps): ReactElement => {
 		upgradeButtonText: plan === PlanName.STARTER ? 'Upgrade' : 'Buy_more_seats',
 	};
 
-	return <PieGraphCard pieGraph={pieGraph} card={card} />;
+	return <PieGraphCard pieGraph={pieGraph} card={card} isLoading={Boolean(!seatsCap)} />;
 };
 
 export default SeatsCard;

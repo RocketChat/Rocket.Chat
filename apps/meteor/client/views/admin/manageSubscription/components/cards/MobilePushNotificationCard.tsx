@@ -3,28 +3,27 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSeatsCap } from '../../../../../../ee/client/views/admin/users/useSeatsCap';
+import { useStatistics } from '../../../../hooks/useStatistics';
 import FeatureUsageCard from '../FeatureUsageCard';
 
 const MobilePushNotificationCard = (): ReactElement => {
 	const { t } = useTranslation();
-	const seatsCap = useSeatsCap();
+	const { data, isLoading } = useStatistics();
+	const { push } = data || {};
 
 	const card = {
 		title: t('RegisterWorkspace_Features_MobileNotifications_Title'),
 		infoText: t('MobilePush_InfoText'),
 	};
 
-	// const total = seatsCap?.maxActiveUsers || 0;
-	// const used = seatsCap?.activeUsers || 0;
 	const total = 10000;
-	const used = 7999;
+	const used = push || 0;
 	const percentage = (used / total) * 100;
 	const closeToLimit = percentage >= 80;
 
 	return (
 		<FeatureUsageCard title={card.title} infoText={card.infoText} showUpgradeButton={closeToLimit}>
-			{seatsCap ? (
+			{!isLoading && push ? (
 				<Box w='full'>
 					<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
 						<Box fontScale='c1'>{t('Monthly_usage')}</Box>

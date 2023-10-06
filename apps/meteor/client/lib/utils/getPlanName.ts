@@ -8,7 +8,7 @@ export enum PlanName {
 }
 
 export const getPlanName = (isEnterprise: boolean, activeModules: string[], isTrial: boolean): PlanName => {
-	const hasWhiteLabelModule = activeModules.includes('white-label');
+	const hasHideWatermarkModule = activeModules.includes('hide-watermark');
 	const hasScalabilityModule = activeModules.includes('scalability');
 
 	switch (true) {
@@ -18,7 +18,7 @@ export const getPlanName = (isEnterprise: boolean, activeModules: string[], isTr
 			return PlanName.ENTERPRISE_TRIAL;
 		case hasScalabilityModule:
 			return PlanName.ENTERPRISE;
-		case hasWhiteLabelModule:
+		case hasHideWatermarkModule:
 			return PlanName.PRO;
 		case isTrial:
 			return PlanName.PRO_TRIAL;

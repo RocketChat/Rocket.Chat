@@ -1,7 +1,7 @@
-import { useAnalyticsObject } from '../views/admin/viewLogs/hooks/useAnalyticsObject';
+import { useStatistics } from '../views/hooks/useStatistics';
 
 export const useIsSelfHosted = (): boolean => {
-	const { data } = useAnalyticsObject();
+	const { data } = useStatistics();
 
 	const isSelfHosted = data?.deploy?.platform !== 'rocket-cloud';
 

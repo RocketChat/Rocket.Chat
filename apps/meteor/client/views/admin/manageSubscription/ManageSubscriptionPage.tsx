@@ -1,4 +1,4 @@
-import { Box, Button, Grid } from '@rocket.chat/fuselage';
+import { Box, Button, Grid, Skeleton } from '@rocket.chat/fuselage';
 import { t } from 'i18next';
 import React, { memo } from 'react';
 
@@ -23,9 +23,13 @@ const ManageSubscriptionPage = () => {
 	const { data } = useIsEnterprise();
 	const { data: licensesData } = useLicense();
 
-	const { activeModules = [], license } = licensesData?.data || {};
+	const { activeModules = [], license, limits } = licensesData?.data || {};
 	const isEnterprise = data?.isEnterprise || false;
 	const isTrial = license?.information?.trial ?? false;
+
+	const marketplaceAppsLimit = limits?.marketplaceApps?.max;
+	const privateAppsLimit = limits?.privateApps?.max;
+	const monthlyActiveContactsLimit = limits?.monthlyActiveContacts?.max;
 
 	const plan = getPlanName(isEnterprise, activeModules, isTrial);
 
@@ -52,13 +56,22 @@ const ManageSubscriptionPage = () => {
 			<Page.ScrollableContentWithShadow p={16}>
 				<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 					<Grid m={0}>
-						{license && (
+						{license ? (
 							<>
 								<Grid.Item lg={4} xs={4} p={8}>
 									<PlanCard isEnterprise={isEnterprise} license={license} />
 								</Grid.Item>
 								<Grid.Item lg={8} xs={4} p={8}>
 									<FeaturesCard plan={plan} />
+								</Grid.Item>
+							</>
+						) : (
+							<>
+								<Grid.Item lg={4} xs={4} p={8}>
+									<Skeleton variant='rect' width='full' height={240} />
+								</Grid.Item>
+								<Grid.Item lg={8} xs={4} p={8}>
+									<Skeleton variant='rect' width='full' height={240} />
 								</Grid.Item>
 							</>
 						)}
@@ -69,7 +82,7 @@ const ManageSubscriptionPage = () => {
 									<SeatsCard plan={plan} />
 								</Grid.Item>
 								<Grid.Item lg={6} xs={4} p={8}>
-									<MACCard plan={plan} />
+									<MACCard plan={plan} monthlyActiveContactsLimit={monthlyActiveContactsLimit} />
 								</Grid.Item>
 							</>
 						) : (
@@ -84,7 +97,7 @@ const ManageSubscriptionPage = () => {
 									<ConcurrentUsersCard />
 								</Grid.Item>
 								<Grid.Item lg={6} xs={4} p={8}>
-									<AppsUsageCard />
+									<AppsUsageCard privateAppsLimit={privateAppsLimit} marketplaceAppsLimit={marketplaceAppsLimit} />
 								</Grid.Item>
 								<Grid.Item lg={6} xs={4} p={8}>
 									<MobilePushNotificationCard />

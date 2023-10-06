@@ -2,22 +2,25 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSeatsCap } from '../../../../../../ee/client/views/admin/users/useSeatsCap';
 import { PlanName } from '../../../../../lib/utils/getPlanName';
+import { useStatistics } from '../../../../hooks/useStatistics';
 import PieGraphCard from '../PieGraphCard';
 
 type MACCardProps = {
 	plan: PlanName;
+	monthlyActiveContactsLimit?: number;
 };
 
-// TODO: waiting this implementation: https://github.com/RocketChat/Rocket.Chat/pull/30439/
-const MACCard = ({ plan }: MACCardProps): ReactElement => {
+const MACCard = ({ plan, monthlyActiveContactsLimit }: MACCardProps): ReactElement => {
 	const { t } = useTranslation();
-	const seatsCap = useSeatsCap();
+	const { data, isLoading } = useStatistics({ refresh: 'true' });
+	const { omnichannelContactsBySource } = data || {};
 
-	const pieGraph = seatsCap && {
-		used: seatsCap.activeUsers,
-		total: seatsCap.maxActiveUsers,
+	const defaultMaxMAC = plan === PlanName.STARTER ? 100 : 15000;
+
+	const pieGraph = omnichannelContactsBySource && {
+		used: omnichannelContactsBySource?.contactsCount || 0,
+		total: monthlyActiveContactsLimit || defaultMaxMAC,
 	};
 
 	const nearLimit = pieGraph && pieGraph.used / pieGraph.total >= 0.8;
@@ -29,7 +32,7 @@ const MACCard = ({ plan }: MACCardProps): ReactElement => {
 		upgradeButtonText: plan === PlanName.STARTER ? 'Upgrade' : 'Buy_MAC_packs',
 	};
 
-	return <PieGraphCard pieGraph={pieGraph} card={card} />;
+	return <PieGraphCard pieGraph={pieGraph} card={card} isLoading={isLoading} />;
 };
 
 export default MACCard;

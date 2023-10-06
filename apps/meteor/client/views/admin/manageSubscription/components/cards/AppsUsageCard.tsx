@@ -6,13 +6,25 @@ import { useTranslation } from 'react-i18next';
 import { useAppsCountQuery } from '../../../../marketplace/hooks/useAppsCountQuery';
 import FeatureUsageCard from '../FeatureUsageCard';
 
-const AppsUsageCard = (): ReactElement => {
+type AppsUsageCardProps = {
+	privateAppsLimit?: number;
+	marketplaceAppsLimit?: number;
+};
+
+const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCardProps): ReactElement => {
 	const { t } = useTranslation();
 	const { data: privateApps } = useAppsCountQuery('private');
 	const { data: marketplaceApps } = useAppsCountQuery('installed');
 
-	const { enabled: privateAppsEnabled, limit: privateAppsLimit, percentage: privateAppsPercentage } = privateApps || {};
-	const { enabled: marketplaceAppsEnabled, limit: marketplaceAppsLimit, percentage: marketplaceAppsPercentage } = privateApps || {};
+	const { enabled: privateAppsEnabled, limit: privateAppsLimitQuery, percentage: privateAppsPercentage } = privateApps || {};
+	const {
+		enabled: marketplaceAppsEnabled,
+		limit: marketplaceAppsLimitQuery,
+		percentage: marketplaceAppsPercentage,
+	} = marketplaceApps || {};
+
+	const privateAppsLimitCount = privateAppsLimit || privateAppsLimitQuery;
+	const marketplaceAppsLimitCount = marketplaceAppsLimit || marketplaceAppsLimitQuery;
 
 	const card = {
 		title: t('Apps'),
@@ -27,7 +39,7 @@ const AppsUsageCard = (): ReactElement => {
 						<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
 							<Box fontScale='c1'>{t('Marketplace_apps')}</Box>
 							<Box fontScale='c1' color={(marketplaceAppsPercentage || 0) >= 80 ? 'font-danger' : 'status-font-on-success'}>
-								{marketplaceAppsEnabled} / {(marketplaceAppsLimit || 0) > 0 ? marketplaceAppsLimit : 5}
+								{marketplaceAppsEnabled} / {(marketplaceAppsLimitCount || 0) > 0 ? marketplaceAppsLimitCount : 5}
 							</Box>
 						</Box>
 
@@ -40,7 +52,7 @@ const AppsUsageCard = (): ReactElement => {
 						<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
 							<Box fontScale='c1'>{t('Private_apps')}</Box>
 							<Box fontScale='c1' color={(privateAppsPercentage || 0) >= 80 ? 'font-danger' : 'status-font-on-success'}>
-								{privateAppsEnabled} / {(privateAppsLimit || 0) > 0 ? privateAppsLimit : 3}
+								{privateAppsEnabled} / {(privateAppsLimitCount || 0) > 0 ? privateAppsLimitCount : 3}
 							</Box>
 						</Box>
 
