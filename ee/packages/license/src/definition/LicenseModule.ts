@@ -1,0 +1,18 @@
+export type LicenseModule =
+	| 'auditing'
+	| 'canned-responses'
+	| 'ldap-enterprise'
+	| 'livechat-enterprise'
+	| 'voip-enterprise'
+	| 'omnichannel-mobile-enterprise'
+	| 'engagement-dashboard'
+	| 'push-privacy'
+	| 'scalability'
+	| 'teams-mention'
+	| 'saml-enterprise'
+	| 'oauth-enterprise'
+	| 'device-management'
+	| 'federation'
+	| 'videoconference-enterprise'
+	| 'message-read-receipt'
+	| 'outlook-calendar';

@@ -236,7 +236,7 @@
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/forked-matrix-appservice-bridge": "^4.0.1",
 		"@rocket.chat/forked-matrix-bot-sdk": "^0.6.0-beta.2",
-		"@rocket.chat/fuselage": "^0.32.1",
+		"@rocket.chat/fuselage": "^0.32.2",
 		"@rocket.chat/fuselage-hooks": "^0.32.1",
 		"@rocket.chat/fuselage-polyfills": "next",
 		"@rocket.chat/fuselage-toastbar": "next",
@@ -246,7 +246,9 @@
 		"@rocket.chat/i18n": "workspace:^",
 		"@rocket.chat/icons": "^0.32.0",
 		"@rocket.chat/instance-status": "workspace:^",
+		"@rocket.chat/jwt": "workspace:^",
 		"@rocket.chat/layout": "next",
+		"@rocket.chat/license": "workspace:^",
 		"@rocket.chat/log-format": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/logo": "^0.31.27",
@@ -263,6 +265,7 @@
 		"@rocket.chat/presence": "workspace:^",
 		"@rocket.chat/random": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
+		"@rocket.chat/server-cloud-communication": "workspace:^",
 		"@rocket.chat/server-fetch": "workspace:^",
 		"@rocket.chat/sha256": "workspace:^",
 		"@rocket.chat/string-helpers": "next",
@@ -286,7 +289,7 @@
 		"@xmldom/xmldom": "^0.8.8",
 		"adm-zip": "0.5.10",
 		"ajv": "^8.11.0",
-		"ajv-formats": "^2.1.1",
+		"ajv-formats": "~2.1.1",
 		"apn": "2.2.0",
 		"archiver": "^3.1.1",
 		"asterisk-manager": "^0.2.0",
@@ -347,6 +350,7 @@
 		"imap": "^0.8.19",
 		"ip-range-check": "^0.2.0",
 		"is-svg": "^4.3.2",
+		"isolated-vm": "4.4.2",
 		"jquery": "^3.6.0",
 		"jschardet": "^3.0.0",
 		"jsdom": "^16.7.0",
@@ -413,6 +417,7 @@
 		"stream-buffers": "^3.0.2",
 		"strict-uri-encode": "^2.0.0",
 		"string-strip-html": "^7.0.3",
+		"suretype": "~2.4.1",
 		"tar-stream": "^1.6.2",
 		"textarea-caret": "^3.1.0",
 		"tinykeys": "^1.4.0",
@@ -468,5 +473,11 @@
 	},
 	"installConfig": {
 		"hoistingLimits": "workspaces"
+	},
+	"rocketchat": {
+		"minimumClientVersions": {
+			"desktop": "3.9.6",
+			"mobile": "4.39.0"
+		}
 	}
 }
