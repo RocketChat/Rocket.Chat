@@ -1,4 +1,4 @@
-import { FieldGroup, Field, ToggleSwitch, Select } from '@rocket.chat/fuselage';
+import { FieldGroup, Field, FieldLabel, FieldRow, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
@@ -41,14 +41,14 @@ const AutoTranslate = ({
 			<ContextualbarContent pbs={24}>
 				<FieldGroup>
 					<Field>
-						<Field.Row>
+						<FieldRow>
 							<ToggleSwitch id='automatic-translation' onChange={handleSwitch} defaultChecked={translateEnable} />
-							<Field.Label htmlFor='automatic-translation'>{t('Automatic_Translation')}</Field.Label>
-						</Field.Row>
+							<FieldLabel htmlFor='automatic-translation'>{t('Automatic_Translation')}</FieldLabel>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Field.Label htmlFor='language'>{t('Language')}</Field.Label>
-						<Field.Row verticalAlign='middle'>
+						<FieldLabel htmlFor='language'>{t('Language')}</FieldLabel>
+						<FieldRow verticalAlign='middle'>
 							<Select
 								id='language'
 								value={language}
@@ -56,7 +56,7 @@ const AutoTranslate = ({
 								onChange={(value) => handleChangeLanguage(String(value))}
 								options={languages}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				</FieldGroup>
 			</ContextualbarContent>

@@ -197,7 +197,6 @@ export class MockedLicenseBuilder {
 export const getReadyLicenseManager = async () => {
 	const license = new LicenseImp();
 	await license.setWorkspaceUrl('http://localhost:3000');
-	await license.setWorkspaceUrl('http://localhost:3000');
 
 	license.setLicenseLimitCounter('activeUsers', () => 0);
 	license.setLicenseLimitCounter('guestUsers', () => 0);

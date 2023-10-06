@@ -4,6 +4,7 @@ import type { LimitContext } from './definition/LimitContext';
 import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
 import { onLicense } from './events/deprecated';
 import {
+	onBehaviorTriggered,
 	onInvalidFeature,
 	onInvalidateLicense,
 	onLimitReached,
@@ -45,6 +46,8 @@ interface License {
 	onValidateLicense: typeof onValidateLicense;
 	onInvalidateLicense: typeof onInvalidateLicense;
 	onLimitReached: typeof onLimitReached;
+	onBehaviorTriggered: typeof onBehaviorTriggered;
+	revalidateLicense: () => Promise<void>;
 
 	getInfo: (loadCurrentValues: boolean) => Promise<{
 		license: ILicenseV3 | undefined;
@@ -78,7 +81,7 @@ export class LicenseImp extends LicenseManager implements License {
 
 	getCurrentValueForLicenseLimit = getCurrentValueForLicenseLimit;
 
-	public async isLimitReached<T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>) {
+	public async isLimitReached<T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>): Promise<boolean> {
 		return this.shouldPreventAction(action, context, 0);
 	}
 
@@ -95,6 +98,8 @@ export class LicenseImp extends LicenseManager implements License {
 	onInvalidateLicense = onInvalidateLicense;
 
 	onLimitReached = onLimitReached;
+
+	onBehaviorTriggered = onBehaviorTriggered;
 
 	// Deprecated:
 	onLicense = onLicense;

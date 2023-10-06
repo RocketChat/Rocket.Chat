@@ -1,4 +1,4 @@
-import { Box, Field, Flex, Select } from '@rocket.chat/fuselage';
+import { Box, FieldLabel, FieldRow, Flex, Select } from '@rocket.chat/fuselage';
 import type { PathPattern } from '@rocket.chat/rest-typings';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -45,13 +45,13 @@ function LookupSettingInput({
 		<>
 			<Flex.Container>
 				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
+					<FieldLabel htmlFor={_id} title={_id}>
 						{label}
-					</Field.Label>
+					</FieldLabel>
 					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 				</Box>
 			</Flex.Container>
-			<Field.Row>
+			<FieldRow>
 				<Select
 					data-qa-setting-id={_id}
 					id={_id}
@@ -63,7 +63,7 @@ function LookupSettingInput({
 					onChange={(value) => handleChange(String(value))}
 					options={values.map(({ key, label }) => [key, label])}
 				/>
-			</Field.Row>
+			</FieldRow>
 		</>
 	);
 }

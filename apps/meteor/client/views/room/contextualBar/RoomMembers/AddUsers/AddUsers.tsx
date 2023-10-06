@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { Field, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -65,7 +65,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 			<ContextualbarScrollableContent>
 				<FieldGroup>
 					<Field>
-						<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
+						<FieldLabel flexGrow={0}>{t('Choose_users')}</FieldLabel>
 						{isRoomFederated(room) ? (
 							<Controller
 								name='users'
