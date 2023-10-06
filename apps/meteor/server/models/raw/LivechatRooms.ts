@@ -1516,11 +1516,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{
 				$set: { pdfTranscriptRequested: true },
 			},
-			{},
-			// @ts-expect-error - extra arg not on base types
-			{
-				bypassUnits: true,
-			},
 		);
 	}
 
@@ -1532,11 +1527,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{
 				$unset: { pdfTranscriptRequested: 1 },
 			},
-			{},
-			// @ts-expect-error - extra arg not on base types
-			{
-				bypassUnits: true,
-			},
 		);
 	}
 
@@ -1547,11 +1537,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			},
 			{
 				$set: { pdfTranscriptFileId: fileId },
-			},
-			{},
-			// @ts-expect-error - extra arg not on base types
-			{
-				bypassUnits: true,
 			},
 		);
 	}
