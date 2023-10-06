@@ -119,7 +119,7 @@ settings.onReady(async () => {
 });
 
 const getCurrentPeriod = () => {
-	moment.utc().format('YYYY-MM');
+	return moment.utc().format('YYYY-MM');
 };
 
 License.setLicenseLimitCounter('activeUsers', () => Users.getActiveLocalUserCount());
@@ -127,5 +127,4 @@ License.setLicenseLimitCounter('guestUsers', () => Users.getActiveLocalGuestCoun
 License.setLicenseLimitCounter('roomsPerGuest', async (context) => (context?.userId ? Subscriptions.countByUserId(context.userId) : 0));
 License.setLicenseLimitCounter('privateApps', () => getAppCount('private'));
 License.setLicenseLimitCounter('marketplaceApps', () => getAppCount('marketplace'));
-// #TODO: Get real value
 License.setLicenseLimitCounter('monthlyActiveContacts', async () => LivechatVisitors.countVisitorsOnPeriod(getCurrentPeriod()));

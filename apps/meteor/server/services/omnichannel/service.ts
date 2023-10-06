@@ -30,6 +30,12 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 				await Livechat.notifyAgentStatusChanged(user._id, user.status);
 			}
 		});
+	}
+
+	async started() {
+		settings.watch<boolean>('Livechat_enabled', (enabled) => {
+			void (enabled && RoutingManager.isMethodSet() ? this.queueWorker.shouldStart() : this.queueWorker.stop());
+		});
 
 		License.onLimitReached('monthlyActiveContacts', async (): Promise<void> => {
 			void this.api?.broadcast('mac.limitReached');
@@ -38,13 +44,7 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 
 		License.onValidateLicense(async (): Promise<void> => {
 			void this.api?.broadcast('mac.limitRestored');
-			await this.queueWorker.shouldStart();
-		});
-	}
-
-	async started() {
-		settings.watch<boolean>('Livechat_enabled', (enabled) => {
-			void (enabled && RoutingManager.isMethodSet() ? this.queueWorker.shouldStart() : this.queueWorker.stop());
+			RoutingManager.isMethodSet() && (await this.queueWorker.shouldStart());
 		});
 	}
 
@@ -54,12 +54,10 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 
 	async isRoomEnabled(room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {
 		const currentMonth = moment.utc().format('YYYY-MM');
-		// @ts-expect-error - v.activity
 		return room.v?.activity?.includes(currentMonth) || !(await License.shouldPreventAction('monthlyActiveContacts'));
 	}
 
 	async checkMACLimit(): Promise<boolean> {
-		// return license.isMacOnLimit();
 		return !(await License.shouldPreventAction('monthlyActiveContacts'));
 	}
 }
