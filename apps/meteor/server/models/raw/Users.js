@@ -384,6 +384,10 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	findOneByUsernameIgnoringCase(username, options) {
+		if (!username) {
+			throw new Error('invalid username');
+		}
+
 		const query = { username };
 
 		return this.findOne(query, {
@@ -1494,6 +1498,18 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(
 			{
 				_id,
+				__rooms: { $ne: rid },
+			},
+			{
+				$addToSet: { __rooms: rid },
+			},
+		);
+	}
+
+	addRoomByUserIds(uids, rid) {
+		return this.updateMany(
+			{
+				_id: { $in: uids },
 				__rooms: { $ne: rid },
 			},
 			{

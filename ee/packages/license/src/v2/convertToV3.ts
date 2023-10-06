@@ -36,7 +36,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 			serverUrls: [
 				{
 					value: v2.url,
-					type: 'url',
+					type: 'regex',
 				},
 			],
 			validPeriods: [
