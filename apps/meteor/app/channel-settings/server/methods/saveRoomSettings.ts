@@ -12,6 +12,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
+import { saveRoomBroadcast } from '../functions/saveRoomBroadcast';
 import { saveRoomCustomFields } from '../functions/saveRoomCustomFields';
 import { saveRoomDescription } from '../functions/saveRoomDescription';
 import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
@@ -32,6 +33,7 @@ type RoomSettings = {
 	roomDescription: string;
 	roomType: IRoom['t'];
 	readOnly: boolean;
+	broadcast: boolean;
 	reactWhenReadOnly: boolean;
 	systemMessages: MessageTypesValues[];
 	default: boolean;
@@ -275,6 +277,11 @@ const settingSavers: RoomSettingsSavers = {
 			await saveRoomReadOnly(rid, value, user);
 		}
 	},
+	async broadcast({ value, room, rid }) {
+		if (value !== room.broadcast) {
+			await saveRoomBroadcast(rid, value);
+		}
+	},
 	async reactWhenReadOnly({ value, room, rid, user }) {
 		if (value !== room.reactWhenReadOnly) {
 			await saveReactWhenReadOnly(rid, value, user);
@@ -345,6 +352,7 @@ const fields: (keyof RoomSettings)[] = [
 	'roomDescription',
 	'roomType',
 	'readOnly',
+	'broadcast',
 	'reactWhenReadOnly',
 	'systemMessages',
 	'default',

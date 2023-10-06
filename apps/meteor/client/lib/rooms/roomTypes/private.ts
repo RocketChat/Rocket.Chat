@@ -30,7 +30,7 @@ roomCoordinator.add(
 				case RoomSettingsEnum.JOIN_CODE:
 					return false;
 				case RoomSettingsEnum.BROADCAST:
-					return Boolean(room.broadcast);
+					return true;
 				case RoomSettingsEnum.READ_ONLY:
 					return !room.broadcast;
 				case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
