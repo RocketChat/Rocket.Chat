@@ -13,22 +13,21 @@ const MentionsWithSymbolUpsellModal = ({ onClose }: { onClose: () => void }) => 
 	if (!isAdmin) {
 		return (
 			<GenericUpsellModal
-				title={t('Mentions_with_symbol_upsell_title')}
-				img='images/high-contrast-upsell-modal.png'
-				subtitle={t('Mentions_with_symbol_upsell_subtitle')}
+				title={t('Empower_access_move_beyond_color')}
+				img='images/mentions-upsell-modal.png'
+				subtitle={t('Compliant_use_of_color')}
 				description={t('Mentions_with_symbol_upsell_description')}
 				onClose={onClose}
 				onCancel={onClose}
 				cancelText={t('Close')}
-				annotation={t('Mentions_with_symbol_upsell_annotation')}
 			/>
 		);
 	}
 	return (
 		<GenericUpsellModal
-			title={t('Mentions_with_symbol_upsell_title')}
-			img='images/high-contrast-upsell-modal.png'
-			subtitle={t('Mentions_with_symbol_upsell_subtitle')}
+			title={t('Empower_access_move_beyond_color')}
+			img='images/mentions-upsell-modal.png'
+			subtitle={t('Compliant_use_of_color')}
 			description={t('Mentions_with_symbol_upsell_description')}
 			onClose={onClose}
 			onCancel={handleTalkToSales}

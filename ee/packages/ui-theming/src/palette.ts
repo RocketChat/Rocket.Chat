@@ -44,7 +44,7 @@ export const palette = [
 		description: 'These should be applied according to surfaces',
 		list: [
 			{ name: 'font-white', token: 'white', color: '#FFFFFF' },
-			{ name: 'font-disabled', token: 'N100', color: '#F7F8FA' },
+			{ name: 'font-disabled', token: 'N500', color: '#CBCED1' },
 			{ name: 'font-annotation', token: 'N600', color: '#9EA2A8' },
 			{ name: 'font-hint', token: 'N700', color: '#6C727A' },
 			{ name: 'font-secondary-info', token: 'N700', color: '#6C727A' },
