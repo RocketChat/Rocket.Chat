@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 
 export const useIsOverMacLimit = (): boolean => {
 	const getMacLimit = useEndpoint('GET', '/v1/omnichannel/mac/check');
-	const { data: { onLimit: isOverMacLimit = false } = {} } = useQuery(['/v1/omnichannel/mac/check'], () => getMacLimit());
+	const { data: { onLimit = false } = {} } = useQuery(['/v1/omnichannel/mac/check'], () => getMacLimit());
 
-	return !!isOverMacLimit;
+	return !onLimit;
 };
