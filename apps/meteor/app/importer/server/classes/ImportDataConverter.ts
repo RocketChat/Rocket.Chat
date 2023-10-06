@@ -1034,7 +1034,11 @@ export class ImportDataConverter {
 					return;
 				}
 				if (roomData.t === 'p') {
-					roomInfo = await createPrivateGroupMethod(startedByUserId, roomData.name, members, false, {}, {}, true);
+					const user = await Users.findOneById(startedByUserId);
+					if (!user) {
+						throw new Error('importer-channel-invalid-creator');
+					}
+					roomInfo = await createPrivateGroupMethod(user, roomData.name, members, false, {}, {}, true);
 				} else {
 					roomInfo = await createChannelMethod(startedByUserId, roomData.name, members, false, {}, {}, true);
 				}
