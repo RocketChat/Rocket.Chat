@@ -33,6 +33,23 @@ const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: ReturnTyp
 	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeSidebarMessage(lastMessage, t)}`;
 };
 
+const getBadgeTitle = (userMentions: number, threadUnread: number, groupMentions: number, unread: number) => {
+	const title = [] as string[];
+	if (userMentions) {
+		[...title, `${userMentions} mention(s)`];
+	}
+	if (threadUnread) {
+		[...title, `${threadUnread} unread threaded message(s)`];
+	}
+	if (groupMentions) {
+		[...title, `${groupMentions} group mention(s)`];
+	}
+	if (!userMentions && !threadUnread && !groupMentions && unread) {
+		[...title, `${unread} unread message(s)`];
+	}
+	return title.join(', ');
+};
+
 type RoomListRowProps = {
 	extended: boolean;
 	t: ReturnType<typeof useTranslation>;
@@ -137,27 +154,12 @@ function SideBarItemTemplateWithData({
 	const isUnread = unread > 0 || threadUnread;
 	const showBadge = !hideUnreadStatus || (!hideMentionStatus && (Boolean(userMentions) || tunreadUser.length > 0));
 
-	const getBadgeTitle = () => {
-		const title = [];
-		if (userMentions) {
-			title.push(`${userMentions} mention(s)`);
-		}
-		if (threadUnread) {
-			title.push(`${tunread.length} unread threaded message(s)`);
-		}
-		if (groupMentions) {
-			title.push(`${groupMentions} group mention(s)`);
-		}
-		if (!userMentions && !threadUnread && !groupMentions && unread) {
-			title.push(`${unread} unread message(s)`);
-		}
-		return title.join(', ');
-	};
+	const badgeTitle = getBadgeTitle(userMentions, tunread.length, groupMentions, unread);
 
 	const badges = (
 		<Margins inlineStart={8}>
 			{showBadge && isUnread && (
-				<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant} title={getBadgeTitle()}>
+				<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant} title={badgeTitle}>
 					{unread + tunread?.length}
 				</Badge>
 			)}
