@@ -326,7 +326,7 @@ API.v1.addRoute(
 				throw new Error('This_conversation_is_already_closed');
 			}
 
-			const guest = await LivechatVisitors.findOneById(room.v?._id);
+			const guest = await LivechatVisitors.findOneEnabledById(room.v?._id);
 			const transferedBy = this.user satisfies TransferByData;
 			transferData.transferredBy = normalizeTransferredByData(transferedBy, room);
 			if (transferData.userId) {

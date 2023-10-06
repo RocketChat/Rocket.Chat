@@ -305,7 +305,7 @@ class LivechatClass {
 			!(await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id'>>(guest.department, { projection: { _id: 1 } }))
 		) {
 			await LivechatVisitors.removeDepartmentById(guest._id);
-			const tmpGuest = await LivechatVisitors.findOneById(guest._id);
+			const tmpGuest = await LivechatVisitors.findOneEnabledById(guest._id);
 			if (tmpGuest) {
 				guest = tmpGuest;
 			}
