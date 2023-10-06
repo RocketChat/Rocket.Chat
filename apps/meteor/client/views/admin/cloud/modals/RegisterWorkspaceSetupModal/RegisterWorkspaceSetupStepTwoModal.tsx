@@ -1,4 +1,4 @@
-import { Modal, Box, Field, TextInput } from '@rocket.chat/fuselage';
+import { Modal, Box, Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect } from 'react';
 import { Trans } from 'react-i18next';
@@ -81,10 +81,10 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 					</Box>
 					<Box is='p'>{t('RegisterWorkspace_Setup_Email_Verification')}</Box>
 					<Field pbs={10}>
-						<Field.Label>{t('Security_code')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Security_code')}</FieldLabel>
+						<FieldRow>
 							<TextInput defaultValue={intentData.user_code} disabled />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				</Box>
 			</Modal.Content>

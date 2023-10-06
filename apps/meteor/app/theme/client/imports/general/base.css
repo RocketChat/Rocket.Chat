@@ -52,12 +52,6 @@ body {
 
 a {
 	cursor: pointer;
-	text-decoration: none;
-
-	&:hover,
-	&:active {
-		text-decoration: none;
-	}
 }
 
 button {

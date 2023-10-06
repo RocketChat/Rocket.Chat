@@ -1,6 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 
 import { i18n } from '../../../server/lib/i18n';
 import { createChannelMethod } from '../../lib/server/methods/createChannel';
@@ -50,7 +50,11 @@ slashCommands.add({
 		}
 
 		if (getParams(params).indexOf('private') > -1) {
-			await createPrivateGroupMethod(userId, channelStr, []);
+			const user = await Users.findOneById(userId);
+			if (!user) {
+				return;
+			}
+			await createPrivateGroupMethod(user, channelStr, []);
 			return;
 		}
 
