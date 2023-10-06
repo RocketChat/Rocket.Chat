@@ -24,10 +24,26 @@ export async function validateLicenseLimits(
 					return [];
 				}
 
-				const currentValue = await getCurrentValueForLicenseLimit.call(this, limitKey, options.context?.[limitKey]);
+				const extraCount = options.context?.[limitKey]?.extraCount ?? 0;
+				const currentValue = (await getCurrentValueForLicenseLimit.call(this, limitKey, options.context?.[limitKey])) + extraCount;
 
 				return limitList
-					.filter(({ max }) => max < currentValue)
+					.filter(({ max, behavior }) => {
+						switch (behavior) {
+							case 'invalidate_license':
+							case 'prevent_installation':
+							case 'disable_modules':
+							case 'start_fair_policy':
+							default:
+								return currentValue > max;
+							case 'prevent_action':
+								/**
+								 * if we are validating the current count the limit should be equal or over the max, if we are validating the future count the limit should be over the max
+								 */
+
+								return extraCount ? currentValue > max : currentValue >= max;
+						}
+					})
 					.map((limit) => {
 						if (!options.suppressLog) {
 							logger.error({
@@ -36,7 +52,6 @@ export async function validateLicenseLimits(
 								limit,
 							});
 						}
-
 						return getResultingBehavior(limit, { reason: 'limit', limit: limitKey });
 					});
 			}),
