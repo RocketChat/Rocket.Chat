@@ -24,8 +24,10 @@ import {
 	LivechatCustomField,
 	Subscriptions,
 	Users,
+	LivechatRooms,
 } from '@rocket.chat/models';
 import { MongoInternals } from 'meteor/mongo';
+import moment from 'moment';
 
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server/getStatistics';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
@@ -98,6 +100,9 @@ export const statistics = {
 		if (uniqueID) {
 			statistics.installedAt = uniqueID.createdAt.toISOString();
 		}
+
+		statistics.deploymentFingerprintHash = settings.get('Deployment_FingerPrint_Hash');
+		statistics.deploymentFingerprintVerified = settings.get('Deployment_FingerPrint_Verified');
 
 		if (Info) {
 			statistics.version = Info.version;
@@ -266,6 +271,36 @@ export const statistics = {
 		statsPms.push(
 			Messages.countRoomsWithMessageType('voip-call-on-hold', { readPreference }).then((count) => {
 				statistics.voipOnHoldCalls = count;
+			}),
+		);
+
+		const defaultValue = { contactsCount: 0, conversationsCount: 0, sources: [] };
+		const billablePeriod = moment.utc().format('YYYY-MM');
+		statsPms.push(
+			LivechatRooms.getMACStatisticsForPeriod(billablePeriod).then(([result]) => {
+				statistics.omnichannelContactsBySource = result || defaultValue;
+			}),
+		);
+
+		const monthAgo = moment.utc().subtract(30, 'days').toDate();
+		const today = moment.utc().toDate();
+		statsPms.push(
+			LivechatRooms.getMACStatisticsBetweenDates(monthAgo, today).then(([result]) => {
+				statistics.uniqueContactsOfLastMonth = result || defaultValue;
+			}),
+		);
+
+		const weekAgo = moment.utc().subtract(7, 'days').toDate();
+		statsPms.push(
+			LivechatRooms.getMACStatisticsBetweenDates(weekAgo, today).then(([result]) => {
+				statistics.uniqueContactsOfLastWeek = result || defaultValue;
+			}),
+		);
+
+		const yesterday = moment.utc().subtract(1, 'days').toDate();
+		statsPms.push(
+			LivechatRooms.getMACStatisticsBetweenDates(yesterday, today).then(([result]) => {
+				statistics.uniqueContactsOfYesterday = result || defaultValue;
 			}),
 		);
 
