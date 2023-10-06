@@ -1,7 +1,7 @@
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
 import { executeSendMessage } from '../../lib/server/methods/sendMessage';
+import { slashCommands } from '../../utils/lib/slashCommand';
 /*
  * Shrug is a named function that will replace /shrug commands
  * @param {Object} message - The message object
@@ -17,5 +17,6 @@ slashCommands.add({
 	options: {
 		description: 'Slash_Shrug_Description',
 		params: 'your_message_optional',
+		clientOnly: true,
 	},
 });

@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 
 import { Livechat } from '../api';
-import { canRenderMessage } from '../components/helpers';
+import { canRenderMessage } from '../helpers/canRenderMessage';
 import store from '../store';
 import constants from './constants';
 
@@ -83,7 +83,7 @@ export const getLastReadMessage = () => {
 		: renderedMessages
 				.slice()
 				.reverse()
-				.find((item) => item.u._id === user._id);
+				.find((item) => item.u._id === user?._id);
 };
 
 export const getUnreadMessages = () => {
@@ -95,10 +95,10 @@ export const getUnreadMessages = () => {
 		: renderedMessages
 				.slice()
 				.reverse()
-				.findIndex((item) => item.u._id === user._id);
+				.findIndex((item) => item.u._id === user?._id);
 
 	if (lastReadMessageIndex !== -1) {
-		const unreadMessages = renderedMessages.slice(lastReadMessageIndex + 1).filter((message) => message.u._id !== user._id);
+		const unreadMessages = renderedMessages.slice(lastReadMessageIndex + 1).filter((message) => message.u._id !== user?._id);
 
 		return unreadMessages;
 	}

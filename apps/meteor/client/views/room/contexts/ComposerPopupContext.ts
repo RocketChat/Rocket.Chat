@@ -10,6 +10,7 @@ export type ComposerPopupOption<T extends { _id: string; sort?: number } = { _id
 
 	trigger?: string;
 	triggerAnywhere?: boolean;
+	triggerLength?: number;
 
 	suffix?: string;
 	prefix?: string;
@@ -34,7 +35,7 @@ export const createMessageBoxPopupConfig = <T extends { _id: string; sort?: numb
 		closeOnEsc: true,
 		triggerAnywhere: true,
 		suffix: ' ',
-		prefix: partial.trigger ?? ' ',
+		prefix: partial.prefix ?? partial.trigger ?? ' ',
 		getValue: (item) => item._id,
 		...partial,
 	};

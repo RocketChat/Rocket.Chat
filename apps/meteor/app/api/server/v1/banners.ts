@@ -1,6 +1,6 @@
-import { Match, check } from 'meteor/check';
-import { BannerPlatform } from '@rocket.chat/core-typings';
 import { Banner } from '@rocket.chat/core-services';
+import { BannerPlatform } from '@rocket.chat/core-typings';
+import { Match, check } from 'meteor/check';
 
 import { API } from '../api';
 

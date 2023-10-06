@@ -1,19 +1,3 @@
-import type { Document, FindOptions, Filter } from 'mongodb';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type {
-	IRoom,
-	IUser,
-	ISubscription,
-	IPaginationOptions,
-	IQueryOptions,
-	IRecordsWithTotal,
-	ITeam,
-	ITeamMember,
-	ITeamStats,
-} from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
-import type { InsertionModel } from '@rocket.chat/model-typings';
 import { Room, Authorization, Message, ServiceClassInternal } from '@rocket.chat/core-services';
 import type {
 	IListRoomsFilter,
@@ -25,13 +9,29 @@ import type {
 	ITeamService,
 	ITeamUpdateData,
 } from '@rocket.chat/core-services';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import type {
+	IRoom,
+	IUser,
+	ISubscription,
+	IPaginationOptions,
+	IQueryOptions,
+	IRecordsWithTotal,
+	ITeam,
+	ITeamMember,
+	ITeamStats,
+} from '@rocket.chat/core-typings';
+import type { InsertionModel } from '@rocket.chat/model-typings';
+import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Document, FindOptions, Filter } from 'mongodb';
 
-import { checkUsernameAvailability } from '../../../app/lib/server/functions/checkUsernameAvailability';
-import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
-import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
-import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
+import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
+import { checkUsernameAvailability } from '../../../app/lib/server/functions/checkUsernameAvailability';
+import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
+import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
@@ -364,7 +364,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			room.teamId = teamId;
 		}
 
-		Rooms.setTeamByIds(rids, teamId);
+		await Rooms.setTeamByIds(rids, teamId);
 		return validRooms;
 	}
 
@@ -406,7 +406,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		delete room.teamId;
 		delete room.teamDefault;
-		Rooms.unsetTeamById(room._id);
+		await Rooms.unsetTeamById(room._id);
 
 		if (room.t === 'c') {
 			await Message.saveSystemMessage('user-removed-room-from-team', team.roomId, room.name || '', user);
@@ -470,12 +470,14 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('room-not-on-team');
 		}
 		room.teamDefault = isDefault;
-		Rooms.setTeamDefaultById(rid, isDefault);
+		await Rooms.setTeamDefaultById(rid, isDefault);
 
 		if (room.teamDefault) {
 			const teamMembers = await this.members(uid, room.teamId, true, undefined, undefined);
 
-			teamMembers.records.map((m) => addUserToRoom(room._id, m.user, user));
+			for await (const m of teamMembers.records) {
+				await addUserToRoom(room._id, m.user, user);
+			}
 		}
 
 		return {

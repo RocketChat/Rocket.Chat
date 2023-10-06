@@ -1,5 +1,5 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Flex, Skeleton, Palette } from '@rocket.chat/fuselage';
+import { Box, Flex, Skeleton, Palette, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
@@ -7,11 +7,11 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/dataView/CounterSet';
+import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
+import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
+import { usePeriodLabel } from '../../../../components/dashboards/usePeriodLabel';
+import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
-import DownloadDataButton from '../dataView/DownloadDataButton';
-import PeriodSelector from '../dataView/PeriodSelector';
-import { usePeriodLabel } from '../dataView/usePeriodLabel';
-import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useMessagesSent } from './useMessagesSent';
 
 const MessagesSentSection = (): ReactElement => {
@@ -110,9 +110,7 @@ const MessagesSentSection = (): ReactElement => {
 										}
 										axisLeft={null}
 										animate={true}
-										// @ts-ignore
-										motionStiffness={90}
-										motionDamping={15}
+										motionConfig='stiff'
 										theme={{
 											// TODO: Get it from theme
 											axis: {
@@ -129,19 +127,8 @@ const MessagesSentSection = (): ReactElement => {
 													},
 												},
 											},
-											tooltip: {
-												container: {
-													backgroundColor: colors.n900,
-													boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
-													borderRadius: 2,
-												},
-											},
 										}}
-										tooltip={({ value }): ReactElement => (
-											<Box fontScale='p1m' color='white'>
-												{t('Value_messages', { value })}
-											</Box>
-										)}
+										tooltip={({ value }) => <Tooltip>{t('Value_messages', { value })}</Tooltip>}
 									/>
 								</Box>
 							</Box>

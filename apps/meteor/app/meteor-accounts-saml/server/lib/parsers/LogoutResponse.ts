@@ -1,8 +1,8 @@
 import xmldom from '@xmldom/xmldom';
 
-import { SAMLUtils } from '../Utils';
 import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 import type { ILogoutResponseValidateCallback } from '../../definition/callbacks';
+import { SAMLUtils } from '../Utils';
 
 export class LogoutResponseParser {
 	serviceProviderOptions: IServiceProviderOptions;

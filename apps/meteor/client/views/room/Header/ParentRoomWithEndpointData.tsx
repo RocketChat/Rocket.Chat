@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Header } from '@rocket.chat/ui-client';
+import { HeaderTagSkeleton } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -14,7 +14,7 @@ const ParentRoomWithEndpointData = ({ rid }: ParentRoomWithEndpointDataProps): R
 	const { data, isLoading, isError } = useRoomInfoEndpoint(rid);
 
 	if (isLoading) {
-		return <Header.Tag.Skeleton />;
+		return <HeaderTagSkeleton />;
 	}
 
 	if (isError || !data?.room) {

@@ -16,12 +16,12 @@ test.describe.serial('Apps', () => {
 
 	test('expect allow user open app contextualbar', async () => {
 		await poHomeChannel.content.dispatchSlashCommand('/contextualbar');
-		await expect(poHomeChannel.btnVerticalBarClose).toBeVisible();
+		await expect(poHomeChannel.btnContextualbarClose).toBeVisible();
 	});
 
 	test('expect app contextualbar to be closed', async () => {
 		await poHomeChannel.content.dispatchSlashCommand('/contextualbar');
-		await poHomeChannel.btnVerticalBarClose.click();
-		await expect(poHomeChannel.btnVerticalBarClose).toBeHidden();
+		await poHomeChannel.btnContextualbarClose.click();
+		await expect(poHomeChannel.btnContextualbarClose).toBeHidden();
 	});
 });

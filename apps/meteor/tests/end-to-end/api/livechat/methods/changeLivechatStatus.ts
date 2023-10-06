@@ -1,15 +1,14 @@
-/* eslint-env mocha */
-
 import type { ILivechatAgent, IUser } from '@rocket.chat/core-typings';
-import type { Response } from 'supertest';
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
+import type { Response } from 'supertest';
 
 import { getCredentials, request, credentials, methodCall } from '../../../../data/api-data';
+import { disableDefaultBusinessHour, makeDefaultBusinessHourActiveAndClosed } from '../../../../data/livechat/businessHours';
 import { createAgent } from '../../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../../data/permissions.helper';
 import { password } from '../../../../data/user';
-import { createUser, getMe, login } from '../../../../data/users.helper';
-import { disableDefaultBusinessHour, makeDefaultBusinessHourActiveAndClosed } from '../../../../data/livechat/businessHours';
+import { createUser, deleteUser, getMe, login } from '../../../../data/users.helper';
 
 describe('livechat:changeLivechatStatus', function () {
 	this.retries(0);
@@ -29,6 +28,10 @@ describe('livechat:changeLivechatStatus', function () {
 			user,
 			credentials: userCredentials,
 		};
+	});
+
+	after(async () => {
+		await deleteUser(agent.user);
 	});
 
 	describe('changeLivechatStatus', () => {
@@ -78,6 +81,9 @@ describe('livechat:changeLivechatStatus', function () {
 					expect(parsedBody.error).to.have.property('error', 'error-not-allowed');
 					expect(parsedBody.error).to.have.property('reason', 'Invalid Agent Id');
 				});
+
+			// cleanup
+			await deleteUser(user);
 		});
 		it('should return an error if status is not valid', async () => {
 			await request

@@ -2,8 +2,8 @@ import { BlockContext } from '@rocket.chat/ui-kit';
 import { useState, useMemo, useCallback } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
+import { createClassName } from '../../../../helpers/createClassName';
 import { Button } from '../../../Button';
-import { createClassName } from '../../../helpers';
 import Block from '../Block';
 import styles from './styles.scss';
 

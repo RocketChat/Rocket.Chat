@@ -1,20 +1,24 @@
-import type { IconProps } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
+import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
-type Item = {
+export type Item = {
 	i18nLabel: string;
-	href?: string;
-	icon?: IconProps['name'];
-	tag?: 'Alpha';
-	permissionGranted?: boolean | (() => boolean);
+	href?: LocationPathname | `https://go.rocket.chat/i/${string}`;
+	icon?: IconName;
+	tag?: 'Alpha' | 'Beta';
+	permissionGranted?: () => boolean;
 	pathSection?: string;
-	pathGroup?: string;
 	name?: string;
 	externalUrl?: boolean;
 	badge?: () => ReactElement;
 };
-export type SidebarItem = Item | { divider: boolean; i18nLabel: string }; // TODO: Remove this when we have a better way to handle dividers
+export type SidebarDivider = { divider: boolean; i18nLabel: string };
+export type SidebarItem = Item | SidebarDivider;
 export const isSidebarItem = (item: SidebarItem): item is Item => !('divider' in item);
+
+export const isGoRocketChatLink = (link: string): link is `https://go.rocket.chat/i/${string}` =>
+	link.startsWith('https://go.rocket.chat/i/');
 
 export const createSidebarItems = (
 	initialItems: SidebarItem[] = [],

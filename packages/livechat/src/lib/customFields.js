@@ -20,7 +20,7 @@ class CustomFields {
 
 		this._initiated = true;
 		const { token } = store.state;
-		Livechat.credentials.token = token;
+		Livechat.token = token;
 
 		store.on('change', this.handleStoreChange);
 	}
@@ -63,7 +63,7 @@ class CustomFields {
 			return;
 		}
 
-		const { token } = Livechat.credentials;
+		const { token } = Livechat;
 		Livechat.sendCustomField({ token, key, value, overwrite });
 	}
 }

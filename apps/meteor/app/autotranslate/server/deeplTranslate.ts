@@ -2,8 +2,6 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import _ from 'underscore';
 import type {
 	IMessage,
 	IDeepLTranslation,
@@ -13,10 +11,12 @@ import type {
 	ISupportedLanguage,
 } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import _ from 'underscore';
 
-import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
+import { i18n } from '../../../server/lib/i18n';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
+import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 
 /**
  * DeepL translation service provider class representation.
@@ -53,7 +53,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	_getProviderMetadata(): IProviderMetadata {
 		return {
 			name: this.name,
-			displayName: TAPi18n.__('AutoTranslate_DeepL'),
+			displayName: i18n.t('AutoTranslate_DeepL'),
 			settings: this._getSettings(),
 		};
 	}
@@ -89,99 +89,99 @@ class DeeplAutoTranslate extends AutoTranslate {
 		this.supportedLanguages[target] = [
 			{
 				language: 'bg',
-				name: TAPi18n.__('Language_Bulgarian', { lng: target }),
+				name: i18n.t('Language_Bulgarian', { lng: target }),
 			},
 			{
 				language: 'cs',
-				name: TAPi18n.__('Language_Czech', { lng: target }),
+				name: i18n.t('Language_Czech', { lng: target }),
 			},
 			{
 				language: 'da',
-				name: TAPi18n.__('Language_Danish', { lng: target }),
+				name: i18n.t('Language_Danish', { lng: target }),
 			},
 			{
 				language: 'de',
-				name: TAPi18n.__('Language_German', { lng: target }),
+				name: i18n.t('Language_German', { lng: target }),
 			},
 			{
 				language: 'el',
-				name: TAPi18n.__('Language_Greek', { lng: target }),
+				name: i18n.t('Language_Greek', { lng: target }),
 			},
 			{
 				language: 'en',
-				name: TAPi18n.__('Language_English', { lng: target }),
+				name: i18n.t('Language_English', { lng: target }),
 			},
 			{
 				language: 'es',
-				name: TAPi18n.__('Language_Spanish', { lng: target }),
+				name: i18n.t('Language_Spanish', { lng: target }),
 			},
 			{
 				language: 'et',
-				name: TAPi18n.__('Language_Estonian', { lng: target }),
+				name: i18n.t('Language_Estonian', { lng: target }),
 			},
 			{
 				language: 'fi',
-				name: TAPi18n.__('Language_Finnish', { lng: target }),
+				name: i18n.t('Language_Finnish', { lng: target }),
 			},
 			{
 				language: 'fr',
-				name: TAPi18n.__('Language_French', { lng: target }),
+				name: i18n.t('Language_French', { lng: target }),
 			},
 			{
 				language: 'hu',
-				name: TAPi18n.__('Language_Hungarian', { lng: target }),
+				name: i18n.t('Language_Hungarian', { lng: target }),
 			},
 			{
 				language: 'it',
-				name: TAPi18n.__('Language_Italian', { lng: target }),
+				name: i18n.t('Language_Italian', { lng: target }),
 			},
 			{
 				language: 'ja',
-				name: TAPi18n.__('Language_Japanese', { lng: target }),
+				name: i18n.t('Language_Japanese', { lng: target }),
 			},
 			{
 				language: 'lt',
-				name: TAPi18n.__('Language_Lithuanian', { lng: target }),
+				name: i18n.t('Language_Lithuanian', { lng: target }),
 			},
 			{
 				language: 'lv',
-				name: TAPi18n.__('Language_Latvian', { lng: target }),
+				name: i18n.t('Language_Latvian', { lng: target }),
 			},
 			{
 				language: 'nl',
-				name: TAPi18n.__('Language_Dutch', { lng: target }),
+				name: i18n.t('Language_Dutch', { lng: target }),
 			},
 			{
 				language: 'pl',
-				name: TAPi18n.__('Language_Polish', { lng: target }),
+				name: i18n.t('Language_Polish', { lng: target }),
 			},
 			{
 				language: 'pt',
-				name: TAPi18n.__('Language_Portuguese', { lng: target }),
+				name: i18n.t('Language_Portuguese', { lng: target }),
 			},
 			{
 				language: 'ro',
-				name: TAPi18n.__('Language_Romanian', { lng: target }),
+				name: i18n.t('Language_Romanian', { lng: target }),
 			},
 			{
 				language: 'ru',
-				name: TAPi18n.__('Language_Russian', { lng: target }),
+				name: i18n.t('Language_Russian', { lng: target }),
 			},
 			{
 				language: 'sk',
-				name: TAPi18n.__('Language_Slovak', { lng: target }),
+				name: i18n.t('Language_Slovak', { lng: target }),
 			},
 			{
 				language: 'sl',
-				name: TAPi18n.__('Language_Slovenian', { lng: target }),
+				name: i18n.t('Language_Slovenian', { lng: target }),
 			},
 			{
 				language: 'sv',
-				name: TAPi18n.__('Language_Swedish', { lng: target }),
+				name: i18n.t('Language_Swedish', { lng: target }),
 			},
 			{
 				language: 'zh',
-				name: TAPi18n.__('Language_Chinese', { lng: target }),
+				name: i18n.t('Language_Chinese', { lng: target }),
 			},
 		];
 
@@ -198,8 +198,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 */
 	async _translateMessage(message: IMessage, targetLanguages: string[]): Promise<ITranslationResult> {
 		const translations: { [k: string]: string } = {};
-		let msgs = message.msg.split('\n');
-		msgs = msgs.map((msg) => encodeURIComponent(msg));
+		const msgs = message.msg.split('\n');
 		const supportedLanguages = await this.getSupportedLanguages('en');
 		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
@@ -250,7 +249,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					params: {
 						auth_key: this.apiKey,
 						target_lang: language,
-						text: encodeURIComponent(attachment.description || attachment.text || ''),
+						text: attachment.description || attachment.text || '',
 					},
 				});
 				if (!result.ok) {

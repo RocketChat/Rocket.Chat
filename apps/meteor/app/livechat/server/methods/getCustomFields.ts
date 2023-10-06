@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
+import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { LivechatCustomField } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { ILivechatCustomField } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:getCustomFields'() {
-		methodDeprecationLogger.warn('livechat:getCustomFields will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('livechat:getCustomFields', '7.0.0');
 		return LivechatCustomField.find().toArray();
 	},
 });

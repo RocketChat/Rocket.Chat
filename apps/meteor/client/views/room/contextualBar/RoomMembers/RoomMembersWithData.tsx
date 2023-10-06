@@ -5,11 +5,9 @@ import { useUserRoom, useAtLeastOnePermission, useUser, usePermission, useUserSu
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { useRecordList } from '../../../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import * as Federation from '../../../../lib/federation/Federation';
 import { useMembersList } from '../../../hooks/useMembersList';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import UserInfoWithData from '../UserInfo';
 import AddUsers from './AddUsers';
 import InviteUsers from './InviteUsers';
@@ -27,7 +25,7 @@ type validRoomType = 'd' | 'p' | 'c';
 const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const user = useUser();
 	const room = useUserRoom(rid);
-	const handleClose = useTabBarClose();
+	const { closeTab } = useRoomToolbox();
 	const [type, setType] = useLocalStorage<'online' | 'all'>('members-list-type', 'online');
 	const [text, setText] = useState('');
 	const subscription = useUserSubscription(rid);
@@ -37,7 +35,8 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const hasPermissionToCreateInviteLinks = usePermission('create-invite-links', rid);
 	const isFederated = room && isRoomFederated(room);
 
-	const canCreateInviteLinks = isFederated ? false : hasPermissionToCreateInviteLinks;
+	const canCreateInviteLinks =
+		room && user && isFederated ? Federation.canCreateInviteLinks(user, room, subscription) : hasPermissionToCreateInviteLinks;
 
 	const [state, setState] = useState<{ tab: ROOM_MEMBERS_TABS; userId?: IUser['_id'] }>({
 		tab: ROOM_MEMBERS_TABS.LIST,
@@ -46,11 +45,9 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 
 	const debouncedText = useDebouncedValue(text, 800);
 
-	const { membersList, loadMoreItems, reload } = useMembersList(
+	const { data, fetchNextPage, isLoading, refetch, hasNextPage } = useMembersList(
 		useMemo(() => ({ rid, type, limit: 50, debouncedText, roomType: room?.t as validRoomType }), [rid, type, debouncedText, room?.t]),
 	);
-
-	const { phase, items, itemCount: total } = useRecordList(membersList);
 
 	const hasPermissionToAddUsers = useAtLeastOnePermission(
 		useMemo(() => [room?.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room?.t]),
@@ -84,7 +81,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	}, [setState]);
 
 	if (state.tab === ROOM_MEMBERS_TABS.INFO && state.userId) {
-		return <UserInfoWithData rid={rid} uid={state.userId} onClose={handleClose} onClickBack={handleBack} />;
+		return <UserInfoWithData rid={rid} uid={state.userId} onClose={closeTab} onClickBack={handleBack} />;
 	}
 
 	if (state.tab === ROOM_MEMBERS_TABS.INVITE) {
@@ -92,7 +89,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	}
 
 	if (state.tab === ROOM_MEMBERS_TABS.ADD) {
-		return <AddUsers rid={rid} onClickBack={handleBack} reload={reload} />;
+		return <AddUsers rid={rid} onClickBack={handleBack} reload={refetch} />;
 	}
 
 	return (
@@ -100,18 +97,17 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 			rid={rid}
 			isTeam={isTeam}
 			isDirect={isDirect}
-			isFederated={isFederated}
-			loading={phase === AsyncStatePhase.LOADING}
+			loading={isLoading}
 			type={type}
 			text={text}
 			setText={handleTextChange}
 			setType={setType}
-			members={items}
-			total={total}
-			onClickClose={handleClose}
+			members={data?.pages?.flatMap((page) => page.members) ?? []}
+			total={data?.pages[data.pages.length - 1].total ?? 0}
+			onClickClose={closeTab}
 			onClickView={openUserInfo}
-			loadMoreItems={loadMoreItems}
-			reload={reload}
+			loadMoreItems={hasNextPage ? fetchNextPage : () => undefined}
+			reload={refetch}
 			onClickInvite={canCreateInviteLinks && canAddUsers ? openInvite : undefined}
 			onClickAdd={canAddUsers ? openAddUser : undefined}
 		/>

@@ -22,13 +22,14 @@ export type CustomScrollbarsProps = {
 };
 
 const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(function ScrollableContentWrapper(
-	{ children, style, onScroll, overflowX, renderView },
+	{ children, style, onScroll, overflowX, renderView, ...props },
 	ref,
 ) {
 	const scrollbarsStyle = useMemo((): CSSProperties => ({ ...style, ...styleDefault }), [style]);
 
 	return (
 		<Scrollbars
+			{...props}
 			autoHide
 			autoHideTimeout={2000}
 			autoHideDuration={500}

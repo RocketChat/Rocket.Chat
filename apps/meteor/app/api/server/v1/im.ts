@@ -2,6 +2,7 @@
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 import {
 	isDmDeleteProps,
 	isDmFileProps,
@@ -10,18 +11,19 @@ import {
 	isDmCreateProps,
 	isDmHistoryProps,
 } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
+import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
+import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
+import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
+import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
-import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
-import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
-import { settings } from '../../../settings/server';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 // TODO: Refact or remove
@@ -121,18 +123,33 @@ API.v1.addRoute(
 			if (!roomId) {
 				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
 			}
-			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
-			if (!canAccess) {
-				return API.v1.unauthorized();
+
+			let subscription;
+
+			const roomExists = !!(await Rooms.findOneById(roomId));
+			if (!roomExists) {
+				// even if the room doesn't exist, we should allow the user to close the subscription anyways
+				subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
+			} else {
+				const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
+				if (!canAccess) {
+					return API.v1.unauthorized();
+				}
+
+				const { subscription: subs } = await findDirectMessageRoom({ roomId }, this.userId);
+
+				subscription = subs;
 			}
 
-			const { room, subscription } = await findDirectMessageRoom({ roomId }, this.userId);
+			if (!subscription) {
+				return API.v1.failure(`The user is not subscribed to the room`);
+			}
 
-			if (!subscription?.open) {
+			if (!subscription.open) {
 				return API.v1.failure(`The direct message room, is already closed to the sender`);
 			}
 
-			await Meteor.callAsync('hideRoom', room._id);
+			await hideRoomMethod(this.userId, roomId);
 
 			return API.v1.success();
 		},
@@ -542,7 +559,7 @@ API.v1.addRoute(
 
 			const { room } = await findDirectMessageRoom({ roomId }, this.userId);
 
-			await Meteor.callAsync('saveRoomSettings', room._id, 'roomTopic', topic);
+			await saveRoomSettings(this.userId, room._id, 'roomTopic', topic);
 
 			return API.v1.success({
 				topic,

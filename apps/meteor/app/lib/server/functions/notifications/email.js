@@ -1,19 +1,19 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { Meteor } from 'meteor/meteor';
 
-import * as Mailer from '../../../../mailer/server/api';
-import { settings } from '../../../../settings/server';
-import { metrics } from '../../../../metrics/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import { getURL } from '../../../../utils/server';
-import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 import { ltrim } from '../../../../../lib/utils/stringUtils';
+import { i18n } from '../../../../../server/lib/i18n';
+import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
+import * as Mailer from '../../../../mailer/server/api';
+import { metrics } from '../../../../metrics/server';
+import { settings } from '../../../../settings/server';
+import { getURL } from '../../../../utils/server/getURL';
 
 let advice = '';
 let goToMessage = '';
 Meteor.startup(() => {
-	settings.watch('email_style', function () {
+	settings.watch('email_style', () => {
 		goToMessage = Mailer.inlinecss('<p><a class=\'btn\' href="[room_path]">{Offline_Link_Message}</a></p>');
 	});
 	Mailer.getTemplate('Email_Footer_Direct_Reply', (value) => {
@@ -29,7 +29,7 @@ async function getEmailContent({ message, user, room }) {
 
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 
-	const header = TAPi18n.__(!roomDirectives.isGroupChat(room) ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
+	const header = i18n.t(!roomDirectives.isGroupChat(room) ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
 		username: userName,
 		channel: roomName,
 		lng,
@@ -43,7 +43,7 @@ async function getEmailContent({ message, user, room }) {
 		let messageContent = escapeHTML(message.msg);
 
 		if (message.t === 'e2e') {
-			messageContent = TAPi18n.__('Encrypted_message', { lng });
+			messageContent = i18n.t('Encrypted_message', { lng });
 		}
 
 		message = await callbacks.run('renderMessage', message);
@@ -57,7 +57,7 @@ async function getEmailContent({ message, user, room }) {
 	}
 
 	if (message.file) {
-		const fileHeader = TAPi18n.__(!roomDirectives.isGroupChat(room) ? 'User_uploaded_a_file_to_you' : 'User_uploaded_a_file_on_channel', {
+		const fileHeader = i18n.t(!roomDirectives.isGroupChat(room) ? 'User_uploaded_a_file_to_you' : 'User_uploaded_a_file_on_channel', {
 			username: userName,
 			channel: roomName,
 			lng,

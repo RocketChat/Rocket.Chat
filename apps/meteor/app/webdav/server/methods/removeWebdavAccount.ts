@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { WebdavAccounts } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
-import type { DeleteResult } from 'mongodb';
+import { WebdavAccounts } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import type { DeleteResult } from 'mongodb';
 
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
@@ -27,7 +27,7 @@ Meteor.methods<ServerMethods>({
 
 		check(accountId, String);
 
-		methodDeprecationLogger.warn('removeWebdavAccount will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('removeWebdavAccount', '7.0.0');
 
 		const removed = await WebdavAccounts.removeByUserAndId(accountId, userId);
 		if (removed) {

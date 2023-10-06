@@ -1,7 +1,7 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
 import type { ILoginResult } from '@rocket.chat/core-services';
 import { MeteorError } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { _hashLoginToken, _tokenExpiration } from './utils';
 

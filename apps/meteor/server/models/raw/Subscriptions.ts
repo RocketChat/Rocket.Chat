@@ -1,6 +1,18 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
+import type {
+	AtLeast,
+	IRole,
+	IRoom,
+	ISubscription,
+	IUser,
+	RocketChatRecordDeleted,
+	RoomType,
+	SpotlightUser,
+} from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
+import { Rooms, Users } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { compact } from 'lodash';
+import mem from 'mem';
 import type {
 	Collection,
 	FindCursor,
@@ -14,13 +26,11 @@ import type {
 	IndexDescription,
 	UpdateFilter,
 	InsertOneResult,
+	InsertManyResult,
 } from 'mongodb';
-import { Rooms, Users } from '@rocket.chat/models';
-import { compact } from 'lodash';
-import mem from 'mem';
 
-import { BaseRaw } from './BaseRaw';
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
+import { BaseRaw } from './BaseRaw';
 
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {
@@ -344,7 +354,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		options: AggregateOptions = {},
 	): Promise<SpotlightUser[]> {
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
-		const orStatement = searchFields.reduce(function (acc, el) {
+		const orStatement = searchFields.reduce((acc, el) => {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, [] as { [x: string]: RegExp }[]);
@@ -537,6 +547,14 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document> {
 		const query = { _id };
 		return this.updateOne(query, { $unset: { E2ESuggestedKey: 1 } });
+	}
+
+	setOnHoldByRoomId(rid: string): Promise<UpdateResult> {
+		return this.updateOne({ rid }, { $set: { onHold: true } });
+	}
+
+	unsetOnHoldByRoomId(rid: string): Promise<UpdateResult> {
+		return this.updateOne({ rid }, { $unset: { onHold: 1 } });
 	}
 
 	findByRoomIds(roomIds: string[]): FindCursor<ISubscription> {
@@ -945,6 +963,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.col.countDocuments(query);
 	}
 
+	countByUserId(userId: string): Promise<number> {
+		const query = { 'u._id': userId };
+
+		return this.col.countDocuments(query);
+	}
+
 	countByRoomId(roomId: string): Promise<number> {
 		const query = {
 			rid: roomId,
@@ -1108,7 +1132,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			$set: {
 				open: true,
 				alert: true,
-				ls: firstMessageUnreadTimestamp,
+				ls: new Date(firstMessageUnreadTimestamp.getTime() - 1), // make sure last seen is before the first unread message
+				unread: 1,
 			},
 		};
 
@@ -1586,6 +1611,38 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		if (!['d', 'l'].includes(room.t)) {
 			await Users.addRoomByUserId(user._id, room._id);
 		}
+
+		return result;
+	}
+
+	async createWithRoomAndManyUsers(
+		room: IRoom,
+		users: { user: AtLeast<IUser, '_id' | 'username' | 'name' | 'settings'>; extraData: Record<string, any> }[] = [],
+	): Promise<InsertManyResult<ISubscription>> {
+		const subscriptions = users.map(({ user, extraData }) => ({
+			open: false,
+			alert: false,
+			unread: 0,
+			userMentions: 0,
+			groupMentions: 0,
+			ts: room.ts,
+			rid: room._id,
+			name: room.name,
+			fname: room.fname,
+			...(room.customFields && { customFields: room.customFields }),
+			t: room.t,
+			u: {
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+			},
+			...(room.prid && { prid: room.prid }),
+			...getDefaultSubscriptionPref(user),
+			...extraData,
+		}));
+
+		// @ts-expect-error - types not good :(
+		const result = await this.insertMany(subscriptions);
 
 		return result;
 	}

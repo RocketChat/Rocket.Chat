@@ -39,7 +39,7 @@ export const useDialPad = ({ initialValue, initialErrorMessage }: DialPadProps):
 		formState: { errors, isDirty },
 	} = useForm<{ PhoneInput: string }>({
 		defaultValues: {
-			PhoneInput: initialValue,
+			PhoneInput: initialValue || '',
 		},
 	});
 

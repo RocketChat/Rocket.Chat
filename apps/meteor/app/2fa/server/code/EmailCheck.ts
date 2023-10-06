@@ -1,12 +1,12 @@
-import { Random } from '@rocket.chat/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Accounts } from 'meteor/accounts-base';
-import bcrypt from 'bcrypt';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import bcrypt from 'bcrypt';
+import { Accounts } from 'meteor/accounts-base';
 
-import { settings } from '../../../settings/server';
+import { i18n } from '../../../../server/lib/i18n';
 import * as Mailer from '../../../mailer/server/api';
+import { settings } from '../../../settings/server';
 import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 
 export class EmailCheck implements ICodeCheck {
@@ -34,7 +34,7 @@ export class EmailCheck implements ICodeCheck {
 	private async send2FAEmail(address: string, random: string, user: IUser): Promise<void> {
 		const language = user.language || settings.get('Language') || 'en';
 
-		const t = (s: string): string => TAPi18n.__(s, { lng: language });
+		const t = (s: string): string => i18n.t(s, { lng: language });
 
 		await Mailer.send({
 			to: address,

@@ -1,8 +1,8 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { AppRequest, IUser, Pagination } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
+import { i18n } from '../../../../server/lib/i18n';
 import { sendDirectMessageToUsers } from '../../../../server/lib/sendDirectMessageToUsers';
 
 const ROCKET_CAT_USERID = 'rocket.cat';
@@ -24,7 +24,7 @@ const notifyBatchOfUsers = async (appName: string, learnMoreUrl: string, appRequ
 
 	const msgFn = (user: IUser): string => {
 		const defaultLang = user.language || 'en';
-		const msg = `${TAPi18n.__('App_request_enduser_message', { appname: appName, learnmore: learnMoreUrl, lng: defaultLang })}`;
+		const msg = `${i18n.t('App_request_enduser_message', { appName, learnmore: learnMoreUrl, lng: defaultLang })}`;
 
 		return msg;
 	};

@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		sendSystemMessages(rid: string, user: string, id: string): void;
+		sendSystemMessages(rid: string, user: string | undefined, id: string): void;
 	}
 }
 

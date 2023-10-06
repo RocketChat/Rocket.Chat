@@ -1,7 +1,9 @@
 import '../apps/startup';
+import './apps';
 import './audit';
 import './deviceManagement';
 import './engagementDashboard';
+import './maxRoomsPerGuest';
 import './seatsCap';
 import './services';
 import './upsell';

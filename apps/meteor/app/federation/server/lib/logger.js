@@ -1,4 +1,4 @@
-import { Logger } from '../../../logger/server';
+import { Logger } from '@rocket.chat/logger';
 
 const logger = new Logger('Federation');
 

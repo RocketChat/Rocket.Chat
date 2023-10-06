@@ -1,20 +1,21 @@
 import type { IRoom, IUser, Username } from '@rocket.chat/core-typings';
 
+import { FederationFactory } from '../../../../../server/services/federation/infrastructure/Factory';
+import type { InMemoryQueue } from '../../../../../server/services/federation/infrastructure/queue/InMemoryQueue';
+import type { RocketChatFileAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
+import type { RocketChatMessageAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Message';
+import { RocketChatNotificationAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Notification';
+import type { RocketChatSettingsAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
+import { FederationUserServiceEE } from '../application/UserService';
 import { FederationDirectMessageRoomServiceSender } from '../application/room/sender/DirectMessageRoomServiceSender';
 import { FederationRoomServiceSender } from '../application/room/sender/RoomServiceSender';
 import type { IFederationBridgeEE } from '../domain/IFederationBridge';
 import { MatrixBridgeEE } from './matrix/Bridge';
+import { RocketChatQueueAdapterEE } from './rocket-chat/adapters/Queue';
 import { RocketChatRoomAdapterEE } from './rocket-chat/adapters/Room';
 import { RocketChatUserAdapterEE } from './rocket-chat/adapters/User';
 import { FederationRoomSenderConverterEE } from './rocket-chat/converters/RoomSender';
 import { FederationHooksEE } from './rocket-chat/hooks';
-import { FederationUserServiceEE } from '../application/UserService';
-import { FederationFactory } from '../../../../../server/services/federation/infrastructure/Factory';
-import type { RocketChatFileAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
-import type { RocketChatMessageAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Message';
-import type { RocketChatSettingsAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
-import { RocketChatNotificationAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Notification';
-import type { InMemoryQueue } from '../../../../../server/services/federation/infrastructure/queue/InMemoryQueue';
 
 export class FederationFactoryEE extends FederationFactory {
 	public static buildFederationBridge(internalSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridgeEE {
@@ -33,6 +34,10 @@ export class FederationFactoryEE extends FederationFactory {
 		return new RocketChatUserAdapterEE();
 	}
 
+	public static buildInternalQueueAdapter(): RocketChatQueueAdapterEE {
+		return new RocketChatQueueAdapterEE();
+	}
+
 	public static buildRoomServiceSenderEE(
 		internalRoomAdapter: RocketChatRoomAdapterEE,
 		internalUserAdapter: RocketChatUserAdapterEE,
@@ -40,6 +45,7 @@ export class FederationFactoryEE extends FederationFactory {
 		internalSettingsAdapter: RocketChatSettingsAdapter,
 		internalMessageAdapter: RocketChatMessageAdapter,
 		internalNotificationAdapter: RocketChatNotificationAdapter,
+		internalQueueAdapter: RocketChatQueueAdapterEE,
 		bridge: IFederationBridgeEE,
 	): FederationRoomServiceSender {
 		return new FederationRoomServiceSender(
@@ -49,6 +55,7 @@ export class FederationFactoryEE extends FederationFactory {
 			internalSettingsAdapter,
 			internalMessageAdapter,
 			internalNotificationAdapter,
+			internalQueueAdapter,
 			bridge,
 		);
 	}

@@ -1,10 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { callbacks } from '../../../../../lib/callbacks';
+import { i18n } from '../../../../../server/lib/i18n';
 import { settings } from '../../../../settings/server';
 
 /**
@@ -17,11 +16,11 @@ export async function parseMessageTextPerUser(messageText: string, message: IMes
 
 	const firstAttachment = message.attachments?.[0];
 	if (!message.msg && firstAttachment && isFileAttachment(firstAttachment) && isFileImageAttachment(firstAttachment)) {
-		return firstAttachment.image_type ? TAPi18n.__('User_uploaded_image', { lng }) : TAPi18n.__('User_uploaded_file', { lng });
+		return firstAttachment.image_type ? i18n.t('User_uploaded_image', { lng }) : i18n.t('User_uploaded_file', { lng });
 	}
 
 	if (message.msg && message.t === 'e2e') {
-		return TAPi18n.__('Encrypted_message', { lng });
+		return i18n.t('Encrypted_message', { lng });
 	}
 
 	// perform processing required before sending message as notification such as markdown filtering
@@ -64,18 +63,5 @@ export function messageContainsHighlight(message: IMessage, highlights: string[]
 	return highlights.some((highlight: string) => {
 		const regexp = new RegExp(escapeRegExp(highlight), 'i');
 		return regexp.test(message.msg);
-	});
-}
-
-export function callJoinRoom(userId: string, rid: string): Promise<void> {
-	return new Promise((resolve, reject) => {
-		Meteor.runAsUser(userId, () =>
-			Meteor.call('joinRoom', rid, (error: unknown, result: any) => {
-				if (error) {
-					return reject(error);
-				}
-				return resolve(result);
-			}),
-		);
 	});
 }

@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { ISetting } from '@rocket.chat/core-typings';
-import type { IStreamer } from 'meteor/rocketchat:streamer';
+import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import { api } from '@rocket.chat/core-services';
+import type { IStreamer } from 'meteor/rocketchat:streamer';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
 import notifications from '../../../../app/notifications/server/lib/Notifications';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { AppEvents } from './events';
 
@@ -14,13 +13,18 @@ export { AppEvents };
 export class AppServerListener {
 	private orch: AppServerOrchestrator;
 
-	engineStreamer: IStreamer;
+	engineStreamer: IStreamer<'apps-engine'>;
 
-	clientStreamer: IStreamer;
+	clientStreamer: IStreamer<'apps'>;
 
 	received;
 
-	constructor(orch: AppServerOrchestrator, engineStreamer: IStreamer, clientStreamer: IStreamer, received: Map<any, any>) {
+	constructor(
+		orch: AppServerOrchestrator,
+		engineStreamer: IStreamer<'apps-engine'>,
+		clientStreamer: IStreamer<'apps'>,
+		received: Map<any, any>,
+	) {
 		this.orch = orch;
 		this.engineStreamer = engineStreamer;
 		this.clientStreamer = clientStreamer;
@@ -40,7 +44,7 @@ export class AppServerListener {
 	}
 
 	async onAppAdded(appId: string): Promise<void> {
-		await (this.orch.getManager()! as any).loadOne(appId); // TO-DO: fix type
+		await (this.orch.getManager()! as any).addLocal(appId); // TO-DO: fix type
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_ADDED, appId);
 	}
 
@@ -66,8 +70,8 @@ export class AppServerListener {
 		}
 	}
 
-	async onAppSettingUpdated({ appId, setting }: { appId: string; setting: ISetting }): Promise<void> {
-		this.received.set(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting._id}`, {
+	async onAppSettingUpdated({ appId, setting }: { appId: string; setting: AppsSetting }): Promise<void> {
+		this.received.set(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting.id}`, {
 			appId,
 			setting,
 			when: new Date(),
@@ -76,7 +80,7 @@ export class AppServerListener {
 			.getManager()!
 			.getSettingsManager()
 			.updateAppSetting(appId, setting as any); // TO-DO: fix type of `setting`
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_SETTING_UPDATED, { appId });
+		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_SETTING_UPDATED, { appId, setting });
 	}
 
 	async onAppUpdated(appId: string): Promise<void> {
@@ -124,9 +128,9 @@ export class AppServerListener {
 }
 
 export class AppServerNotifier {
-	engineStreamer: IStreamer;
+	engineStreamer: IStreamer<'apps-engine'>;
 
-	clientStreamer: IStreamer;
+	clientStreamer: IStreamer<'apps'>;
 
 	received: Map<any, any>;
 
@@ -171,9 +175,9 @@ export class AppServerNotifier {
 		void api.broadcast('apps.statusUpdate', appId, status);
 	}
 
-	async appSettingsChange(appId: string, setting: ISetting): Promise<void> {
-		if (this.received.has(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting._id}`)) {
-			this.received.delete(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting._id}`);
+	async appSettingsChange(appId: string, setting: AppsSetting): Promise<void> {
+		if (this.received.has(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting.id}`)) {
+			this.received.delete(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting.id}`);
 			return;
 		}
 

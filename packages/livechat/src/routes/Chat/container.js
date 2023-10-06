@@ -4,7 +4,11 @@ import { withTranslation } from 'react-i18next';
 
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
-import { debounce, getAvatarUrl, canRenderMessage, throttle, upsert } from '../../components/helpers';
+import { getAvatarUrl } from '../../helpers/baseUrl';
+import { canRenderMessage, canRenderTriggerMessage } from '../../helpers/canRenderMessage';
+import { debounce } from '../../helpers/debounce';
+import { throttle } from '../../helpers/throttle';
+import { upsert } from '../../helpers/upsert';
 import { normalizeQueueAlert } from '../../lib/api';
 import constants from '../../lib/constants';
 import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } from '../../lib/main';
@@ -36,7 +40,7 @@ class ChatContainer extends Component {
 			this.state.queueSpot = newQueueSpot;
 			this.state.estimatedWaitTime = newEstimatedWaitTime;
 			await this.handleQueueMessage(connecting, queueInfo);
-			await this.handleConnectingAgentAlert(newConnecting, normalizeQueueAlert(queueInfo));
+			await this.handleConnectingAgentAlert(newConnecting, await normalizeQueueAlert(queueInfo));
 		}
 	};
 
@@ -57,7 +61,7 @@ class ChatContainer extends Component {
 		}
 
 		const visitor = { token, ...guest };
-		const newUser = await Livechat.grantVisitor({ visitor });
+		const { visitor: newUser } = await Livechat.grantVisitor({ visitor });
 		await dispatch({ user: newUser });
 	};
 
@@ -79,9 +83,7 @@ class ChatContainer extends Component {
 			parentCall('callback', 'chat-started');
 			return newRoom;
 		} catch (error) {
-			const {
-				data: { error: reason },
-			} = error;
+			const reason = error ? error.error : '';
 			const alert = {
 				id: createToken(),
 				children: i18n.t('error_starting_a_new_conversation_reason', { reason }),
@@ -102,11 +104,11 @@ class ChatContainer extends Component {
 	};
 
 	startTyping = throttle(async ({ rid, username }) => {
-		await Livechat.notifyVisitorTyping(rid, username, true);
+		await Livechat.notifyVisitorActivity(rid, username, ['user-typing']);
 		this.stopTypingDebounced({ rid, username });
 	}, 4500);
 
-	stopTyping = ({ rid, username }) => Livechat.notifyVisitorTyping(rid, username, false);
+	stopTyping = ({ rid, username }) => Livechat.notifyVisitorActivity(rid, username, []);
 
 	stopTypingDebounced = debounce(this.stopTyping, 5000);
 
@@ -132,18 +134,18 @@ class ChatContainer extends Component {
 			this.stopTypingDebounced.stop();
 			await Promise.all([this.stopTyping({ rid, username: user.username }), Livechat.sendMessage({ msg, token, rid })]);
 		} catch (error) {
-			const reason = error?.data?.error ?? error.message;
+			const reason = error?.error ?? error.message;
 			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
 			await dispatch({ alerts: (alerts.push(alert), alerts) });
 		}
-		await Livechat.notifyVisitorTyping(rid, user.username, false);
+		await Livechat.notifyVisitorActivity(rid, user.username, []);
 	};
 
 	doFileUpload = async (rid, file) => {
 		const { alerts, dispatch, i18n } = this.props;
 
 		try {
-			await Livechat.uploadFile({ rid, file });
+			await Livechat.uploadFile(rid, file);
 		} catch (error) {
 			const {
 				data: { reason, sizeAllowed },
@@ -445,7 +447,7 @@ export const ChatConnector = ({ ref, t, ...props }) => (
 						: undefined
 				}
 				room={room}
-				messages={messages && messages.filter((message) => canRenderMessage(message))}
+				messages={messages && messages.filter(canRenderMessage).filter(canRenderTriggerMessage(user))}
 				noMoreMessages={noMoreMessages}
 				emoji={true}
 				uploads={uploads}

@@ -1,14 +1,16 @@
 import { faker } from '@faker-js/faker';
 
-import { Registration } from './page-objects';
+import { Utils, Registration } from './page-objects';
 import { test, expect } from './utils/test';
 
-test.describe.serial('register', () => {
+test.describe.parallel('register', () => {
 	let poRegistration: Registration;
+	let poUtils: Utils;
 
 	test.describe('Registration default flow', async () => {
 		test.beforeEach(async ({ page }) => {
 			poRegistration = new Registration(page);
+			poUtils = new Utils(page);
 		});
 		test('Successfully Registration flow', async ({ page }) => {
 			await test.step('expect trigger a validation error if no data is provided on register', async () => {
@@ -24,7 +26,7 @@ test.describe.serial('register', () => {
 			});
 
 			await test.step('expect trigger a validation error if different password is provided on register', async () => {
-				await poRegistration.inputName.fill(faker.name.firstName());
+				await poRegistration.inputName.fill(faker.person.firstName());
 				await poRegistration.inputEmail.fill(faker.internet.email());
 				await poRegistration.username.fill(faker.internet.userName());
 				await poRegistration.inputPassword.fill('any_password');
@@ -37,7 +39,7 @@ test.describe.serial('register', () => {
 			await test.step('expect successfully register a new user', async () => {
 				await poRegistration.inputPasswordConfirm.fill('any_password');
 				await poRegistration.btnRegister.click();
-				await expect(poRegistration.main).toBeHidden();
+				await expect(poUtils.mainContent).toBeVisible();
 			});
 		});
 
@@ -64,13 +66,13 @@ test.describe.serial('register', () => {
 				});
 
 				await test.step('expect to found no errors after submit the form', async () => {
-					await poRegistration.inputName.fill(faker.name.firstName());
+					await poRegistration.inputName.fill(faker.person.firstName());
 					await poRegistration.inputEmail.fill(faker.internet.email());
 					await poRegistration.username.fill(faker.internet.userName());
 					await poRegistration.inputPassword.fill('any_password');
 
 					await poRegistration.btnRegister.click();
-					await expect(poRegistration.main).toBeHidden();
+					await expect(poUtils.mainContent).toBeVisible();
 				});
 			});
 		});
@@ -123,11 +125,21 @@ test.describe.serial('register', () => {
 				await expect(poRegistration.registrationDisabledCallout).toBeVisible();
 			});
 		});
+
+		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
+			await page.goto('/home');
+			await poRegistration.goToRegister.click();
+	
+			const results = await makeAxeBuilder().analyze();
+	
+			expect(results.violations).toEqual([]);
+		});
 	});
 
 	test.describe('Registration for secret password', async () => {
 		test.beforeEach(async ({ api, page }) => {
 			poRegistration = new Registration(page);
+			poUtils = new Utils(page);
 			const result = await api.post('/settings/Accounts_RegistrationForm', { value: 'Secret URL' });
 			await api.post('/settings/Accounts_RegistrationForm_SecretURL', { value: 'secret' });
 			await expect(result.ok()).toBeTruthy();
@@ -158,14 +170,13 @@ test.describe.serial('register', () => {
 		test('It should register a user if the right secret password is provided', async ({ page }) => {
 			await page.goto('/register/secret');
 			await page.waitForSelector('role=form');
-			await poRegistration.inputName.fill(faker.name.firstName());
+			await poRegistration.inputName.fill(faker.person.firstName());
 			await poRegistration.inputEmail.fill(faker.internet.email());
 			await poRegistration.username.fill(faker.internet.userName());
 			await poRegistration.inputPassword.fill('any_password');
 			await poRegistration.inputPasswordConfirm.fill('any_password');
 			await poRegistration.btnRegister.click();
-			await page.waitForSelector('role=main');
-			await expect(poRegistration.main).toBeVisible();
+			await expect(poUtils.mainContent).toBeVisible();
 		});
 	});
 

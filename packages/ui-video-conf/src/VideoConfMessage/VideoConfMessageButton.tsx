@@ -6,7 +6,7 @@ const VideoConfMessageButton = ({
 	primary,
 	...props
 }: { children: ReactNode; primary?: boolean } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>): ReactElement => (
-	<Box mi='x4'>
+	<Box mi={4}>
 		<Button small primary={primary} {...props}>
 			{children}
 		</Button>

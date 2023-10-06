@@ -2,8 +2,8 @@
  * Markdown is a named function that will parse markdown syntax
  * @param {Object} message - The message object
  */
-import { markdown } from './markdown.js';
 import { code } from './code.js';
+import { markdown } from './markdown.js';
 
 export const original = (
 	message,

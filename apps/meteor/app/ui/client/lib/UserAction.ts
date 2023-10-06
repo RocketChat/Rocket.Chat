@@ -1,10 +1,10 @@
+import type { IExtras, IRoomActivity, IActionsObject, IUser } from '@rocket.chat/core-typings';
+import { debounce } from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import { debounce } from 'lodash';
-import type { IExtras, IRoomActivity, IActionsObject, IUser } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../settings/client';
 import { Notifications } from '../../../notifications/client';
+import { settings } from '../../../settings/client';
 
 const TIMEOUT = 15000;
 const RENEW = TIMEOUT / 3;
@@ -161,7 +161,7 @@ export const UserAction = new (class {
 			return;
 		}
 
-		Notifications.unRoom(rid, USER_ACTIVITY, rooms.get(rid));
+		Notifications.unRoom(rid, USER_ACTIVITY);
 		rooms.delete(rid);
 	}
 

@@ -142,7 +142,7 @@ roomCoordinator.add(
 		},
 
 		extractOpenRoomParams({ rid }) {
-			return { type: 'd', ref: rid };
+			return { type: 'd', reference: rid };
 		},
 
 		findRoom(identifier) {

@@ -1,6 +1,6 @@
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 import type { ILivechatTagModel } from '@rocket.chat/model-typings';
-import type { Db, DeleteResult, FindOptions, IndexDescription } from 'mongodb';
+import type { Db, DeleteResult, FindCursor, FindOptions, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
@@ -26,9 +26,15 @@ export class LivechatTagRaw extends BaseRaw<ILivechatTag> implements ILivechatTa
 		return this.findOne(query, options);
 	}
 
+	findInIds(ids: string[], options?: FindOptions<ILivechatTag>): FindCursor<ILivechatTag> {
+		const query = { _id: { $in: ids } };
+
+		return this.find(query, options);
+	}
+
 	async createOrUpdateTag(
-		_id: string,
-		{ name, description }: { name: string; description: string },
+		_id: string | undefined,
+		{ name, description }: { name: string; description?: string },
 		departments: string[] = [],
 	): Promise<ILivechatTag> {
 		const record = {

@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { settings } from '../../../settings/server';
 
 const postCatchError = async function (url: string, options?: Record<string, any> | undefined) {
 	try {
@@ -23,8 +23,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:webhookTest'() {
-		methodDeprecationLogger.info(`Method 'livechat:webhookTest' is deprecated and will be removed in future versions of Rocket.Chat`);
-		this.unblock();
+		methodDeprecationLogger.method('livechat:webhookTest', '7.0.0');
 
 		const sampleData = {
 			type: 'LivechatSession',

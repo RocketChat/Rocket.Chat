@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import mem from 'mem';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { LivechatUnit } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import mem from 'mem';
+import { Meteor } from 'meteor/meteor';
 
 import { hasAnyRoleAsync } from '../../../../../app/authorization/server/functions/hasRole';
 
@@ -17,7 +17,7 @@ async function getUnitsFromUserRoles(user: string | null): Promise<string[] | un
 	return LivechatUnit.findByMonitorId(user);
 }
 
-const memoizedGetUnitFromUserRoles = mem(getUnitsFromUserRoles, { maxAge: 5000 });
+const memoizedGetUnitFromUserRoles = mem(getUnitsFromUserRoles, { maxAge: 10000 });
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

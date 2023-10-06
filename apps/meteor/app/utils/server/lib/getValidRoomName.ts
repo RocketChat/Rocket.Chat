@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import limax from 'limax';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Rooms } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import limax from 'limax';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
 import { validateName } from '../../../lib/server/functions/validateName';
+import { settings } from '../../../settings/server';
 
 export const getValidRoomName = async (
 	displayName: string,

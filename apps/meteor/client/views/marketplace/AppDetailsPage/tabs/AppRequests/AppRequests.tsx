@@ -5,8 +5,8 @@ import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, SetStateAction } from 'react';
 import React, { useState, useEffect } from 'react';
 
+import { useAppsReload } from '../../../../../contexts/hooks/useAppsReload';
 import { queryClient } from '../../../../../lib/queryClient';
-import { useAppsReload } from '../../../AppsContext';
 import { useAppRequests } from '../../../hooks/useAppRequests';
 import AppRequestItem from './AppRequestItem';
 import AppRequestsLoading from './AppRequestsLoading';
@@ -50,7 +50,7 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 
 	if (paginatedAppRequests.isLoading) {
 		return (
-			<Box w='full' maxWidth='x608' marginInline='auto' pbs='x36'>
+			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36}>
 				<AppRequestsLoading />
 			</Box>
 		);
@@ -58,8 +58,8 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 
 	return (
 		<Box h='full' display='flex' flexDirection='column'>
-			<Box w='full' maxWidth='x608' marginInline='auto' pbs='x36' flexGrow='1'>
-				{paginatedAppRequests.isSuccess && paginatedAppRequests.data.data.length ? (
+			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36} flexGrow='1'>
+				{paginatedAppRequests.isSuccess && paginatedAppRequests.data.data?.length ? (
 					paginatedAppRequests.data.data.map((request) => (
 						<AppRequestItem
 							key={request.id}
@@ -77,7 +77,7 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 					</States>
 				)}
 			</Box>
-			{paginatedAppRequests.isSuccess && paginatedAppRequests.data.data.length && (
+			{paginatedAppRequests.isSuccess && paginatedAppRequests.data.data?.length && (
 				<Pagination
 					divider
 					count={paginatedAppRequests.data.meta.total}

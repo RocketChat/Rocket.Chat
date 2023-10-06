@@ -2,12 +2,12 @@ import crypto from 'crypto';
 import fs from 'fs';
 import { resolve } from 'path';
 
+import { Settings } from '@rocket.chat/models';
 import yaml from 'js-yaml';
 import { v4 as uuidv4 } from 'uuid';
-import { Settings } from '@rocket.chat/models';
 
-import type { IFederationBridgeRegistrationFile } from '../../../domain/IFederationBridge';
 import { settings, settingsRegistry } from '../../../../../../app/settings/server';
+import type { IFederationBridgeRegistrationFile } from '../../../domain/IFederationBridge';
 
 const EVERYTHING_REGEX = '.*';
 const LISTEN_RULES = EVERYTHING_REGEX;
@@ -51,6 +51,10 @@ export class RocketChatSettingsAdapter {
 
 	public getBridgeBotUsername(): string {
 		return settings.get('Federation_Matrix_bridge_localpart');
+	}
+
+	public getMaximumSizeOfUsersWhenJoiningPublicRooms(): string {
+		return settings.get('Federation_Matrix_max_size_of_public_rooms_users');
 	}
 
 	public async disableFederation(): Promise<void> {
@@ -241,6 +245,19 @@ export class RocketChatSettingsAdapter {
 					alert: 'Federation_Matrix_registration_file_Alert',
 				});
 			});
+		});
+
+		void settingsRegistry.add('Federation_Matrix_max_size_of_public_rooms_users', 100, {
+			readonly: false,
+			type: 'int',
+			i18nLabel: 'Federation_Matrix_max_size_of_public_rooms_users',
+			i18nDescription: 'Federation_Matrix_max_size_of_public_rooms_users_desc',
+			alert: 'Federation_Matrix_max_size_of_public_rooms_users_Alert',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+			group: 'Federation',
+			section: 'Matrix Bridge',
 		});
 	}
 

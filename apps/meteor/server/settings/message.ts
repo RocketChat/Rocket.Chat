@@ -200,6 +200,7 @@ export const createMessageSettings = () =>
 		await this.add('Message_ErasureType', 'Delete', {
 			type: 'select',
 			public: true,
+			i18nDescription: 'Message_ErasureType_Description',
 			values: [
 				{
 					key: 'Keep',
@@ -242,6 +243,14 @@ export const createMessageSettings = () =>
 			group: 'Message',
 			section: 'AutoTranslate',
 			public: true,
+		});
+
+		await this.add('AutoTranslate_AutoEnableOnJoinRoom', false, {
+			type: 'boolean',
+			group: 'Message',
+			section: 'AutoTranslate',
+			public: true,
+			enableQuery: [{ _id: 'AutoTranslate_Enabled', value: true }],
 		});
 
 		await this.add('AutoTranslate_ServiceProvider', 'google-translate', {
@@ -328,7 +337,7 @@ export const createMessageSettings = () =>
 			public: true,
 		});
 
-		await this.section('Katex', async function () {
+		await this.section('Katex', async () => {
 			const enableQuery = {
 				_id: 'Katex_Enabled',
 				value: true,
@@ -352,7 +361,7 @@ export const createMessageSettings = () =>
 			});
 		});
 
-		await this.section('Google Maps', async function () {
+		await this.section('Google Maps', async () => {
 			await settingsRegistry.add('MapView_Enabled', false, {
 				type: 'boolean',
 				public: true,

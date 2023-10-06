@@ -1,15 +1,16 @@
-import { Trans } from 'react-i18next';
+import { Box } from '@rocket.chat/fuselage';
+import { HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { Link, HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
+import { useTranslation } from 'react-i18next';
 
 export const LoginTerms = (): ReactElement => {
+	const { t } = useTranslation();
+	const loginTerms = useSetting('Layout_Login_Terms') as string;
+
 	return (
 		<HorizontalWizardLayoutCaption>
-			<Trans
-				defaults='By proceeding you are agreeing to our <0>{{terms}}</0>, <1>{{privacyPolicy}}</1> and <2>{{legalNotice}}</2>.'
-				values={{ terms: 'Terms of Service', privacyPolicy: 'Privacy Policy', legalNotice: 'Legal Notice' }}
-				components={[<Link href='/terms-of-service' />, <Link href='/privacy-policy' />, <Link href='/legal-notice' />]}
-			/>
+			<Box withRichContent dangerouslySetInnerHTML={{ __html: loginTerms !== '' ? loginTerms : t('Layout_Login_Terms_Content') }} />
 		</HorizontalWizardLayoutCaption>
 	);
 };

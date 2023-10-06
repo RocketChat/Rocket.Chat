@@ -1,6 +1,6 @@
-import _ from 'underscore';
-import { Accounts } from 'meteor/accounts-base';
 import { Users } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
+import _ from 'underscore';
 
 const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
 

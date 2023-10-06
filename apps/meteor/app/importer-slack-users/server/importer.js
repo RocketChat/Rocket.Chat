@@ -1,11 +1,13 @@
+import fs from 'fs';
+
 import { Settings } from '@rocket.chat/models';
 
-import { Base, ProgressStep } from '../../importer/server';
 import { RocketChatFile } from '../../file/server';
+import { Base, ProgressStep } from '../../importer/server';
 
 export class SlackUsersImporter extends Base {
-	constructor(info, importRecord) {
-		super(info, importRecord);
+	constructor(info, importRecord, converterOptions = {}) {
+		super(info, importRecord, converterOptions);
 
 		const { parse } = require('csv-parse/lib/sync');
 
@@ -13,14 +15,19 @@ export class SlackUsersImporter extends Base {
 	}
 
 	async prepareUsingLocalFile(fullFilePath) {
+		this.logger.debug('start preparing import operation');
 		await this.converter.clearImportData();
 
-		return super.prepareUsingLocalFile(fullFilePath);
-	}
+		const file = fs.readFileSync(fullFilePath);
+		const buffer = Buffer.isBuffer(file) ? file : Buffer.from(file);
 
-	async prepare(dataURI, sentContentType, fileName) {
-		this.logger.debug('start preparing import operation');
-		await super.prepare(dataURI, sentContentType, fileName, true);
+		const { contentType } = this.importRecord;
+		const fileName = this.importRecord.file;
+
+		const data = buffer.toString('base64');
+		const dataURI = `data:${contentType};base64,${data}`;
+
+		await this.updateRecord({ file: fileName });
 
 		await super.updateProgress(ProgressStep.PREPARING_USERS);
 		const uriResult = RocketChatFile.dataURIParse(dataURI);
@@ -76,6 +83,7 @@ export class SlackUsersImporter extends Base {
 		await super.updateProgress(ProgressStep.USER_SELECTION);
 		await super.addCountToTotal(userCount);
 		await Settings.incrementValueById('Slack_Users_Importer_Count', userCount);
-		return super.updateRecord({ 'count.users': userCount });
+		await super.updateRecord({ 'count.users': userCount });
+		return super.getProgress();
 	}
 }

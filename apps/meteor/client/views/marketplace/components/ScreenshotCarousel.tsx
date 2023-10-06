@@ -80,7 +80,7 @@ const ScreenshotCarousel = ({
 				justifyContent='center'
 				alignItems='center'
 				zIndex='2'
-				mi='x38'
+				mi={38}
 			>
 				{handleScreenshotRender()}
 			</Box>

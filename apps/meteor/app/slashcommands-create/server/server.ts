@@ -1,9 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
-import { Rooms } from '@rocket.chat/models';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { Rooms, Users } from '@rocket.chat/models';
 
+import { i18n } from '../../../server/lib/i18n';
+import { createChannelMethod } from '../../lib/server/methods/createChannel';
+import { createPrivateGroupMethod } from '../../lib/server/methods/createPrivateGroup';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 
@@ -39,7 +40,7 @@ slashCommands.add({
 		const room = await Rooms.findOneByName(channelStr);
 		if (room != null) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: TAPi18n.__('Channel_already_exist', {
+				msg: i18n.t('Channel_already_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channelStr],
 					lng: settings.get('Language') || 'en',
@@ -49,10 +50,15 @@ slashCommands.add({
 		}
 
 		if (getParams(params).indexOf('private') > -1) {
-			return Meteor.callAsync('createPrivateGroup', channelStr, []);
+			const user = await Users.findOneById(userId);
+			if (!user) {
+				return;
+			}
+			await createPrivateGroupMethod(user, channelStr, []);
+			return;
 		}
 
-		await Meteor.callAsync('createChannel', channelStr, []);
+		await createChannelMethod(userId, channelStr, []);
 	},
 	options: {
 		description: 'Create_A_New_Channel',

@@ -1,12 +1,12 @@
 import crypto from 'crypto';
 
-import parseRequest from 'parseurl';
 import type { NextHandleFunction } from 'connect';
-import { WebApp } from 'meteor/webapp';
-import { ReactiveDict } from 'meteor/reactive-dict';
 import { Inject } from 'meteor/meteorhacks:inject-initial';
+import { ReactiveDict } from 'meteor/reactive-dict';
+import { WebApp } from 'meteor/webapp';
+import parseRequest from 'parseurl';
 
-import { getURL } from '../../utils/server';
+import { getURL } from '../../utils/server/getURL';
 
 type Injection =
 	| string

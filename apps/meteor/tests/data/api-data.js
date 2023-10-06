@@ -2,7 +2,7 @@ import supertest from 'supertest';
 
 import { publicChannelName, privateChannelName } from './channel.js';
 import { roleNameUsers, roleNameSubscriptions, roleScopeUsers, roleScopeSubscriptions, roleDescription } from './role.js';
-import { username, email, adminUsername, adminPassword } from './user.js';
+import { username, email, adminUsername, adminPassword } from './user';
 
 const apiUrl = process.env.TEST_API_URL || 'http://localhost:3000';
 
@@ -31,6 +31,7 @@ export const group = {};
 export const message = {};
 export const directMessage = {};
 export const integration = {};
+/** @type {{ 'X-Auth-Token': string | undefined; 'X-User-Id': string | undefined }} */
 export const credentials = {
 	'X-Auth-Token': undefined,
 	'X-User-Id': undefined,

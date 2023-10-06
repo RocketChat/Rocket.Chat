@@ -1,12 +1,11 @@
-import https from 'https';
 import http from 'http';
+import https from 'https';
 
-import { Meteor } from 'meteor/meteor';
-import { Random } from '@rocket.chat/random';
 import { Messages } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 
-import { Base, ProgressStep, Selection } from '../../importer/server';
 import { FileUpload } from '../../file-upload/server';
+import { Base, ProgressStep, Selection } from '../../importer/server';
 
 export class PendingFileImporter extends Base {
 	constructor(info, importRecord) {
@@ -48,12 +47,12 @@ export class PendingFileImporter extends Base {
 		let currentSize = 0;
 		let nextSize = 0;
 
-		const waitForFiles = () => {
+		const waitForFiles = async () => {
 			if (count + 1 < maxFileCount && currentSize + nextSize < maxFileSize) {
 				return;
 			}
 
-			Meteor.wrapAsync((callback) => {
+			return new Promise((resolve) => {
 				const handler = setInterval(() => {
 					if (count + 1 >= maxFileCount) {
 						return;
@@ -64,9 +63,9 @@ export class PendingFileImporter extends Base {
 					}
 
 					clearInterval(handler);
-					callback();
+					resolve();
 				}, 1000);
-			})();
+			});
 		};
 
 		const completeFile = async (details) => {
@@ -109,12 +108,12 @@ export class PendingFileImporter extends Base {
 					const reportProgress = this.reportProgress.bind(this);
 
 					nextSize = details.size;
-					waitForFiles();
+					await waitForFiles();
 					count++;
 					currentSize += nextSize;
 					downloadedFileIds.push(_importFile.id);
 
-					requestModule.get(url, function (res) {
+					requestModule.get(url, (res) => {
 						const contentType = res.headers['content-type'];
 						if (!details.type && contentType) {
 							details.type = contentType;

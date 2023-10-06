@@ -1,3 +1,4 @@
+import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import type {
 	IRoom,
 	IStats,
@@ -8,7 +9,6 @@ import type {
 	VideoConferenceInstructions,
 } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 
 export type VideoConferenceJoinOptions = {
 	mic?: boolean;

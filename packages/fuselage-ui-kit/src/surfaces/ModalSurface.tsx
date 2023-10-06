@@ -9,7 +9,7 @@ type ModalSurfaceProps = {
 
 const ModalSurface = ({ children }: ModalSurfaceProps): ReactElement => (
   <Surface type='modal'>
-    <Margins blockEnd='x16'>{children}</Margins>
+    <Margins blockEnd={16}>{children}</Margins>
   </Surface>
 );
 

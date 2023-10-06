@@ -1,8 +1,9 @@
-import faker from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 import type { IUser } from "@rocket.chat/core-typings";
 import { password } from "../user";
 import { createUser, login } from "../users.helper";
 import { createAgent, makeAgentAvailable } from "./rooms";
+import { api, credentials, request } from "../api-data";
 
 export const createBotAgent = async (): Promise<{
 	credentials: { 'X-Auth-Token': string; 'X-User-Id': string; };
@@ -21,5 +22,10 @@ export const createBotAgent = async (): Promise<{
     };
 }
 
-export const getRandomVisitorToken = (): string => faker.random.alphaNumeric(17);
+export const getRandomVisitorToken = (): string => faker.string.alphanumeric(17);
 
+export const removeAgent = async (userId: string): Promise<void> => {
+    await request.delete(api(`livechat/users/agent/${userId}`))
+        .set(credentials)
+        .expect(200);
+}

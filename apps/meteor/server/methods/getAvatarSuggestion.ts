@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
@@ -25,7 +24,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async getAvatarSuggestion() {
-		methodDeprecationLogger.warn('getAvatarSuggestion will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('getAvatarSuggestion', '7.0.0');
 
 		const user = (await Meteor.userAsync()) as IUser | undefined;
 		if (!user) {

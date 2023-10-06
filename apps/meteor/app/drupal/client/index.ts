@@ -1,2 +1,2 @@
-import '../lib/common';
+import './lib';
 import './login-button.css';

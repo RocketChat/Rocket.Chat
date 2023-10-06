@@ -8,7 +8,7 @@ import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useTagsList } from '../../hooks/useTagsList';
 
 const AutoCompleteTagMultiple = (props) => {
-	const { value, onlyMyTags = false, onChange = () => {} } = props;
+	const { value, onlyMyTags = false, onChange = () => {}, department, viewAll = false } = props;
 
 	const t = useTranslation();
 	const [tagsFilter, setTagsFilter] = useState('');
@@ -16,21 +16,18 @@ const AutoCompleteTagMultiple = (props) => {
 	const debouncedTagsFilter = useDebouncedValue(tagsFilter, 500);
 
 	const { itemsList: tagsList, loadMoreItems: loadMoreTags } = useTagsList(
-		useMemo(() => ({ filter: debouncedTagsFilter, onlyMyTags }), [debouncedTagsFilter, onlyMyTags]),
+		useMemo(
+			() => ({ filter: debouncedTagsFilter, onlyMyTags, department, viewAll }),
+			[debouncedTagsFilter, onlyMyTags, department, viewAll],
+		),
 	);
 
 	const { phase: tagsPhase, items: tagsItems, itemCount: tagsTotal } = useRecordList(tagsList);
 
-	const sortedByName = tagsItems.sort((a, b) => {
-		if (a.name > b.name) {
-			return 1;
-		}
-		if (a.name < b.name) {
-			return -1;
-		}
-
-		return 0;
-	});
+	const tagsOptions = useMemo(() => {
+		const pending = value.filter(({ value }) => !tagsItems.find((tag) => tag.value === value));
+		return [...tagsItems, ...pending];
+	}, [tagsItems, value]);
 
 	return (
 		<PaginatedMultiSelectFiltered
@@ -39,7 +36,7 @@ const AutoCompleteTagMultiple = (props) => {
 			onChange={onChange}
 			filter={tagsFilter}
 			setFilter={setTagsFilter}
-			options={sortedByName}
+			options={tagsOptions}
 			width='100%'
 			flexShrink={0}
 			flexGrow={0}

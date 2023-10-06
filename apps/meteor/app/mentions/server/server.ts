@@ -1,24 +1,40 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { api } from '@rocket.chat/core-services';
+import { api, Team } from '@rocket.chat/core-services';
+import type { IUser, IRoom, ITeam } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
-import MentionsServer from './Mentions';
-import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
+import { i18n } from '../../../server/lib/i18n';
+import { settings } from '../../settings/server';
+import MentionsServer from './Mentions';
 
 export class MentionQueries {
-	async getUsers(usernames: string[]): Promise<(Pick<IUser, '_id' | 'username' | 'name'> & { type: 'user' })[]> {
+	async getUsers(
+		usernames: string[],
+	): Promise<((Pick<IUser, '_id' | 'username' | 'name'> & { type: 'user' }) | (Pick<ITeam, '_id' | 'name'> & { type: 'team' }))[]> {
+		const uniqueUsernames = [...new Set(usernames)];
+		const teams = await Team.listByNames(uniqueUsernames, { projection: { name: 1 } });
+
 		const users = await Users.find(
-			{ username: { $in: [...new Set(usernames)] } },
+			{ username: { $in: uniqueUsernames } },
 			{ projection: { _id: true, username: true, name: 1 } },
 		).toArray();
 
-		return users.map((user) => ({
+		const taggedUsers = users.map((user) => ({
 			...user,
-			type: 'user',
+			type: 'user' as const,
 		}));
+
+		if (settings.get<boolean>('Troubleshoot_Disable_Teams_Mention')) {
+			return taggedUsers;
+		}
+
+		const taggedTeams = teams.map((team) => ({
+			...team,
+			type: 'team' as const,
+		}));
+
+		return [...taggedUsers, ...taggedTeams];
 	}
 
 	async getUser(userId: string): Promise<IUser | null> {
@@ -59,7 +75,7 @@ const mention = new MentionsServer({
 	async onMaxRoomMembersExceeded({ sender, rid }: { sender: IUser; rid: string }) {
 		// Get the language of the user for the error notification.
 		const { language } = await this.getUser(sender._id);
-		const msg = TAPi18n.__('Group_mentions_disabled_x_members', { total: this.messageMaxAll }, language);
+		const msg = i18n.t('Group_mentions_disabled_x_members', { total: this.messageMaxAll, lng: language });
 
 		void api.broadcast('notify.ephemeralMessage', sender._id, rid, {
 			msg,

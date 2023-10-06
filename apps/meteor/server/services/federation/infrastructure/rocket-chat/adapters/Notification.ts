@@ -1,8 +1,8 @@
-import { Rooms } from '@rocket.chat/models';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import { Rooms } from '@rocket.chat/models';
 
 import notifications from '../../../../../../app/notifications/server/lib/Notifications';
+import { i18n } from '../../../../../lib/i18n';
 
 export class RocketChatNotificationAdapter {
 	public async notifyUserTypingOnRoom(internalRoomId: string, username: string, isTyping: boolean): Promise<void> {
@@ -38,7 +38,7 @@ export class RocketChatNotificationAdapter {
 
 	public notifyWithEphemeralMessage(i18nMessageKey: string, userId: string, roomId: string, language = 'en'): void {
 		void api.broadcast('notify.ephemeralMessage', userId, roomId, {
-			msg: TAPi18n.__(i18nMessageKey, {
+			msg: i18n.t(i18nMessageKey, {
 				postProcess: 'sprintf',
 				lng: language,
 			}),

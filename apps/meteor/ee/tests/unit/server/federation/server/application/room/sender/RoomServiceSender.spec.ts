@@ -1,8 +1,7 @@
-/* eslint-disable import/first */
-import { expect } from 'chai';
-import sinon from 'sinon';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { expect } from 'chai';
 import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
 const { FederatedRoomEE } = proxyquire.noCallThru().load('../../../../../../../../server/local-services/federation/domain/FederatedRoom', {
 	mongodb: {
@@ -64,6 +63,7 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
 		isFederationEnabled: sinon.stub(),
+		getMaximumSizeOfUsersWhenJoiningPublicRooms: sinon.stub(),
 	};
 	const messageAdapter = {};
 	const bridge = {
@@ -84,6 +84,9 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 		subscribeToUserTypingEventsOnFederatedRoomId: sinon.stub(),
 		broadcastUserTypingOnRoom: sinon.stub(),
 	};
+	const queueAdapter = {
+		enqueueJob: sinon.stub(),
+	};
 	const invitees = [
 		{
 			inviteeUsernameOnly: 'marcos.defendi',
@@ -100,6 +103,7 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 			settingsAdapter as any,
 			messageAdapter as any,
 			notificationAdapter as any,
+			queueAdapter as any,
 			bridge as any,
 		);
 	});
@@ -132,7 +136,9 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 		bridge.joinRoom.reset();
 		bridge.searchPublicRooms.reset();
 		bridge.getRoomData.reset();
+		queueAdapter.enqueueJob.reset();
 		settingsAdapter.isFederationEnabled.reset();
+		settingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms.reset();
 		notificationAdapter.broadcastUserTypingOnRoom.reset();
 		notificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId.reset();
 	});
@@ -746,6 +752,28 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 			expect(bridge.createUser.called).to.be.false;
 		});
 
+		it('should NOT auto-join the user to the room if the user is auto-joining the room but he is NOT from the same homeserver', async () => {
+			const invitee = FederatedUserEE.createInstance('externalInviteeId', {
+				name: 'normalizedInviteeId',
+				username: 'normalizedInviteeId',
+				existsOnlyOnProxyServer: true,
+			});
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+			userAdapter.getFederatedUserByInternalUsername.resolves(invitee);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+
+			await service.onUsersAddedToARoom({
+				internalInviterId: '',
+				invitees,
+				internalRoomId: 'internalRoomId',
+				...invitees[0],
+			} as any);
+
+			expect(bridge.joinRoom.called).to.be.false;
+			expect(bridge.inviteToRoom.called).to.be.false;
+		});
+
 		it('should auto-join the user to the room if the user is auto-joining the room', async () => {
 			const invitee = FederatedUserEE.createInstance('externalInviteeId', {
 				name: 'normalizedInviteeId',
@@ -755,6 +783,7 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.resolves(undefined);
 			userAdapter.getFederatedUserByInternalUsername.resolves(invitee);
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			bridge.extractHomeserverOrigin.returns('localDomain');
 
 			await service.onUsersAddedToARoom({
 				internalInviterId: '',
@@ -822,7 +851,8 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 
 		it('should return the Matrix public rooms for the server', async () => {
 			settingsAdapter.isFederationEnabled.returns(true);
-			bridge.searchPublicRooms.returns({
+			settingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms.returns('100');
+			bridge.searchPublicRooms.resolves({
 				chunk: [
 					{
 						room_id: 'externalRoomId',
@@ -856,6 +886,7 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 						topic: 'externalRoomTopic',
 						canonicalAlias: 'externalRoomAlias',
 						canJoin: true,
+						pageToken: undefined,
 					},
 					{
 						id: 'externalRoomId2',
@@ -864,6 +895,7 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 						topic: 'externalRoomTopic2',
 						canonicalAlias: 'externalRoomAlias2',
 						canJoin: true,
+						pageToken: undefined,
 					},
 				],
 				count: 2,
@@ -875,7 +907,8 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 
 		it('should return the Matrix public rooms for the server filtering all the rooms that is not possible to join', async () => {
 			settingsAdapter.isFederationEnabled.returns(true);
-			bridge.searchPublicRooms.returns({
+			settingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms.returns('100');
+			bridge.searchPublicRooms.resolves({
 				chunk: [
 					{
 						room_id: 'externalRoomId',
@@ -909,6 +942,101 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 						topic: 'externalRoomTopic',
 						canonicalAlias: 'externalRoomAlias',
 						canJoin: true,
+						pageToken: undefined,
+					},
+				],
+				count: 2,
+				total: 10000,
+				nextPageToken: 'next_batch',
+				prevPageToken: 'prev_batch',
+			});
+		});
+
+		it('should return the Matrix public rooms for the server filtering all the rooms that is not possible to join (all of the as canJoin = false, since they have more users than the allowed)', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			settingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms.returns('100');
+			bridge.searchPublicRooms.resolves({
+				chunk: [
+					{
+						room_id: 'externalRoomId',
+						name: 'externalRoomName',
+						num_joined_members: 101,
+						topic: 'externalRoomTopic',
+						canonical_alias: 'externalRoomAlias',
+						join_rule: 'public',
+					},
+					{
+						room_id: 'externalRoomId2',
+						name: 'externalRoomName2',
+						num_joined_members: 4000,
+						topic: 'externalRoomTopic2',
+						canonical_alias: 'externalRoomAlias2',
+						join_rule: 'knock',
+					},
+				],
+				next_batch: 'next_batch',
+				prev_batch: 'prev_batch',
+				total_room_count_estimate: 10000,
+			});
+			const result = await service.searchPublicRooms({} as any);
+
+			expect(result).to.be.eql({
+				rooms: [
+					{
+						id: 'externalRoomId',
+						name: 'externalRoomName',
+						joinedMembers: 101,
+						topic: 'externalRoomTopic',
+						canonicalAlias: 'externalRoomAlias',
+						canJoin: false,
+						pageToken: undefined,
+					},
+				],
+				count: 2,
+				total: 10000,
+				nextPageToken: 'next_batch',
+				prevPageToken: 'prev_batch',
+			});
+		});
+
+		it('should return the Matrix public rooms for the server including a valid pageToken for each room', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			settingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms.returns('100');
+			bridge.searchPublicRooms.resolves({
+				chunk: [
+					{
+						room_id: 'externalRoomId',
+						name: 'externalRoomName',
+						num_joined_members: 101,
+						topic: 'externalRoomTopic',
+						canonical_alias: 'externalRoomAlias',
+						join_rule: 'public',
+					},
+					{
+						room_id: 'externalRoomId2',
+						name: 'externalRoomName2',
+						num_joined_members: 4000,
+						topic: 'externalRoomTopic2',
+						canonical_alias: 'externalRoomAlias2',
+						join_rule: 'knock',
+					},
+				],
+				next_batch: 'next_batch',
+				prev_batch: 'prev_batch',
+				total_room_count_estimate: 10000,
+			});
+			const result = await service.searchPublicRooms({ pageToken: 'pageToken' } as any);
+
+			expect(result).to.be.eql({
+				rooms: [
+					{
+						id: 'externalRoomId',
+						name: 'externalRoomName',
+						joinedMembers: 101,
+						topic: 'externalRoomTopic',
+						canonicalAlias: 'externalRoomAlias',
+						canJoin: false,
+						pageToken: 'pageToken',
 					},
 				],
 				count: 2,
@@ -919,173 +1047,131 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 		});
 	});
 
-	describe('#joinExternalPublicRoom()', () => {
-		const user = FederatedUserEE.createInstance('externalInviterId', {
-			name: 'normalizedInviterId',
-			username: 'normalizedInviterId',
-			existsOnlyOnProxyServer: true,
-		});
-		const room = FederatedRoomEE.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
-
+	describe('#scheduleJoinExternalPublicRoom()', () => {
 		it('should throw an error if the federation is disabled', async () => {
 			settingsAdapter.isFederationEnabled.returns(false);
-			await expect(service.joinExternalPublicRoom({} as any)).to.be.rejectedWith('Federation is disabled');
+			await expect(service.scheduleJoinExternalPublicRoom({} as any)).to.be.rejectedWith('Federation is disabled');
 		});
 
-		it('should throw an error if the user already joined the room', async () => {
+		it('should enqueue a job to join the room', async () => {
 			settingsAdapter.isFederationEnabled.returns(true);
-			roomAdapter.getFederatedRoomByExternalId.resolves(room);
-			roomAdapter.isUserAlreadyJoined.resolves(true);
-			await expect(service.joinExternalPublicRoom({} as any)).to.be.rejectedWith('already-joined');
-		});
+			const internalUserId = 'internalUserId';
+			const externalRoomId = 'externalRoomId';
+			const roomName = 'roomName';
+			const pageToken = 'pageToken';
+			await service.scheduleJoinExternalPublicRoom(internalUserId, externalRoomId, roomName, pageToken);
 
-		it('should NOT create an external user if it already exists', async () => {
-			settingsAdapter.isFederationEnabled.returns(true);
-			userAdapter.getFederatedUserByInternalId.resolves(user);
-			const spy = sinon.spy(service, 'createFederatedUserIncludingHomeserverUsingLocalInformation');
-
-			await service.joinExternalPublicRoom({} as any);
-
-			expect(spy.called).to.be.false;
-		});
-
-		it('should create an external user if it does not exists', async () => {
-			settingsAdapter.isFederationEnabled.returns(true);
-			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(undefined);
-			userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
-			userAdapter.getFederatedUserByInternalId.resolves(user);
-			const spy = sinon.spy(service, 'createFederatedUserIncludingHomeserverUsingLocalInformation');
-
-			await service.joinExternalPublicRoom({ internalUserId: 'internalUserId' } as any);
-
-			expect(spy.calledWith('internalUserId')).to.be.true;
-		});
-
-		it('should throw an error if the federated user was not found even after creation', async () => {
-			settingsAdapter.isFederationEnabled.returns(true);
-			userAdapter.getFederatedUserByInternalId.resolves(undefined);
-			userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
-
-			await expect(service.joinExternalPublicRoom({ internalUserId: 'internalUserId' } as any)).to.be.rejectedWith(
-				'User with internalId internalUserId not found',
+			expect(
+				queueAdapter.enqueueJob.calledOnceWithExactly('federation-enterprise.joinExternalPublicRoom', {
+					internalUserId,
+					externalRoomId,
+					roomName,
+					pageToken,
+				}),
 			);
 		});
 
-		it('should join the user to the remote room', async () => {
-			settingsAdapter.isFederationEnabled.returns(true);
-			userAdapter.getFederatedUserByInternalId.resolves(user);
+		describe('#joinExternalPublicRoom()', () => {
+			const user = FederatedUserEE.createInstance('externalInviterId', {
+				name: 'normalizedInviterId',
+				username: 'normalizedInviterId',
+				existsOnlyOnProxyServer: true,
+			});
+			const room = FederatedRoomEE.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
 
-			await service.joinExternalPublicRoom({
-				externalRoomId: 'externalRoomId',
-				internalUserId: 'internalUserId',
-				externalRoomHomeServerName: 'externalRoomHomeServerName',
-			} as any);
+			it('should throw an error if the federation is disabled', async () => {
+				settingsAdapter.isFederationEnabled.returns(false);
+				await expect(service.joinExternalPublicRoom({} as any)).to.be.rejectedWith('Federation is disabled');
+			});
 
-			expect(bridge.joinRoom.calledWith('externalRoomId', user.getExternalId(), ['externalRoomHomeServerName'])).to.be.true;
-		});
+			it('should throw an error if the user already joined the room', async () => {
+				settingsAdapter.isFederationEnabled.returns(true);
+				roomAdapter.getFederatedRoomByExternalId.resolves(room);
+				roomAdapter.isUserAlreadyJoined.resolves(true);
+				await expect(service.joinExternalPublicRoom({} as any)).to.be.rejectedWith('already-joined');
+			});
 
-		it('should create a federated user for the room creator if it does not exists (external one)', async () => {
-			settingsAdapter.isFederationEnabled.returns(true);
-			userAdapter.getFederatedUserByExternalId.onFirstCall().resolves(undefined);
-			userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
-			userAdapter.getFederatedUserByInternalId.resolves(user);
-			userAdapter.getFederatedUserByExternalId.resolves(user);
-			bridge.getRoomData.resolves({ creator: { id: '@externalId', username: 'username' }, name: 'roomName' });
-			bridge.extractHomeserverOrigin.returns('externalDomain');
-			const spy = sinon.spy(service, 'createFederatedUserInternallyOnly');
+			it('should NOT create an external user if it already exists', async () => {
+				settingsAdapter.isFederationEnabled.returns(true);
+				userAdapter.getFederatedUserByInternalId.resolves(user);
+				const spy = sinon.spy(service, 'createFederatedUserIncludingHomeserverUsingLocalInformation');
+				sinon.stub(service, 'isRoomSizeAllowed').returns(true);
 
-			await service.joinExternalPublicRoom({ internalUserId: 'internalUserId' } as any);
+				await service.joinExternalPublicRoom({} as any);
 
-			expect(spy.calledWith('@externalId', 'externalId', false)).to.be.true;
-		});
+				expect(spy.called).to.be.false;
+			});
 
-		it('should create a federated user for the room creator if it does not exists (local one)', async () => {
-			settingsAdapter.isFederationEnabled.returns(true);
-			userAdapter.getFederatedUserByExternalId.onFirstCall().resolves(undefined);
-			userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
-			userAdapter.getFederatedUserByInternalId.resolves(user);
-			userAdapter.getFederatedUserByExternalId.resolves(user);
-			bridge.getRoomData.resolves({ creator: { id: '@externalId', username: 'username' }, name: 'roomName' });
-			bridge.extractHomeserverOrigin.returns('localDomain');
-			const spy = sinon.spy(service, 'createFederatedUserInternallyOnly');
+			it('should create an external user if it does not exists', async () => {
+				settingsAdapter.isFederationEnabled.returns(true);
+				userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(undefined);
+				userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
+				userAdapter.getFederatedUserByInternalId.resolves(user);
+				const spy = sinon.spy(service, 'createFederatedUserIncludingHomeserverUsingLocalInformation');
+				sinon.stub(service, 'isRoomSizeAllowed').returns(true);
 
-			await service.joinExternalPublicRoom({ internalUserId: 'internalUserId' } as any);
+				await service.joinExternalPublicRoom({ internalUserId: 'internalUserId' } as any);
 
-			expect(spy.calledWith('@externalId', 'username', true)).to.be.true;
-		});
+				expect(spy.calledWith('internalUserId')).to.be.true;
+			});
 
-		it('should NOT create an external user for the room creator if it already exists', async () => {
-			settingsAdapter.isFederationEnabled.returns(true);
-			userAdapter.getFederatedUserByExternalId.resolves(user);
-			userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
-			userAdapter.getFederatedUserByInternalId.resolves(user);
-			userAdapter.getFederatedUserByExternalId.resolves(user);
-			bridge.getRoomData.resolves({ creator: { id: 'id', username: 'username' }, name: 'roomName' });
-			const spy = sinon.spy(service, 'createFederatedUserInternallyOnly');
+			it('should throw an error if the federated user was not found even after creation', async () => {
+				settingsAdapter.isFederationEnabled.returns(true);
+				userAdapter.getFederatedUserByInternalId.resolves(undefined);
+				userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
 
-			await service.joinExternalPublicRoom({
-				internalUserId: 'internalUserId',
-				normalizedRoomId: 'normalizedRoomId',
-				externalRoomId: 'externalRoomId',
-			} as any);
+				await expect(service.joinExternalPublicRoom({ internalUserId: 'internalUserId' } as any)).to.be.rejectedWith(
+					'User with internalId internalUserId not found',
+				);
+			});
 
-			expect(spy.called).to.be.false;
-		});
+			it('should throw an error if the room the user is trying to join does not exists', async () => {
+				settingsAdapter.isFederationEnabled.returns(true);
+				userAdapter.getFederatedUserByInternalId.resolves(user);
+				userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
+				bridge.searchPublicRooms.resolves({ chunk: [{ room_id: 'differentId' }] });
 
-		it('should create a federated room if it does not exists yet', async () => {
-			settingsAdapter.isFederationEnabled.returns(true);
-			userAdapter.getFederatedUserByExternalId.onFirstCall().resolves(undefined);
-			userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
-			userAdapter.getFederatedUserByInternalId.resolves(user);
-			userAdapter.getFederatedUserByExternalId.resolves(user);
-			bridge.getRoomData.resolves({ creator: { id: 'id', username: 'username' }, name: 'roomName' });
-			roomAdapter.getFederatedRoomByExternalId.onFirstCall().resolves(undefined);
-			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+				await expect(
+					service.joinExternalPublicRoom({ internalUserId: 'internalUserId', externalRoomId: 'externalRoomId' } as any),
+				).to.be.rejectedWith("Cannot find the room you're trying to join");
+			});
 
-			await service.joinExternalPublicRoom({
-				internalUserId: 'internalUserId',
-				normalizedRoomId: 'normalizedRoomId',
-				externalRoomId: 'externalRoomId',
-			} as any);
+			it('should throw an error if the room the user is trying to join does not exists due to the server was not able to search', async () => {
+				settingsAdapter.isFederationEnabled.returns(true);
+				userAdapter.getFederatedUserByInternalId.resolves(user);
+				userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
+				bridge.searchPublicRooms.rejects();
 
-			const roomToBeCreated = FederatedRoomEE.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'roomName');
+				await expect(
+					service.joinExternalPublicRoom({ internalUserId: 'internalUserId', externalRoomId: 'externalRoomId' } as any),
+				).to.be.rejectedWith("Cannot find the room you're trying to join");
+			});
 
-			expect(roomAdapter.createFederatedRoom.calledWith(roomToBeCreated)).to.be.true;
-		});
+			it('should throw an error if the room the user is trying to join contains more users (its bigger) than the allowed by the setting', async () => {
+				settingsAdapter.isFederationEnabled.returns(true);
+				settingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms.returns('100');
+				userAdapter.getFederatedUserByInternalId.resolves(user);
+				userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
+				bridge.searchPublicRooms.resolves({ chunk: [{ room_id: 'externalRoomId', num_joined_members: 101 }] });
 
-		it('should NOT create a federated room if it already exists', async () => {
-			settingsAdapter.isFederationEnabled.returns(true);
-			userAdapter.getFederatedUserByExternalId.onFirstCall().resolves(undefined);
-			userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
-			userAdapter.getFederatedUserByInternalId.resolves(user);
-			userAdapter.getFederatedUserByExternalId.resolves(user);
-			bridge.getRoomData.resolves({ creator: { id: 'id', username: 'username' }, name: 'roomName' });
-			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+				await expect(
+					service.joinExternalPublicRoom({ internalUserId: 'internalUserId', externalRoomId: 'externalRoomId' } as any),
+				).to.be.rejectedWith("Can't join a room bigger than the admin of your workspace has set as the maximum size");
+			});
 
-			await service.joinExternalPublicRoom({
-				internalUserId: 'internalUserId',
-				normalizedRoomId: 'normalizedRoomId',
-			} as any);
+			it('should join the user to the remote room', async () => {
+				settingsAdapter.isFederationEnabled.returns(true);
+				userAdapter.getFederatedUserByInternalId.resolves(user);
+				sinon.stub(service, 'isRoomSizeAllowed').returns(true);
 
-			expect(roomAdapter.createFederatedRoom.called).to.be.false;
-		});
+				await service.joinExternalPublicRoom({
+					externalRoomId: 'externalRoomId',
+					internalUserId: 'internalUserId',
+					externalRoomHomeServerName: 'externalRoomHomeServerName',
+				} as any);
 
-		it('should subscribe to typing events and finally adds the user to the room', async () => {
-			settingsAdapter.isFederationEnabled.returns(true);
-			userAdapter.getFederatedUserByExternalId.onFirstCall().resolves(undefined);
-			userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
-			userAdapter.getFederatedUserByInternalId.resolves(user);
-			userAdapter.getFederatedUserByExternalId.resolves(user);
-			bridge.getRoomData.resolves({ creator: { id: 'id', username: 'username' }, name: 'roomName' });
-			roomAdapter.getFederatedRoomByExternalId.resolves(room);
-
-			await service.joinExternalPublicRoom({
-				internalUserId: 'internalUserId',
-				normalizedRoomId: 'normalizedRoomId',
-			} as any);
-
-			expect(notificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId.calledWith(room.getInternalId())).to.be.true;
-			expect(roomAdapter.addUserToRoom.calledWith(room, user)).to.be.true;
+				expect(bridge.joinRoom.calledWith('externalRoomId', user.getExternalId(), ['externalRoomHomeServerName'])).to.be.true;
+			});
 		});
 	});
 });

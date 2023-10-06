@@ -27,6 +27,8 @@ type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 			callbackRef: (node: HTMLElement) => void;
 			commandsRef: ComposerBoxPopupImperativeCommands<T>;
 			suspended: boolean;
+			filter: unknown;
+			clearPopup: () => void;
 	  }
 	| {
 			popup: undefined;
@@ -37,6 +39,8 @@ type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 			select: undefined;
 			commandsRef: ComposerBoxPopupImperativeCommands<T>;
 			suspended: boolean;
+			filter: unknown;
+			clearPopup: () => void;
 	  };
 
 const keys = {
@@ -73,6 +77,11 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		if (!popup) {
 			return;
 		}
+
+		if (popup?.preview && suspended) {
+			setFocused(undefined);
+			return;
+		}
 		setFocused((focused) => {
 			const sortedItems = items
 				.filter((item) => item.isSuccess)
@@ -80,7 +89,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 				.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
 			return sortedItems.find((item) => item._id === focused?._id) ?? sortedItems[0];
 		});
-	}, [items, popup]);
+	}, [items, popup, suspended]);
 
 	const select = useMutableCallback((item: T) => {
 		if (!popup) {
@@ -105,7 +114,6 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 				end: chat?.composer?.selection.start,
 			});
 		}
-
 		setPopup(undefined);
 		setFocused(undefined);
 	});
@@ -119,18 +127,22 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 			return;
 		}
 
-		const configuration = configurations.find(({ trigger, matchSelectorRegex, triggerAnywhere }) => {
+		const configuration = configurations.find(({ trigger, matchSelectorRegex, triggerAnywhere, triggerLength }) => {
 			const selector =
 				matchSelectorRegex ?? (triggerAnywhere ? new RegExp(`(?:^| |\n)(${trigger})[^\\s]*$`) : new RegExp(`(?:^)(${trigger})[^\\s]*$`));
 			const result = selector.test(value);
-			return result;
+			if (!triggerLength || !result) {
+				return result;
+			}
+			const filter = value.match(selector);
+			return filter && triggerLength < filter[0].length;
 		});
-
 		setPopup(configuration);
 		if (!configuration) {
 			setFocused(undefined);
 			setFilter('');
 		}
+
 		if (configuration) {
 			const selector =
 				configuration.matchSelectorRegex ??
@@ -223,6 +235,16 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		}
 	});
 
+	const clearPopup = useMutableCallback(() => {
+		if (!popup) {
+			return;
+		}
+
+		setPopup(undefined);
+		setFocused(undefined);
+		setFilter('');
+	});
+
 	const callbackRef = useCallback(
 		(node: HTMLElement | null) => {
 			if (!node) {
@@ -246,6 +268,8 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 			select: undefined,
 			suspended: true,
 			commandsRef,
+			filter: undefined,
+			clearPopup,
 		};
 	}
 
@@ -255,10 +279,10 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		ariaActiveDescendant,
 		popup,
 		select,
-
+		filter,
 		suspended,
-
 		commandsRef,
 		callbackRef,
+		clearPopup,
 	};
 };

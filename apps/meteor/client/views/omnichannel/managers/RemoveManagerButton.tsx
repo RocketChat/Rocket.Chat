@@ -1,10 +1,11 @@
-import { Table, IconButton } from '@rocket.chat/fuselage';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
+import { GenericTableCell } from '../../../components/GenericTable';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
 const RemoveManagerButton = ({ _id, reload }: { _id: string; reload: () => void }): ReactElement => {
@@ -41,9 +42,9 @@ const RemoveManagerButton = ({ _id, reload }: { _id: string; reload: () => void 
 	});
 
 	return (
-		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
+		<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 			<IconButton small icon='trash' title={t('Remove')} onClick={handleDelete} />
-		</Table.Cell>
+		</GenericTableCell>
 	);
 };
 

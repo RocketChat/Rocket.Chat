@@ -1,17 +1,17 @@
 import { EventEmitter } from 'events';
 
+import debugInitializer from 'debug';
 import humanInterval from 'human-interval';
 import { MongoClient } from 'mongodb';
 import type { MongoClientOptions, Db, Document, Collection, ModifyResult, InsertOneResult } from 'mongodb';
-import debugInitializer from 'debug';
 
-import { hasMongoProtocol } from './lib/hasMongoProtocol';
-import { createJob } from './createJob';
-import { noCallback } from './lib/noCallback';
 import { Job } from './Job';
 import { JobProcessingQueue } from './JobProcessingQueue';
-import type { JobDefinition, JobOptions } from './definition/JobDefinition';
+import { createJob } from './createJob';
 import type { IJob } from './definition/IJob';
+import type { JobDefinition, JobOptions } from './definition/JobDefinition';
+import { hasMongoProtocol } from './lib/hasMongoProtocol';
+import { noCallback } from './lib/noCallback';
 
 const debug = debugInitializer('agenda:agenda');
 
@@ -399,6 +399,12 @@ export class Agenda extends EventEmitter {
 		}
 	}
 
+	public async has(query: Record<string, any>): Promise<boolean> {
+		debug('checking whether Agenda has any jobs matching query', query);
+		const record = await this._collection.findOne(query, { projection: { _id: 1 } });
+		return record !== null;
+	}
+
 	private async _processDbResult(job: Job, result: ModifyResult | InsertOneResult): Promise<void> {
 		debug('processDbResult() called with success, checking whether to process job immediately or not');
 
@@ -460,7 +466,7 @@ export class Agenda extends EventEmitter {
 
 		const update = {
 			$set,
-			$setOnInsert,
+			...(Object.keys($setOnInsert).length && { $setOnInsert }),
 		};
 
 		// Try an upsert

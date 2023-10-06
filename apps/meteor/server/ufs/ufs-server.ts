@@ -4,11 +4,11 @@ import stream from 'stream';
 import URL from 'url';
 import zlib from 'zlib';
 
-import mkdirp from 'mkdirp';
-import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
+import mkdirp from 'mkdirp';
 
-import { UploadFS } from '.';
+import { UploadFS } from './ufs';
 
 Meteor.startup(() => {
 	const path = UploadFS.config.tmpDir;

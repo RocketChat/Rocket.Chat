@@ -1,4 +1,4 @@
-import { Modal, Box, Field, TextInput, CheckBox, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Modal, Box, Field, FieldLabel, FieldRow, TextInput, CheckBox, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -66,14 +66,14 @@ const RegisterWorkspaceSetupStepOneModal = ({
 						{t('RegisterWorkspace_Setup_Subtitle')}
 					</Box>
 					<Field pbs={10}>
-						<Field.Label>{t('RegisterWorkspace_Setup_Label')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('RegisterWorkspace_Setup_Label')}</FieldLabel>
+						<FieldRow>
 							<TextInput
 								onChange={(e) => {
 									setEmail((e.target as HTMLInputElement).value);
 								}}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Box mb={16} fontSize='c1'>
 						<Box is='p'>
@@ -90,7 +90,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 						<Box is='p' fontSize='c1' pis={8}>
 							<Trans i18nKey='RegisterWorkspace_Setup_Terms_Privacy'>
 								I agree with <ExternalLink to='https://rocket.chat/terms'>Terms and Conditions </ExternalLink>
-								and {''}
+								and
 								<ExternalLink to='https://rocket.chat/privacy'>Privacy Policy</ExternalLink>
 							</Trans>
 						</Box>

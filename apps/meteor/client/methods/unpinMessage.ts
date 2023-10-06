@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { ChatMessage, ChatSubscription } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
-import { t } from '../../app/utils/client';
+import { t } from '../../app/utils/lib/i18n';
 import { dispatchToastMessage } from '../lib/toast';
 
 Meteor.methods<ServerMethods>({

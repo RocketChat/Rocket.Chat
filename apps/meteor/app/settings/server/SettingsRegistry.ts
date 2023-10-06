@@ -1,15 +1,15 @@
-import { Emitter } from '@rocket.chat/emitter';
-import { isEqual } from 'underscore';
 import type { ISetting, ISettingGroup, Optional, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingEnterprise } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
+import { isEqual } from 'underscore';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
-import { overwriteSetting } from './functions/overwriteSetting';
-import { overrideSetting } from './functions/overrideSetting';
-import { getSettingDefaults } from './functions/getSettingDefaults';
-import { validateSetting } from './functions/validateSetting';
 import type { ICachedSettings } from './CachedSettings';
+import { getSettingDefaults } from './functions/getSettingDefaults';
+import { overrideSetting } from './functions/overrideSetting';
+import { overwriteSetting } from './functions/overwriteSetting';
+import { validateSetting } from './functions/validateSetting';
 
 const blockedSettings = new Set<string>();
 const hiddenSettings = new Set<string>();

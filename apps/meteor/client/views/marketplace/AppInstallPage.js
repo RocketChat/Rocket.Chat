@@ -1,25 +1,25 @@
 import { Button, ButtonGroup, Icon, Field, FieldGroup, TextInput, Throbber } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
-	useRoute,
-	useQueryStringParameter,
 	useEndpoint,
 	useUpload,
 	useTranslation,
-	useCurrentRoute,
 	useRouteParameter,
+	useRouter,
+	useSearchParameter,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Apps } from '../../../ee/client/apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../ee/client/apps/orchestrator';
 import Page from '../../components/Page';
+import { useAppsReload } from '../../contexts/hooks/useAppsReload';
 import { useFileInput } from '../../hooks/useFileInput';
 import { useForm } from '../../hooks/useForm';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import AppUpdateModal from './AppUpdateModal';
-import { useAppsReload } from './AppsContext';
 import AppInstallModal from './components/AppInstallModal/AppInstallModal';
-import { handleAPIError, handleInstallError } from './helpers';
+import { handleAPIError } from './helpers/handleAPIError';
+import { handleInstallError } from './helpers/handleInstallError';
 import { useAppsCountQuery } from './hooks/useAppsCountQuery';
 import { getManifestFromZippedApp } from './lib/getManifestFromZippedApp';
 
@@ -30,20 +30,14 @@ function AppInstallPage() {
 
 	const reload = useAppsReload();
 
-	const [currentRouteName] = useCurrentRoute();
-	if (!currentRouteName) {
-		throw new Error('No current route name');
-	}
-
-	const router = useRoute(currentRouteName);
-	const upgradeRoute = useRoute('upgrade');
+	const router = useRouter();
 
 	const context = useRouteParameter('context');
 
 	const setModal = useSetModal();
 
-	const appId = useQueryStringParameter('id');
-	const queryUrl = useQueryStringParameter('url');
+	const appId = useSearchParameter('id');
+	const queryUrl = useSearchParameter('url');
 
 	const [installing, setInstalling] = useState(false);
 
@@ -83,16 +77,23 @@ function AppInstallPage() {
 			} else {
 				app = await uploadAppEndpoint(fileData);
 			}
+
+			router.navigate({
+				name: 'marketplace',
+				params: {
+					context: 'private',
+					page: 'info',
+					id: appId || app.app.id,
+				},
+			});
+
+			reload();
 		} catch (e) {
 			handleAPIError(e);
+		} finally {
+			setInstalling(false);
+			setModal(null);
 		}
-
-		router.push({ context: 'private', page: 'info', id: appId || app.app.id });
-
-		reload();
-
-		setInstalling(false);
-		setModal(null);
 	};
 
 	const cancelAction = useCallback(() => {
@@ -102,7 +103,7 @@ function AppInstallPage() {
 
 	const isAppInstalled = async (appId) => {
 		try {
-			const app = await Apps.getApp(appId);
+			const app = await AppClientOrchestratorInstance.getApp(appId);
 			return !!app || false;
 		} catch (e) {
 			return false;
@@ -177,7 +178,12 @@ function AppInstallPage() {
 				handleClose={cancelAction}
 				handleConfirm={() => uploadFile(appFile, manifest)}
 				handleEnableUnlimitedApps={() => {
-					upgradeRoute.push({ type: 'go-fully-featured-registered' });
+					router.navigate({
+						name: 'upgrade',
+						params: {
+							type: 'go-fully-featured-registered',
+						},
+					});
 					setModal(null);
 				}}
 			/>,
@@ -185,7 +191,13 @@ function AppInstallPage() {
 	};
 
 	const handleCancel = () => {
-		router.push({ context, page: 'list' });
+		router.navigate({
+			name: 'marketplace',
+			params: {
+				context,
+				page: 'list',
+			},
+		});
 	};
 
 	return (
@@ -205,8 +217,7 @@ function AppInstallPage() {
 							<TextInput
 								value={file.name || ''}
 								addon={
-									<Button small primary onClick={handleUploadButtonClick} mb='neg-x4' mie='neg-x8'>
-										<Icon name='upload' size='x12' />
+									<Button icon='upload' small primary onClick={handleUploadButtonClick} mb='neg-x4' mie='neg-x8'>
 										{t('Browse_Files')}
 									</Button>
 								}

@@ -3,14 +3,13 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 import React, { memo } from 'react';
 
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import { FormSkeleton } from '../../../components/Skeleton';
 import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
-import VerticalBar from '../../../components/VerticalBar';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useFormsSubscription } from '../additionalForms';
-import AgentInfoAction from './AgentInfoAction';
 
 type AgentInfoProps = {
 	uid: string;
@@ -29,14 +28,14 @@ const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...pr
 	}
 
 	if (result.phase === AsyncStatePhase.REJECTED) {
-		return <Box mbs='x16'>{t('User_not_found')}</Box>;
+		return <Box mbs={16}>{t('User_not_found')}</Box>;
 	}
 
 	const { user } = result.value;
 	const { username, statusLivechat, status: userStatus } = user;
 
 	return (
-		<VerticalBar.ScrollableContent p='x24' {...props}>
+		<ContextualbarScrollableContent p={24} {...props}>
 			{username && (
 				<Box alignSelf='center'>
 					<UserInfo.Avatar data-qa='AgentUserInfoAvatar' username={username} />
@@ -47,8 +46,8 @@ const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...pr
 				{children}
 			</ButtonGroup>
 
-			<Margins block='x4'>
-				<Box mb='x2'>
+			<Margins block={4}>
+				<Box mb={2}>
 					<UserInfo.Username data-qa='AgentInfoUserInfoUserName' username={username} status={<UserStatus status={userStatus} />} />
 				</Box>
 
@@ -61,10 +60,8 @@ const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...pr
 
 				{MaxChats && <MaxChats data={user} />}
 			</Margins>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 });
 
-export default Object.assign(AgentInfo, {
-	Action: AgentInfoAction,
-});
+export default AgentInfo;

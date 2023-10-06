@@ -1,7 +1,7 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Options, Box, Option, Field, Select } from '@rocket.chat/fuselage';
+import { Options, Box, Option, Field, FieldLabel, FieldRow, SelectLegacy } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
@@ -40,16 +40,16 @@ export const PrioritiesSelect = ({ value = '', label, options, onChange }: Prior
 		[sorting],
 	);
 
-	// eslint-disable-next-line react/no-multi-comp, react/display-name
-	const renderOptions = forwardRef<HTMLElement, ComponentProps<typeof Options>>((props, ref) => (
-		<Options ref={ref} {...props} maxHeight={200} />
-	));
+	// eslint-disable-next-line react/no-multi-comp
+	const renderOptions = forwardRef<HTMLElement, ComponentProps<typeof Options>>(function OptionsWrapper(props, ref) {
+		return <Options ref={ref} {...props} maxHeight={200} />;
+	});
 
 	return (
 		<Field>
-			<Field.Label>{label}</Field.Label>
-			<Field.Row>
-				<Select
+			<FieldLabel>{label}</FieldLabel>
+			<FieldRow>
+				<SelectLegacy
 					value={value}
 					onChange={onChange}
 					options={formattedOptions}
@@ -57,7 +57,7 @@ export const PrioritiesSelect = ({ value = '', label, options, onChange }: Prior
 					renderSelected={({ label, value }) => <Box flexGrow='1'>{renderOption(label, value)}</Box>}
 					renderItem={({ label, value, ...props }) => <Option {...props} label={renderOption(label, value)} />}
 				/>
-			</Field.Row>
+			</FieldRow>
 		</Field>
 	);
 };

@@ -1,7 +1,6 @@
-/* eslint-env mocha */
-
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -173,7 +172,7 @@ describe('LIVECHAT - inquiries', function () {
 					expect(res.body).to.have.property('success', true);
 				});
 			const inquiry2 = (await fetchInquiry(room._id)) as ILivechatInquiryRecord;
-			expect(inquiry2.source.type).to.equal('api');
+			expect(inquiry2.source?.type).to.equal('api');
 			expect(inquiry2.status).to.equal('taken');
 		}).timeout(5000);
 	});
@@ -186,7 +185,7 @@ describe('LIVECHAT - inquiries', function () {
 		it('should return an array of inquiries', async () => {
 			await updatePermission('view-l-room', ['admin']);
 			await request
-				.get(api('livechat/inquiries.queued'))
+				.get(api('livechat/inquiries.queuedForUser'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -196,6 +195,20 @@ describe('LIVECHAT - inquiries', function () {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
+				});
+		});
+		it('should validate all returned inquiries are queued', async () => {
+			await request
+				.get(api('livechat/inquiries.queuedForUser'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect(async (res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.inquiries).to.be.an('array');
+					for (const inquiry of res.body.inquiries) {
+						expect(inquiry).to.have.property('status', 'queued');
+					}
 				});
 		});
 	});

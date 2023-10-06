@@ -5,13 +5,13 @@ import * as constants from './tests/e2e/config/constants';
 export default {
 	globalSetup: require.resolve('./tests/e2e/config/global-setup.ts'),
 	use: {
+		channel: 'chromium',
 		headless: true,
 		ignoreHTTPSErrors: true,
 		trace: 'retain-on-failure',
 		baseURL: constants.BASE_URL,
 		screenshot: process.env.CI ? 'off' : 'only-on-failure',
 		video: process.env.CI ? 'off' : 'retain-on-failure',
-		channel: 'chrome',
 		launchOptions: {
 			// force GPU hardware acceleration
 			// (even in headless mode)
@@ -22,7 +22,16 @@ export default {
 	outputDir: 'tests/e2e/.playwright',
 	reporter: [
 		['list'],
-		// process.env.CI ? ['github'] : ['list'],
+		process.env.REPORTER_ROCKETCHAT_REPORT === 'true' && [
+			'./reporters/rocketchat.ts',
+			{
+				url: process.env.REPORTER_ROCKETCHAT_URL,
+				apiKey: process.env.REPORTER_ROCKETCHAT_API_KEY,
+				branch: process.env.REPORTER_ROCKETCHAT_BRANCH,
+				run: Number(process.env.REPORTER_ROCKETCHAT_RUN),
+				draft: process.env.REPORTER_ROCKETCHAT_DRAFT === 'true',
+			},
+		],
 		[
 			'playwright-qase-reporter',
 			{
@@ -36,11 +45,13 @@ export default {
 				environmentId: '1',
 			},
 		],
-	],
+	].filter(Boolean),
 	testDir: 'tests/e2e',
 	testIgnore: 'tests/e2e/federation/**',
 	workers: 1,
 	timeout: 60 * 1000,
 	globalTimeout: (process.env.IS_EE === 'true' ? 50 : 40) * 60 * 1000,
 	maxFailures: process.env.CI ? 5 : undefined,
+	// Retry on CI only.
+	retries: process.env.CI ? 2 : 0,
 } as PlaywrightTestConfig;

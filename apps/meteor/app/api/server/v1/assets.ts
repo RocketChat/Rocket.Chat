@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { isAssetsUnsetAssetProps } from '@rocket.chat/rest-typings';
+import { Meteor } from 'meteor/meteor';
 
 import { RocketChatAssets } from '../../../assets/server';
+import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
-import { settings } from '../../../settings/server';
 
 API.v1.addRoute(
 	'assets.setAsset',

@@ -21,7 +21,7 @@ export const useAppsCountQuery = (context: MarketplaceRouteContext) => {
 	const getAppsCount = useEndpoint('GET', '/apps/count');
 
 	return useQuery(
-		['apps/count', { context }],
+		['apps/count', context],
 		async () => {
 			const data = await getAppsCount();
 

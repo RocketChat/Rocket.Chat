@@ -1,15 +1,16 @@
-import type { UserStatus } from '@rocket.chat/core-typings';
+import type { UserStatus, IUser } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings } from '../../app/settings/client';
-import { AccountBox } from '../../app/ui-utils/client';
-import { callbacks } from '../../lib/callbacks';
+import { AccountBox } from '../../app/ui-utils/client/lib/AccountBox';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { afterLogoutCleanUpCallback } from '../../lib/callbacks/afterLogoutCleanUpCallback';
 import { capitalize, ltrim, rtrim } from '../../lib/utils/stringUtils';
 import { baseURI } from '../lib/baseURI';
-import { add, remove } from '../views/room/lib/Toolbox/IframeButtons';
+import { router } from '../providers/RouterProvider';
 
 const commands = {
 	'go'(data: { path: string }) {
@@ -23,8 +24,14 @@ const commands = {
 			return ret;
 		}, {} as Record<string, string>);
 
-		const newPath = newUrl.pathname.replace(new RegExp(`^${escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX)}`), '');
-		FlowRouter.go(newPath, undefined, { ...FlowRouter.current().queryParams, ...newParams });
+		const newPath = newUrl.pathname.replace(
+			new RegExp(`^${escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX)}`),
+			'',
+		) as LocationPathname;
+		router.navigate({
+			pathname: newPath,
+			search: { ...router.getSearchParameters(), ...newParams },
+		});
 	},
 
 	'set-user-status'(data: { status: UserStatus }) {
@@ -69,17 +76,13 @@ const commands = {
 	async 'logout'() {
 		const user = Meteor.user();
 		Meteor.logout(() => {
-			void callbacks.run('afterLogoutCleanUp', user);
-			Meteor.call('logoutCleanUp', user);
-			return FlowRouter.go('home');
+			if (!user) {
+				return;
+			}
+			void afterLogoutCleanUpCallback.run(user);
+			sdk.call('logoutCleanUp', user as unknown as IUser);
+			return router.navigate('/home');
 		});
-	},
-
-	'set-toolbar-button'({ id, icon, label }: { id: string; icon: string; label: string }) {
-		add(id, { id, icon, label });
-	},
-	'remove-toolbar-button'({ id }: { id: string }) {
-		remove(id);
 	},
 } as const;
 

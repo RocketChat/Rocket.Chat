@@ -14,7 +14,6 @@ import {
 	Button,
 	ButtonGroup,
 	Box,
-	Icon,
 	TextAreaInput,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -24,7 +23,7 @@ import {
 	useSetting,
 	useMethod,
 	useTranslation,
-	useRoute,
+	useRouter,
 	useToastMessageDispatch,
 	useEndpoint,
 } from '@rocket.chat/ui-contexts';
@@ -32,9 +31,16 @@ import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
+import {
+	ContextualbarHeader,
+	ContextualbarBack,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+} from '../../../../../components/Contextualbar';
 import GenericModal from '../../../../../components/GenericModal';
 import RawText from '../../../../../components/RawText';
-import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
@@ -54,7 +60,7 @@ type EditRoomInfoProps = {
 const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
-	const router = useRoute('home');
+	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isFederated = useMemo(() => isRoomFederated(room), [room]);
 
@@ -151,7 +157,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		const handleConfirmDelete = async () => {
 			try {
 				await deleteRoom(room._id);
-				router.push({});
+				router.navigate('/home');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
@@ -168,13 +174,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 
 	return (
 		<>
-			<VerticalBar.Header>
-				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
-				<VerticalBar.Text>{room.teamId ? t('edit-team') : t('edit-room')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
+			<ContextualbarHeader>
+				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
+				<ContextualbarTitle>{room.teamId ? t('edit-team') : t('edit-room')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
 
-			<VerticalBar.ScrollableContent p='x24'>
+			<ContextualbarScrollableContent p={24}>
 				<Box display='flex' justifyContent='center'>
 					<Controller
 						control={control}
@@ -427,15 +433,11 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 											<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 												<Field.Label>{t('RetentionPolicyRoom_FilesOnly')}</Field.Label>
 												<Field.Row>
-													{
-														<Controller
-															control={control}
-															name='retentionFilesOnly'
-															render={({ field: { onChange, value, ref } }) => (
-																<ToggleSwitch ref={ref} checked={value} onChange={onChange} />
-															)}
-														/>
-													}
+													<Controller
+														control={control}
+														name='retentionFilesOnly'
+														render={({ field: { onChange, value, ref } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+													/>
 												</Field.Row>
 											</Box>
 										</Field>
@@ -445,9 +447,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						</Accordion.Item>
 					</Accordion>
 				)}
-			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
-				<ButtonGroup stretch mbe='x12'>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
 					<Button type='reset' disabled={!isDirty} onClick={handleResetForm}>
 						{t('Reset')}
 					</Button>
@@ -455,13 +457,12 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup stretch>
-					<Button danger disabled={!canDeleteRoom || isFederated} onClick={handleDelete}>
-						<Icon name='trash' size='x16' />
+				<ButtonGroup stretch mbs={8}>
+					<Button icon='trash' danger disabled={!canDeleteRoom || isFederated} onClick={handleDelete}>
 						{t('Delete')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 };

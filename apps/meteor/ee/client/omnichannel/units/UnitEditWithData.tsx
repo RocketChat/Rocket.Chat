@@ -35,7 +35,7 @@ const UnitEditWithData: FC<{
 
 	if (error || unitMonitorsError || unitDepartmentsError) {
 		return (
-			<Callout m='x16' type='danger'>
+			<Callout m={16} type='danger'>
 				{t('Not_Available')}
 			</Callout>
 		);
