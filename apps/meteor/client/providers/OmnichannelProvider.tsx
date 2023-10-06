@@ -84,6 +84,12 @@ const OmnichannelProvider: FC = ({ children }) => {
 	}, [isPrioritiesEnabled, queryClient, subscribe]);
 
 	useEffect(() => {
+		return subscribe(`mac.limit`, ({ limitReached }) => {
+			limitReached && queryClient.invalidateQueries(['/v1/omnichannel/mac/check']);
+		});
+	}, [subscribe, queryClient]);
+
+	useEffect(() => {
 		if (!accessible) {
 			return;
 		}
