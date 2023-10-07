@@ -1,17 +1,21 @@
 import { Banner } from '@rocket.chat/core-services';
-import type { IUiKitCoreApp } from '@rocket.chat/core-services';
+import type { IUiKitCoreApp, UiKitCoreAppPayload } from '@rocket.chat/core-services';
 
 export class BannerModule implements IUiKitCoreApp {
 	appId = 'banner-core';
 
 	// when banner view is closed we need to dissmiss that banner for that user
-	async viewClosed(payload: any): Promise<any> {
+	async viewClosed(payload: UiKitCoreAppPayload) {
 		const {
 			payload: {
 				view: { viewId: bannerId },
 			},
-			user: { _id: userId },
+			user: { _id: userId } = {},
 		} = payload;
+
+		if (!userId) {
+			throw new Error('invalid user');
+		}
 
 		return Banner.dismiss(userId, bannerId);
 	}
