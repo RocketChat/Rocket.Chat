@@ -27,4 +27,4 @@ flags:
 comment:
   layout: 'reach, diff, flags'
 fixes:
-  - '../../../../home/runner/work/Rocket.Chat/Rocket.Chat::'
+  - '../../../../home/runner/work/Rocket.Chat/Rocket.Chat/::'
