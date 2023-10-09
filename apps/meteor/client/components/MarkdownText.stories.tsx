@@ -41,7 +41,7 @@ export const Example: ComponentStory<typeof MarkdownText> = () => (
 
 			\`rocket.chat();\`
 
-			https://rocket.chat
+			https://rocket
 		`}
 	/>
 );

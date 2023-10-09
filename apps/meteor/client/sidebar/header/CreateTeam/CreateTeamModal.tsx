@@ -234,7 +234,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 							/>
 						</Box>
 					</Field>
-					<Field>
+					{/* <Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
 								<Field.Label htmlFor={encryptedId}>{t('Teams_New_Encrypted_Label')}</Field.Label>
@@ -257,8 +257,8 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								)}
 							/>
 						</Box>
-					</Field>
-					<Field>
+					</Field> */}
+					{/* <Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
 								<Field.Label htmlFor={broadcastId}>{t('Teams_New_Broadcast_Label')}</Field.Label>
@@ -272,7 +272,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								)}
 							/>
 						</Box>
-					</Field>
+					</Field> */}
 					<Field>
 						<Field.Label htmlFor={addMembersId}>
 							{t('Teams_New_Add_members_Label')}{' '}

@@ -1,5 +1,4 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isVoipRoom } from '@rocket.chat/core-typings';
 import { HeaderToolbox } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -9,7 +8,6 @@ import BurgerMenu from '../../../components/BurgerMenu';
 
 const DirectRoomHeader = lazy(() => import('./DirectRoomHeader'));
 const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHeader'));
-const VoipRoomHeader = lazy(() => import('./Omnichannel/VoipRoomHeader'));
 const RoomHeader = lazy(() => import('./RoomHeader'));
 
 type HeaderProps<T> = {
@@ -40,10 +38,6 @@ const Header = ({ room }: HeaderProps<IRoom>): ReactElement | null => {
 
 	if (room.t === 'l') {
 		return <OmnichannelRoomHeader slots={slots} />;
-	}
-
-	if (isVoipRoom(room)) {
-		return <VoipRoomHeader slots={slots} room={room} />;
 	}
 
 	return <RoomHeader slots={slots} room={room} topic={room.topic} />;

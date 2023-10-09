@@ -2,7 +2,7 @@ import { Sidebar } from '@rocket.chat/fuselage';
 import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
-
+import { useRole } from '@rocket.chat/ui-contexts';
 import UserAvatarWithStatus from './UserAvatarWithStatus';
 import UserMenu from './UserMenu';
 import Administration from './actions/Administration';
@@ -22,6 +22,7 @@ import Sort from './actions/Sort';
 const Header = (): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();
+	const isAdmin = useRole('admin');
 
 	return (
 		<Sidebar.TopBar.Section>
@@ -34,7 +35,9 @@ const Header = (): ReactElement => {
 						<Directory title={t('Directory')} />
 						<Sort title={t('Display')} />
 						<CreateRoom title={t('Create_new')} data-qa='sidebar-create' />
-						<Administration title={t('Administration')} />
+						{
+							isAdmin && <Administration title={t('Administration')} />
+						}
 					</>
 				)}
 				{!user && <Login title={t('Login')} />}

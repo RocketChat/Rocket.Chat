@@ -69,13 +69,13 @@ const TeamsInfo = ({
 					icon: 'trash' as const,
 				},
 			}),
-			...(onClickConvertToChannel && {
-				convertToChannel: {
-					label: t('Convert_to_channel'),
-					action: onClickConvertToChannel,
-					icon: 'hash' as const,
-				},
-			}),
+			// ...(onClickConvertToChannel && {
+			// 	convertToChannel: {
+			// 		label: t('Convert_to_channel'),
+			// 		action: onClickConvertToChannel,
+			// 		icon: 'hash' as const,
+			// 	},
+			// }),
 			...(onClickHide && {
 				hide: {
 					label: t('Hide'),
@@ -151,13 +151,13 @@ const TeamsInfo = ({
 					</InfoPanel.Section>
 
 					<InfoPanel.Section>
-						{room.broadcast && (
+						{/* {room.broadcast && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>
 									<b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}
 								</InfoPanel.Label>
 							</InfoPanel.Field>
-						)}
+						)} */}
 
 						{room.description && (
 							<InfoPanel.Field>
@@ -186,7 +186,7 @@ const TeamsInfo = ({
 							</InfoPanel.Field>
 						)}
 
-						{onClickViewChannels && (
+						{/* {onClickViewChannels && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Teams_channels')}</InfoPanel.Label>
 								<InfoPanel.Text>
@@ -195,7 +195,7 @@ const TeamsInfo = ({
 									</Button>
 								</InfoPanel.Text>
 							</InfoPanel.Field>
-						)}
+						)} */}
 
 						{retentionPolicyEnabled && (
 							<RetentionPolicyCallout

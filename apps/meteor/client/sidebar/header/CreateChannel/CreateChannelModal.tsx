@@ -321,28 +321,6 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 						</Box>
 					</Field>
 					<Field>
-						<Box display='flex' justifyContent='space-between' alignItems='start'>
-							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label htmlFor={broadcastId}>{t('Broadcast')}</Field.Label>
-								<Field.Hint id={`${broadcastId}-hint`}>{t('Broadcast_channel_Description')}</Field.Hint>
-							</Box>
-							<Controller
-								control={control}
-								name='broadcast'
-								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch
-										aria-describedby={`${broadcastId}-hint`}
-										id={broadcastId}
-										ref={ref}
-										checked={value}
-										disabled={!!federated}
-										onChange={onChange}
-									/>
-								)}
-							/>
-						</Box>
-					</Field>
-					<Field>
 						<Field.Label htmlFor={addMembersId}>{t('Add_members')}</Field.Label>
 						<Controller
 							control={control}

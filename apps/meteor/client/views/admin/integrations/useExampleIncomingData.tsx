@@ -19,7 +19,7 @@ export function useExampleData({
 			attachments: [
 				{
 					title: 'Rocket.Chat',
-					title_link: 'https://rocket.chat',
+					title_link: 'https://rocket',
 					text: 'Rocket.Chat, the best open source chat',
 					image_url: imageUrl,
 					color: '#764FA5',

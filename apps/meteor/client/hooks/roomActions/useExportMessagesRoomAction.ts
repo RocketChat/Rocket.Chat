@@ -11,20 +11,17 @@ export const useExportMessagesRoomAction = () => {
 	const permitted = usePermission('mail-messages', room._id);
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
-		if (!permitted) {
 			return undefined;
-		}
-
-		return {
-			id: 'export-messages',
-			groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
-			anonymous: true,
-			title: 'Export_Messages',
-			icon: 'mail',
-			tabComponent: ExportMessages,
-			full: true,
-			order: 12,
-			type: 'communication',
-		};
+		// return {
+		// 	id: 'export-messages',
+		// 	groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
+		// 	anonymous: true,
+		// 	title: 'Export_Messages',
+		// 	icon: 'mail',
+		// 	tabComponent: ExportMessages,
+		// 	full: true,
+		// 	order: 12,
+		// 	type: 'communication',
+		// };
 	}, [permitted]);
 };

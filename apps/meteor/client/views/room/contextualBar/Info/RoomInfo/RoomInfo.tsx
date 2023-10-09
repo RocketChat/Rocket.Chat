@@ -97,13 +97,13 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 					)}
 
 					<InfoPanel.Section>
-						{broadcast && (
+						{/* {broadcast && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>
 									<b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}
 								</InfoPanel.Label>
 							</InfoPanel.Field>
-						)}
+						)} */}
 
 						{description && description !== '' && (
 							<InfoPanel.Field>

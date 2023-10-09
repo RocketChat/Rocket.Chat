@@ -46,7 +46,7 @@ const MessageBoxActionsToolbar = ({
 		<>
 			{variant !== 'small' && actions}
 			{variant === 'small' && featuredAction}
-			<ActionsToolbarDropdown {...(variant === 'small' && { actions })} isRecording={isRecording} rid={rid} tmid={tmid} {...props} />
+			{/* <ActionsToolbarDropdown {...(variant === 'small' && { actions })} isRecording={isRecording} rid={rid} tmid={tmid} {...props} /> */}
 		</>
 	);
 };

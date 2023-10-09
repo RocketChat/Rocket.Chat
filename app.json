@@ -4,7 +4,7 @@
   "repository": "https://github.com/RocketChat/Rocket.Chat",
   "logo": "https://raw.githubusercontent.com/RocketChat/Rocket.Chat.Artwork/master/Logos/2020/png/logo-horizontal-red.png",
   "keywords": ["meteor", "social", "community", "chat"],
-  "website": "https://rocket.chat",
+  "website": "https://rocket",
   "env": {
     "BUILDPACK_URL": "https://github.com/RocketChat/meteor-buildpack-horse.git",
     "METEOR_APP_DIR": "apps/meteor/",

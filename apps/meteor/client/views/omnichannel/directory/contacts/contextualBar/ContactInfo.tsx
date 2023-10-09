@@ -103,6 +103,8 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 	const [{ phoneNumber = '' }] = phone ?? [{}];
 	const [{ address: email = '' }] = visitorEmails ?? [{}];
 
+	console.log(isCallReady);
+
 	const checkIsVisibleAndScopeVisitor = (key: string) => {
 		const field = customFields?.find(({ _id }) => _id === key);
 		return field?.visibility === 'visible' && field?.scope === 'visitor';

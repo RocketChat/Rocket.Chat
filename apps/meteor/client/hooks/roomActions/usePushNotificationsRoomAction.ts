@@ -10,18 +10,15 @@ export const usePushNotificationsRoomAction = () => {
 	const capable = !!subscription;
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
-		if (!capable) {
-			return undefined;
-		}
-
-		return {
-			id: 'push-notifications',
-			groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
-			title: 'Notifications_Preferences',
-			icon: 'bell',
-			tabComponent: NotificationPreferences,
-			order: 11,
-			type: 'customization',
-		};
+		return undefined;
+		// return {
+		// 	id: 'push-notifications',
+		// 	groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
+		// 	title: 'Notifications_Preferences',
+		// 	icon: 'bell',
+		// 	tabComponent: NotificationPreferences,
+		// 	order: 11,
+		// 	type: 'customization',
+		// };
 	}, [capable]);
 };

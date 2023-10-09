@@ -31,7 +31,7 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 
 	const isFederation = isRoomFederated(room);
 
-	const isVoip = isVoipRoom(room);
+	const isVoip = false;
 
 	if (isOmnichannel) {
 		return <ComposerOmnichannel {...props} />;

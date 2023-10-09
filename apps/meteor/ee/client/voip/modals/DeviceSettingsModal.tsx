@@ -66,7 +66,7 @@ const DeviceSettingsModal = (): ReactElement => {
 				{!setSinkIdAvailable && (
 					<Box color='status-font-on-danger' display='flex' flexDirection='column'>
 						{t('Device_Changes_Not_Available')}
-						<Box is='a' href='https://rocket.chat/download' target='_blank' rel='noopener noreferrer'>
+						<Box is='a' href='https://rocket' target='_blank' rel='noopener noreferrer'>
 							{t('Download_Destkop_App')}
 						</Box>
 					</Box>

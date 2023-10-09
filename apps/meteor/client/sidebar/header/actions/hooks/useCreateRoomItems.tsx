@@ -1,8 +1,8 @@
 import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 
-import CreateDiscussion from '../../../../components/CreateDiscussion';
+// import CreateDiscussion from '../../../../components/CreateDiscussion';
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
-import CreateChannelWithData from '../../CreateChannel';
+// import CreateChannelWithData from '../../CreateChannel';
 import CreateDirectMessage from '../../CreateDirectMessage';
 import CreateTeam from '../../CreateTeam';
 import { useCreateRoomModal } from '../../hooks/useCreateRoomModal';
@@ -21,19 +21,19 @@ export const useCreateRoomItems = (): GenericMenuItemProps[] => {
 	const canCreateDirectMessages = useAtLeastOnePermission(CREATE_DIRECT_PERMISSIONS);
 	const canCreateDiscussion = useAtLeastOnePermission(CREATE_DISCUSSION_PERMISSIONS);
 
-	const createChannel = useCreateRoomModal(CreateChannelWithData);
+	// const createChannel = useCreateRoomModal(CreateChannelWithData);
 	const createTeam = useCreateRoomModal(CreateTeam);
-	const createDiscussion = useCreateRoomModal(CreateDiscussion);
+	// const createDiscussion = useCreateRoomModal(CreateDiscussion);
 	const createDirectMessage = useCreateRoomModal(CreateDirectMessage);
 
-	const createChannelItem: GenericMenuItemProps = {
-		id: 'channel',
-		content: t('Channel'),
-		icon: 'hashtag',
-		onClick: () => {
-			createChannel();
-		},
-	};
+	// const createChannelItem: GenericMenuItemProps = {
+	// 	id: 'channel',
+	// 	content: t('Channel'),
+	// 	icon: 'hashtag',
+	// 	onClick: () => {
+	// 		createChannel();
+	// 	},
+	// };
 	const createTeamItem: GenericMenuItemProps = {
 		id: 'team',
 		content: t('Team'),
@@ -50,19 +50,19 @@ export const useCreateRoomItems = (): GenericMenuItemProps[] => {
 			createDirectMessage();
 		},
 	};
-	const createDiscussionItem: GenericMenuItemProps = {
-		id: 'discussion',
-		content: t('Discussion'),
-		icon: 'discussion',
-		onClick: () => {
-			createDiscussion();
-		},
-	};
+	// const createDiscussionItem: GenericMenuItemProps = {
+	// 	id: 'discussion',
+	// 	content: t('Discussion'),
+	// 	icon: 'discussion',
+	// 	onClick: () => {
+	// 		createDiscussion();
+	// 	},
+	// };
 
 	return [
-		...(canCreateChannel ? [createChannelItem] : []),
+		// ...(canCreateChannel ? [createChannelItem] : []),
 		...(canCreateTeam ? [createTeamItem] : []),
 		...(canCreateDirectMessages ? [createDirectMessageItem] : []),
-		...(canCreateDiscussion && discussionEnabled ? [createDiscussionItem] : []),
+		// ...(canCreateDiscussion && discussionEnabled ? [createDiscussionItem] : []),
 	];
 };

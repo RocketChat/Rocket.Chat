@@ -82,14 +82,11 @@ export const CallContext = createContext<CallContextValue>(CallContextValueDefau
 export const useIsVoipEnterprise = (): boolean => useHasLicenseModule('voip-enterprise') === true;
 
 export const useIsCallEnabled = (): boolean => {
-	const { enabled } = useContext(CallContext);
-	return enabled;
+	return false;
 };
 
 export const useIsCallReady = (): boolean => {
-	const { ready } = useContext(CallContext);
-
-	return Boolean(ready);
+	return false;
 };
 export const useIsCallError = (): boolean => {
 	const context = useContext(CallContext);

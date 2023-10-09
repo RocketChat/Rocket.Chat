@@ -15,9 +15,6 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 	const handleMyAccount = useMutableCallback(() => {
 		router.navigate('/account');
 	});
-	const handlePreferences = useMutableCallback(() => {
-		router.navigate('/account/preferences');
-	});
 	const handleFeaturePreview = useMutableCallback(() => {
 		router.navigate('/account/feature-preview');
 	});
@@ -45,12 +42,6 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 			icon: 'user',
 			content: t('Profile'),
 			onClick: handleMyAccount,
-		},
-		{
-			id: 'preferences',
-			icon: 'customize',
-			content: t('Preferences'),
-			onClick: handlePreferences,
 		},
 		{
 			id: 'accessibility',

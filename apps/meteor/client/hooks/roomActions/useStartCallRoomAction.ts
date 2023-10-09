@@ -48,7 +48,7 @@ export const useStartCallRoomAction = () => {
 
 	const user = useUser();
 
-	const allowed = enabled && permittedToCallManagement && (!user?.username || !room.muted?.includes(user.username)) && !ownUser;
+	const allowed = false;
 
 	const handleOpenVideoConf = useMutableCallback(async () => {
 		if (isCalling || isRinging) {
