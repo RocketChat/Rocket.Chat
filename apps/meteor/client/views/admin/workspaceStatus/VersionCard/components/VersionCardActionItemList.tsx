@@ -1,10 +1,10 @@
 import React from 'react';
 
-import type { ActionItem } from './VersionCardActionItem';
+import type { VersionActionItem } from '../types/VersionActionItem';
 import VersionCardActionItem from './VersionCardActionItem';
 
 type VersionCardActionItemListProps = {
-	actionItems: ActionItem[];
+	actionItems: VersionActionItem[];
 };
 
 const VersionCardActionItemList = ({ actionItems }: VersionCardActionItemListProps) => {
