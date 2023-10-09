@@ -193,6 +193,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 							/>
 						</Field>
 					)}
+					<Field color='hint'>{t('Manually_created_users_briefing')}</Field>
 					<Field>
 						<Field.Label htmlFor={emailId}>{t('Email')}</Field.Label>
 						<Field.Row>
@@ -211,7 +212,6 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 										aria-describedby={`${emailId}-error`}
 										error={errors.email?.message}
 										flexGrow={1}
-										addon={<Icon name='mail' size='x20' />}
 									/>
 								)}
 							/>

@@ -3288,6 +3288,7 @@
   "Managing_assets": "Managing assets",
   "Managing_integrations": "Managing integrations",
   "Manual_Selection": "Manual Selection",
+  "Manually_created_users_briefing": "Manually created users will initially be listed under the 'Pending' tab. Once they log in for the first time, they will be moved to the 'Active' tab.",
   "Manufacturing": "Manufacturing",
   "MapView_Enabled": "Enable Mapview",
   "MapView_Enabled_Description": "Enabling mapview will display a location share button on the right of the chat input field.",
