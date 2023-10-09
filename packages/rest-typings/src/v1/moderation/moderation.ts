@@ -19,7 +19,7 @@ export type ModerationEndpoints = {
 			total: number;
 		}>;
 	};
-	'/v1/moderation.user.reports': {
+	'/v1/moderation.userReports': {
 		GET: (params: ReportHistoryPropsGET) => PaginatedResult<{
 			reports: (Pick<UserReport, '_id' | 'reportedUser' | 'ts'> & { count: number })[];
 			count: number;

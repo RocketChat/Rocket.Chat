@@ -52,7 +52,7 @@ const ModConsoleUsersTable: FC = () => {
 		500,
 	);
 
-	const getReports = useEndpoint('GET', '/v1/moderation.user.reports');
+	const getReports = useEndpoint('GET', '/v1/moderation.userReports');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 

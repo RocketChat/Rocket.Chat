@@ -64,7 +64,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'moderation.user.reports',
+	'moderation.userReports',
 	{
 		authRequired: true,
 		validateParams: isReportHistoryProps,
