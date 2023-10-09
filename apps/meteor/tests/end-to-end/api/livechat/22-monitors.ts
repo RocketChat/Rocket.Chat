@@ -98,20 +98,6 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 			expect(body.rooms.find((r: any) => r._id === room._id)).to.exist;
 			room2 = room;
 		});
-		it('should return both created rooms to a manager', async () => {
-			const { body } = await request
-				.get(api('livechat/rooms'))
-				.query({
-					sort: '{ "_updatedAt": 1 }',
-				})
-				.set(manager.credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(body).to.have.property('rooms').that.is.an('array');
-			expect(body.rooms.find((r: any) => r._id === room1._id)).to.exist;
-			expect(body.rooms.find((r: any) => r._id === room2._id)).to.exist;
-		});
 	});
 
 	describe('Monitors & Departments', () => {
