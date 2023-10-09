@@ -23,6 +23,7 @@ export function moduleRemoved(this: LicenseManager, module: LicenseModule) {
 
 export function behaviorTriggered(this: LicenseManager, options: BehaviorWithContext) {
 	const { behavior, reason, modules: _, ...rest } = options;
+
 	try {
 		this.emit(`behavior:${behavior}`, {
 			reason,
