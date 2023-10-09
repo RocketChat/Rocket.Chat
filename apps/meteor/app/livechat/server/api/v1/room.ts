@@ -443,10 +443,6 @@ API.v1.addRoute(
 				throw new Error('error-invalid-room');
 			}
 
-			if (!(await Omnichannel.isRoomEnabled(room))) {
-				throw new Error('error-mac-limit-reached');
-			}
-
 			if (
 				(!room.servedBy || room.servedBy._id !== this.userId) &&
 				!(await hasPermissionAsync(this.userId, 'save-others-livechat-room-info'))
