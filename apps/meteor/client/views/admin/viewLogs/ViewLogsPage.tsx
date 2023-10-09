@@ -14,7 +14,7 @@ const ViewLogsPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Records')} />
+			<Page.Header title={t('Reports')} />
 			<Page.Content>
 				<Tabs mbe={24}>
 					<Tabs.Item onClick={() => setTab('Logs')} selected={tab === 'Logs'}>

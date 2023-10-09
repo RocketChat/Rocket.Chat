@@ -1,5 +1,5 @@
 import type { SettingValueRoomPick } from '@rocket.chat/core-typings';
-import { Box, Field, Flex } from '@rocket.chat/fuselage';
+import { Box, FieldLabel, FieldRow, Flex } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -42,13 +42,13 @@ function RoomPickSettingInput({
 		<>
 			<Flex.Container>
 				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
+					<FieldLabel htmlFor={_id} title={_id}>
 						{label}
-					</Field.Label>
+					</FieldLabel>
 					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 				</Box>
 			</Flex.Container>
-			<Field.Row>
+			<FieldRow>
 				<RoomAutoCompleteMultiple
 					readOnly={readonly}
 					placeholder={placeholder}
@@ -56,7 +56,7 @@ function RoomPickSettingInput({
 					value={parsedValue}
 					onChange={handleChange}
 				/>
-			</Field.Row>
+			</FieldRow>
 		</>
 	);
 }

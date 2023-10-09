@@ -40,7 +40,7 @@ const AppsPageContent = (): ReactElement => {
 			{ id: 'all', label: t('All_Prices'), checked: true },
 			{ id: 'free', label: t('Free_Apps'), checked: false },
 			{ id: 'paid', label: t('Paid_Apps'), checked: false },
-			{ id: 'enterprise', label: t('Enterprise'), checked: false },
+			{ id: 'premium', label: t('Premium'), checked: false },
 		],
 	});
 	const freePaidFilterOnSelected = useRadioToggle(setFreePaidFilterStructure);
@@ -89,7 +89,7 @@ const AppsPageContent = (): ReactElement => {
 
 	const getAppsData = useCallback((): appsDataType => {
 		switch (context) {
-			case 'enterprise':
+			case 'premium':
 			case 'explore':
 			case 'requested':
 				return marketplaceApps;

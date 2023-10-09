@@ -1,5 +1,32 @@
 # Change Log
 
+## 2.0.0
+
+### Minor Changes
+
+- 1246a21648: feat: Add missing variants to UIKit button
+- f9a748526d: feat: Adding new UIKit components: Callout, Checkbox, Radio Button, Time Picker, Toast Bar, Toggle Switch, Tab Navigation
+
+### Patch Changes
+
+- dc1d8ce92e: feat(fuselage-ui-kit): Introduce `TabsNavigationBlock`
+- dce4a829fa: Handle invalid context on `VideoConferenceBlock` component
+- Updated dependencies [074db3b419]
+- Updated dependencies [b8f3d5014f]
+- Updated dependencies [0f56aacc4d]
+  - @rocket.chat/ui-contexts@2.0.0
+  - @rocket.chat/eslint-config@0.6.0
+  - @rocket.chat/gazzodown@2.0.0
+  - @rocket.chat/ui-video-conf@2.0.0
+
+## 2.0.0-rc.5
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.0-rc.5
+- @rocket.chat/ui-contexts@2.0.0-rc.5
+- @rocket.chat/ui-video-conf@2.0.0-rc.5
+
 ## 2.0.0-rc.4
 
 ### Patch Changes
@@ -50,6 +77,14 @@
   - @rocket.chat/eslint-config@0.6.0-rc.0
   - @rocket.chat/gazzodown@2.0.0-rc.0
   - @rocket.chat/ui-video-conf@2.0.0-rc.0
+
+## 1.0.8
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@1.0.8
+- @rocket.chat/ui-contexts@1.0.8
+- @rocket.chat/ui-video-conf@1.0.8
 
 ## 1.0.7
 
