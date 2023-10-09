@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 
-import { getCredentials } from '../../../data/api-data';
+import { api, getCredentials, request, credentials } from '../../../data/api-data';
 import {
 	createVisitor,
 	createLivechatRoom,
@@ -20,22 +20,32 @@ import { IS_EE } from '../../../e2e/config/constants';
 		await makeAgentAvailable();
 	});
 
-	it('Should create an innactive room by default', async () => {
-		const visitor = await createVisitor();
-		const room = await createLivechatRoom(visitor.token);
+	describe('MAC rooms', () => {
+		it('Should create an innactive room by default', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
 
-		expect(room).to.be.an('object');
-		expect(room.v.activity).to.be.undefined;
+			expect(room).to.be.an('object');
+			expect(room.v.activity).to.be.undefined;
+		});
+
+		it('should mark room as active when agent sends a message', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+
+			await sendAgentMessage(room._id);
+
+			const updatedRoom = await getLivechatRoomInfo(room._id);
+
+			expect(updatedRoom).to.have.nested.property('v.activity').and.to.be.an('array');
+		});
 	});
 
-	it('should mark room as active when agent sends a message', async () => {
-		const visitor = await createVisitor();
-		const room = await createLivechatRoom(visitor.token);
+	describe('MAC check', () => {
+		it('should return `onLimit: true` when MAC limit has not been reached', async () => {
+			const { body } = await request.get(api('omnichannel/mac/check')).set(credentials).expect(200);
 
-		await sendAgentMessage(room._id);
-
-		const updatedRoom = await getLivechatRoomInfo(room._id);
-
-		expect(updatedRoom).to.have.nested.property('v.activity').and.to.be.an('array');
+			expect(body).to.have.property('onLimit', true);
+		});
 	});
 });
