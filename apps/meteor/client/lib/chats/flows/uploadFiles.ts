@@ -32,7 +32,6 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 				onClose: (): void => {
 					imperativeModal.close();
 					uploadNextFile();
-					resetFileInput?.();
 				},
 				onSubmit: (fileName: string, description?: string): void => {
 					Object.defineProperty(file, 'name', {
@@ -46,7 +45,6 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					chat.composer?.clear();
 					imperativeModal.close();
 					uploadNextFile();
-					resetFileInput?.();
 				},
 				invalidContentType: Boolean(file.type && !fileUploadIsValidContentType(file.type)),
 			},
@@ -54,4 +52,5 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 	};
 
 	uploadNextFile();
+	resetFileInput?.();
 };
