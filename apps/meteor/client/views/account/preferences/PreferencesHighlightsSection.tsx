@@ -1,4 +1,4 @@
-import { Accordion, Field, FieldGroup, TextAreaInput } from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, TextAreaInput } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -14,11 +14,11 @@ const PreferencesHighlightsSection = () => {
 		<Accordion.Item title={t('Highlights')}>
 			<FieldGroup>
 				<Field>
-					<Field.Label htmlFor={highlightsId}>{t('Highlights_List')}</Field.Label>
-					<Field.Row>
+					<FieldLabel htmlFor={highlightsId}>{t('Highlights_List')}</FieldLabel>
+					<FieldRow>
 						<TextAreaInput id={highlightsId} {...register('highlights')} rows={4} />
-					</Field.Row>
-					<Field.Hint>{t('Highlights_How_To')}</Field.Hint>
+					</FieldRow>
+					<FieldHint>{t('Highlights_How_To')}</FieldHint>
 				</Field>
 			</FieldGroup>
 		</Accordion.Item>

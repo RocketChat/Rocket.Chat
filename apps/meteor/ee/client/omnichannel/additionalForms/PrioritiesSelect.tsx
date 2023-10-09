@@ -1,7 +1,7 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Options, Box, Option, Field, SelectLegacy } from '@rocket.chat/fuselage';
+import { Options, Box, Option, Field, FieldLabel, FieldRow, SelectLegacy } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
@@ -47,8 +47,8 @@ export const PrioritiesSelect = ({ value = '', label, options, onChange }: Prior
 
 	return (
 		<Field>
-			<Field.Label>{label}</Field.Label>
-			<Field.Row>
+			<FieldLabel>{label}</FieldLabel>
+			<FieldRow>
 				<SelectLegacy
 					value={value}
 					onChange={onChange}
@@ -57,7 +57,7 @@ export const PrioritiesSelect = ({ value = '', label, options, onChange }: Prior
 					renderSelected={({ label, value }) => <Box flexGrow='1'>{renderOption(label, value)}</Box>}
 					renderItem={({ label, value, ...props }) => <Option {...props} label={renderOption(label, value)} />}
 				/>
-			</Field.Row>
+			</FieldRow>
 		</Field>
 	);
 };
