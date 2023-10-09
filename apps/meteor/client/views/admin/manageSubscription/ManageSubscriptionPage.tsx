@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Grid, Skeleton } from '@rocket.chat/fuselage';
 import { t } from 'i18next';
 import React, { memo } from 'react';
 
@@ -20,7 +20,7 @@ import { CONTACT_SALES_LINK } from './utils/links';
 
 const ManageSubscriptionPage = () => {
 	const { data } = useIsEnterprise();
-	const { data: licensesData } = useLicense();
+	const { data: licensesData, refetch: refetchLicense } = useLicense();
 
 	const { activeModules = [], license, limits } = licensesData?.data || {};
 	const isEnterprise = data?.isEnterprise || false;
@@ -34,12 +34,12 @@ const ManageSubscriptionPage = () => {
 
 	const getHeaderButton = () => {
 		if (plan === PlanName.COMMUNITY || plan === PlanName.STARTER) {
-			return <UpgradeButton primary i18nKey='Upgrade_to_Pro' />;
+			return <UpgradeButton primary i18nKey='Upgrade_to_Pro' mis={8} />;
 		}
 
 		if (plan === PlanName.PRO || plan === PlanName.PRO_TRIAL) {
 			return (
-				<Button is='a' type='button' primary external href={CONTACT_SALES_LINK}>
+				<Button is='a' type='button' primary external href={CONTACT_SALES_LINK} mis={8}>
 					{t('Start_Enterprise_trial')}
 				</Button>
 			);
@@ -50,7 +50,14 @@ const ManageSubscriptionPage = () => {
 
 	return (
 		<Page bg='tint'>
-			<Page.Header title={t('Manage_subscription')}>{getHeaderButton()}</Page.Header>
+			<Page.Header title={t('Manage_subscription')}>
+				<ButtonGroup>
+					<Button icon='reload' onClick={() => refetchLicense()}>
+						{t('Sync_license_update')}
+					</Button>
+					{getHeaderButton()}
+				</ButtonGroup>
+			</Page.Header>
 
 			<Page.ScrollableContentWithShadow p={16}>
 				<Box marginBlock='none' marginInline='auto' width='full' color='default'>
