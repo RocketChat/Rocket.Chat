@@ -9019,6 +9019,7 @@ __metadata:
     stylelint-order: ^5.0.0
     supertest: ^6.2.3
     suretype: ~2.4.1
+    swiper: ^9.3.2
     tar-stream: ^1.6.2
     template-file: ^6.0.1
     textarea-caret: ^3.1.0
@@ -35740,6 +35741,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ssr-window@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "ssr-window@npm:4.0.2"
+  checksum: df182600927f4f3225224cf8c02338ea637c9750519505bbfb9a9236741a2a7ec088386fb948bca7b447b8303d9109e7dc7672e3de041c79ac2a0e03665af7d2
+  languageName: node
+  linkType: hard
+
 "ssri@npm:^6.0.1":
   version: 6.0.2
   resolution: "ssri@npm:6.0.2"
@@ -36683,6 +36691,15 @@ __metadata:
   bin:
     svgo: bin/svgo
   checksum: b92f71a8541468ffd0b81b8cdb36b1e242eea320bf3c1a9b2c8809945853e9d8c80c19744267eb91cabf06ae9d5fff3592d677df85a31be4ed59ff78534fa420
+  languageName: node
+  linkType: hard
+
+"swiper@npm:^9.3.2":
+  version: 9.3.2
+  resolution: "swiper@npm:9.3.2"
+  dependencies:
+    ssr-window: ^4.0.2
+  checksum: 9ccb6a0ef67d71ac780d7d1f3b2c2daf6f1846d3df8810aff6dcb8501c87b7769540a869cdd83eb902e5278396e5379cb32d9ed397234f7700ef55f0209f4592
   languageName: node
   linkType: hard
 

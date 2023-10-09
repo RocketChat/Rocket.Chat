@@ -418,6 +418,7 @@
 		"strict-uri-encode": "^2.0.0",
 		"string-strip-html": "^7.0.3",
 		"suretype": "~2.4.1",
+		"swiper": "^9.3.2",
 		"tar-stream": "^1.6.2",
 		"textarea-caret": "^3.1.0",
 		"tinykeys": "^1.4.0",

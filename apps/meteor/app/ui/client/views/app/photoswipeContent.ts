@@ -199,5 +199,5 @@ const createEventListenerFor =
 	};
 
 Meteor.startup(() => {
-	$(document).on('click', '.gallery-item', createEventListenerFor('.gallery-item'));
+	// $(document).on('click', '.gallery-item', createEventListenerFor('.gallery-item'));
 });
