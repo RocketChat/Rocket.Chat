@@ -68,8 +68,6 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 	});
 
 	describe('Monitors & Rooms', () => {
-		let room1: any;
-		let room2: any;
 		it('should not return a room of a department that the monitor is not assigned to', async () => {
 			const visitor = await createVisitor(noUnitDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
@@ -82,7 +80,6 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 
 			expect(body).to.have.property('rooms').that.is.an('array');
 			expect(body.rooms.find((r: any) => r._id === room._id)).to.not.exist;
-			room1 = room;
 		});
 		it('should return a room of a department the monitor is assigned to', async () => {
 			const visitor = await createVisitor(unitDepartment._id);
@@ -96,7 +93,6 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 
 			expect(body).to.have.property('rooms').that.is.an('array');
 			expect(body.rooms.find((r: any) => r._id === room._id)).to.exist;
-			room2 = room;
 		});
 	});
 
