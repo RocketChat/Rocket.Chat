@@ -38,6 +38,16 @@ export class NodeRandomGenerator extends RandomGenerator {
 		return result.substring(0, digits);
 	}
 
+	/**
+	 * @name Random.between Returns a random integer between min and max, inclusive.
+	 * @param min Minimum value (inclusive)
+	 * @param max Maximum value (inclusive)
+	 * @returns A random integer between min and max, inclusive.
+	 */
+	between(min: number, max: number) {
+		return Math.floor(this.fraction() * (max - min + 1)) + min;
+	}
+
 	protected safelyCreateWithSeeds(...seeds: readonly unknown[]) {
 		return new AleaRandomGenerator({ seeds });
 	}

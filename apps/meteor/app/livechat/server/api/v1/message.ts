@@ -269,7 +269,7 @@ API.v1.addRoute(
 				guest.connectionData = normalizeHttpHeaderData(this.request.headers);
 
 				const visitorId = await LivechatTyped.registerGuest(guest);
-				visitor = await LivechatVisitors.findOneById(visitorId);
+				visitor = await LivechatVisitors.findOneEnabledById(visitorId);
 			}
 
 			const sentMessages = await Promise.all(

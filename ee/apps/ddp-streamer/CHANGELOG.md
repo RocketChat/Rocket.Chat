@@ -1,5 +1,51 @@
 # @rocket.chat/ddp-streamer
 
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies [239a34e877]
+- Updated dependencies [203304782f]
+- Updated dependencies [4186eecf05]
+- Updated dependencies [8a59855fcf]
+- Updated dependencies [5cee21468e]
+- Updated dependencies [2db32f0d4a]
+- Updated dependencies [982ef6f459]
+- Updated dependencies [ba24f3c21f]
+- Updated dependencies [19aec23cda]
+- Updated dependencies [ebab8c4dd8]
+- Updated dependencies [aaefe865a7]
+- Updated dependencies [074db3b419]
+- Updated dependencies [357a3a50fa]
+- Updated dependencies [f556518fa1]
+- Updated dependencies [ead7c7bef2]
+- Updated dependencies [1041d4d361]
+- Updated dependencies [61128364d6]
+- Updated dependencies [9496f1eb97]
+- Updated dependencies [d45365436e]
+- Updated dependencies [b8f3d5014f]
+- Updated dependencies [93d4912e17]
+  - @rocket.chat/core-typings@6.4.0
+  - @rocket.chat/rest-typings@6.4.0
+  - @rocket.chat/model-typings@0.1.0
+  - @rocket.chat/core-services@0.2.0
+  - @rocket.chat/ui-contexts@2.0.0
+  - @rocket.chat/models@0.0.15
+  - @rocket.chat/instance-status@0.0.15
+
+## 0.1.9-rc.5
+
+### Patch Changes
+
+- Updated dependencies [1041d4d361]
+  - @rocket.chat/core-typings@6.4.0-rc.5
+  - @rocket.chat/rest-typings@6.4.0-rc.5
+  - @rocket.chat/core-services@0.2.0-rc.5
+  - @rocket.chat/model-typings@0.1.0-rc.5
+  - @rocket.chat/ui-contexts@2.0.0-rc.5
+  - @rocket.chat/models@0.0.15-rc.5
+  - @rocket.chat/instance-status@0.0.15-rc.5
+
 ## 0.1.8-rc.4
 
 ### Patch Changes

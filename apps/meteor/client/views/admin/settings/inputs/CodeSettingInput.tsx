@@ -1,4 +1,4 @@
-import { Box, Field, Flex } from '@rocket.chat/fuselage';
+import { Box, FieldLabel, FieldHint, Flex } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -43,12 +43,12 @@ function CodeSettingInput({
 		<>
 			<Flex.Container>
 				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
+					<FieldLabel htmlFor={_id} title={_id}>
 						{label}
-					</Field.Label>
+					</FieldLabel>
 					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 				</Box>
-				{hint && <Field.Hint>{hint}</Field.Hint>}
+				{hint && <FieldHint>{hint}</FieldHint>}
 			</Flex.Container>
 			<CodeMirrorBox label={label}>
 				<CodeMirror

@@ -3,7 +3,6 @@ import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
-import { callbackLogger } from '../lib/logger';
 
 callbacks.add(
 	'afterSaveMessage',
@@ -13,7 +12,6 @@ callbacks.add(
 			return message;
 		}
 
-		callbackLogger.debug(`Calculating Omnichannel metrics for room ${room._id}`);
 		// skips this callback if the message was edited
 		if (!message || isEditedMessage(message)) {
 			return message;
@@ -43,7 +41,6 @@ callbacks.add(
 		const isResponseTotal = room.metrics?.response?.total;
 
 		if (agentLastReply === room.ts) {
-			callbackLogger.debug('Calculating: first message from agent');
 			// first response
 			const firstResponseDate = now;
 			const firstResponseTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
@@ -66,7 +63,6 @@ callbacks.add(
 				reactionTime,
 			};
 		} else if (visitorLastQuery > agentLastReply) {
-			callbackLogger.debug('Calculating: visitor sent a message after agent');
 			// response, not first
 			const responseTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
 			const avgResponseTime =

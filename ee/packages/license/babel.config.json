@@ -1,0 +1,11 @@
+{
+	"presets": ["@babel/preset-typescript"],
+	"plugins": [
+		[
+			"transform-inline-environment-variables",
+			{
+				"include": ["LICENSE_PUBLIC_KEY_V3"]
+			}
+		]
+	]
+}
