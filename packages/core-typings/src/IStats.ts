@@ -17,6 +17,8 @@ export interface IStats {
 		registerServer?: boolean;
 	};
 	uniqueId: string;
+	deploymentFingerprintHash: string;
+	deploymentFingerprintVerified: boolean;
 	installedAt?: string;
 	version?: string;
 	tag?: string;

@@ -71,7 +71,7 @@ export const addUserToRoom = async function (
 		await callbacks.run('beforeJoinRoom', userToBeAdded, room);
 	}
 
-	const autoTranslateConfig = await getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
+	const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
 
 	await Subscriptions.createWithRoomAndUser(room, userToBeAdded as IUser, {
 		ts: now,

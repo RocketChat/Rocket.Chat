@@ -56,7 +56,7 @@ Meteor.methods<ServerMethods>({
 				continue;
 			}
 			await callbacks.run('beforeJoinRoom', user, room);
-			const autoTranslateConfig = await getSubscriptionAutotranslateDefaultConfig(user);
+			const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(user);
 			await Subscriptions.createWithRoomAndUser(room, user, {
 				ts: now,
 				open: true,

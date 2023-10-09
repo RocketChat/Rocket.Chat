@@ -45,6 +45,8 @@ export default {
 			_id: '',
 			wizard: {},
 			uniqueId: '',
+			deploymentFingerprintHash: '',
+			deploymentFingerprintVerified: true,
 			installedAt: '',
 			version: '',
 			tag: '',
