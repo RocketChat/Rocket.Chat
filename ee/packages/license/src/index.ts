@@ -53,7 +53,6 @@ interface License {
 		license: ILicenseV3 | undefined;
 		activeModules: LicenseModule[];
 		limits: Record<LicenseLimitKind, { value?: number; max: number }>;
-		inFairPolicy: boolean;
 	}>;
 
 	// Deprecated:
@@ -82,7 +81,7 @@ export class LicenseImp extends LicenseManager implements License {
 	getCurrentValueForLicenseLimit = getCurrentValueForLicenseLimit;
 
 	public async isLimitReached<T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>): Promise<boolean> {
-		return this.shouldPreventAction(action, context, 0);
+		return this.shouldPreventAction(action, 0, context);
 	}
 
 	onValidFeature = onValidFeature;
