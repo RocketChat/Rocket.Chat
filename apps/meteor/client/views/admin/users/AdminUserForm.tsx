@@ -10,7 +10,6 @@ import {
 	Icon,
 	FieldGroup,
 	ContextualbarFooter,
-	ButtonGroup,
 	Button,
 	Callout,
 } from '@rocket.chat/fuselage';
@@ -27,7 +26,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import React, { useCallback, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -54,10 +53,12 @@ const getInitialValue = ({
 	data,
 	defaultUserRoles,
 	isSmtpEnabled,
+	isNewUserPage,
 }: {
 	data?: Serialized<IUser>;
 	defaultUserRoles?: IUser['roles'];
 	isSmtpEnabled?: boolean;
+	isNewUserPage?: boolean;
 }): userFormProps => ({
 	roles: data?.roles ?? defaultUserRoles,
 	name: data?.name ?? '',
@@ -67,8 +68,8 @@ const getInitialValue = ({
 	nickname: data?.nickname ?? '',
 	email: (data?.emails?.length && data.emails[0].address) || '',
 	verified: (data?.emails?.length && data.emails[0].verified) || false,
-	setRandomPassword: true,
-	setPasswordManually: false,
+	setRandomPassword: isNewUserPage,
+	setPasswordManually: !isNewUserPage,
 	requirePasswordChange: data?.requirePasswordChange || false,
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
@@ -93,6 +94,23 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 	const { data } = useSmtpQuery();
 	const isSmtpEnabled = data?.isSMTPConfigured;
 
+	const {
+		control,
+		watch,
+		handleSubmit,
+		formState: { errors, isDirty },
+		setValue,
+		resetField,
+	} = useForm({
+		defaultValues: getInitialValue({ data: userData, defaultUserRoles, isSmtpEnabled, isNewUserPage: !userData?._id }),
+		mode: 'onBlur',
+	});
+
+	useEffect(() => {
+		resetField('sendWelcomeEmail', { defaultValue: isSmtpEnabled });
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isSmtpEnabled]);
+
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
 	const createUserAction = useEndpoint('POST', '/v1/users.create');
@@ -101,20 +119,6 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 	const { data: roleData, error: roleError } = useQuery(['roles'], async () => getRoles());
 
 	const availableRoles: SelectOption[] = roleData?.roles.map(({ _id, name, description }) => [_id, description || name]) || [];
-
-	const goToUser = useCallback((id) => router.navigate(`/admin/users/info/${id}`), [router]);
-
-	const {
-		control,
-		watch,
-		handleSubmit,
-		// reset,
-		formState: { errors, isDirty },
-		setValue,
-	} = useForm({
-		defaultValues: getInitialValue({ data: userData, defaultUserRoles, isSmtpEnabled }),
-		mode: 'onBlur',
-	});
 
 	const { avatar, username, setRandomPassword, password } = watch();
 
@@ -135,12 +139,12 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 
 	const handleCreateUser = useMutation({
 		mutationFn: createUserAction,
-		onSuccess: async (data) => {
+		onSuccess: async ({ user: { _id } }) => {
 			dispatchToastMessage({ type: 'success', message: t('User_created_successfully!') });
 			await eventStats({
 				params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
 			});
-			goToUser(data.user._id);
+			router.navigate(`/admin/users/created/${_id}`);
 			onReload();
 		},
 		onError: (error) => {
@@ -194,7 +198,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 							/>
 						</Field>
 					)}
-					<Field color='hint'>{t('Manually_created_users_briefing')}</Field>
+					{!userData?._id && <Box color='hint'>{t('Manually_created_users_briefing')}</Box>}
 					<Field>
 						<Field.Label htmlFor={emailId}>{t('Email')}</Field.Label>
 						<Field.Row>
@@ -520,18 +524,9 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 				</FieldGroup>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<ButtonGroup stretch>
-					{/* <Button
-						type='reset'
-						disabled={!isDirty}
-						onClick={() => reset(getInitialValue({ data: userData, defaultUserRoles, isSmtpEnabled }))}
-					>
-						{t('Reset')}
-					</Button> */}
-					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)}>
-						{t('Add_user')}
-					</Button>
-				</ButtonGroup>
+				<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)} w='100%'>
+					{t('Add_user')}
+				</Button>
 			</ContextualbarFooter>
 		</>
 	);

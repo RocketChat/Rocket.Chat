@@ -8,6 +8,7 @@ import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap
 import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
 import AdminInviteUsers from './AdminInviteUsers';
+import AdminUserCreated from './AdminUserCreated';
 import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
@@ -90,7 +91,7 @@ const UsersPage = (): ReactElement => {
 						<ContextualbarTitle>
 							{context === 'info' && t('User_Info')}
 							{context === 'edit' && t('Edit_User')}
-							{context === 'new' && (
+							{(context === 'new' || context === 'created') && (
 								<>
 									<Icon name='user-plus' size={20} /> {t('New_user')}
 								</>
@@ -102,6 +103,7 @@ const UsersPage = (): ReactElement => {
 					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
 					{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
 					{context === 'new' && <AdminUserForm onReload={handleReload} />}
+					{context === 'created' && id && <AdminUserCreated uid={id} />}
 					{context === 'invite' && <AdminInviteUsers />}
 				</Contextualbar>
 			)}
