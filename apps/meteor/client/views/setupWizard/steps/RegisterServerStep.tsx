@@ -1,5 +1,5 @@
 import { RegisterServerPage, RegisterOfflinePage } from '@rocket.chat/onboarding-ui';
-import { useEndpoint, useMethod } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { useEffect, useState } from 'react';
 
@@ -13,10 +13,16 @@ const SERVER_OPTIONS = {
 };
 
 const RegisterServerStep = (): ReactElement => {
+	const t = useTranslation();
 	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, offline, completeSetupWizard } = useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
 
-	const handleRegister: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async (data: { email: string; resend?: boolean }) => {
+	const handleRegister: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async (data: {
+		email: string;
+		agreement: boolean;
+		updates: boolean;
+		resend?: boolean;
+	}) => {
 		goToNextStep();
 		setSetupWizardData((prevState) => ({ ...prevState, serverData: data }));
 		await registerServer(data);
@@ -50,6 +56,8 @@ const RegisterServerStep = (): ReactElement => {
 	if (serverOption === SERVER_OPTIONS.OFFLINE) {
 		return (
 			<RegisterOfflinePage
+				termsHref=''
+				policyHref=''
 				clientKey={clientKey}
 				onBackButtonClick={(): void => setServerOption(SERVER_OPTIONS.REGISTERED)}
 				onSubmit={handleConfirmOffline}
