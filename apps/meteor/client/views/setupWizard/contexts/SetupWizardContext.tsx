@@ -48,7 +48,6 @@ export const SetupWizardContext = createContext<SetupWizarContextValue>({
 		serverData: {
 			agreement: false,
 			email: '',
-			registerType: 'registered',
 			updates: false,
 		},
 		registrationData: { cloudEmail: '', user_code: '', device_code: '' },

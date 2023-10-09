@@ -30,7 +30,6 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 	serverData: {
 		agreement: false,
 		email: '',
-		registerType: 'registered',
 		updates: false,
 	},
 	registrationData: { cloudEmail: '', device_code: '', user_code: '' },
