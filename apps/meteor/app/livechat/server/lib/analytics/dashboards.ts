@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
 import { settings } from '../../../../settings/server';
-import { getAnalyticsOverviewDataCached } from '../AnalyticsTyped';
+import { getAnalyticsOverviewDataCachedForRealtime } from '../AnalyticsTyped';
 import { Livechat } from '../Livechat';
 import {
 	findPercentageOfAbandonedRoomsAsync,
@@ -231,7 +231,7 @@ const getConversationsMetricsAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const totalizers = await getAnalyticsOverviewDataCached({
+	const totalizers = await getAnalyticsOverviewDataCachedForRealtime({
 		daterange: {
 			from: start,
 			to: end,
