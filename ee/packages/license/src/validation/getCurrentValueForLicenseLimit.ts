@@ -27,11 +27,7 @@ export async function getCurrentValueForLicenseLimit<T extends LicenseLimitKind>
 		throw new Error('Unable to validate license limit due to missing data counter.');
 	}
 
-	const extraCount = context?.extraCount || 0;
-
-	const count = await counterFn(context as LimitContext<LicenseLimitKind> | undefined);
-
-	return count + extraCount;
+	return counterFn(context as LimitContext<LicenseLimitKind> | undefined);
 }
 
 export function hasAllDataCounters(this: LicenseManager) {
