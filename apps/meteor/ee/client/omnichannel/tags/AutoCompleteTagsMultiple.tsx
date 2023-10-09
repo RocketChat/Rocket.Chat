@@ -37,13 +37,10 @@ const AutoCompleteTagsMultiple = ({
 
 	const { phase: tagsPhase, items: tagsItems, itemCount: tagsTotal } = useRecordList(tagsList);
 
-	const sortedByName = tagsItems.sort((a, b) => {
-		if (a?.label && b?.label) {
-			return a.label.localeCompare(b.label);
-		}
-
-		return 0;
-	});
+	const tagsOptions = useMemo(() => {
+		const pending = value ? value.filter(({ value }) => !tagsItems.find((tag) => tag.value === value)) : [];
+		return [...tagsItems, ...pending];
+	}, [tagsItems, value]);
 
 	return (
 		<PaginatedMultiSelectFiltered
@@ -52,7 +49,7 @@ const AutoCompleteTagsMultiple = ({
 			onChange={onChange}
 			filter={tagsFilter}
 			setFilter={setTagsFilter}
-			options={sortedByName}
+			options={tagsOptions}
 			width='100%'
 			flexShrink={0}
 			flexGrow={0}

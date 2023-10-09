@@ -1,5 +1,43 @@
 # @rocket.chat/rest-typings
 
+## 6.4.0
+
+### Minor Changes
+
+- 239a34e877: new: ring mobile users on direct conference calls
+- 4186eecf05: Introduce the ability to report an user
+- 2db32f0d4a: Add option to select what URL previews should be generated for each message.
+- 19aec23cda: New AddUser workflow for Federated Rooms
+- ebab8c4dd8: Added Reports Metrics Dashboard to Omnichannel
+- 357a3a50fa: feat: high-contrast theme
+- 1041d4d361: Added option to select between two script engine options for the integrations
+- 93d4912e17: fix: missing params on updateOwnBasicInfo endpoint
+
+### Patch Changes
+
+- 203304782f: Fixed `overrideDestinationChannelEnabled` treated as a required param in `integrations.create` and `integration.update` endpoints
+- 9496f1eb97: Deprecate `livechat:getOverviewData` and `livechat:getAgentOverviewData` methods and create API endpoints `livechat/analytics/overview` and `livechat/analytics/agent-overview` to fetch analytics data
+- Updated dependencies [239a34e877]
+- Updated dependencies [203304782f]
+- Updated dependencies [4186eecf05]
+- Updated dependencies [ba24f3c21f]
+- Updated dependencies [ebab8c4dd8]
+- Updated dependencies [1041d4d361]
+- Updated dependencies [61128364d6]
+- Updated dependencies [d45365436e]
+  - @rocket.chat/core-typings@6.4.0
+
+## 6.4.0-rc.5
+
+### Minor Changes
+
+- 1041d4d361: Added option to select between two script engine options for the integrations
+
+### Patch Changes
+
+- Updated dependencies [1041d4d361]
+  - @rocket.chat/core-typings@6.4.0-rc.5
+
 ## 6.4.0-rc.4
 
 ### Patch Changes
@@ -48,6 +86,12 @@
 - Updated dependencies [61128364d6]
 - Updated dependencies [d45365436e]
   - @rocket.chat/core-typings@6.4.0-rc.0
+
+## 6.3.8
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.3.8
 
 ## 6.3.7
 
