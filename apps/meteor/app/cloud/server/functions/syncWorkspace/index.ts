@@ -11,6 +11,7 @@ export async function syncWorkspace() {
 		if (error instanceof CloudWorkspaceAccessTokenError) {
 			// TODO: Remove License if there is no access token
 		}
+		console.error(error);
 	}
 
 	await getCachedSupportedVersionsToken.reset();
