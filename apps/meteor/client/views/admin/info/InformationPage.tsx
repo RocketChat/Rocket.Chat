@@ -7,6 +7,7 @@ import React, { memo } from 'react';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { PlanName } from '../../../lib/utils/getPlanName';
 import SeatsCard from '../manageSubscription/components/cards/SeatsCard';
 import DeploymentCard from './DeploymentCard';
 import LicenseCard from './LicenseCard';
@@ -97,7 +98,7 @@ const InformationPage = memo(function InformationPage({
 							</Grid.Item>
 							{!showSeatCap && (
 								<Grid.Item xl={12} height='50%'>
-									<SeatsCard seatsCap={seatsCap} />
+									<SeatsCard plan={PlanName.STARTER} />
 								</Grid.Item>
 							)}
 						</Grid.Item>
