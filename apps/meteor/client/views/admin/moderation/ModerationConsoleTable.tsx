@@ -116,7 +116,6 @@ const ModerationConsoleTable: FC = () => {
 					<DateRangePicker onChange={setDateRange} />
 				</GridItem>
 			</Grid>
-
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

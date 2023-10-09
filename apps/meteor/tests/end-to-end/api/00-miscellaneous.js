@@ -24,6 +24,7 @@ describe('miscellaneous', function () {
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
+						expect(res.body).to.have.property('version').and.to.be.a('string');
 						expect(res.body.info).to.have.property('version').and.to.be.a('string');
 						expect(res.body.info).to.have.property('build').and.to.be.an('object');
 						expect(res.body.info).to.have.property('commit').and.to.be.an('object');

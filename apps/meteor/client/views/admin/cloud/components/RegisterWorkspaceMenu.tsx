@@ -8,7 +8,6 @@ import RegisteredWorkspaceModal from '../modals/RegisteredWorkspaceModal';
 
 type RegisterWorkspaceMenuProps = {
 	isWorkspaceRegistered: boolean | string;
-	isConnectedToCloud: boolean | string;
 	onClick: () => void;
 	onClickOfflineRegistration: () => void;
 	onStatusChange?: () => void;
@@ -16,7 +15,6 @@ type RegisterWorkspaceMenuProps = {
 
 const RegisterWorkspaceMenu = ({
 	isWorkspaceRegistered,
-	isConnectedToCloud,
 	onClick,
 	onClickOfflineRegistration,
 	onStatusChange,
@@ -33,7 +31,7 @@ const RegisterWorkspaceMenu = ({
 
 	return (
 		<ButtonGroup>
-			{isWorkspaceRegistered && isConnectedToCloud && (
+			{isWorkspaceRegistered && (
 				<>
 					<Button icon='new-window' role='link' onClick={() => handleLinkClick(CLOUD_CONSOLE_URL)}>
 						{t('Cloud')}
@@ -44,11 +42,6 @@ const RegisterWorkspaceMenu = ({
 				</>
 			)}
 
-			{isWorkspaceRegistered && !isConnectedToCloud && (
-				<Button primary onClick={onClick}>
-					{t('ConnectWorkspace_Button')}
-				</Button>
-			)}
 			{!isWorkspaceRegistered && (
 				<>
 					<Button onClick={onClickOfflineRegistration}>{t('Cloud_Register_manually')}</Button>
