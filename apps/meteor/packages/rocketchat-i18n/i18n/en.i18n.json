@@ -5917,7 +5917,7 @@
   "onboarding.form.adminInfoForm.fields.keepPosted.label": "Keep me posted about Rocket.Chat updates",
   "onboarding.form.awaitConfirmationForm.title": "Awaiting confirmation",
   "onboarding.form.awaitConfirmationForm.content.securityCode": "Security code",
-  "onboarding.form.awaitConfirmationForm.content.sentEmail": "Email sent to <1>{{email}}</1> with a confirmation link.Please verify that the security code below matches the one in the email.",
+  "onboarding.form.awaitConfirmationForm.content.sentEmail": "Email sent to <1>{{emailAddress}}</1> with a confirmation link.Please verify that the security code below matches the one in the email.",
   "onboarding.form.organizationInfoForm.title": "Organization Info",
   "onboarding.form.organizationInfoForm.subtitle": "We need to know who you are.",
   "onboarding.form.organizationInfoForm.fields.organizationName.label": "Organization name",
