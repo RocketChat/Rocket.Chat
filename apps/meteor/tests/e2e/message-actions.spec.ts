@@ -40,6 +40,8 @@ test.describe.serial('message-actions', () => {
 		await page.locator('[data-qa-id="edit-message"]').click();
 		await page.locator('[name="msg"]').fill('this message was edited');
 		await page.keyboard.press('Enter');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('this message was edited');
 	});
 
 	test('expect message is deleted', async ({ page }) => {
@@ -47,6 +49,9 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('[data-qa-id="delete-message"]').click();
 		await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
+		await expect(poHomeChannel.content.lastUserMessage.locator('[data-qa-type="message-body"]:has-text("Message to delete")')).toHaveCount(
+			0,
+		);
 	});
 
 	test('expect quote the message', async ({ page }) => {
@@ -64,6 +69,9 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage('Message to star');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('[data-qa-id="star-message"]').click();
+		await page.getByRole('button').and(page.getByTitle('Options')).click();
+		await page.locator('[data-key="starred-messages"]').click();
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Message to star');
 	});
 
 	test('expect copy the message', async ({ page }) => {

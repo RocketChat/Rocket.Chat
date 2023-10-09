@@ -670,7 +670,14 @@ async function createChannelValidator(params: {
 
 async function createChannel(
 	userId: string,
-	params: { name?: string; members?: string[]; customFields?: Record<string, any>; extraData?: Record<string, any>; readOnly?: boolean },
+	params: {
+		name?: string;
+		members?: string[];
+		customFields?: Record<string, any>;
+		extraData?: Record<string, any>;
+		readOnly?: boolean;
+		excludeSelf?: boolean;
+	},
 ): Promise<{ channel: IRoom }> {
 	const readOnly = typeof params.readOnly !== 'undefined' ? params.readOnly : false;
 	const id = await createChannelMethod(
@@ -680,6 +687,7 @@ async function createChannel(
 		readOnly,
 		params.customFields,
 		params.extraData,
+		params.excludeSelf,
 	);
 
 	return {

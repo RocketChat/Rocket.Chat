@@ -1,4 +1,5 @@
 import type { LicenseLimitKind } from '../definition/ILicenseV3';
+import type { BehaviorWithContext, LicenseBehavior } from '../definition/LicenseBehavior';
 import type { LicenseModule } from '../definition/LicenseModule';
 import type { LicenseManager } from '../license';
 import { hasModule } from '../modules';
@@ -58,18 +59,26 @@ export function onToggledFeature(
 	};
 }
 
-export function onModule(this: LicenseManager, cb: (...args: any[]) => void) {
+export function onModule(this: LicenseManager, cb: (data: { module: LicenseModule; valid: boolean }) => void) {
 	this.on('module', cb);
 }
 
-export function onValidateLicense(this: LicenseManager, cb: (...args: any[]) => void) {
+export function onValidateLicense(this: LicenseManager, cb: () => void) {
 	this.on('validate', cb);
 }
 
-export function onInvalidateLicense(this: LicenseManager, cb: (...args: any[]) => void) {
+export function onInvalidateLicense(this: LicenseManager, cb: () => void) {
 	this.on('invalidate', cb);
 }
 
-export function onLimitReached(this: LicenseManager, limitKind: LicenseLimitKind, cb: (...args: any[]) => void) {
+export function onBehaviorTriggered(
+	this: LicenseManager,
+	behavior: Exclude<LicenseBehavior, 'prevent_installation'>,
+	cb: (data: { reason: BehaviorWithContext['reason']; limit?: LicenseLimitKind }) => void,
+) {
+	this.on(`behavior:${behavior}`, cb);
+}
+
+export function onLimitReached(this: LicenseManager, limitKind: LicenseLimitKind, cb: () => void) {
 	this.on(`limitReached:${limitKind}`, cb);
 }
