@@ -8,7 +8,6 @@ import {
 	Box,
 	ToggleSwitch,
 	Icon,
-	Divider,
 	FieldGroup,
 	ContextualbarFooter,
 	ButtonGroup,
@@ -28,7 +27,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -172,6 +171,8 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 	const sendWelcomeEmailId = useUniqueId();
 	const setRandomPasswordId = useUniqueId();
 	const passwordVerifierId = useUniqueId();
+
+	const [showCustomFields, setShowCustomFields] = useState(true);
 
 	return (
 		<>
@@ -502,10 +503,18 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 				<FieldGroup>
 					{Boolean(customFieldsMetadata.length) && (
 						<>
-							<Button fontScale='c2' w='x140' h='x28' display='flex' alignItems='center' justifyContent='center'>
+							<Button
+								fontScale='c2'
+								w='x140'
+								h='x28'
+								display='flex'
+								alignItems='center'
+								justifyContent='center'
+								onClick={() => setShowCustomFields((prevState) => !prevState)}
+							>
 								{t('Hide_additional_fields')}
 							</Button>
-							<CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />
+							{showCustomFields && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 						</>
 					)}
 				</FieldGroup>
