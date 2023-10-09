@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser, IImportRecord } from '@rocket.chat/core-typings';
-import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
+import { Users, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 import type ldapjs from 'ldapjs';
 
 import type {
@@ -271,10 +271,12 @@ export class LDAPEEManager extends LDAPManager {
 		logger.debug(`Channel '${channel}' doesn't exist, creating it.`);
 
 		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
-		// #ToDo: Remove typecastings when createRoom is converted to ts.
-		const room = await createRoom('c', channel, roomOwner, [], false, false, {
+
+		const user = await Users.findOneByUsernameIgnoringCase(roomOwner);
+
+		const room = await createRoom('c', channel, user, [], false, false, {
 			customFields: { ldap: true },
-		} as any);
+		});
 		if (!room?.rid) {
 			logger.error(`Unable to auto-create channel '${channel}' during ldap sync.`);
 			return;
@@ -574,7 +576,7 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPDataConverter): Promise<void> {
-		const users = await UsersRaw.findLDAPUsers().toArray();
+		const users = await Users.findLDAPUsers().toArray();
 		for await (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
 
@@ -586,7 +588,7 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async updateUserAvatars(ldap: LDAPConnection): Promise<void> {
-		const users = await UsersRaw.findLDAPUsers().toArray();
+		const users = await Users.findLDAPUsers().toArray();
 		for await (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
 			if (!ldapUser) {
@@ -615,7 +617,7 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async logoutDeactivatedUsers(ldap: LDAPConnection): Promise<void> {
-		const users = await UsersRaw.findConnectedLDAPUsers().toArray();
+		const users = await Users.findConnectedLDAPUsers().toArray();
 
 		for await (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
@@ -624,7 +626,7 @@ export class LDAPEEManager extends LDAPManager {
 			}
 
 			if (this.isUserDeactivated(ldapUser)) {
-				await UsersRaw.unsetLoginTokens(user._id);
+				await Users.unsetLoginTokens(user._id);
 			}
 		}
 	}

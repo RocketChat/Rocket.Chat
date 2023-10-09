@@ -21,6 +21,7 @@ export const restrictQuery = async (originalQuery: FilterOperators<IOmnichannelR
 	};
 	query.$and = [condition, ...expressions];
 
+	cbLogger.debug({ msg: 'Applying room query restrictions', units });
 	return query;
 };
 

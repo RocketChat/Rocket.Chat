@@ -4,6 +4,7 @@ export interface ISubscriptionExtraData {
 	open: boolean;
 	ls?: Date;
 	prid?: string;
+	roles?: string[];
 }
 
 interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {

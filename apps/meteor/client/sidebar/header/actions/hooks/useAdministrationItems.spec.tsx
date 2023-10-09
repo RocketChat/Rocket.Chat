@@ -19,12 +19,14 @@ it('should not show upgrade item if has license and not have trial', async () =>
 					workspaceRegistered: false,
 				} as any,
 			}))
+			.withPermission('view-privileged-setting')
+			.withPermission('manage-cloud')
 			.build(),
 	});
 
 	await waitFor(() => !!(result.all.length > 1));
 
-	expect(result.current).toEqual([]);
+	expect(result.current.length).toEqual(1);
 });
 
 it('should return an upgrade item if not have license or if have a trial', async () => {
@@ -42,10 +44,13 @@ it('should return an upgrade item if not have license or if have a trial', async
 					workspaceRegistered: false,
 				} as any,
 			}))
+			.withPermission('view-privileged-setting')
+			.withPermission('manage-cloud')
 			.build(),
 	});
 
-	await waitFor(() => !!result.current[0]);
+	// Workspace admin is also expected to be here
+	await waitFor(() => result.current.length > 1);
 
 	expect(result.current[0]).toEqual(
 		expect.objectContaining({
