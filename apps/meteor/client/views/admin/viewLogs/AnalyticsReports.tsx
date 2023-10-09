@@ -18,7 +18,10 @@ const AnalyticsReports = () => {
 					</Box>
 					<Box fontScale='h4'>{t('How_and_why_we_collect_usage_data')}</Box>
 				</Box>
-				<Box fontScale='p1'>{t('Analytics_page_briefing')}</Box>
+				<Box fontScale='p1' mbe={16}>
+					{t('Analytics_page_briefing_first_paragraph')}
+				</Box>
+				<Box fontScale='p1'>{t('Analytics_page_briefing_second_paragraph')}</Box>
 			</Box>
 			<Box display='flex' flexDirection='column' padding={8} flexGrow={1} color='default' bg='neutral' borderRadius={4} overflow='scroll'>
 				{isSuccess && <pre>{JSON.stringify(data, null, '\t')}</pre>}
