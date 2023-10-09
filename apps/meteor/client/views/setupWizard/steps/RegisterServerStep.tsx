@@ -23,6 +23,7 @@ const RegisterServerStep = (): ReactElement => {
 
 	const handleRegister: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async (data) => {
 		if (data.registerType !== 'standalone') {
+			goToNextStep();
 			setSetupWizardData((prevState) => ({ ...prevState, serverData: data }));
 			await registerServer(data);
 		}

@@ -200,7 +200,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			saveWorkspaceData,
 			saveOrganizationData,
 			completeSetupWizard,
-			maxSteps: data.serverAlreadyRegistered ? 2 : 3,
+			maxSteps: data.serverAlreadyRegistered ? 2 : 4,
 		}),
 		[
 			setupWizardData,
