@@ -94,7 +94,6 @@ settings.onReady(async () => {
 
 	License.onBehaviorTriggered('disable_modules', async (context) => syncByTrigger(`disable_modules_${context.limit}`));
 
-	// License.onBehaviorTriggered('invalidate_license', async () => syncByTrigger('invalidate_license'));
 });
 
 License.setLicenseLimitCounter('activeUsers', () => Users.getActiveLocalUserCount());
