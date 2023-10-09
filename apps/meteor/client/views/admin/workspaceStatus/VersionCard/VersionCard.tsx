@@ -11,6 +11,7 @@ import semver from 'semver';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useLicense } from '../../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
+import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
 import VersionCardActionButton from './components/VersionCardActionButton';
 import VersionCardActionItemList from './components/VersionCardActionItemList';
 import { VersionCardSkeleton } from './components/VersionCardSkeleton';
@@ -53,6 +54,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	const licenseName = license?.tags?.[0]?.name ?? '';
 	const isTrial = license?.trial;
 	const visualExpiration = formatDate(license?.visualExpiration || '');
+	const licenseLimits = licenseData?.data?.limits;
 
 	const serverVersion = serverInfo.version;
 	const supportedVersions = useMemo(
@@ -78,10 +80,9 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	const getActionItems = useCallback(() => {
 		const items: VersionActionItem[] = [];
 		let btn;
+		const isOverLimits = licenseLimits ? isOverLicenseLimits(licenseLimits) : false;
 
-		// TODO:  Add limits plan check
-		const limitExceeded = false;
-		if (limitExceeded) {
+		if (isOverLimits) {
 			items.push({
 				type: 'danger',
 				icon: 'warning',
@@ -167,13 +168,12 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 		}
 
 		setActionItems(items.sort((a) => (a.type === 'danger' ? -1 : 1)));
-	}, [isAirgapped, isRegistered, versionStatus, visualExpiration]);
+	}, [licenseLimits, isAirgapped, isRegistered, versionStatus, visualExpiration]);
 
 	useEffect(() => {
 		if (!supportedVersions.versions) {
 			return;
 		}
-
 		setVersionStatus(getVersionStatus(serverVersion, supportedVersions.versions));
 		getActionItems();
 	}, [getActionItems, serverVersion, supportedVersions]);
