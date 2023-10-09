@@ -40,7 +40,7 @@ export const ReadReceipt = {
 		const room = await Rooms.findOneById(roomId, { projection: { lm: 1 } });
 
 		// if users last seen is greater than room's last message, it means the user already have this room marked as read
-		if (!room || userLastSeen > room.lm) {
+		if (!room || (userLastSeen && userLastSeen > room.lm)) {
 			return;
 		}
 

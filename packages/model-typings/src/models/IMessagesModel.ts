@@ -258,7 +258,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		userId: string,
 		after: Date,
 	): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>>;
-	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>>;
+	findVisibleUnreadMessagesByRoomAndDate(rid: string, after?: Date): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>>;
 	setAsReadById(_id: string): Promise<UpdateResult>;
 	countThreads(): Promise<number>;
 	addThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult>;
