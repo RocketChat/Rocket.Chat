@@ -85,7 +85,7 @@ settings.onReady(async () => {
 	// After the current license is already loaded, watch the setting value to react to new licenses being applied.
 	settings.watch<string>('Enterprise_License', async (license) => applyLicense(license, true));
 
-	callbacks.add('workspaceLicenseChanged', async (updatedLicense) => applyLicense(updatedLicense, false));
+	callbacks.add('workspaceLicenseChanged', async (updatedLicense) => applyLicense(updatedLicense, true));
 
 	License.onBehaviorTriggered('prevent_action', () => syncByTrigger('prevent_action'));
 
