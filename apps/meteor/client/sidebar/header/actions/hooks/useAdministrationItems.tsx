@@ -66,7 +66,7 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 	const setModal = useSetModal();
 
 	const { data } = useRegistrationStatus();
-	const workspaceRegistered = data?.workspaceRegistered ?? false;
+	const workspaceRegistered = data?.registrationStatus?.workspaceRegistered ?? false;
 
 	const handleRegisterWorkspaceClick = (): void => {
 		const handleModalClose = (): void => setModal(null);
