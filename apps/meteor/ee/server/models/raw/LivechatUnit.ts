@@ -51,15 +51,6 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		return this.col.findOne(query, options);
 	}
 
-	async update(
-		originalQuery: Filter<IOmnichannelBusinessUnit>,
-		update: Filter<IOmnichannelBusinessUnit>,
-		options: FindOptions<IOmnichannelBusinessUnit>,
-	): Promise<UpdateResult> {
-		const query = await addQueryRestrictions(originalQuery);
-		return this.col.updateOne(query, update, options);
-	}
-
 	remove(query: Filter<IOmnichannelBusinessUnit>): Promise<DeleteResult> {
 		return this.deleteMany(query);
 	}
