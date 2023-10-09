@@ -1,5 +1,37 @@
 # @rocket.chat/meteor
 
+## 6.4.1
+
+### Patch Changes
+
+- b289bbf26c: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 636a412866: fix: Remove model-level query restrictions for monitors
+- 5e3473a2c9: New setting to automatically enable autotranslate when joining rooms
+- 2fa78b0563: fix: Monitors now able to forward a chat without taking it first
+- 0d14dc49c3: Add new permission to allow kick users from rooms without being a member
+- 919fe1f33d: download translation files through CDN
+- eb4881ca53: fix: user dropdown menu position on RTL layout
+- 5ee909bd94: Improve cache of static files
+  - @rocket.chat/core-typings@6.4.1
+  - @rocket.chat/rest-typings@6.4.1
+  - @rocket.chat/api-client@0.1.10
+  - @rocket.chat/omnichannel-services@0.0.16
+  - @rocket.chat/pdf-worker@0.0.16
+  - @rocket.chat/presence@0.0.16
+  - @rocket.chat/core-services@0.2.1
+  - @rocket.chat/cron@0.0.12
+  - @rocket.chat/gazzodown@2.0.1
+  - @rocket.chat/model-typings@0.1.1
+  - @rocket.chat/ui-contexts@2.0.1
+  - @rocket.chat/fuselage-ui-kit@2.0.1
+  - @rocket.chat/models@0.0.16
+  - @rocket.chat/ui-theming@0.1.0
+  - @rocket.chat/ui-client@2.0.1
+  - @rocket.chat/ui-video-conf@2.0.1
+  - @rocket.chat/web-ui-registration@2.0.1
+  - @rocket.chat/instance-status@0.0.16
+
 ## 6.4.0
 
 ### Minor Changes
