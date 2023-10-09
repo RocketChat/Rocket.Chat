@@ -1,4 +1,4 @@
-import type { LicenseLimitKind } from '../definition/ILicenseV3';
+import type { BehaviorWithContext } from '../definition/LicenseBehavior';
 import type { LicenseModule } from '../definition/LicenseModule';
 import type { LicenseManager } from '../license';
 import { logger } from '../logger';
@@ -21,10 +21,45 @@ export function moduleRemoved(this: LicenseManager, module: LicenseModule) {
 	}
 }
 
-export function limitReached(this: LicenseManager, limitKind: LicenseLimitKind) {
+export function behaviorTriggered(this: LicenseManager, options: BehaviorWithContext) {
+	const { behavior, reason, modules: _, ...rest } = options;
+
 	try {
-		this.emit(`limitReached:${limitKind}`);
+		this.emit(`behavior:${behavior}`, {
+			reason,
+			...rest,
+		});
+	} catch (error) {
+		logger.error({ msg: 'Error running behavior triggered event', error });
+	}
+
+	if (behavior !== 'prevent_action') {
+		return;
+	}
+
+	if (reason !== 'limit' || !(`limit` in rest) || !rest.limit) {
+		return;
+	}
+
+	try {
+		this.emit(`limitReached:${rest.limit}`);
 	} catch (error) {
 		logger.error({ msg: 'Error running limit reached event', error });
+	}
+}
+
+export function licenseValidated(this: LicenseManager) {
+	try {
+		this.emit('validate');
+	} catch (error) {
+		logger.error({ msg: 'Error running license validated event', error });
+	}
+}
+
+export function licenseInvalidated(this: LicenseManager) {
+	try {
+		this.emit('invalidate');
+	} catch (error) {
+		logger.error({ msg: 'Error running license invalidated event', error });
 	}
 }

@@ -185,6 +185,9 @@ export const getLivechatRoomInfo = (roomId: string): Promise<IOmnichannelRoom> =
 	});
 };
 
+/**
+ * @summary Sends message as visitor
+*/
 export const sendMessage = (roomId: string, message: string, visitorToken: string): Promise<IMessage> => {
 	return new Promise((resolve, reject) => {
 		request
