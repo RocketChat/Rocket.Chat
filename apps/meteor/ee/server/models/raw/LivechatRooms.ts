@@ -11,7 +11,6 @@ import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, F
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
-import { addQueryRestrictionsToRoomsModel } from '../../../app/livechat-enterprise/server/lib/query.helper';
 
 declare module '@rocket.chat/model-typings' {
 	interface ILivechatRoomsModel {
@@ -294,32 +293,6 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		};
 		const update = departmentAncestors ? { $set: { departmentAncestors } } : { $unset: { departmentAncestors: 1 } };
 		return this.updateOne(query, update);
-	}
-
-	/** @deprecated Use updateOne or updateMany instead */
-	async update(...args: Parameters<LivechatRoomsRaw['update']>) {
-		const [query, ...restArgs] = args;
-		const restrictedQuery = await addQueryRestrictionsToRoomsModel(query);
-		return super.update(restrictedQuery, ...restArgs);
-	}
-
-	async updateOne(...args: [...Parameters<LivechatRoomsRaw['updateOne']>, { bypassUnits?: boolean }?]) {
-		const [query, update, opts, extraOpts] = args;
-		if (extraOpts?.bypassUnits) {
-			// When calling updateOne from a service, we cannot call the meteor code inside the query restrictions
-			// So the solution now is to pass a bypassUnits flag to the updateOne method which prevents checking
-			// units restrictions on the query, but just for the query the service is actually using
-			// We need to find a way of remove the meteor dependency when fetching units, and then, we can remove this flag
-			return super.updateOne(query, update, opts);
-		}
-		const restrictedQuery = await addQueryRestrictionsToRoomsModel(query);
-		return super.updateOne(restrictedQuery, update, opts);
-	}
-
-	async updateMany(...args: Parameters<LivechatRoomsRaw['updateMany']>) {
-		const [query, ...restArgs] = args;
-		const restrictedQuery = await addQueryRestrictionsToRoomsModel(query);
-		return super.updateMany(restrictedQuery, ...restArgs);
 	}
 
 	getConversationsBySource(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult> {

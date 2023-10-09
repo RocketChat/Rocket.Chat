@@ -1,13 +1,17 @@
 import { Emitter } from '@rocket.chat/emitter';
 
+import { type ILicenseTag } from './definition/ILicenseTag';
 import type { ILicenseV2 } from './definition/ILicenseV2';
 import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
 import type { BehaviorWithContext } from './definition/LicenseBehavior';
 import type { LicenseModule } from './definition/LicenseModule';
+import type { LicenseValidationOptions } from './definition/LicenseValidationOptions';
 import type { LimitContext } from './definition/LimitContext';
+import type { LicenseEvents } from './definition/events';
 import { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
 import { InvalidLicenseError } from './errors/InvalidLicenseError';
 import { NotReadyForValidation } from './errors/NotReadyForValidation';
+import { behaviorTriggered, licenseInvalidated, licenseValidated } from './events/emitter';
 import { logger } from './logger';
 import { getModules, invalidateAll, replaceModules } from './modules';
 import { applyPendingLicense, clearPendingLicense, hasPendingLicense, isPendingLicense, setPendingLicense } from './pendingLicense';
@@ -15,6 +19,7 @@ import { showLicense } from './showLicense';
 import { replaceTags } from './tags';
 import { decrypt } from './token';
 import { convertToV3 } from './v2/convertToV3';
+import { filterBehaviorsResult } from './validation/filterBehaviorsResult';
 import { getCurrentValueForLicenseLimit } from './validation/getCurrentValueForLicenseLimit';
 import { getModulesToDisable } from './validation/getModulesToDisable';
 import { isBehaviorsInResult } from './validation/isBehaviorsInResult';
@@ -22,16 +27,14 @@ import { isReadyForValidation } from './validation/isReadyForValidation';
 import { runValidation } from './validation/runValidation';
 import { validateFormat } from './validation/validateFormat';
 
-export class LicenseManager extends Emitter<
-	Record<`limitReached:${LicenseLimitKind}` | `${'invalid' | 'valid'}:${LicenseModule}`, undefined> & {
-		validate: undefined;
-		invalidate: undefined;
-		module: { module: LicenseModule; valid: boolean };
-	}
-> {
+const globalLimitKinds: LicenseLimitKind[] = ['activeUsers', 'guestUsers', 'privateApps', 'marketplaceApps', 'monthlyActiveContacts'];
+
+export class LicenseManager extends Emitter<LicenseEvents> {
 	dataCounters = new Map<LicenseLimitKind, (context?: LimitContext<LicenseLimitKind>) => Promise<number>>();
 
 	pendingLicense = '';
+
+	tags = new Set<ILicenseTag>();
 
 	modules = new Set<LicenseModule>();
 
@@ -43,9 +46,13 @@ export class LicenseManager extends Emitter<
 
 	private _valid: boolean | undefined;
 
-	private _inFairPolicy: boolean | undefined;
-
 	private _lockedLicense: string | undefined;
+
+	constructor() {
+		super();
+
+		this.on('validate', () => showLicense.call(this, this._license, this._valid));
+	}
 
 	public get license(): ILicenseV3 | undefined {
 		return this._license;
@@ -57,10 +64,6 @@ export class LicenseManager extends Emitter<
 
 	public get valid(): boolean | undefined {
 		return this._valid;
-	}
-
-	public get inFairPolicy(): boolean {
-		return Boolean(this._inFairPolicy);
 	}
 
 	public async setWorkspaceUrl(url: string) {
@@ -75,13 +78,32 @@ export class LicenseManager extends Emitter<
 		return this.workspaceUrl;
 	}
 
+	public async revalidateLicense(options: Omit<LicenseValidationOptions, 'isNewLicense'> = {}): Promise<void> {
+		if (!this.hasValidLicense()) {
+			return;
+		}
+
+		try {
+			await this.validateLicense({ ...options, isNewLicense: false });
+		} catch (e) {
+			if (e instanceof InvalidLicenseError) {
+				this.invalidateLicense();
+			}
+		}
+	}
+
 	private clearLicenseData(): void {
 		this._license = undefined;
 		this._unmodifiedLicense = undefined;
-		this._inFairPolicy = undefined;
 		this._valid = false;
 		this._lockedLicense = undefined;
 		clearPendingLicense.call(this);
+	}
+
+	private invalidateLicense(): void {
+		this._valid = false;
+		licenseInvalidated.call(this);
+		invalidateAll.call(this);
 	}
 
 	private async setLicenseV3(newLicense: ILicenseV3, encryptedLicense: string, originalLicense?: ILicenseV2 | ILicenseV3): Promise<void> {
@@ -92,13 +114,15 @@ export class LicenseManager extends Emitter<
 			this._unmodifiedLicense = originalLicense || newLicense;
 			this._license = newLicense;
 
-			await this.validateLicense();
-
+			const isNewLicense = encryptedLicense !== this._lockedLicense;
 			this._lockedLicense = encryptedLicense;
-		} finally {
-			if (hadValidLicense && !this.hasValidLicense()) {
-				this.emit('invalidate');
-				invalidateAll.call(this);
+
+			await this.validateLicense({ isNewLicense });
+		} catch (e) {
+			if (e instanceof InvalidLicenseError) {
+				if (hadValidLicense) {
+					this.invalidateLicense();
+				}
 			}
 		}
 	}
@@ -111,7 +135,7 @@ export class LicenseManager extends Emitter<
 		return Boolean(this._lockedLicense && this._lockedLicense === encryptedLicense);
 	}
 
-	private async validateLicense(): Promise<void> {
+	private async validateLicense(options: LicenseValidationOptions = {}): Promise<void> {
 		if (!this._license) {
 			throw new InvalidLicenseError();
 		}
@@ -120,15 +144,40 @@ export class LicenseManager extends Emitter<
 			throw new NotReadyForValidation();
 		}
 
-		// #TODO: Only include 'prevent_installation' here if this is actually the initial installation of the license
-		const validationResult = await runValidation.call(this, this._license, [
-			'invalidate_license',
-			'prevent_installation',
-			'start_fair_policy',
-			'disable_modules',
-		]);
+		const validationResult = await runValidation.call(this, this._license, {
+			behaviors: ['invalidate_license', 'start_fair_policy', 'prevent_installation', 'disable_modules'],
+			...options,
+		});
 
-		this.processValidationResult(validationResult);
+		if (isBehaviorsInResult(validationResult, ['invalidate_license', 'prevent_installation'])) {
+			throw new InvalidLicenseError();
+		}
+
+		const shouldLogModules = !this._valid || options.isNewLicense;
+
+		this._valid = true;
+
+		if (this._license.information.tags) {
+			replaceTags.call(this, this._license.information.tags);
+		}
+
+		const disabledModules = getModulesToDisable(validationResult);
+		const modulesToEnable = this._license.grantedModules.filter(({ module }) => !disabledModules.includes(module));
+
+		const modulesChanged = replaceModules.call(
+			this,
+			modulesToEnable.map(({ module }) => module),
+		);
+
+		if (shouldLogModules || modulesChanged) {
+			logger.log({ msg: 'License validated', modules: modulesToEnable });
+		}
+
+		if (!options.isNewLicense) {
+			this.triggerBehaviorEvents(validationResult);
+		}
+
+		licenseValidated.call(this);
 	}
 
 	public async setLicense(encryptedLicense: string): Promise<boolean> {
@@ -175,29 +224,10 @@ export class LicenseManager extends Emitter<
 		}
 	}
 
-	private processValidationResult(result: BehaviorWithContext[]): void {
-		if (!this._license || isBehaviorsInResult(result, ['invalidate_license', 'prevent_installation'])) {
-			return;
+	private triggerBehaviorEvents(validationResult: BehaviorWithContext[]): void {
+		for (const { ...options } of validationResult) {
+			behaviorTriggered.call(this, { ...options });
 		}
-
-		this._valid = true;
-		this._inFairPolicy = isBehaviorsInResult(result, ['start_fair_policy']);
-
-		if (this._license.information.tags) {
-			replaceTags(this._license.information.tags);
-		}
-
-		const disabledModules = getModulesToDisable(result);
-		const modulesToEnable = this._license.grantedModules.filter(({ module }) => !disabledModules.includes(module));
-
-		replaceModules.call(
-			this,
-			modulesToEnable.map(({ module }) => module),
-		);
-		logger.log({ msg: 'License validated', modules: modulesToEnable });
-
-		this.emit('validate');
-		showLicense.call(this, this._license, this._valid);
 	}
 
 	public hasValidLicense(): boolean {
@@ -212,27 +242,47 @@ export class LicenseManager extends Emitter<
 
 	public async shouldPreventAction<T extends LicenseLimitKind>(
 		action: T,
-		context?: Partial<LimitContext<T>>,
-		newCount = 1,
+		extraCount = 0,
+		context: Partial<LimitContext<T>> = {},
+		{ suppressLog }: Pick<LicenseValidationOptions, 'suppressLog'> = {},
 	): Promise<boolean> {
 		const license = this.getLicense();
 		if (!license) {
 			return false;
 		}
 
-		const currentValue = (await getCurrentValueForLicenseLimit.call(this, action, context)) + newCount;
-		return Boolean(
-			license.limits[action]
-				?.filter(({ behavior, max }) => behavior === 'prevent_action' && max >= 0)
-				.some(({ max }) => max < currentValue),
-		);
+		const options: LicenseValidationOptions = {
+			...(extraCount && { behaviors: ['prevent_action'] }),
+			isNewLicense: false,
+			suppressLog: !!suppressLog,
+			context: {
+				[action]: {
+					extraCount,
+					...context,
+				},
+			},
+		};
+
+		const validationResult = await runValidation.call(this, license, options);
+
+		// extra values should not call events since they are not actually reaching the limit just checking if they would
+		if (extraCount) {
+			return isBehaviorsInResult(validationResult, ['prevent_action']);
+		}
+
+		if (isBehaviorsInResult(validationResult, ['invalidate_license', 'disable_modules', 'start_fair_policy'])) {
+			await this.revalidateLicense();
+		}
+
+		this.triggerBehaviorEvents(filterBehaviorsResult(validationResult, ['prevent_action']));
+
+		return isBehaviorsInResult(validationResult, ['prevent_action']);
 	}
 
 	public async getInfo(loadCurrentValues = false): Promise<{
 		license: ILicenseV3 | undefined;
 		activeModules: LicenseModule[];
 		limits: Record<LicenseLimitKind, { value?: number; max: number }>;
-		inFairPolicy: boolean;
 	}> {
 		const activeModules = getModules.call(this);
 		const license = this.getLicense();
@@ -241,7 +291,7 @@ export class LicenseManager extends Emitter<
 		const limits = (
 			(license &&
 				(await Promise.all(
-					(['activeUsers', 'guestUsers', 'privateApps', 'marketplaceApps', 'monthlyActiveContacts'] as LicenseLimitKind[])
+					globalLimitKinds
 						.map((limitKey) => ({
 							limitKey,
 							max: Math.max(-1, Math.min(...Array.from(license.limits[limitKey as LicenseLimitKind] || [])?.map(({ max }) => max))),
@@ -263,7 +313,6 @@ export class LicenseManager extends Emitter<
 			license,
 			activeModules,
 			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
-			inFairPolicy: this.inFairPolicy,
 		};
 	}
 }

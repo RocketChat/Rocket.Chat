@@ -78,6 +78,11 @@ const useI18next = (lng: string): typeof i18next => {
 
 						if (prefix) {
 							result[key.slice(prefix.length + 1)] = value;
+							continue;
+						}
+
+						if (Array.isArray(namespaces) ? namespaces.includes('core') : namespaces === 'core') {
+							result[key] = value;
 						}
 					}
 				}
