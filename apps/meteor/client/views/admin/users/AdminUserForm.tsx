@@ -202,7 +202,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 								name='email'
 								rules={{
 									required: t('The_field_is_required', t('Email')),
-									validate: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')),
+									validate: (email) => (validateEmail(email) ? undefined : t('ensure_email_address_valid')),
 								}}
 								render={({ field }) => (
 									<TextInput
@@ -272,7 +272,6 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 										aria-describedby={`${usernameId}-error`}
 										error={errors.username?.message}
 										flexGrow={1}
-										addon={<Icon name='at' size='x20' />}
 									/>
 								)}
 							/>
@@ -283,73 +282,6 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 							</Field.Error>
 						)}
 					</Field>
-					<Field>
-						<Field.Label htmlFor={statusTextId}>{t('StatusMessage')}</Field.Label>
-						<Field.Row>
-							<Controller
-								control={control}
-								name='statusText'
-								rules={{ maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH) } }}
-								render={({ field }) => (
-									<TextInput
-										{...field}
-										id={statusTextId}
-										error={errors?.statusText?.message}
-										aria-invalid={errors.statusText ? 'true' : 'false'}
-										aria-describedby={`${statusTextId}-error`}
-										flexGrow={1}
-										addon={<Icon name='edit' size='x20' />}
-									/>
-								)}
-							/>
-						</Field.Row>
-						{errors?.statusText && (
-							<Field.Error aria-live='assertive' id={`${statusTextId}-error`}>
-								{errors.statusText.message}
-							</Field.Error>
-						)}
-					</Field>
-					<Field>
-						<Field.Label htmlFor={bioId}>{t('Bio')}</Field.Label>
-						<Field.Row>
-							<Controller
-								control={control}
-								name='bio'
-								rules={{ maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', BIO_TEXT_MAX_LENGTH) } }}
-								render={({ field }) => (
-									<TextAreaInput
-										{...field}
-										id={bioId}
-										rows={3}
-										error={errors?.bio?.message}
-										aria-invalid={errors.bio ? 'true' : 'false'}
-										aria-describedby={`${bioId}-error`}
-										flexGrow={1}
-										addon={<Icon name='edit' size='x20' alignSelf='center' />}
-									/>
-								)}
-							/>
-						</Field.Row>
-						{errors?.bio && (
-							<Field.Error aria-live='assertive' id={`${bioId}-error`}>
-								{errors.bio.message}
-							</Field.Error>
-						)}
-					</Field>
-					<Field>
-						<Field.Label htmlFor={nicknameId}>{t('Nickname')}</Field.Label>
-						<Field.Row>
-							<Controller
-								control={control}
-								name='nickname'
-								render={({ field }) => (
-									<TextInput {...field} id={nicknameId} flexGrow={1} addon={<Icon name='edit' size='x20' alignSelf='center' />} />
-								)}
-							/>
-						</Field.Row>
-					</Field>
-				</FieldGroup>
-				<FieldGroup>
 					<Field>
 						<Field.Label htmlFor={passwordId} mbe={8}>
 							{t('Password')}
@@ -460,7 +392,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 											value={value}
 											onChange={onChange}
 											flexGrow={1}
-											placeholder={t('Select_an_option')}
+											placeholder={t('Select_role')}
 											options={availableRoles}
 										/>
 									)}
@@ -509,10 +441,70 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 							/>
 						)}
 					</Field>
+					<Field>
+						<Field.Label htmlFor={statusTextId}>{t('StatusMessage')}</Field.Label>
+						<Field.Row>
+							<Controller
+								control={control}
+								name='statusText'
+								rules={{ maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH) } }}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										id={statusTextId}
+										error={errors?.statusText?.message}
+										aria-invalid={errors.statusText ? 'true' : 'false'}
+										aria-describedby={`${statusTextId}-error`}
+										flexGrow={1}
+									/>
+								)}
+							/>
+						</Field.Row>
+						{errors?.statusText && (
+							<Field.Error aria-live='assertive' id={`${statusTextId}-error`}>
+								{errors.statusText.message}
+							</Field.Error>
+						)}
+					</Field>
+					<Field>
+						<Field.Label htmlFor={bioId}>{t('Bio')}</Field.Label>
+						<Field.Row>
+							<Controller
+								control={control}
+								name='bio'
+								rules={{ maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', BIO_TEXT_MAX_LENGTH) } }}
+								render={({ field }) => (
+									<TextAreaInput
+										{...field}
+										id={bioId}
+										rows={3}
+										error={errors?.bio?.message}
+										aria-invalid={errors.bio ? 'true' : 'false'}
+										aria-describedby={`${bioId}-error`}
+										flexGrow={1}
+									/>
+								)}
+							/>
+						</Field.Row>
+						{errors?.bio && (
+							<Field.Error aria-live='assertive' id={`${bioId}-error`}>
+								{errors.bio.message}
+							</Field.Error>
+						)}
+					</Field>
+					<Field>
+						<Field.Label htmlFor={nicknameId}>{t('Nickname')}</Field.Label>
+						<Field.Row>
+							<Controller control={control} name='nickname' render={({ field }) => <TextInput {...field} id={nicknameId} flexGrow={1} />} />
+						</Field.Row>
+					</Field>
+				</FieldGroup>
+				<FieldGroup>
 					{Boolean(customFieldsMetadata.length) && (
 						<>
-							<Divider />
-							<Box fontScale='h4'>{t('Custom_Fields')}</Box>
+							<Button fontScale='c2' w='x140' h='x28' display='flex' alignItems='center' justifyContent='center'>
+								{t('Hide_additional_fields')}
+							</Button>
 							<CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />
 						</>
 					)}

@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Tabs } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon, Tabs } from '@rocket.chat/fuselage';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useRef, useState } from 'react';
@@ -90,7 +90,11 @@ const UsersPage = (): ReactElement => {
 						<ContextualbarTitle>
 							{context === 'info' && t('User_Info')}
 							{context === 'edit' && t('Edit_User')}
-							{context === 'new' && t('Add_User')}
+							{context === 'new' && (
+								<>
+									<Icon name='user-plus' size={20} /> {t('New_user')}
+								</>
+							)}
 							{context === 'invite' && t('Invite_Users')}
 						</ContextualbarTitle>
 						<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
