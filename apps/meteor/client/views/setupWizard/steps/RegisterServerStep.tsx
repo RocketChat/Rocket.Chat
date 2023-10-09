@@ -1,56 +1,67 @@
-import { RegisterServerPage, StandaloneServerPage } from '@rocket.chat/onboarding-ui';
-import { useRoute } from '@rocket.chat/ui-contexts';
+import { RegisterServerPage, RegisterOfflinePage } from '@rocket.chat/onboarding-ui';
+import { useEndpoint, useMethod } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
+import { queryClient } from '../../../lib/queryClient';
+import { dispatchToastMessage } from '../../../lib/toast';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 const SERVER_OPTIONS = {
 	REGISTERED: 'REGISTERED',
-	STANDALONE: 'STANDALONE',
+	OFFLINE: 'OFFLINE',
 };
 
 const RegisterServerStep = (): ReactElement => {
-	const { currentStep, setSetupWizardData, registerServer, maxSteps, offline, completeSetupWizard } = useSetupWizardContext();
+	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, offline, completeSetupWizard } = useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
 
-	const router = useRoute('cloud');
-
-	const handleRegisterOffline: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async () => {
-		await completeSetupWizard();
-		router.push({}, { register: 'true' });
+	const handleRegister: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async (data: { email: string; resend?: boolean }) => {
+		goToNextStep();
+		setSetupWizardData((prevState) => ({ ...prevState, serverData: data }));
+		await registerServer(data);
 	};
 
-	const handleRegister: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async (data) => {
-		if (data.registerType !== 'standalone') {
-			goToNextStep();
-			setSetupWizardData((prevState) => ({ ...prevState, serverData: data }));
-			await registerServer(data);
-		}
-	};
+	const [clientKey, setClientKey] = useState('');
 
-	const handleConfirmStandalone: ComponentProps<typeof StandaloneServerPage>['onSubmit'] = async ({ registerType }) => {
-		if (registerType !== 'registered') {
+	const registerManually = useEndpoint('POST', '/v1/cloud.manualRegister');
+	const getWorkspaceRegisterData = useMethod('cloud:getWorkspaceRegisterData');
+
+	useEffect(() => {
+		const loadWorkspaceRegisterData = async (): Promise<void> => {
+			const clientKey = await getWorkspaceRegisterData();
+			setClientKey(clientKey);
+		};
+
+		loadWorkspaceRegisterData();
+	}, [getWorkspaceRegisterData]);
+
+	const handleConfirmOffline: ComponentProps<typeof RegisterOfflinePage>['onSubmit'] = async ({ token }) => {
+		try {
+			await registerManually({ cloudBlob: token });
+			queryClient.invalidateQueries(['licenses']);
+
 			return completeSetupWizard();
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
 		}
 	};
 
-	if (serverOption === SERVER_OPTIONS.STANDALONE) {
+	if (serverOption === SERVER_OPTIONS.OFFLINE) {
 		return (
-			<StandaloneServerPage
-				currentStep={currentStep}
+			<RegisterOfflinePage
+				clientKey={clientKey}
 				onBackButtonClick={(): void => setServerOption(SERVER_OPTIONS.REGISTERED)}
-				onSubmit={handleConfirmStandalone}
-				stepCount={maxSteps}
+				onSubmit={handleConfirmOffline}
 			/>
 		);
 	}
 
 	return (
 		<RegisterServerPage
-			onClickRegisterLater={(): void => setServerOption(SERVER_OPTIONS.STANDALONE)}
+			onClickRegisterOffline={(): void => setServerOption(SERVER_OPTIONS.OFFLINE)}
 			stepCount={maxSteps}
-			onSubmit={offline ? handleRegisterOffline : handleRegister}
+			onSubmit={handleRegister}
 			currentStep={currentStep}
 			offline={offline}
 		/>
