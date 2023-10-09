@@ -33,12 +33,12 @@ const FeaturesCard = ({ plan }: FeaturesCardProps): ReactElement => {
 		}
 
 		if (plan === PlanName.PRO) {
-			PRO_FEATURES.push({ type: 'success', title: 'White_label_branding' });
+			PRO_FEATURES.push({ type: 'success', title: 'Remove_RocketChat_Watermark' });
 			return PRO_FEATURES;
 		}
 
 		if (plan === PlanName.PRO_TRIAL) {
-			PRO_FEATURES.push({ type: 'neutral', title: 'White_label_branding', infoText: 'WhiteLabel_trial_InfoText' });
+			PRO_FEATURES.push({ type: 'neutral', title: 'Remove_RocketChat_Watermark', infoText: 'Remove_RocketChat_Watermark_InfoText' });
 			return PRO_FEATURES;
 		}
 

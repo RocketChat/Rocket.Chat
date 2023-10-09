@@ -34,7 +34,7 @@ const PlanCard = ({ isEnterprise, license }: PlanCardProps): ReactElement => {
 			return (
 				<Box display='flex' flexDirection='column' h='full'>
 					<Box fontScale='p2b' mb={6} display='flex'>
-						<Box mie={8}>{t('Trial_period_active')}</Box> <Tag>{t('n_days_left', { n: trialDaysLeft })}</Tag>
+						<Box mie={8}>{t('Trial_active')}</Box> <Tag>{t('n_days_left', { n: trialDaysLeft })}</Tag>
 					</Box>
 					<Box fontScale='p2' mb={6}>
 						{isSalesAssisted ? (

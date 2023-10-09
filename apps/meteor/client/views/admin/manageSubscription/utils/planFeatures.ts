@@ -31,7 +31,7 @@ export const planFeatures: PlanFeatures = {
 		},
 		{
 			type: 'neutral',
-			title: 'White_label_branding',
+			title: 'Remove_RocketChat_Watermark',
 		},
 		{
 			type: 'neutral',
@@ -53,7 +53,7 @@ export const planFeatures: PlanFeatures = {
 		},
 		{
 			type: 'neutral',
-			title: 'White_label_branding',
+			title: 'Remove_RocketChat_Watermark',
 		},
 		{
 			type: 'neutral',

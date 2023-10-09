@@ -6,15 +6,15 @@ import { useTranslation } from 'react-i18next';
 import { useActiveConnections } from '../../../../hooks/useActiveConnections';
 import FeatureUsageCard from '../FeatureUsageCard';
 
-const ConcurrentUsersCard = (): ReactElement => {
+const ActiveSessionsCard = (): ReactElement => {
 	const { t } = useTranslation();
 	const { data: activeConnections, isLoading } = useActiveConnections();
 
 	const { max, current } = activeConnections || {};
 
 	const card = {
-		title: t('Concurrent_users'),
-		infoText: t('ConcurrentUsers_InfoText'),
+		title: t('ActiveSessions'),
+		infoText: t('ActiveSessions_InfoText'),
 	};
 
 	const total = max || 0;
@@ -31,7 +31,7 @@ const ConcurrentUsersCard = (): ReactElement => {
 						{used} / {total}
 					</Box>
 					<Box fontScale='p2' color='font-secondary-info'>
-						{available} {t('Concurrent_users_available')}
+						{available} {t('ActiveSessions_available')}
 					</Box>
 				</Box>
 			) : (
@@ -40,4 +40,4 @@ const ConcurrentUsersCard = (): ReactElement => {
 		</FeatureUsageCard>
 	);
 };
-export default ConcurrentUsersCard;
+export default ActiveSessionsCard;

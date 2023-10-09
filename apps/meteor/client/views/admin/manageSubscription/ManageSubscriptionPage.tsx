@@ -8,13 +8,12 @@ import { useLicense } from '../../../hooks/useLicense';
 import { PlanName, getPlanName } from '../../../lib/utils/getPlanName';
 import GetMoreWithEnterprise from './components/GetMoreWithEnterprise';
 import UpgradeButton from './components/UpgradeButton';
+import ActiveSessionsCard from './components/cards/ActiveSessionsCard';
 import AppsUsageCard from './components/cards/AppsUsageCard';
-import ConcurrentUsersCard from './components/cards/ConcurrentUsersCard';
 import CountMACCard from './components/cards/CountMACCard';
 import CountSeatsCard from './components/cards/CountSeatsCard';
 import FeaturesCard from './components/cards/FeaturesCard';
 import MACCard from './components/cards/MACCard';
-import MobilePushNotificationCard from './components/cards/MobilePushNotificationCard';
 import PlanCard from './components/cards/PlanCard';
 import SeatsCard from './components/cards/SeatsCard';
 import { CONTACT_SALES_LINK } from './utils/links';
@@ -87,20 +86,17 @@ const ManageSubscriptionPage = () => {
 							</>
 						) : (
 							<>
-								<Grid.Item lg={4} xs={4} p={8}>
+								<Grid.Item lg={6} xs={4} p={8}>
 									<CountSeatsCard />
 								</Grid.Item>
-								<Grid.Item lg={4} xs={4} p={8}>
+								<Grid.Item lg={6} xs={4} p={8}>
 									<CountMACCard />
 								</Grid.Item>
-								<Grid.Item lg={4} xs={4} p={8}>
-									<ConcurrentUsersCard />
+								<Grid.Item lg={6} xs={4} p={8}>
+									<ActiveSessionsCard />
 								</Grid.Item>
 								<Grid.Item lg={6} xs={4} p={8}>
 									<AppsUsageCard privateAppsLimit={privateAppsLimit} marketplaceAppsLimit={marketplaceAppsLimit} />
-								</Grid.Item>
-								<Grid.Item lg={6} xs={4} p={8}>
-									<MobilePushNotificationCard />
 								</Grid.Item>
 							</>
 						)}
