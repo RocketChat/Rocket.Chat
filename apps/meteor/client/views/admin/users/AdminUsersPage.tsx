@@ -39,8 +39,8 @@ const UsersPage = async (): Promise<ReactElement> => {
 	}, [context, seatsCap, tab, router]);
 
 	const handleReload = (): void => {
-		seatsCap?.reload();
-		reload.current();
+		// seatsCap?.reload();
+		// reload.current();
 	};
 
 	return (
@@ -91,7 +91,7 @@ const UsersPage = async (): Promise<ReactElement> => {
 					<UsersTable reload={reload} tab={tab} onReload={handleReload} setPendingActionsCount={setPendingActionsCount} />
 				</Page.Content>
 			</Page>
-			{context && (
+			{/* {context && (
 				<Contextualbar is='aside' aria-labelledby=''>
 					<ContextualbarHeader>
 						<ContextualbarTitle>
@@ -107,7 +107,7 @@ const UsersPage = async (): Promise<ReactElement> => {
 					{context === 'pending' && <AdminUserForm onReload={handleReload} />}
 					{context === 'invite' && <AdminInviteUsers />}
 				</Contextualbar>
-			)}
+			)} */}
 		</Page>
 	);
 };
