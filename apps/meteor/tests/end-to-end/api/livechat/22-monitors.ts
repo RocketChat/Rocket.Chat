@@ -14,7 +14,7 @@ import {
 	makeAgentAvailable,
 } from '../../../data/livechat/rooms';
 import { createMonitor, createUnit } from '../../../data/livechat/units';
-import { updateSetting } from '../../../data/permissions.helper';
+import { updateSetting, updatePermission } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
 import { createUser, login, setUserActiveStatus } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -65,6 +65,9 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 		unitDepartment = await createDepartment();
 
 		await createUnit(monitor.user._id, monitor.user.username!, [unitDepartment._id]);
+	});
+	before(async () => {
+		await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent', 'livechat-monitor']);
 	});
 
 	describe('Monitors & Rooms', () => {

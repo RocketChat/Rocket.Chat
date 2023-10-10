@@ -1313,7 +1313,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(body.history.length).to.equal(0);
 		});
 		it('should return the transfer history for a room', async () => {
-			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent', 'livechat-monitor']);
+			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
 			const initialAgentAssignedToChat: IUser = await createUser();
 			const initialAgentCredentials = await login(initialAgentAssignedToChat.username, password);
 			await createAgent(initialAgentAssignedToChat.username);
