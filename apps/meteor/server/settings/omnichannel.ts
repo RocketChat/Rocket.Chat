@@ -429,14 +429,6 @@ export const createOmniSettings = () =>
 			enableQuery: omnichannelEnabledQuery,
 		});
 
-		await this.add('Omnichannel_hide_conversation_after_closing', true, {
-			type: 'boolean',
-			group: 'Omnichannel',
-			public: true,
-			i18nLabel: 'Omnichannel_hide_conversation_after_closing',
-			enableQuery: omnichannelEnabledQuery,
-		});
-
 		await this.add('Livechat_registration_form_message', '', {
 			type: 'string',
 			group: 'Omnichannel',
