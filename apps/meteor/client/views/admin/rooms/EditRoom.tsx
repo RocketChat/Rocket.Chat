@@ -225,7 +225,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 					</Box>
 				)}
 				<Field>
-					<FieldLabel>{t('Name')}</FieldLabel>
+					<FieldLabel required>{t('Name')}</FieldLabel>
 					<FieldRow>
 						<TextInput disabled={deleting || !canViewName} value={roomName} onChange={handleRoomName} flexGrow={1} />
 					</FieldRow>

@@ -26,6 +26,43 @@ import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
 
+async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
+	if (
+		(!('roomId' in params) && !('roomName' in params)) ||
+		('roomId' in params && !(params as { roomId?: string }).roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
+	) {
+		throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
+	}
+
+	const roomOptions = {
+		projection: {
+			...roomAccessAttributes,
+			t: 1,
+			ro: 1,
+			name: 1,
+			fname: 1,
+			prid: 1,
+			archived: 1,
+			broadcast: 1,
+		},
+	};
+
+	const room = await (() => {
+		if ('roomId' in params) {
+			return Rooms.findOneById(params.roomId || '', roomOptions);
+		}
+		if ('roomName' in params) {
+			return Rooms.findOneByName(params.roomName || '', roomOptions);
+		}
+	})();
+
+	if (!room || room.t !== 'p') {
+		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+	}
+
+	return room;
+}
+
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findPrivateGroupByIdOrName({
 	params,
@@ -49,35 +86,7 @@ async function findPrivateGroupByIdOrName({
 	name: string;
 	broadcast: boolean;
 }> {
-	if (
-		(!('roomId' in params) && !('roomName' in params)) ||
-		('roomId' in params && !(params as { roomId?: string }).roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
-	) {
-		throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
-	}
-
-	const roomOptions = {
-		projection: {
-			...roomAccessAttributes,
-			t: 1,
-			ro: 1,
-			name: 1,
-			fname: 1,
-			prid: 1,
-			archived: 1,
-			broadcast: 1,
-		},
-	};
-	let room: IRoom | null = null;
-	if ('roomId' in params) {
-		room = await Rooms.findOneById(params.roomId || '', roomOptions);
-	} else if ('roomName' in params) {
-		room = await Rooms.findOneByName(params.roomName || '', roomOptions);
-	}
-
-	if (!room || room.t !== 'p') {
-		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
-	}
+	const room = await getRoomFromParams(params);
 
 	const user = await Users.findOneById(userId, { projections: { username: 1 } });
 
@@ -585,17 +594,14 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
+			const room = await getRoomFromParams(this.bodyParams);
 
 			const user = await getUserFromParams(this.bodyParams);
 			if (!user?.username) {
 				return API.v1.failure('Invalid user');
 			}
 
-			await removeUserFromRoomMethod(this.userId, { rid: findResult.rid, username: user.username });
+			await removeUserFromRoomMethod(this.userId, { rid: room._id, username: user.username });
 
 			return API.v1.success();
 		},

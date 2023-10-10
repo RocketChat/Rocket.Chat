@@ -1,3 +1,4 @@
+import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -7,9 +8,21 @@ import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useTagsList } from '../../hooks/useTagsList';
 
-const AutoCompleteTagMultiple = (props) => {
-	const { value, onlyMyTags = false, onChange = () => {}, department, viewAll = false } = props;
+type AutoCompleteTagsMultipleProps = {
+	value?: PaginatedMultiSelectOption[];
+	onlyMyTags?: boolean;
+	onChange?: (value: PaginatedMultiSelectOption[]) => void;
+	department?: string;
+	viewAll?: boolean;
+};
 
+const AutoCompleteTagsMultiple = ({
+	value = [],
+	onlyMyTags = false,
+	onChange = () => undefined,
+	department,
+	viewAll = false,
+}: AutoCompleteTagsMultipleProps) => {
 	const t = useTranslation();
 	const [tagsFilter, setTagsFilter] = useState('');
 
@@ -41,9 +54,11 @@ const AutoCompleteTagMultiple = (props) => {
 			flexShrink={0}
 			flexGrow={0}
 			placeholder={t('Select_an_option')}
-			endReached={tagsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreTags(start, Math.min(50, tagsTotal))}
+			endReached={
+				tagsPhase === AsyncStatePhase.LOADING ? () => undefined : (start) => start && loadMoreTags(start, Math.min(50, tagsTotal))
+			}
 		/>
 	);
 };
 
-export default memo(AutoCompleteTagMultiple);
+export default memo(AutoCompleteTagsMultiple);
