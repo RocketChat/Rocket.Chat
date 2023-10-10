@@ -66,7 +66,7 @@ export const useFilteredApps = ({
 		const filterByPurchaseType: Record<string, (apps: App[]) => App[]> = {
 			all: fallback,
 			paid: (apps: App[]) => apps.filter(filterAppsByPaid),
-			enterprise: (apps: App[]) => apps.filter(filterAppsByEnterprise),
+			premium: (apps: App[]) => apps.filter(filterAppsByEnterprise),
 			free: (apps: App[]) => apps.filter(filterAppsByFree),
 		};
 
@@ -80,7 +80,7 @@ export const useFilteredApps = ({
 			explore: fallback,
 			installed: fallback,
 			private: fallback,
-			enterprise: (apps: App[]) => apps.filter(({ categories }) => categories.includes('Enterprise')),
+			premium: (apps: App[]) => apps.filter(({ categories }) => categories.includes('Premium')),
 			requested: (apps: App[]) => apps.filter(({ appRequestStats, installed }) => Boolean(appRequestStats) && !installed),
 		};
 

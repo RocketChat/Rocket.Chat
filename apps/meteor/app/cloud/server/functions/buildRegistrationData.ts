@@ -89,7 +89,7 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		setupComplete: setupWizardState === 'completed',
 		connectionDisable: !registerServer,
 		npsEnabled,
-		MAC: stats.omnichannelContactsBySource.contactsCount,
+		MAC: stats.omnichannelContactsBySource?.contactsCount ?? 0,
 		// activeContactsBillingMonth: stats.omnichannelContactsBySource.contactsCount,
 		// activeContactsYesterday: stats.uniqueContactsOfYesterday.contactsCount,
 	};

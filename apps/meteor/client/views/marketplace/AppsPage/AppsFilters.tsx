@@ -50,7 +50,7 @@ const AppsFilters = ({
 
 	const appsSearchPlaceholders: { [key: string]: string } = {
 		explore: t('Search_Apps'),
-		enterprise: t('Search_Enterprise_Apps'),
+		enterprise: t('Search_Premium_Apps'),
 		installed: t('Search_Installed_Apps'),
 		requested: t('Search_Requested_Apps'),
 		private: t('Search_Private_apps'),
