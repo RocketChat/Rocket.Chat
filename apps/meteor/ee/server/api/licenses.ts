@@ -1,17 +1,10 @@
+import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
+import { isLicensesInfoProps } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
 import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import type { ILicense } from '../../app/license/definition/ILicense';
-import { getLicenses, validateFormat, flatModules, getMaxActiveUsers, isEnterprise } from '../../app/license/server/license';
-
-function licenseTransform(license: ILicense): ILicense {
-	return {
-		...license,
-		modules: flatModules(license.modules),
-	};
-}
 
 API.v1.addRoute(
 	'licenses.get',
@@ -22,11 +15,22 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const licenses = getLicenses()
-				.filter(({ valid }) => valid)
-				.map(({ license }) => licenseTransform(license));
+			const license = License.getUnmodifiedLicenseAndModules();
+			const licenses = license ? [license] : [];
 
 			return API.v1.success({ licenses });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'licenses.info',
+	{ authRequired: true, validateParams: isLicensesInfoProps, permissionsRequired: ['view-privileged-setting'] },
+	{
+		async get() {
+			const data = await License.getInfo(Boolean(this.queryParams.loadValues));
+
+			return API.v1.success({ data });
 		},
 	},
 );
@@ -45,7 +49,7 @@ API.v1.addRoute(
 			}
 
 			const { license } = this.bodyParams;
-			if (!validateFormat(license)) {
+			if (!(await License.validateFormat(license))) {
 				return API.v1.failure('Invalid license');
 			}
 
@@ -61,7 +65,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const maxActiveUsers = getMaxActiveUsers() || null;
+			const maxActiveUsers = License.getMaxActiveUsers() || null;
 			const activeUsers = await Users.getActiveLocalUserCount();
 
 			return API.v1.success({ maxActiveUsers, activeUsers });
@@ -74,7 +78,7 @@ API.v1.addRoute(
 	{ authOrAnonRequired: true },
 	{
 		get() {
-			const isEnterpriseEdtion = isEnterprise();
+			const isEnterpriseEdtion = License.hasValidLicense();
 			return API.v1.success({ isEnterprise: isEnterpriseEdtion });
 		},
 	},

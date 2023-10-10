@@ -58,7 +58,12 @@ export class RocketChatRoomAdapter {
 				.trim()
 				.replace(/ /g, '-'),
 		);
-		const { rid, _id } = await createRoom(federatedRoom.getRoomType(), roomName, usernameOrId);
+		const owner = await Users.findOneByUsernameIgnoringCase(usernameOrId);
+		if (!owner) {
+			throw new Error('Cannot create a room without a creator');
+		}
+
+		const { rid, _id } = await createRoom(federatedRoom.getRoomType(), roomName, owner);
 		const roomId = rid || _id;
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(
 			roomId,
@@ -90,10 +95,16 @@ export class RocketChatRoomAdapter {
 		const readonly = false;
 		const excludeSelf = false;
 		const extraData = undefined;
+
+		const owner = await Users.findOneByUsernameIgnoringCase(usernameOrId);
+		if (!owner) {
+			throw new Error('Cannot create a room without a creator');
+		}
+
 		const { rid, _id } = await createRoom(
 			federatedRoom.getRoomType(),
 			federatedRoom.getDisplayName(),
-			usernameOrId,
+			owner,
 			federatedRoom.getMembersUsernames(),
 			excludeSelf,
 			readonly,

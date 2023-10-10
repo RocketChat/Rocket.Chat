@@ -3,64 +3,32 @@ import { renderHook } from '@testing-library/react-hooks';
 
 import { useValidatePassword } from './useValidatePassword';
 
-type Response = {
-	enabled: boolean;
-	policy: [
-		name: string,
-		value?:
-			| {
-					[x: string]: number;
-			  }
-			| undefined,
-	][];
-};
+const settingsMockWrapper = mockAppRoot()
+	.withSetting('Accounts_Password_Policy_Enabled', 'true')
+	.withSetting('Accounts_Password_Policy_MinLength', '6')
+	.withSetting('Accounts_Password_Policy_MaxLength', '24')
+	.withSetting('Accounts_Password_Policy_ForbidRepeatingCharacters', 'true')
+	.withSetting('Accounts_Password_Policy_ForbidRepeatingCharactersCount', '3')
+	.withSetting('Accounts_Password_Policy_AtLeastOneLowercase', 'true')
+	.withSetting('Accounts_Password_Policy_AtLeastOneUppercase', 'true')
+	.withSetting('Accounts_Password_Policy_AtLeastOneNumber', 'true')
+	.withSetting('Accounts_Password_Policy_AtLeastOneSpecialCharacter', 'true')
+	.build();
 
 it("should return `false` if password doesn't match all the requirements", async () => {
-	const response: Response = {
-		enabled: true,
-		policy: [['get-password-policy-minLength', { minLength: 8 }]],
-	};
-
-	const { result, waitForValueToChange } = renderHook(async () => useValidatePassword('secret'), {
-		wrapper: mockAppRoot()
-			.withEndpoint('GET', '/v1/pw.getPolicy', () => response)
-			.build(),
+	const { result } = renderHook(async () => useValidatePassword('secret'), {
+		wrapper: settingsMockWrapper,
 	});
 
-	await waitForValueToChange(() => result.current);
 	const res = await result.current;
 	expect(res).toBeFalsy();
 });
 
 it('should return `true` if password matches all the requirements', async () => {
-	const response: Response = {
-		enabled: true,
-		policy: [['get-password-policy-minLength', { minLength: 8 }]],
-	};
-
-	const { result, waitForValueToChange } = renderHook(async () => useValidatePassword('secret-password'), {
-		wrapper: mockAppRoot()
-			.withEndpoint('GET', '/v1/pw.getPolicy', () => response)
-			.build(),
+	const { result } = renderHook(async () => useValidatePassword('5kgnGPq^&t4DSYW!SH#4N'), {
+		wrapper: settingsMockWrapper,
 	});
 
-	await waitForValueToChange(() => result.current);
 	const res = await result.current;
 	expect(res).toBeTruthy();
-});
-
-it('should return `undefined` if password validation is still loading', async () => {
-	const response: Response = {
-		enabled: true,
-		policy: [['get-password-policy-minLength', { minLength: 8 }]],
-	};
-
-	const { result } = renderHook(async () => useValidatePassword('secret-password'), {
-		wrapper: mockAppRoot()
-			.withEndpoint('GET', '/v1/pw.getPolicy', () => response)
-			.build(),
-	});
-
-	const res = await result.current;
-	expect(res).toBeUndefined();
 });

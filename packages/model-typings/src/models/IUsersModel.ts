@@ -239,6 +239,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	removeAllRoomsByUserId(userId: string): Promise<UpdateResult>;
 	removeRoomByUserId(userId: string, rid: string): Promise<UpdateResult>;
 	addRoomByUserId(userId: string, rid: string): Promise<UpdateResult>;
+	addRoomByUserIds(uids: string[], rid: string): Promise<UpdateResult>;
 	removeRoomByRoomIds(rids: string[]): Promise<UpdateResult | Document>;
 	getLoginTokensByUserId(userId: string): FindCursor<ILoginToken>;
 	addPersonalAccessTokenToUser(data: { userId: string; loginTokenObject: IPersonalAccessToken }): Promise<UpdateResult>;
@@ -317,7 +318,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findByUsernameNameOrEmailAddress(nameOrUsernameOrEmail: string, options?: FindOptions<IUser>): FindCursor<IUser>;
 	findCrowdUsers(options?: FindOptions<IUser>): FindCursor<IUser>;
 	getLastLogin(options?: FindOptions<IUser>): Promise<Date | undefined>;
-	findUsersByUsernames(usernames: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findUsersByUsernames<T = IUser>(usernames: string[], options?: FindOptions<IUser>): FindCursor<T>;
 	findUsersByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	findUsersWithUsernameByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	findUsersWithUsernameByIdsNotOffline(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
@@ -372,7 +373,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	getUsersToSendOfflineEmail(userIds: string[]): FindCursor<Pick<IUser, 'name' | 'username' | 'emails' | 'settings' | 'language'>>;
 	countActiveUsersByService(service: string, options?: FindOptions<IUser>): Promise<number>;
 	getActiveLocalUserCount(): Promise<number>;
-	getActiveLocalGuestCount(): Promise<number>;
+	getActiveLocalGuestCount(exceptions?: IUser['_id'] | IUser['_id'][]): Promise<number>;
 	removeOlderResumeTokensByUserId(userId: string, fromDate: Date): Promise<UpdateResult>;
 	findAllUsersWithPendingAvatar(): FindCursor<IUser>;
 	updateCustomFieldsById(userId: string, customFields: Record<string, unknown>): Promise<UpdateResult>;

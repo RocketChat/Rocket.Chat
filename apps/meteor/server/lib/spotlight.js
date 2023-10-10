@@ -144,7 +144,7 @@ export class Spotlight {
 	}
 
 	async _searchTeams(userId, { text, options, users, mentions }) {
-		if (!mentions) {
+		if (!mentions || settings.get('Troubleshoot_Disable_Teams_Mention')) {
 			return users;
 		}
 

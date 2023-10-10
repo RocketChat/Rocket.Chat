@@ -26,7 +26,7 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 		return true;
 	}
 
-	async create(doc: Optional<IBanner, '_id'>): Promise<IBanner> {
+	async create(doc: Optional<IBanner, '_id' | '_updatedAt'>): Promise<IBanner> {
 		const bannerId = doc._id || uuidv4();
 
 		doc.view.appId = 'banner-core';

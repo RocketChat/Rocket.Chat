@@ -300,8 +300,9 @@ export const useQuickActions = (): {
 	const manualOnHoldAllowed = useSetting('Livechat_allow_manual_on_hold');
 
 	const hasManagerRole = useRole('livechat-manager');
+	const hasMonitorRole = useRole('livechat-monitor');
 
-	const roomOpen = room?.open && (room.u?._id === uid || hasManagerRole) && room?.lastMessage?.t !== 'livechat-close';
+	const roomOpen = room?.open && (room.u?._id === uid || hasManagerRole || hasMonitorRole) && room?.lastMessage?.t !== 'livechat-close';
 	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue && room?.u !== undefined;
 	const canForwardGuest = usePermission('transfer-livechat-guest');
 	const canSendTranscriptEmail = usePermission('send-omnichannel-chat-transcript');
