@@ -17,7 +17,7 @@ type AutoCompleteTagsMultipleProps = {
 };
 
 const AutoCompleteTagsMultiple = ({
-	value,
+	value = [],
 	onlyMyTags = false,
 	onChange = () => undefined,
 	department,
@@ -38,7 +38,7 @@ const AutoCompleteTagsMultiple = ({
 	const { phase: tagsPhase, items: tagsItems, itemCount: tagsTotal } = useRecordList(tagsList);
 
 	const tagsOptions = useMemo(() => {
-		const pending = value ? value.filter(({ value }) => !tagsItems.find((tag) => tag.value === value)) : [];
+		const pending = value.filter(({ value }) => !tagsItems.find((tag) => tag.value === value));
 		return [...tagsItems, ...pending];
 	}, [tagsItems, value]);
 

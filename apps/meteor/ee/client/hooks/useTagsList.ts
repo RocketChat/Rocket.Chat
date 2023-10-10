@@ -11,10 +11,10 @@ type TagsListOptions = {
 	viewAll?: boolean;
 };
 
-type TagsItemsList = { _id: string; label: string; value: string; _updatedAt: Date };
+type TagListItem = { _id: string; label: string; value: string; _updatedAt: Date };
 
 type UseTagsListResult = {
-	itemsList: RecordList<TagsItemsList>;
+	itemsList: RecordList<TagListItem>;
 	initialItemCount: number;
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
@@ -22,8 +22,8 @@ type UseTagsListResult = {
 
 export const useTagsList = (options: TagsListOptions): UseTagsListResult => {
 	const { viewAll, department, filter } = options;
-	const [itemsList, setItemsList] = useState(() => new RecordList<TagsItemsList>());
-	const reload = useCallback(() => setItemsList(new RecordList<TagsItemsList>()), []);
+	const [itemsList, setItemsList] = useState(() => new RecordList<TagListItem>());
+	const reload = useCallback(() => setItemsList(new RecordList<TagListItem>()), []);
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
 
