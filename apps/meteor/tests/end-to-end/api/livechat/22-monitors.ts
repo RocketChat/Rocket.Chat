@@ -67,7 +67,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 		await createUnit(monitor.user._id, monitor.user.username!, [unitDepartment._id]);
 	});
 	before(async () => {
-		await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent', 'livechat-monitor']);
+		await updatePermission('transfer-livechat-guest', ['admin', 'livechat-manager', 'livechat-agent', 'livechat-monitor']);
 	});
 
 	describe('Monitors & Rooms', () => {
