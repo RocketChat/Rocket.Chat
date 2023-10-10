@@ -23,7 +23,6 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 	const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
 
 	if (!dbInquiry) {
-		logger.error(`Inquiry with id ${inquiry._id} not found`);
 		throw new Error('inquiry-not-found');
 	}
 
@@ -68,7 +67,6 @@ export const QueueManager: queueManager = {
 		);
 
 		if (!(await checkServiceStatus({ guest, agent }))) {
-			logger.debug(`Cannot create room for visitor ${guest._id}. No online agents`);
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
 
@@ -96,8 +94,6 @@ export const QueueManager: queueManager = {
 			throw new Error('inquiry-not-found');
 		}
 
-		logger.debug(`Generated inquiry for visitor ${guest._id} with id ${inquiry._id} [Not queued]`);
-
 		await LivechatRooms.updateRoomCount();
 
 		await queueInquiry(inquiry, agent);
@@ -114,7 +110,6 @@ export const QueueManager: queueManager = {
 
 	async unarchiveRoom(archivedRoom) {
 		if (!archivedRoom) {
-			logger.error('No room to unarchive');
 			throw new Error('no-room-to-unarchive');
 		}
 
@@ -145,16 +140,12 @@ export const QueueManager: queueManager = {
 		await LivechatRooms.unarchiveOneById(rid);
 		const room = await LivechatRooms.findOneById(rid);
 		if (!room) {
-			logger.debug(`Room with id ${rid} not found`);
 			throw new Error('room-not-found');
 		}
 		const inquiry = await LivechatInquiry.findOneById(await createLivechatInquiry({ rid, name, guest, message, extraData: { source } }));
 		if (!inquiry) {
-			logger.error(`Inquiry for visitor ${guest._id} not found`);
 			throw new Error('inquiry-not-found');
 		}
-
-		logger.debug(`Generated inquiry for visitor ${v._id} with id ${inquiry._id} [Not queued]`);
 
 		await queueInquiry(inquiry, defaultAgent);
 		logger.debug(`Inquiry ${inquiry._id} queued`);

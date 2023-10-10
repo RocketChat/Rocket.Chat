@@ -9,6 +9,9 @@ import {
 	Callout,
 	NumberInput,
 	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	FieldHint,
 	Button,
 	ButtonGroup,
 	Box,
@@ -309,87 +312,87 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 					<RoomAvatarEditor room={room} roomAvatar={roomAvatar} onChangeAvatar={handleRoomAvatar} />
 				</Box>
 				<Field>
-					<Field.Label>{t('Name')}</Field.Label>
-					<Field.Row>
+					<FieldLabel required>{t('Name')}</FieldLabel>
+					<FieldRow>
 						<TextInput disabled={!canViewName} value={roomName} onChange={handleRoomName} flexGrow={1} />
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				{canViewDescription && (
 					<Field>
-						<Field.Label>{t('Description')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Description')}</FieldLabel>
+						<FieldRow>
 							<TextAreaInput disabled={isFederated} rows={4} value={roomDescription} onChange={handleRoomDescription} flexGrow={1} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				)}
 				{canViewAnnouncement && (
 					<Field>
-						<Field.Label>{t('Announcement')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Announcement')}</FieldLabel>
+						<FieldRow>
 							<TextAreaInput disabled={isFederated} rows={4} value={roomAnnouncement} onChange={handleRoomAnnouncement} flexGrow={1} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				)}
 				{canViewTopic && (
 					<Field>
-						<Field.Label>{t('Topic')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Topic')}</FieldLabel>
+						<FieldRow>
 							<TextAreaInput rows={4} value={roomTopic} onChange={handleRoomTopic} flexGrow={1} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				)}
 				{canViewType && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label>{t('Private')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Private')}</FieldLabel>
+							<FieldRow>
 								<ToggleSwitch disabled={!canChangeType || isFederated} checked={roomType === 'p'} onChange={changeRoomType} />
-							</Field.Row>
+							</FieldRow>
 						</Box>
-						<Field.Hint>{t('Teams_New_Private_Description_Enabled')}</Field.Hint>
+						<FieldHint>{t('Teams_New_Private_Description_Enabled')}</FieldHint>
 					</Field>
 				)}
 				{canViewReadOnly && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label>{t('Read_only')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Read_only')}</FieldLabel>
+							<FieldRow>
 								<ToggleSwitch disabled={!canSetRo || isFederated} checked={readOnly} onChange={handleReadOnly} />
-							</Field.Row>
+							</FieldRow>
 						</Box>
-						<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
+						<FieldHint>{t('Only_authorized_users_can_write_new_messages')}</FieldHint>
 					</Field>
 				)}
 				{readOnly && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label>{t('React_when_read_only')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('React_when_read_only')}</FieldLabel>
+							<FieldRow>
 								<ToggleSwitch disabled={!canSetReactWhenRo} checked={reactWhenReadOnly} onChange={handleReactWhenReadOnly} />
-							</Field.Row>
+							</FieldRow>
 						</Box>
-						<Field.Hint>{t('Only_authorized_users_can_react_to_messages')}</Field.Hint>
+						<FieldHint>{t('Only_authorized_users_can_react_to_messages')}</FieldHint>
 					</Field>
 				)}
 				{canViewArchived && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label>{t('Room_archivation_state_true')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Room_archivation_state_true')}</FieldLabel>
+							<FieldRow>
 								<ToggleSwitch disabled={!canArchiveOrUnarchive} checked={archived} onChange={handleArchived} />
-							</Field.Row>
+							</FieldRow>
 						</Box>
 					</Field>
 				)}
 				{canViewJoinCode && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label>{t('Password_to_access')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Password_to_access')}</FieldLabel>
+							<FieldRow>
 								<ToggleSwitch disabled={isFederated} checked={joinCodeRequired} onChange={handleJoinCodeRequired} />
-							</Field.Row>
+							</FieldRow>
 						</Box>
-						<Field.Row>
+						<FieldRow>
 							<PasswordInput
 								disabled={!joinCodeRequired}
 								value={joinCode}
@@ -397,18 +400,18 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 								placeholder={t('Reset_password')}
 								flexGrow={1}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				)}
 				{canViewHideSysMes && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label>{t('Hide_System_Messages')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Hide_System_Messages')}</FieldLabel>
+							<FieldRow>
 								<ToggleSwitch checked={hideSysMes} disabled={isFederated} onChange={handleHideSysMes} />
-							</Field.Row>
+							</FieldRow>
 						</Box>
-						<Field.Row>
+						<FieldRow>
 							<MultiSelect
 								maxWidth='100%'
 								options={sysMesOptions}
@@ -418,16 +421,16 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 								placeholder={t('Select_an_option')}
 								flexGrow={1}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				)}
 				{canViewEncrypted && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label>{t('Encrypted')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Encrypted')}</FieldLabel>
+							<FieldRow>
 								<ToggleSwitch disabled={!canToggleEncryption || isFederated} checked={encrypted} onChange={handleEncrypted} />
-							</Field.Row>
+							</FieldRow>
 						</Box>
 					</Field>
 				)}
@@ -437,22 +440,22 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 							<FieldGroup>
 								<Field>
 									<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-										<Field.Label>{t('RetentionPolicyRoom_Enabled')}</Field.Label>
-										<Field.Row>
+										<FieldLabel>{t('RetentionPolicyRoom_Enabled')}</FieldLabel>
+										<FieldRow>
 											<ToggleSwitch checked={retentionEnabled} onChange={handleRetentionEnabled} />
-										</Field.Row>
+										</FieldRow>
 									</Box>
 								</Field>
 								<Field>
 									<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-										<Field.Label>{t('RetentionPolicyRoom_OverrideGlobal')}</Field.Label>
-										<Field.Row>
+										<FieldLabel>{t('RetentionPolicyRoom_OverrideGlobal')}</FieldLabel>
+										<FieldRow>
 											<ToggleSwitch
 												disabled={!retentionEnabled || !canEditRoomRetentionPolicy}
 												checked={retentionOverrideGlobal}
 												onChange={handleRetentionOverrideGlobal}
 											/>
-										</Field.Row>
+										</FieldRow>
 									</Box>
 								</Field>
 								{retentionOverrideGlobal && (
@@ -461,25 +464,25 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 											<RawText>{t('RetentionPolicyRoom_ReadTheDocs')}</RawText>
 										</Callout>
 										<Field>
-											<Field.Label>{t('RetentionPolicyRoom_MaxAge', { max: maxAgeDefault })}</Field.Label>
-											<Field.Row>
+											<FieldLabel>{t('RetentionPolicyRoom_MaxAge', { max: maxAgeDefault })}</FieldLabel>
+											<FieldRow>
 												<NumberInput value={retentionMaxAge} onChange={onChangeMaxAge} flexGrow={1} />
-											</Field.Row>
+											</FieldRow>
 										</Field>
 										<Field>
 											<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-												<Field.Label>{t('RetentionPolicyRoom_ExcludePinned')}</Field.Label>
-												<Field.Row>
+												<FieldLabel>{t('RetentionPolicyRoom_ExcludePinned')}</FieldLabel>
+												<FieldRow>
 													<ToggleSwitch checked={retentionExcludePinned} onChange={handleRetentionExcludePinned} />
-												</Field.Row>
+												</FieldRow>
 											</Box>
 										</Field>
 										<Field>
 											<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-												<Field.Label>{t('RetentionPolicyRoom_FilesOnly')}</Field.Label>
-												<Field.Row>
+												<FieldLabel>{t('RetentionPolicyRoom_FilesOnly')}</FieldLabel>
+												<FieldRow>
 													<ToggleSwitch checked={retentionFilesOnly} onChange={handleRetentionFilesOnly} />
-												</Field.Row>
+												</FieldRow>
 											</Box>
 										</Field>
 									</>

@@ -75,7 +75,7 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 			...mail,
 		})
 		.then((info) => {
-			logger.info('Message sent: %s', info.messageId);
+			logger.info({ msg: 'Message sent', info });
 			return info;
 		})
 		.catch(async (err) => {
@@ -92,7 +92,6 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 slashCommands.add({
 	command: 'sendEmailAttachment',
 	callback: async ({ command, params }: SlashCommandCallbackParams<'sendEmailAttachment'>) => {
-		logger.debug('sendEmailAttachment command: ', command, params);
 		if (command !== 'sendEmailAttachment' || !Match.test(params, String)) {
 			return;
 		}
@@ -318,7 +317,6 @@ export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: 
 		throw new Error('user-without-verified-email');
 	}
 
-	logger.info(`Sending testing email to ${address}`);
 	void sendEmail(inbox, {
 		to: address,
 		subject: 'Test of inbox configuration',
