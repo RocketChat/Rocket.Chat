@@ -14,6 +14,8 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 
 	private queueWorker: IOmnichannelQueue;
 
+	private macLimitReached = false;
+
 	constructor() {
 		super();
 		this.queueWorker = new OmnichannelQueue();
@@ -38,11 +40,19 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 		});
 
 		License.onLimitReached('monthlyActiveContacts', async (): Promise<void> => {
+			if (this.macLimitReached) {
+				// Dupe events
+				return;
+			}
+
+			this.macLimitReached = true;
 			void this.api?.broadcast('mac.limitReached');
-			await this.queueWorker.stop();
+			// @ts-expect-error - isRunning
+			this.queueWorker.isRunning() && (await this.queueWorker.stop());
 		});
 
 		License.onValidateLicense(async (): Promise<void> => {
+			this.macLimitReached = false;
 			void this.api?.broadcast('mac.limitRestored');
 			RoutingManager.isMethodSet() && (await this.queueWorker.shouldStart());
 		});
