@@ -124,18 +124,19 @@ describe('Meteor.methods', function () {
 		});
 	});
 
-    describe('[@getReadReceipts]', () => {
+	describe('[@getReadReceipts]', () => {
 		let firstMessage = false;
 		let firstThreadMessage = false;
 
-		let channelName = false;
-        let user, userCredentials, room;
+		let user;
+		let userCredentials;
+		let room;
 
-        const roomName = `methods-test-channel-${ Date.now() }`;
+		const roomName = `methods-test-channel-${Date.now()}`;
 		before(async () => {
-            user = await createUser();
-            userCredentials = await login(user.username, password);
-            room = (await createRoom({ type: 'p', name: roomName, members: [user.username] })).body.group;
+			user = await createUser();
+			userCredentials = await login(user.username, password);
+			room = (await createRoom({ type: 'p', name: roomName, members: [user.username] })).body.group;
 		});
 
 		before(async () => {
@@ -159,7 +160,7 @@ describe('Meteor.methods', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-                .expect((res) => {
+				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					firstMessage = res.body.message;
 				})
@@ -220,11 +221,11 @@ describe('Meteor.methods', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-                .expect((res) => {
+				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
-                    const data = JSON.parse(res.body.message);
+					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('result').that.is.an('array');
 					expect(data.result.length).to.equal(1);
 					expect(data.result[0]).to.have.property('userId', credentials['X-User-Id']);
@@ -263,8 +264,8 @@ describe('Meteor.methods', function () {
 				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
-                    rid: room._id,
-                    readThreads: true,
+					rid: room._id,
+					readThreads: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -293,8 +294,7 @@ describe('Meteor.methods', function () {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
-                    const data = JSON.parse(res.body.message);
-                    console.log(data)
+					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('result').that.is.an('array');
 					expect(data.result.length).to.equal(2);
 
@@ -387,20 +387,19 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
-        it('should mark the thread as read', (done) => {
-            request
-                .post(methodCall('readThreads'))
-                .set(userCredentials)
-                .send(firstThreadMessage._id)
-                .expect('Content-Type', 'application/json')
-                .expect(200)
-                .expect((res) => {
-                    console.log(res.body)
-                    expect(res.body).to.have.a.property('success', true);
-                    expect(res.body).to.have.a.property('message').that.is.a('string');
-                })
-                .end(done);
-        });
+		it('should mark the thread as read', (done) => {
+			request
+				.post(methodCall('readThreads'))
+				.set(userCredentials)
+				.send(firstThreadMessage._id)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[@getMessages]', () => {
