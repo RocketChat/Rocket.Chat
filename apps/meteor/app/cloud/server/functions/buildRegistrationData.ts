@@ -7,6 +7,8 @@ import { LICENSE_VERSION } from '../license';
 
 export type WorkspaceRegistrationData<T> = {
 	uniqueId: string;
+	deploymentFingerprintHash: string;
+	deploymentFingerprintVerified: boolean;
 	workspaceId: string;
 	address: string;
 	contactName: string;
@@ -50,6 +52,8 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 	const npsEnabled = settings.get<string>('NPS_survey_enabled');
 	const agreePrivacyTerms = settings.get<string>('Cloud_Service_Agree_PrivacyTerms');
 	const setupWizardState = settings.get<string>('Show_Setup_Wizard');
+	const deploymentFingerprintHash = settings.get<string>('Deployment_FingerPrint_Hash');
+	const deploymentFingerprintVerified = settings.get<boolean>('Deployment_FingerPrint_Verified');
 
 	const firstUser = await Users.getOldest({ projection: { name: 1, emails: 1 } });
 	const contactName = firstUser?.name || '';
@@ -59,6 +63,8 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 
 	return {
 		uniqueId: stats.uniqueId,
+		deploymentFingerprintHash,
+		deploymentFingerprintVerified,
 		workspaceId,
 		address,
 		contactName,
@@ -83,7 +89,7 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		setupComplete: setupWizardState === 'completed',
 		connectionDisable: !registerServer,
 		npsEnabled,
-		MAC: stats.omnichannelContactsBySource.contactsCount,
+		MAC: stats.omnichannelContactsBySource?.contactsCount ?? 0,
 		// activeContactsBillingMonth: stats.omnichannelContactsBySource.contactsCount,
 		// activeContactsYesterday: stats.uniqueContactsOfYesterday.contactsCount,
 	};
