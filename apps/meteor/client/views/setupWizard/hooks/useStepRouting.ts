@@ -23,7 +23,7 @@ export const useStepRouting = (): [number, Dispatch<SetStateAction<number>>] => 
 	});
 
 	useEffect(() => {
-		if (hasOrganizationData) {
+		if ((currentStep === 1 || currentStep === 2) && hasOrganizationData) {
 			setCurrentStep(3);
 		}
 
