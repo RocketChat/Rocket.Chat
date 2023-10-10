@@ -161,10 +161,6 @@ export const RoutingManager: Routing = {
 			throw new Meteor.Error('error-room-not-found', 'Room not found');
 		}
 
-		if (!(await Omnichannel.isRoomEnabled(room))) {
-			throw new Error('error-mac-limit-reached');
-		}
-
 		await dispatchAgentDelegated(rid, agent.agentId);
 		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
 
@@ -234,10 +230,6 @@ export const RoutingManager: Routing = {
 		if (!room?.open) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Room is closed`);
 			return room;
-		}
-
-		if (!(await Omnichannel.isRoomEnabled(room))) {
-			throw new Error('error-mac-limit-reached');
 		}
 
 		if (room.servedBy && room.servedBy._id === agent.agentId) {

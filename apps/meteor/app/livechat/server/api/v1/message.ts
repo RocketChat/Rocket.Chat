@@ -1,4 +1,3 @@
-import { Omnichannel } from '@rocket.chat/core-services';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -212,10 +211,6 @@ API.v1.addRoute(
 			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
-			}
-
-			if (!(await Omnichannel.isRoomEnabled(room))) {
-				throw new Error('error-mac-limit-reached');
 			}
 
 			let ls = undefined;

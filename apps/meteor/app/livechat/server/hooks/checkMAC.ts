@@ -17,6 +17,10 @@ callbacks.add('beforeSaveMessage', async (message, room) => {
 		return message;
 	}
 
+	if (message.t) {
+		return message;
+	}
+
 	const canSendMessage = await Omnichannel.isRoomEnabled(room as IOmnichannelRoom);
 	if (!canSendMessage) {
 		throw new Error('error-mac-limit-reached');

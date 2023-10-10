@@ -1,3 +1,4 @@
+import { Omnichannel } from '@rocket.chat/core-services';
 import type { ILivechatInquiryRecord, ILivechatVisitor, IMessage, IOmnichannelRoom, SelectedAgent } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
@@ -20,6 +21,11 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 	logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
 
 	await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
+	const room = await LivechatRooms.findOneById(inquiry.rid, { projection: { v: 1 } });
+	if (!room || !(await Omnichannel.isRoomEnabled(room))) {
+		logger.error({ msg: 'MAC limit reached, not routing inquiry', inquiry });
+		return;
+	}
 	const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
 
 	if (!dbInquiry) {
