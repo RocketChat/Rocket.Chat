@@ -48,8 +48,8 @@ const Sidebar = () => {
 			>
 				<SidebarHeader />
 				{presenceDisabled && !bannerDismissed && <StatusDisabledSection onDismiss={() => setBannerDismissed(true)} />}
-				{showOmnichannel && <OmnichannelSection />}
 				{isWorkspaceOverMacLimit && <OverMacLimitSection />}
+				{showOmnichannel && <OmnichannelSection />}
 				<SidebarRoomList />
 				<SidebarFooter />
 			</Box>
