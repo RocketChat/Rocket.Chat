@@ -1,17 +1,12 @@
-import { useRouteParameter, useRouter, useRole } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter, useRole, useSetting } from '@rocket.chat/ui-contexts';
 import type { Dispatch, SetStateAction } from 'react';
 import { useState, useEffect } from 'react';
-
-import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 export const useStepRouting = (): [number, Dispatch<SetStateAction<number>>] => {
 	const param = useRouteParameter('step');
 	const router = useRouter();
 	const hasAdminRole = useRole('admin');
-	const {
-		setupWizardData: { organizationData },
-	} = useSetupWizardContext();
-	const hasOrganizationData = !!organizationData;
+	const hasOrganizationData = useSetting('Organization_Name') !== '';
 	const initialStep = hasAdminRole ? 2 : 1;
 
 	const [currentStep, setCurrentStep] = useState<number>(() => {
