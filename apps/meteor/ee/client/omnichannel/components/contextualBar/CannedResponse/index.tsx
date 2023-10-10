@@ -1,9 +1,11 @@
+import type { IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRouter } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 
 import { useRecordList } from '../../../../../../client/hooks/lists/useRecordList';
+import { useIsRoomActive } from '../../../../../../client/hooks/omnichannel/useIsRoomActive';
 import { AsyncStatePhase } from '../../../../../../client/lib/asyncState';
 import { useChat } from '../../../../../../client/views/room/contexts/ChatContext';
 import { useRoom } from '../../../../../../client/views/room/contexts/RoomContext';
@@ -23,6 +25,8 @@ export const WrapCannedResponseList = () => {
 
 	const [text, setText] = useState('');
 	const [type, setType] = useLocalStorage('canned-response-list-type', 'all');
+
+	const isRoomActive = useIsRoomActive(room as IOmnichannelGenericRoom);
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
@@ -74,6 +78,7 @@ export const WrapCannedResponseList = () => {
 			setText={handleTextChange}
 			type={type}
 			setType={setType}
+			isRoomActive={isRoomActive}
 			onClickUse={onClickUse}
 			onClickItem={onClickItem}
 			onClickCreate={onClickCreate}
