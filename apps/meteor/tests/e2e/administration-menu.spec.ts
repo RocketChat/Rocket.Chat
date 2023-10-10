@@ -23,7 +23,7 @@ test.describe.serial('administration-menu', () => {
 
 	test('expect open Workspace status page', async ({ page }) => {
 		test.skip(!IS_EE, 'Enterprise only');
-		await poHomeDiscussion.sidenav.openAdministrationByLabel('Workspace status');
+		await poHomeDiscussion.sidenav.openAdministrationByLabel('Workspace');
 
 		await expect(page).toHaveURL('admin/workspace-status');
 	});
