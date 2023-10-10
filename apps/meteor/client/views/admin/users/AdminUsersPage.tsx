@@ -71,6 +71,7 @@ const UsersPage = async (): Promise<ReactElement> => {
 						</Tabs.Item>
 						<Tabs.Item selected={tab === 'pending'} onClick={() => setTab('pending')}>
 							{pendingActionsCount === 0 ? t('Pending') : `${t('Pending')} (${pendingActionsCount})`}
+						</Tabs.Item>
 						<Tabs.Item selected={tab === 'invited'} onClick={() => setTab('invited')}>
 							{t('Invited')}
 						</Tabs.Item>

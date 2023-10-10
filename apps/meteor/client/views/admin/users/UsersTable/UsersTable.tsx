@@ -127,8 +127,8 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 				</GenericTableHeaderCell>
 			),
 			<GenericTableHeaderCell key='actions' w='x44' />,
-        
-      tab === 'all' && (
+
+			tab === 'all' && (
 				<GenericTableHeaderCell key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 					{t('Token')}
 				</GenericTableHeaderCell>
@@ -154,19 +154,19 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
 				</GenericTable>
 			)}
-      
+
 			{isSuccess && !!data && !!filteredUsers && data.count > 0 && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-              {!isLoading && !isSuccess && tab !== 'all' && tab !== 'active' && (
-						<States>
-							<StatesIcon name='user' />
-							<StatesTitle>{tab === 'pending' ? t('No_pending_users') : t('No_deactivated_users')}</StatesTitle>
-							<StatesSubtitle>{tab === 'pending' ? t('Users_who_are_pending') : t('Deactivated_users_appear_here')}</StatesSubtitle>
-						</States>
-					)}
+							{!isLoading && !isSuccess && tab !== 'all' && tab !== 'active' && (
+								<States>
+									<StatesIcon name='user' />
+									<StatesTitle>{tab === 'pending' ? t('No_pending_users') : t('No_deactivated_users')}</StatesTitle>
+									<StatesSubtitle>{tab === 'pending' ? t('Users_who_are_pending') : t('Deactivated_users_appear_here')}</StatesSubtitle>
+								</States>
+							)}
 							{filteredUsers.map((user) => (
 								<UsersTableRow
 									key={user._id}
@@ -178,10 +178,10 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 									tab={tab}
 								/>
 							))}
-						</>
-					)}
-				</GenericTableBody>
-			</GenericTable>
+						</GenericTableBody>
+					</GenericTable>
+				</>
+			)}
 			<Pagination
 				divider
 				current={current}
