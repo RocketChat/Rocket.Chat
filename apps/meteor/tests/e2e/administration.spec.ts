@@ -14,13 +14,13 @@ test.describe.parallel('administration', () => {
 		poAdmin = new Admin(page);
 	});
 
-	test.describe('Workspace', () => {
+	test.describe('Workspace status', () => {
 		test.beforeEach(async ({ page }) => {
-			await page.goto('/admin/workspace');
+			await page.goto('/admin/workspace-status');
 		});
 
 		test('expect download info as JSON', async ({ page }) => {
-			const [download] = await Promise.all([page.waitForEvent('download'), page.locator('button:has-text("Download Info")').click()]);
+			const [download] = await Promise.all([page.waitForEvent('download'), page.locator('button:has-text("Download info")').click()]);
 
 			await expect(download.suggestedFilename()).toBe('statistics.json');
 		});
