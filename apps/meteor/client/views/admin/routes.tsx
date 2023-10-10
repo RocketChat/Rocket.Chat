@@ -13,6 +13,10 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/admin/sounds${`/${string}` | ''}${`/${string}` | ''}`;
 			pattern: '/admin/sounds/:context?/:id?';
 		};
+		'info': {
+			pathname: '/admin/info';
+			pattern: '/admin/info';
+		};
 		'workspace-status': {
 			pathname: '/admin/workspace-status';
 			pattern: '/admin/workspace-status';
@@ -119,6 +123,16 @@ registerAdminRoute('/sounds/:context?/:id?', {
 	component: lazy(() => import('./customSounds/CustomSoundsRoute')),
 });
 
+/** @deprecated in favor of `/workspace-status` route, this is a fallback to work in Mobile app, should be removed in the next major  */
+registerAdminRoute('/info', {
+	name: 'info',
+	component: lazy(() => import('./workspaceStatus/WorkspaceStatusRoute')),
+});
+
+registerAdminRoute('/workspace-status', {
+	name: 'workspace-status',
+	component: lazy(() => import('./workspaceStatus/WorkspaceStatusRoute')),
+});
 registerAdminRoute('/workspace-status', {
 	name: 'workspace-status',
 	component: lazy(() => import('./workspaceStatus/WorkspaceStatusRoute')),
