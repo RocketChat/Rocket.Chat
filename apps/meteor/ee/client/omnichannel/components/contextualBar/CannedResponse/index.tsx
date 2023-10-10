@@ -1,4 +1,3 @@
-import type { IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRouter } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
@@ -26,7 +25,7 @@ export const WrapCannedResponseList = () => {
 	const [text, setText] = useState('');
 	const [type, setType] = useLocalStorage('canned-response-list-type', 'all');
 
-	const isRoomActive = useIsRoomActive(room as IOmnichannelGenericRoom);
+	const isRoomActive = useIsRoomActive(room);
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);

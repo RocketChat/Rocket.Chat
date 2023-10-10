@@ -5,5 +5,5 @@ export const useIsOverMacLimit = (): boolean => {
 	const getMacLimit = useEndpoint('GET', '/v1/omnichannel/mac/check');
 	const { data: { onLimit = true } = {} } = useQuery(['/v1/omnichannel/mac/check'], () => getMacLimit());
 
-	return !onLimit;
+	return onLimit;
 };

@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import type React from 'react';
 import { useCallback, useMemo } from 'react';
 
+import { useIsRoomActive } from '../../../../hooks/omnichannel/useIsRoomActive';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useChat } from '../../contexts/ChatContext';
@@ -23,6 +24,8 @@ export const useFileUploadDropTarget = (): readonly [
 ] => {
 	const room = useRoom();
 	const { triggerProps, overlayProps } = useDropTarget();
+
+	const isRoomActive = useIsRoomActive(room);
 
 	const t = useTranslation();
 
@@ -46,7 +49,7 @@ export const useFileUploadDropTarget = (): readonly [
 	});
 
 	const allOverlayProps = useMemo(() => {
-		if (!fileUploadEnabled) {
+		if (!fileUploadEnabled || !isRoomActive) {
 			return {
 				enabled: false,
 				reason: t('FileUpload_Disabled'),
@@ -67,7 +70,7 @@ export const useFileUploadDropTarget = (): readonly [
 			onFileDrop,
 			...overlayProps,
 		} as const;
-	}, [fileUploadAllowedForUser, fileUploadEnabled, onFileDrop, overlayProps, t]);
+	}, [fileUploadAllowedForUser, fileUploadEnabled, isRoomActive, onFileDrop, overlayProps, t]);
 
 	return [triggerProps, allOverlayProps] as const;
 };
