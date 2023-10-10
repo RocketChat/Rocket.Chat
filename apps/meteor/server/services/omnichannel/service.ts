@@ -47,7 +47,6 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 
 			this.macLimitReached = true;
 			void this.api?.broadcast('mac.limitReached');
-			// @ts-expect-error - isRunning
 			this.queueWorker.isRunning() && (await this.queueWorker.stop());
 		});
 
