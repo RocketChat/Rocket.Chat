@@ -31,7 +31,9 @@ export const useE2EERoomAction = () => {
 
 		dispatchToastMessage({
 			type: 'success',
-			message: t(room.encrypted ? 'E2E_Encryption_disabled_for_room' : 'E2E_Encryption_enabled_for_room', { roomName: room.name }),
+			message: room.encrypted
+				? t('E2E_Encryption_disabled_for_room', { roomName: room.name })
+				: t('E2E_Encryption_enabled_for_room', { roomName: room.name }),
 		});
 
 		if (subscription?.autoTranslate) {
