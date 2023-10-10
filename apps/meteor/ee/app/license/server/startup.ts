@@ -25,7 +25,7 @@ License.onInvalidateLicense(async () => {
 const applyLicense = async (license: string, isNewLicense: boolean): Promise<boolean> => {
 	const enterpriseLicense = (license ?? '').trim();
 	if (!enterpriseLicense) {
-		false;
+		return false;
 	}
 
 	if (enterpriseLicense === License.encryptedLicense) {
@@ -44,14 +44,15 @@ const syncByTrigger = async (context: string) => {
 		return;
 	}
 
-	const existingData = wrapExceptions(() => JSON.parse(settings.get<string>('Enterprise_License_Data'))).catch(() => ({})) || {};
+	const existingData = wrapExceptions(() => JSON.parse(settings.get<string>('Enterprise_License_Data'))).catch(() => ({})) ?? {};
 
 	const date = new Date();
 
 	const day = date.getDate();
 	const month = date.getMonth() + 1;
+	const year = date.getFullYear();
 
-	const period = `${month}-${day}`;
+	const period = `${year}-${month}-${day}`;
 
 	const [, , signed] = License.encryptedLicense.split('.');
 
@@ -85,15 +86,13 @@ settings.onReady(async () => {
 	// After the current license is already loaded, watch the setting value to react to new licenses being applied.
 	settings.watch<string>('Enterprise_License', async (license) => applyLicense(license, true));
 
-	callbacks.add('workspaceLicenseChanged', async (updatedLicense) => applyLicense(updatedLicense, false));
+	callbacks.add('workspaceLicenseChanged', async (updatedLicense) => applyLicense(updatedLicense, true));
 
-	License.onBehaviorTriggered('prevent_action', () => syncByTrigger('prevent_action'));
+	License.onBehaviorTriggered('prevent_action', (context) => syncByTrigger(`prevent_action_${context.limit}`));
 
-	License.onBehaviorTriggered('start_fair_policy', async () => syncByTrigger('start_fair_policy'));
+	License.onBehaviorTriggered('start_fair_policy', async (context) => syncByTrigger(`start_fair_policy_${context.limit}`));
 
-	License.onBehaviorTriggered('disable_modules', async () => syncByTrigger('disable_modules'));
-
-	License.onBehaviorTriggered('invalidate_license', async () => syncByTrigger('invalidate_license'));
+	License.onBehaviorTriggered('disable_modules', async (context) => syncByTrigger(`disable_modules_${context.limit}`));
 });
 
 License.setLicenseLimitCounter('activeUsers', () => Users.getActiveLocalUserCount());
