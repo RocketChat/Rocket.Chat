@@ -1719,6 +1719,7 @@
   "error-logged-user-not-in-room": "No estás en la sala \"%s\"",
   "error-max-guests-number-reached": "Has alcanzado la cantidad máxima de usuarios invitados que permite tu licencia. Escribe a sale@rocket.chat para obtener una nueva licencia.",
   "error-max-number-simultaneous-chats-reached": "Se ha alcanzado el máximo de chats simultáneos por agente.",
+  "error-mac-limit-reached": "Se ha alcanzado el máximo de contactos activos por mes para este espacio de trabajo.",
   "error-message-deleting-blocked": "La eliminación de mensajes está bloqueada",
   "error-message-editing-blocked": "La edición de mensajes está bloqueada",
   "error-message-size-exceeded": "El tamaño de mensaje excede el máximo: Message_MaxAllowedSize",
