@@ -285,7 +285,7 @@ export const Livechat = {
 		Livechat.logger.debug(`Closing open chats for user ${userId}`);
 		const user = await Users.findOneById(userId);
 
-		const extraQuery = await callbacks.run('livechat.applyDepartmentRestrictions', {});
+		const extraQuery = await callbacks.run('livechat.applyDepartmentRestrictions', {}, { userId });
 		const openChats = LivechatRooms.findOpenByAgent(userId, extraQuery);
 		const promises = [];
 		await openChats.forEach((room) => {
@@ -298,7 +298,7 @@ export const Livechat = {
 	async forwardOpenChats(userId) {
 		Livechat.logger.debug(`Transferring open chats for user ${userId}`);
 		for await (const room of LivechatRooms.findOpenByAgent(userId)) {
-			const guest = await LivechatVisitors.findOneById(room.v._id);
+			const guest = await LivechatVisitors.findOneEnabledById(room.v._id);
 			const user = await Users.findOneById(userId);
 			const { _id, username, name } = user;
 			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
@@ -462,7 +462,7 @@ export const Livechat = {
 	},
 
 	async getLivechatRoomGuestInfo(room) {
-		const visitor = await LivechatVisitors.findOneById(room.v._id);
+		const visitor = await LivechatVisitors.findOneEnabledById(room.v._id);
 		const agent = await Users.findOneById(room.servedBy && room.servedBy._id);
 
 		const ua = new UAParser();
@@ -604,16 +604,15 @@ export const Livechat = {
 	},
 
 	async removeGuest(_id) {
-		check(_id, String);
-		const guest = await LivechatVisitors.findOneById(_id, { projection: { _id: 1 } });
+		const guest = await LivechatVisitors.findOneEnabledById(_id, { projection: { _id: 1, token: 1 } });
 		if (!guest) {
 			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', {
 				method: 'livechat:removeGuest',
 			});
 		}
 
-		await this.cleanGuestHistory(_id);
-		return LivechatVisitors.removeById(_id);
+		await this.cleanGuestHistory(guest);
+		return LivechatVisitors.disableById(_id);
 	},
 
 	async setUserStatusLivechat(userId, status) {
@@ -628,16 +627,13 @@ export const Livechat = {
 		return user;
 	},
 
-	async cleanGuestHistory(_id) {
-		const guest = await LivechatVisitors.findOneById(_id);
-		if (!guest) {
-			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', {
-				method: 'livechat:cleanGuestHistory',
-			});
-		}
-
+	async cleanGuestHistory(guest) {
 		const { token } = guest;
-		check(token, String);
+
+		// This shouldn't be possible, but just in case
+		if (!token) {
+			throw new Error('error-invalid-guest');
+		}
 
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		const cursor = LivechatRooms.findByVisitorToken(token, extraQuery);

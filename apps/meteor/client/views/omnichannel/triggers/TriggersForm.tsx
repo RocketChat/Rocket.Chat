@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Field, TextInput, ToggleSwitch, Select, TextAreaInput } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, ToggleSwitch, Select, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, FC, FormEvent } from 'react';
@@ -138,55 +138,55 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 		<>
 			<Field className={className}>
 				<Box display='flex' flexDirection='row'>
-					<Field.Label>{t('Enabled')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Enabled')}</FieldLabel>
+					<FieldRow>
 						<ToggleSwitch checked={enabled} onChange={handleEnabled} />
-					</Field.Row>
+					</FieldRow>
 				</Box>
 			</Field>
 			<Field className={className}>
 				<Box display='flex' flexDirection='row'>
-					<Field.Label>{t('Run_only_once_for_each_visitor')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Run_only_once_for_each_visitor')}</FieldLabel>
+					<FieldRow>
 						<ToggleSwitch checked={runOnce} onChange={handleRunOnce} />
-					</Field.Row>
+					</FieldRow>
 				</Box>
 			</Field>
 			<Field className={className}>
-				<Field.Label>{t('Name')}*</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Name')}*</FieldLabel>
+				<FieldRow>
 					<TextInput value={name} error={nameError} onChange={handleName} placeholder={t('Name')} />
-				</Field.Row>
-				<Field.Error>{nameError}</Field.Error>
+				</FieldRow>
+				<FieldError>{nameError}</FieldError>
 			</Field>
 			<Field className={className}>
-				<Field.Label>{t('Description')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Description')}</FieldLabel>
+				<FieldRow>
 					<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} />
-				</Field.Row>
+				</FieldRow>
 			</Field>
 			<Field className={className}>
-				<Field.Label>{t('Condition')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Condition')}</FieldLabel>
+				<FieldRow>
 					<Select name='condition' options={conditionOptions} value={conditionName} onChange={handleConditionName} />
-				</Field.Row>
+				</FieldRow>
 				{conditionValuePlaceholder && (
-					<Field.Row>
+					<FieldRow>
 						<TextInput
 							name='conditionValue'
 							value={conditionValue}
 							onChange={handleConditionValue}
 							placeholder={conditionValuePlaceholder}
 						/>
-					</Field.Row>
+					</FieldRow>
 				)}
 			</Field>
 			<Field className={className}>
-				<Field.Label>{t('Action')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Action')}</FieldLabel>
+				<FieldRow>
 					<TextInput value={t('Send_a_message')} disabled />
-				</Field.Row>
-				<Field.Row>
+				</FieldRow>
+				<FieldRow>
 					<Select
 						name='sender'
 						options={senderOptions}
@@ -194,16 +194,16 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 						onChange={handleActionSender}
 						placeholder={t('Select_an_option')}
 					/>
-				</Field.Row>
+				</FieldRow>
 				{actionSender === 'custom' && (
-					<Field.Row>
+					<FieldRow>
 						<TextInput name='agentName' value={actionAgentName} onChange={handleActionAgentName} placeholder={t('Name_of_agent')} />
-					</Field.Row>
+					</FieldRow>
 				)}
-				<Field.Row>
+				<FieldRow>
 					<TextAreaInput name='triggerMessage' rows={3} value={actionMsg} onChange={handleActionMessage} placeholder={`${t('Message')}*`} />
-				</Field.Row>
-				<Field.Error>{msgError}</Field.Error>
+				</FieldRow>
+				<FieldError>{msgError}</FieldError>
 			</Field>
 		</>
 	);

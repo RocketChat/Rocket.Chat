@@ -11,6 +11,7 @@
 		"@swc/jest": "^0.2.26",
 		"@types/babel__core": "^7",
 		"@types/babel__preset-env": "^7",
+		"@types/bcrypt": "^5.0.0",
 		"@types/jest": "~29.5.3",
 		"@types/ws": "^8.5.5",
 		"babel-plugin-transform-inline-environment-variables": "^0.4.4",
@@ -43,6 +44,6 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/jwt": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",
-		"@rocket.chat/server-cloud-communication": "workspace:^"
+		"bcrypt": "^5.0.1"
 	}
 }
