@@ -63,6 +63,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const subscribe = useStream('notify-logged');
 	const queryClient = useQueryClient();
 	const isPrioritiesEnabled = isEnterprise && accessible;
+	const enabled = accessible && !!user && !!routeConfig;
 
 	const {
 		data: { priorities = [] } = {},
@@ -84,10 +85,14 @@ const OmnichannelProvider: FC = ({ children }) => {
 	}, [isPrioritiesEnabled, queryClient, subscribe]);
 
 	useEffect(() => {
+		if (!enabled) {
+			return;
+		}
+
 		return subscribe(`mac.limit`, ({ limitReached }) => {
 			limitReached && queryClient.invalidateQueries(['/v1/omnichannel/mac/check']);
 		});
-	}, [subscribe, queryClient]);
+	}, [subscribe, queryClient, enabled]);
 
 	useEffect(() => {
 		if (!accessible) {
@@ -108,7 +113,6 @@ const OmnichannelProvider: FC = ({ children }) => {
 		}
 	}, [accessible, getRoutingConfig, iceServersSetting, omnichannelRouting, setRouteConfig, voipCallAvailable]);
 
-	const enabled = accessible && !!user && !!routeConfig;
 	const manuallySelected =
 		enabled && canViewOmnichannelQueue && !!routeConfig && routeConfig.showQueue && !routeConfig.autoAssignAgent && agentAvailable;
 
