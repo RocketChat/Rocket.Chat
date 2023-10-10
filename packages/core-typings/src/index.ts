@@ -136,3 +136,5 @@ export * from './IModerationReport';
 export * from './CustomFieldMetadata';
 
 export * as Cloud from './cloud';
+
+export * from './IInstalledLicense';
