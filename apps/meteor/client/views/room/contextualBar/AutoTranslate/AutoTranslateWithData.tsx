@@ -47,7 +47,9 @@ const AutoTranslateWithData = (): ReactElement => {
 		});
 		dispatchToastMessage({
 			type: 'success',
-			message: t(event.target.checked ? 'AutoTranslate_Enabled_for_room' : 'AutoTranslate_Disabled_for_room', { roomName: room.name }),
+			message: event.target.checked
+				? t('AutoTranslate_Enabled_for_room', { roomName: room.name })
+				: t('AutoTranslate_Disabled_for_room', { roomName: room.name }),
 		});
 		if (event.target.checked && currentLanguage) {
 			dispatchToastMessage({
