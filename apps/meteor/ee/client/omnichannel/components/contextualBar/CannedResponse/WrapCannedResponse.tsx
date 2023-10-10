@@ -11,7 +11,13 @@ const WrapCannedResponse: FC<{
 	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
 	reload: () => void;
-}> = ({ allowUse, cannedItem: { _id, departmentName, departmentId, shortcut, tags, scope, text }, onClickBack, onClickUse, reload }) => {
+}> = ({
+	allowUse,
+	cannedItem: { _id, departmentName, departmentId, shortcut, tags, scope, text } = {},
+	onClickBack,
+	onClickUse,
+	reload,
+}) => {
 	const setModal = useSetModal();
 	const onClickEdit = (): void => {
 		setModal(<CreateCannedResponse data={{ _id, departmentId, shortcut, tags, scope, text }} reloadCannedList={reload} />);
