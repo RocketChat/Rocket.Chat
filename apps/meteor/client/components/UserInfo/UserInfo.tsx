@@ -94,17 +94,26 @@ const UserInfo = ({
 						</InfoPanel.Field>
 					)}
 
-					{roles.length !== 0 && (
+					{username && username !== name && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Username')}</InfoPanel.Label>
+							<InfoPanel.Text data-qa='UserInfoUserName'>{username}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)}
+
+         {roles.length !== 0 && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Roles')}</InfoPanel.Label>
 							<UserCard.Roles>{roles}</UserCard.Roles>
 						</InfoPanel.Field>
 					)}
 
-					{username && username !== name && (
+					{bio && (
 						<InfoPanel.Field>
-							<InfoPanel.Label>{t('Username')}</InfoPanel.Label>
-							<InfoPanel.Text data-qa='UserInfoUserName'>{username}</InfoPanel.Text>
+							<InfoPanel.Label>{t('Bio')}</InfoPanel.Label>
+							<InfoPanel.Text withTruncatedText={false}>
+								<MarkdownText variant='inline' content={bio} />
+							</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
 

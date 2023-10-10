@@ -115,12 +115,20 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 				</GenericTableHeaderCell>
 			),
 			tab === 'all' && (
-				<GenericTableHeaderCell key='status' direction={sortDirection} active={sortBy === 'status'} onClick={setSort} sort='status'>
+				<GenericTableHeaderCell
+					w='x100'
+					key='status'
+					direction={sortDirection}
+					active={sortBy === 'status'}
+					onClick={setSort}
+					sort='status'
+				>
 					{t('Registration_status')}
 				</GenericTableHeaderCell>
 			),
-
-			tab === 'all' && (
+			<GenericTableHeaderCell key='actions' w='x44' />,
+        
+      tab === 'all' && (
 				<GenericTableHeaderCell key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 					{t('Token')}
 				</GenericTableHeaderCell>
@@ -146,29 +154,28 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
 				</GenericTable>
 			)}
-
-			<GenericTable>
-				<GenericTableHeader>{headers}</GenericTableHeader>
-				<GenericTableBody>
-					{!isLoading && !isSuccess && tab !== 'all' && tab !== 'active' && (
+      
+			{isSuccess && !!data && !!filteredUsers && data.count > 0 && (
+				<>
+					<GenericTable>
+						<GenericTableHeader>{headers}</GenericTableHeader>
+						<GenericTableBody>
+              {!isLoading && !isSuccess && tab !== 'all' && tab !== 'active' && (
 						<States>
 							<StatesIcon name='user' />
 							<StatesTitle>{tab === 'pending' ? t('No_pending_users') : t('No_deactivated_users')}</StatesTitle>
 							<StatesSubtitle>{tab === 'pending' ? t('Users_who_are_pending') : t('Deactivated_users_appear_here')}</StatesSubtitle>
 						</States>
 					)}
-
-					{isSuccess && !!data && !!filteredUsers && data.count > 0 && (
-						<>
 							{filteredUsers.map((user) => (
 								<UsersTableRow
 									key={user._id}
 									onClick={handleClickOrKeyDown}
 									mediaQuery={mediaQuery}
 									user={user}
-									tab={tab}
 									refetchUsers={refetch}
 									onReload={onReload}
+									tab={tab}
 								/>
 							))}
 						</>

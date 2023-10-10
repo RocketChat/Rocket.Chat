@@ -25,8 +25,7 @@ const UsersPage = async (): Promise<ReactElement> => {
 	const canCreateUser = usePermission('create-user');
 	const canBulkCreateUser = usePermission('bulk-register-user');
 
-	const [tab, setTab] = useState<'all' | 'invited' | 'pending' | 'active' | 'deactivated'>('all');
-
+	const [tab, setTab] = useState<'all' | 'invited' | 'pending' | 'new' | 'active' | 'deactivated'>('all');
 	const [pendingActionsCount, setPendingActionsCount] = useState<number>(0);
 
 	useEffect(() => {
@@ -72,6 +71,11 @@ const UsersPage = async (): Promise<ReactElement> => {
 						</Tabs.Item>
 						<Tabs.Item selected={tab === 'pending'} onClick={() => setTab('pending')}>
 							{pendingActionsCount === 0 ? t('Pending') : `${t('Pending')} (${pendingActionsCount})`}
+						<Tabs.Item selected={tab === 'invited'} onClick={() => setTab('invited')}>
+							{t('Invited')}
+						</Tabs.Item>
+						<Tabs.Item selected={tab === 'new'} onClick={() => setTab('new')}>
+							{t('New_users')}
 						</Tabs.Item>
 						<Tabs.Item selected={tab === 'active'} onClick={() => setTab('active')}>
 							{t('Active')}

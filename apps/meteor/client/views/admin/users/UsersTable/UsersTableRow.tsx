@@ -1,6 +1,6 @@
+import { UserStatus as Status, isUserFederated } from '@rocket.chat/core-typings';
 import type { IRole, IUser } from '@rocket.chat/core-typings';
-import { UserStatus as Status } from '@rocket.chat/core-typings';
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Box, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { useQuery } from '@tanstack/react-query';
@@ -16,6 +16,7 @@ import ActionsMenu from './ActionsMenu';
 
 type UsersTableRowProps = {
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag' | 'lastLogin'>;
+
 	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
 	mediaQuery: boolean;
 	refetchUsers: ReturnType<typeof useQuery>['refetch'];
@@ -84,7 +85,8 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 					{registrationStatusText}
 				</GenericTableCell>
 			)}
-			{tab === 'all' && (
+
+      {tab === 'all' && (
 				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 					{/* TODO: add token here? */}
 					{`${username}-token123`}
@@ -117,6 +119,20 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 						</Button>
 					))}
 				<ActionsMenu user={user} tab={tab} changeUserStatusAction={changeUserStatusAction} onChange={onChange} onReload={onReload} />
+				<Menu
+					mi={4}
+					placement='bottom-start'
+					flexShrink={0}
+					key='menu'
+					renderItem={({ label: { label, icon }, ...props }): ReactElement =>
+						label === 'Delete' ? (
+							<Option label={label} title={label} icon={icon} variant='danger' {...props} />
+						) : (
+							<Option label={label} title={label} icon={icon} {...props} />
+						)
+					}
+					options={menuOptions}
+				/>
 			</GenericTableCell>
 		</GenericTableRow>
 	);
