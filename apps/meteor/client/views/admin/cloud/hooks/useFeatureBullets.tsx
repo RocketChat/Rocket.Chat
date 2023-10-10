@@ -31,12 +31,6 @@ const useFeatureBullets = () => {
 				description: t('RegisterWorkspace_Features_Omnichannel_Description'),
 				disconnect: t('RegisterWorkspace_Features_Omnichannel_Disconnect'),
 			},
-			{
-				key: 4,
-				title: t('RegisterWorkspace_Features_ThirdPartyLogin_Title'),
-				description: t('RegisterWorkspace_Features_ThirdPartyLogin_Description'),
-				disconnect: t('RegisterWorkspace_Features_ThirdPartyLogin_Disconnect'),
-			},
 		],
 		[t],
 	);
