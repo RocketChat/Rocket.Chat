@@ -24,7 +24,7 @@ export const SidebarFooterWatermark = (): ReactElement | null => {
 					{t('Powered_by_RocketChat')}
 				</Box>
 				<Box fontScale='micro' color='pure-white' pbe={4}>
-					{planTag.name}
+					{planTag?.name}
 				</Box>
 			</Box>
 		</Box>
