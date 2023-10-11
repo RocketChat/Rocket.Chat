@@ -12,6 +12,7 @@ type RoomForewordUsernameListItemProps = {
 	useRealName: boolean;
 };
 
+// TODO: Improve `Tag` a11y to be used as a link
 const RoomForewordUsernameListItem: VFC<RoomForewordUsernameListItemProps> = ({ username, href, useRealName }) => {
 	const { data, isLoading, isError } = useUserInfoQuery({ username });
 
