@@ -12,7 +12,7 @@ import EnabledAppsCount from './EnabledAppsCount';
 const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null => {
 	const t = useTranslation();
 	const isAdmin = usePermission('manage-apps');
-	const context = (useRouteParameter('context') || 'explore') as 'private' | 'explore' | 'installed' | 'enterprise' | 'requested';
+	const context = (useRouteParameter('context') || 'explore') as 'private' | 'explore' | 'installed' | 'premium' | 'requested';
 	const route = useRoute('marketplace');
 	const setModal = useSetModal();
 	const result = useAppsCountQuery(context);
