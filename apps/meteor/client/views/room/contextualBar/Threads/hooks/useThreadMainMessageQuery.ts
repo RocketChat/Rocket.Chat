@@ -89,7 +89,7 @@ export const useThreadMainMessageQuery = (
 	return useQuery(['rooms', room._id, 'threads', tmid, 'main-message'] as const, async ({ queryKey }) => {
 		const mainMessage = await getMessage(tmid);
 
-		if (!mainMessage || !isThreadMainMessage(mainMessage)) {
+		if (!mainMessage) {
 			throw new Error('Invalid main message');
 		}
 
