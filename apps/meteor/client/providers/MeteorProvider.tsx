@@ -1,7 +1,6 @@
 import type { FC } from 'react';
 import React from 'react';
 
-import ImageGallery from '../components/ImageGallery';
 import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 import ActionManagerProvider from './ActionManagerProvider';
 import AuthorizationProvider from './AuthorizationProvider';
@@ -34,7 +33,6 @@ const MeteorProvider: FC = ({ children }) => (
 						<SessionProvider>
 							<TooltipProvider>
 								<ToastMessagesProvider>
-									<ImageGallery />
 									<LayoutProvider>
 										<AvatarUrlProvider>
 											<CustomSoundProvider>

@@ -1,106 +1,69 @@
 // Import Swiper React components
 
-import React, { useEffect, useState } from 'react';
-import { Navigation, Zoom } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { IconButton, Throbber } from '@rocket.chat/fuselage';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Keyboard, Navigation, Zoom, A11y } from 'swiper';
+import { type SwiperClass, Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
 import 'swiper/swiper.css';
 import 'swiper/modules/navigation/navigation.min.css';
+import 'swiper/modules/keyboard/keyboard.min.css';
 import 'swiper/modules/zoom/zoom.min.css';
-// import './ImageGallery.css';
+import { useRecordList } from '../hooks/lists/useRecordList';
+import { useRoom } from '../views/room/contexts/RoomContext';
+import { useFilesList } from '../views/room/contextualBar/RoomFiles/hooks/useFilesList';
 
-const ImageGallery = () => {
-	const [isOpen, setIsOpen] = useState(false);
-	const [images, setImages] = useState([]);
-	const [swiperInst, setSwiperInst] = useState<typeof Swiper>(null);
+const ImageGallery = ({ url, onClose }: { url: string; onClose: () => void }) => {
+	const room = useRoom();
+
+	const [images, setImages] = useState<string[]>();
+	const [swiperInst, setSwiperInst] = useState<SwiperClass>();
+	const [currentSlide, setCurrentSlide] = useState<number>();
+
+	const { filesList } = useFilesList(useMemo(() => ({ rid: room._id, type: 'image', text: '' }), [room._id]));
+	const { phase, items: filesItems } = useRecordList(filesList);
 
 	useEffect(() => {
-		document.addEventListener('click', (event) => {
-			const nodes = document.querySelectorAll('.gallery-item');
-			console.log(nodes);
-			if (event.target.classList.contains('gallery-item')) {
-				console.log('isEvent');
-				setIsOpen(true);
-				const sources = [...nodes].map((node) => node.src);
-				setImages(sources);
-				console.log(swiperInst);
-				// swiperInst.update();
-			}
-			// console.log(event.target.classList.contains('gallery-item'));
-		});
-	}, [swiperInst]);
+		const list = [...filesItems].reverse();
 
-	console.log(images);
+		if (phase === 'resolved') {
+			setImages(list.map((item) => item.url || '').filter(Boolean));
+			setCurrentSlide(list.findIndex((item) => url.includes(item._id)));
+		}
+		return () => swiperInst?.update();
+	}, [filesItems, phase, swiperInst, url]);
+
+	if (phase === 'loading' || currentSlide === undefined) {
+		return null;
+	}
 
 	return (
-		isOpen && (
-			<div className='swiper-container'>
-				<Swiper
-					navigation={true}
-					zoom={true}
-					onSlideChange={() => console.log('slide change')}
-					onSwiper={(swiper) => console.log(swiper)}
-					modules={[Navigation, Zoom]}
-					onInit={(swiper) => {
-						console.log(swiper);
-						setSwiperInst(swiper);
-						console.log('init');
-						const nodes = document.querySelectorAll('.gallery-item');
-						console.log(nodes);
-					}}
-				>
-					{images.map((image) => (
-						<img src={image} />
-					))}
-					<SwiperSlide>
+		<div className='swiper-container'>
+			<IconButton icon='cross' onClick={onClose} />
+			<Swiper
+				navigation
+				keyboard
+				zoom
+				lazyPreloaderClass='rcx-lazy-preloader'
+				runCallbacksOnInit
+				initialSlide={currentSlide}
+				onKeyPress={(_, keyCode) => String(keyCode) === '27' && onClose()}
+				modules={[Navigation, Zoom, Keyboard, A11y]}
+				onInit={(swiper) => setSwiperInst(swiper)}
+			>
+				{images?.map((image, index) => (
+					<SwiperSlide key={`${image}-${index}`}>
 						<div className='swiper-zoom-container'>
-							<img src='https://swiperjs.com/demos/images/nature-1.jpg' />
+							<img src={image} loading='lazy' />
+							<div className='rcx-lazy-preloader'>
+								<Throbber />
+							</div>
 						</div>
 					</SwiperSlide>
-					<SwiperSlide>
-						<div className='swiper-zoom-container'>
-							<img src='https://swiperjs.com/demos/images/nature-2.jpg' />
-						</div>
-					</SwiperSlide>
-					<SwiperSlide>
-						<div className='swiper-zoom-container'>
-							<img src='https://swiperjs.com/demos/images/nature-3.jpg' />
-						</div>
-					</SwiperSlide>
-					<SwiperSlide>
-						<div className='swiper-zoom-container'>
-							<img src='https://swiperjs.com/demos/images/nature-4.jpg' />
-						</div>
-					</SwiperSlide>
-					<SwiperSlide>
-						<div className='swiper-zoom-container'>
-							<img src='https://swiperjs.com/demos/images/nature-5.jpg' />
-						</div>
-					</SwiperSlide>
-					<SwiperSlide>
-						<div className='swiper-zoom-container'>
-							<img src='https://swiperjs.com/demos/images/nature-6.jpg' />
-						</div>
-					</SwiperSlide>
-					<SwiperSlide>
-						<div className='swiper-zoom-container'>
-							<img src='https://swiperjs.com/demos/images/nature-7.jpg' />
-						</div>
-					</SwiperSlide>
-					<SwiperSlide>
-						<div className='swiper-zoom-container'>
-							<img src='https://swiperjs.com/demos/images/nature-8.jpg' />
-						</div>
-					</SwiperSlide>
-					<SwiperSlide>
-						<div className='swiper-zoom-container'>
-							<img src='https://swiperjs.com/demos/images/nature-9.jpg' />
-						</div>
-					</SwiperSlide>
-				</Swiper>
-			</div>
-		)
+				))}
+			</Swiper>
+		</div>
 	);
 };
 

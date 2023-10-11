@@ -2,11 +2,12 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { usePermission, useStream, useUserId, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode, ContextType, ReactElement } from 'react';
-import React, { useMemo, memo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, memo, useEffect, useCallback } from 'react';
 
 import { ChatRoom, ChatSubscription } from '../../../../app/models/client';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
+import ImageGallery from '../../../components/ImageGallery';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { RoomManager } from '../../../lib/RoomManager';
@@ -35,6 +36,8 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	const userId = useUserId();
 	const isLivechatAdmin = usePermission('view-livechat-rooms');
 	const { t: roomType } = room ?? {};
+
+	const [imageUrl, setImageUrl] = useState<string | null>();
 
 	// TODO: move this to omnichannel context only
 	useEffect(() => {
@@ -71,6 +74,14 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		}
 	}, [isLivechatAdmin, queryClient, userId, rid, roomType, servedById]);
 
+	useEffect(() => {
+		document.addEventListener('click', (event) => {
+			const target = event?.target as HTMLImageElement;
+			if (target?.classList.contains('gallery-item')) {
+				setImageUrl(target?.dataset?.src);
+			}
+		});
+	}, []);
 	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
 
 	const pseudoRoom = useMemo(() => {
@@ -144,6 +155,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	return (
 		<RoomContext.Provider value={context}>
 			<RoomToolboxProvider>
+				{imageUrl && <ImageGallery url={imageUrl} onClose={() => setImageUrl(null)} />}
 				<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
 			</RoomToolboxProvider>
 		</RoomContext.Provider>
