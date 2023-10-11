@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type { IRocketChatRecord } from '../IRocketChatRecord';
-import { type UiKitPayload } from '../UIKit';
+import { type UiKitPayload } from '../uikit/deprecations';
 
 type TargetPlatform = 'web' | 'mobile';
 

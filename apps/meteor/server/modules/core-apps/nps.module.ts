@@ -33,7 +33,7 @@ export class Nps implements IUiKitCoreApp {
 	}
 
 	async viewSubmit(payload: UiKitCoreAppPayload) {
-		if (!payload.payload?.view?.state) {
+		if (!payload.payload?.view?.state || !payload.payload?.view?.id) {
 			throw new Error('Invalid payload');
 		}
 
@@ -55,9 +55,9 @@ export class Nps implements IUiKitCoreApp {
 		await NPS.vote({
 			npsId,
 			userId,
-			comment,
+			comment: String(comment),
 			roles,
-			score,
+			score: Number(score),
 		});
 
 		if (!userId) {

@@ -91,41 +91,6 @@ const corsOptions: cors.CorsOptions = {
 
 apiServer.use('/api/apps/ui.interaction/', cors(corsOptions), router); // didn't have the rateLimiter option
 
-type UiKitUserInteraction = {
-	type: 'blockAction' | 'viewClosed' | 'viewSubmit' | 'actionButton';
-	actionId: unknown;
-	triggerId: string;
-	mid: unknown;
-	tmid: unknown;
-	rid: unknown;
-	payload: {
-		view: {
-			viewId: string;
-			id: string;
-			state: Record<string, { 'nps-score': number; 'comment': string }>;
-			[key: string]: unknown;
-		};
-		context: unknown;
-		message: unknown;
-		blockId: string;
-		value: unknown;
-		isCleared: unknown;
-	};
-	container?: {
-		id: string;
-		[key: string]: unknown;
-	};
-};
-
-declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface Endpoints {
-		'/apps/ui.interaction/:id': {
-			POST: (params: UiKitUserInteraction) => any;
-		};
-	}
-}
-
 type UiKitUserInteractionRequest = Request<
 	UrlParams<'/apps/ui.interaction/:id'>,
 	any,
@@ -147,11 +112,12 @@ type UiKitUserInteractionRequest = Request<
 
 const getCoreAppPayload = (req: UiKitUserInteractionRequest): UiKitCoreAppPayload => {
 	const { id: appId } = req.params;
-	const { type } = req.body;
 
-	if (type === 'blockAction') {
+	if (req.body.type === 'blockAction') {
 		const { user } = req;
-		const { actionId, triggerId, mid: message, rid: room, payload, container, visitor } = req.body;
+		const { type, actionId, triggerId, payload, container, visitor } = req.body;
+		const message = 'mid' in req.body ? req.body.mid : undefined;
+		const room = 'rid' in req.body ? req.body.rid : undefined;
 
 		return {
 			appId,
@@ -167,17 +133,16 @@ const getCoreAppPayload = (req: UiKitUserInteractionRequest): UiKitCoreAppPayloa
 		};
 	}
 
-	if (type === 'viewClosed') {
+	if (req.body.type === 'viewClosed') {
 		const { user } = req;
 		const {
-			actionId,
+			type,
 			payload: { view, isCleared },
 		} = req.body;
 
 		return {
 			appId,
 			type,
-			actionId,
 			user,
 			payload: {
 				view,
@@ -186,9 +151,9 @@ const getCoreAppPayload = (req: UiKitUserInteractionRequest): UiKitCoreAppPayloa
 		};
 	}
 
-	if (type === 'viewSubmit') {
+	if (req.body.type === 'viewSubmit') {
 		const { user } = req;
-		const { actionId, triggerId, payload } = req.body;
+		const { type, actionId, triggerId, payload } = req.body;
 
 		return {
 			appId,
@@ -241,7 +206,9 @@ export class AppUIKitInteractionApi {
 
 		switch (type) {
 			case 'blockAction': {
-				const { actionId, triggerId, mid, rid, payload, container } = req.body;
+				const { actionId, triggerId, payload, container } = req.body;
+				const mid = 'mid' in req.body ? req.body.mid : undefined;
+				const rid = 'rid' in req.body ? req.body.rid : undefined;
 
 				const { visitor } = req.body;
 				const room = await orch.getConverters()?.get('rooms').convertById(rid);
@@ -276,7 +243,6 @@ export class AppUIKitInteractionApi {
 
 			case 'viewClosed': {
 				const {
-					actionId,
 					payload: { view, isCleared },
 				} = req.body;
 
@@ -285,7 +251,6 @@ export class AppUIKitInteractionApi {
 				const action = {
 					type,
 					appId,
-					actionId,
 					user,
 					payload: {
 						view,

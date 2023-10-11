@@ -5,7 +5,7 @@ import type { IServiceClass } from './ServiceClass';
 export type UiKitCoreAppPayload = {
 	appId: string;
 	type: 'blockAction' | 'viewClosed' | 'viewSubmit';
-	actionId: unknown;
+	actionId?: string;
 	triggerId?: string;
 	container?: {
 		id: string;
@@ -15,13 +15,13 @@ export type UiKitCoreAppPayload = {
 	payload: {
 		blockId?: string;
 		value?: unknown;
-		view: {
-			viewId: string;
-			id: string;
-			state: Record<string, { 'nps-score': number; 'comment': string }>;
+		view?: {
+			viewId?: string;
+			id?: string;
+			state?: { [blockId: string]: { [key: string]: unknown } };
 			[key: string]: unknown;
 		};
-		isCleared: unknown;
+		isCleared?: unknown;
 	};
 	user?: IUser;
 	visitor?: {

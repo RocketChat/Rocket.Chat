@@ -4,7 +4,6 @@ export * from './FeaturedApps';
 export * from './AppRequests';
 export * from './MarketplaceRest';
 export * from './IRoom';
-export * from './UIKit';
 export * from './IMessage';
 export * from './federation';
 export * from './Serialized';
@@ -136,3 +135,6 @@ export * from './IModerationReport';
 export * from './CustomFieldMetadata';
 
 export * as Cloud from './cloud';
+
+export * from './uikit/deprecations';
+export * as UiKit from './uikit';
