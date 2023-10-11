@@ -8488,7 +8488,6 @@ __metadata:
     "@types/bcrypt": ^5.0.0
     "@types/jest": ~29.5.3
     "@types/ws": ^8.5.5
-    babel-plugin-transform-inline-environment-variables: ^0.4.4
     bcrypt: ^5.0.1
     eslint: ~8.45.0
     jest: ~29.6.1
@@ -15430,13 +15429,6 @@ __metadata:
     lodash: ^4.17.15
     react-docgen: ^5.0.0
   checksum: 6126d358ac2cb27a9a7f145ab586b7a28cb19ef09ca37c4f08a853246a101328ffe6c87813e95b1b4ba05beb627285199f7d0ba16abfb61b35cc4febb6d5eabd
-  languageName: node
-  linkType: hard
-
-"babel-plugin-transform-inline-environment-variables@npm:^0.4.4":
-  version: 0.4.4
-  resolution: "babel-plugin-transform-inline-environment-variables@npm:0.4.4"
-  checksum: fa361287411301237fd8ce332aff4f8e8ccb8db30e87a2ddc7224c8bf7cd792eda47aca24dc2e09e70bce4c027bc8cbe22f4999056be37a25d2472945df21ef5
   languageName: node
   linkType: hard
 
