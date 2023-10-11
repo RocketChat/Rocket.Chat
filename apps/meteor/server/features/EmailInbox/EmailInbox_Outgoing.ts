@@ -43,15 +43,15 @@ const sendErrorReplyMessage = async (error: string, options: any) => {
 	return sendMessage(user, message, { _id: options.rid });
 };
 
-const sendSuccessReplyMessage = async (options: any) => {
-	if (!options?.rid || !options?.msgId) {
+const sendSuccessReplyMessage = async (options: { room: IOmnichannelRoom; msgId: string; sender: string }) => {
+	if (!options?.room?._id || !options?.msgId) {
 		return;
 	}
 	const message = {
 		groupable: false,
 		msg: `@${options.sender} Attachment was sent successfully`,
 		_id: String(Date.now()),
-		rid: options.rid,
+		rid: options.room._id,
 		ts: new Date(),
 	};
 
@@ -60,7 +60,7 @@ const sendSuccessReplyMessage = async (options: any) => {
 		return;
 	}
 
-	return sendMessage(user, message, { _id: options.rid });
+	return sendMessage(user, message, options.room);
 };
 
 async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }> {
@@ -174,7 +174,7 @@ slashCommands.add({
 		return sendSuccessReplyMessage({
 			msgId: message._id,
 			sender: message.u.username,
-			rid: room._id,
+			room,
 		});
 	},
 	options: {
