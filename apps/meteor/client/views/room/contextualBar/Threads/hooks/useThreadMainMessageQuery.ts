@@ -8,7 +8,6 @@ import { useCallback, useEffect, useRef } from 'react';
 import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
 import type { FieldExpression, Query } from '../../../../../lib/minimongo';
 import { createFilterFromQuery } from '../../../../../lib/minimongo';
-// import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useGetMessageByID } from './useGetMessageByID';
 
