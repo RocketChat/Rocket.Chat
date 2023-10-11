@@ -1,11 +1,12 @@
 import { api } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isEditedMessage, isRoomFederated } from '@rocket.chat/core-typings';
-import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { Subscriptions, Rooms, Users, Settings } from '@rocket.chat/models';
 import type { ActionsBlock } from '@rocket.chat/ui-kit';
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -13,7 +14,7 @@ import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../autho
 const permissionsToAddUserToRoom = ['add-user-to-joined-room', 'add-user-to-any-c-room', 'add-user-to-any-p-room'];
 
 const APP_ID = 'mention-core';
-const getBlocks = (mentions: IMessage['mentions'], messageId: string) => {
+const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: string | undefined) => {
 	const strigifiedMentions = JSON.stringify(mentions);
 	return {
 		addUsersBlock: {
@@ -24,7 +25,7 @@ const getBlocks = (mentions: IMessage['mentions'], messageId: string) => {
 			actionId: 'add-users',
 			text: {
 				type: 'plain_text',
-				text: i18n.t('Add_them'),
+				text: i18n.t('Add_them', undefined, lng),
 			},
 		},
 		dismissBlock: {
@@ -35,7 +36,7 @@ const getBlocks = (mentions: IMessage['mentions'], messageId: string) => {
 			actionId: 'dismiss',
 			text: {
 				type: 'plain_text',
-				text: i18n.t('Do_nothing'),
+				text: i18n.t('Do_nothing', undefined, lng),
 			},
 		},
 		dmBlock: {
@@ -46,7 +47,7 @@ const getBlocks = (mentions: IMessage['mentions'], messageId: string) => {
 			actionId: 'share-message',
 			text: {
 				type: 'plain_text',
-				text: i18n.t('Let_them_know'),
+				text: i18n.t('Let_them_know', undefined, lng),
 			},
 		},
 	} as const;
@@ -89,8 +90,9 @@ callbacks.add(
 		const canAddUsers = await hasAtLeastOnePermissionAsync(message.u._id, permissionsToAddUserToRoom, message.rid);
 		const canDMUsers = await hasPermissionAsync(message.u._id, 'create-d'); // TODO: Perhaps check if user has DM with mentioned user (might be too expensive)
 
-		const usernames = mentionsUsersNotInChannel.map(({ username }) => username);
-		const actionBlocks = getBlocks(mentionsUsersNotInChannel, message._id);
+		const { language } = (await Users.findOneById(message.u._id)) || {};
+
+		const actionBlocks = getBlocks(mentionsUsersNotInChannel, message._id, language);
 		const elements: ActionsBlock['elements'] = [
 			canAddUsers && actionBlocks.addUsersBlock,
 			(canAddUsers || canDMUsers) && actionBlocks.dismissBlock,
@@ -101,22 +103,31 @@ callbacks.add(
 			? 'You_mentioned___mentions__but_theyre_not_in_this_room'
 			: 'You_mentioned___mentions__but_theyre_not_in_this_room_You_can_ask_a_room_admin_to_add_them';
 
+		const { value: useRealName } = (await Settings.findOneById('UI_Use_Real_Name')) || {};
+
+		const usernamesOrNames = mentionsUsersNotInChannel.map(
+			({ username, name }) => `*@${getUserDisplayName(name, username, Boolean(useRealName))}*`,
+		);
+
+		const mentionsText = usernamesOrNames.join(', ');
+
 		// TODO: Mentions style
-		// TODO: Use real name setting
 		void api.broadcast('notify.ephemeralMessage', message.u._id, message.rid, {
 			msg: '',
 			mentions: mentionsUsersNotInChannel,
 			blocks: [
 				{
+					appId: APP_ID,
 					type: 'section',
 					text: {
 						type: 'mrkdwn',
-						text: i18n.t(messageLabel, { mentions: `@${usernames.join(', @')}` }),
+						text: i18n.t(messageLabel, { mentions: mentionsText }, language),
 					},
 				} as const,
 				Boolean(elements.length) &&
 					({
 						type: 'actions',
+						appId: APP_ID,
 						elements,
 					} as const),
 			].filter(isTruthy),

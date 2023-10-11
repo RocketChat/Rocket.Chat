@@ -36,9 +36,13 @@ export class MentionModule implements IUiKitCoreApp {
 
 		if (actionId === 'dismiss') {
 			void api.broadcast('notify.ephemeralMessage', payload.user._id, payload.room, {
-				msg: i18n.t('You_mentioned___mentions__but_theyre_not_in_this_room', {
-					mentions: `@${usernames.join(', @')}`,
-				}),
+				msg: i18n.t(
+					'You_mentioned___mentions__but_theyre_not_in_this_room',
+					{
+						mentions: `@${usernames.join(', @')}`,
+					},
+					payload.user.language,
+				),
 				_id: payload.message,
 				mentions,
 			});
@@ -48,9 +52,13 @@ export class MentionModule implements IUiKitCoreApp {
 		if (actionId === 'add-users') {
 			void addUsersToRoomMethod(payload.user._id, { rid: payload.room, users: usernames as string[] }, payload.user);
 			void api.broadcast('notify.ephemeralMessage', payload.user._id, payload.room, {
-				msg: i18n.t('You_mentioned___mentions__but_theyre_not_in_this_room', {
-					mentions: `@${usernames.join(', @')}`,
-				}),
+				msg: i18n.t(
+					'You_mentioned___mentions__but_theyre_not_in_this_room',
+					{
+						mentions: `@${usernames.join(', @')}`,
+					},
+					payload.user.language,
+				),
 				_id: payload.message,
 				mentions,
 			});
@@ -83,9 +91,13 @@ export class MentionModule implements IUiKitCoreApp {
 			);
 
 			void api.broadcast('notify.ephemeralMessage', payload.user._id, payload.room, {
-				msg: i18n.t('You_mentioned___mentions__but_theyre_not_in_this_room_You_let_them_know_via_dm', {
-					mentions: `@${usernames.join(', @')}`,
-				}),
+				msg: i18n.t(
+					'You_mentioned___mentions__but_theyre_not_in_this_room_You_let_them_know_via_dm',
+					{
+						mentions: `@${usernames.join(', @')}`,
+					},
+					payload.user.language,
+				),
 				_id: payload.message,
 				mentions,
 			});
