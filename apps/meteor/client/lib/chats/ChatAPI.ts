@@ -144,7 +144,7 @@ export type ChatAPI = {
 	ActionManager: any;
 
 	readonly flows: {
-		readonly uploadFiles: (files: readonly File[]) => Promise<void>;
+		readonly uploadFiles: (files: readonly File[], resetFileInput?: () => void) => Promise<void>;
 		readonly sendMessage: ({ text, tshow }: { text: string; tshow?: boolean; previewUrls?: string[] }) => Promise<boolean>;
 		readonly processSlashCommand: (message: IMessage, userId: string | null) => Promise<boolean>;
 		readonly processTooLongMessage: (message: IMessage) => Promise<boolean>;
