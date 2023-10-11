@@ -24,6 +24,9 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 	const room = await LivechatRooms.findOneById(inquiry.rid, { projection: { v: 1 } });
 	if (!room || !(await Omnichannel.isRoomEnabled(room))) {
 		logger.error({ msg: 'MAC limit reached, not routing inquiry', inquiry });
+		// We'll queue these inquiries so when new license is applied, they just start rolling again
+		// Minimizing disruption
+		await saveQueueInquiry(inquiry);
 		return;
 	}
 	const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
