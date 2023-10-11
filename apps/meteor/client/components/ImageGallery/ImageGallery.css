@@ -1,0 +1,57 @@
+:root {
+	--swiper-navigation-size: 44px;
+}
+
+.swiper {
+	background-color: var(--rcx-color-surface-overlay, rgba(0, 0, 0, 0.6));
+}
+.rcx-swiper-close-button, .rcx-swiper-prev-button, .rcx-swiper-next-button {
+  color: var(--rcx-color-font-pure-white, #fff) !important;
+}
+.rcx-swiper-close-button {
+	position: absolute;
+	z-index: 10;
+	top: 10px;
+	right: 10px;
+}
+.rcx-swiper-prev-button,
+.rcx-swiper-next-button {
+	position: absolute;
+	top: 50%;
+	z-index: 10;
+	cursor: pointer;
+}
+.rcx-swiper-prev-button.swiper-button-disabled,
+.rcx-swiper-next-button.swiper-button-disabled {
+	opacity: 0.35;
+	cursor: auto;
+	pointer-events: none;
+}
+.rcx-swiper-prev-button.swiper-button-hidden,
+.rcx-swiper-next-button.swiper-button-hidden {
+	opacity: 0;
+	cursor: auto;
+	pointer-events: none;
+}
+.swiper-navigation-disabled .rcx-swiper-prev-button,
+.swiper-navigation-disabled .rcx-swiper-next-button {
+	display: none !important;
+}
+.rcx-swiper-prev-button,
+.swiper-rtl .rcx-swiper-next-button {
+	left: 10px;
+	right: auto;
+}
+.rcx-swiper-prev-button:after,
+.swiper-rtl .rcx-swiper-next-button:after {
+	content: 'prev';
+}
+.rcx-swiper-next-button,
+.swiper-rtl .rcx-swiper-prev-button {
+	right: 10px;
+	left: auto;
+}
+.rcx-swiper-next-button:after,
+.swiper-rtl .rcx-swiper-prev-button:after {
+	content: 'next';
+}

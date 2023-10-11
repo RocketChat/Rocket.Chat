@@ -1,8 +1,8 @@
-// Import Swiper React components
-
 import { IconButton, Throbber } from '@rocket.chat/fuselage';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Keyboard, Navigation, Zoom, A11y } from 'swiper';
+import type { SwiperRef } from 'swiper/react';
 import { type SwiperClass, Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
@@ -10,12 +10,15 @@ import 'swiper/swiper.css';
 import 'swiper/modules/navigation/navigation.min.css';
 import 'swiper/modules/keyboard/keyboard.min.css';
 import 'swiper/modules/zoom/zoom.min.css';
+import './ImageGallery/ImageGallery.css';
+
 import { useRecordList } from '../hooks/lists/useRecordList';
 import { useRoom } from '../views/room/contexts/RoomContext';
 import { useFilesList } from '../views/room/contextualBar/RoomFiles/hooks/useFilesList';
 
 const ImageGallery = ({ url, onClose }: { url: string; onClose: () => void }) => {
 	const room = useRoom();
+	const swiperRef = useRef<SwiperRef>(null);
 
 	const [images, setImages] = useState<string[]>();
 	const [swiperInst, setSwiperInst] = useState<SwiperClass>();
@@ -38,11 +41,17 @@ const ImageGallery = ({ url, onClose }: { url: string; onClose: () => void }) =>
 		return null;
 	}
 
-	return (
+	const swiperContainer = (
 		<div className='swiper-container'>
-			<IconButton icon='cross' onClick={onClose} />
+			<IconButton icon='cross' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
+			<IconButton icon='chevron-right' className='rcx-swiper-prev-button' onClick={() => swiperRef?.current?.swiper.slidePrev()} />
+			<IconButton icon='chevron-left' className='rcx-swiper-next-button' onClick={() => swiperRef?.current?.swiper.slideNext()} />
 			<Swiper
-				navigation
+				ref={swiperRef}
+				navigation={{
+					nextEl: '.rcx-swiper-next-button',
+					prevEl: '.rcx-swiper-prev-button',
+				}}
 				keyboard
 				zoom
 				lazyPreloaderClass='rcx-lazy-preloader'
@@ -65,6 +74,7 @@ const ImageGallery = ({ url, onClose }: { url: string; onClose: () => void }) =>
 			</Swiper>
 		</div>
 	);
+	return createPortal(swiperContainer, document.body);
 };
 
 export default ImageGallery;
