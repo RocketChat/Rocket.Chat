@@ -63,4 +63,57 @@ describe('Event License behaviors', () => {
 		await expect(license.hasValidLicense()).toBe(true);
 		await expect(fn).toBeCalledTimes(1);
 	});
+
+	describe('behavior:prevent_action event', () => {
+		it('should emit `behavior:prevent_action` event when the limit is reached', async () => {
+			const licenseManager = await getReadyLicenseManager();
+			const fn = jest.fn();
+
+			licenseManager.onBehaviorTriggered('prevent_action', fn);
+
+			const license = await new MockedLicenseBuilder().withLimits('activeUsers', [
+				{
+					max: 10,
+					behavior: 'prevent_action',
+				},
+			]);
+
+			await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+
+			licenseManager.setLicenseLimitCounter('activeUsers', () => 10);
+
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
+
+			await expect(fn).toBeCalledTimes(1);
+
+			await expect(fn).toBeCalledWith({
+				reason: 'limit',
+				limit: 'activeUsers',
+			});
+		});
+
+		it('should emit `limitReached:activeUsers` event when the limit is reached', async () => {
+			const licenseManager = await getReadyLicenseManager();
+			const fn = jest.fn();
+
+			licenseManager.onLimitReached('activeUsers', fn);
+
+			const license = await new MockedLicenseBuilder().withLimits('activeUsers', [
+				{
+					max: 10,
+					behavior: 'prevent_action',
+				},
+			]);
+
+			await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+
+			licenseManager.setLicenseLimitCounter('activeUsers', () => 10);
+
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
+
+			await expect(fn).toBeCalledTimes(1);
+
+			await expect(fn).toBeCalledWith(undefined);
+		});
+	});
 });

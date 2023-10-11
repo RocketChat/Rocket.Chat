@@ -1,4 +1,4 @@
-import { Field, Box, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldHint, Box, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -35,8 +35,8 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 
 	return (
 		<Field>
-			<Field.Label>{t(label)}</Field.Label>
-			<Field.Row>
+			<FieldLabel>{t(label)}</FieldLabel>
+			<FieldRow>
 				<Box w='100%'>
 					<PaginatedMultiSelectFiltered
 						withTitle
@@ -61,8 +61,8 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 						}
 					/>
 				</Box>
-			</Field.Row>
-			<Field.Hint>{t('List_of_departments_for_forward_description')}</Field.Hint>
+			</FieldRow>
+			<FieldHint>{t('List_of_departments_for_forward_description')}</FieldHint>
 		</Field>
 	);
 };
