@@ -1,8 +1,8 @@
-import { Box, FieldLabel, FieldRow, RadioButton } from '@rocket.chat/fuselage';
+import { Box, FieldHint, FieldLabel, FieldRow, RadioButton } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
-import type { Control, UseFormSetValue } from 'react-hook-form';
+import type { Control } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
 import type { userFormProps } from './AdminUserForm';
@@ -10,18 +10,10 @@ import type { userFormProps } from './AdminUserForm';
 type AdminUserSetRandomPasswordProps = {
 	control: Control<userFormProps, any>;
 	isSmtpEnabled: boolean;
-	setRandomPassword: boolean;
-	setValue: UseFormSetValue<userFormProps>;
 	setRandomPasswordId: string;
 };
 
-const AdminUserSetRandomPassword = ({
-	control,
-	isSmtpEnabled,
-	setRandomPassword,
-	setValue,
-	setRandomPasswordId,
-}: AdminUserSetRandomPasswordProps) => {
+const AdminUserSetRandomPassword = ({ control, isSmtpEnabled, setRandomPasswordId }: AdminUserSetRandomPasswordProps) => {
 	const t = useTranslation();
 
 	const setPasswordManuallyId = useUniqueId();
@@ -39,35 +31,36 @@ const AdminUserSetRandomPassword = ({
 								id={setRandomPasswordId}
 								aria-describedby={`${setRandomPasswordId}-hint`}
 								checked={value}
-								onChange={() => {
-									setValue('setPasswordManually', false);
-									onChange(true);
-								}}
+								onChange={() => onChange(true)}
 								disabled={!isSmtpEnabled}
 							/>
 						)}
 					/>
 				</FieldRow>
-				<FieldLabel htmlFor={setRandomPasswordId} alignSelf='center' fontScale='p2'>
+				<FieldLabel htmlFor={setRandomPasswordId} alignSelf='center' fontScale='p2' disabled={!isSmtpEnabled}>
 					{t('Set_randomly_and_send_by_email')}
 				</FieldLabel>
 			</Box>
+			{!isSmtpEnabled && (
+				<FieldHint
+					id={`${setRandomPasswordId}-hint`}
+					dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }}
+					mbe={16}
+					mbs={0}
+				/>
+			)}
 			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1}>
 				<FieldRow mie={8}>
 					<Controller
 						control={control}
-						name='setPasswordManually'
+						name='setRandomPassword'
 						render={({ field: { ref, onChange, value } }) => (
 							<RadioButton
 								ref={ref}
 								id={setPasswordManuallyId}
 								aria-describedby={`${setPasswordManuallyId}-hint`}
-								checked={value || !setRandomPassword}
-								onChange={() => {
-									setValue('setRandomPassword', false);
-									onChange(true);
-								}}
-								disabled={!isSmtpEnabled}
+								checked={!value}
+								onChange={() => onChange(false)}
 							/>
 						)}
 					/>

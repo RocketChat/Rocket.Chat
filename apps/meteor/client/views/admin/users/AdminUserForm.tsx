@@ -15,6 +15,7 @@ import {
 	FieldRow,
 	FieldError,
 	FieldHint,
+	Icon,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useUniqueId, useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -48,10 +49,7 @@ type AdminUserFormProps = {
 	setCreatedUsersCount: React.Dispatch<React.SetStateAction<number>>;
 };
 
-export type userFormProps = Omit<
-	UserCreateParamsPOST & { setPasswordManually: boolean; avatar: AvatarObject; passwordConfirmation: string },
-	'fields'
->;
+export type userFormProps = Omit<UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string }, 'fields'>;
 
 const getInitialValue = ({
 	data,
@@ -72,8 +70,7 @@ const getInitialValue = ({
 	nickname: data?.nickname ?? '',
 	email: (data?.emails?.length && data.emails[0].address) || '',
 	verified: (data?.emails?.length && data.emails[0].verified) || false,
-	setRandomPassword: isNewUserPage,
-	setPasswordManually: !isNewUserPage,
+	setRandomPassword: isNewUserPage && isSmtpEnabled,
 	requirePasswordChange: data?.requirePasswordChange || false,
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
@@ -93,6 +90,7 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
 	const passwordPlaceholder = String(useSetting('Accounts_PasswordPlaceholder'));
 	const passwordConfirmationPlaceholder = String(useSetting('Accounts_ConfirmPasswordPlaceholder'));
+	const isVerificationNeeded = useSetting('Accounts_EmailVerification');
 
 	const defaultUserRoles = parseCSV(defaultRoles);
 	const { data } = useSmtpQuery();
@@ -103,7 +101,6 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 		watch,
 		handleSubmit,
 		formState: { errors, isDirty },
-		setValue,
 		resetField,
 	} = useForm({
 		defaultValues: getInitialValue({ data: userData, defaultUserRoles, isSmtpEnabled, isNewUserPage: !userData?._id }),
@@ -114,6 +111,11 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 		resetField('sendWelcomeEmail', { defaultValue: isSmtpEnabled });
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isSmtpEnabled]);
+
+	useEffect(() => {
+		resetField('setRandomPassword', { defaultValue: !userData?._id && isSmtpEnabled });
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isSmtpEnabled, userData?._id]);
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
@@ -158,7 +160,7 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 	});
 
 	const handleSaveUser = useMutableCallback(async (userFormPayload: userFormProps) => {
-		const { avatar, setPasswordManually, passwordConfirmation, ...userFormData } = userFormPayload;
+		const { avatar, passwordConfirmation, ...userFormData } = userFormPayload;
 		if (userData?._id) {
 			return handleUpdateUser.mutateAsync({ userId: userData?._id, data: userFormData });
 		}
@@ -232,15 +234,33 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 							</FieldError>
 						)}
 						<FieldRow mbs={12}>
-							<FieldLabel htmlFor={verifiedId} p={0}>
-								{t('Mark_email_as_verified')}
-							</FieldLabel>
+							<Box display='flex' alignItems='center'>
+								<FieldLabel htmlFor={verifiedId} p={0} disabled={!isSmtpEnabled || !isVerificationNeeded}>
+									{t('Mark_email_as_verified')}
+								</FieldLabel>
+								<Icon name='info-circled' size='x21' mis={8} title={t('Activate_to_bypass_email_verification')} color='default' />
+							</Box>
 							<Controller
 								control={control}
 								name='verified'
-								render={({ field: { onChange, value } }) => <ToggleSwitch id={verifiedId} checked={value} onChange={onChange} />}
+								render={({ field: { onChange, value } }) => (
+									<ToggleSwitch id={verifiedId} checked={value} onChange={onChange} disabled={!isSmtpEnabled || !isVerificationNeeded} />
+								)}
 							/>
 						</FieldRow>
+						{/* <FieldHint id={`${verifiedId}-hint`} dangerouslySetInnerHTML={{ __html: t('Activate_to_bypass_email_verification') }} /> */}
+						{isVerificationNeeded && !isSmtpEnabled && (
+							<FieldHint
+								id={`${verifiedId}-hint`}
+								dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }}
+							/>
+						)}
+						{!isVerificationNeeded && (
+							<FieldHint
+								id={`${verifiedId}-hint`}
+								dangerouslySetInnerHTML={{ __html: t('Email_verification_isnt_required', { url: 'admin/settings/Accounts' }) }}
+							/>
+						)}
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={nameId}>{t('Name')}</FieldLabel>
@@ -300,15 +320,7 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 							setRandomPasswordId={setRandomPasswordId}
 							control={control}
 							isSmtpEnabled={isSmtpEnabled || false}
-							setRandomPassword={setRandomPassword || false}
-							setValue={setValue}
 						/>
-						{!isSmtpEnabled && (
-							<FieldHint
-								id={`${setRandomPasswordId}-hint`}
-								dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }}
-							/>
-						)}
 						{!setRandomPassword && (
 							<>
 								<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} mbe={8} mbs={12}>
@@ -424,8 +436,10 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 						</Box>
 					</Field>
 					<Field>
-						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
-							<FieldLabel htmlFor={sendWelcomeEmailId}>{t('Send_welcome_email')}</FieldLabel>
+						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} mbe={8}>
+							<FieldLabel htmlFor={sendWelcomeEmailId} disabled={!isSmtpEnabled}>
+								{t('Send_welcome_email')}
+							</FieldLabel>
 							<FieldRow>
 								<Controller
 									control={control}
@@ -446,6 +460,7 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 							<FieldHint
 								id={`${sendWelcomeEmailId}-hint`}
 								dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }}
+								mbs={0}
 							/>
 						)}
 					</Field>
