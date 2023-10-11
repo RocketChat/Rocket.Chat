@@ -89,8 +89,8 @@ const OmnichannelProvider: FC = ({ children }) => {
 			return;
 		}
 
-		return subscribe(`mac.limit`, ({ limitReached }) => {
-			limitReached && queryClient.invalidateQueries(['/v1/omnichannel/mac/check']);
+		return subscribe(`mac.limit`, () => {
+			queryClient.invalidateQueries(['/v1/omnichannel/mac/check']);
 		});
 	}, [subscribe, queryClient, enabled]);
 
