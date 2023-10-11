@@ -1,11 +1,10 @@
-import { Pagination, Grid, GridItem } from '@rocket.chat/fuselage';
+import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useMemo, useState } from 'react';
 
-import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -17,12 +16,12 @@ import {
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import ModerationConsoleTableRow from './ModerationConsoleTableRow';
-import DateRangePicker from './helpers/DateRangePicker';
+import ModFilter from './helpers/ModFilter';
 
 // TODO: Missing error state
 const ModerationConsoleTable: FC = () => {
 	const [text, setText] = useState('');
-	const moderationRoute = useRoute('moderation-console');
+	const router = useRouter();
 	const t = useTranslation();
 	const isDesktopOrLarger = useMediaQuery('(min-width: 1024px)');
 
@@ -64,13 +63,15 @@ const ModerationConsoleTable: FC = () => {
 	});
 
 	const handleClick = useMutableCallback((id): void => {
-		moderationRoute.push({
-			context: 'info',
-			id,
+		router.navigate({
+			name: 'moderation-console',
+			params: {
+				context: 'info',
+				id,
+			},
 		});
 	});
 
-	// header sequence would be: name, reportedMessage, room, postdate, reports, actions
 	const headers = useMemo(
 		() => [
 			<GenericTableHeaderCell
@@ -103,19 +104,12 @@ const ModerationConsoleTable: FC = () => {
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key='actions' width='x48' />,
 		],
-		[sortDirection, sortBy, setSort, t, isDesktopOrLarger],
+		[sortDirection, sortBy, setSort, t],
 	);
 
 	return (
 		<>
-			<Grid>
-				<GridItem flexGrow={5}>
-					<FilterByText autoFocus placeholder={t('Search')} onChange={({ text }): void => setText(text)} />
-				</GridItem>
-				<GridItem display='flex' alignItems='center'>
-					<DateRangePicker onChange={setDateRange} />
-				</GridItem>
-			</Grid>
+			<ModFilter setText={setText} setDateRange={setDateRange} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
