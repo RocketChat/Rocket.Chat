@@ -1,9 +1,13 @@
+import type { DistributiveOmit, UiKit } from '@rocket.chat/core-typings';
 import { createContext } from 'react';
 
-type ActionManagerContextValue = {
-	on: (...args: any[]) => void;
-	off: (...args: any[]) => void;
-	generateTriggerId: (appId: any) => string;
+type ActionManager = {
+	on(viewId: string, listener: (data: any) => void): void;
+	on(eventName: 'busy', listener: ({ busy }: { busy: boolean }) => void): void;
+	off(viewId: string, listener: (data: any) => any): void;
+	off(eventName: 'busy', listener: ({ busy }: { busy: boolean }) => void): void;
+	generateTriggerId(appId: string | undefined): string;
+	emitInteraction(appId: string, userInteraction: DistributiveOmit<UiKit.UserInteraction, 'triggerId'>): Promise<unknown>;
 	handlePayloadUserInteraction: (
 		type: any,
 		{
@@ -42,4 +46,4 @@ type ActionManagerContextValue = {
 	getUserInteractionPayloadByViewId: (viewId: any) => any;
 };
 
-export const ActionManagerContext = createContext<ActionManagerContextValue | undefined>(undefined);
+export const ActionManagerContext = createContext<ActionManager | undefined>(undefined);

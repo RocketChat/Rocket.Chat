@@ -15,10 +15,12 @@ const ActionManagerBusyState = () => {
 			return;
 		}
 
-		actionManager.on('busy', ({ busy }: { busy: boolean }) => setBusy(busy));
+		const handleBusyStateChange = ({ busy }: { busy: boolean }) => setBusy(busy);
+
+		actionManager.on('busy', handleBusyStateChange);
 
 		return () => {
-			actionManager.off('busy');
+			actionManager.off('busy', handleBusyStateChange);
 		};
 	}, [actionManager]);
 
