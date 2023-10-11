@@ -27,8 +27,8 @@ Default.args = {
 				connected: true,
 			},
 			instanceRecord: {
-				_updatedAt: new Date('00-00-00'),
-				_createdAt: new Date('00-00-00'),
+				_updatedAt: new Date(),
+				_createdAt: new Date(),
 				_id: 'instance-id',
 				name: 'instance-name',
 				pid: 123,
