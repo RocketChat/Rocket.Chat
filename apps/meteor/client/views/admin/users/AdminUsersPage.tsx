@@ -27,6 +27,7 @@ const UsersPage = (): ReactElement => {
 	const canBulkCreateUser = usePermission('bulk-register-user');
 
 	const [tab, setTab] = useState<'all' | 'invited' | 'new' | 'active' | 'deactivated'>('all');
+	const [createdUsersCount, setCreatedUsersCount] = useState(0);
 
 	useEffect(() => {
 		if (!context || !seatsCap) {
@@ -102,8 +103,8 @@ const UsersPage = (): ReactElement => {
 					</ContextualbarHeader>
 					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
 					{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
-					{context === 'new' && <AdminUserForm onReload={handleReload} />}
-					{context === 'created' && id && <AdminUserCreated uid={id} />}
+					{context === 'new' && <AdminUserForm onReload={handleReload} setCreatedUsersCount={setCreatedUsersCount} />}
+					{context === 'created' && id && <AdminUserCreated uid={id} createdUsersCount={createdUsersCount} />}
 					{context === 'invite' && <AdminInviteUsers />}
 				</Contextualbar>
 			)}

@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 
-const AdminUserCreated = ({ uid }: { uid: string }) => {
+const AdminUserCreated = ({ uid, createdUsersCount }: { uid: string; createdUsersCount: number }) => {
 	const t = useTranslation();
 	const router = useRouter();
 
@@ -13,7 +13,7 @@ const AdminUserCreated = ({ uid }: { uid: string }) => {
 	return (
 		<>
 			<ContextualbarScrollableContent h='100%' fontScale='p1m'>
-				{t('You_have_created_one_user')}
+				{createdUsersCount === 1 ? t('You_have_created_one_user') : t('You_have_created_users', { count: createdUsersCount })}
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>

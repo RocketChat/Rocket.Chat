@@ -1,4 +1,4 @@
-import { Box, Field, RadioButton } from '@rocket.chat/fuselage';
+import { Box, FieldLabel, FieldRow, RadioButton } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -29,7 +29,7 @@ const AdminUserSetRandomPassword = ({
 	return (
 		<>
 			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1} mbe={8}>
-				<Field.Row mie={8}>
+				<FieldRow mie={8}>
 					<Controller
 						control={control}
 						name='setRandomPassword'
@@ -47,13 +47,13 @@ const AdminUserSetRandomPassword = ({
 							/>
 						)}
 					/>
-				</Field.Row>
-				<Field.Label htmlFor={setRandomPasswordId} alignSelf='center' fontScale='p2'>
+				</FieldRow>
+				<FieldLabel htmlFor={setRandomPasswordId} alignSelf='center' fontScale='p2'>
 					{t('Set_randomly_and_send_by_email')}
-				</Field.Label>
+				</FieldLabel>
 			</Box>
-			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1} mbe={12}>
-				<Field.Row mie={8}>
+			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1}>
+				<FieldRow mie={8}>
 					<Controller
 						control={control}
 						name='setPasswordManually'
@@ -71,10 +71,10 @@ const AdminUserSetRandomPassword = ({
 							/>
 						)}
 					/>
-				</Field.Row>
-				<Field.Label htmlFor={setPasswordManuallyId} alignSelf='center' fontScale='p2'>
+				</FieldRow>
+				<FieldLabel htmlFor={setPasswordManuallyId} alignSelf='center' fontScale='p2'>
 					{t('Set_manually')}
-				</Field.Label>
+				</FieldLabel>
 			</Box>
 		</>
 	);

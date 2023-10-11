@@ -7,11 +7,14 @@ import {
 	MultiSelectFiltered,
 	Box,
 	ToggleSwitch,
-	Icon,
 	FieldGroup,
 	ContextualbarFooter,
 	Button,
 	Callout,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldHint,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useUniqueId, useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -42,6 +45,7 @@ import { useSmtpQuery } from './hooks/useSmtpQuery';
 type AdminUserFormProps = {
 	userData?: Serialized<IUser>;
 	onReload: () => void;
+	setCreatedUsersCount: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export type userFormProps = Omit<
@@ -79,7 +83,7 @@ const getInitialValue = ({
 	passwordConfirmation: '',
 });
 
-const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
+const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminUserFormProps) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -144,6 +148,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 			await eventStats({
 				params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
 			});
+			setCreatedUsersCount((prevUsersCount) => prevUsersCount + 1);
 			router.navigate(`/admin/users/created/${_id}`);
 			onReload();
 		},
@@ -200,8 +205,8 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 					)}
 					{!userData?._id && <Box color='hint'>{t('Manually_created_users_briefing')}</Box>}
 					<Field>
-						<Field.Label htmlFor={emailId}>{t('Email')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={emailId}>{t('Email')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								control={control}
 								name='email'
@@ -220,26 +225,26 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 									/>
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 						{errors?.email && (
-							<Field.Error aria-live='assertive' id={`${emailId}-error`} fontScale='c1' mbs={12}>
+							<FieldError aria-live='assertive' id={`${emailId}-error`} fontScale='c1' mbs={12}>
 								{errors.email.message}
-							</Field.Error>
+							</FieldError>
 						)}
-						<Field.Row mbs={12}>
-							<Field.Label htmlFor={verifiedId} p={0}>
+						<FieldRow mbs={12}>
+							<FieldLabel htmlFor={verifiedId} p={0}>
 								{t('Mark_email_as_verified')}
-							</Field.Label>
+							</FieldLabel>
 							<Controller
 								control={control}
 								name='verified'
 								render={({ field: { onChange, value } }) => <ToggleSwitch id={verifiedId} checked={value} onChange={onChange} />}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Field.Label htmlFor={nameId}>{t('Name')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={nameId}>{t('Name')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								control={control}
 								name='name'
@@ -255,16 +260,16 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 									/>
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 						{errors?.name && (
-							<Field.Error aria-live='assertive' id={`${nameId}-error`}>
+							<FieldError aria-live='assertive' id={`${nameId}-error`}>
 								{errors.name.message}
-							</Field.Error>
+							</FieldError>
 						)}
 					</Field>
 					<Field>
-						<Field.Label htmlFor={usernameId}>{t('Username')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={usernameId}>{t('Username')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								control={control}
 								name='username'
@@ -280,17 +285,17 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 									/>
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 						{errors?.username && (
-							<Field.Error aria-live='assertive' id={`${usernameId}-error`}>
+							<FieldError aria-live='assertive' id={`${usernameId}-error`}>
 								{errors.username.message}
-							</Field.Error>
+							</FieldError>
 						)}
 					</Field>
 					<Field>
-						<Field.Label htmlFor={passwordId} mbe={8}>
+						<FieldLabel htmlFor={passwordId} mbe={8}>
 							{t('Password')}
-						</Field.Label>
+						</FieldLabel>
 						<AdminUserSetRandomPassword
 							setRandomPasswordId={setRandomPasswordId}
 							control={control}
@@ -299,16 +304,16 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 							setValue={setValue}
 						/>
 						{!isSmtpEnabled && (
-							<Field.Hint
+							<FieldHint
 								id={`${setRandomPasswordId}-hint`}
 								dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }}
 							/>
 						)}
 						{!setRandomPassword && (
 							<>
-								<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} mbe={8}>
-									<Field.Label htmlFor={requirePasswordChangeId}>{t('Require_password_change')}</Field.Label>
-									<Field.Row>
+								<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} mbe={8} mbs={12}>
+									<FieldLabel htmlFor={requirePasswordChangeId}>{t('Require_password_change')}</FieldLabel>
+									<FieldRow>
 										<Controller
 											control={control}
 											name='requirePasswordChange'
@@ -322,9 +327,9 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 												/>
 											)}
 										/>
-									</Field.Row>
+									</FieldRow>
 								</Box>
-								<Field.Row>
+								<FieldRow>
 									<Controller
 										control={control}
 										name='password'
@@ -337,19 +342,18 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 												aria-describedby={`${passwordId}-error`}
 												error={errors.password?.message}
 												flexGrow={1}
-												addon={<Icon name='eye-off' size='x20' />}
 												placeholder={passwordPlaceholder || t('Password')}
 											/>
 										)}
 									/>
-								</Field.Row>
+								</FieldRow>
 								{errors?.password && (
-									<Field.Error aria-live='assertive' id={`${passwordId}-error`}>
+									<FieldError aria-live='assertive' id={`${passwordId}-error`}>
 										{errors.password.message}
-									</Field.Error>
+									</FieldError>
 								)}
 								{requiresPasswordConfirmation && (
-									<Field.Row>
+									<FieldRow>
 										<Controller
 											control={control}
 											name='passwordConfirmation'
@@ -366,25 +370,24 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 													aria-describedby={`${passwordConfirmationId}-error`}
 													error={errors.passwordConfirmation?.message}
 													flexGrow={1}
-													addon={<Icon name='eye-off' size='x20' />}
 													placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
 												/>
 											)}
 										/>
-									</Field.Row>
+									</FieldRow>
 								)}
 								{errors?.passwordConfirmation && (
-									<Field.Error aria-live='assertive' id={`${passwordConfirmationId}-error`}>
+									<FieldError aria-live='assertive' id={`${passwordConfirmationId}-error`}>
 										{errors.passwordConfirmation.message}
-									</Field.Error>
+									</FieldError>
 								)}
 								<PasswordVerifier password={password} id={passwordVerifierId} vertical />
 							</>
 						)}
 					</Field>
 					<Field>
-						<Field.Label htmlFor={rolesId}>{t('Roles')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={rolesId}>{t('Roles')}</FieldLabel>
+						<FieldRow>
 							{roleError && <Callout>{roleError}</Callout>}
 							{!roleError && (
 								<Controller
@@ -403,13 +406,13 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 									)}
 								/>
 							)}
-						</Field.Row>
-						{errors?.roles && <Field.Error>{errors.roles.message}</Field.Error>}
+						</FieldRow>
+						{errors?.roles && <FieldError>{errors.roles.message}</FieldError>}
 					</Field>
 					<Field>
 						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
-							<Field.Label htmlFor={joinDefaultChannelsId}>{t('Join_default_channels')}</Field.Label>
-							<Field.Row>
+							<FieldLabel htmlFor={joinDefaultChannelsId}>{t('Join_default_channels')}</FieldLabel>
+							<FieldRow>
 								<Controller
 									control={control}
 									name='joinDefaultChannels'
@@ -417,13 +420,13 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 										<ToggleSwitch id={joinDefaultChannelsId} ref={ref} onChange={onChange} checked={value} />
 									)}
 								/>
-							</Field.Row>
+							</FieldRow>
 						</Box>
 					</Field>
 					<Field>
 						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
-							<Field.Label htmlFor={sendWelcomeEmailId}>{t('Send_welcome_email')}</Field.Label>
-							<Field.Row>
+							<FieldLabel htmlFor={sendWelcomeEmailId}>{t('Send_welcome_email')}</FieldLabel>
+							<FieldRow>
 								<Controller
 									control={control}
 									name='sendWelcomeEmail'
@@ -437,18 +440,18 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 										/>
 									)}
 								/>
-							</Field.Row>
+							</FieldRow>
 						</Box>
 						{!isSmtpEnabled && (
-							<Field.Hint
+							<FieldHint
 								id={`${sendWelcomeEmailId}-hint`}
 								dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }}
 							/>
 						)}
 					</Field>
 					<Field>
-						<Field.Label htmlFor={statusTextId}>{t('StatusMessage')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={statusTextId}>{t('StatusMessage')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								control={control}
 								name='statusText'
@@ -464,16 +467,16 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 									/>
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 						{errors?.statusText && (
-							<Field.Error aria-live='assertive' id={`${statusTextId}-error`}>
+							<FieldError aria-live='assertive' id={`${statusTextId}-error`}>
 								{errors.statusText.message}
-							</Field.Error>
+							</FieldError>
 						)}
 					</Field>
 					<Field>
-						<Field.Label htmlFor={bioId}>{t('Bio')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={bioId}>{t('Bio')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								control={control}
 								name='bio'
@@ -490,21 +493,19 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 									/>
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 						{errors?.bio && (
-							<Field.Error aria-live='assertive' id={`${bioId}-error`}>
+							<FieldError aria-live='assertive' id={`${bioId}-error`}>
 								{errors.bio.message}
-							</Field.Error>
+							</FieldError>
 						)}
 					</Field>
 					<Field>
-						<Field.Label htmlFor={nicknameId}>{t('Nickname')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={nicknameId}>{t('Nickname')}</FieldLabel>
+						<FieldRow>
 							<Controller control={control} name='nickname' render={({ field }) => <TextInput {...field} id={nicknameId} flexGrow={1} />} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
-				</FieldGroup>
-				<FieldGroup>
 					{Boolean(customFieldsMetadata.length) && (
 						<>
 							<Button
@@ -516,7 +517,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 								justifyContent='center'
 								onClick={() => setShowCustomFields((prevState) => !prevState)}
 							>
-								{t('Hide_additional_fields')}
+								{showCustomFields ? t('Hide_additional_fields') : t('Show_additional_fields')}
 							</Button>
 							{showCustomFields && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 						</>
