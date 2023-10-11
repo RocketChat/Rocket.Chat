@@ -1,4 +1,4 @@
-import { IconButton, Throbber } from '@rocket.chat/fuselage';
+import { IconButton, ModalBackdrop, Throbber } from '@rocket.chat/fuselage';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Keyboard, Navigation, Zoom, A11y } from 'swiper';
@@ -10,11 +10,11 @@ import 'swiper/swiper.css';
 import 'swiper/modules/navigation/navigation.min.css';
 import 'swiper/modules/keyboard/keyboard.min.css';
 import 'swiper/modules/zoom/zoom.min.css';
-import './ImageGallery/ImageGallery.css';
+import './ImageGallery.styles.css';
 
-import { useRecordList } from '../hooks/lists/useRecordList';
-import { useRoom } from '../views/room/contexts/RoomContext';
-import { useFilesList } from '../views/room/contextualBar/RoomFiles/hooks/useFilesList';
+import { useRecordList } from '../../hooks/lists/useRecordList';
+import { useRoom } from '../../views/room/contexts/RoomContext';
+import { useFilesList } from '../../views/room/contextualBar/RoomFiles/hooks/useFilesList';
 
 const ImageGallery = ({ url, onClose }: { url: string; onClose: () => void }) => {
 	const room = useRoom();
@@ -37,8 +37,13 @@ const ImageGallery = ({ url, onClose }: { url: string; onClose: () => void }) =>
 		return () => swiperInst?.update();
 	}, [filesItems, phase, swiperInst, url]);
 
+	const swiperLoader = (
+		<ModalBackdrop display='flex' justifyContent='center'>
+			<Throbber />
+		</ModalBackdrop>
+	);
 	if (phase === 'loading' || currentSlide === undefined) {
-		return null;
+		return createPortal(swiperLoader, document.body);
 	}
 
 	const swiperContainer = (

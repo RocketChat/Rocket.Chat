@@ -2,7 +2,7 @@
 	--swiper-navigation-size: 44px;
 }
 
-.swiper {
+.swiper-container {
 	background-color: var(--rcx-color-surface-overlay, rgba(0, 0, 0, 0.6));
 }
 .rcx-swiper-close-button, .rcx-swiper-prev-button, .rcx-swiper-next-button {
