@@ -1,6 +1,6 @@
 import { Button, Throbber } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
+import type { MouseEventHandler, ReactElement } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
@@ -14,6 +14,10 @@ const ButtonElement = ({
 }: ButtonElementProps): ReactElement => {
   const [{ loading }, action] = useUiKitState(block, context);
   const { style, url, text, value, secondary } = block;
+
+  const handleClick: MouseEventHandler = (e) => {
+    action({ target: e.currentTarget });
+  };
 
   if (url) {
     return (
@@ -29,7 +33,7 @@ const ButtonElement = ({
         success={style === 'success'}
         warning={style === 'warning'}
         secondary={secondary}
-        onClick={action}
+        onClick={handleClick}
       >
         {loading ? (
           <Throbber />
@@ -51,7 +55,7 @@ const ButtonElement = ({
       warning={style === 'warning'}
       secondary={secondary}
       value={value}
-      onClick={action}
+      onClick={handleClick}
     >
       {loading ? (
         <Throbber />

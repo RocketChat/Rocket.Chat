@@ -4,7 +4,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { getUsersInRole } from '../../app/authorization/server';
+import { canAccessRoomAsync, getUsersInRole } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
@@ -35,8 +35,6 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		});
 	}
 
-	const removedUser = await Users.findOneByUsernameIgnoringCase(data.username);
-
 	const fromUser = await Users.findOneById(fromId);
 	if (!fromUser) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -44,13 +42,25 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		});
 	}
 
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, {
-		projection: { _id: 1 },
-	});
-	if (!subscription) {
-		throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
-			method: 'removeUserFromRoom',
+	// did this way so a ctrl-f would find the permission being used
+	const kickAnyUserPermission = room.t === 'c' ? 'kick-user-from-any-c-room' : 'kick-user-from-any-p-room';
+
+	const canKickAnyUser = await hasPermissionAsync(fromId, kickAnyUserPermission);
+	if (!canKickAnyUser && !(await canAccessRoomAsync(room, fromUser))) {
+		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+	}
+
+	const removedUser = await Users.findOneByUsernameIgnoringCase(data.username);
+
+	if (!canKickAnyUser) {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, {
+			projection: { _id: 1 },
 		});
+		if (!subscription) {
+			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
+				method: 'removeUserFromRoom',
+			});
+		}
 	}
 
 	if (await hasRoleAsync(removedUser._id, 'owner', room._id)) {

@@ -1,4 +1,4 @@
-import { Box, Field, Flex, UrlInput } from '@rocket.chat/fuselage';
+import { Box, FieldLabel, Flex, UrlInput } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
 import React from 'react';
@@ -40,9 +40,9 @@ function RelativeUrlSettingInput({
 		<>
 			<Flex.Container>
 				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
+					<FieldLabel htmlFor={_id} title={_id}>
 						{label}
-					</Field.Label>
+					</FieldLabel>
 					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 				</Box>
 			</Flex.Container>

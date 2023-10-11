@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Box, Skeleton, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { Card } from '@rocket.chat/ui-client';
+import { Card, CardBody, CardCol, CardTitle } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ComponentProps, ReactElement } from 'react';
 import React from 'react';
@@ -11,6 +11,7 @@ import { useIsResizing } from '../hooks/useIsResizing';
 import { CardErrorState } from './CardErrorState';
 
 type ReportCardProps = {
+	id: string;
 	title: string;
 	children: ReactNode;
 	periodSelectorProps: ComponentProps<typeof PeriodSelector>;
@@ -27,6 +28,7 @@ type ReportCardProps = {
 };
 
 export const ReportCard = ({
+	id,
 	title,
 	children,
 	periodSelectorProps,
@@ -56,25 +58,27 @@ export const ReportCard = ({
 			flexShrink={0}
 			flexBasis='auto'
 			margin={8}
+			data-qa={id}
+			aria-busy={isLoading}
 		>
-			<Card.Title>
+			<CardTitle>
 				<Box display='flex' justifyContent='space-between' alignItems='center' flexWrap='wrap' style={{ rowGap: 8 }}>
 					<Box display='flex' flexDirection='column' flexShrink={1} mie={16}>
 						<Box is='span' withTruncatedText>
 							{title}
 						</Box>
-						<Box is='span' color='hint' fontScale='c1'>
+						<Box is='span' color='hint' fontScale='c1' data-qa='report-summary'>
 							{subtitle}
 						</Box>
 					</Box>
 					<Box flexGrow={0} flexShrink={0} display='flex' alignItems='center'>
-						<PeriodSelector {...periodSelectorProps} />
+						<PeriodSelector name='periodSelector' {...periodSelectorProps} />
 						<DownloadDataButton {...downloadProps} title='Download CSV' size={32} />
 					</Box>
 				</Box>
-			</Card.Title>
-			<Card.Body>
-				<Card.Col>
+			</CardTitle>
+			<CardBody>
+				<CardCol>
 					<Box minHeight={minHeight}>
 						<CardErrorState isError={isError} onRetry={onRetry}>
 							{isLoading && LoadingSkeleton}
@@ -90,8 +94,8 @@ export const ReportCard = ({
 							{!isLoading && isDataFound && children}
 						</CardErrorState>
 					</Box>
-				</Card.Col>
-			</Card.Body>
+				</CardCol>
+			</CardBody>
 		</Box>
 	);
 };

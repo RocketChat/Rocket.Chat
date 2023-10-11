@@ -1,5 +1,5 @@
 import { Button } from '@rocket.chat/fuselage';
-import { Card } from '@rocket.chat/ui-client';
+import { Card, CardBody, CardFooter, CardFooterWrapper, CardTitle } from '@rocket.chat/ui-client';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -14,15 +14,15 @@ const AddUsersCard = (): ReactElement => {
 
 	return (
 		<Card data-qa-id='homepage-add-users-card'>
-			<Card.Title>{t('Add_users')}</Card.Title>
-			<Card.Body>{t('Invite_and_add_members_to_this_workspace_to_start_communicating')}</Card.Body>
-			<Card.FooterWrapper>
-				<Card.Footer>
+			<CardTitle>{t('Add_users')}</CardTitle>
+			<CardBody>{t('Invite_and_add_members_to_this_workspace_to_start_communicating')}</CardBody>
+			<CardFooterWrapper>
+				<CardFooter>
 					<Button primary onClick={handleOpenUsersRoute}>
 						{t('Add_users')}
 					</Button>
-				</Card.Footer>
-			</Card.FooterWrapper>
+				</CardFooter>
+			</CardFooterWrapper>
 		</Card>
 	);
 };

@@ -112,8 +112,8 @@ export const {
 		permissionGranted: (): boolean => hasPermission('run-import'),
 	},
 	{
-		href: '/admin/logs',
-		i18nLabel: 'Logs',
+		href: '/admin/reports',
+		i18nLabel: 'Reports',
 		icon: 'post',
 		permissionGranted: (): boolean => hasPermission('view-logs'),
 	},

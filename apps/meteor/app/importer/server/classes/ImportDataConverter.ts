@@ -445,8 +445,6 @@ export class ImportDataConverter {
 	public async convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn }: IConversionCallbacks = {}): Promise<void> {
 		const users = (await this.getUsersToImport()) as IImportUserRecord[];
 
-		await callbacks.run('beforeUserImport', { userCount: users.length });
-
 		const insertedIds = new Set<IUser['_id']>();
 		const updatedIds = new Set<IUser['_id']>();
 		let skippedCount = 0;
@@ -1036,7 +1034,11 @@ export class ImportDataConverter {
 					return;
 				}
 				if (roomData.t === 'p') {
-					roomInfo = await createPrivateGroupMethod(startedByUserId, roomData.name, members, false, {}, {}, true);
+					const user = await Users.findOneById(startedByUserId);
+					if (!user) {
+						throw new Error('importer-channel-invalid-creator');
+					}
+					roomInfo = await createPrivateGroupMethod(user, roomData.name, members, false, {}, {}, true);
 				} else {
 					roomInfo = await createChannelMethod(startedByUserId, roomData.name, members, false, {}, {}, true);
 				}

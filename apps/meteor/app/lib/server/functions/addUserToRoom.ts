@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
+import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 export const addUserToRoom = async function (
@@ -24,7 +25,7 @@ export const addUserToRoom = async function (
 		});
 	}
 
-	const userToBeAdded = typeof user !== 'string' ? user : await Users.findOneByUsername(user.replace('@', ''));
+	const userToBeAdded = typeof user === 'string' ? await Users.findOneByUsername(user.replace('@', '')) : await Users.findOneById(user._id);
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 
 	if (!userToBeAdded) {
@@ -70,6 +71,8 @@ export const addUserToRoom = async function (
 		await callbacks.run('beforeJoinRoom', userToBeAdded, room);
 	}
 
+	const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
+
 	await Subscriptions.createWithRoomAndUser(room, userToBeAdded as IUser, {
 		ts: now,
 		open: true,
@@ -77,6 +80,7 @@ export const addUserToRoom = async function (
 		unread: 1,
 		userMentions: 1,
 		groupMentions: 0,
+		...autoTranslateConfig,
 	});
 
 	if (!userToBeAdded.username) {

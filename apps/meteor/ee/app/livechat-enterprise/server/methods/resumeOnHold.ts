@@ -19,7 +19,7 @@ async function resolveOnHoldCommentInfo(options: { clientAction: boolean }, room
 	const {
 		v: { _id: visitorId },
 	} = room;
-	const visitor = await LivechatVisitors.findOneById<Pick<ILivechatVisitor, 'name' | 'username'>>(visitorId, {
+	const visitor = await LivechatVisitors.findOneEnabledById<Pick<ILivechatVisitor, 'name' | 'username'>>(visitorId, {
 		projection: { name: 1, username: 1 },
 	});
 	if (!visitor) {

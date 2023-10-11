@@ -1,4 +1,4 @@
-import { Box, Field, Flex, TextAreaInput, TextInput } from '@rocket.chat/fuselage';
+import { Box, FieldLabel, FieldRow, Flex, TextAreaInput, TextInput } from '@rocket.chat/fuselage';
 import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
 import React from 'react';
 
@@ -43,13 +43,13 @@ function StringSettingInput({
 		<>
 			<Flex.Container>
 				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
+					<FieldLabel htmlFor={_id} title={_id}>
 						{label}
-					</Field.Label>
+					</FieldLabel>
 					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 				</Box>
 			</Flex.Container>
-			<Field.Row>
+			<FieldRow>
 				{multiline ? (
 					<TextAreaInput
 						data-qa-setting-id={_id}
@@ -78,7 +78,7 @@ function StringSettingInput({
 						onChange={handleChange}
 					/>
 				)}
-			</Field.Row>
+			</FieldRow>
 		</>
 	);
 }

@@ -48,7 +48,7 @@ const handleBeforeSaveMessage = async (message: IMessage, room?: IOmnichannelRoo
 	}
 	const visitorId = room?.v?._id;
 	const agent = (await Users.findOneById(agentId, { projection: { name: 1, _id: 1, emails: 1 } })) || {};
-	const visitor = visitorId && ((await LivechatVisitors.findOneById(visitorId, {})) || {});
+	const visitor = visitorId && ((await LivechatVisitors.findOneEnabledById(visitorId, {})) || {});
 
 	Object.keys(placeholderFields).map((field) => {
 		const templateKey = `{{${field}}}`;

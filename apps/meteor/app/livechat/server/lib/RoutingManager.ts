@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
@@ -35,7 +35,7 @@ type Routing = {
 	methods: Record<string, IRoutingMethod>;
 	startQueue(): void;
 	isMethodSet(): boolean;
-	setMethodNameAndStartQueue(name: string): void;
+	setMethodNameAndStartQueue(name: string): Promise<void>;
 	registerMethod(name: string, Method: IRoutingMethodConstructor): void;
 	getMethod(): IRoutingMethod;
 	getConfig(): RoutingMethodConfig | undefined;
@@ -73,8 +73,8 @@ export const RoutingManager: Routing = {
 		return !!this.methodName;
 	},
 
-	setMethodNameAndStartQueue(name) {
-		logger.debug(`Changing default routing method from ${this.methodName} to ${name}`);
+	async setMethodNameAndStartQueue(name) {
+		logger.info(`Changing default routing method from ${this.methodName} to ${name}`);
 		if (!this.methods[name]) {
 			logger.warn(`Cannot change routing method to ${name}. Selected Routing method does not exists. Defaulting to Manual_Selection`);
 			this.methodName = 'Manual_Selection';
@@ -82,12 +82,11 @@ export const RoutingManager: Routing = {
 			this.methodName = name;
 		}
 
-		this.startQueue();
+		void (await Omnichannel.getQueueWorker()).shouldStart();
 	},
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	registerMethod(name, Method) {
-		logger.debug(`Registering new routing method with name ${name}`);
 		this.methods[name] = new Method();
 	},
 
@@ -188,7 +187,6 @@ export const RoutingManager: Routing = {
 		const { servedBy } = room;
 
 		if (servedBy) {
-			logger.debug(`Unassigning current agent for inquiry ${inquiry._id}`);
 			await LivechatRooms.removeAgentByRoomId(rid);
 			await this.removeAllRoomSubscriptions(room);
 			await dispatchAgentDelegated(rid);
@@ -254,7 +252,7 @@ export const RoutingManager: Routing = {
 
 		await LivechatInquiry.takeInquiry(_id);
 		const inq = await this.assignAgent(inquiry as InquiryWithAgentInfo, agent);
-		logger.debug(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
+		logger.info(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 
 		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
 
@@ -262,7 +260,6 @@ export const RoutingManager: Routing = {
 	},
 
 	async transferRoom(room, guest, transferData) {
-		logger.debug(`Transfering room ${room._id} by ${transferData.transferredBy._id}`);
 		if (transferData.departmentId) {
 			logger.debug(`Transfering room ${room._id} to department ${transferData.departmentId}`);
 			return forwardRoomToDepartment(room, guest, transferData);
@@ -278,7 +275,6 @@ export const RoutingManager: Routing = {
 	},
 
 	async delegateAgent(agent, inquiry) {
-		logger.debug(`Delegating Inquiry ${inquiry._id}`);
 		const defaultAgent = await callbacks.run('livechat.beforeDelegateAgent', agent, {
 			department: inquiry?.department,
 		});
