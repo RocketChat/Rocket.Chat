@@ -3,6 +3,7 @@ import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { AppInstallationSource } from '@rocket.chat/apps-engine/server/storage';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
@@ -17,7 +18,7 @@ import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
 import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
-import { canEnableApp, isEnterprise } from '../../../app/license/server/license';
+import { canEnableApp } from '../../../app/license/server/canEnableApp';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { appEnableCheck } from '../marketplace/appEnableCheck';
 import { notifyAppInstall } from '../marketplace/appInstall';
@@ -385,6 +386,11 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 					}
 
+					// Used mostly in Cloud hosting for security reasons
+					if (!marketplaceInfo && orchestrator.shouldDisablePrivateAppInstallation()) {
+						return API.v1.internalError('private_app_install_disabled');
+					}
+
 					const user = orchestrator
 						?.getConverters()
 						?.get('users')
@@ -668,6 +674,7 @@ export class AppsRestApi {
 				async post() {
 					let buff;
 					let permissionsGranted;
+					let isPrivateAppUpload = false;
 
 					if (this.bodyParams.url) {
 						const response = await fetch(this.bodyParams.url);
@@ -710,6 +717,8 @@ export class AppsRestApi {
 							return API.v1.internalError();
 						}
 					} else {
+						isPrivateAppUpload = true;
+
 						const app = await getUploadFormData(
 							{
 								request: this.request,
@@ -732,6 +741,10 @@ export class AppsRestApi {
 
 					if (!buff) {
 						return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
+					}
+
+					if (isPrivateAppUpload && orchestrator.shouldDisablePrivateAppInstallation()) {
+						return API.v1.internalError('private_app_install_disabled');
 					}
 
 					const aff = await manager.update(buff, permissionsGranted);
@@ -1137,7 +1150,7 @@ export class AppsRestApi {
 					const storedApp = prl.getStorageItem();
 					const { installationSource, marketplaceInfo } = storedApp;
 
-					if (!isEnterprise() && installationSource === AppInstallationSource.MARKETPLACE) {
+					if (!License.hasValidLicense() && installationSource === AppInstallationSource.MARKETPLACE) {
 						try {
 							const baseUrl = orchestrator.getMarketplaceUrl() as string;
 							const headers = getDefaultHeaders();

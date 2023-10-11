@@ -14,8 +14,8 @@ const CreateDiscussionAction = ({ room }: { room: IRoom }) => {
 		setModal(<CreateDiscussion onClose={() => setModal(null)} defaultParentRoom={room?.prid || room?._id} />);
 
 	const discussionEnabled = useSetting('Discussion_enabled') as boolean;
-	const canStartDiscussion = usePermission('start-discussion');
-	const canSstartDiscussionOtherUser = usePermission('start-discussion-other-user');
+	const canStartDiscussion = usePermission('start-discussion', room._id);
+	const canSstartDiscussionOtherUser = usePermission('start-discussion-other-user', room._id);
 
 	const allowDiscussion = room && discussionEnabled && !isRoomFederated(room) && (canStartDiscussion || canSstartDiscussionOtherUser);
 

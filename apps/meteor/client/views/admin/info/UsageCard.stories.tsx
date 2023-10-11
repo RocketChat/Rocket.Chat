@@ -44,6 +44,8 @@ export default {
 			_id: '',
 			wizard: {},
 			uniqueId: '',
+			deploymentFingerprintHash: '',
+			deploymentFingerprintVerified: true,
 			installedAt: '',
 			version: '',
 			tag: '',
@@ -148,6 +150,10 @@ export default {
 			uniqueOSOfYesterday: { data: [], day: 0, month: 0, year: 0 },
 			uniqueOSOfLastWeek: { data: [], day: 0, month: 0, year: 0 },
 			uniqueOSOfLastMonth: { data: [], day: 0, month: 0, year: 0 },
+			omnichannelContactsBySource: { contactsCount: 0, conversationsCount: 0, sources: [] },
+			uniqueContactsOfLastMonth: { contactsCount: 0, conversationsCount: 0, sources: [] },
+			uniqueContactsOfLastWeek: { contactsCount: 0, conversationsCount: 0, sources: [] },
+			uniqueContactsOfYesterday: { contactsCount: 0, conversationsCount: 0, sources: [] },
 			apps: {
 				engineVersion: 'x.y.z',
 				enabled: false,
@@ -243,6 +249,7 @@ export default {
 			totalCustomRoles: 0,
 			totalWebRTCCalls: 0,
 			uncaughtExceptionsCount: 0,
+			push: 0,
 			matrixFederation: {
 				enabled: false,
 			},

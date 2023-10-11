@@ -697,6 +697,12 @@ export const createAccountSettings = () =>
 				public: true,
 				i18nLabel: 'Notify_Calendar_Events',
 			});
+
+			await this.add('Accounts_Default_User_Preferences_enableMobileRinging', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'VideoConf_Mobile_Ringing',
+			});
 		});
 
 		await this.section('Avatar', async function () {
@@ -739,50 +745,60 @@ export const createAccountSettings = () =>
 		await this.section('Password_Policy', async function () {
 			await this.add('Accounts_Password_Policy_Enabled', false, {
 				type: 'boolean',
+				public: true,
 			});
 
 			const enableQuery = {
 				_id: 'Accounts_Password_Policy_Enabled',
 				value: true,
+				public: true,
 			};
 
 			await this.add('Accounts_Password_Policy_MinLength', 7, {
 				type: 'int',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_MaxLength', -1, {
 				type: 'int',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_ForbidRepeatingCharacters', true, {
 				type: 'boolean',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_ForbidRepeatingCharactersCount', 3, {
 				type: 'int',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_AtLeastOneLowercase', true, {
 				type: 'boolean',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_AtLeastOneUppercase', true, {
 				type: 'boolean',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_AtLeastOneNumber', true, {
 				type: 'boolean',
+				public: true,
 				enableQuery,
 			});
 
 			await this.add('Accounts_Password_Policy_AtLeastOneSpecialCharacter', true, {
 				type: 'boolean',
+				public: true,
 				enableQuery,
 			});
 		});
