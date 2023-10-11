@@ -965,6 +965,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { selector: selectorRaw } = this.queryParams;
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string } = JSON.parse(selectorRaw);
 
@@ -980,6 +981,8 @@ API.v1.addRoute(
 				await findUsersToAutocomplete({
 					uid: this.userId,
 					selector,
+					offset,
+					count,
 				}),
 			);
 		},

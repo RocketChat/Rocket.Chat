@@ -12,9 +12,13 @@ type UserAutoComplete = Required<Pick<IUser, '_id' | 'name' | 'username' | 'nick
 export async function findUsersToAutocomplete({
 	uid,
 	selector,
+	offset = 0,
+	count = 10,
 }: {
 	uid: string;
 	selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string };
+	offset: number;
+	count: number;
 }): Promise<{
 	items: UserAutoComplete[];
 }> {
@@ -32,7 +36,8 @@ export async function findUsersToAutocomplete({
 		sort: {
 			username: 1,
 		},
-		limit: 10,
+		limit: count,
+		skip: offset,
 	};
 
 	// Search on DMs first, to list known users before others.
