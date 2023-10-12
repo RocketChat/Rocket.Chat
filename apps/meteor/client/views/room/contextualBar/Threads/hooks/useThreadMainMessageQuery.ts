@@ -1,13 +1,12 @@
-import { isThreadMainMessage } from '@rocket.chat/core-typings';
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { useStream } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef } from 'react';
 
+import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
 import type { FieldExpression, Query } from '../../../../../lib/minimongo';
 import { createFilterFromQuery } from '../../../../../lib/minimongo';
-import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useGetMessageByID } from './useGetMessageByID';
 
@@ -87,19 +86,22 @@ export const useThreadMainMessageQuery = (
 	}, [tmid]);
 
 	return useQuery(['rooms', room._id, 'threads', tmid, 'main-message'] as const, async ({ queryKey }) => {
-		const message = await getMessage(tmid);
+		const mainMessage = await getMessage(tmid);
 
-		const mainMessage = (await onClientMessageReceived(message)) || message;
-
-		if (!mainMessage && !isThreadMainMessage(mainMessage)) {
+		if (!mainMessage) {
 			throw new Error('Invalid main message');
 		}
+
+		const debouncedInvalidate = withDebouncing({ wait: 10000 })(() => {
+			queryClient.invalidateQueries(queryKey, { exact: true });
+		});
 
 		unsubscribeRef.current =
 			unsubscribeRef.current ||
 			subscribeToMessage(mainMessage, {
-				onMutate: () => {
-					queryClient.invalidateQueries(queryKey, { exact: true });
+				onMutate: (message) => {
+					queryClient.setQueryData(queryKey, () => message);
+					debouncedInvalidate();
 				},
 				onDelete: () => {
 					onDelete?.();
