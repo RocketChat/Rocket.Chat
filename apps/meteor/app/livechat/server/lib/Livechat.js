@@ -4,7 +4,7 @@
 import dns from 'dns';
 import util from 'util';
 
-import { Message, api } from '@rocket.chat/core-services';
+import { Message } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatVisitors,
@@ -888,20 +888,6 @@ export const Livechat = {
 
 		setImmediate(() => {
 			callbacks.run('livechat.offlineMessage', data);
-		});
-	},
-
-	async notifyAgentStatusChanged(userId, status) {
-		callbacks.runAsync('livechat.agentStatusChanged', { userId, status });
-		if (!settings.get('Livechat_show_agent_info')) {
-			return;
-		}
-
-		await LivechatRooms.findOpenByAgent(userId).forEach((room) => {
-			void api.broadcast('omnichannel.room', room._id, {
-				type: 'agentStatus',
-				status,
-			});
 		});
 	},
 

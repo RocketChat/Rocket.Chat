@@ -855,6 +855,24 @@ class LivechatClass {
 
 		return LivechatRooms.findOneById(room._id);
 	}
+
+	async notifyAgentStatusChanged(userId: string, status?: UserStatus) {
+		if (!status) {
+			return;
+		}
+
+		void callbacks.runAsync('livechat.agentStatusChanged', { userId, status });
+		if (!settings.get('Livechat_show_agent_info')) {
+			return;
+		}
+
+		await LivechatRooms.findOpenByAgent(userId).forEach((room) => {
+			void api.broadcast('omnichannel.room', room._id, {
+				type: 'agentStatus',
+				status,
+			});
+		});
+	}
 }
 
 export const Livechat = new LivechatClass();
