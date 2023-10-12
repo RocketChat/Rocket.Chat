@@ -71,7 +71,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 							/>
 						</Box>
 					))}
-				{isSuccessUserMessages && report.messages.length === 0 && <GenericNoResults />}
+				{isSuccessUserMessages && report.messages.length === 0 && <GenericNoResults title={t('No_message_reports')} icon='message' />}
 				{isError && (
 					<Box display='flex' flexDirection='column' alignItems='center' pb={20} color='default'>
 						<StatesIcon name='warning' variation='danger' />

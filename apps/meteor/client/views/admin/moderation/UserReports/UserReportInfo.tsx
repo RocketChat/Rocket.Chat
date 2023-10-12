@@ -1,3 +1,4 @@
+import type { IUser, UserReport } from '@rocket.chat/core-typings';
 import {
 	Box,
 	Callout,
@@ -51,6 +52,15 @@ const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
 		},
 	);
 
+	const userProfile = useMemo(() => {
+		if (!report?.user) {
+			return null;
+		}
+
+		const { username, name } = report.user;
+		return <UserProfile key={dataUpdatedAt} username={username} name={name} />;
+	}, [report?.user, dataUpdatedAt]);
+
 	const handleChange = useMutableCallback(() => {
 		reloadUsersReports();
 	});
@@ -74,50 +84,63 @@ const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
 		);
 	}
 
+	const renderUserDetails = (user: IUser) => {
+		return (
+			<Box paddingInlineStart={16} marginBlock='x24'>
+				<FieldGroup>
+					<Field>{userProfile}</Field>
+					<Field>
+						<FieldLabel>{t('Roles')}</FieldLabel>
+						<FieldRow justifyContent='flex-start' spacing={1}>
+							{user.roles.map((role, index) => (
+								<UserCard.Role key={index}>{role}</UserCard.Role>
+							))}
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldLabel>{t('Email')}</FieldLabel>
+						<FieldRow>{userEmails.join(', ')}</FieldRow>
+					</Field>
+					<Field>
+						<FieldLabel>{t('Created_at')}</FieldLabel>
+						<FieldRow>{formatDateAndTime(user.createdAt)}</FieldRow>
+					</Field>
+				</FieldGroup>
+			</Box>
+		);
+	};
+
+	const renderDeletedUserWarning = () => {
+		return (
+			<Box padding={16}>
+				<Callout mbs={8} type='warning' icon='warning'>
+					{t('Moderation_User_deleted_warning')}
+				</Callout>
+			</Box>
+		);
+	};
+
+	const renderUserReports = (reports: Omit<UserReport, 'moderationInfo'>[]) => {
+		return reports.map((report, ind) => (
+			<Box key={report._id} paddingInlineStart={16}>
+				<ReportReason ind={ind + 1} uinfo={report.reportedBy?.username} msg={report.description} ts={new Date(report.ts)} />
+			</Box>
+		));
+	};
+
 	return (
 		<>
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
 				{isLoadingUsersReports && <Message>{t('Loading')}</Message>}
 
-				{isSuccessUsersReports && report.user ? (
-					<Box paddingInlineStart={16} marginBlock='x24'>
-						<FieldGroup>
-							<Field>
-								<UserProfile key={dataUpdatedAt} username={report.user.username} name={report.user.name} />
-							</Field>
-							<Field>
-								<FieldLabel>{t('Roles')}</FieldLabel>
-								<FieldRow justifyContent='flex-start' spacing={1}>
-									{report.user.roles.map((role, index) => (
-										<UserCard.Role key={index}>{role}</UserCard.Role>
-									))}
-								</FieldRow>
-							</Field>
-							<Field>
-								<FieldLabel>{t('Email')}</FieldLabel>
-								<FieldRow>{userEmails.join(', ')}</FieldRow>
-							</Field>
-							<Field>
-								<FieldLabel>{t('Created_at')}</FieldLabel>
-								<FieldRow>{formatDateAndTime(report.user.createdAt)}</FieldRow>
-							</Field>
-						</FieldGroup>
-					</Box>
-				) : (
-					<Box padding={16}>
-						<Callout mbs={8} type='warning' icon='warning'>
-							{t('Moderation_User_deleted_warning')}
-						</Callout>
-					</Box>
+				{isSuccessUsersReports && report.reports.length > 0 && (
+					<>
+						{report.user ? renderUserDetails(report.user as unknown as IUser) : renderDeletedUserWarning()}
+						{renderUserReports(report.reports as unknown as Omit<UserReport, 'moderationInfo'>[])}
+					</>
 				)}
-				{isSuccessUsersReports && report.reports.length === 0 && <GenericNoResults />}
-				{isSuccessUsersReports &&
-					report.reports.length > 0 &&
-					report.reports.map((report, ind) => (
-						<Box key={report._id} paddingInlineStart={16}>
-							<ReportReason ind={ind + 1} uinfo={report.reportedBy?.username} msg={report.description} ts={new Date(report.ts)} />
-						</Box>
-					))}
+
+				{isSuccessUsersReports && report.reports.length === 0 && <GenericNoResults title={t('No_user_reports')} icon='user' />}
 			</Box>
 			<ContextualbarFooter display='flex'>
 				{isSuccessUsersReports && report.reports.length > 0 && <UserContextFooter userId={userId} deleted={!report.user} />}
