@@ -893,6 +893,18 @@ class LivechatClass {
 			sort: { ts: 1 },
 		}).toArray();
 	}
+
+	async archiveDepartment(_id: string) {
+		const department = await LivechatDepartment.findOneById(_id, { projection: { _id: 1 } });
+
+		if (!department) {
+			throw new Error('department-not-found');
+		}
+
+		await Promise.all([LivechatDepartmentAgents.disableAgentsByDepartmentId(_id), LivechatDepartment.archiveDepartment(_id)]);
+
+		await callbacks.run('livechat.afterDepartmentArchived', department);
+	}
 }
 
 export const Livechat = new LivechatClass();

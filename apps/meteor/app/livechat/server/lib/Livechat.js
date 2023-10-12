@@ -733,24 +733,6 @@ export const Livechat = {
 		return LivechatDepartmentRaw.unarchiveDepartment(_id);
 	},
 
-	async archiveDepartment(_id) {
-		check(_id, String);
-
-		const department = await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
-
-		if (!department) {
-			throw new Meteor.Error('department-not-found', 'Department not found', {
-				method: 'livechat:removeDepartment',
-			});
-		}
-
-		await LivechatDepartmentAgents.disableAgentsByDepartmentId(_id);
-		await LivechatDepartmentRaw.archiveDepartment(_id);
-
-		this.logger.debug({ msg: 'Running livechat.afterDepartmentArchived callback for department:', departmentId: _id });
-		await callbacks.run('livechat.afterDepartmentArchived', department);
-	},
-
 	showConnecting() {
 		const { showConnecting } = RoutingManager.getConfig();
 		return showConnecting;
