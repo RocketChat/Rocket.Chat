@@ -4,7 +4,7 @@
 import dns from 'dns';
 import util from 'util';
 
-import { Message, VideoConf, api } from '@rocket.chat/core-services';
+import { Message, api } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatVisitors,
@@ -954,15 +954,5 @@ export const Livechat = {
 			},
 		};
 		await LivechatVisitors.updateById(contactId, updateUser);
-	},
-	async updateCallStatus(callId, rid, status, user) {
-		await Rooms.setCallStatus(rid, status);
-		if (status === 'ended' || status === 'declined') {
-			if (await VideoConf.declineLivechatCall(callId)) {
-				return;
-			}
-
-			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date() }, user);
-		}
 	},
 };
