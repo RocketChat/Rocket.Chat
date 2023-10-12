@@ -208,11 +208,8 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (await Livechat.unarchiveDepartment(this.urlParams._id)) {
-				return API.v1.success();
-			}
-
-			return API.v1.failure();
+			await LivechatTs.unarchiveDepartment(this.urlParams._id);
+			return API.v1.success();
 		},
 	},
 );

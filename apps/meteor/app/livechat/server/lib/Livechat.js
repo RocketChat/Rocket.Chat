@@ -717,22 +717,6 @@ export const Livechat = {
 		return ret;
 	},
 
-	async unarchiveDepartment(_id) {
-		check(_id, String);
-
-		const department = await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
-
-		if (!department) {
-			throw new Meteor.Error('department-not-found', 'Department not found', {
-				method: 'livechat:removeDepartment',
-			});
-		}
-
-		// TODO: these kind of actions should be on events instead of here
-		await LivechatDepartmentAgents.enableAgentsByDepartmentId(_id);
-		return LivechatDepartmentRaw.unarchiveDepartment(_id);
-	},
-
 	showConnecting() {
 		const { showConnecting } = RoutingManager.getConfig();
 		return showConnecting;

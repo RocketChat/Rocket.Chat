@@ -905,6 +905,18 @@ class LivechatClass {
 
 		await callbacks.run('livechat.afterDepartmentArchived', department);
 	}
+
+	async unarchiveDepartment(_id: string) {
+		const department = await LivechatDepartment.findOneById(_id, { projection: { _id: 1 } });
+
+		if (!department) {
+			throw new Meteor.Error('department-not-found');
+		}
+
+		// TODO: these kind of actions should be on events instead of here
+		await Promise.all([LivechatDepartmentAgents.enableAgentsByDepartmentId(_id), LivechatDepartment.unarchiveDepartment(_id)]);
+		return true;
+	}
 }
 
 export const Livechat = new LivechatClass();
