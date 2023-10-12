@@ -9,12 +9,15 @@ import { hasAtLeastOnePermissionAsync } from '../../../../authorization/server/f
 import { findAgents, findManagers } from '../../../server/api/lib/users';
 import { Livechat } from '../../../server/lib/Livechat';
 
+const emptyStringArray: string[] = [];
+
 API.v1.addRoute(
 	'livechat/users/:type',
 	{
 		authRequired: true,
 		permissionsRequired: {
-			POST: { permissions: ['view-livechat-manager'], operation: 'hasAll' },
+			'POST': ['view-livechat-manager'],
+			'*': emptyStringArray,
 		},
 		validateParams: {
 			GET: isLivechatUsersManagerGETProps,
