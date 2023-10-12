@@ -947,12 +947,4 @@ export const Livechat = {
 
 		return LivechatRooms.findOneById(roomId);
 	},
-	async updateLastChat(contactId, lastChat) {
-		const updateUser = {
-			$set: {
-				lastChat,
-			},
-		};
-		await LivechatVisitors.updateById(contactId, updateUser);
-	},
 };

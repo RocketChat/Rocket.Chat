@@ -821,6 +821,15 @@ class LivechatClass {
 			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date(), rid }, user as unknown as IUser);
 		}
 	}
+
+	async updateLastChat(contactId: string, lastChat: Required<ILivechatVisitor['lastChat']>) {
+		const updateUser = {
+			$set: {
+				lastChat,
+			},
+		};
+		await LivechatVisitors.updateById(contactId, updateUser);
+	}
 }
 
 export const Livechat = new LivechatClass();
