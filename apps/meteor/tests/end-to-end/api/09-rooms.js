@@ -4,6 +4,7 @@ import path from 'path';
 import { expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
+import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions.js';
@@ -1543,29 +1544,30 @@ describe('[Rooms]', function () {
 			roomId = result.body.room.rid;
 		});
 
-		it('should update group name if user changes username', (done) => {
-			updateSetting('UI_Use_Real_Name', false).then(() => {
-				request
-					.post(api('users.update'))
-					.set(credentials)
-					.send({
-						userId: testUser._id,
-						data: {
-							username: `changed.username.${testUser.username}`,
-						},
-					})
-					.end(() => {
-						request
-							.get(api('subscriptions.getOne'))
-							.set(credentials)
-							.query({ roomId })
-							.end((err, res) => {
-								const { subscription } = res.body;
-								expect(subscription.name).to.equal(`rocket.cat,changed.username.${testUser.username}`);
-								done();
-							});
-					});
-			});
+		it('should update group name if user changes username', async () => {
+			await updateSetting('UI_Use_Real_Name', false);
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: testUser._id,
+					data: {
+						username: `changed.username.${testUser.username}`,
+					},
+				});
+
+			// need to wait for the username update finish
+			await sleep(300);
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId })
+				.send()
+				.expect((res) => {
+					const { subscription } = res.body;
+					expect(subscription.name).to.equal(`rocket.cat,changed.username.${testUser.username}`);
+				});
 		});
 
 		it('should update group name if user changes name', (done) => {
