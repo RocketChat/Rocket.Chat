@@ -1,4 +1,3 @@
-import type { ILivechatTagRecord } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
@@ -12,8 +11,10 @@ type TagsListOptions = {
 	viewAll?: boolean;
 };
 
+type TagListItem = { _id: string; label: string; value: string; _updatedAt: Date };
+
 type UseTagsListResult = {
-	itemsList: RecordList<ILivechatTagRecord>;
+	itemsList: RecordList<TagListItem>;
 	initialItemCount: number;
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
@@ -21,8 +22,8 @@ type UseTagsListResult = {
 
 export const useTagsList = (options: TagsListOptions): UseTagsListResult => {
 	const { viewAll, department, filter } = options;
-	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatTagRecord>());
-	const reload = useCallback(() => setItemsList(new RecordList<ILivechatTagRecord>()), []);
+	const [itemsList, setItemsList] = useState(() => new RecordList<TagListItem>());
+	const reload = useCallback(() => setItemsList(new RecordList<TagListItem>()), []);
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
 
@@ -38,6 +39,7 @@ export const useTagsList = (options: TagsListOptions): UseTagsListResult => {
 				count: end + start,
 				...(viewAll && { viewAll: 'true' }),
 				...(department && { department }),
+				sort: JSON.stringify({ name: 1 }),
 			});
 
 			return {
@@ -45,7 +47,6 @@ export const useTagsList = (options: TagsListOptions): UseTagsListResult => {
 					_id: tag._id,
 					label: tag.name,
 					value: tag.name,
-					_updatedAt: new Date(tag._updatedAt),
 				})),
 				itemCount: total,
 			};

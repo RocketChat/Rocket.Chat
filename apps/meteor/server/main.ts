@@ -1,4 +1,5 @@
 import './models/startup';
+import './configureLogLevel';
 import './settings/index';
 import '../ee/server/models/startup';
 import './services/startup';
