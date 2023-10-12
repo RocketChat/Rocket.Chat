@@ -1,4 +1,3 @@
-import { isThreadMainMessage } from '@rocket.chat/core-typings';
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { useStream } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
