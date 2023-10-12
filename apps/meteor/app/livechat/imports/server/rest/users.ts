@@ -14,10 +14,6 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: {
-			GET: {
-				permissions: ['manage-livechat-agents'],
-				operation: 'hasAll',
-			},
 			POST: { permissions: ['view-livechat-manager'], operation: 'hasAll' },
 		},
 		validateParams: {
