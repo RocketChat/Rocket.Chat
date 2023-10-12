@@ -873,6 +873,26 @@ class LivechatClass {
 			});
 		});
 	}
+
+	async getRoomMessages({ rid }: { rid: string }) {
+		const room = await Rooms.findOneById(rid, { projection: { t: 1 } });
+		if (room?.t !== 'l') {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		const ignoredMessageTypes: MessageTypesValues[] = [
+			'livechat_navigation_history',
+			'livechat_transcript_history',
+			'command',
+			'livechat-close',
+			'livechat-started',
+			'livechat_video_call',
+		];
+
+		return Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, {
+			sort: { ts: 1 },
+		}).toArray();
+	}
 }
 
 export const Livechat = new LivechatClass();

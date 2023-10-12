@@ -766,28 +766,6 @@ export const Livechat = {
 		});
 	},
 
-	async getRoomMessages({ rid }) {
-		check(rid, String);
-
-		const room = await Rooms.findOneById(rid, { projection: { t: 1 } });
-		if (room?.t !== 'l') {
-			throw new Meteor.Error('invalid-room');
-		}
-
-		const ignoredMessageTypes = [
-			'livechat_navigation_history',
-			'livechat_transcript_history',
-			'command',
-			'livechat-close',
-			'livechat-started',
-			'livechat_video_call',
-		];
-
-		return Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, {
-			sort: { ts: 1 },
-		}).toArray();
-	},
-
 	async requestTranscript({ rid, email, subject, user }) {
 		check(rid, String);
 		check(email, String);
