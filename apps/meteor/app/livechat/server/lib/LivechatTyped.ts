@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, VideoConf } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
 	IOmnichannelRoomClosingInfo,
@@ -23,6 +23,7 @@ import {
 	Users,
 	LivechatDepartmentAgents,
 	ReadReceipts,
+	Rooms,
 } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -34,6 +35,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
@@ -807,6 +809,17 @@ class LivechatClass {
 		);
 
 		return true;
+	}
+
+	async updateCallStatus(callId: string, rid: string, status: 'ended' | 'declined', user: IUser | ILivechatVisitor) {
+		await Rooms.setCallStatus(rid, status);
+		if (status === 'ended' || status === 'declined') {
+			if (await VideoConf.declineLivechatCall(callId)) {
+				return;
+			}
+
+			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date(), rid }, user as unknown as IUser);
+		}
 	}
 }
 
