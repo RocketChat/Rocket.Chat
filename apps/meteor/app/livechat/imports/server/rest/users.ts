@@ -35,9 +35,11 @@ API.v1.addRoute(
 					return API.v1.unauthorized();
 				}
 
+				const { onlyAvailable } = this.queryParams;
 				return API.v1.success(
 					await findAgents({
 						text,
+						onlyAvailable,
 						pagination: {
 							offset,
 							count,

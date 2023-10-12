@@ -10,10 +10,12 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 async function findUsers({
 	role,
 	text,
+	onlyAvailable = false,
 	pagination: { offset, count, sort },
 }: {
 	role: IRole['_id'];
 	text?: string;
+	onlyAvailable?: boolean;
 	pagination: { offset: number; count: number; sort: any };
 }): Promise<{ users: ILivechatAgent[]; count: number; offset: number; total: number }> {
 	const query = {};
@@ -21,6 +23,12 @@ async function findUsers({
 		const filterReg = new RegExp(escapeRegExp(text), 'i');
 		Object.assign(query, {
 			$or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }],
+		});
+	}
+
+	if (onlyAvailable) {
+		Object.assign(query, {
+			statusLivechat: 'available',
 		});
 	}
 
@@ -52,14 +60,17 @@ async function findUsers({
 }
 export async function findAgents({
 	text,
+	onlyAvailable = false,
 	pagination: { offset, count, sort },
 }: {
 	text?: string;
+	onlyAvailable: boolean;
 	pagination: { offset: number; count: number; sort: any };
 }): Promise<ReturnType<typeof findUsers>> {
 	return findUsers({
 		role: 'livechat-agent',
 		text,
+		onlyAvailable,
 		pagination: {
 			offset,
 			count,

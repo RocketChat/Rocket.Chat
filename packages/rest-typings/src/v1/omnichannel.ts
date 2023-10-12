@@ -749,12 +749,16 @@ const LivechatDepartmentsByUnitIdSchema = {
 
 export const isLivechatDepartmentsByUnitIdProps = ajv.compile<LivechatDepartmentsByUnitIdProps>(LivechatDepartmentsByUnitIdSchema);
 
-type LivechatUsersManagerGETProps = PaginatedRequest<{ text?: string; fields?: string }>;
+type LivechatUsersManagerGETProps = PaginatedRequest<{ text?: string; fields?: string; onlyAvailable?: boolean }>;
 
 const LivechatUsersManagerGETSchema = {
 	type: 'object',
 	properties: {
 		text: {
+			type: 'string',
+			nullable: true,
+		},
+		onlyAvailable: {
 			type: 'string',
 			nullable: true,
 		},
@@ -3386,7 +3390,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/users/agent': {
-		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
+		GET: (params: PaginatedRequest<{ text?: string; onlyAvailable?: boolean }>) => PaginatedResult<{
 			users: (ILivechatAgent & { departments: string[] })[];
 		}>;
 		POST: (params: LivechatUsersManagerPOSTProps) => { success: boolean };
