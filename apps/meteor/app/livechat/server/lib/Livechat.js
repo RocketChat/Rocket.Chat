@@ -30,7 +30,6 @@ import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
-import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
@@ -912,39 +911,5 @@ export const Livechat = {
 		}
 
 		return businessHourManager.allowAgentChangeServiceStatus(agentId);
-	},
-
-	notifyRoomVisitorChange(roomId, visitor) {
-		void api.broadcast('omnichannel.room', roomId, {
-			type: 'visitorData',
-			visitor,
-		});
-	},
-
-	async changeRoomVisitor(userId, roomId, visitor) {
-		const user = await Users.findOneById(userId);
-		if (!user) {
-			throw new Error('error-user-not-found');
-		}
-
-		if (!(await hasPermissionAsync(userId, 'change-livechat-room-visitor'))) {
-			throw new Error('error-not-authorized');
-		}
-
-		const room = await LivechatRooms.findOneById(roomId, { ...roomAccessAttributes, _id: 1, t: 1 });
-
-		if (!room) {
-			throw new Meteor.Error('invalid-room');
-		}
-
-		if (!(await canAccessRoomAsync(room, user))) {
-			throw new Error('error-not-allowed');
-		}
-
-		await LivechatRooms.changeVisitorByRoomId(room._id, visitor);
-
-		Livechat.notifyRoomVisitorChange(room._id, visitor);
-
-		return LivechatRooms.findOneById(roomId);
 	},
 };

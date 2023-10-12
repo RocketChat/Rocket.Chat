@@ -18,7 +18,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
 import { isWidget } from '../../../../api/server/helpers/isWidget';
-import { canAccessRoomAsync } from '../../../../authorization/server';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../../../authorization/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
 import { settings as rcSettings } from '../../../../settings/server';
@@ -352,7 +352,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/room.visitor',
-	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPUTLivechatRoomVisitorParams, deprecationVersion: '7.0.0' },
+	{
+		authRequired: true,
+		permissionsRequired: ['change-livechat-room-visitor'],
+		validateParams: isPUTLivechatRoomVisitorParams,
+		deprecationVersion: '7.0.0',
+	},
 	{
 		async put() {
 			// This endpoint is deprecated and will be removed in future versions.
@@ -363,7 +368,7 @@ API.v1.addRoute(
 				throw new Error('invalid-visitor');
 			}
 
-			const room = await LivechatRooms.findOneById(rid, { _id: 1, v: 1 }); // TODO: check _id
+			const room = await LivechatRooms.findOneById(rid, { projection: { ...roomAccessAttributes, _id: 1, t: 1 } }); // TODO: check _id
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -373,7 +378,7 @@ API.v1.addRoute(
 				throw new Error('invalid-room-visitor');
 			}
 
-			const roomAfterChange = await Livechat.changeRoomVisitor(this.userId, rid, visitor);
+			const roomAfterChange = await LivechatTyped.changeRoomVisitor(this.userId, room, visitor);
 
 			if (!roomAfterChange) {
 				return API.v1.failure();
