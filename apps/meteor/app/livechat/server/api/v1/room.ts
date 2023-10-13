@@ -368,7 +368,7 @@ API.v1.addRoute(
 				throw new Error('invalid-visitor');
 			}
 
-			const room = await LivechatRooms.findOneById(rid, { projection: { ...roomAccessAttributes, _id: 1, t: 1 } }); // TODO: check _id
+			const room = await LivechatRooms.findOneById(rid, { projection: { ...roomAccessAttributes, _id: 1, t: 1, v: 1 } }); // TODO: check _id
 			if (!room) {
 				throw new Error('invalid-room');
 			}
