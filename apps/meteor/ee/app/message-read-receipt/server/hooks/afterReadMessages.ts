@@ -15,7 +15,7 @@ callbacks.add(
 
 		if (tmid) {
 			await MessageReads.readThread(uid, tmid);
-		} else {
+		} else if (lastSeen) {
 			await ReadReceipt.markMessagesAsRead(rid, uid, lastSeen);
 		}
 	},
