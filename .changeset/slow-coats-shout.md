@@ -1,12 +1,7 @@
 ---
 "@rocket.chat/meteor": patch
-"@rocket.chat/core-services": patch
-"@rocket.chat/core-typings": patch
-"@rocket.chat/model-typings": patch
-"@rocket.chat/rest-typings": patch
-"@rocket.chat/presence": patch
 ---
 
-Count daily and monthly peaks of concurrent connections
+Add the daily and monthly peaks of concurrent connections to statistics
  - Added `dailyPeakConnections` statistic for monitoring the daily peak of concurrent connections in a workspace;
- - Added `presence.getMonthlyPeakConnections` endpoint to enable workspaces to retrieve their monthly peak of concurrent connections.
+ - Added `maxMonthlyPeakConnections` statistic for monitoring the last 30 days peak of concurrent connections in a workspace;
