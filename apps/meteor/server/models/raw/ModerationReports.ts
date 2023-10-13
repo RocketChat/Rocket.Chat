@@ -26,7 +26,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			{ key: { userId: 1, ts: 1 } },
 			{ key: { 'message._id': 1, 'ts': 1 } },
 			{ key: { 'ts': 1, '_hidden': 1, 'message.u._id': 1 } },
-			{ key: { 'ts': 1, '_hidden': 1, 'reportedUser._id': 1 } },
+			{ key: { '_hidden': 1, 'reportedUser._id': 1, 'ts': 1 } },
 		];
 	}
 

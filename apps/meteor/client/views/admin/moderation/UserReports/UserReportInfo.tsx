@@ -2,7 +2,6 @@ import type { IUser, UserReport } from '@rocket.chat/core-typings';
 import {
 	Box,
 	Callout,
-	Message,
 	StatesAction,
 	StatesActions,
 	StatesIcon,
@@ -12,6 +11,7 @@ import {
 	Field,
 	FieldLabel,
 	FieldRow,
+	ContextualbarSkeleton,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
@@ -25,7 +25,6 @@ import ReportReason from '../helpers/ReportReason';
 import UserProfile from '../helpers/UserProfile';
 import UserContextFooter from './UserContextFooter';
 
-// TODO: Missing Error State
 const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -131,7 +130,7 @@ const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
 	return (
 		<>
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
-				{isLoadingUsersReports && <Message>{t('Loading')}</Message>}
+				{isLoadingUsersReports && <ContextualbarSkeleton />}
 
 				{isSuccessUsersReports && report.reports.length > 0 && (
 					<>

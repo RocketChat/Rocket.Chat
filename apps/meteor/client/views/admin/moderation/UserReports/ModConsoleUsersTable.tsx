@@ -1,4 +1,4 @@
-import { Pagination } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -18,16 +18,15 @@ import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import ModFilter from '../helpers/ModFilter';
 import ModConsoleUserTableRow, { type ModConsoleUserRowProps } from './ModConsoleUserTableRow';
 
-// TODO: Missing error state
 const ModConsoleUsersTable: FC = () => {
 	const [text, setText] = useState('');
 	const router = useRouter();
 	const t = useTranslation();
 	const isDesktopOrLarger = useMediaQuery('(min-width: 1024px)');
 
-	const { sortBy, sortDirection, setSort } = useSort<'reports.ts' | 'reports.message.u.username' | 'reports.description' | 'count'>(
-		'reports.ts',
-	);
+	const { sortBy, sortDirection, setSort } = useSort<
+		'reports.ts' | 'reports.reportedUser.username' | 'reports.reportedUser.createdAt' | 'count'
+	>('reports.ts');
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const [dateRange, setDateRange] = useState<{ start: string | null; end: string | null }>({
@@ -43,8 +42,8 @@ const ModConsoleUsersTable: FC = () => {
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
 				count: itemsPerPage,
 				offset: current,
-				...(end && { latest: `${new Date(end).toISOString().slice(0, 10)}T23:59:59.999Z` }),
-				...(start && { oldest: `${new Date(start).toISOString().slice(0, 10)}T00:00:00.000Z` }),
+				latest: end ? `${new Date(end).toISOString().slice(0, 10)}T23:59:59.999Z` : undefined,
+				oldest: start ? `${new Date(start).toISOString().slice(0, 10)}T00:00:00.000Z` : undefined,
 			}),
 			[current, end, itemsPerPage, sortBy, sortDirection, start, text],
 		),
@@ -55,10 +54,14 @@ const ModConsoleUsersTable: FC = () => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { data, isLoading, isSuccess } = useQuery(['moderation.userReports', query], async () => getReports(query), {
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery(['moderation.userReports', query], async () => getReports(query), {
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
+	});
+
+	const handleRefetch = useMutableCallback(() => {
+		refetch();
 	});
 
 	const handleClick = useMutableCallback((id): void => {
@@ -71,19 +74,24 @@ const ModConsoleUsersTable: FC = () => {
 		});
 	});
 
-	// header sequence would be: name, reportedMessage, room, postdate, reports, actions
 	const headers = useMemo(
 		() => [
 			<GenericTableHeaderCell
 				key='name'
 				direction={sortDirection}
-				active={sortBy === 'reports.message.u.username'}
+				active={sortBy === 'reports.reportedUser.username'}
 				onClick={setSort}
-				sort='reports.message.u.username'
+				sort='reports.reportedUser.username'
 			>
 				{t('User')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key='created' direction={sortDirection}>
+			<GenericTableHeaderCell
+				active={sortBy === 'reports.reportedUser.createdAt'}
+				onClick={setSort}
+				sort='reports.reportedUser.createdAt'
+				key='created'
+				direction={sortDirection}
+			>
 				{t('Created_at')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key='email' direction={sortDirection}>
@@ -137,6 +145,15 @@ const ModConsoleUsersTable: FC = () => {
 				</>
 			)}
 			{isSuccess && data.reports.length === 0 && <GenericNoResults />}
+			{isError && (
+				<States>
+					<StatesIcon name='warning' variation='danger' />
+					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+					<StatesActions>
+						<StatesAction onClick={handleRefetch}>{t('Reload_page')}</StatesAction>
+					</StatesActions>
+				</States>
+			)}
 		</>
 	);
 };

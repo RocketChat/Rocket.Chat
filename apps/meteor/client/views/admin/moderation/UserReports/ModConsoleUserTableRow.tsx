@@ -13,9 +13,8 @@ export type ModConsoleUserRowProps = {
 };
 
 const ModConsoleUserTableRow = ({ report, onClick, isDesktopOrLarger }: ModConsoleUserRowProps): JSX.Element => {
-	const { reportedUser } = report;
+	const { reportedUser, count, ts } = report;
 	const { _id, username, name, createdAt, emails } = reportedUser;
-	const { count, ts } = report;
 
 	const formatDateAndTime = useFormatDateAndTime();
 

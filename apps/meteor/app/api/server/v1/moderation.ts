@@ -161,8 +161,6 @@ API.v1.addRoute(
 	},
 );
 
-// api endpoint to get user reports of a userid
-
 API.v1.addRoute(
 	'moderation.user.reportsByUserId',
 	{
