@@ -7,6 +7,7 @@ import { registerPreIntentWorkspaceWizard } from '../../../cloud/server/function
 import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
 import { saveRegistrationData } from '../../../cloud/server/functions/saveRegistrationData';
 import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
+import { syncWorkspace } from '../../../cloud/server/functions/syncWorkspace';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -119,6 +120,22 @@ API.v1.addRoute(
 			const registrationStatus = await retrieveRegistrationStatus();
 
 			return API.v1.success({ registrationStatus });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'cloud.syncWorkspace',
+	{
+		authRequired: true,
+		permissionsRequired: ['view-privileged-setting'],
+		rateLimiterOptions: { numRequestsAllowed: 2, intervalTimeInMS: 60000 },
+	},
+	{
+		async get() {
+			await syncWorkspace();
+
+			return API.v1.success();
 		},
 	},
 );

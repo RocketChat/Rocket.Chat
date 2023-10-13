@@ -1,10 +1,12 @@
-import { Box, Button, ButtonGroup, Grid, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout, Grid, Skeleton, Throbber } from '@rocket.chat/fuselage';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { useLicense } from '../../../hooks/useLicense';
+import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 import { PlanName, getPlanName } from '../../../lib/utils/getPlanName';
 import GetMoreWithEnterprise from './components/GetMoreWithEnterprise';
 import UpgradeButton from './components/UpgradeButton';
@@ -16,11 +18,17 @@ import FeaturesCard from './components/cards/FeaturesCard';
 import MACCard from './components/cards/MACCard';
 import PlanCard from './components/cards/PlanCard';
 import SeatsCard from './components/cards/SeatsCard';
+import { useWorkspaceSync } from './hooks/useWorkspaceSync';
 import { CONTACT_SALES_LINK } from './utils/links';
 
 const ManageSubscriptionPage = () => {
+	const router = useRouter();
 	const { data } = useIsEnterprise();
+	const { isRegistered, isLoading: isRegisteredLoading } = useRegistrationStatus();
 	const { data: licensesData, refetch: refetchLicense } = useLicense();
+	const syncLicenseUpdate = useWorkspaceSync();
+
+	const { subscriptionSuccess } = router.getSearchParameters();
 
 	const { activeModules = [], license, limits } = licensesData?.data || {};
 	const isEnterprise = data?.isEnterprise || false;
@@ -32,7 +40,7 @@ const ManageSubscriptionPage = () => {
 
 	const plan = getPlanName(isEnterprise, activeModules, isTrial);
 
-	const getHeaderButton = () => {
+	const getUpgradeButton = () => {
 		if (plan === PlanName.COMMUNITY || plan === PlanName.STARTER) {
 			return <UpgradeButton primary i18nKey='Upgrade_to_Pro' mis={8} />;
 		}
@@ -48,18 +56,58 @@ const ManageSubscriptionPage = () => {
 		return null;
 	};
 
+	const getHeaderButtons = () => {
+		return (
+			<ButtonGroup>
+				{isRegistered && (
+					<Button
+						icon={syncLicenseUpdate.isInitialLoading || syncLicenseUpdate.isRefetching ? undefined : 'reload'}
+						onClick={() => handleSyncLicenseUpdateClick()}
+					>
+						{syncLicenseUpdate.isInitialLoading || syncLicenseUpdate.isRefetching ? (
+							<Throbber size='x12' inheritColor />
+						) : (
+							t('Sync_license_update')
+						)}
+					</Button>
+				)}
+				{getUpgradeButton()}
+			</ButtonGroup>
+		);
+	};
+
+	const handleSyncLicenseUpdateClick = () => {
+		if (syncLicenseUpdate.isInitialLoading || syncLicenseUpdate.isRefetching) {
+			return;
+		}
+		syncLicenseUpdate.refetch();
+	};
+
+	useEffect(() => {
+		if (subscriptionSuccess && !syncLicenseUpdate.isRefetching) {
+			syncLicenseUpdate.refetch();
+		}
+
+		if (
+			!syncLicenseUpdate.isInitialLoading &&
+			!syncLicenseUpdate.isRefetching &&
+			!syncLicenseUpdate.isError &&
+			syncLicenseUpdate?.data?.success
+		) {
+			refetchLicense();
+		}
+	}, [refetchLicense, subscriptionSuccess, syncLicenseUpdate]);
+
 	return (
 		<Page bg='tint'>
-			<Page.Header title={t('Manage_subscription')}>
-				<ButtonGroup>
-					<Button icon='reload' onClick={() => refetchLicense()}>
-						{t('Sync_license_update')}
-					</Button>
-					{getHeaderButton()}
-				</ButtonGroup>
-			</Page.Header>
+			<Page.Header title={t('Manage_subscription')}>{!isRegisteredLoading && getHeaderButtons()}</Page.Header>
 
 			<Page.ScrollableContentWithShadow p={16}>
+				{subscriptionSuccess && (
+					<Callout type='info' title="We're updating your license" m={8}>
+						{t('Sync_license_update_Callout')}
+					</Callout>
+				)}
 				<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 					<Grid m={0}>
 						{license ? (
