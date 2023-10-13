@@ -14,8 +14,8 @@ API.v1.addRoute(
 			}
 
 			const bodyParams = {
-				okCallback: `${getURL('admin/manage-subscription/?subscriptionSuccess=true')}`,
-				cancelCallback: `${getURL('admin/manage-subscription')}`,
+				okCallback: getURL('admin/manage-subscription/?subscriptionSuccess=true'),
+				cancelCallback: getURL('admin/manage-subscription'),
 			};
 
 			const checkoutUrl = await getCheckoutUrl(token, bodyParams);
