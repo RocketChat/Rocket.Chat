@@ -16,6 +16,7 @@ type AutoCompleteAgentProps = {
 	excludeId?: string;
 	showIdleAgents?: boolean;
 	onlyAvailable?: boolean;
+	withTitle?: boolean;
 	onChange: (value: string) => void;
 };
 
@@ -28,6 +29,7 @@ const AutoCompleteAgent = ({
 	excludeId,
 	showIdleAgents = false,
 	onlyAvailable = false,
+	withTitle = false,
 	onChange,
 }: AutoCompleteAgentProps): ReactElement => {
 	const [agentsFilter, setAgentsFilter] = useState<string>('');
@@ -45,6 +47,7 @@ const AutoCompleteAgent = ({
 
 	return (
 		<PaginatedSelectFiltered
+			withTitle={withTitle}
 			value={value}
 			error={error}
 			placeholder={placeholder}

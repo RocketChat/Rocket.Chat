@@ -114,6 +114,7 @@ const ForwardChatModal = ({
 						<FieldRow>
 							<AutoCompleteAgent
 								onlyAvailable
+								withTitle
 								excludeId={room.servedBy?._id}
 								showIdleAgents={idleAgentsAllowedForForwarding}
 								placeholder={t('Username')}
