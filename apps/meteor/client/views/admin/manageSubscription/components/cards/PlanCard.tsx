@@ -1,5 +1,4 @@
-import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
+import { Box, Button, Icon, Skeleton, Tag } from '@rocket.chat/fuselage';
 import type { ILicenseV3 } from '@rocket.chat/license';
 import { Card, CardBody, CardColSection, ExternalLink } from '@rocket.chat/ui-client';
 import type { ReactElement, ReactNode } from 'react';
@@ -19,7 +18,7 @@ type PlanCardProps = {
 
 const PlanCard = ({ isEnterprise, license }: PlanCardProps): ReactElement => {
 	const { t } = useTranslation();
-	const isSelfHosted = useIsSelfHosted();
+	const { isSelfHosted, isLoading } = useIsSelfHosted();
 	const formatDate = useFormatDate();
 
 	const planName = isEnterprise ? license?.information?.tags && license.information?.tags[0]?.name : t('Community');
@@ -91,9 +90,13 @@ const PlanCard = ({ isEnterprise, license }: PlanCardProps): ReactElement => {
 						)}
 					</Box>
 				</Box>
-				<Box fontScale='p2' display='flex' mb={4} alignItems='center'>
-					<Icon name='cloud-plus' size={24} mie={12} /> {isSelfHosted ? t('Self_managed_hosting') : t('Cloud_hosting')}
-				</Box>
+				{!isLoading ? (
+					<Box fontScale='p2' display='flex' mb={4} alignItems='center'>
+						<Icon name='cloud-plus' size={24} mie={12} /> {isSelfHosted ? t('Self_managed_hosting') : t('Cloud_hosting')}
+					</Box>
+				) : (
+					<Skeleton />
+				)}
 			</>
 		);
 	};
@@ -102,7 +105,7 @@ const PlanCard = ({ isEnterprise, license }: PlanCardProps): ReactElement => {
 		<Card>
 			<CardBody flexDirection='column' mb={0}>
 				<CardColSection display='flex' alignItems='center'>
-					<Icon name='rocketchat' color={colors.r500} size={28} mie={4} />
+					<Icon name='rocketchat' color='badge-background-level-4' size={28} mie={4} />
 					<Box fontScale='h3'>{planName}</Box>
 				</CardColSection>
 				<CardColSection display='flex' flexDirection='column' h='full'>
