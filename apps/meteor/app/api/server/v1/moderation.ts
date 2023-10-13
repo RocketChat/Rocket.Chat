@@ -298,7 +298,6 @@ API.v1.addRoute(
 	},
 );
 
-// api endpoint to hide user reports
 API.v1.addRoute(
 	'moderation.dismissUserReports',
 	{

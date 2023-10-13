@@ -15,7 +15,7 @@ const ModerationConsolePage = () => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const dispatchToastMessage = useToastMessageDispatch();
-	const [tab, setTab] = useState('Users');
+	const [tab, setTab] = useState('Messages');
 
 	const handleRedirect = useCallback(
 		async (mid: string) => {
