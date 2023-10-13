@@ -1,5 +1,5 @@
 ---
-"@rocket.chat/meteor": patch
+"@rocket.chat/meteor": minor
 ---
 
 Add the daily and monthly peaks of concurrent connections to statistics
