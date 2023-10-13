@@ -11,10 +11,10 @@ const getProgressBarValues = (numberOfEnabledApps: number, enabledAppsLimit: num
 	percentage: Math.round((numberOfEnabledApps / enabledAppsLimit) * 100),
 });
 
-export type MarketplaceRouteContext = 'private' | 'explore' | 'installed' | 'enterprise' | 'requested';
+export type MarketplaceRouteContext = 'private' | 'explore' | 'installed' | 'premium' | 'requested';
 
 export function isMarketplaceRouteContext(context: string): context is MarketplaceRouteContext {
-	return ['private', 'explore', 'installed', 'enterprise', 'requested'].includes(context);
+	return ['private', 'explore', 'installed', 'premium', 'requested'].includes(context);
 }
 
 export const useAppsCountQuery = (context: MarketplaceRouteContext) => {
