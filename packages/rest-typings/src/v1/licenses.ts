@@ -49,7 +49,6 @@ export type LicensesEndpoints = {
 				license: ILicenseV3 | undefined;
 				activeModules: string[];
 				limits: Record<LicenseLimitKind, { max: number; value?: number }>;
-				inFairPolicy: boolean;
 			};
 		};
 	};

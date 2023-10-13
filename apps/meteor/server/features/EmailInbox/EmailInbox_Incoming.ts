@@ -35,7 +35,7 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 				return guest;
 			}
 			await LivechatTyped.setDepartmentForGuest({ token: guest.token, department });
-			return LivechatVisitors.findOneById(guest._id, {});
+			return LivechatVisitors.findOneEnabledById(guest._id, {});
 		}
 		return guest;
 	}
@@ -47,7 +47,9 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 		department,
 	});
 
-	const newGuest = await LivechatVisitors.findOneById(userId);
+	const newGuest = await LivechatVisitors.findOneEnabledById(userId);
+	logger.debug(`Guest ${userId} for visitor ${email} created`);
+
 	if (newGuest) {
 		return newGuest;
 	}
