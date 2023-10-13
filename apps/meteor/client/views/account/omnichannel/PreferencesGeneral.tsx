@@ -11,7 +11,7 @@ export const PreferencesGeneral = (): ReactElement => {
 	const omnichannelHideAfterClosing = useUniqueId();
 
 	return (
-		<FieldGroup marginBlockEnd='1.5rem'>
+		<FieldGroup marginBlockEnd='1.5rem' paddingInline='0.5rem'>
 			<Field>
 				<Box display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 					<FieldLabel htmlFor={omnichannelHideAfterClosing}>{t('Omnichannel_hide_conversation_after_closing')}</FieldLabel>
