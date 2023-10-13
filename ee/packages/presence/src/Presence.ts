@@ -19,7 +19,7 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private connsPerInstance = new Map<string, number>();
 
-	private dailyPeakConnections = this.getTotalConnections();
+	private peakConnections = 0;
 
 	constructor() {
 		super();
@@ -37,7 +37,7 @@ export class Presence extends ServiceClass implements IPresence {
 			if (diff?.hasOwnProperty('extraInformation.conns')) {
 				this.connsPerInstance.set(id, diff['extraInformation.conns']);
 
-				this.dailyPeakConnections = Math.max(this.dailyPeakConnections, this.getTotalConnections());
+				this.peakConnections = Math.max(this.peakConnections, this.getTotalConnections());
 				this.validateAvailability();
 			}
 		});
@@ -60,7 +60,6 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async started(): Promise<void> {
-		await this.resetDailyPeakConnections();
 		this.lostConTimeout = setTimeout(async () => {
 			const affectedUsers = await this.removeLostConnections();
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
@@ -256,14 +255,15 @@ export class Presence extends ServiceClass implements IPresence {
 		return Array.from(this.connsPerInstance.values()).reduce((acc, conns) => acc + conns, 0);
 	}
 
-	getDailyPeakConnections(): { peak: number; max: number } {
-		return {
-			peak: this.dailyPeakConnections,
-			max: MAX_CONNECTIONS,
-		};
+	getPeakConnections(reset = false): number {
+		const peak = this.peakConnections;
+		if (reset) {
+			this.resetPeakConnections();
+		}
+		return peak;
 	}
 
-	resetDailyPeakConnections(): void {
-		this.dailyPeakConnections = this.getTotalConnections();
+	resetPeakConnections(): void {
+		this.peakConnections = 0;
 	}
 }
