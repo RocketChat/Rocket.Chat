@@ -366,6 +366,7 @@ export const saveUser = async function (userId, userData) {
 				_id: userData._id,
 				username: userData.username,
 				name: userData.name,
+				updateUsernameInBackground: true,
 			}))
 		) {
 			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {

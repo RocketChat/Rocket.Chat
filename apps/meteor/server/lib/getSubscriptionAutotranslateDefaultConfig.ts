@@ -1,28 +1,23 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { Settings } from '@rocket.chat/models';
+import type { AtLeast, IUser } from '@rocket.chat/core-typings';
 
-export const getSubscriptionAutotranslateDefaultConfig = async (
-	user: IUser,
-): Promise<
+import { settings } from '../../app/settings/server';
+
+export function getSubscriptionAutotranslateDefaultConfig(user: AtLeast<IUser, 'settings'>):
 	| {
 			autoTranslate: boolean;
 			autoTranslateLanguage: string;
 	  }
-	| undefined
-> => {
-	const [autoEnableSetting, languageSetting] = await Promise.all([
-		Settings.findOneById('AutoTranslate_AutoEnableOnJoinRoom'),
-		Settings.findOneById('Language'),
-	]);
-	const { language: userLanguage } = user.settings?.preferences || {};
-
-	if (!autoEnableSetting?.value) {
+	| undefined {
+	if (!settings.get('AutoTranslate_AutoEnableOnJoinRoom')) {
 		return;
 	}
 
-	if (!userLanguage || userLanguage === 'default' || languageSetting?.value === userLanguage) {
+	const languageSetting = settings.get('Language');
+
+	const { language: userLanguage } = user.settings?.preferences || {};
+	if (!userLanguage || userLanguage === 'default' || languageSetting === userLanguage) {
 		return;
 	}
 
 	return { autoTranslate: true, autoTranslateLanguage: userLanguage };
-};
+}

@@ -10,6 +10,8 @@ export const permissions = [
 	{ _id: 'add-user-to-joined-room', roles: ['admin', 'owner', 'moderator'] },
 	{ _id: 'add-user-to-any-c-room', roles: ['admin'] },
 	{ _id: 'add-user-to-any-p-room', roles: [] },
+	{ _id: 'kick-user-from-any-c-room', roles: ['admin'] },
+	{ _id: 'kick-user-from-any-p-room', roles: [] },
 	{ _id: 'api-bypass-rate-limit', roles: ['admin', 'bot', 'app'] },
 	{ _id: 'archive-room', roles: ['admin', 'owner'] },
 	{ _id: 'assign-admin-role', roles: ['admin'] },
