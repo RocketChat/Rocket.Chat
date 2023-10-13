@@ -7,23 +7,28 @@ import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { router } from '../providers/RouterProvider';
 
 Meteor.startup(() => {
-	Tracker.autorun(async () => {
-		const userId = Meteor.userId();
-		const setupWizardState = settings.get('Show_Setup_Wizard');
-
-		const isAdmin = userId && hasRole(userId, 'admin');
-
-		const isWizardInProgress = isAdmin && setupWizardState === 'in_progress';
+	Tracker.autorun(async (computation) => {
 		const { registrationStatus } = await sdk.rest.get('/v1/cloud.registrationStatus');
 
-		const hasRegisterCloudPermission = hasPermission('register-on-cloud');
-		const isWorkspaceRegistered = registrationStatus?.workspaceRegistered;
+		Tracker.withComputation(computation, async () => {
+			const setupWizardState = settings.get('Show_Setup_Wizard');
 
-		const mustRedirect =
-			(!userId && setupWizardState === 'pending') || isWizardInProgress || (!isWorkspaceRegistered && hasRegisterCloudPermission);
+			const hasRegisterCloudPermission = hasPermission('register-on-cloud');
 
-		if (mustRedirect) {
-			router.navigate('/setup-wizard');
-		}
+			const userId = Meteor.userId();
+
+			const isAdmin = userId && hasRole(userId, 'admin');
+
+			const isWizardInProgress = isAdmin && setupWizardState === 'in_progress';
+
+			const isWorkspaceRegistered = registrationStatus?.workspaceRegistered;
+
+			const mustRedirect =
+				(!userId && setupWizardState === 'pending') || isWizardInProgress || (!isWorkspaceRegistered && hasRegisterCloudPermission);
+
+			if (mustRedirect) {
+				router.navigate('/setup-wizard');
+			}
+		});
 	});
 });
