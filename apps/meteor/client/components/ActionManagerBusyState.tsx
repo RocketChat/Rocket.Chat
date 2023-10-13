@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState } from 'react';
 
-import { useUiKitActionManager } from '../hooks/useUiKitActionManager';
+import { useUiKitActionManager } from '../UIKit/hooks/useUiKitActionManager';
 
 const ActionManagerBusyState = () => {
 	const t = useTranslation();

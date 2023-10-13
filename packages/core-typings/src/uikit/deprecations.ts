@@ -1,13 +1,15 @@
 import { UIKitInteractionType as UIKitInteractionTypeApi } from '@rocket.chat/apps-engine/definition/uikit';
-import type {
-	IDividerBlock,
-	ISectionBlock,
-	IActionsBlock,
-	IContextBlock,
-	IInputBlock,
-} from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
+
+import type { View } from './View';
 
 enum UIKitInteractionTypeExtended {
+	MODAL_OPEN = 'modal.open',
+	MODAL_CLOSE = 'modal.close',
+	MODAL_UPDATE = 'modal.update',
+	CONTEXTUAL_BAR_OPEN = 'contextual_bar.open',
+	CONTEXTUAL_BAR_CLOSE = 'contextual_bar.close',
+	CONTEXTUAL_BAR_UPDATE = 'contextual_bar.update',
+	ERRORS = 'errors',
 	BANNER_OPEN = 'banner.open',
 	BANNER_UPDATE = 'banner.update',
 	BANNER_CLOSE = 'banner.close',
@@ -15,31 +17,9 @@ enum UIKitInteractionTypeExtended {
 
 export type UIKitInteractionType = UIKitInteractionTypeApi | UIKitInteractionTypeExtended;
 
-export const UIKitInteractionTypes = {
-	...UIKitInteractionTypeApi,
-	...UIKitInteractionTypeExtended,
-};
-
-export type UiKitPayload = {
-	viewId: string;
-	appId: string;
-	blocks: (IDividerBlock | ISectionBlock | IActionsBlock | IContextBlock | IInputBlock)[];
-};
-
-export type UiKitBannerPayload = UiKitPayload & {
-	inline?: boolean;
-	variant?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
-	icon?: string;
-	title?: string;
-};
-
 export type UIKitUserInteraction = {
 	type: UIKitInteractionType;
-} & UiKitPayload;
-
-export type UiKitBannerProps = {
-	payload: UiKitBannerPayload;
-};
+} & View;
 
 export type UIKitUserInteractionResult = UIKitUserInteractionResultError | UIKitUserInteraction;
 
@@ -50,11 +30,3 @@ type UIKitUserInteractionResultError = UIKitUserInteraction & {
 
 export const isErrorType = (result: UIKitUserInteractionResult): result is UIKitUserInteractionResultError =>
 	result.type === UIKitInteractionTypeApi.ERRORS;
-
-export type UIKitActionEvent = {
-	blockId: string;
-	value?: unknown;
-	appId: string;
-	actionId: string;
-	viewId: string;
-};

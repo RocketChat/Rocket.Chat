@@ -1,6 +1,4 @@
-import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import type { DistributiveOmit, UiKit } from '@rocket.chat/core-typings';
-import { UIKitInteractionTypes } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
 import type { ActionManagerContext } from '@rocket.chat/ui-contexts';
@@ -9,10 +7,8 @@ import { lazy } from 'react';
 
 import * as banners from '../../../client/lib/banners';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
-import { dispatchToastMessage } from '../../../client/lib/toast';
 import { router } from '../../../client/providers/RouterProvider';
 import { sdk } from '../../utils/client/lib/SDKClient';
-import { t } from '../../utils/lib/i18n';
 import { UiKitTriggerTimeoutError } from './UiKitTriggerTimeoutError';
 
 const UiKitModal = lazy(() => import('../../../client/views/modal/uikit/UiKitModal'));
@@ -84,85 +80,6 @@ export class ActionManager implements ActionManagerType {
 			this.events.emit('busy', { busy: false });
 		}
 	}
-
-	public triggerAction = async ({ type, actionId, appId, rid, mid, viewId: _, container, tmid, ...rest }: any) =>
-		new Promise(async (resolve, reject) => {
-			this.events.emit('busy', { busy: true });
-
-			const triggerId = this.generateTriggerId(appId);
-
-			const payload = rest.payload || rest;
-
-			setTimeout(reject, ActionManager.TRIGGER_TIMEOUT, [ActionManager.TRIGGER_TIMEOUT_ERROR, { triggerId, appId }]);
-
-			const { type: interactionType, ...data } = await (async () => {
-				try {
-					return await sdk.rest.post<'/apps/ui.interaction/:id'>(`/apps/ui.interaction/${appId}`, {
-						type,
-						actionId,
-						payload,
-						container,
-						mid,
-						rid,
-						tmid,
-						triggerId,
-					});
-				} catch (e) {
-					reject(e);
-					return {};
-				} finally {
-					this.events.emit('busy', { busy: false });
-				}
-			})();
-
-			return resolve(this.handlePayloadUserInteraction(interactionType, data));
-		});
-
-	public triggerBlockAction = (options: any) => this.triggerAction({ type: UIKitIncomingInteractionType.BLOCK, ...options });
-
-	public triggerActionButtonAction = (options: any) =>
-		this.triggerAction({ type: UIKitIncomingInteractionType.ACTION_BUTTON, ...options }).catch(async (reason) => {
-			if (Array.isArray(reason) && reason[0] === ActionManager.TRIGGER_TIMEOUT_ERROR) {
-				dispatchToastMessage({
-					type: 'error',
-					message: t('UIKit_Interaction_Timeout'),
-				});
-			}
-		});
-
-	public triggerSubmitView = async ({ viewId, ...options }: any) => {
-		const close = () => {
-			const instance = this.viewInstances.get(viewId);
-
-			if (instance) {
-				instance.close();
-			}
-		};
-
-		try {
-			const result = await this.triggerAction({
-				type: UIKitIncomingInteractionType.VIEW_SUBMIT,
-				viewId,
-				...options,
-			});
-			if (!result || UIKitInteractionTypes.MODAL_CLOSE === result) {
-				close();
-			}
-		} catch {
-			close();
-		}
-	};
-
-	public triggerCancel = async ({ view, ...options }: any) => {
-		const instance = this.viewInstances.get(view.id);
-		try {
-			await this.triggerAction({ type: 'viewClosed', view, ...options });
-		} finally {
-			if (instance) {
-				instance.close();
-			}
-		}
-	};
 
 	public handlePayloadUserInteraction = (type: any, { triggerId, ...data }: any) => {
 		if (!this.triggersId.has(triggerId)) {
@@ -297,6 +214,13 @@ export class ActionManager implements ActionManagerType {
 
 		return instance.payload;
 	};
+
+	public disposeView(viewId: UiKit.View['viewId']) {
+		const instance = this.viewInstances.get(viewId);
+		instance?.close?.();
+		this.viewInstances.delete(viewId);
+	}
 }
 
+/** @deprecated consumer should use the context instead */
 export const actionManager = new ActionManager();

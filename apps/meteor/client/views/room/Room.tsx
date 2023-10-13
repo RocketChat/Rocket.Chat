@@ -23,7 +23,7 @@ const Room = (): ReactElement => {
 
 	const toolbox = useRoomToolbox();
 
-	const appsContextualBarContext = useAppsContextualBar();
+	const contextualBarView = useAppsContextualBar();
 
 	return (
 		<ChatProvider>
@@ -41,16 +41,11 @@ const Room = (): ReactElement => {
 								</SelectedMessagesProvider>
 							</ErrorBoundary>
 						)) ||
-						(appsContextualBarContext && (
+						(contextualBarView && (
 							<ErrorBoundary fallback={null}>
 								<SelectedMessagesProvider>
 									<Suspense fallback={<ContextualbarSkeleton />}>
-										<UiKitContextualBar
-											viewId={appsContextualBarContext.viewId}
-											roomId={appsContextualBarContext.roomId}
-											payload={appsContextualBarContext.payload}
-											appId={appsContextualBarContext.appId}
-										/>
+										<UiKitContextualBar key={contextualBarView.viewId} initialView={contextualBarView} />
 									</Suspense>
 								</SelectedMessagesProvider>
 							</ErrorBoundary>

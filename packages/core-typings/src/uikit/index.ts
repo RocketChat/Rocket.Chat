@@ -10,3 +10,7 @@ export type {
 	MesssageActionButtonUserInteraction,
 	RoomActionButtonUserInteraction,
 } from './UserInteraction';
+export { View } from './View';
+export { BannerView } from './BannerView';
+export { ContextualBarView } from './ContextualBarView';
+export { ModalView } from './ModalView';

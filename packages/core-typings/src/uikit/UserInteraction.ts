@@ -1,5 +1,6 @@
 import type { IMessage } from '../IMessage';
 import type { IRoom } from '../IRoom';
+import type { View } from './View';
 
 export type MessageBlockActionUserInteraction = {
 	type: 'blockAction';
@@ -36,8 +37,7 @@ export type ViewClosedUserInteraction = {
 	type: 'viewClosed';
 	payload: {
 		viewId: string;
-		view: {
-			[key: string]: unknown;
+		view: View & {
 			id: string;
 			state: { [blockId: string]: { [key: string]: unknown } };
 		};
@@ -50,8 +50,7 @@ export type ViewSubmitUserInteraction = {
 	type: 'viewSubmit';
 	actionId?: undefined;
 	payload: {
-		view: {
-			[key: string]: unknown;
+		view: View & {
 			id: string;
 			state: { [blockId: string]: { [key: string]: unknown } };
 		};

@@ -202,11 +202,9 @@ export class AppUIKitInteractionApi {
 		const { orch } = this;
 		const { id: appId } = req.params;
 
-		const { type } = req.body;
-
-		switch (type) {
+		switch (req.body.type) {
 			case 'blockAction': {
-				const { actionId, triggerId, payload, container } = req.body;
+				const { type, actionId, triggerId, payload, container } = req.body;
 				const mid = 'mid' in req.body ? req.body.mid : undefined;
 				const rid = 'rid' in req.body ? req.body.rid : undefined;
 
@@ -243,6 +241,7 @@ export class AppUIKitInteractionApi {
 
 			case 'viewClosed': {
 				const {
+					type,
 					payload: { view, isCleared },
 				} = req.body;
 
@@ -270,7 +269,7 @@ export class AppUIKitInteractionApi {
 			}
 
 			case 'viewSubmit': {
-				const { actionId, triggerId, payload } = req.body;
+				const { type, actionId, triggerId, payload } = req.body;
 
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
 
@@ -296,6 +295,7 @@ export class AppUIKitInteractionApi {
 
 			case 'actionButton': {
 				const {
+					type,
 					actionId,
 					triggerId,
 					rid,
