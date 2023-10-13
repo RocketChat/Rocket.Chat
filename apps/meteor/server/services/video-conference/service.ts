@@ -618,6 +618,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				caller: call.createdBy,
 				avatar: getUserAvatarURL(call.createdBy.username),
 				status: call.status,
+				callId: call._id,
 			},
 			userId: calleeId,
 			notId: PushNotification.getNotificationId(`${call.rid}|${call._id}`),
