@@ -1,6 +1,7 @@
 import type { ILivechatAgent, IRole } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { FilterOperators } from 'mongodb';
 
 /**
  * @param {IRole['_id']} role the role id
@@ -11,14 +12,18 @@ async function findUsers({
 	role,
 	text,
 	onlyAvailable = false,
+	excludeId,
+	showIdleAgents = true,
 	pagination: { offset, count, sort },
 }: {
 	role: IRole['_id'];
 	text?: string;
 	onlyAvailable?: boolean;
+	excludeId?: string;
+	showIdleAgents?: boolean;
 	pagination: { offset: number; count: number; sort: any };
 }): Promise<{ users: ILivechatAgent[]; count: number; offset: number; total: number }> {
-	const query = {};
+	const query: FilterOperators<ILivechatAgent> = {};
 	if (text) {
 		const filterReg = new RegExp(escapeRegExp(text), 'i');
 		Object.assign(query, {
@@ -30,6 +35,34 @@ async function findUsers({
 		Object.assign(query, {
 			statusLivechat: 'available',
 		});
+	}
+
+	if (excludeId) {
+		Object.assign(query, {
+			_id: { $ne: excludeId },
+		});
+	}
+
+	if (!showIdleAgents) {
+		const oldOr = query.$or;
+
+		if (oldOr) {
+			delete query.$or;
+			Object.assign(query, {
+				$and: [
+					{
+						$or: oldOr,
+					},
+					{
+						$or: [{ status: { $exists: true, $ne: 'offline' }, roles: { $ne: 'bot' } }, { roles: 'bot' }],
+					},
+				],
+			});
+		} else {
+			Object.assign(query, {
+				$or: [{ status: { $exists: true, $ne: 'offline' }, roles: { $ne: 'bot' } }, { roles: 'bot' }],
+			});
+		}
 	}
 
 	const [
@@ -61,16 +94,22 @@ async function findUsers({
 export async function findAgents({
 	text,
 	onlyAvailable = false,
+	excludeId,
+	showIdleAgents = true,
 	pagination: { offset, count, sort },
 }: {
 	text?: string;
 	onlyAvailable: boolean;
+	excludeId?: string;
+	showIdleAgents?: boolean;
 	pagination: { offset: number; count: number; sort: any };
 }): Promise<ReturnType<typeof findUsers>> {
 	return findUsers({
 		role: 'livechat-agent',
 		text,
 		onlyAvailable,
+		excludeId,
+		showIdleAgents,
 		pagination: {
 			offset,
 			count,
