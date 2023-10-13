@@ -72,61 +72,6 @@ describe('[Presence]', function () {
 		});
 	});
 
-	describe('[/presence.getMonthlyPeakConnections]', () => {
-		it('should throw an error if not authenticated', async () => {
-			await request
-				.get(api('presence.getMonthlyPeakConnections'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				});
-		});
-
-		it('should throw an error if user is unauthorized', async () => {
-			await request
-				.get(api('presence.getMonthlyPeakConnections'))
-				.set(unauthorizedUserCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				});
-		});
-
-		it("should throw an error if doesn't have required permission", async () => {
-			await updatePermission('manage-user-status', []);
-
-			await request
-				.get(api('presence.getMonthlyPeakConnections'))
-				.set(unauthorizedUserCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				});
-
-			await updatePermission('manage-user-status', ['admin']);
-		});
-
-		it('should return current and max connections of 200', async () => {
-			await request
-				.get(api('presence.getMonthlyPeakConnections'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('peak').to.be.a('number');
-					expect(res.body).to.have.property('date');
-					expect(res.body).to.have.property('max').to.be.a('number').and.to.be.equal(200);
-				});
-		});
-	});
-
 	describe('[/presence.enableBroadcast]', () => {
 		it('should throw an error if not authenticated', async () => {
 			await request
