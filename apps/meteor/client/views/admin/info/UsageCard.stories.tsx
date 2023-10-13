@@ -251,6 +251,7 @@ export default {
 			uncaughtExceptionsCount: 0,
 			push: 0,
 			dailyPeakConnections: 0,
+			maxMonthlyPeakConnections: 0,
 			matrixFederation: {
 				enabled: false,
 			},

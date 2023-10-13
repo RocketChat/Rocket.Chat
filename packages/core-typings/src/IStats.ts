@@ -220,6 +220,7 @@ export interface IStats {
 	uncaughtExceptionsCount: number;
 	push: number;
 	dailyPeakConnections: number;
+	maxMonthlyPeakConnections: number;
 	matrixFederation: {
 		enabled: boolean;
 	};
