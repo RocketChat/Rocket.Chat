@@ -10,10 +10,9 @@ export type ModConsoleUserRowProps = {
 	report: Pick<UserReport, '_id' | 'reportedUser' | 'ts'> & { count: number };
 	onClick: (id: IUser['_id']) => void;
 	isDesktopOrLarger: boolean;
-	avatarUpdateKey?: number;
 };
 
-const ModConsoleUserTableRow = ({ report, onClick, isDesktopOrLarger, avatarUpdateKey }: ModConsoleUserRowProps): JSX.Element => {
+const ModConsoleUserTableRow = ({ report, onClick, isDesktopOrLarger }: ModConsoleUserRowProps): JSX.Element => {
 	const { reportedUser } = report;
 	const { _id, username, name, createdAt, emails } = reportedUser;
 	const { count, ts } = report;
@@ -23,7 +22,7 @@ const ModConsoleUserTableRow = ({ report, onClick, isDesktopOrLarger, avatarUpda
 	return (
 		<GenericTableRow key={_id} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
 			<GenericTableCell withTruncatedText>
-				<UserColumn key={avatarUpdateKey} name={name} username={username} isDesktopOrLarger={isDesktopOrLarger} />
+				<UserColumn name={name} username={username} isDesktopOrLarger={isDesktopOrLarger} />
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{formatDateAndTime(createdAt)}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{emails?.[0].address}</GenericTableCell>

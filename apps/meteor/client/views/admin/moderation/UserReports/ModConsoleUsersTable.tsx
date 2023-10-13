@@ -55,13 +55,11 @@ const ModConsoleUsersTable: FC = () => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { data, isLoading, isSuccess, dataUpdatedAt } = useQuery(['moderation.userReports', query], async () => getReports(query), {
+	const { data, isLoading, isSuccess } = useQuery(['moderation.userReports', query], async () => getReports(query), {
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 	});
-
-	const debouncedUpdatedAt = useDebouncedValue(dataUpdatedAt, 1000);
 
 	const handleClick = useMutableCallback((id): void => {
 		router.navigate({
@@ -123,7 +121,6 @@ const ModConsoleUsersTable: FC = () => {
 									report={report as unknown as ModConsoleUserRowProps['report']}
 									onClick={handleClick}
 									isDesktopOrLarger={isDesktopOrLarger}
-									avatarUpdateKey={debouncedUpdatedAt}
 								/>
 							))}
 						</GenericTableBody>
