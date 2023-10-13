@@ -9,18 +9,20 @@ import {
 	useTranslation,
 	useRouter,
 } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { UiTextContext } from '../../../../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
+import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useRoom } from '../../../room/contexts/RoomContext';
 import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
 import DeleteTeamModal from './DeleteTeam';
 import LeaveTeam from './LeaveTeam';
+import LeaveTeamModal from './LeaveTeam/LeaveTeamModal/LeaveTeamModal';
 import TeamsInfo from './TeamsInfo';
 
 const retentionPolicyMaxAge = {
@@ -67,10 +69,15 @@ const TeamsInfoWithLogic = ({ openEditing }) => {
 	const canDelete = usePermission('delete-team', room._id);
 	const canEdit = usePermission('edit-team-channel', room._id);
 
+	const { value } = useEndpointData(
+		'teams.members',
+		useMemo(() => ({ teamId: room.teamId }), [room.teamId]),
+	);
+
 	// const canLeave = usePermission('leave-team'); /* && room.cl !== false && joined */
 
 	const onClickDelete = useMutableCallback(() => {
-		const onConfirm = async (deletedRooms) => {
+		const onLeaveConfirm = async (deletedRooms) => {
 			const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms : [];
 
 			try {
@@ -84,7 +91,22 @@ const TeamsInfoWithLogic = ({ openEditing }) => {
 			}
 		};
 
-		setModal(<DeleteTeamModal onConfirm={onConfirm} onCancel={closeModal} teamId={room.teamId} />);
+		const onDeleteConfirm = async (deletedRooms) => {
+			const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms : null;
+			try {
+				await deleteTeam({ teamId: room.teamId, roomsToRemove });
+				router.push({});
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+			closeModal();
+		};
+
+		if (value.total > 1) {
+			return setModal(<LeaveTeamModal onConfirm={onLeaveConfirm} onCancel={closeModal} teamId={room.teamId} />);
+		}
+
+		setModal(<DeleteTeamModal onConfirm={onDeleteConfirm} onCancel={closeModal} teamId={room.teamId} />);
 	});
 
 	const onClickLeave = useMutableCallback(() => {
