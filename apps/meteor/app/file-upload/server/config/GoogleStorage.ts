@@ -32,12 +32,15 @@ const get: FileUploadClass['get'] = async function (this: FileUploadClass, file,
 const copy: FileUploadClass['copy'] = async function (this: FileUploadClass, file, out) {
 	const fileUrl = await this.store.getRedirectURL(file, false);
 
-	if (fileUrl) {
-		const request = /^https:/.test(fileUrl) ? https : http;
-		request.get(fileUrl, (fileRes) => fileRes.pipe(out));
-	} else {
+	if (!fileUrl) {
 		out.end();
+		return;
 	}
+
+	const request = /^https:/.test(fileUrl) ? https : http;
+	return new Promise((resolve) => {
+		request.get(fileUrl, (fileRes) => fileRes.pipe(out).on('finish', () => resolve()));
+	});
 };
 
 const GoogleCloudStorageUploads = new FileUploadClass({
