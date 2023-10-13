@@ -604,6 +604,14 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
+	disableAutoTranslateByRoomId(roomId: IRoom['_id']): Promise<UpdateResult | Document> {
+		const query = {
+			rid: roomId,
+		};
+
+		return this.updateMany(query, { $unset: { autoTranslate: 1 } });
+	}
+
 	updateAutoTranslateLanguageById(_id: string, autoTranslateLanguage: string): Promise<UpdateResult> {
 		const query = {
 			_id,
