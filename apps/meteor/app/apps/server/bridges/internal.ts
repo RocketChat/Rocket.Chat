@@ -1,5 +1,5 @@
-import { InternalBridge } from '@rocket.chat/apps-engine/server/bridges/InternalBridge';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import { InternalBridge } from '@rocket.chat/apps-engine/server/bridges/InternalBridge';
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { Settings, Subscriptions } from '@rocket.chat/models';
 
@@ -8,7 +8,6 @@ import { isTruthy } from '../../../../lib/isTruthy';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
 
 export class AppInternalBridge extends InternalBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}

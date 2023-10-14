@@ -26,6 +26,9 @@ const ThreadMessagePreviewBody = ({ message }: ThreadMessagePreviewBodyProps): R
 		) {
 			mdTokens?.shift();
 		}
+		if (message.attachments && message.msg === '') {
+			return <>{t('Message_with_attachment')}</>;
+		}
 		if (!isEncryptedMessage || message.e2e === 'done') {
 			return mdTokens ? (
 				<GazzodownText>

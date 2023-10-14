@@ -1,4 +1,4 @@
-import { ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import type { Story } from '@storybook/react';
 import React, { useState } from 'react';
 
@@ -69,16 +69,16 @@ export const List: Story = () => {
 export const Default: Story = () => {
 	const [, selectedCategories, categoryTagList] = useCategories();
 
-	const [data, setData] = useState(() => testCategories);
+	const [data, setData] = useState(testCategories);
 
 	const onSelected = useCategoryToggle(setData);
 
 	return (
-		<>
+		<Box w='x144'>
 			<ButtonGroup>
 				<CategoryDropDown categories={data} selectedCategories={selectedCategories} onSelected={onSelected} />
 			</ButtonGroup>
 			<TagList categories={categoryTagList} onClick={onSelected} />
-		</>
+		</Box>
 	);
 };

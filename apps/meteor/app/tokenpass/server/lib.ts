@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import type { OauthConfig } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings/server';
 import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
+import { settings } from '../../settings/server';
 
 const config: OauthConfig = {
 	serverURL: '',
@@ -22,8 +22,8 @@ const config: OauthConfig = {
 
 const Tokenpass = new CustomOAuth('tokenpass', config);
 
-Meteor.startup(function () {
-	settings.watch<string>('API_Tokenpass_URL', function (value) {
+Meteor.startup(() => {
+	settings.watch<string>('API_Tokenpass_URL', (value) => {
 		config.serverURL = value;
 		Tokenpass.configure(config);
 	});

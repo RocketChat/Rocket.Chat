@@ -10,7 +10,7 @@ type ReactionUserTagProps = {
 };
 
 const ReactionUserTag = ({ username, onClick, displayName }: ReactionUserTagProps): ReactElement => (
-	<Box mie='x4' mbe='x4' data-username={username} onClick={onClick} key={displayName}>
+	<Box mie={4} mbe={4} data-username={username} onClick={onClick} key={displayName}>
 		<Tag variant='primary'>{displayName}</Tag>
 	</Box>
 );

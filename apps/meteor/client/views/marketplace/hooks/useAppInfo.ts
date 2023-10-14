@@ -3,8 +3,8 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useState, useEffect, useContext } from 'react';
 
 import type { ISettings } from '../../../../ee/client/apps/@types/IOrchestrator';
-import { Apps } from '../../../../ee/client/apps/orchestrator';
-import { AppsContext } from '../AppsContext';
+import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
+import { AppsContext } from '../../../contexts/AppsContext';
 import type { AppInfo } from '../definitions/AppInfo';
 
 const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
@@ -12,7 +12,7 @@ const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
 
 	return Promise.all(
 		bundledIn.map(async (bundle) => {
-			const apps = await Apps.getAppsOnBundle(bundle.bundleId);
+			const apps = await AppClientOrchestratorInstance.getAppsOnBundle(bundle.bundleId);
 			bundle.apps = apps.slice(0, 4);
 			return bundle;
 		}),
@@ -36,7 +36,7 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 			}
 
 			let appResult: App | undefined;
-			const marketplaceAppsContexts = ['explore', 'enterprise', 'requested'];
+			const marketplaceAppsContexts = ['explore', 'premium', 'requested'];
 
 			if (marketplaceAppsContexts.includes(context)) appResult = marketplaceApps.value?.apps.find((app) => app.id === appId);
 
@@ -83,7 +83,7 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 		};
 
 		fetchAppInfo();
-	}, [appId, context, getApis, getBundledIn, getScreenshots, getSettings, installedApps, marketplaceApps, privateApps.value]);
+	}, [appId, context, getApis, getBundledIn, getScreenshots, getSettings, installedApps, marketplaceApps, privateApps.value?.apps]);
 
 	return appData;
 };

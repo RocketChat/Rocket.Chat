@@ -1,10 +1,10 @@
-import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IAppsEngineService } from '@rocket.chat/core-services';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { IAppsEngineService } from '@rocket.chat/core-services';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
 
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 import { SystemLogger } from '../../lib/logger/system';
@@ -90,7 +90,10 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 
 			// avoid updating the setting if the value is the same,
 			// which caused an infinite loop
-			if (oldSetting === setting.value) {
+			// and sometimes the settings can be an array
+			// so we need to convert it to JSON stringified to compare it
+
+			if (JSON.stringify(oldSetting) === JSON.stringify(setting.value)) {
 				Apps.getRocketChatLogger().info(
 					`"apps.settingUpdated" event received for setting ${setting.id} of app "${appId}", but the setting value is the same`,
 				);

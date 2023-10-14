@@ -1,108 +1,21 @@
-import { VM, VMScript } from 'vm2';
-import { Random } from '@rocket.chat/random';
-import { Livechat } from 'meteor/rocketchat:livechat';
-import _ from 'underscore';
-import moment from 'moment';
 import { Integrations, Users } from '@rocket.chat/models';
-import * as Models from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import _ from 'underscore';
 
-import * as s from '../../../../lib/utils/stringUtils';
-import { incomingLogger } from '../logger';
-import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
+import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { settings } from '../../../settings/server';
-import { httpCall } from '../../../../server/lib/http/call';
-import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
-import { deasyncPromise } from '../../../../server/deasync/deasync';
+import { IsolatedVMScriptEngine } from '../lib/isolated-vm/isolated-vm';
+import { VM2ScriptEngine } from '../lib/vm2/vm2';
+import { incomingLogger } from '../logger';
 import { addOutgoingIntegration } from '../methods/outgoing/addOutgoingIntegration';
+import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
 
-export const forbiddenModelMethods = ['registerModel', 'getCollectionName'];
+const vm2Engine = new VM2ScriptEngine(true);
+const ivmEngine = new IsolatedVMScriptEngine(true);
 
-const compiledScripts = {};
-function buildSandbox(store = {}) {
-	const httpAsync = async (method, url, options) => {
-		try {
-			return {
-				result: await httpCall(method, url, options),
-			};
-		} catch (error) {
-			return { error };
-		}
-	};
-
-	const sandbox = {
-		scriptTimeout(reject) {
-			return setTimeout(() => reject('timed out'), 3000);
-		},
-		_,
-		s,
-		console,
-		moment,
-		Promise,
-		Livechat,
-		Store: {
-			set(key, val) {
-				store[key] = val;
-				return val;
-			},
-			get(key) {
-				return store[key];
-			},
-		},
-		HTTP: (method, url, options) => {
-			// TODO: deprecate, track and alert
-			return deasyncPromise(httpAsync(method, url, options));
-		},
-		// TODO: Export fetch as the non deprecated method
-	};
-	Object.keys(Models)
-		.filter((k) => !forbiddenModelMethods.includes(k))
-		.forEach((k) => {
-			sandbox[k] = Models[k];
-		});
-	return { store, sandbox };
-}
-
-function getIntegrationScript(integration) {
-	const compiledScript = compiledScripts[integration._id];
-	if (compiledScript && +compiledScript._updatedAt === +integration._updatedAt) {
-		return compiledScript.script;
-	}
-
-	const script = integration.scriptCompiled;
-	const { sandbox, store } = buildSandbox();
-	try {
-		incomingLogger.info({ msg: 'Will evaluate script of Trigger', integration: integration.name });
-		incomingLogger.debug(script);
-
-		const vmScript = new VMScript(`${script}; Script;`, 'script.js');
-		const vm = new VM({
-			sandbox,
-		});
-
-		const ScriptClass = vm.run(vmScript);
-
-		if (ScriptClass) {
-			compiledScripts[integration._id] = {
-				script: new ScriptClass(),
-				store,
-				_updatedAt: integration._updatedAt,
-			};
-
-			return compiledScripts[integration._id].script;
-		}
-	} catch (err) {
-		incomingLogger.error({
-			msg: 'Error evaluating Script in Trigger',
-			integration: integration.name,
-			script,
-			err,
-		});
-		throw API.v1.failure('error-evaluating-script');
-	}
-
-	incomingLogger.error({ msg: 'Class "Script" not in Trigger', integration: integration.name });
-	throw API.v1.failure('class-script-not-found');
+function getEngine(integration) {
+	return integration.scriptEngine === 'isolated-vm' ? ivmEngine : vm2Engine;
 }
 
 async function createIntegration(options, user) {
@@ -172,15 +85,9 @@ async function executeIntegrationRest() {
 		emoji: this.integration.emoji,
 	};
 
-	if (this.integration.scriptEnabled && this.integration.scriptCompiled && this.integration.scriptCompiled.trim() !== '') {
-		let script;
-		try {
-			script = getIntegrationScript(this.integration);
-		} catch (e) {
-			incomingLogger.error(e);
-			return API.v1.failure(e.message);
-		}
+	const scriptEngine = getEngine(this.integration);
 
+	if (scriptEngine.integrationHasValidScript(this.integration)) {
 		this.request.setEncoding('utf8');
 		const content_raw = this.request.read();
 
@@ -205,37 +112,12 @@ async function executeIntegrationRest() {
 			},
 		};
 
+		const result = await scriptEngine.processIncomingRequest({
+			integration: this.integration,
+			request,
+		});
+
 		try {
-			const { sandbox } = buildSandbox(compiledScripts[this.integration._id].store);
-			sandbox.script = script;
-			sandbox.request = request;
-
-			const vm = new VM({
-				timeout: 3000,
-				sandbox,
-			});
-
-			const result = await new Promise((resolve, reject) => {
-				process.nextTick(async () => {
-					try {
-						const scriptResult = await vm.run(`
-							new Promise((resolve, reject) => {
-								scriptTimeout(reject);
-								try {
-									resolve(script.process_incoming_request({ request: request }));
-								} catch(e) {
-									reject(e);
-								}
-							}).catch((error) => { throw new Error(error); });
-						`);
-
-						resolve(scriptResult);
-					} catch (e) {
-						reject(e);
-					}
-				});
-			});
-
 			if (!result) {
 				incomingLogger.debug({
 					msg: 'Process Incoming Request result of Trigger has no data',
@@ -274,6 +156,10 @@ async function executeIntegrationRest() {
 	if (!this.bodyParams || (_.isEmpty(this.bodyParams) && !this.integration.scriptEnabled)) {
 		// return RocketChat.API.v1.failure('body-empty');
 		return API.v1.success();
+	}
+
+	if ((this.bodyParams.channel || this.bodyParams.roomId) && !this.integration.overrideDestinationChannelEnabled) {
+		return API.v1.failure('overriding destination channel is disabled for this integration');
 	}
 
 	this.bodyParams.bot = { i: this.integration._id };

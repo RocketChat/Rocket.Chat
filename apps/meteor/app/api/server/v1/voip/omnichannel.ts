@@ -1,11 +1,11 @@
-import { Match, check } from 'meteor/check';
+import { LivechatVoip } from '@rocket.chat/core-services';
 import type { IUser, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { LivechatVoip } from '@rocket.chat/core-services';
+import { Match, check } from 'meteor/check';
 
 import { API } from '../../api';
-import { logger } from './logger';
 import { getPaginationItems } from '../../helpers/getPaginationItems';
+import { logger } from './logger';
 
 function filter(
 	array: IVoipExtensionWithAgentInfo[],
@@ -78,7 +78,6 @@ API.v1.addRoute(
 			}
 
 			try {
-				logger.debug(`Setting extension ${extension} for agent with id ${user._id}`);
 				await Users.setExtension(user._id, extension);
 				return API.v1.success();
 			} catch (e) {
@@ -146,7 +145,6 @@ API.v1.addRoute(
 				return API.v1.notFound();
 			}
 			if (!user.extension) {
-				logger.debug(`User ${user._id} is not associated with any extension. Skipping`);
 				return API.v1.success();
 			}
 

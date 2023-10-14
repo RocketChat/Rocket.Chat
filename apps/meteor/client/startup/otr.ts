@@ -5,6 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import { Notifications } from '../../app/notifications/client';
 import OTR from '../../app/otr/client/OTR';
 import { OtrRoomState } from '../../app/otr/lib/OtrRoomState';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { t } from '../../app/utils/lib/i18n';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
@@ -66,7 +67,7 @@ Meteor.startup(() => {
 			} else if (userId !== Meteor.userId()) {
 				const encryptedAck = await instanceByRoomId.encryptText(ack);
 
-				Meteor.call('updateOTRAck', { message, ack: encryptedAck });
+				void sdk.call('updateOTRAck', { message, ack: encryptedAck });
 			}
 
 			return { ...message, _id, msg };

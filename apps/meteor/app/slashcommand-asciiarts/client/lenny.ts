@@ -1,6 +1,6 @@
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
+import { sdk } from '../../utils/client/lib/SDKClient';
 import { slashCommands } from '../../utils/lib/slashCommand';
 /*
  * Lenny is a named function that will replace /lenny commands
@@ -9,8 +9,7 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 
 async function LennyFace({ message, params }: SlashCommandCallbackParams<'lenny'>): Promise<void> {
 	const msg = message;
-	msg.msg = `${params} ( ͡° ͜ʖ ͡°)`;
-	await Meteor.callAsync('sendMessage', msg);
+	await sdk.call('sendMessage', { ...msg, msg: `${params} ( ͡° ͜ʖ ͡°)` });
 }
 
 slashCommands.add({
@@ -19,5 +18,6 @@ slashCommands.add({
 	options: {
 		description: 'Slash_LennyFace_Description',
 		params: 'your_message_optional',
+		clientOnly: true,
 	},
 });

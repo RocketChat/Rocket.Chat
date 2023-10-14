@@ -1,5 +1,5 @@
 import type { ILivechatCustomField } from '@rocket.chat/core-typings';
-import { Field, TextInput, Select } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, TextInput, Select } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useEffect } from 'react';
@@ -35,29 +35,33 @@ const CustomFieldsList = ({ setCustomFields, allCustomFields }: CustomFieldsList
 				{/* TODO: REMOVE FILTER ONCE THE ENDPOINT SUPPORTS A SCOPE PARAMETER */}
 				{allCustomFields
 					.filter((customField) => customField.scope !== 'visitor')
-					.map((customField: ILivechatCustomField) =>
-						customField.type === 'select' ? (
-							<Field>
-								<Field.Label>{customField.label}</Field.Label>
-								<Field.Row>
-									<Controller
-										name={customField._id}
-										control={control}
-										render={({ field }): ReactElement => (
-											<Select {...field} options={(customField.options || '').split(',').map((item) => [item, item])} />
-										)}
-									/>
-								</Field.Row>
-							</Field>
-						) : (
-							<Field>
-								<Field.Label>{customField.label}</Field.Label>
-								<Field.Row>
+					.map((customField: ILivechatCustomField) => {
+						if (customField.type === 'select') {
+							return (
+								<Field key={customField._id}>
+									<FieldLabel>{customField.label}</FieldLabel>
+									<FieldRow>
+										<Controller
+											name={customField._id}
+											control={control}
+											render={({ field }): ReactElement => (
+												<Select {...field} options={(customField.options || '').split(',').map((item) => [item, item])} />
+											)}
+										/>
+									</FieldRow>
+								</Field>
+							);
+						}
+
+						return (
+							<Field key={customField._id}>
+								<FieldLabel>{customField.label}</FieldLabel>
+								<FieldRow>
 									<TextInput flexGrow={1} {...register(customField._id)} />
-								</Field.Row>
+								</FieldRow>
 							</Field>
-						),
-					)}
+						);
+					})}
 			</ContextualbarScrollableContent>
 		</Contextualbar>
 	);

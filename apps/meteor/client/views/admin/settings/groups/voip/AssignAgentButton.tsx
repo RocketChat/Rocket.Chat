@@ -1,9 +1,10 @@
-import { Table, IconButton } from '@rocket.chat/fuselage';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React from 'react';
 
+import { GenericTableCell } from '../../../../../components/GenericTable';
 import AssignAgentModal from './AssignAgentModal';
 
 const AssignAgentButton: FC<{ extension: string; reload: () => void }> = ({ extension, reload }) => {
@@ -16,9 +17,9 @@ const AssignAgentButton: FC<{ extension: string; reload: () => void }> = ({ exte
 	});
 
 	return (
-		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
+		<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 			<IconButton icon='user-plus' small title={t('Associate_Agent')} onClick={handleAssociation} />
-		</Table.Cell>
+		</GenericTableCell>
 	);
 };
 

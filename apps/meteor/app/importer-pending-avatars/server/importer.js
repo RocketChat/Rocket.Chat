@@ -39,7 +39,7 @@ export class PendingAvatarImporter extends Base {
 
 					try {
 						if (!url || !url.startsWith('http')) {
-							return;
+							continue;
 						}
 
 						try {

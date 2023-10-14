@@ -34,6 +34,7 @@ export const palette = [
 		category: 'Badge',
 		description: 'Badge Background',
 		list: [
+			{ name: 'badge-background-level-0', token: '', color: '#404754' },
 			{ name: 'badge-background-level-1', token: '', color: '#484C51' },
 			{ name: 'badge-background-level-2', token: '', color: '#2C65BA' },
 			{ name: 'badge-background-level-3', token: '', color: '#955828' },
@@ -54,7 +55,7 @@ export const palette = [
 		list: [
 			{ name: 'button-background-secondary-default', token: '', color: '#0D0F11' },
 			{ name: 'button-background-secondary-hover', token: '', color: '#3A404B' },
-			{ name: 'button-background-secondary-press', token: '', color: '#2C313A' },
+			{ name: 'button-background-secondary-press', token: '', color: '#4C5362' },
 			{ name: 'button-background-secondary-focus', token: '', color: '#0D0F11' },
 			{ name: 'button-background-secondary-keyfocus', token: '', color: '#2F343D' },
 			{ name: 'button-background-secondary-disabled', token: '', color: '#2F343D' },

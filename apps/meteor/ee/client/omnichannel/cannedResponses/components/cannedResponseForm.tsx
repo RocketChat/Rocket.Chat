@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Field, TextInput } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, FieldError, FieldDescription, TextInput } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React from 'react';
@@ -35,49 +35,49 @@ const CannedResponseForm: FC<{
 
 	return (
 		<>
-			<Field mbe='x24'>
-				<Field.Label>{t('Shortcut')}</Field.Label>
+			<Field mbe={24}>
+				<FieldLabel>{t('Shortcut')}</FieldLabel>
 				<TextInput
 					error={errors.shortcut}
-					name={'shortcut'}
+					name='shortcut'
 					placeholder={`!${t('shortcut_name')}`}
 					onChange={handleShortcut}
 					value={shortcut}
 				/>
-				<Field.Error>{errors.shortcut}</Field.Error>
+				<FieldError>{errors.shortcut}</FieldError>
 			</Field>
-			<Field mbe='x24'>
-				<Field.Label w='full'>
+			<Field mbe={24}>
+				<FieldLabel w='full'>
 					<Box w='full' display='flex' flexDirection='row' justifyContent='space-between'>
 						{t('Message')}
 						<Box className={clickable} color='info' onClick={onPreview}>
 							{previewState ? t('Editor') : t('Preview')}
 						</Box>
 					</Box>
-				</Field.Label>
+				</FieldLabel>
 				{previewState ? <PreviewText text={text} /> : <MarkdownTextEditor value={text} onChange={handleText} />}
 			</Field>
-			<Field mbe='x24'>
+			<Field mbe={24}>
 				<Tags handler={handleTags} tags={tags} />
 			</Field>
 			{(isManager || isMonitor) && (
 				<>
-					<Field mbe='x24'>
-						<Field.Label>{t('Sharing')}</Field.Label>
-						<Field.Description>{radioDescription}</Field.Description>
-						<Field.Row mbs='12px' justifyContent='start'>
+					<Field mbe={24}>
+						<FieldLabel>{t('Sharing')}</FieldLabel>
+						<FieldDescription>{radioDescription}</FieldDescription>
+						<FieldRow mbs='12px' justifyContent='start'>
 							<SharingOptions isMonitor={isMonitor} isManager={isManager} scope={scope} radioHandlers={radioHandlers} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					{scope === 'department' && (
-						<Field mbe='x24'>
-							<Field.Label>{t('Department')}</Field.Label>
+						<Field mbe={24}>
+							<FieldLabel>{t('Department')}</FieldLabel>
 							<AutoCompleteDepartment
 								{...(isMonitor && { onlyMyDepartments: isMonitor })}
 								value={departmentId}
 								onChange={handleDepartmentId}
 							/>
-							<Field.Error>{errors.departmentId}</Field.Error>
+							<FieldError>{errors.departmentId}</FieldError>
 						</Field>
 					)}
 				</>

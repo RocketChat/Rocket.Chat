@@ -1,4 +1,4 @@
-import { useQueryStringParameter, useUser } from '@rocket.chat/ui-contexts';
+import { useSearchParameter, useUser } from '@rocket.chat/ui-contexts';
 import RegistrationPageRouter from '@rocket.chat/web-ui-registration';
 import React from 'react';
 
@@ -10,8 +10,8 @@ import { useOAuthAppQuery } from './hooks/useOAuthAppQuery';
 
 const OAuthAuthorizationPage = () => {
 	const user = useUser();
-	const clientId = useQueryStringParameter('client_id');
-	const redirectUri = useQueryStringParameter('redirect_uri');
+	const clientId = useSearchParameter('client_id');
+	const redirectUri = useSearchParameter('redirect_uri');
 
 	const oauthAppQuery = useOAuthAppQuery(clientId, {
 		enabled: !!user,

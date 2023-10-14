@@ -35,4 +35,5 @@ export const getDefaultUserFields = (): DefaultUserFields => ({
 	'_updatedAt': 1,
 	'avatarETag': 1,
 	'extension': 1,
+	'openBusinessHours': 1,
 });

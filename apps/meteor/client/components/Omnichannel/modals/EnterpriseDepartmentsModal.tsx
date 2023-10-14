@@ -44,7 +44,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
 				<Modal.HeroImage src='/images/departments.svg' />
-				<Box fontSize={20} fontWeight={700} lineHeight={28} mbe={28}>
+				<Box fontScale='h3' mbe={28}>
 					{t('Enterprise_Departments_title')}
 				</Box>
 				{isTypeUpgradeYourPlan ? t('Enterprise_Departments_description_free_trial') : t('Enterprise_Departments_description_upgrade')}

@@ -1,4 +1,4 @@
-import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
+import { Pagination } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
@@ -7,6 +7,7 @@ import type { ReactElement, MutableRefObject } from 'react';
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
+import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -22,6 +23,7 @@ type UsersTableProps = {
 	reload: MutableRefObject<() => void>;
 };
 
+// TODO: Missing error state
 const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const usersRoute = useRoute('admin-users');
@@ -76,7 +78,6 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 			return users;
 		},
 		{
-			refetchOnWindowFocus: false,
 			onError: (error) => {
 				dispatchToastMessage({ type: 'error', message: error });
 			},
@@ -171,12 +172,7 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 					/>
 				</>
 			)}
-			{isSuccess && data?.count === 0 && (
-				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
-				</States>
-			)}
+			{isSuccess && data?.count === 0 && <GenericNoResults />}
 		</>
 	);
 };

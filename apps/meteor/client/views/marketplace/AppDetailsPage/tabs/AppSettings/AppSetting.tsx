@@ -4,6 +4,7 @@ import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo, useCallback } from 'react';
 
+import { Utilities } from '../../../../../../ee/lib/misc/Utilities';
 import MarkdownText from '../../../../../components/MarkdownText';
 import MemoizedSetting from '../../../../admin/settings/MemoizedSetting';
 
@@ -20,7 +21,7 @@ const useAppTranslation = (appId: string): AppTranslationFunction => {
 			if (!key) {
 				return '';
 			}
-			const appKey = `project:apps-${appId}-${key}`;
+			const appKey = Utilities.getI18nKeyForApp(key, appId);
 
 			if (t.has(appKey)) {
 				return t(appKey, ...args);
@@ -40,7 +41,7 @@ const useAppTranslation = (appId: string): AppTranslationFunction => {
 					return false;
 				}
 
-				return t.has(`project:apps-${appId}-${key}`) || t.has(key);
+				return t.has(Utilities.getI18nKeyForApp(key, appId)) || t.has(key);
 			},
 			[t, appId],
 		),

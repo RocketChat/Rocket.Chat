@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
-import { Rooms } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
+import { Rooms } from '@rocket.chat/models';
+import { Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
 

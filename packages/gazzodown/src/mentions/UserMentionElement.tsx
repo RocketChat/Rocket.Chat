@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/fuselage';
-import { useLayout, useSetting, useUserId } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { memo, ReactElement, useContext, useMemo } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
@@ -8,29 +8,32 @@ type UserMentionElementProps = {
 	mention: string;
 };
 
+const handleUserMention = (mention: string | undefined, withSymbol: boolean | undefined): string | undefined =>
+	withSymbol ? `@${mention}` : mention;
+
 const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement => {
-	const { resolveUserMention, onUserMentionClick } = useContext(MarkupInteractionContext);
+	const t = useTranslation();
+	const { resolveUserMention, onUserMentionClick, isMobile, ownUserId, useRealName, showMentionSymbol } =
+		useContext(MarkupInteractionContext);
 
 	const resolved = useMemo(() => resolveUserMention?.(mention), [mention, resolveUserMention]);
 	const handleClick = useMemo(() => (resolved ? onUserMentionClick?.(resolved) : undefined), [resolved, onUserMentionClick]);
 
-	const { isMobile } = useLayout();
-	const uid = useUserId();
-	const showRealName = useSetting<boolean>('UI_Use_Real_Name') && !isMobile;
+	const showRealName = useRealName && !isMobile;
 
 	if (mention === 'all') {
 		return (
-			<Message.Mention tag='@' variant='relevant'>
-				all
-			</Message.Mention>
+			<Message.Highlight title={t('Mentions_all_room_members')} variant='relevant'>
+				{handleUserMention('all', showMentionSymbol)}
+			</Message.Highlight>
 		);
 	}
 
 	if (mention === 'here') {
 		return (
-			<Message.Mention tag='@' variant='relevant'>
-				here
-			</Message.Mention>
+			<Message.Highlight title={t('Mentions_online_room_members')} variant='relevant'>
+				{handleUserMention('here', showMentionSymbol)}
+			</Message.Highlight>
 		);
 	}
 
@@ -39,16 +42,15 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 	}
 
 	return (
-		<Message.Mention
-			tag='@'
-			variant={resolved._id === uid ? 'critical' : 'other'}
-			title={resolved.username || resolved.name}
+		<Message.Highlight
+			variant={resolved._id === ownUserId ? 'critical' : 'other'}
+			title={resolved._id === ownUserId ? t('Mentions_you') : t('Mentions_user')}
 			clickable
 			onClick={handleClick}
 			data-uid={resolved._id}
 		>
-			{(showRealName ? resolved.name : resolved.username) ?? mention}
-		</Message.Mention>
+			{handleUserMention((showRealName ? resolved.name : resolved.username) ?? mention, showMentionSymbol)}
+		</Message.Highlight>
 	);
 };
 

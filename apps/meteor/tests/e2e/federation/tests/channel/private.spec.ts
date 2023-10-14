@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import * as constants from '../../config/constants';
 import { FederationChannel } from '../../page-objects/channel';
@@ -65,7 +65,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 			}) => {
 				const pageForServer2 = await browser.newPage();
 				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 				const usernameFromServer2 = await registerUser(apiServer2);
 
 				await doLogin({
@@ -114,7 +114,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 			test('expect to create a group inviting an user from the Server B who already exist in Server A', async ({ browser, page }) => {
 				const pageForServer2 = await browser.newPage();
 				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await doLogin({
 					page: pageForServer2,
@@ -159,7 +159,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 			});
 
 			test.describe('With multiple users (when the remote user does not exists in the server A yet)', () => {
-				const createdGroup = faker.datatype.uuid();
+				const createdGroup = faker.string.uuid();
 				let createdUsernameFromServer2: string;
 
 				test('expect to create a group inviting an user from the Server B who does not exist in Server A yet + an user from Server A only (locally)', async ({
@@ -256,7 +256,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 			});
 
 			test.describe('With multiple users (when the user from Server B already exists in Server A)', () => {
-				const createdGroup = faker.datatype.uuid();
+				const createdGroup = faker.string.uuid();
 				test('expect to create a group inviting an user from the Server B who already exist in Server A + an user from Server A only (locally)', async ({
 					browser,
 					page,
@@ -348,7 +348,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 			});
 
 			test.describe('With local users only', () => {
-				const createdGroup = faker.datatype.uuid();
+				const createdGroup = faker.string.uuid();
 
 				test('Create a group inviting an user from Server A only (locally)', async ({ page }) => {
 					await page.goto(`${constants.RC_SERVER_1.url}/home`);
@@ -401,7 +401,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 			}) => {
 				const pageForServer2 = await browser.newPage();
 				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 				const usernameFromServer2 = await registerUser(apiServer2);
 
 				await doLogin({
@@ -455,7 +455,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 			}) => {
 				const pageForServer2 = await browser.newPage();
 				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 
 				await doLogin({
 					page: pageForServer2,
@@ -502,7 +502,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 			});
 
 			test.describe('With multiple users (when the remote user does not exists in the server A yet)', () => {
-				const createdGroup = faker.datatype.uuid();
+				const createdGroup = faker.string.uuid();
 				let createdUsernameFromServer2: string;
 
 				test('expect to create an empty group, and invite an user from the Server B who does not exist in Server A yet + an user from Server A only (locally)', async ({
@@ -598,7 +598,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 			});
 
 			test.describe('With multiple users (when the user from Server B already exists in Server A)', () => {
-				const createdGroup = faker.datatype.uuid();
+				const createdGroup = faker.string.uuid();
 
 				test('expect to create an empty group, and invite an user from the Server B who already exist in Server A + an user from Server A only (locally)', async ({
 					browser,
@@ -690,7 +690,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 			});
 
 			test.describe('With local users only', () => {
-				const createdGroup = faker.datatype.uuid();
+				const createdGroup = faker.string.uuid();
 
 				test('Create an empty group, and invite an an user from Server A only (locally)', async ({ page }) => {
 					await page.goto(`${constants.RC_SERVER_1.url}/home`);
@@ -739,7 +739,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 		});
 
 		test.describe('Creating rooms with the same name in different servers, and invite users for those rooms', () => {
-			const groupName = faker.datatype.uuid();
+			const groupName = faker.string.uuid();
 			let usernameFromServer2: string;
 
 			test('expect to create a group and invite users from a server which already have a group with the exact same name', async ({
@@ -883,34 +883,6 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 				await expect(poFederationChannelServer1.tabs.btnCall).toBeDisabled();
 				await expect(poFederationChannelServer2.tabs.btnCall).toBeDisabled();
-
-				await pageForServer2.close();
-			});
-
-			test('expect the threads button to be disabled', async ({ browser, page }) => {
-				const pageForServer2 = await browser.newPage();
-				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-
-				await doLogin({
-					page: pageForServer2,
-					server: {
-						url: constants.RC_SERVER_2.url,
-						username: userFromServer2UsernameOnly,
-						password: constants.RC_SERVER_2.password,
-					},
-					storeState: false,
-				});
-
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
-
-				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroupName}`);
-
-				await expect(poFederationChannelServer1.tabs.btnThread).toBeDisabled();
-				await expect(poFederationChannelServer2.tabs.btnThread).toBeDisabled();
 
 				await pageForServer2.close();
 			});
@@ -1091,7 +1063,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 			test('expect to remove the invitee from the room', async ({ browser, page, apiServer2 }) => {
 				const pageForServer2 = await browser.newPage();
 				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 				const usernameFromServer2 = await registerUser(apiServer2);
 
 				await doLogin({
@@ -1151,7 +1123,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 			test('expect the invitee to be able to leave the room', async ({ browser, page, apiServer2 }) => {
 				const pageForServer2 = await browser.newPage();
 				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-				const groupName = faker.datatype.uuid();
+				const groupName = faker.string.uuid();
 				const usernameFromServer2 = await registerUser(apiServer2);
 
 				await doLogin({
@@ -1199,7 +1171,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 			test('expect the federated channels not to be shown as parent channels in discussion creation', async ({ page, browser }) => {
 				const pageForServer2 = await browser.newPage();
 				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-				const channelName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
 
 				await doLogin({
 					page: pageForServer2,
@@ -1228,8 +1200,8 @@ test.describe.parallel('Federation - Group Creation', () => {
 			test('expect the federated channels not to be shown as parent channels in the input to add rooms to the team on Server A', async ({
 				page,
 			}) => {
-				const channelName = faker.datatype.uuid();
-				const teamName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
+				const teamName = faker.string.uuid();
 
 				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(channelName, [fullUsernameFromServer2]);
@@ -1248,8 +1220,8 @@ test.describe.parallel('Federation - Group Creation', () => {
 			}) => {
 				const pageForServer2 = await browser.newPage();
 				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-				const channelName = faker.datatype.uuid();
-				const teamName = faker.datatype.uuid();
+				const channelName = faker.string.uuid();
+				const teamName = faker.string.uuid();
 
 				await doLogin({
 					page: pageForServer2,

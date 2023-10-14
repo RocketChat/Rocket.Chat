@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { checkUsernameAvailabilityWithValidation } from '../functions/checkUsernameAvailability';
 import { RateLimiter } from '../lib';
@@ -15,7 +15,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async checkUsernameAvailability(username) {
-		methodDeprecationLogger.warn('checkUsernameAvailability will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('checkUsernameAvailability', '7.0.0');
 
 		check(username, String);
 		const userId = Meteor.userId();

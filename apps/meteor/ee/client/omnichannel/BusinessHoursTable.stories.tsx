@@ -14,7 +14,7 @@ export default {
 	},
 } as ComponentMeta<typeof BusinessHoursTable>;
 
-export const Default: ComponentStory<typeof BusinessHoursTable> = (args) => <BusinessHoursTable {...args} />;
+export const Default: ComponentStory<typeof BusinessHoursTable> = (_args) => <BusinessHoursTable />;
 Default.storyName = 'BusinessHoursTable';
 Default.args = {
 	businessHours: [
@@ -59,7 +59,7 @@ Default.args = {
 };
 Default.decorators = [
 	(fn) => (
-		<Box maxWidth='x600' alignSelf='center' w='full' m='x24'>
+		<Box maxWidth='x600' alignSelf='center' w='full' m={24}>
 			{fn()}
 		</Box>
 	),

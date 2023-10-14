@@ -1,8 +1,8 @@
+import type { IWebdavAccount } from '@rocket.chat/core-typings';
+import { WebdavAccounts } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { createClient } from 'webdav';
-import { WebdavAccounts } from '@rocket.chat/models';
-import type { IWebdavAccount } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { settings } from '../../../settings/server';
 import { getWebdavCredentials } from '../lib/getWebdavCredentials';

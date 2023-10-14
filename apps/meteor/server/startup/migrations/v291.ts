@@ -1,9 +1,9 @@
-import { Settings } from '@rocket.chat/models';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import { Settings } from '@rocket.chat/models';
 
+import { Apps } from '../../../ee/server/apps';
 import type { AppRealStorage } from '../../../ee/server/apps/storage';
 import { addMigration } from '../../lib/migrations';
-import { Apps } from '../../../ee/server/apps';
 
 addMigration({
 	version: 291,

@@ -1,15 +1,15 @@
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 
-import { Meteor } from 'meteor/meteor';
 import type { IImportFileData } from '@rocket.chat/core-typings';
 import { Imports } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { RocketChatImportFileInstance } from '../startup/store';
+import { Importers } from '..';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
-import { Importers } from '..';
+import { RocketChatImportFileInstance } from '../startup/store';
 
 export const executeGetImportFileData = async (): Promise<IImportFileData | { waiting: true }> => {
 	const operation = await Imports.findLastImport();
@@ -25,7 +25,6 @@ export const executeGetImportFileData = async (): Promise<IImportFileData | { wa
 	}
 
 	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
-	await importer.instance.build();
 
 	const waitingSteps = [
 		ProgressStep.DOWNLOADING_FILE,

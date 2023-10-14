@@ -1,12 +1,11 @@
-import { UiInteractionBridge as UiIntBridge } from '@rocket.chat/apps-engine/server/bridges/UiInteractionBridge';
 import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import { UiInteractionBridge as UiIntBridge } from '@rocket.chat/apps-engine/server/bridges/UiInteractionBridge';
 import { api } from '@rocket.chat/core-services';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class UiInteractionBridge extends UiIntBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}

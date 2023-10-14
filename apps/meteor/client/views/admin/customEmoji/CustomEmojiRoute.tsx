@@ -1,4 +1,4 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useRef } from 'react';
@@ -45,9 +45,9 @@ const CustomEmojiRoute = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page name='admin-emoji-custom'>
-				<Page.Header title={t('Custom_Emoji')}>
+				<Page.Header title={t('Emoji')}>
 					<Button primary onClick={handleAddEmoji} aria-label={t('New')}>
-						<Icon name='plus' /> {t('New')}
+						{t('New')}
 					</Button>
 				</Page.Header>
 				<Page.Content>

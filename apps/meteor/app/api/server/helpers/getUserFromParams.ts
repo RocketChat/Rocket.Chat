@@ -1,7 +1,7 @@
 // Convenience method, almost need to turn it into a middleware of sorts
-import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 export async function getUserFromParams(params: {
 	userId?: string;

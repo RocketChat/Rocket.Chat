@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { sdk } from '../../../utils/client/lib/SDKClient';
 import { userStatus } from './userStatus';
 
 userStatus.packages.customUserStatus = {
@@ -40,7 +41,7 @@ Meteor.startup(() => {
 			return;
 		}
 
-		Meteor.call('listCustomUserStatus', (error, result) => {
+		void sdk.call('listCustomUserStatus').then((result) => {
 			if (!result) {
 				return;
 			}

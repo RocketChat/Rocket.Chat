@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
+import { Messages, AppsTokens, Users, Rooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
-import { Messages, AppsTokens, Users, Rooms } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { API } from '../api';
-import PushNotification from '../../../push-notifications/server/lib/PushNotification';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
+import PushNotification from '../../../push-notifications/server/lib/PushNotification';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'push.token',

@@ -30,7 +30,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 	const savePriority = useEndpoint('PUT', `/v1/livechat/priorities/:priorityId`, { priorityId });
 	const resetPriorities = useEndpoint('POST', '/v1/livechat/priorities.reset');
 
-	const { data: priorities } = useOmnichannelPriorities();
+	const { data: priorities, isLoading } = useOmnichannelPriorities();
 
 	const isPrioritiesDirty = useMemo(() => !!priorities.length && priorities.some((p) => p.dirty), [priorities]);
 
@@ -83,7 +83,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 					</ButtonGroup>
 				</Page.Header>
 				<Page.Content>
-					<PrioritiesTable data={priorities} onRowClick={onRowClick} />
+					<PrioritiesTable priorities={priorities} isLoading={isLoading} onRowClick={onRowClick} />
 				</Page.Content>
 			</Page>
 

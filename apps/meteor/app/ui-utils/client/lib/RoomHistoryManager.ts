@@ -1,18 +1,18 @@
-import { Tracker } from 'meteor/tracker';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { v4 as uuidv4 } from 'uuid';
-import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
-import { Emitter } from '@rocket.chat/emitter';
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
+import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import type { MutableRefObject } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
-import { waitForElement } from '../../../../client/lib/utils/waitForElement';
-import { readMessage } from './readMessages';
-import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { ChatMessage, ChatSubscription } from '../../../models/client';
-import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
-import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
+import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
+import { getConfig } from '../../../../client/lib/utils/getConfig';
+import { waitForElement } from '../../../../client/lib/utils/waitForElement';
+import { ChatMessage, ChatSubscription } from '../../../models/client';
+import { getUserPreference } from '../../../utils/client';
 
 export async function upsertMessage(
 	{
@@ -70,6 +70,7 @@ class RoomHistoryManagerClass extends Emitter {
 			unreadNotLoaded: ReactiveVar<number>;
 			firstUnread: ReactiveVar<IMessage | undefined>;
 			loaded: number | undefined;
+			oldestTs?: Date;
 		}
 	> = {};
 
@@ -122,7 +123,6 @@ class RoomHistoryManagerClass extends Emitter {
 	}
 
 	public async getMore(rid: IRoom['_id'], limit = defaultLimit): Promise<void> {
-		let ts;
 		const room = this.getRoom(rid);
 
 		if (Tracker.nonreactive(() => room.hasMore.get()) !== true) {
@@ -133,16 +133,6 @@ class RoomHistoryManagerClass extends Emitter {
 
 		await this.queue();
 
-		// ScrollListener.setLoader true
-		const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: 1 } });
-		// lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
-
-		if (lastMessage) {
-			({ ts } = lastMessage);
-		} else {
-			ts = undefined;
-		}
-
 		let ls = undefined;
 
 		const subscription = ChatSubscription.findOne({ rid });
@@ -150,7 +140,15 @@ class RoomHistoryManagerClass extends Emitter {
 			({ ls } = subscription);
 		}
 
-		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls ? String(ls) : undefined, false);
+		const showThreadsInMainChannel = getUserPreference(Meteor.userId(), 'showThreadsInMainChannel', false);
+		const result = await callWithErrorHandling(
+			'loadHistory',
+			rid,
+			room.oldestTs,
+			limit,
+			ls ? String(ls) : undefined,
+			showThreadsInMainChannel,
+		);
 
 		if (!result) {
 			throw new Error('loadHistory returned nothing');
@@ -164,7 +162,11 @@ class RoomHistoryManagerClass extends Emitter {
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
 
-		const wrapper = await waitForElement('.messages-box .wrapper');
+		if (messages.length > 0) {
+			room.oldestTs = messages[messages.length - 1].ts;
+		}
+
+		const wrapper = await waitForElement('.messages-box .wrapper .rc-scrollbars-view');
 
 		if (wrapper) {
 			previousHeight = wrapper.scrollHeight;
@@ -180,7 +182,7 @@ class RoomHistoryManagerClass extends Emitter {
 			room.loaded = 0;
 		}
 
-		const visibleMessages = messages.filter((msg) => !msg.tmid || msg.tshow);
+		const visibleMessages = messages.filter((msg) => !msg.tmid || showThreadsInMainChannel || msg.tshow);
 
 		room.loaded += visibleMessages.length;
 
@@ -193,14 +195,12 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 
 		waitAfterFlush(() => {
+			this.emit('loaded-messages');
 			const heightDiff = wrapper.scrollHeight - (previousHeight ?? NaN);
 			wrapper.scrollTop = (scroll ?? NaN) + heightDiff;
 		});
 
 		room.isLoading.set(false);
-		waitAfterFlush(() => {
-			readMessage.refreshUnreadMark(rid);
-		});
 	}
 
 	public async getMoreNext(rid: IRoom['_id'], atBottomRef: MutableRefObject<boolean>) {
@@ -268,6 +268,7 @@ class RoomHistoryManagerClass extends Emitter {
 		room.isLoading.set(true);
 		room.hasMore.set(true);
 		room.hasMoreNext.set(false);
+		room.oldestTs = undefined;
 		room.loaded = undefined;
 	}
 
@@ -276,15 +277,14 @@ class RoomHistoryManagerClass extends Emitter {
 			return;
 		}
 
-		const surroundingMessage = ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } });
+		const messageAlreadyLoaded = Boolean(ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } }));
 
-		if (surroundingMessage) {
+		if (messageAlreadyLoaded) {
 			return;
 		}
 
 		const room = this.getRoom(message.rid);
-		room.isLoading.set(true);
-		room.hasMore.set(false);
+		void this.clear(message.rid);
 
 		const subscription = ChatSubscription.findOne({ rid: message.rid });
 
@@ -296,9 +296,8 @@ class RoomHistoryManagerClass extends Emitter {
 
 		upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
 
-		readMessage.refreshUnreadMark(message.rid);
-
 		Tracker.afterFlush(async () => {
+			this.emit('loaded-messages');
 			room.isLoading.set(false);
 		});
 

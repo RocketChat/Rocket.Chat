@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { SAUMonitorClass } from '../lib/SAUMonitor';
 import { settings } from '../../../settings/server';
+import { SAUMonitorClass } from '../lib/SAUMonitor';
 
 const SAUMonitor = new SAUMonitorClass();
 

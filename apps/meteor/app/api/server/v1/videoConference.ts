@@ -1,3 +1,4 @@
+import { VideoConf } from '@rocket.chat/core-services';
 import type { VideoConference } from '@rocket.chat/core-typings';
 import {
 	isVideoConfStartProps,
@@ -6,13 +7,12 @@ import {
 	isVideoConfInfoProps,
 	isVideoConfListProps,
 } from '@rocket.chat/rest-typings';
-import { VideoConf } from '@rocket.chat/core-services';
 
-import { API } from '../api';
+import { availabilityErrors } from '../../../../lib/videoConference/constants';
+import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
-import { availabilityErrors } from '../../../../lib/videoConference/constants';
+import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
 API.v1.addRoute(
@@ -24,6 +24,10 @@ API.v1.addRoute(
 			const { userId } = this;
 			if (!userId || !(await canAccessRoomIdAsync(roomId, userId))) {
 				return API.v1.failure('invalid-params');
+			}
+
+			if (!(await hasPermissionAsync(userId, 'call-management', roomId))) {
+				return API.v1.unauthorized();
 			}
 
 			try {

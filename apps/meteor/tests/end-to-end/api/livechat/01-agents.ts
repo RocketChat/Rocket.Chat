@@ -1,15 +1,22 @@
-/* eslint-env mocha */
-
 import type { ILivechatAgent, ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { disableDefaultBusinessHour, makeDefaultBusinessHourActiveAndClosed } from '../../../data/livechat/businessHours';
-import { createAgent, createManager, createVisitor, createLivechatRoom, takeInquiry, fetchInquiry } from '../../../data/livechat/rooms';
+import {
+	createAgent,
+	createManager,
+	createVisitor,
+	createLivechatRoom,
+	takeInquiry,
+	fetchInquiry,
+	makeAgentAvailable,
+} from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
-import { createUser, getMe, login } from '../../../data/users.helper';
+import { createUser, deleteUser, getMe, login } from '../../../data/users.helper';
 
 describe('LIVECHAT - Agents', function () {
 	this.retries(0);
@@ -32,10 +39,16 @@ describe('LIVECHAT - Agents', function () {
 		const userCredentials = await login(user.username, password);
 		await createAgent(user.username);
 
+		await makeAgentAvailable(userCredentials);
+
 		agent2 = {
 			user,
 			credentials: userCredentials,
 		};
+	});
+
+	after(async () => {
+		await deleteUser(agent2.user);
 	});
 
 	// TODO: missing test cases for POST method
@@ -144,7 +157,7 @@ describe('LIVECHAT - Agents', function () {
 
 		it('should return a valid user when all goes fine', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
-			const user = await createUser();
+			const user: IUser = await createUser();
 			await request
 				.post(api('livechat/users/agent'))
 				.set(credentials)
@@ -159,6 +172,9 @@ describe('LIVECHAT - Agents', function () {
 					expect(res.body.user).to.have.property('_id');
 					expect(res.body.user).to.have.property('username');
 				});
+
+			// cleanup
+			await deleteUser(user);
 		});
 	});
 
@@ -208,7 +224,7 @@ describe('LIVECHAT - Agents', function () {
 
 		it('should return { user: null } when user is not an agent', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
-			const user = await createUser();
+			const user: IUser = await createUser();
 			await request
 				.get(api(`livechat/users/agent/${user._id}`))
 				.set(credentials)
@@ -219,6 +235,9 @@ describe('LIVECHAT - Agents', function () {
 					expect(res.body).to.have.property('user');
 					expect(res.body.user).to.be.null;
 				});
+
+			// cleanup
+			await deleteUser(user);
 		});
 	});
 
@@ -367,6 +386,9 @@ describe('LIVECHAT - Agents', function () {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'Agent not found');
 				});
+
+			// cleanup
+			await deleteUser(user);
 		});
 		it('should return an error if status is not valid', async () => {
 			await request
@@ -439,7 +461,7 @@ describe('LIVECHAT - Agents', function () {
 					expect(res.body).to.have.property('error', 'error-business-hours-are-closed');
 				});
 		});
-		it('should allow managers to make other agents available outside business hour', async () => {
+		it('should not allow managers to make other agents available outside business hour', async () => {
 			await updatePermission('manage-livechat-agents', ['admin']);
 
 			const currentUser: ILivechatAgent = await getMe(agent2.credentials as any);
@@ -453,7 +475,7 @@ describe('LIVECHAT - Agents', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('status', newStatus);
+					expect(res.body).to.have.property('status', currentStatus);
 				});
 
 			await disableDefaultBusinessHour();

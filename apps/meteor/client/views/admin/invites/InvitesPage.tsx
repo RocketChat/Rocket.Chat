@@ -6,6 +6,7 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
+import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -98,7 +99,6 @@ const InvitesPage = (): ReactElement => {
 							</GenericTableBody>
 						</GenericTable>
 					)}
-
 					{isSuccess && data && data.length > 0 && (
 						<GenericTable>
 							<GenericTableHeader>{headers}</GenericTableHeader>
@@ -110,14 +110,7 @@ const InvitesPage = (): ReactElement => {
 							</GenericTableBody>
 						</GenericTable>
 					)}
-
-					{isSuccess && data && data.length === 0 && (
-						<States>
-							<StatesIcon name='magnifier' />
-							<StatesTitle>{t('No_results_found')}</StatesTitle>
-						</States>
-					)}
-
+					{isSuccess && data && data.length === 0 && <GenericNoResults />}
 					{isError && (
 						<States>
 							<StatesIcon name='warning' variation='danger' />

@@ -1,12 +1,20 @@
-import { isGETLivechatTriggersParams } from '@rocket.chat/rest-typings';
+import { LivechatTrigger } from '@rocket.chat/models';
+import { isGETLivechatTriggersParams, isPOSTLivechatTriggersParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
-import { findTriggers, findTriggerById } from '../../../server/api/lib/triggers';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { findTriggers, findTriggerById, deleteTrigger } from '../../../server/api/lib/triggers';
 
 API.v1.addRoute(
 	'livechat/triggers',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETLivechatTriggersParams },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-manager'],
+		validateParams: {
+			GET: isGETLivechatTriggersParams,
+			POST: isPOSTLivechatTriggersParams,
+		},
+	},
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -21,6 +29,17 @@ API.v1.addRoute(
 			});
 
 			return API.v1.success(triggers);
+		},
+		async post() {
+			const { _id, name, description, enabled, runOnce, conditions, actions } = this.bodyParams;
+
+			if (_id) {
+				await LivechatTrigger.updateById(_id, { name, description, enabled, runOnce, conditions, actions });
+			} else {
+				await LivechatTrigger.insertOne({ name, description, enabled, runOnce, conditions, actions });
+			}
+
+			return API.v1.success();
 		},
 	},
 );
@@ -37,6 +56,13 @@ API.v1.addRoute(
 			return API.v1.success({
 				trigger,
 			});
+		},
+		async delete() {
+			await deleteTrigger({
+				triggerId: this.urlParams._id,
+			});
+
+			return API.v1.success();
 		},
 	},
 );

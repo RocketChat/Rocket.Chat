@@ -1,17 +1,19 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { UserContext, useSetting } from '@rocket.chat/ui-contexts';
 import type { LoginService, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { UserContext, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
 import React, { useEffect, useMemo } from 'react';
 
 import { Subscriptions, ChatRoom } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
-import { callbacks } from '../../../lib/callbacks';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
+import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
-import { call } from '../../lib/utils/call';
+import { useCreateFontStyleElement } from '../../views/account/accessibility/hooks/useCreateFontStyleElement';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 
@@ -47,8 +49,8 @@ const logout = (): Promise<void> =>
 		}
 
 		Meteor.logout(async () => {
-			await callbacks.run('afterLogoutCleanUp', user);
-			call('logoutCleanUp', user).then(resolve, reject);
+			await afterLogoutCleanUpCallback.run(user);
+			sdk.call('logoutCleanUp', user).then(resolve, reject);
 		});
 	});
 
@@ -64,7 +66,13 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 
 	const userId = useReactiveValue(getUserId);
 	const user = useReactiveValue(getUser);
-	const [language, setLanguage] = useLocalStorage('userLanguage', user?.language ?? 'en');
+	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
+	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
+
+	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
+
+	const createFontStyleElement = useCreateFontStyleElement();
+	createFontStyleElement(user?.settings?.preferences?.fontSize);
 
 	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
 
@@ -161,10 +169,24 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	);
 
 	useEffect(() => {
-		if (user?.language !== undefined && user.language !== language) {
-			setLanguage(user.language);
+		if (!!userId && preferedLanguage !== userLanguage) {
+			setUserPreferences({ data: { language: preferedLanguage } });
+			setUserLanguage(preferedLanguage);
 		}
-	}, [user?.language, language, setLanguage]);
+
+		if (user?.language !== undefined && user.language !== userLanguage) {
+			setUserLanguage(user.language);
+			setPreferedLanguage(user.language);
+		}
+	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
+
+	const { data: license } = useIsEnterprise({ enabled: !!userId });
+
+	useEffect(() => {
+		if (!license?.isEnterprise && user?.settings?.preferences?.themeAppearence === 'high-contrast') {
+			setUserPreferences({ data: { themeAppearence: 'light' } });
+		}
+	}, [license?.isEnterprise, setUserPreferences, user?.settings?.preferences?.themeAppearence]);
 
 	return <UserContext.Provider children={children} value={contextValue} />;
 };
