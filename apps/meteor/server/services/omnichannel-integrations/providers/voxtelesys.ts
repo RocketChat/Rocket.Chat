@@ -119,7 +119,7 @@ export class Voxtelesys implements ISMSProvider {
 					size: filesize(MAX_FILE_SIZE),
 					lng,
 				});
-			} else if (!fileUploadIsValidContentType(type, this.fileUploadMediaTypeWhiteList())) {
+			} else if (!fileUploadIsValidContentType(type, this.mediaTypeWhiteList)) {
 				reason = i18n.t('File_type_is_not_accepted', { lng });
 			}
 
@@ -149,10 +149,6 @@ export class Voxtelesys implements ISMSProvider {
 		} catch (err) {
 			SystemLogger.error({ msg: 'Error connecting to Voxtelesys SMS API', err });
 		}
-	}
-
-	fileUploadMediaTypeWhiteList(): any {
-		throw new Error('Method not implemented.');
 	}
 
 	response(): SMSProviderResponse {

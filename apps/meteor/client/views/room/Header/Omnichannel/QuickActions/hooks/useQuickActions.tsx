@@ -72,12 +72,12 @@ export const useQuickActions = (): {
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
-	const requestTranscript = useMethod('livechat:requestTranscript');
+	const requestTranscript = useEndpoint('POST', '/v1/livechat/transcript/:rid', { rid });
 
 	const handleRequestTranscript = useCallback(
 		async (email: string, subject: string) => {
 			try {
-				await requestTranscript(rid, email, subject);
+				await requestTranscript({ email, subject });
 				closeModal();
 				dispatchToastMessage({
 					type: 'success',
@@ -87,7 +87,7 @@ export const useQuickActions = (): {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeModal, dispatchToastMessage, requestTranscript, rid, t],
+		[closeModal, dispatchToastMessage, requestTranscript, t],
 	);
 
 	const sendTranscriptPDF = useEndpoint('POST', '/v1/omnichannel/:rid/request-transcript', { rid });
@@ -118,11 +118,11 @@ export const useQuickActions = (): {
 		[closeModal, dispatchToastMessage, rid, sendTranscript],
 	);
 
-	const discardTranscript = useMethod('livechat:discardTranscript');
+	const discardTranscript = useEndpoint('DELETE', '/v1/livechat/transcript/:rid', { rid });
 
 	const handleDiscardTranscript = useCallback(async () => {
 		try {
-			await discardTranscript(rid);
+			await discardTranscript();
 			dispatchToastMessage({
 				type: 'success',
 				message: t('Livechat_transcript_request_has_been_canceled'),
@@ -131,7 +131,7 @@ export const useQuickActions = (): {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [closeModal, discardTranscript, dispatchToastMessage, rid, t]);
+	}, [closeModal, discardTranscript, dispatchToastMessage, t]);
 
 	const forwardChat = useEndpoint('POST', '/v1/livechat/room.forward');
 
@@ -300,8 +300,9 @@ export const useQuickActions = (): {
 	const manualOnHoldAllowed = useSetting('Livechat_allow_manual_on_hold');
 
 	const hasManagerRole = useRole('livechat-manager');
+	const hasMonitorRole = useRole('livechat-monitor');
 
-	const roomOpen = room?.open && (room.u?._id === uid || hasManagerRole) && room?.lastMessage?.t !== 'livechat-close';
+	const roomOpen = room?.open && (room.u?._id === uid || hasManagerRole || hasMonitorRole) && room?.lastMessage?.t !== 'livechat-close';
 	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue && room?.u !== undefined;
 	const canForwardGuest = usePermission('transfer-livechat-guest');
 	const canSendTranscriptEmail = usePermission('send-omnichannel-chat-transcript');

@@ -1,6 +1,6 @@
+import type { Logger } from '@rocket.chat/logger';
 import { Random } from '@rocket.chat/random';
 
-import type { Logger } from '../../app/logger/server';
 import { compareByRanking } from '../utils/comparisons';
 
 enum CallbackPriority {
@@ -170,7 +170,7 @@ export class Callbacks<
 		this.setCallbacks(hook, hooks);
 	}
 
-	run<Hook extends keyof TEventLikeCallbackSignatures>(hook: Hook, ...args: Parameters<TEventLikeCallbackSignatures[Hook]>): void;
+	run<Hook extends keyof TEventLikeCallbackSignatures>(hook: Hook, ...args: Parameters<TEventLikeCallbackSignatures[Hook]>): Promise<void>;
 
 	run<Hook extends keyof TChainedCallbackSignatures>(
 		hook: Hook,

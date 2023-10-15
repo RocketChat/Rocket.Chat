@@ -5,7 +5,7 @@ import { withTranslation } from 'react-i18next';
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
 import { getAvatarUrl } from '../../helpers/baseUrl';
-import { canRenderMessage } from '../../helpers/canRenderMessage';
+import { canRenderMessage, canRenderTriggerMessage } from '../../helpers/canRenderMessage';
 import { debounce } from '../../helpers/debounce';
 import { throttle } from '../../helpers/throttle';
 import { upsert } from '../../helpers/upsert';
@@ -40,7 +40,7 @@ class ChatContainer extends Component {
 			this.state.queueSpot = newQueueSpot;
 			this.state.estimatedWaitTime = newEstimatedWaitTime;
 			await this.handleQueueMessage(connecting, queueInfo);
-			await this.handleConnectingAgentAlert(newConnecting, normalizeQueueAlert(queueInfo));
+			await this.handleConnectingAgentAlert(newConnecting, await normalizeQueueAlert(queueInfo));
 		}
 	};
 
@@ -104,11 +104,11 @@ class ChatContainer extends Component {
 	};
 
 	startTyping = throttle(async ({ rid, username }) => {
-		await Livechat.notifyVisitorTyping(rid, username, true);
+		await Livechat.notifyVisitorActivity(rid, username, ['user-typing']);
 		this.stopTypingDebounced({ rid, username });
 	}, 4500);
 
-	stopTyping = ({ rid, username }) => Livechat.notifyVisitorTyping(rid, username, false);
+	stopTyping = ({ rid, username }) => Livechat.notifyVisitorActivity(rid, username, []);
 
 	stopTypingDebounced = debounce(this.stopTyping, 5000);
 
@@ -138,7 +138,7 @@ class ChatContainer extends Component {
 			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
 			await dispatch({ alerts: (alerts.push(alert), alerts) });
 		}
-		await Livechat.notifyVisitorTyping(rid, user.username, false);
+		await Livechat.notifyVisitorActivity(rid, user.username, []);
 	};
 
 	doFileUpload = async (rid, file) => {
@@ -447,7 +447,7 @@ export const ChatConnector = ({ ref, t, ...props }) => (
 						: undefined
 				}
 				room={room}
-				messages={messages && messages.filter((message) => canRenderMessage(message))}
+				messages={messages && messages.filter(canRenderMessage).filter(canRenderTriggerMessage(user))}
 				noMoreMessages={noMoreMessages}
 				emoji={true}
 				uploads={uploads}

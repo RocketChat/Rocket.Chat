@@ -1,4 +1,5 @@
 import type { IMethodConnection, IUser, IRoom } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
@@ -17,7 +18,6 @@ import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { checkCodeForUser } from '../../2fa/server/code';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { apiDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
-import { Logger } from '../../logger/server';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';

@@ -1,9 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Roles, Rooms } from '@rocket.chat/models';
+import { Logger } from '@rocket.chat/logger';
+import { Roles, Rooms, Users } from '@rocket.chat/models';
 
 import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../../app/lib/server/functions/createRoom';
-import { Logger } from '../../../../app/logger/server';
 import { getValidRoomName } from '../../../../app/utils/server/lib/getValidRoomName';
 import { syncUserRoles } from '../syncUserRoles';
 
@@ -20,6 +20,12 @@ export class OAuthEEManager {
 		if (channelsMap && user && identity && groupClaimName) {
 			const groupsFromSSO = identity[groupClaimName] || [];
 
+			const userChannelAdmin = await Users.findOneByUsernameIgnoringCase(channelsAdmin);
+			if (!userChannelAdmin) {
+				logger.error(`could not create channel, user not found: ${channelsAdmin}`);
+				return;
+			}
+
 			for await (const ssoGroup of Object.keys(channelsMap)) {
 				if (typeof ssoGroup === 'string') {
 					let channels = channelsMap[ssoGroup];
@@ -30,7 +36,7 @@ export class OAuthEEManager {
 						const name = await getValidRoomName(channel.trim(), undefined, { allowDuplicates: true });
 						let room = await Rooms.findOneByNonValidatedName(name);
 						if (!room) {
-							const createdRoom = await createRoom('c', channel, channelsAdmin, [], false, false);
+							const createdRoom = await createRoom('c', channel, userChannelAdmin, [], false, false);
 							if (!createdRoom?.rid) {
 								logger.error(`could not create channel ${channel}`);
 								return;

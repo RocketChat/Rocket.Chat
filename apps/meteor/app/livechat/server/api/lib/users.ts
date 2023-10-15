@@ -24,7 +24,12 @@ async function findUsers({
 		});
 	}
 
-	const { cursor, totalCount } = Users.findPaginatedUsersInRolesWithQuery<ILivechatAgent>(role, query, {
+	const [
+		{
+			sortedResults,
+			totalCount: [{ total } = { total: 0 }],
+		},
+	] = await Users.findAgentsWithDepartments<ILivechatAgent>(role, query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
@@ -38,11 +43,9 @@ async function findUsers({
 		},
 	});
 
-	const [users, total] = await Promise.all([cursor.toArray(), totalCount]);
-
 	return {
-		users,
-		count: users.length,
+		users: sortedResults,
+		count: sortedResults.length,
 		offset,
 		total,
 	};

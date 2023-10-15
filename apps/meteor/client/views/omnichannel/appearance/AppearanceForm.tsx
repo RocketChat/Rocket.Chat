@@ -1,4 +1,16 @@
-import { Box, Field, TextInput, ToggleSwitch, Accordion, FieldGroup, InputBox, TextAreaInput, NumberInput } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Field,
+	FieldLabel,
+	FieldRow,
+	TextInput,
+	ToggleSwitch,
+	Accordion,
+	FieldGroup,
+	InputBox,
+	TextAreaInput,
+	NumberInput,
+} from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, FormEvent } from 'react';
@@ -105,46 +117,46 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 			<Accordion.Item defaultExpanded title={t('Livechat_online')}>
 				<FieldGroup>
 					<Field>
-						<Field.Label>{t('Title')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Title')}</FieldLabel>
+						<FieldRow>
 							<TextInput value={Livechat_title} onChange={handleLivechat_title} placeholder={t('Title')} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Field.Label>{t('Title_bar_color')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Title_bar_color')}</FieldLabel>
+						<FieldRow>
 							<InputBox type='color' value={Livechat_title_color} onChange={handleLivechat_title_color} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field>
 						<Box display='flex' flexDirection='row'>
-							<Field.Label>{t('Message_Characther_Limit')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Message_Characther_Limit')}</FieldLabel>
+							<FieldRow>
 								<ToggleSwitch checked={Livechat_enable_message_character_limit} onChange={handleLivechat_enable_message_character_limit} />
-							</Field.Row>
+							</FieldRow>
 						</Box>
-						<Field.Row>
+						<FieldRow>
 							<NumberInput
 								disabled={!Livechat_enable_message_character_limit}
 								value={Livechat_message_character_limit}
 								onChange={onChangeCharacterLimit}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field>
 						<Box display='flex' flexDirection='row'>
-							<Field.Label>{t('Show_agent_info')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Show_agent_info')}</FieldLabel>
+							<FieldRow>
 								<ToggleSwitch checked={Livechat_show_agent_info} onChange={handleLivechat_show_agent_info} />
-							</Field.Row>
+							</FieldRow>
 						</Box>
 					</Field>
 					<Field>
 						<Box display='flex' flexDirection='row'>
-							<Field.Label>{t('Show_agent_email')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Show_agent_email')}</FieldLabel>
+							<FieldRow>
 								<ToggleSwitch checked={Livechat_show_agent_email} onChange={handleLivechat_show_agent_email} />
-							</Field.Row>
+							</FieldRow>
 						</Box>
 					</Field>
 				</FieldGroup>
@@ -154,66 +166,66 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 				<FieldGroup>
 					<Field>
 						<Box display='flex' flexDirection='row'>
-							<Field.Label>{t('Display_offline_form')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Display_offline_form')}</FieldLabel>
+							<FieldRow>
 								<ToggleSwitch checked={Livechat_display_offline_form} onChange={handleLivechat_display_offline_form} />
-							</Field.Row>
+							</FieldRow>
 						</Box>
 					</Field>
 					<Field>
-						<Field.Label>{t('Offline_form_unavailable_message')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Offline_form_unavailable_message')}</FieldLabel>
+						<FieldRow>
 							<TextAreaInput
 								rows={3}
 								value={Livechat_offline_form_unavailable}
 								onChange={handleLivechat_offline_form_unavailable}
 								placeholder={t('Offline_form_unavailable_message')}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Field.Label>{t('Offline_message')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Offline_message')}</FieldLabel>
+						<FieldRow>
 							<TextAreaInput
 								rows={3}
 								value={Livechat_offline_message}
 								onChange={handleLivechat_offline_message}
 								placeholder={t('Offline_message')}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Field.Label>{t('Title_offline')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Title_offline')}</FieldLabel>
+						<FieldRow>
 							<TextInput value={Livechat_offline_title} onChange={handleLivechat_offline_title} placeholder={t('Title_offline')} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Field.Label>{t('Title_bar_color_offline')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Title_bar_color_offline')}</FieldLabel>
+						<FieldRow>
 							<InputBox type='color' value={Livechat_offline_title_color} onChange={handleLivechat_offline_title_color} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Field.Label>{t('Email_address_to_send_offline_messages')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Email_address_to_send_offline_messages')}</FieldLabel>
+						<FieldRow>
 							<TextInput
 								value={Livechat_offline_email}
 								onChange={handleLivechat_offline_email}
 								placeholder={t('Email_address_to_send_offline_messages')}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Field.Label>{t('Offline_success_message')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Offline_success_message')}</FieldLabel>
+						<FieldRow>
 							<TextAreaInput
 								rows={3}
 								value={Livechat_offline_success_message}
 								onChange={handleLivechat_offline_success_message}
 								placeholder={t('Offline_success_message')}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				</FieldGroup>
 			</Accordion.Item>
@@ -222,64 +234,64 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 				<FieldGroup>
 					<Field>
 						<Box display='flex' flexDirection='row'>
-							<Field.Label>{t('Enabled')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Enabled')}</FieldLabel>
+							<FieldRow>
 								<ToggleSwitch checked={Livechat_registration_form} onChange={handleLivechat_registration_form} />
-							</Field.Row>
+							</FieldRow>
 						</Box>
 					</Field>
 					<Field>
 						<Box display='flex' flexDirection='row'>
-							<Field.Label>{t('Show_name_field')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Show_name_field')}</FieldLabel>
+							<FieldRow>
 								<ToggleSwitch checked={Livechat_name_field_registration_form} onChange={handleLivechat_name_field_registration_form} />
-							</Field.Row>
+							</FieldRow>
 						</Box>
 					</Field>
 					<Field>
 						<Box display='flex' flexDirection='row'>
-							<Field.Label>{t('Show_email_field')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Show_email_field')}</FieldLabel>
+							<FieldRow>
 								<ToggleSwitch checked={Livechat_email_field_registration_form} onChange={handleLivechat_email_field_registration_form} />
-							</Field.Row>
+							</FieldRow>
 						</Box>
 					</Field>
 					<Field>
-						<Field.Label>{t('Livechat_registration_form_message')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Livechat_registration_form_message')}</FieldLabel>
+						<FieldRow>
 							<TextAreaInput
 								rows={3}
 								value={Livechat_registration_form_message}
 								onChange={handleLivechat_registration_form_message}
 								placeholder={t('Offline_message')}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				</FieldGroup>
 			</Accordion.Item>
 			<Accordion.Item title={t('Conversation_finished')}>
 				<FieldGroup>
 					<Field>
-						<Field.Label>{t('Conversation_finished_message')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Conversation_finished_message')}</FieldLabel>
+						<FieldRow>
 							<TextAreaInput
 								rows={3}
 								value={Livechat_conversation_finished_message}
 								onChange={handleLivechat_conversation_finished_message}
 								placeholder={t('Offline_message')}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Field.Label>{t('Conversation_finished_text')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Conversation_finished_text')}</FieldLabel>
+						<FieldRow>
 							<TextAreaInput
 								rows={3}
 								value={Livechat_conversation_finished_text}
 								onChange={handleLivechat_conversation_finished_text}
 								placeholder={t('Offline_message')}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				</FieldGroup>
 			</Accordion.Item>

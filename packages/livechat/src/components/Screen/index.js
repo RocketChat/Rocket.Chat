@@ -10,8 +10,8 @@ import { Sound } from '../Sound';
 import ScreenHeader from './Header';
 import styles from './styles.scss';
 
-export const ScreenContent = ({ children, nopadding, triggered = false }) => (
-	<main className={createClassName(styles, 'screen__main', { nopadding, triggered })}>{children}</main>
+export const ScreenContent = ({ children, nopadding, triggered = false, full = false }) => (
+	<main className={createClassName(styles, 'screen__main', { nopadding, triggered, full })}>{children}</main>
 );
 
 export const ScreenFooter = ({ children, options, limit }) => (

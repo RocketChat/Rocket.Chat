@@ -17,7 +17,7 @@ import MarkdownText from '../../../../../components/MarkdownText';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import type { Action } from '../../../../hooks/useActionSpread';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
-import { useRetentionPolicy } from '../../../components/body/hooks/useRetentionPolicy';
+import { useRetentionPolicy } from '../../../body/hooks/useRetentionPolicy';
 import { useRoomActions } from '../hooks/useRoomActions';
 
 type RoomInfoProps = {

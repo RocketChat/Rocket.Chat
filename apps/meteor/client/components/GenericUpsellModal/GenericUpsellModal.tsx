@@ -42,13 +42,13 @@ const GenericUpsellModal = ({
 			<Modal.Header>
 				{icon && <Modal.Icon name={icon} />}
 				<Modal.HeaderText>
-					<Modal.Tagline color='font-annotation'>{tagline ?? t('Enterprise_capability')}</Modal.Tagline>
+					<Modal.Tagline color='font-annotation'>{tagline ?? t('Premium_capability')}</Modal.Tagline>
 					<Modal.Title>{title}</Modal.Title>
 				</Modal.HeaderText>
-				<Modal.Close onClick={onClose} />
+				<Modal.Close aria-label={t('Close')} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
-				<Modal.HeroImage src={img} />
+				<Modal.HeroImage src={img} alt='' />
 				{subtitle && (
 					<Box is='h3' fontScale='h3'>
 						{subtitle}

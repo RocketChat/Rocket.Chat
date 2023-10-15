@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
@@ -8,14 +8,15 @@ import type {
 	RoutingMethodConfig,
 	SelectedAgent,
 	InquiryWithAgentInfo,
+	TransferData,
 } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
-import { Logger } from '../../../../server/lib/logger/Logger';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
@@ -34,7 +35,7 @@ type Routing = {
 	methods: Record<string, IRoutingMethod>;
 	startQueue(): void;
 	isMethodSet(): boolean;
-	setMethodNameAndStartQueue(name: string): void;
+	setMethodNameAndStartQueue(name: string): Promise<void>;
 	registerMethod(name: string, Method: IRoutingMethodConstructor): void;
 	getMethod(): IRoutingMethod;
 	getConfig(): RoutingMethodConfig | undefined;
@@ -42,8 +43,8 @@ type Routing = {
 	delegateInquiry(
 		inquiry: InquiryWithAgentInfo,
 		agent?: SelectedAgent | null,
-		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId: string; transferData: any } },
-	): Promise<IOmnichannelRoom | null | void>;
+		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
+	): Promise<(IOmnichannelRoom & { chatQueued?: boolean }) | null | void>;
 	assignAgent(inquiry: InquiryWithAgentInfo, agent: SelectedAgent): Promise<InquiryWithAgentInfo>;
 	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string): Promise<boolean>;
 	takeInquiry(
@@ -52,18 +53,10 @@ type Routing = {
 			'estimatedInactivityCloseTimeAt' | 'message' | 't' | 'source' | 'estimatedWaitingTimeQueue' | 'priorityWeight' | '_updatedAt'
 		>,
 		agent: SelectedAgent | null,
-		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId: string; transferData: any } },
+		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
 	): Promise<IOmnichannelRoom | null | void>;
-	transferRoom(
-		room: IOmnichannelRoom,
-		guest: ILivechatVisitor,
-		transferData: {
-			departmentId?: string;
-			userId?: string;
-			transferredBy: { _id: string };
-		},
-	): Promise<boolean>;
-	delegateAgent(agent: SelectedAgent, inquiry: ILivechatInquiryRecord): Promise<SelectedAgent | null | undefined>;
+	transferRoom(room: IOmnichannelRoom, guest: ILivechatVisitor, transferData: TransferData): Promise<boolean>;
+	delegateAgent(agent: SelectedAgent | undefined, inquiry: ILivechatInquiryRecord): Promise<SelectedAgent | null | undefined>;
 	removeAllRoomSubscriptions(room: Pick<IOmnichannelRoom, '_id'>, ignoreUser?: { _id: string }): Promise<void>;
 };
 
@@ -80,8 +73,8 @@ export const RoutingManager: Routing = {
 		return !!this.methodName;
 	},
 
-	setMethodNameAndStartQueue(name) {
-		logger.debug(`Changing default routing method from ${this.methodName} to ${name}`);
+	async setMethodNameAndStartQueue(name) {
+		logger.info(`Changing default routing method from ${this.methodName} to ${name}`);
 		if (!this.methods[name]) {
 			logger.warn(`Cannot change routing method to ${name}. Selected Routing method does not exists. Defaulting to Manual_Selection`);
 			this.methodName = 'Manual_Selection';
@@ -89,12 +82,11 @@ export const RoutingManager: Routing = {
 			this.methodName = name;
 		}
 
-		this.startQueue();
+		void (await Omnichannel.getQueueWorker()).shouldStart();
 	},
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	registerMethod(name, Method) {
-		logger.debug(`Registering new routing method with name ${name}`);
 		this.methods[name] = new Method();
 	},
 
@@ -195,10 +187,9 @@ export const RoutingManager: Routing = {
 		const { servedBy } = room;
 
 		if (servedBy) {
-			logger.debug(`Unassigning current agent for inquiry ${inquiry._id}`);
 			await LivechatRooms.removeAgentByRoomId(rid);
 			await this.removeAllRoomSubscriptions(room);
-			await dispatchAgentDelegated(rid, null);
+			await dispatchAgentDelegated(rid);
 		}
 
 		await dispatchInquiryQueued(inquiry);
@@ -252,9 +243,8 @@ export const RoutingManager: Routing = {
 
 		if (!agent) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Precondition failed for agent`);
-			const cbRoom = await callbacks.run<'livechat.onAgentAssignmentFailed'>('livechat.onAgentAssignmentFailed', {
+			const cbRoom = await callbacks.run<'livechat.onAgentAssignmentFailed'>('livechat.onAgentAssignmentFailed', room, {
 				inquiry,
-				room,
 				options,
 			});
 			return cbRoom;
@@ -262,7 +252,7 @@ export const RoutingManager: Routing = {
 
 		await LivechatInquiry.takeInquiry(_id);
 		const inq = await this.assignAgent(inquiry as InquiryWithAgentInfo, agent);
-		logger.debug(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
+		logger.info(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 
 		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
 
@@ -270,7 +260,6 @@ export const RoutingManager: Routing = {
 	},
 
 	async transferRoom(room, guest, transferData) {
-		logger.debug(`Transfering room ${room._id} by ${transferData.transferredBy._id}`);
 		if (transferData.departmentId) {
 			logger.debug(`Transfering room ${room._id} to department ${transferData.departmentId}`);
 			return forwardRoomToDepartment(room, guest, transferData);
@@ -286,7 +275,6 @@ export const RoutingManager: Routing = {
 	},
 
 	async delegateAgent(agent, inquiry) {
-		logger.debug(`Delegating Inquiry ${inquiry._id}`);
 		const defaultAgent = await callbacks.run('livechat.beforeDelegateAgent', agent, {
 			department: inquiry?.department,
 		});
@@ -309,7 +297,6 @@ export const RoutingManager: Routing = {
 			if (ignoreUser && ignoreUser._id === u._id) {
 				return;
 			}
-			// @ts-expect-error - File still in JS, expecting error for now on `u` types
 			void removeAgentFromSubscription(roomId, u);
 		});
 	},

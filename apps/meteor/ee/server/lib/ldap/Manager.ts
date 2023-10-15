@@ -1,9 +1,12 @@
 import { Team } from '@rocket.chat/core-services';
-import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
-import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
+import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser, IImportRecord } from '@rocket.chat/core-typings';
+import { Users, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 import type ldapjs from 'ldapjs';
 
-import type { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
+import type {
+	ImporterAfterImportCallback,
+	ImporterBeforeImportCallback,
+} from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../../app/lib/server/functions/createRoom';
 import { removeUserFromRoom } from '../../../../app/lib/server/functions/removeUserFromRoom';
@@ -43,9 +46,22 @@ export class LDAPEEManager extends LDAPManager {
 				await this.updateExistingUsers(ldap, converter);
 			}
 
+			const membersOfGroupFilter = await ldap.searchMembersOfGroupFilter();
+
 			await converter.convertUsers({
-				afterImportFn: (async (data: IImportUser, _type: string, isNewRecord: boolean): Promise<void> =>
-					this.advancedSync(ldap, data, converter, isNewRecord)) as ImporterAfterImportCallback,
+				beforeImportFn: (async ({ options }: IImportRecord): Promise<boolean> => {
+					if (!ldap.options.groupFilterEnabled || !ldap.options.groupFilterGroupMemberFormat) {
+						return true;
+					}
+
+					const memberFormat = ldap.options.groupFilterGroupMemberFormat
+						?.replace(/#{username}/g, options?.username || '#{username}')
+						.replace(/#{userdn}/g, options?.dn || '#{userdn}');
+
+					return membersOfGroupFilter.includes(memberFormat);
+				}) as ImporterBeforeImportCallback,
+				afterImportFn: (async ({ data }, isNewRecord: boolean): Promise<void> =>
+					this.advancedSync(ldap, data as IImportUser, converter, isNewRecord)) as ImporterAfterImportCallback,
 			});
 		} catch (error) {
 			logger.error(error);
@@ -255,10 +271,12 @@ export class LDAPEEManager extends LDAPManager {
 		logger.debug(`Channel '${channel}' doesn't exist, creating it.`);
 
 		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
-		// #ToDo: Remove typecastings when createRoom is converted to ts.
-		const room = await createRoom('c', channel, roomOwner, [], false, false, {
+
+		const user = await Users.findOneByUsernameIgnoringCase(roomOwner);
+
+		const room = await createRoom('c', channel, user, [], false, false, {
 			customFields: { ldap: true },
-		} as any);
+		});
 		if (!room?.rid) {
 			logger.error(`Unable to auto-create channel '${channel}' during ldap sync.`);
 			return;
@@ -540,7 +558,7 @@ export class LDAPEEManager extends LDAPManager {
 					count++;
 
 					const userData = this.mapUserData(data);
-					converter.addUserSync(userData);
+					converter.addUserSync(userData, { dn: data.dn, username: this.getLdapUsername(data) });
 					return userData;
 				},
 				endCallback: (error: any): void => {
@@ -558,19 +576,19 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPDataConverter): Promise<void> {
-		const users = await UsersRaw.findLDAPUsers().toArray();
+		const users = await Users.findLDAPUsers().toArray();
 		for await (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
 
 			if (ldapUser) {
 				const userData = this.mapUserData(ldapUser, user.username);
-				converter.addUserSync(userData);
+				converter.addUserSync(userData, { dn: ldapUser.dn, username: this.getLdapUsername(ldapUser) });
 			}
 		}
 	}
 
 	private static async updateUserAvatars(ldap: LDAPConnection): Promise<void> {
-		const users = await UsersRaw.findLDAPUsers().toArray();
+		const users = await Users.findLDAPUsers().toArray();
 		for await (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
 			if (!ldapUser) {
@@ -599,7 +617,7 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async logoutDeactivatedUsers(ldap: LDAPConnection): Promise<void> {
-		const users = await UsersRaw.findConnectedLDAPUsers().toArray();
+		const users = await Users.findConnectedLDAPUsers().toArray();
 
 		for await (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
@@ -608,7 +626,7 @@ export class LDAPEEManager extends LDAPManager {
 			}
 
 			if (this.isUserDeactivated(ldapUser)) {
-				await UsersRaw.unsetLoginTokens(user._id);
+				await Users.unsetLoginTokens(user._id);
 			}
 		}
 	}

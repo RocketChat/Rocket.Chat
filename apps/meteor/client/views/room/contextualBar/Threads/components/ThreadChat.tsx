@@ -1,6 +1,6 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import { Box, CheckBox, Field } from '@rocket.chat/fuselage';
+import { Box, CheckBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect, useCallback } from 'react';
@@ -8,9 +8,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { callbacks } from '../../../../../../lib/callbacks';
 import { ContextualbarContent } from '../../../../../components/Contextualbar';
 import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBoundary';
-import DropTargetOverlay from '../../../components/body/DropTargetOverlay';
-import ComposerContainer from '../../../components/body/composer/ComposerContainer';
-import { useFileUploadDropTarget } from '../../../components/body/hooks/useFileUploadDropTarget';
+import DropTargetOverlay from '../../../body/DropTargetOverlay';
+import { useFileUploadDropTarget } from '../../../body/hooks/useFileUploadDropTarget';
+import ComposerContainer from '../../../composer/ComposerContainer';
+import RoomComposer from '../../../composer/RoomComposer/RoomComposer';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
@@ -98,31 +99,33 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 					<ThreadMessageList mainMessage={mainMessage} />
 				</MessageListErrorBoundary>
 
-				<ComposerContainer
-					rid={mainMessage.rid}
-					tmid={mainMessage._id}
-					subscription={subscription}
-					onSend={handleSend}
-					onEscape={handleComposerEscape}
-					onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
-					onNavigateToNextMessage={handleNavigateToNextMessage}
-					onUploadFiles={handleUploadFiles}
-					tshow={sendToChannel}
-				>
-					<Field>
-						<Field.Row marginBlock={8}>
-							<CheckBox
-								id={sendToChannelID}
-								checked={sendToChannel}
-								onChange={() => setSendToChannel((checked) => !checked)}
-								name='alsoSendThreadToChannel'
-							/>
-							<Field.Label htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
-								{t('Also_send_to_channel')}
-							</Field.Label>
-						</Field.Row>
-					</Field>
-				</ComposerContainer>
+				<RoomComposer>
+					<ComposerContainer
+						rid={mainMessage.rid}
+						tmid={mainMessage._id}
+						subscription={subscription}
+						onSend={handleSend}
+						onEscape={handleComposerEscape}
+						onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
+						onNavigateToNextMessage={handleNavigateToNextMessage}
+						onUploadFiles={handleUploadFiles}
+						tshow={sendToChannel}
+					>
+						<Field>
+							<FieldRow marginBlock={8}>
+								<CheckBox
+									id={sendToChannelID}
+									checked={sendToChannel}
+									onChange={() => setSendToChannel((checked) => !checked)}
+									name='alsoSendThreadToChannel'
+								/>
+								<FieldLabel htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
+									{t('Also_send_to_channel')}
+								</FieldLabel>
+							</FieldRow>
+						</Field>
+					</ComposerContainer>
+				</RoomComposer>
 			</Box>
 		</ContextualbarContent>
 	);

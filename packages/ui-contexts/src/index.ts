@@ -14,6 +14,7 @@ export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { TranslationContext, TranslationContextValue } from './TranslationContext';
 export { UserContext, UserContextValue, LoginService } from './UserContext';
 export { DeviceContext, Device, IExperimentalHTMLAudioElement, DeviceContextValue } from './DeviceContext';
+export { ActionManagerContext } from './ActionManagerContext';
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
@@ -79,7 +80,6 @@ export { useUserRoom } from './hooks/useUserRoom';
 export { useUserSubscription } from './hooks/useUserSubscription';
 export { useUserSubscriptionByName } from './hooks/useUserSubscriptionByName';
 export { useUserSubscriptions } from './hooks/useUserSubscriptions';
-export { usePasswordPolicy } from './hooks/usePasswordPolicy';
 export { useVerifyPassword } from './hooks/useVerifyPassword';
 export { useSelectedDevices } from './hooks/useSelectedDevices';
 export { useDeviceConstraints } from './hooks/useDeviceConstraints';

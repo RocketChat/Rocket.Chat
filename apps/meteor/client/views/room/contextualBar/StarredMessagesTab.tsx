@@ -4,8 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
-import MessageListTab from '../components/contextualBar/MessageListTab';
 import { useRoom } from '../contexts/RoomContext';
+import MessageListTab from './MessageListTab';
 
 const StarredMessagesTab = () => {
 	const getStarredMessages = useEndpoint('GET', '/v1/chat.getStarredMessages');
