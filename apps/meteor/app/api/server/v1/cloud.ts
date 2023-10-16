@@ -133,9 +133,13 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			await syncWorkspace();
+			try {
+				await syncWorkspace();
 
-			return API.v1.success();
+				return API.v1.success({ success: true });
+			} catch (error) {
+				return API.v1.failure('Error during workspace sync');
+			}
 		},
 	},
 );

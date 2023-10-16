@@ -89,6 +89,6 @@ export type CloudEndpoints = {
 		GET: () => { registrationStatus: CloudRegistrationStatus };
 	};
 	'/v1/cloud.syncWorkspace': {
-		GET: () => void;
+		GET: () => { success: boolean };
 	};
 };

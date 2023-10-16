@@ -6107,7 +6107,7 @@
   "Self_managed_hosting": "Self-managed hosting",
   "Cloud_hosting": "Rocket.Chat cloud hosting",
   "free_per_month_user": "$0 per month/user",
-  "Trial_active_active": "Trial active",
+  "Trial_active": "Trial active",
   "Contact_sales_renew_date": "<0>Contact sales</0> to check plan renew date",
   "Renews_DATE": "Renews {{date}}",
   "Learn_more_about_enterprise": "Learn more about enterprise",

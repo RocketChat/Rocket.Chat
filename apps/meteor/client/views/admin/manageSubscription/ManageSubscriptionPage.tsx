@@ -92,7 +92,6 @@ const ManageSubscriptionPage = () => {
 			!syncLicenseUpdate.isInitialLoading &&
 			!syncLicenseUpdate.isRefetching &&
 			!syncLicenseUpdate.isError &&
-			syncLicenseUpdate?.data &&
 			syncLicenseUpdate?.data?.success
 		) {
 			refetchLicense();
@@ -109,56 +108,62 @@ const ManageSubscriptionPage = () => {
 						{t('Sync_license_update_Callout')}
 					</Callout>
 				)}
-				<Box marginBlock='none' marginInline='auto' width='full' color='default'>
-					<Grid m={0}>
-						{!isLicenseLoading || licensesData ? (
-							<>
-								<Grid.Item lg={4} xs={4} p={8}>
-									<PlanCard isEnterprise={isEnterprise} license={license} />
-								</Grid.Item>
-								<Grid.Item lg={8} xs={4} p={8}>
-									<FeaturesCard plan={plan} />
-								</Grid.Item>
-							</>
-						) : (
-							<>
-								<Grid.Item lg={4} xs={4} p={8}>
-									<Skeleton variant='rect' width='full' height={240} />
-								</Grid.Item>
-								<Grid.Item lg={8} xs={4} p={8}>
-									<Skeleton variant='rect' width='full' height={240} />
-								</Grid.Item>
-							</>
-						)}
+				{!isLicenseLoading && plan ? (
+					<Box marginBlock='none' marginInline='auto' width='full' color='default'>
+						<Grid m={0}>
+							<Grid.Item lg={4} xs={4} p={8}>
+								<PlanCard isEnterprise={isEnterprise} license={license} />
+							</Grid.Item>
+							<Grid.Item lg={8} xs={4} p={8}>
+								<FeaturesCard plan={plan} />
+							</Grid.Item>
 
-						{plan !== PlanName.COMMUNITY ? (
-							<>
-								<Grid.Item lg={6} xs={4} p={8}>
-									<SeatsCard plan={plan} />
-								</Grid.Item>
-								<Grid.Item lg={6} xs={4} p={8}>
-									<MACCard plan={plan} monthlyActiveContactsLimit={monthlyActiveContactsLimit} />
-								</Grid.Item>
-							</>
-						) : (
-							<>
-								<Grid.Item lg={6} xs={4} p={8}>
-									<CountSeatsCard />
-								</Grid.Item>
-								<Grid.Item lg={6} xs={4} p={8}>
-									<CountMACCard />
-								</Grid.Item>
-								<Grid.Item lg={6} xs={4} p={8}>
-									<ActiveSessionsCard />
-								</Grid.Item>
-								<Grid.Item lg={6} xs={4} p={8}>
-									<AppsUsageCard privateAppsLimit={privateAppsLimit} marketplaceAppsLimit={marketplaceAppsLimit} />
-								</Grid.Item>
-							</>
-						)}
-					</Grid>
-					{plan !== PlanName.ENTERPRISE && plan !== PlanName.ENTERPRISE_TRIAL && <GetMoreWithEnterprise />}
-				</Box>
+							{plan === PlanName.COMMUNITY ? (
+								<>
+									<Grid.Item lg={6} xs={4} p={8}>
+										<CountSeatsCard />
+									</Grid.Item>
+									<Grid.Item lg={6} xs={4} p={8}>
+										<CountMACCard />
+									</Grid.Item>
+									<Grid.Item lg={6} xs={4} p={8}>
+										<ActiveSessionsCard />
+									</Grid.Item>
+									<Grid.Item lg={6} xs={4} p={8}>
+										<AppsUsageCard privateAppsLimit={privateAppsLimit} marketplaceAppsLimit={marketplaceAppsLimit} />
+									</Grid.Item>
+								</>
+							) : (
+								<>
+									<Grid.Item lg={6} xs={4} p={8}>
+										<SeatsCard plan={plan} />
+									</Grid.Item>
+									<Grid.Item lg={6} xs={4} p={8}>
+										<MACCard plan={plan} monthlyActiveContactsLimit={monthlyActiveContactsLimit} />
+									</Grid.Item>
+								</>
+							)}
+						</Grid>
+						{plan !== PlanName.ENTERPRISE && plan !== PlanName.ENTERPRISE_TRIAL && <GetMoreWithEnterprise />}
+					</Box>
+				) : (
+					<Box marginBlock='none' marginInline='auto' width='full' color='default'>
+						<Grid m={0}>
+							<Grid.Item lg={4} xs={4} p={8}>
+								<Skeleton variant='rect' width='full' height={240} />
+							</Grid.Item>
+							<Grid.Item lg={8} xs={4} p={8}>
+								<Skeleton variant='rect' width='full' height={240} />
+							</Grid.Item>
+							<Grid.Item lg={6} xs={4} p={8}>
+								<Skeleton variant='rect' width='full' height={650} />
+							</Grid.Item>
+							<Grid.Item lg={6} xs={4} p={8}>
+								<Skeleton variant='rect' width='full' height={650} />
+							</Grid.Item>
+						</Grid>
+					</Box>
+				)}
 			</Page.ScrollableContentWithShadow>
 		</Page>
 	);

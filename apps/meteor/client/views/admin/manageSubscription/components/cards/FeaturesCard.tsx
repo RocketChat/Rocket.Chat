@@ -28,7 +28,7 @@ const FeaturesCard = ({ plan }: FeaturesCardProps): ReactElement => {
 			return CE_FEATURES;
 		}
 
-		if (plan === PlanName.ENTERPRISE) {
+		if (plan === PlanName.ENTERPRISE || plan === PlanName.ENTERPRISE_TRIAL) {
 			return ENTERPRISE_FEATURES;
 		}
 
