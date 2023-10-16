@@ -107,6 +107,8 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 		mode: 'onBlur',
 	});
 
+	const { avatar, username, setRandomPassword, password } = watch();
+
 	useEffect(() => {
 		resetField('sendWelcomeEmail', { defaultValue: isSmtpEnabled });
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -117,6 +119,12 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isSmtpEnabled, userData?._id]);
 
+	useEffect(() => {
+		resetField('requirePasswordChange', { defaultValue: setRandomPassword });
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [setRandomPassword]);
+
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
 	const createUserAction = useEndpoint('POST', '/v1/users.create');
@@ -125,8 +133,6 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 	const { data: roleData, error: roleError } = useQuery(['roles'], async () => getRoles());
 
 	const availableRoles: SelectOption[] = roleData?.roles.map(({ _id, name, description }) => [_id, description || name]) || [];
-
-	const { avatar, username, setRandomPassword, password } = watch();
 
 	const updateAvatar = useUpdateAvatar(avatar, userData?._id || '');
 
@@ -238,7 +244,7 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 								<FieldLabel htmlFor={verifiedId} p={0} disabled={!isSmtpEnabled || !isVerificationNeeded}>
 									{t('Mark_email_as_verified')}
 								</FieldLabel>
-								<Icon name='info-circled' size='x21' mis={8} title={t('Activate_to_bypass_email_verification')} color='default' />
+								<Icon name='info-circled' size='x20' mis={8} title={t('Enable_to_bypass_email_verification')} color='default' />
 							</Box>
 							<Controller
 								control={control}
