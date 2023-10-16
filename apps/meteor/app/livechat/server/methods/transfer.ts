@@ -58,7 +58,13 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const guest = await LivechatVisitors.findOneById(room.v?._id);
+		const guest = await LivechatVisitors.findOneEnabledById(room.v?._id);
+
+		const user = await Meteor.userAsync();
+
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:transfer' });
+		}
 
 		const normalizedTransferData: {
 			roomId: string;
@@ -70,7 +76,7 @@ Meteor.methods<ServerMethods>({
 			transferredTo?: Pick<IUser, '_id' | 'username' | 'name'>;
 		} = {
 			...transferData,
-			transferredBy: normalizeTransferredByData((await Meteor.userAsync()) || {}, room),
+			transferredBy: normalizeTransferredByData(user, room),
 		};
 
 		if (normalizedTransferData.userId) {

@@ -1,6 +1,6 @@
+import { Logger } from '@rocket.chat/logger';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { Logger } from '../../logger/server';
 import { settings } from '../../settings/server';
 
 export const logger = new Logger('CAS');

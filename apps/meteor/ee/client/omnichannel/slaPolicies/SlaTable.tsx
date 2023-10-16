@@ -1,7 +1,7 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQuery, hashQueryKey } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
@@ -22,36 +22,36 @@ import RemoveSlaButton from './RemoveSlaButton';
 
 const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	const t = useTranslation();
+	const router = useRouter();
+
 	const [filter, setFilter] = useState('');
-	const slaPoliciesRoute = useRoute('omnichannel-sla-policies');
+	const debouncedFilter = useDebouncedValue(filter, 500);
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description' | 'dueTimeInMinutes'>('name');
 
 	const query = useMemo(
 		() => ({
-			text: filter,
+			text: debouncedFilter,
 			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
 			...(itemsPerPage && { count: itemsPerPage }),
 			...(current && { offset: current }),
 		}),
-		[filter, itemsPerPage, current, sortBy, sortDirection],
+		[debouncedFilter, itemsPerPage, current, sortBy, sortDirection],
 	);
 
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
 	const { data, isSuccess, isLoading, refetch } = useQuery(['/v1/livechat/sla', query], () => getSlaData(query));
 
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+
 	useEffect(() => {
 		reload.current = refetch;
 	}, [reload, refetch]);
 
-	const onRowClick = useMutableCallback(
-		(id) => () =>
-			slaPoliciesRoute.push({
-				context: 'edit',
-				id,
-			}),
-	);
+	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/sla-policies/new'));
+	const onRowClick = useMutableCallback((id) => () => router.navigate(`/omnichannel/sla-policies/edit/${id}`));
 
 	const headers = (
 		<>
@@ -84,7 +84,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	return (
 		<>
-			<FilterByText onChange={({ text }): void => setFilter(text)} />
+			{((isSuccess && data?.sla.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setFilter(text)} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -93,7 +93,18 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data?.sla.length === 0 && <GenericNoResults />}
+			{isSuccess && data?.sla.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data?.sla.length === 0 && !queryHasChanged && (
+				<GenericNoResults
+					icon='flag'
+					title={t('No_SLA_policies_yet')}
+					description={t('No_SLA_policies_yet_description')}
+					buttonTitle={t('Create_SLA_policy')}
+					buttonAction={handleAddNew}
+					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkText={t('Learn_more_about_SLA_policies')}
+				/>
+			)}
 			{isSuccess && data?.sla.length > 0 && (
 				<>
 					<GenericTable>

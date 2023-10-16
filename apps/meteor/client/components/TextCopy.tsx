@@ -4,7 +4,7 @@ import type { ComponentProps, ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
 const defaultWrapperRenderer = (text: string): ReactElement => (
-	<Box fontFamily='mono' alignSelf='center' fontScale='p2' style={{ wordBreak: 'break-all' }} mie='x4' flexGrow={1} maxHeight='x108'>
+	<Box fontFamily='mono' alignSelf='center' fontScale='p2' style={{ wordBreak: 'break-all' }} mie={4} flexGrow={1} maxHeight='x108'>
 		{text}
 	</Box>
 );
@@ -35,7 +35,7 @@ const TextCopy = ({ text, wrapper = defaultWrapperRenderer, ...props }: TextCopy
 			justifyContent='stretch'
 			alignItems='flex-start'
 			flexGrow={1}
-			padding='x16'
+			padding={16}
 			backgroundColor='surface'
 			width='full'
 			{...props}

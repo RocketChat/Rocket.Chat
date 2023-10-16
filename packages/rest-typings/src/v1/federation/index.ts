@@ -15,3 +15,4 @@ export * from './FederationJoinExternalPublicRoomProps';
 export * from './FederationPublicRoomsProps';
 export * from './FederationAddServerProps';
 export * from './FederationRemoveServerProps';
+export * from './FederationVerifyMatrixIdProps';

@@ -67,9 +67,9 @@ const CannedResponseList: FC<{
 			</ContextualbarHeader>
 
 			<ContextualbarContent paddingInline={0} ref={ref}>
-				<Box display='flex' flexDirection='row' p='x24' flexShrink={0}>
+				<Box display='flex' flexDirection='row' p={24} flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
-						<Margins inline='x4'>
+						<Margins inline={4}>
 							<TextInput
 								placeholder={t('Search')}
 								value={text}
@@ -78,7 +78,7 @@ const CannedResponseList: FC<{
 								ref={inputRef}
 							/>
 							<Box w='x144'>
-								<Select onChange={setType} value={type} options={options} />
+								<Select onChange={(value) => setType(String(value))} value={type} options={options} />
 							</Box>
 						</Margins>
 					</Box>

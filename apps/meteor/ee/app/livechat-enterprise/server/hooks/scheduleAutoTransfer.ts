@@ -18,27 +18,23 @@ let autoTransferTimeout = 0;
 const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> => {
 	const { rid } = inquiry;
 	if (!rid?.trim()) {
-		cbLogger.debug('Skipping callback. Invalid room id');
 		return;
 	}
 
 	if (!autoTransferTimeout || autoTransferTimeout <= 0) {
-		cbLogger.debug('Skipping callback. No auto transfer timeout or invalid value from setting');
 		return inquiry;
 	}
 
 	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, autoTransferredAt: 1, autoTransferOngoing: 1 } });
 	if (!room) {
-		cbLogger.debug(`Skipping callback. Room ${rid} not found`);
 		return inquiry;
 	}
 
 	if (room.autoTransferredAt || room.autoTransferOngoing) {
-		cbLogger.debug(`Skipping callback. Room ${room._id} already being transfered or not found`);
 		return inquiry;
 	}
 
-	cbLogger.debug(`Callback success. Room ${room._id} will be scheduled to be auto transfered after ${autoTransferTimeout} seconds`);
+	cbLogger.info(`Room ${room._id} will be scheduled to be auto transfered after ${autoTransferTimeout} seconds`);
 	await AutoTransferChatScheduler.scheduleRoom(rid, autoTransferTimeout as number);
 
 	return inquiry;

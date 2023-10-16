@@ -1,5 +1,3 @@
-/* eslint-env mocha */
-
 import fs from 'fs';
 import path from 'path';
 
@@ -14,6 +12,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import type { SuccessResult } from '../../../../app/api/server/definition';
@@ -1847,21 +1846,37 @@ describe('LIVECHAT - rooms', function () {
 			const { _id } = await createLivechatRoom(visitor.token);
 			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(400);
 		});
-		it('should close room if user has permission', async () => {
-			await updatePermission('close-others-livechat-room', ['admin']);
+		it('should not close a room without comment', async () => {
+			await restorePermissionToRoles('close-others-livechat-room');
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(200);
+			const response = await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(400);
+
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error', 'error-comment-is-required');
+		});
+		it('should not close a room when comment is an empty string', async () => {
+			await restorePermissionToRoles('close-others-livechat-room');
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			const response = await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: '' }).expect(400);
+
+			expect(response.body).to.have.property('success', false);
+		});
+		it('should close room if user has permission', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }).expect(200);
 		});
 		it('should fail if room is closed', async () => {
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
 
 			// close room
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(200);
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }).expect(200);
 
 			// try to close again
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(400);
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }).expect(400);
 		});
 
 		(IS_EE ? it : it.skip)('should close room and generate transcript pdf', async () => {
@@ -1869,7 +1884,11 @@ describe('LIVECHAT - rooms', function () {
 				room: { _id: roomId },
 			} = await startANewLivechatRoomAndTakeIt();
 
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId, generateTranscriptPdf: true }).expect(200);
+			await request
+				.post(api('livechat/room.closeByUser'))
+				.set(credentials)
+				.send({ rid: roomId, comment: 'test', generateTranscriptPdf: true })
+				.expect(200);
 
 			// Wait for the pdf to be generated
 			await sleep(1500);
@@ -1883,7 +1902,11 @@ describe('LIVECHAT - rooms', function () {
 				room: { _id: roomId },
 			} = await startANewLivechatRoomAndTakeIt();
 
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId, generateTranscriptPdf: false }).expect(200);
+			await request
+				.post(api('livechat/room.closeByUser'))
+				.set(credentials)
+				.send({ rid: roomId, comment: 'test', generateTranscriptPdf: false })
+				.expect(200);
 
 			// Wait for the pdf to not be generated
 			await sleep(1500);
@@ -2018,6 +2041,60 @@ describe('LIVECHAT - rooms', function () {
 		it("room's subscription should have correct unread count", async () => {
 			const { unread } = await getSubscriptionForRoom(room._id, departmentWithAgent.agent.credentials);
 			expect(unread).to.equal(totalMessagesSent);
+		});
+	});
+
+	describe('livechat/transcript/:rid', () => {
+		it('should fail if user is not logged in', async () => {
+			await request.delete(api('livechat/transcript/rid')).expect(401);
+		});
+		it('should fail if user doesnt have send-omnichannel-chat-transcript permission', async () => {
+			await updatePermission('send-omnichannel-chat-transcript', []);
+			await request.delete(api('livechat/transcript/rid')).set(credentials).expect(403);
+		});
+		it('should fail if :rid is not a valid room id', async () => {
+			await updatePermission('send-omnichannel-chat-transcript', ['admin']);
+			await request.delete(api('livechat/transcript/rid')).set(credentials).expect(400);
+		});
+		it('should fail if room is closed', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(_id);
+			await request
+				.delete(api(`livechat/transcript/${_id}`))
+				.set(credentials)
+				.expect(400);
+		});
+		it('should fail if room doesnt have a transcript request active', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			await request
+				.delete(api(`livechat/transcript/${_id}`))
+				.set(credentials)
+				.expect(400);
+		});
+		it('should return OK if all conditions are met', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			// First, request transcript with livechat:requestTranscript method
+			await request
+				.post(methodCall('livechat:requestTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:requestTranscript',
+						params: [_id, 'test@test.com', 'Transcript of your omnichannel conversation'],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			// Then, delete the transcript
+			await request
+				.delete(api(`livechat/transcript/${_id}`))
+				.set(credentials)
+				.expect(200);
 		});
 	});
 });

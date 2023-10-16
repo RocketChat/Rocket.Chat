@@ -1,10 +1,12 @@
 import type { IIntegration, INewOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Integrations, Users } from '@rocket.chat/models';
+import { wrapExceptions } from '@rocket.chat/tools';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
+import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateScriptEngine';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -51,23 +53,18 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('invalid_integration', '[methods] updateOutgoingIntegration -> integration not found');
 		}
 
-		if (integration.scriptCompiled) {
-			await Integrations.updateOne(
-				{ _id: integrationId },
-				{
-					$set: { scriptCompiled: integration.scriptCompiled },
-					$unset: { scriptError: 1 as const },
-				},
-			);
-		} else {
-			await Integrations.updateOne(
-				{ _id: integrationId },
-				{
-					$set: { scriptError: integration.scriptError },
-					$unset: { scriptCompiled: 1 as const },
-				},
-			);
+		const oldScriptEngine = currentIntegration.scriptEngine ?? 'vm2';
+		const scriptEngine = integration.scriptEngine ?? oldScriptEngine;
+		if (
+			integration.script?.trim() &&
+			(scriptEngine !== oldScriptEngine || integration.script?.trim() !== currentIntegration.script?.trim())
+		) {
+			wrapExceptions(() => validateScriptEngine(scriptEngine)).catch((e) => {
+				throw new Meteor.Error(e.message);
+			});
 		}
+
+		const isFrozen = isScriptEngineFrozen(scriptEngine);
 
 		await Integrations.updateOne(
 			{ _id: integrationId },
@@ -86,8 +83,14 @@ Meteor.methods<ServerMethods>({
 					userId: integration.userId,
 					urls: integration.urls,
 					token: integration.token,
-					script: integration.script,
-					scriptEnabled: integration.scriptEnabled,
+					...(isFrozen
+						? {}
+						: {
+								script: integration.script,
+								scriptEnabled: integration.scriptEnabled,
+								scriptEngine,
+								...(integration.scriptCompiled ? { scriptCompiled: integration.scriptCompiled } : { scriptError: integration.scriptError }),
+						  }),
 					triggerWords: integration.triggerWords,
 					retryFailedCalls: integration.retryFailedCalls,
 					retryCount: integration.retryCount,
@@ -97,6 +100,13 @@ Meteor.methods<ServerMethods>({
 					_updatedAt: new Date(),
 					_updatedBy: await Users.findOne({ _id: this.userId }, { projection: { username: 1 } }),
 				},
+				...(isFrozen
+					? {}
+					: {
+							$unset: {
+								...(integration.scriptCompiled ? { scriptError: 1 as const } : { scriptCompiled: 1 as const }),
+							},
+					  }),
 			},
 		);
 

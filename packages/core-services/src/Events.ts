@@ -30,7 +30,9 @@ import type {
 	ICalendarNotification,
 	AtLeast,
 	ILivechatInquiryRecord,
+	ILivechatAgent,
 	IBanner,
+	ILivechatVisitor,
 } from '@rocket.chat/core-typings';
 
 import type { AutoUpdateRecord } from './types/IMeteor';
@@ -238,7 +240,11 @@ export type EventSignatures = {
 	}): void;
 	'omnichannel.room'(
 		roomId: string,
-		data: { type: 'agentStatus'; status: string } | { type: 'queueData' | 'agentData'; data: { [k: string]: unknown } },
+		data:
+			| { type: 'agentStatus'; status: string }
+			| { type: 'queueData'; data: { [k: string]: unknown } | undefined }
+			| { type: 'agentData'; data: ILivechatAgent | undefined | { hiddenInfo: boolean } }
+			| { type: 'visitorData'; visitor: ILivechatVisitor },
 	): void;
 
 	// Send all events from here

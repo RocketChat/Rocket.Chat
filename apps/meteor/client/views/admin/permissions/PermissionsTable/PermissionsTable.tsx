@@ -63,7 +63,7 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 						{t('New_role')}
 					</Button>
 				</Page.Header>
-				<Margins blockEnd='x16'>
+				<Margins blockEnd={16}>
 					<Tabs>
 						<Tabs.Item
 							data-qa='PermissionTable-Permissions'
@@ -84,7 +84,7 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 					</Tabs>
 				</Margins>
 				<Page.Content mb='neg-x8'>
-					<Margins block='x8'>
+					<Margins block={8}>
 						<PermissionsTableFilter onChange={setFilter} />
 						{permissions?.length === 0 && <GenericNoResults />}
 						{permissions?.length > 0 && (

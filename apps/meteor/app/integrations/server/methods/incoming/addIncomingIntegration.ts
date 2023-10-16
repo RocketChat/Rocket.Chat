@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { validateScriptEngine, isScriptEngineFrozen } from '../../lib/validateScriptEngine';
 
 const validChannelChars = ['@', '#'];
 
@@ -30,7 +31,8 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 			alias: Match.Maybe(String),
 			emoji: Match.Maybe(String),
 			scriptEnabled: Boolean,
-			overrideDestinationChannelEnabled: Boolean,
+			scriptEngine: Match.Maybe(String),
+			overrideDestinationChannelEnabled: Match.Maybe(Boolean),
 			script: Match.Maybe(String),
 			avatar: Match.Maybe(String),
 		}),
@@ -74,6 +76,10 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		});
 	}
 
+	if (integration.script?.trim()) {
+		validateScriptEngine(integration.scriptEngine ?? 'isolated-vm');
+	}
+
 	const user = await Users.findOne({ username: integration.username });
 
 	if (!user) {
@@ -84,15 +90,23 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 
 	const integrationData: IIncomingIntegration = {
 		...integration,
+		scriptEngine: integration.scriptEngine ?? 'isolated-vm',
 		type: 'webhook-incoming',
 		channel: channels,
+		overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled ?? false,
 		token: Random.id(48),
 		userId: user._id,
 		_createdAt: new Date(),
 		_createdBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
 	};
 
-	if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
+	// Only compile the script if it is enabled and using a sandbox that is not frozen
+	if (
+		!isScriptEngineFrozen(integrationData.scriptEngine) &&
+		integration.scriptEnabled === true &&
+		integration.script &&
+		integration.script.trim() !== ''
+	) {
 		try {
 			let babelOptions = Babel.getDefaultOptions({ runtime: false });
 			babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });

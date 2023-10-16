@@ -21,7 +21,7 @@ const MyDataModal: FC<MyDataModalProps> = ({ onCancel, title, text, ...props }) 
 			</Modal.Header>
 			{text && (
 				<Modal.Content fontScale='p2'>
-					<Box mb='x8'>{text}</Box>
+					<Box mb={8}>{text}</Box>
 				</Modal.Content>
 			)}
 			<Modal.Footer>

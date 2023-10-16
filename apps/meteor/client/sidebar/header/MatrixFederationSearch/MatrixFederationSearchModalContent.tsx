@@ -44,8 +44,8 @@ const MatrixFederationSearchModalContent: VFC<MatrixFederationSearchModalContent
 	return (
 		<>
 			<Box display='flex' flexDirection='row'>
-				<Box mie='x4' flexGrow={0} flexShrink={4}>
-					<Select options={serverOptions} value={serverName} onChange={setServerName} />
+				<Box mie={4} flexGrow={0} flexShrink={4}>
+					<Select options={serverOptions} value={serverName} onChange={(value) => setServerName(String(value))} />
 				</Box>
 				<TextInput
 					placeholder={t('Search_rooms')}
@@ -55,7 +55,7 @@ const MatrixFederationSearchModalContent: VFC<MatrixFederationSearchModalContent
 					onChange={(e: FormEvent<HTMLInputElement>) => setRoomName(e.currentTarget.value)}
 				/>
 			</Box>
-			<Box is='a' display='flex' flexDirection='row' mbe='x16' onClick={manageServers}>
+			<Box is='a' display='flex' flexDirection='row' mbe={16} onClick={manageServers}>
 				{t('Manage_server_list')}
 			</Box>
 			<FederatedRoomListErrorBoundary>

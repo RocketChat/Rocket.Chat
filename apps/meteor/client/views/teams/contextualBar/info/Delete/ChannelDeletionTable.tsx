@@ -45,7 +45,7 @@ const ChannelDeletionTable = ({ rooms, onChangeRoomSelection, selectedRooms, onT
 		<>
 			<GenericTableHeaderCell key='name' sort='name' onClick={setSort} direction={sortDirection} active={sortBy === 'name'}>
 				<CheckBox indeterminate={indeterminate} checked={checked} onChange={onToggleAllRooms} />
-				<Box mi='x8'>{t('Channel_name')}</Box>
+				<Box mi={8}>{t('Channel_name')}</Box>
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell
 				key='usersCount'
@@ -62,7 +62,7 @@ const ChannelDeletionTable = ({ rooms, onChangeRoomSelection, selectedRooms, onT
 	);
 
 	return (
-		<Box display='flex' flexDirection='column' height='x200' mbs='x24'>
+		<Box display='flex' flexDirection='column' height='x200' mbs={24}>
 			<GenericTable>
 				<GenericTableHeader>{headers}</GenericTableHeader>
 				<GenericTableBody>

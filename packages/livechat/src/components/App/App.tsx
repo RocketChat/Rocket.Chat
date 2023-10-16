@@ -1,9 +1,11 @@
+import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 import i18next from 'i18next';
 import { Component } from 'preact';
 import Router, { route } from 'preact-router';
 import { parse } from 'query-string';
 import { withTranslation } from 'react-i18next';
 
+import type { Department } from '../../definitions/departments';
 import { setInitCookies } from '../../helpers/cookies';
 import { isActiveSession } from '../../helpers/isActiveSession';
 import { isRTL } from '../../helpers/isRTL';
@@ -34,10 +36,9 @@ type AppProps = {
 			forceAcceptDataProcessingConsent?: boolean;
 		};
 		online?: boolean;
-		departments: {
-			showOnRegistration: boolean;
-		}[];
+		departments: Department[];
 		enabled?: boolean;
+		triggers: ILivechatTrigger[];
 	};
 	gdpr: {
 		accepted: boolean;
@@ -74,14 +75,33 @@ type AppState = {
 	poppedOut: boolean;
 };
 
-// eslint-disable-next-line react/prefer-stateless-function
+export type ScreenPropsType = {
+	notificationsEnabled: boolean;
+	minimized: boolean;
+	expanded: boolean;
+	windowed: boolean;
+	sound: unknown;
+	alerts: unknown;
+	modal: unknown;
+	nameDefault: string;
+	emailDefault: string;
+	departmentDefault: string;
+	onEnableNotifications: () => unknown;
+	onDisableNotifications: () => unknown;
+	onMinimize: () => unknown;
+	onRestore: () => unknown;
+	onOpenWindow: () => unknown;
+	onDismissAlert: () => unknown;
+	dismissNotification: () => void;
+};
+
 export class App extends Component<AppProps, AppState> {
 	state = {
 		initialized: false,
 		poppedOut: false,
 	};
 
-	protected handleRoute = async () => {
+	protected handleRoute = async ({ url }: { url: string }) => {
 		setTimeout(() => {
 			const {
 				config: {
@@ -92,10 +112,9 @@ export class App extends Component<AppProps, AppState> {
 						forceAcceptDataProcessingConsent: gdprRequired,
 					},
 					online,
-					departments = [],
+					departments,
 				},
 				gdpr: { accepted: gdprAccepted },
-				triggered,
 				user,
 			} = this.props;
 
@@ -111,10 +130,10 @@ export class App extends Component<AppProps, AppState> {
 			}
 
 			const showDepartment = departments.filter((dept) => dept.showOnRegistration).length > 0;
+			const isAnyFieldVisible = nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment;
+			const showRegistrationForm = !user?.token && registrationForm && isAnyFieldVisible && !Triggers.showTriggerMessages();
 
-			const showRegistrationForm =
-				registrationForm && (nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment) && !triggered && !user?.token;
-			if (showRegistrationForm) {
+			if (url === '/' && showRegistrationForm) {
 				return route('/register');
 			}
 		}, 100);
@@ -281,9 +300,10 @@ export class App extends Component<AppProps, AppState> {
 				<ChatConnector default path='/' {...screenProps} />
 				<ChatFinished path='/chat-finished' {...screenProps} />
 				<GDPRAgreement path='/gdpr' {...screenProps} />
-				<LeaveMessage path='/leave-message' {...screenProps} />
-				<Register path='/register' {...screenProps} />
-				<SwitchDepartment path='/switch-department' {...screenProps} />
+				{/* TODO: Find a better way to avoid prop drilling with that amout of props (perhaps create a screen context/provider) */}
+				<LeaveMessage path='/leave-message' screenProps={screenProps} />
+				<Register path='/register' screenProps={screenProps} />
+				<SwitchDepartment path='/switch-department' screenProps={screenProps} />
 				<TriggerMessage path='/trigger-messages' {...screenProps} />
 			</Router>
 		);

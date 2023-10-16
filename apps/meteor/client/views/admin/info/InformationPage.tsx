@@ -61,13 +61,13 @@ const InformationPage = memo(function InformationPage({
 			<Page.ScrollableContentWithShadow>
 				<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 					{warningMultipleInstances && (
-						<Callout type='warning' title={t('Multiple_monolith_instances_alert')} marginBlockEnd='x16'></Callout>
+						<Callout type='warning' title={t('Multiple_monolith_instances_alert')} marginBlockEnd={16}></Callout>
 					)}
 					{alertOplogForMultipleInstances && (
 						<Callout
 							type='danger'
 							title={t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances')}
-							marginBlockEnd='x16'
+							marginBlockEnd={16}
 						>
 							<Box withRichContent>
 								<p>{t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details')}</p>

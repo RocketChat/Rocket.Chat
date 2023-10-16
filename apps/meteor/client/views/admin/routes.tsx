@@ -70,8 +70,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/registration/:page?';
 		};
 		'admin-view-logs': {
-			pathname: '/admin/logs';
-			pattern: '/admin/logs';
+			pathname: '/admin/reports';
+			pattern: '/admin/reports';
 		};
 		'federation-dashboard': {
 			pathname: '/admin/federation';
@@ -175,7 +175,7 @@ registerAdminRoute('/emoji/:context?/:id?', {
 
 registerAdminRoute('/users/:context?/:id?', {
 	name: 'admin-users',
-	component: lazy(() => import('./users/UsersRoute')),
+	component: lazy(() => import('./users/AdminUsersRoute')),
 });
 
 registerAdminRoute('/rooms/:context?/:id?', {
@@ -193,7 +193,7 @@ registerAdminRoute('/registration/:page?', {
 	component: lazy(() => import('./cloud/CloudRoute')),
 });
 
-registerAdminRoute('/logs', {
+registerAdminRoute('/reports', {
 	name: 'admin-view-logs',
 	component: lazy(() => import('./viewLogs/ViewLogsRoute')),
 });

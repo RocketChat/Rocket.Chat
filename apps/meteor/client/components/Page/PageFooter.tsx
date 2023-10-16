@@ -7,10 +7,10 @@ type PageFooterProps = { isDirty: boolean } & ComponentProps<typeof Box>;
 const PageFooter: FC<PageFooterProps> = ({ children, isDirty, ...props }) => {
 	return (
 		<AnimatedVisibility visibility={isDirty ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}>
-			<Box elevation='1' borderWidth={0} borderColor='transparent' minHeight='x64' pb='x8' {...props}>
+			<Box elevation='1' borderWidth={0} borderColor='transparent' minHeight='x64' pb={8} {...props}>
 				<Box
 					height='100%'
-					marginInline='x24'
+					marginInline={24}
 					display='flex'
 					flexDirection='row'
 					flexWrap='wrap'

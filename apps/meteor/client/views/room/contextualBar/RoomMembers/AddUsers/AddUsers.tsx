@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { Field, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -19,6 +19,7 @@ import UserAutoCompleteMultiple from '../../../../../components/UserAutoComplete
 import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
+import { useAddMatrixUsers } from './AddMatrixUsers/useAddMatrixUsers';
 
 type AddUsersProps = {
 	rid: IRoom['_id'];
@@ -37,6 +38,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 	const {
 		handleSubmit,
 		control,
+		getValues,
 		formState: { isDirty },
 	} = useForm({ defaultValues: { users: [] } });
 
@@ -51,6 +53,8 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 		}
 	});
 
+	const addClickHandler = useAddMatrixUsers();
+
 	return (
 		<>
 			<ContextualbarHeader>
@@ -61,7 +65,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 			<ContextualbarScrollableContent>
 				<FieldGroup>
 					<Field>
-						<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
+						<FieldLabel flexGrow={0}>{t('Choose_users')}</FieldLabel>
 						{isRoomFederated(room) ? (
 							<Controller
 								name='users'
@@ -80,9 +84,24 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
-						{t('Add_users')}
-					</Button>
+					{isRoomFederated(room) ? (
+						<Button
+							primary
+							disabled={addClickHandler.isLoading}
+							onClick={() =>
+								addClickHandler.mutate({
+									users: getValues('users'),
+									handleSave,
+								})
+							}
+						>
+							{t('Add_users')}
+						</Button>
+					) : (
+						<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
+							{t('Add_users')}
+						</Button>
+					)}
 				</ButtonGroup>
 			</ContextualbarFooter>
 		</>

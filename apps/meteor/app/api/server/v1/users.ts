@@ -126,7 +126,9 @@ API.v1.addRoute(
 				realname: this.bodyParams.data.name,
 				username: this.bodyParams.data.username,
 				nickname: this.bodyParams.data.nickname,
+				bio: this.bodyParams.data.bio,
 				statusText: this.bodyParams.data.statusText,
+				statusType: this.bodyParams.data.statusType,
 				newPassword: this.bodyParams.data.newPassword,
 				typedPassword: this.bodyParams.data.currentPassword,
 			};
@@ -1032,6 +1034,10 @@ API.v1.addRoute(
 				// reset other user keys
 				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-totp'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
+				}
+
+				if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
+					throw new Meteor.Error('error-two-factor-not-enabled', 'Two factor authentication is not enabled');
 				}
 
 				const user = await getUserFromParams(this.bodyParams);

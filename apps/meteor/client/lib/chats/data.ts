@@ -5,7 +5,7 @@ import moment from 'moment';
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
 import { Messages, ChatRoom, ChatSubscription } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
-import { readMessage, MessageTypes } from '../../../app/ui-utils/client';
+import { MessageTypes } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { onClientBeforeSendMessage } from '../onClientBeforeSendMessage';
 import { prependReplies } from '../utils/prependReplies';
@@ -175,7 +175,8 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		Messages.upsert({ _id: message._id }, { $set: { ...message, rid, ...(tmid && { tmid }) } });
 	};
 
-	const updateMessage = async (message: IEditedMessage): Promise<void> => sdk.call('updateMessage', message);
+	const updateMessage = async (message: IEditedMessage, previewUrls?: string[]): Promise<void> =>
+		sdk.call('updateMessage', message, previewUrls);
 
 	const canDeleteMessage = async (message: IMessage): Promise<boolean> => {
 		const uid = Meteor.userId();
@@ -216,7 +217,6 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 	const deleteMessage = async (mid: IMessage['_id']): Promise<void> => {
 		await sdk.call('deleteMessage', { _id: mid });
-		Messages.remove({ _id: mid });
 	};
 
 	const drafts = new Map<IMessage['_id'] | undefined, string>();
@@ -247,11 +247,6 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 	const joinRoom = async (): Promise<void> => {
 		await sdk.call('joinRoom', rid);
-	};
-
-	const markRoomAsRead = async (): Promise<void> => {
-		readMessage.readNow(rid);
-		readMessage.refreshUnreadMark(rid);
 	};
 
 	const findDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom | undefined> =>
@@ -318,7 +313,6 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		getRoom,
 		isSubscribedToRoom,
 		joinRoom,
-		markRoomAsRead,
 		findDiscussionByID,
 		getDiscussionByID,
 		findSubscription,

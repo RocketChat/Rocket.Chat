@@ -1,5 +1,5 @@
 import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
-import { Card } from '@rocket.chat/ui-client';
+import { Card, CardFooter, CardFooterWrapper } from '@rocket.chat/ui-client';
 import { useRole, useSettingSetValue, useSetting, useToastMessageDispatch, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -54,17 +54,17 @@ const CustomContentCard = (): ReactElement | null => {
 	if (isAdmin) {
 		return (
 			<Card data-qa-id='homepage-custom-card'>
-				<Box display='flex' mbe='x12'>
+				<Box display='flex' mbe={12}>
 					<Tag role='status' aria-label={willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}>
-						<Icon mie='x4' name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x12' />
+						<Icon mie={4} name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x12' />
 						{willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
 				</Box>
-				<Box mb='x8' role='status' aria-label={isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : customContentBody}>
+				<Box mb={8} role='status' aria-label={isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : customContentBody}>
 					{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}
 				</Box>
-				<Card.FooterWrapper>
-					<Card.Footer>
+				<CardFooterWrapper>
+					<CardFooter>
 						<Button onClick={() => settingsRoute.push({ group: 'Layout' })} title={t('Layout_Home_Page_Content')}>
 							{t('Customize_Content')}
 						</Button>
@@ -86,8 +86,8 @@ const CustomContentCard = (): ReactElement | null => {
 						>
 							{!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
 						</Button>
-					</Card.Footer>
-				</Card.FooterWrapper>
+					</CardFooter>
+				</CardFooterWrapper>
 			</Card>
 		);
 	}
@@ -95,7 +95,7 @@ const CustomContentCard = (): ReactElement | null => {
 	if (!willNotShowCustomContent && !isCustomContentOnly) {
 		return (
 			<Card>
-				<Box mb='x8'>
+				<Box mb={8}>
 					<CustomHomepageContent role='status' aria-label={customContentBody} />
 				</Box>
 			</Card>

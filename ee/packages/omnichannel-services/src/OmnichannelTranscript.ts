@@ -13,13 +13,12 @@ import {
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
 import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
 import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
+import type { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
 import type { Root } from '@rocket.chat/message-parser';
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
 import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
-
-import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result.status === 'rejected';
 
@@ -41,7 +40,7 @@ type MessageData = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg' | 'md'> & {
 
 type WorkerData = {
 	siteName: string;
-	visitor: ILivechatVisitor | null;
+	visitor: Pick<ILivechatVisitor, '_id' | 'username' | 'name' | 'visitorEmails'> | null;
 	agent: ILivechatAgent | undefined;
 	closedAt?: Date;
 	messages: MessageData[];
@@ -79,7 +78,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	async started(): Promise<void> {
 		try {
-			this.shouldWork = await licenseService.hasLicense('scalability');
+			this.shouldWork = await licenseService.hasModule('scalability');
 		} catch (e: unknown) {
 			// ignore
 		}
@@ -223,7 +222,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}
 				let file = message.files?.map((v) => ({ _id: v._id, name: v.name })).find((file) => file.name === attachment.title);
 				if (!file) {
-					this.log.debug(`File ${attachment.title} not found in room ${message.rid}!`);
+					this.log.warn(`File ${attachment.title} not found in room ${message.rid}!`);
 					// For some reason, when an image is uploaded from clipboard, it doesn't have a file :(
 					// So, we'll try to get the FILE_ID from the `title_link` prop which has the format `/file-upload/FILE_ID/FILE_NAME` using a regex
 					const fileId = attachment.title_link?.match(/\/file-upload\/(.*)\/.*/)?.[1];
@@ -237,7 +236,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}
 
 				if (!file) {
-					this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
+					this.log.warn(`File ${attachment.title} not found in room ${message.rid}!`);
 					// ignore attachments without file
 					files.push({ name: attachment.title, buffer: null });
 					continue;
@@ -305,7 +304,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const messages = await this.getMessagesFromRoom({ rid: room._id });
 
 			const visitor =
-				room.v && (await LivechatVisitors.findOneById(room.v._id, { projection: { _id: 1, name: 1, username: 1, visitorEmails: 1 } }));
+				room.v &&
+				(await LivechatVisitors.findOneEnabledById(room.v._id, { projection: { _id: 1, name: 1, username: 1, visitorEmails: 1 } }));
 			const agent =
 				room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1, utcOffset: 1 } }));
 

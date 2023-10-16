@@ -36,11 +36,11 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 
 	return (
 		<SidebarGenericItem active={isActive} href={path} externalUrl={externalUrl}>
-			{icon && <Icon name={icon} size='x20' mi='x4' />}
+			{icon && <Icon name={icon} size='x20' mi={4} />}
 			<Box
 				withTruncatedText
 				fontScale='p2'
-				mi='x4'
+				mi={4}
 				flexGrow={1}
 				display='flex'
 				alignItems='center'

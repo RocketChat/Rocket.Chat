@@ -1,5 +1,33 @@
 # @rocket.chat/release-action
 
+## 2.2.0
+
+### Minor Changes
+
+- f93648a5df: Add back "Engine Versions" to the release notes
+
+### Patch Changes
+
+- Updated dependencies [0f56aacc4d]
+  - @rocket.chat/eslint-config@0.6.0
+
+## 2.2.0-rc.0
+
+### Minor Changes
+
+- f93648a5df: Add back "Engine Versions" to the release notes
+
+### Patch Changes
+
+- Updated dependencies [0f56aacc4d]
+  - @rocket.chat/eslint-config@0.6.0-rc.0
+
+## 2.1.0
+
+### Minor Changes
+
+- a56f5f0a5f: Add back "Engine Versions" to the release notes
+
 ## 2.0.0
 
 ### Major Changes

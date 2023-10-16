@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, VideoConf, api } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
 	IOmnichannelRoomClosingInfo,
@@ -9,8 +9,10 @@ import type {
 	SelectedAgent,
 	ILivechatAgent,
 	IMessage,
+	ILivechatDepartment,
 } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Logger, type MainLogger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
 	LivechatInquiry,
@@ -20,6 +22,8 @@ import {
 	Messages,
 	Users,
 	LivechatDepartmentAgents,
+	ReadReceipts,
+	Rooms,
 } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -29,10 +33,10 @@ import type { FindCursor, UpdateFilter } from 'mongodb';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
-import type { MainLogger } from '../../../../server/lib/logger/getPino';
+import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { Logger } from '../../../logger/server';
+import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
@@ -125,7 +129,7 @@ class LivechatClass {
 		return RoutingManager.getNextAgent(department);
 	}
 
-	async getOnlineAgents(department?: string, agent?: SelectedAgent): Promise<FindCursor<ILivechatAgent> | undefined> {
+	async getOnlineAgents(department?: string, agent?: SelectedAgent | null): Promise<FindCursor<ILivechatAgent> | undefined> {
 		if (agent?.agentId) {
 			return Users.findOnlineAgents(agent.agentId);
 		}
@@ -154,6 +158,11 @@ class LivechatClass {
 		if (!room || !isOmnichannelRoom(room) || !room.open) {
 			this.logger.debug(`Room ${room._id} is not open`);
 			return;
+		}
+
+		const commentRequired = settings.get('Livechat_request_comment_when_closing_conversation');
+		if (commentRequired && !comment?.trim()) {
+			throw new Error('error-comment-is-required');
 		}
 
 		const { updatedOptions: options } = await this.resolveChatTags(room, params.options);
@@ -294,9 +303,12 @@ class LivechatClass {
 			room = null;
 		}
 
-		if (guest.department && !(await LivechatDepartment.findOneById(guest.department))) {
+		if (
+			guest.department &&
+			!(await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id'>>(guest.department, { projection: { _id: 1 } }))
+		) {
 			await LivechatVisitors.removeDepartmentById(guest._id);
-			const tmpGuest = await LivechatVisitors.findOneById(guest._id);
+			const tmpGuest = await LivechatVisitors.findOneEnabledById(guest._id);
 			if (tmpGuest) {
 				guest = tmpGuest;
 			}
@@ -352,7 +364,9 @@ class LivechatClass {
 				return onlineForDep;
 			}
 
-			const dep = await LivechatDepartment.findOneById(department);
+			const dep = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(department, {
+				projection: { fallbackForwardDepartment: 1 },
+			});
 			if (!dep?.fallbackForwardDepartment) {
 				return onlineForDep;
 			}
@@ -397,6 +411,7 @@ class LivechatClass {
 
 		const result = await Promise.allSettled([
 			Messages.removeByRoomId(rid),
+			ReadReceipts.removeByRoomId(rid),
 			Subscriptions.removeByRoomId(rid),
 			LivechatInquiry.removeByRoomId(rid),
 			LivechatRooms.removeById(rid),
@@ -540,7 +555,7 @@ class LivechatClass {
 		phone,
 		username,
 		connectionData,
-		status = 'online',
+		status = UserStatus.ONLINE,
 	}: {
 		id?: string;
 		token: string;
@@ -580,7 +595,7 @@ class LivechatClass {
 
 		if (department) {
 			Livechat.logger.debug(`Attempt to find a department with id/name ${department}`);
-			const dep = await LivechatDepartment.findOneByIdOrName(department);
+			const dep = await LivechatDepartment.findOneByIdOrName(department, { projection: { _id: 1 } });
 			if (!dep) {
 				Livechat.logger.debug('Invalid department provided');
 				throw new Meteor.Error('error-invalid-department', 'The provided department is invalid');
@@ -667,7 +682,12 @@ class LivechatClass {
 			};
 		}
 
-		const department = await LivechatDepartment.findOneById(departmentId);
+		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'requestTagBeforeClosingChat' | 'chatClosingTags'>>(
+			departmentId,
+			{
+				projection: { requestTagBeforeClosingChat: 1, chatClosingTags: 1 },
+			},
+		);
 		if (!department) {
 			return {
 				updatedOptions: {
@@ -781,7 +801,7 @@ class LivechatClass {
 					return updateDepartmentAgents(
 						dep._id,
 						{
-							...(toRemoveIds.includes(dep._id) ? { remove: [{ agentId: _id }] } : { upsert: [{ agentId: _id }] }),
+							...(toRemoveIds.includes(dep._id) ? { remove: [{ agentId: _id }] } : { upsert: [{ agentId: _id, count: 0, order: 0 }] }),
 						},
 						dep.enabled,
 					);
@@ -789,6 +809,112 @@ class LivechatClass {
 				.toArray(),
 		);
 
+		return true;
+	}
+
+	async updateCallStatus(callId: string, rid: string, status: 'ended' | 'declined', user: IUser | ILivechatVisitor) {
+		await Rooms.setCallStatus(rid, status);
+		if (status === 'ended' || status === 'declined') {
+			if (await VideoConf.declineLivechatCall(callId)) {
+				return;
+			}
+
+			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date(), rid }, user as unknown as IUser);
+		}
+	}
+
+	async updateLastChat(contactId: string, lastChat: Required<ILivechatVisitor['lastChat']>) {
+		const updateUser = {
+			$set: {
+				lastChat,
+			},
+		};
+		await LivechatVisitors.updateById(contactId, updateUser);
+	}
+
+	notifyRoomVisitorChange(roomId: string, visitor: ILivechatVisitor) {
+		void api.broadcast('omnichannel.room', roomId, {
+			type: 'visitorData',
+			visitor,
+		});
+	}
+
+	async changeRoomVisitor(userId: string, room: IOmnichannelRoom, visitor: ILivechatVisitor) {
+		const user = await Users.findOneById(userId, { projection: { _id: 1 } });
+		if (!user) {
+			throw new Error('error-user-not-found');
+		}
+
+		if (!(await canAccessRoomAsync(room, user))) {
+			throw new Error('error-not-allowed');
+		}
+
+		await LivechatRooms.changeVisitorByRoomId(room._id, visitor);
+
+		this.notifyRoomVisitorChange(room._id, visitor);
+
+		return LivechatRooms.findOneById(room._id);
+	}
+
+	async notifyAgentStatusChanged(userId: string, status?: UserStatus) {
+		if (!status) {
+			return;
+		}
+
+		void callbacks.runAsync('livechat.agentStatusChanged', { userId, status });
+		if (!settings.get('Livechat_show_agent_info')) {
+			return;
+		}
+
+		await LivechatRooms.findOpenByAgent(userId).forEach((room) => {
+			void api.broadcast('omnichannel.room', room._id, {
+				type: 'agentStatus',
+				status,
+			});
+		});
+	}
+
+	async getRoomMessages({ rid }: { rid: string }) {
+		const room = await Rooms.findOneById(rid, { projection: { t: 1 } });
+		if (room?.t !== 'l') {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		const ignoredMessageTypes: MessageTypesValues[] = [
+			'livechat_navigation_history',
+			'livechat_transcript_history',
+			'command',
+			'livechat-close',
+			'livechat-started',
+			'livechat_video_call',
+		];
+
+		return Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, {
+			sort: { ts: 1 },
+		}).toArray();
+	}
+
+	async archiveDepartment(_id: string) {
+		const department = await LivechatDepartment.findOneById(_id, { projection: { _id: 1 } });
+
+		if (!department) {
+			throw new Error('department-not-found');
+		}
+
+		await Promise.all([LivechatDepartmentAgents.disableAgentsByDepartmentId(_id), LivechatDepartment.archiveDepartment(_id)]);
+
+		await callbacks.run('livechat.afterDepartmentArchived', department);
+	}
+
+	async unarchiveDepartment(_id: string) {
+		const department = await LivechatDepartment.findOneById(_id, { projection: { _id: 1 } });
+
+		if (!department) {
+			throw new Meteor.Error('department-not-found');
+		}
+
+		// TODO: these kind of actions should be on events instead of here
+		await Promise.all([LivechatDepartmentAgents.enableAgentsByDepartmentId(_id), LivechatDepartment.unarchiveDepartment(_id)]);
 		return true;
 	}
 }

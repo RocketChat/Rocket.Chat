@@ -1,6 +1,6 @@
+import { Logger } from '@rocket.chat/logger';
 import { Meteor } from 'meteor/meteor';
 
-import { Logger } from '../../logger/server';
 import { settings } from '../../settings/server';
 import { SAMLUtils } from './lib/Utils';
 import { loadSamlServiceProviders, addSettings } from './lib/settings';

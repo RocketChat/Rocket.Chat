@@ -60,8 +60,8 @@ function RoomFiles({
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 
-			<ContextualbarContent p='x12'>
-				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
+			<ContextualbarContent p={12}>
+				<Box display='flex' flexDirection='row' p={12} flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
 							<TextInput
@@ -73,7 +73,7 @@ function RoomFiles({
 								onChange={setText}
 								addon={<Icon name='magnifier' size='x20' />}
 							/>
-							<Box w='x144' mis='x8'>
+							<Box w='x144' mis={8}>
 								<Select onChange={setType} value={type} options={options} />
 							</Box>
 						</Margins>
@@ -81,7 +81,7 @@ function RoomFiles({
 				</Box>
 
 				{loading && (
-					<Box p='x12'>
+					<Box p={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}

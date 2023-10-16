@@ -19,6 +19,7 @@ export const useAppsRoomActions = () => {
 				(action): RoomToolboxActionConfig => ({
 					id: action.actionId,
 					icon: undefined,
+					variant: action.variant,
 					order: 300,
 					title: Utilities.getI18nKeyForApp(action.labelI18n, action.appId),
 					groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],
@@ -31,6 +32,7 @@ export const useAppsRoomActions = () => {
 							appId: action.appId,
 							payload: { context: action.context },
 						}),
+					type: 'apps',
 				}),
 			) ?? [],
 		[actionManager, applyButtonFilters, result.data, room._id],

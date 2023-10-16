@@ -1,10 +1,11 @@
-import type { IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import { type IThreadMessage, type IThreadMainMessage, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo, useRef } from 'react';
 
+import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
 import { useChat } from '../../../views/room/contexts/ChatContext';
@@ -29,6 +30,9 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 	const chat = useChat();
 
 	const messageRef = useRef(null);
+
+	// Checks if is videoconf message to limit toolbox actions
+	const messageContext: MessageActionContext = isVideoConfMessage(message) ? 'videoconf-threads' : 'threads';
 
 	useJumpToMessage(message._id, messageRef);
 
@@ -68,7 +72,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 
 				{ignored ? <IgnoredContent onShowMessageIgnored={toggleIgnoring} /> : <ThreadMessageContent message={message} />}
 			</MessageContainer>
-			{!message.private && <MessageToolboxHolder message={message} context='threads' />}
+			{!message.private && <MessageToolboxHolder message={message} context={messageContext} />}
 		</Message>
 	);
 };

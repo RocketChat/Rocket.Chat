@@ -96,7 +96,7 @@ const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: User
 
 	return (
 		<>
-			<Margins inline='x16'>
+			<Margins inline={16}>
 				<SeatsCapUsage members={activeUsers} limit={maxActiveUsers} />
 			</Margins>
 			<ButtonGroup>

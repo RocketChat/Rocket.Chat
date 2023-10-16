@@ -49,7 +49,7 @@ function withDoNotAskAgain<T extends RequiredModalProps>(
 				{...props}
 				dontAskAgain={
 					<Box display='flex' flexDirection='row'>
-						<CheckBox checked={state} onChange={onChange} mie='x4' name='dont_ask_again' />
+						<CheckBox checked={state} onChange={onChange} mie={4} name='dont_ask_again' />
 						<label htmlFor='dont_ask_again'>{t('Dont_ask_me_again')}</label>
 					</Box>
 				}

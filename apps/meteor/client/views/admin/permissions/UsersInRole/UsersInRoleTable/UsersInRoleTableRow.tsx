@@ -26,7 +26,7 @@ const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps): Reac
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					<UserAvatar size='x40' username={username ?? ''} etag={avatarETag} />
-					<Box display='flex' withTruncatedText mi='x8'>
+					<Box display='flex' withTruncatedText mi={8}>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' withTruncatedText color='default'>
 								{name || username}

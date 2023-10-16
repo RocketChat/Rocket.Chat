@@ -2,13 +2,13 @@ import http from 'http';
 import URL from 'url';
 
 import { InstanceStatus } from '@rocket.chat/instance-status';
+import { Logger } from '@rocket.chat/logger';
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
 import type createServer from 'connect';
 import { WebApp } from 'meteor/webapp';
 
 import { UploadFS } from '../../../../server/ufs';
-import { Logger } from '../../../logger/server';
 import { isDocker } from '../../../utils/server/functions/isDocker';
 
 const logger = new Logger('UploadProxy');

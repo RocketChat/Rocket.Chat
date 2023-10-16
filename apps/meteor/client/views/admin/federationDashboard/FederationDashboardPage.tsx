@@ -14,7 +14,7 @@ function FederationDashboardPage(): ReactElement {
 		<Page>
 			<Page.Header title={t('Federation')} />
 			<Page.ScrollableContentWithShadow>
-				<Box margin='x24'>
+				<Box margin={24}>
 					<OverviewSection />
 					<ServersSection />
 				</Box>

@@ -1,4 +1,5 @@
 import { api } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
 import type { Document } from 'mongodb';
 import polka from 'polka';
 
@@ -6,7 +7,6 @@ import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/reg
 import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 import { DatabaseWatcher } from '../../../../apps/meteor/server/database/DatabaseWatcher';
-import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 import { StreamHub } from './StreamHub';
 
 const PORT = process.env.PORT || 3035;

@@ -4,9 +4,9 @@ import stream from 'stream';
 import zlib from 'zlib';
 
 import type { IUpload } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 
 import { UploadFS } from '../../../../server/ufs';
-import { Logger } from '../../../logger/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
 

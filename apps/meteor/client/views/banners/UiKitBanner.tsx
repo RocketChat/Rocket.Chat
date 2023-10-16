@@ -20,7 +20,7 @@ const UiKitBanner: FC<UiKitBannerProps> = ({ payload }) => {
 
 	const icon = useMemo(() => {
 		if (state.icon) {
-			return <Icon name={state.icon as IconName} size={20} />;
+			return <Icon name={state.icon as IconName} size='x20' />;
 		}
 
 		return null;

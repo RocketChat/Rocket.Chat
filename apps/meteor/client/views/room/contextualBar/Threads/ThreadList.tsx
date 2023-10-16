@@ -144,7 +144,7 @@ const ThreadList: VFC = () => {
 								onChange={handleSearchTextChange}
 							/>
 							<Box w='x144'>
-								<Select options={typeOptions} value={type} onChange={handleTypeChange} />
+								<Select options={typeOptions} value={type} onChange={(value) => handleTypeChange(String(value))} />
 							</Box>
 						</Margins>
 					</Box>
@@ -152,7 +152,7 @@ const ThreadList: VFC = () => {
 
 				{phase === AsyncStatePhase.LOADING && (
 					<Box pi={24} pb={12}>
-						<Throbber size={12} />
+						<Throbber size='x12' />
 					</Box>
 				)}
 

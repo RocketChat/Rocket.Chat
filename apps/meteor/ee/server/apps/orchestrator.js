@@ -1,6 +1,7 @@
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import { Logger } from '@rocket.chat/logger';
 import { AppLogs, Apps as AppsModel, AppsPersistence } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -14,17 +15,19 @@ import {
 	AppDepartmentsConverter,
 	AppUploadsConverter,
 	AppVisitorsConverter,
+	AppRolesConverter,
 } from '../../../app/apps/server/converters';
 import { AppThreadsConverter } from '../../../app/apps/server/converters/threads';
 import { settings, settingsRegistry } from '../../../app/settings/server';
-import { Logger } from '../../../server/lib/logger/Logger';
-import { canEnableApp } from '../../app/license/server/license';
+import { canEnableApp } from '../../app/license/server/canEnableApp';
 import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
 import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
 }
+
+const DISABLED_PRIVATE_APP_INSTALLATION = ['yes', 'true'].includes(String(process.env.DISABLE_PRIVATE_APP_INSTALLATION).toLowerCase());
 
 let appsSourceStorageType;
 let appsSourceStorageFilesystemPath;
@@ -64,6 +67,7 @@ export class AppServerOrchestrator {
 		this._converters.set('uploads', new AppUploadsConverter(this));
 		this._converters.set('videoConferences', new AppVideoConferencesConverter());
 		this._converters.set('threads', new AppThreadsConverter(this));
+		this._converters.set('roles', new AppRolesConverter(this));
 
 		this._bridges = new RealAppBridges(this);
 
@@ -135,6 +139,10 @@ export class AppServerOrchestrator {
 
 	isDebugging() {
 		return !isTesting();
+	}
+
+	shouldDisablePrivateAppInstallation() {
+		return DISABLED_PRIVATE_APP_INSTALLATION;
 	}
 
 	/**

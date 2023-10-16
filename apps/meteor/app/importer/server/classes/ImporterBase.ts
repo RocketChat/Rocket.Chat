@@ -1,10 +1,11 @@
-import type { IImport, IImportRecordType, IImportData, IImportChannel, IImportUser, IImportProgress } from '@rocket.chat/core-typings';
+import type { IImport, IImportRecord, IImportChannel, IImportUser, IImportProgress } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Settings, ImportData, Imports } from '@rocket.chat/models';
 import AdmZip from 'adm-zip';
 import type { MatchKeysAndValues } from 'mongodb';
 
 import { Selection, SelectionChannel, SelectionUser } from '..';
-import { Logger } from '../../../logger/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils/lib/i18n';
 import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterProgressStep';
 import type { ImporterInfo } from '../definitions/ImporterInfo';
@@ -131,7 +132,7 @@ export class Importer {
 		this.reloadCount();
 		const started = Date.now();
 
-		const beforeImportFn = async (data: IImportData, type: IImportRecordType) => {
+		const beforeImportFn = async ({ data, dataType: type }: IImportRecord) => {
 			if (this.importRecord.valid === false) {
 				this.converter.aborted = true;
 				throw new Error('The import operation is no longer valid.');
@@ -173,7 +174,7 @@ export class Importer {
 				}
 			}
 
-			return true;
+			return false;
 		};
 
 		const afterImportFn = async () => {
@@ -210,6 +211,8 @@ export class Importer {
 				await this.applySettingValues({});
 
 				await this.updateProgress(ProgressStep.IMPORTING_USERS);
+				const usersToImport = importSelection.users.filter((user) => user.do_import);
+				await callbacks.run('beforeUserImport', { userCount: usersToImport.length });
 				await this.converter.convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn });
 
 				await this.updateProgress(ProgressStep.IMPORTING_CHANNELS);

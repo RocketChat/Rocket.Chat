@@ -1,5 +1,5 @@
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
-import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
+import { isThreadMessage, isRoomFederated, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { MessageToolbox as FuselageMessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useSettings, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
@@ -23,7 +23,7 @@ const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActi
 		return context;
 	}
 
-	if (message.t === 'videoconf') {
+	if (isVideoConfMessage(message)) {
 		return 'videoconf';
 	}
 
@@ -43,9 +43,16 @@ type MessageToolboxProps = {
 	messageContext?: MessageActionContext;
 	room: IRoom;
 	subscription?: ISubscription;
+	onChangeMenuVisibility: (visible: boolean) => void;
 };
 
-const MessageToolbox = ({ message, messageContext, room, subscription }: MessageToolboxProps): ReactElement | null => {
+const MessageToolbox = ({
+	message,
+	messageContext,
+	room,
+	subscription,
+	onChangeMenuVisibility,
+}: MessageToolboxProps): ReactElement | null => {
 	const t = useTranslation();
 	const user = useUser() ?? undefined;
 	const settings = useSettings();
@@ -109,6 +116,7 @@ const MessageToolbox = ({ message, messageContext, room, subscription }: Message
 				))}
 			{actionsQueryResult.isSuccess && actionsQueryResult.data.menu.length > 0 && (
 				<MessageActionMenu
+					onChangeMenuVisibility={onChangeMenuVisibility}
 					options={[...actionsQueryResult.data?.menu, ...(actionButtonApps.data ?? [])].filter(Boolean).map((action) => ({
 						...action,
 						action: (e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
