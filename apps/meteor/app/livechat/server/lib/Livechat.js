@@ -257,20 +257,6 @@ export const Livechat = {
 		}
 	},
 
-	async closeOpenChats(userId, comment) {
-		Livechat.logger.debug(`Closing open chats for user ${userId}`);
-		const user = await Users.findOneById(userId);
-
-		const extraQuery = await callbacks.run('livechat.applyDepartmentRestrictions', {}, { userId });
-		const openChats = LivechatRooms.findOpenByAgent(userId, extraQuery);
-		const promises = [];
-		await openChats.forEach((room) => {
-			promises.push(LivechatTyped.closeRoom({ user, room, comment }));
-		});
-
-		await Promise.all(promises);
-	},
-
 	async forwardOpenChats(userId) {
 		Livechat.logger.debug(`Transferring open chats for user ${userId}`);
 		for await (const room of LivechatRooms.findOpenByAgent(userId)) {

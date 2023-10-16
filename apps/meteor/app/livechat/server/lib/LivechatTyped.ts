@@ -940,6 +940,20 @@ class LivechatClass {
 
 		return true;
 	}
+
+	async closeOpenChats(userId: string, comment?: string) {
+		this.logger.debug(`Closing open chats for user ${userId}`);
+		const user = await Users.findOneById(userId);
+
+		const extraQuery = await callbacks.run('livechat.applyDepartmentRestrictions', {}, { userId });
+		const openChats = LivechatRooms.findOpenByAgent(userId, extraQuery);
+		const promises: Promise<void>[] = [];
+		await openChats.forEach((room) => {
+			promises.push(this.closeRoom({ user, room, comment }));
+		});
+
+		await Promise.all(promises);
+	}
 }
 
 export const Livechat = new LivechatClass();
