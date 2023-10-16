@@ -14,7 +14,6 @@ import {
 	Subscriptions,
 	Messages,
 	LivechatDepartment as LivechatDepartmentRaw,
-	LivechatDepartmentAgents,
 	Rooms,
 	Users,
 	ReadReceipts,
@@ -566,41 +565,6 @@ export const Livechat = {
 		}
 
 		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
-	},
-
-	/*
-	 * @deprecated - Use the equivalent from DepartmentHelpers class
-	 */
-	async removeDepartment(_id) {
-		check(_id, String);
-
-		const departmentRemovalEnabled = settings.get('Omnichannel_enable_department_removal');
-
-		if (!departmentRemovalEnabled) {
-			throw new Meteor.Error('department-removal-disabled', 'Department removal is disabled', {
-				method: 'livechat:removeDepartment',
-			});
-		}
-
-		const department = await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
-
-		if (!department) {
-			throw new Meteor.Error('department-not-found', 'Department not found', {
-				method: 'livechat:removeDepartment',
-			});
-		}
-		const ret = (await LivechatDepartmentRaw.removeById(_id)).deletedCount;
-		const agentsIds = (await LivechatDepartmentAgents.findByDepartmentId(_id, { projection: { agentId: 1 } }).toArray()).map(
-			(agent) => agent.agentId,
-		);
-		await LivechatDepartmentAgents.removeByDepartmentId(_id);
-		await LivechatDepartmentRaw.unsetFallbackDepartmentByDepartmentId(_id);
-		if (ret) {
-			setImmediate(() => {
-				callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
-			});
-		}
-		return ret;
 	},
 
 	showConnecting() {
