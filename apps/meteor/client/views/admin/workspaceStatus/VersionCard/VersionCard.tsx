@@ -65,12 +65,13 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	const getVersionStatus = (serverVersion: string, versions: { version: string }[]): VersionStatus => {
 		const coercedServerVersion = String(semver.coerce(serverVersion));
 		const highestVersion = versions.reduce((prev, current) => (prev.version > current.version ? prev : current));
+		const isSupported = versions.some((v) => v.version === coercedServerVersion || v.version === serverVersion);
 
 		if (semver.gte(coercedServerVersion, highestVersion.version)) {
 			return 'latest';
 		}
 
-		if (semver.gt(highestVersion.version, coercedServerVersion)) {
+		if (isSupported && semver.gt(highestVersion.version, coercedServerVersion)) {
 			return 'available_version';
 		}
 
