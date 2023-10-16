@@ -2,12 +2,12 @@ import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 
 import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data.js';
+import { sendSimpleMessage } from '../../data/chat.helper.js';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper.js';
-import { sendSimpleMessage } from '../../data/chat.helper.js';
 import { IS_EE } from '../../e2e/config/constants';
 
 describe('Meteor.methods', function () {
@@ -170,8 +170,11 @@ describe('Meteor.methods', function () {
 		});
 
 		(IS_EE ? describe : describe.skip)('[@getReadReceipts] EE', () => {
-			let user, userCredentials, room;
-			let firstMessage, firstThreadMessage;
+			let user = null;
+			let userCredentials = null;
+			let room = null;
+			let firstMessage = null;
+			let firstThreadMessage = null;
 
 			const roomName = `methods-test-channel-${Date.now()}`;
 			before(async () => {
