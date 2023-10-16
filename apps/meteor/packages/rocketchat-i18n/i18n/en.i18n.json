@@ -2611,6 +2611,7 @@
   "Install_FxOs_done": "Great! You can now use Rocket.Chat via the icon on your homescreen. Have fun with Rocket.Chat!",
   "Install_FxOs_error": "Sorry, that did not work as intended! The following error appeared:",
   "Install_FxOs_follow_instructions": "Please confirm the app installation on your device (press \"Install\" when prompted).",
+  "Installing": "Installing",
   "Install_package": "Install package",
   "Installation": "Installation",
   "Installed": "Installed",
