@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { IconProps } from '@rocket.chat/fuselage';
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -10,7 +10,7 @@ import { actionLinks } from '../../../lib/actionLinks';
 import MessageAction from './actions/MessageAction';
 
 type MessageActionOptions = {
-	icon: IconProps['name'];
+	icon: IconName;
 	i18nLabel?: TranslationKey;
 	label?: string;
 	methodId: string;

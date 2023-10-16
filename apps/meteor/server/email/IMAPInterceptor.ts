@@ -1,10 +1,10 @@
 import { EventEmitter } from 'events';
 
+import { EmailInbox } from '@rocket.chat/models';
 import type { ImapMessage, ImapMessageBodyInfo } from 'imap';
 import IMAP from 'imap';
 import type { ParsedMail } from 'mailparser';
 import { simpleParser } from 'mailparser';
-import { EmailInbox } from '@rocket.chat/models';
 
 import { logger } from '../features/EmailInbox/logger';
 

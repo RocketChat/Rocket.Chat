@@ -1,7 +1,7 @@
-import { UserStatus } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 import { Presence } from '@rocket.chat/core-services';
+import { UserStatus } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

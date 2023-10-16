@@ -50,9 +50,9 @@ const UserCard = forwardRef(function UserCard(
 		customStatus = <Skeleton width='100%' />,
 		roles = (
 			<>
-				<Skeleton flexGrow={1} mi='x2' />
-				<Skeleton flexGrow={1} mi='x2' />
-				<Skeleton flexGrow={1} mi='x2' />
+				<Skeleton flexGrow={1} mi={2} />
+				<Skeleton flexGrow={1} mi={2} />
+				<Skeleton flexGrow={1} mi={2} />
 			</>
 		),
 		bio = <Skeleton width='100%' />,
@@ -76,29 +76,29 @@ const UserCard = forwardRef(function UserCard(
 				) : (
 					<Skeleton borderRadius='x4' width='x124' height='x124' variant='rect' />
 				)}
-				<Box flexGrow={0} display='flex' mbs='x12' alignItems='center' justifyContent='center'>
+				<Box flexGrow={0} display='flex' mbs={12} alignItems='center' justifyContent='center'>
 					{isLoading ? (
 						<>
-							<Skeleton variant='rect' height='x28' width='x28' borderRadius='x4' mi='x2' />
-							<Skeleton variant='rect' height='x28' width='x28' borderRadius='x4' mi='x2' />
-							<Skeleton variant='rect' height='x28' width='x28' borderRadius='x4' mi='x2' />
+							<Skeleton variant='rect' height='x28' width='x28' borderRadius='x4' mi={2} />
+							<Skeleton variant='rect' height='x28' width='x28' borderRadius='x4' mi={2} />
+							<Skeleton variant='rect' height='x28' width='x28' borderRadius='x4' mi={2} />
 						</>
 					) : (
 						actions
 					)}
 				</Box>
 			</Box>
-			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis='x24' width='1px'>
-				<Box mbe='x4' withTruncatedText display='flex' alignItems='center'>
+			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis={24} width='1px'>
+				<Box mbe={4} withTruncatedText display='flex' alignItems='center'>
 					{isLoading ? <Skeleton width='100%' /> : <UserCardUsername status={status} name={name} />}
 					{nickname && (
-						<Box flexGrow={1} flexShrink={1} flexBasis={0} title={nickname} color='hint' mis='x4' fontScale='p2' withTruncatedText>
+						<Box flexGrow={1} flexShrink={1} flexBasis={0} title={nickname} color='hint' mis={4} fontScale='p2' withTruncatedText>
 							({nickname})
 						</Box>
 					)}
 				</Box>
 				{customStatus && (
-					<UserCardInfo mbe='x16'>
+					<UserCardInfo mbe={16}>
 						{typeof customStatus === 'string' ? (
 							<MarkdownText withTruncatedText variant='inlineWithoutBreaks' content={customStatus} parseEmoji={true} />
 						) : (

@@ -1,6 +1,6 @@
-import type { UserStatus } from './UserStatus';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
+import type { UserStatus } from './UserStatus';
 
 export interface ILoginToken {
 	hashedToken: string;
@@ -223,6 +223,7 @@ export type AvatarServiceObject = {
 	blob: Blob;
 	contentType: string;
 	service: string;
+	url: string;
 };
 
 export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;

@@ -199,15 +199,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2)');
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2) message 2');
 
-					await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText(
-						'hello world from server A (user 2) message 2',
-					);
-					await expect(poFederationChannel1ForUser2.content.lastUserMessageBody).toHaveText(
-						'hello world from server A (user 2) message 2',
-					);
-					await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText(
-						'hello world from server A (user 2) message 2',
-					);
+					await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('hello world from server A (user 2) message 2');
+					await expect(poFederationChannel1ForUser2.content.lastUserMessageBody).toHaveText('hello world from server A (user 2) message 2');
+					await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('hello world from server A (user 2) message 2');
 
 					await page2.close();
 					await pageForServer2.close();
@@ -480,12 +474,20 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`, { delay: 100 });
-				await poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`).waitFor();
-				await expect(poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)).toBeVisible();
+				await poFederationChannelServer1.content.messagePopUpItems
+					.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)
+					.waitFor();
+				await expect(
+					poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`),
+				).toBeVisible();
 
 				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`, { delay: 100 });
-				await poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`).waitFor();
-				await expect(poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)).toBeVisible();
+				await poFederationChannelServer2.content.messagePopUpItems
+					.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)
+					.waitFor();
+				await expect(
+					poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`),
+				).toBeVisible();
 
 				await poFederationChannelServer1.content.inputMessage.fill('');
 				await poFederationChannelServer2.content.inputMessage.fill('');
@@ -511,12 +513,20 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
 
 				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`, { delay: 100 });
-				await poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`).waitFor();
-				await expect(poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)).toBeVisible();
+				await poFederationChannelServer2.content.messagePopUpItems
+					.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)
+					.waitFor();
+				await expect(
+					poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`),
+				).toBeVisible();
 
 				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`, { delay: 100 });
-				await poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`).waitFor();
-				await expect(poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)).toBeVisible();
+				await poFederationChannelServer1.content.messagePopUpItems
+					.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)
+					.waitFor();
+				await expect(
+					poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`),
+				).toBeVisible();
 
 				await poFederationChannelServer1.content.inputMessage.fill('');
 				await poFederationChannelServer2.content.inputMessage.fill('');
@@ -1129,83 +1139,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page2.close();
 			});
 
-			test('expect to not be able to reply in thread in Server A', async ({ browser, page, apiServer2 }) => {
-				const page2 = await browser.newPage();
-				const poFederationChannelServerUser2 = new FederationChannel(page2);
-				const usernameFromServer2 = await registerUser(apiServer2);
-
-				await doLogin({
-					page: page2,
-					server: {
-						url: constants.RC_SERVER_2.url,
-						username: usernameFromServer2,
-						password: constants.RC_SERVER_2.password,
-					},
-					storeState: false,
-				});
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await page2.goto(`${constants.RC_SERVER_2.url}/home`);
-
-				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(usernameFromServer2, constants.RC_SERVER_2.matrixServerName);
-				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
-					usernameFromServer2,
-					constants.RC_SERVER_2.matrixServerName,
-				);
-				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
-
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer1.content.sendMessage('message');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
-
-				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
-
-				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
-				await expect(poFederationChannelServerUser2.content.lastUserMessageBody).toHaveText('message from Server A');
-
-				await poFederationChannelServer1.content.openLastMessageMenu();
-				await expect(poFederationChannelServer1.content.btnOptionReplyInThread).not.toBeVisible();
-				await page2.close();
-			});
-
-			test('expect to not be able to reply in thread in Server B', async ({ browser, page, apiServer2 }) => {
-				const page2 = await browser.newPage();
-				const poFederationChannelServerUser2 = new FederationChannel(page2);
-				const usernameFromServer2 = await registerUser(apiServer2);
-
-				await doLogin({
-					page: page2,
-					server: {
-						url: constants.RC_SERVER_2.url,
-						username: usernameFromServer2,
-						password: constants.RC_SERVER_2.password,
-					},
-					storeState: false,
-				});
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await page2.goto(`${constants.RC_SERVER_2.url}/home`);
-
-				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(usernameFromServer2, constants.RC_SERVER_2.matrixServerName);
-				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
-					usernameFromServer2,
-					constants.RC_SERVER_2.matrixServerName,
-				);
-				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
-
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer1.content.sendMessage('message');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
-
-				await poFederationChannelServerUser2.content.sendMessageUsingEnter('message from Server A');
-
-				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
-				await expect(poFederationChannelServerUser2.content.lastUserMessageBody).toHaveText('message from Server A');
-
-				await poFederationChannelServerUser2.content.openLastMessageMenu();
-				await expect(poFederationChannelServerUser2.content.btnOptionReplyInThread).not.toBeVisible();
-				await page2.close();
-			});
-
-			test('expect to not be able to start a discussion from a message in thread in Server A', async ({ browser, page, apiServer2 }) => {
+			test('expect to not be able to start a discussion from a message in Server A', async ({ browser, page, apiServer2 }) => {
 				const page2 = await browser.newPage();
 				const poFederationChannelServerUser2 = new FederationChannel(page2);
 				const usernameFromServer2 = await registerUser(apiServer2);
@@ -1243,7 +1177,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page2.close();
 			});
 
-			test('expect to not be able to start a discussion from a message in thread in Server B', async ({ browser, page, apiServer2 }) => {
+			test('expect to not be able to start a discussion from a message in Server B', async ({ browser, page, apiServer2 }) => {
 				const page2 = await browser.newPage();
 				const poFederationChannelServerUser2 = new FederationChannel(page2);
 				const usernameFromServer2 = await registerUser(apiServer2);

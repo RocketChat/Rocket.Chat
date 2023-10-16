@@ -1,12 +1,12 @@
+import type * as http from 'http';
 import type { TransformCallback, TransformOptions } from 'stream';
 import stream from 'stream';
 import zlib from 'zlib';
-import type * as http from 'http';
 
 import type { IUpload } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 
 import { UploadFS } from '../../../../server/ufs';
-import { Logger } from '../../../logger/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
 
@@ -71,13 +71,13 @@ const readFromGridFS = async function (
 	const ws = new stream.PassThrough();
 
 	[rs, ws].forEach((stream) =>
-		stream.on('error', function (err) {
+		stream.on('error', (err) => {
 			store.onReadError.call(store, err, fileId, file);
 			res.end();
 		}),
 	);
 
-	ws.on('close', function () {
+	ws.on('close', () => {
 		// Close output stream at the end
 		ws.emit('end');
 	});
@@ -131,7 +131,7 @@ const copyFromGridFS = async function (storeName: string | undefined, fileId: st
 	const rs = await store.getReadStream(fileId, file);
 
 	[rs, out].forEach((stream) =>
-		stream.on('error', function (err) {
+		stream.on('error', (err) => {
 			store.onReadError.call(store, err, fileId, file);
 			out.end();
 		}),

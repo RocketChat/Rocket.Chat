@@ -1,11 +1,23 @@
-import { Meteor } from 'meteor/meteor';
-import mem from 'mem';
+import { LivechatUnit, LivechatDepartmentAgents } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { LivechatUnit } from '@rocket.chat/models';
+import mem from 'mem';
+import { Meteor } from 'meteor/meteor';
 
 import { hasAnyRoleAsync } from '../../../../../app/authorization/server/functions/hasRole';
+import { logger } from '../lib/logger';
 
-async function getUnitsFromUserRoles(user: string | null): Promise<string[] | undefined> {
+async function getUnitsFromUserRoles(user: string): Promise<string[]> {
+	return LivechatUnit.findByMonitorId(user);
+}
+
+async function getDepartmentsFromUserRoles(user: string): Promise<string[]> {
+	return (await LivechatDepartmentAgents.findByAgentId(user).toArray()).map((department) => department.departmentId);
+}
+
+const memoizedGetUnitFromUserRoles = mem(getUnitsFromUserRoles, { maxAge: process.env.TEST_MODE ? 1 : 10000 });
+const memoizedGetDepartmentsFromUserRoles = mem(getDepartmentsFromUserRoles, { maxAge: process.env.TEST_MODE ? 1 : 10000 });
+
+export const getUnitsFromUser = async (user: string): Promise<string[] | undefined> => {
 	if (!user || (await hasAnyRoleAsync(user, ['admin', 'livechat-manager']))) {
 		return;
 	}
@@ -14,10 +26,11 @@ async function getUnitsFromUserRoles(user: string | null): Promise<string[] | un
 		return;
 	}
 
-	return LivechatUnit.findByMonitorId(user);
-}
+	const unitsAndDepartments = [...(await memoizedGetUnitFromUserRoles(user)), ...(await memoizedGetDepartmentsFromUserRoles(user))];
+	logger.debug({ msg: 'Calculating units for monitor', user, unitsAndDepartments });
 
-const memoizedGetUnitFromUserRoles = mem(getUnitsFromUserRoles, { maxAge: 5000 });
+	return unitsAndDepartments;
+};
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -27,8 +40,11 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:getUnitsFromUser'(): Promise<string[] | undefined> {
+	async 'livechat:getUnitsFromUser'(): Promise<string[] | undefined> {
 		const user = Meteor.userId();
-		return memoizedGetUnitFromUserRoles(user);
+		if (!user) {
+			return;
+		}
+		return getUnitsFromUser(user);
 	},
 });

@@ -14,9 +14,9 @@ test.describe.parallel('administration', () => {
 		poAdmin = new Admin(page);
 	});
 
-	test.describe('Info', () => {
+	test.describe('Workspace', () => {
 		test.beforeEach(async ({ page }) => {
-			await page.goto('/admin/info');
+			await page.goto('/admin/workspace');
 		});
 
 		test('expect download info as JSON', async ({ page }) => {
@@ -44,8 +44,14 @@ test.describe.parallel('administration', () => {
 			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
 			await poAdmin.tabs.users.checkboxVerified.click();
 			await poAdmin.tabs.users.inputPassword.type('any_password');
-			await poAdmin.tabs.users.addRole('user');
+			await expect(poAdmin.tabs.users.userRole).toBeVisible();
 			await poAdmin.tabs.users.btnSave.click();
+		});
+
+		test('expect SMTP setup warning and routing to email settings', async ({ page }) => {
+			await poAdmin.tabs.users.btnInvite.click();
+			await poAdmin.tabs.users.setupSmtpLink.click();
+			await expect(page).toHaveURL('/admin/settings/Email');
 		});
 	});
 
@@ -68,9 +74,20 @@ test.describe.parallel('administration', () => {
 		test('expect open upsell modal if not enterprise', async ({ page }) => {
 			test.skip(IS_EE);
 			await poAdmin.btnCreateRole.click();
-			await page.waitForSelector('dialog[id="custom-roles"]');
+			await page.waitForSelector('role=dialog[name="Custom roles"]');
 		});
 	});
+
+	test.describe('Mailer', () => {
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/admin/mailer');
+		})
+
+		test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
+			const results = await makeAxeBuilder().analyze();
+			expect(results.violations).toEqual([]);
+		})
+	})
 
 	test.describe('Settings', () => {
 		test.describe('General', () => {

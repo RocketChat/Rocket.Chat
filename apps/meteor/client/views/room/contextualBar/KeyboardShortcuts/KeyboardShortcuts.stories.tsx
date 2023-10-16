@@ -13,5 +13,5 @@ export default {
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
 } as ComponentMeta<typeof KeyboardShortcutsWithData>;
 
-export const Default: ComponentStory<typeof KeyboardShortcutsWithData> = (args) => <KeyboardShortcutsWithData {...args} />;
+export const Default: ComponentStory<typeof KeyboardShortcutsWithData> = () => <KeyboardShortcutsWithData />;
 Default.storyName = 'KeyboardShortcuts';

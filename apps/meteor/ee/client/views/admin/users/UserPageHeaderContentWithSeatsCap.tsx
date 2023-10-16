@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon, Margins } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
 import { useSetModal, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -96,18 +96,18 @@ const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: User
 
 	return (
 		<>
-			<Margins inline='x16'>
+			<Margins inline={16}>
 				<SeatsCapUsage members={activeUsers} limit={maxActiveUsers} />
 			</Margins>
 			<ButtonGroup>
-				<Button onClick={handleNewButtonClick}>
-					<Icon size='x20' name='user-plus' /> {t('New')}
+				<Button icon='user-plus' onClick={handleNewButtonClick}>
+					{t('New')}
 				</Button>
-				<Button onClick={handleInviteButtonClick}>
-					<Icon size='x20' name='mail' /> {t('Invite')}
+				<Button icon='mail' onClick={handleInviteButtonClick}>
+					{t('Invite')}
 				</Button>
-				<Button onClick={() => handleExternalLink(seatsLinkUrl)}>
-					<Icon size='x20' name='new-window' /> {t('Request_seats')}
+				<Button icon='new-window' onClick={() => handleExternalLink(seatsLinkUrl)}>
+					{t('Request_seats')}
 				</Button>
 			</ButtonGroup>
 		</>

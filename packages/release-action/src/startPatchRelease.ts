@@ -1,10 +1,10 @@
-import semver from 'semver';
-import * as github from '@actions/github';
 import * as core from '@actions/core';
+import * as github from '@actions/github';
+import semver from 'semver';
 
+import { checkoutBranch, commitChanges, createBranch, pushNewBranch } from './gitUtils';
 import { setupOctokit } from './setupOctokit';
 import { createBumpFile, readPackageJson } from './utils';
-import { checkoutBranch, commitChanges, createBranch, pushNewBranch } from './gitUtils';
 
 export async function startPatchRelease({
 	githubToken,

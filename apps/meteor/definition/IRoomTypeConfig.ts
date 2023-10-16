@@ -9,8 +9,7 @@ import type {
 	ISubscription,
 	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
-import type { ComponentProps } from 'react';
-import type { Icon } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { IRouterPaths, RouteName } from '@rocket.chat/ui-contexts';
 
 export type RoomIdentification = { rid?: IRoom['_id']; name?: string; tab?: string };
@@ -81,7 +80,7 @@ export interface IRoomTypeClientDirectives {
 	getAvatarPath: (
 		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
 	) => string;
-	getIcon?: (room: Partial<IRoom>) => ComponentProps<typeof Icon>['name'];
+	getIcon?: (room: Partial<IRoom>) => IconName;
 	extractOpenRoomParams?: (routeParams: Record<string, string | null | undefined>) => { type: RoomType; reference: string };
 	findRoom: (identifier: string) => IRoom | undefined;
 	showJoinLink: (roomId: string) => boolean;

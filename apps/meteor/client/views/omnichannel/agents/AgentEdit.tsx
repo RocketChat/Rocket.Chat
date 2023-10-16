@@ -1,5 +1,17 @@
 import type { ILivechatAgent, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-import { Field, TextInput, Button, Box, MultiSelect, Icon, Select, ContextualbarFooter, ButtonGroup } from '@rocket.chat/fuselage';
+import {
+	Field,
+	FieldLabel,
+	FieldRow,
+	TextInput,
+	Button,
+	Box,
+	MultiSelect,
+	Icon,
+	Select,
+	ContextualbarFooter,
+	ButtonGroup,
+} from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { FC, ReactElement } from 'react';
@@ -121,26 +133,26 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 					</Box>
 				)}
 				<Field>
-					<Field.Label>{t('Name')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Name')}</FieldLabel>
+					<FieldRow>
 						<TextInput data-qa='AgentEditTextInput-Name' value={name} disabled />
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label>{t('Username')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Username')}</FieldLabel>
+					<FieldRow>
 						<TextInput data-qa='AgentEditTextInput-Username' value={username} disabled addon={<Icon name='at' size='x20' />} />
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label>{t('Email')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Email')}</FieldLabel>
+					<FieldRow>
 						<TextInput data-qa='AgentEditTextInput-Email' value={email} disabled addon={<Icon name='mail' size='x20' />} />
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label>{t('Departments')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Departments')}</FieldLabel>
+					<FieldRow>
 						<MultiSelect
 							data-qa='AgentEditTextInput-Departaments'
 							options={options}
@@ -148,11 +160,11 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 							placeholder={t('Select_an_option')}
 							onChange={handleDepartments}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label>{t('Status')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Status')}</FieldLabel>
+					<FieldRow>
 						<Select
 							data-qa='AgentEditTextInput-Status'
 							options={[
@@ -163,15 +175,15 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 							placeholder={t('Select_an_option')}
 							onChange={handleStatus}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				{MaxChats && <MaxChats data={user} onChange={onChangeMaxChats} />}
 				{voipEnabled && (
 					<Field>
-						<Field.Label>{t('VoIP_Extension')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('VoIP_Extension')}</FieldLabel>
+						<FieldRow>
 							<TextInput data-qa='AgentEditTextInput-VoIP_Extension' value={voipExtension as string} onChange={handleVoipExtension} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				)}
 			</ContextualbarScrollableContent>

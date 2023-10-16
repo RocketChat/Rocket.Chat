@@ -1,17 +1,16 @@
-/* eslint-env mocha */
-
-import { expect } from 'chai';
 import type { ILivechatDepartment, ILivechatTag } from '@rocket.chat/core-typings';
+import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
 import { removeTag, saveTags } from '../../../data/livechat/tags';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { IS_EE } from '../../../e2e/config/constants';
-import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { createMonitor, createUnit } from '../../../data/livechat/units';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import type { IUserWithCredentials } from '../../../data/user';
 import { password } from '../../../data/user';
-import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { createUser, deleteUser, login } from '../../../data/users.helper';
+import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[EE] Livechat - Tags', function () {
 	this.retries(0);

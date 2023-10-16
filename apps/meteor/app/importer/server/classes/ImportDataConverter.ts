@@ -1,5 +1,3 @@
-import { Accounts } from 'meteor/accounts-base';
-import { ObjectId } from 'mongodb';
 import type {
 	IImportUser,
 	IImportMessage,
@@ -14,21 +12,26 @@ import type {
 	IImportRecordType,
 	IMessage as IDBMessage,
 } from '@rocket.chat/core-typings';
+import type { Logger } from '@rocket.chat/logger';
 import { ImportData, Rooms, Users, Subscriptions } from '@rocket.chat/models';
-import { hash as bcryptHash } from 'bcrypt';
-import { SHA256 } from '@rocket.chat/sha256';
 import { Random } from '@rocket.chat/random';
+import { SHA256 } from '@rocket.chat/sha256';
+import { hash as bcryptHash } from 'bcrypt';
+import { Accounts } from 'meteor/accounts-base';
+import { ObjectId } from 'mongodb';
 
-import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
-import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
-import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
-import type { Logger } from '../../../../server/lib/logger/Logger';
-import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
-import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
-import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
-import { createChannelMethod } from '../../../lib/server/methods/createChannel';
-import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { callbacks } from '../../../../lib/callbacks';
+import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
+import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
+import { addUserToDefaultChannels } from '../../../lib/server/functions/addUserToDefaultChannels';
+import { generateUsernameSuggestion } from '../../../lib/server/functions/getUsernameSuggestion';
+import { insertMessage } from '../../../lib/server/functions/insertMessage';
+import { saveUserIdentity } from '../../../lib/server/functions/saveUserIdentity';
+import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
+import { createChannelMethod } from '../../../lib/server/methods/createChannel';
+import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
+import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
 
 type IRoom = Record<string, any>;
 type IMessage = Record<string, any>;
@@ -150,7 +153,7 @@ export class ImportDataConverter {
 			_id: new ObjectId().toHexString(),
 			data,
 			dataType: type,
-			...options,
+			options,
 		});
 	}
 
@@ -442,8 +445,6 @@ export class ImportDataConverter {
 	public async convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn }: IConversionCallbacks = {}): Promise<void> {
 		const users = (await this.getUsersToImport()) as IImportUserRecord[];
 
-		await callbacks.run('beforeUserImport', { userCount: users.length });
-
 		const insertedIds = new Set<IUser['_id']>();
 		const updatedIds = new Set<IUser['_id']>();
 		let skippedCount = 0;
@@ -451,13 +452,14 @@ export class ImportDataConverter {
 
 		const batchToInsert = new Set<IImportUser>();
 
-		for await (const { data, _id } of users) {
+		for await (const record of users) {
+			const { data, _id } = record;
 			if (this.aborted) {
 				break;
 			}
 
 			try {
-				if (beforeImportFn && !(await beforeImportFn(data, 'user'))) {
+				if (beforeImportFn && !(await beforeImportFn(record))) {
 					await this.skipRecord(_id);
 					skippedCount++;
 					continue;
@@ -534,7 +536,7 @@ export class ImportDataConverter {
 				}
 
 				if (afterImportFn) {
-					await afterImportFn(data, 'user', isNewUser);
+					await afterImportFn(record, isNewUser);
 				}
 			} catch (e) {
 				this._logger.error(e);
@@ -645,7 +647,6 @@ export class ImportDataConverter {
 
 		const result: Array<IMentionedUser> = [];
 		for await (const importId of mentions) {
-			// eslint-disable-next-line no-extra-parens
 			if (importId === ('all' as 'string') || importId === 'here') {
 				result.push({
 					_id: importId,
@@ -739,13 +740,14 @@ export class ImportDataConverter {
 		const rids: Array<string> = [];
 		const messages = await this.getMessagesToImport();
 
-		for await (const { data, _id } of messages) {
+		for await (const record of messages) {
+			const { data, _id } = record;
 			if (this.aborted) {
 				return;
 			}
 
 			try {
-				if (beforeImportFn && !(await beforeImportFn(data, 'message'))) {
+				if (beforeImportFn && !(await beforeImportFn(record))) {
 					await this.skipRecord(_id);
 					continue;
 				}
@@ -814,7 +816,7 @@ export class ImportDataConverter {
 				}
 
 				if (afterImportFn) {
-					await afterImportFn(data, 'message', true);
+					await afterImportFn(record, true);
 				}
 			} catch (e) {
 				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
@@ -837,7 +839,6 @@ export class ImportDataConverter {
 	async updateRoom(room: IRoom, roomData: IImportChannel, startedByUserId: string): Promise<void> {
 		roomData._id = room._id;
 
-		// eslint-disable-next-line no-extra-parens
 		if ((roomData._id as string).toUpperCase() === 'GENERAL' && roomData.name !== room.name) {
 			await saveRoomSettings(startedByUserId, 'GENERAL', 'roomName', roomData.name);
 		}
@@ -1033,7 +1034,11 @@ export class ImportDataConverter {
 					return;
 				}
 				if (roomData.t === 'p') {
-					roomInfo = await createPrivateGroupMethod(startedByUserId, roomData.name, members, false, {}, {}, true);
+					const user = await Users.findOneById(startedByUserId);
+					if (!user) {
+						throw new Error('importer-channel-invalid-creator');
+					}
+					roomInfo = await createPrivateGroupMethod(user, roomData.name, members, false, {}, {}, true);
 				} else {
 					roomInfo = await createChannelMethod(startedByUserId, roomData.name, members, false, {}, {}, true);
 				}
@@ -1115,13 +1120,14 @@ export class ImportDataConverter {
 
 	async convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn, onErrorFn }: IConversionCallbacks = {}): Promise<void> {
 		const channels = await this.getChannelsToImport();
-		for await (const { data, _id } of channels) {
+		for await (const record of channels) {
+			const { data, _id } = record;
 			if (this.aborted) {
 				return;
 			}
 
 			try {
-				if (beforeImportFn && !(await beforeImportFn(data, 'channel'))) {
+				if (beforeImportFn && !(await beforeImportFn(record))) {
 					await this.skipRecord(_id);
 					continue;
 				}
@@ -1150,7 +1156,7 @@ export class ImportDataConverter {
 				}
 
 				if (afterImportFn) {
-					await afterImportFn(data, 'channel', !existingRoom);
+					await afterImportFn(record, !existingRoom);
 				}
 			} catch (e) {
 				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));

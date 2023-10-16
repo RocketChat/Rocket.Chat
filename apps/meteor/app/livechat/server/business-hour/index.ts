@@ -1,12 +1,12 @@
-import { Meteor } from 'meteor/meteor';
-import { cronJobs } from '@rocket.chat/cron';
 import type { IUser } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
-import { BusinessHourManager } from './BusinessHourManager';
-import { SingleBusinessHourBehavior } from './Single';
 import { callbacks } from '../../../../lib/callbacks';
+import { BusinessHourManager } from './BusinessHourManager';
 import { DefaultBusinessHour } from './Default';
+import { SingleBusinessHourBehavior } from './Single';
 
 export const businessHourManager = new BusinessHourManager(cronJobs);
 

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { userStatus } from './userStatus';
 import { sdk } from '../../../utils/client/lib/SDKClient';
+import { userStatus } from './userStatus';
 
 userStatus.packages.customUserStatus = {
 	list: [],

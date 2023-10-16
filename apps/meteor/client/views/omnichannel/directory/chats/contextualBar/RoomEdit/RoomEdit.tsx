@@ -1,5 +1,5 @@
 import type { ILivechatVisitor, IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
-import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -127,10 +127,10 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 				)}
 
 				<Field>
-					<Field.Label>{t('Topic')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Topic')}</FieldLabel>
+					<FieldRow>
 						<TextInput {...register('topic')} flexGrow={1} />
-					</Field.Row>
+					</FieldRow>
 				</Field>
 
 				<Field>

@@ -62,6 +62,6 @@ export const useOmnichannelPrioritiesMenu = (rid: string): ComponentProps<typeof
 			return items;
 		}, {});
 
-		return priorities.length ? { menuHeading, unprioritizedOption, ...options } : {};
+		return priorities.length ? { menuHeading, Unprioritized: unprioritizedOption, ...options } : {};
 	}, [t, handlePriorityChange, priorities, renderOption]);
 };

@@ -5,8 +5,8 @@ import URL from 'url';
 import _ from 'underscore';
 
 import { settings } from '../../../settings/server';
-import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import type { S3Options } from '../../ufs/AmazonS3/server';
+import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server';
 
 const get: FileUploadClass['get'] = async function (this: FileUploadClass, file, req, res) {
@@ -32,12 +32,15 @@ const get: FileUploadClass['get'] = async function (this: FileUploadClass, file,
 
 const copy: FileUploadClass['copy'] = async function (this: FileUploadClass, file, out) {
 	const fileUrl = await this.store.getRedirectURL(file);
-	if (fileUrl) {
-		const request = /^https:/.test(fileUrl) ? https : http;
-		request.get(fileUrl, (fileRes) => fileRes.pipe(out));
-	} else {
+	if (!fileUrl) {
 		out.end();
+		return;
 	}
+
+	const request = /^https:/.test(fileUrl) ? https : http;
+	return new Promise((resolve) => {
+		request.get(fileUrl, (fileRes) => fileRes.pipe(out).on('finish', () => resolve()));
+	});
 };
 
 const AmazonS3Uploads = new FileUploadClass({
@@ -61,7 +64,7 @@ const AmazonS3UserDataFiles = new FileUploadClass({
 	// store setted bellow
 });
 
-const configure = _.debounce(function () {
+const configure = _.debounce(() => {
 	const Bucket = settings.get<string>('FileUpload_S3_Bucket');
 	const Acl = settings.get<string>('FileUpload_S3_Acl');
 	const AWSAccessKeyId = settings.get<string>('FileUpload_S3_AWSAccessKeyId');

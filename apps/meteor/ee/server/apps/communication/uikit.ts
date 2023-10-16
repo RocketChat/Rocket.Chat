@@ -1,17 +1,17 @@
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
+import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
+import { UiKitCoreApp } from '@rocket.chat/core-services';
+import cors from 'cors';
 import type { Request, Response } from 'express';
 import express from 'express';
-import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
-import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
-import { UiKitCoreApp } from '@rocket.chat/core-services';
 
+import { authenticationMiddleware } from '../../../../app/api/server/middlewares/authentication';
 import { settings } from '../../../../app/settings/server';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
-import { authenticationMiddleware } from '../../../../app/api/server/middlewares/authentication';
 
 const apiServer = express();
 

@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ICreatedRoom } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { createRoom } from '../functions';
+import { createRoom } from '../functions/createRoom';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -35,8 +35,7 @@ export const createChannelMethod = async (
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });
 	}
 
-	const user = await Users.findOneById(userId, { projection: { username: 1 } });
-
+	const user = await Users.findOneById(userId);
 	if (!user?.username) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });
 	}
@@ -44,7 +43,7 @@ export const createChannelMethod = async (
 	if (!(await hasPermissionAsync(userId, 'create-c'))) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
 	}
-	return createRoom('c', name, user.username, members, excludeSelf, readOnly, {
+	return createRoom('c', name, user, members, excludeSelf, readOnly, {
 		customFields,
 		...extraData,
 	});

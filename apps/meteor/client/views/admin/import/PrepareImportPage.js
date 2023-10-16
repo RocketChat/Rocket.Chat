@@ -1,4 +1,4 @@
-import { Badge, Box, Button, ButtonGroup, Icon, Margins, Throbber, Tabs } from '@rocket.chat/fuselage';
+import { Badge, Box, Button, ButtonGroup, Margins, ProgressBar, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
@@ -171,8 +171,8 @@ function PrepareImportPage() {
 		<Page>
 			<Page.Header title={t('Importing_Data')}>
 				<ButtonGroup>
-					<Button secondary onClick={handleBackToImportsButtonClick}>
-						<Icon name='back' /> {t('Back_to_imports')}
+					<Button icon='back' secondary onClick={handleBackToImportsButtonClick}>
+						{t('Back_to_imports')}
 					</Button>
 					<Button primary disabled={isImporting || handleMinimumImportData} onClick={handleStartButtonClick}>
 						{t('Importer_Prepare_Start_Import')}
@@ -204,8 +204,10 @@ function PrepareImportPage() {
 							<>
 								{progressRate ? (
 									<Box display='flex' justifyContent='center' fontScale='p2'>
-										<Box is='progress' value={(progressRate * 10).toFixed(0)} max='1000' marginInlineEnd='x24' />
-										<Box is='span'>{numberFormat(progressRate, 0)}%</Box>
+										<ProgressBar percentage={progressRate.toFixed(0)} />
+										<Box is='span' mis='x24'>
+											{numberFormat(progressRate, 0)}%
+										</Box>
 									</Box>
 								) : (
 									<Throbber justifyContent='center' />

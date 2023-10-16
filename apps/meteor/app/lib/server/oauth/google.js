@@ -1,7 +1,7 @@
-import { Match, check } from 'meteor/check';
-import _ from 'underscore';
-import { Google } from 'meteor/google-oauth';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { Match, check } from 'meteor/check';
+import { Google } from 'meteor/google-oauth';
+import _ from 'underscore';
 
 import { registerAccessTokenService } from './oauth';
 
@@ -41,7 +41,7 @@ async function getScopes(accessToken) {
 	}
 }
 
-registerAccessTokenService('google', async function (options) {
+registerAccessTokenService('google', async (options) => {
 	check(
 		options,
 		Match.ObjectIncluding({

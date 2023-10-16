@@ -1,5 +1,5 @@
-import { ajv } from '../Ajv';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import { ajv } from '../Ajv';
 
 type ReportMessageHistoryParams = {
 	userId: string;

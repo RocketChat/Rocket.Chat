@@ -1,4 +1,7 @@
-import { MongoInternals } from 'meteor/mongo';
+import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
+import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
+import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type {
 	IDirectVideoConference,
 	ILivechatVideoConference,
@@ -24,25 +27,28 @@ import {
 	isGroupVideoConference,
 	isLivechatVideoConference,
 } from '@rocket.chat/core-typings';
-import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
-import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
-import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
-import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
-import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal } from '@rocket.chat/core-services';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
+import { MongoInternals } from 'meteor/mongo';
 
-import { Apps } from '../../../ee/server/apps';
+import { RocketChatAssets } from '../../../app/assets/server';
+import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { metrics } from '../../../app/metrics/server/lib/metrics';
+import PushNotification from '../../../app/push-notifications/server/lib/PushNotification';
+import { Push } from '../../../app/push/server/push';
 import { settings } from '../../../app/settings/server';
+import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
+import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
+import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
+import { Apps } from '../../../ee/server/apps';
+import { callbacks } from '../../../lib/callbacks';
+import { availabilityErrors } from '../../../lib/videoConference/constants';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { i18n } from '../../lib/i18n';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
-import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
-import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { availabilityErrors } from '../../../lib/videoConference/constants';
-import { callbacks } from '../../../lib/callbacks';
-import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { i18n } from '../../lib/i18n';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -199,6 +205,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await this.runVideoConferenceChangedEvent(callId);
 		this.notifyVideoConfUpdate(call.rid, call._id);
+
+		await this.sendAllPushNotifications(call._id);
 	}
 
 	public async get(callId: VideoConference['_id']): Promise<Omit<VideoConference, 'providerData'> | null> {
@@ -583,6 +591,70 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
+	private async sendPushNotification(
+		call: AtLeast<IDirectVideoConference, 'createdBy' | 'rid' | '_id' | 'status'>,
+		calleeId: IUser['_id'],
+	): Promise<void> {
+		if (
+			settings.get('Push_enable') !== true ||
+			settings.get('VideoConf_Mobile_Ringing') !== true ||
+			!(await getUserPreference(calleeId, 'enableMobileRinging'))
+		) {
+			return;
+		}
+
+		metrics.notificationsSent.inc({ notification_type: 'mobile' });
+		await Push.send({
+			from: 'push',
+			badge: 0,
+			sound: 'default',
+			priority: 10,
+			title: `@${call.createdBy.username}`,
+			text: i18n.t('Video_Conference'),
+			payload: {
+				host: Meteor.absoluteUrl(),
+				rid: call.rid,
+				notificationType: 'videoconf',
+				caller: call.createdBy,
+				avatar: getUserAvatarURL(call.createdBy.username),
+				status: call.status,
+				callId: call._id,
+			},
+			userId: calleeId,
+			notId: PushNotification.getNotificationId(`${call.rid}|${call._id}`),
+			gcm: {
+				style: 'inbox',
+				image: RocketChatAssets.getURL('Assets_favicon_192'),
+			},
+			apn: {
+				category: 'MESSAGE_NOREPLY',
+				topicSuffix: '.voip',
+			},
+		});
+	}
+
+	private async sendAllPushNotifications(callId: VideoConference['_id']): Promise<void> {
+		if (settings.get('Push_enable') !== true || settings.get('VideoConf_Mobile_Ringing') !== true) {
+			return;
+		}
+
+		const call = await VideoConferenceModel.findOneById<Pick<VideoConference, 'createdBy' | 'rid' | '_id' | 'users' | 'status'>>(callId, {
+			projection: { createdBy: 1, rid: 1, users: 1, status: 1 },
+		});
+
+		if (!call) {
+			return;
+		}
+
+		const subscriptions = Subscriptions.findByRoomIdAndNotUserId(call.rid, call.createdBy._id, {
+			projection: { 'u._id': 1, '_id': 0 },
+		});
+
+		for await (const subscription of subscriptions) {
+			await this.sendPushNotification(call, subscription.u._id);
+		}
+	}
+
 	private async startDirect(
 		providerName: string,
 		user: IUser,
@@ -636,6 +708,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				// Ignore errors on this timeout
 			}
 		}, 40000);
+
+		await this.sendPushNotification(call, calleeId);
 
 		return {
 			type: 'direct',
@@ -949,5 +1023,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
 		await this.runVideoConferenceChangedEvent(call._id);
+		await this.sendAllPushNotifications(call._id);
 	}
 }

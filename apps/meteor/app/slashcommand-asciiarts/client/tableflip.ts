@@ -1,7 +1,7 @@
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
 import { sdk } from '../../utils/client/lib/SDKClient';
+import { slashCommands } from '../../utils/lib/slashCommand';
 /*
  * Tableflip is a named function that will replace /Tableflip commands
  * @param {Object} message - The message object

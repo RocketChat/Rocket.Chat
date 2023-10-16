@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import { Invites } from '@rocket.chat/models';
 import type { IInvite } from '@rocket.chat/core-typings';
+import { Invites } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 

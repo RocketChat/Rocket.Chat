@@ -1,9 +1,10 @@
+import { memo } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
-import { createClassName, memo } from '../../helpers';
+import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
 
-const MessageSeparator = memo(({ date, unread, use: Element = 'div', className, style = {}, t }) => (
+const MessageSeparator = ({ date, unread, use: Element = 'div', className, style = {}, t }) => (
 	<Element
 		className={createClassName(
 			styles,
@@ -31,6 +32,6 @@ const MessageSeparator = memo(({ date, unread, use: Element = 'div', className, 
 		)}
 		<hr className={createClassName(styles, 'separator__line')} />
 	</Element>
-));
+);
 
-export default withTranslation()(MessageSeparator);
+export default withTranslation()(memo(MessageSeparator));

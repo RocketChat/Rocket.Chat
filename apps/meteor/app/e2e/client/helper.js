@@ -1,14 +1,14 @@
-/* eslint-disable new-cap, no-proto */
-
-import ByteBuffer from 'bytebuffer';
 import { Random } from '@rocket.chat/random';
+import ByteBuffer from 'bytebuffer';
 
+// eslint-disable-next-line no-proto
 const StaticArrayBufferProto = new ArrayBuffer().__proto__;
 
 export function toString(thing) {
 	if (typeof thing === 'string') {
 		return thing;
 	}
+	// eslint-disable-next-line new-cap
 	return new ByteBuffer.wrap(thing).toString('binary');
 }
 
@@ -17,6 +17,7 @@ export function toArrayBuffer(thing) {
 		return undefined;
 	}
 	if (thing === Object(thing)) {
+		// eslint-disable-next-line no-proto
 		if (thing.__proto__ === StaticArrayBufferProto) {
 			return thing;
 		}
@@ -25,6 +26,7 @@ export function toArrayBuffer(thing) {
 	if (typeof thing !== 'string') {
 		throw new Error(`Tried to convert a non-string of type ${typeof thing} to an array buffer`);
 	}
+	// eslint-disable-next-line new-cap
 	return new ByteBuffer.wrap(thing, 'binary').toArrayBuffer();
 }
 

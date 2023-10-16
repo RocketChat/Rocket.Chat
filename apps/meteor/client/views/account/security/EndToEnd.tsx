@@ -1,4 +1,4 @@
-import { Box, Margins, PasswordInput, Field, FieldGroup, Button } from '@rocket.chat/fuselage';
+import { Box, Margins, PasswordInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation, useLogout } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { useCallback, useEffect } from 'react';
@@ -65,26 +65,26 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	}, [password, resetField]);
 
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs='x16' {...props}>
-			<Margins blockEnd='x8'>
+		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs={16} {...props}>
+			<Margins blockEnd={8}>
 				<Box fontScale='h4'>{t('E2E_Encryption_Password_Change')}</Box>
 				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Encryption_Password_Explanation') }} />
 				<FieldGroup w='full'>
 					<Field>
-						<Field.Label id='New_encryption_password'>{t('New_encryption_password')}</Field.Label>
-						<Field.Row>
+						<FieldLabel id='New_encryption_password'>{t('New_encryption_password')}</FieldLabel>
+						<FieldRow>
 							<PasswordInput
 								{...register('password', { required: true })}
 								placeholder={t('New_Password_Placeholder')}
 								disabled={!keysExist}
 								aria-labelledby='New_encryption_password'
 							/>
-						</Field.Row>
-						{!keysExist && <Field.Hint>{t('EncryptionKey_Change_Disabled')}</Field.Hint>}
+						</FieldRow>
+						{!keysExist && <FieldHint>{t('EncryptionKey_Change_Disabled')}</FieldHint>}
 					</Field>
 					{hasTypedPassword && (
 						<Field>
-							<Field.Label id='Confirm_new_encryption_password'>{t('Confirm_new_encryption_password')}</Field.Label>
+							<FieldLabel id='Confirm_new_encryption_password'>{t('Confirm_new_encryption_password')}</FieldLabel>
 							<PasswordInput
 								error={errors.passwordConfirm?.message}
 								{...register('passwordConfirm', {
@@ -94,7 +94,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 								placeholder={t('Confirm_New_Password_Placeholder')}
 								aria-labelledby='Confirm_new_encryption_password'
 							/>
-							{errors.passwordConfirm && <Field.Error>{errors.passwordConfirm.message}</Field.Error>}
+							{errors.passwordConfirm && <FieldError>{errors.passwordConfirm.message}</FieldError>}
 						</Field>
 					)}
 				</FieldGroup>
@@ -106,7 +106,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 				>
 					{t('Save_changes')}
 				</Button>
-				<Box fontScale='h4' mbs='x16'>
+				<Box fontScale='h4' mbs={16}>
 					{t('Reset_E2E_Key')}
 				</Box>
 				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Reset_Key_Explanation') }} />

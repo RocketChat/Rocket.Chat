@@ -30,12 +30,12 @@ const OutlookSettingItem = ({ id, title, subTitle, enabled, handleEnable }: Outl
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
 			className={hovered}
-			pi='x24'
-			pb='x16'
+			pi={24}
+			pb={16}
 			display='flex'
 			justifyContent='space-between'
 		>
-			<Box mie='x8'>
+			<Box mie={8}>
 				<Box fontScale='h4'>{title}</Box>
 				<Box fontScale='p2'>{subTitle}</Box>
 			</Box>

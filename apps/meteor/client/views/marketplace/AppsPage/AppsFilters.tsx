@@ -50,7 +50,7 @@ const AppsFilters = ({
 
 	const appsSearchPlaceholders: { [key: string]: string } = {
 		explore: t('Search_Apps'),
-		enterprise: t('Search_Enterprise_Apps'),
+		enterprise: t('Search_Premium_Apps'),
 		installed: t('Search_Installed_Apps'),
 		requested: t('Search_Requested_Apps'),
 		private: t('Search_Private_apps'),
@@ -59,7 +59,7 @@ const AppsFilters = ({
 	const fixFiltersSize = breakpoints.includes('lg') ? { maxWidth: 'x200', minWidth: 'x200' } : null;
 
 	return (
-		<Box pi='x24'>
+		<Box pi={24}>
 			<FilterByText placeholder={appsSearchPlaceholders[context]} onChange={({ text }): void => setText(text)}>
 				{!isPrivateAppsPage && (
 					<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} flexGrow={1} {...fixFiltersSize} />

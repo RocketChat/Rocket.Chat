@@ -2,8 +2,8 @@ import { LivechatPriority } from '@rocket.chat/models';
 import { isGETLivechatPrioritiesParams, isPUTLivechatPriority } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
-import { findPriority, updatePriority } from './lib/priorities';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
+import { findPriority, updatePriority } from './lib/priorities';
 
 API.v1.addRoute(
 	'livechat/priorities',

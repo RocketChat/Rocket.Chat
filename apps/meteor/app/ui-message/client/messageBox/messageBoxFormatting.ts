@@ -1,13 +1,12 @@
-import type { Icon } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
 
 import { settings } from '../../../settings/client';
 
 export type FormattingButton =
 	| {
 			label: TranslationKey;
-			icon: ComponentProps<typeof Icon>['name'];
+			icon: IconName;
 			pattern: string;
 			// text?: () => string | undefined;
 			command?: string;

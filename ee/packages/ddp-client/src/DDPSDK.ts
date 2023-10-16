@@ -1,13 +1,13 @@
 import { RestClient } from '@rocket.chat/api-client';
 
 import { ClientStreamImpl } from './ClientStream';
-import type { ClientStream } from './types/ClientStream';
 import type { Connection } from './Connection';
 import { ConnectionImpl } from './Connection';
 import { DDPDispatcher } from './DDPDispatcher';
 import { TimeoutControl } from './TimeoutControl';
 import type { Account } from './types/Account';
 import { AccountImpl } from './types/Account';
+import type { ClientStream } from './types/ClientStream';
 import type { SDK } from './types/SDK';
 
 interface PublicationPayloads {

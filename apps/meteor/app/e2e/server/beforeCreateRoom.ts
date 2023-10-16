@@ -1,7 +1,7 @@
-import { callbacks } from '../../../lib/callbacks';
+import { beforeCreateRoomCallback } from '../../../lib/callbacks/beforeCreateRoomCallback';
 import { settings } from '../../settings/server';
 
-callbacks.add('beforeCreateRoom', ({ type, extraData }) => {
+beforeCreateRoomCallback.add(({ type, extraData }) => {
 	if (
 		settings.get<boolean>('E2E_Enable') &&
 		((type === 'd' && settings.get<boolean>('E2E_Enabled_Default_DirectRooms')) ||

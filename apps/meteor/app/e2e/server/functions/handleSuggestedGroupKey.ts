@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { Subscriptions } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 export async function handleSuggestedGroupKey(
 	handle: 'accept' | 'reject',

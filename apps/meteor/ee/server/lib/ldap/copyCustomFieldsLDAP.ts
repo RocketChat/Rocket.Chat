@@ -1,6 +1,6 @@
 import type { IImportUser, ILDAPEntry } from '@rocket.chat/core-typings';
+import type { Logger } from '@rocket.chat/logger';
 
-import type { Logger } from '../../../../app/logger/server';
 import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler';
 import { getNestedProp } from './getNestedProp';
 import { replacesNestedValues } from './replacesNestedValues';

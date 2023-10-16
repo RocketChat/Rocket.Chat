@@ -1,11 +1,11 @@
+import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Users } from '@rocket.chat/models';
 
+import { CustomSounds } from '../../../custom-sounds/client';
+import { Subscriptions } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { getUserPreference } from '../../../utils/client';
-import { Subscriptions } from '../../../models/client';
-import { CustomSounds } from '../../../custom-sounds/client';
 
 let audio = null;
 

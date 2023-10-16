@@ -7,6 +7,7 @@ export { keys };
 export type TranslationLanguage = {
 	en: string;
 	name: string;
+	ogName: string;
 	key: string;
 };
 
@@ -33,6 +34,7 @@ export const TranslationContext = createContext<TranslationContextValue>({
 		{
 			name: 'Default',
 			en: 'Default',
+			ogName: 'Default',
 			key: '',
 		},
 	],

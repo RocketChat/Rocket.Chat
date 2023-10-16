@@ -1,6 +1,6 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Users } from '@rocket.chat/models';
 import type { ILivechatAgent, IRole } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 /**
  * @param {IRole['_id']} role the role id
@@ -24,7 +24,12 @@ async function findUsers({
 		});
 	}
 
-	const { cursor, totalCount } = Users.findPaginatedUsersInRolesWithQuery<ILivechatAgent>(role, query, {
+	const [
+		{
+			sortedResults,
+			totalCount: [{ total } = { total: 0 }],
+		},
+	] = await Users.findAgentsWithDepartments<ILivechatAgent>(role, query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
@@ -38,11 +43,9 @@ async function findUsers({
 		},
 	});
 
-	const [users, total] = await Promise.all([cursor.toArray(), totalCount]);
-
 	return {
-		users,
-		count: users.length,
+		users: sortedResults,
+		count: sortedResults.length,
 		offset,
 		total,
 	};

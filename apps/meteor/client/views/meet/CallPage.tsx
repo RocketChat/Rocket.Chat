@@ -324,7 +324,7 @@ const CallPage: FC<CallPageProps> = ({
 								size='x124'
 							/>
 							<Box color='white' fontSize={16} margin={15}>
-								{'Calling...'}
+								Calling...
 							</Box>
 							<Box
 								style={{

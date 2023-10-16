@@ -14,6 +14,7 @@ export type GroupsCreateProps = {
 		encrypted: boolean;
 		teamId?: string;
 	};
+	excludeSelf?: boolean;
 };
 
 const GroupsCreatePropsSchema = {

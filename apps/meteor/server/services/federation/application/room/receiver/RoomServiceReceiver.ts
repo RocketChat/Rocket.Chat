@@ -1,16 +1,20 @@
 // TODO: Refactor this file splitting it into smaller files + removing the complexity of the most important method (changeMembership)
-/* eslint-disable complexity */
-import { isDirectMessageRoom, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { isDirectMessageRoom, isQuoteAttachment } from '@rocket.chat/core-typings';
 
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import { FederatedUser } from '../../../domain/FederatedUser';
 import { EVENT_ORIGIN } from '../../../domain/IFederationBridge';
 import type { IFederationBridge } from '../../../domain/IFederationBridge';
+import { removeExternalSpecificCharsFromExternalIdentifier } from '../../../infrastructure/matrix/converters/room/RoomReceiver';
+import type { InMemoryQueue } from '../../../infrastructure/queue/InMemoryQueue';
+import type { RocketChatFileAdapter } from '../../../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from '../../../infrastructure/rocket-chat/adapters/Message';
+import type { RocketChatNotificationAdapter } from '../../../infrastructure/rocket-chat/adapters/Notification';
 import type { RocketChatRoomAdapter } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../../infrastructure/rocket-chat/adapters/User';
+import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
 import type {
 	FederationRoomCreateInputDto,
 	FederationRoomChangeMembershipDto,
@@ -23,12 +27,7 @@ import type {
 	FederationRoomEditExternalMessageDto,
 	FederationRoomRoomChangePowerLevelsEventDto,
 } from '../input/RoomReceiverDto';
-import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
-import type { RocketChatFileAdapter } from '../../../infrastructure/rocket-chat/adapters/File';
-import type { RocketChatNotificationAdapter } from '../../../infrastructure/rocket-chat/adapters/Notification';
-import type { InMemoryQueue } from '../../../infrastructure/queue/InMemoryQueue';
 import { getMessageRedactionHandler } from '../message/receiver/message-redaction-helper';
-import { removeExternalSpecificCharsFromExternalIdentifier } from '../../../infrastructure/matrix/converters/room/RoomReceiver';
 
 export class FederationRoomServiceReceiver extends AbstractFederationApplicationService {
 	constructor(
@@ -494,6 +493,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		if (!FederatedRoom.shouldUpdateMessage(newRawMessage, message)) {
 			return;
 		}
+
 		await this.internalMessageAdapter.editMessage(
 			senderUser,
 			newRawMessage,
@@ -673,6 +673,130 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 					notifyChannel: true,
 				});
 			}),
+		);
+	}
+
+	public async onExternalThreadedMessageReceived(roomReceiveExternalMessageInput: FederationRoomReceiveExternalMessageDto): Promise<void> {
+		const { externalRoomId, externalSenderId, rawMessage, externalFormattedText, externalEventId, replyToEventId, thread } =
+			roomReceiveExternalMessageInput;
+		if (!thread?.rootEventId) {
+			return;
+		}
+
+		const parentMessage = await this.internalMessageAdapter.getMessageByFederationId(thread.rootEventId);
+		if (!parentMessage) {
+			return;
+		}
+
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const senderUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalSenderId);
+		if (!senderUser) {
+			return;
+		}
+		const message = await this.internalMessageAdapter.getMessageByFederationId(externalEventId);
+		if (message) {
+			return;
+		}
+		if (replyToEventId) {
+			const messageToReplyTo = await this.internalMessageAdapter.getMessageByFederationId(replyToEventId);
+			if (!messageToReplyTo) {
+				return;
+			}
+			await this.internalMessageAdapter.sendThreadQuoteMessage(
+				senderUser,
+				federatedRoom,
+				rawMessage,
+				externalEventId,
+				messageToReplyTo,
+				this.internalHomeServerDomain,
+				parentMessage._id,
+				externalFormattedText,
+			);
+			return;
+		}
+
+		await this.internalMessageAdapter.sendThreadMessage(
+			senderUser,
+			federatedRoom,
+			rawMessage,
+			externalEventId,
+			parentMessage._id,
+			externalFormattedText,
+			this.internalHomeServerDomain,
+		);
+	}
+
+	public async onExternalThreadedFileMessageReceived(
+		roomReceiveExternalMessageInput: FederationRoomReceiveExternalFileMessageDto,
+	): Promise<void> {
+		const { externalRoomId, externalSenderId, messageBody, externalEventId, replyToEventId, thread } = roomReceiveExternalMessageInput;
+
+		if (!thread?.rootEventId) {
+			return;
+		}
+
+		const parentMessage = await this.internalMessageAdapter.getMessageByFederationId(thread.rootEventId);
+		if (!parentMessage) {
+			return;
+		}
+
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const senderUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalSenderId);
+		if (!senderUser) {
+			return;
+		}
+		const message = await this.internalMessageAdapter.getMessageByFederationId(externalEventId);
+		if (message) {
+			return;
+		}
+		const fileDetails = {
+			name: messageBody.filename,
+			size: messageBody.size,
+			type: messageBody.mimetype,
+			rid: federatedRoom.getInternalId(),
+			userId: senderUser.getInternalId(),
+		};
+		const readableStream = await this.bridge.getReadStreamForFileFromUrl(senderUser.getExternalId(), messageBody.url);
+		const { files = [], attachments } = await this.internalFileAdapter.uploadFile(
+			readableStream,
+			federatedRoom.getInternalId(),
+			senderUser.getInternalReference(),
+			fileDetails,
+		);
+
+		if (replyToEventId) {
+			const messageToReplyTo = await this.internalMessageAdapter.getMessageByFederationId(replyToEventId);
+			if (!messageToReplyTo) {
+				return;
+			}
+			await this.internalMessageAdapter.sendThreadQuoteFileMessage(
+				senderUser,
+				federatedRoom,
+				files,
+				attachments,
+				externalEventId,
+				messageToReplyTo,
+				this.internalHomeServerDomain,
+				parentMessage._id,
+			);
+			return;
+		}
+
+		await this.internalMessageAdapter.sendThreadFileMessage(
+			senderUser,
+			federatedRoom,
+			files,
+			attachments,
+			externalEventId,
+			parentMessage._id,
 		);
 	}
 }

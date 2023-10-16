@@ -9,4 +9,5 @@ export default {
 	moduleNameMapper: {
 		'\\.css$': 'identity-obj-proxy',
 	},
+	collectCoverage: true,
 };
