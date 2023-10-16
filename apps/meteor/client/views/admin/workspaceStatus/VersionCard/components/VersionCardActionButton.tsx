@@ -5,10 +5,14 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import RegisterWorkspaceModal from '../../../cloud/modals/RegisterWorkspaceModal';
-import type { VersionActionButton } from '../types/VersionActionButton';
 
 type VersionCardActionButtonProps = {
 	actionButton: VersionActionButton;
+};
+
+export type VersionActionButton = {
+	path: string;
+	label: ReactElement;
 };
 
 const VersionCardActionButton = ({ actionButton }: VersionCardActionButtonProps): ReactElement => {

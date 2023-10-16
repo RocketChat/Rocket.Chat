@@ -1,9 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
+import type { Keys } from '@rocket.chat/icons';
 import { FramedIcon } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import type { VersionActionItem } from '../types/VersionActionItem';
+export type VersionActionItem = {
+	type: 'danger' | 'neutral';
+	icon: Keys;
+	label: ReactElement;
+};
 
 type VersionCardActionItemProps = {
 	actionItem: VersionActionItem;

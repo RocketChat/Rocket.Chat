@@ -13,12 +13,12 @@ import { useLicense } from '../../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
 import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
 import VersionCardActionButton from './components/VersionCardActionButton';
+import type { VersionActionButton } from './components/VersionCardActionButton';
+import type { VersionActionItem } from './components/VersionCardActionItem';
 import VersionCardActionItemList from './components/VersionCardActionItemList';
 import { VersionCardSkeleton } from './components/VersionCardSkeleton';
 import { VersionTag } from './components/VersionTag';
-import type { VersionActionButton } from './types/VersionActionButton';
-import type { VersionActionItem } from './types/VersionActionItem';
-import type { VersionStatus } from './types/VersionStatus';
+import type { VersionStatus } from './components/VersionTag';
 
 const SUPPORT_EXTERNAL_LINK = 'https://go.rocket.chat/i/version-support';
 const RELEASES_EXTERNAL_LINK = 'https://go.rocket.chat/i/update-product';

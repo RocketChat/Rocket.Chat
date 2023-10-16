@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type { VersionActionItem } from '../types/VersionActionItem';
+import type { VersionActionItem } from './VersionCardActionItem';
 import VersionCardActionItem from './VersionCardActionItem';
 
 type VersionCardActionItemListProps = {

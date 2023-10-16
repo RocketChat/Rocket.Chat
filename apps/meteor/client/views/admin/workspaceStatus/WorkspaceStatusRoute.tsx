@@ -31,6 +31,10 @@ const WorkspaceStatusRoute = (): ReactElement => {
 		downloadJsonAs(statistics, 'statistics');
 	};
 
+	if (!canViewStatistics) {
+		return <NotAuthorizedPage />;
+	}
+
 	if (isLoading) {
 		return <PageSkeleton />;
 	}
@@ -52,20 +56,16 @@ const WorkspaceStatusRoute = (): ReactElement => {
 		);
 	}
 
-	if (canViewStatistics) {
-		return (
-			<WorkspaceStatusPage
-				canViewStatistics={canViewStatistics}
-				serverInfo={serverInfo}
-				statistics={statistics}
-				instances={instances}
-				onClickRefreshButton={handleClickRefreshButton}
-				onClickDownloadInfo={handleClickDownloadInfo}
-			/>
-		);
-	}
-
-	return <NotAuthorizedPage />;
+	return (
+		<WorkspaceStatusPage
+			canViewStatistics={canViewStatistics}
+			serverInfo={serverInfo}
+			statistics={statistics}
+			instances={instances}
+			onClickRefreshButton={handleClickRefreshButton}
+			onClickDownloadInfo={handleClickDownloadInfo}
+		/>
+	);
 };
 
 export default memo(WorkspaceStatusRoute);
