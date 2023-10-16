@@ -23,7 +23,7 @@ const DiscussionMetrics = ({ lm, count, rid, drid }: DiscussionMetricsProps): Re
 		<MessageBlock>
 			<MessageMetrics>
 				<MessageMetricsReply data-rid={rid} data-drid={drid} onClick={() => goToRoom(drid)}>
-					{count ? t('message_counter', { counter: count, count }) : t('Reply')}
+					{count ? t(count === 1 ? 'message_counter' : 'message_counter_plural', { counter: count }) : t('Reply')}
 				</MessageMetricsReply>
 				<MessageMetricsItem title={lm?.toLocaleString()}>
 					<MessageMetricsItem.Icon name='clock' />
