@@ -1,9 +1,5 @@
 // Note: Please don't add any new methods to this file, since its still in js and we are migrating to ts
 // Please add new methods to LivechatTyped.ts
-
-import dns from 'dns';
-import util from 'util';
-
 import { Message } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import {
@@ -41,8 +37,6 @@ import { Livechat as LivechatTyped } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('Livechat');
-
-const dnsResolveMx = util.promisify(dns.resolveMx);
 
 export const Livechat = {
 	Analytics,
@@ -626,63 +620,6 @@ export const Livechat = {
 	async notifyGuestStatusChanged(token, status) {
 		await LivechatInquiry.updateVisitorStatus(token, status);
 		await LivechatRooms.updateVisitorStatus(token, status);
-	},
-
-	async sendOfflineMessage(data = {}) {
-		if (!settings.get('Livechat_display_offline_form')) {
-			throw new Error('error-offline-form-disabled');
-		}
-
-		const { message, name, email, department, host } = data;
-		const emailMessage = `${message}`.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
-
-		let html = '<h1>New livechat message</h1>';
-		if (host && host !== '') {
-			html = html.concat(`<p><strong>Sent from:</strong><a href='${host}'> ${host}</a></p>`);
-		}
-		html = html.concat(`
-			<p><strong>Visitor name:</strong> ${name}</p>
-			<p><strong>Visitor email:</strong> ${email}</p>
-			<p><strong>Message:</strong><br>${emailMessage}</p>`);
-
-		let fromEmail = settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
-
-		if (fromEmail) {
-			fromEmail = fromEmail[0];
-		} else {
-			fromEmail = settings.get('From_Email');
-		}
-
-		if (settings.get('Livechat_validate_offline_email')) {
-			const emailDomain = email.substr(email.lastIndexOf('@') + 1);
-
-			try {
-				await dnsResolveMx(emailDomain);
-			} catch (e) {
-				throw new Meteor.Error('error-invalid-email-address', 'Invalid email address', {
-					method: 'livechat:sendOfflineMessage',
-				});
-			}
-		}
-
-		// TODO Block offline form if Livechat_offline_email is undefined
-		// (it does not make sense to have an offline form that does nothing)
-		// `this.sendEmail` will throw an error if the email is invalid
-		// thus this breaks livechat, since the "to" email is invalid, and that returns an [invalid email] error to the livechat client
-		let emailTo = settings.get('Livechat_offline_email');
-		if (department && department !== '') {
-			const dep = await LivechatDepartmentRaw.findOneByIdOrName(department);
-			emailTo = dep.email || emailTo;
-		}
-
-		const from = `${name} - ${email} <${fromEmail}>`;
-		const replyTo = `${name} <${email}>`;
-		const subject = `Livechat offline message from ${name}: ${`${emailMessage}`.substring(0, 20)}`;
-		await this.sendEmail(from, emailTo, replyTo, subject, html);
-
-		setImmediate(() => {
-			callbacks.run('livechat.offlineMessage', data);
-		});
 	},
 
 	async allowAgentChangeServiceStatus(statusLivechat, agentId) {
