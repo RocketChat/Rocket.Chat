@@ -28,7 +28,6 @@ class AutoTransferChatSchedulerClass {
 
 	public async init(): Promise<void> {
 		if (this.running) {
-			this.logger.debug('Already running');
 			return;
 		}
 
@@ -40,7 +39,7 @@ class AutoTransferChatSchedulerClass {
 
 		await this.scheduler.start();
 		this.running = true;
-		this.logger.debug('Started');
+		this.logger.info('Service started');
 	}
 
 	private async getSchedulerUser(): Promise<IUser | null> {
@@ -58,7 +57,6 @@ class AutoTransferChatSchedulerClass {
 		this.scheduler.define(jobName, this.executeJob.bind(this));
 		await this.scheduler.schedule(when, jobName, { roomId });
 		await LivechatRooms.setAutoTransferOngoingById(roomId);
-		this.logger.debug(`Scheduled room ${roomId} to be transferred in ${timeout} seconds`);
 	}
 
 	public async unscheduleRoom(roomId: string): Promise<void> {

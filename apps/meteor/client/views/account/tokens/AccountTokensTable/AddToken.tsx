@@ -1,4 +1,4 @@
-import { Box, TextInput, Button, Field, FieldGroup, Margins, CheckBox } from '@rocket.chat/fuselage';
+import { Box, TextInput, Button, Field, FieldGroup, FieldLabel, FieldRow, Margins, CheckBox } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -56,18 +56,18 @@ const AddToken = ({ reload, ...props }: { reload: () => void }): ReactElement =>
 	return (
 		<FieldGroup is='form' onSubmit={handleSubmit(handleAddToken)} marginBlock={8} {...props}>
 			<Field>
-				<Field.Row>
+				<FieldRow>
 					<Margins inlineEnd={4}>
 						<TextInput data-qa='PersonalTokenField' {...register('name')} placeholder={t('API_Add_Personal_Access_Token')} />
 					</Margins>
 					<Button primary disabled={!isDirty} type='submit'>
 						{t('Add')}
 					</Button>
-				</Field.Row>
-				<Field.Row>
+				</FieldRow>
+				<FieldRow>
 					<CheckBox id={bypassTwoFactorCheckboxId} {...register('bypassTwoFactor')} />
-					<Field.Label htmlFor={bypassTwoFactorCheckboxId}>{t('Ignore_Two_Factor_Authentication')}</Field.Label>
-				</Field.Row>
+					<FieldLabel htmlFor={bypassTwoFactorCheckboxId}>{t('Ignore_Two_Factor_Authentication')}</FieldLabel>
+				</FieldRow>
 			</Field>
 		</FieldGroup>
 	);

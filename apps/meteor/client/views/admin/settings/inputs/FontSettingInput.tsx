@@ -1,4 +1,4 @@
-import { Box, Field, Flex, TextInput } from '@rocket.chat/fuselage';
+import { Box, FieldLabel, FieldRow, Flex, TextInput } from '@rocket.chat/fuselage';
 import type { FormEventHandler, ReactElement } from 'react';
 import React from 'react';
 
@@ -36,13 +36,13 @@ function FontSettingInput({
 		<>
 			<Flex.Container>
 				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
+					<FieldLabel htmlFor={_id} title={_id}>
 						{label}
-					</Field.Label>
+					</FieldLabel>
 					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 				</Box>
 			</Flex.Container>
-			<Field.Row>
+			<FieldRow>
 				<TextInput
 					data-qa-setting-id={_id}
 					id={_id}
@@ -53,7 +53,7 @@ function FontSettingInput({
 					autoComplete={autocomplete === false ? 'off' : undefined}
 					onChange={handleChange}
 				/>
-			</Field.Row>
+			</FieldRow>
 		</>
 	);
 }

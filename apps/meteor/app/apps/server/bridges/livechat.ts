@@ -223,7 +223,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		}
 
 		return Promise.all(
-			(await LivechatVisitors.find(query).toArray()).map(
+			(await LivechatVisitors.findEnabled(query).toArray()).map(
 				async (visitor) => visitor && this.orch.getConverters()?.get('visitors').convertVisitor(visitor),
 			),
 		);
@@ -288,7 +288,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			throw new Error('Could not get the message converter to process livechat room messages');
 		}
 
-		const livechatMessages = await Livechat.getRoomMessages({ rid: roomId });
+		const livechatMessages = await LivechatTyped.getRoomMessages({ rid: roomId });
 
 		return Promise.all(livechatMessages.map((message) => messageConverter.convertMessage(message) as Promise<IAppsEngineMesage>));
 	}

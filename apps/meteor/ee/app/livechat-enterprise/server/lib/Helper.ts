@@ -17,7 +17,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 import { updateInquiryQueueSla } from './SlaHelper';
 import { memoizeDebounce } from './debounceByParams';
-import { logger, helperLogger } from './logger';
+import { logger } from './logger';
 
 type QueueInfo = {
 	message: {
@@ -124,7 +124,6 @@ const dispatchWaitingQueueStatus = async (department?: string) => {
 		return;
 	}
 
-	helperLogger.debug(`Updating statuses for queue ${department || 'Public'}`);
 	const queue = await LivechatInquiry.getCurrentSortedQueueAsync({
 		department,
 		queueSortBy: getInquirySortMechanismSetting(),
@@ -144,9 +143,9 @@ const dispatchWaitingQueueStatus = async (department?: string) => {
 // but we don't need to notify _each_ change that takes place, just their final position
 export const debouncedDispatchWaitingQueueStatus = memoizeDebounce(dispatchWaitingQueueStatus, 1200);
 
-export const setPredictedVisitorAbandonmentTime = async (room: IOmnichannelRoom) => {
+export const setPredictedVisitorAbandonmentTime = async (room: Pick<IOmnichannelRoom, '_id' | 'responseBy' | 'departmentId'>) => {
 	if (
-		!room.v?.lastMessageTs ||
+		!room.responseBy?.firstResponseTs ||
 		!settings.get('Livechat_abandoned_rooms_action') ||
 		settings.get('Livechat_abandoned_rooms_action') === 'none'
 	) {
@@ -164,7 +163,7 @@ export const setPredictedVisitorAbandonmentTime = async (room: IOmnichannelRoom)
 		return;
 	}
 
-	const willBeAbandonedAt = moment(room.v.lastMessageTs).add(Number(secondsToAdd), 'seconds').toDate();
+	const willBeAbandonedAt = moment(room.responseBy.firstResponseTs).add(Number(secondsToAdd), 'seconds').toDate();
 	await LivechatRooms.setPredictedVisitorAbandonmentByRoomId(room._id, willBeAbandonedAt);
 };
 
@@ -186,12 +185,10 @@ export const updatePredictedVisitorAbandonment = async () => {
 export const updateQueueInactivityTimeout = async () => {
 	const queueTimeout = settings.get<number>('Livechat_max_queue_wait_time');
 	if (queueTimeout <= 0) {
-		logger.debug('QueueInactivityTimer: Disabling scheduled closing');
 		await OmnichannelQueueInactivityMonitor.stop();
 		return;
 	}
 
-	logger.debug('QueueInactivityTimer: Updating estimated inactivity time for queued items');
 	await LivechatInquiry.getQueuedInquiries({ projection: { _updatedAt: 1 } }).forEach((inq) => {
 		const aggregatedDate = moment(inq._updatedAt).add(queueTimeout, 'minutes');
 		try {

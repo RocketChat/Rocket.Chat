@@ -1,4 +1,4 @@
-import type { ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, ISubscription, IUser } from '@rocket.chat/core-typings';
 
 /**
  * @type {(userPref: Pick<import('@rocket.chat/core-typings').IUser, 'settings'>) => {
@@ -7,7 +7,7 @@ import type { ISubscription, IUser } from '@rocket.chat/core-typings';
  * 	emailPrefOrigin: 'user';
  * }}
  */
-export const getDefaultSubscriptionPref = (userPref: IUser) => {
+export const getDefaultSubscriptionPref = (userPref: AtLeast<IUser, 'settings'>) => {
 	const subscription: Partial<ISubscription> = {};
 
 	const { desktopNotifications, pushNotifications, emailNotificationMode, highlights } = userPref.settings?.preferences || {};
