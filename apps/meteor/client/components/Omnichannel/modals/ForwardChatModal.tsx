@@ -113,15 +113,15 @@ const ForwardChatModal = ({
 						<FieldLabel>{t('Forward_to_user')}</FieldLabel>
 						<FieldRow>
 							<AutoCompleteAgent
-								onlyAvailable
 								withTitle
+								onlyAvailable
+								value={getValues().username}
 								excludeId={room.servedBy?._id}
 								showIdleAgents={idleAgentsAllowedForForwarding}
 								placeholder={t('Username')}
 								onChange={(value) => {
 									setValue('username', value);
 								}}
-								value={getValues().username}
 							/>
 						</FieldRow>
 					</Field>
