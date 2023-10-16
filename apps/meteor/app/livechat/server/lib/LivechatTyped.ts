@@ -922,7 +922,7 @@ class LivechatClass {
 	async updateMessage({ guest, message }: { guest: ILivechatVisitor; message: AtLeast<IMessage, '_id' | 'msg' | 'rid'> }) {
 		check(message, Match.ObjectIncluding({ _id: String }));
 
-		const originalMessage = await Messages.findOneById(message._id, { projection: { u: 1 } });
+		const originalMessage = await Messages.findOneById<Pick<IMessage, 'u' | '_id'>>(message._id, { projection: { u: 1 } });
 		if (!originalMessage?._id) {
 			return;
 		}
