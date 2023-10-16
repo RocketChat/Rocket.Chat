@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useSeatsCap } from '../../../../../../ee/client/views/admin/users/useSeatsCap';
 import { PlanName } from '../../../../../lib/utils/getPlanName';
+import type { CardProps } from '../FeatureUsageCard';
 import PieGraphCard from '../PieGraphCard';
 
 type SeatsCardProps = {
@@ -21,7 +22,7 @@ const SeatsCard = ({ plan }: SeatsCardProps): ReactElement => {
 
 	const nearLimit = pieGraph && pieGraph.used / pieGraph.total >= 0.8;
 
-	const card = {
+	const card: CardProps = {
 		title: t('Seats'),
 		infoText: t('Seats_InfoText'),
 		showUpgradeButton: nearLimit,

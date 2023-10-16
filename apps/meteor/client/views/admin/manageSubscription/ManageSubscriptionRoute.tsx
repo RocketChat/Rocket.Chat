@@ -8,11 +8,11 @@ import ManageSubscriptionPage from './ManageSubscriptionPage';
 const ManageSubscriptionRoute = (): ReactElement => {
 	const canViewManageSubscription = usePermission('manage-cloud');
 
-	if (canViewManageSubscription) {
-		return <ManageSubscriptionPage />;
+	if (!canViewManageSubscription) {
+		return <NotAuthorizedPage />;
 	}
 
-	return <NotAuthorizedPage />;
+	return <ManageSubscriptionPage />;
 };
 
 export default memo(ManageSubscriptionRoute);

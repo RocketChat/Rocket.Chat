@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Skeleton, Tag } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Palette, Skeleton, Tag } from '@rocket.chat/fuselage';
 import type { ILicenseV3 } from '@rocket.chat/license';
 import { Card, CardBody, CardColSection, ExternalLink } from '@rocket.chat/ui-client';
 import type { ReactElement, ReactNode } from 'react';
@@ -13,7 +13,7 @@ import UpgradeButton from '../UpgradeButton';
 
 type PlanCardProps = {
 	isEnterprise: boolean;
-	license: ILicenseV3;
+	license: ILicenseV3 | undefined;
 };
 
 const PlanCard = ({ isEnterprise, license }: PlanCardProps): ReactElement => {
@@ -25,7 +25,7 @@ const PlanCard = ({ isEnterprise, license }: PlanCardProps): ReactElement => {
 	const isSalesAssisted = license?.information?.grantedBy?.method !== 'self-service' || true;
 	const isTrial = license?.information?.trial || false;
 	const isAutoRenew = license?.information?.autoRenew || false;
-	const visualExpiration = license?.information?.visualExpiration;
+	const visualExpiration = license?.information?.visualExpiration || String(new Date());
 	const trialDaysLeft = (isTrial && getDaysLeft(visualExpiration)) || 0;
 
 	const getPlanContent = (): ReactNode => {
@@ -105,7 +105,7 @@ const PlanCard = ({ isEnterprise, license }: PlanCardProps): ReactElement => {
 		<Card>
 			<CardBody flexDirection='column' mb={0}>
 				<CardColSection display='flex' alignItems='center'>
-					<Icon name='rocketchat' color='badge-background-level-4' size={28} mie={4} />
+					<Icon name='rocketchat' color={Palette.badge['badge-background-level-4'].toString()} size={28} mie={4} />
 					<Box fontScale='h3'>{planName}</Box>
 				</CardColSection>
 				<CardColSection display='flex' flexDirection='column' h='full'>

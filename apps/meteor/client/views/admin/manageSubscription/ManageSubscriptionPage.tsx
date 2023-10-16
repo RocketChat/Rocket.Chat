@@ -25,7 +25,7 @@ const ManageSubscriptionPage = () => {
 	const router = useRouter();
 	const { data } = useIsEnterprise();
 	const { isRegistered, isLoading: isRegisteredLoading } = useRegistrationStatus();
-	const { data: licensesData, refetch: refetchLicense } = useLicense();
+	const { data: licensesData, isLoading: isLicenseLoading, refetch: refetchLicense } = useLicense();
 	const syncLicenseUpdate = useWorkspaceSync();
 
 	const { subscriptionSuccess } = router.getSearchParameters();
@@ -104,13 +104,13 @@ const ManageSubscriptionPage = () => {
 
 			<Page.ScrollableContentWithShadow p={16}>
 				{subscriptionSuccess && (
-					<Callout type='info' title="We're updating your license" m={8}>
+					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>
 						{t('Sync_license_update_Callout')}
 					</Callout>
 				)}
 				<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 					<Grid m={0}>
-						{license ? (
+						{!isLicenseLoading || licensesData ? (
 							<>
 								<Grid.Item lg={4} xs={4} p={8}>
 									<PlanCard isEnterprise={isEnterprise} license={license} />

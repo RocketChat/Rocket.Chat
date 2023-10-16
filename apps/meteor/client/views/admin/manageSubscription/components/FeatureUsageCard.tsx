@@ -6,21 +6,20 @@ import React, { memo } from 'react';
 import InfoTextIconModal from './InfoTextIconModal';
 import UpgradeButton from './UpgradeButton';
 
-export type FeatureUsageCardProps = {
-	title: string;
+type FeatureUsageCardProps = {
 	children?: ReactNode;
+	card: CardProps;
+};
+
+export type CardProps = {
+	title: string;
 	infoText?: string;
 	showUpgradeButton?: boolean;
 	upgradeButtonText?: string;
 };
 
-const FeatureUsageCard = ({
-	children,
-	title,
-	infoText,
-	showUpgradeButton,
-	upgradeButtonText = 'Upgrade',
-}: FeatureUsageCardProps): ReactElement => {
+const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactElement => {
+	const { title, infoText, showUpgradeButton, upgradeButtonText = 'Upgrade' } = card;
 	return (
 		<Card minHeight={220}>
 			<CardTitle fontScale='p2b'>

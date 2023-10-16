@@ -4,13 +4,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSeatsCap } from '../../../../../../ee/client/views/admin/users/useSeatsCap';
+import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
 
 const CountSeatsCard = (): ReactElement => {
 	const { t } = useTranslation();
 	const seatsCap = useSeatsCap();
 
-	const card = {
+	const card: CardProps = {
 		title: t('Seats'),
 		infoText: t('CountSeats_InfoText'),
 	};
@@ -18,7 +19,7 @@ const CountSeatsCard = (): ReactElement => {
 	const maxSeats = seatsCap?.activeUsers || 0;
 
 	return (
-		<FeatureUsageCard title={card.title} infoText={card.infoText}>
+		<FeatureUsageCard card={card}>
 			{seatsCap ? (
 				<Box fontScale='h1'>
 					<Icon color='font-annotation' name='user' size={40} mie={4} />

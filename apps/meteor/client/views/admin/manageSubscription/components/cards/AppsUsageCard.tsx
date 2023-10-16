@@ -4,6 +4,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppsCountQuery } from '../../../../marketplace/hooks/useAppsCountQuery';
+import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
 
 type AppsUsageCardProps = {
@@ -26,13 +27,14 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 	const privateAppsLimitCount = privateAppsLimit || privateAppsLimitQuery;
 	const marketplaceAppsLimitCount = marketplaceAppsLimit || marketplaceAppsLimitQuery;
 
-	const card = {
+	const card: CardProps = {
 		title: t('Apps'),
 		infoText: t('Apps_InfoText'),
+		showUpgradeButton: (marketplaceAppsPercentage || 0) >= 80,
 	};
 
 	return (
-		<FeatureUsageCard title={card.title} infoText={card.infoText} showUpgradeButton={(marketplaceAppsPercentage || 0) >= 80}>
+		<FeatureUsageCard card={card}>
 			{privateApps && marketplaceApps ? (
 				<Box w='full' display='flex' flexDirection='column'>
 					<Box mb={12}>

@@ -4,6 +4,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useActiveConnections } from '../../../../hooks/useActiveConnections';
+import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
 
 const ActiveSessionsCard = (): ReactElement => {
@@ -12,19 +13,20 @@ const ActiveSessionsCard = (): ReactElement => {
 
 	const { max, current } = activeConnections || {};
 
-	const card = {
-		title: t('ActiveSessions'),
-		infoText: t('ActiveSessions_InfoText'),
-	};
-
 	const total = max || 0;
 	const used = current || 0;
 	const available = total - used;
 
 	const exceedLimit = used >= total;
 
+	const card: CardProps = {
+		title: t('ActiveSessions'),
+		infoText: t('ActiveSessions_InfoText'),
+		showUpgradeButton: exceedLimit,
+	};
+
 	return (
-		<FeatureUsageCard title={card.title} infoText={card.infoText} showUpgradeButton={exceedLimit}>
+		<FeatureUsageCard card={card}>
 			{!isLoading && activeConnections ? (
 				<Box textAlign='center'>
 					<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'}>

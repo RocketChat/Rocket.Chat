@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { PlanName } from '../../../../../lib/utils/getPlanName';
 import { useStatistics } from '../../../../hooks/useStatistics';
+import type { CardProps } from '../FeatureUsageCard';
 import PieGraphCard from '../PieGraphCard';
 
 type MACCardProps = {
@@ -25,7 +26,7 @@ const MACCard = ({ plan, monthlyActiveContactsLimit }: MACCardProps): ReactEleme
 
 	const nearLimit = pieGraph && pieGraph.used / pieGraph.total >= 0.8;
 
-	const card = {
+	const card: CardProps = {
 		title: t('Monthly_active_contacts'),
 		infoText: t('MAC_InfoText'),
 		showUpgradeButton: nearLimit,

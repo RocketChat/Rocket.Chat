@@ -2,23 +2,27 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import type { FC } from 'react';
 
-const getColors = (type: string) => {
-	switch (type) {
-		case 'danger':
-			return { color: 'status-font-on-danger', bg: 'status-background-danger' };
-		case 'info':
-			return { color: 'status-font-on-info', bg: 'status-background-info' };
-		case 'success':
-			return { color: 'status-font-on-success', bg: 'status-background-success' };
-		case 'warning':
-			return { color: 'status-font-on-warning', bg: 'status-background-warning' };
-		default:
-			return { color: 'font-secondary-info', bg: 'surface-tint' };
-	}
+type Variant = 'danger' | 'info' | 'success' | 'warning' | 'default';
+
+type ColorMapType = {
+	[key in Variant]: {
+		color: string;
+		bg: string;
+	};
 };
 
+const colorMap: ColorMapType = {
+	danger: { color: 'status-font-on-danger', bg: 'status-background-danger' },
+	info: { color: 'status-font-on-info', bg: 'status-background-info' },
+	success: { color: 'status-font-on-success', bg: 'status-background-success' },
+	warning: { color: 'status-font-on-warning', bg: 'status-background-warning' },
+	default: { color: 'font-secondary-info', bg: 'surface-tint' },
+};
+
+const getColors = (type: Variant) => colorMap[type] || colorMap.default;
+
 type FramedIconProps = {
-	type: 'danger' | 'info' | 'success' | 'warning' | 'neutral';
+	type: Variant;
 	icon: Keys;
 };
 

@@ -6147,5 +6147,7 @@
   "Upgrade_to_Pro": "Upgrade to Pro",
   "Start_Enterprise_trial": "Start Enterprise trial",
   "Sync_license_update": "Sync license update",
-  "Sync_license_update_Callout":"If you don't notice any changes in your workspace within a few minutes, sync the license update."
+  "Sync_license_update_Callout_Title": "We're updating your license",
+  "Sync_license_update_Callout": "If you don't notice any changes in your workspace within a few minutes, sync the license update.",
+  "Includes": "Includes"
 }

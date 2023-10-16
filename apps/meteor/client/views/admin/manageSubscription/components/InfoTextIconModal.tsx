@@ -3,7 +3,7 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import CardInfoModal from './CardInfoModal';
+import GenericModal from '../../../../components/GenericModal';
 
 export type InfoTextIconModalProps = {
 	title: string;
@@ -18,7 +18,11 @@ const InfoTextIconModal = ({ title, infoText }: InfoTextIconModalProps): ReactEl
 			setModal(null);
 			return;
 		}
-		setModal(<CardInfoModal title={title} text={infoText} close={() => setModal(null)} />);
+		setModal(
+			<GenericModal icon='info' title={title} onClose={() => setModal(null)}>
+				{infoText}
+			</GenericModal>,
+		);
 	};
 
 	return <IconButton icon='info' mini onClick={() => handleInfoClick()} />;

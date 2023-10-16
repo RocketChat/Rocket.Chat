@@ -4,6 +4,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useStatistics } from '../../../../hooks/useStatistics';
+import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
 
 const CountMACCard = (): ReactElement => {
@@ -11,7 +12,7 @@ const CountMACCard = (): ReactElement => {
 	const { data, isLoading } = useStatistics({ refresh: 'true' });
 	const { omnichannelContactsBySource } = data || {};
 
-	const card = {
+	const card: CardProps = {
 		title: t('Monthly_active_contacts'),
 		infoText: t('CountMAC_InfoText'),
 	};
@@ -19,7 +20,7 @@ const CountMACCard = (): ReactElement => {
 	const MACCount = omnichannelContactsBySource?.contactsCount;
 
 	return (
-		<FeatureUsageCard title={card.title} infoText={card.infoText}>
+		<FeatureUsageCard card={card}>
 			{!isLoading && MACCount ? (
 				<Box fontScale='h1'>
 					<Icon color='font-annotation' name='headset' size={40} mie={4} />
