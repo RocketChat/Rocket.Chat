@@ -1,4 +1,4 @@
-import { FieldGroup, Field, FieldLabel, FieldRow, ToggleSwitch, Select } from '@rocket.chat/fuselage';
+import { Callout, FieldGroup, Field, FieldLabel, FieldRow, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
@@ -11,6 +11,7 @@ import {
 	ContextualbarIcon,
 	ContextualbarContent,
 } from '../../../../components/Contextualbar';
+import { useRoom } from '../../contexts/RoomContext';
 
 type AutoTranslateProps = {
 	language: string;
@@ -30,6 +31,7 @@ const AutoTranslate = ({
 	handleClose,
 }: AutoTranslateProps): ReactElement => {
 	const t = useTranslation();
+	const room = useRoom();
 
 	return (
 		<>
@@ -40,14 +42,24 @@ const AutoTranslate = ({
 			</ContextualbarHeader>
 			<ContextualbarContent pbs={24}>
 				<FieldGroup>
+					{room.encrypted && (
+						<Callout title={t('Automatic_translation_not_available')} type='warning'>
+							{t('Automatic_translation_not_available_info')}
+						</Callout>
+					)}
 					<Field>
 						<FieldRow>
-							<ToggleSwitch id='automatic-translation' onChange={handleSwitch} defaultChecked={translateEnable} />
+							<ToggleSwitch
+								id='automatic-translation'
+								onChange={handleSwitch}
+								defaultChecked={translateEnable}
+								disabled={room.encrypted && !translateEnable}
+							/>
 							<FieldLabel htmlFor='automatic-translation'>{t('Automatic_Translation')}</FieldLabel>
 						</FieldRow>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor='language'>{t('Language')}</FieldLabel>
+						<FieldLabel htmlFor='translate-to'>{t('Translate_to')}</FieldLabel>
 						<FieldRow verticalAlign='middle'>
 							<Select
 								id='language'
