@@ -92,6 +92,7 @@ const ManageSubscriptionPage = () => {
 			!syncLicenseUpdate.isInitialLoading &&
 			!syncLicenseUpdate.isRefetching &&
 			!syncLicenseUpdate.isError &&
+			syncLicenseUpdate?.data &&
 			syncLicenseUpdate?.data?.success
 		) {
 			refetchLicense();
