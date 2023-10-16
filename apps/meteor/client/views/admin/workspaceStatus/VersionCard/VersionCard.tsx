@@ -51,7 +51,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 	const { information: license } = licenseData?.data?.license ?? {};
 	const isAirgapped = license?.offline;
-	const licenseName = license?.tags?.[0]?.name ?? '';
+	const licenseName = license?.tags?.[0]?.name ?? 'Community';
 	const isTrial = license?.trial;
 	const visualExpiration = formatDate(license?.visualExpiration || '');
 	const licenseLimits = licenseData?.data?.limits;
@@ -180,7 +180,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 	return (
 		<Card style={style}>
-			{!isLoading && license ? (
+			{!isLoading && licenseData ? (
 				<>
 					<CardBody flexDirection='row'>
 						<CardCol>
