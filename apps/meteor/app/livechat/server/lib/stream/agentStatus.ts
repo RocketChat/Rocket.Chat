@@ -1,8 +1,7 @@
 import { Logger } from '@rocket.chat/logger';
 
 import { settings } from '../../../../settings/server';
-import { Livechat } from '../Livechat';
-import { Livechat as LivechatTyped } from '../LivechatTyped';
+import { Livechat } from '../LivechatTyped';
 
 const logger = new Logger('AgentStatusWatcher');
 
@@ -69,7 +68,7 @@ export const onlineAgents = {
 
 		try {
 			if (action === 'close') {
-				return await LivechatTyped.closeOpenChats(userId, comment);
+				return await Livechat.closeOpenChats(userId, comment);
 			}
 
 			if (action === 'forward') {

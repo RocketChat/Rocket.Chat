@@ -11,6 +11,7 @@ import type {
 	IMessage,
 	ILivechatDepartment,
 	AtLeast,
+	TransferData,
 } from '@rocket.chat/core-typings';
 import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -42,7 +43,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
-import { updateDepartmentAgents, validateEmail } from './Helper';
+import { updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 
@@ -953,6 +954,51 @@ class LivechatClass {
 		});
 
 		await Promise.all(promises);
+	}
+
+	async transfer(room: IOmnichannelRoom, guest: ILivechatVisitor, transferData: TransferData) {
+		this.logger.debug(`Transfering room ${room._id} [Transfered by: ${transferData?.transferredBy?._id}]`);
+		if (room.onHold) {
+			throw new Error('error-room-onHold');
+		}
+
+		if (transferData.departmentId) {
+			const department = await LivechatDepartment.findOneById(transferData.departmentId, {
+				projection: { name: 1 },
+			});
+			if (!department) {
+				throw new Error('error-invalid-department');
+			}
+
+			transferData.department = department;
+			this.logger.debug(`Transfering room ${room._id} to department ${transferData.department?._id}`);
+		}
+
+		return RoutingManager.transferRoom(room, guest, transferData);
+	}
+
+	async forwardOpenChats(userId: string) {
+		this.logger.debug(`Transferring open chats for user ${userId}`);
+		const user = await Users.findOneById(userId);
+		if (!user) {
+			throw new Error('error-invalid-user');
+		}
+
+		const { _id, username, name } = user;
+		for await (const room of LivechatRooms.findOpenByAgent(userId)) {
+			const guest = await LivechatVisitors.findOneEnabledById(room.v._id);
+			if (!guest) {
+				continue;
+			}
+
+			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
+			await this.transfer(room, guest, {
+				userId: _id,
+				transferredBy,
+				departmentId: guest.department,
+				scope: 'department',
+			});
+		}
 	}
 }
 

@@ -257,21 +257,6 @@ export const Livechat = {
 		}
 	},
 
-	async forwardOpenChats(userId) {
-		Livechat.logger.debug(`Transferring open chats for user ${userId}`);
-		for await (const room of LivechatRooms.findOpenByAgent(userId)) {
-			const guest = await LivechatVisitors.findOneEnabledById(room.v._id);
-			const user = await Users.findOneById(userId);
-			const { _id, username, name } = user;
-			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
-			await this.transfer(room, guest, {
-				roomId: room._id,
-				transferredBy,
-				departmentId: guest.department,
-			});
-		}
-	},
-
 	async savePageHistory(token, roomId, pageInfo) {
 		Livechat.logger.debug(`Saving page movement history for visitor with token ${token}`);
 		if (pageInfo.change !== settings.get('Livechat_history_monitor_type')) {
