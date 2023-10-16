@@ -10,6 +10,7 @@ import type {
 	ILivechatAgent,
 	IMessage,
 	ILivechatDepartment,
+	AtLeast,
 } from '@rocket.chat/core-typings';
 import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -915,6 +916,28 @@ class LivechatClass {
 
 		// TODO: these kind of actions should be on events instead of here
 		await Promise.all([LivechatDepartmentAgents.enableAgentsByDepartmentId(_id), LivechatDepartment.unarchiveDepartment(_id)]);
+		return true;
+	}
+
+	async updateMessage({ guest, message }: { guest: ILivechatVisitor; message: AtLeast<IMessage, '_id' | 'msg' | 'rid'> }) {
+		check(message, Match.ObjectIncluding({ _id: String }));
+
+		const originalMessage = await Messages.findOneById(message._id, { projection: { u: 1 } });
+		if (!originalMessage?._id) {
+			return;
+		}
+
+		const editAllowed = settings.get('Message_AllowEditing');
+		const editOwn = originalMessage.u && originalMessage.u._id === guest._id;
+
+		if (!editAllowed || !editOwn) {
+			throw new Error('error-action-not-allowed');
+		}
+
+		// TODO: Apps sends an `any` object and apparently we just check for _id being present
+		// while updateMessage expects AtLeast<id, msg, rid>
+		await updateMessage(message, guest as unknown as IUser);
+
 		return true;
 	}
 }

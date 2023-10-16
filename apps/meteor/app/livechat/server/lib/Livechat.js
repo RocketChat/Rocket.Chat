@@ -34,7 +34,6 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { FileUpload } from '../../../file-upload/server';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
@@ -61,28 +60,6 @@ export const Livechat = {
 			newRoom,
 			showConnecting: this.showConnecting(),
 		});
-	},
-
-	async updateMessage({ guest, message }) {
-		check(message, Match.ObjectIncluding({ _id: String }));
-
-		const originalMessage = await Messages.findOneById(message._id);
-		if (!originalMessage || !originalMessage._id) {
-			return;
-		}
-
-		const editAllowed = settings.get('Message_AllowEditing');
-		const editOwn = originalMessage.u && originalMessage.u._id === guest._id;
-
-		if (!editAllowed || !editOwn) {
-			throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', {
-				method: 'livechatUpdateMessage',
-			});
-		}
-
-		await updateMessage(message, guest);
-
-		return true;
 	},
 
 	async deleteMessage({ guest, message }) {
