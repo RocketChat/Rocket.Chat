@@ -9,7 +9,6 @@ import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatVisitors,
 	LivechatCustomField,
-	Settings,
 	LivechatRooms,
 	LivechatInquiry,
 	Subscriptions,
@@ -163,50 +162,6 @@ export const Livechat = {
 		}
 
 		return 0;
-	},
-
-	async getInitSettings() {
-		const rcSettings = {};
-
-		await Settings.findNotHiddenPublic([
-			'Livechat_title',
-			'Livechat_title_color',
-			'Livechat_enable_message_character_limit',
-			'Livechat_message_character_limit',
-			'Message_MaxAllowedSize',
-			'Livechat_enabled',
-			'Livechat_registration_form',
-			'Livechat_allow_switching_departments',
-			'Livechat_offline_title',
-			'Livechat_offline_title_color',
-			'Livechat_offline_message',
-			'Livechat_offline_success_message',
-			'Livechat_offline_form_unavailable',
-			'Livechat_display_offline_form',
-			'Omnichannel_call_provider',
-			'Language',
-			'Livechat_enable_transcript',
-			'Livechat_transcript_message',
-			'Livechat_fileupload_enabled',
-			'FileUpload_Enabled',
-			'Livechat_conversation_finished_message',
-			'Livechat_conversation_finished_text',
-			'Livechat_name_field_registration_form',
-			'Livechat_email_field_registration_form',
-			'Livechat_registration_form_message',
-			'Livechat_force_accept_data_processing_consent',
-			'Livechat_data_processing_consent_text',
-			'Livechat_show_agent_info',
-			'Livechat_clear_local_storage_when_chat_ended',
-		]).forEach((setting) => {
-			rcSettings[setting._id] = setting.value;
-		});
-
-		rcSettings.Livechat_history_monitor_type = settings.get('Livechat_history_monitor_type');
-
-		rcSettings.Livechat_Show_Connecting = this.showConnecting();
-
-		return rcSettings;
 	},
 
 	async saveRoomInfo(roomData, guestData, userId) {
