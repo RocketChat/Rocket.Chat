@@ -166,7 +166,7 @@ const ServerLogs = (): ReactElement => {
 	}, [sendToBottomIfNecessary]);
 
 	return (
-		<Box width='full' height='full' overflow='hidden' position='relative' display='flex' marginBlock={8}>
+		<Box width='full' height='full' overflow='hidden' position='relative' display='flex' mbe={8}>
 			<Scrollable vertical>
 				<Box
 					ref={wrapperRef}
