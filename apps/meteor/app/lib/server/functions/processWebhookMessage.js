@@ -1,4 +1,3 @@
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
@@ -8,39 +7,9 @@ import { validateRoomMessagePermissionsAsync } from '../../../authorization/serv
 import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
 import { sendMessage } from './sendMessage';
 
-type Payload = {
-	channel?: string | string[];
-	roomId?: string | string[];
-	text?: IMessage['msg'];
-	msg?: IMessage['msg']; // overrided if text is present
-	username?: IMessage['alias'];
-	alias?: IMessage['alias']; // overrided if username is present
-	icon_emoji?: IMessage['emoji'];
-	emoji?: IMessage['emoji']; // overrided if icon_emoji is present
-	icon_url?: IMessage['avatar'];
-	avatar?: IMessage['avatar']; // overrided if icon_url is present
-	attachments?: IMessage['attachments'];
-	parseUrls?: boolean;
-	bot?: IMessage['bot'];
-	groupable?: IMessage['groupable'];
-	tmid?: IMessage['tmid'];
-};
-
-type DefaultValues = {
-	channel: string | string[];
-	alias: string;
-	avatar: string;
-	emoji: string;
-};
-
-export const processWebhookMessage = async function (
-	messageObj: Payload,
-	user: IUser & { username: Exclude<IUser['username'], undefined> },
-	defaultValues: DefaultValues = { channel: '', alias: '', avatar: '', emoji: '' },
-) {
+export const processWebhookMessage = async function (messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }) {
 	const sentData = [];
-
-	const channels: Array<string> = [...new Set(messageObj.channel || messageObj.roomId || defaultValues.channel)];
+	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
 
 	for await (const channel of channels) {
 		const channelType = channel[0];
@@ -100,7 +69,7 @@ export const processWebhookMessage = async function (
 			messageObj.attachments = undefined;
 		}
 
-		const message: Partial<IMessage> & { parseUrls?: boolean } = {
+		const message = {
 			alias: messageObj.username || messageObj.alias || defaultValues.alias,
 			msg: trim(messageObj.text || messageObj.msg || ''),
 			attachments: messageObj.attachments || [],
@@ -122,7 +91,7 @@ export const processWebhookMessage = async function (
 
 		if (Array.isArray(message.attachments)) {
 			for (let i = 0; i < message.attachments.length; i++) {
-				const attachment = message.attachments[i] as Exclude<IMessage['attachments'], undefined>[number] & { msg?: string };
+				const attachment = message.attachments[i];
 				if (attachment.msg) {
 					attachment.text = trim(attachment.msg);
 					delete attachment.msg;
