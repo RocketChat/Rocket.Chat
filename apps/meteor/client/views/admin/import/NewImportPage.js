@@ -34,7 +34,7 @@ function NewImportPage() {
 		refetchOnWindowFocus: false,
 	});
 
-	const options = useMemo(() => importers?.map(({ key, name }) => [key, name]) || [], [importers]);
+	const options = useMemo(() => importers?.map(({ key, name }) => [key, t(name)]) || [], [importers, t]);
 
 	const importerKey = useRouteParameter('importerKey');
 	const importer = useMemo(() => (importers || []).find(({ key }) => key === importerKey), [importerKey, importers]);

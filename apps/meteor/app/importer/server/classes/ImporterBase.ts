@@ -26,7 +26,7 @@ type OldSettings = {
  * Base class for all of the importers.
  */
 export class Importer {
-	private reportProgressHandler: ReturnType<typeof setTimeout> | undefined;
+	private _reportProgressHandler: ReturnType<typeof setTimeout> | undefined;
 
 	protected AdmZip = AdmZip;
 
@@ -44,7 +44,7 @@ export class Importer {
 
 	protected oldSettings: OldSettings;
 
-	protected lastProgressReportTotal = 0;
+	protected _lastProgressReportTotal = 0;
 
 	public importRecord: IImport;
 
@@ -77,7 +77,7 @@ export class Importer {
 		this.oldSettings = {};
 
 		this.progress.step = this.importRecord.status;
-		this.lastProgressReportTotal = 0;
+		this._lastProgressReportTotal = 0;
 		this.reloadCount();
 
 		this.logger.debug(`Constructed a new ${this.info.name} Importer.`);
@@ -332,12 +332,12 @@ export class Importer {
 		const count = this.progress.count.completed + this.progress.count.error;
 		const range = [ProgressStep.IMPORTING_USERS, ProgressStep.IMPORTING_CHANNELS].includes(this.progress.step) ? 50 : 500;
 
-		if (count % range === 0 || count >= this.progress.count.total || count - this.lastProgressReportTotal > range) {
-			this.lastProgressReportTotal = this.progress.count.completed + this.progress.count.error;
+		if (count % range === 0 || count >= this.progress.count.total || count - this._lastProgressReportTotal > range) {
+			this._lastProgressReportTotal = this.progress.count.completed + this.progress.count.error;
 			await this.updateRecord({ 'count.completed': this.progress.count.completed, 'count.error': this.progress.count.error });
 			this.reportProgress();
-		} else if (!this.reportProgressHandler) {
-			this.reportProgressHandler = setTimeout(() => {
+		} else if (!this._reportProgressHandler) {
+			this._reportProgressHandler = setTimeout(() => {
 				this.reportProgress();
 			}, 250);
 		}
@@ -351,9 +351,9 @@ export class Importer {
 	 * Sends an updated progress to the websocket
 	 */
 	reportProgress() {
-		if (this.reportProgressHandler) {
-			clearTimeout(this.reportProgressHandler);
-			this.reportProgressHandler = undefined;
+		if (this._reportProgressHandler) {
+			clearTimeout(this._reportProgressHandler);
+			this._reportProgressHandler = undefined;
 		}
 		ImporterWebsocket.progressUpdated(this.progress);
 	}

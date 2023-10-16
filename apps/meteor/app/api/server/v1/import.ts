@@ -15,7 +15,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { translateForUserId } from '../../../../server/lib/translateForUser';
 import { PendingAvatarImporter } from '../../../importer-pending-avatars/server/importer';
 import { PendingFileImporter } from '../../../importer-pending-files/server/importer';
 import { Importers } from '../../../importer/server';
@@ -201,16 +200,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const importers = Importers.getAllVisible();
+			const importers = Importers.getAllVisible().map(({ key, name }) => ({ key, name }));
 
-			const translatedImporters = await Promise.all(
-				importers.map(async ({ key, name }) => ({
-					key,
-					name: (await translateForUserId(name, this.userId)) || name,
-				})),
-			);
-
-			return API.v1.success(translatedImporters);
+			return API.v1.success(importers);
 		},
 	},
 );
