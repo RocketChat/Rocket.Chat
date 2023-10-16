@@ -9,9 +9,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { i18n } from '../../../../server/lib/i18n';
-import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-
-const permissionsToAddUserToRoom = ['add-user-to-joined-room', 'add-user-to-any-c-room', 'add-user-to-any-p-room'];
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 const APP_ID = 'mention-core';
 const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: string | undefined) => {
@@ -87,9 +85,12 @@ callbacks.add(
 			return message;
 		}
 
-		const canAddUsers = await hasAtLeastOnePermissionAsync(message.u._id, permissionsToAddUserToRoom, message.rid);
+		const canAddUsersToThisRoom = await hasPermissionAsync(message.u._id, 'add-user-to-joined-room', message.rid);
+		const canAddToAnyRoom = await (room.t === 'c'
+			? hasPermissionAsync(message.u._id, 'add-user-to-any-c-room')
+			: hasPermissionAsync(message.u._id, 'add-user-to-any-p-room'));
 		const canDMUsers = await hasPermissionAsync(message.u._id, 'create-d'); // TODO: Perhaps check if user has DM with mentioned user (might be too expensive)
-
+		const canAddUsers = canAddUsersToThisRoom || canAddToAnyRoom;
 		const { language } = (await Users.findOneById(message.u._id)) || {};
 
 		const actionBlocks = getBlocks(mentionsUsersNotInChannel, message._id, language);
