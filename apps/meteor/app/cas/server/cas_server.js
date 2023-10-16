@@ -257,7 +257,7 @@ Accounts.registerLoginHandler('cas', async (options) => {
 				if (roomName) {
 					let room = await Rooms.findOneByNameAndType(roomName, 'c');
 					if (!room) {
-						room = await createRoom('c', roomName, user.username);
+						room = await createRoom('c', roomName, user);
 					}
 				}
 			}
