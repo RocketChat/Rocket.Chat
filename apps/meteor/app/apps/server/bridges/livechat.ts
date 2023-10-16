@@ -209,7 +209,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			userId = transferredTo._id;
 		}
 
-		return Livechat.transfer(
+		return LivechatTyped.transfer(
 			await this.orch.getConverters()?.get('rooms').convertAppRoom(currentRoom),
 			this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			{ userId, departmentId, transferredBy, transferredTo },

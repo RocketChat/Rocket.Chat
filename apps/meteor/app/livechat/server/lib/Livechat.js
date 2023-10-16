@@ -335,23 +335,6 @@ export const Livechat = {
 		await sendMessage(transferredBy, transferMessage, room);
 	},
 
-	async transfer(room, guest, transferData) {
-		Livechat.logger.debug(`Transfering room ${room._id} [Transfered by: ${transferData?.transferredBy?._id}]`);
-		if (room.onHold) {
-			Livechat.logger.debug('Cannot transfer. Room is on hold');
-			throw new Error('error-room-onHold');
-		}
-
-		if (transferData.departmentId) {
-			transferData.department = await LivechatDepartmentRaw.findOneById(transferData.departmentId, {
-				projection: { name: 1 },
-			});
-			Livechat.logger.debug(`Transfering room ${room._id} to department ${transferData.department?._id}`);
-		}
-
-		return RoutingManager.transferRoom(room, guest, transferData);
-	},
-
 	async returnRoomAsInquiry(rid, departmentId, overrideTransferData = {}) {
 		Livechat.logger.debug(`Transfering room ${rid} to ${departmentId ? 'department' : ''} queue`);
 		const room = await LivechatRooms.findOneById(rid);

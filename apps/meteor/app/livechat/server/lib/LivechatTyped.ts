@@ -993,10 +993,8 @@ class LivechatClass {
 
 			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
 			await this.transfer(room, guest, {
-				userId: _id,
 				transferredBy,
 				departmentId: guest.department,
-				scope: 'department',
 			});
 		}
 	}
