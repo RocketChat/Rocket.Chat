@@ -141,7 +141,9 @@ describe('licenses', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('data').and.to.be.an('object');
-					expect(res.body.data).to.have.property('license').and.to.be.an('object');
+					if (process.env.IS_EE) {
+						expect(res.body.data).to.have.property('license').and.to.be.an('object');
+					}
 					expect(res.body.data).to.have.property('tags').and.to.be.an('array');
 				})
 
