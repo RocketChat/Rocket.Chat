@@ -1,6 +1,7 @@
 import type { IImport } from '@rocket.chat/core-typings';
 import { Settings, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { parse } from 'csv-parse/lib/sync';
 
 import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import type { IConverterOptions } from '../../importer/server/classes/ImportDataConverter';
@@ -12,9 +13,6 @@ export class CsvImporter extends Importer {
 
 	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: IConverterOptions = {}) {
 		super(info, importRecord, converterOptions);
-
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		const { parse } = require('csv-parse/lib/sync');
 
 		this.csvParser = parse;
 	}
