@@ -66,17 +66,6 @@ describe('[Users]', function () {
 			});
 	});
 
-	// before(async () => {
-	// 	await request
-	// 		.post(api('login'))
-	// 		.send({
-	// 			user: apiUsername,
-	// 			password,
-	// 		})
-	// 		.expect('Content-Type', 'application/json')
-	// 		.expect(200);
-	// });
-
 	after(async () => {
 		await deleteUser(targetUser);
 	});
