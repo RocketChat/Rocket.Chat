@@ -25,10 +25,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'licenses.info',
-	{ authRequired: true, validateParams: isLicensesInfoProps, permissionsRequired: ['view-privileged-setting'] },
+	{ authRequired: true, validateParams: isLicensesInfoProps },
 	{
 		async get() {
-			const data = await License.getInfo(Boolean(this.queryParams.loadValues));
+			const unrestrictedAccess = await hasPermissionAsync(this.userId, 'view-privileged-setting');
+			const loadCurrentValues = unrestrictedAccess && Boolean(this.queryParams.loadValues);
+
+			const data = await License.getInfo({ limits: unrestrictedAccess, license: unrestrictedAccess, currentValues: loadCurrentValues });
 
 			return API.v1.success({ data });
 		},
