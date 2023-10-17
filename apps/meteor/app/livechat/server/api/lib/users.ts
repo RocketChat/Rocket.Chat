@@ -46,6 +46,8 @@ async function findUsers({
 	if (!showIdleAgents) {
 		const oldOr = query.$or;
 
+		const newOr = [{ status: { $exists: true, $ne: 'offline' }, roles: { $ne: 'bot' } }, { roles: 'bot' }];
+
 		if (oldOr) {
 			delete query.$or;
 			Object.assign(query, {
@@ -54,13 +56,13 @@ async function findUsers({
 						$or: oldOr,
 					},
 					{
-						$or: [{ status: { $exists: true, $ne: 'offline' }, roles: { $ne: 'bot' } }, { roles: 'bot' }],
+						$or: newOr,
 					},
 				],
 			});
 		} else {
 			Object.assign(query, {
-				$or: [{ status: { $exists: true, $ne: 'offline' }, roles: { $ne: 'bot' } }, { roles: 'bot' }],
+				$or: newOr,
 			});
 		}
 	}
