@@ -10,10 +10,10 @@ test.use({ storageState: Users.admin.state });
 
 const getMentionText = (username: string, kind?: number): string => {
 	if (kind === 1) {
-		return `You mentioned @${username}, but they're not in this room.`;
+		return `You mentioned ${username}, but they're not in this room.`;
 	}
 	if (kind === 2) {
-		return `You mentioned @${username}, but they're not in this room. You can ask a room admin to add them.`;
+		return `You mentioned ${username}, but they're not in this room. You can ask a room admin to add them.`;
 	}
 	if (kind === 3) {
 		return `You mentioned ${username}, but they're not in this room. You let them know via DM.`;

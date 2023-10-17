@@ -107,7 +107,7 @@ callbacks.add(
 		const { value: useRealName } = (await Settings.findOneById('UI_Use_Real_Name')) || {};
 
 		const usernamesOrNames = mentionsUsersNotInChannel.map(
-			({ username, name }) => `*@${getUserDisplayName(name, username, Boolean(useRealName))}*`,
+			({ username, name }) => `*${getUserDisplayName(name, username, Boolean(useRealName))}*`,
 		);
 
 		const mentionsText = usernamesOrNames.join(', ');
