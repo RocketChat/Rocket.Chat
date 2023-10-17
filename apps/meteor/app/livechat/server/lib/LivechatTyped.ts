@@ -1239,6 +1239,96 @@ class LivechatClass {
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 		return user;
 	}
+
+	async returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: any = {}) {
+		Livechat.logger.debug({ msg: `Transfering room to ${departmentId ? 'department' : ''} queue`, room });
+		if (!room.open) {
+			throw new Meteor.Error('room-closed');
+		}
+
+		if (room.onHold) {
+			throw new Meteor.Error('error-room-onHold');
+		}
+
+		if (!room.servedBy) {
+			return false;
+		}
+
+		const user = await Users.findOneById(room.servedBy._id);
+		if (!user?._id) {
+			throw new Meteor.Error('error-invalid-user');
+		}
+
+		// find inquiry corresponding to room
+		const inquiry = await LivechatInquiry.findOne({ rid: room._id });
+		if (!inquiry) {
+			return false;
+		}
+
+		const transferredBy = normalizeTransferredByData(user, room);
+		Livechat.logger.debug(`Transfering room ${room._id} by user ${transferredBy._id}`);
+		const transferData = { roomId: room._id, scope: 'queue', departmentId, transferredBy, ...overrideTransferData };
+		try {
+			await this.saveTransferHistory(room, transferData);
+			await RoutingManager.unassignAgent(inquiry, departmentId);
+		} catch (e) {
+			this.logger.error(e);
+			throw new Meteor.Error('error-returning-inquiry');
+		}
+
+		callbacks.runAsync('livechat:afterReturnRoomAsInquiry', { room });
+
+		return true;
+	}
+
+	async saveTransferHistory(room: IOmnichannelRoom, transferData: TransferData) {
+		Livechat.logger.debug(`Saving transfer history for room ${room._id}`);
+		const { departmentId: previousDepartment } = room;
+		const { department: nextDepartment, transferredBy, transferredTo, scope, comment } = transferData;
+
+		check(
+			transferredBy,
+			Match.ObjectIncluding({
+				_id: String,
+				username: String,
+				name: Match.Maybe(String),
+				type: String,
+			}),
+		);
+
+		const { _id, username } = transferredBy;
+		const scopeData = scope || (nextDepartment ? 'department' : 'agent');
+		Livechat.logger.debug(`Storing new chat transfer of ${room._id} [Transfered by: ${_id} to ${scopeData}]`);
+
+		const transfer = {
+			transferData: {
+				transferredBy,
+				ts: new Date(),
+				scope: scopeData,
+				comment,
+				...(previousDepartment && { previousDepartment }),
+				...(nextDepartment && { nextDepartment }),
+				...(transferredTo && { transferredTo }),
+			},
+		};
+
+		const type = 'livechat_transfer_history';
+		const transferMessage = {
+			t: type,
+			rid: room._id,
+			ts: new Date(),
+			msg: '',
+			u: {
+				_id,
+				username,
+			},
+			groupable: false,
+		};
+
+		Object.assign(transferMessage, transfer);
+
+		await sendMessage(transferredBy, transferMessage, room);
+	}
 }
 
 export const Livechat = new LivechatClass();

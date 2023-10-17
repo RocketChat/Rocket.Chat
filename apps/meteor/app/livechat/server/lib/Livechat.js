@@ -23,12 +23,11 @@ import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import { Analytics } from './Analytics';
-import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
+import { parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('Livechat');
@@ -192,111 +191,6 @@ export const Livechat = {
 		}
 
 		return Message.saveSystemMessage('livechat_navigation_history', roomId, `${pageTitle} - ${pageUrl}`, user, extraData);
-	},
-
-	async saveTransferHistory(room, transferData) {
-		Livechat.logger.debug(`Saving transfer history for room ${room._id}`);
-		const { departmentId: previousDepartment } = room;
-		const { department: nextDepartment, transferredBy, transferredTo, scope, comment } = transferData;
-
-		check(
-			transferredBy,
-			Match.ObjectIncluding({
-				_id: String,
-				username: String,
-				name: Match.Maybe(String),
-				type: String,
-			}),
-		);
-
-		const { _id, username } = transferredBy;
-		const scopeData = scope || (nextDepartment ? 'department' : 'agent');
-		Livechat.logger.debug(`Storing new chat transfer of ${room._id} [Transfered by: ${_id} to ${scopeData}]`);
-
-		const transfer = {
-			transferData: {
-				transferredBy,
-				ts: new Date(),
-				scope: scopeData,
-				comment,
-				...(previousDepartment && { previousDepartment }),
-				...(nextDepartment && { nextDepartment }),
-				...(transferredTo && { transferredTo }),
-			},
-		};
-
-		const type = 'livechat_transfer_history';
-		const transferMessage = {
-			t: type,
-			rid: room._id,
-			ts: new Date(),
-			msg: '',
-			u: {
-				_id,
-				username,
-			},
-			groupable: false,
-		};
-
-		Object.assign(transferMessage, transfer);
-
-		await sendMessage(transferredBy, transferMessage, room);
-	},
-
-	async returnRoomAsInquiry(rid, departmentId, overrideTransferData = {}) {
-		Livechat.logger.debug(`Transfering room ${rid} to ${departmentId ? 'department' : ''} queue`);
-		const room = await LivechatRooms.findOneById(rid);
-		if (!room) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'livechat:returnRoomAsInquiry',
-			});
-		}
-
-		if (!room.open) {
-			throw new Meteor.Error('room-closed', 'Room closed', {
-				method: 'livechat:returnRoomAsInquiry',
-			});
-		}
-
-		if (room.onHold) {
-			throw new Meteor.Error('error-room-onHold', 'Room On Hold', {
-				method: 'livechat:returnRoomAsInquiry',
-			});
-		}
-
-		if (!room.servedBy) {
-			return false;
-		}
-
-		const user = await Users.findOneById(room.servedBy._id);
-		if (!user || !user._id) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'livechat:returnRoomAsInquiry',
-			});
-		}
-
-		// find inquiry corresponding to room
-		const inquiry = await LivechatInquiry.findOne({ rid });
-		if (!inquiry) {
-			return false;
-		}
-
-		const transferredBy = normalizeTransferredByData(user, room);
-		Livechat.logger.debug(`Transfering room ${room._id} by user ${transferredBy._id}`);
-		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy, ...overrideTransferData };
-		try {
-			await this.saveTransferHistory(room, transferData);
-			await RoutingManager.unassignAgent(inquiry, departmentId);
-		} catch (e) {
-			this.logger.error(e);
-			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', {
-				method: 'livechat:returnRoomAsInquiry',
-			});
-		}
-
-		callbacks.runAsync('livechat:afterReturnRoomAsInquiry', { room });
-
-		return true;
 	},
 
 	async getLivechatRoomGuestInfo(room) {
