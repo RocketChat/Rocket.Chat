@@ -67,7 +67,7 @@ API.v1.addRoute(
 				},
 			};
 
-			const result = await Livechat.sendMessage(sendMessage);
+			const result = await LivechatTyped.sendMessage(sendMessage);
 			if (result) {
 				const message = await Messages.findOneById(_id);
 				if (!message) {
@@ -272,10 +272,15 @@ API.v1.addRoute(
 				visitor = await LivechatVisitors.findOneEnabledById(visitorId);
 			}
 
+			const guest = visitor;
+			if (!guest) {
+				throw new Error('error-invalid-token');
+			}
+
 			const sentMessages = await Promise.all(
 				this.bodyParams.messages.map(async (message: { msg: string }): Promise<{ username: string; msg: string; ts: number }> => {
 					const sendMessage = {
-						guest: visitor,
+						guest,
 						message: {
 							_id: Random.id(),
 							rid,
@@ -288,8 +293,8 @@ API.v1.addRoute(
 							},
 						},
 					};
-					// @ts-expect-error -- Typings on sendMessage are wrong
-					const sentMessage = await Livechat.sendMessage(sendMessage);
+
+					const sentMessage = await LivechatTyped.sendMessage(sendMessage);
 					return {
 						username: sentMessage.u.username,
 						msg: sentMessage.msg,

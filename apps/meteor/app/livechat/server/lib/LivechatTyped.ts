@@ -15,6 +15,8 @@ import type {
 	ILivechatDepartment,
 	AtLeast,
 	TransferData,
+	MessageAttachment,
+	IMessageInbox,
 } from '@rocket.chat/core-typings';
 import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -88,6 +90,36 @@ type OfflineMessageData = {
 	department?: string;
 	host?: string;
 };
+
+export interface ILivechatMessage {
+	token: string;
+	_id: string;
+	rid: string;
+	msg: string;
+	file?: {
+		_id: string;
+		name?: string;
+		type?: string;
+		size?: number;
+		description?: string;
+		identify?: { size: { width: number; height: number } };
+		format?: string;
+	};
+	files?: {
+		_id: string;
+		name?: string;
+		type?: string;
+		size?: number;
+		description?: string;
+		identify?: { size: { width: number; height: number } };
+		format?: string;
+	}[];
+	attachments?: MessageAttachment[];
+	alias?: string;
+	groupable?: boolean;
+	blocks?: IMessage['blocks'];
+	email?: IMessageInbox['email'];
+}
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
 
@@ -1121,6 +1153,30 @@ class LivechatClass {
 
 		setImmediate(() => {
 			void callbacks.run('livechat.offlineMessage', data);
+		});
+	}
+
+	async sendMessage({
+		guest,
+		message,
+		roomInfo,
+		agent,
+	}: {
+		guest: ILivechatVisitor;
+		message: ILivechatMessage;
+		roomInfo: {
+			source?: IOmnichannelRoom['source'];
+			[key: string]: unknown;
+		};
+		agent?: SelectedAgent;
+	}) {
+		const { room, newRoom } = await this.getRoom(guest, message, roomInfo, agent);
+		if (guest.name) {
+			message.alias = guest.name;
+		}
+		return Object.assign(await sendMessage(guest, message, room), {
+			newRoom,
+			showConnecting: this.showConnecting(),
 		});
 	}
 }

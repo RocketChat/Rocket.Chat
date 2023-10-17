@@ -33,7 +33,6 @@ import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import { Analytics } from './Analytics';
 import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
-import { Livechat as LivechatTyped } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('Livechat');
@@ -42,17 +41,6 @@ export const Livechat = {
 	Analytics,
 
 	logger,
-
-	async sendMessage({ guest, message, roomInfo, agent }) {
-		const { room, newRoom } = await LivechatTyped.getRoom(guest, message, roomInfo, agent);
-		if (guest.name) {
-			message.alias = guest.name;
-		}
-		return Object.assign(await sendMessage(guest, message, room), {
-			newRoom,
-			showConnecting: this.showConnecting(),
-		});
-	},
 
 	async deleteMessage({ guest, message }) {
 		Livechat.logger.debug(`Attempting to delete a message by visitor ${guest._id}`);
