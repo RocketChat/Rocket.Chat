@@ -20,9 +20,11 @@ export const useAddMatrixUsers = () => {
 		try {
 			let matrixIdVerificationMap = new Map();
 			const matrixIds = users.filter((user) => user.startsWith('@'));
-			const matrixIdsVerificationResponse = await dispatchVerifyEndpoint({ matrixIds });
-			const { results: matrixIdsVerificationResults } = matrixIdsVerificationResponse;
-			matrixIdVerificationMap = new Map(Object.entries(matrixIdsVerificationResults));
+			if (matrixIds.length > 0) {
+				const matrixIdsVerificationResponse = await dispatchVerifyEndpoint({ matrixIds });
+				const { results: matrixIdsVerificationResults } = matrixIdsVerificationResponse;
+				matrixIdVerificationMap = new Map(Object.entries(matrixIdsVerificationResults));
+			}
 
 			setModal(
 				<AddMatrixUsersModal
