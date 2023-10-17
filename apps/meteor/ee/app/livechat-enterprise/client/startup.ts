@@ -13,9 +13,10 @@ const businessHours: Record<string, IBusinessHourBehavior> = {
 };
 
 Meteor.startup(() => {
-	settings.onload('Livechat_business_hour_type', async (_, value) => {
+	Tracker.autorun(async () => {
+		const bhType = settings.get<string>('Livechat_business_hour_type');
 		if (await hasLicense('livechat-enterprise')) {
-			businessHourManager.registerBusinessHourBehavior(businessHours[(value as string).toLowerCase()]);
+			businessHourManager.registerBusinessHourBehavior(businessHours[bhType.toLowerCase()]);
 		}
 	});
 });
