@@ -19,10 +19,8 @@ const EnabledAppsCount = ({
 }): ReactElement | null => {
 	const t = useTranslation();
 
-	const privateAppsCountText: string =
-		enabled === 1 ? t('Private_Apps_Count_Enabled', { count: enabled }) : t('Private_Apps_Count_Enabled_plural', { count: enabled });
-	const marketplaceAppsCountText: string =
-		enabled === 1 ? t('Apps_Count_Enabled', { count: enabled }) : t('Apps_Count_Enabled_plural', { count: enabled });
+	const privateAppsCountText: string = t('Private_Apps_Count_Enabled', { count: enabled });
+	const marketplaceAppsCountText: string = t('Apps_Count_Enabled', { count: enabled });
 
 	return (
 		<GenericResourceUsage

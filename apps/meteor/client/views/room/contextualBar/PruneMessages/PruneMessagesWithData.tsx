@@ -96,10 +96,7 @@ const PruneMessagesWithData = (): ReactElement => {
 					throw new Error(t('No_messages_found_to_prune'));
 				}
 
-				dispatchToastMessage({
-					type: 'success',
-					message: t(count === 1 ? '__count__message_pruned' : '__count__message_pruned_plural', { count }),
-				});
+				dispatchToastMessage({ type: 'success', message: t('__count__message_pruned', { count }) });
 				methods.reset();
 			} catch (error: unknown) {
 				dispatchToastMessage({ type: 'error', message: error });
