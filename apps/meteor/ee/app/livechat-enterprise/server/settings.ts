@@ -199,15 +199,15 @@ export const createSettings = async (): Promise<void> => {
 	});
 
 	await settingsRegistry.add('Livechat_allow_manual_on_hold_upon_agent_engagement_only', true, {
-        type: 'boolean',
-        group: 'Omnichannel',
-        section: 'Sessions',
-        enterprise: true,
-        invalidValue: false,
-        public: true,
-        modules: ['livechat-enterprise'],
-        enableQuery: { _id: 'Livechat_allow_manual_on_hold', value: true },
-    });
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		enterprise: true,
+		invalidValue: false,
+		public: true,
+		modules: ['livechat-enterprise'],
+		enableQuery: { _id: 'Livechat_allow_manual_on_hold', value: true },
+	});
 
 	await settingsRegistry.add('Livechat_auto_transfer_chat_timeout', 0, {
 		type: 'int',
