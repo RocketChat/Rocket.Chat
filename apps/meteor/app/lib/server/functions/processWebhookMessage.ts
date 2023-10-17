@@ -1,4 +1,4 @@
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, RequiredField } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
@@ -12,13 +12,13 @@ type Payload = {
 	channel?: string | string[];
 	roomId?: string | string[];
 	text?: IMessage['msg'];
-	msg?: IMessage['msg']; // overrided if text is present
+	msg?: IMessage['msg']; // overridden if text is present
 	username?: IMessage['alias'];
-	alias?: IMessage['alias']; // overrided if username is present
+	alias?: IMessage['alias']; // overridden if username is present
 	icon_emoji?: IMessage['emoji'];
-	emoji?: IMessage['emoji']; // overrided if icon_emoji is present
+	emoji?: IMessage['emoji']; // overridden if icon_emoji is present
 	icon_url?: IMessage['avatar'];
-	avatar?: IMessage['avatar']; // overrided if icon_url is present
+	avatar?: IMessage['avatar']; // overridden if icon_url is present
 	attachments?: IMessage['attachments'];
 	parseUrls?: boolean;
 	bot?: IMessage['bot'];
@@ -35,7 +35,7 @@ type DefaultValues = {
 
 export const processWebhookMessage = async function (
 	messageObj: Payload,
-	user: IUser & { username: Exclude<IUser['username'], undefined> },
+	user: IUser & { username: RequiredField<IUser, 'username'> },
 	defaultValues: DefaultValues = { channel: '', alias: '', avatar: '', emoji: '' },
 ) {
 	const sentData = [];
