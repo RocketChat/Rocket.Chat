@@ -36,8 +36,8 @@ const WorkspaceStatusPage = ({
 	const alertOplogForMultipleInstances = warningMultipleInstances && !statistics.oplogEnabled;
 
 	return (
-		<Page data-qa='workspace-status' bg='tint'>
-			<Page.Header title={t('Workspace_status')}>
+		<Page bg='tint'>
+			<Page.Header title={t('Workspace')}>
 				{canViewStatistics && (
 					<ButtonGroup>
 						<Button type='button' onClick={onClickDownloadInfo}>

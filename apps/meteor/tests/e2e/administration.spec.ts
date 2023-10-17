@@ -14,9 +14,9 @@ test.describe.parallel('administration', () => {
 		poAdmin = new Admin(page);
 	});
 
-	test.describe('Workspace status', () => {
+	test.describe('Workspace', () => {
 		test.beforeEach(async ({ page }) => {
-			await page.goto('/admin/workspace-status');
+			await page.goto('/admin/workspace');
 		});
 
 		test('expect download info as JSON', async ({ page }) => {

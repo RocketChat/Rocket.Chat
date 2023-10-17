@@ -8,8 +8,8 @@ export const {
 	subscribeToSidebarItems: subscribeToAdminSidebarItems,
 } = createSidebarItems([
 	{
-		href: '/admin/workspace-status',
-		i18nLabel: 'Workspace_status',
+		href: '/admin/workspace',
+		i18nLabel: 'Workspace',
 		icon: 'info-circled',
 		permissionGranted: (): boolean => hasPermission('view-statistics'),
 	},

@@ -42,7 +42,7 @@ const WorkspaceStatusRoute = (): ReactElement => {
 	if (isError || !statistics || !serverInfo) {
 		return (
 			<Page>
-				<Page.Header title={t('Workspace_status')}>
+				<Page.Header title={t('Workspace')}>
 					<ButtonGroup>
 						<Button icon='reload' primary type='button' onClick={handleClickRefreshButton}>
 							{t('Refresh')}
