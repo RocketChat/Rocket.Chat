@@ -746,7 +746,7 @@ const ChatPostMessageSchema = {
 		{
 			type: 'object',
 			properties: {
-				roomId: {
+				channel: {
 					oneOf: [
 						{ type: 'string' },
 						{
