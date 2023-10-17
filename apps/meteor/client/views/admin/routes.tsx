@@ -126,12 +126,12 @@ registerAdminRoute('/sounds/:context?/:id?', {
 /** @deprecated in favor of `/workspace` route, this is a fallback to work in Mobile app, should be removed in the next major  */
 registerAdminRoute('/info', {
 	name: 'info',
-	component: lazy(() => import('./workspaceStatus/WorkspaceStatusRoute')),
+	component: lazy(() => import('./workspace/WorkspaceRoute')),
 });
 
 registerAdminRoute('/workspace', {
 	name: 'workspace',
-	component: lazy(() => import('./workspaceStatus/WorkspaceStatusRoute')),
+	component: lazy(() => import('./workspace/WorkspaceRoute')),
 });
 
 registerAdminRoute('/import', {

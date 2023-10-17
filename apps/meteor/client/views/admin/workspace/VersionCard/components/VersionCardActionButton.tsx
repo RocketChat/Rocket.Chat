@@ -8,6 +8,7 @@ import RegisterWorkspaceModal from '../../../cloud/modals/RegisterWorkspaceModal
 
 type VersionCardActionButtonProps = {
 	actionButton: VersionActionButton;
+	refetch: () => void;
 };
 
 export type VersionActionButton = {
@@ -15,7 +16,7 @@ export type VersionActionButton = {
 	label: ReactElement;
 };
 
-const VersionCardActionButton = ({ actionButton }: VersionCardActionButtonProps): ReactElement => {
+const VersionCardActionButton = ({ actionButton, refetch }: VersionCardActionButtonProps): ReactElement => {
 	const router = useRouter();
 	const setModal = useSetModal();
 
@@ -45,10 +46,6 @@ const VersionCardActionButton = ({ actionButton }: VersionCardActionButtonProps)
 			{actionButton.label}
 		</Button>
 	);
-};
-
-const refetch = (): void => {
-	window.location.reload();
 };
 
 export default memo(VersionCardActionButton);

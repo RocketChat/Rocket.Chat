@@ -20,7 +20,7 @@ type WorkspaceStatusPageProps = {
 	onClickDownloadInfo: () => void;
 };
 
-const WorkspaceStatusPage = ({
+const WorkspacePage = ({
 	canViewStatistics,
 	serverInfo,
 	statistics,
@@ -99,4 +99,4 @@ const WorkspaceStatusPage = ({
 	);
 };
 
-export default memo(WorkspaceStatusPage);
+export default memo(WorkspacePage);

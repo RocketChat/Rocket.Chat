@@ -40,7 +40,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 	const formatDate = useFormatDate();
 
-	const { data: licenseData, isLoading } = useLicense();
+	const { data: licenseData, isLoading, refetch: refetchLicense } = useLicense();
 	const { data: regStatus } = useRegistrationStatus();
 
 	const [actionItems, setActionItems] = useState<VersionActionItem[]>([]);
@@ -201,7 +201,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 							<CardColSection>{actionItems && <VersionCardActionItemList actionItems={actionItems} />}</CardColSection>
 						</CardCol>
 					</CardBody>
-					<CardFooter>{actionButton && <VersionCardActionButton actionButton={actionButton} />}</CardFooter>
+					<CardFooter>{actionButton && <VersionCardActionButton actionButton={actionButton} refetch={refetchLicense} />}</CardFooter>
 				</>
 			) : (
 				<VersionCardSkeleton />

@@ -8,9 +8,9 @@ import PageSkeleton from '../../../components/PageSkeleton';
 import { useWorkspaceInfo } from '../../../hooks/useWorkspaceInfo';
 import { downloadJsonAs } from '../../../lib/download';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
-import WorkspaceStatusPage from './WorkspaceStatusPage';
+import WorkspacePage from './WorkspacePage';
 
-const WorkspaceStatusRoute = (): ReactElement => {
+const WorkspaceRoute = (): ReactElement => {
 	const t = useTranslation();
 	const canViewStatistics = usePermission('view-statistics');
 
@@ -57,7 +57,7 @@ const WorkspaceStatusRoute = (): ReactElement => {
 	}
 
 	return (
-		<WorkspaceStatusPage
+		<WorkspacePage
 			canViewStatistics={canViewStatistics}
 			serverInfo={serverInfo}
 			statistics={statistics}
@@ -68,4 +68,4 @@ const WorkspaceStatusRoute = (): ReactElement => {
 	);
 };
 
-export default memo(WorkspaceStatusRoute);
+export default memo(WorkspaceRoute);
