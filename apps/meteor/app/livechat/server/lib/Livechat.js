@@ -12,7 +12,6 @@ import {
 	LivechatDepartment as LivechatDepartmentRaw,
 	Rooms,
 	Users,
-	ReadReceipts,
 } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -25,7 +24,6 @@ import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { FileUpload } from '../../../file-upload/server';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import * as Mailer from '../../../mailer/server/api';
@@ -469,18 +467,6 @@ export const Livechat = {
 		return removeUserFromRolesAsync(user._id, ['livechat-manager']);
 	},
 
-	async removeGuest(_id) {
-		const guest = await LivechatVisitors.findOneEnabledById(_id, { projection: { _id: 1, token: 1 } });
-		if (!guest) {
-			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', {
-				method: 'livechat:removeGuest',
-			});
-		}
-
-		await this.cleanGuestHistory(guest);
-		return LivechatVisitors.disableById(_id);
-	},
-
 	async setUserStatusLivechat(userId, status) {
 		const user = await Users.setLivechatStatus(userId, status);
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
@@ -491,31 +477,6 @@ export const Livechat = {
 		const user = await Users.setLivechatStatusIf(userId, status, condition, fields);
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 		return user;
-	},
-
-	async cleanGuestHistory(guest) {
-		const { token } = guest;
-
-		// This shouldn't be possible, but just in case
-		if (!token) {
-			throw new Error('error-invalid-guest');
-		}
-
-		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
-		const cursor = LivechatRooms.findByVisitorToken(token, extraQuery);
-		for await (const room of cursor) {
-			await Promise.all([
-				FileUpload.removeFilesByRoomId(room._id),
-				Messages.removeByRoomId(room._id),
-				ReadReceipts.removeByRoomId(room._id),
-			]);
-		}
-
-		await Promise.all([
-			Subscriptions.removeByVisitorToken(token),
-			LivechatRooms.removeByVisitorToken(token),
-			LivechatInquiry.removeByVisitorToken(token),
-		]);
 	},
 
 	async saveDepartmentAgents(_id, departmentAgents) {

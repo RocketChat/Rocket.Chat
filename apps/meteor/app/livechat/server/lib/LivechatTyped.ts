@@ -43,6 +43,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { FileUpload } from '../../../file-upload/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import * as Mailer from '../../../mailer/server/api';
@@ -1178,6 +1179,40 @@ class LivechatClass {
 			newRoom,
 			showConnecting: this.showConnecting(),
 		});
+	}
+
+	async removeGuest(_id: string) {
+		const guest = await LivechatVisitors.findOneEnabledById(_id, { projection: { _id: 1, token: 1 } });
+		if (!guest) {
+			throw new Error('error-invalid-guest');
+		}
+
+		await this.cleanGuestHistory(guest);
+		return LivechatVisitors.disableById(_id);
+	}
+
+	async cleanGuestHistory(guest: ILivechatVisitor) {
+		const { token } = guest;
+
+		// This shouldn't be possible, but just in case
+		if (!token) {
+			throw new Error('error-invalid-guest');
+		}
+
+		const cursor = LivechatRooms.findByVisitorToken(token);
+		for await (const room of cursor) {
+			await Promise.all([
+				FileUpload.removeFilesByRoomId(room._id),
+				Messages.removeByRoomId(room._id),
+				ReadReceipts.removeByRoomId(room._id),
+			]);
+		}
+
+		await Promise.all([
+			Subscriptions.removeByVisitorToken(token),
+			LivechatRooms.removeByVisitorToken(token),
+			LivechatInquiry.removeByVisitorToken(token),
+		]);
 	}
 }
 
