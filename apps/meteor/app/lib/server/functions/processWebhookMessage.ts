@@ -1,4 +1,4 @@
-import type { IMessage, IUser, RequiredField } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, RequiredField, MessageAttachment } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
@@ -122,7 +122,7 @@ export const processWebhookMessage = async function (
 
 		if (Array.isArray(message.attachments)) {
 			for (let i = 0; i < message.attachments.length; i++) {
-				const attachment = message.attachments[i] as Exclude<IMessage['attachments'], undefined>[number] & { msg?: string };
+				const attachment = message.attachments[i] as MessageAttachment & { msg?: string };
 				if (attachment.msg) {
 					attachment.text = trim(attachment.msg);
 					delete attachment.msg;
