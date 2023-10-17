@@ -1,7 +1,8 @@
 import i18next from 'i18next';
 
 import { Livechat } from '../api';
-import { store } from '../store';
+import type { StoreState } from '../store';
+import { initialState, store } from '../store';
 import CustomFields from './customFields';
 import { loadConfig, updateBusinessUnit } from './main';
 import { parentCall } from './parentCall';
@@ -9,23 +10,29 @@ import { createToken } from './random';
 import { loadMessages } from './room';
 import Triggers from './triggers';
 
-const createOrUpdateGuest = async (guest) => {
+const createOrUpdateGuest = async (guest: StoreState['guest']) => {
+	if (!guest) {
+		return;
+	}
 	const { token } = guest;
 	token && (await store.setState({ token }));
 	const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...guest } });
 	store.setState({ user });
 };
 
-const updateIframeGuestData = (data) => {
+const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
 	const {
 		iframe,
 		iframe: { guest },
-		user: _id,
+		user,
 		token,
 	} = store.state;
-	store.setState({ iframe: { ...iframe, guest: { ...guest, ...data } } });
 
-	if (!_id) {
+	const iframeGuest = { ...guest, ...data } as StoreState['guest'];
+
+	store.setState({ iframe: { ...iframe, guest: iframeGuest } });
+
+	if (!user) {
 		return;
 	}
 
@@ -33,8 +40,18 @@ const updateIframeGuestData = (data) => {
 	createOrUpdateGuest(guestData);
 };
 
+export type Api = typeof api;
+
+export type ApiMethods = keyof Api;
+
+export type ApiArgs<Method> = Method extends ApiMethods ? Parameters<Api[Method]>[0] : never;
+
+export type ApiMethodsAndArgs = {
+	[Method in ApiMethods]: ApiArgs<Method>;
+};
+
 const api = {
-	pageVisited(info) {
+	pageVisited({ info }: { info: { change: string; title: string; location: { href: string } } }) {
 		if (info.change === 'url') {
 			Triggers.processRequest(info);
 		}
@@ -51,11 +68,11 @@ const api = {
 		Livechat.sendVisitorNavigation({ token, rid, pageInfo: { change, title, location: { href } } });
 	},
 
-	setCustomField(key, value, overwrite = true) {
+	setCustomField({ key, value, overwrite = true }: { key: string; value?: string; overwrite: boolean }) {
 		CustomFields.setCustomField(key, value, overwrite);
 	},
 
-	setTheme({ color, fontColor, iconColor, title, offlineTitle } = {}) {
+	setTheme({ theme: { color, fontColor, iconColor, title, offlineTitle } }: { theme: StoreState['iframe']['theme'] }) {
 		const {
 			iframe,
 			iframe: { theme },
@@ -75,7 +92,7 @@ const api = {
 		});
 	},
 
-	async setDepartment(value) {
+	async setDepartment({ value }: { value: string }) {
 		const {
 			user,
 			config: { departments = [] },
@@ -89,7 +106,7 @@ const api = {
 		updateIframeGuestData({ department });
 
 		if (defaultAgent && defaultAgent.department !== department) {
-			store.setState({ defaultAgent: null });
+			store.setState({ defaultAgent: undefined });
 		}
 
 		if (department !== existingDepartment) {
@@ -98,8 +115,8 @@ const api = {
 		}
 	},
 
-	async setBusinessUnit(newBusinessUnit) {
-		if (!newBusinessUnit || !newBusinessUnit.trim().length) {
+	async setBusinessUnit({ newBusinessUnit }: { newBusinessUnit: string }) {
+		if (!newBusinessUnit?.trim().length) {
 			throw new Error('Error! Invalid business ids');
 		}
 
@@ -117,7 +134,12 @@ const api = {
 		updateIframeGuestData({ department: '' });
 	},
 
-	setAgent({ _id, username, ...props } = {}) {
+	async clearWidgetData() {
+		const { minimized, visible, undocked, expanded, businessUnit, ...initial } = initialState();
+		await store.setState(initial);
+	},
+
+	setAgent({ agent: { _id, username, ...props } }: { agent: StoreState['defaultAgent'] }) {
 		if (!_id || !username) {
 			return console.warn('The fields _id and username are mandatory.');
 		}
@@ -132,11 +154,11 @@ const api = {
 		});
 	},
 
-	setExpanded(expanded) {
+	setExpanded({ expanded }: { expanded: StoreState['expanded'] }) {
 		store.setState({ expanded });
 	},
 
-	async setGuestToken(token) {
+	async setGuestToken({ token }: { token: StoreState['token'] }) {
 		const {
 			token: localToken,
 			iframe,
@@ -149,15 +171,15 @@ const api = {
 		await loadConfig();
 	},
 
-	setGuestName(name) {
+	setGuestName({ name }: { name: string }) {
 		updateIframeGuestData({ name });
 	},
 
-	setGuestEmail(email) {
+	setGuestEmail({ email }: { email: string }) {
 		updateIframeGuestData({ email });
 	},
 
-	registerGuest(data = {}) {
+	registerGuest({ data }: { data: StoreState['guest'] }) {
 		if (typeof data !== 'object') {
 			return;
 		}
@@ -167,13 +189,13 @@ const api = {
 		}
 
 		if (data.department) {
-			api.setDepartment(data.department);
+			api.setDepartment({ value: data.department });
 		}
 
 		createOrUpdateGuest(data);
 	},
 
-	async setLanguage(language) {
+	async setLanguage({ language }: { language: StoreState['iframe']['language'] }) {
 		const { iframe } = store.state;
 		await store.setState({ iframe: { ...iframe, language } });
 		i18next.changeLanguage(language);
@@ -200,32 +222,45 @@ const api = {
 		store.setState({ minimized: false });
 		parentCall('openWidget');
 	},
-	setParentUrl(parentUrl) {
+
+	setParentUrl({ parentUrl }: { parentUrl: StoreState['parentUrl'] }) {
 		store.setState({ parentUrl });
 	},
 };
 
-const onNewMessage = (event) => {
+function hasCorrectParams<T extends ApiMethods>(fn: T, args: ApiArgs<T>): boolean {
+	
+
+function onNewMessage<T extends ApiMethods>(event: MessageEvent<{ src?: string; fn: T; args: ApiArgs<T> }>) {
 	if (event.source === event.target) {
 		return;
 	}
 
-	if (typeof event.data === 'object' && event.data.src !== undefined && event.data.src === 'rocketchat') {
-		if (api[event.data.fn] !== undefined && typeof api[event.data.fn] === 'function') {
-			const args = [].concat(event.data.args || []);
-			api[event.data.fn].apply(null, args);
-		}
+	if (!event.data || typeof event.data !== 'object') {
+		return;
 	}
-};
+
+	if (!event.data.src || event.data.src !== 'rocketchat') {
+		return;
+	}
+
+	const { fn } = event.data;
+
+	const { args } = event.data;
+
+	// TODO: Refactor widget.js to ts and change their calls to use objects instead of ordered arguments
+	api[fn](args);
+}
 
 class Hooks {
+	private _started: boolean;
+
 	constructor() {
-		if (!Hooks.instance) {
-			this._started = false;
-			Hooks.instance = this;
+		if (instance) {
+			throw new Error('Hooks already has an instance.');
 		}
 
-		return Hooks.instance;
+		this._started = false;
 	}
 
 	init() {

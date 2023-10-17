@@ -1,9 +1,11 @@
 import mitt from 'mitt';
 
+import type { ApiArgs, ApiMethods } from './lib/hooks';
+
 const log =
 	process.env.NODE_ENV === 'development'
-		? (...args) => window.console.log('%cwidget%c', 'color: red', 'color: initial', ...args)
-		: () => {};
+		? (...args: any) => window.console.log('%cwidget%c', 'color: red', 'color: initial', ...args)
+		: () => undefined;
 
 const WIDGET_OPEN_WIDTH = 365;
 const WIDGET_OPEN_HEIGHT = 525;
@@ -12,16 +14,16 @@ const WIDGET_MINIMIZED_HEIGHT = 54;
 const WIDGET_MARGIN = 16;
 
 window.RocketChat = window.RocketChat || { _: [] };
-const config = {};
-let widget;
-let iframe;
-let hookQueue = [];
+const config: { url?: string } = {};
+let widget: HTMLDivElement | null;
+let iframe: HTMLIFrameElement | null;
+let hookQueue: [[ApiMethods, ApiArgs<ApiMethods>]?] = [];
 let ready = false;
 let smallScreen = false;
-let scrollPosition;
-let widget_height;
+let scrollPosition: number;
+let widgetHeight: number;
 
-export const validCallbacks = [
+export const VALIDCALLBACKS = [
 	'chat-maximized',
 	'chat-minimized',
 	'chat-started',
@@ -38,15 +40,15 @@ export const validCallbacks = [
 
 const callbacks = mitt();
 
-function registerCallback(eventName, fn) {
-	if (validCallbacks.indexOf(eventName) === -1) {
+function registerCallback(eventName: string, fn: () => unknown) {
+	if (VALIDCALLBACKS.indexOf(eventName) === -1) {
 		return false;
 	}
 
 	return callbacks.on(eventName, fn);
 }
 
-function emitCallback(eventName, data) {
+function emitCallback(eventName: string, data?: unknown) {
 	if (typeof data !== 'undefined') {
 		callbacks.emit(eventName, data);
 	} else {
@@ -55,19 +57,26 @@ function emitCallback(eventName, data) {
 }
 
 // hooks
-function callHook(action, params) {
+function callHook<T extends ApiMethods>(action: T, params?: ApiArgs<T>) {
 	if (!ready) {
 		return hookQueue.push([action, params]);
+	}
+	if (!iframe?.contentWindow) {
+		throw new Error('Widget is not initialized');
 	}
 	const data = {
 		src: 'rocketchat',
 		fn: action,
 		args: params,
 	};
-	iframe.contentWindow.postMessage(data, '*');
+	iframe.contentWindow?.postMessage(data, '*');
 }
 
-const updateWidgetStyle = (isOpened) => {
+const updateWidgetStyle = (isOpened: boolean) => {
+	if (!iframe || !widget) {
+		throw new Error('Widget is not initialized');
+	}
+
 	const isFullscreen = smallScreen && widget.dataset.state !== 'triggered';
 
 	if (smallScreen && isOpened) {
@@ -91,7 +100,7 @@ const updateWidgetStyle = (isOpened) => {
 		 * for widget.style.width
 		 */
 
-		widget.style.height = isFullscreen ? '100%' : `${WIDGET_MARGIN + widget_height + WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT}px`;
+		widget.style.height = isFullscreen ? '100%' : `${WIDGET_MARGIN + widgetHeight + WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT}px`;
 		widget.style.width = isFullscreen ? '100%' : `${WIDGET_MARGIN + WIDGET_OPEN_WIDTH + WIDGET_MARGIN}px`;
 	} else {
 		widget.style.left = 'auto';
@@ -100,7 +109,7 @@ const updateWidgetStyle = (isOpened) => {
 	}
 };
 
-const createWidget = (url) => {
+const createWidget = (url: string) => {
 	widget = document.createElement('div');
 	widget.className = 'rocketchat-widget';
 	widget.style.position = 'fixed';
@@ -119,7 +128,6 @@ const createWidget = (url) => {
 
 	iframe = document.createElement('iframe');
 	iframe.id = 'rocketchat-iframe';
-	iframe.allowTransparency = 'true';
 	iframe.src = url;
 	iframe.style.width = '100%';
 	iframe.style.height = '100%';
@@ -130,15 +138,15 @@ const createWidget = (url) => {
 	widget.appendChild(container);
 	document.body.appendChild(widget);
 
-	const handleMediaQueryTest = ({ matches }) => {
+	const handleMediaQueryTest = ({ matches }: { matches: boolean }) => {
 		if (!widget) {
 			return;
 		}
 
 		smallScreen = matches;
 		updateWidgetStyle(widget.dataset.state === 'opened');
-		callHook('setExpanded', smallScreen);
-		callHook('setParentUrl', window.location.href);
+		callHook('setExpanded', { expanded: smallScreen });
+		callHook('setParentUrl', { parentUrl: window.location.href });
 	};
 
 	const mediaQueryList = window.matchMedia('screen and (max-device-width: 480px)');
@@ -147,24 +155,35 @@ const createWidget = (url) => {
 };
 
 const openWidget = () => {
+	if (!iframe || !widget) {
+		throw new Error('Widget is not initialized');
+	}
+
 	if (widget.dataset.state === 'opened') {
 		return;
 	}
 
-	widget_height = WIDGET_OPEN_HEIGHT;
+	widgetHeight = WIDGET_OPEN_HEIGHT;
 	widget.dataset.state = 'opened';
 	updateWidgetStyle(true);
 	iframe.focus();
 	emitCallback('chat-maximized');
 };
 
-const resizeWidget = (height) => {
-	widget_height = height;
+const resizeWidget = (height: number) => {
+	if (!widget) {
+		throw new Error('Widget is not initialized');
+	}
+	widgetHeight = height;
 	widget.dataset.state = 'triggered';
 	updateWidgetStyle(true);
 };
 
 function closeWidget() {
+	if (!iframe || !widget) {
+		throw new Error('Widget is not initialized');
+	}
+
 	if (widget.dataset.state === 'closed') {
 		return;
 	}
@@ -174,7 +193,23 @@ function closeWidget() {
 	emitCallback('chat-minimized');
 }
 
-const api = {
+type ApiTypes = {
+	popup: Window | null;
+	ready: () => void;
+	minimizeWindow: () => void;
+	restoreWindow: () => void;
+	openPopout: () => void;
+	openWidget: () => void;
+	resizeWidget: (height: number) => void;
+	removeWidget: () => void;
+	callback: (eventName: string, data?: unknown) => void;
+	showWidget: () => void;
+	hideWidget: () => void;
+	resetDocumentStyle: () => void;
+	setFullScreenDocumentMobile: () => void;
+};
+
+const api: ApiTypes = {
 	popup: null,
 
 	ready() {
@@ -201,24 +236,27 @@ const api = {
 
 	openPopout() {
 		closeWidget();
+		if (!config.url) {
+			throw new Error('Config.url is not set!');
+		}
 		api.popup = window.open(
 			`${config.url}${config.url.lastIndexOf('?') > -1 ? '&' : '?'}mode=popout`,
 			'livechat-popout',
-			`width=${WIDGET_OPEN_WIDTH}, height=${widget_height}, toolbars=no`,
+			`width=${WIDGET_OPEN_WIDTH}, height=${widgetHeight}, toolbars=no`,
 		);
-		api.popup.focus();
+		api.popup?.focus();
 	},
 
 	openWidget() {
 		openWidget();
 	},
 
-	resizeWidget(height) {
+	resizeWidget(height: number) {
 		resizeWidget(height);
 	},
 
 	removeWidget() {
-		document.body.removeChild(widget);
+		document.body.removeChild(widget as Node);
 	},
 
 	callback(eventName, data) {
@@ -226,11 +264,17 @@ const api = {
 	},
 
 	showWidget() {
+		if (!iframe) {
+			throw new Error('Widget is not initialized');
+		}
 		iframe.style.display = 'initial';
 		emitCallback('show-widget');
 	},
 
 	hideWidget() {
+		if (!iframe) {
+			throw new Error('Widget is not initialized');
+		}
 		iframe.style.display = 'none';
 		emitCallback('hide-widget');
 	},
@@ -244,63 +288,65 @@ const api = {
 	},
 };
 
-function pageVisited(change) {
+function pageVisited(change: string) {
 	callHook('pageVisited', {
-		change,
-		location: JSON.parse(JSON.stringify(document.location)),
-		title: document.title,
+		info: {
+			change,
+			location: JSON.parse(JSON.stringify(document.location)),
+			title: document.title,
+		},
 	});
 }
 
-function setCustomField(key, value, overwrite) {
+function setCustomField(key: string, value: string, overwrite: boolean) {
 	if (typeof overwrite === 'undefined') {
 		overwrite = true;
 	}
-	callHook('setCustomField', [key, value, overwrite]);
+	callHook('setCustomField', { key, value, overwrite });
 }
 
-function setTheme(theme) {
-	callHook('setTheme', theme);
+function setTheme(theme: ApiArgs<'setTheme'>['theme']) {
+	callHook('setTheme', { theme });
 }
 
-function setDepartment(department) {
-	callHook('setDepartment', department);
+function setDepartment(department: ApiArgs<'setDepartment'>['value']) {
+	callHook('setDepartment', { value: department });
 }
 
-function setBusinessUnit(businessUnit) {
-	callHook('setBusinessUnit', businessUnit);
+function setBusinessUnit(businessUnit: ApiArgs<'setBusinessUnit'>['newBusinessUnit']) {
+	callHook('setBusinessUnit', { newBusinessUnit: businessUnit });
 }
 
 function clearBusinessUnit() {
 	callHook('clearBusinessUnit');
 }
 
-function setGuestToken(token) {
-	callHook('setGuestToken', token);
+function setGuestToken(token: ApiArgs<'setGuestToken'>['token']) {
+	callHook('setGuestToken', { token });
 }
 
-function setGuestName(name) {
-	callHook('setGuestName', name);
+function setGuestName(name: ApiArgs<'setGuestName'>['name']) {
+	callHook('setGuestName', { name });
 }
 
-function setGuestEmail(email) {
-	callHook('setGuestEmail', email);
+function setGuestEmail(email: ApiArgs<'setGuestEmail'>['email']) {
+	callHook('setGuestEmail', { email });
 }
 
-function registerGuest(guest) {
-	callHook('registerGuest', guest);
+function registerGuest(guest: ApiArgs<'registerGuest'>['data']) {
+	callHook('registerGuest', { data: guest });
 }
 
 function clearDepartment() {
 	callHook('clearDepartment');
 }
 
-function setAgent(agent) {
-	callHook('setAgent', agent);
+function setAgent(agent: ApiArgs<'setAgent'>['agent']) {
+	callHook('setAgent', { agent });
 }
 
-function setLanguage(language) {
-	callHook('setLanguage', language);
+function setLanguage(language: ApiArgs<'setLanguage'>['language']) {
+	callHook('setLanguage', { language });
 }
 
 function showWidget() {
@@ -319,19 +365,42 @@ function minimizeWidget() {
 	callHook('minimizeWidget');
 }
 
-function setParentUrl(url) {
-	callHook('setParentUrl', url);
+function setParentUrl(url?: ApiArgs<'setParentUrl'>['parentUrl']) {
+	callHook('setParentUrl', { parentUrl: url });
 }
 
-function initialize(params) {
+function isDefined<T>(val: T | undefined | null): val is T {
+	return val !== undefined && val !== null;
+}
+
+function initialize(params: {
+	customField?: ApiArgs<'setCustomField'>;
+	setCustomFields?: ApiArgs<'setCustomField'>[];
+	theme?: ApiArgs<'setTheme'>['theme'];
+	department?: ApiArgs<'setDepartment'>['value'];
+	businessUnit?: ApiArgs<'setBusinessUnit'>['newBusinessUnit'];
+	guestToken?: ApiArgs<'setGuestToken'>['token'];
+	guestName?: ApiArgs<'setGuestName'>['name'];
+	guestEmail?: ApiArgs<'setGuestEmail'>['email'];
+	registerGuest?: ApiArgs<'registerGuest'>['data'];
+	language?: ApiArgs<'setLanguage'>['language'];
+	agent?: ApiArgs<'setAgent'>['agent'];
+	parentUrl?: ApiArgs<'setParentUrl'>['parentUrl'];
+}) {
 	for (const method in params) {
 		if (!params.hasOwnProperty(method)) {
 			continue;
 		}
 
+		const param = params[method as keyof typeof params];
+
+		if (!isDefined(param)) {
+			continue;
+		}
+
 		switch (method) {
 			case 'customField':
-				const { key, value, overwrite } = params[method];
+				const { key, value, overwrite } = param;
 				setCustomField(key, value, overwrite);
 				continue;
 			case 'setCustomFields':
@@ -339,41 +408,41 @@ function initialize(params) {
 					console.log('Error: Invalid parameters. Value must be an array of objects');
 					continue;
 				}
-				params[method].forEach((data) => {
-					const { key, value, overwrite } = data;
+				param.forEach((data: ApiArgs<'setCustomField'>) => {
+					const { key, value = '', overwrite } = data;
 					setCustomField(key, value, overwrite);
 				});
 				continue;
 			case 'theme':
-				setTheme(params[method]);
+				setTheme(param);
 				continue;
 			case 'department':
-				setDepartment(params[method]);
+				setDepartment(param);
 				continue;
 			case 'businessUnit': {
-				setBusinessUnit(params[method]);
+				setBusinessUnit(param);
 				continue;
 			}
 			case 'guestToken':
-				setGuestToken(params[method]);
+				setGuestToken(param);
 				continue;
 			case 'guestName':
-				setGuestName(params[method]);
+				setGuestName(param);
 				continue;
 			case 'guestEmail':
-				setGuestEmail(params[method]);
+				setGuestEmail(param);
 				continue;
 			case 'registerGuest':
-				registerGuest(params[method]);
+				registerGuest(param);
 				continue;
 			case 'language':
-				setLanguage(params[method]);
+				setLanguage(param);
 				continue;
 			case 'agent':
-				setAgent(params[method]);
+				setAgent(param);
 				continue;
 			case 'parentUrl':
-				setParentUrl(params[method]);
+				setParentUrl(param);
 				continue;
 			default:
 				continue;
@@ -381,25 +450,44 @@ function initialize(params) {
 	}
 }
 
-const currentPage = {
+const currentPage: { href: string | null; title: string | null } = {
 	href: null,
 	title: null,
 };
 
+function onNewMessage<T extends ApiMethods>(msg: MessageEvent<{ src?: string; fn: T; args: ApiArgs<T> }>) {
+	if (msg.source === msg.target) {
+		return;
+	}
+
+	if (!msg.data || typeof msg.data !== 'object') {
+		return;
+	}
+
+	if (!msg.data.src || msg.data.src !== 'rocketchat') {
+		return;
+	}
+
+	const { fn } = msg.data;
+
+	const { args } = msg.data;
+
+	// TODO: Refactor widget.js to ts and change their calls to use objects instead of ordered arguments
+	log(`api.${msg.data.fn}`, ...args);
+	api[fn](args);
+}
+
+// (msg) => {
+// 	if (typeof msg.data === 'object' && msg.data.src !== undefined && msg.data.src === 'rocketchat') {
+// 		if (api[msg.data.fn] !== undefined && typeof api[msg.data.fn] === 'function') {
+// 			const args = [].concat(msg.data.args || []);
+// 			log(`api.${msg.data.fn}`, ...args);
+// 			api[msg.data.fn].apply(null, args);
+// 		}
+// 	}
+
 const attachMessageListener = () => {
-	window.addEventListener(
-		'message',
-		(msg) => {
-			if (typeof msg.data === 'object' && msg.data.src !== undefined && msg.data.src === 'rocketchat') {
-				if (api[msg.data.fn] !== undefined && typeof api[msg.data.fn] === 'function') {
-					const args = [].concat(msg.data.args || []);
-					log(`api.${msg.data.fn}`, ...args);
-					api[msg.data.fn].apply(null, args);
-				}
-			}
-		},
-		false,
-	);
+	window.addEventListener('message', onNewMessage, false);
 };
 
 const trackNavigation = () => {
@@ -416,7 +504,7 @@ const trackNavigation = () => {
 	}, 800);
 };
 
-const init = (url) => {
+const init = (url: string) => {
 	const trimmedUrl = url.trim();
 	if (!trimmedUrl) {
 		return;
@@ -440,7 +528,7 @@ if (typeof window.RocketChat.url !== 'undefined') {
 
 const queue = window.RocketChat._;
 
-window.RocketChat._.push = function (c) {
+window.RocketChat._.push = function (c: () => void) {
 	c.call(window.RocketChat.livechat);
 };
 window.RocketChat = window.RocketChat._.push;
@@ -469,45 +557,45 @@ window.RocketChat.livechat = {
 	setParentUrl,
 
 	// callbacks
-	onChatMaximized(fn) {
+	onChatMaximized(fn: () => unknown) {
 		registerCallback('chat-maximized', fn);
 	},
-	onChatMinimized(fn) {
+	onChatMinimized(fn: () => unknown) {
 		registerCallback('chat-minimized', fn);
 	},
-	onChatStarted(fn) {
+	onChatStarted(fn: () => unknown) {
 		registerCallback('chat-started', fn);
 	},
-	onChatEnded(fn) {
+	onChatEnded(fn: () => unknown) {
 		registerCallback('chat-ended', fn);
 	},
-	onPrechatFormSubmit(fn) {
+	onPrechatFormSubmit(fn: () => unknown) {
 		registerCallback('pre-chat-form-submit', fn);
 	},
-	onOfflineFormSubmit(fn) {
+	onOfflineFormSubmit(fn: () => unknown) {
 		registerCallback('offline-form-submit', fn);
 	},
-	onWidgetShown(fn) {
+	onWidgetShown(fn: () => unknown) {
 		registerCallback('show-widget', fn);
 	},
-	onWidgetHidden(fn) {
+	onWidgetHidden(fn: () => unknown) {
 		registerCallback('hide-widget', fn);
 	},
-	onAssignAgent(fn) {
+	onAssignAgent(fn: () => unknown) {
 		registerCallback('assign-agent', fn);
 	},
-	onAgentStatusChange(fn) {
+	onAgentStatusChange(fn: () => unknown) {
 		registerCallback('agent-status-change', fn);
 	},
-	onQueuePositionChange(fn) {
+	onQueuePositionChange(fn: () => unknown) {
 		registerCallback('queue-position-change', fn);
 	},
-	onServiceOffline(fn) {
+	onServiceOffline(fn: () => unknown) {
 		registerCallback('no-agent-online', fn);
 	},
 };
 
 // proccess queue
-queue.forEach((c) => {
+queue.forEach((c: () => void) => {
 	c.call(window.RocketChat.livechat);
 });

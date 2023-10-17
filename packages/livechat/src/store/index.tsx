@@ -1,13 +1,15 @@
+import type { ILivechatVisitor, ILivechatVisitorDTO } from '@rocket.chat/core-typings';
 import type { ComponentChildren } from 'preact';
 import { Component, createContext } from 'preact';
 
 import type { CustomField } from '../components/Form/CustomFields';
+import type { Agent } from '../definitions/agents';
 import type { Department } from '../definitions/departments';
 import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
 import Store from './Store';
 
-type StoreState = {
+export type StoreState = {
 	token: string;
 	typing: string[];
 	config: {
@@ -32,16 +34,19 @@ type StoreState = {
 		enabled?: boolean;
 	};
 	messages: any[];
-	user: any;
+	user?: ILivechatVisitor;
+	guest?: ILivechatVisitorDTO;
 	sound: {
 		src?: string;
 		play?: boolean;
 		enabled: boolean;
 	};
 	iframe: {
-		guest: any;
-		theme: any;
-		visible: boolean;
+		guest?: ILivechatVisitorDTO;
+		theme?: any;
+		visible?: boolean;
+		department?: string;
+		language?: string;
 	};
 	gdpr: {
 		accepted: boolean;
@@ -66,6 +71,8 @@ type StoreState = {
 	lastReadMessageId?: any;
 	triggerAgent?: any;
 	queueInfo?: any;
+	defaultAgent?: Agent;
+	parentUrl?: string;
 };
 
 export const initialState = (): StoreState => ({
@@ -80,14 +87,14 @@ export const initialState = (): StoreState => ({
 		resources: {},
 	},
 	messages: [],
-	user: null,
+	user: undefined,
 	sound: {
 		src: '',
 		enabled: true,
 		play: false,
 	},
 	iframe: {
-		guest: {},
+		guest: undefined,
 		theme: {},
 		visible: true,
 	},

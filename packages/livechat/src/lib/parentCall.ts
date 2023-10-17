@@ -1,4 +1,4 @@
-import { validCallbacks } from '../widget';
+import { VALIDCALLBACKS } from '../widget';
 
 export const parentCall = (method: string, args: any = []) => {
 	const data = {
@@ -12,4 +12,4 @@ export const parentCall = (method: string, args: any = []) => {
 };
 
 export const runCallbackEventEmitter = (callbackName: string, data: unknown) =>
-	validCallbacks.includes(callbackName) && parentCall('callback', [callbackName, data]);
+	VALIDCALLBACKS.includes(callbackName) && parentCall('callback', [callbackName, data]);
