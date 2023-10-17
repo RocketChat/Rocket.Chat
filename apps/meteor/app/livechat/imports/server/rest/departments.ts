@@ -17,6 +17,7 @@ import {
 } from '../../../server/api/lib/departments';
 import { DepartmentHelper } from '../../../server/lib/Departments';
 import { Livechat } from '../../../server/lib/Livechat';
+import { Livechat as LivechatTs } from '../../../server/lib/LivechatTyped';
 
 API.v1.addRoute(
 	'livechat/department',
@@ -192,7 +193,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			await Livechat.archiveDepartment(this.urlParams._id);
+			await LivechatTs.archiveDepartment(this.urlParams._id);
 
 			return API.v1.success();
 		},
@@ -207,11 +208,8 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (await Livechat.unarchiveDepartment(this.urlParams._id)) {
-				return API.v1.success();
-			}
-
-			return API.v1.failure();
+			await LivechatTs.unarchiveDepartment(this.urlParams._id);
+			return API.v1.success();
 		},
 	},
 );
