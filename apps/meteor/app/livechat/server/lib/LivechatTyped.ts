@@ -1241,7 +1241,7 @@ class LivechatClass {
 	}
 
 	async returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: any = {}) {
-		Livechat.logger.debug({ msg: `Transfering room to ${departmentId ? 'department' : ''} queue`, room });
+		this.logger.debug({ msg: `Transfering room to ${departmentId ? 'department' : ''} queue`, room });
 		if (!room.open) {
 			throw new Meteor.Error('room-closed');
 		}
@@ -1266,7 +1266,7 @@ class LivechatClass {
 		}
 
 		const transferredBy = normalizeTransferredByData(user, room);
-		Livechat.logger.debug(`Transfering room ${room._id} by user ${transferredBy._id}`);
+		this.logger.debug(`Transfering room ${room._id} by user ${transferredBy._id}`);
 		const transferData = { roomId: room._id, scope: 'queue', departmentId, transferredBy, ...overrideTransferData };
 		try {
 			await this.saveTransferHistory(room, transferData);
@@ -1282,7 +1282,6 @@ class LivechatClass {
 	}
 
 	async saveTransferHistory(room: IOmnichannelRoom, transferData: TransferData) {
-		Livechat.logger.debug(`Saving transfer history for room ${room._id}`);
 		const { departmentId: previousDepartment } = room;
 		const { department: nextDepartment, transferredBy, transferredTo, scope, comment } = transferData;
 
@@ -1298,7 +1297,7 @@ class LivechatClass {
 
 		const { _id, username } = transferredBy;
 		const scopeData = scope || (nextDepartment ? 'department' : 'agent');
-		Livechat.logger.debug(`Storing new chat transfer of ${room._id} [Transfered by: ${_id} to ${scopeData}]`);
+		this.logger.info(`Storing new chat transfer of ${room._id} [Transfered by: ${_id} to ${scopeData}]`);
 
 		const transfer = {
 			transferData: {
