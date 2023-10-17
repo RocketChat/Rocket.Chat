@@ -33,7 +33,7 @@ callbacks.add(
 callbacks.add(
 	'beforeUserImport',
 	async ({ userCount }) => {
-		if (await License.shouldPreventAction('activeUsers', {}, userCount)) {
+		if (await License.shouldPreventAction('activeUsers', userCount)) {
 			throw new Meteor.Error('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 		}
 	},

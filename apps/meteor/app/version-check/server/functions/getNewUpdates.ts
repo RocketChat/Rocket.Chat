@@ -50,18 +50,16 @@ export const getNewUpdates = async () => {
 						infoUrl: String,
 					}),
 				],
-				alerts: [
-					Match.Optional([
-						Match.ObjectIncluding({
-							id: String,
-							title: String,
-							text: String,
-							textArguments: [Match.Any],
-							modifiers: [String] as [StringConstructor],
-							infoUrl: String,
-						}),
-					]),
-				],
+				alerts: Match.Optional([
+					Match.ObjectIncluding({
+						id: String,
+						title: String,
+						text: String,
+						textArguments: [Match.Any],
+						modifiers: [String] as [StringConstructor],
+						infoUrl: String,
+					}),
+				]),
 			}),
 		);
 
