@@ -8,7 +8,6 @@ import {
 	LivechatRooms,
 	LivechatInquiry,
 	Subscriptions,
-	Messages,
 	LivechatDepartment as LivechatDepartmentRaw,
 	Rooms,
 	Users,
@@ -24,7 +23,6 @@ import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
@@ -39,30 +37,6 @@ export const Livechat = {
 	Analytics,
 
 	logger,
-
-	async deleteMessage({ guest, message }) {
-		Livechat.logger.debug(`Attempting to delete a message by visitor ${guest._id}`);
-		check(message, Match.ObjectIncluding({ _id: String }));
-
-		const msg = await Messages.findOneById(message._id);
-		if (!msg || !msg._id) {
-			return;
-		}
-
-		const deleteAllowed = settings.get('Message_AllowDeleting');
-		const editOwn = msg.u && msg.u._id === guest._id;
-
-		if (!deleteAllowed || !editOwn) {
-			Livechat.logger.debug('Cannot delete message: not allowed');
-			throw new Meteor.Error('error-action-not-allowed', 'Message deleting not allowed', {
-				method: 'livechatDeleteMessage',
-			});
-		}
-
-		await deleteMessage(message, guest);
-
-		return true;
-	},
 
 	async saveGuest(guestData, userId) {
 		const { _id, name, email, phone, livechatData = {} } = guestData;

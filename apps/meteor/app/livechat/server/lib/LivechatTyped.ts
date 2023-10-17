@@ -44,6 +44,7 @@ import { i18n } from '../../../../server/lib/i18n';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { FileUpload } from '../../../file-upload/server';
+import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import * as Mailer from '../../../mailer/server/api';
@@ -1213,6 +1214,19 @@ class LivechatClass {
 			LivechatRooms.removeByVisitorToken(token),
 			LivechatInquiry.removeByVisitorToken(token),
 		]);
+	}
+
+	async deleteMessage({ guest, message }: { guest: ILivechatVisitor; message: IMessage }) {
+		const deleteAllowed = settings.get<boolean>('Message_AllowDeleting');
+		const editOwn = message.u && message.u._id === guest._id;
+
+		if (!deleteAllowed || !editOwn) {
+			throw new Error('error-action-not-allowed');
+		}
+
+		await deleteMessage(message, guest as unknown as IUser);
+
+		return true;
 	}
 }
 
