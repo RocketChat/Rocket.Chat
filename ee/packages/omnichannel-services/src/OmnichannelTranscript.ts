@@ -70,6 +70,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		this.log = new loggerClass('OmnichannelTranscript');
 
 		this.onEvent('license.module', ({ module, valid }) => {
+			console.log('OmnichannelTranscript', module, valid);
 			if (module === 'scalability') {
 				this.shouldWork = valid;
 			}
@@ -79,6 +80,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	async started(): Promise<void> {
 		try {
 			this.shouldWork = await licenseService.hasModule('scalability');
+			console.log('OmnichannelTranscript.enabled', this.shouldWork);
 		} catch (e: unknown) {
 			// ignore
 		}
@@ -109,6 +111,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	async requestTranscript({ details }: { details: WorkDetails }): Promise<void> {
+		console.log('OmnichannelTranscript.requestTranscript', details, this.shouldWork);
 		if (!this.shouldWork) {
 			this.log.info(`Not requesting transcript for room ${details.rid} because scalability module is not enabled`);
 			return;
