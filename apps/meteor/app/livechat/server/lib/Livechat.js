@@ -447,12 +447,6 @@ export const Livechat = {
 		return user;
 	},
 
-	async setUserStatusLivechatIf(userId, status, condition, fields) {
-		const user = await Users.setLivechatStatusIf(userId, status, condition, fields);
-		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
-		return user;
-	},
-
 	async saveDepartmentAgents(_id, departmentAgents) {
 		check(_id, String);
 		check(departmentAgents, {

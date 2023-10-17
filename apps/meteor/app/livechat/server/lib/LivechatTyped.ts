@@ -17,6 +17,7 @@ import type {
 	TransferData,
 	MessageAttachment,
 	IMessageInbox,
+	ILivechatAgentStatus,
 } from '@rocket.chat/core-typings';
 import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -36,7 +37,7 @@ import {
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import moment from 'moment-timezone';
-import type { FindCursor, UpdateFilter } from 'mongodb';
+import type { Filter, FindCursor, UpdateFilter } from 'mongodb';
 
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
@@ -122,6 +123,10 @@ export interface ILivechatMessage {
 	blocks?: IMessage['blocks'];
 	email?: IMessageInbox['email'];
 }
+
+type AKeyOf<T> = {
+	[K in keyof T]?: T[K];
+};
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
 
@@ -1227,6 +1232,12 @@ class LivechatClass {
 		await deleteMessage(message, guest as unknown as IUser);
 
 		return true;
+	}
+
+	async setUserStatusLivechatIf(userId: string, status: ILivechatAgentStatus, condition?: Filter<IUser>, fields?: AKeyOf<ILivechatAgent>) {
+		const user = await Users.setLivechatStatusIf(userId, status, condition, fields);
+		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
+		return user;
 	}
 }
 
