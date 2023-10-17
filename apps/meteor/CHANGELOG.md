@@ -1,5 +1,34 @@
 # @rocket.chat/meteor
 
+## 6.4.2
+
+### Patch Changes
+
+- eceeaf3b5d: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 8e155d4212: fixed threads breaking when sending messages too fast
+- 3f7ce23a90: fix: mobile ringing notification missing call id
+- 36bcec8e40: Forward headers when using proxy for file uploads
+- d20033723c: Handle the username update in the background
+  - @rocket.chat/core-typings@6.4.2
+  - @rocket.chat/rest-typings@6.4.2
+  - @rocket.chat/api-client@0.1.11
+  - @rocket.chat/omnichannel-services@0.0.17
+  - @rocket.chat/pdf-worker@0.0.17
+  - @rocket.chat/presence@0.0.17
+  - @rocket.chat/core-services@0.2.2
+  - @rocket.chat/cron@0.0.13
+  - @rocket.chat/gazzodown@2.0.2
+  - @rocket.chat/model-typings@0.1.2
+  - @rocket.chat/ui-contexts@2.0.2
+  - @rocket.chat/fuselage-ui-kit@2.0.2
+  - @rocket.chat/models@0.0.17
+  - @rocket.chat/ui-theming@0.1.0
+  - @rocket.chat/ui-client@2.0.2
+  - @rocket.chat/ui-video-conf@2.0.2
+  - @rocket.chat/web-ui-registration@2.0.2
+  - @rocket.chat/instance-status@0.0.17
+
 ## 6.4.1
 
 ### Patch Changes

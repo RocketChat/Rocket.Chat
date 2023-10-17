@@ -1,5 +1,15 @@
 # rocketchat-services
 
+## 1.1.11
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.2
+- @rocket.chat/rest-typings@6.4.2
+- @rocket.chat/core-services@0.2.2
+- @rocket.chat/model-typings@0.1.2
+- @rocket.chat/models@0.0.17
+
 ## 1.1.10
 
 ### Patch Changes
