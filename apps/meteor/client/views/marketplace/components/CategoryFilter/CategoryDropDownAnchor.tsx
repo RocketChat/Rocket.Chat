@@ -1,4 +1,5 @@
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
+import colorTokens from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEventHandler } from 'react';
 import React, { forwardRef } from 'react';
@@ -15,33 +16,38 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 
 	return (
 		<Box
-			is={Button}
+			is='button'
 			ref={ref}
 			onClick={onClick}
+			bg={selectedCategoriesCount ? colorTokens.b500 : 'light'}
+			borderColor={selectedCategoriesCount ? 'none' : 'light'}
+			borderRadius='x4'
+			borderWidth={selectedCategoriesCount ? 'none' : 'x1'}
 			display='flex'
-			alignItems='center'
-			justifyContent='space-between'
-			minWidth='x144'
 			flexGrow={1}
 			flexShrink={1}
-			borderColor={selectedCategoriesCount ? 'none' : 'light'}
-			borderWidth={selectedCategoriesCount ? 'none' : 'x1'}
-			{...(selectedCategoriesCount ? { primary: true } : { bg: 'surface-light' })}
+			justifyContent='space-between'
+			minWidth='x144'
+			pb={9}
+			pie={7}
+			pis={14}
 			{...props}
 		>
 			{selectedCategoriesCount > 0 && (
 				<Box
-					mie={6}
-					borderRadius='x32'
-					bg='light'
-					fontWeight={700}
-					fontSize='micro'
-					color='info'
-					pi={6}
-					h='x40'
-					display='flex'
+					is={Button}
 					alignItems='center'
+					bg='light'
+					borderRadius='x32'
+					color='info'
+					display='flex'
+					fontSize='micro'
+					fontWeight={700}
+					h='fit-content'
 					justifyContent='center'
+					mie={6}
+					minWidth={25}
+					p={0}
 				>
 					{selectedCategoriesCount}
 				</Box>
