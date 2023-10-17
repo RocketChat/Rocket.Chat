@@ -1,6 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useStream, useRouter } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType, ReactElement } from 'react';
 import React, { useMemo, memo, useEffect, useCallback } from 'react';
 
@@ -28,22 +27,6 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useRoomRolesManagement(rid);
 
 	const { data: room, isSuccess } = useRoomQuery(rid);
-
-	const subscribeToRoom = useStream('room-data');
-
-	const queryClient = useQueryClient();
-	const { t: roomType } = room ?? {};
-
-	// TODO: move this to omnichannel context only
-	useEffect(() => {
-		if (roomType !== 'l') {
-			return;
-		}
-
-		return subscribeToRoom(rid, (room) => {
-			queryClient.setQueryData(['rooms', rid], room);
-		});
-	}, [subscribeToRoom, rid, queryClient, roomType]);
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const router = useRouter();
