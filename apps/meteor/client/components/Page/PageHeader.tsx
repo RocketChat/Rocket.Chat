@@ -1,5 +1,4 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { HeaderToolbox } from '@rocket.chat/ui-client';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, ComponentProps, ReactNode } from 'react';
@@ -18,12 +17,9 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 	const t = useTranslation();
 	const [border] = useContext(PageContext);
 	const { isMobile } = useLayout();
-	const headerAutoFocus = useAutoFocus();
 
 	return (
 		<Box
-			tabIndex={-1}
-			ref={headerAutoFocus}
 			is='header'
 			borderBlockEndWidth='default'
 			minHeight='x64'
