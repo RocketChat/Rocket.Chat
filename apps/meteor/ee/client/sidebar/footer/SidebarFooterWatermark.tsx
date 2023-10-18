@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -8,10 +8,10 @@ import { useLicense } from '../../../../client/hooks/useLicense';
 export const SidebarFooterWatermark = (): ReactElement | null => {
 	const t = useTranslation();
 
-	const { data: { license, activeModules = [] } = {} } = useLicense();
-	const [planTag] = license?.information?.tags ?? [];
+	const { data: { license, activeModules = [], trial: isTrial = false } = {}, isLoading, isError } = useLicense();
+	const [{ name: planName }] = license?.information?.tags ?? [{ name: 'Community' }];
 
-	const isWatermarkHidden = activeModules.includes('hide-watermark');
+	const isWatermarkHidden = !isTrial && activeModules.includes('hide-watermark');
 
 	if (isWatermarkHidden) {
 		return null;
@@ -23,9 +23,13 @@ export const SidebarFooterWatermark = (): ReactElement | null => {
 				<Box fontScale='micro' color='hint' pbe={4}>
 					{t('Powered_by_RocketChat')}
 				</Box>
-				<Box fontScale='micro' color='pure-white' pbe={4}>
-					{planTag?.name}
-				</Box>
+				{isLoading || isError ? (
+					<Skeleton width='5rem' height='1rem' />
+				) : (
+					<Box fontScale='micro' color='pure-white' pbe={4}>
+						{planName} {isTrial ? 'trial' : ''}
+					</Box>
+				)}
 			</Box>
 		</Box>
 	);
