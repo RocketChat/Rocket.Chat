@@ -29,7 +29,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			flexShrink={1}
 			justifyContent='space-between'
 			minWidth='x144'
-			pb={9}
+			height='x40'
 			pie={7}
 			pis={14}
 			{...props}
