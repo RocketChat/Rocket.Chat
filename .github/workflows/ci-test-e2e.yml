@@ -267,6 +267,7 @@ jobs:
         with:
           directory: /tmp/coverage
           flags: e2e-api
+          root_dir: ./apps/meteor/
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
