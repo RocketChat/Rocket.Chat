@@ -1,21 +1,15 @@
 // Note: Please don't add any new methods to this file, since its still in js and we are migrating to ts
 // Please add new methods to LivechatTyped.ts
-
-import dns from 'dns';
-import util from 'util';
-
 import { Message } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatVisitors,
 	LivechatCustomField,
-	Settings,
 	LivechatRooms,
 	LivechatInquiry,
 	Subscriptions,
 	Messages,
 	LivechatDepartment as LivechatDepartmentRaw,
-	LivechatDepartmentAgents,
 	Rooms,
 	Users,
 	ReadReceipts,
@@ -34,7 +28,6 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { FileUpload } from '../../../file-upload/server';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
@@ -44,8 +37,6 @@ import { Livechat as LivechatTyped } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('Livechat');
-
-const dnsResolveMx = util.promisify(dns.resolveMx);
 
 export const Livechat = {
 	Analytics,
@@ -61,28 +52,6 @@ export const Livechat = {
 			newRoom,
 			showConnecting: this.showConnecting(),
 		});
-	},
-
-	async updateMessage({ guest, message }) {
-		check(message, Match.ObjectIncluding({ _id: String }));
-
-		const originalMessage = await Messages.findOneById(message._id);
-		if (!originalMessage || !originalMessage._id) {
-			return;
-		}
-
-		const editAllowed = settings.get('Message_AllowEditing');
-		const editOwn = originalMessage.u && originalMessage.u._id === guest._id;
-
-		if (!editAllowed || !editOwn) {
-			throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', {
-				method: 'livechatUpdateMessage',
-			});
-		}
-
-		await updateMessage(message, guest);
-
-		return true;
 	},
 
 	async deleteMessage({ guest, message }) {
@@ -188,50 +157,6 @@ export const Livechat = {
 		return 0;
 	},
 
-	async getInitSettings() {
-		const rcSettings = {};
-
-		await Settings.findNotHiddenPublic([
-			'Livechat_title',
-			'Livechat_title_color',
-			'Livechat_enable_message_character_limit',
-			'Livechat_message_character_limit',
-			'Message_MaxAllowedSize',
-			'Livechat_enabled',
-			'Livechat_registration_form',
-			'Livechat_allow_switching_departments',
-			'Livechat_offline_title',
-			'Livechat_offline_title_color',
-			'Livechat_offline_message',
-			'Livechat_offline_success_message',
-			'Livechat_offline_form_unavailable',
-			'Livechat_display_offline_form',
-			'Omnichannel_call_provider',
-			'Language',
-			'Livechat_enable_transcript',
-			'Livechat_transcript_message',
-			'Livechat_fileupload_enabled',
-			'FileUpload_Enabled',
-			'Livechat_conversation_finished_message',
-			'Livechat_conversation_finished_text',
-			'Livechat_name_field_registration_form',
-			'Livechat_email_field_registration_form',
-			'Livechat_registration_form_message',
-			'Livechat_force_accept_data_processing_consent',
-			'Livechat_data_processing_consent_text',
-			'Livechat_show_agent_info',
-			'Livechat_clear_local_storage_when_chat_ended',
-		]).forEach((setting) => {
-			rcSettings[setting._id] = setting.value;
-		});
-
-		rcSettings.Livechat_history_monitor_type = settings.get('Livechat_history_monitor_type');
-
-		rcSettings.Livechat_Show_Connecting = this.showConnecting();
-
-		return rcSettings;
-	},
-
 	async saveRoomInfo(roomData, guestData, userId) {
 		Livechat.logger.debug(`Saving room information on room ${roomData._id}`);
 		const { livechatData = {} } = roomData;
@@ -277,35 +202,6 @@ export const Livechat = {
 				// when the conversation is in the queue, then the result will be 0(zero)
 				Subscriptions.updateDisplayNameByRoomId(rid, name)
 			);
-		}
-	},
-
-	async closeOpenChats(userId, comment) {
-		Livechat.logger.debug(`Closing open chats for user ${userId}`);
-		const user = await Users.findOneById(userId);
-
-		const extraQuery = await callbacks.run('livechat.applyDepartmentRestrictions', {}, { userId });
-		const openChats = LivechatRooms.findOpenByAgent(userId, extraQuery);
-		const promises = [];
-		await openChats.forEach((room) => {
-			promises.push(LivechatTyped.closeRoom({ user, room, comment }));
-		});
-
-		await Promise.all(promises);
-	},
-
-	async forwardOpenChats(userId) {
-		Livechat.logger.debug(`Transferring open chats for user ${userId}`);
-		for await (const room of LivechatRooms.findOpenByAgent(userId)) {
-			const guest = await LivechatVisitors.findOneEnabledById(room.v._id);
-			const user = await Users.findOneById(userId);
-			const { _id, username, name } = user;
-			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
-			await this.transfer(room, guest, {
-				roomId: room._id,
-				transferredBy,
-				departmentId: guest.department,
-			});
 		}
 	},
 
@@ -385,23 +281,6 @@ export const Livechat = {
 		Object.assign(transferMessage, transfer);
 
 		await sendMessage(transferredBy, transferMessage, room);
-	},
-
-	async transfer(room, guest, transferData) {
-		Livechat.logger.debug(`Transfering room ${room._id} [Transfered by: ${transferData?.transferredBy?._id}]`);
-		if (room.onHold) {
-			Livechat.logger.debug('Cannot transfer. Room is on hold');
-			throw new Error('error-room-onHold');
-		}
-
-		if (transferData.departmentId) {
-			transferData.department = await LivechatDepartmentRaw.findOneById(transferData.departmentId, {
-				projection: { name: 1 },
-			});
-			Livechat.logger.debug(`Transfering room ${room._id} to department ${transferData.department?._id}`);
-		}
-
-		return RoutingManager.transferRoom(room, guest, transferData);
 	},
 
 	async returnRoomAsInquiry(rid, departmentId, overrideTransferData = {}) {
@@ -682,41 +561,6 @@ export const Livechat = {
 		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
 	},
 
-	/*
-	 * @deprecated - Use the equivalent from DepartmentHelpers class
-	 */
-	async removeDepartment(_id) {
-		check(_id, String);
-
-		const departmentRemovalEnabled = settings.get('Omnichannel_enable_department_removal');
-
-		if (!departmentRemovalEnabled) {
-			throw new Meteor.Error('department-removal-disabled', 'Department removal is disabled', {
-				method: 'livechat:removeDepartment',
-			});
-		}
-
-		const department = await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
-
-		if (!department) {
-			throw new Meteor.Error('department-not-found', 'Department not found', {
-				method: 'livechat:removeDepartment',
-			});
-		}
-		const ret = (await LivechatDepartmentRaw.removeById(_id)).deletedCount;
-		const agentsIds = (await LivechatDepartmentAgents.findByDepartmentId(_id, { projection: { agentId: 1 } }).toArray()).map(
-			(agent) => agent.agentId,
-		);
-		await LivechatDepartmentAgents.removeByDepartmentId(_id);
-		await LivechatDepartmentRaw.unsetFallbackDepartmentByDepartmentId(_id);
-		if (ret) {
-			setImmediate(() => {
-				callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
-			});
-		}
-		return ret;
-	},
-
 	showConnecting() {
 		const { showConnecting } = RoutingManager.getConfig();
 		return showConnecting;
@@ -776,63 +620,6 @@ export const Livechat = {
 	async notifyGuestStatusChanged(token, status) {
 		await LivechatInquiry.updateVisitorStatus(token, status);
 		await LivechatRooms.updateVisitorStatus(token, status);
-	},
-
-	async sendOfflineMessage(data = {}) {
-		if (!settings.get('Livechat_display_offline_form')) {
-			throw new Error('error-offline-form-disabled');
-		}
-
-		const { message, name, email, department, host } = data;
-		const emailMessage = `${message}`.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
-
-		let html = '<h1>New livechat message</h1>';
-		if (host && host !== '') {
-			html = html.concat(`<p><strong>Sent from:</strong><a href='${host}'> ${host}</a></p>`);
-		}
-		html = html.concat(`
-			<p><strong>Visitor name:</strong> ${name}</p>
-			<p><strong>Visitor email:</strong> ${email}</p>
-			<p><strong>Message:</strong><br>${emailMessage}</p>`);
-
-		let fromEmail = settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
-
-		if (fromEmail) {
-			fromEmail = fromEmail[0];
-		} else {
-			fromEmail = settings.get('From_Email');
-		}
-
-		if (settings.get('Livechat_validate_offline_email')) {
-			const emailDomain = email.substr(email.lastIndexOf('@') + 1);
-
-			try {
-				await dnsResolveMx(emailDomain);
-			} catch (e) {
-				throw new Meteor.Error('error-invalid-email-address', 'Invalid email address', {
-					method: 'livechat:sendOfflineMessage',
-				});
-			}
-		}
-
-		// TODO Block offline form if Livechat_offline_email is undefined
-		// (it does not make sense to have an offline form that does nothing)
-		// `this.sendEmail` will throw an error if the email is invalid
-		// thus this breaks livechat, since the "to" email is invalid, and that returns an [invalid email] error to the livechat client
-		let emailTo = settings.get('Livechat_offline_email');
-		if (department && department !== '') {
-			const dep = await LivechatDepartmentRaw.findOneByIdOrName(department);
-			emailTo = dep.email || emailTo;
-		}
-
-		const from = `${name} - ${email} <${fromEmail}>`;
-		const replyTo = `${name} <${email}>`;
-		const subject = `Livechat offline message from ${name}: ${`${emailMessage}`.substring(0, 20)}`;
-		await this.sendEmail(from, emailTo, replyTo, subject, html);
-
-		setImmediate(() => {
-			callbacks.run('livechat.offlineMessage', data);
-		});
 	},
 
 	async allowAgentChangeServiceStatus(statusLivechat, agentId) {
