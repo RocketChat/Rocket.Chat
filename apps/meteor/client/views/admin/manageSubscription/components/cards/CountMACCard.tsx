@@ -17,11 +17,11 @@ const CountMACCard = (): ReactElement => {
 		infoText: t('CountMAC_InfoText'),
 	};
 
-	const MACCount = omnichannelContactsBySource?.contactsCount;
+	const MACCount = omnichannelContactsBySource?.contactsCount || 0;
 
 	return (
 		<FeatureUsageCard card={card}>
-			{!isLoading && MACCount ? (
+			{!isLoading && data ? (
 				<Box fontScale='h1'>
 					<Icon color='font-annotation' name='headset' size={40} mie={4} />
 					{MACCount}
