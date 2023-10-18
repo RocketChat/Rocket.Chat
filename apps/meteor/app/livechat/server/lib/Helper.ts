@@ -402,6 +402,9 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 	logger.debug(`Forwarding room ${room._id} to agent ${transferData.userId}`);
 
 	const { userId: agentId, clientAction } = transferData;
+	if (!agentId) {
+		throw new Error('error-invalid-agent');
+	}
 	const user = await Users.findOneOnlineAgentById(agentId);
 	if (!user) {
 		logger.debug(`Agent ${agentId} is offline. Cannot forward`);

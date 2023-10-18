@@ -23,8 +23,8 @@ export function getMaxActiveUsers(this: LicenseManager) {
 
 export function getAppsConfig(this: LicenseManager) {
 	return {
-		maxPrivateApps: getLicenseLimit(this.getLicense(), 'privateApps') ?? -1,
-		maxMarketplaceApps: getLicenseLimit(this.getLicense(), 'marketplaceApps') ?? -1,
+		maxPrivateApps: getLicenseLimit(this.getLicense(), 'privateApps') ?? 3,
+		maxMarketplaceApps: getLicenseLimit(this.getLicense(), 'marketplaceApps') ?? 5,
 	};
 }
 
