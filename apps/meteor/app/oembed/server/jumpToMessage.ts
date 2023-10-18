@@ -1,8 +1,9 @@
 import QueryString from 'querystring';
 import URL from 'url';
+import _ from 'underscore';
 
-import type { MessageAttachment, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { isQuoteAttachment } from '@rocket.chat/core-typings';
+import type { MessageAttachment, IMessage, IOmnichannelRoom, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import { isFileAttachment, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../lib/callbacks';
@@ -11,25 +12,26 @@ import { canAccessRoomAsync } from '../../authorization/server/functions/canAcce
 import { settings } from '../../settings/server';
 import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
-const recursiveRemoveAttachments = (attachments: MessageAttachment, deep = 1, quoteChainLimit: number): MessageAttachment => {
-	if (attachments && isQuoteAttachment(attachments)) {
+const recursiveRemoveAttachments = (attachment: MessageAttachment, deep = 1, quoteChainLimit: number): MessageAttachment => {
+	if (attachment && isQuoteAttachment(attachment)) {
 		if (deep < quoteChainLimit - 1) {
-			attachments.attachments?.map((msg) => recursiveRemoveAttachments(msg, deep + 1, quoteChainLimit));
+			attachment.attachments?.map((msg) => recursiveRemoveAttachments(msg, deep + 1, quoteChainLimit));
+		} else if (attachment.attachments?.some(isFileAttachment)) {
+			attachment.attachments = attachment.attachments?.filter(isFileAttachment) || [];
 		} else {
-			delete attachments.attachments;
+			delete attachment.attachments;
 		}
 	}
 
-	return attachments;
+	return attachment;
 };
 
 const validateAttachmentDeepness = (message: IMessage): IMessage => {
 	if (!message?.attachments) {
 		return message;
 	}
-
 	const quoteChainLimit = settings.get<number>('Message_QuoteChainLimit');
-	if ((message.attachments && quoteChainLimit < 2) || isNaN(quoteChainLimit)) {
+	if ((message.attachments && quoteChainLimit < 2 && !message.attachments?.some(isFileAttachment)) || isNaN(quoteChainLimit)) {
 		delete message.attachments;
 	}
 
@@ -69,7 +71,24 @@ callbacks.add(
 
 			const message = await Messages.findOneById(msgId);
 
-			const jumpToMessage = message && validateAttachmentDeepness(message);
+			let shouldCreateQuote = true;
+			let jumpToMessage: false | IMessage | null | undefined;
+			if (message) {
+				if (msg.forward) {
+					console.log('** This forward');
+					if (message.attachments?.[0] && isQuoteAttachment(message.attachments[0])) {
+						if (message.attachments[0].attachments?.some(isFileAttachment) && _.isEmpty(message.msg.split('\n')[1])) {
+							shouldCreateQuote = false;
+						} else {
+							shouldCreateQuote = true;
+							message.attachments = []; // We need to empty it only if we dont have fileattachemnts
+						}
+					}
+					jumpToMessage = message;
+				} else {
+					jumpToMessage = validateAttachmentDeepness(message);
+				}
+			}
 			if (!jumpToMessage) {
 				continue;
 			}
@@ -94,10 +113,19 @@ callbacks.add(
 			}
 
 			const useRealName = Boolean(settings.get('UI_Use_Real_Name'));
+			console.log('😎 Should create quote', shouldCreateQuote);
+			console.log('😎 Origin message to forward', jumpToMessage);
+			console.log('😎 New message before sending', msg);
+			if (shouldCreateQuote) {
+				msg.attachments?.push(
+					createQuoteAttachment(jumpToMessage, item.url, useRealName, getUserAvatarURL(jumpToMessage.u.username || '') as string),
+				);
+			} else if (msg.forward) {
+				msg.attachments = jumpToMessage.attachments;
+			}
 
-			msg.attachments.push(
-				createQuoteAttachment(jumpToMessage, item.url, useRealName, getUserAvatarURL(jumpToMessage.u.username || '') as string),
-			);
+			console.log('😎 Final new message', msg);
+
 			item.ignoreParse = true;
 		}
 

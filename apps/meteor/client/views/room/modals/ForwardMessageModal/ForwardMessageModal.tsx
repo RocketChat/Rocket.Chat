@@ -43,6 +43,7 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 					const sendPayload = {
 						roomId,
 						text: curMsg,
+						forward: true
 					};
 
 					await sendMessage(sendPayload);
