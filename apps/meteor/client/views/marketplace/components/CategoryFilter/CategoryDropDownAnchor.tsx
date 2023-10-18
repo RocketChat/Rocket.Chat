@@ -32,6 +32,8 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			height='x40'
 			pie={7}
 			pis={14}
+			lineHeight='unset'
+			rcx-input-box
 			{...props}
 		>
 			{selectedCategoriesCount > 0 && (
