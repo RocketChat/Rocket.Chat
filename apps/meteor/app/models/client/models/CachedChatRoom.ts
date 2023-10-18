@@ -27,6 +27,8 @@ class CachedChatRoom extends CachedCollection<IRoom> {
 			return room;
 		}
 
+		const lastRoomUpdate = room?.lm || sub.ts || room?.ts;
+
 		CachedChatSubscription.collection.update(
 			{
 				rid: room._id,
@@ -69,6 +71,7 @@ class CachedChatRoom extends CachedCollection<IRoom> {
 					ts: room.ts,
 					source: (room as IOmnichannelRoom | undefined)?.source,
 					queuedAt: (room as IOmnichannelRoom | undefined)?.queuedAt,
+					lm: sub.lr ? new Date(Math.max(sub.lr.getTime(), lastRoomUpdate?.getTime() || 0)) : lastRoomUpdate,
 					federated: room.federated,
 					...(() => {
 						const name = room.name || sub.name;
