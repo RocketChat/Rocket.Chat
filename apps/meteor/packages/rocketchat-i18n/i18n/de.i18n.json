@@ -5,7 +5,7 @@
   "__count__message_pruned": "{{counter}} Nachricht gelöscht",
   "__count__message_pruned_plural": "{{counter}} Nachrichten gelöscht",
   "__usersCount__member_joined": "+ {{counter}} Mitglied(er) beigetreten",
-  "__usersCount__member_joined": "+ {{counter}} Mitglieder beigetreten",
+  "__usersCount__member_joined_plural": "+ {{counter}} Mitglieder beigetreten",
   "__usersCount__people_will_be_invited": "{{usersCount}} Mitglieder werden eingeladen",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} ist nicht länger {{role}}, geändert durch {{user_by}}",
   "__username__was_set__role__by__user_by_": "{{username}} ist jetzt {{role}}, geändert durch {{user_by}}",

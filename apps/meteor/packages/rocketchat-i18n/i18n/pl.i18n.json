@@ -5,7 +5,7 @@
   "__count__message_pruned": "{{counter}} wiadomość(i) usuniętych",
   "__count__message_pruned_plural": "{{counter}} wiadomość(i) usuniętych",
   "__usersCount__member_joined": "+ {{counter}} członek dołączył",
-  "__usersCount__member_joined": "+ {{counter}} członków dołączyło",
+  "__usersCount__member_joined_plural": "+ {{counter}} członków dołączyło",
   "__usersCount__people_will_be_invited": "{{usersCount}} ludzi zostanie zostanie zaproszonych",
   "__username__is_no_longer__role__defined_by__user_by_": "Użytkownik {{username}} nie ma już roli {{role}}; zmienił to użytkownik {{user_by}}",
   "__username__was_set__role__by__user_by_": "Użytkownik {{username}} otrzymał rolę {{role}} od użytkownika {{user_by}}",

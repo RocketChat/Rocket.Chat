@@ -5,7 +5,7 @@
   "__count__message_pruned": "{{counter}} viesti karsittu",
   "__count__message_pruned_plural": "{{counter}} viestiä karsittu",
   "__usersCount__member_joined": "+ {{counter}} jäsen liittyi",
-  "__usersCount__member_joined": "+ {{counter}} jäsentä liittynyt",
+  "__usersCount__member_joined_plural": "+ {{counter}} jäsentä liittynyt",
   "__usersCount__people_will_be_invited": "{{usersCount}} henkilöä kutsutaan",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} ei ole enää {{role}} (muutoksen teki {{user_by}})",
   "__username__was_set__role__by__user_by_": "{{user_by}} muutti käyttäjän {{username}} rooliksi {{role}} ",

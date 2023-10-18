@@ -4,7 +4,7 @@
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} stanze vuote saranno rimosse automaticamente:<br/> {{rooms}}.",
   "__count__message_pruned": "{{counter}} messaggio eliminato",
   "__count__message_pruned_plural": "{{counter}} messaggi eliminati",
-  "__usersCount__member_joined": "+ {{counter}} membri si sono uniti",
+  "__usersCount__member_joined_plural": "+ {{counter}} membri si sono uniti",
   "__usersCount__people_will_be_invited": "{{usersCount}} persone saranno invitate",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} non è più {{role}}, da {{user_by}}",
   "__username__was_set__role__by__user_by_": "A {{username}} è stato assegnato il ruolo di {{role}} da {{user_by}}",

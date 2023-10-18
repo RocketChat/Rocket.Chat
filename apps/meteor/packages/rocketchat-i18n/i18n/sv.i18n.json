@@ -5,7 +5,7 @@
   "__count__message_pruned": "{{counter}} meddelande rensat",
   "__count__message_pruned_plural": "{{counter}} meddelanden rensade",
   "__usersCount__member_joined": "+ {{counter}} medlem har anslutit",
-  "__usersCount__member_joined": "+ {{counter}} medlemmar har anslutit",
+  "__usersCount__member_joined_plural": "+ {{counter}} medlemmar har anslutit",
   "__usersCount__people_will_be_invited": "{{usersCount}} personer bjuds in",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} är inte längre {{role}}, av {{user_by}}",
   "__username__was_set__role__by__user_by_": "{{username}} sattes {{role}} av {{user_by}}",
