@@ -193,7 +193,7 @@ jobs:
           WEBHOOK_TEST_URL: 'http://host.docker.internal:10000'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
           COVERAGE_DIR: '/tmp/coverage'
-          COVERAGE_REPORTER: 'lcov'
+          COVERAGE_REPORTER: 'lcovonly'
         run: |
           for i in $(seq 1 2); do
             npm run testapi && s=0 && break || s=$?
@@ -267,7 +267,6 @@ jobs:
         with:
           directory: /tmp/coverage
           flags: e2e-api
-          root_dir: /tmp/coverage
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
