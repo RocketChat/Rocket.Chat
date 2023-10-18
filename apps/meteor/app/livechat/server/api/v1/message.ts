@@ -134,9 +134,9 @@ API.v1.addRoute(
 				throw new Error('invalid-message');
 			}
 
-			const result = await Livechat.updateMessage({
+			const result = await LivechatTyped.updateMessage({
 				guest,
-				message: { _id: msg._id, msg: this.bodyParams.msg },
+				message: { _id: msg._id, msg: this.bodyParams.msg, rid: msg.rid },
 			});
 			if (!result) {
 				return API.v1.failure();
