@@ -17,15 +17,23 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 	const { data: privateApps } = useAppsCountQuery('private');
 	const { data: marketplaceApps } = useAppsCountQuery('installed');
 
-	const { enabled: privateAppsEnabled, limit: privateAppsLimitQuery, percentage: privateAppsPercentage } = privateApps || {};
 	const {
-		enabled: marketplaceAppsEnabled,
-		limit: marketplaceAppsLimitQuery,
-		percentage: marketplaceAppsPercentage,
+		enabled: privateAppsEnabled = 0,
+		limit: privateAppsLimitQuery = 0,
+		percentage: privateAppsPercentageQuery = 0,
+	} = privateApps || {};
+	const {
+		enabled: marketplaceAppsEnabled = 0,
+		limit: marketplaceAppsLimitQuery = 0,
+		percentage: marketplaceAppsPercentageQuery = 0,
 	} = marketplaceApps || {};
 
-	const privateAppsLimitCount = privateAppsLimit || privateAppsLimitQuery;
-	const marketplaceAppsLimitCount = marketplaceAppsLimit || marketplaceAppsLimitQuery;
+	const marketplaceAppsLimitCount = marketplaceAppsLimit || (marketplaceAppsLimitQuery > 0 ? marketplaceAppsLimitQuery : 5);
+	const marketplaceAppsPercentage =
+		Math.round((marketplaceAppsEnabled / marketplaceAppsLimitCount) * 100) || marketplaceAppsPercentageQuery;
+
+	const privateAppsLimitCount = privateAppsLimit || privateAppsLimitQuery > 0 ? privateAppsLimitQuery : 3;
+	const privateAppsPercentage = Math.round((privateAppsEnabled / privateAppsLimitCount) * 100) || privateAppsPercentageQuery;
 
 	const card: CardProps = {
 		title: t('Apps'),
@@ -41,7 +49,7 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 						<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
 							<Box fontScale='c1'>{t('Marketplace_apps')}</Box>
 							<Box fontScale='c1' color={(marketplaceAppsPercentage || 0) >= 80 ? 'font-danger' : 'status-font-on-success'}>
-								{marketplaceAppsEnabled} / {(marketplaceAppsLimitCount || 0) > 0 ? marketplaceAppsLimitCount : 5}
+								{marketplaceAppsEnabled} / {marketplaceAppsLimitCount}
 							</Box>
 						</Box>
 
@@ -54,7 +62,7 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 						<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
 							<Box fontScale='c1'>{t('Private_apps')}</Box>
 							<Box fontScale='c1' color={(privateAppsPercentage || 0) >= 80 ? 'font-danger' : 'status-font-on-success'}>
-								{privateAppsEnabled} / {(privateAppsLimitCount || 0) > 0 ? privateAppsLimitCount : 3}
+								{privateAppsEnabled} / {privateAppsLimitCount}
 							</Box>
 						</Box>
 
