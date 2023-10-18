@@ -13,9 +13,12 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
+			const manageSubscriptionURL =
+				process.env.NODE_ENV !== 'production' ? 'https://localhost:3000/admin/manage-subscription/' : getURL('admin/manage-subscription');
+
 			const bodyParams = {
-				okCallback: getURL('admin/manage-subscription/?subscriptionSuccess=true'),
-				cancelCallback: getURL('admin/manage-subscription'),
+				okCallback: `${manageSubscriptionURL}?subscriptionSuccess=true`,
+				cancelCallback: manageSubscriptionURL,
 			};
 
 			const checkoutUrl = await getCheckoutUrl(token, bodyParams);
