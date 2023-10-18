@@ -17,7 +17,7 @@ type AdminUserFormWithDataProps = {
 
 const AdminUserFormWithData = ({ uid, onReload, context }: AdminUserFormWithDataProps): ReactElement => {
 	const t = useTranslation();
-	const { data, isLoading, isError } = useUserInfoQuery({ userId: uid });
+	const { data, isLoading, isError, refetch } = useUserInfoQuery({ userId: uid });
 
 	if (isLoading) {
 		return (
@@ -43,7 +43,16 @@ const AdminUserFormWithData = ({ uid, onReload, context }: AdminUserFormWithData
 		);
 	}
 
-	return <AdminUserForm userData={data?.user} onReload={onReload} context={context} />;
+	return (
+		<AdminUserForm
+			userData={data?.user}
+			onReload={onReload}
+			context={context}
+			refetchUserFormData={() => {
+				refetch();
+			}}
+		/>
+	);
 };
 
 export default AdminUserFormWithData;

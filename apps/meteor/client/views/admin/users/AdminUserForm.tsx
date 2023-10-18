@@ -48,6 +48,7 @@ type AdminUserFormProps = {
 	onReload: () => void;
 	setCreatedUsersCount?: React.Dispatch<React.SetStateAction<number>>;
 	context: string;
+	refetchUserFormData?: () => void;
 };
 
 export type userFormProps = Omit<UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string }, 'fields'>;
@@ -81,7 +82,7 @@ const getInitialValue = ({
 	passwordConfirmation: '',
 });
 
-const AdminUserForm = ({ userData, onReload, setCreatedUsersCount, context, ...props }: AdminUserFormProps) => {
+const AdminUserForm = ({ userData, onReload, setCreatedUsersCount, context, refetchUserFormData, ...props }: AdminUserFormProps) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -126,6 +127,7 @@ const AdminUserForm = ({ userData, onReload, setCreatedUsersCount, context, ...p
 			await updateAvatar();
 			router.navigate(`/admin/users/info/${_id}`);
 			onReload();
+			refetchUserFormData?.();
 		},
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
