@@ -14,7 +14,6 @@ export const OverMacLimitSection = (): ReactElement => {
 		<SidebarBanner
 			text={t('You_have_reached_the_limit_active_costumers_this_month')}
 			description={t('Learn_more')}
-			// @ts-expect-error - ds
 			addon={<Icon name='warning' color='danger' size='x24' />}
 			onClick={handleClick}
 		/>
