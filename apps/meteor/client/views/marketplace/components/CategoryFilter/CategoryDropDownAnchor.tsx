@@ -1,4 +1,5 @@
-import { Box, Button, Icon } from '@rocket.chat/fuselage';
+import type { Button } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
 import colorTokens from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEventHandler } from 'react';
