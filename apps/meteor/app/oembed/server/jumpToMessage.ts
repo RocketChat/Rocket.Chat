@@ -77,7 +77,7 @@ callbacks.add(
 				if (msg.forward) {
 					console.log('** This forward');
 					if (message.attachments?.[0] && isQuoteAttachment(message.attachments[0])) {
-						if (message.attachments[0].attachments?.some(isFileAttachment) && _.isEmpty(message.msg.split('\n')[1])) {
+						if (_.isEmpty(message.msg.split('\n')[1])) {
 							shouldCreateQuote = false;
 						} else {
 							shouldCreateQuote = true;
