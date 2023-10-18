@@ -37,5 +37,7 @@ export async function statsCron(logger: Logger): Promise<void> {
 
 	const now = new Date();
 
-	await cronJobs.add(name, `12 ${now.getHours()} * * *`, async () => generateStatistics(logger));
+	await cronJobs.add(name, `12 ${now.getHours()} * * *`, async () => {
+		await generateStatistics(logger);
+	});
 }

@@ -2,7 +2,7 @@ import type { BannerPlatform, IBanner, Optional } from '@rocket.chat/core-typing
 
 export interface IBannerService {
 	getBannersForUser(userId: string, platform: BannerPlatform, bannerId?: string): Promise<IBanner[]>;
-	create(banner: Optional<IBanner, '_id'>): Promise<IBanner>;
+	create(banner: Optional<IBanner, '_id' | '_updatedAt'>): Promise<IBanner>;
 	dismiss(userId: string, bannerId: string): Promise<boolean>;
 	discardDismissal(bannerId: string): Promise<boolean>;
 	getById(bannerId: string): Promise<null | IBanner>;

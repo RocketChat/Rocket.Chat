@@ -4,7 +4,6 @@ import { LivechatUnitMonitors, LivechatDepartment, LivechatRooms } from '@rocket
 import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
-import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
 import { getUnitsFromUser } from '../../../app/livechat-enterprise/server/lib/units';
 
 const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUnit> = {}) => {
@@ -40,7 +39,6 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		options: FindOptions<IOmnichannelBusinessUnit>,
 	): Promise<FindCursor<IOmnichannelBusinessUnit>> {
 		const query = await addQueryRestrictions(originalQuery);
-		queriesLogger.debug({ msg: 'LivechatUnit.find', query });
 		return this.col.find(query, options) as FindCursor<IOmnichannelBusinessUnit>;
 	}
 
@@ -50,18 +48,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		options: FindOptions<IOmnichannelBusinessUnit>,
 	): Promise<IOmnichannelBusinessUnit | null> {
 		const query = await addQueryRestrictions(originalQuery);
-		queriesLogger.debug({ msg: 'LivechatUnit.findOne', query });
 		return this.col.findOne(query, options);
-	}
-
-	async update(
-		originalQuery: Filter<IOmnichannelBusinessUnit>,
-		update: Filter<IOmnichannelBusinessUnit>,
-		options: FindOptions<IOmnichannelBusinessUnit>,
-	): Promise<UpdateResult> {
-		const query = await addQueryRestrictions(originalQuery);
-		queriesLogger.debug({ msg: 'LivechatUnit.update', query });
-		return this.col.updateOne(query, update, options);
 	}
 
 	remove(query: Filter<IOmnichannelBusinessUnit>): Promise<DeleteResult> {

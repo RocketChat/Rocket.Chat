@@ -1,5 +1,5 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
-import { Box, Field, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -71,8 +71,8 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 					<Margins inline={4}>
 						{role.scope !== 'Users' && (
 							<Field mbe={4}>
-								<Field.Label>{t('Choose_a_room')}</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Choose_a_room')}</FieldLabel>
+								<FieldRow>
 									<Controller
 										control={control}
 										name='rid'
@@ -80,12 +80,12 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 											<RoomAutoComplete value={value} onChange={onChange} placeholder={t('User')} />
 										)}
 									/>
-								</Field.Row>
+								</FieldRow>
 							</Field>
 						)}
 						<Field>
-							<Field.Label>{t('Add_users')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Add_users')}</FieldLabel>
+							<FieldRow>
 								<Controller
 									control={control}
 									name='users'
@@ -98,7 +98,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 										{t('Add')}
 									</Button>
 								</ButtonGroup>
-							</Field.Row>
+							</FieldRow>
 						</Field>
 					</Margins>
 				</Box>

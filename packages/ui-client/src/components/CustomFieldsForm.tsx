@@ -1,6 +1,6 @@
 import type { CustomFieldMetadata } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Field, Select, TextInput } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError, Select, TextInput } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -73,10 +73,10 @@ const CustomField = <T extends FieldValues>({
 			rules={{ minLength: props.minLength, maxLength: props.maxLength, validate: { required: validateRequired } }}
 			render={({ field }) => (
 				<Field rcx-field-group__item>
-					<Field.Label htmlFor={fieldId} required={required}>
+					<FieldLabel htmlFor={fieldId} required={required}>
 						{label || t(name as TranslationKey)}
-					</Field.Label>
-					<Field.Row>
+					</FieldLabel>
+					<FieldRow>
 						<Component
 							{...props}
 							{...field}
@@ -86,10 +86,10 @@ const CustomField = <T extends FieldValues>({
 							options={selectOptions as SelectOption[]}
 							flexGrow={1}
 						/>
-					</Field.Row>
-					<Field.Error aria-live='assertive' id={`${fieldId}-error`}>
+					</FieldRow>
+					<FieldError aria-live='assertive' id={`${fieldId}-error`}>
 						{errorMessage}
-					</Field.Error>
+					</FieldError>
 				</Field>
 			)}
 		/>
