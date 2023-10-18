@@ -12,7 +12,7 @@ import { preventSyntheticEvent } from '../../../lib/utils/preventSyntheticEvent'
 import ModalBlock from './ModalBlock';
 
 type UiKitModalProps = {
-	key: UiKit.ModalView['viewId']; // force re-mount when viewId changes
+	key: UiKit.ModalView['id']; // force re-mount when viewId changes
 	initialView: UiKit.ModalView;
 };
 
@@ -57,6 +57,7 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 			},
 			...view,
 			values,
+			viewId: view.id,
 		}),
 		[debouncedEmitInteraction, emitInteraction, updateValues, values, view],
 	);
@@ -69,14 +70,13 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 				payload: {
 					view: {
 						...view,
-						id: view.viewId,
 						state,
 					},
 				},
-				viewId: view.viewId,
+				viewId: view.id,
 			})
 			.finally(() => {
-				actionManager.disposeView(view.viewId);
+				actionManager.disposeView(view.id);
 			});
 	});
 
@@ -86,17 +86,16 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 			.emitInteraction(view.appId, {
 				type: 'viewClosed',
 				payload: {
-					viewId: view.viewId,
+					viewId: view.id,
 					view: {
 						...view,
-						id: view.viewId,
 						state,
 					},
 					isCleared: false,
 				},
 			})
 			.finally(() => {
-				actionManager.disposeView(view.viewId);
+				actionManager.disposeView(view.id);
 			});
 	});
 
@@ -105,17 +104,16 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 			.emitInteraction(view.appId, {
 				type: 'viewClosed',
 				payload: {
-					viewId: view.viewId,
+					viewId: view.id,
 					view: {
 						...view,
-						id: view.viewId,
 						state,
 					},
 					isCleared: true,
 				},
 			})
 			.finally(() => {
-				actionManager.disposeView(view.viewId);
+				actionManager.disposeView(view.id);
 			});
 	});
 

@@ -16,7 +16,7 @@ const ActionManagerProvider = ({ children }: ActionManagerProviderProps): ReactE
 	useAppTranslations();
 	useAppActionButtons();
 	useAppSlashCommands();
-	useAppUiKitInteraction(actionManager.handlePayloadUserInteraction.bind(actionManager));
+	useAppUiKitInteraction(actionManager.handleServerInteraction.bind(actionManager));
 
 	return <ActionManagerContext.Provider value={actionManager}>{children}</ActionManagerContext.Provider>;
 };

@@ -45,7 +45,7 @@ const Room = (): ReactElement => {
 							<ErrorBoundary fallback={null}>
 								<SelectedMessagesProvider>
 									<Suspense fallback={<ContextualbarSkeleton />}>
-										<UiKitContextualBar key={contextualBarView.viewId} initialView={contextualBarView} />
+										<UiKitContextualBar key={contextualBarView.id} initialView={contextualBarView} />
 									</Suspense>
 								</SelectedMessagesProvider>
 							</ErrorBoundary>

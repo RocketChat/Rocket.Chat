@@ -1,4 +1,4 @@
-import { UIKitInteractionType as UIKitInteractionTypeApi } from '@rocket.chat/apps-engine/definition/uikit';
+import type { UIKitInteractionType as UIKitInteractionTypeApi } from '@rocket.chat/apps-engine/definition/uikit';
 
 import type { View } from './View';
 
@@ -27,6 +27,3 @@ type UIKitUserInteractionResultError = UIKitUserInteraction & {
 	type: UIKitInteractionTypeApi.ERRORS;
 	errors?: Array<{ [key: string]: string }>;
 };
-
-export const isErrorType = (result: UIKitUserInteractionResult): result is UIKitUserInteractionResultError =>
-	result.type === UIKitInteractionTypeApi.ERRORS;

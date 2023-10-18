@@ -20,7 +20,7 @@ import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 type UiKitContextualBarProps = {
-	key: UiKit.ContextualBarView['viewId']; // force re-mount when viewId changes
+	key: UiKit.ContextualBarView['id']; // force re-mount when viewId changes
 	initialView: UiKit.ContextualBarView;
 };
 
@@ -66,6 +66,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 			},
 			...view,
 			values,
+			viewId: view.id,
 		}),
 		[debouncedEmitInteraction, emitInteraction, updateValues, values, view],
 	);
@@ -79,14 +80,13 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 				payload: {
 					view: {
 						...view,
-						id: view.viewId,
 						state,
 					},
 				},
-				viewId: view.viewId,
+				viewId: view.id,
 			})
 			.finally(() => {
-				actionManager.disposeView(view.viewId);
+				actionManager.disposeView(view.id);
 			});
 	});
 
@@ -97,17 +97,16 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 			.emitInteraction(view.appId, {
 				type: 'viewClosed',
 				payload: {
-					viewId: view.viewId,
+					viewId: view.id,
 					view: {
 						...view,
-						id: view.viewId,
 						state,
 					},
 					isCleared: false,
 				},
 			})
 			.finally(() => {
-				actionManager.disposeView(view.viewId);
+				actionManager.disposeView(view.id);
 			});
 	});
 
@@ -118,17 +117,16 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 			.emitInteraction(view.appId, {
 				type: 'viewClosed',
 				payload: {
-					viewId: view.viewId,
+					viewId: view.id,
 					view: {
 						...view,
-						id: view.viewId,
 						state,
 					},
 					isCleared: true,
 				},
 			})
 			.finally(() => {
-				actionManager.disposeView(view.viewId);
+				actionManager.disposeView(view.id);
 			});
 	});
 
@@ -151,6 +149,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 							{contextualBarParser.text(view.close.text, BlockContext.NONE, 0)}
 						</Button>
 					)}
+
 					{view.submit && (
 						<Button {...getButtonStyle(view.submit)} onClick={handleSubmit}>
 							{contextualBarParser.text(view.submit.text, BlockContext.NONE, 1)}

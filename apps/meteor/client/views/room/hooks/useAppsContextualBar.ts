@@ -13,7 +13,7 @@ export const useAppsContextualBar = () => {
 			return undefined;
 		}
 
-		return actionManager.getUserInteractionPayloadByViewId(viewId)?.view;
+		return actionManager.getInteractionPayloadByViewId(viewId)?.view;
 	}, [actionManager, viewId]);
 
 	const subscribe = useCallback(

@@ -1,5 +1,4 @@
-import type { UIKitUserInteractionResult, UiKit } from '@rocket.chat/core-typings';
-import { isErrorType } from '@rocket.chat/core-typings';
+import type { UiKit } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { extractInitialStateFromLayout } from '@rocket.chat/fuselage-ui-kit';
 import type { Dispatch } from 'react';
@@ -14,6 +13,30 @@ const reduceValues = (
 	...values,
 	[actionId]: payload,
 });
+
+const getViewId = (view: UiKit.View): string => {
+	if ('id' in view && typeof view.id === 'string') {
+		return view.id;
+	}
+
+	if ('viewId' in view && typeof view.viewId === 'string') {
+		return view.viewId;
+	}
+
+	throw new Error('Invalid view');
+};
+
+const getViewFromInteraction = (interaction: UiKit.ServerInteraction): UiKit.View | undefined => {
+	if ('view' in interaction && typeof interaction.view === 'object') {
+		return interaction.view;
+	}
+
+	if (interaction.type === 'banner.open') {
+		return interaction;
+	}
+
+	return undefined;
+};
 
 type UseUiKitViewReturnType<TView extends UiKit.View> = {
 	view: TView;
@@ -47,17 +70,16 @@ export function useUiKitView<S extends UiKit.View>(initialView: S): UseUiKitView
 		}, {});
 	}, [values]);
 
-	const { viewId } = view;
+	const viewId = getViewId(view);
 
 	useEffect(() => {
-		const handleUpdate = (data: UIKitUserInteractionResult): void => {
-			if (isErrorType(data)) {
-				setErrors(data.errors);
+		const handleUpdate = (interaction: UiKit.ServerInteraction): void => {
+			if (interaction.type === 'errors') {
+				setErrors(interaction.errors);
 				return;
 			}
 
-			const { type, ...rest } = data;
-			updateView((view) => ({ ...view, ...rest }));
+			updateView((view) => ({ ...view, ...getViewFromInteraction(interaction) }));
 		};
 
 		actionManager.on(viewId, handleUpdate);

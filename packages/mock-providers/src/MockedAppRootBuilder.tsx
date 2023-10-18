@@ -432,8 +432,8 @@ export class MockedAppRootBuilder {
 															value={{
 																generateTriggerId: () => '',
 																emitInteraction: () => Promise.reject(new Error('not implemented')),
-																getUserInteractionPayloadByViewId: () => undefined,
-																handlePayloadUserInteraction: () => undefined,
+																getInteractionPayloadByViewId: () => undefined,
+																handleServerInteraction: () => undefined,
 																off: () => undefined,
 																on: () => undefined,
 																disposeView: () => undefined,

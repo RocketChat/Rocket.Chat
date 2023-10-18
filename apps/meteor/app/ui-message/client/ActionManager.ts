@@ -1,7 +1,7 @@
 import type { DistributiveOmit, UiKit } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
-import type { ActionManagerContext } from '@rocket.chat/ui-contexts';
+import type { ActionManagerContext, RouterContext } from '@rocket.chat/ui-contexts';
 import type { ContextType } from 'react';
 import { lazy } from 'react';
 
@@ -24,7 +24,17 @@ export class ActionManager implements ActionManagerType {
 
 	protected triggersId = new Map<string, string | undefined>();
 
-	protected viewInstances = new Map<string, { payload?: any; close: () => void }>();
+	protected viewInstances = new Map<
+		string,
+		{
+			payload?: {
+				view: UiKit.ContextualBarView;
+			};
+			close: () => void;
+		}
+	>();
+
+	public constructor(protected router: ContextType<typeof RouterContext>) {}
 
 	protected invalidateTriggerId(id: string) {
 		const appId = this.triggersId.get(id);
@@ -62,160 +72,161 @@ export class ActionManager implements ActionManagerType {
 
 		let timeout: ReturnType<typeof setTimeout> | undefined;
 
-		try {
-			return new Promise((resolve, reject) => {
+		await Promise.race([
+			new Promise((_, reject) => {
 				timeout = setTimeout(() => reject(new UiKitTriggerTimeoutError('Timeout', { triggerId, appId })), ActionManager.TRIGGER_TIMEOUT);
-
-				sdk.rest
-					.post(`/apps/ui.interaction/${appId}`, {
-						...userInteraction,
-						triggerId,
-					})
-					.then(({ type, ...data }) => {
-						resolve(this.handlePayloadUserInteraction(type, data));
-					}, reject);
-			});
-		} finally {
+			}),
+			sdk.rest
+				.post(`/apps/ui.interaction/${appId}`, {
+					...userInteraction,
+					triggerId,
+				})
+				.then((interaction) => this.handleServerInteraction(interaction)),
+		]).finally(() => {
 			if (timeout) clearTimeout(timeout);
 			this.events.emit('busy', { busy: false });
-		}
+		});
 	}
 
-	public handlePayloadUserInteraction = (type: any, { triggerId, ...data }: any) => {
+	public handleServerInteraction(interaction: UiKit.ServerInteraction) {
+		const { triggerId } = interaction;
+
 		if (!this.triggersId.has(triggerId)) {
 			return;
 		}
+
 		const appId = this.invalidateTriggerId(triggerId);
 		if (!appId) {
 			return;
 		}
 
-		const { view } = data;
-		let { viewId } = data;
-
-		if (view?.id) {
-			viewId = view.id;
-		}
-
-		if (!viewId) {
-			return;
-		}
-
-		if (type === 'errors') {
-			this.events.emit(viewId, {
-				type,
-				triggerId,
-				viewId,
-				appId,
-				...data,
-			});
-			return 'errors';
-		}
-
-		if (['banner.update', 'modal.update', 'contextual_bar.update'].includes(type)) {
-			this.events.emit(viewId, {
-				type,
-				triggerId,
-				viewId,
-				appId,
-				...data,
-			});
-			return type;
-		}
-
-		if (['modal.open'].includes(type)) {
-			const instance = imperativeModal.open({
-				component: UiKitModal,
-				props: {
-					triggerId,
-					viewId,
-					appId,
-					...data,
-				},
-			});
-
-			this.viewInstances.set(viewId, {
-				close: () => {
-					instance.close();
-					this.viewInstances.delete(viewId);
-				},
-			});
-
-			return 'modal.open';
-		}
-
-		if (['contextual_bar.open'].includes(type)) {
-			this.viewInstances.set(viewId, {
-				payload: {
+		switch (interaction.type) {
+			case 'errors': {
+				const { type, triggerId, viewId, appId, errors } = interaction;
+				this.events.emit(interaction.viewId, {
 					type,
 					triggerId,
-					appId,
 					viewId,
-					...data,
-				},
-				close: () => {
-					this.viewInstances.delete(viewId);
-				},
-			});
-
-			router.navigate({
-				name: router.getRouteName()!,
-				params: {
-					...router.getRouteParameters(),
-					tab: 'app',
-					context: viewId,
-				},
-			});
-
-			return 'contextual_bar.open';
-		}
-
-		if (['banner.open'].includes(type)) {
-			banners.open(data);
-			this.viewInstances.set(viewId, {
-				close: () => {
-					banners.closeById(viewId);
-				},
-			});
-			return 'banner.open';
-		}
-
-		if (['banner.close'].includes(type)) {
-			const instance = this.viewInstances.get(viewId);
-
-			if (instance) {
-				instance.close();
+					appId,
+					errors,
+				});
+				break;
 			}
-			return 'banner.close';
-		}
 
-		if (['contextual_bar.close'].includes(type)) {
-			const instance = this.viewInstances.get(viewId);
+			case 'modal.open': {
+				const { view } = interaction;
+				const instance = imperativeModal.open({
+					component: UiKitModal,
+					props: {
+						key: view.id,
+						initialView: interaction.view,
+					},
+				});
 
-			if (instance) {
-				instance.close();
+				this.viewInstances.set(view.id, {
+					close: () => {
+						instance.close();
+						this.viewInstances.delete(view.id);
+					},
+				});
+				break;
 			}
-			return 'contextual_bar.close';
+
+			case 'modal.update':
+			case 'contextual_bar.update': {
+				const { type, triggerId, appId, view } = interaction;
+				this.events.emit(view.id, {
+					type,
+					triggerId,
+					viewId: view.id,
+					appId,
+					view,
+				});
+				break;
+			}
+
+			case 'modal.close': {
+				break;
+			}
+
+			case 'banner.open': {
+				const { type, triggerId, ...view } = interaction;
+				banners.open(view);
+				this.viewInstances.set(view.viewId, {
+					close: () => {
+						banners.closeById(view.viewId);
+					},
+				});
+				break;
+			}
+
+			case 'banner.update': {
+				const { type, triggerId, appId, view } = interaction;
+				this.events.emit(view.viewId, {
+					type,
+					triggerId,
+					viewId: view.viewId,
+					appId,
+					view,
+				});
+				break;
+			}
+
+			case 'banner.close': {
+				const { viewId } = interaction;
+				this.viewInstances.get(viewId)?.close();
+
+				break;
+			}
+
+			case 'contextual_bar.open': {
+				const { view } = interaction;
+				this.viewInstances.set(view.id, {
+					payload: {
+						view,
+					},
+					close: () => {
+						this.viewInstances.delete(view.id);
+					},
+				});
+
+				const routeName = this.router.getRouteName();
+				const routeParams = this.router.getRouteParameters();
+
+				if (!routeName) {
+					break;
+				}
+
+				this.router.navigate({
+					name: routeName,
+					params: {
+						...routeParams,
+						tab: 'app',
+						context: view.id,
+					},
+				});
+				break;
+			}
+
+			case 'contextual_bar.close': {
+				const { view } = interaction;
+				this.viewInstances.get(view.id)?.close();
+				break;
+			}
 		}
 
-		return 'modal.close';
-	};
+		return interaction.type;
+	}
 
-	public getUserInteractionPayloadByViewId = (viewId: any) => {
+	public getInteractionPayloadByViewId(viewId: UiKit.ContextualBarView['id']) {
 		if (!viewId) {
 			throw new Error('No viewId provided when checking for `user interaction payload`');
 		}
 
-		const instance = this.viewInstances.get(viewId);
+		return this.viewInstances.get(viewId)?.payload;
+	}
 
-		if (!instance) {
-			return {};
-		}
-
-		return instance.payload;
-	};
-
-	public disposeView(viewId: UiKit.View['viewId']) {
+	public disposeView(viewId: UiKit.ModalView['id'] | UiKit.BannerView['viewId'] | UiKit.ContextualBarView['id']) {
 		const instance = this.viewInstances.get(viewId);
 		instance?.close?.();
 		this.viewInstances.delete(viewId);
@@ -223,4 +234,4 @@ export class ActionManager implements ActionManagerType {
 }
 
 /** @deprecated consumer should use the context instead */
-export const actionManager = new ActionManager();
+export const actionManager = new ActionManager(router);

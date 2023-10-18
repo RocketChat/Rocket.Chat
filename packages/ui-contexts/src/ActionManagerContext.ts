@@ -8,18 +8,13 @@ type ActionManager = {
 	off(eventName: 'busy', listener: ({ busy }: { busy: boolean }) => void): void;
 	generateTriggerId(appId: string | undefined): string;
 	emitInteraction(appId: string, userInteraction: DistributiveOmit<UiKit.UserInteraction, 'triggerId'>): Promise<unknown>;
-	handlePayloadUserInteraction: (
-		type: any,
-		{
-			triggerId,
-			...data
-		}: {
-			[x: string]: any;
-			triggerId: any;
-		},
-	) => any;
-	getUserInteractionPayloadByViewId: (viewId: any) => any;
-	disposeView(viewId: UiKit.View['viewId']): void;
+	handleServerInteraction(interaction: UiKit.ServerInteraction): UiKit.ServerInteraction['type'] | undefined;
+	getInteractionPayloadByViewId(viewId: UiKit.ContextualBarView['id']):
+		| {
+				view: UiKit.ContextualBarView;
+		  }
+		| undefined;
+	disposeView(viewId: UiKit.ModalView['id'] | UiKit.BannerView['viewId'] | UiKit.ContextualBarView['id']): void;
 };
 
 export const ActionManagerContext = createContext<ActionManager | undefined>(undefined);
