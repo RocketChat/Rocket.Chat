@@ -23,7 +23,7 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 	let poHomeChannel: HomeChannel;
 	let poRoomInfo: OmnichannelRoomInfo;
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ api, page }) => {
 		(
 			await Promise.all([
 				api.post('/livechat/users/agent', { username: 'user1' }),
@@ -31,6 +31,7 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 				api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }),
 			])
 		).every((res) => expect(res.status()).toBe(200));
+		await page.emulateMedia({ reducedMotion: 'reduce' });
 	});
 
 	test.beforeEach(async ({ page }) => {
