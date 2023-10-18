@@ -235,6 +235,10 @@ jobs:
       - name: Show server logs if E2E test failed
         if: failure()
         run: docker compose -f docker-compose-ci.yml logs rocketchat
+      
+      - name: Show PDF transcript service logs if E2E test failed
+        if: failure()
+        run: docker compose -f docker-compose-ci.yml logs omnichannel-transcript-service
 
       - name: Extract e2e:ee:coverage
         if: inputs.type == 'ui' && inputs.release == 'ee'
