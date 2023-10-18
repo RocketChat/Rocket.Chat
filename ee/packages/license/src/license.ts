@@ -318,7 +318,12 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 						.map(async ({ max, limitKey }) => {
 							return {
 								[limitKey as LicenseLimitKind]: {
-									...(loadCurrentValues ? { value: await getCurrentValueForLicenseLimit.call(this, limitKey as LicenseLimitKind) } : {}),
+									...(loadCurrentValues
+										? {
+												value: await getCurrentValueForLicenseLimit.call(this, limitKey as LicenseLimitKind),
+												overLimit: await this.shouldPreventAction(limitKey as LicenseLimitKind),
+										  }
+										: {}),
 									max,
 								},
 							};

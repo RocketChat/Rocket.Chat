@@ -14,7 +14,9 @@ export async function validateLicenseLimits(
 ): Promise<BehaviorWithContext[]> {
 	const { limits } = license;
 
-	const limitKeys = (Object.keys(limits) as LicenseLimitKind[]).filter((limit) => isLimitAllowed(limit, options));
+	const limitKeys = (Object.keys(limits) as LicenseLimitKind[])
+		.filter((limit) => isLimitAllowed(limit, options))
+		.filter((limit) => (!options.context ? true : !!options.context[limit]));
 	return (
 		await Promise.all(
 			limitKeys.map(async (limitKey) => {
