@@ -136,5 +136,4 @@ export * from './CustomFieldMetadata';
 
 export * as Cloud from './cloud';
 
-export * from './uikit/deprecations';
 export * as UiKit from './uikit';
