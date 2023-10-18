@@ -2,7 +2,7 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IOmnichannelService } from '@rocket.chat/core-services';
 import type { IOmnichannelQueue } from '@rocket.chat/core-typings';
 
-import { Livechat } from '../../../app/livechat/server';
+import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../app/settings/server';
 import { OmnichannelQueue } from './queue';

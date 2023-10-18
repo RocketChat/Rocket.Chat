@@ -18,6 +18,7 @@ import type {
 	ILivechatTagRecord,
 	TransferData,
 	AtLeast,
+	UserStatus,
 } from '@rocket.chat/core-typings';
 import type { FilterOperators } from 'mongodb';
 
@@ -52,7 +53,7 @@ interface EventLikeCallbackSignatures {
 	'livechat.saveRoom': (room: IRoom) => void;
 	'livechat:afterReturnRoomAsInquiry': (params: { room: IRoom }) => void;
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
-	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
+	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: UserStatus }) => void;
 	'livechat.onNewAgentCreated': (agentId: string) => void;
 	'livechat.afterTakeInquiry': (inq: InquiryWithAgentInfo, agent: { agentId: string; username: string }) => void;
 	'livechat.afterAgentRemoved': (params: { agent: Pick<IUser, '_id' | 'username'> }) => void;

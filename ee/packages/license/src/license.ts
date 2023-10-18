@@ -4,6 +4,7 @@ import { type ILicenseTag } from './definition/ILicenseTag';
 import type { ILicenseV2 } from './definition/ILicenseV2';
 import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
 import type { BehaviorWithContext } from './definition/LicenseBehavior';
+import type { LicenseInfo } from './definition/LicenseInfo';
 import type { LicenseModule } from './definition/LicenseModule';
 import type { LicenseValidationOptions } from './definition/LicenseValidationOptions';
 import type { LimitContext } from './definition/LimitContext';
@@ -66,6 +67,14 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		return this._valid;
 	}
 
+	public get encryptedLicense(): string | undefined {
+		if (!this.hasValidLicense()) {
+			return undefined;
+		}
+
+		return this._lockedLicense;
+	}
+
 	public async setWorkspaceUrl(url: string) {
 		this.workspaceUrl = url.replace(/\/$/, '').replace(/^https?:\/\/(.*)$/, '$1');
 
@@ -106,7 +115,12 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		invalidateAll.call(this);
 	}
 
-	private async setLicenseV3(newLicense: ILicenseV3, encryptedLicense: string, originalLicense?: ILicenseV2 | ILicenseV3): Promise<void> {
+	private async setLicenseV3(
+		newLicense: ILicenseV3,
+		encryptedLicense: string,
+		originalLicense?: ILicenseV2 | ILicenseV3,
+		isNewLicense?: boolean,
+	): Promise<void> {
 		const hadValidLicense = this.hasValidLicense();
 		this.clearLicenseData();
 
@@ -114,7 +128,6 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			this._unmodifiedLicense = originalLicense || newLicense;
 			this._license = newLicense;
 
-			const isNewLicense = encryptedLicense !== this._lockedLicense;
 			this._lockedLicense = encryptedLicense;
 
 			await this.validateLicense({ isNewLicense });
@@ -127,8 +140,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		}
 	}
 
-	private async setLicenseV2(newLicense: ILicenseV2, encryptedLicense: string): Promise<void> {
-		return this.setLicenseV3(convertToV3(newLicense), encryptedLicense, newLicense);
+	private async setLicenseV2(newLicense: ILicenseV2, encryptedLicense: string, isNewLicense?: boolean): Promise<void> {
+		return this.setLicenseV3(convertToV3(newLicense), encryptedLicense, newLicense, isNewLicense);
 	}
 
 	private isLicenseDuplicated(encryptedLicense: string): boolean {
@@ -180,7 +193,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		licenseValidated.call(this);
 	}
 
-	public async setLicense(encryptedLicense: string): Promise<boolean> {
+	public async setLicense(encryptedLicense: string, isNewLicense = true): Promise<boolean> {
 		if (!(await validateFormat(encryptedLicense))) {
 			throw new InvalidLicenseError();
 		}
@@ -209,10 +222,10 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			logger.debug({ msg: 'license', decrypted });
 
 			if (!encryptedLicense.startsWith('RCV3_')) {
-				await this.setLicenseV2(decrypted, encryptedLicense);
+				await this.setLicenseV2(decrypted, encryptedLicense, isNewLicense);
 				return true;
 			}
-			await this.setLicenseV3(decrypted, encryptedLicense);
+			await this.setLicenseV3(decrypted, encryptedLicense, decrypted, isNewLicense);
 
 			return true;
 		} catch (e) {
@@ -279,17 +292,22 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		return isBehaviorsInResult(validationResult, ['prevent_action']);
 	}
 
-	public async getInfo(loadCurrentValues = false): Promise<{
-		license: ILicenseV3 | undefined;
-		activeModules: LicenseModule[];
-		limits: Record<LicenseLimitKind, { value?: number; max: number }>;
-	}> {
+	public async getInfo({
+		limits: includeLimits,
+		currentValues: loadCurrentValues,
+		license: includeLicense,
+	}: {
+		limits: boolean;
+		currentValues: boolean;
+		license: boolean;
+	}): Promise<LicenseInfo> {
 		const activeModules = getModules.call(this);
 		const license = this.getLicense();
 
 		// Get all limits present in the license and their current value
 		const limits = (
 			(license &&
+				includeLimits &&
 				(await Promise.all(
 					globalLimitKinds
 						.map((limitKey) => ({
@@ -310,9 +328,11 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		).reduce((prev, curr) => ({ ...prev, ...curr }), {});
 
 		return {
-			license,
+			license: (includeLicense && license) || undefined,
 			activeModules,
 			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
+			tags: license?.information.tags || [],
+			trial: Boolean(license?.information.trial),
 		};
 	}
 }

@@ -6,7 +6,7 @@ import { imperativeModal } from '../../imperativeModal';
 import { prependReplies } from '../../utils/prependReplies';
 import type { ChatAPI } from '../ChatAPI';
 
-export const uploadFiles = async (chat: ChatAPI, files: readonly File[]): Promise<void> => {
+export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFileInput?: () => void): Promise<void> => {
 	const replies = chat.composer?.quotedMessages.get() ?? [];
 
 	const msg = await prependReplies('', replies);
@@ -52,4 +52,5 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[]): Promis
 	};
 
 	uploadNextFile();
+	resetFileInput?.();
 };
