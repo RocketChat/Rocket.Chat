@@ -11,12 +11,12 @@ import { Roles } from '../../../../../app/models/client';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { UserStatus } from '../../../../components/UserStatus';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { dispatchToastMessage } from '../../../../lib/toast';
 import { useChangeAdminStatusAction } from '../hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
 import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
-import { dispatchToastMessage } from '../../../../lib/toast';
 
 type UsersTableRowProps = {
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'emails' | 'active' | 'avatarETag' | 'roles'>;
@@ -91,6 +91,21 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 		dispatchToastMessage({ type: 'success', message: t('Welcome_email_resent') });
 	};
 
+	const checkPendingButton = (): ReactElement => {
+		if (active) {
+			return (
+				<Button small secondary mie={8} onClick={handleResendWelcomeEmail}>
+					{t('Resend_welcome_email')}
+				</Button>
+			);
+		}
+		return (
+			<Button small primary mie={8} onClick={changeUserStatusAction?.action}>
+				{t('Activate')}
+			</Button>
+		);
+	};
+
 	return (
 		<GenericTableRow
 			onKeyDown={(e): void => onClick(_id, e)}
@@ -151,15 +166,8 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 					e.stopPropagation();
 				}}
 			>
-				{tab === 'pending' && active ? (
-					<Button small secondary mie={8} onClick={handleResendWelcomeEmail}>
-						{t('Resend_welcome_email')}
-					</Button>
-				) : (
-					<Button small primary mie={8} onClick={changeUserStatusAction?.action}>
-						{t('Activate')}
-					</Button>
-				)}
+				{tab === 'pending' && checkPendingButton()}
+
 				<Menu
 					mi={4}
 					placement='bottom-start'
