@@ -156,10 +156,10 @@ const ManageSubscriptionPage = () => {
 								<Skeleton variant='rect' width='full' height={240} />
 							</Grid.Item>
 							<Grid.Item lg={6} xs={4} p={8}>
-								<Skeleton variant='rect' width='full' height={650} />
+								<Skeleton variant='rect' width='full' height={240} />
 							</Grid.Item>
 							<Grid.Item lg={6} xs={4} p={8}>
-								<Skeleton variant='rect' width='full' height={650} />
+								<Skeleton variant='rect' width='full' height={240} />
 							</Grid.Item>
 						</Grid>
 					</Box>
