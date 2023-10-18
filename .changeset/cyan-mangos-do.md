@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-chore: fix UI issue on marketplace filters
+fix: UI issue on marketplace filters
