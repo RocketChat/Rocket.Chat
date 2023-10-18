@@ -65,7 +65,12 @@ const ConnectionStatusBar: FC = function ConnectionStatusBar() {
 				<Icon name='warning' /> {t('meteor_status' as Parameters<typeof t>[0], { context: status })}
 			</strong>
 
-			{status === 'waiting' && <> {t(reconnectCountdown === 1 ? 'meteor_status_reconnect_in' : 'meteor_status_reconnect_in_plural', { count: reconnectCountdown })}</>}
+			{status === 'waiting' && (
+				<>
+					{' '}
+					{t(reconnectCountdown === 1 ? 'meteor_status_reconnect_in' : 'meteor_status_reconnect_in_plural', { count: reconnectCountdown })}
+				</>
+			)}
 
 			{['waiting', 'offline'].includes(status) && (
 				<>
