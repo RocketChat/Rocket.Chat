@@ -35,7 +35,7 @@ export class SlackAPI {
 		let groups = [];
 		const request = await fetch('https://slack.com/api/conversations.list', {
 			headers: {
-				Authorization: `Bearer ${this.token || 'token'}`,
+				Authorization: `Bearer ${this.token}`,
 			},
 			params: {
 				types: 'private_channel',
@@ -195,5 +195,29 @@ export class SlackAPI {
 		});
 		const response = await request.json();
 		return response && response && request.status === 200 && request.ok && response.user;
+	}
+
+	static async verifyToken(token) {
+		const request = await fetch('https://slack.com/api/auth.test', {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+			method: 'POST',
+		});
+		const response = await request.json();
+		return response && response && request.status === 200 && request.ok && response.ok;
+	}
+
+	static async verifyAppCredentials({ botToken, appToken }) {
+		const request = await fetch('https://slack.com/api/apps.connections.open', {
+			headers: {
+				Authorization: `Bearer ${appToken}`,
+			},
+			method: 'POST',
+		});
+		const response = await request.json();
+		const isAppTokenOk = response && response && request.status === 200 && request.ok && response.ok;
+		const isBotTokenOk = await this.verifyToken(botToken);
+		return isAppTokenOk && isBotTokenOk;
 	}
 }

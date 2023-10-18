@@ -3,4 +3,4 @@
 '@rocket.chat/i18n': patch
 ---
 
-Using slack app for slack bridge integration since slack legacy bot integration has been deprecated
+Updated slack bridge to add support for connecting using slack apps in addition to the slack legacy bot

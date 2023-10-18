@@ -1,3 +1,5 @@
+import { debounce } from 'lodash';
+
 import { settings } from '../../settings/server';
 import RocketAdapter from './RocketAdapter.js';
 import SlackAdapter from './SlackAdapter.js';
@@ -8,6 +10,7 @@ import { classLogger, connLogger } from './logger';
  */
 class SlackBridgeClass {
 	constructor() {
+		this.isEnabled = false;
 		this.isLegacyRTM = true;
 		this.slackAdapters = [];
 		this.rocket = new RocketAdapter(this);
@@ -42,7 +45,7 @@ class SlackBridgeClass {
 					this.rocket.addSlack(slack);
 					this.slackAdapters.push(slack);
 
-					slack.connectLegacy(apiToken).catch((err) => connLogger.error('error connecting to slack', err));
+					slack.connect({ apiToken }).catch((err) => connLogger.error('error connecting to slack', err));
 				});
 			} else {
 				const botTokenList = this.botTokens.split('\n'); // Bot token list
@@ -67,7 +70,7 @@ class SlackBridgeClass {
 					this.rocket.addSlack(slack);
 					this.slackAdapters.push(slack);
 
-					slack.connect(appCredential).catch((err) => connLogger.error('error connecting to slack', err));
+					slack.connect({ appCredential }).catch((err) => connLogger.error('error connecting to slack', err));
 				});
 			}
 
@@ -81,26 +84,32 @@ class SlackBridgeClass {
 	}
 
 	async reconnect() {
-		if (this.connected === true) {
-			this.disconnect();
-		}
+		await this.disconnect();
 		// connect if either apiTokens or appCredentials are set
 		if (this.isLegacyRTM && this.apiTokens) {
-			await this.connect();
+			this.connect();
 		} else if (!this.isLegacyRTM && this.botTokens && this.appTokens && this.signingSecrets) {
-			await this.connect();
+			this.connect();
 		}
 	}
 
-	disconnect() {
-		if (this.connected === true) {
-			this.rocket.disconnect();
-			this.slackAdapters.forEach((slack) => {
-				slack.disconnect();
-			});
-			this.slackAdapters = [];
-			this.connected = false;
-			connLogger.info('Disabled');
+	debouncedReconnectIfEnabled = debounce(() => {
+		if (this.isEnabled) {
+			this.reconnect();
+		}
+	}, 500);
+
+	async disconnect() {
+		try {
+			if (this.connected === true) {
+				await this.rocket.disconnect();
+				await Promise.all(this.slackAdapters.map((slack) => slack.disconnect()));
+				this.slackAdapters = [];
+				this.connected = false;
+				connLogger.info('Slack Bridge Disconnected');
+			}
+		} catch (error) {
+			connLogger.error('An error occurred during disconnection', error);
 		}
 	}
 
@@ -109,7 +118,7 @@ class SlackBridgeClass {
 		settings.watch('SlackBridge_UseLegacy', (value) => {
 			if (value !== this.isLegacyRTM) {
 				this.isLegacyRTM = value;
-				this.reconnect();
+				this.debouncedReconnectIfEnabled();
 			}
 			classLogger.debug('Setting: SlackBridge_UseLegacy', value);
 		});
@@ -118,7 +127,7 @@ class SlackBridgeClass {
 		settings.watch('SlackBridge_BotToken', (value) => {
 			if (value !== this.botTokens) {
 				this.botTokens = value;
-				this.reconnect();
+				this.debouncedReconnectIfEnabled();
 			}
 			classLogger.debug('Setting: SlackBridge_BotToken', value);
 		});
@@ -126,7 +135,7 @@ class SlackBridgeClass {
 		settings.watch('SlackBridge_AppToken', (value) => {
 			if (value !== this.appTokens) {
 				this.appTokens = value;
-				this.reconnect();
+				this.debouncedReconnectIfEnabled();
 			}
 			classLogger.debug('Setting: SlackBridge_AppToken', value);
 		});
@@ -134,7 +143,7 @@ class SlackBridgeClass {
 		settings.watch('SlackBridge_SigningSecret', (value) => {
 			if (value !== this.signingSecrets) {
 				this.signingSecrets = value;
-				this.reconnect();
+				this.debouncedReconnectIfEnabled();
 			}
 			classLogger.debug('Setting: SlackBridge_SigningSecret', value);
 		});
@@ -143,7 +152,7 @@ class SlackBridgeClass {
 		settings.watch('SlackBridge_APIToken', (value) => {
 			if (value !== this.apiTokens) {
 				this.apiTokens = value;
-				this.reconnect();
+				this.debouncedReconnectIfEnabled();
 			}
 
 			classLogger.debug('Setting: SlackBridge_APIToken', value);
@@ -169,10 +178,13 @@ class SlackBridgeClass {
 
 		// Is this entire SlackBridge enabled
 		settings.watch('SlackBridge_Enabled', (value) => {
-			if (value) {
-				this.reconnect();
-			} else {
-				this.disconnect();
+			if (this.isEnabled !== value) {
+				this.isEnabled = value;
+				if (this.isEnabled) {
+					this.debouncedReconnectIfEnabled();
+				} else {
+					this.disconnect();
+				}
 			}
 			classLogger.debug('Setting: SlackBridge_Enabled', value);
 		});

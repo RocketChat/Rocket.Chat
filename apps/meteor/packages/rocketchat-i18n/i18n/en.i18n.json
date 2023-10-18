@@ -4750,7 +4750,7 @@
   "SLA_Policies": "SLA Policies",
   "SLA_removed": "SLA removed",
   "Slack_Users": "Slack's Users CSV",
-  "SlackBridge_APIToken": "API Tokens",
+  "SlackBridge_APIToken": "API Tokens (Legacy)",
   "SlackBridge_UseLegacy": "Use Legacy API Tokens",
   "SlackBridge_APIToken_Description": "You can configure multiple slack servers by adding one API Token per line.", "SlackBridge_BotToken": "Bot Tokens",
   "SlackBridge_BotToken_Description": "You can configure multiple slack servers by adding one Bot Token per line.",

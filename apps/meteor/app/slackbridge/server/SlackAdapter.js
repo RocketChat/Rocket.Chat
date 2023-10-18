@@ -40,6 +40,39 @@ export default class SlackAdapter {
 		this.slackAPI = {};
 	}
 
+	async connect({ apiToken, appCredential }) {
+		try {
+			let connectResult;
+
+			if (appCredential) {
+				connectResult = await this.connectApp(appCredential);
+			}
+
+			if (apiToken) {
+				connectResult = await this.connectLegacy(apiToken);
+			}
+
+			if (connectResult) {
+				slackLogger.info('Connected to Slack');
+				slackLogger.debug('Slack connection result: ', connectResult);
+				Meteor.startup(async () => {
+					try {
+						await this.populateMembershipChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
+					} catch (err) {
+						slackLogger.error({ msg: 'Error attempting to connect to Slack', err });
+						if (err.data.error === 'invalid_auth') {
+							slackLogger.error('The provided token is invalid');
+						}
+						this.slackBridge.disconnect();
+					}
+				});
+			}
+		} catch (err) {
+			slackLogger.error({ msg: 'Error attempting to connect to Slack', err });
+			this.slackBridge.disconnect();
+		}
+	}
+
 	/**
 	 * Connect to the remote Slack server using the passed in app credential and register for Slack events.
 	 * @typedef {Object} AppCredential
@@ -48,34 +81,27 @@ export default class SlackAdapter {
 	 * @property {string} signingSecret
 	 * @param {AppCredential} appCredential
 	 */
-	async connect(appCredential) {
+	async connectApp(appCredential) {
 		this.appCredential = appCredential;
+
+		// Invalid app credentials causes unhandled errors
+		if (!(await SlackAPI.verifyAppCredentials(appCredential))) {
+			throw new Error('Invalid app credentials (botToken or appToken) for the slack app');
+		}
+		this.slackAPI = new SlackAPI(this.appCredential.botToken);
+
 		this.slackApp = new SlackApp({
 			appToken: this.appCredential.appToken,
 			signingSecret: this.appCredential.signingSecret,
 			token: this.appCredential.botToken,
 			socketMode: true,
 		});
-		this.slackAPI = new SlackAPI(this.appCredential.botToken);
 
 		this.registerForEvents();
 
-		await this.slackApp
-			.start()
-			.then((res) => slackLogger.debug('Connecting to slack', res))
-			.catch((err) => {
-				slackLogger.error({ msg: 'Error attempting to connect to Slack', err });
-				throw new Error(err);
-			});
+		const connectionResult = await this.slackApp.start();
 
-		Meteor.startup(async () => {
-			try {
-				await this.populateMembershipChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
-			} catch (err) {
-				slackLogger.error({ msg: 'Error attempting to connect to Slack', err });
-				this.slackBridge.disconnect();
-			}
-		});
+		return connectionResult;
 	}
 
 	/**
@@ -86,33 +112,22 @@ export default class SlackAdapter {
 	async connectLegacy(apiToken) {
 		this.apiToken = apiToken;
 
+		// Invalid apiToken causes unhandled errors
+		if (!(await SlackAPI.verifyToken(apiToken))) {
+			throw new Error('Invalid ApiToken for the slack legacy bot integration');
+		}
+
 		if (RTMClient != null) {
 			RTMClient.disconnect;
 		}
 		this.slackAPI = new SlackAPI(this.apiToken);
 		this.rtm = new RTMClient(this.apiToken);
 
-		await this.rtm
-			.start()
-			.then((res) => slackLogger.debug('Connecting to slack', res))
-			.catch((err) => {
-				slackLogger.error({ msg: 'Error attempting to connect to Slack', err });
-				if (err.data.error === 'invalid_auth') {
-					throw new Error('The provided token is invalid');
-				}
-				throw new Error(err);
-			});
-
 		this.registerForEventsLegacy();
 
-		Meteor.startup(async () => {
-			try {
-				await this.populateMembershipChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
-			} catch (err) {
-				slackLogger.error({ msg: 'Error attempting to connect to Slack', err });
-				await this.slackBridge.disconnect();
-			}
-		});
+		const connectionResult = await this.rtm.start();
+
+		return connectionResult;
 	}
 
 	/**
@@ -121,8 +136,7 @@ export default class SlackAdapter {
 	async disconnect() {
 		if (this.rtm.connected && this.rtm.disconnect) {
 			await this.rtm.disconnect();
-		}
-		if (this.slackApp.stop) {
+		} else if (this.slackApp.stop) {
 			await this.slackApp.stop();
 		}
 	}
