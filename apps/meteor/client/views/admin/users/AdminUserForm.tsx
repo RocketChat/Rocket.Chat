@@ -30,7 +30,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -46,7 +46,8 @@ import { useSmtpQuery } from './hooks/useSmtpQuery';
 type AdminUserFormProps = {
 	userData?: Serialized<IUser>;
 	onReload: () => void;
-	setCreatedUsersCount: React.Dispatch<React.SetStateAction<number>>;
+	setCreatedUsersCount?: React.Dispatch<React.SetStateAction<number>>;
+	context: string;
 };
 
 export type userFormProps = Omit<UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string }, 'fields'>;
@@ -70,8 +71,8 @@ const getInitialValue = ({
 	nickname: data?.nickname ?? '',
 	email: (data?.emails?.length && data.emails[0].address) || '',
 	verified: (data?.emails?.length && data.emails[0].verified) || false,
-	setRandomPassword: isNewUserPage && isSmtpEnabled,
-	requirePasswordChange: data?.requirePasswordChange || false,
+	setRandomPassword: (isNewUserPage && isSmtpEnabled) ?? true,
+	requirePasswordChange: isNewUserPage && (data?.requirePasswordChange ?? true),
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
 	joinDefaultChannels: true,
@@ -80,7 +81,7 @@ const getInitialValue = ({
 	passwordConfirmation: '',
 });
 
-const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminUserFormProps) => {
+const AdminUserForm = ({ userData, onReload, setCreatedUsersCount, context, ...props }: AdminUserFormProps) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -93,37 +94,22 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 	const isVerificationNeeded = useSetting('Accounts_EmailVerification');
 
 	const defaultUserRoles = parseCSV(defaultRoles);
-	const { data } = useSmtpQuery();
+	const { data, isSuccess: isSmtpStatusAvailable } = useSmtpQuery();
 	const isSmtpEnabled = data?.isSMTPConfigured;
+	const isNewUserPage = context === 'new';
 
 	const {
 		control,
 		watch,
 		handleSubmit,
 		formState: { errors, isDirty },
-		resetField,
+		setValue,
 	} = useForm({
-		defaultValues: getInitialValue({ data: userData, defaultUserRoles, isSmtpEnabled, isNewUserPage: !userData?._id }),
+		defaultValues: getInitialValue({ data: userData, defaultUserRoles, isSmtpEnabled, isNewUserPage }),
 		mode: 'onBlur',
 	});
 
 	const { avatar, username, setRandomPassword, password } = watch();
-
-	useEffect(() => {
-		resetField('sendWelcomeEmail', { defaultValue: isSmtpEnabled });
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isSmtpEnabled]);
-
-	useEffect(() => {
-		resetField('setRandomPassword', { defaultValue: !userData?._id && isSmtpEnabled });
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isSmtpEnabled, userData?._id]);
-
-	useEffect(() => {
-		resetField('requirePasswordChange', { defaultValue: setRandomPassword });
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [setRandomPassword]);
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
@@ -156,7 +142,7 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 			await eventStats({
 				params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
 			});
-			setCreatedUsersCount((prevUsersCount) => prevUsersCount + 1);
+			setCreatedUsersCount?.((prevUsersCount) => prevUsersCount + 1);
 			router.navigate(`/admin/users/created/${_id}`);
 			onReload();
 		},
@@ -167,9 +153,11 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 
 	const handleSaveUser = useMutableCallback(async (userFormPayload: userFormProps) => {
 		const { avatar, passwordConfirmation, ...userFormData } = userFormPayload;
-		if (userData?._id) {
+
+		if (!isNewUserPage && userData?._id) {
 			return handleUpdateUser.mutateAsync({ userId: userData?._id, data: userFormData });
 		}
+
 		return handleCreateUser.mutateAsync({ ...userFormData, fields: '' });
 	});
 
@@ -191,11 +179,15 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 
 	const [showCustomFields, setShowCustomFields] = useState(true);
 
+	if (!context) {
+		return null;
+	}
+
 	return (
 		<>
 			<ContextualbarScrollableContent {...props}>
 				<FieldGroup>
-					{userData?._id && (
+					{!isNewUserPage && (
 						<Field>
 							<Controller
 								name='avatar'
@@ -211,7 +203,7 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 							/>
 						</Field>
 					)}
-					{!userData?._id && <Box color='hint'>{t('Manually_created_users_briefing')}</Box>}
+					{isNewUserPage && <Box color='hint'>{t('Manually_created_users_briefing')}</Box>}
 					<Field>
 						<FieldLabel htmlFor={emailId}>{t('Email')}</FieldLabel>
 						<FieldRow>
@@ -254,7 +246,6 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 								)}
 							/>
 						</FieldRow>
-						{/* <FieldHint id={`${verifiedId}-hint`} dangerouslySetInnerHTML={{ __html: t('Activate_to_bypass_email_verification') }} /> */}
 						{isVerificationNeeded && !isSmtpEnabled && (
 							<FieldHint
 								id={`${verifiedId}-hint`}
@@ -323,9 +314,12 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 							{t('Password')}
 						</FieldLabel>
 						<AdminUserSetRandomPassword
+							isNewUserPage={isNewUserPage}
 							setRandomPasswordId={setRandomPasswordId}
 							control={control}
-							isSmtpEnabled={isSmtpEnabled || false}
+							isSmtpStatusAvailable={isSmtpStatusAvailable}
+							isSmtpEnabled={isSmtpEnabled}
+							setValue={setValue}
 						/>
 						{!setRandomPassword && (
 							<>
@@ -340,7 +334,7 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 													ref={ref}
 													id={requirePasswordChangeId}
 													disabled={setRandomPassword}
-													checked={setRandomPassword || value}
+													checked={value}
 													onChange={onChange}
 												/>
 											)}
@@ -351,7 +345,7 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 									<Controller
 										control={control}
 										name='password'
-										rules={{ required: !userData?._id && t('The_field_is_required', t('Password')) }}
+										rules={{ required: isNewUserPage && t('The_field_is_required', t('Password')) }}
 										render={({ field }) => (
 											<PasswordInput
 												{...field}
@@ -376,7 +370,7 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 											control={control}
 											name='passwordConfirmation'
 											rules={{
-												required: !userData?._id && t('The_field_is_required', t('Confirm_password')),
+												required: isNewUserPage && t('The_field_is_required', t('Confirm_password')),
 												deps: ['password'],
 												validate: (val: string) => (watch('password') === val ? true : t('Invalid_confirm_pass')),
 											}}
@@ -447,19 +441,22 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 								{t('Send_welcome_email')}
 							</FieldLabel>
 							<FieldRow>
-								<Controller
-									control={control}
-									name='sendWelcomeEmail'
-									render={({ field: { onChange, value } }) => (
-										<ToggleSwitch
-											id={sendWelcomeEmailId}
-											aria-describedby={`${sendWelcomeEmailId}-hint`}
-											onChange={onChange}
-											checked={value}
-											disabled={!isSmtpEnabled}
-										/>
-									)}
-								/>
+								{isSmtpStatusAvailable && (
+									<Controller
+										control={control}
+										name='sendWelcomeEmail'
+										defaultValue={isSmtpEnabled}
+										render={({ field: { onChange, value } }) => (
+											<ToggleSwitch
+												id={sendWelcomeEmailId}
+												aria-describedby={`${sendWelcomeEmailId}-hint`}
+												onChange={onChange}
+												checked={value}
+												disabled={!isSmtpEnabled}
+											/>
+										)}
+									/>
+								)}
 							</FieldRow>
 						</Box>
 						{!isSmtpEnabled && (
@@ -554,4 +551,4 @@ const UserForm = ({ userData, onReload, setCreatedUsersCount, ...props }: AdminU
 	);
 };
 
-export default UserForm;
+export default AdminUserForm;

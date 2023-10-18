@@ -2,21 +2,41 @@ import { Box, FieldHint, FieldLabel, FieldRow, RadioButton } from '@rocket.chat/
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
-import type { Control } from 'react-hook-form';
+import type { Control, UseFormSetValue } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
 import type { userFormProps } from './AdminUserForm';
 
 type AdminUserSetRandomPasswordProps = {
+	isNewUserPage: boolean | undefined;
 	control: Control<userFormProps, any>;
-	isSmtpEnabled: boolean;
+	isSmtpStatusAvailable: boolean;
+	isSmtpEnabled: boolean | undefined;
 	setRandomPasswordId: string;
+	setValue: UseFormSetValue<userFormProps>;
 };
 
-const AdminUserSetRandomPassword = ({ control, isSmtpEnabled, setRandomPasswordId }: AdminUserSetRandomPasswordProps) => {
+const AdminUserSetRandomPassword = ({
+	isNewUserPage,
+	control,
+	isSmtpStatusAvailable,
+	isSmtpEnabled,
+	setRandomPasswordId,
+	setValue,
+}: AdminUserSetRandomPasswordProps) => {
 	const t = useTranslation();
 
 	const setPasswordManuallyId = useUniqueId();
+
+	const handleSetRandomPasswordChange = (onChange: (...event: any[]) => void, value: boolean) => {
+		setValue('requirePasswordChange', value);
+
+		onChange(value);
+	};
+
+	if (!isSmtpStatusAvailable || isNewUserPage === undefined) {
+		return null;
+	}
 
 	return (
 		<>
@@ -25,13 +45,14 @@ const AdminUserSetRandomPassword = ({ control, isSmtpEnabled, setRandomPasswordI
 					<Controller
 						control={control}
 						name='setRandomPassword'
+						defaultValue={isNewUserPage}
 						render={({ field: { ref, onChange, value } }) => (
 							<RadioButton
 								ref={ref}
 								id={setRandomPasswordId}
 								aria-describedby={`${setRandomPasswordId}-hint`}
 								checked={value}
-								onChange={() => onChange(true)}
+								onChange={() => handleSetRandomPasswordChange(onChange, true)}
 								disabled={!isSmtpEnabled}
 							/>
 						)}
@@ -54,13 +75,14 @@ const AdminUserSetRandomPassword = ({ control, isSmtpEnabled, setRandomPasswordI
 					<Controller
 						control={control}
 						name='setRandomPassword'
+						defaultValue={!isNewUserPage}
 						render={({ field: { ref, onChange, value } }) => (
 							<RadioButton
 								ref={ref}
 								id={setPasswordManuallyId}
 								aria-describedby={`${setPasswordManuallyId}-hint`}
 								checked={!value}
-								onChange={() => onChange(false)}
+								onChange={() => handleSetRandomPasswordChange(onChange, false)}
 							/>
 						)}
 					/>
