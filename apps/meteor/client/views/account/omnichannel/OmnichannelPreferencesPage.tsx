@@ -6,6 +6,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 
 import Page from '../../../components/Page';
 import PreferencesConversationTranscript from './PreferencesConversationTranscript';
+import { PreferencesGeneral } from './PreferencesGeneral';
 
 type FormData = {
 	omnichannelTranscriptPDF: boolean;
@@ -18,9 +19,10 @@ const OmnichannelPreferencesPage = (): ReactElement => {
 
 	const omnichannelTranscriptPDF = useUserPreference<boolean>('omnichannelTranscriptPDF') ?? false;
 	const omnichannelTranscriptEmail = useUserPreference<boolean>('omnichannelTranscriptEmail') ?? false;
+	const omnichannelHideConversationAfterClosing = useUserPreference<boolean>('omnichannelHideConversationAfterClosing') ?? true;
 
 	const methods = useForm({
-		defaultValues: { omnichannelTranscriptPDF, omnichannelTranscriptEmail },
+		defaultValues: { omnichannelTranscriptPDF, omnichannelTranscriptEmail, omnichannelHideConversationAfterClosing },
 	});
 
 	const {
@@ -48,6 +50,7 @@ const OmnichannelPreferencesPage = (): ReactElement => {
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<Accordion>
 						<FormProvider {...methods}>
+							<PreferencesGeneral />
 							<PreferencesConversationTranscript />
 						</FormProvider>
 					</Accordion>
