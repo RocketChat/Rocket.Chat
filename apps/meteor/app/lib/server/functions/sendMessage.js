@@ -255,7 +255,9 @@ export const sendMessage = async function (user, message, room, upsert = false, 
 		if (message.t === 'otr') {
 			const otrStreamer = notifications.streamRoomMessage;
 			otrStreamer.emit(message.rid, message, user, room);
-		} else if (message._id && upsert) {
+			return message;
+		}
+		if (message._id && upsert) {
 			const { _id } = message;
 			delete message._id;
 			await Messages.updateOne(
