@@ -16,7 +16,7 @@ type AdminUserSetRandomPasswordProps = {
 	setValue: UseFormSetValue<userFormProps>;
 };
 
-const AdminUserSetRandomPassword = ({
+const AdminUserSetRandomPasswordRadios = ({
 	isNewUserPage,
 	control,
 	isSmtpStatusAvailable,
@@ -95,4 +95,4 @@ const AdminUserSetRandomPassword = ({
 	);
 };
 
-export default AdminUserSetRandomPassword;
+export default AdminUserSetRandomPasswordRadios;

@@ -3,7 +3,6 @@ import {
 	Field,
 	TextInput,
 	TextAreaInput,
-	PasswordInput,
 	MultiSelectFiltered,
 	Box,
 	ToggleSwitch,
@@ -20,7 +19,7 @@ import {
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useUniqueId, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
-import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
+import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
 	useSetting,
@@ -40,7 +39,8 @@ import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
-import AdminUserSetRandomPassword from './AdminUserSetRandomPassword';
+import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
+import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 
 type AdminUserFormProps = {
@@ -88,9 +88,6 @@ const AdminUserForm = ({ userData, onReload, setCreatedUsersCount, context, ...p
 
 	const customFieldsMetadata = useAccountsCustomFields();
 	const defaultRoles = useSetting<string>('Accounts_Registration_Users_Default_Roles') || '';
-	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
-	const passwordPlaceholder = String(useSetting('Accounts_PasswordPlaceholder'));
-	const passwordConfirmationPlaceholder = String(useSetting('Accounts_ConfirmPasswordPlaceholder'));
 	const isVerificationNeeded = useSetting('Accounts_EmailVerification');
 
 	const defaultUserRoles = parseCSV(defaultRoles);
@@ -169,13 +166,10 @@ const AdminUserForm = ({ userData, onReload, setCreatedUsersCount, context, ...p
 	const bioId = useUniqueId();
 	const nicknameId = useUniqueId();
 	const passwordId = useUniqueId();
-	const passwordConfirmationId = useUniqueId();
-	const requirePasswordChangeId = useUniqueId();
 	const rolesId = useUniqueId();
 	const joinDefaultChannelsId = useUniqueId();
 	const sendWelcomeEmailId = useUniqueId();
 	const setRandomPasswordId = useUniqueId();
-	const passwordVerifierId = useUniqueId();
 
 	const [showCustomFields, setShowCustomFields] = useState(true);
 
@@ -313,7 +307,7 @@ const AdminUserForm = ({ userData, onReload, setCreatedUsersCount, context, ...p
 						<FieldLabel htmlFor={passwordId} mbe={8}>
 							{t('Password')}
 						</FieldLabel>
-						<AdminUserSetRandomPassword
+						<AdminUserSetRandomPasswordRadios
 							isNewUserPage={isNewUserPage}
 							setRandomPasswordId={setRandomPasswordId}
 							control={control}
@@ -322,79 +316,14 @@ const AdminUserForm = ({ userData, onReload, setCreatedUsersCount, context, ...p
 							setValue={setValue}
 						/>
 						{!setRandomPassword && (
-							<>
-								<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} mbe={8} mbs={12}>
-									<FieldLabel htmlFor={requirePasswordChangeId}>{t('Require_password_change')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											control={control}
-											name='requirePasswordChange'
-											render={({ field: { ref, onChange, value } }) => (
-												<ToggleSwitch
-													ref={ref}
-													id={requirePasswordChangeId}
-													disabled={setRandomPassword}
-													checked={value}
-													onChange={onChange}
-												/>
-											)}
-										/>
-									</FieldRow>
-								</Box>
-								<FieldRow>
-									<Controller
-										control={control}
-										name='password'
-										rules={{ required: isNewUserPage && t('The_field_is_required', t('Password')) }}
-										render={({ field }) => (
-											<PasswordInput
-												{...field}
-												id={passwordId}
-												aria-invalid={errors.password ? 'true' : 'false'}
-												aria-describedby={`${passwordId}-error`}
-												error={errors.password?.message}
-												flexGrow={1}
-												placeholder={passwordPlaceholder || t('Password')}
-											/>
-										)}
-									/>
-								</FieldRow>
-								{errors?.password && (
-									<FieldError aria-live='assertive' id={`${passwordId}-error`}>
-										{errors.password.message}
-									</FieldError>
-								)}
-								{requiresPasswordConfirmation && (
-									<FieldRow>
-										<Controller
-											control={control}
-											name='passwordConfirmation'
-											rules={{
-												required: isNewUserPage && t('The_field_is_required', t('Confirm_password')),
-												deps: ['password'],
-												validate: (val: string) => (watch('password') === val ? true : t('Invalid_confirm_pass')),
-											}}
-											render={({ field }) => (
-												<PasswordInput
-													{...field}
-													id={passwordConfirmationId}
-													aria-invalid={errors.passwordConfirmation ? 'true' : 'false'}
-													aria-describedby={`${passwordConfirmationId}-error`}
-													error={errors.passwordConfirmation?.message}
-													flexGrow={1}
-													placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
-												/>
-											)}
-										/>
-									</FieldRow>
-								)}
-								{errors?.passwordConfirmation && (
-									<FieldError aria-live='assertive' id={`${passwordConfirmationId}-error`}>
-										{errors.passwordConfirmation.message}
-									</FieldError>
-								)}
-								<PasswordVerifier password={password} id={passwordVerifierId} vertical />
-							</>
+							<AdminUserSetRandomPasswordContent
+								control={control}
+								setRandomPassword={setRandomPassword}
+								isNewUserPage={isNewUserPage}
+								passwordId={passwordId}
+								errors={errors}
+								password={password}
+							/>
 						)}
 					</Field>
 					<Field>
