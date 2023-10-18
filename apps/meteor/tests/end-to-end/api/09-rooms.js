@@ -7,7 +7,7 @@ import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
-import { imgURL } from '../../data/interactions.js';
+import { imgURL } from '../../data/interactions';
 import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { closeRoom, createRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
