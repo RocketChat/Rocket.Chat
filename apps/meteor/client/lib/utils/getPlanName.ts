@@ -7,13 +7,19 @@ export enum PlanName {
 	ENTERPRISE_TRIAL = 'Enterprise_trial',
 }
 
-export const getPlanName = (isEnterprise: boolean, activeModules: string[], isTrial: boolean): PlanName => {
+export const getPlanName = (isEnterprise: boolean, activeModules: string[], isTrial: boolean): PlanName | undefined => {
+	if (!isEnterprise) {
+		return PlanName.COMMUNITY;
+	}
+
+	if (!activeModules || activeModules.length === 0) {
+		return;
+	}
+
 	const hasHideWatermarkModule = activeModules.includes('hide-watermark');
 	const hasScalabilityModule = activeModules.includes('scalability');
 
 	switch (true) {
-		case !isEnterprise:
-			return PlanName.COMMUNITY;
 		case hasScalabilityModule && isTrial:
 			return PlanName.ENTERPRISE_TRIAL;
 		case hasScalabilityModule:
