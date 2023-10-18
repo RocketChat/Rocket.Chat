@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon, Tabs } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useRef, useState } from 'react';
@@ -13,6 +13,9 @@ import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
 import UsersTable from './UsersTable';
+
+import PageHeader from '/client/components/Page/PageHeader';
+import PageContent from '/client/components/Page/PageContent';
 
 const UsersPage = (): ReactElement => {
 	const t = useTranslation();
@@ -47,7 +50,7 @@ const UsersPage = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Users')}>
+				<PageHeader title={t('Users')}>
 					{seatsCap && seatsCap.maxActiveUsers < Number.POSITIVE_INFINITY ? (
 						<UserPageHeaderContentWithSeatsCap {...seatsCap} />
 					) : (
@@ -64,27 +67,27 @@ const UsersPage = (): ReactElement => {
 							)}
 						</ButtonGroup>
 					)}
-				</Page.Header>
-				<Page.Content>
-					<Tabs>
-						<Tabs.Item selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
-							{t('All')}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'invited'} onClick={() => setTab('invited')}>
-							{t('Invited')}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'new'} onClick={() => setTab('new')}>
-							{t('New_users')}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'active'} onClick={() => setTab('active')}>
-							{t('Active')}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'deactivated'} onClick={() => setTab('deactivated')}>
-							{t('Deactivated')}
-						</Tabs.Item>
-					</Tabs>
+				</PageHeader>
+				<Tabs>
+					<TabsItem selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
+						{t('All')}
+					</TabsItem>
+					<TabsItem selected={tab === 'invited'} onClick={() => setTab('invited')}>
+						{t('Invited')}
+					</TabsItem>
+					<TabsItem selected={tab === 'new'} onClick={() => setTab('new')}>
+						{t('New_users')}
+					</TabsItem>
+					<TabsItem selected={tab === 'active'} onClick={() => setTab('active')}>
+						{t('Active')}
+					</TabsItem>
+					<TabsItem selected={tab === 'deactivated'} onClick={() => setTab('deactivated')}>
+						{t('Deactivated')}
+					</TabsItem>
+				</Tabs>
+				<PageContent>
 					<UsersTable reload={reload} tab={tab} onReload={handleReload} />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context && (
 				<Contextualbar is='aside' aria-labelledby=''>
