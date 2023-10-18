@@ -1570,29 +1570,30 @@ describe('[Rooms]', function () {
 				});
 		});
 
-		it('should update group name if user changes name', (done) => {
-			updateSetting('UI_Use_Real_Name', true).then(() => {
-				request
-					.post(api('users.update'))
-					.set(credentials)
-					.send({
-						userId: testUser._id,
-						data: {
-							name: `changed.name.${testUser.username}`,
-						},
-					})
-					.end(() => {
-						request
-							.get(api('subscriptions.getOne'))
-							.set(credentials)
-							.query({ roomId })
-							.end((err, res) => {
-								const { subscription } = res.body;
-								expect(subscription.fname).to.equal(`changed.name.${testUser.username}, Rocket.Cat`);
-								done();
-							});
-					});
-			});
+		it('should update group name if user changes name', async () => {
+			await updateSetting('UI_Use_Real_Name', true);
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: testUser._id,
+					data: {
+						name: `changed.name.${testUser.username}`,
+					},
+				});
+
+			// need to wait for the name update finish
+			await sleep(300);
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId })
+				.send()
+				.expect((res) => {
+					const { subscription } = res.body;
+					expect(subscription.fname).to.equal(`changed.name.${testUser.username}, Rocket.Cat`);
+				});
 		});
 	});
 
