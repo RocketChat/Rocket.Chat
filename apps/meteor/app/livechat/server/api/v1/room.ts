@@ -251,7 +251,7 @@ API.v1.addRoute(
 			const { _id, username, name } = guest;
 			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
 
-			if (!(await Livechat.transfer(room, guest, { roomId: rid, departmentId: department, transferredBy }))) {
+			if (!(await LivechatTyped.transfer(room, guest, { departmentId: department, transferredBy }))) {
 				return API.v1.failure();
 			}
 
@@ -312,10 +312,10 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room', 'transfer-livechat-guest'], validateParams: isLiveChatRoomForwardProps },
 	{
 		async post() {
-			const transferData: typeof this.bodyParams & {
-				transferredBy?: unknown;
+			const transferData = this.bodyParams as typeof this.bodyParams & {
+				transferredBy: TransferByData;
 				transferredTo?: { _id: string; username?: string; name?: string };
-			} = this.bodyParams;
+			};
 
 			const room = await LivechatRooms.findOneById(this.bodyParams.roomId);
 			if (!room || room.t !== 'l') {
@@ -327,6 +327,10 @@ API.v1.addRoute(
 			}
 
 			const guest = await LivechatVisitors.findOneEnabledById(room.v?._id);
+			if (!guest) {
+				throw new Error('error-invalid-visitor');
+			}
+
 			const transferedBy = this.user satisfies TransferByData;
 			transferData.transferredBy = normalizeTransferredByData(transferedBy, room);
 			if (transferData.userId) {
@@ -340,7 +344,7 @@ API.v1.addRoute(
 				}
 			}
 
-			const chatForwardedResult = await Livechat.transfer(room, guest, transferData);
+			const chatForwardedResult = await LivechatTyped.transfer(room, guest, transferData);
 			if (!chatForwardedResult) {
 				throw new Error('error-forwarding-chat');
 			}
