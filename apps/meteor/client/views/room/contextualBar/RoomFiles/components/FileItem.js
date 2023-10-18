@@ -19,33 +19,49 @@ const FileItem = ({ fileData, isDeletionAllowed, onClickDelete }) => {
 	const { _id, name, url, uploadedAt, ts, type, typeGroup, style, className, user } = fileData;
 
 	return (
-		<Box display='flex' p={12} borderRadius='x4' style={style} className={[className, hoverClass]}>
-			<Box
-				is='a'
-				minWidth={0}
-				{...(typeGroup === 'image' && { className: 'gallery-item' })}
-				download
-				rel='noopener noreferrer'
-				target='_blank'
-				title={name}
-				display='flex'
-				flexGrow={1}
-				flexShrink={1}
-				href={url}
-			>
-				{typeGroup === 'image' ? <Avatar size='x48' url={url} /> : <FileItemIcon type={type} />}
-				<Box mis={8} flexShrink={1} overflow='hidden'>
-					<Box withTruncatedText color='default' fontScale='p2m'>
-						{name}
-					</Box>
-					<Box withTruncatedText color='hint' fontScale='p2'>
-						@{user?.username}
-					</Box>
-					<Box color='hint' fontScale='micro'>
-						{format(uploadedAt)}
+		<Box display='flex' p={12} borderRadius='x4' style={style} className={[className, hoverClass, 'gallery-item']}>
+			{typeGroup === 'image' ? (
+				<Box minWidth={0} className='gallery-item' title={name} display='flex' flexGrow={1} flexShrink={1}>
+					<Avatar size='x48' url={url} className='gallery-item' />
+					<Box mis={8} flexShrink={1} overflow='hidden' className='gallery-item'>
+						<Box withTruncatedText color='default' fontScale='p2m' className='gallery-item'>
+							{name}
+						</Box>
+						<Box withTruncatedText color='hint' fontScale='p2' className='gallery-item'>
+							@{user?.username}
+						</Box>
+						<Box color='hint' fontScale='micro' className='gallery-item'>
+							{format(uploadedAt)}
+						</Box>
 					</Box>
 				</Box>
-			</Box>
+			) : (
+				<Box
+					is='a'
+					minWidth={0}
+					download
+					rel='noopener noreferrer'
+					target='_blank'
+					title={name}
+					display='flex'
+					flexGrow={1}
+					flexShrink={1}
+					href={url}
+				>
+					<FileItemIcon type={type} />
+					<Box mis={8} flexShrink={1} overflow='hidden'>
+						<Box withTruncatedText color='default' fontScale='p2m'>
+							{name}
+						</Box>
+						<Box withTruncatedText color='hint' fontScale='p2'>
+							@{user?.username}
+						</Box>
+						<Box color='hint' fontScale='micro'>
+							{format(uploadedAt)}
+						</Box>
+					</Box>
+				</Box>
+			)}
 
 			<MenuItem
 				_id={_id}

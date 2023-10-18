@@ -1,12 +1,13 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType, ReactElement } from 'react';
-import React, { useState, useMemo, memo, useEffect, useCallback } from 'react';
+import React, { useMemo, memo, useEffect, useCallback } from 'react';
 
 import { ChatSubscription } from '../../../../app/models/client';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import ImageGallery from '../../../components/ImageGallery';
+import { useImageGallery } from '../../../hooks/useImageGallery';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { RoomManager } from '../../../lib/RoomManager';
@@ -26,9 +27,10 @@ type RoomProviderProps = {
 
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useRoomRolesManagement(rid);
+	const { imageUrl, onClose } = useImageGallery();
 
 	const { data: room, isSuccess } = useRoomQuery(rid);
-	const [imageUrl, setImageUrl] = useState<string | null>();
+
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const router = useRouter();
 	useEffect(() => {
@@ -36,15 +38,6 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			router.navigate('/home');
 		}
 	}, [isSuccess, room, router]);
-
-	useEffect(() => {
-		document.addEventListener('click', (event) => {
-			const target = event?.target as HTMLImageElement;
-			if (target?.classList.contains('gallery-item')) {
-				setImageUrl(target?.dataset?.src);
-			}
-		});
-	}, []);
 
 	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
 
@@ -119,7 +112,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	return (
 		<RoomContext.Provider value={context}>
 			<RoomToolboxProvider>
-				{imageUrl && <ImageGallery url={imageUrl} onClose={() => setImageUrl(null)} />}
+				{imageUrl && <ImageGallery url={imageUrl} onClose={onClose} />}
 				<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
 			</RoomToolboxProvider>
 		</RoomContext.Provider>
