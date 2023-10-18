@@ -15,7 +15,7 @@ import {
 	Select,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
-import { useLocalStorage, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
@@ -34,8 +34,6 @@ const AccessibilityPage = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const preferencesValues = useAccessiblityPreferencesValues();
 
-	const { themeAppearence } = preferencesValues;
-	const [, setPrevTheme] = useLocalStorage('prevTheme', themeAppearence);
 	const createFontStyleElement = useCreateFontStyleElement();
 	const displayRolesEnabled = useSetting('UI_DisplayRoles');
 
@@ -74,7 +72,6 @@ const AccessibilityPage = () => {
 		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
 		onSettled: (_data, _error, { data: { fontSize } }) => {
 			reset(currentData);
-			dirtyFields.themeAppearence && setPrevTheme(themeAppearence);
 			dirtyFields.fontSize && fontSize && createFontStyleElement(fontSize);
 		},
 	});
