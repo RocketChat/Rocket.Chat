@@ -21,8 +21,9 @@ export const getCheckoutUrl = async (token: string, body: CheckoutBodyParams) =>
 			body,
 		});
 
-		if (!response.ok) {
-			throw new Error((await response.json()).error);
+		if (!response.url) {
+			const { i18n } = await response.json();
+			throw new Error(i18n);
 		}
 
 		return response.json();

@@ -14,7 +14,7 @@ API.v1.addRoute(
 			}
 
 			const manageSubscriptionURL =
-				process.env.NODE_ENV !== 'production' ? 'https://localhost:3000/admin/manage-subscription/' : getURL('admin/manage-subscription');
+				process.env.NODE_ENV !== 'production' ? 'http://localhost:3000/admin/manage-subscription/' : getURL('admin/manage-subscription');
 
 			const bodyParams = {
 				okCallback: `${manageSubscriptionURL}?subscriptionSuccess=true`,
@@ -23,8 +23,8 @@ API.v1.addRoute(
 
 			const checkoutUrl = await getCheckoutUrl(token, bodyParams);
 
-			if (checkoutUrl.error) {
-				return API.v1.failure(checkoutUrl.error);
+			if (!checkoutUrl.url) {
+				return API.v1.failure(checkoutUrl);
 			}
 
 			return API.v1.success({ url: checkoutUrl.url });
