@@ -1,4 +1,16 @@
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldGroup, IconButton } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Button,
+	ButtonGroup,
+	Margins,
+	TextInput,
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	IconButton,
+} from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, ChangeEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
@@ -134,24 +146,24 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 			<ContextualbarScrollableContent {...props}>
 				<FieldGroup>
 					<Field>
-						<Field.Label>{t('Name')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Name')}</FieldLabel>
+						<FieldRow>
 							<TextInput value={name} onChange={handleChangeName} placeholder={t('Name')} />
-						</Field.Row>
-						{errors.name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
+						</FieldRow>
+						{errors.name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
 					</Field>
 					<Field>
-						<Field.Label>{t('Aliases')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Aliases')}</FieldLabel>
+						<FieldRow>
 							<TextInput value={aliases} onChange={handleChangeAliases} placeholder={t('Aliases')} />
-						</Field.Row>
-						{errors.aliases && <Field.Error>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</Field.Error>}
+						</FieldRow>
+						{errors.aliases && <FieldError>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</FieldError>}
 					</Field>
 					<Field>
-						<Field.Label alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
+						<FieldLabel alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
 							{t('Custom_Emoji')}
 							<IconButton icon='upload' secondary onClick={clickUpload} />
-						</Field.Label>
+						</FieldLabel>
 						{newEmojiPreview && (
 							<Box display='flex' flexDirection='row' mbs='none' justifyContent='center'>
 								<Margins inline={4}>

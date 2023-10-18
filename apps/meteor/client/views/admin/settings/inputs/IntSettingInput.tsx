@@ -1,4 +1,4 @@
-import { Box, Field, Flex, InputBox } from '@rocket.chat/fuselage';
+import { Box, FieldLabel, FieldRow, Flex, InputBox } from '@rocket.chat/fuselage';
 import type { FormEventHandler, ReactElement } from 'react';
 import React from 'react';
 
@@ -37,13 +37,13 @@ function IntSettingInput({
 		<>
 			<Flex.Container>
 				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
+					<FieldLabel htmlFor={_id} title={_id}>
 						{label}
-					</Field.Label>
+					</FieldLabel>
 					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 				</Box>
 			</Flex.Container>
-			<Field.Row>
+			<FieldRow>
 				<InputBox
 					data-qa-setting-id={_id}
 					id={_id}
@@ -55,7 +55,7 @@ function IntSettingInput({
 					autoComplete={autocomplete === false ? 'off' : undefined}
 					onChange={handleChange}
 				/>
-			</Field.Row>
+			</FieldRow>
 		</>
 	);
 }

@@ -38,8 +38,9 @@ const AccessibilityPage = () => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { data: license } = useIsEnterprise();
 	const preferencesValues = useAccessiblityPreferencesValues();
+	const { data: license } = useIsEnterprise();
+	const isEnterprise = license?.isEnterprise;
 
 	const { themeAppearence } = preferencesValues;
 	const [, setPrevTheme] = useLocalStorage('prevTheme', themeAppearence);
@@ -102,14 +103,14 @@ const AccessibilityPage = () => {
 					<Accordion>
 						<Accordion.Item defaultExpanded={true} title={t('Theme')}>
 							{themes.map(({ id, title, description, ...item }, index) => {
-								const communityDisabled = 'isEEOnly' in item && item.isEEOnly && !license?.isEnterprise;
+								const showCommunityUpsellTriggers = 'isEEOnly' in item && item.isEEOnly && !isEnterprise;
 
 								return (
 									<Field key={id} pbe={themes.length - 1 ? undefined : 'x28'} pbs={index === 0 ? undefined : 'x28'}>
 										<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 											<FieldLabel display='flex' alignItems='center' htmlFor={id}>
 												{t.has(title) ? t(title) : title}
-												{communityDisabled && (
+												{showCommunityUpsellTriggers && (
 													<Box is='span' mis={8}>
 														<Tag variant='featured'>
 															<Icon name='lightning' />
@@ -123,7 +124,7 @@ const AccessibilityPage = () => {
 													control={control}
 													name='themeAppearence'
 													render={({ field: { onChange, value, ref } }) => {
-														if (communityDisabled) {
+														if (showCommunityUpsellTriggers) {
 															return (
 																<RadioButton
 																	id={id}
@@ -166,15 +167,17 @@ const AccessibilityPage = () => {
 									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 										<FieldLabel htmlFor={fontSizeId}>
 											{t('Mentions_with_@_symbol')}
-											<Box is='span' mis={8} display='inline-block'>
-												<Tag variant='featured'>
-													<Icon name='lightning' />
-													{t('Enterprise')}
-												</Tag>
-											</Box>
+											{!isEnterprise && (
+												<Box is='span' mis={8} display='inline-block'>
+													<Tag variant='featured'>
+														<Icon name='lightning' />
+														{t('Enterprise')}
+													</Tag>
+												</Box>
+											)}
 										</FieldLabel>
 										<FieldRow>
-											{license?.isEnterprise ? (
+											{isEnterprise ? (
 												<Controller
 													control={control}
 													name='mentionsWithSymbol'

@@ -1,6 +1,6 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Field, Select } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
 type SlaPoliciesSelectProps = {
@@ -15,10 +15,10 @@ export const SlaPoliciesSelect = ({ value, label, options, onChange }: SlaPolici
 
 	return (
 		<Field>
-			<Field.Label>{label}</Field.Label>
-			<Field.Row>
+			<FieldLabel>{label}</FieldLabel>
+			<FieldRow>
 				<Select value={value} options={optionsSelect} onChange={(value) => onChange(String(value))} />
-			</Field.Row>
+			</FieldRow>
 		</Field>
 	);
 };

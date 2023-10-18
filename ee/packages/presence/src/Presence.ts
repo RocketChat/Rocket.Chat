@@ -19,6 +19,8 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private connsPerInstance = new Map<string, number>();
 
+	private peakConnections = 0;
+
 	constructor() {
 		super();
 
@@ -35,6 +37,7 @@ export class Presence extends ServiceClass implements IPresence {
 			if (diff?.hasOwnProperty('extraInformation.conns')) {
 				this.connsPerInstance.set(id, diff['extraInformation.conns']);
 
+				this.peakConnections = Math.max(this.peakConnections, this.getTotalConnections());
 				this.validateAvailability();
 			}
 		});
@@ -65,7 +68,7 @@ export class Presence extends ServiceClass implements IPresence {
 		try {
 			await Settings.updateValueById('Presence_broadcast_disabled', false);
 
-			this.hasLicense = await License.hasLicense('scalability');
+			this.hasLicense = await License.hasModule('scalability');
 		} catch (e: unknown) {
 			// ignore
 		}
@@ -250,5 +253,17 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private getTotalConnections(): number {
 		return Array.from(this.connsPerInstance.values()).reduce((acc, conns) => acc + conns, 0);
+	}
+
+	getPeakConnections(reset = false): number {
+		const peak = this.peakConnections;
+		if (reset) {
+			this.resetPeakConnections();
+		}
+		return peak;
+	}
+
+	resetPeakConnections(): void {
+		this.peakConnections = 0;
 	}
 }
