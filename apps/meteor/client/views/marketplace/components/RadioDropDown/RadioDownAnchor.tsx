@@ -33,6 +33,7 @@ const RadioDownAnchor = forwardRef<HTMLElement, RadioDropdownAnchorProps>(functi
 			minWidth='x144'
 			pie={10}
 			pis={14}
+			rcx-input-box
 			{...props}
 		>
 			{selected}
