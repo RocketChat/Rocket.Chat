@@ -6062,5 +6062,16 @@
   "All_visible": "All visible",
   "Filter_by_visibility": "Filter by visibility",
   "Registration_status": "Registration status",
+  "Pending": "Pending",
+  "Pending_action": "Pending action",
+  "User_first_log_in": "User first log in",
+  "Activation": "Activation",
+  "Resend_welcome_email": "Resend welcome email",
+  "No_pending_users": "No pending users",
+  "No_deactivated_users": "No deactivated users",
+  "Users_who_are_pending": "Users who are pending activation or have been manually created but haven't logged in yet appear here.",
+  "Deactivated_users_appear_here": "Deactivated users appear here.",
+  "Welcome_email_resent": "Welcome email resent",
+  "Reason_for_joining": "Reason for joining",
   "Theme_Appearence": "Theme Appearence"
 }

@@ -16,6 +16,7 @@ export const useListUsers = (
 	sortDirection: ReturnType<typeof useSort>['sortDirection'],
 	itemsPerPage: ReturnType<typeof usePagination>['itemsPerPage'],
 	current: ReturnType<typeof usePagination>['current'],
+	setPendingActionsCount: React.Dispatch<React.SetStateAction<number>>,
 ) => {
 	const query = useDebouncedValue(
 		useMemo(() => {
@@ -64,6 +65,10 @@ export const useListUsers = (
 			},
 		},
 	);
+
+	if (usersListQueryResult.isSuccess) {
+		setPendingActionsCount(usersListQueryResult.data.users.filter((user) => !user.active).length);
+	}
 
 	return usersListQueryResult;
 };

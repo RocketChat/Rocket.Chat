@@ -39,6 +39,7 @@ type UserInfoProps = UserInfoDataProps & {
 	verified?: boolean;
 	actions: ReactElement;
 	roles: ReactElement[];
+	reason?: string;
 };
 
 const UserInfo = ({
@@ -59,6 +60,7 @@ const UserInfo = ({
 	customFields,
 	canViewAllInfo,
 	actions,
+	reason,
 	...props
 }: UserInfoProps): ReactElement => {
 	const t = useTranslation();
@@ -87,6 +89,12 @@ const UserInfo = ({
 				</InfoPanel.Section>
 
 				<InfoPanel.Section>
+					{reason && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Reason_for_joining')}</InfoPanel.Label>
+							<InfoPanel.Text>{reason}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)}
 					{nickname && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Nickname')}</InfoPanel.Label>
