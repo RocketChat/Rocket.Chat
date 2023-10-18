@@ -23,7 +23,7 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 	let poHomeChannel: HomeChannel;
 	let poRoomInfo: OmnichannelRoomInfo;
 
-	test.beforeAll(async ({ api, page }) => {
+	test.beforeAll(async ({ api }) => {
 		(
 			await Promise.all([
 				api.post('/livechat/users/agent', { username: 'user1' }),
@@ -31,7 +31,6 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 				api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }),
 			])
 		).every((res) => expect(res.status()).toBe(200));
-		await page.emulateMedia({ reducedMotion: 'reduce' });
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -54,8 +53,10 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 		).every((res) => expect(res.status()).toBe(200));
 	});
 
-	test('Priority updates with sidebar', async ({ browser, api }) => {
+	test('Priority updates with sidebar', async ({ browser, api, page }) => {
 		const systemMessage = poHomeChannel.content.lastSystemMessageBody;
+		await page.emulateMedia({ reducedMotion: 'reduce' });
+
 
 		await test.step('Initiate conversation', async () => {
 			const poLivechat = await createAuxContext(browser, Users.user1, '/livechat', false).then(
