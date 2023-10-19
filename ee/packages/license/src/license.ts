@@ -332,6 +332,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			activeModules,
 			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
 			tags: license?.information.tags || [],
+			trial: Boolean(license?.information.trial),
 		};
 	}
 }
