@@ -35,8 +35,12 @@ export const getUserReportsByUid = async (queryParams: GetUserReportsParamsGET, 
 
 	const emailSet = new Map<IUserEmail['address'], IUserEmail>();
 
-	reports.flatMap((report) => report.reportedUser?.emails ?? []).forEach((email) => emailSet.set(email.address, email));
-
+	reports.forEach((report) => {
+		const email = report.reportedUser?.emails?.[0];
+		if (email) {
+			emailSet.set(email.address, email);
+		}
+	});
 	if (user) {
 		user.emails = Array.from(emailSet.values());
 	}
