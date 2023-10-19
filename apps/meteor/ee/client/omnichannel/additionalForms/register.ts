@@ -6,7 +6,6 @@ import { registerForm } from '../../../../client/views/omnichannel/additionalFor
 import { hasLicense } from '../../../app/license/client';
 import type CurrentChatTags from '../tags/CurrentChatTags';
 import type BusinessHoursMultipleContainer from './BusinessHoursMultipleContainer';
-import type BusinessHoursTimeZone from './BusinessHoursTimeZone';
 import type ContactManager from './ContactManager';
 import type CustomFieldsAdditionalFormContainer from './CustomFieldsAdditionalFormContainer';
 import type DepartmentBusinessHours from './DepartmentBusinessHours';
@@ -29,7 +28,6 @@ declare module '../../../../client/views/omnichannel/additionalForms' {
 		useEeTextAreaInput?: () => LazyExoticComponent<typeof EeTextAreaInput>;
 		useBusinessHoursMultiple?: () => LazyExoticComponent<typeof BusinessHoursMultipleContainer>;
 		useEeTextInput?: () => LazyExoticComponent<typeof EeTextInput>;
-		useBusinessHoursTimeZone?: () => LazyExoticComponent<typeof BusinessHoursTimeZone>;
 		useContactManager?: () => LazyExoticComponent<typeof ContactManager>;
 
 		useCurrentChatTags?: () => LazyExoticComponent<typeof CurrentChatTags>;
@@ -54,7 +52,6 @@ hasLicense('livechat-enterprise').then((enabled) => {
 		useEeTextAreaInput: () => useMemo(() => lazy(() => import('./EeTextAreaInput')), []),
 		useBusinessHoursMultiple: () => useMemo(() => lazy(() => import('./BusinessHoursMultipleContainer')), []),
 		useEeTextInput: () => useMemo(() => lazy(() => import('./EeTextInput')), []),
-		useBusinessHoursTimeZone: () => useMemo(() => lazy(() => import('./BusinessHoursTimeZone')), []),
 		useContactManager: () => useMemo(() => lazy(() => import('./ContactManager')), []),
 		useCurrentChatTags: () => useMemo(() => lazy(() => import('../tags/CurrentChatTags')), []),
 		useDepartmentBusinessHours: () => useMemo(() => lazy(() => import('./DepartmentBusinessHours')), []),
