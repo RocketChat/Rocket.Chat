@@ -4,7 +4,7 @@ import { before, describe, after, it } from 'mocha';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage } from '../../data/chat.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, login } from '../../data/users.helper.js';
 
@@ -71,6 +71,18 @@ describe('AutoTranslate', function () {
 			});
 		});
 		describe('[/autotranslate.saveSettings', () => {
+			let testGroupId;
+			before(async () => {
+				await updateSetting('E2E_Enable', true);
+				await updateSetting('E2E_Enabled_Default_PrivateRooms', true);
+				const res = await createRoom({ type: 'p', name: `e2etest-autotranslate-${Date.now()}` });
+				testGroupId = res.body.group._id;
+			});
+			after(async () => {
+				await updateSetting('E2E_Enabled_Default_PrivateRooms', false);
+				await updateSetting('E2E_Enable', false);
+				await deleteRoom({ type: 'p', roomId: testGroupId });
+			});
 			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
 				updateSetting('AutoTranslate_Enabled', false).then(() => {
 					request
@@ -222,6 +234,23 @@ describe('AutoTranslate', function () {
 						expect(res.body.error).to.be.equal('Invalid subscription [error-invalid-subscription]');
 					})
 					.end(done);
+			});
+			it('should throw an error when E2E encryption is enabled', async () => {
+				await request
+					.post(api('autotranslate.saveSettings'))
+					.set(credentials)
+					.send({
+						roomId: testGroupId,
+						field: 'autoTranslate',
+						defaultLanguage: 'en',
+						value: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-e2e-enabled');
+					});
 			});
 			it('should return success when the setting is saved correctly', (done) => {
 				request

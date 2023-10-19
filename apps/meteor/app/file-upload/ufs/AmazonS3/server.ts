@@ -80,7 +80,7 @@ class AmazonS3Store extends UploadFS.Store {
 				ResponseContentDisposition: `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(file.name || '')}"`,
 			};
 
-			return s3.getSignedUrl('getObject', params);
+			return s3.getSignedUrlPromise('getObject', params);
 		};
 
 		/**
