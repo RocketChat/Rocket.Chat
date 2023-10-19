@@ -29,7 +29,7 @@ export const palette = [
 			{ name: 'surface-featured', token: '', color: '#5F1477' },
 			{ name: 'surface-featured-hover', token: '', color: '#4A105D' },
 			{ name: 'surface-overlay', token: '', color: 'rgba(0, 0, 0, 0.6)' },
-			{ name: 'surface-sidebar', token: '', color: '#262931' },
+			{ name: 'surface-sidebar', token: '', color: '#2F343D' },
 		],
 	},
 	{
