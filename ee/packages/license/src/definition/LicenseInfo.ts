@@ -7,4 +7,5 @@ export type LicenseInfo = {
 	activeModules: LicenseModule[];
 	limits: Record<LicenseLimitKind, { value?: number; max: number }>;
 	tags: ILicenseTag[];
+	trial: boolean;
 };
