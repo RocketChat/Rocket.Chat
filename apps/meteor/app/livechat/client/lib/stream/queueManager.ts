@@ -8,18 +8,34 @@ import { LivechatInquiry } from '../../collections/LivechatInquiry';
 const departments = new Set();
 
 const events = {
-	added: (inquiry: ILivechatInquiryRecord) => {
-		departments.has(inquiry.department) && LivechatInquiry.insert({ ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+	added: async (inquiry: ILivechatInquiryRecord) => {
+		if (!departments.has(inquiry.department)) {
+			return;
+		}
+
+		LivechatInquiry.insert({ ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+		await invalidateRoomQueries(inquiry.rid);
 	},
 	changed: async (inquiry: ILivechatInquiryRecord) => {
 		if (inquiry.status !== 'queued' || (inquiry.department && !departments.has(inquiry.department))) {
-			return LivechatInquiry.remove(inquiry._id);
+			return removeInquiry(inquiry);
 		}
 
 		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
-		await queryClient.invalidateQueries(['/v1/rooms.info', inquiry.rid]);
+		await invalidateRoomQueries(inquiry.rid);
 	},
-	removed: (inquiry: ILivechatInquiryRecord) => LivechatInquiry.remove(inquiry._id),
+	removed: (inquiry: ILivechatInquiryRecord) => removeInquiry(inquiry),
+};
+
+const invalidateRoomQueries = async (rid: string) => {
+	await queryClient.invalidateQueries(['rooms', { reference: rid, type: 'l' }]);
+	await queryClient.removeQueries(['rooms', rid]);
+	await queryClient.removeQueries(['/v1/rooms.info', rid]);
+};
+
+const removeInquiry = async (inquiry: ILivechatInquiryRecord) => {
+	await LivechatInquiry.remove(inquiry._id);
+	return queryClient.invalidateQueries(['rooms', { reference: inquiry.rid, type: 'l' }]);
 };
 
 const getInquiriesFromAPI = async () => {

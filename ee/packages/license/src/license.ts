@@ -4,6 +4,7 @@ import { type ILicenseTag } from './definition/ILicenseTag';
 import type { ILicenseV2 } from './definition/ILicenseV2';
 import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
 import type { BehaviorWithContext } from './definition/LicenseBehavior';
+import type { LicenseInfo } from './definition/LicenseInfo';
 import type { LicenseModule } from './definition/LicenseModule';
 import type { LicenseValidationOptions } from './definition/LicenseValidationOptions';
 import type { LimitContext } from './definition/LimitContext';
@@ -291,17 +292,22 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		return isBehaviorsInResult(validationResult, ['prevent_action']);
 	}
 
-	public async getInfo(loadCurrentValues = false): Promise<{
-		license: ILicenseV3 | undefined;
-		activeModules: LicenseModule[];
-		limits: Record<LicenseLimitKind, { value?: number; max: number }>;
-	}> {
+	public async getInfo({
+		limits: includeLimits,
+		currentValues: loadCurrentValues,
+		license: includeLicense,
+	}: {
+		limits: boolean;
+		currentValues: boolean;
+		license: boolean;
+	}): Promise<LicenseInfo> {
 		const activeModules = getModules.call(this);
 		const license = this.getLicense();
 
 		// Get all limits present in the license and their current value
 		const limits = (
 			(license &&
+				includeLimits &&
 				(await Promise.all(
 					globalLimitKinds
 						.map((limitKey) => ({
@@ -322,9 +328,11 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		).reduce((prev, curr) => ({ ...prev, ...curr }), {});
 
 		return {
-			license,
+			license: (includeLicense && license) || undefined,
 			activeModules,
 			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
+			tags: license?.information.tags || [],
+			trial: Boolean(license?.information.trial),
 		};
 	}
 }

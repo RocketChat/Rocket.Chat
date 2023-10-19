@@ -1,5 +1,5 @@
-import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
-import type { LicenseModule } from './definition/LicenseModule';
+import type { LicenseLimitKind } from './definition/ILicenseV3';
+import type { LicenseInfo } from './definition/LicenseInfo';
 import type { LimitContext } from './definition/LimitContext';
 import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
 import { onLicense } from './events/deprecated';
@@ -24,6 +24,7 @@ export * from './definition/ILicenseTag';
 export * from './definition/ILicenseV2';
 export * from './definition/ILicenseV3';
 export * from './definition/LicenseBehavior';
+export * from './definition/LicenseInfo';
 export * from './definition/LicenseLimit';
 export * from './definition/LicenseModule';
 export * from './definition/LicensePeriod';
@@ -49,11 +50,7 @@ interface License {
 	onBehaviorTriggered: typeof onBehaviorTriggered;
 	revalidateLicense: () => Promise<void>;
 
-	getInfo: (loadCurrentValues: boolean) => Promise<{
-		license: ILicenseV3 | undefined;
-		activeModules: LicenseModule[];
-		limits: Record<LicenseLimitKind, { value?: number; max: number }>;
-	}>;
+	getInfo: (info: { limits: boolean; currentValues: boolean; license: boolean }) => Promise<LicenseInfo>;
 
 	// Deprecated:
 	onLicense: typeof onLicense;
