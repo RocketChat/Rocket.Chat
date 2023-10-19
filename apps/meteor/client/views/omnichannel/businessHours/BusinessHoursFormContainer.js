@@ -7,6 +7,7 @@ import { useForm } from '../../../hooks/useForm';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useFormsSubscription } from '../additionalForms';
 import BusinessHourForm from './BusinessHoursForm';
+import BusinessHoursTimeZone from './BusinessHoursTimeZone';
 
 const useChangeHandler = (name, ref) =>
 	useMutableCallback((val) => {
@@ -29,12 +30,10 @@ const BusinessHoursFormContainer = ({ data, saveRef, onChange = () => {} }) => {
 	const [hasChangesMultiple, setHasChangesMultiple] = useState(false);
 	const [hasChangesTimeZone, setHasChangesTimeZone] = useState(false);
 
-	const { useBusinessHoursTimeZone = cleanFunc, useBusinessHoursMultiple = cleanFunc } = forms;
+	const { useBusinessHoursMultiple = cleanFunc } = forms;
 
-	const TimezoneForm = useBusinessHoursTimeZone();
 	const MultipleBHForm = useBusinessHoursMultiple();
 
-	const showTimezone = useReactiveValue(useMutableCallback(() => businessHourManager.showTimezoneTemplate()));
 	const showMultipleBHForm = useReactiveValue(useMutableCallback(() => businessHourManager.showCustomTemplate(data)));
 
 	const onChangeTimezone = useChangeHandler('timezone', saveRef);
@@ -45,7 +44,7 @@ const BusinessHoursFormContainer = ({ data, saveRef, onChange = () => {} }) => {
 	saveRef.current.form = values;
 
 	useEffect(() => {
-		onChange(hasUnsavedChanges || (showMultipleBHForm && hasChangesMultiple) || (showTimezone && hasChangesTimeZone));
+		onChange(hasUnsavedChanges || (showMultipleBHForm && hasChangesMultiple) || hasChangesTimeZone);
 	});
 
 	return (
@@ -54,9 +53,11 @@ const BusinessHoursFormContainer = ({ data, saveRef, onChange = () => {} }) => {
 				{showMultipleBHForm && MultipleBHForm && (
 					<MultipleBHForm onChange={onChangeMultipleBHForm} data={data} hasChangesAndIsValid={setHasChangesMultiple} />
 				)}
-				{showTimezone && TimezoneForm && (
-					<TimezoneForm onChange={onChangeTimezone} data={data?.timezone?.name ?? data?.timezoneName} hasChanges={setHasChangesTimeZone} />
-				)}
+				<BusinessHoursTimeZone
+					onChange={onChangeTimezone}
+					data={data?.timezone?.name ?? data?.timezoneName}
+					hasChanges={setHasChangesTimeZone}
+				/>
 				<BusinessHourForm values={values} handlers={handlers} />
 			</FieldGroup>
 		</Box>
