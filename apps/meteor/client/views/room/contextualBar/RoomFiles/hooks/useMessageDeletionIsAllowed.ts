@@ -1,9 +1,10 @@
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { useSetting, usePermission } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { getDifference, MINUTES } from '../lib/getDifference';
 
-export const useMessageDeletionIsAllowed = (rid, uid) => {
+export const useMessageDeletionIsAllowed = (rid: IRoom['_id'], uid: IUser['_id']) => {
 	const canForceDelete = usePermission('force-delete-message', rid);
 	const deletionIsEnabled = useSetting('Message_AllowDeleting');
 	const userHasPermissonToDeleteAny = usePermission('delete-message', rid);
@@ -41,9 +42,9 @@ export const useMessageDeletionIsAllowed = (rid, uid) => {
 			return checkTimeframe;
 		}
 
-		const isOwn = ({ uid: owner }) => owner === uid;
+		const isOwn = ({ uid: owner }: IMessage) => owner === uid;
 
-		return (msg) => isOwn(msg) && checkTimeframe(msg);
+		return (msg: IMessage) => isOwn(msg) && checkTimeframe(msg);
 	})();
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps

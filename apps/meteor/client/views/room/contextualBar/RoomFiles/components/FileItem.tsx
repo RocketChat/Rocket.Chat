@@ -1,10 +1,11 @@
+import type { IUpload } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Avatar, Palette } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import FileItemIcon from './FileItemIcon';
-import MenuItem from './MenuItem';
+import FileItemMenu from './FileItemMenu';
 
 const hoverClass = css`
 	&:hover {
@@ -13,13 +14,19 @@ const hoverClass = css`
 	}
 `;
 
-const FileItem = ({ fileData, isDeletionAllowed, onClickDelete }) => {
+type FileItemProps = {
+	fileData: IUpload;
+	isDeletionAllowed: boolean;
+	onClickDelete: (id: IUpload['_id']) => void;
+};
+
+const FileItem = ({ fileData, isDeletionAllowed, onClickDelete }: FileItemProps) => {
 	const format = useFormatDateAndTime();
 
-	const { _id, name, url, uploadedAt, ts, type, typeGroup, style, className, user } = fileData;
+	const { _id, name, url, uploadedAt, ts, type, typeGroup, user } = fileData;
 
 	return (
-		<Box display='flex' p={12} borderRadius='x4' style={style} className={[className, hoverClass]}>
+		<Box display='flex' p={12} borderRadius={4} className={hoverClass}>
 			<Box
 				is='a'
 				minWidth={0}
@@ -27,13 +34,12 @@ const FileItem = ({ fileData, isDeletionAllowed, onClickDelete }) => {
 				download
 				rel='noopener noreferrer'
 				target='_blank'
-				title={name}
 				display='flex'
 				flexGrow={1}
 				flexShrink={1}
 				href={url}
 			>
-				{typeGroup === 'image' ? <Avatar size='x48' url={url} /> : <FileItemIcon type={type} />}
+				{typeGroup === 'image' && url ? <Avatar size='x48' url={url} /> : <FileItemIcon type={type} />}
 				<Box mis={8} flexShrink={1} overflow='hidden'>
 					<Box withTruncatedText color='default' fontScale='p2m'>
 						{name}
@@ -46,15 +52,9 @@ const FileItem = ({ fileData, isDeletionAllowed, onClickDelete }) => {
 					</Box>
 				</Box>
 			</Box>
-
-			<MenuItem
-				_id={_id}
-				name={name}
-				url={url}
-				onClickDelete={isDeletionAllowed && isDeletionAllowed({ uid: user?._id, ts }) && onClickDelete}
-			/>
+			<FileItemMenu _id={_id} name={name} url={url} onClickDelete={isDeletionAllowed?.({ uid: user?._id, ts }) && onClickDelete} />
 		</Box>
 	);
 };
 
-export default FileItem;
+export default memo(FileItem);

@@ -1,5 +1,6 @@
+import type { IUpload } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, Margins } from '@rocket.chat/fuselage';
-import { useUniqueId, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -13,23 +14,38 @@ import {
 	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import Row from './Row';
+import FileItem from './components/FileItem';
 
-function RoomFiles({
+type RoomFilesProps = {
+	loading: boolean;
+	type: string;
+	text: string;
+	filesItems: IUpload[];
+	loadMoreItems: (start: number, end: number) => void;
+	setType: (type: string) => void;
+	setText: (text: string) => void;
+	total: number;
+	onClickClose: () => void;
+	onClickDelete: (id: IUpload['_id']) => void;
+	isDeletionAllowed: boolean;
+};
+
+const RoomFiles = ({
 	loading,
-	filesItems = [],
-	text,
 	type,
-	setText,
+	text,
+	filesItems = [],
+	loadMoreItems,
 	setType,
+	setText,
+	total,
 	onClickClose,
 	onClickDelete,
-	total,
-	loadMoreItems,
 	isDeletionAllowed,
-}) {
+}: RoomFilesProps) => {
 	const t = useTranslation();
-	const options = useMemo(
+
+	const options: SelectOption[] = useMemo(
 		() => [
 			['all', t('All')],
 			['image', t('Images')],
@@ -40,17 +56,6 @@ function RoomFiles({
 		],
 		[t],
 	);
-	const inputRef = useAutoFocus(true);
-
-	const searchId = useUniqueId();
-
-	const itemData = useMemo(
-		() => ({
-			onClickDelete,
-			isDeletionAllowed,
-		}),
-		[isDeletionAllowed, onClickDelete],
-	);
 
 	return (
 		<>
@@ -59,16 +64,13 @@ function RoomFiles({
 				<ContextualbarTitle>{t('Files')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-
 			<ContextualbarContent p={12}>
 				<Box display='flex' flexDirection='row' p={12} flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
 							<TextInput
 								data-qa-files-search
-								id={searchId}
 								placeholder={t('Search_Files')}
-								ref={inputRef}
 								value={text}
 								onChange={setText}
 								addon={<Icon name='magnifier' size='x20' />}
@@ -79,15 +81,12 @@ function RoomFiles({
 						</Margins>
 					</Box>
 				</Box>
-
 				{loading && (
 					<Box p={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
-
-				{!loading && filesItems.length <= 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
-
+				{!loading && filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
 				{!loading && filesItems.length > 0 && (
 					<Box w='full' h='full' flexShrink={1} overflow='hidden'>
 						<Virtuoso
@@ -96,17 +95,17 @@ function RoomFiles({
 								width: '100%',
 							}}
 							totalCount={total}
-							endReached={loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
+							endReached={(start) => loadMoreItems(start, Math.min(50, total - start))}
 							overscan={50}
 							data={filesItems}
 							components={{ Scroller: ScrollableContentWrapper }}
-							itemContent={(index, data) => <Row data={itemData} index={index} item={data} />}
+							itemContent={(_, data) => <FileItem fileData={data} onClickDelete={onClickDelete} isDeletionAllowed={isDeletionAllowed} />}
 						/>
 					</Box>
 				)}
 			</ContextualbarContent>
 		</>
 	);
-}
+};
 
 export default RoomFiles;

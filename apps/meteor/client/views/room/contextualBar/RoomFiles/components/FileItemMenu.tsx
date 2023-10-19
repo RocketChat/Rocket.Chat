@@ -1,3 +1,4 @@
+import type { IUpload } from '@rocket.chat/core-typings';
 import { Box, Menu, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
@@ -5,8 +6,16 @@ import React, { memo } from 'react';
 import { getURL } from '../../../../../../app/utils/client';
 import { download } from '../../../../../lib/download';
 
-const MenuItem = ({ _id, name, url, onClickDelete }) => {
+type FileItemMenuProps = {
+	_id: IUpload['_id'];
+	name: IUpload['name'];
+	url: IUpload['url'];
+	onClickDelete: (id: IUpload['_id']) => void;
+};
+
+const FileItemMenu = ({ _id, name, url, onClickDelete }: FileItemMenuProps) => {
 	const t = useTranslation();
+
 	const menuOptions = {
 		downLoad: {
 			label: (
@@ -16,10 +25,12 @@ const MenuItem = ({ _id, name, url, onClickDelete }) => {
 				</Box>
 			),
 			action: () => {
-				const URL = window.webkitURL ?? window.URL;
-				const href = getURL(url);
-				download(href, name);
-				URL.revokeObjectURL(url);
+				if (url && name) {
+					const URL = window.webkitURL ?? window.URL;
+					const href = getURL(url);
+					download(href, name);
+					URL.revokeObjectURL(url);
+				}
 			},
 		},
 		...(onClickDelete && {
@@ -38,4 +49,4 @@ const MenuItem = ({ _id, name, url, onClickDelete }) => {
 	return <Menu options={menuOptions} />;
 };
 
-export default memo(MenuItem);
+export default memo(FileItemMenu);

@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 
-const FileItemIcon = ({ type }) => {
+const FileItemIcon = ({ type }: { type?: string }) => {
 	let icon;
 	switch (type) {
 		case 'application/vnd.ms-excel':

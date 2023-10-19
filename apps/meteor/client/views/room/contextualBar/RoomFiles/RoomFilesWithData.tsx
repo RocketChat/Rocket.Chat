@@ -11,24 +11,36 @@ import RoomFiles from './RoomFiles';
 import { useFilesList } from './hooks/useFilesList';
 import { useMessageDeletionIsAllowed } from './hooks/useMessageDeletionIsAllowed';
 
+// TODO: replace method
 const RoomFilesWithData = () => {
-	const uid = useUserId();
-	const room = useRoom();
-	const { closeTab } = useRoomToolbox();
 	const t = useTranslation();
+	const room = useRoom();
+	const uid = useUserId();
+
+	const { closeTab } = useRoomToolbox();
 	const setModal = useSetModal();
-	const closeModal = useMutableCallback(() => setModal());
 	const dispatchToastMessage = useToastMessageDispatch();
 	const deleteFile = useMethod('deleteFileMessage');
 
-	const [type, setType] = useLocalStorage('file-list-type', 'all');
 	const [text, setText] = useState('');
+	const [type, setType] = useLocalStorage('file-list-type', 'all');
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const { filesList, loadMoreItems, reload } = useFilesList(useMemo(() => ({ rid: room._id, type, text }), [room._id, type, text]));
+	const isDeletionAllowed = useMessageDeletionIsAllowed(room._id, uid);
+
+	const query = useMemo(
+		() => ({
+			rid: room._id,
+			type,
+			text,
+		}),
+		[room._id, type, text],
+	);
+
+	const { filesList, loadMoreItems, reload } = useFilesList(query);
 	const { phase, items: filesItems, itemCount: totalItemCount } = useRecordList(filesList);
 
 	const handleDelete = useMutableCallback((_id) => {
@@ -39,29 +51,27 @@ const RoomFilesWithData = () => {
 				reload();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				setModal(null);
 			}
-			closeModal();
 		};
 
 		setModal(
-			<GenericModal variant='danger' onConfirm={onConfirm} onCancel={closeModal} confirmText={t('Delete')}>
+			<GenericModal variant='danger' onConfirm={onConfirm} onCancel={() => setModal(null)} confirmText={t('Delete')}>
 				{t('Delete_File_Warning')}
 			</GenericModal>,
 		);
-	}, []);
-
-	const isDeletionAllowed = useMessageDeletionIsAllowed(room._id, uid);
+	});
 
 	return (
 		<RoomFiles
-			rid={room._id}
 			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}
+			filesItems={filesItems}
 			loadMoreItems={loadMoreItems}
 			setType={setType}
 			setText={handleTextChange}
-			filesItems={filesItems}
 			total={totalItemCount}
 			onClickClose={closeTab}
 			onClickDelete={handleDelete}
