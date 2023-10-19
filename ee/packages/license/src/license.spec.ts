@@ -22,6 +22,19 @@ it('should not prevent if the counter is under the limit', async () => {
 	await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
 });
 
+it('should not prevent actions there is no limit set in the license', async () => {
+	const licenseManager = await getReadyLicenseManager();
+
+	const license = await new MockedLicenseBuilder();
+
+	await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+
+	licenseManager.setLicenseLimitCounter('activeUsers', () => 5);
+	licenseManager.setLicenseLimitCounter('monthlyActiveContacts', () => 5);
+	await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
+	await expect(licenseManager.shouldPreventAction('monthlyActiveContacts')).resolves.toBe(false);
+});
+
 it('should prevent if the counter is equal or over the limit', async () => {
 	const licenseManager = await getReadyLicenseManager();
 
