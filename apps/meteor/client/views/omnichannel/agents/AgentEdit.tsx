@@ -154,6 +154,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 					<FieldLabel>{t('Departments')}</FieldLabel>
 					<FieldRow>
 						<MultiSelect
+							withTitle
 							data-qa='AgentEditTextInput-Departaments'
 							options={options}
 							value={departments}
