@@ -6,43 +6,39 @@ import { getPaginationItems } from '../../../app/api/server/helpers/getPaginatio
 import type { ParseJsonQuery } from './definitions';
 
 export const getUserReports = async (queryParams: ReportHistoryPropsGET, parseJsonQuery: ParseJsonQuery) => {
-	try {
-		const { latest: _latest, oldest: _oldest, selector = '' } = queryParams;
+	const { latest: _latest, oldest: _oldest, selector = '' } = queryParams;
 
-		const { count = 20, offset = 0 } = await getPaginationItems(queryParams);
+	const { count = 20, offset = 0 } = await getPaginationItems(queryParams);
 
-		const { sort } = await parseJsonQuery();
+	const { sort } = await parseJsonQuery();
 
-		const latest = _latest ? new Date(_latest) : new Date();
+	const latest = _latest ? new Date(_latest) : new Date();
 
-		const oldest = _oldest ? new Date(_oldest) : new Date(0);
+	const oldest = _oldest ? new Date(_oldest) : new Date(0);
 
-		const escapedSelector = escapeRegExp(selector);
+	const escapedSelector = escapeRegExp(selector);
 
-		const reports = await ModerationReports.findUserReports(latest, oldest, escapedSelector, {
-			offset,
-			count,
-			sort,
-		}).toArray();
+	const reports = await ModerationReports.findUserReports(latest, oldest, escapedSelector, {
+		offset,
+		count,
+		sort,
+	}).toArray();
 
-		if (reports.length === 0) {
-			return {
-				reports,
-				count: 0,
-				offset,
-				total: 0,
-			};
-		}
-
-		const total = await ModerationReports.countUserReportsInRange(latest, oldest, escapedSelector);
-
+	if (reports.length === 0) {
 		return {
 			reports,
-			count: reports.length,
+			count: 0,
 			offset,
-			total,
+			total: 0,
 		};
-	} catch (error) {
-		throw new Error('Error while fetching user reports');
 	}
+
+	const total = await ModerationReports.getTotalUniqueReportedUsers(latest, oldest, escapedSelector);
+
+	return {
+		reports,
+		count: reports.length,
+		offset,
+		total,
+	};
 };

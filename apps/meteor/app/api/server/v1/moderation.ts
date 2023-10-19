@@ -11,6 +11,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { deleteReportedMessages } from '../../../../server/lib/moderation/deleteReportedMessages';
 import { getUserReports } from '../../../../server/lib/moderation/getUserReports';
 import { getUserReportsByUid } from '../../../../server/lib/moderation/getUserReportsByUid';
@@ -53,7 +54,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const total = await ModerationReports.countMessageReportsInRange(latest, oldest, escapedSelector);
+			const total = await ModerationReports.getTotalUniqueReportedUsers(latest, oldest, escapedSelector, true);
 
 			return API.v1.success({
 				reports,
@@ -78,6 +79,7 @@ API.v1.addRoute(
 				const result = await getUserReports(this.queryParams, this.parseJsonQuery.bind(this));
 				return API.v1.success(result);
 			} catch (error) {
+				SystemLogger.error(error);
 				return API.v1.failure('Error while fetching user reports');
 			}
 		},
@@ -147,6 +149,7 @@ API.v1.addRoute(
 				const result = await getUserReportsByUid(this.queryParams, this.parseJsonQuery.bind(this));
 				return API.v1.success(result);
 			} catch (error) {
+				SystemLogger.error(error);
 				return API.v1.failure('Error while fetching user reports');
 			}
 		},
@@ -247,14 +250,14 @@ API.v1.addRoute(
 		async post() {
 			const { userId, reason, action: actionParam } = this.bodyParams;
 
+			if (!userId) {
+				return API.v1.failure('error-user-id-param-not-provided');
+			}
+
 			const sanitizedReason: string = reason ?? 'No reason provided';
 			const action: string = actionParam ?? 'None';
 
 			const { userId: moderatorId } = this;
-
-			if (!userId) {
-				return API.v1.failure('error-user-id-param-not-provided');
-			}
 
 			await ModerationReports.hideUserReportsByUserId(userId, moderatorId, sanitizedReason, action);
 

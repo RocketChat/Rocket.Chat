@@ -16,7 +16,7 @@ import {
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import ModerationConsoleTableRow from './ModerationConsoleTableRow';
-import ModFilter from './helpers/ModFilter';
+import ModerationFilter from './helpers/ModerationFilter';
 
 // TODO: Missing error state
 const ModerationConsoleTable: FC = () => {
@@ -109,7 +109,7 @@ const ModerationConsoleTable: FC = () => {
 
 	return (
 		<>
-			<ModFilter setText={setText} setDateRange={setDateRange} />
+			<ModerationFilter setText={setText} setDateRange={setDateRange} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

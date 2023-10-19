@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Tabs, TabsItem, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
 import { type TranslationKey, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
 import { Contextualbar, ContextualbarClose } from '../../../components/Contextualbar';
 import UserMessages from './UserMessages';
@@ -20,7 +20,7 @@ const ModConsoleReportDetails = ({ userId, default: defaultTab, onRedirect }: Mo
 	const [tab, setTab] = useState<string>(defaultTab);
 	const moderationRoute = useRouter();
 
-	const handleTabClick = useMemo(() => (tab: string) => (): void => setTab(tab), [setTab]);
+	const handleTabClick = (tab: string) => (): void => setTab(tab);
 
 	return (
 		<Contextualbar>

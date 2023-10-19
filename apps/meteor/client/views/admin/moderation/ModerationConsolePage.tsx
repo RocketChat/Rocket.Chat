@@ -29,7 +29,7 @@ const ModerationConsolePage = () => {
 		[dispatchToastMessage],
 	);
 
-	const handleTabClick = useCallback((tab: string) => () => setTab(tab), [setTab]);
+	const handleTabClick = (tab: string) => () => setTab(tab);
 
 	return (
 		<Page flexDirection='row'>

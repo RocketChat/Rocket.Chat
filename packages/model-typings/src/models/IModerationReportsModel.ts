@@ -37,9 +37,9 @@ export interface IModerationReportsModel extends IBaseModel<IModerationReport> {
 		pagination: PaginationParams<IModerationReport>,
 	): AggregationCursor<Pick<UserReport, '_id' | 'reportedUser' | 'ts'> & { count: number }>;
 
-	countMessageReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number>;
+	getTotalUniqueReportedUsers(latest: Date, oldest: Date, selector: string, isMessageReports?: boolean): Promise<number>;
 
-	countUserReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number>;
+	countMessageReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number>;
 
 	findReportsByMessageId(
 		messageId: IMessage['_id'],

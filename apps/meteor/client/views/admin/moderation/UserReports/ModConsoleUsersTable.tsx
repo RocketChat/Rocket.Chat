@@ -15,7 +15,7 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import ModFilter from '../helpers/ModFilter';
+import ModerationFilter from '../helpers/ModerationFilter';
 import ModConsoleUserTableRow, { type ModConsoleUserRowProps } from './ModConsoleUserTableRow';
 
 const ModConsoleUsersTable: FC = () => {
@@ -110,7 +110,7 @@ const ModConsoleUsersTable: FC = () => {
 
 	return (
 		<>
-			<ModFilter setText={setText} setDateRange={setDateRange} />
+			<ModerationFilter setText={setText} setDateRange={setDateRange} />
 
 			{isLoading && (
 				<GenericTable>

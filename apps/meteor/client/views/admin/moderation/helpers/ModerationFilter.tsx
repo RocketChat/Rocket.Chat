@@ -5,12 +5,12 @@ import React, { useCallback } from 'react';
 import FilterByText from '../../../../components/FilterByText';
 import DateRangePicker from './DateRangePicker';
 
-type ModFilterProps = {
+type ModerationFilterProps = {
 	setText: (text: string) => void;
 	setDateRange: (dateRange: { start: string; end: string }) => void;
 };
 
-const ModFilter = ({ setText, setDateRange }: ModFilterProps) => {
+const ModerationFilter = ({ setText, setDateRange }: ModerationFilterProps) => {
 	const t = useTranslation();
 
 	const handleChange = useCallback(({ text }): void => setText(text), [setText]);
@@ -27,4 +27,4 @@ const ModFilter = ({ setText, setDateRange }: ModFilterProps) => {
 	);
 };
 
-export default ModFilter;
+export default ModerationFilter;

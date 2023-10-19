@@ -25,6 +25,13 @@ import ReportReason from '../helpers/ReportReason';
 import UserColumn from '../helpers/UserColumn';
 import UserContextFooter from './UserContextFooter';
 
+const isUser = (obj: any): obj is IUser => {
+	if (obj?.createdAt && typeof obj.createdAt === 'string') {
+		obj.createdAt = new Date(obj.createdAt);
+	}
+	return obj?.createdAt instanceof Date;
+};
+
 const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -134,7 +141,7 @@ const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
 
 				{isSuccessUsersReports && report.reports.length > 0 && (
 					<>
-						{report.user ? renderUserDetails(report.user as unknown as IUser) : renderDeletedUserWarning()}
+						{report.user ? isUser(report.user) && renderUserDetails(report.user) : renderDeletedUserWarning()}
 						{renderUserReports(report.reports as unknown as Omit<UserReport, 'moderationInfo'>[])}
 					</>
 				)}

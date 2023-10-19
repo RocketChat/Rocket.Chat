@@ -21,7 +21,6 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return [
 			{ key: { 'ts': 1, 'reports.ts': 1 } },
 			{ key: { 'message.u._id': 1, 'ts': 1 } },
-			{ key: { 'reportedUser._id': 1, 'ts': 1 } },
 			{ key: { 'message.rid': 1, 'ts': 1 } },
 			{ key: { userId: 1, ts: 1 } },
 			{ key: { 'message._id': 1, 'ts': 1 } },
@@ -195,37 +194,29 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		return this.col.aggregate(pipeline, { allowDiskUse: true, readPreference: readSecondaryPreferred() });
 	}
 
-	countMessageReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number> {
-		return this.col
-			.distinct('message.u._id', {
-				_hidden: {
-					$ne: true,
-				},
-				ts: {
-					$lt: latest,
-					$gt: oldest,
-				},
-				...this.getSearchQueryForSelector(selector),
-			})
-			.then((ids) => ids.length);
+	async getTotalUniqueReportedUsers(latest: Date, oldest: Date, selector: string, isMessageReports?: boolean): Promise<number> {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			ts: {
+				$lt: latest,
+				$gt: oldest,
+			},
+			...(isMessageReports ? this.getSearchQueryForSelector(selector) : this.getSearchQueryForSelectorUsers(selector)),
+		};
+
+		const field = isMessageReports ? 'message.u._id' : 'reportedUser._id';
+		const ids = await this.col.distinct(field, query);
+		return ids.length;
 	}
 
-	countUserReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number> {
-		return this.col
-			.distinct('reportedUser._id', {
-				_hidden: {
-					$ne: true,
-				},
-				ts: {
-					$lt: latest,
-					$gt: oldest,
-				},
-				message: {
-					$exists: false,
-				},
-				...this.getSearchQueryForSelectorUsers(selector),
-			})
-			.then((ids) => ids.length);
+	countMessageReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number> {
+		return this.col.countDocuments({
+			_hidden: { $ne: true },
+			ts: { $lt: latest, $gt: oldest },
+			...this.getSearchQueryForSelector(selector),
+		});
 	}
 
 	findReportedMessagesByReportedUserId(
