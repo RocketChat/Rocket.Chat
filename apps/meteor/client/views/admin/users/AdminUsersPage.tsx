@@ -7,15 +7,14 @@ import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
+import PageContent from '../../../components/Page/PageContent';
+import PageHeader from '../../../components/Page/PageHeader';
 import AdminInviteUsers from './AdminInviteUsers';
 import AdminUserCreated from './AdminUserCreated';
 import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
 import UsersTable from './UsersTable';
-
-import PageHeader from '/client/components/Page/PageHeader';
-import PageContent from '/client/components/Page/PageContent';
 
 const UsersPage = (): ReactElement => {
 	const t = useTranslation();
