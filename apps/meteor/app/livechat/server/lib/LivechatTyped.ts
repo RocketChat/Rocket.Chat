@@ -757,7 +757,7 @@ class LivechatClass {
 		attempts = 10,
 	) {
 		if (!attempts) {
-			Livechat.logger.error({ msg: 'Webhook call failed. Max attempts reached' });
+			Livechat.logger.error({ msg: 'Omnichannel webhook call failed. Max attempts reached' });
 			return;
 		}
 		const timeout = settings.get<number>('Livechat_http_timeout');
