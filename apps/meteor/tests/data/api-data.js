@@ -1,7 +1,7 @@
 import supertest from 'supertest';
 
-import { publicChannelName, privateChannelName } from './channel.js';
-import { roleNameUsers, roleNameSubscriptions, roleScopeUsers, roleScopeSubscriptions, roleDescription } from './role.js';
+import { publicChannelName, privateChannelName } from './channel';
+import { roleNameUsers, roleNameSubscriptions, roleScopeUsers, roleScopeSubscriptions, roleDescription } from './role';
 import { username, email, adminUsername, adminPassword } from './user';
 
 const apiUrl = process.env.TEST_API_URL || 'http://localhost:3000';
