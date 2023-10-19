@@ -128,7 +128,7 @@ API.v1.addRoute(
 	'cloud.syncWorkspace',
 	{
 		authRequired: true,
-		permissionsRequired: ['view-privileged-setting'],
+		permissionsRequired: ['manage-cloud'],
 		rateLimiterOptions: { numRequestsAllowed: 2, intervalTimeInMS: 60000 },
 	},
 	{
