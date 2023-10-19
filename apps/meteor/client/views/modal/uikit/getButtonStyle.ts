@@ -1,6 +1,6 @@
-import type { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
+import type { ButtonElement } from '@rocket.chat/ui-kit';
 
 // TODO: Move to fuselage-ui-kit
-export const getButtonStyle = (view: IUIKitSurface): { danger: boolean } | { primary: boolean } => {
-	return view.submit?.style === 'danger' ? { danger: true } : { primary: true };
+export const getButtonStyle = (buttonElement: ButtonElement): { danger: boolean } | { primary: boolean } => {
+	return buttonElement?.style === 'danger' ? { danger: true } : { primary: true };
 };
