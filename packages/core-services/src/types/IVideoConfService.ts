@@ -1,8 +1,8 @@
-import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import type {
 	IRoom,
 	IStats,
 	IUser,
+	UiKit,
 	VideoConference,
 	VideoConferenceCapabilities,
 	VideoConferenceCreateData,
@@ -19,7 +19,7 @@ export interface IVideoConfService {
 	create(data: VideoConferenceCreateData, useAppUser?: boolean): Promise<VideoConferenceInstructions>;
 	start(caller: IUser['_id'], rid: string, options: { title?: string; allowRinging?: boolean }): Promise<VideoConferenceInstructions>;
 	join(uid: IUser['_id'] | undefined, callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string>;
-	getInfo(callId: VideoConference['_id'], uid: IUser['_id'] | undefined): Promise<IBlock[]>;
+	getInfo(callId: VideoConference['_id'], uid: IUser['_id'] | undefined): Promise<UiKit.LayoutBlock[]>;
 	cancel(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
 	get(callId: VideoConference['_id']): Promise<Omit<VideoConference, 'providerData'> | null>;
 	getUnfiltered(callId: VideoConference['_id']): Promise<VideoConference | null>;
