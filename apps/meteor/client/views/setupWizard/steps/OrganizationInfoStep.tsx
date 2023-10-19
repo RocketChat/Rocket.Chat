@@ -37,7 +37,6 @@ const OrganizationInfoStep = (): ReactElement => {
 		goToNextStep,
 		completeSetupWizard,
 		currentStep,
-		registerPreIntent,
 		skipCloudRegistration,
 		maxSteps,
 	} = useSetupWizardContext();
@@ -51,7 +50,7 @@ const OrganizationInfoStep = (): ReactElement => {
 			return completeSetupWizard();
 		}
 		setSetupWizardData((prevState) => ({ ...prevState, organizationData: data }));
-		await registerPreIntent();
+
 		goToNextStep();
 	};
 

@@ -14,7 +14,8 @@ const SERVER_OPTIONS = {
 
 const RegisterServerStep = (): ReactElement => {
 	const t = useTranslation();
-	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, offline, completeSetupWizard } = useSetupWizardContext();
+	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, offline, completeSetupWizard, registerPreIntent } =
+		useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
 
 	const handleRegister: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async (data: {
@@ -41,6 +42,10 @@ const RegisterServerStep = (): ReactElement => {
 
 		loadWorkspaceRegisterData();
 	}, [getWorkspaceRegisterData]);
+
+	useEffect(() => {
+		registerPreIntent();
+	}, [registerPreIntent]);
 
 	const handleConfirmOffline: ComponentProps<typeof RegisterOfflinePage>['onSubmit'] = async ({ token }) => {
 		try {
