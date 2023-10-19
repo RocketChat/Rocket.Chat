@@ -22,7 +22,7 @@ import GenericNoResults from '../../../../components/GenericNoResults';
 import UserCard from '../../../../components/UserCard';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import ReportReason from '../helpers/ReportReason';
-import UserProfile from '../helpers/UserProfile';
+import UserColumn from '../helpers/UserColumn';
 import UserContextFooter from './UserContextFooter';
 
 const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
@@ -57,7 +57,7 @@ const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
 		}
 
 		const { username, name } = report.user;
-		return <UserProfile key={dataUpdatedAt} username={username} name={name} />;
+		return <UserColumn key={dataUpdatedAt} username={username} name={name} isProfile={true} />;
 	}, [report?.user, dataUpdatedAt]);
 
 	const handleChange = useMutableCallback(() => {

@@ -6,15 +6,20 @@ import UserAvatar from '../../../../components/avatar/UserAvatar';
 type UserColumnProps = {
 	name?: string;
 	username?: string;
-	isDesktopOrLarger: boolean;
+	isDesktopOrLarger?: boolean;
+	isProfile?: boolean;
 };
 
-const UserColumn = ({ name, username, isDesktopOrLarger }: UserColumnProps) => {
+const UserColumn = ({ name, username, isDesktopOrLarger, isProfile }: UserColumnProps) => {
+	let size: 'x40' | 'x20' | 'x48' = 'x40';
+	if (isProfile) size = 'x48';
+	else if (isDesktopOrLarger) size = 'x20';
+
 	return (
 		<Box display='flex' alignItems='center'>
 			{username && (
 				<Box>
-					<UserAvatar size={isDesktopOrLarger ? 'x20' : 'x40'} username={username} />
+					<UserAvatar sizes={size} username={username} />
 				</Box>
 			)}
 			<Box display='flex' mi={8} withTruncatedText>
@@ -23,7 +28,7 @@ const UserColumn = ({ name, username, isDesktopOrLarger }: UserColumnProps) => {
 						{name && username ? (
 							<>
 								{name}{' '}
-								<Box display='inline-flex' fontWeight={300} fontSize='micro'>
+								<Box display='inline-flex' fontWeight={300} fontSize={isProfile ? 'p2' : 'micro'}>
 									(@{username})
 								</Box>
 							</>
