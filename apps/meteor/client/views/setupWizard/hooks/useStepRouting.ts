@@ -6,7 +6,7 @@ export const useStepRouting = (): [number, Dispatch<SetStateAction<number>>] => 
 	const param = useRouteParameter('step');
 	const router = useRouter();
 	const hasAdminRole = useRole('admin');
-	const hasOrganizationData = useSetting('Organization_Name') !== '';
+	const hasOrganizationData = !!useSetting('Organization_Name');
 	const initialStep = hasAdminRole ? 2 : 1;
 
 	const [currentStep, setCurrentStep] = useState<number>(() => {

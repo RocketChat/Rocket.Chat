@@ -1,13 +1,17 @@
 import { Settings } from '@rocket.chat/models';
 
 export async function ensureCloudWorkspaceRegistered(): Promise<void> {
-	const projection = { projection: { value: 1 } };
-
-	const cloudWorkspaceClientId = await Settings.findOneById('Cloud_Workspace_Client_Id', projection);
-	const cloudWorkspaceClientSecret = await Settings.findOneById('Cloud_Workspace_Client_Secret', projection);
+	const cloudWorkspaceClientId = await Settings.getValueById('Cloud_Workspace_Client_Id');
+	const cloudWorkspaceClientSecret = await Settings.getValueById('Cloud_Workspace_Client_Secret');
+	const showSetupWizard = await Settings.getValueById('Show_Setup_Wizard');
 
 	// skip if both fields are already set, which means the workspace is already registered
-	if (!!cloudWorkspaceClientId?.value && !!cloudWorkspaceClientSecret?.value) {
+	if (!!cloudWorkspaceClientId && !!cloudWorkspaceClientSecret) {
+		return;
+	}
+
+	// skip if the setup wizard still not completed
+	if (showSetupWizard !== 'completed') {
 		return;
 	}
 
