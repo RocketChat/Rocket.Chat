@@ -5,7 +5,7 @@ import React from 'react';
 import BusinessHoursTimeZone from './BusinessHoursTimeZone';
 
 export default {
-	title: 'Enterprise/Omnichannel/BusinessHoursTimeZone',
+	title: 'Omnichannel/BusinessHoursTimeZone',
 	component: BusinessHoursTimeZone,
 	decorators: [
 		(fn) => (
