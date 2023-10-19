@@ -8,7 +8,7 @@ const HighContrastUpsellModal = ({ onClose }: { onClose: () => void }) => {
 	const t = useTranslation();
 
 	const isAdmin = useRole('admin');
-	const { handleGoFullyFeatured, handleTalkToSales } = useUpsellActions();
+	const { handleManageSubscription, handleTalkToSales } = useUpsellActions();
 
 	if (!isAdmin) {
 		return (
@@ -32,7 +32,7 @@ const HighContrastUpsellModal = ({ onClose }: { onClose: () => void }) => {
 			description={t('High_contrast_upsell_description')}
 			onClose={onClose}
 			onCancel={handleTalkToSales}
-			onConfirm={handleGoFullyFeatured}
+			onConfirm={handleManageSubscription}
 			cancelText={t('Talk_to_an_expert')}
 			confirmText={t('Start_free_trial')}
 		/>

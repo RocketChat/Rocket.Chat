@@ -9,13 +9,9 @@ import {
 } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import type { UpgradeTabVariant } from '../../../../../lib/upgradeTab';
-import { getUpgradeTabLabel, isFullyFeature } from '../../../../../lib/upgradeTab';
-import Emoji from '../../../../components/Emoji';
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
 import RegisterWorkspaceModal from '../../../../views/admin/cloud/modals/RegisterWorkspaceModal';
-import { useUpgradeTabParams } from '../../../../views/hooks/useUpgradeTabParams';
 
 const ADMIN_PERMISSIONS = [
 	'view-statistics',
@@ -57,11 +53,6 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 
 	const shouldShowAdminMenu = useAtLeastOnePermission(ADMIN_PERMISSIONS);
 
-	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
-	const shouldShowEmoji = isFullyFeature(tabType);
-
-	const label = getUpgradeTabLabel(tabType);
-
 	const isAdmin = useRole('admin');
 	const setModal = useSetModal();
 
@@ -74,12 +65,9 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 	};
 
 	const adminRoute = useRoute('admin-index');
-	const upgradeRoute = useRoute('upgrade');
 	const cloudRoute = useRoute('cloud');
 
 	const omnichannel = usePermission('view-livechat-manager');
-
-	const showUpgradeItem = !isLoading && tabType;
 
 	const omnichannelItem: GenericMenuItemProps = {
 		id: 'omnichannel',
@@ -88,18 +76,6 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 		onClick: () => router.navigate('/omnichannel/current'),
 	};
 
-	const upgradeItem: GenericMenuItemProps = {
-		id: 'showUpgradeItem',
-		content: (
-			<>
-				{t(label)} {shouldShowEmoji && <Emoji emojiHandle=':zap:' />}
-			</>
-		),
-		icon: 'arrow-stack-up',
-		onClick: () => {
-			upgradeRoute.push({ type: tabType as UpgradeTabVariant }, trialEndDate ? { trialEndDate } : undefined);
-		},
-	};
 	const adminItem: GenericMenuItemProps = {
 		id: 'registration',
 		content: workspaceRegistered ? t('Registration') : t('Register'),
@@ -121,10 +97,7 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 		},
 	};
 
-	return [
-		showUpgradeItem && upgradeItem,
-		shouldShowAdminMenu && workspaceItem,
-		isAdmin && adminItem,
-		omnichannel && omnichannelItem,
-	].filter(Boolean) as GenericMenuItemProps[];
+	return [shouldShowAdminMenu && workspaceItem, isAdmin && adminItem, omnichannel && omnichannelItem].filter(
+		Boolean,
+	) as GenericMenuItemProps[];
 };

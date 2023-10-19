@@ -8,7 +8,7 @@ const MentionsWithSymbolUpsellModal = ({ onClose }: { onClose: () => void }) => 
 	const t = useTranslation();
 
 	const isAdmin = useRole('admin');
-	const { handleGoFullyFeatured, handleTalkToSales } = useUpsellActions();
+	const { handleManageSubscription, handleTalkToSales } = useUpsellActions();
 
 	if (!isAdmin) {
 		return (
@@ -31,7 +31,7 @@ const MentionsWithSymbolUpsellModal = ({ onClose }: { onClose: () => void }) => 
 			description={t('Mentions_with_symbol_upsell_description')}
 			onClose={onClose}
 			onCancel={handleTalkToSales}
-			onConfirm={handleGoFullyFeatured}
+			onConfirm={handleManageSubscription}
 			cancelText={t('Talk_to_an_expert')}
 			confirmText={t('Start_free_trial')}
 		/>
