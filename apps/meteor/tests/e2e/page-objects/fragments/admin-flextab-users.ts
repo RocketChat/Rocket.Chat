@@ -31,8 +31,16 @@ export class AdminFlextabUsers {
 		return this.page.locator('//label[text()="Email"]/following-sibling::span//input').first();
 	}
 
+	get inputSetManually(): Locator {
+		return this.page.locator('//label[text()="Set randomly and send by email"]');
+	}
+
 	get inputPassword(): Locator {
-		return this.page.locator('//label[text()="Password"]/following-sibling::span//input');
+		return this.page.locator('input[placeholder="Password"]');
+	}
+
+	get inputConfirmPassword(): Locator {
+		return this.page.locator('input[placeholder="Confirm password"]');
 	}
 
 	get checkboxVerified(): Locator {
