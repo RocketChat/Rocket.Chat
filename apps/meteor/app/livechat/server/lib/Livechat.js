@@ -37,52 +37,6 @@ export const Livechat = {
 
 	logger,
 
-	async saveGuest(guestData, userId) {
-		const { _id, name, email, phone, livechatData = {} } = guestData;
-		Livechat.logger.debug(`Saving data for visitor ${_id}`);
-		const updateData = {};
-
-		if (name) {
-			updateData.name = name;
-		}
-		if (email) {
-			updateData.email = email;
-		}
-		if (phone) {
-			updateData.phone = phone;
-		}
-
-		const customFields = {};
-
-		if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
-			Livechat.logger.debug(`Saving custom fields for visitor ${_id}`);
-			const fields = LivechatCustomField.findByScope('visitor');
-			for await (const field of fields) {
-				if (!livechatData.hasOwnProperty(field._id)) {
-					continue;
-				}
-				const value = trim(livechatData[field._id]);
-				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
-					const regexp = new RegExp(field.regexp);
-					if (!regexp.test(value)) {
-						throw new Meteor.Error(i18n.t('error-invalid-custom-field-value', { field: field.label }));
-					}
-				}
-				customFields[field._id] = value;
-			}
-			updateData.livechatData = customFields;
-			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields for visitor ${_id}`);
-		}
-		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
-
-		setImmediate(() => {
-			Apps.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
-			callbacks.run('livechat.saveGuest', updateData);
-		});
-
-		return ret;
-	},
-
 	async setCustomFields({ token, key, value, overwrite } = {}) {
 		check(token, String);
 		check(key, String);

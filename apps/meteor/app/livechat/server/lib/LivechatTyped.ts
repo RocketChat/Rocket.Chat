@@ -33,6 +33,7 @@ import {
 	ReadReceipts,
 	Rooms,
 	Settings,
+	LivechatCustomField,
 } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -41,8 +42,10 @@ import type { Filter, FindCursor, UpdateFilter } from 'mongodb';
 
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
+import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
 import { canAccessRoomAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { FileUpload } from '../../../file-upload/server';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
@@ -1327,6 +1330,58 @@ class LivechatClass {
 		Object.assign(transferMessage, transfer);
 
 		await sendMessage(transferredBy, transferMessage, room);
+	}
+
+	async saveGuest(guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string }, userId: string) {
+		const { _id, name, email, phone, livechatData = {} } = guestData;
+		this.logger.debug({ msg: 'Saving guest', guestData });
+		const updateData: {
+			name?: string | undefined;
+			username?: string | undefined;
+			email?: string | undefined;
+			phone?: string | undefined;
+			livechatData: {
+				[k: string]: any;
+			};
+		} = { livechatData: {} };
+
+		if (name) {
+			updateData.name = name;
+		}
+		if (email) {
+			updateData.email = email;
+		}
+		if (phone) {
+			updateData.phone = phone;
+		}
+
+		const customFields: Record<string, any> = {};
+
+		if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
+			this.logger.debug({ msg: `Saving custom fields for visitor ${_id}`, livechatData });
+			for await (const field of LivechatCustomField.findByScope('visitor')) {
+				if (!livechatData.hasOwnProperty(field._id)) {
+					continue;
+				}
+				const value = trim(livechatData[field._id]);
+				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
+					const regexp = new RegExp(field.regexp);
+					if (!regexp.test(value)) {
+						throw new Error(i18n.t('error-invalid-custom-field-value'));
+					}
+				}
+				customFields[field._id] = value;
+			}
+			updateData.livechatData = customFields;
+			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields for visitor ${_id}`);
+		}
+		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
+
+		setImmediate(() => {
+			void Apps.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
+		});
+
+		return ret;
 	}
 }
 
