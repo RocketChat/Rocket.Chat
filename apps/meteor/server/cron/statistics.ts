@@ -28,7 +28,10 @@ async function generateStatistics(logger: Logger): Promise<void> {
 		});
 
 		const { cloudToken } = await response.json();
-		await Statistics.updateOne({ _id: cronStatistics._id }, { $set: { cloudToken } });
+
+		if (cloudToken != null) {
+			await Statistics.updateOne({ _id: cronStatistics._id }, { $set: { cloudToken } });
+		}
 	} catch (error) {
 		/* error*/
 		logger.warn('Failed to send usage report');
