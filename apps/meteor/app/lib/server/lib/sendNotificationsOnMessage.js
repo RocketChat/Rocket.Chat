@@ -1,6 +1,4 @@
-import { Room } from '@rocket.chat/core-services';
 import { Subscriptions, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
