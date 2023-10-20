@@ -8,8 +8,8 @@ import { useLicense } from '../../../../client/hooks/useLicense';
 export const SidebarFooterWatermark = (): ReactElement | null => {
 	const t = useTranslation();
 
-	const { data: { license, activeModules = [], trial: isTrial = false } = {}, isLoading, isError } = useLicense();
-	const [{ name: planName }] = license?.information?.tags ?? [{ name: 'Community' }];
+	const { data: { activeModules = [], trial: isTrial = false, tags } = {}, isLoading, isError } = useLicense();
+	const [{ name: planName }] = tags ?? [{ name: 'Community' }];
 
 	const isWatermarkHidden = !isTrial && activeModules.includes('hide-watermark');
 
