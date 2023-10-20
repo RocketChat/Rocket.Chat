@@ -1,3 +1,4 @@
+import { api } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
 import { Subscriptions, Users, Settings } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
@@ -93,6 +94,8 @@ settings.onReady(async () => {
 	License.onBehaviorTriggered('start_fair_policy', async (context) => syncByTrigger(`start_fair_policy_${context.limit}`));
 
 	License.onBehaviorTriggered('disable_modules', async (context) => syncByTrigger(`disable_modules_${context.limit}`));
+
+	License.onSync(() => api.broadcast('license'));
 });
 
 License.setLicenseLimitCounter('activeUsers', () => Users.getActiveLocalUserCount());

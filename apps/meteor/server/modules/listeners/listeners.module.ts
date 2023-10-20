@@ -29,6 +29,8 @@ export class ListenersModule {
 	constructor(service: IServiceClass, notifications: NotificationsModule) {
 		const logger = new Logger('ListenersModule');
 
+		service.onEvent('license', () => notifications.notifyAllInThisInstance('license'));
+
 		service.onEvent('emoji.deleteCustom', (emoji) => {
 			notifications.notifyLoggedInThisInstance('deleteEmojiCustom', {
 				emojiData: emoji,

@@ -69,6 +69,7 @@ export interface StreamerEvents {
 		{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'deleteCustomSound'; args: [{ soundData: ICustomSound }] },
 		{ key: 'updateCustomSound'; args: [{ soundData: ICustomSound }] },
+		{ key: 'license'; args: [unknown] },
 	];
 
 	'notify-user': [

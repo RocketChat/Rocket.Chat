@@ -55,6 +55,7 @@ export type EventSignatures = {
 	'emoji.deleteCustom'(emoji: IEmoji): void;
 	'emoji.updateCustom'(emoji: IEmoji): void;
 	'license.module'(data: { module: string; valid: boolean }): void;
+	'license'(): void;
 	'livechat-inquiry-queue-observer'(data: { action: string; inquiry: IInquiry }): void;
 	'message'(data: { action: string; message: IMessage }): void;
 	'meteor.clientVersionUpdated'(data: AutoUpdateRecord): void;
