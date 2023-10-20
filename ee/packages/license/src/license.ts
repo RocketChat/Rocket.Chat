@@ -12,7 +12,7 @@ import type { LicenseEvents } from './definition/events';
 import { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
 import { InvalidLicenseError } from './errors/InvalidLicenseError';
 import { NotReadyForValidation } from './errors/NotReadyForValidation';
-import { behaviorTriggered, licenseInvalidated, licenseValidated } from './events/emitter';
+import { behaviorTriggered, behaviorTriggeredToggled, licenseInvalidated, licenseValidated } from './events/emitter';
 import { logger } from './logger';
 import { getModules, invalidateAll, replaceModules } from './modules';
 import { applyPendingLicense, clearPendingLicense, hasPendingLicense, isPendingLicense, setPendingLicense } from './pendingLicense';
@@ -48,6 +48,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 	private _valid: boolean | undefined;
 
 	private _lockedLicense: string | undefined;
+
+	public shouldPreventActionResults = new Map<LicenseLimitKind, boolean>();
 
 	constructor() {
 		super();
@@ -106,6 +108,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		this._unmodifiedLicense = undefined;
 		this._valid = false;
 		this._lockedLicense = undefined;
+
+		this.shouldPreventActionResults.clear();
 		clearPendingLicense.call(this);
 	}
 
@@ -243,6 +247,12 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		}
 	}
 
+	private triggerBehaviorEventsToggled(validationResult: BehaviorWithContext[]): void {
+		for (const { ...options } of validationResult) {
+			behaviorTriggeredToggled.call(this, { ...options });
+		}
+	}
+
 	public hasValidLicense(): boolean {
 		return Boolean(this.getLicense());
 	}
@@ -268,6 +278,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			...(extraCount && { behaviors: ['prevent_action'] }),
 			isNewLicense: false,
 			suppressLog: !!suppressLog,
+			limits: [action],
 			context: {
 				[action]: {
 					extraCount,
@@ -278,18 +289,37 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 		const validationResult = await runValidation.call(this, license, options);
 
+		const shouldPreventAction = isBehaviorsInResult(validationResult, ['prevent_action']);
+
 		// extra values should not call events since they are not actually reaching the limit just checking if they would
 		if (extraCount) {
-			return isBehaviorsInResult(validationResult, ['prevent_action']);
+			return shouldPreventAction;
 		}
 
 		if (isBehaviorsInResult(validationResult, ['invalidate_license', 'disable_modules', 'start_fair_policy'])) {
 			await this.revalidateLicense();
 		}
 
-		this.triggerBehaviorEvents(filterBehaviorsResult(validationResult, ['prevent_action']));
+		const eventsToEmit = shouldPreventAction
+			? filterBehaviorsResult(validationResult, ['prevent_action'])
+			: [
+					{
+						behavior: 'allow_action',
+						modules: [],
+						reason: 'limit',
+						limit: action,
+					} as BehaviorWithContext,
+			  ];
 
-		return isBehaviorsInResult(validationResult, ['prevent_action']);
+		if (this.shouldPreventActionResults.get(action) !== shouldPreventAction) {
+			this.shouldPreventActionResults.set(action, shouldPreventAction);
+
+			this.triggerBehaviorEventsToggled(eventsToEmit);
+		}
+
+		this.triggerBehaviorEvents(eventsToEmit);
+
+		return shouldPreventAction;
 	}
 
 	public async getInfo({
@@ -330,6 +360,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		return {
 			license: (includeLicense && license) || undefined,
 			activeModules,
+			preventedActions: Object.fromEntries(this.shouldPreventActionResults.entries()) as Record<LicenseLimitKind, boolean>,
 			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
 			tags: license?.information.tags || [],
 			trial: Boolean(license?.information.trial),
