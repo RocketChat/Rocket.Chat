@@ -2,7 +2,7 @@ import type { IServerInfo, IStats, Serialized } from '@rocket.chat/core-typings'
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { IInstance } from '@rocket.chat/rest-typings';
-import { Card } from '@rocket.chat/ui-client';
+import { Card, CardBody, CardCol, CardTitle, CardColSection, CardColTitle, CardFooter } from '@rocket.chat/ui-client';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
@@ -31,57 +31,58 @@ const DeploymentCard = ({ info, statistics, instances }: DeploymentCardProps): R
 
 	return (
 		<Card data-qa-id='deployment-card'>
-			<Card.Title>{t('Deployment')}</Card.Title>
-			<Card.Body>
-				<Card.Col>
-					<Card.Col.Section>
-						<Card.Col.Title>{t('Version')}</Card.Col.Title>
+			<CardTitle>{t('Deployment')}</CardTitle>
+			<CardBody>
+				<CardCol>
+					<CardColSection>
+						<CardColTitle>{t('Version')}</CardColTitle>
 						{statistics.version}
-					</Card.Col.Section>
-					<Card.Col.Section>
-						<Card.Col.Title>{t('Deployment_ID')}</Card.Col.Title>
+					</CardColSection>
+					<CardColSection>
+						<CardColTitle>{t('Deployment_ID')}</CardColTitle>
 						{statistics.uniqueId}
-					</Card.Col.Section>
+					</CardColSection>
 					{appsEngineVersion && (
-						<Card.Col.Section>
-							<Card.Col.Title>{t('Apps_Engine_Version')}</Card.Col.Title>
+						<CardColSection>
+							<CardColTitle>{t('Apps_Engine_Version')}</CardColTitle>
 							{appsEngineVersion}
-						</Card.Col.Section>
+						</CardColSection>
 					)}
-					<Card.Col.Section>
-						<Card.Col.Title>{t('Node_version')}</Card.Col.Title>
+					<CardColSection>
+						<CardColTitle>{t('Node_version')}</CardColTitle>
 						{statistics.process.nodeVersion}
-					</Card.Col.Section>
-					<Card.Col.Section>
-						<Card.Col.Title>{t('DB_Migration')}</Card.Col.Title>
+					</CardColSection>
+					<CardColSection>
+						<CardColTitle>{t('DB_Migration')}</CardColTitle>
 						{`${statistics.migration.version} (${formatDateAndTime(statistics.migration.lockedAt)})`}
-					</Card.Col.Section>
-					<Card.Col.Section>
-						<Card.Col.Title>{t('MongoDB')}</Card.Col.Title>
+					</CardColSection>
+					<CardColSection>
+						<CardColTitle>{t('MongoDB')}</CardColTitle>
 						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine} ${
 							!statistics.msEnabled ? `(oplog ${statistics.oplogEnabled ? t('Enabled') : t('Disabled')})` : ''
 						}`}
-					</Card.Col.Section>
-					<Card.Col.Section>
-						<Card.Col.Title>{t('Commit_details')}</Card.Col.Title>
+					</CardColSection>
+					<CardColSection>
+						<CardColTitle>{t('Commit_details')}</CardColTitle>
 						{t('github_HEAD')}: ({commit.hash ? commit.hash.slice(0, 9) : ''}) <br />
-						{t('Branch')}: {commit.branch}
-					</Card.Col.Section>
-					<Card.Col.Section>
-						<Card.Col.Title>{t('PID')}</Card.Col.Title>
+						{t('Branch')}: {commit.branch} <br />
+						{commit.subject}
+					</CardColSection>
+					<CardColSection>
+						<CardColTitle>{t('PID')}</CardColTitle>
 						{statistics.process.pid}
-					</Card.Col.Section>
-				</Card.Col>
-			</Card.Body>
+					</CardColSection>
+				</CardCol>
+			</CardBody>
 
 			{!!instances.length && (
-				<Card.Footer>
+				<CardFooter>
 					<ButtonGroup align='end'>
 						<Button small onClick={handleInstancesModal}>
 							{t('Instances')}
 						</Button>
 					</ButtonGroup>
-				</Card.Footer>
+				</CardFooter>
 			)}
 		</Card>
 	);

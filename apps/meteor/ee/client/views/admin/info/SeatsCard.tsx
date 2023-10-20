@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import { Card } from '@rocket.chat/ui-client';
+import { Card, CardBody, CardCol, CardFooter, CardTitle } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -23,13 +23,13 @@ const SeatsCard = ({ seatsCap }: SeatsCardProps): ReactElement => {
 
 	const isNearLimit = seatsCap && seatsCap.activeUsers / seatsCap.maxActiveUsers >= 0.8;
 
-	const color = isNearLimit ? colors.d500 : undefined;
+	const color = isNearLimit ? colors.r500 : undefined;
 
 	return (
 		<Card>
-			<Card.Title>{t('Seats_usage')}</Card.Title>
-			<Card.Body>
-				<Card.Col>
+			<CardTitle>{t('Seats_usage')}</CardTitle>
+			<CardBody>
+				<CardCol>
 					<Box display='flex' flexDirection='row' justifyContent='center' fontScale={isNearLimit ? 'p2m' : 'p2'}>
 						{!seatsCap ? (
 							<Skeleton variant='rect' width='x112' height='x112' />
@@ -43,15 +43,15 @@ const SeatsCard = ({ seatsCap }: SeatsCardProps): ReactElement => {
 							/>
 						)}
 					</Box>
-				</Card.Col>
-			</Card.Body>
-			<Card.Footer>
+				</CardCol>
+			</CardBody>
+			<CardFooter>
 				<ButtonGroup align='end'>
 					<Button small primary onClick={() => handleExternalLink(requestSeatsLink)}>
 						{t('Request_seats')}
 					</Button>
 				</ButtonGroup>
-			</Card.Footer>
+			</CardFooter>
 		</Card>
 	);
 };

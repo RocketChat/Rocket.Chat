@@ -1,13 +1,13 @@
 {
 	"name": "@rocket.chat/ui-client",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.9",
 		"@rocket.chat/css-in-js": "next",
-		"@rocket.chat/fuselage": "next",
-		"@rocket.chat/fuselage-hooks": "next",
-		"@rocket.chat/icons": "next",
+		"@rocket.chat/fuselage": "^0.35.0",
+		"@rocket.chat/fuselage-hooks": "^0.32.1",
+		"@rocket.chat/icons": "^0.32.0",
 		"@rocket.chat/mock-providers": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:~",
 		"@storybook/addon-actions": "~6.5.16",
@@ -21,6 +21,7 @@
 		"@storybook/react": "~6.5.16",
 		"@storybook/testing-library": "~0.0.13",
 		"@swc/jest": "^0.2.26",
+		"@testing-library/jest-dom": "~5.16.5",
 		"@testing-library/react": "^12.1.2",
 		"@testing-library/react-hooks": "^8.0.1",
 		"@types/babel__core": "~7.20.1",
@@ -36,7 +37,7 @@
 		"jest": "~29.6.1",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
-		"react-hook-form": "^7.30.0",
+		"react-hook-form": "~7.45.4",
 		"ts-jest": "~29.0.5",
 		"typescript": "~5.2.2"
 	},
@@ -60,7 +61,7 @@
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"@rocket.chat/ui-contexts": "1.0.0",
+		"@rocket.chat/ui-contexts": "2.0.0",
 		"react": "~17.0.2"
 	},
 	"volta": {

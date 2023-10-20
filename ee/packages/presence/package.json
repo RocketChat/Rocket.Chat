@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/presence",
-	"version": "0.0.6",
+	"version": "0.0.15",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.9",
@@ -28,10 +28,13 @@
 	"files": [
 		"/dist"
 	],
+	"volta": {
+		"extends": "../../../package.json"
+	},
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
-		"mongodb": "^4.12.1"
+		"mongodb": "^4.17.1"
 	}
 }

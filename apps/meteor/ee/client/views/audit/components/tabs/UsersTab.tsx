@@ -1,4 +1,4 @@
-import { Field } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -30,17 +30,17 @@ const UsersTab = ({ form: { control } }: UsersTabProps): ReactElement => {
 
 	return (
 		<Field flexShrink={1}>
-			<Field.Label>{t('Users')}</Field.Label>
-			<Field.Row>
+			<FieldLabel>{t('Users')}</FieldLabel>
+			<FieldRow>
 				<UserAutoCompleteMultiple
 					error={!!usersFieldState.error}
 					value={usersField.value}
 					onChange={usersField.onChange}
 					placeholder={t('Username_Placeholder')}
 				/>
-			</Field.Row>
-			{usersFieldState.error?.type === 'required' && <Field.Error>{t('The_field_is_required', t('Users'))}</Field.Error>}
-			{usersFieldState.error?.type === 'validate' && <Field.Error>{usersFieldState.error.message}</Field.Error>}
+			</FieldRow>
+			{usersFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', t('Users'))}</FieldError>}
+			{usersFieldState.error?.type === 'validate' && <FieldError>{usersFieldState.error.message}</FieldError>}
 		</Field>
 	);
 };

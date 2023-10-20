@@ -2,7 +2,8 @@ import { faker } from '@faker-js/faker';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
-import type { Response } from 'supertest';
+import moment from 'moment';
+import { type Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
@@ -332,6 +333,27 @@ describe('LIVECHAT - visitors', function () {
 					expect(res.body.visitor).to.have.property('ts');
 					expect(res.body.visitor._id).to.be.equal(createdVisitor._id);
 				});
+		});
+
+		it('should return visitor activity field when visitor was active on month', async () => {
+			// Activity is determined by a conversation in which an agent has engaged (sent a message)
+			// For a visitor to be considered active, they must have had a conversation in the last 30 days
+			const period = moment().format('YYYY-MM');
+			const { visitor, room } = await startANewLivechatRoomAndTakeIt();
+			// agent should send a message on the room
+			await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: room._id,
+						msg: 'test',
+					},
+				});
+
+			const activeVisitor = await getLivechatVisitorByToken(visitor.token);
+			expect(activeVisitor).to.have.property('activity');
+			expect(activeVisitor.activity).to.include(period);
 		});
 
 		it("should return a 'error-removing-visitor' error when removeGuest's result is false", async () => {

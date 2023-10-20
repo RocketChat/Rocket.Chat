@@ -1,9 +1,15 @@
 {
 	"name": "@rocket.chat/mock-providers",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"private": true,
+	"dependencies": {
+		"@rocket.chat/i18n": "workspace:~",
+		"i18next": "~23.4.5",
+		"react-i18next": "~13.2.1"
+	},
 	"devDependencies": {
 		"@rocket.chat/ui-contexts": "workspace:*",
+		"@storybook/react": "~6.5.16",
 		"@tanstack/react-query": "^4.16.1",
 		"@types/jest": "~29.5.3",
 		"eslint": "~8.45.0",

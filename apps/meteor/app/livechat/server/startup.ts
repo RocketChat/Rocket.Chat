@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -13,6 +13,7 @@ import { settings } from '../../settings/server';
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
 import { Livechat } from './lib/Livechat';
+import { Livechat as LivechatTyped } from './lib/LivechatTyped';
 import { RoutingManager } from './lib/RoutingManager';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 import './roomAccessValidator.internalService';
@@ -62,18 +63,16 @@ Meteor.startup(async () => {
 	await createDefaultBusinessHourIfNotExists();
 
 	settings.watch<boolean>('Livechat_enable_business_hours', async (value) => {
-		Livechat.logger.debug(`Changing business hour type to ${value}`);
+		Livechat.logger.info(`Changing business hour type to ${value}`);
 		if (value) {
 			await businessHourManager.startManager();
-			Livechat.logger.debug(`Business hour manager started`);
 			return;
 		}
 		await businessHourManager.stopManager();
-		Livechat.logger.debug(`Business hour manager stopped`);
 	});
 
 	settings.watch<string>('Livechat_Routing_Method', (value) => {
-		RoutingManager.setMethodNameAndStartQueue(value);
+		void RoutingManager.setMethodNameAndStartQueue(value);
 	});
 
 	// Remove when accounts.onLogout is async
@@ -81,6 +80,11 @@ Meteor.startup(async () => {
 		({ user }: { user: IUser }) =>
 			user?.roles?.includes('livechat-agent') &&
 			!user?.roles?.includes('bot') &&
-			void Livechat.setUserStatusLivechatIf(user._id, 'not-available', {}, { livechatStatusSystemModified: true }).catch(),
+			void LivechatTyped.setUserStatusLivechatIf(
+				user._id,
+				ILivechatAgentStatus.NOT_AVAILABLE,
+				{},
+				{ livechatStatusSystemModified: true },
+			).catch(),
 	);
 });
