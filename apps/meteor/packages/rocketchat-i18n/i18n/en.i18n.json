@@ -5453,6 +5453,7 @@
   "Username_title": "Register username",
   "Username_has_been_updated": "Username has been updated",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "{{username}} wants to start OTR. Do you want to accept?",
+  "Username_name_email": "Username, name or e-mail",
   "Users": "Users",
   "Users must use Two Factor Authentication": "Users must use Two Factor Authentication",
   "Users_added": "The users have been added",

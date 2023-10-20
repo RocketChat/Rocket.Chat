@@ -118,7 +118,7 @@ const ForwardChatModal = ({
 								value={getValues().username}
 								excludeId={room.servedBy?._id}
 								showIdleAgents={idleAgentsAllowedForForwarding}
-								placeholder={t('Username')}
+								placeholder={t('Username_name_email')}
 								onChange={(value) => {
 									setValue('username', value);
 								}}
