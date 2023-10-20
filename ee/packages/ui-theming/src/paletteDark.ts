@@ -9,7 +9,7 @@ export const palette = [
 			{ name: 'stroke-dark', token: 'N600', color: '#9EA2A8' },
 			{ name: 'stroke-extra-dark', token: 'N400', color: '#CBCED1' },
 			{ name: 'stroke-extra-light-highlight', token: '', color: '#87CBFC' },
-			{ name: 'stroke-highlight', token: '', color: '#3976D1' },
+			{ name: 'stroke-highlight', token: '', color: '#6292DA' },
 			{ name: 'stroke-extra-light-error', token: '', color: '#F49AA6' },
 			{ name: 'stroke-error', token: '', color: '#BB3E4E' },
 		],
