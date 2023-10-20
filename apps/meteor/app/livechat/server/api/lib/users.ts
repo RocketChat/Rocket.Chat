@@ -24,47 +24,26 @@ async function findUsers({
 	pagination: { offset: number; count: number; sort: any };
 }): Promise<{ users: ILivechatAgent[]; count: number; offset: number; total: number }> {
 	const query: FilterOperators<ILivechatAgent> = {};
+	const orConditions: FilterOperators<ILivechatAgent>['$or'] = [];
 	if (text) {
 		const filterReg = new RegExp(escapeRegExp(text), 'i');
-		Object.assign(query, {
-			$or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }],
-		});
+		orConditions.push({ $or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }] });
 	}
 
 	if (onlyAvailable) {
-		Object.assign(query, {
-			statusLivechat: 'available',
-		});
+		query.statusLivechat = 'available';
 	}
 
 	if (excludeId) {
-		Object.assign(query, {
-			_id: { $ne: excludeId },
-		});
+		query._id = { $ne: excludeId };
 	}
 
 	if (!showIdleAgents) {
-		const oldOr = query.$or;
+		orConditions.push({ $or: [{ status: { $exists: true, $ne: 'offline' }, roles: { $ne: 'bot' } }, { roles: 'bot' }] });
+	}
 
-		const newOr = [{ status: { $exists: true, $ne: 'offline' }, roles: { $ne: 'bot' } }, { roles: 'bot' }];
-
-		if (oldOr) {
-			delete query.$or;
-			Object.assign(query, {
-				$and: [
-					{
-						$or: oldOr,
-					},
-					{
-						$or: newOr,
-					},
-				],
-			});
-		} else {
-			Object.assign(query, {
-				$or: newOr,
-			});
-		}
+	if (orConditions.length) {
+		query.$and = orConditions;
 	}
 
 	const [
