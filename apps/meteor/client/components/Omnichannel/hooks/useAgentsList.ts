@@ -50,7 +50,7 @@ export const useAgentsList = (
 			const items = agents.map<AgentOption>((agent) => {
 				const agentOption = {
 					_updatedAt: new Date(agent._updatedAt),
-					label: agent.username || agent._id,
+					label: `${agent.name || agent._id} (@${agent.username})`,
 					value: agent._id,
 					_id: agent._id,
 				};
