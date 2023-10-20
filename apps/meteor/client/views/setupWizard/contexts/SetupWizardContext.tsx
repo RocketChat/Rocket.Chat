@@ -31,7 +31,7 @@ type SetupWizarContextValue = {
 	registerServer: (params: { email: string; resend?: boolean }) => Promise<void>;
 	registerPreIntent: () => Promise<void>;
 	saveWorkspaceData: () => Promise<void>;
-	saveOrganizationData: () => Promise<void>;
+	saveOrganizationData: (data: SetupWizardData['organizationData']) => Promise<void>;
 	completeSetupWizard: () => Promise<void>;
 	offline: boolean;
 	maxSteps: number;

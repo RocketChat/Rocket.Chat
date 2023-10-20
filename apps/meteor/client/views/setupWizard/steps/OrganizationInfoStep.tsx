@@ -31,6 +31,7 @@ const OrganizationInfoStep = (): ReactElement => {
 
 	const {
 		setupWizardData: { organizationData },
+		saveOrganizationData,
 		setSetupWizardData,
 		settings,
 		goToPreviousStep,
@@ -49,7 +50,10 @@ const OrganizationInfoStep = (): ReactElement => {
 		if (skipCloudRegistration) {
 			return completeSetupWizard();
 		}
+
 		setSetupWizardData((prevState) => ({ ...prevState, organizationData: data }));
+
+		await saveOrganizationData(data);
 
 		goToNextStep();
 	};
