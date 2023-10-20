@@ -21,7 +21,7 @@ const PlanCard = ({ isEnterprise, license }: PlanCardProps): ReactElement => {
 	const { isSelfHosted, isLoading } = useIsSelfHosted();
 	const formatDate = useFormatDate();
 
-	const planName = isEnterprise ? license?.information?.tags && license.information?.tags[0]?.name : t('Community');
+	const planName = isEnterprise ? license?.information?.tags && license.information?.tags[0]?.name : 'Community';
 	const isSalesAssisted = license?.information?.grantedBy?.method !== 'self-service' || true;
 	const isTrial = license?.information?.trial || false;
 	const isAutoRenew = license?.information?.autoRenew || false;
