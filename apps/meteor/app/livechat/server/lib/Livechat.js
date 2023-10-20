@@ -1,6 +1,5 @@
 // Note: Please don't add any new methods to this file, since its still in js and we are migrating to ts
 // Please add new methods to LivechatTyped.ts
-import { Message } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatVisitors,
@@ -24,7 +23,6 @@ import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import * as Mailer from '../../../mailer/server/api';
-import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import { Analytics } from './Analytics';
 import { parseAgentCustomFields, updateDepartmentAgents } from './Helper';
@@ -83,35 +81,6 @@ export const Livechat = {
 				Subscriptions.updateDisplayNameByRoomId(rid, name)
 			);
 		}
-	},
-
-	async savePageHistory(token, roomId, pageInfo) {
-		Livechat.logger.debug(`Saving page movement history for visitor with token ${token}`);
-		if (pageInfo.change !== settings.get('Livechat_history_monitor_type')) {
-			return;
-		}
-		const user = await Users.findOneById('rocket.cat');
-
-		const pageTitle = pageInfo.title;
-		const pageUrl = pageInfo.location.href;
-		const extraData = {
-			navigation: {
-				page: pageInfo,
-				token,
-			},
-		};
-
-		if (!roomId) {
-			// keep history of unregistered visitors for 1 month
-			const keepHistoryMiliseconds = 2592000000;
-			extraData.expireAt = new Date().getTime() + keepHistoryMiliseconds;
-		}
-
-		if (!settings.get('Livechat_Visitor_navigation_as_a_message')) {
-			extraData._hidden = true;
-		}
-
-		return Message.saveSystemMessage('livechat_navigation_history', roomId, `${pageTitle} - ${pageUrl}`, user, extraData);
 	},
 
 	async getLivechatRoomGuestInfo(room) {
