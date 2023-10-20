@@ -11,8 +11,6 @@ import { statistics } from '../../app/statistics/server';
 async function generateStatistics(logger: Logger): Promise<void> {
 	const cronStatistics = await statistics.save();
 
-	cronStatistics.host = Meteor.absoluteUrl();
-
 	if (!settings.get('Statistics_reporting')) {
 		return;
 	}
@@ -23,7 +21,10 @@ async function generateStatistics(logger: Logger): Promise<void> {
 
 		const response = await fetch('https://collector.rocket.chat/', {
 			method: 'POST',
-			body: cronStatistics,
+			body: {
+				...cronStatistics,
+				host: Meteor.absoluteUrl(),
+			},
 			headers,
 		});
 
