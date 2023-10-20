@@ -27,10 +27,10 @@ async function generateStatistics(logger: Logger): Promise<void> {
 			headers,
 		});
 
-		const { cloudToken } = await response.json();
+		const { statsToken } = await response.json();
 
-		if (cloudToken != null) {
-			await Statistics.updateOne({ _id: cronStatistics._id }, { $set: { cloudToken } });
+		if (statsToken != null) {
+			await Statistics.updateOne({ _id: cronStatistics._id }, { $set: { statsToken } });
 		}
 	} catch (error) {
 		/* error*/
