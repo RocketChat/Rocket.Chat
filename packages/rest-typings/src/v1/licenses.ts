@@ -45,7 +45,7 @@ export type LicensesEndpoints = {
 	};
 	'/v1/licenses.info': {
 		GET: (params: licensesInfoProps) => {
-			data: LicenseInfo;
+			license: LicenseInfo;
 		};
 	};
 	'/v1/licenses.add': {
