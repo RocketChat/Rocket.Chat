@@ -13,7 +13,7 @@ export const useLicense = (): UseQueryResult<OperationResult<'GET', '/v1/license
 			if (!canViewLicense) {
 				throw new Error('unauthorized api call');
 			}
-			return getLicenses({ loadValues: true });
+			return getLicenses({});
 		},
 		{
 			staleTime: Infinity,
