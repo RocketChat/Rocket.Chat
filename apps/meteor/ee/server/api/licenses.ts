@@ -34,9 +34,9 @@ API.v1.addRoute(
 			const unrestrictedAccess = await hasPermissionAsync(this.userId, 'view-privileged-setting');
 			const loadCurrentValues = unrestrictedAccess && Boolean(this.queryParams.loadValues);
 
-			const data = await License.getInfo({ limits: unrestrictedAccess, license: unrestrictedAccess, currentValues: loadCurrentValues });
+			const license = await License.getInfo({ limits: unrestrictedAccess, license: unrestrictedAccess, currentValues: loadCurrentValues });
 
-			return API.v1.success({ data });
+			return API.v1.success({ license });
 		},
 	},
 );
