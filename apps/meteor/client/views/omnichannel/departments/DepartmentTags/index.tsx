@@ -1,4 +1,4 @@
-import { Button, Chip, Field, TextInput } from '@rocket.chat/fuselage';
+import { Button, Chip, FieldRow, FieldHint, TextInput } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
 import React, { useCallback, useState } from 'react';
@@ -28,7 +28,7 @@ export const DepartmentTags = ({ error, value: tags, onChange }: DepartmentTagsP
 
 	return (
 		<>
-			<Field.Row>
+			<FieldRow>
 				<TextInput
 					data-qa='DepartmentEditTextInput-ConversationClosingTags'
 					error={error}
@@ -45,18 +45,18 @@ export const DepartmentTags = ({ error, value: tags, onChange }: DepartmentTagsP
 				>
 					{t('Add')}
 				</Button>
-			</Field.Row>
+			</FieldRow>
 
-			<Field.Hint>{t('Conversation_closing_tags_description')}</Field.Hint>
+			<FieldHint>{t('Conversation_closing_tags_description')}</FieldHint>
 
 			{tags?.length > 0 && (
-				<Field.Row justifyContent='flex-start'>
+				<FieldRow justifyContent='flex-start'>
 					{tags.map((tag, i) => (
 						<Chip key={i} onClick={handleTagChipClick(tag)} mie={8}>
 							{tag}
 						</Chip>
 					))}
-				</Field.Row>
+				</FieldRow>
 			)}
 		</>
 	);

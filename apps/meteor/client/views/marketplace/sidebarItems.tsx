@@ -17,9 +17,9 @@ export const {
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
 	{
-		href: '/marketplace/enterprise',
+		href: '/marketplace/premium',
 		icon: 'lightning',
-		i18nLabel: 'Enterprise',
+		i18nLabel: 'Premium',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
 	{

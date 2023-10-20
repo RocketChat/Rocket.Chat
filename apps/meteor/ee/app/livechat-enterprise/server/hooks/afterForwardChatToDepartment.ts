@@ -13,7 +13,6 @@ callbacks.add(
 			projection: { departmentAncestors: 1 },
 		});
 		if (!room) {
-			cbLogger.debug('Skipping callback. No room found');
 			return options;
 		}
 		await LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
@@ -22,14 +21,12 @@ callbacks.add(
 			projection: { ancestors: 1 },
 		});
 		if (!department) {
-			cbLogger.debug('Skipping callback. No department found');
 			return options;
 		}
 
 		const { departmentAncestors } = room;
 		const { ancestors } = department;
 		if (!ancestors && !departmentAncestors) {
-			cbLogger.debug('Skipping callback. No ancestors found for department');
 			return options;
 		}
 
