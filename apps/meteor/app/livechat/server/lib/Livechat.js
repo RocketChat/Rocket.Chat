@@ -308,47 +308,6 @@ export const Livechat = {
 		});
 	},
 
-	async requestTranscript({ rid, email, subject, user }) {
-		check(rid, String);
-		check(email, String);
-		check(subject, String);
-		check(
-			user,
-			Match.ObjectIncluding({
-				_id: String,
-				username: String,
-				utcOffset: Number,
-				name: Match.Maybe(String),
-			}),
-		);
-
-		const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, open: 1, transcriptRequest: 1 } });
-
-		if (!room || !room.open) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room');
-		}
-
-		if (room.transcriptRequest) {
-			throw new Meteor.Error('error-transcript-already-requested', 'Transcript already requested');
-		}
-
-		const { _id, username, name, utcOffset } = user;
-		const transcriptRequest = {
-			requestedAt: new Date(),
-			requestedBy: {
-				_id,
-				username,
-				name,
-				utcOffset,
-			},
-			email,
-			subject,
-		};
-
-		await LivechatRooms.setEmailTranscriptRequestedByRoomId(rid, transcriptRequest);
-		return true;
-	},
-
 	async notifyGuestStatusChanged(token, status) {
 		await LivechatInquiry.updateVisitorStatus(token, status);
 		await LivechatRooms.updateVisitorStatus(token, status);

@@ -1413,6 +1413,44 @@ class LivechatClass {
 
 		return result.modifiedCount;
 	}
+
+	async requestTranscript({
+		rid,
+		email,
+		subject,
+		user,
+	}: {
+		rid: string;
+		email: string;
+		subject: string;
+		user: AtLeast<IUser, '_id' | 'username' | 'utcOffset' | 'name'>;
+	}) {
+		const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, open: 1, transcriptRequest: 1 } });
+
+		if (!room?.open) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room');
+		}
+
+		if (room.transcriptRequest) {
+			throw new Meteor.Error('error-transcript-already-requested', 'Transcript already requested');
+		}
+
+		const { _id, username, name, utcOffset } = user;
+		const transcriptRequest = {
+			requestedAt: new Date(),
+			requestedBy: {
+				_id,
+				username,
+				name,
+				utcOffset,
+			},
+			email,
+			subject,
+		};
+
+		await LivechatRooms.setEmailTranscriptRequestedByRoomId(rid, transcriptRequest);
+		return true;
+	}
 }
 
 export const Livechat = new LivechatClass();
