@@ -79,6 +79,14 @@ export function onBehaviorTriggered(
 	this.on(`behavior:${behavior}`, cb);
 }
 
+export function onBehaviorToggled(
+	this: LicenseManager,
+	behavior: Exclude<LicenseBehavior, 'prevent_installation'>,
+	cb: (data: { reason: BehaviorWithContext['reason']; limit?: LicenseLimitKind }) => void,
+) {
+	this.on(`behaviorToggled:${behavior}`, cb);
+}
+
 export function onLimitReached(this: LicenseManager, limitKind: LicenseLimitKind, cb: () => void) {
 	this.on(`limitReached:${limitKind}`, cb);
 }

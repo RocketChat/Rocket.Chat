@@ -1,4 +1,11 @@
-export const themeItems = [
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+
+type ThemeItem = {
+	id: string;
+	title: TranslationKey;
+	description: TranslationKey;
+};
+export const themeItems: ThemeItem[] = [
 	{
 		id: 'light',
 		title: 'Theme_light',
@@ -10,7 +17,6 @@ export const themeItems = [
 		description: 'Theme_dark_description',
 	},
 	{
-		isEEOnly: true,
 		id: 'high-contrast',
 		title: 'Theme_high_contrast',
 		description: 'Theme_high_contrast_description',

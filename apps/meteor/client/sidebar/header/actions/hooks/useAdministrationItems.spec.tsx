@@ -6,13 +6,12 @@ import { useAdministrationItems } from './useAdministrationItems';
 it('should not show upgrade item if has license and not have trial', async () => {
 	const { result, waitFor } = renderHook(() => useAdministrationItems(), {
 		wrapper: mockAppRoot()
-			.withEndpoint('GET', '/v1/licenses.get', () => ({
-				licenses: [
-					{
-						modules: ['testModule'],
-						meta: { trial: false },
-					} as any,
-				],
+			.withEndpoint('GET', '/v1/licenses.info', () => ({
+				license: {
+					// @ts-expect-error this is a mock
+					license: { activeModules: ['testModule'] },
+					trial: false,
+				},
 			}))
 			.withEndpoint('GET', '/v1/cloud.registrationStatus', () => ({
 				registrationStatus: {
@@ -25,19 +24,21 @@ it('should not show upgrade item if has license and not have trial', async () =>
 	});
 
 	await waitFor(() => !!(result.all.length > 1));
-
 	expect(result.current.length).toEqual(1);
+
+	expect(result.current[0]).toEqual(
+		expect.objectContaining({
+			id: 'workspace',
+		}),
+	);
 });
 
 it('should return an upgrade item if not have license or if have a trial', async () => {
 	const { result, waitFor } = renderHook(() => useAdministrationItems(), {
 		wrapper: mockAppRoot()
-			.withEndpoint('GET', '/v1/licenses.get', () => ({
-				licenses: [
-					{
-						modules: [],
-					} as any,
-				],
+			.withEndpoint('GET', '/v1/licenses.info', () => ({
+				// @ts-expect-error this is a mock
+				license: {},
 			}))
 			.withEndpoint('GET', '/v1/cloud.registrationStatus', () => ({
 				registrationStatus: {
@@ -62,12 +63,9 @@ it('should return an upgrade item if not have license or if have a trial', async
 it('should return omnichannel item if has `view-livechat-manager` permission ', async () => {
 	const { result, waitFor } = renderHook(() => useAdministrationItems(), {
 		wrapper: mockAppRoot()
-			.withEndpoint('GET', '/v1/licenses.get', () => ({
-				licenses: [
-					{
-						modules: [],
-					} as any,
-				],
+			.withEndpoint('GET', '/v1/licenses.info', () => ({
+				// @ts-expect-error this is a mock
+				license: {},
 			}))
 			.withEndpoint('GET', '/v1/cloud.registrationStatus', () => ({
 				registrationStatus: {
@@ -90,12 +88,9 @@ it('should return omnichannel item if has `view-livechat-manager` permission ', 
 it('should show administration item if has at least one admin permission', async () => {
 	const { result, waitFor } = renderHook(() => useAdministrationItems(), {
 		wrapper: mockAppRoot()
-			.withEndpoint('GET', '/v1/licenses.get', () => ({
-				licenses: [
-					{
-						modules: [],
-					} as any,
-				],
+			.withEndpoint('GET', '/v1/licenses.info', () => ({
+				// @ts-expect-error this is a mock
+				license: {},
 			}))
 			.withEndpoint('GET', '/v1/cloud.registrationStatus', () => ({
 				registrationStatus: {
