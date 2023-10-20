@@ -15,6 +15,9 @@ import type {
 	ILivechatDepartment,
 	AtLeast,
 	TransferData,
+	MessageAttachment,
+	IMessageInbox,
+	ILivechatAgentStatus,
 } from '@rocket.chat/core-typings';
 import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -34,13 +37,15 @@ import {
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import moment from 'moment-timezone';
-import type { FindCursor, UpdateFilter } from 'mongodb';
+import type { Filter, FindCursor, UpdateFilter } from 'mongodb';
 
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { FileUpload } from '../../../file-upload/server';
+import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import * as Mailer from '../../../mailer/server/api';
@@ -87,6 +92,40 @@ type OfflineMessageData = {
 	email: string;
 	department?: string;
 	host?: string;
+};
+
+export interface ILivechatMessage {
+	token: string;
+	_id: string;
+	rid: string;
+	msg: string;
+	file?: {
+		_id: string;
+		name?: string;
+		type?: string;
+		size?: number;
+		description?: string;
+		identify?: { size: { width: number; height: number } };
+		format?: string;
+	};
+	files?: {
+		_id: string;
+		name?: string;
+		type?: string;
+		size?: number;
+		description?: string;
+		identify?: { size: { width: number; height: number } };
+		format?: string;
+	}[];
+	attachments?: MessageAttachment[];
+	alias?: string;
+	groupable?: boolean;
+	blocks?: IMessage['blocks'];
+	email?: IMessageInbox['email'];
+}
+
+type AKeyOf<T> = {
+	[K in keyof T]?: T[K];
 };
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
@@ -1122,6 +1161,172 @@ class LivechatClass {
 		setImmediate(() => {
 			void callbacks.run('livechat.offlineMessage', data);
 		});
+	}
+
+	async sendMessage({
+		guest,
+		message,
+		roomInfo,
+		agent,
+	}: {
+		guest: ILivechatVisitor;
+		message: ILivechatMessage;
+		roomInfo: {
+			source?: IOmnichannelRoom['source'];
+			[key: string]: unknown;
+		};
+		agent?: SelectedAgent;
+	}) {
+		const { room, newRoom } = await this.getRoom(guest, message, roomInfo, agent);
+		if (guest.name) {
+			message.alias = guest.name;
+		}
+		return Object.assign(await sendMessage(guest, message, room), {
+			newRoom,
+			showConnecting: this.showConnecting(),
+		});
+	}
+
+	async removeGuest(_id: string) {
+		const guest = await LivechatVisitors.findOneEnabledById(_id, { projection: { _id: 1, token: 1 } });
+		if (!guest) {
+			throw new Error('error-invalid-guest');
+		}
+
+		await this.cleanGuestHistory(guest);
+		return LivechatVisitors.disableById(_id);
+	}
+
+	async cleanGuestHistory(guest: ILivechatVisitor) {
+		const { token } = guest;
+
+		// This shouldn't be possible, but just in case
+		if (!token) {
+			throw new Error('error-invalid-guest');
+		}
+
+		const cursor = LivechatRooms.findByVisitorToken(token);
+		for await (const room of cursor) {
+			await Promise.all([
+				FileUpload.removeFilesByRoomId(room._id),
+				Messages.removeByRoomId(room._id),
+				ReadReceipts.removeByRoomId(room._id),
+			]);
+		}
+
+		await Promise.all([
+			Subscriptions.removeByVisitorToken(token),
+			LivechatRooms.removeByVisitorToken(token),
+			LivechatInquiry.removeByVisitorToken(token),
+		]);
+	}
+
+	async deleteMessage({ guest, message }: { guest: ILivechatVisitor; message: IMessage }) {
+		const deleteAllowed = settings.get<boolean>('Message_AllowDeleting');
+		const editOwn = message.u && message.u._id === guest._id;
+
+		if (!deleteAllowed || !editOwn) {
+			throw new Error('error-action-not-allowed');
+		}
+
+		await deleteMessage(message, guest as unknown as IUser);
+
+		return true;
+	}
+
+	async setUserStatusLivechatIf(userId: string, status: ILivechatAgentStatus, condition?: Filter<IUser>, fields?: AKeyOf<ILivechatAgent>) {
+		const user = await Users.setLivechatStatusIf(userId, status, condition, fields);
+		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
+		return user;
+	}
+
+	async returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: any = {}) {
+		this.logger.debug({ msg: `Transfering room to ${departmentId ? 'department' : ''} queue`, room });
+		if (!room.open) {
+			throw new Meteor.Error('room-closed');
+		}
+
+		if (room.onHold) {
+			throw new Meteor.Error('error-room-onHold');
+		}
+
+		if (!room.servedBy) {
+			return false;
+		}
+
+		const user = await Users.findOneById(room.servedBy._id);
+		if (!user?._id) {
+			throw new Meteor.Error('error-invalid-user');
+		}
+
+		// find inquiry corresponding to room
+		const inquiry = await LivechatInquiry.findOne({ rid: room._id });
+		if (!inquiry) {
+			return false;
+		}
+
+		const transferredBy = normalizeTransferredByData(user, room);
+		this.logger.debug(`Transfering room ${room._id} by user ${transferredBy._id}`);
+		const transferData = { roomId: room._id, scope: 'queue', departmentId, transferredBy, ...overrideTransferData };
+		try {
+			await this.saveTransferHistory(room, transferData);
+			await RoutingManager.unassignAgent(inquiry, departmentId);
+		} catch (e) {
+			this.logger.error(e);
+			throw new Meteor.Error('error-returning-inquiry');
+		}
+
+		callbacks.runAsync('livechat:afterReturnRoomAsInquiry', { room });
+
+		return true;
+	}
+
+	async saveTransferHistory(room: IOmnichannelRoom, transferData: TransferData) {
+		const { departmentId: previousDepartment } = room;
+		const { department: nextDepartment, transferredBy, transferredTo, scope, comment } = transferData;
+
+		check(
+			transferredBy,
+			Match.ObjectIncluding({
+				_id: String,
+				username: String,
+				name: Match.Maybe(String),
+				type: String,
+			}),
+		);
+
+		const { _id, username } = transferredBy;
+		const scopeData = scope || (nextDepartment ? 'department' : 'agent');
+		this.logger.info(`Storing new chat transfer of ${room._id} [Transfered by: ${_id} to ${scopeData}]`);
+
+		const transfer = {
+			transferData: {
+				transferredBy,
+				ts: new Date(),
+				scope: scopeData,
+				comment,
+				...(previousDepartment && { previousDepartment }),
+				...(nextDepartment && { nextDepartment }),
+				...(transferredTo && { transferredTo }),
+			},
+		};
+
+		const type = 'livechat_transfer_history';
+		const transferMessage = {
+			t: type,
+			rid: room._id,
+			ts: new Date(),
+			msg: '',
+			u: {
+				_id,
+				username,
+			},
+			groupable: false,
+		};
+
+		Object.assign(transferMessage, transfer);
+
+		await sendMessage(transferredBy, transferMessage, room);
 	}
 }
 

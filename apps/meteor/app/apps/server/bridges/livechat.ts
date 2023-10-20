@@ -44,7 +44,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			throw new Error('Invalid token for livechat message');
 		}
 
-		const msg = await Livechat.sendMessage({
+		const msg = await LivechatTyped.sendMessage({
 			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(message.visitor),
 			message: await this.orch.getConverters()?.get('messages').convertAppMessage(message),
 			agent: undefined,
