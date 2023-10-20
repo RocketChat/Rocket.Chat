@@ -118,6 +118,70 @@ describe('Event License behaviors', () => {
 	});
 
 	/**
+	 * This event is used to sync multiple instances of license manager
+	 * The sync event is triggered when the license is changed, but if the validation is running due to a previous change, no sync should be triggered, avoiding multiple/loops syncs
+	 */
+	describe('sync event', () => {
+		it('should emit `sync` event when the license is changed', async () => {
+			const licenseManager = await getReadyLicenseManager();
+			const fn = jest.fn();
+
+			licenseManager.onChange(fn);
+
+			const license = await new MockedLicenseBuilder().withLimits('activeUsers', [
+				{
+					max: 10,
+					behavior: 'prevent_action',
+				},
+				{
+					max: 20,
+					behavior: 'invalidate_license',
+				},
+			]);
+
+			await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+
+			licenseManager.setLicenseLimitCounter('activeUsers', () => 21);
+
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
+
+			await expect(fn).toBeCalledTimes(1);
+		});
+
+		it('should not emit `sync` event when the license validation was triggered by a the sync method', async () => {
+			const licenseManager = await getReadyLicenseManager();
+			const fn = jest.fn();
+
+			licenseManager.onChange(fn);
+
+			const license = await new MockedLicenseBuilder().withLimits('activeUsers', [
+				{
+					max: 10,
+					behavior: 'prevent_action',
+				},
+				{
+					max: 20,
+					behavior: 'invalidate_license',
+				},
+			]);
+
+			await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+
+			licenseManager.setLicenseLimitCounter('activeUsers', () => 21);
+
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
+
+			await expect(fn).toBeCalledTimes(1);
+
+			fn.mockClear();
+
+			await expect(licenseManager.sync()).resolves.toBe(undefined);
+
+			await expect(fn).toBeCalledTimes(0);
+		});
+	});
+
+	/**
 	 * this is only called when the prevent_action behavior is triggered for the first time
 	 * it will not be called again until the behavior is toggled
 	 */
