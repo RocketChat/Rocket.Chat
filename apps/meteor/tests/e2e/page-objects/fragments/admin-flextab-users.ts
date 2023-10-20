@@ -36,7 +36,7 @@ export class AdminFlextabUsers {
 	}
 
 	get checkboxVerified(): Locator {
-		return this.page.locator('//label[text()="Verified"]');
+		return this.page.locator('//label[text()="Mark email as verified"]');
 	}
 
 	get userRole(): Locator {
