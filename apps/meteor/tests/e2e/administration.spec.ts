@@ -42,7 +42,6 @@ test.describe.parallel('administration', () => {
 			await poAdmin.tabs.users.inputName.type(faker.person.firstName());
 			await poAdmin.tabs.users.inputUserName.type(faker.internet.userName());
 			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
-			await poAdmin.tabs.users.checkboxVerified.click();
 			await poAdmin.tabs.users.inputPassword.type('any_password');
 			await expect(poAdmin.tabs.users.userRole).toBeVisible();
 			await poAdmin.tabs.users.btnSave.click();
