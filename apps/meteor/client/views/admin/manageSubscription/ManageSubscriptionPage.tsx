@@ -30,7 +30,7 @@ const ManageSubscriptionPage = () => {
 
 	const { subscriptionSuccess } = router.getSearchParameters();
 
-	const { activeModules = [], license, limits } = licensesData?.data || {};
+	const { activeModules = [], license, limits } = licensesData?.license || {};
 	const isEnterprise = data?.isEnterprise || false;
 	const isTrial = license?.information?.trial ?? false;
 
