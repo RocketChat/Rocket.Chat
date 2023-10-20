@@ -7,7 +7,7 @@ import useDismissUserAction from '../hooks/useDismissUserAction';
 import useResetAvatarAction from '../hooks/useResetAvatarAction';
 import type { ModConsoleUserRowProps } from './ModConsoleUserTableRow';
 
-const ModConsoleUserActions = ({ report, onClick }: Omit<ModConsoleUserRowProps, 'isDesktopOrLarger'>): JSX.Element => {
+const ModConsoleUserActions = ({ report, onClick }: Omit<ModConsoleUserRowProps, 'isDesktopOrLarger'>) => {
 	const t = useTranslation();
 	const {
 		reportedUser: { _id: uid },

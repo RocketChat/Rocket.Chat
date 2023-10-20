@@ -1,4 +1,3 @@
-import { Grid, GridItem } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
@@ -16,14 +15,9 @@ const ModerationFilter = ({ setText, setDateRange }: ModerationFilterProps) => {
 	const handleChange = useCallback(({ text }): void => setText(text), [setText]);
 
 	return (
-		<Grid>
-			<GridItem flexGrow={5}>
-				<FilterByText autoFocus placeholder={t('Search')} onChange={handleChange} />
-			</GridItem>
-			<GridItem display='flex' alignItems='center'>
-				<DateRangePicker onChange={setDateRange} />
-			</GridItem>
-		</Grid>
+		<FilterByText autoFocus placeholder={t('Search')} onChange={handleChange}>
+			<DateRangePicker onChange={setDateRange} />
+		</FilterByText>
 	);
 };
 

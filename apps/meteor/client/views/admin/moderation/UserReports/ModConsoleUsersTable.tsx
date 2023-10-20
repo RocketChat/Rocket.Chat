@@ -1,6 +1,6 @@
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useMemo, useState } from 'react';
@@ -52,16 +52,8 @@ const ModConsoleUsersTable: FC = () => {
 
 	const getReports = useEndpoint('GET', '/v1/moderation.userReports');
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
 	const { data, isLoading, isSuccess, isError, refetch } = useQuery(['moderation.userReports', query], async () => getReports(query), {
-		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
-		},
-	});
-
-	const handleRefetch = useMutableCallback(() => {
-		refetch();
+		keepPreviousData: true,
 	});
 
 	const handleClick = useMutableCallback((id): void => {
@@ -150,7 +142,7 @@ const ModConsoleUsersTable: FC = () => {
 					<StatesIcon name='warning' variation='danger' />
 					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 					<StatesActions>
-						<StatesAction onClick={handleRefetch}>{t('Reload_page')}</StatesAction>
+						<StatesAction onClick={() => refetch()}>{t('Reload_page')}</StatesAction>
 					</StatesActions>
 				</States>
 			)}

@@ -16,17 +16,11 @@ const MessageContextFooter: FC<{ userId: string; deleted: boolean }> = ({ userId
 	const deleteMessagesAction = useDeleteMessagesAction(userId);
 
 	return (
-		<ButtonGroup flexGrow={0} width='full' stretch>
-			<Button onClick={dismissUserAction.onClick} title={t('Moderation_Dismiss_all_reports')} aria-label={t('Moderation_Dismiss_reports')}>
+		<ButtonGroup width='full' stretch>
+			<Button onClick={dismissUserAction.onClick} title={t('Moderation_Dismiss_all_reports')}>
 				{t('Moderation_Dismiss_all_reports')}
 			</Button>
-			<Button
-				onClick={deleteMessagesAction.onClick}
-				title={t('delete-message')}
-				aria-label={t('Moderation_Delete_all_messages')}
-				secondary
-				danger
-			>
+			<Button onClick={deleteMessagesAction.onClick} title={t('delete-message')} secondary danger>
 				{t('Moderation_Delete_all_messages')}
 			</Button>
 

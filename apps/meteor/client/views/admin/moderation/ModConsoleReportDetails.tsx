@@ -15,12 +15,10 @@ type ModConsoleReportDetailsProps = {
 
 const tabs = ['Messages', 'Users'];
 
-const ModConsoleReportDetails = ({ userId, default: defaultTab, onRedirect }: ModConsoleReportDetailsProps): JSX.Element => {
+const ModConsoleReportDetails = ({ userId, default: defaultTab, onRedirect }: ModConsoleReportDetailsProps) => {
 	const t = useTranslation();
 	const [tab, setTab] = useState<string>(defaultTab);
 	const moderationRoute = useRouter();
-
-	const handleTabClick = (tab: string) => (): void => setTab(tab);
 
 	return (
 		<Contextualbar>
@@ -30,7 +28,7 @@ const ModConsoleReportDetails = ({ userId, default: defaultTab, onRedirect }: Mo
 			</ContextualbarHeader>
 			<Tabs>
 				{tabs.map((tabName) => (
-					<TabsItem key={tabName || ''} selected={tab === tabName} onClick={handleTabClick(tabName)}>
+					<TabsItem key={tabName || ''} selected={tab === tabName} onClick={() => setTab(tabName)}>
 						{t(tabName as TranslationKey)}
 					</TabsItem>
 				))}

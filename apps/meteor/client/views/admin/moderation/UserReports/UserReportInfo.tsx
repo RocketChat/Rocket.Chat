@@ -13,8 +13,7 @@ import {
 	FieldRow,
 	ContextualbarSkeleton,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
@@ -32,9 +31,8 @@ const isUser = (obj: any): obj is IUser => {
 	return obj?.createdAt instanceof Date;
 };
 
-const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
+const UserReportInfo = ({ userId }: { userId: string }) => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 	const getUserReports = useEndpoint('GET', '/v1/moderation.user.reportsByUserId');
 	const formatDateAndTime = useFormatDate();
 
@@ -45,18 +43,7 @@ const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
 		isSuccess: isSuccessUsersReports,
 		isError,
 		dataUpdatedAt,
-	} = useQuery(
-		['moderation.usersReport', { userId }],
-		async () => {
-			const reports = await getUserReports({ userId });
-			return reports;
-		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
-		},
-	);
+	} = useQuery(['moderation.usersReport', { userId }], async () => getUserReports({ userId }));
 
 	const userProfile = useMemo(() => {
 		if (!report?.user) {
@@ -66,10 +53,6 @@ const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
 		const { username, name } = report.user;
 		return <UserColumn key={dataUpdatedAt} username={username} name={name} isProfile={true} />;
 	}, [report?.user, dataUpdatedAt]);
-
-	const handleChange = useMutableCallback(() => {
-		reloadUsersReports();
-	});
 
 	const userEmails = useMemo(() => {
 		if (!report?.user?.emails) {
@@ -84,7 +67,7 @@ const UserReportInfo = ({ userId }: { userId: string }): JSX.Element => {
 				<StatesIcon name='warning' variation='danger' />
 				<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 				<StatesActions>
-					<StatesAction onClick={handleChange}>{t('Reload_page')}</StatesAction>
+					<StatesAction onClick={() => reloadUsersReports()}>{t('Reload_page')}</StatesAction>
 				</StatesActions>
 			</Box>
 		);

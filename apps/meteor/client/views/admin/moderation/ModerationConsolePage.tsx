@@ -29,20 +29,19 @@ const ModerationConsolePage = () => {
 		[dispatchToastMessage],
 	);
 
-	const handleTabClick = (tab: string) => () => setTab(tab);
-
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={t('Moderation')} />
+
+				<Tabs>
+					{tabs.map((tabName) => (
+						<TabsItem key={tabName || ''} selected={tab === tabName} onClick={() => setTab(tabName)}>
+							{t(`Reported_${tabName}` as TranslationKey)}
+						</TabsItem>
+					))}
+				</Tabs>
 				<Page.Content>
-					<Tabs>
-						{tabs.map((tabName) => (
-							<TabsItem key={tabName || ''} selected={tab === tabName} onClick={handleTabClick(tabName)}>
-								{t(`Reported_${tabName}` as TranslationKey)}
-							</TabsItem>
-						))}
-					</Tabs>
 					{tab === 'Messages' && <ModerationConsoleTable />} {tab === 'Users' && <ModConsoleUsersTable />}
 				</Page.Content>
 			</Page>

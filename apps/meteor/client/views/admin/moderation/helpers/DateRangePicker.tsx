@@ -1,4 +1,4 @@
-import { Select, type SelectOption } from '@rocket.chat/fuselage';
+import { Select, Box, type SelectOption } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment, { type Moment } from 'moment';
@@ -75,7 +75,11 @@ const DateRangePicker = ({ onChange }: DateRangePickerProps) => {
 		}
 	});
 
-	return <Select defaultSelectedKey='alldates' width='100%' options={timeOptions} onChange={handleOptionClick} />;
+	return (
+		<Box flexGrow={0}>
+			<Select defaultSelectedKey='alldates' width='100%' options={timeOptions} onChange={handleOptionClick} />
+		</Box>
+	);
 };
 
 export default DateRangePicker;
