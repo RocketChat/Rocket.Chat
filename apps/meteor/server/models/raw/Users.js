@@ -2201,7 +2201,6 @@ export class UsersRaw extends BaseRaw {
 			{
 				active: true,
 				type: { $nin: ['app'] },
-				roles: { $ne: ['guest'] },
 				_id: { $in: ids },
 			},
 			options,

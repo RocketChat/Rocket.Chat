@@ -38,27 +38,27 @@ export const Animated: Story<Pick<ComponentProps<typeof UsagePieGraph>, 'size' |
 		{
 			total: 100,
 			used: 0,
-			color: colorTokens.s500,
+			color: colorTokens.g500,
 		},
 		{
 			total: 100,
 			used: 25,
-			color: colorTokens.p500,
+			color: colorTokens.b500,
 		},
 		{
 			total: 100,
 			used: 50,
-			color: colorTokens.w500,
+			color: colorTokens.y500,
 		},
 		{
 			total: 100,
 			used: 75,
-			color: colorTokens['s1-500'],
+			color: colorTokens.o500,
 		},
 		{
 			total: 100,
 			used: 100,
-			color: colorTokens.d500,
+			color: colorTokens.r500,
 		},
 	]);
 

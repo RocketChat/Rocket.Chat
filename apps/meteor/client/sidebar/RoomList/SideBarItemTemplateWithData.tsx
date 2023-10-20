@@ -33,6 +33,30 @@ const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: ReturnTyp
 	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeSidebarMessage(lastMessage, t)}`;
 };
 
+const getBadgeTitle = (
+	userMentions: number,
+	threadUnread: number,
+	groupMentions: number,
+	unread: number,
+	t: ReturnType<typeof useTranslation>,
+) => {
+	const title = [] as string[];
+	if (userMentions) {
+		title.push(t('mentions_counter', { count: userMentions }));
+	}
+	if (threadUnread) {
+		title.push(t('threads_counter', { count: threadUnread }));
+	}
+	if (groupMentions) {
+		title.push(t('group_mentions_counter', { count: groupMentions }));
+	}
+	const count = unread - userMentions - groupMentions;
+	if (count > 0) {
+		title.push(t('unread_messages_counter', { count }));
+	}
+	return title.join(', ');
+};
+
 type RoomListRowProps = {
 	extended: boolean;
 	t: ReturnType<typeof useTranslation>;
@@ -137,10 +161,12 @@ function SideBarItemTemplateWithData({
 	const isUnread = unread > 0 || threadUnread;
 	const showBadge = !hideUnreadStatus || (!hideMentionStatus && (Boolean(userMentions) || tunreadUser.length > 0));
 
+	const badgeTitle = getBadgeTitle(userMentions, tunread.length, groupMentions, unread, t);
+
 	const badges = (
 		<Margins inlineStart={8}>
 			{showBadge && isUnread && (
-				<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant}>
+				<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant} title={badgeTitle}>
 					{unread + tunread?.length}
 				</Badge>
 			)}
