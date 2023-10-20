@@ -14,10 +14,10 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 	const { data: registrationStatusData, isSuccess: isSuccessRegistrationStatus } = useRegistrationStatus();
 
 	const registered = registrationStatusData?.registrationStatus?.workspaceRegistered ?? false;
-	const hasValidLicense = licensesData?.licenses.some((license) => license.modules.length > 0) ?? false;
+	const hasValidLicense = Boolean(licensesData?.license ?? false);
 	const hadExpiredTrials = cloudWorkspaceHadTrial ?? false;
 
-	const licenses = (licensesData?.licenses || []) as (Partial<ILicenseV2 & ILicenseV3> & { modules: string[] })[];
+	const licenses = (licensesData?.license || []) as (Partial<ILicenseV2 & ILicenseV3> & { modules: string[] })[];
 
 	const trialLicense = licenses.find(({ meta, information }) => information?.trial ?? meta?.trial);
 	const isTrial = Boolean(trialLicense);

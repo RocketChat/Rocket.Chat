@@ -5,12 +5,15 @@ import { check } from 'meteor/check';
 
 import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
+import { apiDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 
 API.v1.addRoute(
 	'licenses.get',
 	{ authRequired: true },
 	{
 		async get() {
+			apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, ' Use licenses.info instead.');
+
 			if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
 				return API.v1.unauthorized();
 			}
@@ -81,8 +84,9 @@ API.v1.addRoute(
 	{ authOrAnonRequired: true },
 	{
 		get() {
-			const isEnterpriseEdtion = License.hasValidLicense();
-			return API.v1.success({ isEnterprise: isEnterpriseEdtion });
+			apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, ' Use licenses.info instead.');
+			const isEnterpriseEdition = License.hasValidLicense();
+			return API.v1.success({ isEnterprise: isEnterpriseEdition });
 		},
 	},
 );
