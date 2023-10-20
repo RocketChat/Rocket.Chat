@@ -79,7 +79,7 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 			await agent1.poHomeOmnichannel.content.btnForwardChat.click();
 			await agent1.poHomeOmnichannel.content.inputModalAgentUserName.click();
 			await agent1.poHomeOmnichannel.content.inputModalAgentUserName.type('user2');
-			await agent1.page.locator('.rcx-option .rcx-option__wrapper >> text="user2"').click();
+			await agent1.page.locator('.rcx-option .rcx-option__wrapper >> text="user2 (@user2)"').click();
 			await agent1.poHomeOmnichannel.content.inputModalAgentForwardComment.type('any_comment');
 			await agent1.poHomeOmnichannel.content.btnModalConfirm.click();
 			await expect(agent1.poHomeOmnichannel.toastSuccess).toBeVisible();
