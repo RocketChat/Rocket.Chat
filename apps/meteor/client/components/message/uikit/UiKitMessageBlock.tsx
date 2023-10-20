@@ -1,12 +1,12 @@
-import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageBlock } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { UiKitComponent, UiKitMessage as UiKitMessageSurfaceRender, UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import type { ContextType, ReactElement } from 'react';
-import React from 'react';
+import React, { useMemo } from 'react';
 
+import { useUiKitActionManager } from '../../../UIKit/hooks/useUiKitActionManager';
 import {
 	useVideoConfDispatchOutgoing,
 	useVideoConfIsCalling,
@@ -15,27 +15,16 @@ import {
 	useVideoConfManager,
 	useVideoConfSetPreferences,
 } from '../../../contexts/VideoConfContext';
-import { useUiKitActionManager } from '../../../hooks/useUiKitActionManager';
 import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 import GazzodownText from '../../GazzodownText';
 
-let patched = false;
-const patchMessageParser = () => {
-	if (patched) {
-		return;
-	}
-
-	patched = true;
-};
-
 type UiKitMessageBlockProps = {
+	rid: IRoom['_id'];
 	mid: IMessage['_id'];
 	blocks: MessageSurfaceLayout;
-	rid: IRoom['_id'];
-	appId?: string | boolean; // TODO: this is a hack while the context value is not properly typed
 };
 
-const UiKitMessageBlock = ({ mid: _mid, blocks, rid, appId }: UiKitMessageBlockProps): ReactElement => {
+const UiKitMessageBlock = ({ rid, mid, blocks }: UiKitMessageBlockProps): ReactElement => {
 	const joinCall = useVideoConfJoinCall();
 	const setPreferences = useVideoConfSetPreferences();
 	const isCalling = useVideoConfIsCalling();
@@ -61,44 +50,47 @@ const UiKitMessageBlock = ({ mid: _mid, blocks, rid, appId }: UiKitMessageBlockP
 	const actionManager = useUiKitActionManager();
 
 	// TODO: this structure is attrociously wrong; we should revisit this
-	const context: ContextType<typeof UiKitContext> = {
-		// @ts-ignore Property 'mid' does not exist on type 'ActionParams'.
-		action: ({ actionId, value, blockId, mid = _mid, appId }, event) => {
-			if (appId === 'videoconf-core') {
-				event.preventDefault();
-				setPreferences({ mic: true, cam: false });
-				if (actionId === 'join') {
-					return joinCall(blockId);
+	const contextValue = useMemo(
+		(): ContextType<typeof UiKitContext> => ({
+			action: ({ appId, actionId, blockId, value }, event) => {
+				if (appId === 'videoconf-core') {
+					event.preventDefault();
+					setPreferences({ mic: true, cam: false });
+					if (actionId === 'join') {
+						return joinCall(blockId);
+					}
+
+					if (actionId === 'callBack') {
+						return handleOpenVideoConf(blockId);
+					}
 				}
 
-				if (actionId === 'callBack') {
-					return handleOpenVideoConf(blockId);
-				}
-			}
-
-			actionManager?.triggerBlockAction({
-				blockId,
-				actionId,
-				value,
-				mid,
-				rid,
-				appId,
-				container: {
-					type: UIKitIncomingInteractionContainerType.MESSAGE,
-					id: mid,
-				},
-			});
-		},
-		// @ts-ignore Type 'string | boolean | undefined' is not assignable to type 'string'.
-		appId,
-		rid,
-	};
-
-	patchMessageParser(); // TODO: this is a hack
+				actionManager.emitInteraction(appId, {
+					type: 'blockAction',
+					actionId,
+					payload: {
+						blockId,
+						value,
+					},
+					container: {
+						type: 'message',
+						id: mid,
+					},
+					rid,
+					mid,
+				});
+			},
+			appId: '', // TODO: this is a hack
+			rid,
+			state: () => undefined, // TODO: this is a hack
+			values: {}, // TODO: this is a hack
+		}),
+		[actionManager, handleOpenVideoConf, joinCall, mid, rid, setPreferences],
+	);
 
 	return (
 		<MessageBlock fixedWidth>
-			<UiKitContext.Provider value={context}>
+			<UiKitContext.Provider value={contextValue}>
 				<GazzodownText>
 					<UiKitComponent render={UiKitMessageSurfaceRender} blocks={blocks} />
 				</GazzodownText>

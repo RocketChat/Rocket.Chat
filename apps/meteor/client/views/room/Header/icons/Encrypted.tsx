@@ -29,7 +29,7 @@ const Encrypted = ({ room }: { room: IRoom }) => {
 		});
 	});
 	return e2eEnabled && room?.encrypted ? (
-		<HeaderState title={encryptedLabel} icon='key' onClick={handleE2EClick} color={colors.s500} tiny />
+		<HeaderState title={encryptedLabel} icon='key' onClick={handleE2EClick} color={colors.g500} tiny />
 	) : null;
 };
 

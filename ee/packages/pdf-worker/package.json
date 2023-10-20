@@ -34,7 +34,7 @@
 	"dependencies": {
 		"@react-pdf/renderer": "^3.1.12",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/fuselage-tokens": "next",
+		"@rocket.chat/fuselage-tokens": "^0.32.0",
 		"@types/react": "~17.0.62",
 		"emoji-assets": "^7.0.1",
 		"emoji-toolkit": "^7.0.1",
