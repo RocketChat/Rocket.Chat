@@ -1,4 +1,4 @@
-import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MutableRefObject } from 'react';
@@ -19,6 +19,8 @@ import { useFilterActiveUsers } from '../hooks/useFilterActiveUsers';
 import { useFilterPendingUsers } from '../hooks/useFilterPendingUsers';
 import { useListUsers } from '../hooks/useListUsers';
 import UsersTableRow from './UsersTableRow';
+
+// TODO: remove bots from pending users + add "resend email" function
 
 type UsersTableProps = {
 	reload: MutableRefObject<() => void>;
