@@ -27,6 +27,7 @@ import { isBehaviorsInResult } from './validation/isBehaviorsInResult';
 import { isReadyForValidation } from './validation/isReadyForValidation';
 import { runValidation } from './validation/runValidation';
 import { validateFormat } from './validation/validateFormat';
+import { validateLicenseLimits } from './validation/validateLicenseLimits';
 
 const globalLimitKinds: LicenseLimitKind[] = ['activeUsers', 'guestUsers', 'privateApps', 'marketplaceApps', 'monthlyActiveContacts'];
 
@@ -303,12 +304,44 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		}
 	}
 
-	public get shouldPreventActionResultsMap(): {
+	public async shouldPreventActionResultsMap(): Promise<{
 		[key in LicenseLimitKind]: boolean;
-	} {
-		return Object.fromEntries(this.shouldPreventActionResults.entries()) as {
-			[key in LicenseLimitKind]: boolean;
-		};
+	}> {
+		const keys: LicenseLimitKind[] = [
+			'activeUsers',
+			'guestUsers',
+			'roomsPerGuest',
+			'privateApps',
+			'marketplaceApps',
+			'monthlyActiveContacts',
+		];
+
+		const items = await Promise.all(
+			keys.map(async (limit) => {
+				if (!this._license) {
+					throw new Error('License not found');
+				}
+
+				const cached = this.shouldPreventActionResults.get(limit as LicenseLimitKind);
+
+				if (cached !== undefined) {
+					return [limit as LicenseLimitKind, cached];
+				}
+
+				const fresh = isBehaviorsInResult(
+					await validateLicenseLimits.call(this, this._license, {
+						behaviors: ['prevent_action'],
+					}),
+					['prevent_action'],
+				);
+
+				this.shouldPreventActionResults.set(limit as LicenseLimitKind, fresh);
+
+				return [limit as LicenseLimitKind, fresh];
+			}),
+		);
+
+		return Object.fromEntries(items);
 	}
 
 	public async shouldPreventAction<T extends LicenseLimitKind>(
@@ -408,7 +441,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		return {
 			license: (includeLicense && license) || undefined,
 			activeModules,
-			preventedActions: this.shouldPreventActionResultsMap,
+			preventedActions: await this.shouldPreventActionResultsMap(),
 			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
 			tags: license?.information.tags || [],
 			trial: Boolean(license?.information.trial),
