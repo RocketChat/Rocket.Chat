@@ -19,7 +19,7 @@ export const userDataDownloadsCron = (): void => {
 			return;
 		}
 
-		await cronJobs.add(name, '*/5 * * * *' || `*/${processingFrequency} * * * *`, async () => dataExport.processDataDownloads());
+		await cronJobs.add(name, `*/${processingFrequency} * * * *`, async () => dataExport.processDataDownloads());
 
 		return async () => {
 			await cronJobs.remove(jobName);
