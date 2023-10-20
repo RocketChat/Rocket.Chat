@@ -22,7 +22,7 @@ it('should not prevent if the counter is under the limit', async () => {
 	await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
 });
 
-it('should not prevent actions there is no limit set in the license', async () => {
+it('should not prevent actions if there is no limit set in the license', async () => {
 	const licenseManager = await getReadyLicenseManager();
 
 	const license = await new MockedLicenseBuilder();
