@@ -2,6 +2,7 @@ import type { IMessage, IUser, RequiredField, MessageAttachment } from '@rocket.
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { validateRoomMessagePermissionsAsync } from '../../../authorization/server/functions/canSendMessage';
@@ -33,13 +34,6 @@ type DefaultValues = {
 	emoji: string;
 };
 
-const toArray = (value: string | Array<string>): Array<string> => {
-	if (typeof value === 'string') {
-		return [value];
-	}
-	return value;
-};
-
 export const processWebhookMessage = async function (
 	messageObj: Payload,
 	user: IUser & { username: RequiredField<IUser, 'username'> },
@@ -47,7 +41,7 @@ export const processWebhookMessage = async function (
 ) {
 	const sentData = [];
 
-	const channels: Array<string> = [...new Set(toArray(messageObj.channel || messageObj.roomId || defaultValues.channel))];
+	const channels: Array<string> = [...new Set(ensureArray(messageObj.channel || messageObj.roomId || defaultValues.channel))];
 
 	for await (const channel of channels) {
 		const channelType = channel[0];
