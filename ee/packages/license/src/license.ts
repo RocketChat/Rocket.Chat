@@ -297,6 +297,20 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		}
 	}
 
+	public syncShouldPreventActionResults(actions: Record<LicenseLimitKind, boolean>): void {
+		for (const [action, shouldPreventAction] of Object.entries(actions)) {
+			this.shouldPreventActionResults.set(action as LicenseLimitKind, shouldPreventAction);
+		}
+	}
+
+	public get shouldPreventActionResultsMap(): {
+		[key in LicenseLimitKind]: boolean;
+	} {
+		return Object.fromEntries(this.shouldPreventActionResults.entries()) as {
+			[key in LicenseLimitKind]: boolean;
+		};
+	}
+
 	public async shouldPreventAction<T extends LicenseLimitKind>(
 		action: T,
 		extraCount = 0,
@@ -394,7 +408,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		return {
 			license: (includeLicense && license) || undefined,
 			activeModules,
-			preventedActions: Object.fromEntries(this.shouldPreventActionResults.entries()) as Record<LicenseLimitKind, boolean>,
+			preventedActions: this.shouldPreventActionResultsMap,
 			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
 			tags: license?.information.tags || [],
 			trial: Boolean(license?.information.trial),

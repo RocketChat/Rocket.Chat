@@ -126,7 +126,7 @@ describe('Event License behaviors', () => {
 			const licenseManager = await getReadyLicenseManager();
 			const fn = jest.fn();
 
-			licenseManager.onSync(fn);
+			licenseManager.onChange(fn);
 
 			const license = await new MockedLicenseBuilder().withLimits('activeUsers', [
 				{
@@ -152,7 +152,7 @@ describe('Event License behaviors', () => {
 			const licenseManager = await getReadyLicenseManager();
 			const fn = jest.fn();
 
-			licenseManager.onSync(fn);
+			licenseManager.onChange(fn);
 
 			const license = await new MockedLicenseBuilder().withLimits('activeUsers', [
 				{

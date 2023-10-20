@@ -10,7 +10,7 @@ import {
 	onInvalidateLicense,
 	onLimitReached,
 	onModule,
-	onSync,
+	onChange,
 	onToggledFeature,
 	onValidFeature,
 	onValidateLicense,
@@ -83,7 +83,7 @@ export class LicenseImp extends LicenseManager implements License {
 		return this.shouldPreventAction(action, 0, context);
 	}
 
-	onSync = onSync;
+	onChange = onChange;
 
 	onValidFeature = onValidFeature;
 

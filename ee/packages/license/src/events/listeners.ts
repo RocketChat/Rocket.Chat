@@ -7,7 +7,7 @@ import { hasModule } from '../modules';
 /**
  * Invoked when the license changes some internal state. it's called to sync the license with other instances.
  */
-export function onSync(this: LicenseManager, cb: () => void) {
+export function onChange(this: LicenseManager, cb: () => void) {
 	this.on('sync', cb);
 }
 

@@ -1,4 +1,5 @@
 import { api } from '@rocket.chat/core-services';
+import type { LicenseLimitKind } from '@rocket.chat/license';
 import { License } from '@rocket.chat/license';
 import { Subscriptions, Users, Settings } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
@@ -95,7 +96,25 @@ settings.onReady(async () => {
 
 	License.onBehaviorTriggered('disable_modules', async (context) => syncByTrigger(`disable_modules_${context.limit}`));
 
-	License.onSync(() => api.broadcast('license'));
+	License.onChange(() => api.broadcast('license.sync'));
+
+	License.onBehaviorToggled('prevent_action', (context) => {
+		if (!context.limit) {
+			return;
+		}
+		void api.broadcast('license.actions', {
+			[context.limit]: true,
+		} as Record<Partial<LicenseLimitKind>, boolean>);
+	});
+
+	License.onBehaviorToggled('allow_action', (context) => {
+		if (!context.limit) {
+			return;
+		}
+		void api.broadcast('license.actions', {
+			[context.limit]: false,
+		} as Record<Partial<LicenseLimitKind>, boolean>);
+	});
 });
 
 License.setLicenseLimitCounter('activeUsers', () => Users.getActiveLocalUserCount());
