@@ -49,7 +49,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 			)}
 
 			{normalizedMessage.blocks && (
-				<UiKitMessageBlock mid={normalizedMessage._id} blocks={normalizedMessage.blocks} appId rid={normalizedMessage.rid} />
+				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />
 			)}
 
 			{normalizedMessage.attachments && <Attachments attachments={normalizedMessage.attachments} />}
