@@ -331,6 +331,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 				const fresh = isBehaviorsInResult(
 					await validateLicenseLimits.call(this, this._license, {
 						behaviors: ['prevent_action'],
+						limits: [limit],
 					}),
 					['prevent_action'],
 				);
