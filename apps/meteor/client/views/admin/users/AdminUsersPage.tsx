@@ -25,7 +25,7 @@ const UsersPage = (): ReactElement => {
 	const canCreateUser = usePermission('create-user');
 	const canBulkCreateUser = usePermission('bulk-register-user');
 
-	const [tab, setTab] = useState<'all' | 'invited' | 'new' | 'active' | 'deactivated' | 'pending'>('all');
+	const [tab, setTab] = useState<'all' | 'invited' | 'active' | 'deactivated' | 'pending'>('all');
 	const [pendingActionsCount, setPendingActionsCount] = useState<number>(0);
 
 	useEffect(() => {
@@ -80,9 +80,6 @@ const UsersPage = (): ReactElement => {
 						</Tabs.Item>
 						<Tabs.Item selected={tab === 'invited'} onClick={() => setTab('invited')}>
 							{t('Invited')}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'new'} onClick={() => setTab('new')}>
-							{t('New_users')}
 						</Tabs.Item>
 					</Tabs>
 					<UsersTable reload={reload} tab={tab} onReload={handleReload} setPendingActionsCount={setPendingActionsCount} />
