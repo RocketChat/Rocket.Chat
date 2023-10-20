@@ -318,23 +318,21 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 		const items = await Promise.all(
 			keys.map(async (limit) => {
-				if (!this._license) {
-					throw new Error('License not found');
-				}
-
 				const cached = this.shouldPreventActionResults.get(limit as LicenseLimitKind);
 
 				if (cached !== undefined) {
 					return [limit as LicenseLimitKind, cached];
 				}
 
-				const fresh = isBehaviorsInResult(
-					await validateLicenseLimits.call(this, this._license, {
-						behaviors: ['prevent_action'],
-						limits: [limit],
-					}),
-					['prevent_action'],
-				);
+				const fresh = this._license
+					? isBehaviorsInResult(
+							await validateLicenseLimits.call(this, this._license, {
+								behaviors: ['prevent_action'],
+								limits: [limit],
+							}),
+							['prevent_action'],
+					  )
+					: false;
 
 				this.shouldPreventActionResults.set(limit as LicenseLimitKind, fresh);
 
