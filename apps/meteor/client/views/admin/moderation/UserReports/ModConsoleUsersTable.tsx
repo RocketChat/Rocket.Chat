@@ -66,8 +66,8 @@ const ModConsoleUsersTable: FC = () => {
 		});
 	});
 
-	const headers = useMemo(
-		() => [
+	const headers = (
+		<>
 			<GenericTableHeaderCell
 				key='name'
 				direction={sortDirection}
@@ -76,7 +76,7 @@ const ModConsoleUsersTable: FC = () => {
 				sort='reports.reportedUser.username'
 			>
 				{t('User')}
-			</GenericTableHeaderCell>,
+			</GenericTableHeaderCell>
 			<GenericTableHeaderCell
 				active={sortBy === 'reports.reportedUser.createdAt'}
 				onClick={setSort}
@@ -85,19 +85,18 @@ const ModConsoleUsersTable: FC = () => {
 				direction={sortDirection}
 			>
 				{t('Created_at')}
-			</GenericTableHeaderCell>,
+			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='email' direction={sortDirection}>
 				{t('Email')}
-			</GenericTableHeaderCell>,
+			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='postdate' direction={sortDirection} active={sortBy === 'reports.ts'} onClick={setSort} sort='reports.ts'>
 				{t('Moderation_Report_date')}
-			</GenericTableHeaderCell>,
+			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='reports' direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
 				{t('Moderation_Report_plural')}
-			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key='actions' width='x48' />,
-		],
-		[sortDirection, sortBy, setSort, t],
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='actions' width='x48' />
+		</>
 	);
 
 	return (
