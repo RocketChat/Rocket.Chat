@@ -25,6 +25,7 @@ import type {
 	IBanner,
 	UiKit,
 } from '@rocket.chat/core-typings';
+import type { LicenseLimitKind } from '@rocket.chat/license';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
@@ -69,6 +70,7 @@ export interface StreamerEvents {
 		{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'deleteCustomSound'; args: [{ soundData: ICustomSound }] },
 		{ key: 'updateCustomSound'; args: [{ soundData: ICustomSound }] },
+		{ key: 'license'; args: [{ preventedActions: Record<LicenseLimitKind, boolean> }] | [] },
 	];
 
 	'notify-user': [
