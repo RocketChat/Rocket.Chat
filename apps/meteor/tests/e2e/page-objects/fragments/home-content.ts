@@ -197,7 +197,7 @@ export class HomeContent {
 	}
 
 	get inputModalAgentUserName(): Locator {
-		return this.page.locator('#modal-root input[placeholder="Username"]');
+		return this.page.locator('#modal-root input[placeholder="Username, name or e-mail"]');
 	}
 
 	get inputModalAgentForwardComment(): Locator {
