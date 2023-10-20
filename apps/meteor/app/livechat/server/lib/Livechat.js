@@ -37,39 +37,6 @@ export const Livechat = {
 
 	logger,
 
-	async setCustomFields({ token, key, value, overwrite } = {}) {
-		check(token, String);
-		check(key, String);
-		check(value, String);
-		check(overwrite, Boolean);
-		Livechat.logger.debug(`Setting custom fields data for visitor with token ${token}`);
-
-		const customField = await LivechatCustomField.findOneById(key);
-		if (!customField) {
-			throw new Meteor.Error('invalid-custom-field');
-		}
-
-		if (customField.regexp !== undefined && customField.regexp !== '') {
-			const regexp = new RegExp(customField.regexp);
-			if (!regexp.test(value)) {
-				throw new Meteor.Error(i18n.t('error-invalid-custom-field-value', { field: key }));
-			}
-		}
-
-		let result;
-		if (customField.scope === 'room') {
-			result = await LivechatRooms.updateDataByToken(token, key, value, overwrite);
-		} else {
-			result = await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
-		}
-
-		if (result) {
-			return result.modifiedCount;
-		}
-
-		return 0;
-	},
-
 	async saveRoomInfo(roomData, guestData, userId) {
 		Livechat.logger.debug(`Saving room information on room ${roomData._id}`);
 		const { livechatData = {} } = roomData;
