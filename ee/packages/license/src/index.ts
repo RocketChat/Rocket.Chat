@@ -4,11 +4,13 @@ import type { LimitContext } from './definition/LimitContext';
 import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
 import { onLicense } from './events/deprecated';
 import {
+	onBehaviorToggled,
 	onBehaviorTriggered,
 	onInvalidFeature,
 	onInvalidateLicense,
 	onLimitReached,
 	onModule,
+	onChange,
 	onToggledFeature,
 	onValidFeature,
 	onValidateLicense,
@@ -81,6 +83,8 @@ export class LicenseImp extends LicenseManager implements License {
 		return this.shouldPreventAction(action, 0, context);
 	}
 
+	onChange = onChange;
+
 	onValidFeature = onValidFeature;
 
 	onInvalidFeature = onInvalidFeature;
@@ -96,6 +100,8 @@ export class LicenseImp extends LicenseManager implements License {
 	onLimitReached = onLimitReached;
 
 	onBehaviorTriggered = onBehaviorTriggered;
+
+	onBehaviorToggled = onBehaviorToggled;
 
 	// Deprecated:
 	onLicense = onLicense;

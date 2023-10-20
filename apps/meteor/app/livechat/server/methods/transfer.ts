@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { normalizeTransferredByData } from '../lib/Helper';
-import { Livechat } from '../lib/Livechat';
+import { Livechat } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -59,6 +59,10 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const guest = await LivechatVisitors.findOneEnabledById(room.v?._id);
+
+		if (!guest) {
+			throw new Meteor.Error('error-invalid-visitor', 'Invalid visitor', { method: 'livechat:transfer' });
+		}
 
 		const user = await Meteor.userAsync();
 
