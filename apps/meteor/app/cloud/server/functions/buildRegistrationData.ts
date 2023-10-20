@@ -38,11 +38,11 @@ export type WorkspaceRegistrationData<T> = {
 	MAC: number;
 	// activeContactsBillingMonth: number;
 	// activeContactsYesterday: number;
-	cloudToken: string; // TODO: still to be defined
+	cloudToken?: string; // TODO: still to be defined
 };
 
 export async function buildWorkspaceRegistrationData<T extends string | undefined>(contactEmail: T): Promise<WorkspaceRegistrationData<T>> {
-	const stats = (await Statistics.findLastSentWithCloudToken()) || (await statistics.get());
+	const stats = (await Statistics.findLast()) || (await statistics.get());
 
 	const address = settings.get<string>('Site_Url');
 	const siteName = settings.get<string>('Site_Name');

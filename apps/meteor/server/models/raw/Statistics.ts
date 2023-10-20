@@ -10,13 +10,7 @@ export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [
-			{ key: { createdAt: -1 } },
-			{
-				key: { createdAt: -1, cloudToken: 1 },
-				partialFilterExpression: { cloudToken: { $exists: true } },
-			},
-		];
+		return [{ key: { createdAt: -1 } }];
 	}
 
 	async findLast(): Promise<IStats> {
@@ -30,19 +24,6 @@ export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 			},
 		).toArray();
 		return records?.[0];
-	}
-
-	async findLastSentWithCloudToken(): Promise<IStats | null> {
-		return this.findOne(
-			{
-				cloudToken: { $exists: true },
-			},
-			{
-				sort: {
-					createdAt: -1,
-				},
-			},
-		);
 	}
 
 	async findMonthlyPeakConnections() {

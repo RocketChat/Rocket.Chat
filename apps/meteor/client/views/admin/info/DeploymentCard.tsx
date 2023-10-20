@@ -13,7 +13,7 @@ import InstancesModal from './InstancesModal';
 type DeploymentCardProps = {
 	info: IServerInfo;
 	instances: Serialized<IInstance[]>;
-	statistics: Omit<IStats, 'cloudToken'>;
+	statistics: IStats;
 };
 
 const DeploymentCard = ({ info, statistics, instances }: DeploymentCardProps): ReactElement => {

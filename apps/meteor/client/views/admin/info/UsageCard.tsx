@@ -21,7 +21,7 @@ import { UserStatus } from '../../../components/UserStatus';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 
 type UsageCardProps = {
-	statistics: Omit<IStats, 'cloudToken'>;
+	statistics: IStats;
 	vertical: boolean;
 };
 

@@ -9,7 +9,7 @@ import { settings } from '../../app/settings/server';
 import { statistics } from '../../app/statistics/server';
 
 async function generateStatistics(logger: Logger): Promise<void> {
-	const cronStatistics: Record<string, any> = await statistics.save();
+	const cronStatistics = await statistics.save();
 
 	cronStatistics.host = Meteor.absoluteUrl();
 

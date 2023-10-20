@@ -4,6 +4,5 @@ import type { IBaseModel } from './IBaseModel';
 
 export interface IStatisticsModel extends IBaseModel<IStats> {
 	findLast(): Promise<IStats>;
-	findLastSentWithCloudToken(): Promise<IStats | null>;
 	findMonthlyPeakConnections(): Promise<Pick<IStats, 'dailyPeakConnections' | 'createdAt'> | null>;
 }
