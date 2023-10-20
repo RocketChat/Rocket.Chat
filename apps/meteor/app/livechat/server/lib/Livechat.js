@@ -20,7 +20,6 @@ import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
-import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import * as Mailer from '../../../mailer/server/api';
 import { businessHourManager } from '../business-hour';
@@ -184,45 +183,6 @@ export const Livechat = {
 		}
 
 		return false;
-	},
-
-	async afterRemoveAgent(user) {
-		await callbacks.run('livechat.afterAgentRemoved', { agent: user });
-		return true;
-	},
-
-	async removeAgent(username) {
-		check(username, String);
-
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
-
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'livechat:removeAgent',
-			});
-		}
-
-		const { _id } = user;
-
-		if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
-			return this.afterRemoveAgent(user);
-		}
-
-		return false;
-	},
-
-	async removeManager(username) {
-		check(username, String);
-
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
-
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'livechat:removeManager',
-			});
-		}
-
-		return removeUserFromRolesAsync(user._id, ['livechat-manager']);
 	},
 
 	async setUserStatusLivechat(userId, status) {

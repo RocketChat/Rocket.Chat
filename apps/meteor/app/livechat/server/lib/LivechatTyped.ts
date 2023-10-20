@@ -44,6 +44,7 @@ import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
+import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
@@ -1499,6 +1500,37 @@ class LivechatClass {
 
 		// @ts-expect-error: Investigating on which case we won't receive a roomId and where that history is supposed to be stored
 		return Message.saveSystemMessage('livechat_navigation_history', roomId, `${pageTitle} - ${pageUrl}`, user, extraData);
+	}
+
+	async afterRemoveAgent(user: AtLeast<IUser, '_id' | 'username'>) {
+		await callbacks.run('livechat.afterAgentRemoved', { agent: user });
+		return true;
+	}
+
+	async removeAgent(username: string) {
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
+
+		if (!user) {
+			throw new Error('error-invalid-user');
+		}
+
+		const { _id } = user;
+
+		if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
+			return this.afterRemoveAgent(user);
+		}
+
+		return false;
+	}
+
+	async removeManager(username: string) {
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+
+		if (!user) {
+			throw new Error('error-invalid-user');
+		}
+
+		return removeUserFromRolesAsync(user._id, ['livechat-manager']);
 	}
 }
 
