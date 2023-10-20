@@ -18,4 +18,5 @@ export type LicenseEvents = ModuleValidation &
 		validate: undefined;
 		invalidate: undefined;
 		module: { module: LicenseModule; valid: boolean };
+		sync: undefined;
 	};

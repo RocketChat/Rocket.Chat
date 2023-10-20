@@ -95,7 +95,27 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		}
 
 		try {
-			await this.validateLicense({ ...options, isNewLicense: false });
+			await this.validateLicense({ ...options, isNewLicense: false, triggerSync: true });
+		} catch (e) {
+			if (e instanceof InvalidLicenseError) {
+				this.invalidateLicense();
+				this.emit('sync');
+			}
+		}
+	}
+
+	/**
+	 * The sync method should be called when a license from a different instance is has changed, so the local instance
+	 * needs to be updated. This method will validate the license and update the local instance if the license is valid, but will not trigger the onSync event.
+	 */
+
+	public async sync(options: Omit<LicenseValidationOptions, 'isNewLicense'> = {}): Promise<void> {
+		if (!this.hasValidLicense()) {
+			return;
+		}
+
+		try {
+			await this.validateLicense({ ...options, isNewLicense: false, triggerSync: false });
 		} catch (e) {
 			if (e instanceof InvalidLicenseError) {
 				this.invalidateLicense();
@@ -152,7 +172,11 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		return Boolean(this._lockedLicense && this._lockedLicense === encryptedLicense);
 	}
 
-	private async validateLicense(options: LicenseValidationOptions = {}): Promise<void> {
+	private async validateLicense(
+		options: LicenseValidationOptions = {
+			triggerSync: true,
+		},
+	): Promise<void> {
 		if (!this._license) {
 			throw new InvalidLicenseError();
 		}
@@ -195,6 +219,16 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		}
 
 		licenseValidated.call(this);
+
+		// If something changed in the license and the sync option is enabled, trigger a sync
+		if (
+			((!options.isNewLicense &&
+				filterBehaviorsResult(validationResult, ['invalidate_license', 'start_fair_policy', 'prevent_installation'])) ||
+				modulesChanged) &&
+			options.triggerSync
+		) {
+			this.emit('sync');
+		}
 	}
 
 	public async setLicense(encryptedLicense: string, isNewLicense = true): Promise<boolean> {
