@@ -2679,6 +2679,8 @@
   "Omnichannel_sorting_disclaimer": "Conversar do Omnichannel são ordenadas por {{sortingMechanism}}, edite a sala para alterar.",
   "Livechat_online": "Omnichannel online",
   "Omnichannel_placed_chat_on_hold": "Conversa em espera: {{comment}}",
+  "Omnichannel_hide_conversation_after_closing": "Ocultar conversa após fechar",
+  "Omnichannel_hide_conversation_after_closing_description": "Após encerrar a conversa, você será redirecionado para a página inicial.",
   "Livechat_Queue": "Fila omnichannel",
   "Livechat_registration_form": "Formulário de registro",
   "Livechat_registration_form_message": "Mensagem do formulário de registro",

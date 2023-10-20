@@ -126,9 +126,9 @@ describe('licenses', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('data').and.to.be.an('object');
-					expect(res.body.data).to.not.have.property('license');
-					expect(res.body.data).to.have.property('tags').and.to.be.an('array');
+					expect(res.body).to.have.property('license').and.to.be.an('object');
+					expect(res.body.license).to.not.have.property('license');
+					expect(res.body.license).to.have.property('tags').and.to.be.an('array');
 				})
 				.end(done);
 		});
@@ -140,11 +140,11 @@ describe('licenses', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('data').and.to.be.an('object');
+					expect(res.body).to.have.property('license').and.to.be.an('object');
 					if (process.env.IS_EE) {
-						expect(res.body.data).to.have.property('license').and.to.be.an('object');
+						expect(res.body.license).to.have.property('license').and.to.be.an('object');
 					}
-					expect(res.body.data).to.have.property('tags').and.to.be.an('array');
+					expect(res.body.license).to.have.property('tags').and.to.be.an('array');
 				})
 
 				.end(done);
