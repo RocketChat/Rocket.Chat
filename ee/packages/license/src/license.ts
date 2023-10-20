@@ -278,6 +278,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			...(extraCount && { behaviors: ['prevent_action'] }),
 			isNewLicense: false,
 			suppressLog: !!suppressLog,
+			limits: [action],
 			context: {
 				[action]: {
 					extraCount,
