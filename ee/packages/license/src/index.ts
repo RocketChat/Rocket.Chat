@@ -4,6 +4,7 @@ import type { LimitContext } from './definition/LimitContext';
 import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
 import { onLicense } from './events/deprecated';
 import {
+	onBehaviorToggled,
 	onBehaviorTriggered,
 	onInvalidFeature,
 	onInvalidateLicense,
@@ -96,6 +97,8 @@ export class LicenseImp extends LicenseManager implements License {
 	onLimitReached = onLimitReached;
 
 	onBehaviorTriggered = onBehaviorTriggered;
+
+	onBehaviorToggled = onBehaviorToggled;
 
 	// Deprecated:
 	onLicense = onLicense;
