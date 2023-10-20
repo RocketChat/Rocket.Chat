@@ -245,6 +245,14 @@ export const createMessageSettings = () =>
 			public: true,
 		});
 
+		await this.add('AutoTranslate_AutoEnableOnJoinRoom', false, {
+			type: 'boolean',
+			group: 'Message',
+			section: 'AutoTranslate',
+			public: true,
+			enableQuery: [{ _id: 'AutoTranslate_Enabled', value: true }],
+		});
+
 		await this.add('AutoTranslate_ServiceProvider', 'google-translate', {
 			type: 'select',
 			group: 'Message',

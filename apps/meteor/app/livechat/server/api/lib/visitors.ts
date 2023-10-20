@@ -6,7 +6,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
 
 export async function findVisitorInfo({ visitorId }: { visitorId: IVisitor['_id'] }) {
-	const visitor = await LivechatVisitors.findOneById(visitorId);
+	const visitor = await LivechatVisitors.findOneEnabledById(visitorId);
 	if (!visitor) {
 		throw new Error('visitor-not-found');
 	}
