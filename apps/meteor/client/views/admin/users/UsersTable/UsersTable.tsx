@@ -1,4 +1,4 @@
-import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MutableRefObject } from 'react';
@@ -145,6 +145,7 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 	return (
 		<>
 			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
+
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -152,18 +153,23 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 				</GenericTable>
 			)}
 
-			{isSuccess && !!data && !!filteredUsers && data.count > 0 && (
+			{isError && (
+				<States>
+					<StatesIcon name='warning' variation='danger' />
+					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+					<StatesActions>
+						<StatesAction onClick={() => refetch()}>{t('Reload_page')}</StatesAction>
+					</StatesActions>
+				</States>
+			)}
+
+			{isSuccess && filteredUsers.length === 0 && <GenericNoResults />}
+
+			{isSuccess && !!data && !!filteredUsers && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{!isLoading && !isSuccess && tab !== 'all' && tab !== 'active' && (
-								<States>
-									<StatesIcon name='user' />
-									<StatesTitle>{tab === 'pending' ? t('No_pending_users') : t('No_deactivated_users')}</StatesTitle>
-									<StatesSubtitle>{tab === 'pending' ? t('Users_who_are_pending') : t('Deactivated_users_appear_here')}</StatesSubtitle>
-								</States>
-							)}
 							{filteredUsers.map((user) => (
 								<UsersTableRow
 									key={user._id}
@@ -177,27 +183,16 @@ const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTabl
 							))}
 						</GenericTableBody>
 					</GenericTable>
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
+						{...paginationProps}
+					/>
 				</>
-			)}
-			<Pagination
-				divider
-				current={current}
-				itemsPerPage={itemsPerPage}
-				count={data?.total || 0}
-				onSetItemsPerPage={setItemsPerPage}
-				onSetCurrent={setCurrent}
-				{...paginationProps}
-			/>
-
-			{isSuccess && data?.count === 0 && <GenericNoResults />}
-			{isError && (
-				<States>
-					<StatesIcon name='warning' variation='danger' />
-					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
-					<StatesActions>
-						<StatesAction onClick={() => refetch()}>{t('Reload_page')}</StatesAction>
-					</StatesActions>
-				</States>
 			)}
 		</>
 	);
