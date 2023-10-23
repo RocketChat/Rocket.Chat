@@ -3,7 +3,7 @@ import { Palette } from '@rocket.chat/fuselage';
 
 import { useOmnichannelHighlight } from '../../../../../ee/client/omnichannel/hooks/useOmnichannelHighlight';
 
-const highlightDot = css`
+const highlightBadge = css`
 	position: relative;
 
 	&::after {
@@ -26,7 +26,7 @@ export const useAdministrationHighlight = () => {
 	return {
 		isHighlightVisible: isOmnichannelHighlightVisible,
 		get className() {
-			return this.isHighlightVisible ? highlightDot : undefined;
+			return this.isHighlightVisible ? highlightBadge : undefined;
 		},
 	};
 };

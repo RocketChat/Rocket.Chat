@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { hasPermission } from '../../../app/authorization/client';
-import { OmnichannelHighlight } from '../../../ee/client/omnichannel/components/OmnichannelHighlight';
+import { OmnichannelHighlightBadge } from '../../../ee/client/omnichannel/components/OmnichannelHighlightBadge';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 
 export const {
@@ -14,7 +14,7 @@ export const {
 		href: '/omnichannel/current',
 		icon: 'message',
 		i18nLabel: 'Current_Chats',
-		badge: () => <OmnichannelHighlight />,
+		badge: () => <OmnichannelHighlightBadge />,
 		permissionGranted: (): boolean => hasPermission('view-livechat-current-chats'),
 	},
 	{

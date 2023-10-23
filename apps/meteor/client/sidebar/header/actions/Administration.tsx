@@ -11,14 +11,14 @@ const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = ({ classNam
 	const t = useTranslation();
 
 	const sections = useAdministrationMenu();
-	const { className: highlightDot } = useAdministrationHighlight();
+	const { className: highlightBadge } = useAdministrationHighlight();
 
 	return (
 		<GenericMenu
 			sections={sections}
 			title={t('Administration')}
 			is={Sidebar.TopBar.Action}
-			className={[className, highlightDot]}
+			className={[className, highlightBadge]}
 			{...props}
 		/>
 	);
