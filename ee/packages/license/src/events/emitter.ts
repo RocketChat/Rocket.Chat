@@ -33,7 +33,7 @@ export function behaviorTriggered(this: LicenseManager, options: BehaviorWithCon
 		logger.error({ msg: 'Error running behavior triggered event', error });
 	}
 
-	if (behavior !== 'prevent_action') {
+	if (!['prevent_action'].includes(behavior)) {
 		return;
 	}
 
@@ -45,6 +45,19 @@ export function behaviorTriggered(this: LicenseManager, options: BehaviorWithCon
 		this.emit(`limitReached:${rest.limit}`);
 	} catch (error) {
 		logger.error({ msg: 'Error running limit reached event', error });
+	}
+}
+
+export function behaviorTriggeredToggled(this: LicenseManager, options: BehaviorWithContext) {
+	const { behavior, reason, modules: _, ...rest } = options;
+
+	try {
+		this.emit(`behaviorToggled:${behavior}`, {
+			reason,
+			...rest,
+		});
+	} catch (error) {
+		logger.error({ msg: 'Error running behavior triggered event', error });
 	}
 }
 

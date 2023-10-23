@@ -19,15 +19,7 @@ const LicenseCard = (): ReactElement => {
 
 	const isAirGapped = true;
 
-	const { data, isError, isLoading } = useLicense();
-
-	const { modules = [] } = isLoading || isError || !data?.licenses?.length ? {} : data?.licenses[0];
-
-	const hasEngagement = modules.includes('engagement-dashboard');
-	const hasOmnichannel = modules.includes('livechat-enterprise');
-	const hasAuditing = modules.includes('auditing');
-	const hasCannedResponses = modules.includes('canned-responses');
-	const hasReadReceipts = modules.includes('message-read-receipt');
+	const request = useLicense();
 
 	const handleApplyLicense = useMutableCallback(() =>
 		setModal(
@@ -41,6 +33,37 @@ const LicenseCard = (): ReactElement => {
 		),
 	);
 
+	if (request.isLoading || request.isError) {
+		return (
+			<Card data-qa-id='license-card'>
+				<CardTitle>{t('License')}</CardTitle>
+				<CardBody>
+					<CardCol>
+						<CardColSection>
+							<PlanTag />
+						</CardColSection>
+						<CardColSection>
+							<CardColTitle>{t('Features')}</CardColTitle>
+
+							<Skeleton width='40x' />
+							<Skeleton width='40x' />
+							<Skeleton width='40x' />
+							<Skeleton width='40x' />
+						</CardColSection>
+					</CardCol>
+				</CardBody>
+			</Card>
+		);
+	}
+
+	const { activeModules } = request.data.license;
+
+	const hasEngagement = activeModules.includes('engagement-dashboard');
+	const hasOmnichannel = activeModules.includes('livechat-enterprise');
+	const hasAuditing = activeModules.includes('auditing');
+	const hasCannedResponses = activeModules.includes('canned-responses');
+	const hasReadReceipts = activeModules.includes('message-read-receipt');
+
 	return (
 		<Card data-qa-id='license-card'>
 			<CardTitle>{t('License')}</CardTitle>
@@ -51,22 +74,12 @@ const LicenseCard = (): ReactElement => {
 					</CardColSection>
 					<CardColSection>
 						<CardColTitle>{t('Features')}</CardColTitle>
-						{isLoading ? (
-							<>
-								<Skeleton width='40x' />
-								<Skeleton width='40x' />
-								<Skeleton width='40x' />
-								<Skeleton width='40x' />
-							</>
-						) : (
-							<>
-								<Feature label={t('Omnichannel')} enabled={hasOmnichannel} />
-								<Feature label={t('Auditing')} enabled={hasAuditing} />
-								<Feature label={t('Canned_Responses')} enabled={hasCannedResponses} />
-								<Feature label={t('Engagement_Dashboard')} enabled={hasEngagement} />
-								<Feature label={t('Read_Receipts')} enabled={hasReadReceipts} />
-							</>
-						)}
+
+						<Feature label={t('Omnichannel')} enabled={hasOmnichannel} />
+						<Feature label={t('Auditing')} enabled={hasAuditing} />
+						<Feature label={t('Canned_Responses')} enabled={hasCannedResponses} />
+						<Feature label={t('Engagement_Dashboard')} enabled={hasEngagement} />
+						<Feature label={t('Read_Receipts')} enabled={hasReadReceipts} />
 					</CardColSection>
 				</CardCol>
 			</CardBody>

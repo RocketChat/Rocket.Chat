@@ -2,8 +2,8 @@ import { SelectFiltered, Field } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import { useForm } from '../../../../client/hooks/useForm';
-import { useTimezoneNameList } from '../../../../client/hooks/useTimezoneNameList';
+import { useForm } from '../../../hooks/useForm';
+import { useTimezoneNameList } from '../../../hooks/useTimezoneNameList';
 
 const getInitialData = (data = {}) => ({
 	name: data ?? '',
