@@ -4581,6 +4581,7 @@
   "Username_Placeholder": "Digite os nomes de usuário...",
   "Username_title": "Cadastre um nome de usuário",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "{{username}} quer começar OTR. Você aceita?",
+  "Username_name_email": "Nome de usuário, nome ou e-mail",
   "Users": "Usuários",
   "Users must use Two Factor Authentication": "Os usuários devem usar autenticação de dois fatores",
   "Users_added": "Os usuários foram adicionados",
