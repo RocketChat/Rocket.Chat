@@ -10,6 +10,7 @@ import {
 	onInvalidateLicense,
 	onLimitReached,
 	onModule,
+	onChange,
 	onToggledFeature,
 	onValidFeature,
 	onValidateLicense,
@@ -81,6 +82,8 @@ export class LicenseImp extends LicenseManager implements License {
 	public async isLimitReached<T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>): Promise<boolean> {
 		return this.shouldPreventAction(action, 0, context);
 	}
+
+	onChange = onChange;
 
 	onValidFeature = onValidFeature;
 

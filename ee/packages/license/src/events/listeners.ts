@@ -4,6 +4,13 @@ import type { LicenseModule } from '../definition/LicenseModule';
 import type { LicenseManager } from '../license';
 import { hasModule } from '../modules';
 
+/**
+ * Invoked when the license changes some internal state. it's called to sync the license with other instances.
+ */
+export function onChange(this: LicenseManager, cb: () => void) {
+	this.on('sync', cb);
+}
+
 export function onValidFeature(this: LicenseManager, feature: LicenseModule, cb: () => void) {
 	this.on(`valid:${feature}`, cb);
 
