@@ -20,7 +20,10 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 			api.post('/livechat/users/manager', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
 			api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
 			api.post('/users.setStatus', { status: 'online', username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/livechat/agent.status', { status: 'available', agentId: 'user1' }).then((res) => expect(res.status()).toBe(200)),
 			api.post('/users.setStatus', { status: 'online', username: 'user3' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/livechat/agent.status', { status: 'available', agentId: 'user3' }).then((res) => expect(res.status()).toBe(200)),
+
 		]);
 
 		const { page } = await createAuxContext(browser, Users.user1);

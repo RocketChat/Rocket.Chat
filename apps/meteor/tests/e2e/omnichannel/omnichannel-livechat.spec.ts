@@ -19,6 +19,7 @@ test.describe('Livechat', () => {
 		test.beforeAll(async ({ browser, api }) => {
 			await api.post('/livechat/users/agent', { username: 'user3' }).then((res) => expect(res.status()).toBe(200));
 			await api.post('/users.setStatus', { status: 'online', username: 'user3' }).then((res) => expect(res.status()).toBe(200));
+			await api.post('/livechat/agent.status', { status: 'available', agentId: 'user3' }).then((res) => expect(res.status()).toBe(200));
 
 			page = await browser.newPage();
 			poLiveChat = new OmnichannelLiveChat(page, api);

@@ -37,6 +37,7 @@ test.describe('omnichannel-takeChat', () => {
 	test.beforeEach(async ({ page, api }) => {
 		// make "user-3" online
 		await api.post('/users.setStatus', { status: 'online', username: 'user3' }).then((res) => expect(res.status()).toBe(200));
+		await api.post('/livechat/agent.status', { status: 'available', agentId: 'user3' }).then((res) => expect(res.status()).toBe(200));
 
 		// start a new chat for each test
 		newVisitor = {

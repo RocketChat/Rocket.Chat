@@ -9,6 +9,8 @@ test.describe.serial('omnichannel-agents', () => {
 
 	test.beforeEach(async ({ page, api }) => {
 		await api.post('/users.setStatus', { status: 'online', username: 'user2' }).then((res) => expect(res.status()).toBe(200));
+		await api.post('/livechat/agent.status', { status: 'available', agentId: 'user2' }).then((res) => expect(res.status()).toBe(200));
+
 		poOmnichannelAgents = new OmnichannelAgents(page);
 		await page.goto('/omnichannel');
 		await poOmnichannelAgents.sidenav.linkAgents.click();

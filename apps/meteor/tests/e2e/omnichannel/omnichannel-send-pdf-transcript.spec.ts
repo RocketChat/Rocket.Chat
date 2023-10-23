@@ -20,10 +20,11 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 			email: faker.internet.email(),
 		};
 
-		// Set user user 1 as manager and agent
+		// Set user user 3 as manager and agent
 		await api.post('/livechat/users/agent', { username: 'user3' }).then((res) => expect(res.status()).toBe(200));
 		await api.post('/livechat/users/manager', { username: 'user3' }).then((res) => expect(res.status()).toBe(200));
 		await api.post('/users.setStatus', { status: 'online', username: 'user3' }).then((res) => expect(res.status()).toBe(200));
+		await api.post('/livechat/agent.status', { status: 'available', agentId: 'user3' }).then((res) => expect(res.status()).toBe(200));
 
 		const { page } = await createAuxContext(browser, Users.user3);
 		agent = { page, poHomeChannel: new HomeOmnichannel(page) };

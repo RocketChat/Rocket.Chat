@@ -26,6 +26,8 @@ test.describe.serial('Omnichannel Triggers', () => {
 			api.post('/livechat/users/manager', { username: 'user3' }),
 			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true }),
 			api.post('/users.setStatus', { status: 'online', username: 'user3' }),
+			api.post('/livechat/agent.status', { status: 'available', agentId: 'user3' }),
+
 		]);
 		requests.every((e) => expect(e.status()).toBe(200));
 

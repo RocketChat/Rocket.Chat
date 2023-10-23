@@ -30,6 +30,8 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 				api.post('/livechat/users/manager', { username: 'user3' }),
 				api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }),
 				api.post('/users.setStatus', { status: 'online', username: 'user3' }),
+				api.post('/livechat/agent.status', { status: 'available', agentId: 'user3' }),
+
 
 			])
 		).every((res) => expect(res.status()).toBe(200));

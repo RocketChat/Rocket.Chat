@@ -17,18 +17,18 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 
 	test.beforeAll(async ({ api, browser }) => {
 		await Promise.all([
-			api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/livechat/users/agent', { username: 'user3' }).then((res) => expect(res.status()).toBe(200)),
 			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
 			api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 5 }).then((res) => expect(res.status()).toBe(200)),
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: true }).then((res) => expect(res.status()).toBe(200)),
 		]);
 
-		const { page } = await createAuxContext(browser, Users.user1);
+		const { page } = await createAuxContext(browser, Users.user3);
 		agent = { page, poHomeChannel: new HomeChannel(page) };
 	});
 	test.afterAll(async ({ api }) => {
 		await Promise.all([
-			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
+			api.delete('/livechat/users/agent/user3').then((res) => expect(res.status()).toBe(200)),
 			api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 3600 }).then((res) => expect(res.status()).toBe(200)),
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }).then((res) => expect(res.status()).toBe(200)),
 		]);
@@ -37,8 +37,10 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 	});
 
 	test.beforeEach(async ({ page, api }) => {
-		// make "user-1" online
-		await agent.poHomeChannel.sidenav.switchStatus('online');
+		// make "user-3" online
+		await api.post('/users.setStatus', { status: 'online', username: 'user3' }).then((res) => expect(res.status()).toBe(200));
+		await api.post('/livechat/agent.status', { status: 'available', agentId: 'user3' }).then((res) => expect(res.status()).toBe(200));
+
 
 		// start a new chat for each test
 		newVisitor = {
@@ -63,7 +65,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 
 		// expect to see a system message saying the chat was on-hold
 		await expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(
-			`Chat On Hold: The chat was manually placed On Hold by user1`,
+			`Chat On Hold: The chat was manually placed On Hold by user3`,
 		);
 		await expect(agent.poHomeChannel.content.inputMessage).not.toBeVisible();
 		await expect(agent.poHomeChannel.content.resumeOnHoldOmnichannelChatButton).toBeVisible();
