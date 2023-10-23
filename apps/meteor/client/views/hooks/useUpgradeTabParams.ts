@@ -12,11 +12,11 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 	const { data: licensesData, isSuccess: isSuccessLicense } = useLicense();
 	const { isRegistered, isSuccess: isSuccessRegistrationStatus } = useRegistrationStatus();
 
-	const hasValidLicense = Boolean(licensesData?.license?.license ?? false);
+	const hasValidLicense = Boolean(licensesData?.license ?? false);
 	const hadExpiredTrials = cloudWorkspaceHadTrial ?? false;
 
-	const isTrial = Boolean(licensesData?.license?.trial);
-	const trialEndDateStr = licensesData?.license?.license?.information?.visualExpiration;
+	const isTrial = Boolean(licensesData?.trial);
+	const trialEndDateStr = licensesData?.license?.information?.visualExpiration;
 	const trialEndDate = trialEndDateStr ? format(new Date(trialEndDateStr), 'yyyy-MM-dd') : undefined;
 
 	const upgradeTabType = getUpgradeTabType({

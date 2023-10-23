@@ -56,7 +56,7 @@ const LicenseCard = (): ReactElement => {
 		);
 	}
 
-	const { activeModules } = request.data.license;
+	const { activeModules } = request.data;
 
 	const hasEngagement = activeModules.includes('engagement-dashboard');
 	const hasOmnichannel = activeModules.includes('livechat-enterprise');
