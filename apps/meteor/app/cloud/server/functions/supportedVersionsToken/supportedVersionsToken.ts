@@ -7,6 +7,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { settings } from '../../../../settings/server';
+import { buildVersionUpdateMessage } from '../../../../version-check/server/functions/buildVersionUpdateMessage';
 import { generateWorkspaceBearerHttpHeader } from '../getWorkspaceAccessToken';
 import { supportedVersionsChooseLatest } from './supportedVersionsChooseLatest';
 
@@ -83,7 +84,9 @@ const cacheValueInSettings = <T extends SettingValue>(
 	);
 };
 
-/** CODE */
+const releaseEndpoint = process.env.OVERWRITE_INTERNAL_RELEASE_URL?.trim()
+	? process.env.OVERWRITE_INTERNAL_RELEASE_URL.trim()
+	: 'https://releases.rocket.chat/v2/server/supportedVersions';
 
 const getSupportedVersionsFromCloud = async () => {
 	if (process.env.CLOUD_SUPPORTED_VERSIONS_TOKEN) {
@@ -97,7 +100,7 @@ const getSupportedVersionsFromCloud = async () => {
 	const headers = await generateWorkspaceBearerHttpHeader();
 
 	const response = await handleResponse<SupportedVersions>(
-		fetch('https://releases.rocket.chat/v2/server/supportedVersions', {
+		fetch(releaseEndpoint, {
 			headers,
 		}),
 	);
@@ -105,7 +108,7 @@ const getSupportedVersionsFromCloud = async () => {
 	if (!response.success) {
 		SystemLogger.error({
 			msg: 'Failed to communicate with Rocket.Chat Cloud',
-			url: 'https://releases.rocket.chat/v2/server/supportedVersions',
+			url: releaseEndpoint,
 			err: response.error,
 		});
 	}
@@ -123,8 +126,14 @@ const getSupportedVersionsToken = async () => {
 
 	const [versionsFromLicense, response] = await Promise.all([License.getLicense(), getSupportedVersionsFromCloud()]);
 
-	return (await supportedVersionsChooseLatest(versionsFromLicense?.supportedVersions, (response.success && response.result) || undefined))
-		?.signed;
+	const supportedVersions = await supportedVersionsChooseLatest(
+		versionsFromLicense?.supportedVersions,
+		(response.success && response.result) || undefined,
+	);
+
+	await buildVersionUpdateMessage(supportedVersions?.versions);
+
+	return supportedVersions?.signed;
 };
 
 export const getCachedSupportedVersionsToken = cacheValueInSettings('Cloud_Workspace_Supported_Versions_Token', getSupportedVersionsToken);
