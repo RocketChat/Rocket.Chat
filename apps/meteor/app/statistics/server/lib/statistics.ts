@@ -1,7 +1,7 @@
 import { log } from 'console';
 import os from 'os';
 
-import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
+import { Analytics, Team, VideoConf, Presence } from '@rocket.chat/core-services';
 import type { IRoom, IStats } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import {
@@ -579,6 +579,11 @@ export const statistics = {
 		const defaultLoggedInCustomScript = (await Settings.findOneById('Custom_Script_Logged_In'))?.packageValue;
 		statistics.loggedInCustomScriptChanged = settings.get('Custom_Script_Logged_In') !== defaultLoggedInCustomScript;
 
+		statistics.dailyPeakConnections = await Presence.getPeakConnections(true);
+
+		const peak = await Statistics.findMonthlyPeakConnections();
+		statistics.maxMonthlyPeakConnections = Math.max(statistics.dailyPeakConnections, peak?.dailyPeakConnections || 0);
+
 		statistics.matrixFederation = await getMatrixFederationStatistics();
 
 		// Omnichannel call stats
@@ -593,7 +598,9 @@ export const statistics = {
 	async save(): Promise<IStats> {
 		const rcStatistics = await statistics.get();
 		rcStatistics.createdAt = new Date();
-		await Statistics.insertOne(rcStatistics);
+		const { insertedId } = await Statistics.insertOne(rcStatistics);
+		rcStatistics._id = insertedId;
+
 		return rcStatistics;
 	},
 };

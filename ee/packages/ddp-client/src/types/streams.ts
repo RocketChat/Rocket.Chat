@@ -1,6 +1,5 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
-import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import type {
 	IMessage,
 	IRoom,
@@ -24,7 +23,9 @@ import type {
 	ILivechatAgent,
 	IImportProgress,
 	IBanner,
+	UiKit,
 } from '@rocket.chat/core-typings';
+import type { LicenseLimitKind } from '@rocket.chat/license';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
@@ -69,6 +70,7 @@ export interface StreamerEvents {
 		{ key: 'public-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'deleteCustomSound'; args: [{ soundData: ICustomSound }] },
 		{ key: 'updateCustomSound'; args: [{ soundData: ICustomSound }] },
+		{ key: 'license'; args: [{ preventedActions: Record<LicenseLimitKind, boolean> }] | [] },
 	];
 
 	'notify-user': [
@@ -148,7 +150,7 @@ export interface StreamerEvents {
 		{ key: `${string}/notification`; args: [INotificationDesktop] },
 		{ key: `${string}/voip.events`; args: [VoipEventDataSignature] },
 		{ key: `${string}/call.hangup`; args: [{ roomId: string }] },
-		{ key: `${string}/uiInteraction`; args: [IUIKitInteraction] },
+		{ key: `${string}/uiInteraction`; args: [UiKit.ServerInteraction] },
 		{
 			key: `${string}/video-conference`;
 			args: [{ action: string; params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] } }];
