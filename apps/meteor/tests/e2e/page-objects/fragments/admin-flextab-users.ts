@@ -32,7 +32,7 @@ export class AdminFlextabUsers {
 	}
 
 	get inputSetManually(): Locator {
-		return this.page.locator('//label[text()="Set randomly and send by email"]');
+		return this.page.locator('//label[text()="Set manually"]');
 	}
 
 	get inputPassword(): Locator {
