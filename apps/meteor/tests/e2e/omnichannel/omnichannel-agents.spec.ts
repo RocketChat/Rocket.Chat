@@ -7,7 +7,7 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('omnichannel-agents', () => {
 	let poOmnichannelAgents: OmnichannelAgents;
 
-	test.beforeAll(async ({ page, api }) => {
+	test.beforeEach(async ({ page, api }) => {
 		await api.post('/users.setStatus', { status: 'online', username: 'user2' }).then((res) => expect(res.status()).toBe(200));
 		poOmnichannelAgents = new OmnichannelAgents(page);
 		await page.goto('/omnichannel');

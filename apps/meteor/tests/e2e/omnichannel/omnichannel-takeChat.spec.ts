@@ -18,7 +18,6 @@ test.describe('omnichannel-takeChat', () => {
 			await api.post('/livechat/users/agent', { username: 'user3' }).then((res) => expect(res.status()).toBe(200)),
 			await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }).then((res) => expect(res.status()).toBe(200)),
 			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
-			await api.post('/users.setStatus', { status: 'online', username: 'user3' }).then((res) => expect(res.status()).toBe(200)),
 		]);
 
         const { page } = await createAuxContext(browser, Users.user3);
@@ -36,8 +35,8 @@ test.describe('omnichannel-takeChat', () => {
 	});
 
 	test.beforeEach(async ({ page, api }) => {
-		// make "user-1" online
-		await agent.poHomeChannel.sidenav.switchStatus('online');
+		// make "user-3" online
+		await api.post('/users.setStatus', { status: 'online', username: 'user3' }).then((res) => expect(res.status()).toBe(200)),
 
 		// start a new chat for each test
 		newVisitor = {
@@ -63,8 +62,9 @@ test.describe('omnichannel-takeChat', () => {
 	});
 
 	test('expect "user3" to not able able to take chat from queue in-case its user status is offline', async () => {
-		// make "user-1" offline
+		// make "user-3" offline
 		await agent.poHomeChannel.sidenav.switchStatus('offline');
+
 
 		await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name);
 		await expect(agent.poHomeChannel.content.takeOmnichannelChatButton).toBeVisible();
