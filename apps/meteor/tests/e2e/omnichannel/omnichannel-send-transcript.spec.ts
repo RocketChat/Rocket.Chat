@@ -4,37 +4,36 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-transcript', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newUser: { email: string; name: string };
 
-	let agent: { page: Page; poHomeChannel: HomeOmnichannel };
+	let agent: { page: Page; poHomeChannel: HomeChannel };
 	test.beforeAll(async ({ api, browser }) => {
 		newUser = {
 			name: faker.person.firstName(),
 			email: faker.internet.email(),
 		};
 
-        const { page } = await createAuxContext(browser, Users.user1);
-        const poHomeChannel = new HomeOmnichannel(page);
-        await poHomeChannel.sidenav.switchStatus('online');
+		// Set user user 3 as manager and agent
+		await api.post('/livechat/users/agent', { username: 'user3' });
+		await api.post('/livechat/users/manager', { username: 'user3' });
+		await api.post('/users.setStatus', { status: 'online', username: 'user3' }).then((res) => expect(res.status()).toBe(200));
 
-		// Set user user 1 as manager and agent
-		await api.post('/livechat/users/agent', { username: 'user1' });
-		await api.post('/livechat/users/manager', { username: 'user1' });
 
-		agent = { page, poHomeChannel };
+		const { page } = await createAuxContext(browser, Users.user3);
+		agent = { page, poHomeChannel: new HomeChannel(page) };
 	});
 	test.beforeEach(async ({ page, api }) => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.delete('/livechat/users/agent/user1');
-		await api.delete('/livechat/users/manager/user1');
+		await api.delete('/livechat/users/agent/user3');
+		await api.delete('/livechat/users/manager/user3');
 		await agent.page.close();
 	});
 

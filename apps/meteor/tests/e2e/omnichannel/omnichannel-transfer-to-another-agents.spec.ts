@@ -14,30 +14,27 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 	let agent2: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 	test.beforeAll(async ({ api, browser }) => {
 
-        const { page: pageUser1 } = await createAuxContext(browser, Users.user1);
-        const poHomeChannelUser1 = new HomeOmnichannel(pageUser1);
-        await poHomeChannelUser1.sidenav.switchStatus('online');
-
-        const { page: pageUser2 } = await createAuxContext(browser, Users.user2);
-        const poHomeChannelUser2 = new HomeOmnichannel(pageUser2);
-        await poHomeChannelUser2.sidenav.switchStatus('online');
-
 		await Promise.all([
 			api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
-			api.post('/livechat/users/agent', { username: 'user2' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/livechat/users/agent', { username: 'user3' }).then((res) => expect(res.status()).toBe(200)),
 			api.post('/livechat/users/manager', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
 			api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/users.setStatus', { status: 'online', username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/users.setStatus', { status: 'online', username: 'user3' }).then((res) => expect(res.status()).toBe(200)),
 		]);
 
-		agent1 = { page: pageUser1, poHomeOmnichannel: poHomeChannelUser1 };
-		agent2 = { page: pageUser2, poHomeOmnichannel: poHomeChannelUser2 };
+		const { page } = await createAuxContext(browser, Users.user1);
+		agent1 = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
+
+		const { page: page2 } = await createAuxContext(browser, Users.user3);
+		agent2 = { page: page2, poHomeOmnichannel: new HomeOmnichannel(page2) };
 	});
 
 	test.afterAll(async ({ api }) => {
 		await Promise.all([
 			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
 			api.delete('/livechat/users/manager/user1').then((res) => expect(res.status()).toBe(200)),
-			api.delete('/livechat/users/agent/user2').then((res) => expect(res.status()).toBe(200)),
+			api.delete('/livechat/users/agent/user3').then((res) => expect(res.status()).toBe(200)),
 			api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200)),
 		]);
 
@@ -71,7 +68,7 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 			await agent2.poHomeOmnichannel.sidenav.switchStatus('offline');
 
 			await agent1.poHomeOmnichannel.content.btnForwardChat.click();
-			await agent1.poHomeOmnichannel.content.inputModalAgentUserName.type('user2');
+			await agent1.poHomeOmnichannel.content.inputModalAgentUserName.type('user3');
 			await expect(agent1.page.locator('text=Empty')).toBeVisible();
 
 			await agent1.page.goto('/');
@@ -82,8 +79,8 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 
 			await agent1.poHomeOmnichannel.sidenav.getSidebarItemByName(newVisitor.name).click();
 			await agent1.poHomeOmnichannel.content.btnForwardChat.click();
-			await agent1.poHomeOmnichannel.content.inputModalAgentUserName.type('user2');
-			await agent1.page.locator('.rcx-option .rcx-option__wrapper >> text="user2"').click();
+			await agent1.poHomeOmnichannel.content.inputModalAgentUserName.type('user3');
+			await agent1.page.locator('.rcx-option .rcx-option__wrapper >> text="user3"').click();
 			await agent1.poHomeOmnichannel.content.inputModalAgentForwardComment.type('any_comment');
 			await agent1.poHomeOmnichannel.content.btnModalConfirm.click();
 			await expect(agent1.poHomeOmnichannel.toastSuccess).toBeVisible();

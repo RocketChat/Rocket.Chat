@@ -1,6 +1,5 @@
-import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { HomeChannel, OmnichannelAgents } from '../page-objects';
+import { OmnichannelAgents } from '../page-objects';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -8,28 +7,24 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('omnichannel-agents', () => {
 	let poOmnichannelAgents: OmnichannelAgents;
 
-	test.beforeEach(async ({ page, browser }) => {
+	test.beforeAll(async ({ page, api }) => {
+		await api.post('/users.setStatus', { status: 'online', username: 'user2' }).then((res) => expect(res.status()).toBe(200));
 		poOmnichannelAgents = new OmnichannelAgents(page);
-
-        const { page: user1Page } = await createAuxContext(browser, Users.user1);
-        const poUser1Omnichannel = new HomeChannel(user1Page);
-        await poUser1Omnichannel.sidenav.switchStatus('online');
-
 		await page.goto('/omnichannel');
 		await poOmnichannelAgents.sidenav.linkAgents.click();
 	});
 
-	test('expect add "user1" as agent', async ({ page }) => {
-		await poOmnichannelAgents.inputUsername.type('user1');
-		await page.locator('role=option[name="user1"]').click();
+	test('expect add "user2" as agent', async ({ page }) => {
+		await poOmnichannelAgents.inputUsername.type('user2');
+		await page.locator('role=option[name="user2"]').click();
 		await poOmnichannelAgents.btnAdd.click();
 
-		await poOmnichannelAgents.inputSearch.fill('user1');
+		await poOmnichannelAgents.inputSearch.fill('user2');
 		await expect(poOmnichannelAgents.firstRowInTable).toBeVisible();
 	});
 
-	test('expect update "user1" status', async ({ page }) => {
-		await poOmnichannelAgents.inputSearch.fill('user1');
+	test('expect update "user2" status', async ({ page }) => {
+		await poOmnichannelAgents.inputSearch.fill('user2');
 		await poOmnichannelAgents.firstRowInTable.click();
 
 		await poOmnichannelAgents.btnEdit.click();
@@ -38,12 +33,12 @@ test.describe.serial('omnichannel-agents', () => {
 		await poOmnichannelAgents.btnSave.click();
 	});
 
-	test('expect remove "user1" as agent', async () => {
-		await poOmnichannelAgents.inputSearch.fill('user1');
+	test('expect remove "user2" as agent', async () => {
+		await poOmnichannelAgents.inputSearch.fill('user2');
 		await poOmnichannelAgents.btnDeletefirstRowInTable.click();
 		await poOmnichannelAgents.btnModalRemove.click();
 
-		await poOmnichannelAgents.inputSearch.fill('user1');
+		await poOmnichannelAgents.inputSearch.fill('user2');
 		await expect(poOmnichannelAgents.firstRowInTable).toBeHidden();
 	});
 });

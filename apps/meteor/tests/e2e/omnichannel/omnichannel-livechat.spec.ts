@@ -17,23 +17,20 @@ test.describe('Livechat', () => {
 		let page: Page;
 
 		test.beforeAll(async ({ browser, api }) => {
-            const { page: user1Page } = await createAuxContext(browser, Users.user1);
-            const poHomeOmnichannel = new HomeOmnichannel(user1Page);
-            await poHomeOmnichannel.sidenav.switchStatus('online');
-
-			const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
-			await expect(statusCode).toBe(200);
+			await api.post('/livechat/users/agent', { username: 'user3' }).then((res) => expect(res.status()).toBe(200));
+			await api.post('/users.setStatus', { status: 'online', username: 'user3' }).then((res) => expect(res.status()).toBe(200));
 
 			page = await browser.newPage();
 			poLiveChat = new OmnichannelLiveChat(page, api);
 
-			poAuxContext = { page: user1Page, poHomeOmnichannel };
+			const { page: pageCtx } = await createAuxContext(browser, Users.user3);
+			poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
 
 			await page.goto('/livechat');
 		});
 
 		test.afterAll(async ({ api }) => {
-			await api.delete('/livechat/users/agent/user1');
+			await api.delete('/livechat/users/agent/user3');
 			await poAuxContext.page.close();
 			await page.close();
 		});
