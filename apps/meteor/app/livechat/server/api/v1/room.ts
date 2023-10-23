@@ -327,7 +327,7 @@ API.v1.addRoute(
 				throw new Error('This_conversation_is_already_closed');
 			}
 
-			if (!(await Omnichannel.isRoomEnabled(room))) {
+			if (!(await Omnichannel.isWithinMACLimit(room))) {
 				throw new Error('error-mac-limit-reached');
 			}
 
@@ -417,7 +417,7 @@ API.v1.addRoute(
 				throw new Error('error-invalid-room');
 			}
 
-			if (!(await Omnichannel.isRoomEnabled(room))) {
+			if (!(await Omnichannel.isWithinMACLimit(room))) {
 				throw new Error('error-mac-limit-reached');
 			}
 

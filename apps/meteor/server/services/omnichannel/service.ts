@@ -61,12 +61,8 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 		return this.queueWorker;
 	}
 
-	async isRoomEnabled(room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {
+	async isWithinMACLimit(room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {
 		const currentMonth = moment.utc().format('YYYY-MM');
 		return room.v?.activity?.includes(currentMonth) || !(await License.shouldPreventAction('monthlyActiveContacts'));
-	}
-
-	async checkMACLimit(): Promise<boolean> {
-		return !(await License.shouldPreventAction('monthlyActiveContacts'));
 	}
 }

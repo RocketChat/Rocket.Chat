@@ -50,7 +50,7 @@ export const takeInquiry = async (
 	}
 
 	const room = await LivechatRooms.findOneById(inquiry.rid);
-	if (!room || !(await Omnichannel.isRoomEnabled(room))) {
+	if (!room || !(await Omnichannel.isWithinMACLimit(room))) {
 		throw new Error('error-mac-limit-reached');
 	}
 

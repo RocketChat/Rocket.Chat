@@ -411,7 +411,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-transcript-already-requested', 'Transcript already requested');
 		}
 
-		if (!(await Omnichannel.isRoomEnabled(room))) {
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
 			throw new Error('error-mac-limit-reached');
 		}
 

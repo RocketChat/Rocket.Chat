@@ -50,7 +50,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:transfer' });
 		}
 
-		if (!(await Omnichannel.isRoomEnabled(room))) {
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
 			throw new Meteor.Error('error-mac-limit-reached', 'MAC limit reached', { method: 'livechat:transfer' });
 		}
 

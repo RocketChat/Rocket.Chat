@@ -178,7 +178,7 @@ export const RoutingManager: Routing = {
 			return false;
 		}
 
-		if (!(await Omnichannel.isRoomEnabled(room))) {
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
 			throw new Error('error-mac-limit-reached');
 		}
 
@@ -269,7 +269,7 @@ export const RoutingManager: Routing = {
 	},
 
 	async transferRoom(room, guest, transferData) {
-		if (!(await Omnichannel.isRoomEnabled(room))) {
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
 			throw new Error('error-mac-limit-reached');
 		}
 

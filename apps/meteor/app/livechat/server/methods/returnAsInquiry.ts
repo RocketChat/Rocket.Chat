@@ -30,7 +30,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!(await Omnichannel.isRoomEnabled(room))) {
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
 			throw new Meteor.Error('error-mac-limit-reached', 'MAC limit reached', { method: 'livechat:returnAsInquiry' });
 		}
 

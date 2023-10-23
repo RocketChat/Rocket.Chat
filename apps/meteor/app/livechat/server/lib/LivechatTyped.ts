@@ -521,7 +521,7 @@ class LivechatClass {
 			throw new Error('error-invalid-room');
 		}
 
-		if (!(await Omnichannel.isRoomEnabled(room))) {
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
 			throw new Error('error-mac-limit-reached');
 		}
 

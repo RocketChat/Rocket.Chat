@@ -28,7 +28,7 @@ API.v1.addRoute(
 				throw new Error('invalid-room');
 			}
 
-			if (!(await Omnichannel.isRoomEnabled(room as IOmnichannelRoom))) {
+			if (!(await Omnichannel.isWithinMACLimit(room as IOmnichannelRoom))) {
 				throw new Error('error-mac-limit-reached');
 			}
 
@@ -84,7 +84,7 @@ API.v1.addRoute(
 				throw new Error('invalid-room');
 			}
 
-			if (!(await Omnichannel.isRoomEnabled(room as IOmnichannelRoom))) {
+			if (!(await Omnichannel.isWithinMACLimit(room as IOmnichannelRoom))) {
 				throw new Error('error-mac-limit-reached');
 			}
 

@@ -4,6 +4,5 @@ import type { IServiceClass } from './ServiceClass';
 
 export interface IOmnichannelService extends IServiceClass {
 	getQueueWorker(): IOmnichannelQueue;
-	isRoomEnabled(_room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean>;
-	checkMACLimit(): Promise<boolean>;
+	isWithinMACLimit(_room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean>;
 }
