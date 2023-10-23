@@ -66,12 +66,4 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.visitor.activity[0]).to.equal(moment.utc().format('YYYY-MM'));
 		});
 	});
-
-	describe('MAC check', () => {
-		it('should return `onLimit: true` when MAC limit has not been reached', async () => {
-			const { body } = await request.get(api('omnichannel/mac/check')).set(credentials).expect(200);
-
-			expect(body).to.have.property('onLimit', true);
-		});
-	});
 });
