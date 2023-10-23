@@ -4,7 +4,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { settings } from '../../../../app/settings/client';
-import { generateTriggerId } from '../../../../app/ui-message/client/ActionManager';
+import { actionManager } from '../../../../app/ui-message/client/ActionManager';
 import { slashCommands } from '../../../../app/utils/client';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
@@ -78,7 +78,7 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 		params: [{ eventName: 'slashCommandsStats', timestamp: Date.now(), command: commandName }],
 	});
 
-	const triggerId = generateTriggerId(appId);
+	const triggerId = actionManager.generateTriggerId(appId);
 
 	const data = {
 		cmd: commandName,

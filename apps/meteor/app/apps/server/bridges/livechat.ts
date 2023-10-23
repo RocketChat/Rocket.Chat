@@ -44,7 +44,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			throw new Error('Invalid token for livechat message');
 		}
 
-		const msg = await Livechat.sendMessage({
+		const msg = await LivechatTyped.sendMessage({
 			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(message.visitor),
 			message: await this.orch.getConverters()?.get('messages').convertAppMessage(message),
 			agent: undefined,
@@ -74,7 +74,8 @@ export class AppLivechatBridge extends LivechatBridge {
 			message: await this.orch.getConverters()?.get('messages').convertAppMessage(message),
 		};
 
-		await Livechat.updateMessage(data);
+		// @ts-expect-error IVisitor vs ILivechatVisitor :(
+		await LivechatTyped.updateMessage(data);
 	}
 
 	protected async createRoom(visitor: IVisitor, agent: IUser, appId: string, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
@@ -208,7 +209,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			userId = transferredTo._id;
 		}
 
-		return Livechat.transfer(
+		return LivechatTyped.transfer(
 			await this.orch.getConverters()?.get('rooms').convertAppRoom(currentRoom),
 			this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			{ userId, departmentId, transferredBy, transferredTo },
