@@ -228,4 +228,5 @@ export interface IStats {
 	webRTCEnabled: boolean;
 	webRTCEnabledForOmnichannel: boolean;
 	omnichannelWebRTCCalls: number;
+	statsToken?: string;
 }
