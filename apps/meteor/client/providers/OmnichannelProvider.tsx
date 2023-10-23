@@ -19,6 +19,7 @@ import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
+import { useMacLimitValidations } from '../hooks/omnichannel/useMacValidations';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 
 const emptyContextValue: OmnichannelContextValue = {
@@ -27,6 +28,7 @@ const emptyContextValue: OmnichannelContextValue = {
 	isEnterprise: false,
 	agentAvailable: false,
 	showOmnichannelQueueLink: false,
+	isOverMacLimit: false,
 	livechatPriorities: {
 		enabled: false,
 		data: [],
@@ -74,6 +76,8 @@ const OmnichannelProvider: FC = ({ children }) => {
 		enabled: isPrioritiesEnabled,
 	});
 
+	const { isOverMacLimit } = useMacLimitValidations(enabled);
+
 	useEffect(() => {
 		if (!isPrioritiesEnabled) {
 			return;
@@ -83,16 +87,6 @@ const OmnichannelProvider: FC = ({ children }) => {
 			queryClient.invalidateQueries(['/v1/livechat/priorities']);
 		});
 	}, [isPrioritiesEnabled, queryClient, subscribe]);
-
-	useEffect(() => {
-		if (!enabled) {
-			return;
-		}
-
-		return subscribe(`mac.limit`, () => {
-			queryClient.invalidateQueries(['/v1/omnichannel/mac/check']);
-		});
-	}, [subscribe, queryClient, enabled]);
 
 	useEffect(() => {
 		if (!accessible) {
@@ -177,6 +171,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				voipCallAvailable,
 				routeConfig,
 				livechatPriorities,
+				isOverMacLimit,
 			};
 		}
 
@@ -195,6 +190,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				: { enabled: false },
 			showOmnichannelQueueLink: showOmnichannelQueueLink && !!agentAvailable,
 			livechatPriorities,
+			isOverMacLimit,
 		};
 	}, [
 		enabled,
@@ -209,6 +205,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		routeConfig,
 		queue,
 		showOmnichannelQueueLink,
+		isOverMacLimit,
 	]);
 
 	return <OmnichannelContext.Provider children={children} value={contextValue} />;
