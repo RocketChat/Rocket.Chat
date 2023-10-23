@@ -1,7 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
-	Icon,
 	FieldDescription,
 	Accordion,
 	Box,
@@ -14,20 +13,16 @@ import {
 	FieldRow,
 	RadioButton,
 	Select,
-	Tag,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
-import { useLocalStorage, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import Page from '../../../components/Page';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
-import HighContrastUpsellModal from './HighContrastUpsellModal';
-import MentionsWithSymbolUpsellModal from './MentionsWithSymbolUpsellModal';
 import { fontSizes } from './fontSizes';
 import type { AccessibilityPreferencesData } from './hooks/useAcessibilityPreferencesValues';
 import { useAccessiblityPreferencesValues } from './hooks/useAcessibilityPreferencesValues';
@@ -36,14 +31,9 @@ import { themeItems as themes } from './themeItems';
 
 const AccessibilityPage = () => {
 	const t = useTranslation();
-	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const preferencesValues = useAccessiblityPreferencesValues();
-	const { data: license } = useIsEnterprise();
-	const isEnterprise = license?.isEnterprise;
 
-	const { themeAppearence } = preferencesValues;
-	const [, setPrevTheme] = useLocalStorage('prevTheme', themeAppearence);
 	const createFontStyleElement = useCreateFontStyleElement();
 	const displayRolesEnabled = useSetting('UI_DisplayRoles');
 
@@ -82,7 +72,6 @@ const AccessibilityPage = () => {
 		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
 		onSettled: (_data, _error, { data: { fontSize } }) => {
 			reset(currentData);
-			dirtyFields.themeAppearence && setPrevTheme(themeAppearence);
 			dirtyFields.fontSize && fontSize && createFontStyleElement(fontSize);
 		},
 	});
@@ -102,45 +91,25 @@ const AccessibilityPage = () => {
 					</Box>
 					<Accordion>
 						<Accordion.Item defaultExpanded={true} title={t('Theme')}>
-							{themes.map(({ id, title, description, ...item }, index) => {
-								const showCommunityUpsellTriggers = 'isEEOnly' in item && item.isEEOnly && !isEnterprise;
-
+							{themes.map(({ id, title, description }, index) => {
 								return (
 									<Field key={id} pbe={themes.length - 1 ? undefined : 'x28'} pbs={index === 0 ? undefined : 'x28'}>
 										<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 											<FieldLabel display='flex' alignItems='center' htmlFor={id}>
-												{t.has(title) ? t(title) : title}
-												{showCommunityUpsellTriggers && (
-													<Box is='span' mis={8}>
-														<Tag variant='featured'>
-															<Icon name='lightning' />
-															{t('Enterprise')}
-														</Tag>
-													</Box>
-												)}
+												{t(title)}
 											</FieldLabel>
 											<FieldRow>
 												<Controller
 													control={control}
 													name='themeAppearence'
-													render={({ field: { onChange, value, ref } }) => {
-														if (showCommunityUpsellTriggers) {
-															return (
-																<RadioButton
-																	id={id}
-																	ref={ref}
-																	onChange={() => setModal(<HighContrastUpsellModal onClose={() => setModal(null)} />)}
-																	checked={false}
-																/>
-															);
-														}
-														return <RadioButton id={id} ref={ref} onChange={() => onChange(id)} checked={value === id} />;
-													}}
+													render={({ field: { onChange, value, ref } }) => (
+														<RadioButton id={id} ref={ref} onChange={() => onChange(id)} checked={value === id} />
+													)}
 												/>
 											</FieldRow>
 										</Box>
 										<FieldHint mbs={12} style={{ whiteSpace: 'break-spaces' }}>
-											{t.has(description) ? t(description) : description}
+											{t(description)}
 										</FieldHint>
 									</Field>
 								);
@@ -165,32 +134,15 @@ const AccessibilityPage = () => {
 								</Field>
 								<Field>
 									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-										<FieldLabel htmlFor={fontSizeId}>
-											{t('Mentions_with_@_symbol')}
-											{!isEnterprise && (
-												<Box is='span' mis={8} display='inline-block'>
-													<Tag variant='featured'>
-														<Icon name='lightning' />
-														{t('Enterprise')}
-													</Tag>
-												</Box>
-											)}
-										</FieldLabel>
+										<FieldLabel htmlFor={fontSizeId}>{t('Mentions_with_@_symbol')}</FieldLabel>
 										<FieldRow>
-											{isEnterprise ? (
-												<Controller
-													control={control}
-													name='mentionsWithSymbol'
-													render={({ field: { onChange, value, ref } }) => (
-														<ToggleSwitch id={mentionsWithSymbolId} ref={ref} checked={value} onChange={onChange} />
-													)}
-												/>
-											) : (
-												<ToggleSwitch
-													onChange={() => setModal(<MentionsWithSymbolUpsellModal onClose={() => setModal(null)} />)}
-													checked={false}
-												/>
-											)}
+											<Controller
+												control={control}
+												name='mentionsWithSymbol'
+												render={({ field: { onChange, value, ref } }) => (
+													<ToggleSwitch id={mentionsWithSymbolId} ref={ref} checked={value} onChange={onChange} />
+												)}
+											/>
 										</FieldRow>
 									</Box>
 									<FieldDescription
