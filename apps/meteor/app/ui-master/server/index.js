@@ -121,7 +121,10 @@ Meteor.startup(() => {
 
 	injectIntoHead('base', `<base href="${baseUrl}">`);
 
-	injectIntoHead('css-theme', '');
+	const customCss = settings.get('theme-custom-css');
+	if (customCss) {
+		injectIntoHead('css-theme', `<style id='custom-theme-css'> ${customCss} </style>`);
+	}
 });
 
 const renderDynamicCssList = withDebouncing({ wait: 500 })(async () => {
