@@ -197,7 +197,7 @@ export class HomeContent {
 	}
 
 	get inputModalAgentUserName(): Locator {
-		return this.page.locator('#modal-root input:nth-child(1)');
+		return this.page.locator('#modal-root input[placeholder="Username, name or e-mail"]');
 	}
 
 	get inputModalAgentForwardComment(): Locator {
@@ -237,16 +237,8 @@ export class HomeContent {
 
 	async openLastThreadMessageMenu(): Promise<void> {
 		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().hover();
-		await this.page
-			.locator('//main//aside >> [data-qa-type="message"]')
-			.last()
-			.locator('role=button[name="More"]')
-			.waitFor();
-		await this.page
-			.locator('//main//aside >> [data-qa-type="message"]')
-			.last()
-			.locator('role=button[name="More"]')
-			.click();
+		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
+		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().locator('role=button[name="More"]').click();
 	}
 
 	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
