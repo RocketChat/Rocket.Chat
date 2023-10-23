@@ -6,12 +6,11 @@ import { useLayout } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
 import React, { memo, useMemo } from 'react';
 
-import { RoomActivityIcon } from '../../../ee/client/omnichannel/components/RoomActivityIcon';
 import { useOmnichannelPriorities } from '../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
-import { PriorityIcon } from '../../../ee/client/omnichannel/priorities/PriorityIcon';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomMenu from '../RoomMenu';
+import { OmnichannelBadges } from '../badges/OmnichannelBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
@@ -171,8 +170,7 @@ function SideBarItemTemplateWithData({
 					{unread + tunread?.length}
 				</Badge>
 			)}
-			{isOmnichannelRoom(room) && isPriorityEnabled && <PriorityIcon level={room.priorityWeight} />}
-			{isOmnichannelRoom(room) && <RoomActivityIcon room={room} />}
+			<OmnichannelBadges room={room} />
 		</Margins>
 	);
 
