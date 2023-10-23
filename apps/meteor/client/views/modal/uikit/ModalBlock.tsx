@@ -1,4 +1,4 @@
-import type { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
+import type { UiKit } from '@rocket.chat/core-typings';
 import { Modal, AnimatedVisibility, Button, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
@@ -38,7 +38,7 @@ const focusableElementsStringInvalid = `
 	[contenteditable]:invalid`;
 
 type ModalBlockParams = {
-	view: IUIKitSurface & { showIcon?: boolean };
+	view: UiKit.ModalView;
 	errors: any;
 	appId: string;
 	onSubmit: FormEventHandler<HTMLElement>;
@@ -55,7 +55,7 @@ const KeyboardCode = new Map<string, number>([
 	['TAB', 9],
 ]);
 
-const ModalBlock = ({ view, errors, appId, onSubmit, onClose, onCancel }: ModalBlockParams): ReactElement => {
+const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockParams): ReactElement => {
 	const id = `modal_id_${useUniqueId()}`;
 	const ref = useRef<HTMLElement>(null);
 
@@ -165,7 +165,7 @@ const ModalBlock = ({ view, errors, appId, onSubmit, onClose, onCancel }: ModalB
 			<FocusScope contain restoreFocus autoFocus>
 				<Modal open id={id} ref={ref}>
 					<Modal.Header>
-						{view.showIcon ? <Modal.Thumb url={getURL(`/api/apps/${appId}/icon`)} /> : null}
+						{view.showIcon ? <Modal.Thumb url={getURL(`/api/apps/${view.appId}/icon`)} /> : null}
 						<Modal.Title>{modalParser.text(view.title, BlockContext.NONE, 0)}</Modal.Title>
 						<Modal.Close tabIndex={-1} onClick={onClose} />
 					</Modal.Header>
@@ -182,7 +182,7 @@ const ModalBlock = ({ view, errors, appId, onSubmit, onClose, onCancel }: ModalB
 								</Button>
 							)}
 							{view.submit && (
-								<Button {...getButtonStyle(view)} onClick={onSubmit}>
+								<Button {...getButtonStyle(view.submit)} onClick={onSubmit}>
 									{modalParser.text(view.submit.text, BlockContext.NONE, 1)}
 								</Button>
 							)}

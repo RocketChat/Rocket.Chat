@@ -17,7 +17,7 @@ export const addSprinfToI18n = function (t: (typeof i18n)['t'], i18nInstance?: t
 			return t(key, ...replaces);
 		}
 
-		if (isObject(replaces[0])) {
+		if (isObject(replaces[0]) && !Array.isArray(replaces[0])) {
 			if (!hasCounterProperty(replaces[0])) {
 				return t(key, ...replaces);
 			}
