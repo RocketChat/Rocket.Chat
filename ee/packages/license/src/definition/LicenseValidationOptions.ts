@@ -8,4 +8,5 @@ export type LicenseValidationOptions = {
 	suppressLog?: boolean;
 	isNewLicense?: boolean;
 	context?: Partial<{ [K in LicenseLimitKind]: Partial<LimitContext<LicenseLimitKind>> }>;
+	triggerSync?: boolean;
 };

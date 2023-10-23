@@ -34,6 +34,7 @@ import type {
 	ILivechatVisitor,
 	UiKit,
 } from '@rocket.chat/core-typings';
+import type { LicenseLimitKind } from '@rocket.chat/license';
 
 import type { AutoUpdateRecord } from './types/IMeteor';
 
@@ -55,6 +56,9 @@ export type EventSignatures = {
 	'emoji.deleteCustom'(emoji: IEmoji): void;
 	'emoji.updateCustom'(emoji: IEmoji): void;
 	'license.module'(data: { module: string; valid: boolean }): void;
+	'license.sync'(): void;
+	'license.actions'(actions: Record<Partial<LicenseLimitKind>, boolean>): void;
+
 	'livechat-inquiry-queue-observer'(data: { action: string; inquiry: IInquiry }): void;
 	'message'(data: { action: string; message: IMessage }): void;
 	'meteor.clientVersionUpdated'(data: AutoUpdateRecord): void;
