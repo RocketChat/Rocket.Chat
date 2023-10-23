@@ -4,7 +4,7 @@ import { useCurrentChatsHighlight } from './useCurrentChatsHighlight';
 
 export const useOmnichannelHighlight = () => {
 	const isLivechatManager = usePermission('view-livechat-manager');
-	const { isHighlit } = useCurrentChatsHighlight();
+	const { isHighlightVisible } = useCurrentChatsHighlight();
 
-	return { isHighlit: isLivechatManager && isHighlit };
+	return { isHighlightVisible: isLivechatManager && isHighlightVisible };
 };

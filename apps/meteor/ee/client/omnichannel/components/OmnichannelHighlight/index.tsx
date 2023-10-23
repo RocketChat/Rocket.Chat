@@ -4,9 +4,9 @@ import React from 'react';
 import { useOmnichannelHighlight } from '../../hooks/useOmnichannelHighlight';
 
 export const OmnichannelHighlight = () => {
-	const { isHighlit } = useOmnichannelHighlight();
+	const { isHighlightVisible } = useOmnichannelHighlight();
 
-	if (!isHighlit) {
+	if (!isHighlightVisible) {
 		return null;
 	}
 

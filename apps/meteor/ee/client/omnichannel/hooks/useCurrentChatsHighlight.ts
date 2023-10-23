@@ -6,11 +6,11 @@ import { useIsOverMacLimit } from '../../../../client/hooks/omnichannel/useIsOve
 
 export const useCurrentChatsHighlight = () => {
 	const isOverMacLimit = useIsOverMacLimit();
-	const [isHighlit, setHighlight] = useLocalStorage<boolean>('omnichannel-current-chats-highlight', isOverMacLimit);
+	const [isHighlightVisible, setHighlight] = useLocalStorage<boolean>('omnichannel-current-chats-highlight', isOverMacLimit);
 	const router = useRouter();
 
 	useEffect(() => {
-		if (!isHighlit) {
+		if (!isHighlightVisible) {
 			return;
 		}
 
@@ -21,9 +21,9 @@ export const useCurrentChatsHighlight = () => {
 
 			setHighlight(false);
 		});
-	}, [isHighlit, router, setHighlight]);
+	}, [isHighlightVisible, router, setHighlight]);
 
 	return {
-		isHighlit,
+		isHighlightVisible,
 	};
 };

@@ -21,12 +21,12 @@ const highlightDot = css`
 `;
 
 export const useAdministrationHighlight = () => {
-	const { isHighlit: isOmnichannelHighlit } = useOmnichannelHighlight();
+	const { isHighlightVisible: isOmnichannelHighlightVisible } = useOmnichannelHighlight();
 
 	return {
-		isHighlit: isOmnichannelHighlit,
+		isHighlightVisible: isOmnichannelHighlightVisible,
 		get className() {
-			return this.isHighlit ? highlightDot : undefined;
+			return this.isHighlightVisible ? highlightDot : undefined;
 		},
 	};
 };
