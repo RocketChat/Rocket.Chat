@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react';
 import { useLicense } from '../useLicense';
 
 export const useMacLimitValidations = (enabled: boolean) => {
-	const { data: { license } = {}, isLoading, isError } = useLicense();
-	const preventedActions = license?.preventedActions;
+	const { data: { preventedActions } = {}, isLoading, isError } = useLicense();
 	const [isOverMacLimit, setOverMacLimit] = useState(preventedActions?.monthlyActiveContacts || false);
 	const subscribe = useStream('notify-logged');
 

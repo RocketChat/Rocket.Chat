@@ -19,7 +19,7 @@ import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
-import { useMacLimitValidations } from '../hooks/omnichannel/useMacValidations';
+import { useMacLimitValidations } from '../hooks/omnichannel/useMacLimitValidations';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 
 const emptyContextValue: OmnichannelContextValue = {
