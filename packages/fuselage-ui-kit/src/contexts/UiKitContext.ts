@@ -1,10 +1,15 @@
-import type { InputElementDispatchAction } from '@rocket.chat/ui-kit';
+import type {
+  ActionableElement,
+  InputElementDispatchAction,
+} from '@rocket.chat/ui-kit';
 import { createContext } from 'react';
+
+type ActionId = ActionableElement['actionId'];
 
 type ActionParams = {
   blockId: string;
   appId: string;
-  actionId: string;
+  actionId: ActionId;
   value: unknown;
   viewId?: string;
   dispatchActionConfig?: InputElementDispatchAction[];
@@ -21,7 +26,7 @@ type UiKitContextValue = {
   ) => Promise<void> | void;
   appId: string;
   errors?: Record<string, string>;
-  values: Record<string, { value: string } | undefined>;
+  values: Record<ActionId, { value: unknown } | undefined>;
   viewId?: string;
   rid?: string;
 };

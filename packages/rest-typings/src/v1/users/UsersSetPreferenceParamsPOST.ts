@@ -50,6 +50,7 @@ export type UsersSetPreferencesParamsPOST = {
 		idleTimeLimit?: number;
 		omnichannelTranscriptEmail?: boolean;
 		omnichannelTranscriptPDF?: boolean;
+		omnichannelHideConversationAfterClosing?: boolean;
 		enableMobileRinging?: boolean;
 		mentionsWithSymbol?: boolean;
 	};
@@ -244,6 +245,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				omnichannelTranscriptPDF: {
+					type: 'boolean',
+					nullable: true,
+				},
+				omnichannelHideConversationAfterClosing: {
 					type: 'boolean',
 					nullable: true,
 				},
