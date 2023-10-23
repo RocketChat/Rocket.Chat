@@ -12,7 +12,7 @@ export class AdminFlextabUsers {
 	}
 
 	get btnSave(): Locator {
-		return this.page.locator('role=button[name="Save"]');
+		return this.page.locator('role=button[name="Add user"]');
 	}
 
 	get btnInvite(): Locator {
