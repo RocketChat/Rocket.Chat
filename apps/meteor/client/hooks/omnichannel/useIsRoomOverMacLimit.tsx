@@ -6,7 +6,7 @@ import { useIsOverMacLimit } from './useIsOverMacLimit';
 
 const getPeriod = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 
-export const useIsRoomActive = (room: IRoom) => {
+export const useIsRoomOverMacLimit = (room: IRoom) => {
 	const isOverMacLimit = useIsOverMacLimit();
 	const { v: { activity = [] } = {}, t: roomType } = room as IOmnichannelGenericRoom;
 
@@ -19,5 +19,5 @@ export const useIsRoomActive = (room: IRoom) => {
 		return !isOverMacLimit || activity.includes(currentPeriod);
 	}, [activity, isOverMacLimit, roomType]);
 
-	return isContactActive;
+	return !isContactActive;
 };

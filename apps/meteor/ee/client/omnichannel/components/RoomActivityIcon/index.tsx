@@ -4,8 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useIsRoomActive } from '../../../../../client/hooks/omnichannel/useIsRoomActive';
-import { useOmnichannel } from '../../../../../client/hooks/omnichannel/useOmnichannel';
+import { useIsRoomOverMacLimit } from '../../../../../client/hooks/omnichannel/useIsRoomOverMacLimit';
 
 type RoomActivityIconProps = {
 	room: IOmnichannelRoom;
@@ -13,10 +12,9 @@ type RoomActivityIconProps = {
 
 export const RoomActivityIcon = ({ room }: RoomActivityIconProps): ReactElement | null => {
 	const t = useTranslation();
-	const { isEnterprise } = useOmnichannel();
-	const isRoomActive = useIsRoomActive(room);
+	const isRoomOverMacLimit = useIsRoomOverMacLimit(room);
 
-	return isEnterprise && !isRoomActive ? (
+	return isRoomOverMacLimit ? (
 		<Icon name='warning' verticalAlign='middle' size='x20' color='danger' title={t('Workspace_exceeded_MAC_limit_disclaimer')} />
 	) : null;
 };
