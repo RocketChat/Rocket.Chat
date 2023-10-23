@@ -118,13 +118,9 @@ settings.onReady(async () => {
 	});
 });
 
-const getCurrentPeriod = () => {
-	return moment.utc().format('YYYY-MM');
-};
-
 License.setLicenseLimitCounter('activeUsers', () => Users.getActiveLocalUserCount());
 License.setLicenseLimitCounter('guestUsers', () => Users.getActiveLocalGuestCount());
 License.setLicenseLimitCounter('roomsPerGuest', async (context) => (context?.userId ? Subscriptions.countByUserId(context.userId) : 0));
 License.setLicenseLimitCounter('privateApps', () => getAppCount('private'));
 License.setLicenseLimitCounter('marketplaceApps', () => getAppCount('marketplace'));
-License.setLicenseLimitCounter('monthlyActiveContacts', async () => LivechatVisitors.countVisitorsOnPeriod(getCurrentPeriod()));
+License.setLicenseLimitCounter('monthlyActiveContacts', async () => LivechatVisitors.countVisitorsOnPeriod(moment.utc().format('YYYY-MM')));
