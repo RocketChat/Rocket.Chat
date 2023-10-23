@@ -49,13 +49,12 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 	const isRegistered = regStatus?.registrationStatus.workspaceRegistered || false;
 
-	const { information: license } = licenseData?.data?.license ?? {};
-	const isAirgapped = license?.offline;
-	const licenseName = license?.tags?.[0]?.name ?? 'Community';
-	const isTrial = license?.trial;
-	const visualExpiration = formatDate(license?.visualExpiration || '');
-	const licenseLimits = licenseData?.data?.limits;
-
+	const { license, tags, trial, limits } = licenseData?.license || {};
+	const isAirgapped = license?.information?.offline;
+	const licenseName = tags?.[0]?.name ?? 'Community';
+	const isTrial = trial;
+	const visualExpiration = formatDate(license?.information?.visualExpiration || '');
+	const licenseLimits = limits;
 	const serverVersion = serverInfo.version;
 	const supportedVersions = useMemo(
 		() => decodeBase64(serverInfo?.supportedVersions?.signed || ''),
