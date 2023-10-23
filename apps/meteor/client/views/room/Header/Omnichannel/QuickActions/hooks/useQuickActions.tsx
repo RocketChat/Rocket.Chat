@@ -297,8 +297,6 @@ export const useQuickActions = (): {
 
 	const omnichannelRouteConfig = useOmnichannelRouteConfig();
 
-	const manualOnHoldAllowed = useSetting('Livechat_allow_manual_on_hold');
-
 	const hasManagerRole = useRole('livechat-manager');
 
 	const roomOpen = room?.open && (room.u?._id === uid || hasManagerRole) && room?.lastMessage?.t !== 'livechat-close';
@@ -309,8 +307,10 @@ export const useQuickActions = (): {
 	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
 	const canCloseRoom = usePermission('close-livechat-room');
 	const canCloseOthersRoom = usePermission('close-others-livechat-room');
-	const allowManualOnHoldUponAgentEngagement = useSetting('Livechat_allow_manual_on_hold_upon_agent_engagement_only');
-	const canPlaceChatOnHold = Boolean(!room.onHold && room.u && manualOnHoldAllowed && (!allowManualOnHoldUponAgentEngagement || !(room as any).lastMessage?.token));
+	const restrictedOnHold = useSetting('Livechat_allow_manual_on_hold_upon_agent_engagement_only');
+	const canRoomBePlacedOnHold = !room.onHold && room.u;
+	const canAgentPlaceOnHold = !room.lastMessage.token;
+	const canPlaceChatOnHold = canRoomBePlacedOnHold && (!restrictedOnHold || canAgentPlaceOnHold);
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
