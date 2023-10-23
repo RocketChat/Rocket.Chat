@@ -8,11 +8,9 @@ import {
 	LivechatRooms,
 	LivechatInquiry,
 	Subscriptions,
-	Messages,
 	LivechatDepartment as LivechatDepartmentRaw,
 	Rooms,
 	Users,
-	ReadReceipts,
 } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -25,15 +23,11 @@ import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { FileUpload } from '../../../file-upload/server';
-import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
-import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import { Analytics } from './Analytics';
-import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
-import { Livechat as LivechatTyped } from './LivechatTyped';
+import { parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('Livechat');
@@ -42,41 +36,6 @@ export const Livechat = {
 	Analytics,
 
 	logger,
-
-	async sendMessage({ guest, message, roomInfo, agent }) {
-		const { room, newRoom } = await LivechatTyped.getRoom(guest, message, roomInfo, agent);
-		if (guest.name) {
-			message.alias = guest.name;
-		}
-		return Object.assign(await sendMessage(guest, message, room), {
-			newRoom,
-			showConnecting: this.showConnecting(),
-		});
-	},
-
-	async deleteMessage({ guest, message }) {
-		Livechat.logger.debug(`Attempting to delete a message by visitor ${guest._id}`);
-		check(message, Match.ObjectIncluding({ _id: String }));
-
-		const msg = await Messages.findOneById(message._id);
-		if (!msg || !msg._id) {
-			return;
-		}
-
-		const deleteAllowed = settings.get('Message_AllowDeleting');
-		const editOwn = msg.u && msg.u._id === guest._id;
-
-		if (!deleteAllowed || !editOwn) {
-			Livechat.logger.debug('Cannot delete message: not allowed');
-			throw new Meteor.Error('error-action-not-allowed', 'Message deleting not allowed', {
-				method: 'livechatDeleteMessage',
-			});
-		}
-
-		await deleteMessage(message, guest);
-
-		return true;
-	},
 
 	async saveGuest(guestData, userId) {
 		const { _id, name, email, phone, livechatData = {} } = guestData;
@@ -234,111 +193,6 @@ export const Livechat = {
 		return Message.saveSystemMessage('livechat_navigation_history', roomId, `${pageTitle} - ${pageUrl}`, user, extraData);
 	},
 
-	async saveTransferHistory(room, transferData) {
-		Livechat.logger.debug(`Saving transfer history for room ${room._id}`);
-		const { departmentId: previousDepartment } = room;
-		const { department: nextDepartment, transferredBy, transferredTo, scope, comment } = transferData;
-
-		check(
-			transferredBy,
-			Match.ObjectIncluding({
-				_id: String,
-				username: String,
-				name: Match.Maybe(String),
-				type: String,
-			}),
-		);
-
-		const { _id, username } = transferredBy;
-		const scopeData = scope || (nextDepartment ? 'department' : 'agent');
-		Livechat.logger.debug(`Storing new chat transfer of ${room._id} [Transfered by: ${_id} to ${scopeData}]`);
-
-		const transfer = {
-			transferData: {
-				transferredBy,
-				ts: new Date(),
-				scope: scopeData,
-				comment,
-				...(previousDepartment && { previousDepartment }),
-				...(nextDepartment && { nextDepartment }),
-				...(transferredTo && { transferredTo }),
-			},
-		};
-
-		const type = 'livechat_transfer_history';
-		const transferMessage = {
-			t: type,
-			rid: room._id,
-			ts: new Date(),
-			msg: '',
-			u: {
-				_id,
-				username,
-			},
-			groupable: false,
-		};
-
-		Object.assign(transferMessage, transfer);
-
-		await sendMessage(transferredBy, transferMessage, room);
-	},
-
-	async returnRoomAsInquiry(rid, departmentId, overrideTransferData = {}) {
-		Livechat.logger.debug(`Transfering room ${rid} to ${departmentId ? 'department' : ''} queue`);
-		const room = await LivechatRooms.findOneById(rid);
-		if (!room) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'livechat:returnRoomAsInquiry',
-			});
-		}
-
-		if (!room.open) {
-			throw new Meteor.Error('room-closed', 'Room closed', {
-				method: 'livechat:returnRoomAsInquiry',
-			});
-		}
-
-		if (room.onHold) {
-			throw new Meteor.Error('error-room-onHold', 'Room On Hold', {
-				method: 'livechat:returnRoomAsInquiry',
-			});
-		}
-
-		if (!room.servedBy) {
-			return false;
-		}
-
-		const user = await Users.findOneById(room.servedBy._id);
-		if (!user || !user._id) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'livechat:returnRoomAsInquiry',
-			});
-		}
-
-		// find inquiry corresponding to room
-		const inquiry = await LivechatInquiry.findOne({ rid });
-		if (!inquiry) {
-			return false;
-		}
-
-		const transferredBy = normalizeTransferredByData(user, room);
-		Livechat.logger.debug(`Transfering room ${room._id} by user ${transferredBy._id}`);
-		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy, ...overrideTransferData };
-		try {
-			await this.saveTransferHistory(room, transferData);
-			await RoutingManager.unassignAgent(inquiry, departmentId);
-		} catch (e) {
-			this.logger.error(e);
-			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', {
-				method: 'livechat:returnRoomAsInquiry',
-			});
-		}
-
-		callbacks.runAsync('livechat:afterReturnRoomAsInquiry', { room });
-
-		return true;
-	},
-
 	async getLivechatRoomGuestInfo(room) {
 		const visitor = await LivechatVisitors.findOneEnabledById(room.v._id);
 		const agent = await Users.findOneById(room.servedBy && room.servedBy._id);
@@ -481,53 +335,10 @@ export const Livechat = {
 		return removeUserFromRolesAsync(user._id, ['livechat-manager']);
 	},
 
-	async removeGuest(_id) {
-		const guest = await LivechatVisitors.findOneEnabledById(_id, { projection: { _id: 1, token: 1 } });
-		if (!guest) {
-			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', {
-				method: 'livechat:removeGuest',
-			});
-		}
-
-		await this.cleanGuestHistory(guest);
-		return LivechatVisitors.disableById(_id);
-	},
-
 	async setUserStatusLivechat(userId, status) {
 		const user = await Users.setLivechatStatus(userId, status);
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 		return user;
-	},
-
-	async setUserStatusLivechatIf(userId, status, condition, fields) {
-		const user = await Users.setLivechatStatusIf(userId, status, condition, fields);
-		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
-		return user;
-	},
-
-	async cleanGuestHistory(guest) {
-		const { token } = guest;
-
-		// This shouldn't be possible, but just in case
-		if (!token) {
-			throw new Error('error-invalid-guest');
-		}
-
-		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
-		const cursor = LivechatRooms.findByVisitorToken(token, extraQuery);
-		for await (const room of cursor) {
-			await Promise.all([
-				FileUpload.removeFilesByRoomId(room._id),
-				Messages.removeByRoomId(room._id),
-				ReadReceipts.removeByRoomId(room._id),
-			]);
-		}
-
-		await Promise.all([
-			Subscriptions.removeByVisitorToken(token),
-			LivechatRooms.removeByVisitorToken(token),
-			LivechatInquiry.removeByVisitorToken(token),
-		]);
 	},
 
 	async saveDepartmentAgents(_id, departmentAgents) {

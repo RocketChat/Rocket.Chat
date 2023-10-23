@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type { IRocketChatRecord } from '../IRocketChatRecord';
-import { type UiKitPayload } from '../UIKit';
+import type * as UiKit from '../uikit';
 
 type TargetPlatform = 'web' | 'mobile';
 
@@ -23,6 +23,6 @@ export interface Announcement extends IRocketChatRecord {
 	createdBy: Creator;
 	createdAt: Date;
 	dictionary?: Dictionary;
-	view: UiKitPayload;
+	view: UiKit.View;
 	surface: 'banner' | 'modal';
 }
