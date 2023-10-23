@@ -8,16 +8,16 @@ const getPeriod = (date: Date) => `${date.getFullYear()}-${String(date.getMonth(
 
 export const useIsRoomOverMacLimit = (room: IRoom) => {
 	const isOverMacLimit = useIsOverMacLimit();
-	const { v: { activity = [] } = {}, t: roomType } = room as IOmnichannelGenericRoom;
+	const { v: { activity = [] } = {}, t: roomType, open } = room as IOmnichannelGenericRoom;
 
 	const isContactActive = useMemo(() => {
-		if (!['l', 'v'].includes(roomType)) {
+		if (!['l', 'v'].includes(roomType) || !open) {
 			return true;
 		}
 
 		const currentPeriod = getPeriod(new Date());
 		return !isOverMacLimit || activity.includes(currentPeriod);
-	}, [activity, isOverMacLimit, roomType]);
+	}, [activity, isOverMacLimit, open, roomType]);
 
 	return !isContactActive;
 };
