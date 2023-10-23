@@ -15,10 +15,11 @@ export const buildVersionUpdateMessage = async (
 ) => {
 	const lastCheckedVersion = settings.get<string>('Update_LatestAvailableVersion');
 
+	if (!lastCheckedVersion) {
+		return;
+	}
+
 	for await (const version of versions) {
-		if (!lastCheckedVersion) {
-			break;
-		}
 		if (semver.lte(version.version, lastCheckedVersion)) {
 			continue;
 		}
