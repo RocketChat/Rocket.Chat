@@ -13,19 +13,19 @@ import UpgradeButton from '../UpgradeButton';
 
 type PlanCardProps = {
 	isEnterprise: boolean;
-	license: ILicenseV3 | undefined;
+	licenseInformation: ILicenseV3['information'] | undefined;
 };
 
-const PlanCard = ({ isEnterprise, license }: PlanCardProps): ReactElement => {
+const PlanCard = ({ isEnterprise, licenseInformation }: PlanCardProps): ReactElement => {
 	const { t } = useTranslation();
 	const { isSelfHosted, isLoading } = useIsSelfHosted();
 	const formatDate = useFormatDate();
 
-	const planName = isEnterprise ? license?.information?.tags && license.information?.tags[0]?.name : 'Community';
-	const isSalesAssisted = license?.information?.grantedBy?.method !== 'self-service' || true;
-	const isTrial = license?.information?.trial || false;
-	const isAutoRenew = license?.information?.autoRenew || false;
-	const visualExpiration = license?.information?.visualExpiration || String(new Date());
+	const planName = isEnterprise ? licenseInformation?.tags && licenseInformation?.tags[0]?.name : 'Community';
+	const isSalesAssisted = licenseInformation?.grantedBy?.method !== 'self-service' || true;
+	const isTrial = licenseInformation?.trial || false;
+	const isAutoRenew = licenseInformation?.autoRenew || false;
+	const visualExpiration = licenseInformation?.visualExpiration || String(new Date());
 	const trialDaysLeft = (isTrial && getDaysLeft(visualExpiration)) || 0;
 
 	const getPlanContent = (): ReactNode => {

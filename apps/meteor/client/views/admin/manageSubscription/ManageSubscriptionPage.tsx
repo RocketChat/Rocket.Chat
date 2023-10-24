@@ -112,7 +112,7 @@ const ManageSubscriptionPage = () => {
 					<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 						<Grid m={0}>
 							<Grid.Item lg={4} xs={4} p={8}>
-								<PlanCard isEnterprise={isEnterprise} license={license} />
+								<PlanCard isEnterprise={isEnterprise} licenseInformation={license?.information} />
 							</Grid.Item>
 							<Grid.Item lg={8} xs={4} p={8}>
 								<FeaturesCard plan={plan} />
