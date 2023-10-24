@@ -19,7 +19,7 @@ import { useForm } from 'react-hook-form';
 
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import UserAutoComplete from '../../UserAutoComplete';
+import AutoCompleteAgent from '../../AutoCompleteAgent';
 import { useDepartmentsList } from '../hooks/useDepartmentsList';
 
 const ForwardChatModal = ({
@@ -52,28 +52,6 @@ const ForwardChatModal = ({
 		useMemo(() => ({ filter: debouncedDepartmentsFilter as string, enabled: true }), [debouncedDepartmentsFilter]),
 	);
 	const { phase: departmentsPhase, items: departments, itemCount: departmentsTotal } = useRecordList(departmentsList);
-
-	const _id = { $ne: room.servedBy?._id };
-	const conditions = {
-		_id,
-		...(!idleAgentsAllowedForForwarding && {
-			$or: [
-				{
-					status: {
-						$exists: true,
-						$ne: 'offline',
-					},
-					roles: {
-						$ne: 'bot',
-					},
-				},
-				{
-					roles: 'bot',
-				},
-			],
-		}),
-		statusLivechat: 'available',
-	};
 
 	const endReached = useCallback(
 		(start) => {
@@ -134,13 +112,16 @@ const ForwardChatModal = ({
 					<Field>
 						<FieldLabel>{t('Forward_to_user')}</FieldLabel>
 						<FieldRow>
-							<UserAutoComplete
-								conditions={conditions}
-								placeholder={t('Username')}
+							<AutoCompleteAgent
+								withTitle
+								onlyAvailable
+								value={getValues().username}
+								excludeId={room.servedBy?._id}
+								showIdleAgents={idleAgentsAllowedForForwarding}
+								placeholder={t('Username_name_email')}
 								onChange={(value) => {
 									setValue('username', value);
 								}}
-								value={getValues().username}
 							/>
 						</FieldRow>
 					</Field>

@@ -1,6 +1,6 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
-import type { UiKitBannerPayload } from './UIKit';
+import type * as UiKit from './uikit';
 
 export enum BannerPlatform {
 	Web = 'web',
@@ -13,7 +13,7 @@ export interface IBanner extends IRocketChatRecord {
 	roles?: string[]; // only show the banner to this roles
 	createdBy: Pick<IUser, '_id' | 'username'>;
 	createdAt: Date;
-	view: UiKitBannerPayload;
+	view: UiKit.BannerView;
 	active?: boolean;
 	inactivedAt?: Date;
 	snapshot?: string;
