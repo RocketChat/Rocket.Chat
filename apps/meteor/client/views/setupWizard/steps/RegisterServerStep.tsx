@@ -1,7 +1,8 @@
 import { RegisterServerPage, RegisterOfflinePage } from '@rocket.chat/onboarding-ui';
 import { useEndpoint, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type { ReactElement, ComponentProps } from 'react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { queryClient } from '../../../lib/queryClient';
 import { dispatchToastMessage } from '../../../lib/toast';
@@ -14,8 +15,7 @@ const SERVER_OPTIONS = {
 
 const RegisterServerStep = (): ReactElement => {
 	const t = useTranslation();
-	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, offline, completeSetupWizard, registerPreIntent } =
-		useSetupWizardContext();
+	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, completeSetupWizard } = useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
 
 	const handleRegister: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async (data: {
@@ -29,33 +29,34 @@ const RegisterServerStep = (): ReactElement => {
 		await registerServer(data);
 	};
 
-	const [clientKey, setClientKey] = useState('');
-
 	const registerManually = useEndpoint('POST', '/v1/cloud.manualRegister');
+	const registerPreIntent = useEndpoint('POST', '/v1/cloud.registerPreIntent');
 	const getWorkspaceRegisterData = useMethod('cloud:getWorkspaceRegisterData');
 
-	useEffect(() => {
-		const loadWorkspaceRegisterData = async (): Promise<void> => {
-			const clientKey = await getWorkspaceRegisterData();
-			setClientKey(clientKey);
-		};
+	const { data: clientKey } = useQuery(['setupWizard/clientKey'], async () => getWorkspaceRegisterData(), {
+		staleTime: Infinity,
+	});
 
-		loadWorkspaceRegisterData();
-	}, [getWorkspaceRegisterData]);
+	const { data } = useQuery(['setupWizard/registerIntent'], async () => registerPreIntent(), {
+		staleTime: Infinity,
+	});
 
-	useEffect(() => {
-		registerPreIntent();
-	}, [registerPreIntent]);
+	const { mutate } = useMutation<null, unknown, string>(
+		['setupWizard/confirmOfflineRegistration'],
+		async (token) => registerManually({ cloudBlob: token }),
+		{
+			onSuccess: () => {
+				queryClient.invalidateQueries(['licenses']);
+				completeSetupWizard();
+			},
+			onError: () => {
+				dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
+			},
+		},
+	);
 
-	const handleConfirmOffline: ComponentProps<typeof RegisterOfflinePage>['onSubmit'] = async ({ token }) => {
-		try {
-			await registerManually({ cloudBlob: token });
-			queryClient.invalidateQueries(['licenses']);
-
-			return completeSetupWizard();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
-		}
+	const handleConfirmOffline: ComponentProps<typeof RegisterOfflinePage>['onSubmit'] = ({ token }) => {
+		mutate(token);
 	};
 
 	if (serverOption === SERVER_OPTIONS.OFFLINE) {
@@ -63,7 +64,7 @@ const RegisterServerStep = (): ReactElement => {
 			<RegisterOfflinePage
 				termsHref='https://rocket.chat/terms'
 				policyHref='https://rocket.chat/privacy'
-				clientKey={clientKey}
+				clientKey={clientKey || ''}
 				onBackButtonClick={(): void => setServerOption(SERVER_OPTIONS.REGISTERED)}
 				onSubmit={handleConfirmOffline}
 			/>
@@ -76,7 +77,7 @@ const RegisterServerStep = (): ReactElement => {
 			stepCount={maxSteps}
 			onSubmit={handleRegister}
 			currentStep={currentStep}
-			offline={offline}
+			offline={data?.offline ?? false}
 		/>
 	);
 };

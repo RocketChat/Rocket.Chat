@@ -42,7 +42,6 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const [setupWizardData, setSetupWizardData] = useState<ContextType<typeof SetupWizardContext>['setupWizardData']>(initialData);
 	const [currentStep, setCurrentStep] = useStepRouting();
 	const { isSuccess, data } = useParameters();
-	const [offline, setOffline] = useState(false);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const dispatchSettings = useSettingsDispatch();
 
@@ -51,7 +50,6 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const defineUsername = useMethod('setUsername');
 	const loginWithPassword = useLoginWithPassword();
 	const setForceLogin = useSessionDispatch('forceLogin');
-	const registerPreIntentEndpoint = useEndpoint('POST', '/v1/cloud.registerPreIntent');
 	const createRegistrationIntent = useEndpoint('POST', '/v1/cloud.createRegistrationIntent');
 
 	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
@@ -165,16 +163,6 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		}
 	});
 
-	const registerPreIntent = useMutableCallback(async (): Promise<void> => {
-		try {
-			const { offline } = await registerPreIntentEndpoint();
-
-			setOffline(offline);
-		} catch (_) {
-			setOffline(true);
-		}
-	});
-
 	const completeSetupWizard = useMutableCallback(async (): Promise<void> => {
 		dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
 		return setShowSetupWizard('completed');
@@ -191,8 +179,6 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			goToPreviousStep,
 			goToNextStep,
 			goToStep,
-			offline,
-			registerPreIntent,
 			registerAdminUser,
 			validateEmail: _validateEmail,
 			registerServer,
@@ -210,9 +196,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			goToPreviousStep,
 			goToNextStep,
 			goToStep,
-			offline,
 			registerAdminUser,
-			registerPreIntent,
 			_validateEmail,
 			registerServer,
 			saveWorkspaceData,
