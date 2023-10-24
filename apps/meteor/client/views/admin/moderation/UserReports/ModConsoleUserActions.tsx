@@ -29,7 +29,7 @@ const ModConsoleUserActions = ({ report, onClick }: Omit<ModConsoleUserRowProps,
 						],
 					},
 					{
-						items: [useDismissUserAction(uid, true), useDeactivateUserAction(uid), useResetAvatarAction(uid)],
+						items: [useDismissUserAction(uid, true), useDeactivateUserAction(uid, true), useResetAvatarAction(uid)],
 					},
 				]}
 				placement='bottom-end'

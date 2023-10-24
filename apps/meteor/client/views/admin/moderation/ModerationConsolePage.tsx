@@ -1,6 +1,6 @@
 import { Tabs, TabsItem } from '@rocket.chat/fuselage';
-import { useTranslation, useRouteParameter, useToastMessageDispatch, type TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState } from 'react';
+import { useTranslation, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import React, { useCallback } from 'react';
 
 import Page from '../../../components/Page';
 import { getPermaLink } from '../../../lib/getPermaLink';
@@ -8,14 +8,18 @@ import ModConsoleReportDetails from './ModConsoleReportDetails';
 import ModerationConsoleTable from './ModerationConsoleTable';
 import ModConsoleUsersTable from './UserReports/ModConsoleUsersTable';
 
-const tabs = ['Messages', 'Users'];
+type TabType = 'users' | 'messages';
 
-const ModerationConsolePage = () => {
+type ModerationConsolePageProps = {
+	tab: TabType;
+	onSelectTab?: (tab: TabType) => void;
+};
+
+const ModerationConsolePage = ({ tab = 'messages', onSelectTab }: ModerationConsolePageProps) => {
 	const t = useTranslation();
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const dispatchToastMessage = useToastMessageDispatch();
-	const [tab, setTab] = useState('Messages');
 
 	const handleRedirect = useCallback(
 		async (mid: string) => {
@@ -29,20 +33,27 @@ const ModerationConsolePage = () => {
 		[dispatchToastMessage],
 	);
 
+	const handleTabClick = useCallback(
+		(tab: TabType): undefined | (() => void) => (onSelectTab ? (): void => onSelectTab(tab) : undefined),
+		[onSelectTab],
+	);
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={t('Moderation')} />
 
 				<Tabs>
-					{tabs.map((tabName) => (
-						<TabsItem key={tabName || ''} selected={tab === tabName} onClick={() => setTab(tabName)}>
-							{t(`Reported_${tabName}` as TranslationKey)}
-						</TabsItem>
-					))}
+					<TabsItem selected={tab === 'messages'} onClick={handleTabClick('messages')}>
+						{t('Reported_Messages')}
+					</TabsItem>
+					<TabsItem selected={tab === 'users'} onClick={handleTabClick('users')}>
+						{t('Reported_Users')}
+					</TabsItem>
 				</Tabs>
 				<Page.Content>
-					{tab === 'Messages' && <ModerationConsoleTable />} {tab === 'Users' && <ModConsoleUsersTable />}
+					{tab === 'messages' && <ModerationConsoleTable />}
+					{tab === 'users' && <ModConsoleUsersTable />}
 				</Page.Content>
 			</Page>
 			{context === 'info' && id && <ModConsoleReportDetails userId={id} onRedirect={handleRedirect} default={tab} />}

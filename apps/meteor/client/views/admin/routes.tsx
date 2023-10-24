@@ -102,8 +102,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/upgrade/:type?';
 		};
 		'moderation-console': {
-			pathname: `/admin/moderation${`/${string}` | ''}${`/${string}` | ''}`;
-			pattern: '/admin/moderation/:context?/:id?';
+			pathname: `/admin/moderation${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/moderation/:tab?/:context?/:id?';
 		};
 	}
 }
@@ -223,7 +223,7 @@ registerAdminRoute('/upgrade/:type?', {
 	component: lazy(() => import('./upgrade/UpgradePage')),
 });
 
-registerAdminRoute('/moderation/:context?/:id?', {
+registerAdminRoute('/moderation/:tab?/:context?/:id?', {
 	name: 'moderation-console',
 	component: lazy(() => import('./moderation/ModerationConsoleRoute')),
 });

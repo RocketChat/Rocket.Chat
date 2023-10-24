@@ -12,7 +12,7 @@ const UserContextFooter: FC<{ userId: string; deleted: boolean }> = ({ userId, d
 	const t = useTranslation();
 
 	const dismissUserAction = useDismissUserAction(userId, true);
-	const deactivateUserAction = useDeactivateUserAction(userId);
+	const deactivateUserAction = useDeactivateUserAction(userId, true);
 
 	return (
 		<ButtonGroup width='full' stretch>

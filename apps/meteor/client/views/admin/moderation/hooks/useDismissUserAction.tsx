@@ -1,4 +1,4 @@
-import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
@@ -10,6 +10,7 @@ const useDismissUserAction = (userId: string, isUserReport?: boolean): GenericMe
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const moderationRoute = useRouter();
+	const tab = useRouteParameter('tab');
 	const queryClient = useQueryClient();
 
 	const dismissMsgReports = useEndpoint('POST', '/v1/moderation.dismissReports');
@@ -33,7 +34,7 @@ const useDismissUserAction = (userId: string, isUserReport?: boolean): GenericMe
 		queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
 		queryClient.invalidateQueries({ queryKey: ['moderation.userReports'] });
 		setModal();
-		moderationRoute.navigate('/admin/moderation', { replace: true });
+		moderationRoute.navigate(`/admin/moderation/${tab}`, { replace: true });
 	};
 
 	const confirmDismissUser = (): void => {

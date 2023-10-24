@@ -17,6 +17,7 @@ import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
+import { ContextualbarScrollableContent } from '../../../../components/Contextualbar';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import UserCard from '../../../../components/UserCard';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
@@ -75,7 +76,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 
 	const renderUserDetails = (user: IUser) => {
 		return (
-			<Box paddingInlineStart={16} marginBlock='x24'>
+			<Box>
 				<FieldGroup>
 					<Field>{userProfile}</Field>
 					<Field>
@@ -101,7 +102,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 
 	const renderDeletedUserWarning = () => {
 		return (
-			<Box padding={16}>
+			<Box>
 				<Callout mbs={8} type='warning' icon='warning'>
 					{t('Moderation_User_deleted_warning')}
 				</Callout>
@@ -111,7 +112,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 
 	const renderUserReports = (reports: Omit<UserReport, 'moderationInfo'>[]) => {
 		return reports.map((report, ind) => (
-			<Box key={report._id} paddingInlineStart={16}>
+			<Box key={report._id}>
 				<ReportReason ind={ind + 1} uinfo={report.reportedBy?.username} msg={report.description} ts={new Date(report.ts)} />
 			</Box>
 		));
@@ -119,7 +120,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 
 	return (
 		<>
-			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
+			<ContextualbarScrollableContent>
 				{isLoadingUsersReports && <ContextualbarSkeleton />}
 
 				{isSuccessUsersReports && report.reports.length > 0 && (
@@ -130,7 +131,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 				)}
 
 				{isSuccessUsersReports && report.reports.length === 0 && <GenericNoResults title={t('No_user_reports')} icon='user' />}
-			</Box>
+			</ContextualbarScrollableContent>{' '}
 			<ContextualbarFooter display='flex'>
 				{isSuccessUsersReports && report.reports.length > 0 && <UserContextFooter userId={userId} deleted={!report.user} />}
 			</ContextualbarFooter>

@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Tabs, TabsItem, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
-import { type TranslationKey, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
 import { Contextualbar, ContextualbarClose } from '../../../components/Contextualbar';
@@ -13,29 +13,30 @@ type ModConsoleReportDetailsProps = {
 	onRedirect: (mid: string) => void;
 };
 
-const tabs = ['Messages', 'Users'];
-
 const ModConsoleReportDetails = ({ userId, default: defaultTab, onRedirect }: ModConsoleReportDetailsProps) => {
 	const t = useTranslation();
 	const [tab, setTab] = useState<string>(defaultTab);
 	const moderationRoute = useRouter();
 
+	const activeTab = useRouteParameter('tab');
+
 	return (
 		<Contextualbar>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('Reports')}</ContextualbarTitle>
-				<ContextualbarClose onClick={() => moderationRoute.navigate('/admin/moderation', { replace: true })} />
+				<ContextualbarClose onClick={() => moderationRoute.navigate(`/admin/moderation/${activeTab}`, { replace: true })} />
 			</ContextualbarHeader>
 			<Tabs>
-				{tabs.map((tabName) => (
-					<TabsItem key={tabName || ''} selected={tab === tabName} onClick={() => setTab(tabName)}>
-						{t(tabName as TranslationKey)}
-					</TabsItem>
-				))}
+				<TabsItem selected={tab === 'messages'} onClick={() => setTab('messages')}>
+					{t('Messages')}
+				</TabsItem>
+				<TabsItem selected={tab === 'users'} onClick={() => setTab('users')}>
+					{t('User')}
+				</TabsItem>
 			</Tabs>
 
-			{tab === 'Messages' && <UserMessages userId={userId} onRedirect={onRedirect} />}
-			{tab === 'Users' && <UserReportInfo userId={userId} />}
+			{tab === 'messages' && <UserMessages userId={userId} onRedirect={onRedirect} />}
+			{tab === 'users' && <UserReportInfo userId={userId} />}
 		</Contextualbar>
 	);
 };

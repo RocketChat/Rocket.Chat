@@ -64,8 +64,9 @@ const ModerationConsoleTable: FC = () => {
 
 	const handleClick = useMutableCallback((id): void => {
 		router.navigate({
-			name: 'moderation-console',
+			pattern: '/admin/moderation/:tab?/:context?/:id?',
 			params: {
+				tab: 'messages',
 				context: 'info',
 				id,
 			},

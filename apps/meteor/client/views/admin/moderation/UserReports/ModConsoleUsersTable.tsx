@@ -57,11 +57,8 @@ const ModConsoleUsersTable: FC = () => {
 
 	const handleClick = useMutableCallback((id): void => {
 		router.navigate({
-			name: 'moderation-console',
-			params: {
-				context: 'info',
-				id,
-			},
+			pattern: '/admin/moderation/:tab?/:context?/:id?',
+			params: { tab: 'users', context: 'info', id },
 		});
 	});
 
@@ -115,7 +112,7 @@ const ModConsoleUsersTable: FC = () => {
 						<GenericTableBody>
 							{data.reports.map((report) => (
 								<ModConsoleUserTableRow
-									key={report._id}
+									key={report.reportedUser?._id}
 									report={report as unknown as ModConsoleUserRowProps['report']}
 									onClick={handleClick}
 									isDesktopOrLarger={isDesktopOrLarger}
