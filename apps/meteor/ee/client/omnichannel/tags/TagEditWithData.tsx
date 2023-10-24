@@ -30,7 +30,7 @@ const TagEditWithData = ({ tagId }: { tagId: ILivechatTag['_id'] }) => {
 		return <TagEditWithDepartmentData tagData={data} />;
 	}
 
-	return <TagEdit tagId={tagId} tagData={data} />;
+	return <TagEdit tagData={data} />;
 };
 
 export default TagEditWithData;
