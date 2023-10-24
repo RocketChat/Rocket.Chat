@@ -4173,7 +4173,7 @@
   "Reactions": "Reactions",
   "Read_by": "Read by",
   "Read_only": "Read Only",
-  "Read_Receipts": "Read Receipts",
+  "Read_Receipts": "Read receipts",
   "Readability": "Readability",
   "This_room_is_read_only": "This room is read only",
   "Only_people_with_permission_can_send_messages_here": "Only people with permission can send messages here",
@@ -6146,7 +6146,6 @@
   "Unlimited_push_notifications": "Unlimited push notifications",
   "Up_to_N_seats": "Up to 500 seats",
   "Up_to_N_MACs": "Up to 15000 MACs",
-  "Unlimited_seats_and_MACs": "Unlimited seats and MACs",
   "Buy_more_seats": "Buy more seats",
   "Buy_MAC_packs": "Buy MAC packs",
   "Upgrade_to_Pro": "Upgrade to Pro",
@@ -6154,5 +6153,6 @@
   "Sync_license_update": "Sync license update",
   "Sync_license_update_Callout_Title": "We're updating your license",
   "Sync_license_update_Callout": "If you don't notice any changes in your workspace within a few minutes, sync the license update.",
-  "Includes": "Includes"
+  "Includes": "Includes",
+  "Unlock_premium_capabilities": "Unlock premium capabilities"
 }

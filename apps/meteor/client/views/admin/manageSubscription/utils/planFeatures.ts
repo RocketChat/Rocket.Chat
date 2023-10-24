@@ -14,14 +14,6 @@ type PlanFeatures = {
 export const planFeatures: PlanFeatures = {
 	community: [
 		{
-			type: 'success',
-			title: 'Unlimited_seats_and_MACs',
-		},
-		{
-			type: 'neutral',
-			title: 'Unlimited_push_notifications',
-		},
-		{
 			type: 'neutral',
 			title: 'Premium_and_unlimited_apps',
 		},
@@ -31,11 +23,19 @@ export const planFeatures: PlanFeatures = {
 		},
 		{
 			type: 'neutral',
+			title: 'Unlimited_push_notifications',
+		},
+		{
+			type: 'neutral',
 			title: 'Remove_RocketChat_Watermark',
 		},
 		{
 			type: 'neutral',
 			title: 'Video_call_manager',
+		},
+		{
+			type: 'neutral',
+			title: 'Read_Receipts',
 		},
 	],
 	starter: [

@@ -48,7 +48,7 @@ const FeaturesCard = ({ plan }: FeaturesCardProps): ReactElement => {
 	const features = getLicenseFeatures();
 
 	return (
-		<FeatureUsageCard card={{ title: t('Includes') }}>
+		<FeatureUsageCard card={{ title: plan === PlanName.COMMUNITY ? t('Unlock_premium_capabilities') : t('Includes') }}>
 			<CardColSection h='full' w='full' display='flex' flexDirection='column'>
 				<CardCol>
 					<Box maxHeight={120} display='flex' flexDirection='column' flexWrap='wrap'>
