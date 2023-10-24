@@ -77,7 +77,7 @@ const RegisterServerStep = (): ReactElement => {
 			stepCount={maxSteps}
 			onSubmit={handleRegister}
 			currentStep={currentStep}
-			offline={data?.offline ?? false}
+			offline={!data || data.offline}
 		/>
 	);
 };
