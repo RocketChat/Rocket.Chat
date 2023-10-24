@@ -20,7 +20,7 @@ const Retry: FC<RetryProps> = ({ retry }) => {
 		}
 	`;
 	return (
-		<ImageBox className={clickable} onClick={retry} size={160}>
+		<ImageBox className={clickable} onClick={retry} size='x160'>
 			<Icon name='refresh' color='hint' size='x64' />
 			<Box fontScale='h3' color='default' textAlign='center'>
 				{t('Retry')}

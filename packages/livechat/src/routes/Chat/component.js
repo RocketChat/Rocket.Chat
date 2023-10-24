@@ -1,5 +1,5 @@
-import { Picker } from 'emoji-mart';
-import { Component } from 'preact';
+import { Component, createRef } from 'preact';
+import { Suspense, lazy } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
 import { Button } from '../../components/Button';
@@ -12,7 +12,7 @@ import { FooterOptions, CharCounter } from '../../components/Footer';
 import { Menu } from '../../components/Menu';
 import { MessageList } from '../../components/Messages';
 import { Screen } from '../../components/Screen';
-import { createClassName } from '../../components/helpers';
+import { createClassName } from '../../helpers/createClassName';
 import ChangeIcon from '../../icons/change.svg';
 import FinishIcon from '../../icons/finish.svg';
 import PlusIcon from '../../icons/plus.svg';
@@ -20,7 +20,13 @@ import RemoveIcon from '../../icons/remove.svg';
 import SendIcon from '../../icons/send.svg';
 import EmojiIcon from '../../icons/smile.svg';
 import styles from './styles.scss';
+
 import 'emoji-mart/css/emoji-mart.css';
+
+const Picker = lazy(async () => {
+	const { Picker } = await import('emoji-mart');
+	return Picker;
+});
 
 class Chat extends Component {
 	state = {
@@ -28,6 +34,8 @@ class Chat extends Component {
 		text: '',
 		emojiPickerActive: false,
 	};
+
+	inputRef = createRef(null);
 
 	handleFilesDropTargetRef = (ref) => {
 		this.filesDropTarget = ref;
@@ -55,7 +63,7 @@ class Chat extends Component {
 
 	handleUploadClick = (event) => {
 		event.preventDefault();
-		this.filesDropTarget.browse();
+		this.inputRef?.current?.click();
 	};
 
 	handleSendClick = (event) => {
@@ -145,7 +153,7 @@ class Chat extends Component {
 			handleEmojiClick={this.handleEmojiClick}
 			{...props}
 		>
-			<FilesDropTarget ref={this.handleFilesDropTargetRef} overlayed overlayText={t('drop_here_to_upload_a_file')} onUpload={onUpload}>
+			<FilesDropTarget inputRef={this.inputRef} overlayed overlayText={t('drop_here_to_upload_a_file')} onUpload={onUpload}>
 				<Screen.Content nopadding>
 					{incomingCallAlert && !!incomingCallAlert.show && <CallNotification {...incomingCallAlert} dispatch={dispatch} />}
 					{incomingCallAlert?.show && ongoingCall && ongoingCall.callStatus === CallStatus.IN_PROGRESS_SAME_TAB ? (
@@ -165,20 +173,22 @@ class Chat extends Component {
 							dispatch={dispatch}
 						/>
 						{this.state.emojiPickerActive && (
-							<Picker
-								style={{ position: 'absolute', zIndex: 10, bottom: 0, maxWidth: '90%', left: 20, maxHeight: '90%' }}
-								showPreview={false}
-								showSkinTones={false}
-								sheetSize={64}
-								onSelect={this.handleEmojiSelect}
-								autoFocus={true}
-							/>
+							<Suspense fallback={null}>
+								<Picker
+									style={{ position: 'absolute', zIndex: 10, bottom: 0, maxWidth: '90%', left: 20, maxHeight: '90%' }}
+									showPreview={false}
+									showSkinTones={false}
+									sheetSize={64}
+									onSelect={this.handleEmojiSelect}
+									autoFocus={true}
+								/>
+							</Suspense>
 						)}
 					</div>
 				</Screen.Content>
 				<Screen.Footer
 					options={
-						options ? (
+						options && !registrationRequired ? (
 							<FooterOptions>
 								<Menu.Group>
 									{onChangeDepartment && (

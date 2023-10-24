@@ -1,18 +1,18 @@
-import { Meteor } from 'meteor/meteor';
-import { Email } from 'meteor/email';
-import _ from 'underscore';
-import juice from 'juice';
-import stripHtml from 'string-strip-html';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import juice from 'juice';
+import { Email } from 'meteor/email';
+import { Meteor } from 'meteor/meteor';
+import stripHtml from 'string-strip-html';
+import _ from 'underscore';
 
-import { settings } from '../../settings/server';
-import { replaceVariables } from './replaceVariables';
 import { Apps } from '../../../ee/server/apps';
 import { validateEmail } from '../../../lib/emailValidator';
 import { strLeft, strRightBack } from '../../../lib/utils/stringUtils';
 import { i18n } from '../../../server/lib/i18n';
+import { settings } from '../../settings/server';
+import { replaceVariables } from './replaceVariables';
 
 let contentHeader: string | undefined;
 let contentFooter: string | undefined;
@@ -75,11 +75,12 @@ export const wrap = (html: string, data: { [key: string]: unknown } = {}): strin
 	}
 
 	if (!body) {
-		throw new Error('`body` is not set yet');
+		throw new Error('error-email-body-not-initialized');
 	}
 
 	return replaceEscaped(body.replace('{{body}}', html), data);
 };
+
 export const inlinecss = (html: string): string => {
 	const css = settings.get<string>('email_style');
 	return css ? juice.inlineContent(html, css) : html;

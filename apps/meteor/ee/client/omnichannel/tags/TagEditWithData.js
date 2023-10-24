@@ -18,7 +18,7 @@ function TagEditWithData({ tagId, reload, title }) {
 
 	if (isError) {
 		return (
-			<Callout m='x16' type='danger'>
+			<Callout m={16} type='danger'>
 				{t('Not_Available')}
 			</Callout>
 		);

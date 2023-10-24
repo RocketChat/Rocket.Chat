@@ -1,7 +1,8 @@
 import { Component } from 'preact';
 import { route } from 'preact-router';
 
-import { canRenderMessage, getAvatarUrl } from '../../components/helpers';
+import { getAvatarUrl } from '../../helpers/baseUrl';
+import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { parentCall } from '../../lib/parentCall';
 import { Consumer } from '../../store';
 import TriggerMessage from './component';
@@ -20,6 +21,7 @@ export class TriggerMessageContainer extends Component {
 	};
 }
 
+/** @type {function({ ref?: any; path?: string }): any} */
 export const TriggerMessageConnector = ({ ref, ...props }) => (
 	<Consumer>
 		{({
@@ -56,7 +58,7 @@ export const TriggerMessageConnector = ({ ref, ...props }) => (
 						  }
 						: undefined
 				}
-				messages={messages && messages.filter((message) => canRenderMessage(message))}
+				messages={messages && messages.filter(canRenderMessage)}
 			/>
 		)}
 	</Consumer>

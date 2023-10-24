@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Select, Margins, Field, Label } from '@rocket.chat/fuselage';
+import { Box, Select, Margins, Field, FieldLabel, FieldRow, Label } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useEffect } from 'react';
 
@@ -54,30 +54,30 @@ const AnalyticsPage = () => {
 		<Page>
 			<Page.Header title={t('Analytics')} />
 			<Page.ScrollableContentWithShadow display='flex' flexDirection='column'>
-				<Margins block='x4'>
+				<Margins block={4}>
 					<Box display='flex' mi='neg-x4' flexWrap='wrap' flexGrow={1}>
 						<Box display='flex' flexWrap='wrap' flexGrow={1}>
-							<Box display='flex' mi='x4' flexDirection='column' flexGrow={1}>
-								<Label mb='x4'>{t('Type')}</Label>
-								<Select options={typeOptions} value={type} onChange={setType} />
+							<Box display='flex' mi={4} flexDirection='column' flexGrow={1}>
+								<Label mb={4}>{t('Type')}</Label>
+								<Select options={typeOptions} value={type} onChange={(value) => setType(String(value))} />
 							</Box>
-							<Box display='flex' mi='x4' flexDirection='column' flexGrow={1}>
-								<Label mb='x4'>{t('Departments')}</Label>
+							<Box display='flex' mi={4} flexDirection='column' flexGrow={1}>
+								<Label mb={4}>{t('Departments')}</Label>
 								<AutoCompleteDepartment value={department || undefined} onChange={setDepartment} onlyMyDepartments />
 							</Box>
 						</Box>
-						<DateRangePicker flexGrow={1} mi='x4' onChange={setDateRange} />
+						<DateRangePicker flexGrow={1} mi={4} onChange={setDateRange} />
 					</Box>
 					<Box>
 						<Overview type={type} dateRange={dateRange} departmentId={department || ''} />
 					</Box>
 					<Box display='flex'>
-						<Margins inline='x2'>
+						<Margins inline={2}>
 							<Field>
-								<Field.Label>{t('Chart')}</Field.Label>
-								<Field.Row>
-									<Select options={graphOptions} value={chartName} onChange={setChartName} />
-								</Field.Row>
+								<FieldLabel>{t('Chart')}</FieldLabel>
+								<FieldRow>
+									<Select options={graphOptions} value={chartName} onChange={(value) => setChartName(String(value))} />
+								</FieldRow>
 							</Field>
 						</Margins>
 					</Box>
@@ -91,7 +91,7 @@ const AnalyticsPage = () => {
 							dateRange={dateRange}
 							alignSelf='stretch'
 						/>
-						<Box display='flex' w='33%' justifyContent='stretch' p='x10' mis='x4'>
+						<Box display='flex' w='33%' justifyContent='stretch' p={10} mis={4}>
 							<AgentOverview type={chartName || ''} dateRange={dateRange} departmentId={department || ''} />
 						</Box>
 					</Box>

@@ -1,16 +1,17 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import { parse } from '@rocket.chat/message-parser';
 import { Markup } from '@rocket.chat/gazzodown';
+import { parse } from '@rocket.chat/message-parser';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { TextObject } from '@rocket.chat/ui-kit';
+import { useContext } from 'react';
 
-import { useUiKitContext } from '../contexts/kitContext';
+import { UiKitContext } from '../contexts/UiKitContext';
 
 const MarkdownTextElement = ({ textObject }: { textObject: TextObject }) => {
   const t = useTranslation() as (
     key: string,
     args: { [key: string]: string | number }
   ) => string;
-  const { appId } = useUiKitContext();
+  const { appId } = useContext(UiKitContext);
 
   const { i18n } = textObject;
 

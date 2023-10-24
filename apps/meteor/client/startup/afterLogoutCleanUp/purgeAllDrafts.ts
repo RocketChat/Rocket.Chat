@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../lib/callbacks';
+import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
 
 Meteor.startup(() => {
 	const purgeAllDrafts = (): void => {
@@ -9,5 +10,5 @@ Meteor.startup(() => {
 			.forEach((key) => Meteor._localStorage.removeItem(key));
 	};
 
-	callbacks.add('afterLogoutCleanUp', purgeAllDrafts, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
+	afterLogoutCleanUpCallback.add(purgeAllDrafts, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
 });

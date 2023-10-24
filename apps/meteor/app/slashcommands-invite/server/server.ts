@@ -1,11 +1,12 @@
-import type { IUser, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
+import type { IUser, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings/server';
-import { slashCommands } from '../../utils/lib/slashCommand';
 import { i18n } from '../../../server/lib/i18n';
 import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
+import { settings } from '../../settings/server';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 /*
  * Invite is a named function that will replace /invite commands
@@ -57,13 +58,25 @@ slashCommands.add({
 			});
 		}
 
+		const inviter = await Users.findOneById(userId);
+
+		if (!inviter) {
+			throw new Meteor.Error('error-user-not-found', 'Inviter not found', {
+				method: 'slashcommand-invite',
+			});
+		}
+
 		await Promise.all(
 			usersFiltered.map(async (user) => {
 				try {
-					return await addUsersToRoomMethod(userId, {
-						rid: message.rid,
-						users: [user.username || ''],
-					});
+					return await addUsersToRoomMethod(
+						userId,
+						{
+							rid: message.rid,
+							users: [user.username || ''],
+						},
+						inviter,
+					);
 				} catch ({ error }: any) {
 					if (typeof error !== 'string') {
 						return;

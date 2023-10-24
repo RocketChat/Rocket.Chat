@@ -1,6 +1,6 @@
-import type * as MessageParser from '@rocket.chat/message-parser';
 import { Text, View } from '@react-pdf/renderer';
 import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
+import type * as MessageParser from '@rocket.chat/message-parser';
 
 type HeadingBlockProps = {
 	items?: MessageParser.Plain[];

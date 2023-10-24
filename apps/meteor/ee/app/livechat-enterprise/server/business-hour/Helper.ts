@@ -1,15 +1,16 @@
-import moment from 'moment-timezone';
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import { LivechatBusinessHours, LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
-import { isEnterprise } from '../../../license/server/license';
 import { businessHourLogger } from '../../../../../app/livechat/server/lib/logger';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
-	const agentIdsWithDepartment = (
-		await LivechatDepartmentAgents.find({ departmentEnabled: true }, { projection: { agentId: 1 } }).toArray()
-	).map((dept) => dept.agentId);
+	// Fetch departments with agents excluding archived ones (disabled ones still can be tied to business hours)
+	// Then find the agents that are not in any of those departments
+
+	const departmentIds = (await LivechatDepartment.findNotArchived({ projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
+
+	const agentIdsWithDepartment = await LivechatDepartmentAgents.findAllAgentsConnectedToListOfDepartments(departmentIds);
 
 	const agentIdsWithoutDepartment = (
 		await Users.findUsersInRolesWithQuery(
@@ -62,7 +63,10 @@ const getAgentIdsToHandle = async (businessHour: Pick<ILivechatBusinessHour, '_i
 	).map((dept) => dept.agentId);
 };
 
-export const openBusinessHour = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {
+export const openBusinessHour = async (
+	businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>,
+	updateLivechatStatus = true,
+): Promise<void> => {
 	const agentIds = await getAgentIdsToHandle(businessHour);
 	businessHourLogger.debug({
 		msg: 'Opening business hour',
@@ -72,7 +76,10 @@ export const openBusinessHour = async (businessHour: Pick<ILivechatBusinessHour,
 	});
 
 	await Users.addBusinessHourByAgentIds(agentIds, businessHour._id);
-	await Users.updateLivechatStatusBasedOnBusinessHours();
+	await Users.makeAgentsWithinBusinessHourAvailable(agentIds);
+	if (updateLivechatStatus) {
+		await Users.updateLivechatStatusBasedOnBusinessHours();
+	}
 };
 
 export const closeBusinessHour = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {
@@ -93,29 +100,4 @@ export const removeBusinessHourByAgentIds = async (agentIds: string[], businessH
 	}
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHourId);
 	await Users.updateLivechatStatusBasedOnBusinessHours();
-};
-
-export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
-	if (isEnterprise()) {
-		return;
-	}
-
-	const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour<Pick<ILivechatBusinessHour, '_id'>>({
-		projection: { _id: 1 },
-	});
-	if (!defaultBusinessHour) {
-		return;
-	}
-
-	await LivechatBusinessHours.updateOne(
-		{ _id: defaultBusinessHour._id },
-		{
-			$set: {
-				timezone: {
-					name: moment.tz.guess(),
-					utc: String(moment().utcOffset() / 60),
-				},
-			},
-		},
-	);
 };

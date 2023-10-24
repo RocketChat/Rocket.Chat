@@ -1,14 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 
+import { businessHourManager } from '../../../../app/livechat/server/business-hour';
+import { SingleBusinessHourBehavior } from '../../../../app/livechat/server/business-hour/Single';
 import { settings } from '../../../../app/settings/server';
+import { MultipleBusinessHoursBehavior } from './business-hour/Multiple';
 import { updatePredictedVisitorAbandonment, updateQueueInactivityTimeout } from './lib/Helper';
 import { VisitorInactivityMonitor } from './lib/VisitorInactivityMonitor';
-import './lib/query.helper';
-import { MultipleBusinessHoursBehavior } from './business-hour/Multiple';
-import { SingleBusinessHourBehavior } from '../../../../app/livechat/server/business-hour/Single';
-import { businessHourManager } from '../../../../app/livechat/server/business-hour';
-import { resetDefaultBusinessHourIfNeeded } from './business-hour/Helper';
 import { logger } from './lib/logger';
+import './lib/query.helper';
 
 const visitorActivityMonitor = new VisitorInactivityMonitor();
 const businessHours = {
@@ -16,11 +15,11 @@ const businessHours = {
 	Single: new SingleBusinessHourBehavior(),
 };
 
-settings.change('Livechat_max_queue_wait_time', async function () {
+settings.change('Livechat_max_queue_wait_time', async () => {
 	await updateQueueInactivityTimeout();
 });
 
-Meteor.startup(async function () {
+Meteor.startup(async () => {
 	settings.watch('Livechat_abandoned_rooms_action', async (value) => {
 		await updatePredictedVisitorAbandonment();
 		if (!value || value === 'none') {
@@ -39,10 +38,8 @@ Meteor.startup(async function () {
 		}
 		businessHourManager.registerBusinessHourBehavior(businessHours[value as keyof typeof businessHours]);
 		if (settings.get('Livechat_enable_business_hours')) {
-			await businessHourManager.startManager();
+			await businessHourManager.restartManager();
 			logger.debug(`Business hour manager started`);
 		}
 	});
-
-	await resetDefaultBusinessHourIfNeeded();
 });

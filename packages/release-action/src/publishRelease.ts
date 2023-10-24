@@ -1,26 +1,27 @@
 import fs from 'fs';
 import path from 'path';
 
+import * as core from '@actions/core';
 import { exec } from '@actions/exec';
 import * as github from '@actions/github';
-import * as core from '@actions/core';
 
 import { createNpmFile } from './createNpmFile';
-import { setupOctokit } from './setupOctokit';
-import { bumpFileVersions, getChangelogEntry, readPackageJson } from './utils';
 import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
+import { checkoutBranch, commitChanges, createTag, getCurrentBranch, mergeBranch, pushChanges } from './gitUtils';
+import { setupOctokit } from './setupOctokit';
+import { bumpFileVersions, createBumpFile, getChangelogEntry, getEngineVersionsMd, readPackageJson } from './utils';
 
 export async function publishRelease({
 	githubToken,
 	mainPackagePath,
-	exitCandidate = false,
+	mergeFinal = false,
 	baseRef,
 	cwd = process.cwd(),
 }: {
 	githubToken: string;
 	mainPackagePath: string;
 	baseRef?: string;
-	exitCandidate?: boolean;
+	mergeFinal?: boolean;
 	cwd?: string;
 }) {
 	const octokit = setupOctokit(githubToken);
@@ -29,12 +30,12 @@ export async function publishRelease({
 	await createNpmFile();
 
 	if (baseRef) {
-		await exec('git', ['checkout', baseRef]);
+		await checkoutBranch(baseRef);
 	}
 
 	const { version: currentVersion } = await readPackageJson(cwd);
 
-	if (exitCandidate) {
+	if (mergeFinal) {
 		let preRelease = false;
 		try {
 			fs.accessSync(path.resolve(cwd, '.changeset', 'pre.json'));
@@ -50,10 +51,14 @@ export async function publishRelease({
 		}
 	}
 
+	const { name: mainPkgName } = await readPackageJson(mainPackagePath);
+
+	// by creating a changeset we make sure we'll always bump the version
+	core.info('create a changeset for main package');
+	await createBumpFile(cwd, mainPkgName);
+
 	// bump version of all packages
 	await exec('yarn', ['changeset', 'version']);
-
-	// TODO if main package has no changes, throw error
 
 	// get version from main package
 	const { version: newVersion } = await readPackageJson(mainPackagePath);
@@ -68,22 +73,30 @@ export async function publishRelease({
 		throw new Error('Could not find changelog entry for version newVersion');
 	}
 
-	const releaseBody = changelogEntry.content;
+	const releaseBody = (await getEngineVersionsMd(cwd)) + changelogEntry.content;
 
 	core.info('update version in all files to new');
 	await bumpFileVersions(cwd, currentVersion, newVersion);
 
-	await exec('git', ['add', '.']);
-	await exec('git', ['commit', '-m', `Release ${newVersion}`]);
+	await commitChanges(`Release ${newVersion}\n\n[no ci]`);
+
+	if (mergeFinal) {
+		// get current branch name
+		const branchName = await getCurrentBranch();
+
+		// merge release changes to master
+		await checkoutBranch('master');
+		await mergeBranch(branchName);
+	}
 
 	core.info('fix dependencies in workspace packages');
 	await fixWorkspaceVersionsBeforePublish();
 
 	await exec('yarn', ['changeset', 'publish', '--no-git-tag']);
 
-	await exec('git', ['tag', newVersion]);
+	await createTag(newVersion);
 
-	await exec('git', ['push', '--follow-tags']);
+	await pushChanges();
 
 	core.info('create release');
 	await octokit.rest.repos.createRelease({

@@ -1,5 +1,5 @@
-import { Messages, ModerationReports, Rooms, Users } from '@rocket.chat/models';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import { Messages, ModerationReports, Rooms, Users } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 import { AppEvents, Apps } from '../../../ee/server/apps';

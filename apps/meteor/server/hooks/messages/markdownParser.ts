@@ -2,9 +2,9 @@ import { isE2EEMessage, isOTRMessage } from '@rocket.chat/core-typings';
 import type { Options, Root } from '@rocket.chat/message-parser';
 import { parse } from '@rocket.chat/message-parser';
 
+import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { SystemLogger } from '../../lib/logger/system';
-import { settings } from '../../../app/settings/server';
 
 if (process.env.DISABLE_MESSAGE_PARSER !== 'true') {
 	callbacks.add(

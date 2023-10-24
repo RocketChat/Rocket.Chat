@@ -1,44 +1,44 @@
+import { Buffer } from 'buffer';
 import type { WriteStream } from 'fs';
 import fs from 'fs';
 import { unlink, rename, writeFile } from 'fs/promises';
-import stream from 'stream';
 import type * as http from 'http';
 import type * as https from 'https';
-import { Buffer } from 'buffer';
+import stream from 'stream';
 import URL from 'url';
 
+import { hashLoginToken } from '@rocket.chat/account-utils';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import type { IUpload } from '@rocket.chat/core-typings';
+import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
+import type { NextFunction } from 'connect';
+import filesize from 'filesize';
+import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import { Cookies } from 'meteor/ostrio:cookies';
+import type { OptionalId } from 'mongodb';
+import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
-import sharp from 'sharp';
-import { Cookies } from 'meteor/ostrio:cookies';
-import { Match } from 'meteor/check';
-import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
-import filesize from 'filesize';
-import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { hashLoginToken } from '@rocket.chat/account-utils';
-import type { IUpload } from '@rocket.chat/core-typings';
-import type { NextFunction } from 'connect';
-import type { OptionalId } from 'mongodb';
 
-import { UploadFS } from '../../../../server/ufs';
-import { settings } from '../../../settings/server';
-import { mime } from '../../../utils/lib/mimeTypes';
-import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { fileUploadIsValidContentType } from '../../../utils/server/restrictions';
-import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { AppEvents, Apps } from '../../../../ee/server/apps';
-import { streamToBuffer } from './streamToBuffer';
+import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
+import { UploadFS } from '../../../../server/ufs';
 import { ufsComplete } from '../../../../server/ufs/ufs-methods';
-import { i18n } from '../../../../server/lib/i18n';
+import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
+import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { settings } from '../../../settings/server';
+import { mime } from '../../../utils/lib/mimeTypes';
+import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
+import { fileUploadIsValidContentType } from '../../../utils/server/restrictions';
+import { streamToBuffer } from './streamToBuffer';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
 
-settings.watch('FileUpload_MaxFileSize', async function (value: string) {
+settings.watch('FileUpload_MaxFileSize', async (value: string) => {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {
@@ -562,7 +562,32 @@ export const FileUpload = {
 	) {
 		res.setHeader('Content-Disposition', `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(fileName)}"`);
 
-		request.get(fileUrl, (fileRes) => fileRes.pipe(res));
+		request.get(fileUrl, (fileRes) => {
+			if (fileRes.statusCode !== 200) {
+				res.setHeader('x-rc-proxyfile-status', String(fileRes.statusCode));
+				res.setHeader('content-length', 0);
+				res.writeHead(500);
+				res.end();
+				return;
+			}
+
+			// eslint-disable-next-line prettier/prettier
+			const headersToProxy = [
+				'age',
+				'cache-control',
+				'content-length',
+				'content-type',
+				'date',
+				'expired',
+				'last-modified',
+			];
+
+			headersToProxy.forEach((header) => {
+				fileRes.headers[header] && res.setHeader(header, String(fileRes.headers[header]));
+			});
+
+			fileRes.pipe(res);
+		});
 	},
 
 	generateJWTToFileUrls({ rid, userId, fileId }: { rid: string; userId: string; fileId: string }) {

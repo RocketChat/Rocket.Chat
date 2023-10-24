@@ -33,20 +33,20 @@ function EditIncomingWebhookWithData({ integrationId, ...props }) {
 
 	if (isLoading) {
 		return (
-			<Box w='full' pb='x24' {...props}>
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
+			<Box w='full' pb={24} {...props}>
+				<Skeleton mbe={4} />
+				<Skeleton mbe={8} />
+				<Skeleton mbe={4} />
+				<Skeleton mbe={8} />
+				<Skeleton mbe={4} />
+				<Skeleton mbe={8} />
 			</Box>
 		);
 	}
 
 	if (error) {
 		return (
-			<Box mbs='x16' {...props}>
+			<Box mbs={16} {...props}>
 				{t('Oops_page_not_found')}
 			</Box>
 		);

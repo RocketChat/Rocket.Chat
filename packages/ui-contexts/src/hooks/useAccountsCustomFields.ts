@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
 import type { CustomFieldMetadata } from '@rocket.chat/core-typings';
+import { useMemo } from 'react';
 
 import { useSetting } from './useSetting';
 

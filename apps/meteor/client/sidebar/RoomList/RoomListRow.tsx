@@ -1,20 +1,13 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { SidebarSection } from '@rocket.chat/fuselage';
 import type { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentType, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
 
 import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
-import OmnichannelSection from '../sections/OmnichannelSection';
 import SideBarItemTemplateWithData from './SideBarItemTemplateWithData';
-
-const sections: {
-	[key: string]: ComponentType<any>;
-} = {
-	Omnichannel: OmnichannelSection,
-};
 
 type RoomListRowProps = {
 	extended: boolean;
@@ -44,11 +37,8 @@ const RoomListRow = ({ data, item }: { data: RoomListRowProps; item: ISubscripti
 	);
 
 	if (typeof item === 'string') {
-		const Section = sections[item];
-		return Section ? (
-			<Section aria-level='1' />
-		) : (
-			<SidebarSection aria-level='1'>
+		return (
+			<SidebarSection>
 				<SidebarSection.Title>{t(item)}</SidebarSection.Title>
 			</SidebarSection>
 		);

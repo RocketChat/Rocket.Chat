@@ -9,7 +9,7 @@ type MessageSurfaceProps = {
 
 const MessageSurface = ({ children }: MessageSurfaceProps): ReactElement => (
   <Surface type='message'>
-    <Margins blockEnd='x16'>{children}</Margins>
+    <Margins blockEnd={16}>{children}</Margins>
   </Surface>
 );
 

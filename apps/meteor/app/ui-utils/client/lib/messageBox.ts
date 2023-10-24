@@ -3,7 +3,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import type { ChatAPI } from '../../../../client/lib/chats/ChatAPI';
 
-type MessageBoxAction = {
+export type MessageBoxAction = {
 	label: TranslationKey;
 	id: string;
 	icon?: string;

@@ -1,12 +1,12 @@
+import { Settings } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Inject } from 'meteor/meteorhacks:inject-initial';
 import { Tracker } from 'meteor/tracker';
-import { Settings } from '@rocket.chat/models';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 
+import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import { settings } from '../../settings/server';
 import { applyHeadInjections, headInjections, injectIntoBody, injectIntoHead } from './inject';
-import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 
 import './scripts';
 
@@ -120,8 +120,6 @@ Meteor.startup(() => {
 	})(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX);
 
 	injectIntoHead('base', `<base href="${baseUrl}">`);
-
-	injectIntoHead('css-theme', '');
 });
 
 const renderDynamicCssList = withDebouncing({ wait: 500 })(async () => {

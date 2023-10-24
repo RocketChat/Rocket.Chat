@@ -28,8 +28,7 @@ export default function useCodeMirror(extensions?: Extension[], doc?: string) {
     if (update.docChanged) {
       setChanges({
         value: view.current?.state?.doc.toString() || '',
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-expect-error Property 'annotations' does not exist on type 'Transaction'. Did you mean 'annotation'?
         isDispatch: update?.transactions[0]?.annotations?.length === 1 || false,
         cursor: view.current?.state?.selection?.main?.head || 0,
       });

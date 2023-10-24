@@ -93,7 +93,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 		<>
 			<ContextualbarScrollableContent>
 				<Box w='full' alignSelf='center' mb='neg-x8'>
-					<Margins block='x8'>
+					<Margins block={8}>
 						<FormProvider {...methods}>
 							<RoleForm editing={Boolean(role?._id)} isProtected={role?.protected} isDisabled={!isEnterprise} />
 						</FormProvider>

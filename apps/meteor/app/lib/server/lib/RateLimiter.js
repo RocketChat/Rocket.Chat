@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { Meteor } from 'meteor/meteor';
 import { RateLimiter } from 'meteor/rate-limit';
 
 export const RateLimiterClass = new (class {
@@ -8,7 +8,7 @@ export const RateLimiterClass = new (class {
 			return fn;
 		}
 		const rateLimiter = new RateLimiter();
-		Object.entries(matchers).forEach(function ([key, matcher]) {
+		Object.entries(matchers).forEach(([key, matcher]) => {
 			matchers[key] = (...args) => Promise.await(matcher(...args));
 		});
 
@@ -16,7 +16,7 @@ export const RateLimiterClass = new (class {
 		return function (...args) {
 			const match = {};
 
-			Object.keys(matchers).forEach(function (key) {
+			Object.keys(matchers).forEach((key) => {
 				match[key] = args[key];
 			});
 
@@ -46,7 +46,7 @@ export const RateLimiterClass = new (class {
 			type: 'method',
 			name: methodName,
 		};
-		Object.entries(matchers).forEach(function ([key, matcher]) {
+		Object.entries(matchers).forEach(([key, matcher]) => {
 			match[key] = (...args) => Promise.await(matcher(...args));
 		});
 		return DDPRateLimiter.addRule(match, numRequests, timeInterval);

@@ -1,11 +1,12 @@
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
-import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 
+import { LivechatEnterprise } from '../../../../../ee/app/livechat-enterprise/server/lib/LivechatEnterprise';
 import { API } from '../../../../api/server';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { Livechat } from '../../../server/lib/Livechat';
 import {
 	findDepartments,
 	findDepartmentById,
@@ -14,9 +15,9 @@ import {
 	findDepartmentAgents,
 	findArchivedDepartments,
 } from '../../../server/api/lib/departments';
-import { LivechatEnterprise } from '../../../../../ee/app/livechat-enterprise/server/lib/LivechatEnterprise';
 import { DepartmentHelper } from '../../../server/lib/Departments';
-import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { Livechat } from '../../../server/lib/Livechat';
+import { Livechat as LivechatTs } from '../../../server/lib/LivechatTyped';
 
 API.v1.addRoute(
 	'livechat/department',
@@ -192,11 +193,9 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (await Livechat.archiveDepartment(this.urlParams._id)) {
-				return API.v1.success();
-			}
+			await LivechatTs.archiveDepartment(this.urlParams._id);
 
-			return API.v1.failure();
+			return API.v1.success();
 		},
 	},
 );
@@ -209,11 +208,8 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (await Livechat.unarchiveDepartment(this.urlParams._id)) {
-				return API.v1.success();
-			}
-
-			return API.v1.failure();
+			await LivechatTs.unarchiveDepartment(this.urlParams._id);
+			return API.v1.success();
 		},
 	},
 );

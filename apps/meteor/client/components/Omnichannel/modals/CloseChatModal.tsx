@@ -1,5 +1,18 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
-import { Field, Button, TextInput, Modal, Box, CheckBox, Divider, EmailInput } from '@rocket.chat/fuselage';
+import {
+	Field,
+	FieldGroup,
+	Button,
+	TextInput,
+	Modal,
+	Box,
+	CheckBox,
+	Divider,
+	EmailInput,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+} from '@rocket.chat/fuselage';
 import { usePermission, useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
@@ -68,7 +81,7 @@ const CloseChatModal = ({
 			};
 			const requestData = transcriptEmail && visitorEmail ? { email: visitorEmail, subject } : undefined;
 
-			if (!comment && commentRequired) {
+			if (!comment?.trim() && commentRequired) {
 				setError('comment', { type: 'custom', message: t('The_field_is_required', t('Comment')) });
 			}
 
@@ -89,7 +102,7 @@ const CloseChatModal = ({
 
 	const cannotSubmit = useMemo(() => {
 		const cannotSendTag = (tagRequired && !tags?.length) || errors.tags;
-		const cannotSendComment = (commentRequired && !comment) || errors.comment;
+		const cannotSendComment = (commentRequired && !comment?.trim()) || errors.comment;
 		const cannotSendTranscriptEmail = transcriptEmail && (!visitorEmail || !subject);
 
 		return Boolean(cannotSendTag || cannotSendComment || cannotSendTranscriptEmail);
@@ -132,91 +145,93 @@ const CloseChatModal = ({
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
 				<Box color='annotation'>{t('Close_room_description')}</Box>
-				<Field marginBlock='x15'>
-					<Field.Label required={commentRequired}>{t('Comment')}</Field.Label>
-					<Field.Row>
-						<TextInput
-							{...register('comment')}
-							error={
-								errors.comment &&
-								t('error-the-field-is-required', {
-									field: t('Comment'),
-								})
-							}
-							flexGrow={1}
-							placeholder={t('Please_add_a_comment')}
-						/>
-					</Field.Row>
-					<Field.Error>{errors.comment?.message}</Field.Error>
-				</Field>
-				<Field>
-					<Tags tagRequired={tagRequired} tags={tags} handler={handleTags} {...(department && { department: department._id })} />
-					<Field.Error>{errors.tags?.message}</Field.Error>
-				</Field>
-				{canSendTranscript && (
-					<>
-						<Field>
-							<Divider />
-							<Field.Label marginBlockStart='x8'>{t('Chat_transcript')}</Field.Label>
-						</Field>
-						{canSendTranscriptPDF && (
-							<Field marginBlockStart='x10'>
-								<Field.Row>
-									<CheckBox id='transcript-pdf' {...register('transcriptPDF', { value: userTranscriptPDF })} />
-									<Field.Label htmlFor='transcript-pdf' color='default' fontScale='c1'>
-										{t('Omnichannel_transcript_pdf')}
-									</Field.Label>
-								</Field.Row>
+				<FieldGroup>
+					<Field>
+						<FieldLabel required={commentRequired}>{t('Comment')}</FieldLabel>
+						<FieldRow>
+							<TextInput
+								{...register('comment')}
+								error={
+									errors.comment &&
+									t('error-the-field-is-required', {
+										field: t('Comment'),
+									})
+								}
+								flexGrow={1}
+								placeholder={t('Please_add_a_comment')}
+							/>
+						</FieldRow>
+						<FieldError>{errors.comment?.message}</FieldError>
+					</Field>
+					<Field>
+						<Tags tagRequired={tagRequired} tags={tags} handler={handleTags} {...(department && { department: department._id })} />
+						<FieldError>{errors.tags?.message}</FieldError>
+					</Field>
+					{canSendTranscript && (
+						<>
+							<Field>
+								<Divider />
+								<FieldLabel marginBlockStart={8}>{t('Chat_transcript')}</FieldLabel>
 							</Field>
-						)}
-						{canSendTranscriptEmail && (
-							<>
-								<Field marginBlockStart='x10'>
-									<Field.Row>
-										<CheckBox id='transcript-email' {...register('transcriptEmail', { value: userTranscriptEmail })} />
-										<Field.Label htmlFor='transcript-email' color='default' fontScale='c1'>
-											{t('Omnichannel_transcript_email')}
-										</Field.Label>
-									</Field.Row>
+							{canSendTranscriptPDF && (
+								<Field marginBlockStart={10}>
+									<FieldRow>
+										<CheckBox id='transcript-pdf' {...register('transcriptPDF', { value: userTranscriptPDF })} />
+										<FieldLabel htmlFor='transcript-pdf' color='default' fontScale='c1'>
+											{t('Omnichannel_transcript_pdf')}
+										</FieldLabel>
+									</FieldRow>
 								</Field>
-								{transcriptEmail && (
-									<>
-										<Field marginBlockStart='x14'>
-											<Field.Label required>{t('Contact_email')}</Field.Label>
-											<Field.Row>
-												<EmailInput value={visitorEmail} required disabled flexGrow={1} />
-											</Field.Row>
-										</Field>
-										<Field marginBlockStart='x12'>
-											<Field.Label required>{t('Subject')}</Field.Label>
-											<Field.Row>
-												<TextInput
-													{...register('subject', { required: true })}
-													className='active'
-													error={
-														errors.subject &&
-														t('error-the-field-is-required', {
-															field: t('Subject'),
-														})
-													}
-													flexGrow={1}
-												/>
-											</Field.Row>
-											<Field.Error>{errors.subject?.message}</Field.Error>
-										</Field>
-									</>
-								)}
-							</>
-						)}
-						<Field marginBlockStart='x16'>
-							<Field.Label color='annotation' fontScale='c1'>
-								{canSendTranscriptPDF && canSendTranscriptEmail
-									? t('These_options_affect_this_conversation_only_To_set_default_selections_go_to_My_Account_Omnichannel')
-									: t('This_option_affect_this_conversation_only_To_set_default_selection_go_to_My_Account_Omnichannel')}
-							</Field.Label>
-						</Field>
-					</>
-				)}
+							)}
+							{canSendTranscriptEmail && (
+								<>
+									<Field marginBlockStart={10}>
+										<FieldRow>
+											<CheckBox id='transcript-email' {...register('transcriptEmail', { value: userTranscriptEmail })} />
+											<FieldLabel htmlFor='transcript-email' color='default' fontScale='c1'>
+												{t('Omnichannel_transcript_email')}
+											</FieldLabel>
+										</FieldRow>
+									</Field>
+									{transcriptEmail && (
+										<>
+											<Field marginBlockStart={14}>
+												<FieldLabel required>{t('Contact_email')}</FieldLabel>
+												<FieldRow>
+													<EmailInput value={visitorEmail} required disabled flexGrow={1} />
+												</FieldRow>
+											</Field>
+											<Field marginBlockStart={12}>
+												<FieldLabel required>{t('Subject')}</FieldLabel>
+												<FieldRow>
+													<TextInput
+														{...register('subject', { required: true })}
+														className='active'
+														error={
+															errors.subject &&
+															t('error-the-field-is-required', {
+																field: t('Subject'),
+															})
+														}
+														flexGrow={1}
+													/>
+												</FieldRow>
+												<FieldError>{errors.subject?.message}</FieldError>
+											</Field>
+										</>
+									)}
+								</>
+							)}
+							<Field marginBlockStart={16}>
+								<FieldLabel color='annotation' fontScale='c1'>
+									{canSendTranscriptPDF && canSendTranscriptEmail
+										? t('These_options_affect_this_conversation_only_To_set_default_selections_go_to_My_Account_Omnichannel')
+										: t('This_option_affect_this_conversation_only_To_set_default_selection_go_to_My_Account_Omnichannel')}
+								</FieldLabel>
+							</Field>
+						</>
+					)}
+				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>

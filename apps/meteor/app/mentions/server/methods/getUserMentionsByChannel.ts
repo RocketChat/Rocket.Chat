@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IMessage } from '@rocket.chat/core-typings';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../../authorization/server';
 

@@ -36,9 +36,7 @@ const SlaPage = () => {
 			<Page>
 				<Page.Header title={t('SLA_Policies')}>
 					<ButtonGroup>
-						<Button onClick={handleClick} title={t('New_SLA_Policy')}>
-							{t('New')}
-						</Button>
+						<Button onClick={handleClick}>{t('Create_SLA_policy')}</Button>
 					</ButtonGroup>
 				</Page.Header>
 				<Page.Content>

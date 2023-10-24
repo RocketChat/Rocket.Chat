@@ -23,7 +23,7 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 
 	const hideSysMessages = useStableArray(mergeHideSysMessages(hideSysMesSetting, hideRoomSysMes));
 
-	const query: Mongo.Query<IMessage> = useMemo(
+	const query: Mongo.Selector<IMessage> = useMemo(
 		() => ({
 			rid,
 			_hidden: { $ne: true },

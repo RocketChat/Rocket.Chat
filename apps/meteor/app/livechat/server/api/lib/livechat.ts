@@ -1,6 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-import { Random } from '@rocket.chat/random';
-import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import type {
 	ILivechatAgent,
 	ILivechatDepartment,
@@ -9,12 +6,14 @@ import type {
 	IOmnichannelRoom,
 	SelectedAgent,
 } from '@rocket.chat/core-typings';
+import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { Meteor } from 'meteor/meteor';
 
-import { Livechat } from '../../lib/Livechat';
-import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { callbacks } from '../../../../../lib/callbacks';
-import { normalizeAgent } from '../../lib/Helper';
 import { i18n } from '../../../../../server/lib/i18n';
+import { normalizeAgent } from '../../lib/Helper';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 
 export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): Promise<boolean> {
 	return LivechatTyped.online(department, skipSettingCheck, skipFallbackCheck);
@@ -126,7 +125,7 @@ export function getRoom({
 	return LivechatTyped.getRoom(guest, message, roomInfo, agent, extraParams);
 }
 
-export async function findAgent(agentId?: string): Promise<void | { hiddenInfo: true } | ILivechatAgent> {
+export async function findAgent(agentId?: string): Promise<void | { hiddenInfo: boolean } | ILivechatAgent> {
 	return normalizeAgent(agentId);
 }
 
@@ -139,7 +138,7 @@ export function normalizeHttpHeaderData(headers: Record<string, string | string[
 
 export async function settings({ businessUnit = '' }: { businessUnit?: string } = {}): Promise<Record<string, string | number | any>> {
 	// Putting this ugly conversion while we type the livechat service
-	const initSettings = (await Livechat.getInitSettings()) as unknown as Record<string, string | number | any>;
+	const initSettings = await LivechatTyped.getInitSettings();
 	const triggers = await findTriggers();
 	const departments = await findDepartments(businessUnit);
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;

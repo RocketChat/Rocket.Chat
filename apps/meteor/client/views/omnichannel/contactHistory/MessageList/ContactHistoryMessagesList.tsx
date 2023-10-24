@@ -57,14 +57,14 @@ const ContactHistoryMessagesList = ({
 				<Box
 					display='flex'
 					flexDirection='row'
-					p='x24'
+					p={24}
 					borderBlockEndWidth='default'
 					borderBlockEndStyle='solid'
 					borderBlockEndColor='extra-light'
 					flexShrink={0}
 				>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
-						<Margins inline='x4'>
+						<Margins inline={4}>
 							<TextInput
 								placeholder={t('Search')}
 								value={text}
@@ -75,7 +75,7 @@ const ContactHistoryMessagesList = ({
 					</Box>
 				</Box>
 				{phase === AsyncStatePhase.LOADING && (
-					<Box pi='x24' pb='x12'>
+					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}

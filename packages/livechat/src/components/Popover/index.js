@@ -1,6 +1,7 @@
 import { Component, createContext } from 'preact';
 
-import { createClassName, normalizeDOMRect } from '../helpers';
+import { createClassName } from '../../helpers/createClassName';
+import { normalizeDOMRect } from '../../helpers/normalizeDOMRect';
 import styles from './styles.scss';
 
 const PopoverContext = createContext();

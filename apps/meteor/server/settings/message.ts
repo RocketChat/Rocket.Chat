@@ -245,6 +245,14 @@ export const createMessageSettings = () =>
 			public: true,
 		});
 
+		await this.add('AutoTranslate_AutoEnableOnJoinRoom', false, {
+			type: 'boolean',
+			group: 'Message',
+			section: 'AutoTranslate',
+			public: true,
+			enableQuery: [{ _id: 'AutoTranslate_Enabled', value: true }],
+		});
+
 		await this.add('AutoTranslate_ServiceProvider', 'google-translate', {
 			type: 'select',
 			group: 'Message',
@@ -329,7 +337,7 @@ export const createMessageSettings = () =>
 			public: true,
 		});
 
-		await this.section('Katex', async function () {
+		await this.section('Katex', async () => {
 			const enableQuery = {
 				_id: 'Katex_Enabled',
 				value: true,
@@ -353,7 +361,7 @@ export const createMessageSettings = () =>
 			});
 		});
 
-		await this.section('Google Maps', async function () {
+		await this.section('Google Maps', async () => {
 			await settingsRegistry.add('MapView_Enabled', false, {
 				type: 'boolean',
 				public: true,

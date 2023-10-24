@@ -1,7 +1,7 @@
-import type { Db } from 'mongodb';
 import { Agenda } from '@rocket.chat/agenda';
 import { CronHistory } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import type { Db } from 'mongodb';
 
 const runCronJobFunctionAndPersistResult = async (fn: () => Promise<any>, jobName: string): Promise<void> => {
 	const { insertedId } = await CronHistory.insertOne({
@@ -36,8 +36,22 @@ const runCronJobFunctionAndPersistResult = async (fn: () => Promise<any>, jobNam
 	}
 };
 
+type ReservedJob = {
+	name: string;
+	callback: () => any | Promise<any>;
+} & (
+	| {
+			schedule: string;
+			timestamped: false;
+	  }
+	| {
+			when: Date;
+			timestamped: true;
+	  }
+);
+
 export class AgendaCronJobs {
-	private reservedJobs: { name: string; schedule: string; callback: () => any | Promise<any> }[] = [];
+	private reservedJobs: ReservedJob[] = [];
 
 	private scheduler: Agenda | undefined;
 
@@ -50,11 +64,16 @@ export class AgendaCronJobs {
 			mongo,
 			db: { collection: 'rocketchat_cron' },
 			defaultConcurrency: 1,
+			processEvery: '1 minute',
 		});
 		await this.scheduler.start();
 
-		for await (const { name, schedule, callback } of this.reservedJobs) {
-			await this.add(name, schedule, callback);
+		for await (const job of this.reservedJobs) {
+			if (job.timestamped) {
+				await this.addAtTimestamp(job.name, job.when, job.callback);
+			} else {
+				await this.add(job.name, job.schedule, job.callback);
+			}
 		}
 
 		this.reservedJobs = [];
@@ -62,13 +81,20 @@ export class AgendaCronJobs {
 
 	public async add(name: string, schedule: string, callback: () => any | Promise<any>): Promise<void> {
 		if (!this.scheduler) {
-			return this.reserve(name, schedule, callback);
+			return this.reserve({ name, schedule, callback, timestamped: false });
 		}
 
-		this.scheduler.define(name, async () => {
-			await runCronJobFunctionAndPersistResult(async () => callback(), name);
-		});
+		await this.define(name, callback);
 		await this.scheduler.every(schedule, name, {}, {});
+	}
+
+	public async addAtTimestamp(name: string, when: Date, callback: () => any | Promise<any>): Promise<void> {
+		if (!this.scheduler) {
+			return this.reserve({ name, when, callback, timestamped: true });
+		}
+
+		await this.define(name, callback);
+		await this.scheduler.schedule(when, name, {});
 	}
 
 	public async remove(name: string): Promise<void> {
@@ -87,12 +113,22 @@ export class AgendaCronJobs {
 		return this.scheduler.has({ name: jobName });
 	}
 
-	private async reserve(name: string, schedule: string, callback: () => any | Promise<any>): Promise<void> {
-		this.reservedJobs = [...this.reservedJobs, { name, schedule, callback }];
+	private async reserve(config: ReservedJob): Promise<void> {
+		this.reservedJobs = [...this.reservedJobs, config];
 	}
 
 	private async unreserve(jobName: string): Promise<void> {
 		this.reservedJobs = this.reservedJobs.filter(({ name }) => name !== jobName);
+	}
+
+	private async define(jobName: string, callback: () => any | Promise<any>): Promise<void> {
+		if (!this.scheduler) {
+			throw new Error('Scheduler is not running.');
+		}
+
+		this.scheduler.define(jobName, async () => {
+			await runCronJobFunctionAndPersistResult(async () => callback(), jobName);
+		});
 	}
 }
 
