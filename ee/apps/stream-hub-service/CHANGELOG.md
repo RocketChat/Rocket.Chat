@@ -1,5 +1,14 @@
 # @rocket.chat/stream-hub-service
 
+## 0.2.12
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.3
+- @rocket.chat/core-services@0.2.3
+- @rocket.chat/model-typings@0.1.3
+- @rocket.chat/models@0.0.18
+
 ## 0.2.11
 
 ### Patch Changes

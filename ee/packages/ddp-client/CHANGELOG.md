@@ -1,5 +1,12 @@
 # @rocket.chat/ddp-client
 
+## 0.2.3
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.4.3
+- @rocket.chat/api-client@0.1.12
+
 ## 0.2.2
 
 ### Patch Changes

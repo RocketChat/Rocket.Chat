@@ -1,5 +1,36 @@
 # @rocket.chat/meteor
 
+## 6.4.3
+
+### Patch Changes
+
+- a8676a3c5e: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 69d89c4700: Fix unnecessary username validation on accounts profile form
+- 02f4491d5a: fix: Omnichannel webhook is not retrying requests
+- 02f4491d5a: Fixed intermittent errors caused by the removal of subscriptions and inquiries when lacking permissions.
+- 25a2129beb: Rolled back a change of route from `/admin/workspace` to `/admin/info`
+- 02f4491d5a: Add pagination & tooltips to agent's dropdown on forwarding modal
+- 02f4491d5a: Added new Omnichannel setting 'Hide conversation after closing'
+  - @rocket.chat/core-typings@6.4.3
+  - @rocket.chat/rest-typings@6.4.3
+  - @rocket.chat/api-client@0.1.12
+  - @rocket.chat/omnichannel-services@0.0.18
+  - @rocket.chat/pdf-worker@0.0.18
+  - @rocket.chat/presence@0.0.18
+  - @rocket.chat/core-services@0.2.3
+  - @rocket.chat/cron@0.0.14
+  - @rocket.chat/gazzodown@2.0.3
+  - @rocket.chat/model-typings@0.1.3
+  - @rocket.chat/ui-contexts@2.0.3
+  - @rocket.chat/fuselage-ui-kit@2.0.3
+  - @rocket.chat/models@0.0.18
+  - @rocket.chat/ui-theming@0.1.0
+  - @rocket.chat/ui-client@2.0.3
+  - @rocket.chat/ui-video-conf@2.0.3
+  - @rocket.chat/web-ui-registration@2.0.3
+  - @rocket.chat/instance-status@0.0.18
+
 ## 6.4.2
 
 ### Patch Changes
