@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-Change `/admin/workspace` path to `/admin/info` path as it was before 
+Rolled back a change of route from `/admin/workspace` to `/admin/info`
