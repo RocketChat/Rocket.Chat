@@ -1,5 +1,5 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type featureBulletsType = {
 	key: number;
@@ -9,7 +9,7 @@ type featureBulletsType = {
 };
 
 const useFeatureBullets = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const featureBullets: featureBulletsType[] = useMemo(
 		() => [

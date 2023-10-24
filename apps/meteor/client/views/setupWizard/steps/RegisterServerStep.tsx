@@ -61,8 +61,8 @@ const RegisterServerStep = (): ReactElement => {
 	if (serverOption === SERVER_OPTIONS.OFFLINE) {
 		return (
 			<RegisterOfflinePage
-				termsHref=''
-				policyHref=''
+				termsHref='https://rocket.chat/terms'
+				policyHref='https://rocket.chat/privacy'
 				clientKey={clientKey}
 				onBackButtonClick={(): void => setServerOption(SERVER_OPTIONS.REGISTERED)}
 				onSubmit={handleConfirmOffline}

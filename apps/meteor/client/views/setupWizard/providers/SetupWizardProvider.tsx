@@ -161,7 +161,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			goToStep(4);
 			setShowSetupWizard('in_progress');
 		} catch (e) {
-			console.log(e);
+			dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
 		}
 	});
 

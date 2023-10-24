@@ -1,7 +1,5 @@
 ---
-"@rocket.chat/meteor": minor
+'@rocket.chat/meteor': minor
 ---
 
-feat: Setup wizard updates
-
-Updating components and "copy" for more design consistency and removing standalone server (mandatory cloud connectivity)
+feat: Setup wizard content updates and enforcing cloud connectivity
