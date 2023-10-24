@@ -7,6 +7,8 @@ import { check, Match } from 'meteor/check';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
 import { Info } from '../../../utils/rocketchat.info';
 
+/** @deprecated */
+
 export const getNewUpdates = async () => {
 	try {
 		const uniqueID = await Settings.findOne('uniqueID');
