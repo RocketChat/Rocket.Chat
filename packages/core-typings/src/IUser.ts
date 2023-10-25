@@ -150,9 +150,7 @@ export interface IUser extends IRocketChatRecord {
 		public_key: string;
 	};
 	requirePasswordChange?: boolean;
-	customFields?: {
-		[key: string]: any;
-	};
+	customFields?: Record<string, any>;
 	settings?: IUserSettings;
 	defaultRoom?: string;
 	ldap?: boolean;

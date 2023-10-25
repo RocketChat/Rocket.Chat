@@ -12,11 +12,12 @@ import AdminUserForm from './AdminUserForm';
 type AdminUserFormWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
+	context: string;
 };
 
-const AdminUserFormWithData = ({ uid, onReload }: AdminUserFormWithDataProps): ReactElement => {
+const AdminUserFormWithData = ({ uid, onReload, context }: AdminUserFormWithDataProps): ReactElement => {
 	const t = useTranslation();
-	const { data, isLoading, isError } = useUserInfoQuery({ userId: uid });
+	const { data, isLoading, isError, refetch } = useUserInfoQuery({ userId: uid });
 
 	if (isLoading) {
 		return (
@@ -42,7 +43,16 @@ const AdminUserFormWithData = ({ uid, onReload }: AdminUserFormWithDataProps): R
 		);
 	}
 
-	return <AdminUserForm userData={data?.user} onReload={onReload} />;
+	return (
+		<AdminUserForm
+			userData={data?.user}
+			onReload={onReload}
+			context={context}
+			refetchUserFormData={() => {
+				refetch();
+			}}
+		/>
+	);
 };
 
 export default AdminUserFormWithData;

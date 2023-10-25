@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Tabs } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useRef, useState } from 'react';
@@ -7,7 +7,10 @@ import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
+import PageContent from '../../../components/Page/PageContent';
+import PageHeader from '../../../components/Page/PageHeader';
 import AdminInviteUsers from './AdminInviteUsers';
+import AdminUserCreated from './AdminUserCreated';
 import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
@@ -46,7 +49,7 @@ const UsersPage = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Users')}>
+				<PageHeader title={t('Users')}>
 					{seatsCap && seatsCap.maxActiveUsers < Number.POSITIVE_INFINITY ? (
 						<UserPageHeaderContentWithSeatsCap {...seatsCap} />
 					) : (
@@ -91,14 +94,19 @@ const UsersPage = (): ReactElement => {
 						<ContextualbarTitle>
 							{context === 'info' && t('User_Info')}
 							{context === 'edit' && t('Edit_User')}
-							{context === 'new' && t('Add_User')}
+							{(context === 'new' || context === 'created') && (
+								<>
+									<Icon name='user-plus' size={20} /> {t('New_user')}
+								</>
+							)}
 							{context === 'invite' && t('Invite_Users')}
 						</ContextualbarTitle>
 						<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
 					</ContextualbarHeader>
 					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
-					{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
-					{context === 'new' && <AdminUserForm onReload={handleReload} />}
+					{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} context={context} />}
+					{context === 'new' && <AdminUserForm onReload={handleReload} setCreatedUsersCount={setCreatedUsersCount} context={context} />}
+					{context === 'created' && id && <AdminUserCreated uid={id} createdUsersCount={createdUsersCount} />}
 					{context === 'invite' && <AdminInviteUsers />}
 				</Contextualbar>
 			)}
