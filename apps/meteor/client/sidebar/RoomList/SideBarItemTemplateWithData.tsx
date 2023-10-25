@@ -170,7 +170,7 @@ function SideBarItemTemplateWithData({
 					{unread + tunread?.length}
 				</Badge>
 			)}
-			<OmnichannelBadges room={room} />
+			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
 		</Margins>
 	);
 
