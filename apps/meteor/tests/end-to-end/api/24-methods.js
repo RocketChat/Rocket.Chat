@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 
+import { sleep } from '../../../lib/utils/sleep';
 import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data.js';
 import { sendSimpleMessage } from '../../data/chat.helper.js';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
@@ -154,17 +155,19 @@ describe('Meteor.methods', function () {
 					.send({
 						message: JSON.stringify({
 							method: 'getReadReceipts',
-							params: [],
+							params: [{ messageId: 'test' }],
 							id: 'id',
 							msg: 'method',
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(200)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'This is an enterprise feature [error-action-not-allowed]');
-						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+						expect(res.body).to.have.property('success', true);
+						const data = JSON.parse(res.body.message);
+						expect(data).to.have.property('error').that.is.an('object');
+						expect(data.error).to.have.property('error', 'error-action-not-allowed');
+						expect(data.error).to.have.property('message', 'This is an enterprise feature [error-action-not-allowed]');
 					});
 			});
 		});
@@ -188,6 +191,8 @@ describe('Meteor.methods', function () {
 			before(async () => {
 				await updateSetting('Message_Read_Receipt_Enabled', true);
 				await updateSetting('Message_Read_Receipt_Store_Users', true);
+
+				await sleep(500);
 			});
 
 			after(async () => {
@@ -212,8 +217,10 @@ describe('Meteor.methods', function () {
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', true);
 						expect(res.body).to.have.a.property('message').that.is.a('string');
+						console.log('res.body', res.body);
 
 						const data = JSON.parse(res.body.message);
+						console.log('data', data);
 						expect(data).to.have.a.property('result').that.is.an('array');
 						expect(data.result.length).to.equal(1);
 						expect(data.result[0]).to.have.property('userId', credentials['X-User-Id']);
