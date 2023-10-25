@@ -5016,7 +5016,7 @@
   "test-admin-options": "Test options on admin panel",
   "test-admin-options_description": "Permission to test options on admin panel such as LDAP login.",
   "test-push-notifications": "Test push notifications",
-  "test-push-notifications_description": "Permission to test test push notifications",
+  "test-push-notifications_description": "Permission to test push notifications",
   "Texts": "Texts",
   "Thank_you_for_your_feedback": "Thank you for your feedback",
   "The_application_name_is_required": "The application name is required",
