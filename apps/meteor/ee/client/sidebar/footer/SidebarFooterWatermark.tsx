@@ -20,7 +20,7 @@ export const SidebarFooterWatermark = (): ReactElement | null => {
 		return null;
 	}
 
-	const [{ name: planName }] = license.tags ?? [{ name: 'Community' }];
+	const [{ name: planName } = { name: 'Community' }] = license.tags ?? [];
 
 	return (
 		<Box pi={16} pbe={8}>
