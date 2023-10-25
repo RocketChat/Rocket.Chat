@@ -16,15 +16,15 @@ import { useRecordList } from '../../hooks/lists/useRecordList';
 import { useRoom } from '../../views/room/contexts/RoomContext';
 import { useFilesList } from '../../views/room/contextualBar/RoomFiles/hooks/useFilesList';
 
-const ImageGallery = ({ url, onClose, sortByRecent }: { url: string; onClose: () => void; sortByRecent?: boolean }) => {
+const ImageGallery = ({ url, onClose, sortByRecent }: { url: string; onClose: () => void; sortByRecent?: boolean; name?: string }) => {
 	const room = useRoom();
 	const swiperRef = useRef<SwiperRef>(null);
 
-	const [images, setImages] = useState<string[]>();
+	const [images, setImages] = useState<string[]>([]);
 	const [swiperInst, setSwiperInst] = useState<SwiperClass>();
 	const [currentSlide, setCurrentSlide] = useState<number>();
 
-	const { filesList } = useFilesList(useMemo(() => ({ rid: room._id, type: 'image', text: '' }), [room._id]));
+	const { filesList, loadMoreItems } = useFilesList(useMemo(() => ({ rid: room._id, type: 'image', text: '' }), [room._id]));
 	const { phase, items: filesItems } = useRecordList(filesList);
 
 	useEffect(() => {
@@ -65,6 +65,7 @@ const ImageGallery = ({ url, onClose, sortByRecent }: { url: string; onClose: ()
 				onKeyPress={(_, keyCode) => String(keyCode) === '27' && onClose()}
 				modules={[Navigation, Zoom, Keyboard, A11y]}
 				onInit={(swiper) => setSwiperInst(swiper)}
+				onReachEnd={() => loadMoreItems(images.length - currentSlide, images.length + 1)}
 			>
 				{images?.map((image, index) => (
 					<SwiperSlide key={`${image}-${index}`}>
