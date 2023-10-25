@@ -1,23 +1,18 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { TextObject } from '@rocket.chat/ui-kit';
 import { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { UiKitContext } from '../contexts/UiKitContext';
 
 const PlainTextElement = ({ textObject }: { textObject: TextObject }) => {
-  const t = useTranslation() as (
-    key: string,
-    args: { [key: string]: string | number }
-  ) => string;
-
   const { appId } = useContext(UiKitContext);
-  const { i18n } = textObject;
+  const { t } = useTranslation(`app-${appId}`);
 
-  if (i18n) {
-    return <>{t(`apps-${appId}-${i18n.key}`, { ...i18n.args })}</>;
-  }
+  const text = textObject.i18n
+    ? t(textObject.i18n.key, { ...textObject.i18n.args })
+    : textObject.text;
 
-  return <>{textObject.text}</>;
+  return <>{text}</>;
 };
 
 export default PlainTextElement;

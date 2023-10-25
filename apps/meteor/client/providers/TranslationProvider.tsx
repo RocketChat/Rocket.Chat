@@ -16,8 +16,8 @@ import { getURL } from '../../app/utils/client';
 import { i18n, addSprinfToI18n } from '../../app/utils/lib/i18n';
 import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator';
 import { applyCustomTranslations } from '../lib/utils/applyCustomTranslations';
-import { filterLanguage } from '../lib/utils/filterLanguage';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
+import { normalizeLanguage } from '../lib/utils/normalizeLanguage';
 
 i18n.use(I18NextHttpBackend).use(initReactI18next).use(sprintf);
 
@@ -180,7 +180,7 @@ type TranslationProviderProps = {
 
 const useAutoLanguage = () => {
 	const serverLanguage = useSetting<string>('Language');
-	const browserLanguage = filterLanguage(window.navigator.userLanguage ?? window.navigator.language);
+	const browserLanguage = normalizeLanguage(window.navigator.userLanguage ?? window.navigator.language);
 	const defaultUserLanguage = browserLanguage || serverLanguage || 'en';
 
 	// if the language is supported, if not remove the region
