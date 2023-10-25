@@ -69,6 +69,9 @@ function PrepareImportPage() {
 			try {
 				const data = await waitFor(getImportFileData, (data) => data && !data.waiting);
 
+				// TODO: remove!!!!!!!!!!!!
+				console.log(data);
+
 				if (!data) {
 					handleError(t('Importer_not_setup'));
 					router.navigate('/admin/import');

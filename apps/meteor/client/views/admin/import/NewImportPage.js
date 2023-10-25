@@ -228,7 +228,7 @@ function NewImportPage() {
 								{fileType === 'upload' && (
 									<>
 										{maxFileSize > 0 ? (
-											<Callout type='warning' marginBlock='x16'>
+											<Callout type='warning' marginBlock='x16' color='default'>
 												{t('Importer_Upload_FileSize_Message', {
 													maxFileSize: formatMemorySize(maxFileSize),
 												})}
