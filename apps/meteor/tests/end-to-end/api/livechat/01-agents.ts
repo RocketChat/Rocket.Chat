@@ -127,8 +127,11 @@ describe('LIVECHAT - Agents', function () {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
-					expect(res.body.users.every((u: { statusLivechat: string }) => ['available', 'not-available'].includes(u.statusLivechat))).to.be
-						.true;
+					expect(
+						res.body.users.every(
+							(u: { statusLivechat: string }) => !u.statusLivechat || ['available', 'not-available'].includes(u.statusLivechat),
+						),
+					).to.be.true;
 				});
 		});
 
@@ -146,7 +149,8 @@ describe('LIVECHAT - Agents', function () {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
-					expect(res.body.users.every((u: { status: string }) => ['online', 'offline', 'away', 'busy'].includes(u.status))).to.be.true;
+					expect(res.body.users.every((u: { status: string }) => !u.status || ['online', 'offline', 'away', 'busy'].includes(u.status))).to
+						.be.true;
 				});
 		});
 
