@@ -16,7 +16,7 @@ import {
 } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
-import { createUser, deleteUser, getMe, login } from '../../../data/users.helper';
+import { createUser, deleteUser, getMe, login, setUserActiveStatus } from '../../../data/users.helper';
 
 describe('LIVECHAT - Agents', function () {
 	this.retries(0);
@@ -114,6 +114,60 @@ describe('LIVECHAT - Agents', function () {
 					expect(res.body.users.every((u: { statusLivechat: string }) => u.statusLivechat === 'available')).to.be.true;
 				});
 		});
+		it('should return an array of available/unavailable agents when onlyAvailable is false', async () => {
+			await request
+				.get(api('livechat/users/agent'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.query({ onlyAvailable: false })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.users).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					expect(res.body.users.every((u: { statusLivechat: string }) => ['available', 'not-available'].includes(u.statusLivechat))).to.be
+						.true;
+				});
+		});
+
+		it('should return offline agents when showIdleAgents is true', async () => {
+			await setUserActiveStatus(agent2.user._id, false);
+			await request
+				.get(api('livechat/users/agent'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.query({ showIdleAgents: true })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.users).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					expect(res.body.users.every((u: { status: string }) => ['online', 'offline', 'away', 'busy'].includes(u.status))).to.be.true;
+				});
+		});
+
+		it('should return only online agents when showIdleAgents is false', async () => {
+			await setUserActiveStatus(agent2.user._id, true);
+			await request
+				.get(api('livechat/users/agent'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.query({ showIdleAgents: false })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.users).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					expect(res.body.users.every((u: { status: string }) => u.status !== 'offline')).to.be.true;
+				});
+		});
+
 		it('should return an array of managers', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
 			await updatePermission('manage-livechat-agents', ['admin']);
