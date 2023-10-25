@@ -16,7 +16,7 @@ import { useRecordList } from '../../hooks/lists/useRecordList';
 import { useRoom } from '../../views/room/contexts/RoomContext';
 import { useFilesList } from '../../views/room/contextualBar/RoomFiles/hooks/useFilesList';
 
-const ImageGallery = ({ url, onClose }: { url: string; onClose: () => void }) => {
+const ImageGallery = ({ url, onClose, sortByRecent }: { url: string; onClose: () => void; sortByRecent?: boolean }) => {
 	const room = useRoom();
 	const swiperRef = useRef<SwiperRef>(null);
 
@@ -28,14 +28,14 @@ const ImageGallery = ({ url, onClose }: { url: string; onClose: () => void }) =>
 	const { phase, items: filesItems } = useRecordList(filesList);
 
 	useEffect(() => {
-		const list = [...filesItems].reverse();
+		const list = sortByRecent ? [...filesItems] : [...filesItems].reverse();
 
 		if (phase === 'resolved') {
 			setImages(list.map((item) => item.url || '').filter(Boolean));
 			setCurrentSlide(list.findIndex((item) => url.includes(item._id)));
 		}
 		return () => swiperInst?.update();
-	}, [filesItems, phase, swiperInst, url]);
+	}, [filesItems, phase, sortByRecent, swiperInst, url]);
 
 	const swiperLoader = (
 		<ModalBackdrop display='flex' justifyContent='center'>

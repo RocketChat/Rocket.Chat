@@ -57,7 +57,7 @@ const RoomFilesWithData = () => {
 
 	return (
 		<>
-			{imageUrl && <ImageGallery url={imageUrl} onClose={onClose} />}
+			{imageUrl && <ImageGallery url={imageUrl} onClose={onClose} sortByRecent />}
 			<RoomFiles
 				rid={room._id}
 				loading={phase === AsyncStatePhase.LOADING}
