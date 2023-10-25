@@ -5,6 +5,7 @@ import type { FC } from 'react';
 import React, { useEffect } from 'react';
 
 import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator';
+import PageSkeleton from '../components/PageSkeleton';
 import { AppsContext } from '../contexts/AppsContext';
 import { AsyncStatePhase } from '../lib/asyncState';
 import { useInvalidateAppsCountQueryCallback } from '../views/marketplace/hooks/useAppsCountQuery';
@@ -65,13 +66,12 @@ const AppsProvider: FC = ({ children }) => {
 		},
 		{
 			staleTime: Infinity,
-			keepPreviousData: true,
 			onSettled: () => queryClient.invalidateQueries(['marketplace', 'apps-stored']),
 		},
 	);
 
 	const store = useQuery(
-		['marketplace', 'apps-stored', isAdminUser],
+		['marketplace', 'apps-stored', instance.data, marketplace.data],
 		() => {
 			if (!marketplace.isFetched && !instance.isFetched) {
 				throw new Error('Apps not loaded');
@@ -117,9 +117,12 @@ const AppsProvider: FC = ({ children }) => {
 		},
 		{
 			enabled: marketplace.isFetched && instance.isFetched,
-			keepPreviousData: true,
 		},
 	);
+
+	if (!store.isSuccess) {
+		return <PageSkeleton />;
+	}
 
 	return (
 		<AppsContext.Provider
