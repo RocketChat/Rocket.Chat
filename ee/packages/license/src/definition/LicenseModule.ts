@@ -17,4 +17,5 @@ export type LicenseModule =
 	| 'message-read-receipt'
 	| 'outlook-calendar'
 	| 'hide-watermark'
-	| 'custom-roles';
+	| 'custom-roles'
+	| 'accessibility-certification';

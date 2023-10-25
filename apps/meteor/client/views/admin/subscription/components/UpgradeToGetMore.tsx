@@ -15,7 +15,14 @@ const UpgradeToGetMore = ({ activeModules, isEnterprise }: UpgradeToGetMoreProps
 	const { t } = useTranslation();
 
 	const getEnterpriseSectionContent = () => {
-		const enterpriseModules = ['scalability', 'engagement-dashboard', 'oauth-enterprise', 'custom-roles', 'auditing'];
+		const enterpriseModules = [
+			'scalability',
+			'accessibility-certification',
+			'engagement-dashboard',
+			'oauth-enterprise',
+			'custom-roles',
+			'auditing',
+		];
 
 		if (!isEnterprise) {
 			return enterpriseModules.map((module) => {
