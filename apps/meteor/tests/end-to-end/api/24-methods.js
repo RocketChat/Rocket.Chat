@@ -181,18 +181,14 @@ describe('Meteor.methods', function () {
 
 			const roomName = `methods-test-channel-${Date.now()}`;
 			before(async () => {
+				await updateSetting('Message_Read_Receipt_Enabled', true);
+				await updateSetting('Message_Read_Receipt_Store_Users', true);
+
 				user = await createUser();
 				userCredentials = await login(user.username, password);
 				room = (await createRoom({ type: 'p', name: roomName, members: [user.username] })).body.group;
 				firstMessage = (await sendSimpleMessage({ roomId: room._id })).body.message;
 				firstThreadMessage = (await sendSimpleMessage({ roomId: room._id, tmid: firstMessage._id })).body.message;
-			});
-
-			before(async () => {
-				await updateSetting('Message_Read_Receipt_Enabled', true);
-				await updateSetting('Message_Read_Receipt_Store_Users', true);
-
-				await sleep(500);
 			});
 
 			after(async () => {
