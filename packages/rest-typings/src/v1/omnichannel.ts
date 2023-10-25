@@ -765,7 +765,7 @@ const LivechatUsersManagerGETSchema = {
 			nullable: true,
 		},
 		onlyAvailable: {
-			type: 'string',
+			type: 'boolean',
 			nullable: true,
 		},
 		excludeId: {
