@@ -4,6 +4,13 @@ import type { LicenseModule } from '../definition/LicenseModule';
 import type { LicenseManager } from '../license';
 import { hasModule } from '../modules';
 
+/**
+ * Invoked when the license changes some internal state. it's called to sync the license with other instances.
+ */
+export function onChange(this: LicenseManager, cb: () => void) {
+	this.on('sync', cb);
+}
+
 export function onValidFeature(this: LicenseManager, feature: LicenseModule, cb: () => void) {
 	this.on(`valid:${feature}`, cb);
 
@@ -77,6 +84,14 @@ export function onBehaviorTriggered(
 	cb: (data: { reason: BehaviorWithContext['reason']; limit?: LicenseLimitKind }) => void,
 ) {
 	this.on(`behavior:${behavior}`, cb);
+}
+
+export function onBehaviorToggled(
+	this: LicenseManager,
+	behavior: Exclude<LicenseBehavior, 'prevent_installation'>,
+	cb: (data: { reason: BehaviorWithContext['reason']; limit?: LicenseLimitKind }) => void,
+) {
+	this.on(`behaviorToggled:${behavior}`, cb);
 }
 
 export function onLimitReached(this: LicenseManager, limitKind: LicenseLimitKind, cb: () => void) {

@@ -2,7 +2,7 @@ import { ActionManagerContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement } from 'react';
 import React from 'react';
 
-import * as ActionManager from '../../app/ui-message/client/ActionManager';
+import { actionManager } from '../../app/ui-message/client/ActionManager';
 import { useAppActionButtons } from '../hooks/useAppActionButtons';
 import { useAppSlashCommands } from '../hooks/useAppSlashCommands';
 import { useAppTranslations } from '../hooks/useAppTranslations';
@@ -16,9 +16,9 @@ const ActionManagerProvider = ({ children }: ActionManagerProviderProps): ReactE
 	useAppTranslations();
 	useAppActionButtons();
 	useAppSlashCommands();
-	useAppUiKitInteraction(ActionManager.handlePayloadUserInteraction);
+	useAppUiKitInteraction(actionManager.handleServerInteraction.bind(actionManager));
 
-	return <ActionManagerContext.Provider value={ActionManager}>{children}</ActionManagerContext.Provider>;
+	return <ActionManagerContext.Provider value={actionManager}>{children}</ActionManagerContext.Provider>;
 };
 
 export default ActionManagerProvider;
