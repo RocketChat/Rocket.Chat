@@ -16,4 +16,5 @@ export type LicenseModule =
 	| 'videoconference-enterprise'
 	| 'message-read-receipt'
 	| 'outlook-calendar'
+	| 'hide-watermark'
 	| 'custom-roles';

@@ -34,6 +34,7 @@ export const createSetupWSettings = () =>
 					step: 2,
 					order: 1,
 				},
+				public: true,
 			});
 			await this.add('Industry', '', {
 				type: 'select',
