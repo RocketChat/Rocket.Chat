@@ -3,15 +3,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSeatsCap } from '../../../../../../ee/client/views/admin/users/useSeatsCap';
-import { PlanName } from '../../../../../lib/utils/getPlanName';
 import type { CardProps } from '../FeatureUsageCard';
 import PieGraphCard from '../PieGraphCard';
 
-type SeatsCardProps = {
-	plan: PlanName;
-};
-
-const SeatsCard = ({ plan }: SeatsCardProps): ReactElement => {
+const SeatsCard = (): ReactElement => {
 	const { t } = useTranslation();
 	const seatsCap = useSeatsCap();
 
@@ -26,7 +21,7 @@ const SeatsCard = ({ plan }: SeatsCardProps): ReactElement => {
 		title: t('Seats'),
 		infoText: t('Seats_InfoText'),
 		showUpgradeButton: nearLimit,
-		upgradeButtonText: plan === PlanName.STARTER ? 'Upgrade' : 'Buy_more_seats',
+		upgradeButtonText: 'Buy_more',
 	};
 
 	return <PieGraphCard pieGraph={pieGraph} card={card} isLoading={Boolean(!seatsCap)} />;

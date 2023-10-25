@@ -32,7 +32,7 @@ const ActiveSessionsCard = (): ReactElement => {
 					<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'}>
 						{used} / {total}
 					</Box>
-					<Box fontScale='p2' color='font-secondary-info'>
+					<Box fontScale='p2' color='font-secondary-info' mbs={12}>
 						{available} {t('ActiveSessions_available')}
 					</Box>
 				</Box>
@@ -42,4 +42,5 @@ const ActiveSessionsCard = (): ReactElement => {
 		</FeatureUsageCard>
 	);
 };
+
 export default ActiveSessionsCard;

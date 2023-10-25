@@ -3,37 +3,24 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppsCountQuery } from '../../../../marketplace/hooks/useAppsCountQuery';
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
 
 type AppsUsageCardProps = {
-	privateAppsLimit?: number;
-	marketplaceAppsLimit?: number;
+	privateAppsLimit?: { value?: number; max: number };
+	marketplaceAppsLimit?: { value?: number; max: number };
 };
 
 const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCardProps): ReactElement => {
 	const { t } = useTranslation();
-	const { data: privateApps } = useAppsCountQuery('private');
-	const { data: marketplaceApps } = useAppsCountQuery('installed');
 
-	const {
-		enabled: privateAppsEnabled = 0,
-		limit: privateAppsLimitQuery = 0,
-		percentage: privateAppsPercentageQuery = 0,
-	} = privateApps || {};
-	const {
-		enabled: marketplaceAppsEnabled = 0,
-		limit: marketplaceAppsLimitQuery = 0,
-		percentage: marketplaceAppsPercentageQuery = 0,
-	} = marketplaceApps || {};
+	const marketplaceAppsEnabled = marketplaceAppsLimit?.value || 0;
+	const marketplaceAppsLimitCount = marketplaceAppsLimit?.max || 5;
+	const marketplaceAppsPercentage = Math.round((marketplaceAppsEnabled / marketplaceAppsLimitCount) * 100);
 
-	const marketplaceAppsLimitCount = marketplaceAppsLimit || (marketplaceAppsLimitQuery > 0 ? marketplaceAppsLimitQuery : 5);
-	const marketplaceAppsPercentage =
-		Math.round((marketplaceAppsEnabled / marketplaceAppsLimitCount) * 100) || marketplaceAppsPercentageQuery;
-
-	const privateAppsLimitCount = privateAppsLimit || privateAppsLimitQuery > 0 ? privateAppsLimitQuery : 3;
-	const privateAppsPercentage = Math.round((privateAppsEnabled / privateAppsLimitCount) * 100) || privateAppsPercentageQuery;
+	const privateAppsEnabled = privateAppsLimit?.value || 0;
+	const privateAppsLimitCount = privateAppsLimit?.max || 3;
+	const privateAppsPercentage = Math.round((privateAppsEnabled / privateAppsLimitCount) * 100);
 
 	const card: CardProps = {
 		title: t('Apps'),
@@ -43,7 +30,7 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 
 	return (
 		<FeatureUsageCard card={card}>
-			{privateApps && marketplaceApps ? (
+			{privateAppsLimit && marketplaceAppsLimit ? (
 				<Box w='full' display='flex' flexDirection='column'>
 					<Box mb={12}>
 						<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>

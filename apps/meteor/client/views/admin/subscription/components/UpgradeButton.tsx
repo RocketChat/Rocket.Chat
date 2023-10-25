@@ -11,7 +11,7 @@ type UpgradeButtonProps = {
 	i18nKey?: string;
 } & Partial<ButtonProps>;
 
-const UpgradeButton = ({ i18nKey = 'Upgrade', ...props }: UpgradeButtonProps): ReactElement => {
+const UpgradeButton = ({ i18nKey = 'Manage_subscription', ...props }: UpgradeButtonProps): ReactElement => {
 	const { t } = useTranslation();
 	const handleExternalLink = useExternalLink();
 	const { isLoading, url } = useCheckoutUrl();

@@ -13,12 +13,12 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const manageSubscriptionURL =
-				process.env.NODE_ENV !== 'production' ? 'http://localhost:3000/admin/manage-subscription/' : getURL('admin/manage-subscription');
+			const subscriptionURL =
+				process.env.NODE_ENV !== 'production' ? 'http://localhost:3000/admin/subscription/' : getURL('admin/subscription');
 
 			const bodyParams = {
-				okCallback: `${manageSubscriptionURL}?subscriptionSuccess=true`,
-				cancelCallback: manageSubscriptionURL,
+				okCallback: `${subscriptionURL}?subscriptionSuccess=true`,
+				cancelCallback: subscriptionURL,
 			};
 
 			const checkoutUrl = await getCheckoutUrl(token, bodyParams);
