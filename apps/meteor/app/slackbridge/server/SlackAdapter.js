@@ -42,15 +42,7 @@ export default class SlackAdapter {
 
 	async connect({ apiToken, appCredential }) {
 		try {
-			let connectResult;
-
-			if (appCredential) {
-				connectResult = await this.connectApp(appCredential);
-			}
-
-			if (apiToken) {
-				connectResult = await this.connectLegacy(apiToken);
-			}
+			const connectResult = await (appCredential ? this.connectApp(appCredential) : this.connectLegacy(apiToken));
 
 			if (connectResult) {
 				slackLogger.info('Connected to Slack');
