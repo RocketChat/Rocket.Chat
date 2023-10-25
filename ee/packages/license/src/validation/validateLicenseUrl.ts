@@ -1,4 +1,5 @@
-import crypto from 'crypto';
+import { asyncFilter } from '@rocket.chat/tools';
+import { compare as bcryptCompare } from 'bcrypt';
 
 import type { ILicenseV3 } from '../definition/ILicenseV3';
 import type { BehaviorWithContext } from '../definition/LicenseBehavior';
@@ -21,12 +22,15 @@ const validateUrl = (licenseURL: string, url: string) => {
 	return licenseURL.toLowerCase() === url.toLowerCase();
 };
 
-const validateHash = (licenseURL: string, url: string) => {
-	const value = crypto.createHash('sha256').update(url).digest('hex');
-	return licenseURL === value;
+const validateHash = async (licenseURL: string, url: string) => {
+	return bcryptCompare(url, licenseURL);
 };
 
-export function validateLicenseUrl(this: LicenseManager, license: ILicenseV3, options: LicenseValidationOptions): BehaviorWithContext[] {
+export async function validateLicenseUrl(
+	this: LicenseManager,
+	license: ILicenseV3,
+	options: LicenseValidationOptions,
+): Promise<BehaviorWithContext[]> {
 	if (!isBehaviorAllowed('invalidate_license', options)) {
 		return [];
 	}
@@ -42,27 +46,27 @@ export function validateLicenseUrl(this: LicenseManager, license: ILicenseV3, op
 		return [getResultingBehavior({ behavior: 'invalidate_license' }, { reason: 'url' })];
 	}
 
-	return serverUrls
-		.filter((url) => {
+	return (
+		await asyncFilter(serverUrls, async (url) => {
 			switch (url.type) {
 				case 'regex':
 					return !validateRegex(url.value, workspaceUrl);
 				case 'hash':
-					return !validateHash(url.value, workspaceUrl);
+					return !(await validateHash(url.value, workspaceUrl));
 				case 'url':
 					return !validateUrl(url.value, workspaceUrl);
 			}
 
 			return false;
 		})
-		.map((url) => {
-			if (!options.suppressLog) {
-				logger.error({
-					msg: 'Url validation failed',
-					url,
-					workspaceUrl,
-				});
-			}
-			return getResultingBehavior({ behavior: 'invalidate_license' }, { reason: 'url' });
-		});
+	).map((url) => {
+		if (!options.suppressLog) {
+			logger.error({
+				msg: 'Url validation failed',
+				url,
+				workspaceUrl,
+			});
+		}
+		return getResultingBehavior({ behavior: 'invalidate_license' }, { reason: 'url' });
+	});
 }

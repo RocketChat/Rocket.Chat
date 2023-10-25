@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import crypto from 'crypto';
+import { hash as bcryptHash } from 'bcrypt';
 
 import { MockedLicenseBuilder, getReadyLicenseManager } from '../../__tests__/MockedLicenseBuilder';
 import { validateLicenseUrl } from './validateLicenseUrl';
@@ -18,7 +18,7 @@ describe('Url Validation', () => {
 			});
 
 			await expect(
-				validateLicenseUrl.call(licenseManager, await license.build(), {
+				await validateLicenseUrl.call(licenseManager, await license.build(), {
 					behaviors: ['invalidate_license', 'prevent_installation', 'start_fair_policy', 'disable_modules'],
 					suppressLog: true,
 				}),
@@ -40,7 +40,7 @@ describe('Url Validation', () => {
 			});
 
 			await expect(
-				validateLicenseUrl.call(licenseManager, await license.build(), {
+				await validateLicenseUrl.call(licenseManager, await license.build(), {
 					behaviors: ['invalidate_license', 'prevent_installation', 'start_fair_policy', 'disable_modules'],
 					suppressLog: true,
 				}),
@@ -58,7 +58,7 @@ describe('Url Validation', () => {
 			});
 
 			await expect(
-				validateLicenseUrl.call(licenseManager, await license.build(), {
+				await validateLicenseUrl.call(licenseManager, await license.build(), {
 					behaviors: ['invalidate_license', 'prevent_installation', 'start_fair_policy', 'disable_modules'],
 					suppressLog: true,
 				}),
@@ -80,7 +80,7 @@ describe('Url Validation', () => {
 			});
 
 			await expect(
-				validateLicenseUrl.call(licenseManager, await license.build(), {
+				await validateLicenseUrl.call(licenseManager, await license.build(), {
 					behaviors: ['invalidate_license', 'prevent_installation', 'start_fair_policy', 'disable_modules'],
 					suppressLog: true,
 				}),
@@ -92,14 +92,14 @@ describe('Url Validation', () => {
 		it('should return a behavior if the license does not match the hash', async () => {
 			const licenseManager = await getReadyLicenseManager();
 
-			const hash = crypto.createHash('sha256').update('localhost:3001').digest('hex');
+			const hash = await bcryptHash('localhost:3001', 10);
 			const license = await new MockedLicenseBuilder().withServerUrls({
 				value: hash,
 				type: 'hash',
 			});
 
 			await expect(
-				validateLicenseUrl.call(licenseManager, await license.build(), {
+				await validateLicenseUrl.call(licenseManager, await license.build(), {
 					behaviors: ['invalidate_license', 'prevent_installation', 'start_fair_policy', 'disable_modules'],
 					suppressLog: true,
 				}),
@@ -114,13 +114,13 @@ describe('Url Validation', () => {
 		it('should return an empty array if the license matches the hash', async () => {
 			const licenseManager = await getReadyLicenseManager();
 
-			const hash = crypto.createHash('sha256').update('localhost:3000').digest('hex');
+			const hash = await bcryptHash('localhost:3000', 10);
 			const license = await new MockedLicenseBuilder().withServerUrls({
 				value: hash,
 				type: 'hash',
 			});
 			await expect(
-				validateLicenseUrl.call(licenseManager, await license.build(), {
+				await validateLicenseUrl.call(licenseManager, await license.build(), {
 					behaviors: ['invalidate_license', 'prevent_installation', 'start_fair_policy', 'disable_modules'],
 					suppressLog: true,
 				}),

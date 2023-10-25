@@ -12,7 +12,7 @@ export async function runValidation(
 	options: LicenseValidationOptions,
 ): Promise<BehaviorWithContext[]> {
 	return [
-		...validateLicenseUrl.call(this, license, options),
+		...(await validateLicenseUrl.call(this, license, options)),
 		...validateLicensePeriods(license, options),
 		...(await validateLicenseLimits.call(this, license, options)),
 	];
