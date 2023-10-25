@@ -1,6 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { type IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
-import { useMemo } from 'react';
+import { isOmnichannelRoom, type IOmnichannelGenericRoom, isVoipRoom } from '@rocket.chat/core-typings';
 
 import { useIsOverMacLimit } from './useIsOverMacLimit';
 
@@ -8,16 +7,17 @@ const getPeriod = (date: Date) => `${date.getFullYear()}-${String(date.getMonth(
 
 export const useIsRoomOverMacLimit = (room: IRoom) => {
 	const isOverMacLimit = useIsOverMacLimit();
-	const { v: { activity = [] } = {}, t: roomType, open } = room as IOmnichannelGenericRoom;
 
-	const isContactActive = useMemo(() => {
-		if (!['l', 'v'].includes(roomType) || !open) {
-			return true;
-		}
+	if (!isOmnichannelRoom(room) && !isVoipRoom(room)) {
+		return false;
+	}
 
-		const currentPeriod = getPeriod(new Date());
-		return !isOverMacLimit || activity.includes(currentPeriod);
-	}, [activity, isOverMacLimit, open, roomType]);
+	if (!room.open) {
+		return false;
+	}
 
-	return !isContactActive;
+	const { v: { activity = [] } = {} } = room as IOmnichannelGenericRoom;
+
+	const currentPeriod = getPeriod(new Date());
+	return isOverMacLimit && !activity.includes(currentPeriod);
 };
