@@ -402,6 +402,9 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 	logger.debug(`Forwarding room ${room._id} to agent ${transferData.userId}`);
 
 	const { userId: agentId, clientAction } = transferData;
+	if (!agentId) {
+		throw new Error('error-invalid-agent');
+	}
 	const user = await Users.findOneOnlineAgentById(agentId);
 	if (!user) {
 		logger.debug(`Agent ${agentId} is offline. Cannot forward`);
@@ -434,7 +437,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 		return false;
 	}
 
-	await Livechat.saveTransferHistory(room, transferData);
+	await LivechatTyped.saveTransferHistory(room, transferData);
 
 	const { servedBy } = roomTaken;
 	if (servedBy) {
@@ -534,7 +537,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		logger.debug(
 			`Routing algorithm doesn't support auto assignment (using ${RoutingManager.methodName}). Chat will be on department queue`,
 		);
-		await Livechat.saveTransferHistory(room, transferData);
+		await LivechatTyped.saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId);
 	}
 
@@ -570,7 +573,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		}
 	}
 
-	await Livechat.saveTransferHistory(room, transferData);
+	await LivechatTyped.saveTransferHistory(room, transferData);
 	if (oldServedBy) {
 		// if chat is queued then we don't ignore the new servedBy agent bcs at this
 		// point the chat is not assigned to him/her and it is still in the queue

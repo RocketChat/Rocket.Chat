@@ -10,7 +10,6 @@ import { Subscriptions, ChatRoom } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
-import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
 import { useCreateFontStyleElement } from '../../views/account/accessibility/hooks/useCreateFontStyleElement';
@@ -179,14 +178,6 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			setPreferedLanguage(user.language);
 		}
 	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
-
-	const { data: license } = useIsEnterprise({ enabled: !!userId });
-
-	useEffect(() => {
-		if (!license?.isEnterprise && user?.settings?.preferences?.themeAppearence === 'high-contrast') {
-			setUserPreferences({ data: { themeAppearence: 'light' } });
-		}
-	}, [license?.isEnterprise, setUserPreferences, user?.settings?.preferences?.themeAppearence]);
 
 	return <UserContext.Provider children={children} value={contextValue} />;
 };

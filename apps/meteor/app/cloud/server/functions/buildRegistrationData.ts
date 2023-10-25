@@ -38,6 +38,7 @@ export type WorkspaceRegistrationData<T> = {
 	MAC: number;
 	// activeContactsBillingMonth: number;
 	// activeContactsYesterday: number;
+	statsToken?: string;
 };
 
 export async function buildWorkspaceRegistrationData<T extends string | undefined>(contactEmail: T): Promise<WorkspaceRegistrationData<T>> {
@@ -92,5 +93,6 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		MAC: stats.omnichannelContactsBySource?.contactsCount ?? 0,
 		// activeContactsBillingMonth: stats.omnichannelContactsBySource.contactsCount,
 		// activeContactsYesterday: stats.uniqueContactsOfYesterday.contactsCount,
+		statsToken: stats.statsToken,
 	};
 }
