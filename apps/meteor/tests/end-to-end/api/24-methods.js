@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 
-import { sleep } from '../../../lib/utils/sleep';
 import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data.js';
 import { sendSimpleMessage } from '../../data/chat.helper.js';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
