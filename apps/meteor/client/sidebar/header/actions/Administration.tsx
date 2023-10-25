@@ -4,24 +4,14 @@ import type { HTMLAttributes, VFC } from 'react';
 import React from 'react';
 
 import GenericMenu from '../../../components/GenericMenu/GenericMenu';
-import { useAdministrationHighlight } from './hooks/useAdministrationHighlight';
 import { useAdministrationMenu } from './hooks/useAdministrationMenu';
 
-const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = ({ className, ...props }) => {
+const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
 	const t = useTranslation();
 
 	const sections = useAdministrationMenu();
-	const { className: highlightBadge } = useAdministrationHighlight();
 
-	return (
-		<GenericMenu
-			sections={sections}
-			title={t('Administration')}
-			is={Sidebar.TopBar.Action}
-			className={[className, highlightBadge]}
-			{...props}
-		/>
-	);
+	return <GenericMenu sections={sections} title={t('Administration')} is={Sidebar.TopBar.Action} {...props} />;
 };
 
 export default Administration;
