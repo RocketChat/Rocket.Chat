@@ -121,7 +121,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 		}
 
 		const { _id } = visitor;
-		const result = await Livechat.removeGuest(_id);
+		const result = await LivechatTyped.removeGuest(_id);
 		if (!result.modifiedCount) {
 			throw new Meteor.Error('error-removing-visitor', 'An error ocurred while deleting visitor');
 		}
@@ -174,7 +174,7 @@ API.v1.addRoute('livechat/visitor.callStatus', {
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}
-		await Livechat.updateCallStatus(callId, rid, callStatus, guest);
+		await LivechatTyped.updateCallStatus(callId, rid, callStatus, guest);
 		return API.v1.success({ token, callStatus });
 	},
 });

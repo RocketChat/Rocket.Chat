@@ -66,6 +66,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	const { email, avatar, username } = watch();
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
+	const previousUsername = user?.username || '';
 	const isUserVerified = user?.emails?.[0]?.verified ?? false;
 
 	const mutateConfirmationEmail = useMutation({
@@ -84,6 +85,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 
 	const validateUsername = async (username: string): Promise<string | undefined> => {
 		if (!username) {
+			return;
+		}
+
+		if (username === previousUsername) {
 			return;
 		}
 
