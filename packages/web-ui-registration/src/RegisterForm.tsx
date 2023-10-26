@@ -15,7 +15,7 @@ import {
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
-import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useAccountsCustomFields, useRouter, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -37,6 +37,8 @@ type LoginRegisterPayload = {
 export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const { t } = useTranslation();
 
+	const router = useRouter();
+
 	const requireNameForRegister = Boolean(useSetting('Accounts_RequireNameForSignUp'));
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
 	const manuallyApproveNewUsersRequired = useSetting('Accounts_ManuallyApproveNewUsers');
@@ -54,7 +56,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	const passwordConfirmationId = useUniqueId();
 	const reasonId = useUniqueId();
 
-	const registerUser = useRegisterMethod();
+	const registerUser = useRegisterMethod(router.getRouteName() === 'invite');
 	const customFields = useAccountsCustomFields();
 
 	const [serverError, setServerError] = useState<string | undefined>(undefined);

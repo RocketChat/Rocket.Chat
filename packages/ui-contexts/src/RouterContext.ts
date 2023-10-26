@@ -10,6 +10,10 @@ export interface IRouterPaths {
 		pattern: '/home';
 		pathname: '/home';
 	};
+	invite: {
+		pattern: '/invite/:hash';
+		pathname: '/invite/:hash';
+	};
 }
 
 export type LocationPathname = IRouterPaths[keyof IRouterPaths]['pathname'];
