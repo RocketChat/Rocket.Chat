@@ -41,7 +41,7 @@ import type {
 } from './types/ITeamService';
 import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent';
 import type { ITranslationService } from './types/ITranslationService';
-import type { IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
+import type { UiKitCoreAppPayload, IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
 import type { IVoipService } from './types/IVoipService';
@@ -94,6 +94,7 @@ export {
 	ITeamService,
 	ITeamUpdateData,
 	ITelemetryEvent,
+	UiKitCoreAppPayload,
 	IUiKitCoreApp,
 	IUiKitCoreAppService,
 	IVideoConfService,
@@ -153,6 +154,7 @@ export const Settings = proxifyWithWait<ISettingsService>('settings');
 export const OmnichannelIntegration = proxifyWithWait<IOmnichannelIntegrationService>('omnichannel-integration');
 export const Federation = proxifyWithWait<IFederationService>('federation');
 export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
+export const Omnichannel = proxifyWithWait<IOmnichannelService>('omnichannel');
 export const OmnichannelEEService = proxifyWithWait<IOmnichannelEEService>('omnichannel-ee');
 export const Import = proxifyWithWait<IImportService>('import');
 

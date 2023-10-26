@@ -126,7 +126,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 })();
 
 const subscribeOpenedRoom = [
-	(callback: () => void): (() => void) => RoomManager.on('opened', callback),
+	(callback: () => void): (() => void) => RoomManager.on('changed', callback),
 	(): IRoom['_id'] | undefined => RoomManager.opened,
 ] as const;
 

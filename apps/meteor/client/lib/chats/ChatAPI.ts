@@ -105,7 +105,6 @@ export type UploadsAPI = {
 
 export type ChatAPI = {
 	readonly uid: string | null;
-
 	readonly composer?: ComposerAPI;
 	readonly setComposerAPI: (composer: ComposerAPI) => void;
 	readonly data: DataAPI;
@@ -142,8 +141,10 @@ export type ChatAPI = {
 		performContinuously(action: 'recording' | 'uploading' | 'playing'): void;
 	};
 
+	ActionManager: any;
+
 	readonly flows: {
-		readonly uploadFiles: (files: readonly File[]) => Promise<void>;
+		readonly uploadFiles: (files: readonly File[], resetFileInput?: () => void) => Promise<void>;
 		readonly sendMessage: ({ text, tshow }: { text: string; tshow?: boolean; previewUrls?: string[] }) => Promise<boolean>;
 		readonly processSlashCommand: (message: IMessage, userId: string | null) => Promise<boolean>;
 		readonly processTooLongMessage: (message: IMessage) => Promise<boolean>;

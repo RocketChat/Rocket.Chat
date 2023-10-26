@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useToggle } from '@rocket.chat/fuselage-hooks';
+import { useOutsideClick, useToggle } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { Dispatch, FormEvent, ReactElement, RefObject, SetStateAction } from 'react';
 import { useCallback, useRef } from 'react';
@@ -53,11 +53,10 @@ export type OptionProp = TitleOptionProp | CheckboxOptionProp;
  */
 type DropDownProps = {
 	dropdownOptions: OptionProp[];
-	defaultTitle: TranslationKey; // For example: 'All rooms'
-	selectedOptionsTitle: TranslationKey; // For example: 'Rooms (3)'
+	defaultTitle: TranslationKey;
+	selectedOptionsTitle: TranslationKey;
 	selectedOptions: OptionProp[];
 	setSelectedOptions: Dispatch<SetStateAction<OptionProp[]>>;
-	customSetSelected: Dispatch<SetStateAction<OptionProp[]>>;
 	searchBarText?: TranslationKey;
 };
 
@@ -67,10 +66,10 @@ export const MultiSelectCustom = ({
 	selectedOptionsTitle,
 	selectedOptions,
 	setSelectedOptions,
-	customSetSelected,
 	searchBarText,
 }: DropDownProps): ReactElement => {
 	const reference = useRef<HTMLInputElement>(null);
+	const target = useRef<HTMLElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
 	const onClose = useCallback(
@@ -85,28 +84,19 @@ export const MultiSelectCustom = ({
 		[toggleCollapsed],
 	);
 
+	useOutsideClick([target], onClose);
+
 	const onSelect = (item: OptionProp, e?: FormEvent<HTMLElement>): void => {
 		e?.stopPropagation();
-
 		item.checked = !item.checked;
 
 		if (item.checked === true) {
-			// the user has enabled this option -> add it to the selected options
 			setSelectedOptions([...new Set([...selectedOptions, item])]);
-			customSetSelected((prevItems) => {
-				const newItems = prevItems;
-				const toggledItem = newItems.find(({ id }) => id === item.id);
-
-				if (toggledItem) {
-					toggledItem.checked = !toggledItem.checked;
-				}
-
-				return [...prevItems];
-			});
-		} else {
-			// the user has disabled this option -> remove this from the selected options list
-			setSelectedOptions(selectedOptions.filter((option: OptionProp) => option.id !== item.id));
+			return;
 		}
+
+		// the user has disabled this option -> remove this from the selected options list
+		setSelectedOptions(selectedOptions.filter((option: OptionProp) => option.id !== item.id));
 	};
 
 	const count = dropdownOptions.filter((option) => option.checked).length;
@@ -123,7 +113,7 @@ export const MultiSelectCustom = ({
 				maxCount={dropdownOptions.length}
 			/>
 			{collapsed && (
-				<MultiSelectCustomListWrapper ref={reference} onClose={onClose}>
+				<MultiSelectCustomListWrapper ref={target}>
 					<MultiSelectCustomList options={dropdownOptions} onSelected={onSelect} searchBarText={searchBarText} />
 				</MultiSelectCustomListWrapper>
 			)}

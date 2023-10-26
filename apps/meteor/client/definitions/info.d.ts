@@ -23,4 +23,9 @@ declare module '*.info' {
 		tag?: string;
 		branch?: string;
 	};
+
+	export const minimumClientVersions: {
+		desktop: string;
+		mobile: string;
+	};
 }

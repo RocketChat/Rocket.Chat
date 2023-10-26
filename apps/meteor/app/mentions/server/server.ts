@@ -1,5 +1,5 @@
-import { api } from '@rocket.chat/core-services';
-import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import { api, Team } from '@rocket.chat/core-services';
+import type { IUser, IRoom, ITeam } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -9,16 +9,32 @@ import { settings } from '../../settings/server';
 import MentionsServer from './Mentions';
 
 export class MentionQueries {
-	async getUsers(usernames: string[]): Promise<(Pick<IUser, '_id' | 'username' | 'name'> & { type: 'user' })[]> {
+	async getUsers(
+		usernames: string[],
+	): Promise<((Pick<IUser, '_id' | 'username' | 'name'> & { type: 'user' }) | (Pick<ITeam, '_id' | 'name'> & { type: 'team' }))[]> {
+		const uniqueUsernames = [...new Set(usernames)];
+		const teams = await Team.listByNames(uniqueUsernames, { projection: { name: 1 } });
+
 		const users = await Users.find(
-			{ username: { $in: [...new Set(usernames)] } },
+			{ username: { $in: uniqueUsernames } },
 			{ projection: { _id: true, username: true, name: 1 } },
 		).toArray();
 
-		return users.map((user) => ({
+		const taggedUsers = users.map((user) => ({
 			...user,
-			type: 'user',
+			type: 'user' as const,
 		}));
+
+		if (settings.get<boolean>('Troubleshoot_Disable_Teams_Mention')) {
+			return taggedUsers;
+		}
+
+		const taggedTeams = teams.map((team) => ({
+			...team,
+			type: 'team' as const,
+		}));
+
+		return [...taggedUsers, ...taggedTeams];
 	}
 
 	async getUser(userId: string): Promise<IUser | null> {

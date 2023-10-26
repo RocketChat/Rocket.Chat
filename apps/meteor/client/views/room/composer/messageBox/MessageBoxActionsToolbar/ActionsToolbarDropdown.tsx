@@ -93,6 +93,7 @@ const ActionsToolbarDropdown = ({ isRecording, rid, tmid, actions, ...props }: A
 											chat: chatContext,
 										})
 									}
+									gap={!item.icon}
 								>
 									{item.icon && <OptionIcon name={item.icon as ComponentProps<typeof OptionIcon>['name']} />}
 									<OptionContent>{item.name}</OptionContent>
