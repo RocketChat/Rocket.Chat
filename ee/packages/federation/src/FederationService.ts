@@ -440,7 +440,7 @@ export class FederationService extends ServiceClass implements IFederationServic
 	}
 
 	private async hasValidLicense(): Promise<boolean> {
-		return License.hasLicense('federation');
+		return License.hasModule('federation');
 	}
 
 	private async checkRequiredLicense(): Promise<void> {
