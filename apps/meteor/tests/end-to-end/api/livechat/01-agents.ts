@@ -1,4 +1,4 @@
-import type { ILivechatAgent, ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
+import { UserStatus, type ILivechatAgent, type ILivechatDepartment, type IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
@@ -16,7 +16,7 @@ import {
 } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
-import { createUser, deleteUser, getMe, login } from '../../../data/users.helper';
+import { createUser, deleteUser, getMe, login, setUserStatus } from '../../../data/users.helper';
 
 describe('LIVECHAT - Agents', function () {
 	this.retries(0);
@@ -114,6 +114,68 @@ describe('LIVECHAT - Agents', function () {
 					expect(res.body.users.every((u: { statusLivechat: string }) => u.statusLivechat === 'available')).to.be.true;
 				});
 		});
+		it('should return an array of available/unavailable agents when onlyAvailable is false', async () => {
+			await request
+				.get(api('livechat/users/agent'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.query({ onlyAvailable: false })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.users).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					expect(
+						res.body.users.every(
+							(u: { statusLivechat: string }) => !u.statusLivechat || ['available', 'not-available'].includes(u.statusLivechat),
+						),
+					).to.be.true;
+				});
+		});
+
+		it('should return offline agents when showIdleAgents is true', async () => {
+			await setUserStatus(agent2.credentials, UserStatus.OFFLINE);
+			await request
+				.get(api('livechat/users/agent'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.query({ showIdleAgents: true })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.users).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					expect(
+						res.body.users.every(
+							(u: { status: UserStatus }) =>
+								!u.status || [UserStatus.ONLINE, UserStatus.OFFLINE, UserStatus.AWAY, UserStatus.BUSY].includes(u.status),
+						),
+					).to.be.true;
+				});
+		});
+
+		it('should return only online agents when showIdleAgents is false', async () => {
+			await setUserStatus(agent2.credentials, UserStatus.ONLINE);
+			await request
+				.get(api('livechat/users/agent'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.query({ showIdleAgents: false })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.users).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					expect(res.body.users.every((u: { status: UserStatus }) => u.status !== UserStatus.OFFLINE)).to.be.true;
+				});
+		});
+
 		it('should return an array of managers', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
 			await updatePermission('manage-livechat-agents', ['admin']);
