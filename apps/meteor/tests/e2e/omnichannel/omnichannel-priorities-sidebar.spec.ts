@@ -17,18 +17,22 @@ const getPrioritySystemMessage = (username: string, priority: string) =>
 
 test.skip(!IS_EE, 'Omnichannel Priorities > Enterprise Only');
 
-test.use({ storageState: Users.user1.state });
+test.use({ storageState: Users.user3.state });
 
 test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 	let poHomeChannel: HomeChannel;
 	let poRoomInfo: OmnichannelRoomInfo;
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({  api }) => {
 		(
 			await Promise.all([
-				api.post('/livechat/users/agent', { username: 'user1' }),
-				api.post('/livechat/users/manager', { username: 'user1' }),
+                api.post('/livechat/users/agent', { username: 'user3' }),
+				api.post('/livechat/users/manager', { username: 'user3' }),
 				api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }),
+				api.post('/users.setStatus', { status: 'online', username: 'user3' }),
+				api.post('/livechat/agent.status', { status: 'available', agentId: 'user3' }),
+
+
 			])
 		).every((res) => expect(res.status()).toBe(200));
 	});
@@ -46,8 +50,8 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 	test.afterAll(async ({ api }) => {
 		(
 			await Promise.all([
-				api.delete('/livechat/users/agent/user1'),
-				api.delete('/livechat/users/manager/user1'),
+				api.delete('/livechat/users/agent/user3'),
+				api.delete('/livechat/users/manager/user3'),
 				api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
 			])
 		).every((res) => expect(res.status()).toBe(200));
@@ -57,7 +61,7 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 		const systemMessage = poHomeChannel.content.lastSystemMessageBody;
 
 		await test.step('Initiate conversation', async () => {
-			const poLivechat = await createAuxContext(browser, Users.user1, '/livechat', false).then(
+			const poLivechat = await createAuxContext(browser, Users.user3, '/livechat', false).then(
 				({ page }) => new OmnichannelLiveChat(page, api),
 			);
 			await poLivechat.openLiveChat();
@@ -74,16 +78,16 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
 
 			await poHomeChannel.sidenav.selectPriority(NEW_USER.name, 'Lowest');
-			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Lowest')}"`).waitFor();
+			await systemMessage.locator(`text="${getPrioritySystemMessage('user3', 'Lowest')}"`).waitFor();
 			await expect(poRoomInfo.getLabel('Priority')).toBeVisible();
 			await expect(poRoomInfo.getInfo('Lowest')).toBeVisible();
 
 			await poHomeChannel.sidenav.selectPriority(NEW_USER.name, 'Highest');
-			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Highest')}"`).waitFor();
+			await systemMessage.locator(`text="${getPrioritySystemMessage('user3', 'Highest')}"`).waitFor();
 			await expect(poRoomInfo.getInfo('Highest')).toBeVisible();
 
 			await poHomeChannel.sidenav.selectPriority(NEW_USER.name, 'Unprioritized');
-			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Unprioritized')}"`).waitFor();
+			await systemMessage.locator(`text="${getPrioritySystemMessage('user3', 'Unprioritized')}"`).waitFor();
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
 			await expect(poRoomInfo.getInfo('Unprioritized')).not.toBeVisible();
 		});
@@ -95,16 +99,16 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
 
 			await poHomeChannel.sidenav.selectPriority(NEW_USER.name, 'Lowest');
-			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Lowest')}"`).waitFor();
+			await systemMessage.locator(`text="${getPrioritySystemMessage('user3', 'Lowest')}"`).waitFor();
 			await expect(poRoomInfo.getLabel('Priority')).toBeVisible();
 			await expect(poRoomInfo.getInfo('Lowest')).toBeVisible();
 
 			await poHomeChannel.sidenav.selectPriority(NEW_USER.name, 'Highest');
-			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Highest')}"`).waitFor();
+			await systemMessage.locator(`text="${getPrioritySystemMessage('user3', 'Highest')}"`).waitFor();
 			await expect(poRoomInfo.getInfo('Highest')).toBeVisible();
 
 			await poHomeChannel.sidenav.selectPriority(NEW_USER.name, 'Unprioritized');
-			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Unprioritized')}"`).waitFor();
+			await systemMessage.locator(`text="${getPrioritySystemMessage('user3', 'Unprioritized')}"`).waitFor();
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
 			await expect(poRoomInfo.getInfo('Unprioritized')).not.toBeVisible();
 		});

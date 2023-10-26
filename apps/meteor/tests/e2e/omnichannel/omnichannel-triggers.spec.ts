@@ -18,16 +18,20 @@ test.describe.serial('Omnichannel Triggers', () => {
 			name: faker.person.firstName(),
 			email: faker.internet.email(),
 		};
+
 		triggersName = faker.string.uuid();
 		triggerMessage = 'This is a trigger message';
 		const requests = await Promise.all([
-			api.post('/livechat/users/agent', { username: 'user1' }),
-			api.post('/livechat/users/manager', { username: 'user1' }),
+			api.post('/livechat/users/agent', { username: 'user3' }),
+			api.post('/livechat/users/manager', { username: 'user3' }),
 			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true }),
+			api.post('/users.setStatus', { status: 'online', username: 'user3' }),
+			api.post('/livechat/agent.status', { status: 'available', agentId: 'user3' }),
+
 		]);
 		requests.every((e) => expect(e.status()).toBe(200));
 
-		const { page } = await createAuxContext(browser, Users.user1, '/omnichannel/triggers');
+		const { page } = await createAuxContext(browser, Users.user3, '/omnichannel/triggers');
 		agent = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
 		await page.emulateMedia({ reducedMotion: 'reduce' });
 	});
@@ -38,8 +42,8 @@ test.describe.serial('Omnichannel Triggers', () => {
 
 	test.afterAll(async ({ api }) => {
 		await Promise.all([
-			api.delete('/livechat/users/agent/user1'),
-			api.delete('/livechat/users/manager/user1'),
+			api.delete('/livechat/users/agent/user3'),
+			api.delete('/livechat/users/manager/user3'),
 			api.delete(`/livechat/triggers/${triggersName}`),
 			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false }),
 		]);
@@ -69,6 +73,7 @@ test.describe.serial('Omnichannel Triggers', () => {
 
 	test('create and edit trigger', async () => {
 		await test.step('expect create new trigger', async () => {
+            await agent.page.goto('/omnichannel/triggers');
 			await agent.poHomeOmnichannel.triggers.createTrigger(triggersName, triggerMessage);
 			await agent.poHomeOmnichannel.triggers.btnCloseToastMessage.click();
 		});
