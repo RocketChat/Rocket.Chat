@@ -1,6 +1,6 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
-import { LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
+import { LivechatRooms, LivechatVisitors, LivechatInquiry } from '@rocket.chat/models';
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -37,7 +37,10 @@ callbacks.add(
 		}
 
 		if (!room.v?.activity?.includes(monthYear)) {
-			await LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear);
+			await Promise.all([
+				LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear),
+				LivechatInquiry.markInquiryActiveForPeriod(room._id, monthYear),
+			]);
 		}
 
 		if (room.responseBy) {
