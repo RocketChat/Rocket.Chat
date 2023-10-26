@@ -13,13 +13,13 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 
 const APP_ID = 'mention-core';
 const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: string | undefined) => {
-	const strigifiedMentions = JSON.stringify(mentions);
+	const stringifiedMentions = JSON.stringify(mentions);
 	return {
 		addUsersBlock: {
 			type: 'button',
 			appId: APP_ID,
 			blockId: messageId,
-			value: strigifiedMentions,
+			value: stringifiedMentions,
 			actionId: 'add-users',
 			text: {
 				type: 'plain_text',
@@ -30,7 +30,7 @@ const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: strin
 			type: 'button',
 			appId: APP_ID,
 			blockId: messageId,
-			value: strigifiedMentions,
+			value: stringifiedMentions,
 			actionId: 'dismiss',
 			text: {
 				type: 'plain_text',
@@ -40,7 +40,7 @@ const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: strin
 		dmBlock: {
 			type: 'button',
 			appId: APP_ID,
-			value: strigifiedMentions,
+			value: stringifiedMentions,
 			blockId: messageId,
 			actionId: 'share-message',
 			text: {
