@@ -137,6 +137,13 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 	};
 
 	const formId = useUniqueId();
+	const enabledField = useUniqueId();
+	const runOnceField = useUniqueId();
+	const nameField = useUniqueId();
+	const descriptionField = useUniqueId();
+	const conditionField = useUniqueId();
+	const actionField = useUniqueId();
+	const actionMessageField = useUniqueId();
 
 	return (
 		<Contextualbar>
@@ -149,56 +156,75 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 					<FieldGroup>
 						<Field>
 							<Box display='flex' flexDirection='row'>
-								<FieldLabel>{t('Enabled')}</FieldLabel>
+								<FieldLabel htmlFor={enabledField}>{t('Enabled')}</FieldLabel>
 								<FieldRow>
 									<Controller
 										name='enabled'
 										control={control}
-										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
+										render={({ field: { value, ...field } }) => <ToggleSwitch id={enabledField} {...field} checked={value} />}
 									/>
 								</FieldRow>
 							</Box>
 						</Field>
 						<Field>
 							<Box display='flex' flexDirection='row'>
-								<FieldLabel>{t('Run_only_once_for_each_visitor')}</FieldLabel>
+								<FieldLabel htmlFor={runOnceField}>{t('Run_only_once_for_each_visitor')}</FieldLabel>
 								<FieldRow>
 									<Controller
 										name='runOnce'
 										control={control}
-										render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
+										render={({ field: { value, ...field } }) => <ToggleSwitch id={runOnceField} {...field} checked={value} />}
 									/>
 								</FieldRow>
 							</Box>
 						</Field>
 						<Field>
-							<FieldLabel required>{t('Name')}</FieldLabel>
+							<FieldLabel htmlFor={nameField} required>
+								{t('Name')}
+							</FieldLabel>
 							<FieldRow>
 								<Controller
 									name='name'
 									control={control}
 									rules={{ required: t('The_field_is_required', t('Name')) }}
-									render={({ field }) => <TextInput {...field} error={errors?.name?.message} />}
+									render={({ field }) => (
+										<TextInput
+											{...field}
+											id={nameField}
+											error={errors?.name?.message}
+											aria-required={true}
+											aria-invalid={Boolean(errors?.name)}
+											aria-describedby={`${nameField}-error`}
+										/>
+									)}
 								/>
 							</FieldRow>
-							{errors?.name && <FieldError>{errors?.name.message}</FieldError>}
+							{errors?.name && (
+								<FieldError aria-live='assertive' id={`${nameField}-error`}>
+									{errors?.name.message}
+								</FieldError>
+							)}
 						</Field>
 						<Field>
-							<FieldLabel>{t('Description')}</FieldLabel>
+							<FieldLabel htmlFor={descriptionField}>{t('Description')}</FieldLabel>
 							<FieldRow>
-								<Controller name='description' control={control} render={({ field }) => <TextInput {...field} value={description} />} />
+								<Controller
+									name='description'
+									control={control}
+									render={({ field }) => <TextInput id={descriptionField} {...field} value={description} />}
+								/>
 							</FieldRow>
 						</Field>
 						{conditionsFields.map((_, index) => {
 							const conditionValuePlaceholder = conditionValuePlaceholders[conditions[index].name];
 							return (
 								<Field key={index}>
-									<FieldLabel>{t('Condition')}</FieldLabel>
+									<FieldLabel htmlFor={conditionField}>{t('Condition')}</FieldLabel>
 									<FieldRow>
 										<Controller
 											name={`conditions.${index}.name`}
 											control={control}
-											render={({ field }) => <Select {...field} options={conditionOptions} />}
+											render={({ field }) => <Select id={conditionField} {...field} options={conditionOptions} />}
 										/>
 									</FieldRow>
 									{conditionValuePlaceholder && (
@@ -215,9 +241,9 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 						})}
 						{actionsFields.map((_, index) => (
 							<Field key={index}>
-								<FieldLabel>{t('Action')}</FieldLabel>
+								<FieldLabel htmlFor={actionField}>{t('Action')}</FieldLabel>
 								<FieldRow>
-									<TextInput value={t('Send_a_message')} disabled />
+									<TextInput id={actionField} value={t('Send_a_message')} readOnly />
 								</FieldRow>
 								<FieldRow>
 									<Controller
@@ -244,7 +270,8 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 											<TextAreaInput
 												error={errors.actions?.[index]?.params?.msg?.message}
 												aria-invalid={Boolean(errors.actions?.[index]?.params?.msg)}
-												aria-describedby=''
+												aria-describedby={`${actionMessageField}-error`}
+												aria-required={true}
 												{...field}
 												rows={3}
 												placeholder={`${t('Message')}*`}
@@ -252,7 +279,11 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 										)}
 									/>
 								</FieldRow>
-								{errors.actions?.[index]?.params?.msg && <FieldError>{errors.actions?.[index]?.params?.msg?.message}</FieldError>}
+								{errors.actions?.[index]?.params?.msg && (
+									<FieldError aria-live='assertive' id={`${actionMessageField}-error`}>
+										{errors.actions?.[index]?.params?.msg?.message}
+									</FieldError>
+								)}
 							</Field>
 						))}
 					</FieldGroup>
