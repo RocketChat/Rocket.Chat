@@ -10,16 +10,15 @@ import { findAgents, findManagers } from '../../../server/api/lib/users';
 import { Livechat as LivechatJS } from '../../../server/lib/Livechat';
 import { Livechat } from '../../../server/lib/LivechatTyped';
 
+const emptyStringArray: string[] = [];
+
 API.v1.addRoute(
 	'livechat/users/:type',
 	{
 		authRequired: true,
 		permissionsRequired: {
-			GET: {
-				permissions: ['manage-livechat-agents'],
-				operation: 'hasAll',
-			},
-			POST: { permissions: ['view-livechat-manager'], operation: 'hasAll' },
+			'POST': ['view-livechat-manager'],
+			'*': emptyStringArray,
 		},
 		validateParams: {
 			GET: isLivechatUsersManagerGETProps,
@@ -40,9 +39,13 @@ API.v1.addRoute(
 					return API.v1.unauthorized();
 				}
 
+				const { onlyAvailable, excludeId, showIdleAgents } = this.queryParams;
 				return API.v1.success(
 					await findAgents({
 						text,
+						onlyAvailable,
+						excludeId,
+						showIdleAgents,
 						pagination: {
 							offset,
 							count,
