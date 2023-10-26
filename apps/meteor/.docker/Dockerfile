@@ -33,10 +33,10 @@ RUN set -o pipefail \
 
 COPY --chown=rocketchat:rocketchat . /app
 
-USER rokcetchat
+USER rocketchat
 
 RUN cd /app/bundle/programs/server \
-	&& [[ $(uname -m) == "x86_64" ]] && export METEOR_SKIP_NPM_REBUILD=1 \
+	&& if [[ $(uname -m) == "x86_64" ]]; then export METEOR_SKIP_NPM_REBUILD=1; fi \
 	&& npm install --production
 
 VOLUME /app/uploads
