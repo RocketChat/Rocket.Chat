@@ -11,8 +11,8 @@ export interface IRouterPaths {
 		pathname: '/home';
 	};
 	invite: {
+		pathname: `/invite/${string}`;
 		pattern: '/invite/:hash';
-		pathname: '/invite/:hash';
 	};
 }
 
