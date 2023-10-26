@@ -8,6 +8,7 @@ export type OmnichannelContextValue = {
 	agentAvailable: boolean;
 	routeConfig?: OmichannelRoutingConfig;
 	showOmnichannelQueueLink: boolean;
+	isOverMacLimit: boolean;
 	livechatPriorities: {
 		data: Serialized<ILivechatPriority>[];
 		isLoading: boolean;
@@ -22,6 +23,7 @@ export const OmnichannelContext = createContext<OmnichannelContextValue>({
 	isEnterprise: false,
 	agentAvailable: false,
 	showOmnichannelQueueLink: false,
+	isOverMacLimit: false,
 	livechatPriorities: {
 		data: [],
 		isLoading: false,

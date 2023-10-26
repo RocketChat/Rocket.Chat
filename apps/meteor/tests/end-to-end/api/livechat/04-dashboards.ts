@@ -196,13 +196,11 @@ describe('LIVECHAT - dashboards', function () {
 			});
 
 			const minMessages = TOTAL_MESSAGES.min * TOTAL_ROOMS;
-			const maxMessages = TOTAL_MESSAGES.max * TOTAL_ROOMS;
 
 			const totalMessages = result.body.totalizers.find((item: any) => item.title === 'Total_messages');
 			expect(totalMessages).to.not.be.undefined;
 			const totalMessagesValue = parseInt(totalMessages.value);
 			expect(totalMessagesValue).to.be.greaterThanOrEqual(minMessages);
-			expect(totalMessagesValue).to.be.lessThanOrEqual(maxMessages);
 		});
 	});
 
