@@ -2,7 +2,7 @@ import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks
 import languages from '@rocket.chat/i18n/dist/languages';
 import en from '@rocket.chat/i18n/src/locales/en.i18n.json';
 import type { TranslationKey, TranslationContextValue } from '@rocket.chat/ui-contexts';
-import { useMethod, useSetting, TranslationContext, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
+import { useMethod, useSetting, TranslationContext } from '@rocket.chat/ui-contexts';
 import type i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
 import sprintf from 'i18next-sprintf-postprocessor';
@@ -12,6 +12,7 @@ import React, { useEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
 import { CachedCollectionManager } from '../../app/ui-cached-collection/client';
+import { getURL } from '../../app/utils/client';
 import { i18n, addSprinfToI18n } from '../../app/utils/lib/i18n';
 import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator';
 import { applyCustomTranslations } from '../lib/utils/applyCustomTranslations';
@@ -39,8 +40,6 @@ const parseToJSON = (customTranslations: string): Record<string, Record<string, 
 const localeCache = new Map<string, Promise<string>>();
 
 const useI18next = (lng: string): typeof i18next => {
-	const basePath = useAbsoluteUrl()('/i18n');
-
 	const customTranslations = useSetting('Custom_Translations');
 
 	const parsedCustomTranslations = useMemo(() => {
@@ -79,6 +78,11 @@ const useI18next = (lng: string): typeof i18next => {
 
 						if (prefix) {
 							result[key.slice(prefix.length + 1)] = value;
+							continue;
+						}
+
+						if (Array.isArray(namespaces) ? namespaces.includes('core') : namespaces === 'core') {
+							result[key] = value;
 						}
 					}
 				}
@@ -100,17 +104,18 @@ const useI18next = (lng: string): typeof i18next => {
 			partialBundledLanguages: true,
 			defaultNS: 'core',
 			backend: {
-				loadPath: `${basePath}/{{lng}}.json`,
+				loadPath: 'i18n/{{lng}}.json',
 				parse: (data: string, lngs?: string | string[], namespaces: string | string[] = []) =>
 					extractKeys(JSON.parse(data), lngs, namespaces),
 				request: (_options, url, _payload, callback) => {
 					const params = url.split('/');
+
 					const lng = params[params.length - 1];
 
 					let promise = localeCache.get(lng);
 
 					if (!promise) {
-						promise = fetch(url).then((res) => res.text());
+						promise = fetch(getURL(url)).then((res) => res.text());
 						localeCache.set(lng, promise);
 					}
 
@@ -122,6 +127,8 @@ const useI18next = (lng: string): typeof i18next => {
 			},
 			react: {
 				useSuspense: true,
+				bindI18n: 'languageChanged loaded',
+				bindI18nStore: 'added removed',
 			},
 			interpolation: {
 				escapeValue: false,
@@ -174,7 +181,7 @@ type TranslationProviderProps = {
 const useAutoLanguage = () => {
 	const serverLanguage = useSetting<string>('Language');
 	const browserLanguage = filterLanguage(window.navigator.userLanguage ?? window.navigator.language);
-	const defaultUserLanguage = serverLanguage || browserLanguage || 'en';
+	const defaultUserLanguage = browserLanguage || serverLanguage || 'en';
 
 	// if the language is supported, if not remove the region
 	const suggestedLanguage = languages.includes(defaultUserLanguage) ? defaultUserLanguage : defaultUserLanguage.split('-').shift() ?? 'en';
@@ -209,11 +216,13 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 			{
 				en: 'Default',
 				name: i18nextInstance.t('Default'),
+				ogName: i18nextInstance.t('Default'),
 				key: '',
 			},
 			...[...new Set([...i18nextInstance.languages, ...languages])].map((key) => ({
 				en: key,
 				name: getLanguageName(key, language),
+				ogName: getLanguageName(key, key),
 				key,
 			})),
 		],
@@ -222,6 +231,7 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 
 	useEffect(() => {
 		if (moment.locales().includes(language.toLowerCase())) {
+			moment.locale(language);
 			return;
 		}
 
@@ -270,6 +280,7 @@ const TranslationProviderInner = ({
 	availableLanguages: {
 		en: string;
 		name: string;
+		ogName: string;
 		key: string;
 	}[];
 }): ReactElement => {

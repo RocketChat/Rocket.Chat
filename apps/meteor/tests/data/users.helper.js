@@ -33,16 +33,13 @@ export const login = (username, password) =>
 			});
 	});
 
-export const deleteUser = (user) =>
-	new Promise((resolve) => {
-		request
-			.post(api('users.delete'))
-			.set(credentials)
-			.send({
-				userId: user._id,
-			})
-			.end(resolve);
-	});
+export const deleteUser = async (user) =>
+	request
+		.post(api('users.delete'))
+		.set(credentials)
+		.send({
+			userId: user._id,
+		});
 
 export const getUserByUsername = (username) =>
 	new Promise((resolve) => {
@@ -76,4 +73,16 @@ export const getMe = (overrideCredential = credentials) =>
 			.end((end, res) => {
 				resolve(res.body);
 			});
+	});
+
+export const setUserActiveStatus = (userId, activeStatus = true) =>
+	new Promise((resolve) => {
+		request
+			.post(api('users.setActiveStatus'))
+			.set(credentials)
+			.send({
+				userId,
+				activeStatus,
+			})
+			.end(resolve);
 	});

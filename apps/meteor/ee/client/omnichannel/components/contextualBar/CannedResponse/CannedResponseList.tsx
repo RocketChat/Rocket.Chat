@@ -30,6 +30,7 @@ const CannedResponseList: FC<{
 	setText: FormEventHandler<HTMLOrSVGElement>;
 	type: string;
 	setType: Dispatch<SetStateAction<string>>;
+	isRoomOverMacLimit: boolean;
 	onClickItem: (data: any) => void;
 	onClickCreate: (e: MouseEvent<HTMLOrSVGElement>) => void;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
@@ -45,6 +46,7 @@ const CannedResponseList: FC<{
 	setText,
 	type,
 	setType,
+	isRoomOverMacLimit,
 	onClickItem,
 	onClickCreate,
 	onClickUse,
@@ -78,7 +80,7 @@ const CannedResponseList: FC<{
 								ref={inputRef}
 							/>
 							<Box w='x144'>
-								<Select onChange={setType} value={type} options={options} />
+								<Select onChange={(value) => setType(String(value))} value={type} options={options} />
 							</Box>
 						</Margins>
 					</Box>
@@ -98,6 +100,7 @@ const CannedResponseList: FC<{
 							itemContent={(_index, data): ReactElement => (
 								<Item
 									data={data}
+									allowUse={!isRoomOverMacLimit}
 									onClickItem={(): void => {
 										onClickItem(data);
 									}}
@@ -112,6 +115,7 @@ const CannedResponseList: FC<{
 			{cannedId && (
 				<ContextualbarInnerContent>
 					<WrapCannedResponse
+						allowUse={!isRoomOverMacLimit}
 						cannedItem={cannedItems.find((canned) => canned._id === (cannedId as unknown))}
 						onClickBack={onClickItem}
 						onClickUse={onClickUse}

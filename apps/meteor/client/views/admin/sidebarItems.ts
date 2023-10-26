@@ -8,7 +8,7 @@ export const {
 	subscribeToSidebarItems: subscribeToAdminSidebarItems,
 } = createSidebarItems([
 	{
-		href: '/admin/workspace',
+		href: '/admin/info',
 		i18nLabel: 'Workspace',
 		icon: 'info-circled',
 		permissionGranted: (): boolean => hasPermission('view-statistics'),
@@ -112,8 +112,8 @@ export const {
 		permissionGranted: (): boolean => hasPermission('run-import'),
 	},
 	{
-		href: '/admin/logs',
-		i18nLabel: 'Logs',
+		href: '/admin/reports',
+		i18nLabel: 'Reports',
 		icon: 'post',
 		permissionGranted: (): boolean => hasPermission('view-logs'),
 	},

@@ -2,7 +2,7 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
 
-import { getPeriodRange } from '../dataView/periods';
+import { getPeriodRange } from '../../../../components/dashboards/periods';
 
 type UseActiveUsersOptions = { utc: boolean };
 

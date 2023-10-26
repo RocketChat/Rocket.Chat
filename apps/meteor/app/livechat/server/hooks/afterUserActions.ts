@@ -1,8 +1,8 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import { type IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
-import { callbackLogger } from '../lib/logger';
 
 type IAfterSaveUserProps = {
 	user: IUser;
@@ -33,14 +33,12 @@ const handleAgentCreated = async (user: IUser) => {
 
 const handleDeactivateUser = async (user: IUser) => {
 	if (wasAgent(user)) {
-		callbackLogger.debug('Removing agent', user._id);
-		await Livechat.removeAgent(user.username);
+		await Users.makeAgentUnavailableAndUnsetExtension(user._id);
 	}
 };
 
 const handleActivateUser = async (user: IUser) => {
 	if (isAgent(user)) {
-		callbackLogger.debug('Adding agent', user._id);
 		await Livechat.addAgent(user.username);
 	}
 };

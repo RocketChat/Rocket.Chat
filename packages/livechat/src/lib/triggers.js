@@ -34,7 +34,7 @@ const getAgent = (triggerAction) => {
 
 			let agent;
 			try {
-				agent = await Livechat.nextAgent(department);
+				agent = await Livechat.nextAgent({ department });
 			} catch (error) {
 				return reject(error);
 			}
@@ -105,12 +105,10 @@ class Triggers {
 		this._started = true;
 		this._triggers = [...triggers];
 
-		firedTriggers.forEach((triggerId) => {
-			this._triggers.forEach((trigger) => {
-				if (trigger._id === triggerId) {
-					trigger.skip = true;
-				}
-			});
+		this._triggers.forEach((trigger) => {
+			if (firedTriggers.includes(trigger._id)) {
+				trigger.skip = true;
+			}
 		});
 
 		store.on('change', ([state, prevState]) => {
@@ -121,11 +119,13 @@ class Triggers {
 	}
 
 	async fire(trigger) {
-		const { token, firedTriggers = [], user } = store.state;
+		const { token, user } = store.state;
+
 		if (!this._enabled || user) {
 			return;
 		}
-		const { actions } = trigger;
+
+		const { actions, conditions } = trigger;
 		await asyncForEach(actions, (action) => {
 			if (action.name === 'send-message') {
 				trigger.skip = true;
@@ -140,6 +140,7 @@ class Triggers {
 						ts: ts.toISOString(),
 						_id: createToken(),
 						trigger: true,
+						triggerAfterRegistration: conditions.some((c) => c.name === 'after-guest-registration'),
 					};
 
 					await store.setState({
@@ -148,9 +149,10 @@ class Triggers {
 							store.state.messages,
 							message,
 							({ _id }) => _id === message._id,
-							({ ts }) => ts,
+							({ ts }) => new Date(ts).getTime(),
 						),
 					});
+
 					await processUnread();
 
 					if (agent && agent._id) {
@@ -158,10 +160,11 @@ class Triggers {
 						parentCall('callback', ['assign-agent', normalizeAgent(agent)]);
 					}
 
-					const foundCondition = trigger.conditions.find((c) => c.name === 'chat-opened-by-visitor');
+					const foundCondition = trigger.conditions.find((c) => ['chat-opened-by-visitor', 'after-guest-registration'].includes(c.name));
 					if (!foundCondition) {
 						route('/trigger-messages');
 					}
+
 					store.setState({ minimized: false });
 				});
 			}
@@ -169,13 +172,29 @@ class Triggers {
 
 		if (trigger.runOnce) {
 			trigger.skip = true;
-			firedTriggers.push(trigger._id);
-			store.setState({ firedTriggers });
+			store.setState({ firedTriggers: [...store.state.firedTriggers, trigger._id] });
 		}
 	}
 
 	processRequest(request) {
 		this._requests.push(request);
+	}
+
+	ready(triggerId, condition) {
+		const { activeTriggers = [] } = store.state;
+		store.setState({ activeTriggers: { ...activeTriggers, [triggerId]: condition } });
+	}
+
+	showTriggerMessages() {
+		const { activeTriggers = [] } = store.state;
+
+		const triggers = Object.entries(activeTriggers);
+
+		if (!triggers.length) {
+			return false;
+		}
+
+		return triggers.some(([, condition]) => condition.name !== 'after-guest-registration');
 	}
 
 	processTriggers() {
@@ -189,19 +208,23 @@ class Triggers {
 					case 'page-url':
 						const hrefRegExp = new RegExp(condition.value, 'g');
 						if (this.parentUrl && hrefRegExp.test(this.parentUrl)) {
+							this.ready(trigger._id, condition);
 							this.fire(trigger);
 						}
 						break;
 					case 'time-on-site':
+						this.ready(trigger._id, condition);
 						trigger.timeout = setTimeout(() => {
 							this.fire(trigger);
 						}, parseInt(condition.value, 10) * 1000);
 						break;
 					case 'chat-opened-by-visitor':
+					case 'after-guest-registration':
 						const openFunc = () => {
 							this.fire(trigger);
 							this.callbacks.off('chat-opened-by-visitor', openFunc);
 						};
+						this.ready(trigger._id, condition);
 						this.callbacks.on('chat-opened-by-visitor', openFunc);
 						break;
 				}

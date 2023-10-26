@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Select, Margins, Field, Label } from '@rocket.chat/fuselage';
+import { Box, Select, Margins, Field, FieldLabel, FieldRow, Label } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useEffect } from 'react';
 
@@ -59,7 +59,7 @@ const AnalyticsPage = () => {
 						<Box display='flex' flexWrap='wrap' flexGrow={1}>
 							<Box display='flex' mi={4} flexDirection='column' flexGrow={1}>
 								<Label mb={4}>{t('Type')}</Label>
-								<Select options={typeOptions} value={type} onChange={setType} />
+								<Select options={typeOptions} value={type} onChange={(value) => setType(String(value))} />
 							</Box>
 							<Box display='flex' mi={4} flexDirection='column' flexGrow={1}>
 								<Label mb={4}>{t('Departments')}</Label>
@@ -74,10 +74,10 @@ const AnalyticsPage = () => {
 					<Box display='flex'>
 						<Margins inline={2}>
 							<Field>
-								<Field.Label>{t('Chart')}</Field.Label>
-								<Field.Row>
-									<Select options={graphOptions} value={chartName} onChange={setChartName} />
-								</Field.Row>
+								<FieldLabel>{t('Chart')}</FieldLabel>
+								<FieldRow>
+									<Select options={graphOptions} value={chartName} onChange={(value) => setChartName(String(value))} />
+								</FieldRow>
 							</Field>
 						</Margins>
 					</Box>

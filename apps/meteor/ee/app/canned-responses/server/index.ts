@@ -1,6 +1,6 @@
-import { onLicense } from '../../license/server';
+import { License } from '@rocket.chat/license';
 
-await onLicense('canned-responses', async () => {
+await License.onLicense('canned-responses', async () => {
 	const { createSettings } = await import('./settings');
 	await import('./permissions');
 	await import('./hooks/onRemoveAgentDepartment');

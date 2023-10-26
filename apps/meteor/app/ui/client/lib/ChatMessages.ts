@@ -18,6 +18,7 @@ import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
+import { actionManager } from '../../../ui-message/client/ActionManager';
 import { UserAction } from './UserAction';
 
 type DeepWritable<T> = T extends (...args: any) => any
@@ -41,6 +42,8 @@ export class ChatMessages implements ChatAPI {
 	public readStateManager: ReadStateManager;
 
 	public uploads: UploadsAPI;
+
+	public ActionManager: any;
 
 	public userCard: { open(username: string): (event: UIEvent) => void; close(): void };
 
@@ -147,6 +150,7 @@ export class ChatMessages implements ChatAPI {
 		this.uid = params.uid;
 		this.data = createDataAPI({ rid, tmid });
 		this.uploads = createUploadsAPI({ rid, tmid });
+		this.ActionManager = actionManager;
 
 		const unimplemented = () => {
 			throw new Error('Flow is not implemented');
