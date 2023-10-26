@@ -156,7 +156,7 @@ const create = async ({
 	const discussion = await createRoom(
 		type,
 		name,
-		user.username as string,
+		user,
 		[...new Set(invitedUsers)].filter(Boolean),
 		false,
 		false,
@@ -221,7 +221,7 @@ export const createDiscussion = async (
 		});
 	}
 
-	if (!(await hasAtLeastOnePermissionAsync(userId, ['start-discussion', 'start-discussion-other-user']))) {
+	if (!(await hasAtLeastOnePermissionAsync(userId, ['start-discussion', 'start-discussion-other-user'], prid))) {
 		throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 	}
 	const user = await Users.findOneById(userId);

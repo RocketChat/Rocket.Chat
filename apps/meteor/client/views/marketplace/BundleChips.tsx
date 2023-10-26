@@ -18,15 +18,15 @@ const BundleChips = ({ bundledIn }: BundleChipsProps): ReactElement => {
 
 	return (
 		<>
-			{bundledIn.map((bundle) => (
+			{bundledIn.map(({ bundleId, bundleName }) => (
 				<Tag
-					key={bundle.bundleId}
+					key={bundleId}
 					variant='featured'
 					title={t('this_app_is_included_with_subscription', {
-						bundleName: bundle.bundleName,
+						bundleName,
 					})}
 				>
-					{bundle.bundleName}
+					{bundleName}
 				</Tag>
 			))}
 		</>

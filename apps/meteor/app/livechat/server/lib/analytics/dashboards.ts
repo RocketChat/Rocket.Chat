@@ -1,9 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '@rocket.chat/models';
+import mem from 'mem';
 import moment from 'moment';
 
 import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
 import { settings } from '../../../../settings/server';
+import { getAnalyticsOverviewDataCachedForRealtime } from '../AnalyticsTyped';
 import { Livechat } from '../Livechat';
 import {
 	findPercentageOfAbandonedRoomsAsync,
@@ -13,15 +15,7 @@ import {
 	findAllAverageServiceTimeAsync,
 } from './departments';
 
-export const findAllChatsStatusAsync = async ({
-	start,
-	end,
-	departmentId = undefined,
-}: {
-	start: Date;
-	end: Date;
-	departmentId?: string;
-}) => {
+const findAllChatsStatusAsync = async ({ start, end, departmentId = undefined }: { start: Date; end: Date; departmentId?: string }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -33,7 +27,7 @@ export const findAllChatsStatusAsync = async ({
 	};
 };
 
-export const getProductivityMetricsAsync = async ({
+const getProductivityMetricsAsync = async ({
 	start,
 	end,
 	departmentId = undefined,
@@ -78,7 +72,7 @@ export const getProductivityMetricsAsync = async ({
 	};
 };
 
-export const getAgentsProductivityMetricsAsync = async ({
+const getAgentsProductivityMetricsAsync = async ({
 	start,
 	end,
 	departmentId = undefined,
@@ -148,7 +142,7 @@ export const getAgentsProductivityMetricsAsync = async ({
 	};
 };
 
-export const getChatsMetricsAsync = async ({ start, end, departmentId = undefined }: { start: Date; end: Date; departmentId?: string }) => {
+const getChatsMetricsAsync = async ({ start, end, departmentId = undefined }: { start: Date; end: Date; departmentId?: string }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -223,7 +217,7 @@ export const getChatsMetricsAsync = async ({ start, end, departmentId = undefine
 	};
 };
 
-export const getConversationsMetricsAsync = async ({
+const getConversationsMetricsAsync = async ({
 	start,
 	end,
 	departmentId,
@@ -237,7 +231,7 @@ export const getConversationsMetricsAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const totalizers = await Livechat.Analytics.getAnalyticsOverviewData({
+	const totalizers = await getAnalyticsOverviewDataCachedForRealtime({
 		daterange: {
 			from: start,
 			to: end,
@@ -263,7 +257,7 @@ export const getConversationsMetricsAsync = async ({
 	};
 };
 
-export const findAllChatMetricsByAgentAsync = async ({
+const findAllChatMetricsByAgentAsync = async ({
 	start,
 	end,
 	departmentId = undefined,
@@ -311,10 +305,10 @@ export const findAllChatMetricsByAgentAsync = async ({
 	return result;
 };
 
-export const findAllAgentsStatusAsync = async ({ departmentId = undefined }: { departmentId?: string }) =>
+const findAllAgentsStatusAsync = async ({ departmentId = undefined }: { departmentId?: string }) =>
 	(await Users.countAllAgentsStatus({ departmentId }))[0];
 
-export const findAllChatMetricsByDepartmentAsync = async ({
+const findAllChatMetricsByDepartmentAsync = async ({
 	start,
 	end,
 	departmentId = undefined,
@@ -349,7 +343,7 @@ export const findAllChatMetricsByDepartmentAsync = async ({
 	return result;
 };
 
-export const findAllResponseTimeMetricsAsync = async ({
+const findAllResponseTimeMetricsAsync = async ({
 	start,
 	end,
 	departmentId = undefined,
@@ -380,3 +374,16 @@ export const findAllResponseTimeMetricsAsync = async ({
 		},
 	};
 };
+
+export const getConversationsMetricsAsyncCached = mem(getConversationsMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const getAgentsProductivityMetricsAsyncCached = mem(getAgentsProductivityMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const getChatsMetricsAsyncCached = mem(getChatsMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const getProductivityMetricsAsyncCached = mem(getProductivityMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const findAllChatsStatusAsyncCached = mem(findAllChatsStatusAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const findAllChatMetricsByAgentAsyncCached = mem(findAllChatMetricsByAgentAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const findAllAgentsStatusAsyncCached = mem(findAllAgentsStatusAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const findAllChatMetricsByDepartmentAsyncCached = mem(findAllChatMetricsByDepartmentAsync, {
+	maxAge: 5000,
+	cacheKey: JSON.stringify,
+});
+export const findAllResponseTimeMetricsAsyncCached = mem(findAllResponseTimeMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });

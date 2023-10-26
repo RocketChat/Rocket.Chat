@@ -1,4 +1,4 @@
-import { Field, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEvent } from 'react';
 import React, { useState, useCallback } from 'react';
@@ -86,17 +86,17 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 		<>
 			<ContextualbarScrollableContent {...props}>
 				<Field>
-					<Field.Label>{t('Name')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Name')}</FieldLabel>
+					<FieldRow>
 						<TextInput
 							value={name}
 							onChange={(e: FormEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
 							placeholder={t('Name')}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label alignSelf='stretch'>{t('Sound_File_mp3')}</Field.Label>
+					<FieldLabel alignSelf='stretch'>{t('Sound_File_mp3')}</FieldLabel>
 					<Box display='flex' flexDirection='row' mbs='none'>
 						<Margins inline={4}>
 							{/* FIXME: replace to IconButton */}

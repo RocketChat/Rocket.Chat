@@ -4,6 +4,7 @@ import type { MouseEvent } from 'react';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 
 import { useRecordList } from '../../../../../../client/hooks/lists/useRecordList';
+import { useIsRoomOverMacLimit } from '../../../../../../client/hooks/omnichannel/useIsRoomOverMacLimit';
 import { AsyncStatePhase } from '../../../../../../client/lib/asyncState';
 import { useChat } from '../../../../../../client/views/room/contexts/ChatContext';
 import { useRoom } from '../../../../../../client/views/room/contexts/RoomContext';
@@ -23,6 +24,8 @@ export const WrapCannedResponseList = () => {
 
 	const [text, setText] = useState('');
 	const [type, setType] = useLocalStorage('canned-response-list-type', 'all');
+
+	const isRoomOverMacLimit = useIsRoomOverMacLimit(room);
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
@@ -74,6 +77,7 @@ export const WrapCannedResponseList = () => {
 			setText={handleTextChange}
 			type={type}
 			setType={setType}
+			isRoomOverMacLimit={isRoomOverMacLimit}
 			onClickUse={onClickUse}
 			onClickItem={onClickItem}
 			onClickCreate={onClickCreate}

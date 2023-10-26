@@ -94,6 +94,26 @@ describe('LIVECHAT - Agents', function () {
 					expect(agentRecentlyCreated?._id).to.be.equal(agent._id);
 				});
 		});
+		it('should return an array of available agents', async () => {
+			await updatePermission('edit-omnichannel-contact', ['admin']);
+			await updatePermission('transfer-livechat-guest', ['admin']);
+			await updatePermission('manage-livechat-agents', ['admin']);
+
+			await request
+				.get(api('livechat/users/agent'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.query({ onlyAvailable: true })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.users).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					expect(res.body.users.every((u: { statusLivechat: string }) => u.statusLivechat === 'available')).to.be.true;
+				});
+		});
 		it('should return an array of managers', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
 			await updatePermission('manage-livechat-agents', ['admin']);
