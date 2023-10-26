@@ -1,3 +1,4 @@
+import { UserStatus } from '@rocket.chat/core-typings';
 import { api, credentials, request } from './api-data';
 import { password } from './user';
 
@@ -84,7 +85,7 @@ export const setUserActiveStatus = (userId, activeStatus = true) =>
 			.end(resolve);
 	});
 
-export const setUserStatus = (overrideCredentials = credentials, status = 'online') =>
+export const setUserStatus = (overrideCredentials = credentials, status = UserStatus.ONLINE) =>
 	request.post(api('users.setStatus')).set(overrideCredentials).send({
 		message: '',
 		status,

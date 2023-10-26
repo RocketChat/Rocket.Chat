@@ -1,4 +1,4 @@
-import type { ILivechatAgent, ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
+import { UserStatus, type ILivechatAgent, type ILivechatDepartment, type IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
@@ -136,7 +136,7 @@ describe('LIVECHAT - Agents', function () {
 		});
 
 		it('should return offline agents when showIdleAgents is true', async () => {
-			await setUserStatus(agent2.credentials, 'offline');
+			await setUserStatus(agent2.credentials, UserStatus.OFFLINE);
 			await request
 				.get(api('livechat/users/agent'))
 				.set(credentials)
@@ -149,13 +149,17 @@ describe('LIVECHAT - Agents', function () {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
-					expect(res.body.users.every((u: { status: string }) => !u.status || ['online', 'offline', 'away', 'busy'].includes(u.status))).to
-						.be.true;
+					expect(
+						res.body.users.every(
+							(u: { status: UserStatus }) =>
+								!u.status || [UserStatus.ONLINE, UserStatus.OFFLINE, UserStatus.AWAY, UserStatus.BUSY].includes(u.status),
+						),
+					).to.be.true;
 				});
 		});
 
 		it('should return only online agents when showIdleAgents is false', async () => {
-			await setUserStatus(agent2.credentials, 'online');
+			await setUserStatus(agent2.credentials, UserStatus.ONLINE);
 			await request
 				.get(api('livechat/users/agent'))
 				.set(credentials)
@@ -168,7 +172,7 @@ describe('LIVECHAT - Agents', function () {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
-					expect(res.body.users.every((u: { status: string }) => u.status !== 'offline')).to.be.true;
+					expect(res.body.users.every((u: { status: UserStatus }) => u.status !== UserStatus.OFFLINE)).to.be.true;
 				});
 		});
 
