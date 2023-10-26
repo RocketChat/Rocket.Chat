@@ -36,7 +36,7 @@ COPY --chown=rocketchat:rocketchat . /app
 USER rocketchat
 
 RUN cd /app/bundle/programs/server \
-	&& if [ "$(uname -m)" == "x86_64" ]; then export METEOR_SKIP_NPM_REBUILD=1; fi \
+	&& if [ "$(uname -m)" = "x86_64" ]; then export METEOR_SKIP_NPM_REBUILD=1; fi \
 	&& npm install --production
 
 VOLUME /app/uploads
