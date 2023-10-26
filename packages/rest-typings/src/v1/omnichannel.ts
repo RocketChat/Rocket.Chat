@@ -3615,7 +3615,7 @@ export type OmnichannelEndpoints = {
 		POST: (params: POSTLivechatTriggersParams) => void;
 	};
 	'/v1/livechat/triggers/:_id': {
-		GET: () => { trigger: ILivechatTrigger | null };
+		GET: () => { trigger: ILivechatTrigger };
 		DELETE: () => void;
 	};
 	'/v1/livechat/rooms': {
