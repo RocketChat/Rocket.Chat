@@ -3,7 +3,7 @@ import { isGETLivechatTriggersParams, isPOSTLivechatTriggersParams } from '@rock
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { findTriggers, findTriggerById } from '../../../server/api/lib/triggers';
+import { findTriggers, findTriggerById, deleteTrigger } from '../../../server/api/lib/triggers';
 
 API.v1.addRoute(
 	'livechat/triggers',
@@ -56,6 +56,13 @@ API.v1.addRoute(
 			return API.v1.success({
 				trigger,
 			});
+		},
+		async delete() {
+			await deleteTrigger({
+				triggerId: this.urlParams._id,
+			});
+
+			return API.v1.success();
 		},
 	},
 );
