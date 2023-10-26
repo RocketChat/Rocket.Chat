@@ -7,6 +7,7 @@ import { _setRealName } from './setRealName';
 import { _setUsername } from './setUsername';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
+import { messageTextToAstMarkdown } from '../../../../server/lib/messageTextToAstMarkdown';
 
 /**
  *
@@ -125,7 +126,8 @@ async function updateUsernameReferences({
 		const cursor = Messages.findByMention(previousUsername);
 		for await (const msg of cursor) {
 			const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
-			await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
+			const updatedMd = messageTextToAstMarkdown(updatedMsg);
+			await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg, updatedMd);
 		}
 
 		await Rooms.replaceUsername(previousUsername, username);

@@ -28,6 +28,7 @@ import type {
 	Document,
 	UpdateFilter,
 } from 'mongodb';
+import type { Root } from '@rocket.chat/message-parser';
 
 import { otrSystemMessages } from '../../../app/otr/lib/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -1203,6 +1204,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		oldUsername: string,
 		newUsername: string,
 		newMessage: string,
+		newMd: Root,
 	): Promise<UpdateResult> {
 		const query = {
 			_id,
@@ -1213,6 +1215,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			$set: {
 				'mentions.$.username': newUsername,
 				'msg': newMessage,
+				'md': newMd,
 			},
 		};
 

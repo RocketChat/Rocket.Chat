@@ -19,6 +19,7 @@ import type {
 	Document,
 	Filter,
 } from 'mongodb';
+import type { Root } from '@rocket.chat/message-parser';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -214,6 +215,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		oldUsername: string,
 		newUsername: string,
 		newMessage: string,
+		newMd: Root,
 	): Promise<UpdateResult>;
 	unlinkUserId(userId: string, newUserId: string, newUsername: string, newNameAlias: string): Promise<UpdateResult | Document>;
 	setSlackBotIdAndSlackTs(_id: string, slackBotId: string, slackTs: Date): Promise<UpdateResult>;
