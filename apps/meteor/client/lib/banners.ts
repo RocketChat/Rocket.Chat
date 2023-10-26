@@ -1,4 +1,4 @@
-import type { UiKitBannerPayload } from '@rocket.chat/core-typings';
+import type { UiKit } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { Keys as IconName } from '@rocket.chat/icons';
 
@@ -15,7 +15,7 @@ export type LegacyBannerPayload = {
 	onClose?: () => Promise<void> | void;
 };
 
-type BannerPayload = LegacyBannerPayload | UiKitBannerPayload;
+type BannerPayload = LegacyBannerPayload | UiKit.BannerView;
 
 export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBannerPayload => !('blocks' in payload);
 
@@ -35,6 +35,7 @@ export const open = (payload: BannerPayload): void => {
 		if (isLegacyPayload(_payload) && isLegacyPayload(payload)) {
 			return _payload.id === payload.id;
 		}
+
 		if (!isLegacyPayload(_payload) && !isLegacyPayload(payload)) {
 			return _payload.viewId === payload.viewId;
 		}

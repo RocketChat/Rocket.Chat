@@ -4,6 +4,7 @@ export interface ISubscriptionExtraData {
 	open: boolean;
 	ls?: Date;
 	prid?: string;
+	roles?: string[];
 }
 
 interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
@@ -52,4 +53,5 @@ export interface IRoomService {
 		sendMessage?: boolean,
 	): Promise<void>;
 	getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean>;
+	join(param: { room: IRoom; user: Pick<IUser, '_id'>; joinCode?: string }): Promise<boolean | undefined>;
 }

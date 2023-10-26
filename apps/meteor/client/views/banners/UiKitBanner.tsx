@@ -1,63 +1,94 @@
-import type { UiKitBannerPayload } from '@rocket.chat/core-typings';
+import type { UiKit } from '@rocket.chat/core-typings';
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { UiKitContext, bannerParser, UiKitBanner as UiKitBannerSurfaceRender, UiKitComponent } from '@rocket.chat/fuselage-ui-kit';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
+import type { ReactElement, ContextType } from 'react';
 import React, { useMemo } from 'react';
 
+import { useUiKitActionManager } from '../../UIKit/hooks/useUiKitActionManager';
+import { useUiKitView } from '../../UIKit/hooks/useUiKitView';
 import MarkdownText from '../../components/MarkdownText';
-import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
-import * as banners from '../../lib/banners';
-import { useBannerContextValue } from '../../uikit/hooks/useBannerContextValue';
 
 // TODO: move this to fuselage-ui-kit itself
 bannerParser.mrkdwn = ({ text }): ReactElement => <MarkdownText variant='inline' content={text} />;
 
 type UiKitBannerProps = {
-	initialPayload: UiKitBannerPayload;
+	key: UiKit.BannerView['viewId']; // force re-mount when viewId changes
+	initialView: UiKit.BannerView;
 };
 
-const UiKitBanner = ({ initialPayload }: UiKitBannerProps) => {
+const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
 	const actionManager = useUiKitActionManager();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const contextValue = useBannerContextValue(initialPayload);
-
-	const { payload } = contextValue;
+	const { view, values, state } = useUiKitView(initialView);
 
 	const icon = useMemo<ReactElement | null>(() => {
-		if (payload.icon) {
-			return <Icon name={payload.icon as IconName} size={20} />;
+		if (view.icon) {
+			return <Icon name={view.icon as IconName} size={20} />;
 		}
 
 		return null;
-	}, [payload.icon]);
+	}, [view.icon]);
 
-	const handleClose = useMutableCallback(() =>
-		actionManager
-			.triggerCancel({
-				appId: payload.appId,
-				viewId: payload.viewId,
-				view: {
-					...payload,
-					id: payload.viewId,
+	const handleClose = useMutableCallback(() => {
+		void actionManager
+			.emitInteraction(view.appId, {
+				type: 'viewClosed',
+				payload: {
+					viewId: view.viewId,
+					view: {
+						...view,
+						id: view.viewId,
+						state,
+					},
+					isCleared: true,
 				},
-				isCleared: true,
 			})
-			.then(() => () => banners.close())
 			.catch((error) => {
 				dispatchToastMessage({ type: 'error', message: error });
-				() => banners.close();
 				return Promise.reject(error);
-			}),
+			})
+			.finally(() => {
+				actionManager.disposeView(view.viewId);
+			});
+	});
+
+	const contextValue = useMemo(
+		(): ContextType<typeof UiKitContext> => ({
+			action: async ({ appId, viewId, actionId, blockId, value }) => {
+				if (!appId || !viewId) {
+					return;
+				}
+
+				await actionManager.emitInteraction(appId, {
+					type: 'blockAction',
+					actionId,
+					container: {
+						type: 'view',
+						id: viewId,
+					},
+					payload: {
+						blockId,
+						value,
+					},
+				});
+
+				actionManager.disposeView(view.viewId);
+			},
+			state: (): void => undefined,
+			appId: view.appId,
+			values: values as any,
+		}),
+		[view, values, actionManager],
 	);
 
 	return (
-		<Banner closeable icon={icon} inline={payload.inline} title={payload.title} variant={payload.variant} onClose={handleClose}>
+		<Banner closeable icon={icon} inline={view.inline} title={view.title} variant={view.variant} onClose={handleClose}>
 			<UiKitContext.Provider value={contextValue}>
-				<UiKitComponent render={UiKitBannerSurfaceRender} blocks={payload.blocks as LayoutBlock[]} />
+				<UiKitComponent render={UiKitBannerSurfaceRender} blocks={view.blocks as LayoutBlock[]} />
 			</UiKitContext.Provider>
 		</Banner>
 	);

@@ -1,3 +1,4 @@
+import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -6,6 +7,8 @@ import { BaseRaw } from './BaseRaw';
 const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdle) => ({
 	statusLivechat: 'available',
 	roles: 'livechat-agent',
+	// ignore deactivated users
+	active: true,
 	...(!isLivechatEnabledWhenAgentIdle && {
 		$or: [
 			{
@@ -381,6 +384,10 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	findOneByUsernameIgnoringCase(username, options) {
+		if (!username) {
+			throw new Error('invalid username');
+		}
+
 		const query = { username };
 
 		return this.findOne(query, {
@@ -933,7 +940,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateMany(query, update);
+		return this.updateOne(query, update);
 	}
 
 	addBusinessHourByAgentIds(agentIds = [], businessHourId) {
@@ -1031,6 +1038,8 @@ export class UsersRaw extends BaseRaw {
 		const query = {
 			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
 			roles: 'livechat-agent',
+			// exclude deactivated users
+			active: true,
 			// Avoid unnecessary updates
 			statusLivechat: 'available',
 			...(Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } }),
@@ -1483,6 +1492,18 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	addRoomByUserIds(uids, rid) {
+		return this.updateMany(
+			{
+				_id: { $in: uids },
+				__rooms: { $ne: rid },
+			},
+			{
+				$addToSet: { __rooms: rid },
+			},
+		);
+	}
+
 	removeRoomByRoomIds(rids) {
 		return this.updateMany(
 			{
@@ -1681,6 +1702,24 @@ export class UsersRaw extends BaseRaw {
 			$set: {
 				statusLivechat: status,
 				livechatStatusSystemModified: false,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	makeAgentUnavailableAndUnsetExtension(userId) {
+		const query = {
+			_id: userId,
+			roles: 'livechat-agent',
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: ILivechatAgentStatus.NOT_AVAILABLE,
+			},
+			$unset: {
+				extension: 1,
 			},
 		};
 
@@ -2148,7 +2187,6 @@ export class UsersRaw extends BaseRaw {
 			{
 				active: true,
 				type: { $nin: ['app'] },
-				roles: { $ne: ['guest'] },
 				_id: { $in: ids },
 			},
 			options,

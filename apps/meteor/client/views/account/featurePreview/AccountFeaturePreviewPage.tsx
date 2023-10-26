@@ -3,13 +3,16 @@ import {
 	ButtonGroup,
 	Button,
 	Box,
-	Field,
 	ToggleSwitch,
-	FieldGroup,
 	States,
 	StatesIcon,
 	StatesTitle,
 	Accordion,
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	FieldHint,
 } from '@rocket.chat/fuselage';
 import type { FeaturePreviewProps } from '@rocket.chat/ui-client';
 import { useFeaturePreviewList } from '@rocket.chat/ui-client';
@@ -104,12 +107,12 @@ const AccountFeaturePreviewPage = () => {
 												<Fragment key={feature.name}>
 													<Field>
 														<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-															<Field.Label htmlFor={feature.name}>{t(feature.i18n)}</Field.Label>
-															<Field.Row>
+															<FieldLabel htmlFor={feature.name}>{t(feature.i18n)}</FieldLabel>
+															<FieldRow>
 																<ToggleSwitch id={feature.name} checked={feature.value} name={feature.name} onChange={handleFeatures} />
-															</Field.Row>
+															</FieldRow>
 														</Box>
-														{feature.description && <Field.Hint mbs={12}>{t(feature.description)}</Field.Hint>}
+														{feature.description && <FieldHint mbs={12}>{t(feature.description)}</FieldHint>}
 													</Field>
 													{feature.imageUrl && <Box is='img' width='100%' height='auto' mbs={16} src={feature.imageUrl} alt='' />}
 												</Fragment>

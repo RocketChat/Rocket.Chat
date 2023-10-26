@@ -1,4 +1,4 @@
-import { NumberInput, Field } from '@rocket.chat/fuselage';
+import { NumberInput, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React from 'react';
@@ -13,10 +13,10 @@ const MaxChatsPerAgent: FC<{
 
 	return (
 		<Field>
-			<Field.Label>{t('Max_number_of_chats_per_agent')}</Field.Label>
-			<Field.Row>
+			<FieldLabel>{t('Max_number_of_chats_per_agent')}</FieldLabel>
+			<FieldRow>
 				<NumberInput value={maxNumberSimultaneousChat} onChange={handleMaxNumberSimultaneousChat} flexGrow={1} />
-			</Field.Row>
+			</FieldRow>
 		</Field>
 	);
 };

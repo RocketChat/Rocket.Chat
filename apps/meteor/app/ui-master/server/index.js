@@ -120,8 +120,6 @@ Meteor.startup(() => {
 	})(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX);
 
 	injectIntoHead('base', `<base href="${baseUrl}">`);
-
-	injectIntoHead('css-theme', '');
 });
 
 const renderDynamicCssList = withDebouncing({ wait: 500 })(async () => {

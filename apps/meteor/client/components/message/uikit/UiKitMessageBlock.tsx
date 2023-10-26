@@ -9,13 +9,13 @@ import { useMessageBlockContextValue } from '../../../uikit/hooks/useMessageBloc
 import GazzodownText from '../../GazzodownText';
 
 type UiKitMessageBlockProps = {
+	rid: IRoom['_id'];
 	mid: IMessage['_id'];
 	blocks: MessageSurfaceLayout;
-	rid: IRoom['_id'];
 };
 
-const UiKitMessageBlock = ({ mid: _mid, blocks, rid }: UiKitMessageBlockProps): ReactElement => {
-	const contextValue = useMessageBlockContextValue(rid, _mid);
+const UiKitMessageBlock = ({ rid, mid, blocks }: UiKitMessageBlockProps): ReactElement => {
+	const contextValue = useMessageBlockContextValue(rid, mid);
 
 	return (
 		<MessageBlock fixedWidth>

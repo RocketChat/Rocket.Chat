@@ -127,7 +127,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 						variation: diffDailyActiveUsers ?? 0,
 						description: (
 							<>
-								<LegendSymbol color={colors.p200} /> {t('Daily_Active_Users')}
+								<LegendSymbol color={colors.b200} /> {t('Daily_Active_Users')}
 							</>
 						),
 					},
@@ -136,7 +136,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 						variation: diffWeeklyActiveUsers ?? 0,
 						description: (
 							<>
-								<LegendSymbol color={colors.p300} /> {t('Weekly_Active_Users')}
+								<LegendSymbol color={colors.b300} /> {t('Weekly_Active_Users')}
 							</>
 						),
 					},
@@ -203,7 +203,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 											right: 0,
 											left: 40,
 										}}
-										colors={[colors.p200, colors.p300, colors.p500]}
+										colors={[colors.b200, colors.b300, colors.b500]}
 										axisLeft={{
 											// TODO: Get it from theme
 											tickSize: 0,

@@ -34,6 +34,7 @@ export const createSetupWSettings = () =>
 					step: 2,
 					order: 1,
 				},
+				public: true,
 			});
 			await this.add('Industry', '', {
 				type: 'select',
@@ -1204,6 +1205,13 @@ export const createSetupWSettings = () =>
 				secret: true,
 			});
 
+			await this.add('Cloud_Workspace_Supported_Versions_Token', '', {
+				type: 'string',
+				hidden: true,
+				readonly: true,
+				secret: true,
+			});
+
 			await this.add('Cloud_Url', 'https://cloud.rocket.chat', {
 				type: 'string',
 				hidden: true,
@@ -1263,7 +1271,7 @@ export const createSetupWSettings = () =>
 				secret: true,
 			});
 
-			await this.add('Cloud_Workspace_Client_Secret_Expires_At', '', {
+			await this.add('Cloud_Workspace_Client_Secret_Expires_At', 0, {
 				type: 'int',
 				hidden: true,
 				readonly: true,

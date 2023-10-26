@@ -15,6 +15,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { validateEmailDomain } from '../lib';
+import { generatePassword } from '../lib/generatePassword';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { checkEmailAvailability } from './checkEmailAvailability';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
@@ -344,7 +345,7 @@ export const saveUser = async function (userId, userData) {
 
 	if (userData.hasOwnProperty('setRandomPassword')) {
 		if (userData.setRandomPassword) {
-			userData.password = passwordPolicy.generatePassword();
+			userData.password = generatePassword();
 			userData.requirePasswordChange = true;
 			sendPassword = true;
 		}
@@ -365,6 +366,7 @@ export const saveUser = async function (userId, userData) {
 				_id: userData._id,
 				username: userData.username,
 				name: userData.name,
+				updateUsernameInBackground: true,
 			}))
 		) {
 			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {

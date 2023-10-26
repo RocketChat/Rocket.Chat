@@ -40,7 +40,7 @@ class ChatContainer extends Component {
 			this.state.queueSpot = newQueueSpot;
 			this.state.estimatedWaitTime = newEstimatedWaitTime;
 			await this.handleQueueMessage(connecting, queueInfo);
-			await this.handleConnectingAgentAlert(newConnecting, normalizeQueueAlert(queueInfo));
+			await this.handleConnectingAgentAlert(newConnecting, await normalizeQueueAlert(queueInfo));
 		}
 	};
 
