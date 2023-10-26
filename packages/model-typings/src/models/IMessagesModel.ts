@@ -1,25 +1,25 @@
 import type {
+	ILivechatDepartment,
 	IMessage,
+	IMessageWithPendingFileImport,
 	IRoom,
 	IUser,
-	ILivechatDepartment,
-	MessageTypesValues,
 	MessageAttachment,
-	IMessageWithPendingFileImport,
+	MessageTypesValues,
 } from '@rocket.chat/core-typings';
+import type { Root } from '@rocket.chat/message-parser';
 import type {
+	AggregateOptions,
 	AggregationCursor,
 	CountDocumentsOptions,
-	FindCursor,
-	FindOptions,
-	AggregateOptions,
-	InsertOneResult,
 	DeleteResult,
-	UpdateResult,
 	Document,
 	Filter,
+	FindCursor,
+	FindOptions,
+	InsertOneResult,
+	UpdateResult,
 } from 'mongodb';
-import type { Root } from '@rocket.chat/message-parser';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
