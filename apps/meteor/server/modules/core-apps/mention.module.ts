@@ -72,7 +72,7 @@ export class MentionModule implements IUiKitCoreApp {
 				throw new Error('Failed to retrieve room information');
 			}
 
-			const roomPath = roomCoordinator.getRouteLink(sub.t, { rid: sub.rid });
+			const roomPath = roomCoordinator.getRouteLink(sub.t, { rid: sub.rid, name: sub.name });
 			if (!roomPath) {
 				throw new Error('Failed to retrieve path to room');
 			}
