@@ -133,7 +133,7 @@ describe('Meteor.methods', function () {
 				.send({
 					message: JSON.stringify({
 						method: 'getReadReceipts',
-						params: [],
+						params: [{ messageId: 'test' }],
 						id: 'id',
 						msg: 'method',
 					}),
@@ -142,7 +142,7 @@ describe('Meteor.methods', function () {
 				.expect(401)
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
+					expect(res.body).to.have.property('message', 'You must be logged in to do this.');
 				});
 		});
 
@@ -195,203 +195,271 @@ describe('Meteor.methods', function () {
 				await deleteUser(user);
 			});
 
-			it("should return the sender's read receipt for a message sent in the main room", async () => {
-				await request
-					.post(methodCall('getReadReceipts'))
-					.set(credentials)
-					.send({
-						message: JSON.stringify({
-							method: 'getReadReceipts',
-							params: [{ messageId: firstMessage._id }],
-							id: 'id',
-							msg: 'method',
-						}),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
-						console.log('res.body', res.body);
+			describe('simple message and thread that nobody has read yet', () => {
+				it("should return only the sender's read receipt for a message sent in the main room", async () => {
+					await request
+						.post(methodCall('getReadReceipts'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: firstMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
 
-						const data = JSON.parse(res.body.message);
-						console.log('data', data);
-						expect(data).to.have.a.property('result').that.is.an('array');
-						expect(data.result.length).to.equal(1);
-						expect(data.result[0]).to.have.property('userId', credentials['X-User-Id']);
-					});
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(1);
+							expect(data.result[0]).to.have.property('userId', credentials['X-User-Id']);
+						});
+				});
+
+				it("should return only the sender's read receipt for a message sent in a thread", async () => {
+					await request
+						.post(methodCall('getReadReceipts'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: firstThreadMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(1);
+							expect(data.result[0]).to.have.property('userId', credentials['X-User-Id']);
+						});
+				});
 			});
 
-			it("should return the sender's read receipt for a message sent in a thread", async () => {
-				await request
-					.post(methodCall('getReadReceipts'))
-					.set(credentials)
-					.send({
-						message: JSON.stringify({
-							method: 'getReadReceipts',
-							params: [{ messageId: firstThreadMessage._id }],
-							id: 'id',
-							msg: 'method',
-						}),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
+			describe('simple message and thread where the room message was read by the invited user but the thread message was not', () => {
+				before("should read all main room's messages with the invited user", async () => {
+					await request
+						.post(methodCall('readMessages'))
+						.set(userCredentials)
+						.send({
+							message: JSON.stringify({
+								id: 'id',
+								msg: 'method',
+								method: 'readMessages',
+								params: [room._id, true],
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+						});
+				});
 
-						const data = JSON.parse(res.body.message);
-						expect(data).to.have.a.property('result').that.is.an('array');
-						expect(data.result.length).to.equal(1);
-						expect(data.result[0]).to.have.property('userId', credentials['X-User-Id']);
-					});
+				it("should return both the sender's and the invited user's read receipt for a message sent in the main room", async () => {
+					await request
+						.post(methodCall('getReadReceipts'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: firstMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(2);
+
+							const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
+							expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
+						});
+				});
+
+				it("should return only the sender's read receipt for a message sent in a thread", async () => {
+					await request
+						.post(methodCall('getReadReceipts'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: firstThreadMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(1);
+							expect(data.result[0]).to.have.property('userId', credentials['X-User-Id']);
+						});
+				});
 			});
 
-			it("should read all main room's messages with the invited user", async () => {
-				await request
-					.post(methodCall('readMessages'))
-					.set(userCredentials)
-					.send({
-						message: JSON.stringify({
-							id: 'id',
-							msg: 'method',
-							method: 'readMessages',
-							params: [room._id, true],
-						}),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
-					});
+			describe('simple message and thread where both was read by the invited user', () => {
+				before('should read thread messages with the invited user', async () => {
+					await request
+						.post(methodCall('getThreadMessages'))
+						.set(userCredentials)
+						.send({
+							message: JSON.stringify({
+								id: 'id',
+								msg: 'method',
+								method: 'getThreadMessages',
+								params: [
+									{
+										tmid: firstMessage._id,
+									},
+								],
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(2);
+						});
+				});
+
+				it("should return both the sender's and invited user's read receipt for a message sent in a thread", async () => {
+					await request
+						.post(methodCall('getReadReceipts'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: firstThreadMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(2);
+
+							const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
+							expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
+						});
+				});
 			});
 
-			it("should return the invited user's read receipt for a message sent in the main room", async () => {
-				await request
-					.post(methodCall('getReadReceipts'))
-					.set(credentials)
-					.send({
-						message: JSON.stringify({
-							method: 'getReadReceipts',
-							params: [{ messageId: firstMessage._id }],
-							id: 'id',
-							msg: 'method',
-						}),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
+			describe('simple message and thread marked as read by the invited user', () => {
+				let otherMessage = null;
+				let otherThreadMessage = null;
 
-						const data = JSON.parse(res.body.message);
-						expect(data).to.have.a.property('result').that.is.an('array');
-						expect(data.result.length).to.equal(2);
+				before('should send another message and create a thread', async () => {
+					otherMessage = (await sendSimpleMessage({ roomId: room._id })).body.message;
+					otherThreadMessage = (await sendSimpleMessage({ roomId: room._id, tmid: otherMessage._id })).body.message;
+				});
 
-						const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
-						expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
-					});
-			});
+				before('should mark the thread as read by the invited user', async () => {
+					await request
+						.post(methodCall('readThreads'))
+						.set(userCredentials)
+						.send({
+							message: JSON.stringify({
+								method: 'readThreads',
+								params: [otherMessage._id],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+						});
+				});
 
-			it("should return only the sender's read receipt for a message sent in a thread after the main room is read", async () => {
-				await request
-					.post(methodCall('getReadReceipts'))
-					.set(credentials)
-					.send({
-						message: JSON.stringify({
-							method: 'getReadReceipts',
-							params: [{ messageId: firstThreadMessage._id }],
-							id: 'id',
-							msg: 'method',
-						}),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
+				it("should return both the sender's and invited user's read receipt for a message sent in the main room", async () => {
+					await request
+						.post(methodCall('getReadReceipts'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: otherThreadMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
 
-						const data = JSON.parse(res.body.message);
-						expect(data).to.have.a.property('result').that.is.an('array');
-						expect(data.result.length).to.equal(1);
-						expect(data.result[0]).to.have.property('userId', credentials['X-User-Id']);
-					});
-			});
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(2);
 
-			it('should read thread messages with the invited user', async () => {
-				await request
-					.post(methodCall('getThreadMessages'))
-					.set(userCredentials)
-					.send({
-						message: JSON.stringify({
-							id: 'id',
-							msg: 'method',
-							method: 'getThreadMessages',
-							params: [
-								{
-									tmid: firstMessage._id,
-								},
-							],
-						}),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
+							const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
+							expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
+						});
+				});
 
-						const data = JSON.parse(res.body.message);
-						expect(data).to.have.a.property('result').that.is.an('array');
-						expect(data.result.length).to.equal(2);
-					});
-			});
+				it("should return both the sender's and invited user's read receipt for a message sent in a thread", async () => {
+					await request
+						.post(methodCall('getReadReceipts'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getReadReceipts',
+								params: [{ messageId: otherThreadMessage._id }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
 
-			it("should return the invited user's read receipt for a message sent in a thread after it is read", async () => {
-				await request
-					.post(methodCall('getReadReceipts'))
-					.set(credentials)
-					.send({
-						message: JSON.stringify({
-							method: 'getReadReceipts',
-							params: [{ messageId: firstThreadMessage._id }],
-							id: 'id',
-							msg: 'method',
-						}),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.equal(2);
 
-						const data = JSON.parse(res.body.message);
-						expect(data).to.have.a.property('result').that.is.an('array');
-						expect(data.result.length).to.equal(2);
-
-						const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
-						expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
-					});
-			});
-
-			it('should mark the thread as read', async () => {
-				await request
-					.post(methodCall('readThreads'))
-					.set(userCredentials)
-					.send({
-						message: JSON.stringify({
-							method: 'readThreads',
-							params: [firstThreadMessage._id],
-							id: 'id',
-							msg: 'method',
-						}),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
-					});
+							const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
+							expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
+						});
+				});
 			});
 		});
 	});
