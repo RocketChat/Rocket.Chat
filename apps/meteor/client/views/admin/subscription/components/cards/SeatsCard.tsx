@@ -2,17 +2,19 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSeatsCap } from '../../../../../../ee/client/views/admin/users/useSeatsCap';
 import type { CardProps } from '../FeatureUsageCard';
 import PieGraphCard from '../PieGraphCard';
 
-const SeatsCard = (): ReactElement => {
-	const { t } = useTranslation();
-	const seatsCap = useSeatsCap();
+type SeatsCardProps = {
+	seatsLimit?: { value?: number; max: number };
+};
 
-	const pieGraph = seatsCap && {
-		used: seatsCap.activeUsers,
-		total: seatsCap.maxActiveUsers,
+const SeatsCard = ({ seatsLimit }: SeatsCardProps): ReactElement => {
+	const { t } = useTranslation();
+
+	const pieGraph = seatsLimit && {
+		used: seatsLimit.value || 0,
+		total: seatsLimit.max,
 	};
 
 	const nearLimit = pieGraph && pieGraph.used / pieGraph.total >= 0.8;
@@ -24,7 +26,7 @@ const SeatsCard = (): ReactElement => {
 		upgradeButtonText: 'Buy_more',
 	};
 
-	return <PieGraphCard pieGraph={pieGraph} card={card} isLoading={Boolean(!seatsCap)} />;
+	return <PieGraphCard pieGraph={pieGraph} card={card} isLoading={Boolean(!seatsLimit)} />;
 };
 
 export default SeatsCard;

@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { CardCol, CardColSection, CardFooter, FramedIcon } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -21,6 +22,7 @@ type FeaturesCardProps = {
 
 const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps): ReactElement => {
 	const { t } = useTranslation();
+	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	const getFeatureSet = (modules: string[], isEnterprise: boolean): FeatureSet[] => {
 		const featureSet: FeatureSet[] = [
@@ -76,7 +78,7 @@ const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps): React
 		<FeatureUsageCard card={{ title: !isEnterprise ? t('Unlock_premium_capabilities') : t('Includes') }}>
 			<CardColSection h='full' w='full' display='flex' flexDirection='column'>
 				<CardCol>
-					<Box maxHeight={140} display='flex' flexDirection='column' flexWrap='wrap'>
+					<Box maxHeight={mediaQuery ? 140 : undefined} display='flex' flexDirection='column' flexWrap='wrap'>
 						{getFeatureSet(activeModules, isEnterprise).map(({ type, title, infoText }, index) => (
 							<Box key={`feature_${index}`} display='flex' alignItems='center' mbe={4}>
 								<FramedIcon type={type} icon={type === 'success' ? 'check' : 'lock'} />

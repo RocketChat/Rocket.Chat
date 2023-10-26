@@ -6,15 +6,15 @@ import type { CardProps } from '../FeatureUsageCard';
 import PieGraphCard from '../PieGraphCard';
 
 type MACCardProps = {
-	monthlyActiveContactsLimit?: { value?: number; max: number };
+	macLimit?: { value?: number; max: number };
 };
 
-const MACCard = ({ monthlyActiveContactsLimit }: MACCardProps): ReactElement => {
+const MACCard = ({ macLimit }: MACCardProps): ReactElement => {
 	const { t } = useTranslation();
 
-	const pieGraph = monthlyActiveContactsLimit && {
-		used: monthlyActiveContactsLimit?.value || 0,
-		total: monthlyActiveContactsLimit.max || 100,
+	const pieGraph = macLimit && {
+		used: macLimit?.value || 0,
+		total: macLimit.max || 100,
 	};
 
 	const nearLimit = pieGraph && pieGraph.used / pieGraph.total >= 0.8;
@@ -26,7 +26,7 @@ const MACCard = ({ monthlyActiveContactsLimit }: MACCardProps): ReactElement => 
 		upgradeButtonText: 'Buy_more',
 	};
 
-	return <PieGraphCard pieGraph={pieGraph} card={card} isLoading={!monthlyActiveContactsLimit} />;
+	return <PieGraphCard pieGraph={pieGraph} card={card} isLoading={!macLimit} />;
 };
 
 export default MACCard;

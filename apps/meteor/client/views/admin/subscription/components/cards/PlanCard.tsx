@@ -1,22 +1,28 @@
 import { Box, Button, Icon, Palette, Skeleton, Tag } from '@rocket.chat/fuselage';
 import type { ILicenseV3 } from '@rocket.chat/license';
 import { Card, CardBody, CardColSection, ExternalLink } from '@rocket.chat/ui-client';
+import differenceInDays from 'date-fns/differenceInDays';
 import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { useIsSelfHosted } from '../../../../../hooks/useIsSelfHosted';
-import { getDaysLeft } from '../../../../../lib/utils/getDaysLeft';
 import { CONTACT_SALES_LINK, DOWNGRADE_LINK, TRIAL_LINK } from '../../utils/links';
 import UpgradeButton from '../UpgradeButton';
+
+type LicenseLimits = {
+	activeUsers: { max: number; value?: number };
+	monthlyActiveContacts: { max: number; value?: number };
+};
 
 type PlanCardProps = {
 	isEnterprise: boolean;
 	licenseInformation: ILicenseV3['information'] | undefined;
+	licenseLimits?: LicenseLimits;
 };
 
-const PlanCard = ({ isEnterprise, licenseInformation }: PlanCardProps): ReactElement => {
+const PlanCard = ({ isEnterprise, licenseInformation, licenseLimits }: PlanCardProps): ReactElement => {
 	const { t } = useTranslation();
 	const { isSelfHosted, isLoading } = useIsSelfHosted();
 	const formatDate = useFormatDate();
@@ -26,7 +32,38 @@ const PlanCard = ({ isEnterprise, licenseInformation }: PlanCardProps): ReactEle
 	const isTrial = licenseInformation?.trial || false;
 	const isAutoRenew = licenseInformation?.autoRenew || false;
 	const visualExpiration = licenseInformation?.visualExpiration || String(new Date());
-	const trialDaysLeft = (isTrial && getDaysLeft(visualExpiration)) || 0;
+	const trialDaysLeft = (isTrial && differenceInDays(new Date(visualExpiration), new Date())) || 0;
+
+	const getLimitsLabel = () => {
+		if (!licenseLimits) {
+			return;
+		}
+
+		const getLabel = () => {
+			if (licenseLimits?.activeUsers.max === Infinity && licenseLimits?.monthlyActiveContacts.max === Infinity) {
+				return t('Unlimited_seats_MACs');
+			}
+
+			if (licenseLimits?.activeUsers.max === Infinity) {
+				return t('Unlimited_seats');
+			}
+
+			if (licenseLimits?.monthlyActiveContacts.max === Infinity) {
+				return t('Unlimited_MACs');
+			}
+		};
+
+		const limitLabel = getLabel();
+
+		return (
+			limitLabel && (
+				<Box fontScale='p2' display='flex' mb={4} alignItems='center'>
+					<Icon name='lightning' size={24} mie={12} />
+					{limitLabel}
+				</Box>
+			)
+		);
+	};
 
 	const getPlanContent = (): ReactNode => {
 		if (isTrial) {
@@ -78,6 +115,7 @@ const PlanCard = ({ isEnterprise, licenseInformation }: PlanCardProps): ReactEle
 
 		return (
 			<>
+				{getLimitsLabel()}
 				<Box fontScale='p2' display='flex' mb={4} alignItems='center'>
 					<Icon name='calendar' size={24} mie={12} />
 					<Box is='span'>
