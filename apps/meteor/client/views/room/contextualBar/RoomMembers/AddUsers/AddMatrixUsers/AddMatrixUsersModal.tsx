@@ -54,7 +54,7 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 		<Modal>
 			<Modal.Header>
 				<Modal.HeaderText>
-					<Modal.Title>Continue Adding?</Modal.Title>
+					<Modal.Title>{t('Continue_Adding')}</Modal.Title>
 				</Modal.HeaderText>
 				<Modal.Close title={t('Close')} onClick={onClose} />
 			</Modal.Header>
