@@ -3,7 +3,7 @@ FROM node:14.21.3-bullseye-slim
 LABEL maintainer="buildmaster@rocket.chat"
 
 # dependencies
-RUN set -o pipefail \
+RUN set -e \
 	&& groupadd -g 65533 -r rocketchat \
 	&& useradd -u 65533 -Md /tmp -g rocketchat rocketchat \
 	&& mkdir /app/uploads -p \
