@@ -23,6 +23,10 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 		License.onModule((licenseModule) => {
 			void api.broadcast('license.module', licenseModule);
 		});
+
+		this.onEvent('license.actions', (preventedActions) => License.syncShouldPreventActionResults(preventedActions));
+
+		this.onEvent('license.sync', () => License.sync());
 	}
 
 	async started(): Promise<void> {

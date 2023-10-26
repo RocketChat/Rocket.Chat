@@ -1,11 +1,12 @@
 import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import { UiInteractionBridge as UiIntBridge } from '@rocket.chat/apps-engine/server/bridges/UiInteractionBridge';
+import { UiInteractionBridge as AppsEngineUiInteractionBridge } from '@rocket.chat/apps-engine/server/bridges/UiInteractionBridge';
 import { api } from '@rocket.chat/core-services';
+import type { UiKit } from '@rocket.chat/core-typings';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
-export class UiInteractionBridge extends UiIntBridge {
+export class UiInteractionBridge extends AppsEngineUiInteractionBridge {
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}
@@ -19,6 +20,6 @@ export class UiInteractionBridge extends UiIntBridge {
 			throw new Error('Invalid app provided');
 		}
 
-		void api.broadcast('notify.uiInteraction', user.id, interaction);
+		void api.broadcast('notify.uiInteraction', user.id, interaction as UiKit.ServerInteraction);
 	}
 }
