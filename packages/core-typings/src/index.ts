@@ -4,7 +4,6 @@ export * from './FeaturedApps';
 export * from './AppRequests';
 export * from './MarketplaceRest';
 export * from './IRoom';
-export * from './UIKit';
 export * from './IMessage';
 export * from './federation';
 export * from './Serialized';
@@ -39,7 +38,6 @@ export * from './IUserSession';
 export * from './IUserStatus';
 export * from './IUser';
 
-export * from './ee/ILicense/ILicense';
 export * from './ee/IAuditLog';
 
 export * from './import';
@@ -135,3 +133,7 @@ export * from './ICustomOAuthConfig';
 
 export * from './IModerationReport';
 export * from './CustomFieldMetadata';
+
+export * as Cloud from './cloud';
+
+export * as UiKit from './uikit';

@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Select, Margins, Field, Label } from '@rocket.chat/fuselage';
+import { Box, Select, Margins, Field, FieldLabel, FieldRow, Label } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useEffect } from 'react';
 
@@ -74,10 +74,10 @@ const AnalyticsPage = () => {
 					<Box display='flex'>
 						<Margins inline={2}>
 							<Field>
-								<Field.Label>{t('Chart')}</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Chart')}</FieldLabel>
+								<FieldRow>
 									<Select options={graphOptions} value={chartName} onChange={(value) => setChartName(String(value))} />
-								</Field.Row>
+								</FieldRow>
 							</Field>
 						</Margins>
 					</Box>

@@ -1,16 +1,8 @@
-import type { UIKitInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
+import type { UiKit } from '@rocket.chat/core-typings';
 import { useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-export const useAppUiKitInteraction = (
-	handlePayloadUserInteraction: (
-		type: UIKitInteractionType,
-		data: {
-			triggerId: string;
-			appId: string;
-		},
-	) => void,
-) => {
+export const useAppUiKitInteraction = (handleServerInteraction: (interaction: UiKit.ServerInteraction) => void) => {
 	const notifyUser = useStream('notify-user');
 	const uid = useUserId();
 
@@ -19,8 +11,9 @@ export const useAppUiKitInteraction = (
 			return;
 		}
 
-		return notifyUser(`${uid}/uiInteraction`, ({ type, ...data }) => {
-			handlePayloadUserInteraction(type, data);
+		return notifyUser(`${uid}/uiInteraction`, (interaction) => {
+			// @ts-ignore
+			handleServerInteraction(interaction);
 		});
-	}, [notifyUser, uid, handlePayloadUserInteraction]);
+	}, [notifyUser, uid, handleServerInteraction]);
 };

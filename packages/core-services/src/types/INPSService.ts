@@ -1,9 +1,9 @@
 import type { IUser, IRole } from '@rocket.chat/core-typings';
 
 export type NPSVotePayload = {
-	userId: string;
+	userId: string | undefined;
 	npsId: string;
-	roles: IRole['_id'][];
+	roles?: IRole['_id'][];
 	score: number;
 	comment: string;
 };
