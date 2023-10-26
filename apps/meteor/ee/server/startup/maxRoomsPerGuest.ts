@@ -1,17 +1,14 @@
-import { Subscriptions } from '@rocket.chat/models';
+import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../../server/lib/i18n';
-import { getMaxRoomsPerGuest } from '../../app/license/server/license';
 
 callbacks.add(
 	'beforeAddedToRoom',
 	async ({ user }) => {
 		if (user.roles?.includes('guest')) {
-			const totalSubscriptions = await Subscriptions.countByUserId(user._id);
-
-			if (totalSubscriptions >= getMaxRoomsPerGuest()) {
+			if (await License.shouldPreventAction('roomsPerGuest', 0, { userId: user._id })) {
 				throw new Meteor.Error('error-max-rooms-per-guest-reached', i18n.t('error-max-rooms-per-guest-reached'));
 			}
 		}

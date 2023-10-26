@@ -26,12 +26,11 @@ export async function getWorkspaceAccessTokenWithScope(scope = '') {
 		scope = workspaceScopes.join(' ');
 	}
 
-	const cloudUrl = settings.get<string>('Cloud_Url');
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const client_secret = settings.get<string>('Cloud_Workspace_Client_Secret');
 	const redirectUri = getRedirectUri();
 
-	let authTokenResult;
+	let payload;
 	try {
 		const body = new URLSearchParams();
 		body.append('client_id', client_id);
@@ -40,12 +39,13 @@ export async function getWorkspaceAccessTokenWithScope(scope = '') {
 		body.append('grant_type', 'client_credentials');
 		body.append('redirect_uri', redirectUri);
 
-		const result = await fetch(`${cloudUrl}/api/oauth/token`, {
+		const cloudUrl = settings.get<string>('Cloud_Url');
+		const response = await fetch(`${cloudUrl}/api/oauth/token`, {
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			method: 'POST',
 			body,
 		});
-		authTokenResult = await result.json();
+		payload = await response.json();
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to get Workspace AccessToken from Rocket.Chat Cloud',
@@ -64,10 +64,10 @@ export async function getWorkspaceAccessTokenWithScope(scope = '') {
 	}
 
 	const expiresAt = new Date();
-	expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.expires_in);
+	expiresAt.setSeconds(expiresAt.getSeconds() + payload.expires_in);
 
 	tokenResponse.expiresAt = expiresAt;
-	tokenResponse.token = authTokenResult.access_token;
+	tokenResponse.token = payload.access_token;
 
 	return tokenResponse;
 }
