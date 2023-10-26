@@ -1,7 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUiKitCoreApp } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Messages } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { processWebhookMessage } from '../../../app/lib/server/functions/processWebhookMessage';
@@ -34,6 +34,12 @@ export class MentionModule implements IUiKitCoreApp {
 
 		const usernames = mentions.map(({ username }) => username);
 
+		const message = await Messages.findOneById(referenceMessageId);
+
+		if (!message) {
+			throw new Error('Mention bot - Failed to retrieve message information');
+		}
+
 		if (actionId === 'dismiss') {
 			void api.broadcast('notify.ephemeralMessage', payload.user._id, payload.room, {
 				msg: i18n.t(
@@ -44,6 +50,7 @@ export class MentionModule implements IUiKitCoreApp {
 					payload.user.language,
 				),
 				_id: payload.message,
+				tmid: message.tmid,
 				mentions,
 			});
 			return;
@@ -59,6 +66,7 @@ export class MentionModule implements IUiKitCoreApp {
 					},
 					payload.user.language,
 				),
+				tmid: message.tmid,
 				_id: payload.message,
 				mentions,
 			});
@@ -69,16 +77,16 @@ export class MentionModule implements IUiKitCoreApp {
 			const sub = await Subscriptions.findOneByRoomIdAndUserId(payload.room, payload.user._id);
 			// this should exist since the event is fired from withing the room (e.g the user sent a message)
 			if (!sub) {
-				throw new Error('Failed to retrieve room information');
+				throw new Error('Mention bot - Failed to retrieve room information');
 			}
 
 			const roomPath = roomCoordinator.getRouteLink(sub.t, { rid: sub.rid, name: sub.name });
 			if (!roomPath) {
-				throw new Error('Failed to retrieve path to room');
+				throw new Error('Mention bot - Failed to retrieve path to room');
 			}
 
 			const link = new URL(Meteor.absoluteUrl(roomPath));
-			link.searchParams.set('msg', referenceMessageId);
+			link.searchParams.set('msg', message._id);
 			const text = `[ ](${link.toString()})`;
 
 			// forwards message to all DMs
@@ -98,6 +106,7 @@ export class MentionModule implements IUiKitCoreApp {
 					},
 					payload.user.language,
 				),
+				tmid: message.tmid,
 				_id: payload.message,
 				mentions,
 			});

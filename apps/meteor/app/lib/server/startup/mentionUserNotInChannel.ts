@@ -116,6 +116,7 @@ callbacks.add(
 		void api.broadcast('notify.ephemeralMessage', message.u._id, message.rid, {
 			msg: '',
 			mentions: mentionsUsersNotInChannel,
+			tmid: message.tmid,
 			blocks: [
 				{
 					appId: APP_ID,
