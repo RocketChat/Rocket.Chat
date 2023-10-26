@@ -16,7 +16,7 @@ import {
 } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
-import { createUser, deleteUser, getMe, login, setUserActiveStatus } from '../../../data/users.helper';
+import { createUser, deleteUser, getMe, login, setUserStatus } from '../../../data/users.helper';
 
 describe('LIVECHAT - Agents', function () {
 	this.retries(0);
@@ -24,7 +24,6 @@ describe('LIVECHAT - Agents', function () {
 	let manager: ILivechatAgent;
 
 	let agent2: { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
-	let agent3: { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
 
 	before((done) => getCredentials(done));
 
@@ -48,22 +47,8 @@ describe('LIVECHAT - Agents', function () {
 		};
 	});
 
-	before(async () => {
-		const user: IUser = await createUser();
-		const userCredentials = await login(user.username, password);
-		await createAgent(user.username);
-
-		await makeAgentAvailable(userCredentials);
-
-		agent3 = {
-			user,
-			credentials: userCredentials,
-		};
-	});
-
 	after(async () => {
 		await deleteUser(agent2.user);
-		await deleteUser(agent3.user);
 	});
 
 	// TODO: missing test cases for POST method
@@ -151,7 +136,7 @@ describe('LIVECHAT - Agents', function () {
 		});
 
 		it('should return offline agents when showIdleAgents is true', async () => {
-			await setUserActiveStatus(agent3.user._id, false);
+			await setUserStatus(agent2.credentials, 'offline');
 			await request
 				.get(api('livechat/users/agent'))
 				.set(credentials)
@@ -170,7 +155,7 @@ describe('LIVECHAT - Agents', function () {
 		});
 
 		it('should return only online agents when showIdleAgents is false', async () => {
-			await setUserActiveStatus(agent3.user._id, true);
+			await setUserStatus(agent2.credentials, 'online');
 			await request
 				.get(api('livechat/users/agent'))
 				.set(credentials)
