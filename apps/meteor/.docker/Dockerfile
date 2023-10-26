@@ -9,6 +9,7 @@ RUN set -e \
 	&& mkdir /app/uploads -p \
 	&& chown -R rocketchat:rocketchat /app \
 	&& apt-get update \
+	&& apt_mark="$(apt-mark showmanual)" \
 	&& DEBIAN_FRONTEND=noninteractive apt-get install \
 		-o Dpkg::Options::='--force-confold' \
 		-o Dpkg::Options::='--force-confdef' \
@@ -18,9 +19,8 @@ RUN set -e \
 		make \
 		python3 \
 		ca-certificates \
-	&& aptMark="$(apt-mark showmanual)" \
 	&& apt-mark auto '.*' > /dev/null \
-	&& apt-mark manual $aptMark > /dev/null \
+	&& apt-mark manual $apt_mark > /dev/null \
 	&& find /usr/local -type f -executable -exec ldd '{}' ';' \
 	| awk '/=>/ { print $(NF-1) }' \
 	| sort -u \
@@ -36,7 +36,7 @@ COPY --chown=rocketchat:rocketchat . /app
 USER rocketchat
 
 RUN cd /app/bundle/programs/server \
-	&& if [[ $(uname -m) == "x86_64" ]]; then export METEOR_SKIP_NPM_REBUILD=1; fi \
+	&& if [ "$(uname -m)" == "x86_64" ]; then export METEOR_SKIP_NPM_REBUILD=1; fi \
 	&& npm install --production
 
 VOLUME /app/uploads
