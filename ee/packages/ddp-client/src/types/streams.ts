@@ -237,6 +237,7 @@ export interface StreamerEvents {
 		},
 
 		{ key: 'voip.statuschanged'; args: [boolean] },
+		{ key: 'mac.limit'; args: [{ limitReached: boolean }] },
 		{ key: 'omnichannel.priority-changed'; args: [{ id: string; clientAction: ClientAction; name?: string }] },
 	];
 
