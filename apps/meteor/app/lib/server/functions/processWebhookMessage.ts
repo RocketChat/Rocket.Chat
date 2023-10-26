@@ -1,15 +1,47 @@
+import type { IMessage, IUser, RequiredField, MessageAttachment } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { validateRoomMessagePermissionsAsync } from '../../../authorization/server/functions/canSendMessage';
 import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
 import { sendMessage } from './sendMessage';
 
-export const processWebhookMessage = async function (messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }) {
+type Payload = {
+	channel?: string | string[];
+	roomId?: string | string[];
+	text?: IMessage['msg'];
+	msg?: IMessage['msg']; // overridden if text is present
+	username?: IMessage['alias'];
+	alias?: IMessage['alias']; // overridden if username is present
+	icon_emoji?: IMessage['emoji'];
+	emoji?: IMessage['emoji']; // overridden if icon_emoji is present
+	icon_url?: IMessage['avatar'];
+	avatar?: IMessage['avatar']; // overridden if icon_url is present
+	attachments?: IMessage['attachments'];
+	parseUrls?: boolean;
+	bot?: IMessage['bot'];
+	groupable?: IMessage['groupable'];
+	tmid?: IMessage['tmid'];
+};
+
+type DefaultValues = {
+	channel: string | string[];
+	alias: string;
+	avatar: string;
+	emoji: string;
+};
+
+export const processWebhookMessage = async function (
+	messageObj: Payload,
+	user: IUser & { username: RequiredField<IUser, 'username'> },
+	defaultValues: DefaultValues = { channel: '', alias: '', avatar: '', emoji: '' },
+) {
 	const sentData = [];
-	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
+
+	const channels: Array<string> = [...new Set(ensureArray(messageObj.channel || messageObj.roomId || defaultValues.channel))];
 
 	for await (const channel of channels) {
 		const channelType = channel[0];
@@ -69,7 +101,7 @@ export const processWebhookMessage = async function (messageObj, user, defaultVa
 			messageObj.attachments = undefined;
 		}
 
-		const message = {
+		const message: Partial<IMessage> & { parseUrls?: boolean } = {
 			alias: messageObj.username || messageObj.alias || defaultValues.alias,
 			msg: trim(messageObj.text || messageObj.msg || ''),
 			attachments: messageObj.attachments || [],
@@ -91,7 +123,7 @@ export const processWebhookMessage = async function (messageObj, user, defaultVa
 
 		if (Array.isArray(message.attachments)) {
 			for (let i = 0; i < message.attachments.length; i++) {
-				const attachment = message.attachments[i];
+				const attachment = message.attachments[i] as MessageAttachment & { msg?: string };
 				if (attachment.msg) {
 					attachment.text = trim(attachment.msg);
 					delete attachment.msg;
