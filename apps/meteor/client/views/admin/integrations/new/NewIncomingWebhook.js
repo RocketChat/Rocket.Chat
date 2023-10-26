@@ -15,6 +15,8 @@ const initialState = {
 	avatar: '',
 	emoji: '',
 	scriptEnabled: false,
+	scriptEngine: 'isolated-vm',
+	overrideDestinationChannelEnabled: false,
 	script: '',
 };
 

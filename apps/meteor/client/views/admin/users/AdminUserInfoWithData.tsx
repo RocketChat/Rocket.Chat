@@ -8,11 +8,11 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import { ContextualbarContent } from '../../../components/Contextualbar';
 import { FormSkeleton } from '../../../components/Skeleton';
 import UserCard from '../../../components/UserCard';
 import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
-import VerticalBar from '../../../components/VerticalBar';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 import AdminUserInfoActions from './AdminUserInfoActions';
 
@@ -96,17 +96,17 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 
 	if (isLoading) {
 		return (
-			<VerticalBar.Content>
+			<ContextualbarContent>
 				<FormSkeleton />
-			</VerticalBar.Content>
+			</ContextualbarContent>
 		);
 	}
 
 	if (error || !user || !data?.user) {
 		return (
-			<VerticalBar.Content pb='x16'>
+			<ContextualbarContent pb={16}>
 				<Callout type='danger'>{t('User_not_found')}</Callout>
-			</VerticalBar.Content>
+			</ContextualbarContent>
 		);
 	}
 
@@ -116,7 +116,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 			actions={
 				<AdminUserInfoActions
 					isActive={data?.user.active}
-					isAdmin={data?.user.roles.includes('admin')}
+					isAdmin={data?.user.roles?.includes('admin')}
 					userId={data?.user._id}
 					username={user.username}
 					isFederatedUser={isUserFederated(data?.user as unknown as IUser)}

@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon, Tabs } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Tabs } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
@@ -29,7 +29,7 @@ const IntegrationsPage = (): ReactElement => {
 			<Page.Header title={t('Integrations')}>
 				<ButtonGroup>
 					<Button primary onClick={handleNewButtonClick}>
-						<Icon name='plus' /> {t('New')}
+						{t('New')}
 					</Button>
 				</ButtonGroup>
 			</Page.Header>

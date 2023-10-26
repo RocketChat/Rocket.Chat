@@ -1,27 +1,31 @@
+import type { IUser, SelectedAgent } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
-import type { IUser } from '@rocket.chat/core-typings';
 
-import { callbacks } from '../../../../../lib/callbacks';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
 
 let contactManagerPreferred = false;
 let lastChattedAgentPreferred = false;
 
-const normalizeDefaultAgent = (agent?: Pick<IUser, '_id' | 'username'> | null) => {
+const normalizeDefaultAgent = (agent?: Pick<IUser, '_id' | 'username'> | null): SelectedAgent | null => {
 	if (!agent) {
-		return;
+		return null;
 	}
 
 	const { _id: agentId, username } = agent;
 	return { agentId, username };
 };
 
-const getDefaultAgent = async (username?: string) =>
-	username !== undefined &&
-	normalizeDefaultAgent(await Users.findOneOnlineAgentByUserList(username, { projection: { _id: 1, username: 1 } }));
+const getDefaultAgent = async (username?: string): Promise<SelectedAgent | null> => {
+	if (!username) {
+		return null;
+	}
 
-settings.watch<boolean>('Livechat_last_chatted_agent_routing', function (value) {
+	return normalizeDefaultAgent(await Users.findOneOnlineAgentByUserList(username, { projection: { _id: 1, username: 1 } }));
+};
+
+settings.watch<boolean>('Livechat_last_chatted_agent_routing', (value) => {
 	lastChattedAgentPreferred = value;
 	if (!lastChattedAgentPreferred) {
 		callbacks.remove('livechat.onMaxNumberSimultaneousChatsReached', 'livechat-on-max-number-simultaneous-chats-reached');
@@ -36,7 +40,7 @@ settings.watch<boolean>('Livechat_last_chatted_agent_routing', function (value) 
 				return inquiry;
 			}
 
-			if (!RoutingManager.getConfig().autoAssignAgent) {
+			if (!RoutingManager.getConfig()?.autoAssignAgent) {
 				return inquiry;
 			}
 
@@ -60,7 +64,7 @@ settings.watch<boolean>('Livechat_last_chatted_agent_routing', function (value) 
 				return inquiry;
 			}
 
-			if (!RoutingManager.getConfig().autoAssignAgent) {
+			if (!RoutingManager.getConfig()?.autoAssignAgent) {
 				return inquiry;
 			}
 
@@ -74,7 +78,7 @@ settings.watch<boolean>('Livechat_last_chatted_agent_routing', function (value) 
 	);
 });
 
-settings.watch<boolean>('Omnichannel_contact_manager_routing', function (value) {
+settings.watch<boolean>('Omnichannel_contact_manager_routing', (value) => {
 	contactManagerPreferred = value;
 });
 
@@ -86,7 +90,7 @@ callbacks.add(
 		}
 
 		const { _id: guestId } = defaultGuest;
-		const guest = await LivechatVisitors.findOneById(guestId, {
+		const guest = await LivechatVisitors.findOneEnabledById(guestId, {
 			projection: { lastAgent: 1, token: 1, contactManager: 1 },
 		});
 		if (!guest) {

@@ -4,7 +4,7 @@ import type { RequiredField } from '../utils';
 export type SlashCommandCallbackParams<T> = {
 	command: T;
 	params: string;
-	message: RequiredField<Partial<IMessage>, 'rid'>;
+	message: RequiredField<Partial<IMessage>, 'rid' | '_id'>;
 	userId: string;
 	triggerId?: string;
 };

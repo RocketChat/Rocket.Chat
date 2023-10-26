@@ -1,9 +1,10 @@
 import type { IPersonalAccessToken, Serialized } from '@rocket.chat/core-typings';
-import { ButtonGroup, IconButton, TableRow, TableCell } from '@rocket.chat/fuselage';
+import { ButtonGroup, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useCallback } from 'react';
 
+import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 
 type AccountTokensRowProps = {
@@ -27,20 +28,20 @@ const AccountTokensRow: FC<AccountTokensRowProps> = ({
 	const handleRemove = useCallback(() => onRemove(name), [name, onRemove]);
 
 	return (
-		<TableRow key={name} tabIndex={0} role='link' qa-token-name={name}>
-			<TableCell withTruncatedText color='default' fontScale='p2m'>
+		<GenericTableRow key={name} tabIndex={0} role='link' qa-token-name={name}>
+			<GenericTableCell withTruncatedText color='default' fontScale='p2m'>
 				{name}
-			</TableCell>
-			{isMedium && <TableCell withTruncatedText>{formatDateAndTime(createdAt)}</TableCell>}
-			<TableCell withTruncatedText>...{lastTokenPart}</TableCell>
-			<TableCell withTruncatedText>{bypassTwoFactor ? t('Ignore') : t('Require')}</TableCell>
-			<TableCell withTruncatedText>
+			</GenericTableCell>
+			{isMedium && <GenericTableCell withTruncatedText>{formatDateAndTime(createdAt)}</GenericTableCell>}
+			<GenericTableCell withTruncatedText>...{lastTokenPart}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{bypassTwoFactor ? t('Ignore') : t('Require')}</GenericTableCell>
+			<GenericTableCell withTruncatedText>
 				<ButtonGroup>
 					<IconButton title={t('Refresh')} icon='refresh' small secondary onClick={handleRegenerate} />
 					<IconButton title={t('Remove')} icon='trash' small secondary onClick={handleRemove} />
 				</ButtonGroup>
-			</TableCell>
-		</TableRow>
+			</GenericTableCell>
+		</GenericTableRow>
 	);
 };
 

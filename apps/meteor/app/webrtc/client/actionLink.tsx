@@ -1,10 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import { actionLinks } from '../../../client/lib/actionLinks';
-import { APIClient } from '../../utils/client';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 import { ChatRoom } from '../../models/client';
 import { Notifications } from '../../notifications/client';
-import { dispatchToastMessage } from '../../../client/lib/toast';
+import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 
 actionLinks.register('joinLivechatWebRTCCall', (message: IMessage) => {
@@ -30,6 +30,6 @@ actionLinks.register('endLivechatWebRTCCall', async (message: IMessage) => {
 		dispatchToastMessage({ type: 'info', message: t('Call_Already_Ended') });
 		return;
 	}
-	await APIClient.put(`/v1/livechat/webrtc.call/${message._id}`, { rid: _id, status: 'ended' });
-	Notifications.notifyRoom(_id, 'webrtc', 'callStatus', { callStatus: 'ended' });
+	await sdk.rest.put(`/v1/livechat/webrtc.call/${message._id}`, { rid: _id, status: 'ended' });
+	Notifications.notifyRoom(_id, 'webrtc' as any, 'callStatus', { callStatus: 'ended' });
 });

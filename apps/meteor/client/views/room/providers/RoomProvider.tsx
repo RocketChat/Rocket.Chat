@@ -1,7 +1,5 @@
-import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { useRoute, useStream } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType, ReactElement } from 'react';
 import React, { useMemo, memo, useEffect, useCallback } from 'react';
 
@@ -14,11 +12,10 @@ import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
-import { useRoomRolesManagement } from '../components/body/hooks/useRoomRolesManagement';
-import { RoomAPIContext } from '../contexts/RoomAPIContext';
+import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
 import { RoomContext } from '../contexts/RoomContext';
 import ComposerPopupProvider from './ComposerPopupProvider';
-import ToolboxProvider from './ToolboxProvider';
+import RoomToolboxProvider from './RoomToolboxProvider';
 import { useRoomQuery } from './hooks/useRoomQuery';
 
 type RoomProviderProps = {
@@ -31,28 +28,13 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 
 	const { data: room, isSuccess } = useRoomQuery(rid);
 
-	const subscribeToRoom = useStream('room-data');
-
-	const queryClient = useQueryClient();
-
-	// TODO: move this to omnichannel context only
-	useEffect(() => {
-		if (!room || !isOmnichannelRoom(room)) {
-			return;
-		}
-
-		return subscribeToRoom(rid, (room: IRoom | IOmnichannelRoom) => {
-			queryClient.setQueryData(['rooms', rid], room);
-		});
-	}, [subscribeToRoom, rid, queryClient, room]);
-
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
-	const homeRoute = useRoute('home');
+	const router = useRouter();
 	useEffect(() => {
 		if (isSuccess && !room) {
-			homeRoute.push();
+			router.navigate('/home');
 		}
-	}, [isSuccess, room, homeRoute]);
+	}, [isSuccess, room, router]);
 
 	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
 
@@ -120,20 +102,16 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		};
 	}, [rid, subscribed]);
 
-	const api = useMemo(() => ({}), []);
-
 	if (!pseudoRoom) {
 		return isSuccess && !room ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (
-		<RoomAPIContext.Provider value={api}>
-			<RoomContext.Provider value={context}>
-				<ToolboxProvider room={pseudoRoom}>
-					<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
-				</ToolboxProvider>
-			</RoomContext.Provider>
-		</RoomAPIContext.Provider>
+		<RoomContext.Provider value={context}>
+			<RoomToolboxProvider>
+				<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+			</RoomToolboxProvider>
+		</RoomContext.Provider>
 	);
 };
 

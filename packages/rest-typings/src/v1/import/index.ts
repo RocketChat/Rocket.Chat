@@ -8,3 +8,4 @@ export * from './GetImportProgressParamsGET';
 export * from './GetLatestImportOperationsParamsGET';
 export * from './StartImportParamsPOST';
 export * from './UploadImportFileParamsPOST';
+export * from './ImportAddUsersParamsPOST';

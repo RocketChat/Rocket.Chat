@@ -12,9 +12,10 @@ type NewDepartmentProps = {
 };
 
 const NewDepartment = ({ id }: NewDepartmentProps) => {
+	const t = useTranslation();
 	const setModal = useSetModal();
 	const getDepartmentCreationAvailable = useEndpoint('GET', '/v1/livechat/department/isDepartmentCreationAvailable');
-	const { data, isLoading, error } = useQuery(['getDepartments'], () => getDepartmentCreationAvailable(), {
+	const { data, isLoading, isError } = useQuery(['getDepartments'], () => getDepartmentCreationAvailable(), {
 		onSuccess: (data) => {
 			if (data.isDepartmentCreationAvailable === false) {
 				setModal(<EnterpriseDepartmentsModal closeModal={(): void => setModal(null)} />);
@@ -22,9 +23,7 @@ const NewDepartment = ({ id }: NewDepartmentProps) => {
 		},
 	});
 
-	const t = useTranslation();
-
-	if (error) {
+	if (isError) {
 		return <Callout type='danger'>{t('Unavailable')}</Callout>;
 	}
 
@@ -32,8 +31,7 @@ const NewDepartment = ({ id }: NewDepartmentProps) => {
 		return <PageSkeleton />;
 	}
 
-	// TODO: remove allowedToForwardData and data props once the EditDepartment component is migrated to TS
-	return <EditDepartment id={id} title={t('New_Department')} allowedToForwardData={undefined} data={undefined} />;
+	return <EditDepartment id={id} title={t('New_Department')} />;
 };
 
 export default NewDepartment;

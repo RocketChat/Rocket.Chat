@@ -1,7 +1,7 @@
-import get from 'lodash.get';
 import type { IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Rooms, Users } from '@rocket.chat/models';
+import get from 'lodash.get';
 
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -48,7 +48,7 @@ const handleBeforeSaveMessage = async (message: IMessage, room?: IOmnichannelRoo
 	}
 	const visitorId = room?.v?._id;
 	const agent = (await Users.findOneById(agentId, { projection: { name: 1, _id: 1, emails: 1 } })) || {};
-	const visitor = visitorId && ((await LivechatVisitors.findOneById(visitorId, {})) || {});
+	const visitor = visitorId && ((await LivechatVisitors.findOneEnabledById(visitorId, {})) || {});
 
 	Object.keys(placeholderFields).map((field) => {
 		const templateKey = `{{${field}}}`;
@@ -64,7 +64,7 @@ const handleBeforeSaveMessage = async (message: IMessage, room?: IOmnichannelRoo
 	return message;
 };
 
-settings.watch('Canned_Responses_Enable', function (value) {
+settings.watch('Canned_Responses_Enable', (value) => {
 	if (!value) {
 		callbacks.remove('beforeSaveMessage', 'canned-responses-replace-placeholders');
 		return;

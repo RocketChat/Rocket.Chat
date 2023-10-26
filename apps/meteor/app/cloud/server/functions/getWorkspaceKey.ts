@@ -1,10 +1,10 @@
-import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { settings } from '../../../settings/server';
+import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
 export async function getWorkspaceKey() {
-	const { connectToCloud, workspaceRegistered } = await retrieveRegistrationStatus();
+	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
-	if (!connectToCloud || !workspaceRegistered) {
+	if (!workspaceRegistered) {
 		return false;
 	}
 

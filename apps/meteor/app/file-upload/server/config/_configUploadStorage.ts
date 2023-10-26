@@ -1,8 +1,8 @@
 import _ from 'underscore';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
-import { SystemLogger } from '../../../../server/lib/logger/system';
 import './AmazonS3';
 import './FileSystem';
 import './GoogleStorage';

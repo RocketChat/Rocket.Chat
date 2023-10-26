@@ -2,6 +2,8 @@ import type { ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-ty
 import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
+import { callbacks } from '../../../../../lib/callbacks';
+
 export async function findRooms({
 	agents,
 	roomName,
@@ -31,6 +33,7 @@ export async function findRooms({
 	onhold?: string | boolean;
 	options: { offset: number; count: number; fields: Record<string, number>; sort: Record<string, number> };
 }): Promise<PaginatedResult<{ rooms: Array<IOmnichannelRoom> }>> {
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 	const { cursor, totalCount } = LivechatRooms.findRoomsWithCriteria({
 		agents,
 		roomName,
@@ -47,6 +50,7 @@ export async function findRooms({
 			count,
 			fields,
 		},
+		extraQuery,
 	});
 
 	const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);

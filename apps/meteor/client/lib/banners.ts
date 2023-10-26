@@ -1,22 +1,21 @@
-import type { UiKitBannerPayload } from '@rocket.chat/core-typings';
+import type { UiKit } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import type { Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
+import type { Keys as IconName } from '@rocket.chat/icons';
 
 export type LegacyBannerPayload = {
 	id: string;
 	closable?: boolean;
-	title?: string;
-	text?: string;
-	html?: string;
-	icon?: ComponentProps<typeof Icon>['name'];
+	title?: string | (() => string);
+	text?: string | (() => string);
+	html?: string | (() => string);
+	icon?: IconName;
 	modifiers?: ('large' | 'danger')[];
 	timer?: number;
 	action?: () => Promise<void> | void;
 	onClose?: () => Promise<void> | void;
 };
 
-type BannerPayload = LegacyBannerPayload | UiKitBannerPayload;
+type BannerPayload = LegacyBannerPayload | UiKit.BannerView;
 
 export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBannerPayload => !('blocks' in payload);
 
@@ -36,7 +35,7 @@ export const open = (payload: BannerPayload): void => {
 		if (isLegacyPayload(_payload)) {
 			return _payload.id === (payload as LegacyBannerPayload).id;
 		}
-		return (_payload as UiKitBannerPayload).viewId === (payload as UiKitBannerPayload).viewId;
+		return _payload.viewId === (payload as UiKit.BannerView).viewId;
 	});
 
 	if (index === -1) {

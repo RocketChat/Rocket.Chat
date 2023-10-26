@@ -1,11 +1,12 @@
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, directMessage, apiUsername, apiEmail, methodCall } from '../../data/api-data.js';
-import { password, adminUsername } from '../../data/user';
-import { deleteRoom } from '../../data/rooms.helper';
-import { createUser, deleteUser, login } from '../../data/users.helper';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
+import { deleteRoom } from '../../data/rooms.helper';
 import { testFileUploads } from '../../data/uploads.helper';
+import { password, adminUsername } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Direct Messages]', function () {
 	this.retries(0);
@@ -230,7 +231,7 @@ describe('[Direct Messages]', function () {
 			.end(done);
 	});
 
-	context("Setting: 'Use Real Name': true", () => {
+	describe("Setting: 'Use Real Name': true", () => {
 		before(async () => updateSetting('UI_Use_Real_Name', true));
 		after(async () => updateSetting('UI_Use_Real_Name', false));
 
@@ -331,8 +332,26 @@ describe('[Direct Messages]', function () {
 			.end(done);
 	});
 
-	describe('[/im.files]', async function () {
+	describe('[/im.files]', async () => {
 		await testFileUploads('im.files', directMessage, 'invalid-channel');
+	});
+
+	describe('/im.messages', () => {
+		it('should return all DM messages that were sent to yourself using your username', (done) => {
+			request
+				.get(api('im.messages'))
+				.set(credentials)
+				.query({
+					username: adminUsername,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+				})
+				.end(done);
+		});
 	});
 
 	describe('/im.messages.others', () => {
@@ -814,7 +833,7 @@ describe('[Direct Messages]', function () {
 				.end(done);
 		});
 
-		context('when authenticated as a non-admin user', () => {
+		describe('when authenticated as a non-admin user', () => {
 			let otherUser;
 			let otherCredentials;
 

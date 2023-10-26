@@ -3,10 +3,10 @@ import { Meteor } from 'meteor/meteor';
 import { hasAtLeastOnePermission } from '../../../app/authorization/client';
 import { settings } from '../../../app/settings/client';
 import { MessageAction } from '../../../app/ui-utils/client';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { queryClient } from '../../lib/queryClient';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../lib/toast';
-import { call } from '../../lib/utils/call';
 import { messageArgs } from '../../lib/utils/messageArgs';
 
 Meteor.startup(() => {
@@ -14,12 +14,13 @@ Meteor.startup(() => {
 		id: 'pin-message',
 		icon: 'pin',
 		label: 'Pin',
-		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct'],
+		type: 'interaction',
+		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct', 'videoconf', 'videoconf-threads'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			message.pinned = true;
 			try {
-				await call('pinMessage', message);
+				await sdk.call('pinMessage', message);
 				queryClient.invalidateQueries(['rooms', message.rid, 'pinned-messages']);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -35,7 +36,7 @@ Meteor.startup(() => {
 			}
 			return hasAtLeastOnePermission('pin-message', message.rid);
 		},
-		order: 7,
+		order: 2,
 		group: 'menu',
 	});
 });

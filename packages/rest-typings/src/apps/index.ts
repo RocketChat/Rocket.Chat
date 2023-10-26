@@ -1,5 +1,5 @@
-import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
@@ -12,6 +12,7 @@ import type {
 	AppRequestFilter,
 	AppRequestsStats,
 	PaginatedAppRequests,
+	UiKit,
 } from '@rocket.chat/core-typings';
 
 export type AppsEndpoints = {
@@ -60,7 +61,7 @@ export type AppsEndpoints = {
 						Setting_Description: string;
 					};
 				};
-			};
+			}[];
 		};
 	};
 
@@ -91,7 +92,12 @@ export type AppsEndpoints = {
 	'/apps/:id/languages': {
 		GET: () => {
 			languages: {
-				[key: string]: object;
+				[key: string]: {
+					Params: string;
+					Description: string;
+					Setting_Name: string;
+					Setting_Description: string;
+				};
 			};
 		};
 	};
@@ -250,5 +256,9 @@ export type AppsEndpoints = {
 		}) => {
 			app: App;
 		};
+	};
+
+	'/apps/ui.interaction/:id': {
+		POST: (params: UiKit.UserInteraction) => any;
 	};
 };

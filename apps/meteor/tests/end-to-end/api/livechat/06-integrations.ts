@@ -1,7 +1,6 @@
-/* eslint-env mocha */
-
 import type { ISetting } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import { before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -122,6 +121,8 @@ describe('LIVECHAT - Integrations', function () {
 	});
 
 	describe('Livechat - Webhooks', () => {
+		const webhookUrl = process.env.WEBHOOK_TEST_URL || 'https://httpbin.org';
+
 		describe('livechat/webhook.test', () => {
 			it('should fail when user doesnt have view-livechat-webhooks permission', async () => {
 				await updatePermission('view-livechat-webhooks', []);
@@ -134,13 +135,13 @@ describe('LIVECHAT - Integrations', function () {
 				const response = await request.post(api('livechat/webhook.test')).set(credentials).expect(400);
 				expect(response.body).to.have.property('success', false);
 			});
-			it.skip('should return true if webhook test went good', async () => {
-				await updateSetting('Livechat_webhookUrl', 'https://httpbin.org/status/200');
+			it('should return true if webhook test went good', async () => {
+				await updateSetting('Livechat_webhookUrl', `${webhookUrl}/status/200`);
 				const response = await request.post(api('livechat/webhook.test')).set(credentials).expect(200);
 				expect(response.body.success).to.be.true;
 			});
-			it.skip('should fail if webhook test went bad', async () => {
-				await updateSetting('Livechat_webhookUrl', 'https://httpbin.org/status/400');
+			it('should fail if webhook test went bad', async () => {
+				await updateSetting('Livechat_webhookUrl', `${webhookUrl}/status/400`);
 				await request.post(api('livechat/webhook.test')).set(credentials).expect(400);
 			});
 		});

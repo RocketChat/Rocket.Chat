@@ -16,7 +16,7 @@ test.describe.serial('create-discussion', () => {
 	});
 
 	test('expect create discussion', async ({ page }) => {
-		const discussionName = faker.datatype.uuid();
+		const discussionName = faker.string.uuid();
 		const discussionMessage = faker.animal.type();
 
 		await poHomeDiscussion.sidenav.openNewByLabel('Discussion');

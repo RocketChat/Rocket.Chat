@@ -1,6 +1,6 @@
+import type { IUpload } from '@rocket.chat/core-typings';
 import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
 import type { DeleteResult, IndexDescription, UpdateResult, Document, InsertOneResult, WithId, Filter } from 'mongodb';
-import type { IUpload } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
 

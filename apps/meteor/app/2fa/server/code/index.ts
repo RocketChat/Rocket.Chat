@@ -1,15 +1,15 @@
 import crypto from 'crypto';
 
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
-import { TOTPCheck } from './TOTPCheck';
 import { EmailCheck } from './EmailCheck';
-import { PasswordCheckFallback } from './PasswordCheckFallback';
 import type { ICodeCheck } from './ICodeCheck';
+import { PasswordCheckFallback } from './PasswordCheckFallback';
+import { TOTPCheck } from './TOTPCheck';
 
 export interface ITwoFactorOptions {
 	disablePasswordFallback?: boolean;
@@ -34,7 +34,7 @@ function getMethodByNameOrFirstActiveForUser(user: IUser, name?: string): ICodeC
 	return Array.from(checkMethods.values()).find((method) => method.isEnabled(user));
 }
 
-function getAvailableMethodNames(user: IUser): string[] | [] {
+function getAvailableMethodNames(user: IUser): string[] {
 	return (
 		Array.from(checkMethods)
 			.filter(([, method]) => method.isEnabled(user))
@@ -205,9 +205,9 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 
 	const data = await selectedMethod.processInvalidCode(existingUser);
 
-	if (!code) {
-		const availableMethods = getAvailableMethodNames(existingUser);
+	const availableMethods = getAvailableMethodNames(existingUser);
 
+	if (!code) {
 		throw new Meteor.Error('totp-required', 'TOTP Required', {
 			method: selectedMethod.name,
 			...data,
@@ -220,6 +220,7 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', {
 			method: selectedMethod.name,
 			...data,
+			availableMethods,
 		});
 	}
 

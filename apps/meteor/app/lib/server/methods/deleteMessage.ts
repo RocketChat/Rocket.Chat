@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { deleteMessageValidatingPermission } from '../functions/deleteMessage';
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async deleteMessage(message) {
-		methodDeprecationLogger.warn('deleteMessage method is deprecated, and will be removed in future versions');
+		methodDeprecationLogger.method('deleteMessage', '7.0.0');
 
 		check(
 			message,

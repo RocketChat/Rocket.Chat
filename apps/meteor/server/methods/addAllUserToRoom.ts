@@ -1,13 +1,14 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Message } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
+import { getSubscriptionAutotranslateDefaultConfig } from '../lib/getSubscriptionAutotranslateDefaultConfig';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -55,6 +56,7 @@ Meteor.methods<ServerMethods>({
 				continue;
 			}
 			await callbacks.run('beforeJoinRoom', user, room);
+			const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(user);
 			await Subscriptions.createWithRoomAndUser(room, user, {
 				ts: now,
 				open: true,
@@ -62,6 +64,7 @@ Meteor.methods<ServerMethods>({
 				unread: 1,
 				userMentions: 1,
 				groupMentions: 0,
+				...autoTranslateConfig,
 			});
 			await Message.saveSystemMessage('uj', rid, user.username || '', user, { ts: now });
 			await callbacks.run('afterJoinRoom', user, room);

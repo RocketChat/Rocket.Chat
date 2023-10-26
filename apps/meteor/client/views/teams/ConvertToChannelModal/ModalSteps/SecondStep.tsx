@@ -23,7 +23,7 @@ const SecondStep: FC<SecondStepsProps> = ({ onClose, onCancel, onConfirm, delete
 		<GenericModal
 			{...props}
 			variant='warning'
-			icon={<Icon name='modal-warning' size={24} color='status-font-on-warning' />}
+			icon={<Icon name='modal-warning' size='x24' color='status-font-on-warning' />}
 			cancelText={rooms?.length > 0 ? t('Back') : t('Cancel')}
 			confirmText={t('Convert')}
 			title={t('Confirmation')}

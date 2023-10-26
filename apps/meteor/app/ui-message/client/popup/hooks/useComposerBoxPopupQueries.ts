@@ -3,7 +3,8 @@ import { useQueries } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 import type { ComposerPopupOption } from '../../../../../client/views/room/contexts/ComposerPopupContext';
-import { slashCommands } from '../../../../utils/client';
+import { slashCommands } from '../../../../utils/lib/slashCommand';
+import { useEnablePopupPreview } from './useEnablePopupPreview';
 
 export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: number }>(filter: unknown, popup?: ComposerPopupOption<T>) => {
 	const [counter, setCounter] = useState(0);
@@ -12,11 +13,14 @@ export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: numbe
 		setCounter(0);
 	}, [popup, filter]);
 
+	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
+
 	const enableQuery =
 		!popup ||
 		(popup.preview &&
 			Boolean(slashCommands.commands[(filter as any)?.cmd]) &&
-			slashCommands.commands[(filter as any)?.cmd].providesPreview);
+			slashCommands.commands[(filter as any)?.cmd].providesPreview) ||
+		shouldPopupPreview;
 
 	return {
 		queries: useQueries({

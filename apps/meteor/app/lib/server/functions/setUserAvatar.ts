@@ -1,15 +1,15 @@
-import { Meteor } from 'meteor/meteor';
-import type { IUser } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { Meteor } from 'meteor/meteor';
 
-import { RocketChatFile } from '../../../file/server';
-import { FileUpload } from '../../../file-upload/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { settings } from '../../../settings/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { FileUpload } from '../../../file-upload/server';
+import { RocketChatFile } from '../../../file/server';
+import { settings } from '../../../settings/server';
 
 export const setAvatarFromServiceWithValidation = async (
 	userId: string,
@@ -165,7 +165,7 @@ export async function setUserAvatar(
 
 	const avatarETag = etag || result?.etag || '';
 
-	setTimeout(async function () {
+	setTimeout(async () => {
 		if (service) {
 			await Users.setAvatarData(user._id, service, avatarETag);
 			void api.broadcast('user.avatarUpdate', {

@@ -1,9 +1,9 @@
 import type { IImportUser, IUser } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
-import { VirtualDataConverter } from '../../../app/importer/server/classes/VirtualDataConverter';
 import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
-import { Logger } from '../logger/Logger';
+import { VirtualDataConverter } from '../../../app/importer/server/classes/VirtualDataConverter';
 import { settings } from '../../../app/settings/server';
 
 const logger = new Logger('LDAP Data Converter');

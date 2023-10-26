@@ -9,7 +9,7 @@ export class PendingAvatarImporter extends Base {
 		await super.updateProgress(ProgressStep.PREPARING_STARTED);
 
 		const users = await Users.findAllUsersWithPendingAvatar();
-		const fileCount = users.count();
+		const fileCount = await users.count();
 
 		if (fileCount === 0) {
 			await super.updateProgress(ProgressStep.DONE);
@@ -39,7 +39,7 @@ export class PendingAvatarImporter extends Base {
 
 					try {
 						if (!url || !url.startsWith('http')) {
-							return;
+							continue;
 						}
 
 						try {

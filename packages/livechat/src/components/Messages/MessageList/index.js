@@ -1,11 +1,14 @@
 import { parseISO } from 'date-fns/fp';
 import isSameDay from 'date-fns/isSameDay';
+import { Suspense } from 'preact/compat';
 
+import { MemoizedComponent } from '../../../helpers/MemoizedComponent';
+import { getAttachmentUrl } from '../../../helpers/baseUrl';
+import { createClassName } from '../../../helpers/createClassName';
 import constants from '../../../lib/constants';
 import store from '../../../store';
 import { isCallOngoing } from '../../Calls/CallStatus';
 import { JoinCallButton } from '../../Calls/JoinCallButton';
-import { createClassName, getAttachmentUrl, MemoizedComponent } from '../../helpers';
 import Message from '../Message';
 import MessageSeparator from '../MessageSeparator';
 import { TypingIndicator } from '../TypingIndicator';
@@ -178,17 +181,19 @@ export class MessageList extends MemoizedComponent {
 			}
 
 			items.push(
-				<Message
-					key={message._id}
-					attachmentResolver={attachmentResolver}
-					avatarResolver={avatarResolver}
-					use='li'
-					me={uid && message.u && uid === message.u._id}
-					compact={nextMessage && message.u && nextMessage.u && message.u._id === nextMessage.u._id && !nextMessage.t}
-					conversationFinishedMessage={conversationFinishedMessage}
-					type={message.t}
-					{...message}
-				/>,
+				<Suspense fallback={null}>
+					<Message
+						key={message._id}
+						attachmentResolver={attachmentResolver}
+						avatarResolver={avatarResolver}
+						use='li'
+						me={uid && message.u && uid === message.u._id}
+						compact={nextMessage && message.u && nextMessage.u && message.u._id === nextMessage.u._id && !nextMessage.t}
+						conversationFinishedMessage={conversationFinishedMessage}
+						type={message.t}
+						{...message}
+					/>
+				</Suspense>,
 			);
 
 			const showUnreadSeparator = lastReadMessageId && nextMessage && lastReadMessageId === message._id;

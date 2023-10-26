@@ -1,17 +1,18 @@
-import { Random } from '@rocket.chat/random';
-import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser, UserType } from '@rocket.chat/apps-engine/definition/users';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import { Presence } from '@rocket.chat/core-services';
 import type { UserStatus } from '@rocket.chat/core-typings';
+import { Subscriptions, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 
-import { setUserAvatar, deleteUser, getUserCreatedByApp } from '../../../lib/server/functions';
-import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
+import { deleteUser } from '../../../lib/server/functions/deleteUser';
+import { getUserCreatedByApp } from '../../../lib/server/functions/getUserCreatedByApp';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
+import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 
 export class AppUserBridge extends UserBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}

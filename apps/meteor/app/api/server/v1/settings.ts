@@ -1,22 +1,22 @@
-import { Meteor } from 'meteor/meteor';
-import { ServiceConfiguration } from 'meteor/service-configuration';
-import _ from 'underscore';
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 import {
 	isOauthCustomConfiguration,
 	isSettingsUpdatePropDefault,
 	isSettingsUpdatePropsActions,
 	isSettingsUpdatePropsColor,
 } from '@rocket.chat/rest-typings';
-import { Settings } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 import type { FindOptions } from 'mongodb';
+import _ from 'underscore';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import type { ResultFor } from '../definition';
-import { API } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
+import { API } from '../api';
+import type { ResultFor } from '../definition';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
 async function fetchSettings(

@@ -1,5 +1,5 @@
 import type { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
-import { Box, Callout, Field, Margins } from '@rocket.chat/fuselage';
+import { Box, Callout, Field, FieldHint, Margins } from '@rocket.chat/fuselage';
 import type { ElementType, ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
@@ -85,7 +85,7 @@ const MemoizedSetting = ({
 
 	return (
 		<Field className={className} flexDirection='row' justifyContent='space-between' alignItems='flex-start'>
-			<Box flexDirection='column' flexGrow={1}>
+			<Box flexDirection='column' flexGrow={1} wordBreak='break-word' w='full'>
 				<InputComponent
 					value={value}
 					hint={hint}
@@ -95,9 +95,9 @@ const MemoizedSetting = ({
 					{...inputProps}
 					disabled={disabled}
 				/>
-				{hint && type !== 'code' && <Field.Hint>{hint}</Field.Hint>}
+				{hint && type !== 'code' && <FieldHint>{hint}</FieldHint>}
 				{callout && (
-					<Margins block='x16'>
+					<Margins block={16}>
 						<Callout type='warning'>{callout}</Callout>
 					</Margins>
 				)}

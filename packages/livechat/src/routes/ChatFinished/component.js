@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
 import Screen from '../../components/Screen';
-import { createClassName } from '../../components/helpers';
+import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
 
 class ChatFinished extends Component {
@@ -13,16 +13,7 @@ class ChatFinished extends Component {
 		onRedirectChat && onRedirectChat();
 	};
 
-	render = ({
-		color,
-		title,
-		greeting,
-		message,
-		// eslint-disable-next-line no-unused-vars
-		onRedirectChat,
-		t,
-		...props
-	}) => {
+	render = ({ color, title, greeting, message, onRedirectChat, t, ...props }) => {
 		const defaultGreeting = t('thanks_for_talking_with_us');
 		const defaultMessage = t('if_you_have_any_other_questions_just_press_the_but');
 

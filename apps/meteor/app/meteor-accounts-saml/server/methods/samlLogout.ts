@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { SAMLServiceProvider } from '../lib/ServiceProvider';
 import { SAMLUtils } from '../lib/Utils';
-import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
 /**
  * Fetch SAML provider configs for given 'provider'.

@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import PageContext from './PageContext';
 
 type PageProps = Omit<ComponentProps<typeof Box>, 'backgroundColor'> & {
-	background?: 'light' | 'tint' | 'neutral';
+	background?: 'light' | 'tint' | 'neutral' | 'room';
 };
 
 const Page = ({ background = 'light', ...props }: PageProps): ReactElement => {
@@ -20,7 +20,6 @@ const Page = ({ background = 'light', ...props }: PageProps): ReactElement => {
 				flexShrink={1}
 				height='full'
 				overflow='hidden'
-				aria-labelledby='PageHeader-title'
 				bg={background}
 				color='default'
 				{...props}

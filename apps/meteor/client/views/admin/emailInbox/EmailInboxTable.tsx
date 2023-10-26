@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useCallback } from 'react';
 
+import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -103,13 +104,7 @@ const EmailInboxTable = (): ReactElement => {
 					/>
 				</>
 			)}
-			{result.isSuccess && result.data.emailInboxes.length === 0 && (
-				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
-				</States>
-			)}
-
+			{result.isSuccess && result.data.emailInboxes.length === 0 && <GenericNoResults />}
 			{result.isError && (
 				<States>
 					<StatesIcon name='warning' variation='danger' />

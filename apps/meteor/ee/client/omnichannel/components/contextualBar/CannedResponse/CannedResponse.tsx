@@ -4,11 +4,19 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, MouseEventHandler } from 'react';
 import React, { memo } from 'react';
 
-import VerticalBar from '../../../../../../client/components/VerticalBar';
+import {
+	Contextualbar,
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarAction,
+	ContextualbarContent,
+	ContextualbarFooter,
+} from '../../../../../../client/components/Contextualbar';
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
 const CannedResponse: FC<{
-	canEdit: boolean;
+	allowEdit: boolean;
+	allowUse: boolean;
 	data: {
 		departmentName: ILivechatDepartment['name'];
 		shortcut: IOmnichannelCannedResponse['shortcut'];
@@ -19,17 +27,17 @@ const CannedResponse: FC<{
 	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
 	onClickEdit: MouseEventHandler<HTMLOrSVGElement>;
 	onClickUse: MouseEventHandler<HTMLOrSVGElement>;
-}> = ({ canEdit, data: { departmentName, shortcut, text, scope: dataScope, tags }, onClickBack, onClickEdit, onClickUse }) => {
+}> = ({ allowEdit, allowUse, data: { departmentName, shortcut, text, scope: dataScope, tags }, onClickBack, onClickEdit, onClickUse }) => {
 	const t = useTranslation();
 	const scope = useScopeDict(dataScope, departmentName);
 
 	return (
-		<VerticalBar display='flex' flexDirection='column' width={'full'} overflow='hidden' zIndex={100} insetBlock={0}>
-			<VerticalBar.Header>
-				{onClickBack && <VerticalBar.Action onClick={onClickBack} title={t('Back_to_threads')} name='arrow-back' />}
-				<VerticalBar.Text>!{shortcut}</VerticalBar.Text>
-			</VerticalBar.Header>
-			<VerticalBar.Content>
+		<Contextualbar color='default' display='flex' flexDirection='column' width='full' overflow='hidden' zIndex={100} insetBlock={0}>
+			<ContextualbarHeader>
+				{onClickBack && <ContextualbarAction onClick={onClickBack} title={t('Back_to_threads')} name='arrow-back' />}
+				<ContextualbarTitle>!{shortcut}</ContextualbarTitle>
+			</ContextualbarHeader>
+			<ContextualbarContent>
 				<Box pb='24px'>
 					<Box mbe='16px'>
 						<Box fontScale='p2m' mbe='8px'>
@@ -74,16 +82,16 @@ const CannedResponse: FC<{
 						</Box>
 					</Box>
 				</Box>
-			</VerticalBar.Content>
-			<VerticalBar.Footer>
+			</ContextualbarContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					{canEdit && <Button onClick={onClickEdit}>{t('Edit')}</Button>}
-					<Button primary onClick={onClickUse}>
+					{allowEdit && <Button onClick={onClickEdit}>{t('Edit')}</Button>}
+					<Button primary disabled={!allowUse} onClick={onClickUse}>
 						{t('Use')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
-		</VerticalBar>
+			</ContextualbarFooter>
+		</Contextualbar>
 	);
 };
 

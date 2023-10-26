@@ -1,4 +1,4 @@
-import { Field, Box, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldHint, Box, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -28,10 +28,15 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 
 	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
+	const options = useMemo(() => {
+		const pending = value.filter(({ value }) => !departmentsItems.find((dep) => dep.value === value));
+		return [...departmentsItems, ...pending];
+	}, [departmentsItems, value]);
+
 	return (
 		<Field>
-			<Field.Label>{t(label)}</Field.Label>
-			<Field.Row>
+			<FieldLabel>{t(label)}</FieldLabel>
+			<FieldRow>
 				<Box w='100%'>
 					<PaginatedMultiSelectFiltered
 						withTitle
@@ -41,7 +46,7 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 						filter={debouncedDepartmentsFilter}
 						setFilter={setDepartmentsFilter}
 						onChange={handler}
-						options={departmentsItems}
+						options={options}
 						value={value}
 						placeholder={t('Select_an_option')}
 						endReached={
@@ -56,8 +61,8 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 						}
 					/>
 				</Box>
-			</Field.Row>
-			<Field.Hint>{t('List_of_departments_for_forward_description')}</Field.Hint>
+			</FieldRow>
+			<FieldHint>{t('List_of_departments_for_forward_description')}</FieldHint>
 		</Field>
 	);
 };

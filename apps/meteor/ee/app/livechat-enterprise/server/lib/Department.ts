@@ -1,6 +1,6 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { LivechatDepartment } from '@rocket.chat/models';
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import { LivechatDepartment } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { callbacks } from '../../../../../lib/callbacks';
 
@@ -24,7 +24,7 @@ export const findAllDepartmentsAvailable = async (
 		query = await callbacks.run('livechat.applyDepartmentRestrictions', query, { userId: uid });
 	}
 
-	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, { limit: count, offset });
+	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, { limit: count, offset, sort: { name: 1 } });
 
 	const [departments, total] = await Promise.all([cursor.toArray(), totalCount]);
 

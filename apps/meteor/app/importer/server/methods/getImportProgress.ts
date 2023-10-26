@@ -1,10 +1,10 @@
 import type { IImportProgress } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 import { Imports } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Importers } from '..';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 export const executeGetImportProgress = async (): Promise<IImportProgress> => {
 	const operation = await Imports.findLastImport();
@@ -19,7 +19,6 @@ export const executeGetImportProgress = async (): Promise<IImportProgress> => {
 	}
 
 	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
-	await importer.instance.build();
 
 	return importer.instance.getProgress();
 };

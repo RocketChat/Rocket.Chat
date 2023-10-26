@@ -1,7 +1,7 @@
 import supertest from 'supertest';
 
-import { publicChannelName, privateChannelName } from './channel.js';
-import { roleNameUsers, roleNameSubscriptions, roleScopeUsers, roleScopeSubscriptions, roleDescription } from './role.js';
+import { publicChannelName, privateChannelName } from './channel';
+import { roleNameUsers, roleNameSubscriptions, roleScopeUsers, roleScopeSubscriptions, roleDescription } from './role';
 import { username, email, adminUsername, adminPassword } from './user';
 
 const apiUrl = process.env.TEST_API_URL || 'http://localhost:3000';
@@ -13,10 +13,10 @@ export function wait(cb, time) {
 	return () => setTimeout(cb, time);
 }
 
-export const apiUsername = `api${username}`;
-export const apiEmail = `api${email}`;
-export const apiPublicChannelName = `api${publicChannelName}`;
-export const apiPrivateChannelName = `api${privateChannelName}`;
+export const apiUsername = `api${username}-${Date.now()}`;
+export const apiEmail = `api${email}-${Date.now()}`;
+export const apiPublicChannelName = `api${publicChannelName}-${Date.now()}`;
+export const apiPrivateChannelName = `api${privateChannelName}-${Date.now()}`;
 
 export const apiRoleNameUsers = `api${roleNameUsers}`;
 export const apiRoleNameSubscriptions = `api${roleNameSubscriptions}`;
@@ -25,12 +25,12 @@ export const apiRoleScopeSubscriptions = `${roleScopeSubscriptions}`;
 export const apiRoleDescription = `api${roleDescription}`;
 export const reservedWords = ['admin', 'administrator', 'system', 'user'];
 
-export const targetUser = {};
 export const channel = {};
 export const group = {};
 export const message = {};
 export const directMessage = {};
 export const integration = {};
+/** @type {{ 'X-Auth-Token': string | undefined; 'X-User-Id': string | undefined }} */
 export const credentials = {
 	'X-Auth-Token': undefined,
 	'X-User-Id': undefined,

@@ -25,13 +25,13 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 				<Modal.HeroImage maxHeight='initial' src='/images/conf-call-config.svg' />
 				<Box fontScale='h3'>{t('Enterprise_capabilities')}</Box>
 				<Box withRichContent>
-					<Box is='ul' pis='x24'>
+					<Box is='ul' pis={24}>
 						<li>{t('Ringtones_and_visual_indicators_notify_people_of_incoming_calls')}</li>
 						<li>{t('Call_history_provides_a_record_of_when_calls_took_place_and_who_joined')}</li>
 					</Box>
 				</Box>
 				<Box fontScale='h3'>{t('Conference_call_apps')}</Box>
-				<Margins blockStart='x12'>
+				<Margins blockStart={12}>
 					<Callout icon='team' title={isAdmin ? t('Jitsi_included_with_Community') : 'Jitsi'}>
 						{t('Open-source_conference_call_solution')}
 					</Callout>
@@ -42,10 +42,10 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 						{t('Secure_SaaS_solution')} {t('A_cloud-based_platform_for_those_needing_a_plug-and-play_app')}
 					</Callout>
 				</Margins>
-				<Box fontScale='h3' mbs='x24'>
+				<Box fontScale='h3' mbs={24}>
 					{t('Required_action')}
 				</Box>
-				<Callout mbs='x12' mbe='x24' title={t('Missing_configuration')} type='warning'>
+				<Callout mbs={12} mbe={24} title={t('Missing_configuration')} type='warning'>
 					{isAdmin
 						? t('An_app_needs_to_be_installed_and_configured')
 						: t('A_workspace_admin_needs_to_install_and_configure_a_conference_call_app')}

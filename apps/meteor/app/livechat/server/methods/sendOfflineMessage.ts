@@ -1,21 +1,21 @@
-import { Meteor } from 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { Livechat } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'livechat:sendOfflineMessage'(data: { name: string; email: string; message: string }): Promise<boolean>;
+		'livechat:sendOfflineMessage'(data: { name: string; email: string; message: string }): Promise<void>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:sendOfflineMessage'(data) {
-		methodDeprecationLogger.warn('livechat:sendOfflineMessage will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('livechat:sendOfflineMessage', '7.0.0');
 
 		check(data, {
 			name: String,
@@ -23,7 +23,7 @@ Meteor.methods<ServerMethods>({
 			message: String,
 		});
 
-		return Livechat.sendOfflineMessage(data);
+		await Livechat.sendOfflineMessage(data);
 	},
 });
 

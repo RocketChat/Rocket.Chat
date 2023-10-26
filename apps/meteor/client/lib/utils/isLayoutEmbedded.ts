@@ -1,3 +1,9 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { router } from '../../providers/RouterProvider';
 
-export const isLayoutEmbedded = (): boolean => FlowRouter.getQueryParam('layout') === 'embedded';
+let embedded = false;
+
+router.subscribeToRouteChange(() => {
+	embedded = router.getSearchParameters().layout === 'embedded';
+});
+
+export const isLayoutEmbedded = () => embedded;

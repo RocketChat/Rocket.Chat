@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { lazy, useMemo } from 'react';
@@ -7,10 +7,9 @@ import Page from '../../../components/Page';
 
 const BusinessHoursPage = () => {
 	const t = useTranslation();
-
 	const router = useRoute('omnichannel-businessHours');
 
-	const Table = useMemo(() => lazy(() => import('../../../../ee/client/omnichannel/BusinessHoursTableContainer')), []);
+	const BusinessHoursTable = useMemo(() => lazy(() => import('../../../../ee/client/omnichannel/BusinessHoursTable')), []);
 
 	const handleNew = useMutableCallback(() => {
 		router.push({
@@ -22,13 +21,13 @@ const BusinessHoursPage = () => {
 		<Page>
 			<Page.Header title={t('Business_Hours')}>
 				<ButtonGroup>
-					<Button onClick={handleNew}>
-						<Icon name='plus' /> {t('New')}
+					<Button icon='plus' onClick={handleNew}>
+						{t('New')}
 					</Button>
 				</ButtonGroup>
 			</Page.Header>
 			<Page.Content>
-				<Table />
+				<BusinessHoursTable />
 			</Page.Content>
 		</Page>
 	);

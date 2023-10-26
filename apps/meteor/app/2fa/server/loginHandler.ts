@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { OAuth } from 'meteor/oauth';
 import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import { OAuth } from 'meteor/oauth';
 
 import { callbacks } from '../../../lib/callbacks';
 import { checkCodeForUser } from './code/index';

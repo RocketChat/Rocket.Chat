@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import { eventTypes } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
+import { getFederationDomain } from '../lib/getFederationDomain';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

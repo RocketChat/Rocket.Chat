@@ -37,18 +37,23 @@ export class AppRoomsConverter {
 
 		let v;
 		if (room.visitor) {
-			const visitor = await LivechatVisitors.findOneById(room.visitor.id);
+			const visitor = await LivechatVisitors.findOneEnabledById(room.visitor.id);
+
+			const { lastMessageTs, phone } = room.visitorChannelInfo;
+
 			v = {
 				_id: visitor._id,
 				username: visitor.username,
 				token: visitor.token,
 				status: visitor.status || 'online',
+				...(lastMessageTs && { lastMessageTs }),
+				...(phone && { phone }),
 			};
 		}
 
 		let departmentId;
 		if (room.department) {
-			const department = await LivechatDepartment.findOneById(room.department.id);
+			const department = await LivechatDepartment.findOneById(room.department.id, { projection: { _id: 1 } });
 			departmentId = department._id;
 		}
 
@@ -165,16 +170,34 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('users').convertById(u._id);
 			},
-			visitor: async (room) => {
+			visitor: (room) => {
 				const { v } = room;
 
 				if (!v) {
 					return undefined;
 				}
 
-				delete room.v;
-
 				return this.orch.getConverters().get('visitors').convertById(v._id);
+			},
+			// Note: room.v is not just visitor, it also contains channel related visitor data
+			// so we need to pass this data to the converter
+			// So suppose you have a contact whom we're contacting using SMS via 2 phone no's,
+			// let's call X and Y. Then if the contact sends a message using X phone number,
+			// then room.v.phoneNo would be X and correspondingly we'll store the timestamp of
+			// the last message from this visitor from X phone no on room.v.lastMessageTs
+			visitorChannelInfo: (room) => {
+				const { v } = room;
+
+				if (!v) {
+					return undefined;
+				}
+
+				const { lastMessageTs, phone } = v;
+
+				return {
+					...(phone && { phone }),
+					...(lastMessageTs && { lastMessageTs }),
+				};
 			},
 			department: async (room) => {
 				const { departmentId } = room;

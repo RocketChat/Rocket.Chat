@@ -15,15 +15,12 @@ const AppRoot = (): ReactElement => (
 		{createPortal(
 			<>
 				<meta charSet='utf-8' />
-				<meta http-equiv='content-type' content='text/html; charset=utf-8' />
-				<meta http-equiv='expires' content='-1' />
-				<meta http-equiv='X-UA-Compatible' content='IE=edge' />
+				<meta httpEquiv='content-type' content='text/html; charset=utf-8' />
+				<meta httpEquiv='expires' content='-1' />
+				<meta httpEquiv='X-UA-Compatible' content='IE=edge' />
 				<meta name='fragment' content='!' />
 				<meta name='distribution' content='global' />
-				<meta
-					name='viewport'
-					content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, interactive-widget=resizes-content'
-				/>
+				<meta name='viewport' content='width=device-width, initial-scale=1, interactive-widget=resizes-content' />
 				<meta name='rating' content='general' />
 				<meta name='mobile-web-app-capable' content='yes' />
 				<meta name='apple-mobile-web-app-capable' content='yes' />

@@ -1,11 +1,10 @@
-import type { IOmnichannelBusinessUnit, ILivechatUnitMonitor, ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { IOmnichannelBusinessUnit, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatUnitModel } from '@rocket.chat/model-typings';
-import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
 import { LivechatUnitMonitors, LivechatDepartment, LivechatRooms } from '@rocket.chat/models';
+import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
 
-import { getUnitsFromUser } from '../../../app/livechat-enterprise/server/lib/units';
-import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
+import { getUnitsFromUser } from '../../../app/livechat-enterprise/server/lib/units';
 
 const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUnit> = {}) => {
 	const query: FilterOperators<IOmnichannelBusinessUnit> = { ...originalQuery, type: 'u' };
@@ -40,7 +39,6 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		options: FindOptions<IOmnichannelBusinessUnit>,
 	): Promise<FindCursor<IOmnichannelBusinessUnit>> {
 		const query = await addQueryRestrictions(originalQuery);
-		queriesLogger.debug({ msg: 'LivechatUnit.find', query });
 		return this.col.find(query, options) as FindCursor<IOmnichannelBusinessUnit>;
 	}
 
@@ -50,18 +48,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		options: FindOptions<IOmnichannelBusinessUnit>,
 	): Promise<IOmnichannelBusinessUnit | null> {
 		const query = await addQueryRestrictions(originalQuery);
-		queriesLogger.debug({ msg: 'LivechatUnit.findOne', query });
 		return this.col.findOne(query, options);
-	}
-
-	async update(
-		originalQuery: Filter<IOmnichannelBusinessUnit>,
-		update: Filter<IOmnichannelBusinessUnit>,
-		options: FindOptions<IOmnichannelBusinessUnit>,
-	): Promise<UpdateResult> {
-		const query = await addQueryRestrictions(originalQuery);
-		queriesLogger.debug({ msg: 'LivechatUnit.update', query });
-		return this.col.updateOne(query, update, options);
 	}
 
 	remove(query: Filter<IOmnichannelBusinessUnit>): Promise<DeleteResult> {
@@ -69,13 +56,13 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 	}
 
 	async createOrUpdateUnit(
-		_id: string | undefined,
+		_id: string | null,
 		{ name, visibility }: { name: string; visibility: IOmnichannelBusinessUnit['visibility'] },
 		ancestors: string[],
-		monitors: ILivechatUnitMonitor[],
+		monitors: { monitorId: string; username: string }[],
 		departments: { departmentId: string }[],
 	): Promise<Omit<IOmnichannelBusinessUnit, '_updatedAt'>> {
-		monitors = ([] as ILivechatUnitMonitor[]).concat(monitors || []);
+		monitors = ([] as { monitorId: string; username: string }[]).concat(monitors || []);
 		ancestors = ([] as string[]).concat(ancestors || []);
 
 		const record = {
@@ -116,7 +103,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 			});
 		}
 
-		const savedDepartments = (await LivechatDepartment.find({ parentId: _id }).toArray()).map(({ _id }) => _id);
+		const savedDepartments = (await LivechatDepartment.findByParentId(_id, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
 		const departmentsToSave = departments.map(({ departmentId }) => departmentId);
 
 		// remove other departments
@@ -135,7 +122,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		}
 
 		for await (const departmentId of departmentsToSave) {
-			await LivechatDepartment.update(
+			await LivechatDepartment.updateOne(
 				{ _id: departmentId },
 				{
 					$set: {
@@ -200,9 +187,13 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		return monitoredUnits.map((u) => u.unitId);
 	}
 
-	async findMonitoredDepartmentsByMonitorId(monitorId: string): Promise<ILivechatDepartment[]> {
+	async findMonitoredDepartmentsByMonitorId(monitorId: string, includeDisabled: boolean): Promise<ILivechatDepartment[]> {
 		const monitoredUnits = await this.findByMonitorId(monitorId);
-		return LivechatDepartment.findByUnitIds(monitoredUnits, {}).toArray();
+
+		if (includeDisabled) {
+			return LivechatDepartment.findByUnitIds(monitoredUnits, {}).toArray();
+		}
+		return LivechatDepartment.findActiveByUnitIds(monitoredUnits, {}).toArray();
 	}
 
 	countUnits(): Promise<number> {

@@ -1,33 +1,33 @@
-import faker from '@faker-js/faker';
-import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
+import { faker } from '@faker-js/faker';
+import { expect } from 'chai';
+import type { ILivechatDepartment, IUser, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
-import { IUserCredentialsHeader, password } from '../user';
-import { createUser, login } from '../users.helper';
-import { createAgent, makeAgentAvailable } from './rooms';
-import type { DummyResponse } from './utils';
+import { IUserCredentialsHeader } from '../user';
+import { createAnOnlineAgent } from './users';
+import { WithRequiredProperty } from './utils';
 
-export const createDepartment = (): Promise<ILivechatDepartment> =>
-	new Promise((resolve, reject) => {
-		request
-			.post(api('livechat/department'))
-			.send({
-				department: {
-					enabled: false,
-					email: 'email@email.com',
-					showOnRegistration: true,
-					showOnOfflineForm: true,
-					name: `new department ${Date.now()}`,
-					description: 'created from api',
-				},
-			})
-			.set(credentials)
-			.end((err: Error, res: DummyResponse<ILivechatDepartment>) => {
-				if (err) {
-					return reject(err);
-				}
-				resolve(res.body.department);
-			});
-	});
+export const NewDepartmentData = ((): Partial<ILivechatDepartment> => ({
+    enabled: true,
+    name: `new department ${Date.now()}`,
+    description: 'created from api',
+    showOnRegistration: true,
+    email: faker.internet.email(),
+    showOnOfflineForm: true,
+}))();
+
+export const createDepartment = async (departmentData: Partial<ILivechatDepartment> = NewDepartmentData): Promise<ILivechatDepartment> => {
+    const response = await request.post(api('livechat/department')).set(credentials).send({
+        department: departmentData,
+    }).expect(200);
+    return response.body.department;
+};
+
+export const updateDepartment = async (departmentId: string, departmentData: Partial<LivechatDepartmentDTO>): Promise<ILivechatDepartment> => {
+    const response = await request.put(api(`livechat/department/${ departmentId }`)).set(credentials).send({
+        department: departmentData,
+    }).expect(200);
+    return response.body.department;
+};
 
 export const createDepartmentWithMethod = (initialAgents: { agentId: string, username: string }[] = []) =>
 new Promise((resolve, reject) => {
@@ -59,22 +59,19 @@ new Promise((resolve, reject) => {
 
 export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: ILivechatDepartment, agent: {
 	credentials: IUserCredentialsHeader;
-	user: IUser;
+	user: WithRequiredProperty<IUser, 'username'>;
 }}> => {
-	const agent: IUser = await createUser();
-	const createdUserCredentials = await login(agent.username, password);
-	await createAgent(agent.username);
-	await makeAgentAvailable(createdUserCredentials);
+    const { user, credentials } = await createAnOnlineAgent();
 
 	const department = await createDepartmentWithMethod() as ILivechatDepartment;
 
-	await addOrRemoveAgentFromDepartment(department._id, {agentId: agent._id, username: (agent.username as string)}, true);
+	await addOrRemoveAgentFromDepartment(department._id, {agentId: user._id, username: user.username}, true);
 
 	return {
 		department,
 		agent: {
-			credentials: createdUserCredentials,
-			user: agent,
+			credentials,
+			user,
 		}
 	};
 };
@@ -88,3 +85,23 @@ export const addOrRemoveAgentFromDepartment = async (departmentId: string, agent
 		throw new Error('Failed to add or remove agent from department. Status code: ' + response.status + '\n' + response.body);
 	}
 }
+
+export const archiveDepartment = async (departmentId: string): Promise<void> => {
+    await request.post(api(`livechat/department/${ departmentId }/archive`)).set(credentials).expect(200);
+}
+
+export const disableDepartment = async (department: ILivechatDepartment): Promise<void> => {
+    department.enabled = false;
+    delete department._updatedAt;
+    const updatedDepartment = await updateDepartment(department._id, department);
+    expect(updatedDepartment.enabled).to.be.false;
+}
+
+export const deleteDepartment = async (departmentId: string): Promise<void> => {
+    await request.delete(api(`livechat/department/${ departmentId }`)).set(credentials).expect(200);
+}
+
+export const getDepartmentById = async (departmentId: string): Promise<ILivechatDepartment> => {
+    const response = await request.get(api(`livechat/department/${ departmentId }`)).set(credentials).expect(200);
+    return response.body.department;
+};

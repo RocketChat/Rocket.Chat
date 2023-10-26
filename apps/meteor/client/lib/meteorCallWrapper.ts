@@ -2,7 +2,7 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { APIClient } from '../../app/utils/client';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 const bypassMethods: string[] = ['setUserStatus', 'logout'];
 
@@ -51,7 +51,8 @@ function wrapMeteorDDPCalls(): void {
 		};
 		const method = encodeURIComponent(message.method.replace(/\//g, ':'));
 
-		APIClient.post(`/v1/${endpoint}/${method}`, restParams)
+		sdk.rest
+			.post(`/v1/${endpoint}/${method}`, restParams)
 			.then(({ message: _message }) => {
 				processResult(_message);
 				if (message.method === 'login') {

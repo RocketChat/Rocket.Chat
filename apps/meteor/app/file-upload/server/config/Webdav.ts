@@ -1,9 +1,9 @@
 import _ from 'underscore';
 
-import { FileUploadClass, FileUpload } from '../lib/FileUpload';
-import { settings } from '../../../settings/server';
-import '../../ufs/Webdav/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../settings/server';
+import { FileUploadClass, FileUpload } from '../lib/FileUpload';
+import '../../ufs/Webdav/server';
 
 const get: FileUploadClass['get'] = async function (this: FileUploadClass, file, _req, res) {
 	(await this.store.getReadStream(file._id, file))
@@ -19,7 +19,9 @@ const get: FileUploadClass['get'] = async function (this: FileUploadClass, file,
 };
 
 const copy: FileUploadClass['copy'] = async function (this: FileUploadClass, file, out) {
-	(await this.store.getReadStream(file._id, file)).pipe(out);
+	return new Promise(async (resolve) => {
+		(await this.store.getReadStream(file._id, file)).pipe(out).on('finish', () => resolve());
+	});
 };
 
 const WebdavUploads = new FileUploadClass({
@@ -43,7 +45,7 @@ const WebdavUserDataFiles = new FileUploadClass({
 	// store setted bellow
 });
 
-const configure = _.debounce(function () {
+const configure = _.debounce(() => {
 	const uploadFolderPath = settings.get('FileUpload_Webdav_Upload_Folder_Path');
 	const server = settings.get('FileUpload_Webdav_Server_URL');
 	const username = settings.get('FileUpload_Webdav_Username');

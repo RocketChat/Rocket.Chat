@@ -1,6 +1,6 @@
 /* eslint-env mocha */
-import type { Options, Root } from '@rocket.chat/message-parser';
 import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import type { Options, Root } from '@rocket.chat/message-parser';
 import { expect } from 'chai';
 
 import { parseMessageQuoteAttachment } from '../../../../../../../client/lib/parseMessageTextToAstMarkdown';

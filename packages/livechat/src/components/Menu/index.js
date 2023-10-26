@@ -1,23 +1,30 @@
 import { Component } from 'preact';
 
+import { createClassName } from '../../helpers/createClassName';
+import { normalizeDOMRect } from '../../helpers/normalizeDOMRect';
 import { PopoverTrigger } from '../Popover';
-import { createClassName, normalizeDOMRect } from '../helpers';
 import styles from './styles.scss';
 
-export const Menu = ({ children, hidden, placement, ...props }) => (
+/** @typedef {{ children: any, hidden?: boolean, placement?: string }} MenuProps */
+
+/** @type {{ (props: MenuProps) => JSX.Element; Group: any; Item: any}} */
+export const Menu = ({ children, hidden, placement = '', ...props }) => (
 	<div className={createClassName(styles, 'menu', { hidden, placement })} {...props}>
 		{children}
 	</div>
 );
 
-export const Group = ({ children, title, ...props }) => (
+/** @typedef {{ children: any, title?: string }} GroupProps */
+
+/** @type {(props: GroupProps) => JSX.Element} */
+export const Group = ({ children, title = '', ...props }) => (
 	<div className={createClassName(styles, 'menu__group')} {...props}>
 		{title && <div className={createClassName(styles, 'menu__group-title')}>{title}</div>}
 		{children}
 	</div>
 );
 
-export const Item = ({ children, primary, danger, disabled, icon, ...props }) => (
+export const Item = ({ children, primary = false, danger = false, disabled = false, icon = undefined, ...props }) => (
 	<button className={createClassName(styles, 'menu__item', { primary, danger, disabled })} disabled={disabled} {...props}>
 		{icon && <div className={createClassName(styles, 'menu__item__icon')}>{icon()}</div>}
 		{children}
@@ -76,7 +83,10 @@ class PopoverMenuWrapper extends Component {
 	);
 }
 
-export const PopoverMenu = ({ children, trigger, overlayed }) => (
+/** @typedef {{ children: any, trigger: (contextValue: { pop: () => void }) => void, overlayed?: boolean }} PopoverMenuProps */
+
+/** @type {(props: PopoverMenuProps) => JSX.Element} */
+export const PopoverMenu = ({ children = null, trigger, overlayed }) => (
 	<PopoverTrigger
 		overlayProps={{
 			className: overlayed ? createClassName(styles, 'popover-menu__overlay') : null,

@@ -1,5 +1,5 @@
-import type { Db, IndexDescription } from 'mongodb';
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 

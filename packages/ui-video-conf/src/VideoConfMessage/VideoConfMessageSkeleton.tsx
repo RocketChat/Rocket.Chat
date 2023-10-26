@@ -7,10 +7,10 @@ import VideoConfMessageRow from './VideoConfMessageRow';
 const VideoConfMessageSkeleton = (): ReactElement => (
 	<VideoConfMessage>
 		<VideoConfMessageRow>
-			<Skeleton width='full' pb='x4' />
+			<Skeleton width='full' pb={4} />
 		</VideoConfMessageRow>
 		<VideoConfMessageRow backgroundColor='tint'>
-			<Skeleton width='full' pb='x4' />
+			<Skeleton width='full' pb={4} />
 		</VideoConfMessageRow>
 	</VideoConfMessage>
 );

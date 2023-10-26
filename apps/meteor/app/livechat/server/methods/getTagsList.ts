@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	'livechat:getTagsList'() {
-		methodDeprecationLogger.warn('livechat:getTagsList will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.method('livechat:getTagsList', '7.0.0');
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'livechat:getTagsList',

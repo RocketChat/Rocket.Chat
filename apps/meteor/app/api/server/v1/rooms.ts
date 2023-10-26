@@ -1,17 +1,25 @@
-import { Meteor } from 'meteor/meteor';
+import { Media } from '@rocket.chat/core-services';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Messages, Rooms, Users } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import { isGETRoomsNameExists } from '@rocket.chat/rest-typings';
-import { Messages, Rooms, Users } from '@rocket.chat/models';
-import type { IRoom } from '@rocket.chat/core-typings';
-import { Media } from '@rocket.chat/core-services';
+import { Meteor } from 'meteor/meteor';
 
-import { API } from '../api';
+import { isTruthy } from '../../../../lib/isTruthy';
+import * as dataExport from '../../../../server/lib/dataExport';
+import { eraseRoom } from '../../../../server/methods/eraseRoom';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { getUploadFormData } from '../lib/getUploadFormData';
-import { settings } from '../../../settings/server';
-import { eraseRoom } from '../../../../server/methods/eraseRoom';
+import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
+import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { FileUpload } from '../../../file-upload/server';
+import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
+import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
+import { settings } from '../../../settings/server';
+import { API } from '../api';
+import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { getUploadFormData } from '../lib/getUploadFormData';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -20,14 +28,6 @@ import {
 	findChannelAndPrivateAutocompleteWithPagination,
 	findRoomsAvailableForTeams,
 } from '../lib/rooms';
-import * as dataExport from '../../../../server/lib/dataExport';
-import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
-import { getPaginationItems } from '../helpers/getPaginationItems';
-import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
-import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
-import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
-import { isTruthy } from '../../../../lib/isTruthy';
-import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
 
 async function findRoomByIdOrName({
 	params,
@@ -398,7 +398,7 @@ API.v1.addRoute(
 				await findAdminRooms({
 					uid: this.userId,
 					filter: filter || '',
-					types: types || [],
+					types: (types && !Array.isArray(types) ? [types] : types) ?? [],
 					pagination: {
 						offset,
 						count,
