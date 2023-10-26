@@ -30,11 +30,15 @@ callbacks.add(
 		// Return YYYY-MM from moment
 		const monthYear = moment().format('YYYY-MM');
 		const isVisitorActive = await LivechatVisitors.isVisitorActiveOnPeriod(room.v._id, monthYear);
+
+		// Case: agent answers & visitor is not active, we mark visitor as active
 		if (!isVisitorActive) {
 			await LivechatVisitors.markVisitorActiveForPeriod(room.v._id, monthYear);
 		}
 
-		await LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear);
+		if (!room.v?.activity?.includes(monthYear)) {
+			await LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear);
+		}
 
 		if (room.responseBy) {
 			await LivechatRooms.setAgentLastMessageTs(room._id);
