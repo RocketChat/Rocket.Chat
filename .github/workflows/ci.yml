@@ -126,6 +126,7 @@ jobs:
     name: 📦 Meteor Build - coverage
     needs: [release-versions, packages-build]
     runs-on: ubuntu-20.04
+    container: node:14.21.3-bullseye-slim
 
     steps:
       - name: Github Info
