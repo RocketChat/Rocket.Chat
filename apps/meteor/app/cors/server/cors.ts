@@ -1,12 +1,12 @@
 import type http from 'http';
 import url from 'url';
 
+import { Logger } from '@rocket.chat/logger';
 import { Meteor } from 'meteor/meteor';
 import type { StaticFiles } from 'meteor/webapp';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import _ from 'underscore';
 
-import { Logger } from '../../logger/server';
 import { settings } from '../../settings/server';
 
 // Taken from 'connect' types
@@ -79,7 +79,7 @@ WebApp.rawConnectHandlers.use((_req: http.IncomingMessage, res: http.ServerRespo
 const _staticFilesMiddleware = WebAppInternals.staticFilesMiddleware;
 
 // @ts-expect-error - accessing internal property of webapp
-WebAppInternals._staticFilesMiddleware = function (
+WebAppInternals.staticFilesMiddleware = function (
 	staticFiles: StaticFiles,
 	req: http.IncomingMessage,
 	res: http.ServerResponse,

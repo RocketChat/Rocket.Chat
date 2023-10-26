@@ -1,11 +1,11 @@
 import { EventEmitter } from 'events';
 
 import { MeteorService, isMeteorError, MeteorError } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
 import ejson from 'ejson';
 import { v1 as uuidv1 } from 'uuid';
 import WebSocket from 'ws';
 
-import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 import type { Client } from './Client';
 import { Publication } from './Publication';
 import { DDP_EVENTS } from './constants';

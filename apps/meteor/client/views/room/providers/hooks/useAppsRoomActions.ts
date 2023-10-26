@@ -31,6 +31,7 @@ export const useAppsRoomActions = () => {
 							appId: action.appId,
 							payload: { context: action.context },
 						}),
+					type: 'apps',
 				}),
 			) ?? [],
 		[actionManager, applyButtonFilters, result.data, room._id],

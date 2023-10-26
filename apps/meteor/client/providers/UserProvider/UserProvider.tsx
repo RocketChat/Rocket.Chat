@@ -13,6 +13,7 @@ import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCl
 import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
+import { useCreateFontStyleElement } from '../../views/account/accessibility/hooks/useCreateFontStyleElement';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 
@@ -67,8 +68,9 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	const user = useReactiveValue(getUser);
 	const [language, setLanguage] = useLocalStorage('userLanguage', user?.language ?? 'en');
 
-	const { data: license } = useIsEnterprise();
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
+
+	useCreateFontStyleElement(user?.settings?.preferences?.fontSize);
 
 	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
 
@@ -169,6 +171,8 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			setLanguage(user.language);
 		}
 	}, [user?.language, language, setLanguage]);
+
+	const { data: license } = useIsEnterprise({ enabled: !!userId });
 
 	useEffect(() => {
 		if (!license?.isEnterprise && user?.settings?.preferences?.themeAppearence === 'high-contrast') {

@@ -1,6 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Uploads, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Uploads, Users, ReadReceipts } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { Apps } from '../../../../ee/server/apps';
@@ -62,6 +62,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		if (!showDeletedStatus) {
 			await Messages.removeById(message._id);
 		}
+		await ReadReceipts.removeByMessageId(message._id);
 
 		for await (const file of files) {
 			file?._id && (await FileUpload.getStore('Uploads').deleteById(file._id));

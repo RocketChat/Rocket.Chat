@@ -110,7 +110,7 @@ const UiKitContextualBar = (props: UiKitContextualBarProps) => {
 				</Box>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<ButtonGroup align='end'>
+				<ButtonGroup stretch>
 					{view.close && (
 						<Button danger={view.close.style === 'danger'} onClick={handleCancel}>
 							{contextualBarParser.text(view.close.text, BlockContext.NONE, 0)}

@@ -92,8 +92,6 @@ video {
 
 	border: 0 solid;
 
-	font-size: 100%;
-
 	&::after,
 	&::before {
 		border: 0 solid;

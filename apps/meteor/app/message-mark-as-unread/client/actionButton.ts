@@ -14,6 +14,7 @@ Meteor.startup(() => {
 		icon: 'flag',
 		label: 'Mark_unread',
 		context: ['message', 'message-mobile', 'threads'],
+		type: 'interaction',
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 
@@ -44,7 +45,7 @@ Meteor.startup(() => {
 
 			return message.u._id !== user._id;
 		},
-		order: 10,
+		order: 4,
 		group: 'menu',
 	});
 });

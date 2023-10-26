@@ -28,6 +28,9 @@ COPY ./packages/models/dist packages/models/dist
 COPY ./packages/instance-status/package.json packages/instance-status/package.json
 COPY ./packages/instance-status/dist packages/instance-status/dist
 
+COPY ./packages/logger/package.json packages/logger/package.json
+COPY ./packages/logger/dist packages/logger/dist
+
 COPY ./ee/apps/${SERVICE}/dist .
 
 COPY ./package.json .
