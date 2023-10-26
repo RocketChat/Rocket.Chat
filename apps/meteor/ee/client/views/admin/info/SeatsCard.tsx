@@ -23,7 +23,7 @@ const SeatsCard = ({ seatsCap }: SeatsCardProps): ReactElement => {
 
 	const isNearLimit = seatsCap && seatsCap.activeUsers / seatsCap.maxActiveUsers >= 0.8;
 
-	const color = isNearLimit ? colors.d500 : undefined;
+	const color = isNearLimit ? colors.r500 : undefined;
 
 	return (
 		<Card>

@@ -106,7 +106,11 @@ export async function createDirectMessage(
 			throw new Meteor.Error((error as any)?.message);
 		}
 	}
-	const { _id: rid, inserted, ...room } = await createRoom('d', undefined, undefined, roomUsers as IUser[], false, undefined, {}, options);
+	const {
+		_id: rid,
+		inserted,
+		...room
+	} = await createRoom<'d'>('d', undefined, undefined, roomUsers as IUser[], false, undefined, {}, options);
 
 	return {
 		// @ts-expect-error - room type is already defined in the `createRoom` return type

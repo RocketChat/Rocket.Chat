@@ -3,16 +3,24 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useIsEnterprise } from '../../../../client/hooks/useIsEnterprise';
+import { useLicense } from '../../../../client/hooks/useLicense';
 
 export const SidebarFooterWatermark = (): ReactElement | null => {
 	const t = useTranslation();
 
-	const { isLoading, isError, data } = useIsEnterprise();
+	const response = useLicense();
 
-	if (isError || isLoading || data?.isEnterprise) {
+	if (response.isLoading || response.isError) {
 		return null;
 	}
+
+	const license = response.data;
+
+	if (license.activeModules.includes('hide-watermark') && !license.trial) {
+		return null;
+	}
+
+	const [{ name: planName } = { name: 'Community' }] = license.tags ?? [];
 
 	return (
 		<Box pi={16} pbe={8}>
@@ -21,7 +29,7 @@ export const SidebarFooterWatermark = (): ReactElement | null => {
 					{t('Powered_by_RocketChat')}
 				</Box>
 				<Box fontScale='micro' color='pure-white' pbe={4}>
-					{t('Free_Edition')}
+					{[planName, license.trial ? 'trial' : ''].filter(Boolean).join(' ')}
 				</Box>
 			</Box>
 		</Box>

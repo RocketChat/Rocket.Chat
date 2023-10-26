@@ -29,6 +29,9 @@ export class ListenersModule {
 	constructor(service: IServiceClass, notifications: NotificationsModule) {
 		const logger = new Logger('ListenersModule');
 
+		service.onEvent('license.sync', () => notifications.notifyAllInThisInstance('license'));
+		service.onEvent('license.actions', () => notifications.notifyAllInThisInstance('license'));
+
 		service.onEvent('emoji.deleteCustom', (emoji) => {
 			notifications.notifyLoggedInThisInstance('deleteEmojiCustom', {
 				emojiData: emoji,
@@ -471,6 +474,15 @@ export class ListenersModule {
 			notifications.streamApps.emitWithoutBroadcast('actions/changed');
 			notifications.streamApps.emitWithoutBroadcast('apps', ['actions/changed', []]);
 		});
+
+		service.onEvent('mac.limitReached', () => {
+			notifications.notifyLoggedInThisInstance('mac.limit', { limitReached: true });
+		});
+
+		service.onEvent('mac.limitRestored', () => {
+			notifications.notifyLoggedInThisInstance('mac.limit', { limitReached: false });
+		});
+
 		this.federationEvents(service, notifications);
 	}
 
