@@ -1,8 +1,9 @@
 import { api } from '@rocket.chat/core-services';
 import type { LicenseLimitKind } from '@rocket.chat/license';
 import { License } from '@rocket.chat/license';
-import { Subscriptions, Users, Settings } from '@rocket.chat/models';
+import { Subscriptions, Users, Settings, LivechatVisitors } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
+import moment from 'moment';
 
 import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorkspace';
 import { settings } from '../../../../app/settings/server';
@@ -122,5 +123,4 @@ License.setLicenseLimitCounter('guestUsers', () => Users.getActiveLocalGuestCoun
 License.setLicenseLimitCounter('roomsPerGuest', async (context) => (context?.userId ? Subscriptions.countByUserId(context.userId) : 0));
 License.setLicenseLimitCounter('privateApps', () => getAppCount('private'));
 License.setLicenseLimitCounter('marketplaceApps', () => getAppCount('marketplace'));
-// #TODO: Get real value
-License.setLicenseLimitCounter('monthlyActiveContacts', async () => 0);
+License.setLicenseLimitCounter('monthlyActiveContacts', async () => LivechatVisitors.countVisitorsOnPeriod(moment.utc().format('YYYY-MM')));

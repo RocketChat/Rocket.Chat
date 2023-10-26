@@ -51,7 +51,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 		},
 		grantedModules: [
 			...new Set(
-				v2.modules
+				['hide-watermark', ...v2.modules]
 					.map((licenseModule) => (isBundle(licenseModule) ? getBundleModules(licenseModule) : [licenseModule]))
 					.reduce((prev, curr) => [...prev, ...curr], [])
 					.map((licenseModule) => ({ module: licenseModule as LicenseModule })),
