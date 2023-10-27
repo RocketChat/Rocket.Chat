@@ -1,4 +1,4 @@
-import { Field } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -19,17 +19,17 @@ const RoomsTab = ({ form: { control } }: RoomsTabProps): ReactElement => {
 
 	return (
 		<Field flexShrink={1}>
-			<Field.Label>{t('Channel_name')}</Field.Label> {/* TODO: should it be `Room_name`? */}
-			<Field.Row>
+			<FieldLabel>{t('Channel_name')}</FieldLabel> {/* TODO: should it be `Room_name`? */}
+			<FieldRow>
 				<RoomAutoComplete
 					value={ridField.value}
 					error={!!ridFieldState.error}
 					placeholder={t('Channel_Name_Placeholder')}
 					onChange={ridField.onChange}
 				/>
-			</Field.Row>
-			{ridFieldState.error?.type === 'required' && <Field.Error>{t('The_field_is_required', t('Channel_name'))}</Field.Error>}
-			{ridFieldState.error?.type === 'validate' && <Field.Error>{ridFieldState.error.message}</Field.Error>}
+			</FieldRow>
+			{ridFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', t('Channel_name'))}</FieldError>}
+			{ridFieldState.error?.type === 'validate' && <FieldError>{ridFieldState.error.message}</FieldError>}
 		</Field>
 	);
 };

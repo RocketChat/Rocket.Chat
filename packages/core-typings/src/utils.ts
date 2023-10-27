@@ -32,3 +32,5 @@ export type DeepWritable<T> = T extends (...args: any) => any
 	: {
 			-readonly [P in keyof T]: DeepWritable<T[P]>;
 	  };
+
+export type DistributiveOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;

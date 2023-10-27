@@ -172,7 +172,6 @@ jobs:
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
     needs: [build, release-versions]
-    if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
     runs-on: ubuntu-20.04
 
     env:
@@ -189,7 +188,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
+      # we only build and publish the actual docker images if not a PR from a fork
       - uses: ./.github/actions/build-docker
+        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}

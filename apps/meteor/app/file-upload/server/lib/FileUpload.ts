@@ -562,7 +562,32 @@ export const FileUpload = {
 	) {
 		res.setHeader('Content-Disposition', `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(fileName)}"`);
 
-		request.get(fileUrl, (fileRes) => fileRes.pipe(res));
+		request.get(fileUrl, (fileRes) => {
+			if (fileRes.statusCode !== 200) {
+				res.setHeader('x-rc-proxyfile-status', String(fileRes.statusCode));
+				res.setHeader('content-length', 0);
+				res.writeHead(500);
+				res.end();
+				return;
+			}
+
+			// eslint-disable-next-line prettier/prettier
+			const headersToProxy = [
+				'age',
+				'cache-control',
+				'content-length',
+				'content-type',
+				'date',
+				'expired',
+				'last-modified',
+			];
+
+			headersToProxy.forEach((header) => {
+				fileRes.headers[header] && res.setHeader(header, String(fileRes.headers[header]));
+			});
+
+			fileRes.pipe(res);
+		});
 	},
 
 	generateJWTToFileUrls({ rid, userId, fileId }: { rid: string; userId: string; fileId: string }) {

@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
@@ -20,8 +20,10 @@ const Sidebar = () => {
 	const [bannerDismissed, setBannerDismissed] = useSessionStorage('presence_cap_notifier', false);
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 
-	const sideBarBackground = css`
-		background-color: ${Palette.surface['surface-tint']};
+	const sidebarLink = css`
+		a {
+			text-decoration: none;
+		}
 	`;
 
 	return (
@@ -35,7 +37,7 @@ const Sidebar = () => {
 					'rcx-sidebar--main',
 					`rcx-sidebar rcx-sidebar--${sidebarViewMode}`,
 					sidebarHideAvatar && 'rcx-sidebar--hide-avatar',
-					sideBarBackground,
+					sidebarLink,
 				].filter(Boolean)}
 				role='navigation'
 				data-qa-opened={sidebar.isCollapsed ? 'false' : 'true'}

@@ -11,18 +11,26 @@ type AutoCompleteAgentProps = {
 	value: string;
 	error?: string;
 	placeholder?: string;
-	onChange: (value: string) => void;
 	haveAll?: boolean;
 	haveNoAgentsSelectedOption?: boolean;
+	excludeId?: string;
+	showIdleAgents?: boolean;
+	onlyAvailable?: boolean;
+	withTitle?: boolean;
+	onChange: (value: string) => void;
 };
 
 const AutoCompleteAgent = ({
 	value,
 	error,
 	placeholder,
-	onChange,
 	haveAll = false,
 	haveNoAgentsSelectedOption = false,
+	excludeId,
+	showIdleAgents = true,
+	onlyAvailable = false,
+	withTitle = false,
+	onChange,
 }: AutoCompleteAgentProps): ReactElement => {
 	const [agentsFilter, setAgentsFilter] = useState<string>('');
 
@@ -30,26 +38,16 @@ const AutoCompleteAgent = ({
 
 	const { itemsList: AgentsList, loadMoreItems: loadMoreAgents } = useAgentsList(
 		useMemo(
-			() => ({ text: debouncedAgentsFilter, haveAll, haveNoAgentsSelectedOption }),
-			[debouncedAgentsFilter, haveAll, haveNoAgentsSelectedOption],
+			() => ({ text: debouncedAgentsFilter, onlyAvailable, haveAll, haveNoAgentsSelectedOption, excludeId, showIdleAgents }),
+			[debouncedAgentsFilter, excludeId, haveAll, haveNoAgentsSelectedOption, onlyAvailable, showIdleAgents],
 		),
 	);
 
 	const { phase: agentsPhase, itemCount: agentsTotal, items: agentsItems } = useRecordList(AgentsList);
 
-	const sortedByName = agentsItems.sort((a, b) => {
-		if (a.label > b.label) {
-			return 1;
-		}
-		if (a.label < b.label) {
-			return -1;
-		}
-
-		return 0;
-	});
-
 	return (
 		<PaginatedSelectFiltered
+			withTitle={withTitle}
 			value={value}
 			error={error}
 			placeholder={placeholder}
@@ -57,7 +55,7 @@ const AutoCompleteAgent = ({
 			flexShrink={0}
 			filter={agentsFilter}
 			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
-			options={sortedByName}
+			options={agentsItems}
 			data-qa='autocomplete-agent'
 			endReached={
 				agentsPhase === AsyncStatePhase.LOADING ? (): void => undefined : (start): void => loadMoreAgents(start, Math.min(50, agentsTotal))

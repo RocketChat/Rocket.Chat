@@ -2,6 +2,9 @@ import type { ILivechatDepartment, ILivechatDepartmentAgents, Serialized } from 
 import {
 	FieldGroup,
 	Field,
+	FieldLabel,
+	FieldRow,
+	FieldError,
 	TextInput,
 	Box,
 	Icon,
@@ -12,10 +15,10 @@ import {
 	Button,
 	PaginatedSelectFiltered,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -127,10 +130,13 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	} = useForm<FormValues>({ mode: 'onChange', defaultValues: initialValues });
 
 	const requestTagBeforeClosingChat = watch('requestTagBeforeClosingChat');
-	const offlineMessageChannelName = watch('offlineMessageChannelName');
+
+	const [fallbackFilter, setFallbackFilter] = useState<string>('');
+
+	const debouncedFallbackFilter = useDebouncedValue(fallbackFilter, 500);
 
 	const { itemsList: RoomsList, loadMoreItems: loadMoreRooms } = useRoomsList(
-		useMemo(() => ({ text: offlineMessageChannelName }), [offlineMessageChannelName]),
+		useMemo(() => ({ text: debouncedFallbackFilter }), [debouncedFallbackFilter]),
 	);
 
 	const { phase: roomsPhase, items: roomsItems, itemCount: roomsTotal } = useRecordList(RoomsList);
@@ -240,16 +246,16 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 					>
 						<Field>
 							<Box display='flex' data-qa='DepartmentEditToggle-Enabled' flexDirection='row'>
-								<Field.Label>{t('Enabled')}</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Enabled')}</FieldLabel>
+								<FieldRow>
 									<ToggleSwitch flexGrow={1} {...register('enabled')} />
-								</Field.Row>
+								</FieldRow>
 							</Box>
 						</Field>
 
 						<Field>
-							<Field.Label>{t('Name')}*</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Name')}*</FieldLabel>
+							<FieldRow>
 								<TextInput
 									data-qa='DepartmentEditTextInput-Name'
 									flexGrow={1}
@@ -257,34 +263,34 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 									placeholder={t('Name')}
 									{...register('name', { required: t('The_field_is_required', 'name') })}
 								/>
-							</Field.Row>
-							{errors.name && <Field.Error>{errors.name?.message}</Field.Error>}
+							</FieldRow>
+							{errors.name && <FieldError>{errors.name?.message}</FieldError>}
 						</Field>
 
 						<Field>
-							<Field.Label>{t('Description')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Description')}</FieldLabel>
+							<FieldRow>
 								<TextAreaInput
 									data-qa='DepartmentEditTextInput-Description'
 									flexGrow={1}
 									placeholder={t('Description')}
 									{...register('description')}
 								/>
-							</Field.Row>
+							</FieldRow>
 						</Field>
 
 						<Field>
 							<Box data-qa='DepartmentEditToggle-ShowOnRegistrationPage' display='flex' flexDirection='row'>
-								<Field.Label>{t('Show_on_registration_page')}</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Show_on_registration_page')}</FieldLabel>
+								<FieldRow>
 									<ToggleSwitch flexGrow={1} {...register('showOnRegistration')} />
-								</Field.Row>
+								</FieldRow>
 							</Box>
 						</Field>
 
 						<Field>
-							<Field.Label>{t('Email')}*</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Email')}*</FieldLabel>
+							<FieldRow>
 								<TextInput
 									data-qa='DepartmentEditTextInput-Email'
 									flexGrow={1}
@@ -296,22 +302,22 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										validate: (email) => validateEmail(email) || t('error-invalid-email-address'),
 									})}
 								/>
-							</Field.Row>
-							{errors.email && <Field.Error>{errors.email?.message}</Field.Error>}
+							</FieldRow>
+							{errors.email && <FieldError>{errors.email?.message}</FieldError>}
 						</Field>
 
 						<Field>
 							<Box display='flex' data-qa='DepartmentEditToggle-ShowOnOfflinePage' flexDirection='row'>
-								<Field.Label>{t('Show_on_offline_page')}</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Show_on_offline_page')}</FieldLabel>
+								<FieldRow>
 									<ToggleSwitch flexGrow={1} {...register('showOnOfflineForm')} />
-								</Field.Row>
+								</FieldRow>
 							</Box>
 						</Field>
 
 						<Field>
-							<Field.Label>{t('Livechat_DepartmentOfflineMessageToChannel')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Livechat_DepartmentOfflineMessageToChannel')}</FieldLabel>
+							<FieldRow>
 								<Controller
 									control={control}
 									name='offlineMessageChannelName'
@@ -321,17 +327,18 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 											value={value}
 											onChange={onChange}
 											flexShrink={0}
-											filter={value}
-											setFilter={onChange}
+											filter={fallbackFilter}
+											setFilter={setFallbackFilter as (value?: string | number) => void}
 											options={roomsItems}
 											placeholder={t('Channel_name')}
 											endReached={
 												roomsPhase === AsyncStatePhase.LOADING ? () => undefined : (start) => loadMoreRooms(start, Math.min(50, roomsTotal))
 											}
+											aria-busy={fallbackFilter !== debouncedFallbackFilter}
 										/>
 									)}
 								/>
-							</Field.Row>
+							</FieldRow>
 						</Field>
 
 						{MaxChats && (
@@ -421,7 +428,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 						{AutoCompleteDepartment && (
 							<Field>
-								<Field.Label>{t('Fallback_forward_department')}</Field.Label>
+								<FieldLabel>{t('Fallback_forward_department')}</FieldLabel>
 								<Controller
 									control={control}
 									name='fallbackForwardDepartment'
@@ -441,20 +448,20 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 						<Field>
 							<Box display='flex' data-qa='DiscussionToggle-RequestTagBeforeCLosingChat' flexDirection='row'>
-								<Field.Label>{t('Request_tag_before_closing_chat')}</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Request_tag_before_closing_chat')}</FieldLabel>
+								<FieldRow>
 									<ToggleSwitch
 										data-qa='DiscussionToggle-RequestTagBeforeCLosingChat'
 										flexGrow={1}
 										{...register('requestTagBeforeClosingChat')}
 									/>
-								</Field.Row>
+								</FieldRow>
 							</Box>
 						</Field>
 
 						{requestTagBeforeClosingChat && (
 							<Field>
-								<Field.Label alignSelf='stretch'>{t('Conversation_closing_tags')}*</Field.Label>
+								<FieldLabel alignSelf='stretch'>{t('Conversation_closing_tags')}*</FieldLabel>
 								<Controller
 									control={control}
 									name='chatClosingTags'
@@ -463,7 +470,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										<DepartmentTags value={value} onChange={onChange} error={errors.chatClosingTags?.message as string} />
 									)}
 								/>
-								{errors.chatClosingTags && <Field.Error>{errors.chatClosingTags?.message}</Field.Error>}
+								{errors.chatClosingTags && <FieldError>{errors.chatClosingTags?.message}</FieldError>}
 							</Field>
 						)}
 
@@ -475,7 +482,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 						<Divider mb={16} />
 						<Field>
-							<Field.Label mb={4}>{t('Agents')}:</Field.Label>
+							<FieldLabel mb={4}>{t('Agents')}:</FieldLabel>
 							<Box display='flex' flexDirection='column' height='50vh'>
 								<DepartmentsAgentsTable control={control} register={register} />
 							</Box>

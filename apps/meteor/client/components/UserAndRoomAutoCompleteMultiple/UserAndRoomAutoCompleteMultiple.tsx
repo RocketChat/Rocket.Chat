@@ -18,7 +18,16 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, ...props }: UserAndR
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 
 	const rooms = useUserSubscriptions(
-		useMemo(() => ({ open: { $ne: false }, lowerCaseName: new RegExp(escapeRegExp(debouncedFilter), 'i') }), [debouncedFilter]),
+		useMemo(
+			() => ({
+				open: { $ne: false },
+				$or: [
+					{ lowerCaseFName: new RegExp(escapeRegExp(debouncedFilter), 'i') },
+					{ lowerCaseName: new RegExp(escapeRegExp(debouncedFilter), 'i') },
+				],
+			}),
+			[debouncedFilter],
+		),
 	).filter((room) => {
 		if (!user) {
 			return;

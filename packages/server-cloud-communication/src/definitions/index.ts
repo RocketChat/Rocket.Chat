@@ -17,6 +17,8 @@ type Message = {
 type Version = {
 	version: string;
 	expiration: Date;
+	security: boolean;
+	infoUrl: string;
 	messages?: Message[];
 };
 

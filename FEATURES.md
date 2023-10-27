@@ -1,10 +1,10 @@
 # Features
 
 - Self Host
-  - Docker  
-  - Multiple Deployment Options (Heroku, Digital Ocean, Sandstorm, etc.)  
+  - Docker
+  - Multiple Deployment Options (Heroku, Digital Ocean, Sandstorm, etc.)
 - Authentication Options
-  - OAuth 
+  - OAuth
   - SAML
   - LDAP
   - CAS (1.0, 2.0 + attribute sync)
@@ -19,7 +19,7 @@
 - Rich Media
   - Audio Calls
   - Video Conferencing
-  - Screensharing
+  - Screen Sharing
 - Notifications
   - Desktop and Mobile
   - Use your own gateway

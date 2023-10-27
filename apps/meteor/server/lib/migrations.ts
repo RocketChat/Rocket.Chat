@@ -299,3 +299,25 @@ export async function migrateDatabase(
 
 	return true;
 }
+
+export async function onServerVersionChange(cb: () => Promise<void>): Promise<void> {
+	const result = await Migrations.findOneAndUpdate(
+		{
+			_id: 'upgrade',
+		},
+		{
+			$set: {
+				hash: Info.commit.hash,
+			},
+		},
+		{
+			upsert: true,
+		},
+	);
+
+	if (result.value?.hash === Info.commit.hash) {
+		return;
+	}
+
+	await cb();
+}
