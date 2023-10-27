@@ -1,6 +1,4 @@
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import type { ContextType } from 'react';
@@ -13,10 +11,10 @@ import {
 	useVideoConfManager,
 	useVideoConfSetPreferences,
 } from '../../contexts/VideoConfContext';
-import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
+import { useUiKitActionManager } from './useUiKitActionManager';
 
-export const useMessageBlockContextValue = (rid: IRoom['_id'], _mid: IMessage['id']): ContextType<typeof UiKitContext> => {
+export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_id']): ContextType<typeof UiKitContext> => {
 	const joinCall = useVideoConfJoinCall();
 	const setPreferences = useVideoConfSetPreferences();
 	const isCalling = useVideoConfIsCalling();
@@ -42,7 +40,7 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], _mid: IMessage['i
 	const actionManager = useUiKitActionManager();
 
 	return {
-		action: ({ actionId, value, blockId, mid = _mid, appId }, event) => {
+		action: ({ appId, actionId, blockId, value }, event) => {
 			if (appId === 'videoconf-core') {
 				event.preventDefault();
 				setPreferences({ mic: true, cam: false });
@@ -55,19 +53,22 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], _mid: IMessage['i
 				}
 			}
 
-			actionManager?.triggerBlockAction({
-				blockId,
+			actionManager.emitInteraction(appId, {
+				type: 'blockAction',
 				actionId,
-				value,
-				mid,
-				rid,
-				appId,
+				payload: {
+					blockId,
+					value,
+				},
 				container: {
-					type: UIKitIncomingInteractionContainerType.MESSAGE,
+					type: 'message',
 					id: mid,
 				},
+				rid,
+				mid,
 			});
 		},
 		rid,
+		values: {}, // TODO: this is a hack to make the context work, but it should be removed
 	};
 };

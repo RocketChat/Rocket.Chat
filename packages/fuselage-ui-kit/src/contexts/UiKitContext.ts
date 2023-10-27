@@ -25,10 +25,7 @@ type UiKitContextValue = {
     state: ActionParams,
     event: Parameters<React.MouseEventHandler<HTMLElement>>[0]
   ) => Promise<void> | void;
-  payload?: {
-    appId?: string;
-    viewId?: string;
-  };
+  appId?: string;
   errors?: Record<string, string>;
   values: Record<ActionId, { value: unknown } | undefined>;
   viewId?: string;
@@ -38,8 +35,6 @@ type UiKitContextValue = {
 export const UiKitContext = createContext<UiKitContextValue>({
   action: () => undefined,
   updateState: () => undefined,
-  payload: {
-    appId: 'core',
-    viewId: 'default',
-  },
+  appId: 'core',
+  values: {},
 });

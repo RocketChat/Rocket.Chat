@@ -80,7 +80,8 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
   const { blockId, actionId, appId, dispatchActionConfig } = element;
   const {
     action,
-    payload: { appId: appIdFromContext = undefined, viewId = undefined } = {},
+    appId: appIdFromContext = undefined,
+    viewId = undefined,
     updateState,
   } = useContext(UiKitContext);
 
@@ -112,12 +113,14 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
       setValue(elValue);
     }
 
-    state &&
-      (await state({ blockId, appId, actionId, value: elValue, viewId }, e));
+    await updateState?.(
+      { blockId, appId, actionId, value: elValue, viewId },
+      e
+    );
     await action(
       {
         blockId,
-        appId: appId || appIdFromContext,
+        appId: appId || appIdFromContext || 'core',
         actionId,
         value: elValue,
         viewId,
@@ -141,7 +144,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
     await action(
       {
         blockId,
-        appId: appId || appIdFromContext,
+        appId: appId || appIdFromContext || 'core',
         actionId,
         value,
         viewId,
@@ -158,11 +161,16 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 
     setValue(value);
 
-    updateState &&
-      (await updateState(
-        { blockId, appId: appId || appIdFromContext, actionId, value, viewId },
-        e
-      ));
+    await updateState?.(
+      {
+        blockId,
+        appId: appId || appIdFromContext || 'core',
+        actionId,
+        value,
+        viewId,
+      },
+      e
+    );
   });
 
   const result: UiKitState = useMemo(

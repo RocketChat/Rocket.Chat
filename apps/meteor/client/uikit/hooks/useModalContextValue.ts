@@ -1,55 +1,58 @@
-import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
+import type { UiKit } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
-import type { ContextType } from 'react';
+import type { Dispatch } from 'react';
+import { useMemo, type ContextType } from 'react';
 
-import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
-import type { ModalState } from '../../views/modal/uikit/UiKitModal';
+import { useUiKitActionManager } from './useUiKitActionManager';
 
-type UseModalContextValueProps = ModalState & {
-	values: any;
-	updateValues: (value: any) => void;
+type UseModalContextValueParams = {
+	view: UiKit.ModalView;
+	values: {
+		[actionId: string]: {
+			value: unknown;
+			blockId?: string | undefined;
+		};
+	};
+	updateValues: Dispatch<{
+		actionId: string;
+		payload: {
+			value: unknown;
+			blockId?: string;
+		};
+	}>;
 };
 
-export const useModalContextValue = (props: UseModalContextValueProps): ContextType<typeof UiKitContext> => {
+type UseModalContextValueReturn = ContextType<typeof UiKitContext>;
+
+export const useModalContextValue = ({ view, values, updateValues }: UseModalContextValueParams): UseModalContextValueReturn => {
 	const actionManager = useUiKitActionManager();
 
-	const { viewId, mid: _mid, values, updateValues } = props;
-
-	const debouncedBlockAction = useDebouncedCallback((actionId, appId, value, blockId, mid) => {
-		actionManager.triggerBlockAction({
-			container: {
-				type: UIKitIncomingInteractionContainerType.VIEW,
-				id: viewId,
-			},
-			actionId,
-			appId,
-			value,
-			blockId,
-			mid,
-		});
-	}, 700);
+	const emitInteraction = useMemo(() => actionManager.emitInteraction.bind(actionManager), [actionManager]);
+	const debouncedEmitInteraction = useDebouncedCallback(emitInteraction, 700);
 
 	return {
-		action: ({ actionId, appId, value, blockId, mid = _mid, dispatchActionConfig }) => {
-			if (Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes('on_character_entered')) {
-				debouncedBlockAction(actionId, appId, value, blockId, mid);
-			} else {
-				actionManager.triggerBlockAction({
-					container: {
-						type: UIKitIncomingInteractionContainerType.VIEW,
-						id: viewId,
-					},
-					actionId,
-					appId,
-					value,
-					blockId,
-					mid,
-				});
+		action: async ({ actionId, viewId, appId, dispatchActionConfig, blockId, value }) => {
+			if (!appId || !viewId) {
+				return;
 			}
-		},
 
-		updateState: ({ actionId, value, blockId = 'default' }: { actionId: string; value: any; blockId: string }) => {
+			const emit = dispatchActionConfig?.includes('on_character_entered') ? debouncedEmitInteraction : emitInteraction;
+
+			await emit(appId, {
+				type: 'blockAction',
+				actionId,
+				container: {
+					type: 'view',
+					id: viewId,
+				},
+				payload: {
+					blockId,
+					value,
+				},
+			});
+		},
+		updateState: ({ actionId, value, /* ,appId, */ blockId = 'default' }) => {
 			updateValues({
 				actionId,
 				payload: {
@@ -58,7 +61,8 @@ export const useModalContextValue = (props: UseModalContextValueProps): ContextT
 				},
 			});
 		},
-		payload: props,
+		...view,
 		values,
+		viewId: view.id,
 	};
 };

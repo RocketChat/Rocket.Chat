@@ -1,63 +1,46 @@
-import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
-import { type UIKitUserInteractionResult, type UiKitBannerPayload, type UiKitPayload, isErrorType } from '@rocket.chat/core-typings';
-import { useSafely } from '@rocket.chat/fuselage-hooks';
+import type { UiKit } from '@rocket.chat/core-typings';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
-import { useEffect, type ContextType, useState } from 'react';
+import { type ContextType } from 'react';
 
-import { useUiKitActionManager } from '../../hooks/useUiKitActionManager';
-import * as banners from '../../lib/banners';
+import { useUiKitActionManager } from './useUiKitActionManager';
 
-type UseBannerContextValueReturn = ContextType<typeof UiKitContext> & {
-	payload: UiKitBannerPayload;
+type UseBannerContextValueParams = {
+	view: UiKit.BannerView;
+	values: {
+		[actionId: string]: {
+			value: unknown;
+			blockId?: string | undefined;
+		};
+	};
 };
+type UseBannerContextValueReturn = ContextType<typeof UiKitContext>;
 
-export const useBannerContextValue = (payload: UiKitPayload): UseBannerContextValueReturn => {
-	const [state, setState] = useSafely(useState(payload));
+export const useBannerContextValue = ({ view, values }: UseBannerContextValueParams): UseBannerContextValueReturn => {
 	const actionManager = useUiKitActionManager();
-	const { viewId } = payload;
-
-	useEffect(() => {
-		const handleUpdate = ({ ...data }: UIKitUserInteractionResult): void => {
-			if (isErrorType(data)) {
-				const { errors } = data;
-				setState((state) => ({ ...state, errors }));
-				return;
-			}
-
-			const { type, ...rest } = data;
-			setState(rest as any);
-		};
-
-		actionManager.on(viewId, handleUpdate);
-
-		return (): void => {
-			actionManager.off(viewId, handleUpdate);
-		};
-	}, [actionManager, setState, viewId]);
 
 	return {
-		action: async ({ actionId, appId, blockId, value, viewId }): Promise<void> => {
-			if (!viewId) {
+		action: async ({ appId, viewId, actionId, blockId, value }) => {
+			if (!appId || !viewId) {
 				return;
 			}
 
-			if (!appId) {
-				throw new Error('useUIKitHandleAction - invalid appId');
-			}
-
-			actionManager.triggerBlockAction({
-				container: {
-					type: UIKitIncomingInteractionContainerType.VIEW,
-					id: state.viewId || state.appId,
-				},
+			await actionManager.emitInteraction(appId, {
+				type: 'blockAction',
 				actionId,
-				appId,
-				value,
-				blockId,
+				container: {
+					type: 'view',
+					id: viewId,
+				},
+				payload: {
+					blockId,
+					value,
+				},
 			});
 
-			banners.closeById(state.viewId);
+			actionManager.disposeView(view.viewId);
 		},
-		payload: state,
+		updateState: (): void => undefined,
+		appId: view.appId,
+		values: values as any,
 	};
 };

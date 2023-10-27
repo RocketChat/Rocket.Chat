@@ -46,7 +46,7 @@ const Room = (): ReactElement => {
 									</Suspense>
 								</SelectedMessagesProvider>
 							</ErrorBoundary>
-						)
+						))
 					}
 				/>
 			</MessageHighlightProvider>
