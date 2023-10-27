@@ -1,7 +1,7 @@
 import dns from 'dns';
 import * as util from 'util';
 
-import { Message, VideoConf, api } from '@rocket.chat/core-services';
+import { Message, VideoConf, api, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
 	IOmnichannelRoomClosingInfo,
@@ -521,6 +521,10 @@ class LivechatClass {
 			throw new Error('error-invalid-room');
 		}
 
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			throw new Error('error-mac-limit-reached');
+		}
+
 		const showAgentInfo = settings.get<string>('Livechat_show_agent_info');
 		const closingMessage = await Messages.findLivechatClosingMessage(rid, { projection: { ts: 1 } });
 		const ignoredMessageTypes: MessageTypesValues[] = [
@@ -796,12 +800,15 @@ class LivechatClass {
 		attempts = 10,
 	) {
 		if (!attempts) {
+			Livechat.logger.error({ msg: 'Omnichannel webhook call failed. Max attempts reached' });
 			return;
 		}
 		const timeout = settings.get<number>('Livechat_http_timeout');
 		const secretToken = settings.get<string>('Livechat_secret_token');
+		const webhookUrl = settings.get<string>('Livechat_webhookUrl');
 		try {
-			const result = await fetch(settings.get('Livechat_webhookUrl'), {
+			Livechat.webhookLogger.debug({ msg: 'Sending webhook request', postData });
+			const result = await fetch(webhookUrl, {
 				method: 'POST',
 				headers: {
 					...(secretToken && { 'X-RocketChat-Livechat-Token': secretToken }),
@@ -812,17 +819,20 @@ class LivechatClass {
 
 			if (result.status === 200) {
 				metrics.totalLivechatWebhooksSuccess.inc();
-			} else {
-				metrics.totalLivechatWebhooksFailures.inc();
+				return result;
 			}
-			return result;
+
+			metrics.totalLivechatWebhooksFailures.inc();
+			throw new Error(await result.text());
 		} catch (err) {
-			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
+			const retryAfter = timeout * 4;
+			Livechat.webhookLogger.error({ msg: `Error response on ${11 - attempts} try ->`, err });
 			// try 10 times after 20 seconds each
-			attempts - 1 && Livechat.webhookLogger.warn(`Will try again in ${(timeout / 1000) * 4} seconds ...`);
+			attempts - 1 &&
+				Livechat.webhookLogger.warn({ msg: `Webhook call failed. Retrying`, newAttemptAfterSeconds: retryAfter / 1000, webhookUrl });
 			setTimeout(async () => {
 				await Livechat.sendRequest(postData, attempts - 1);
-			}, timeout * 4);
+			}, retryAfter);
 		}
 	}
 
