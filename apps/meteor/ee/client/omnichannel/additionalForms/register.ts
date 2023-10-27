@@ -7,7 +7,7 @@ import { hasLicense } from '../../../app/license/client';
 import type CurrentChatTags from '../tags/CurrentChatTags';
 import type BusinessHoursMultipleContainer from './BusinessHoursMultipleContainer';
 import type ContactManager from './ContactManager';
-import type CustomFieldsAdditionalFormContainer from './CustomFieldsAdditionalFormContainer';
+import type CustomFieldsAdditionalForm from './CustomFieldsAdditionalForm';
 import type DepartmentBusinessHours from './DepartmentBusinessHours';
 import type DepartmentForwarding from './DepartmentForwarding';
 import type EeNumberInput from './EeNumberInput';
@@ -21,7 +21,7 @@ import type SlaPoliciesSelect from './SlaPoliciesSelect';
 declare module '../../../../client/views/omnichannel/additionalForms' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface EEFormHooks {
-		useCustomFieldsAdditionalForm: () => LazyExoticComponent<typeof CustomFieldsAdditionalFormContainer>;
+		useCustomFieldsAdditionalForm: () => LazyExoticComponent<typeof CustomFieldsAdditionalForm>;
 		useMaxChatsPerAgent?: () => LazyExoticComponent<typeof MaxChatsPerAgentContainer>;
 		useMaxChatsPerAgentDisplay?: () => LazyExoticComponent<typeof MaxChatsPerAgentDisplay>;
 		useEeNumberInput?: () => LazyExoticComponent<typeof EeNumberInput>;
@@ -45,7 +45,7 @@ hasLicense('livechat-enterprise').then((enabled) => {
 	}
 
 	registerForm({
-		useCustomFieldsAdditionalForm: () => useMemo(() => lazy(() => import('./CustomFieldsAdditionalFormContainer')), []),
+		useCustomFieldsAdditionalForm: () => useMemo(() => lazy(() => import('./CustomFieldsAdditionalForm')), []),
 		useMaxChatsPerAgent: () => useMemo(() => lazy(() => import('./MaxChatsPerAgentContainer')), []),
 		useMaxChatsPerAgentDisplay: () => useMemo(() => lazy(() => import('./MaxChatsPerAgentDisplay')), []),
 		useEeNumberInput: () => useMemo(() => lazy(() => import('./EeNumberInput')), []),
