@@ -1,7 +1,8 @@
 import moment from 'moment';
 
 export const getMomentCurrentLabel = (timestamp = Date.now()) => {
-	const numberHour = moment(timestamp, ['H']).hour();
+	const m = moment(timestamp);
+	const n = moment(m).add(1, 'hours');
 
-	return `${moment(numberHour, ['H']).format('hA')}-${moment((numberHour + 1) % 24, ['H']).format('hA')}`;
+	return `${m.format('hA')}-${n.format('hA')}`;
 };
