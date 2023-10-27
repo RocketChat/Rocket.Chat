@@ -51,7 +51,7 @@ API.v1.addRoute(
 				throw new Error('invalid-param');
 			}
 
-			type Room = Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'servedBy'>;
+			type Room = Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'servedBy' | 'u' | 'lastMessage'>;
 
 			const room = await LivechatRooms.findOneById<Room>(roomId, {
 				projection: { t: 1, open: 1, onHold: 1, servedBy: 1 },

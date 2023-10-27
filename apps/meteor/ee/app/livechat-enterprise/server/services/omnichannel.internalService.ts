@@ -62,7 +62,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 	}
 
 	async resumeRoomOnHold(
-		room: Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'servedBy'>,
+		room: Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'servedBy' | 'u' | 'lastMessage'>,
 		comment: string,
 		resumeBy: Pick<IUser, '_id' | 'username' | 'name'>,
 		clientAction = false,
