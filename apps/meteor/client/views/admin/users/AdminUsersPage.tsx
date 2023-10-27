@@ -66,8 +66,8 @@ const UsersPage = (): ReactElement => {
 							)}
 						</ButtonGroup>
 					)}
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					<Tabs>
 						<Tabs.Item selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
 							{t('All')}
@@ -86,7 +86,7 @@ const UsersPage = (): ReactElement => {
 						</Tabs.Item>
 					</Tabs>
 					<UsersTable reload={reload} tab={tab} onReload={handleReload} setPendingActionsCount={setPendingActionsCount} />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context && (
 				<Contextualbar is='aside' aria-labelledby=''>
