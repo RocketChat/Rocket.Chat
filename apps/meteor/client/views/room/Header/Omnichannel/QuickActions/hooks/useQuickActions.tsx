@@ -309,7 +309,7 @@ export const useQuickActions = (): {
 	const restrictedOnHold = useSetting('Livechat_allow_manual_on_hold_upon_agent_engagement_only');
 	const canRoomBePlacedOnHold = !room.onHold && room.u;
 	const canAgentPlaceOnHold = !room.lastMessage?.token;
-	const canPlaceChatOnHold = manualOnHoldAllowed && canRoomBePlacedOnHold && (!restrictedOnHold || canAgentPlaceOnHold);
+	const canPlaceChatOnHold = Boolean(manualOnHoldAllowed && canRoomBePlacedOnHold && (!restrictedOnHold || canAgentPlaceOnHold));
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
