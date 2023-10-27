@@ -4,7 +4,6 @@ import { isOmnichannelRoom, type IOmnichannelGenericRoom, isVoipRoom } from '@ro
 import { useIsOverMacLimit } from './useIsOverMacLimit';
 
 const getPeriod = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-const isILivechatInquiry = (room: any) => room.rid && room.status;
 
 export const useIsRoomOverMacLimit = (room: IRoom) => {
 	const isOverMacLimit = useIsOverMacLimit();
@@ -13,7 +12,7 @@ export const useIsRoomOverMacLimit = (room: IRoom) => {
 		return false;
 	}
 
-	if (!isILivechatInquiry(room) && !room.open) {
+	if (room.open === false) {
 		return false;
 	}
 
