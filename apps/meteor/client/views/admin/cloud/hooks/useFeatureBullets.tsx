@@ -1,5 +1,5 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type featureBulletsType = {
 	key: number;
@@ -9,7 +9,7 @@ type featureBulletsType = {
 };
 
 const useFeatureBullets = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const featureBullets: featureBulletsType[] = useMemo(
 		() => [
@@ -30,12 +30,6 @@ const useFeatureBullets = () => {
 				title: t('RegisterWorkspace_Features_Omnichannel_Title'),
 				description: t('RegisterWorkspace_Features_Omnichannel_Description'),
 				disconnect: t('RegisterWorkspace_Features_Omnichannel_Disconnect'),
-			},
-			{
-				key: 4,
-				title: t('RegisterWorkspace_Features_ThirdPartyLogin_Title'),
-				description: t('RegisterWorkspace_Features_ThirdPartyLogin_Description'),
-				disconnect: t('RegisterWorkspace_Features_ThirdPartyLogin_Disconnect'),
 			},
 		],
 		[t],

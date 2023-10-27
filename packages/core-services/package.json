@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/core-services",
-	"version": "0.2.0-rc.4",
+	"version": "0.2.0",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.9",
@@ -30,6 +30,9 @@
 	"files": [
 		"/dist"
 	],
+	"volta": {
+		"extends": "../../package.json"
+	},
 	"dependencies": {
 		"@rocket.chat/apps-engine": "1.41.0-alpha.290",
 		"@rocket.chat/core-typings": "workspace:^",

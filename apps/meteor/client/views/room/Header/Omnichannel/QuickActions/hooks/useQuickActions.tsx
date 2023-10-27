@@ -315,7 +315,6 @@ export const useQuickActions = (): {
 	const canRoomBePlacedOnHold = !room.onHold && room.u;
 	const canAgentPlaceOnHold = !room.lastMessage?.token;
 	const canPlaceChatOnHold = Boolean(manualOnHoldAllowed && canRoomBePlacedOnHold && (!restrictedOnHold || canAgentPlaceOnHold));
-
 	const isRoomOverMacLimit = useIsRoomOverMacLimit(room);
 
 	const hasPermissionButtons = (id: string): boolean => {
