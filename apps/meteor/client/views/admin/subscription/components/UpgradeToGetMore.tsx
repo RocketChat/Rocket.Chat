@@ -53,14 +53,18 @@ const UpgradeToGetMore = ({ activeModules, isEnterprise }: UpgradeToGetMoreProps
 				{upgradeModules.map(({ title, body }, index) => (
 					<Grid.Item lg={4} xs={4} p={8} key={index}>
 						<Card>
-							<CardTitle display='flex' alignItems='center'>
-								<FramedIcon type='success' icon='check' />
-								<Box mis={8} is='h4'>
-									{title}
+							<CardTitle>
+								<Box display='flex' alignItems='center'>
+									<FramedIcon type='success' icon='check' />
+									<Box mis={8} is='h4'>
+										{title}
+									</Box>
 								</Box>
 							</CardTitle>
-							<CardBody color='font-secondary-info' textAlign='left'>
-								{body}
+							<CardBody>
+								<Box color='font-secondary-info' textAlign='left'>
+									{body}
+								</Box>
 							</CardBody>
 						</Card>
 					</Grid.Item>

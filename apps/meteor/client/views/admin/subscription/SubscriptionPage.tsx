@@ -30,7 +30,7 @@ const SubscriptionPage = () => {
 	const { subscriptionSuccess } = router.getSearchParameters();
 
 	const { license, limits, activeModules = [] } = licensesData || {};
-	const { isEnterprise = false } = enterpriseData || {};
+	const { isEnterprise = true } = enterpriseData || {};
 
 	const getKeyLimit = (key: 'monthlyActiveContacts' | 'activeUsers') => {
 		const { max, value } = limits?.[key] || {};

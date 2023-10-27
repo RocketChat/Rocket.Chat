@@ -141,13 +141,15 @@ const PlanCard = ({ isEnterprise, licenseInformation, licenseLimits }: PlanCardP
 
 	return (
 		<Card>
-			<CardBody flexDirection='column' mb={0}>
-				<CardColSection display='flex' alignItems='center'>
-					<Icon name='rocketchat' color={Palette.badge['badge-background-level-4'].toString()} size={28} mie={4} />
-					<Box fontScale='h3'>{planName}</Box>
-				</CardColSection>
-				<CardColSection display='flex' flexDirection='column' h='full'>
-					{getPlanContent()}
+			<CardBody>
+				<CardColSection flexDirection='column' mb={0}>
+					<CardColSection display='flex' alignItems='center'>
+						<Icon name='rocketchat' color={Palette.badge['badge-background-level-4'].toString()} size={28} mie={4} />
+						<Box fontScale='h3'>{planName}</Box>
+					</CardColSection>
+					<CardColSection display='flex' flexDirection='column' h='full'>
+						{getPlanContent()}
+					</CardColSection>
 				</CardColSection>
 			</CardBody>
 		</Card>

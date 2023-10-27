@@ -22,7 +22,7 @@ const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactEleme
 	const { title, infoText, showUpgradeButton, upgradeButtonText = 'Upgrade' } = card;
 	return (
 		<Card minHeight={220}>
-			<CardTitle fontScale='p2b'>
+			<CardTitle>
 				<Box display='flex' alignItems='center'>
 					{title} {infoText && <InfoTextIconModal title={title} infoText={infoText} />}
 				</Box>
