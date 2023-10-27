@@ -30,6 +30,7 @@ const UsersPage = (): ReactElement => {
 
 	const [tab, setTab] = useState<'all' | 'invited' | 'active' | 'deactivated' | 'pending'>('all');
 	const [pendingActionsCount, setPendingActionsCount] = useState<number>(0);
+	const [createdUsersCount, setCreatedUsersCount] = useState(0);
 
 	useEffect(() => {
 		if (!context || !seatsCap) {
@@ -69,21 +70,21 @@ const UsersPage = (): ReactElement => {
 				</PageHeader>
 				<PageContent>
 					<Tabs>
-						<Tabs.Item selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
+						<TabsItem selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
 							{t('All')}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'pending'} onClick={() => setTab('pending')}>
+						</TabsItem>
+						<TabsItem selected={tab === 'pending'} onClick={() => setTab('pending')}>
 							{pendingActionsCount === 0 ? t('Pending') : `${t('Pending')} (${pendingActionsCount})`}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'active'} onClick={() => setTab('active')}>
+						</TabsItem>
+						<TabsItem selected={tab === 'active'} onClick={() => setTab('active')}>
 							{t('Active')}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'deactivated'} onClick={() => setTab('deactivated')}>
+						</TabsItem>
+						<TabsItem selected={tab === 'deactivated'} onClick={() => setTab('deactivated')}>
 							{t('Deactivated')}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'invited'} onClick={() => setTab('invited')}>
+						</TabsItem>
+						<TabsItem selected={tab === 'invited'} onClick={() => setTab('invited')}>
 							{t('Invited')}
-						</Tabs.Item>
+						</TabsItem>
 					</Tabs>
 					<UsersTable reload={reload} tab={tab} onReload={handleReload} setPendingActionsCount={setPendingActionsCount} />
 				</PageContent>
