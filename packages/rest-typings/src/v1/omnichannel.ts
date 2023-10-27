@@ -3359,7 +3359,7 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 	'/v1/livechat/custom-fields/:_id': {
-		GET: () => { customField: ILivechatCustomField | null };
+		GET: () => { customField: ILivechatCustomField };
 	};
 	'/v1/livechat/:rid/messages': {
 		GET: (params: LivechatRidMessagesProps) => PaginatedResult<{
