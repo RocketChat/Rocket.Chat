@@ -18,6 +18,7 @@ import type {
 	MessageAttachment,
 	IMessageInbox,
 	ILivechatAgentStatus,
+	IOmnichannelAgent,
 } from '@rocket.chat/core-typings';
 import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -39,6 +40,7 @@ import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import moment from 'moment-timezone';
 import type { Filter, FindCursor, UpdateFilter } from 'mongodb';
+import UAParser from 'ua-parser-js';
 
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
@@ -56,7 +58,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
-import { updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
+import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 
@@ -133,6 +135,26 @@ type AKeyOf<T> = {
 };
 
 type PageInfo = { title: string; location: { href: string }; change: string };
+
+type ICRMData = {
+	_id: string;
+	label?: string;
+	topic?: string;
+	createdAt: Date;
+	lastMessageAt?: Date;
+	tags?: string[];
+	customFields?: IOmnichannelRoom['livechatData'];
+	visitor: Pick<ILivechatVisitor, '_id' | 'token' | 'name' | 'username' | 'department' | 'phone' | 'ip'> & {
+		email?: ILivechatVisitor['visitorEmails'];
+		os?: string;
+		browser?: string;
+		customFields: ILivechatVisitor['livechatData'];
+	};
+	agent?: Pick<IOmnichannelAgent, '_id' | 'username' | 'name' | 'customFields'> & {
+		email?: NonNullable<IOmnichannelAgent['emails']>[number]['address'];
+	};
+	crmData?: IOmnichannelRoom['crmData'];
+};
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
 
@@ -1545,6 +1567,67 @@ class LivechatClass {
 		}
 
 		return removeUserFromRolesAsync(user._id, ['livechat-manager']);
+	}
+
+	async getLivechatRoomGuestInfo(room: IOmnichannelRoom) {
+		const visitor = await LivechatVisitors.findOneEnabledById(room.v._id);
+		if (!visitor) {
+			throw new Error('error-invalid-visitor');
+		}
+
+		const agent = room.servedBy?._id ? await Users.findOneById(room.servedBy?._id) : null;
+
+		const ua = new UAParser();
+		ua.setUA(visitor.userAgent || '');
+
+		const postData: ICRMData = {
+			_id: room._id,
+			label: room.fname || room.label, // using same field for compatibility
+			topic: room.topic,
+			createdAt: room.ts,
+			lastMessageAt: room.lm,
+			tags: room.tags,
+			customFields: room.livechatData,
+			visitor: {
+				_id: visitor._id,
+				token: visitor.token,
+				name: visitor.name,
+				username: visitor.username,
+				department: visitor.department,
+				ip: visitor.ip,
+				os: ua.getOS().name && `${ua.getOS().name} ${ua.getOS().version}`,
+				browser: ua.getBrowser().name && `${ua.getBrowser().name} ${ua.getBrowser().version}`,
+				customFields: visitor.livechatData,
+			},
+		};
+
+		if (agent) {
+			const customFields = parseAgentCustomFields(agent.customFields);
+
+			postData.agent = {
+				_id: agent._id,
+				username: agent.username,
+				name: agent.name,
+				...(customFields && { customFields }),
+			};
+
+			if (agent.emails && agent.emails.length > 0) {
+				postData.agent.email = agent.emails[0].address;
+			}
+		}
+
+		if (room.crmData) {
+			postData.crmData = room.crmData;
+		}
+
+		if (visitor.visitorEmails && visitor.visitorEmails.length > 0) {
+			postData.visitor.email = visitor.visitorEmails;
+		}
+		if (visitor.phone && visitor.phone.length > 0) {
+			postData.visitor.phone = visitor.phone;
+		}
+
+		return postData;
 	}
 }
 

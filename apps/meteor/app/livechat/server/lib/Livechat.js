@@ -2,7 +2,6 @@
 // Please add new methods to LivechatTyped.ts
 import { Logger } from '@rocket.chat/logger';
 import {
-	LivechatVisitors,
 	LivechatCustomField,
 	LivechatRooms,
 	LivechatInquiry,
@@ -13,7 +12,6 @@ import {
 } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import UAParser from 'ua-parser-js';
 
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
@@ -24,7 +22,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import * as Mailer from '../../../mailer/server/api';
 import { businessHourManager } from '../business-hour';
 import { Analytics } from './Analytics';
-import { parseAgentCustomFields, updateDepartmentAgents } from './Helper';
+import { updateDepartmentAgents } from './Helper';
 import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('Livechat');
@@ -80,66 +78,6 @@ export const Livechat = {
 				Subscriptions.updateDisplayNameByRoomId(rid, name)
 			);
 		}
-	},
-
-	async getLivechatRoomGuestInfo(room) {
-		const visitor = await LivechatVisitors.findOneEnabledById(room.v._id);
-		const agent = await Users.findOneById(room.servedBy && room.servedBy._id);
-
-		const ua = new UAParser();
-		ua.setUA(visitor.userAgent);
-
-		const postData = {
-			_id: room._id,
-			label: room.fname || room.label, // using same field for compatibility
-			topic: room.topic,
-			createdAt: room.ts,
-			lastMessageAt: room.lm,
-			tags: room.tags,
-			customFields: room.livechatData,
-			visitor: {
-				_id: visitor._id,
-				token: visitor.token,
-				name: visitor.name,
-				username: visitor.username,
-				email: null,
-				phone: null,
-				department: visitor.department,
-				ip: visitor.ip,
-				os: ua.getOS().name && `${ua.getOS().name} ${ua.getOS().version}`,
-				browser: ua.getBrowser().name && `${ua.getBrowser().name} ${ua.getBrowser().version}`,
-				customFields: visitor.livechatData,
-			},
-		};
-
-		if (agent) {
-			const customFields = parseAgentCustomFields(agent.customFields);
-
-			postData.agent = {
-				_id: agent._id,
-				username: agent.username,
-				name: agent.name,
-				email: null,
-				...(customFields && { customFields }),
-			};
-
-			if (agent.emails && agent.emails.length > 0) {
-				postData.agent.email = agent.emails[0].address;
-			}
-		}
-
-		if (room.crmData) {
-			postData.crmData = room.crmData;
-		}
-
-		if (visitor.visitorEmails && visitor.visitorEmails.length > 0) {
-			postData.visitor.email = visitor.visitorEmails;
-		}
-		if (visitor.phone && visitor.phone.length > 0) {
-			postData.visitor.phone = visitor.phone;
-		}
-
-		return postData;
 	},
 
 	async afterAgentAdded(user) {
