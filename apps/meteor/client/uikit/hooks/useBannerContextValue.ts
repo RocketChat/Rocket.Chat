@@ -41,6 +41,6 @@ export const useBannerContextValue = ({ view, values }: UseBannerContextValuePar
 		},
 		updateState: (): void => undefined,
 		appId: view.appId,
-		values: values as any,
+		values,
 	};
 };
