@@ -71,6 +71,10 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
+			if (process.env.NODE_ENV === 'development') {
+				return API.v1.success({ offline: true });
+			}
+
 			return API.v1.success({ offline: !(await registerPreIntentWorkspaceWizard()) });
 		},
 	},
