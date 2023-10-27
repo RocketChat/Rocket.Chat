@@ -1,10 +1,25 @@
-import type { OperationResult } from '@rocket.chat/rest-typings';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
-import type { UseQueryResult } from '@tanstack/react-query';
-import { useQuery } from '@tanstack/react-query';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
-export const useWorkspaceSync = (): UseQueryResult<OperationResult<'GET', '/v1/cloud.syncWorkspace'>> => {
-	const getCloudSync = useEndpoint('GET', '/v1/cloud.syncWorkspace');
+export const useWorkspaceSync = () => {
+	const { t } = useTranslation();
+	const cloudSync = useEndpoint('POST', '/v1/cloud.syncWorkspace');
+	const dispatchToastMessage = useToastMessageDispatch();
 
-	return useQuery(['cloud', 'syncWorkspace'], () => getCloudSync(), { enabled: false, cacheTime: 0, staleTime: 0 });
+	return useMutation({
+		mutationFn: cloudSync,
+		onSuccess: () => {
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Sync_success'),
+			});
+		},
+		onError: (error) => {
+			dispatchToastMessage({
+				type: 'error',
+				message: error,
+			});
+		},
+	});
 };

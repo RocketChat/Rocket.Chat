@@ -47,15 +47,8 @@ const SubscriptionPage = () => {
 		return (
 			<ButtonGroup>
 				{isRegistered || (isRegistered && subscriptionSuccess) ? (
-					<Button
-						icon={syncLicenseUpdate.isInitialLoading || syncLicenseUpdate.isRefetching ? undefined : 'reload'}
-						onClick={() => handleSyncLicenseUpdateClick()}
-					>
-						{syncLicenseUpdate.isInitialLoading || syncLicenseUpdate.isRefetching ? (
-							<Throbber size='x12' inheritColor />
-						) : (
-							t('Sync_license_update')
-						)}
+					<Button icon={syncLicenseUpdate.isLoading ? undefined : 'reload'} onClick={() => handleSyncLicenseUpdateClick()}>
+						{syncLicenseUpdate.isLoading ? <Throbber size='x12' inheritColor /> : t('Sync_license_update')}
 					</Button>
 				) : null}
 				<UpgradeButton primary mis={8} i18nKey={isEnterprise ? 'Manage_subscription' : 'Upgrade'} />
@@ -64,24 +57,15 @@ const SubscriptionPage = () => {
 	};
 
 	const handleSyncLicenseUpdateClick = () => {
-		if (syncLicenseUpdate.isInitialLoading || syncLicenseUpdate.isRefetching) {
+		if (syncLicenseUpdate.isLoading) {
 			return;
 		}
-		syncLicenseUpdate.refetch();
+		syncLicenseUpdate.mutate(undefined, { onSuccess: () => refetchLicense() });
 	};
 
 	useEffect(() => {
-		if (subscriptionSuccess && !syncLicenseUpdate.isRefetching) {
-			syncLicenseUpdate.refetch();
-		}
-
-		if (
-			!syncLicenseUpdate.isInitialLoading &&
-			!syncLicenseUpdate.isRefetching &&
-			!syncLicenseUpdate.isError &&
-			syncLicenseUpdate?.data?.success
-		) {
-			refetchLicense();
+		if (subscriptionSuccess && syncLicenseUpdate.isIdle) {
+			syncLicenseUpdate.mutate(undefined, { onSuccess: () => refetchLicense() });
 		}
 	}, [refetchLicense, subscriptionSuccess, syncLicenseUpdate]);
 

@@ -132,7 +132,7 @@ API.v1.addRoute(
 		rateLimiterOptions: { numRequestsAllowed: 2, intervalTimeInMS: 60000 },
 	},
 	{
-		async get() {
+		async post() {
 			try {
 				await syncWorkspace();
 
