@@ -1,34 +1,34 @@
 import type {
 	ILivechatDepartment,
 	IMessage,
+	IMessageWithPendingFileImport,
 	IRoom,
 	IUser,
+	MessageAttachment,
 	MessageTypesValues,
 	RocketChatRecordDeleted,
-	MessageAttachment,
-	IMessageWithPendingFileImport,
 } from '@rocket.chat/core-typings';
+import type { Root } from '@rocket.chat/message-parser';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import { Rooms } from '@rocket.chat/models';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
+	AggregateOptions,
 	AggregationCursor,
 	Collection,
 	CountDocumentsOptions,
-	AggregateOptions,
-	FindCursor,
 	Db,
+	DeleteResult,
+	Document,
 	Filter,
+	FindCursor,
 	FindOptions,
 	IndexDescription,
 	InsertOneResult,
-	DeleteResult,
-	UpdateResult,
-	Document,
 	UpdateFilter,
+	UpdateResult,
 } from 'mongodb';
-import type { Root } from '@rocket.chat/message-parser';
 
 import { otrSystemMessages } from '../../../app/otr/lib/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
