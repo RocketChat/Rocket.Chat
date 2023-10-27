@@ -29,6 +29,7 @@ export const palette = [
 			{ name: 'surface-featured', token: '', color: '#5F1477' },
 			{ name: 'surface-featured-hover', token: '', color: '#4A105D' },
 			{ name: 'surface-overlay', token: '', color: 'rgba(0, 0, 0, 0.6)' },
+			{ name: 'surface-sidebar', token: '', color: '#2F343D' },
 		],
 	},
 	{
@@ -89,7 +90,7 @@ export const palette = [
 		list: [
 			{ name: 'badge-background-level-0', token: '', color: '#404754' },
 			{ name: 'badge-background-level-1', token: '', color: '#484C51' },
-			{ name: 'badge-background-level-2', token: '', color: '#3070CF' },
+			{ name: 'badge-background-level-2', token: '', color: '#2C65BA' },
 			{ name: 'badge-background-level-3', token: '', color: '#A9642D' },
 			{ name: 'badge-background-level-4', token: '', color: '#BB3E4E' },
 		],
