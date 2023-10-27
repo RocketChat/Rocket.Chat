@@ -5,20 +5,20 @@ import { before, describe, it } from 'mocha';
 import moment from 'moment';
 import { type Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createCustomField, deleteCustomField } from '../../data/livechat/custom-fields';
 import {
 	makeAgentAvailable,
 	createAgent,
 	createLivechatRoom,
 	createVisitor,
 	startANewLivechatRoomAndTakeIt,
-} from '../../../data/livechat/rooms';
-import { getRandomVisitorToken } from '../../../data/livechat/users';
-import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
-import { updatePermission, updateSetting, removePermissionFromAllRoles, restorePermissionToRoles } from '../../../data/permissions.helper';
-import { adminUsername } from '../../../data/user';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/livechat/rooms';
+import { getRandomVisitorToken } from '../../data/livechat/users';
+import { getLivechatVisitorByToken } from '../../data/livechat/visitor';
+import { updatePermission, updateSetting, removePermissionFromAllRoles, restorePermissionToRoles } from '../../data/permissions.helper';
+import { adminUsername } from '../../data/user';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('LIVECHAT - visitors', function () {
 	this.retries(0);

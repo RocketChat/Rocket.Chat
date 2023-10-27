@@ -3,8 +3,8 @@ import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { disableDefaultBusinessHour, makeDefaultBusinessHourActiveAndClosed } from '../../../data/livechat/businessHours';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { disableDefaultBusinessHour, makeDefaultBusinessHourActiveAndClosed } from '../../data/livechat/businessHours';
 import {
 	createAgent,
 	createManager,
@@ -13,10 +13,10 @@ import {
 	takeInquiry,
 	fetchInquiry,
 	makeAgentAvailable,
-} from '../../../data/livechat/rooms';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { password } from '../../../data/user';
-import { createUser, deleteUser, getMe, login, setUserStatus } from '../../../data/users.helper';
+} from '../../data/livechat/rooms';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { password } from '../../data/user';
+import { createUser, deleteUser, getMe, login, setUserStatus } from '../../data/users.helper';
 
 describe('LIVECHAT - Agents', function () {
 	this.retries(0);

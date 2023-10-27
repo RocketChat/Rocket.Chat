@@ -3,8 +3,8 @@ import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../../data/livechat/department';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../data/livechat/department';
 import {
 	makeAgentAvailable,
 	createAgent,
@@ -12,11 +12,11 @@ import {
 	createVisitor,
 	createLivechatRoom,
 	getLivechatRoomInfo,
-} from '../../../data/livechat/rooms';
-import { createMonitor, createUnit } from '../../../data/livechat/units';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { createUser, deleteUser } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/livechat/rooms';
+import { createMonitor, createUnit } from '../../data/livechat/units';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { createUser, deleteUser } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('LIVECHAT - Departments', () => {
 	before((done) => getCredentials(done));

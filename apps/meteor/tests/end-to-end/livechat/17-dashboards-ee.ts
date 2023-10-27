@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import {
 	createVisitor,
 	createLivechatRoom,
@@ -13,9 +13,9 @@ import {
 	sendAgentMessage,
 	sendMessage,
 	fetchInquiry,
-} from '../../../data/livechat/rooms';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/livechat/rooms';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - dashboards', function () {
 	this.retries(0);

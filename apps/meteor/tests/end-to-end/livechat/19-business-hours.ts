@@ -3,8 +3,8 @@ import { LivechatBusinessHourBehaviors, LivechatBusinessHourTypes, ILivechatAgen
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { sleep } from '../../../../lib/utils/sleep';
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { sleep } from '../../../lib/utils/sleep';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import {
 	getDefaultBusinessHour,
 	removeAllCustomBusinessHours,
@@ -13,7 +13,7 @@ import {
 	createCustomBusinessHour,
 	getCustomBusinessHourById,
 	getWorkHours,
-} from '../../../data/livechat/businessHours';
+} from '../../data/livechat/businessHours';
 import {
 	addOrRemoveAgentFromDepartment,
 	archiveDepartment,
@@ -21,14 +21,14 @@ import {
 	disableDepartment,
 	getDepartmentById,
 	deleteDepartment,
-} from '../../../data/livechat/department';
-import { createAgent, createManager, makeAgentAvailable } from '../../../data/livechat/rooms';
-import { removeAgent } from '../../../data/livechat/users';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting, updateEESetting } from '../../../data/permissions.helper';
-import type { IUserCredentialsHeader } from '../../../data/user';
-import { password } from '../../../data/user';
-import { setUserActiveStatus, createUser, deleteUser, getMe, getUserByUsername, login } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/livechat/department';
+import { createAgent, createManager, makeAgentAvailable } from '../../data/livechat/rooms';
+import { removeAgent } from '../../data/livechat/users';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting, updateEESetting } from '../../data/permissions.helper';
+import type { IUserCredentialsHeader } from '../../data/user';
+import { password } from '../../data/user';
+import { setUserActiveStatus, createUser, deleteUser, getMe, getUserByUsername, login } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('LIVECHAT - business hours', function () {
 	this.retries(0);

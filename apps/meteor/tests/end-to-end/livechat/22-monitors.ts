@@ -3,8 +3,8 @@ import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, it, describe } from 'mocha';
 
-import { getCredentials, api, request } from '../../../data/api-data';
-import { addOrRemoveAgentFromDepartment, createDepartment } from '../../../data/livechat/department';
+import { getCredentials, api, request } from '../../data/api-data';
+import { addOrRemoveAgentFromDepartment, createDepartment } from '../../data/livechat/department';
 import {
 	createAgent,
 	createLivechatRoom,
@@ -12,12 +12,12 @@ import {
 	createVisitor,
 	getLivechatRoomInfo,
 	makeAgentAvailable,
-} from '../../../data/livechat/rooms';
-import { createMonitor, createUnit } from '../../../data/livechat/units';
-import { updateSetting, updatePermission } from '../../../data/permissions.helper';
-import { password } from '../../../data/user';
-import { createUser, login, setUserActiveStatus } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/livechat/rooms';
+import { createMonitor, createUnit } from '../../data/livechat/units';
+import { updateSetting, updatePermission } from '../../data/permissions.helper';
+import { password } from '../../data/user';
+import { createUser, login, setUserActiveStatus } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
 

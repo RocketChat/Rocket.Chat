@@ -2,15 +2,15 @@ import { faker } from '@faker-js/faker';
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 
-import { getCredentials } from '../../../data/api-data';
+import { getCredentials } from '../../data/api-data';
 import {
 	sendMessage,
 	startANewLivechatRoomAndTakeIt,
 	sendAgentMessage,
 	createAgent,
 	makeAgentAvailable,
-} from '../../../data/livechat/rooms';
-import { updateSetting } from '../../../data/permissions.helper';
+} from '../../data/livechat/rooms';
+import { updateSetting } from '../../data/permissions.helper';
 
 describe('LIVECHAT - messages', () => {
 	before((done) => getCredentials(done));

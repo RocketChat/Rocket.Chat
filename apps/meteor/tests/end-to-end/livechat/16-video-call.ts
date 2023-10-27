@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createLivechatRoom, createVisitor, fetchMessages, sendMessage } from '../../../data/livechat/rooms';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createLivechatRoom, createVisitor, fetchMessages, sendMessage } from '../../data/livechat/rooms';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
 
 describe('LIVECHAT - WebRTC video call', function () {
 	this.retries(0);

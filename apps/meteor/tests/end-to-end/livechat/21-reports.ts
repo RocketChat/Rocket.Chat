@@ -2,14 +2,14 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { api, request, credentials, getCredentials } from '../../../data/api-data';
-import { createDepartment, addOrRemoveAgentFromDepartment } from '../../../data/livechat/department';
-import { startANewLivechatRoomAndTakeIt, createAgent } from '../../../data/livechat/rooms';
-import { createMonitor, createUnit } from '../../../data/livechat/units';
-import { restorePermissionToRoles, updatePermission } from '../../../data/permissions.helper';
-import { password } from '../../../data/user';
-import { createUser, deleteUser, login } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+import { api, request, credentials, getCredentials } from '../../data/api-data';
+import { createDepartment, addOrRemoveAgentFromDepartment } from '../../data/livechat/department';
+import { startANewLivechatRoomAndTakeIt, createAgent } from '../../data/livechat/rooms';
+import { createMonitor, createUnit } from '../../data/livechat/units';
+import { restorePermissionToRoles, updatePermission } from '../../data/permissions.helper';
+import { password } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('LIVECHAT - reports', () => {
 	before((done) => getCredentials(done));

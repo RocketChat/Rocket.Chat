@@ -1,13 +1,13 @@
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
-import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
-import { createVisitor, createLivechatRoom, makeAgentUnavailable, closeOmnichannelRoom } from '../../../data/livechat/rooms';
-import { createBotAgent, getRandomVisitorToken } from '../../../data/livechat/users';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createCustomField, deleteCustomField } from '../../data/livechat/custom-fields';
+import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } from '../../data/livechat/department';
+import { createVisitor, createLivechatRoom, makeAgentUnavailable, closeOmnichannelRoom } from '../../data/livechat/rooms';
+import { createBotAgent, getRandomVisitorToken } from '../../data/livechat/users';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('LIVECHAT - Utils', function () {
 	this.retries(0);

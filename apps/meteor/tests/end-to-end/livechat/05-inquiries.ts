@@ -3,9 +3,9 @@ import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createAgent, createLivechatRoom, createVisitor, fetchInquiry, makeAgentAvailable } from '../../../data/livechat/rooms';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createAgent, createLivechatRoom, createVisitor, fetchInquiry, makeAgentAvailable } from '../../data/livechat/rooms';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
 
 describe('LIVECHAT - inquiries', function () {
 	this.retries(0);

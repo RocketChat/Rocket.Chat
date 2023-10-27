@@ -2,9 +2,9 @@ import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createTrigger, fetchTriggers } from '../../../data/livechat/triggers';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createTrigger, fetchTriggers } from '../../data/livechat/triggers';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../data/permissions.helper';
 
 describe('LIVECHAT - triggers', function () {
 	this.retries(0);

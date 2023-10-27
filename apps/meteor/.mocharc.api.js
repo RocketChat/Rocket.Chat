@@ -9,5 +9,5 @@ module.exports = {
 	timeout: 10000,
 	bail: true,
 	file: 'tests/end-to-end/teardown.js',
-	spec: ['tests/end-to-end/api/**/*', 'tests/end-to-end/apps/*'],
+	spec: [process.env.SPEC?.split(',') || 'tests/end-to-end/api/**/*', 'tests/end-to-end/apps/*', 'tests/end-to-end/livechat/*'],
 };

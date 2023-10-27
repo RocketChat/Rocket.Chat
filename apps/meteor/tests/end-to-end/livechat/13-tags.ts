@@ -2,15 +2,15 @@ import type { ILivechatDepartment, ILivechatTag } from '@rocket.chat/core-typing
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
-import { removeTag, saveTags } from '../../../data/livechat/tags';
-import { createMonitor, createUnit } from '../../../data/livechat/units';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import type { IUserWithCredentials } from '../../../data/user';
-import { password } from '../../../data/user';
-import { createUser, deleteUser, login } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createDepartmentWithAnOnlineAgent } from '../../data/livechat/department';
+import { removeTag, saveTags } from '../../data/livechat/tags';
+import { createMonitor, createUnit } from '../../data/livechat/units';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../data/permissions.helper';
+import type { IUserWithCredentials } from '../../data/user';
+import { password } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[EE] Livechat - Tags', function () {
 	this.retries(0);

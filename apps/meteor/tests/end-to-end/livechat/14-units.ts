@@ -2,12 +2,12 @@ import type { ILivechatDepartment, IOmnichannelBusinessUnit } from '@rocket.chat
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createDepartment } from '../../../data/livechat/rooms';
-import { createMonitor, createUnit } from '../../../data/livechat/units';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { createUser, deleteUser } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createDepartment } from '../../data/livechat/rooms';
+import { createMonitor, createUnit } from '../../data/livechat/units';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { createUser, deleteUser } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Units', function () {
 	this.retries(0);

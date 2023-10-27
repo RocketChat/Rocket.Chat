@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 import moment from 'moment';
 
-import { api, getCredentials, request, credentials } from '../../../data/api-data';
+import { api, getCredentials, request, credentials } from '../../data/api-data';
 import {
 	createVisitor,
 	createLivechatRoom,
@@ -11,8 +11,8 @@ import {
 	makeAgentAvailable,
 	sendAgentMessage,
 	getLivechatRoomInfo,
-} from '../../../data/livechat/rooms';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/livechat/rooms';
+import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('MAC', () => {
 	before((done) => getCredentials(done));

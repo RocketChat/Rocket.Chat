@@ -6,20 +6,20 @@ import { before, describe, it } from 'mocha';
 import moment from 'moment';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } from '../../data/livechat/department';
 import {
 	closeOmnichannelRoom,
 	placeRoomOnHold,
 	sendAgentMessage,
 	sendMessage,
 	startANewLivechatRoomAndTakeIt,
-} from '../../../data/livechat/rooms';
-import { createAnOnlineAgent } from '../../../data/livechat/users';
-import { sleep } from '../../../data/livechat/utils';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting } from '../../../data/permissions.helper';
-import type { IUserCredentialsHeader } from '../../../data/user';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/livechat/rooms';
+import { createAnOnlineAgent } from '../../data/livechat/users';
+import { sleep } from '../../data/livechat/utils';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting } from '../../data/permissions.helper';
+import type { IUserCredentialsHeader } from '../../data/user';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('LIVECHAT - dashboards', function () {
 	this.retries(0);
