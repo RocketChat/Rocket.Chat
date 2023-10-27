@@ -28,6 +28,7 @@ import {
 	ContextualbarScrollableContent,
 } from '../../../components/Contextualbar';
 import { useFormsSubscription } from '../additionalForms';
+import { useRemoveCustomField } from './useRemoveCustomField';
 
 const getInitialValues = (customFieldData: ILivechatCustomField | undefined) => ({
 	field: customFieldData?._id || '',
@@ -46,14 +47,14 @@ const getInitialValues = (customFieldData: ILivechatCustomField | undefined) => 
 
 const EditCustomFields = ({ customFieldData }: { customFieldData?: ILivechatCustomField }) => {
 	const t = useTranslation();
+	const router = useRouter();
+	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { useCustomFieldsAdditionalForm } = useFormsSubscription();
 	const AdditionalForm = useCustomFieldsAdditionalForm();
 
-	const queryClient = useQueryClient();
-
-	const router = useRouter();
+	const handleDelete = useRemoveCustomField();
 
 	const methods = useForm({ mode: 'onBlur', values: getInitialValues(customFieldData) });
 	const {
@@ -210,6 +211,13 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: ILivechatCust
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
+				{customFieldData?._id && (
+					<ButtonGroup stretch mbs={8}>
+						<Button icon='trash' danger onClick={() => handleDelete(customFieldData._id)}>
+							{t('Delete')}
+						</Button>
+					</ButtonGroup>
+				)}
 			</ContextualbarFooter>
 		</Contextualbar>
 	);
