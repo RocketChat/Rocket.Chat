@@ -1,5 +1,34 @@
 # @rocket.chat/meteor
 
+## 6.4.4
+
+### Patch Changes
+
+- 9e61d9c8b5: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- e832e9fe96: Fixed widget's `nextAgent` API sending an array of chars instead of an object for `departmentId` parameter
+- a20c4799a4: fix: custom-css injection
+- 4789616afd: Fixed a problem that would prevent private apps from being shown on air-gapped environments
+- e832e9fe96: Fixed a problem caused by `onlyAvailable` property of `livechat/users/agent` endpoint not having the proper type validation
+  - @rocket.chat/core-typings@6.4.4
+  - @rocket.chat/rest-typings@6.4.4
+  - @rocket.chat/api-client@0.1.13
+  - @rocket.chat/omnichannel-services@0.0.19
+  - @rocket.chat/pdf-worker@0.0.19
+  - @rocket.chat/presence@0.0.19
+  - @rocket.chat/core-services@0.2.4
+  - @rocket.chat/cron@0.0.15
+  - @rocket.chat/gazzodown@2.0.4
+  - @rocket.chat/model-typings@0.1.4
+  - @rocket.chat/ui-contexts@2.0.4
+  - @rocket.chat/fuselage-ui-kit@2.0.4
+  - @rocket.chat/models@0.0.19
+  - @rocket.chat/ui-theming@0.1.0
+  - @rocket.chat/ui-client@2.0.4
+  - @rocket.chat/ui-video-conf@2.0.4
+  - @rocket.chat/web-ui-registration@2.0.4
+  - @rocket.chat/instance-status@0.0.19
+
 ## 6.4.3
 
 ### Patch Changes
