@@ -178,11 +178,6 @@ jobs:
             sleep 10
           done;
 
-      - name: Clean up DB
-        if: inputs.type == 'api'
-        working-directory: ./apps/meteor
-        run: docker exec mongodb bash -c 'if command -v mongosh ; then mongosh --eval "use rocketchat" --eval "db.dropDatabase()" rocketchat; else mongo rocketchat --eval "db.dropDatabase()"; fi'
-
       - name: E2E Test API (Team Collab)
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
