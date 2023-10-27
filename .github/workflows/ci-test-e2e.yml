@@ -78,8 +78,9 @@ jobs:
       matrix:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
+        spec: ${{ fromJSON(inputs.specs) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }} (${{ matrix.shard }}/${{ inputs.total-shard }})
+    name: MongoDB ${{ matrix.mongodb-version }} (${{ matrix.shard }}/${{ inputs.total-shard }}) (${{ matrix.spec == 'tests/end-to-end/api/**/*' && 'Team Collaboration' || 'Apps & Omnichannel' }})
 
     steps:
       - name: Launch MongoDB
@@ -178,23 +179,14 @@ jobs:
             sleep 10
           done;
 
-      - name: E2E Test API (Team Collab)
+      - name: E2E Test API
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
         env:
           WEBHOOK_TEST_URL: 'http://host.docker.internal:10000'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
-          SPEC: 'tests/end-to-end/api/**/*'
-        run: npm run testapi
-
-      - name: E2E Test API (Apps & Omnichannel)
-        if: inputs.type == 'api'
-        working-directory: ./apps/meteor
-        env:
-          WEBHOOK_TEST_URL: 'http://host.docker.internal:10000'
-          IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
-          SPEC: 'tests/end-to-end/apps/*,tests/end-to-end/livechat/*'
-        run: npm run testapi
+          SPEC: ${{ matrix.spec }}
+        run:  npm run testapi -- --exit
 
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
