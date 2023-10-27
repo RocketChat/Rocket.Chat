@@ -13,13 +13,10 @@ const handleUserMention = (mention: string | undefined, withSymbol: boolean | un
 
 const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement => {
 	const t = useTranslation();
-	const { resolveUserMention, onUserMentionClick, isMobile, ownUserId, useRealName, showMentionSymbol } =
-		useContext(MarkupInteractionContext);
+	const { resolveUserMention, onUserMentionClick, ownUserId, useRealName, showMentionSymbol } = useContext(MarkupInteractionContext);
 
 	const resolved = useMemo(() => resolveUserMention?.(mention), [mention, resolveUserMention]);
 	const handleClick = useMemo(() => (resolved ? onUserMentionClick?.(resolved) : undefined), [resolved, onUserMentionClick]);
-
-	const showRealName = useRealName && !isMobile;
 
 	if (mention === 'all') {
 		return (
@@ -49,7 +46,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 			onClick={handleClick}
 			data-uid={resolved._id}
 		>
-			{handleUserMention((showRealName ? resolved.name : resolved.username) ?? mention, showMentionSymbol)}
+			{handleUserMention((useRealName ? resolved.name : resolved.username) ?? mention, showMentionSymbol)}
 		</Message.Highlight>
 	);
 };
