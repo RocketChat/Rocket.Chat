@@ -21,11 +21,13 @@ export const useCategories = (): [CategoryDropDownGroups, selectedCategoriesList
 		try {
 			const fetchedCategories = await AppClientOrchestratorInstance.getCategories();
 
-			const mappedCategories = fetchedCategories.map((currentCategory) => ({
-				id: currentCategory.id,
-				label: currentCategory.title,
-				checked: false,
-			}));
+			const mappedCategories = fetchedCategories
+				.filter((currentCategory) => !currentCategory.hidden)
+				.map((currentCategory) => ({
+					id: currentCategory.id,
+					label: currentCategory.title,
+					checked: false,
+				}));
 
 			setCategories([
 				{
