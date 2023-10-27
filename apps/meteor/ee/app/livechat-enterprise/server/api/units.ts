@@ -18,7 +18,7 @@ declare module '@rocket.chat/rest-typings' {
 			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
 		};
 		'/v1/livechat/units/:id': {
-			GET: () => IOmnichannelBusinessUnit | null;
+			GET: () => IOmnichannelBusinessUnit;
 			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
 			DELETE: () => number;
 		};
