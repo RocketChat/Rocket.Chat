@@ -14,7 +14,7 @@ export const useTimeAgo = (): ((time: Date | number | string) => string) => {
 		(time) => {
 			return moment(time).calendar(null, {
 				sameDay: format,
-				lastDay: moment().calendar('lastDay').replace('LT', format),
+				lastDay: moment(time).calendar('lastDay').replace('LT', format),
 				lastWeek: `dddd ${format}`,
 				sameElse: 'LL',
 			});

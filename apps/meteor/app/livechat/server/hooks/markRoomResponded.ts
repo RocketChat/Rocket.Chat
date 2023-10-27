@@ -1,6 +1,7 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
-import { LivechatRooms } from '@rocket.chat/models';
+import { LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
+import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
 
@@ -24,6 +25,19 @@ callbacks.add(
 		// if the message has a token, it was sent by the visitor, so ignore it
 		if (message.token) {
 			return message;
+		}
+
+		// Return YYYY-MM from moment
+		const monthYear = moment().format('YYYY-MM');
+		const isVisitorActive = await LivechatVisitors.isVisitorActiveOnPeriod(room.v._id, monthYear);
+		if (!isVisitorActive) {
+			await LivechatVisitors.markVisitorActiveForPeriod(room.v._id, monthYear);
+		}
+
+		await LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear);
+
+		if (room.responseBy) {
+			await LivechatRooms.setAgentLastMessageTs(room._id);
 		}
 
 		// check if room is yet awaiting for response from visitor
