@@ -49,7 +49,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 	const isRegistered = regStatus?.registrationStatus.workspaceRegistered || false;
 
-	const { license, tags, trial, limits } = licenseData?.license || {};
+	const { license, tags, trial, limits } = licenseData || {};
 	const isAirgapped = license?.information?.offline;
 	const licenseName = tags?.[0]?.name ?? 'Community';
 	const isTrial = trial;
