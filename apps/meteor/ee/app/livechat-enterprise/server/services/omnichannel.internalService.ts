@@ -31,10 +31,6 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		this.logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
 
 		const { _id: roomId } = room;
-		const restrictedOnHold = settings.get('Livechat_allow_manual_on_hold_upon_agent_engagement_only');
-		const canRoomBePlacedOnHold = !room.onHold;
-		const canAgentPlaceOnHold = !room.lastMessage?.token;
-		const canPlaceChatOnHold = canRoomBePlacedOnHold && (!restrictedOnHold || canAgentPlaceOnHold);
 
 		if (!room || !isOmnichannelRoom(room)) {
 			throw new Error('error-invalid-room');
@@ -45,6 +41,10 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		if (room.onHold) {
 			throw new Error('error-room-is-already-on-hold');
 		}
+		const restrictedOnHold = settings.get('Livechat_allow_manual_on_hold_upon_agent_engagement_only');
+		const canRoomBePlacedOnHold = !room.onHold;
+		const canAgentPlaceOnHold = !room.lastMessage?.token;
+		const canPlaceChatOnHold = canRoomBePlacedOnHold && (!restrictedOnHold || canAgentPlaceOnHold);
 		if (!canPlaceChatOnHold) {
 			throw new Error('error-contact-sent-last-message-so-cannot-place-on-hold');
 		}
@@ -62,7 +62,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 	}
 
 	async resumeRoomOnHold(
-		room: Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'servedBy' | 'u' | 'lastMessage'>,
+		room: Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'servedBy'>,
 		comment: string,
 		resumeBy: Pick<IUser, '_id' | 'username' | 'name'>,
 		clientAction = false,
