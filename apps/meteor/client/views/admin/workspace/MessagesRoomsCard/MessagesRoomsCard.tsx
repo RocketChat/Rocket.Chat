@@ -13,12 +13,10 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 
 	return (
 		<Card>
-			<CardBody flexDirection='row' m='none'>
+			<CardBody>
 				<CardCol>
 					<CardColSection mbs={0} mbe={16}>
-						<CardColTitle fontScale='p2b' mbe={20}>
-							{t('Total_rooms')}
-						</CardColTitle>
+						<CardColTitle>{t('Total_rooms')}</CardColTitle>
 						<TextSeparator
 							label={
 								<>
@@ -68,9 +66,7 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 					</CardColSection>
 
 					<CardColSection mbs={0} mbe={16}>
-						<CardColTitle fontScale='p2b' mbe={20}>
-							{t('Messages')}
-						</CardColTitle>
+						<CardColTitle>{t('Messages')}</CardColTitle>
 						<TextSeparator
 							label={
 								<>

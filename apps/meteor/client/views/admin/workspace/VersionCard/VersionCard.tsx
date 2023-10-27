@@ -182,13 +182,15 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 		<Card style={style}>
 			{!isLoading && licenseData ? (
 				<>
-					<CardBody flexDirection='row'>
+					<CardBody>
 						<CardCol>
 							<CardColSection m={0}>
-								<CardColTitle fontScale='h3' mbe={4} display='flex'>
-									{t('Version_version', { version: serverVersion })}
-									<Box mis={8} alignSelf='center' width='auto'>
-										<VersionTag versionStatus={versionStatus} />
+								<CardColTitle>
+									<Box fontScale='h3' mbe={4} display='flex'>
+										{t('Version_version', { version: serverVersion })}
+										<Box mis={8} alignSelf='center' width='auto'>
+											<VersionTag versionStatus={versionStatus} />
+										</Box>
 									</Box>
 								</CardColTitle>
 							</CardColSection>

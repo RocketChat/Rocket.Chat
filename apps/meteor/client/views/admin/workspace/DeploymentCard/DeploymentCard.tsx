@@ -31,11 +31,9 @@ const DeploymentCard = ({ serverInfo, statistics, instances }: DeploymentCardPro
 
 	return (
 		<Card data-qa-id='deployment-card'>
-			<CardBody m='none'>
+			<CardBody>
 				<CardCol>
-					<CardColTitle fontScale='p2b' mbe={20}>
-						{t('Deployment')}
-					</CardColTitle>
+					<CardColTitle>{t('Deployment')}</CardColTitle>
 					<CardColSection>
 						<CardColTitle>{t('Version')}</CardColTitle>
 						{statistics.version}

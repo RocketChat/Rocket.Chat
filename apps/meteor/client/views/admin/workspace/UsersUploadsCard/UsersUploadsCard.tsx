@@ -28,12 +28,10 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps): ReactElement =
 
 	return (
 		<Card>
-			<CardBody flexDirection='row' m='none'>
+			<CardBody>
 				<CardCol>
 					<CardColSection mbs={0} mbe={16}>
-						<CardColTitle fontScale='p2b' mbe={20}>
-							{t('Users')}
-						</CardColTitle>
+						<CardColTitle>{t('Users')}</CardColTitle>
 						<TextSeparator
 							label={
 								<>
@@ -82,9 +80,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps): ReactElement =
 					</CardColSection>
 
 					<CardColSection mb={16}>
-						<CardColTitle fontScale='p2b' mbe={20}>
-							{t('Types')}
-						</CardColTitle>
+						<CardColTitle>{t('Types')}</CardColTitle>
 						<TextSeparator label={t('Users_Connected')} value={statistics.totalConnectedUsers} />
 						<TextSeparator label={t('Stats_Active_Users')} value={statistics.activeUsers} />
 						<TextSeparator label={t('Stats_Active_Guests')} value={statistics.activeGuests} />
@@ -93,9 +89,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps): ReactElement =
 					</CardColSection>
 
 					<CardColSection mb={16}>
-						<CardColTitle fontScale='p2b' mbe={20}>
-							{t('Uploads')}
-						</CardColTitle>
+						<CardColTitle>{t('Uploads')}</CardColTitle>
 						<TextSeparator label={t('Stats_Total_Uploads')} value={statistics.uploadsTotal} />
 						<TextSeparator label={t('Stats_Total_Uploads_Size')} value={formatMemorySize(statistics.uploadsTotalSize)} />
 					</CardColSection>

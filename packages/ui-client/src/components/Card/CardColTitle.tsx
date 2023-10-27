@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps, FC } from 'react';
+import type { FC } from 'react';
 
-const CardColTitle: FC<ComponentProps<typeof Box>> = ({ children, ...props }) => (
-	<Box m='none' fontScale='c2' {...props}>
+const CardColTitle: FC = ({ children }) => (
+	<Box fontScale='c2' m='none'>
 		{children}
 	</Box>
 );
