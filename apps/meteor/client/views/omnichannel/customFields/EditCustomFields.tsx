@@ -1,4 +1,4 @@
-import type { ILivechatCustomField } from '@rocket.chat/core-typings';
+import type { ILivechatCustomField, Serialized } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	FieldError,
@@ -30,7 +30,7 @@ import {
 import { useFormsSubscription } from '../additionalForms';
 import { useRemoveCustomField } from './useRemoveCustomField';
 
-const getInitialValues = (customFieldData: ILivechatCustomField | undefined) => ({
+const getInitialValues = (customFieldData: Serialized<ILivechatCustomField> | undefined) => ({
 	field: customFieldData?._id || '',
 	label: customFieldData?.label || '',
 	scope: customFieldData?.scope || 'visitor',
@@ -45,7 +45,7 @@ const getInitialValues = (customFieldData: ILivechatCustomField | undefined) => 
 	public: !!customFieldData?.public,
 });
 
-const EditCustomFields = ({ customFieldData }: { customFieldData?: ILivechatCustomField }) => {
+const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<ILivechatCustomField> }) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const queryClient = useQueryClient();
