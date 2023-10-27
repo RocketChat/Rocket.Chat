@@ -474,5 +474,13 @@ export class ListenersModule {
 			notifications.streamApps.emitWithoutBroadcast('actions/changed');
 			notifications.streamApps.emitWithoutBroadcast('apps', ['actions/changed', []]);
 		});
+
+		service.onEvent('mac.limitReached', () => {
+			notifications.notifyLoggedInThisInstance('mac.limit', { limitReached: true });
+		});
+
+		service.onEvent('mac.limitRestored', () => {
+			notifications.notifyLoggedInThisInstance('mac.limit', { limitReached: false });
+		});
 	}
 }

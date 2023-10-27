@@ -2,6 +2,7 @@ import { usePermission, useRouter, useSetModal, useCurrentModal, useTranslation 
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
+import { getURL } from '../../../../../app/utils/client/getURL';
 import GenericUpsellModal from '../../../../../client/components/GenericUpsellModal';
 import { useUpsellActions } from '../../../../../client/components/GenericUpsellModal/hooks';
 import PageSkeleton from '../../../../../client/components/PageSkeleton';
@@ -25,7 +26,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 			setModal(
 				<GenericUpsellModal
 					title={t('Device_Management')}
-					img='images/device-management.png'
+					img={getURL('images/device-management.png')}
 					subtitle={t('Ensure_secure_workspace_access')}
 					description={t('Manage_which_devices')}
 					cancelText={t('Talk_to_an_expert')}
