@@ -13,7 +13,7 @@ import type DepartmentForwarding from './DepartmentForwarding';
 import type EeNumberInput from './EeNumberInput';
 import type EeTextAreaInput from './EeTextAreaInput';
 import type EeTextInput from './EeTextInput';
-import type MaxChatsPerAgentContainer from './MaxChatsPerAgentContainer';
+import type MaxChatsPerAgent from './MaxChatsPerAgent';
 import type MaxChatsPerAgentDisplay from './MaxChatsPerAgentDisplay';
 import type PrioritiesSelect from './PrioritiesSelect';
 import type SlaPoliciesSelect from './SlaPoliciesSelect';
@@ -22,14 +22,13 @@ declare module '../../../../client/views/omnichannel/additionalForms' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface EEFormHooks {
 		useCustomFieldsAdditionalForm: () => LazyExoticComponent<typeof CustomFieldsAdditionalFormContainer>;
-		useMaxChatsPerAgent?: () => LazyExoticComponent<typeof MaxChatsPerAgentContainer>;
-		useMaxChatsPerAgentDisplay?: () => LazyExoticComponent<typeof MaxChatsPerAgentDisplay>;
+		useMaxChatsPerAgent: () => LazyExoticComponent<typeof MaxChatsPerAgent>;
+		useMaxChatsPerAgentDisplay: () => LazyExoticComponent<typeof MaxChatsPerAgentDisplay>;
 		useEeNumberInput?: () => LazyExoticComponent<typeof EeNumberInput>;
 		useEeTextAreaInput?: () => LazyExoticComponent<typeof EeTextAreaInput>;
 		useBusinessHoursMultiple?: () => LazyExoticComponent<typeof BusinessHoursMultipleContainer>;
 		useEeTextInput?: () => LazyExoticComponent<typeof EeTextInput>;
 		useContactManager?: () => LazyExoticComponent<typeof ContactManager>;
-
 		useCurrentChatTags?: () => LazyExoticComponent<typeof CurrentChatTags>;
 		useDepartmentBusinessHours?: () => LazyExoticComponent<typeof DepartmentBusinessHours>;
 		useDepartmentForwarding?: () => LazyExoticComponent<typeof DepartmentForwarding>;
@@ -46,7 +45,7 @@ hasLicense('livechat-enterprise').then((enabled) => {
 
 	registerForm({
 		useCustomFieldsAdditionalForm: () => useMemo(() => lazy(() => import('./CustomFieldsAdditionalFormContainer')), []),
-		useMaxChatsPerAgent: () => useMemo(() => lazy(() => import('./MaxChatsPerAgentContainer')), []),
+		useMaxChatsPerAgent: () => useMemo(() => lazy(() => import('./MaxChatsPerAgent')), []),
 		useMaxChatsPerAgentDisplay: () => useMemo(() => lazy(() => import('./MaxChatsPerAgentDisplay')), []),
 		useEeNumberInput: () => useMemo(() => lazy(() => import('./EeNumberInput')), []),
 		useEeTextAreaInput: () => useMemo(() => lazy(() => import('./EeTextAreaInput')), []),

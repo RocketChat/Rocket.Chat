@@ -1,21 +1,25 @@
 import { NumberInput, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ComponentProps } from 'react';
 import React from 'react';
+import { useFormContext, Controller } from 'react-hook-form';
 
-const MaxChatsPerAgent: FC<{
-	values: { maxNumberSimultaneousChat: number };
-	handlers: { handleMaxNumberSimultaneousChat: () => void };
-}> = ({ values, handlers }) => {
+const MaxChatsPerAgent = ({ className }: { className?: ComponentProps<typeof Field>['className'] }) => {
 	const t = useTranslation();
-	const { maxNumberSimultaneousChat } = values;
-	const { handleMaxNumberSimultaneousChat } = handlers;
+	const { control } = useFormContext();
+
+	const maxChatsField = useUniqueId();
 
 	return (
-		<Field>
-			<FieldLabel>{t('Max_number_of_chats_per_agent')}</FieldLabel>
+		<Field className={className}>
+			<FieldLabel htmlFor={maxChatsField}>{t('Max_number_of_chats_per_agent')}</FieldLabel>
 			<FieldRow>
-				<NumberInput value={maxNumberSimultaneousChat} onChange={handleMaxNumberSimultaneousChat} flexGrow={1} />
+				<Controller
+					name='maxNumberSimultaneousChat'
+					control={control}
+					render={({ field }) => <NumberInput id={maxChatsField} {...field} />}
+				/>
 			</FieldRow>
 		</Field>
 	);
