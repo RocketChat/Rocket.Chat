@@ -9,8 +9,12 @@ import { useRegistrationStatus } from '../../hooks/useRegistrationStatus';
 export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; trialEndDate: string | undefined; isLoading: boolean } => {
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
 
-	const { data: licensesData, isSuccess: isSuccessLicense } = useLicense();
-	const { data: registrationStatusData, isSuccess: isSuccessRegistrationStatus } = useRegistrationStatus();
+	const { data: licensesData, isSuccess: isSuccessLicense, isError: isLicenseError } = useLicense();
+	const { data: registrationStatusData, isSuccess: isSuccessRegistrationStatus, isError: isRegistrationError } = useRegistrationStatus();
+
+	if (isLicenseError || isRegistrationError) {
+		return { tabType: false, trialEndDate: undefined, isLoading: false };
+	}
 
 	const registered = registrationStatusData?.registrationStatus?.workspaceRegistered ?? false;
 	const hasValidLicense = Boolean(licensesData?.license ?? false);
