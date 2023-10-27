@@ -22,6 +22,7 @@ import CloseChatModalData from '../../../../../../components/Omnichannel/modals/
 import ForwardChatModal from '../../../../../../components/Omnichannel/modals/ForwardChatModal';
 import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
+import { useIsRoomOverMacLimit } from '../../../../../../hooks/omnichannel/useIsRoomOverMacLimit';
 import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
 import { quickActionHooks } from '../../../../../../ui';
 import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
@@ -296,9 +297,13 @@ export const useQuickActions = (): {
 	});
 
 	const omnichannelRouteConfig = useOmnichannelRouteConfig();
+
 	const manualOnHoldAllowed = useSetting('Livechat_allow_manual_on_hold');
+
 	const hasManagerRole = useRole('livechat-manager');
-	const roomOpen = room?.open && (room.u?._id === uid || hasManagerRole) && room?.lastMessage?.t !== 'livechat-close';
+	const hasMonitorRole = useRole('livechat-monitor');
+
+	const roomOpen = room?.open && (room.u?._id === uid || hasManagerRole || hasMonitorRole) && room?.lastMessage?.t !== 'livechat-close';
 	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue && room?.u !== undefined;
 	const canForwardGuest = usePermission('transfer-livechat-guest');
 	const canSendTranscriptEmail = usePermission('send-omnichannel-chat-transcript');
@@ -311,18 +316,20 @@ export const useQuickActions = (): {
 	const canAgentPlaceOnHold = !room.lastMessage?.token;
 	const canPlaceChatOnHold = Boolean(manualOnHoldAllowed && canRoomBePlacedOnHold && (!restrictedOnHold || canAgentPlaceOnHold));
 
+	const isRoomOverMacLimit = useIsRoomOverMacLimit(room);
+
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
-				return !!roomOpen && canMoveQueue;
+				return !isRoomOverMacLimit && !!roomOpen && canMoveQueue;
 			case QuickActionsEnum.ChatForward:
-				return !!roomOpen && canForwardGuest;
+				return !isRoomOverMacLimit && !!roomOpen && canForwardGuest;
 			case QuickActionsEnum.Transcript:
-				return canSendTranscriptEmail || (hasLicense && canSendTranscriptPDF);
+				return !isRoomOverMacLimit && (canSendTranscriptEmail || (hasLicense && canSendTranscriptPDF));
 			case QuickActionsEnum.TranscriptEmail:
-				return canSendTranscriptEmail;
+				return !isRoomOverMacLimit && canSendTranscriptEmail;
 			case QuickActionsEnum.TranscriptPDF:
-				return hasLicense && canSendTranscriptPDF;
+				return hasLicense && !isRoomOverMacLimit && canSendTranscriptPDF;
 			case QuickActionsEnum.CloseChat:
 				return !!roomOpen && (canCloseRoom || canCloseOthersRoom);
 			case QuickActionsEnum.OnHoldChat:
