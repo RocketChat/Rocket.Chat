@@ -16,7 +16,7 @@ test.describe.parallel('administration', () => {
 
 	test.describe('Workspace', () => {
 		test.beforeEach(async ({ page }) => {
-			await page.goto('/admin/workspace');
+			await page.goto('/admin/info');
 		});
 
 		test('expect download info as JSON', async ({ page }) => {
