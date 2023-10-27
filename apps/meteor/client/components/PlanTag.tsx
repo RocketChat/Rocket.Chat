@@ -12,7 +12,7 @@ function PlanTag(): ReactElement {
 
 	useEffect(() => {
 		const developmentTag = process.env.NODE_ENV === 'development' ? 'Development' : null;
-		const enterpriseTag = data?.isEnterprise ? 'Enterprise' : null;
+		const enterpriseTag = data?.isEnterprise ? 'Premium' : null;
 
 		setPlans([developmentTag, enterpriseTag].filter(isTruthy));
 	}, [setPlans, data?.isEnterprise]);
