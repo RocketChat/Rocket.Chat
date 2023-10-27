@@ -3,7 +3,7 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import type { SupportedVersions } from '@rocket.chat/server-cloud-communication';
 import { Card, CardBody, CardCol, CardColSection, CardColTitle, CardFooter, ExternalLink } from '@rocket.chat/ui-client';
-import type { CSSProperties, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import semver from 'semver';
@@ -29,7 +29,7 @@ type VersionCardProps = {
 
 const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
-	const style: CSSProperties = {
+	const cardBackground = {
 		backgroundImage: 'url(images/globe.png)',
 		backgroundRepeat: 'no-repeat',
 		backgroundPosition: 'right 20px center',
@@ -179,7 +179,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	}, [getActionItems, serverVersion, supportedVersions]);
 
 	return (
-		<Card style={style}>
+		<Card background={cardBackground}>
 			{!isLoading && licenseData ? (
 				<>
 					<CardBody>
