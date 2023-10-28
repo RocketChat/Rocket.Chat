@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, Dispatch, SetStateAction, ChangeEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
-type ChannelDescriptor = {
+export type ChannelDescriptor = {
 	channel_id: string;
 	name: string;
 	is_archived: boolean;

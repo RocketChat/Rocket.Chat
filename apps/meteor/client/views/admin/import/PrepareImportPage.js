@@ -16,6 +16,7 @@ import Page from '../../../components/Page';
 import PrepareChannels from './PrepareChannels';
 import PrepareUsers from './PrepareUsers';
 import { useErrorHandler } from './useErrorHandler';
+import useMessagesCount from './useMessagesCount';
 
 const waitFor = (fn, predicate) =>
 	new Promise((resolve, reject) => {
@@ -43,6 +44,7 @@ function PrepareImportPage() {
 	const [messageCount, setMessageCount] = useSafely(useState(0));
 	const [users, setUsers] = useState([]);
 	const [channels, setChannels] = useState([]);
+	const [messages, setMessages] = useState([]);
 	const [isImporting, setImporting] = useSafely(useState(false));
 
 	const usersCount = useMemo(() => users.filter(({ do_import }) => do_import).length, [users]);
@@ -87,6 +89,7 @@ function PrepareImportPage() {
 				setMessageCount(data.message_count);
 				setUsers(data.users.map((user) => ({ ...user, do_import: true })));
 				setChannels(data.channels.map((channel) => ({ ...channel, do_import: true })));
+				setMessages(data.messages);
 				setPreparing(false);
 				setProgressRate(null);
 			} catch (error) {
@@ -221,6 +224,7 @@ function PrepareImportPage() {
 						{!isPreparing && tab === 'channels' && (
 							<PrepareChannels channels={channels} channelsCount={channelsCount} setChannels={setChannels} />
 						)}
+						{useMessagesCount(users, channels, messages, setMessageCount)}
 					</Margins>
 				</Box>
 			</Page.ScrollableContentWithShadow>

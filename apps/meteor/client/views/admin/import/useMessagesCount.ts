@@ -1,11 +1,28 @@
+import type { Dispatch, SetStateAction } from 'react';
 import { useMemo } from 'react';
 
-const useMessagesCount = (users, channels, messages, setMessageCount) => {
+import type { ChannelDescriptor } from './PrepareChannels';
+import type { UserDescriptor } from './PrepareUsers';
+
+export type MessageDescriptor = {
+	_id?: string;
+	rid: string;
+	u: {
+		_id: string;
+	};
+};
+
+const useMessagesCount = (
+	users: UserDescriptor[],
+	channels: ChannelDescriptor[],
+	messages: MessageDescriptor[],
+	setMessageCount: Dispatch<SetStateAction<number>>,
+) => {
 	useMemo(() => {
 		let messageCount = 0;
 
-		const selectedUsers = new Set(users.map((user) => user._id));
-		const selectedChannels = new Set(users.map((channel) => channel._id));
+		const selectedUsers = new Set(users.map((user) => user.user_id));
+		const selectedChannels = new Set(channels.map((channel) => channel.channel_id));
 
 		for (const message of messages) {
 			if (selectedUsers.has(message.u._id) || selectedChannels.has(message.rid)) {
@@ -14,7 +31,7 @@ const useMessagesCount = (users, channels, messages, setMessageCount) => {
 		}
 
 		setMessageCount(messageCount);
-	}, [users, setMessageCount, messages]);
+	}, [users, channels, setMessageCount, messages]);
 };
 
 export default useMessagesCount;
