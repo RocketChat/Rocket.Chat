@@ -1,4 +1,4 @@
-import emojione from 'emojione';
+import emojione from 'emoji-toolkit';
 
 import type { EmojiPackages } from '../lib/rocketchat';
 
