@@ -1,4 +1,4 @@
-import emojione from 'emojione';
+import emojione from 'emoji-toolkit';
 import mem from 'mem';
 
 import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
@@ -205,9 +205,9 @@ const convertShortName = mem(
 		const alt = emojione.unicodeAlt ? emojione.convert(unicode.toUpperCase()) : shortname;
 
 		if (emojione.sprites) {
-			return `<span class="emojione emojione-${category} _${fname}" ${title}>${alt}</span>`;
+			return `<span class="joypixels emojione-${category} _${fname}" ${title}>${alt}</span>`;
 		}
-		return `<img class="emojione" alt="${alt}" ${title} src="${ePath}${fname}${emojione.fileExtension}"/>`;
+		return `<img class="joypixels" alt="${alt}" ${title} src="${ePath}${fname}${emojione.fileExtension}"/>`;
 	},
 	{ maxAge: 1000 },
 );
