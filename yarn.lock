@@ -8840,7 +8840,6 @@ __metadata:
     ejson: ^2.2.3
     emailreplyparser: ^0.0.5
     emoji-toolkit: ^7.0.1
-    emojione: ^4.5.0
     emojione-assets: ^4.5.0
     eslint: ~8.45.0
     eslint-config-prettier: ~8.8.0
