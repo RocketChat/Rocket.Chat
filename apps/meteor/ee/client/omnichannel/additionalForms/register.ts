@@ -29,7 +29,6 @@ declare module '../../../../client/views/omnichannel/additionalForms' {
 		useBusinessHoursMultiple?: () => LazyExoticComponent<typeof BusinessHoursMultipleContainer>;
 		useEeTextInput?: () => LazyExoticComponent<typeof EeTextInput>;
 		useContactManager?: () => LazyExoticComponent<typeof ContactManager>;
-
 		useCurrentChatTags?: () => LazyExoticComponent<typeof CurrentChatTags>;
 		useDepartmentBusinessHours?: () => LazyExoticComponent<typeof DepartmentBusinessHours>;
 		useDepartmentForwarding?: () => LazyExoticComponent<typeof DepartmentForwarding>;

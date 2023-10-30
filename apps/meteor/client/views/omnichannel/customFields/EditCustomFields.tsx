@@ -51,8 +51,8 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { useCustomFieldsAdditionalForm } = useFormsSubscription();
-	const AdditionalForm = useCustomFieldsAdditionalForm();
+	const additionalForms = useFormsSubscription();
+	const CustomFieldAdditionalForm = additionalForms?.useCustomFieldsAdditionalForm();
 
 	const handleDelete = useRemoveCustomField();
 
@@ -114,7 +114,10 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 									<Controller
 										name='field'
 										control={control}
-										rules={{ required: t('The_field_is_required', t('Field')) }}
+										rules={{
+											required: t('The_field_is_required', t('Field')),
+											validate: (value) => (!/^[0-9a-zA-Z-_]+$/.test(value) ? t('error-invalid-custom-field-name') : undefined),
+										}}
 										render={({ field }) => (
 											<TextInput
 												id={fieldField}
@@ -199,7 +202,7 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 									<Controller name='regexp' control={control} render={({ field }) => <TextInput id={regexpField} {...field} />} />
 								</FieldRow>
 							</Field>
-							{AdditionalForm && <AdditionalForm />}
+							{CustomFieldAdditionalForm && <CustomFieldAdditionalForm />}
 						</FieldGroup>
 					</form>
 				</FormProvider>

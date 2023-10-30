@@ -1,16 +1,13 @@
 import type { ReactElement } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-export interface EEFormHooks {}
-
 const createFormSubscription = (): {
 	registerForm: (form: EEFormHooks) => void;
 	unregisterForm: (form: keyof EEFormHooks) => void;
 	formsSubscription: readonly [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => EEFormHooks];
 	getForm: (form: keyof EEFormHooks) => () => ReactElement;
 } => {
-	let forms = {} as EEFormHooks;
+	let forms: EEFormHooks;
 	let updateCb = (): void => undefined;
 
 	const formsSubscription = [
