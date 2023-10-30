@@ -4,9 +4,9 @@ import React, { useState, useCallback, useMemo } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import ImageGallery from '../../../../components/ImageGallery/ImageGallery';
+import { useImageGallery } from '../../../../components/ImageGallery/hooks/useImageGallery';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useImageGallery } from '../../../../hooks/useImageGallery';
 import { useRoom } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import RoomFiles from './RoomFiles';
@@ -22,7 +22,7 @@ const RoomFilesWithData = () => {
 	const closeModal = useMutableCallback(() => setModal());
 	const dispatchToastMessage = useToastMessageDispatch();
 	const deleteFile = useMethod('deleteFileMessage');
-	const { imageUrl, onClose } = useImageGallery('rcx-avatar__element', 'rcx-verticalbar__content');
+	const { isOpen, ...imageGalleryProps } = useImageGallery(room._id, 'rcx-avatar__element', 'rcx-verticalbar__content');
 
 	const [type, setType] = useLocalStorage('file-list-type', 'all');
 	const [text, setText] = useState('');
@@ -57,7 +57,7 @@ const RoomFilesWithData = () => {
 
 	return (
 		<>
-			{imageUrl && <ImageGallery url={imageUrl} onClose={onClose} />}
+			{isOpen && <ImageGallery {...imageGalleryProps} />}
 			<RoomFiles
 				rid={room._id}
 				loading={phase === AsyncStatePhase.LOADING}

@@ -7,7 +7,7 @@ import { ChatSubscription } from '../../../../app/models/client';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import ImageGallery from '../../../components/ImageGallery';
-import { useImageGallery } from '../../../hooks/useImageGallery';
+import { useImageGallery } from '../../../components/ImageGallery/hooks/useImageGallery';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { RoomManager } from '../../../lib/RoomManager';
@@ -27,7 +27,6 @@ type RoomProviderProps = {
 
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useRoomRolesManagement(rid);
-	const { imageUrl, onClose } = useImageGallery();
 
 	const { data: room, isSuccess } = useRoomQuery(rid);
 
@@ -105,6 +104,9 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		};
 	}, [rid, subscribed]);
 
+	const { isOpen, ...imageGalleryProps } = useImageGallery(rid);
+
+	console.log(isOpen, imageGalleryProps);
 	if (!pseudoRoom) {
 		return isSuccess && !room ? <RoomNotFound /> : <RoomSkeleton />;
 	}
@@ -112,7 +114,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	return (
 		<RoomContext.Provider value={context}>
 			<RoomToolboxProvider>
-				{imageUrl && <ImageGallery url={imageUrl} onClose={onClose} />}
+				{isOpen && <ImageGallery {...imageGalleryProps} />}
 				<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
 			</RoomToolboxProvider>
 		</RoomContext.Provider>

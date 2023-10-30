@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, IconButton, ModalBackdrop, Throbber } from '@rocket.chat/fuselage';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Box, IconButton, Throbber } from '@rocket.chat/fuselage';
+import React, { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Keyboard, Navigation, Zoom, A11y } from 'swiper';
 import type { SwiperRef } from 'swiper/react';
@@ -12,9 +12,7 @@ import 'swiper/modules/navigation/navigation.min.css';
 import 'swiper/modules/keyboard/keyboard.min.css';
 import 'swiper/modules/zoom/zoom.min.css';
 
-import { useRecordList } from '../../hooks/lists/useRecordList';
-import { useRoom } from '../../views/room/contexts/RoomContext';
-import { useFilesList } from '../../views/room/contextualBar/RoomFiles/hooks/useFilesList';
+import ImageGalleryLoader from './ImageGalleryLoader';
 
 const swiperStyle = css`
 	.swiper {
@@ -85,40 +83,22 @@ const swiperStyle = css`
 	}
 `;
 
-const ImageGallery = ({ url, onClose }: { url: string; onClose: () => void }) => {
-	const room = useRoom();
+type ImageGalleryProps = {
+	images: string[];
+	isLoading: boolean;
+	loadMore: () => void;
+	currentSlide: number | undefined;
+	onClose: () => void;
+};
+const ImageGallery = ({ images, isLoading, loadMore, currentSlide, onClose }: ImageGalleryProps) => {
 	const swiperRef = useRef<SwiperRef>(null);
-
-	const [images, setImages] = useState<string[]>([]);
 	const [, setSwiperInst] = useState<SwiperClass>();
-	const [currentSlide, setCurrentSlide] = useState<number>();
 
-	const { filesList, loadMoreItems } = useFilesList(useMemo(() => ({ rid: room._id, type: 'image', text: '' }), [room._id]));
-	const { phase, items: filesItems } = useRecordList(filesList);
-
-	useEffect(() => {
-		const list = [...filesItems];
-
-		if (phase === 'resolved') {
-			setImages(list.map((item) => item.url || '').filter(Boolean));
-			setCurrentSlide(list.findIndex((item) => url.includes(item._id)));
-		}
-	}, [filesItems, phase, url]);
-
-	const swiperLoader = (
-		<ModalBackdrop display='flex' justifyContent='center'>
-			<Throbber />
-		</ModalBackdrop>
-	);
-	if (phase === 'loading' || currentSlide === undefined) {
-		return createPortal(swiperLoader, document.body);
+	if (isLoading) {
+		return <ImageGalleryLoader />;
 	}
 
-	const handleLoadMore = () => {
-		loadMoreItems(images.length - currentSlide, images.length + 1);
-	};
-
-	const swiperContainer = (
+	return createPortal(
 		<Box className={swiperStyle}>
 			<div className='swiper-container'>
 				<IconButton icon='cross' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
@@ -138,7 +118,7 @@ const ImageGallery = ({ url, onClose }: { url: string; onClose: () => void }) =>
 					onKeyPress={(_, keyCode) => String(keyCode) === '27' && onClose()}
 					modules={[Navigation, Zoom, Keyboard, A11y]}
 					onInit={(swiper) => setSwiperInst(swiper)}
-					onReachEnd={handleLoadMore}
+					onReachEnd={loadMore}
 				>
 					{images?.map((image, index) => (
 						<SwiperSlide key={`${image}-${index}`}>
@@ -152,9 +132,9 @@ const ImageGallery = ({ url, onClose }: { url: string; onClose: () => void }) =>
 					))}
 				</Swiper>
 			</div>
-		</Box>
+		</Box>,
+		document.body,
 	);
-	return createPortal(swiperContainer, document.body);
 };
 
 export default ImageGallery;
