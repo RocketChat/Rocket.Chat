@@ -8538,7 +8538,6 @@ __metadata:
     "@storybook/theming": ~6.5.16
     "@types/crypto-js": ~4.1.1
     "@types/mini-css-extract-plugin": ~1.4.3
-    "@types/terser-webpack-plugin": ~4.2.2
     "@types/webpack": ^5.28.4
     "@types/webpack-bundle-analyzer": ^4
     "@types/webpack-dev-server": ~4.7.2
@@ -8561,7 +8560,7 @@ __metadata:
     file-loader: ^6.2.0
     gh-release: ^3.5.0
     history: ~5.3.0
-    html-webpack-plugin: ^4.4.1
+    html-webpack-plugin: ^5.5.3
     husky: ^4.3.8
     i18next: ~23.4.5
     if-env: ^1.0.4
@@ -13388,16 +13387,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/terser-webpack-plugin@npm:~4.2.2":
-  version: 4.2.2
-  resolution: "@types/terser-webpack-plugin@npm:4.2.2"
-  dependencies:
-    "@types/webpack": ^4
-    terser: ^4.6.13
-  checksum: 9e31abd59cacd8d60e3e16b65317b4bba56b66c564c089956b63aee27f0a00367c10f734151ebb4a7f6285ba1c600165a56fa2ba4ec83faa67aec6a5e4eb8e49
-  languageName: node
-  linkType: hard
-
 "@types/testing-library__jest-dom@npm:^5.9.1, @types/testing-library__jest-dom@npm:~5.14.6":
   version: 5.14.6
   resolution: "@types/testing-library__jest-dom@npm:5.14.6"
@@ -13538,7 +13527,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/webpack@npm:^4, @types/webpack@npm:^4.41.26, @types/webpack@npm:^4.41.8":
+"@types/webpack@npm:^4.41.26, @types/webpack@npm:^4.41.8":
   version: 4.41.33
   resolution: "@types/webpack@npm:4.41.33"
   dependencies:
@@ -24007,7 +23996,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-webpack-plugin@npm:^4.0.0, html-webpack-plugin@npm:^4.4.1":
+"html-webpack-plugin@npm:^4.0.0":
   version: 4.5.2
   resolution: "html-webpack-plugin@npm:4.5.2"
   dependencies:
@@ -24026,7 +24015,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-webpack-plugin@npm:^5.0.0":
+"html-webpack-plugin@npm:^5.0.0, html-webpack-plugin@npm:^5.5.3":
   version: 5.5.3
   resolution: "html-webpack-plugin@npm:5.5.3"
   dependencies:
@@ -37520,7 +37509,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser@npm:^4.1.2, terser@npm:^4.6.13, terser@npm:^4.6.3":
+"terser@npm:^4.1.2, terser@npm:^4.6.3":
   version: 4.8.1
   resolution: "terser@npm:4.8.1"
   dependencies:
