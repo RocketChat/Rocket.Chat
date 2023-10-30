@@ -9,6 +9,7 @@ import type { LicenseModule } from './definition/LicenseModule';
 import type { LicenseValidationOptions } from './definition/LicenseValidationOptions';
 import type { LimitContext } from './definition/LimitContext';
 import type { LicenseEvents } from './definition/events';
+import { getLicenseLimit } from './deprecated';
 import { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
 import { InvalidLicenseError } from './errors/InvalidLicenseError';
 import { NotReadyForValidation } from './errors/NotReadyForValidation';
@@ -29,7 +30,6 @@ import { runValidation } from './validation/runValidation';
 import { validateDefaultLimits } from './validation/validateDefaultLimits';
 import { validateFormat } from './validation/validateFormat';
 import { validateLicenseLimits } from './validation/validateLicenseLimits';
-import { getLicenseLimit } from './deprecated';
 
 const globalLimitKinds: LicenseLimitKind[] = ['activeUsers', 'guestUsers', 'privateApps', 'marketplaceApps', 'monthlyActiveContacts'];
 
