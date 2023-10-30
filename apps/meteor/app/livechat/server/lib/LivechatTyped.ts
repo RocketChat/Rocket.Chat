@@ -1648,6 +1648,16 @@ class LivechatClass {
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 		return user;
 	}
+
+	async afterAgentAdded(user: IUser) {
+		await Promise.all([
+			Users.setOperator(user._id, true),
+			this.setUserStatusLivechat(user._id, user.status !== 'offline' ? ILivechatAgentStatus.AVAILABLE : ILivechatAgentStatus.NOT_AVAILABLE),
+		]);
+		callbacks.runAsync('livechat.onNewAgentCreated', user._id);
+
+		return user;
+	}
 }
 
 export const Livechat = new LivechatClass();

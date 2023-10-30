@@ -77,15 +77,6 @@ export const Livechat = {
 		}
 	},
 
-	async afterAgentAdded(user) {
-		await Users.setOperator(user._id, true);
-		await this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
-
-		callbacks.runAsync('livechat.onNewAgentCreated', user._id);
-
-		return user;
-	},
-
 	async addAgent(username) {
 		check(username, String);
 

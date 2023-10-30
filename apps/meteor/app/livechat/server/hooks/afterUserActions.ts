@@ -21,14 +21,14 @@ const handleAgentUpdated = async (userData: IAfterSaveUserProps) => {
 	}
 
 	if (!wasAgent(oldUser) && isAgent(newUser)) {
-		await Livechat.afterAgentAdded(newUser);
+		await LivechatTyped.afterAgentAdded(newUser);
 	}
 };
 
 const handleAgentCreated = async (user: IUser) => {
 	// created === no prev roles :)
 	if (isAgent(user)) {
-		await Livechat.afterAgentAdded(user);
+		await LivechatTyped.afterAgentAdded(user);
 	}
 };
 
