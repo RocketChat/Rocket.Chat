@@ -6,6 +6,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import { settings } from '../../settings/server';
+import { getURL } from '../../utils/server/getURL';
 import { applyHeadInjections, headInjections, injectIntoBody, injectIntoHead } from './inject';
 
 import './scripts';
@@ -41,14 +42,14 @@ Meteor.startup(() => {
 
 	settings.watch('Assets_SvgFavicon_Enable', (value) => {
 		const standardFavicons = `
-			<link rel="icon" sizes="16x16" type="image/png" href="assets/favicon_16.png" />
-			<link rel="icon" sizes="32x32" type="image/png" href="assets/favicon_32.png" />`;
+			<link rel="icon" sizes="16x16" type="image/png" href=${getURL('assets/favicon_16.png')} />
+			<link rel="icon" sizes="32x32" type="image/png" href=${getURL('assets/favicon_32.png')} />`;
 
 		if (value) {
 			injectIntoHead(
 				'Assets_SvgFavicon_Enable',
 				`${standardFavicons}
-				<link rel="icon" sizes="any" type="image/svg+xml" href="assets/favicon.svg" />`,
+				<link rel="icon" sizes="any" type="image/svg+xml" href=${getURL('assets/favicon.svg')} />`,
 			);
 		} else {
 			injectIntoHead('Assets_SvgFavicon_Enable', standardFavicons);

@@ -765,7 +765,7 @@ const LivechatUsersManagerGETSchema = {
 			nullable: true,
 		},
 		onlyAvailable: {
-			type: 'string',
+			type: 'boolean',
 			nullable: true,
 		},
 		excludeId: {
@@ -3277,7 +3277,7 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 	'/v1/livechat/tags/:tagId': {
-		GET: () => ILivechatTag | null;
+		GET: () => ILivechatTag;
 	};
 	'/v1/livechat/department': {
 		GET: (params?: LivechatDepartmentProps) => PaginatedResult<{
