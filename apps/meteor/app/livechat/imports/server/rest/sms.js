@@ -56,7 +56,7 @@ const defineVisitor = async (smsNumber, targetDepartment) => {
 	}
 
 	const id = await LivechatTyped.registerGuest(data);
-	return LivechatVisitors.findOneById(id);
+	return LivechatVisitors.findOneEnabledById(id);
 };
 
 const normalizeLocationSharing = (payload) => {
@@ -182,7 +182,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		};
 
 		try {
-			const msg = SMSService.response.call(this, await Livechat.sendMessage(sendMessage));
+			const msg = SMSService.response.call(this, await LivechatTyped.sendMessage(sendMessage));
 			setImmediate(async () => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {

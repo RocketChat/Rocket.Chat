@@ -1,4 +1,17 @@
-import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
+import {
+	TextInput,
+	TextAreaInput,
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldHint,
+	CheckBox,
+	Button,
+	ButtonGroup,
+	Box,
+} from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -63,10 +76,10 @@ const MailerPage = () => {
 				<Box id={mailerFormId} is='form' autoComplete='off' maxWidth='x600' onSubmit={handleSubmit(handleSendEmail)}>
 					<FieldGroup>
 						<Field>
-							<Field.Label required htmlFor={fromEmailId}>
+							<FieldLabel required htmlFor={fromEmailId}>
 								{t('From')}
-							</Field.Label>
-							<Field.Row>
+							</FieldLabel>
+							<FieldRow>
 								<TextInput
 									id={fromEmailId}
 									placeholder={t('Type_your_email')}
@@ -78,15 +91,15 @@ const MailerPage = () => {
 									aria-invalid={errors.fromEmail ? 'true' : 'false'}
 									aria-describedby={`${fromEmailId}-error`}
 								/>
-							</Field.Row>
+							</FieldRow>
 							{errors.fromEmail && (
-								<Field.Error aria-live='assertive' id={`${fromEmailId}-error`}>
+								<FieldError aria-live='assertive' id={`${fromEmailId}-error`}>
 									{errors.fromEmail.message}
-								</Field.Error>
+								</FieldError>
 							)}
 						</Field>
 						<Field>
-							<Field.Row>
+							<FieldRow>
 								<Controller
 									control={control}
 									name='dryRun'
@@ -94,13 +107,13 @@ const MailerPage = () => {
 										<CheckBox aria-describedby={`${dryRunId}-hint`} ref={ref} id={dryRunId} checked={value} onChange={onChange} />
 									)}
 								/>
-								<Field.Label htmlFor={dryRunId}>{t('Dry_run')}</Field.Label>
-							</Field.Row>
-							<Field.Hint id={`${dryRunId}-hint`}>{t('Dry_run_description')}</Field.Hint>
+								<FieldLabel htmlFor={dryRunId}>{t('Dry_run')}</FieldLabel>
+							</FieldRow>
+							<FieldHint id={`${dryRunId}-hint`}>{t('Dry_run_description')}</FieldHint>
 						</Field>
 						<Field>
-							<Field.Label htmlFor={queryId}>{t('Query')}</Field.Label>
-							<Field.Row>
+							<FieldLabel htmlFor={queryId}>{t('Query')}</FieldLabel>
+							<FieldRow>
 								<TextInput
 									id={queryId}
 									{...register('query', {
@@ -110,19 +123,19 @@ const MailerPage = () => {
 									aria-describedby={`${queryId}-error ${queryId}-hint`}
 									aria-invalid={errors.query ? 'true' : 'false'}
 								/>
-							</Field.Row>
+							</FieldRow>
 							{errors.query && (
-								<Field.Error id={`${queryId}-error`} aria-live='assertive'>
+								<FieldError id={`${queryId}-error`} aria-live='assertive'>
 									{errors.query.message}
-								</Field.Error>
+								</FieldError>
 							)}
-							<Field.Hint id={`${queryId}-hint`}>{t('Query_description')}</Field.Hint>
+							<FieldHint id={`${queryId}-hint`}>{t('Query_description')}</FieldHint>
 						</Field>
 						<Field>
-							<Field.Label required htmlFor={subjectId}>
+							<FieldLabel required htmlFor={subjectId}>
 								{t('Subject')}
-							</Field.Label>
-							<Field.Row>
+							</FieldLabel>
+							<FieldRow>
 								<TextInput
 									id={subjectId}
 									{...register('subject', { required: t('error-the-field-is-required', { field: t('Subject') }) })}
@@ -131,18 +144,18 @@ const MailerPage = () => {
 									aria-required='true'
 									aria-invalid={errors.subject ? 'true' : 'false'}
 								/>
-							</Field.Row>
+							</FieldRow>
 							{errors.subject && (
-								<Field.Error aria-live='assertive' id={`${subjectId}-error`}>
+								<FieldError aria-live='assertive' id={`${subjectId}-error`}>
 									{errors.subject.message}
-								</Field.Error>
+								</FieldError>
 							)}
 						</Field>
 						<Field>
-							<Field.Label required htmlFor={emailBodyId}>
+							<FieldLabel required htmlFor={emailBodyId}>
 								{t('Email_body')}
-							</Field.Label>
-							<Field.Row>
+							</FieldLabel>
+							<FieldRow>
 								<TextAreaInput
 									id={emailBodyId}
 									{...register('emailBody', {
@@ -155,13 +168,13 @@ const MailerPage = () => {
 									aria-required='true'
 									aria-invalid={errors.emailBody ? 'true' : 'false'}
 								/>
-							</Field.Row>
+							</FieldRow>
 							{errors.emailBody && (
-								<Field.Error aria-live='assertive' id={`${emailBodyId}-error`}>
+								<FieldError aria-live='assertive' id={`${emailBodyId}-error`}>
 									{errors.emailBody.message}
-								</Field.Error>
+								</FieldError>
 							)}
-							<Field.Hint id={`${emailBodyId}-hint`} dangerouslySetInnerHTML={{ __html: t('Mailer_body_tags') }} />
+							<FieldHint id={`${emailBodyId}-hint`} dangerouslySetInnerHTML={{ __html: t('Mailer_body_tags') }} />
 						</Field>
 					</FieldGroup>
 				</Box>

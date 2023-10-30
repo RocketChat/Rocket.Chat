@@ -6,11 +6,18 @@ import CreateCannedResponse from '../../CannedResponse/modals';
 import CannedResponse from './CannedResponse';
 
 const WrapCannedResponse: FC<{
+	allowUse: boolean;
 	cannedItem: any;
 	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
 	reload: () => void;
-}> = ({ cannedItem: { _id, departmentName, departmentId, shortcut, tags, scope, text }, onClickBack, onClickUse, reload }) => {
+}> = ({
+	allowUse,
+	cannedItem: { _id, departmentName, departmentId, shortcut, tags, scope, text } = {},
+	onClickBack,
+	onClickUse,
+	reload,
+}) => {
 	const setModal = useSetModal();
 	const onClickEdit = (): void => {
 		setModal(<CreateCannedResponse data={{ _id, departmentId, shortcut, tags, scope, text }} reloadCannedList={reload} />);
@@ -19,11 +26,12 @@ const WrapCannedResponse: FC<{
 	const hasManagerPermission = usePermission('view-all-canned-responses');
 	const hasMonitorPermission = usePermission('save-department-canned-responses');
 
-	const canEdit = hasManagerPermission || (hasMonitorPermission && scope !== 'global') || scope === 'user';
+	const allowEdit = hasManagerPermission || (hasMonitorPermission && scope !== 'global') || scope === 'user';
 
 	return (
 		<CannedResponse
-			canEdit={canEdit}
+			allowEdit={allowEdit}
+			allowUse={allowUse}
 			data={{
 				departmentName,
 				shortcut,

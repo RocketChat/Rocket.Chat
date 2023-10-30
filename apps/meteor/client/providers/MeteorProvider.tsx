@@ -35,8 +35,8 @@ const MeteorProvider: FC = ({ children }) => (
 								<ToastMessagesProvider>
 									<LayoutProvider>
 										<AvatarUrlProvider>
-											<CustomSoundProvider>
-												<UserProvider>
+											<UserProvider>
+												<CustomSoundProvider>
 													<DeviceProvider>
 														<ModalProvider>
 															<AuthorizationProvider>
@@ -56,8 +56,8 @@ const MeteorProvider: FC = ({ children }) => (
 															</AuthorizationProvider>
 														</ModalProvider>
 													</DeviceProvider>
-												</UserProvider>
-											</CustomSoundProvider>
+												</CustomSoundProvider>
+											</UserProvider>
 										</AvatarUrlProvider>
 									</LayoutProvider>
 								</ToastMessagesProvider>
