@@ -16,7 +16,7 @@ import {
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import ModerationFilter from '../helpers/ModerationFilter';
-import ModConsoleUserTableRow, { type ModConsoleUserRowProps } from './ModConsoleUserTableRow';
+import ModConsoleUserTableRow from './ModConsoleUserTableRow';
 
 const ModConsoleUsersTable: FC = () => {
 	const [text, setText] = useState('');
@@ -113,7 +113,7 @@ const ModConsoleUsersTable: FC = () => {
 							{data.reports.map((report) => (
 								<ModConsoleUserTableRow
 									key={report.reportedUser?._id}
-									report={report as unknown as ModConsoleUserRowProps['report']}
+									report={report}
 									onClick={handleClick}
 									isDesktopOrLarger={isDesktopOrLarger}
 								/>

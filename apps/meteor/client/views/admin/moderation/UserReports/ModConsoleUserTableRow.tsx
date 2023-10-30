@@ -1,4 +1,4 @@
-import type { IUser, UserReport } from '@rocket.chat/core-typings';
+import type { IUser, UserReport, Serialized } from '@rocket.chat/core-typings';
 import React from 'react';
 
 import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
@@ -7,7 +7,7 @@ import UserColumn from '../helpers/UserColumn';
 import ModConsoleUserActions from './ModConsoleUserActions';
 
 export type ModConsoleUserRowProps = {
-	report: Pick<UserReport, '_id' | 'reportedUser' | 'ts'> & { count: number };
+	report: Serialized<Pick<UserReport, '_id' | 'reportedUser' | 'ts'> & { count: number }>;
 	onClick: (id: IUser['_id']) => void;
 	isDesktopOrLarger: boolean;
 };

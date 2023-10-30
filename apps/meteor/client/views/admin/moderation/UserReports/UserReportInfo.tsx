@@ -1,4 +1,4 @@
-import type { IUser, UserReport } from '@rocket.chat/core-typings';
+import type { IUser, UserReport, Serialized } from '@rocket.chat/core-typings';
 import {
 	Box,
 	Callout,
@@ -25,13 +25,6 @@ import ReportReason from '../helpers/ReportReason';
 import UserColumn from '../helpers/UserColumn';
 import UserContextFooter from './UserContextFooter';
 
-const isUser = (obj: any): obj is IUser => {
-	if (obj?.createdAt && typeof obj.createdAt === 'string') {
-		obj.createdAt = new Date(obj.createdAt);
-	}
-	return obj?.createdAt instanceof Date;
-};
-
 const UserReportInfo = ({ userId }: { userId: string }) => {
 	const t = useTranslation();
 	const getUserReports = useEndpoint('GET', '/v1/moderation.user.reportsByUserId');
@@ -44,7 +37,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		isSuccess: isSuccessUsersReports,
 		isError,
 		dataUpdatedAt,
-	} = useQuery(['moderation.usersReport', { userId }], async () => getUserReports({ userId }));
+	} = useQuery(['moderation.usersReport', userId], async () => getUserReports({ userId }));
 
 	const userProfile = useMemo(() => {
 		if (!report?.user) {
@@ -74,7 +67,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		);
 	}
 
-	const renderUserDetails = (user: IUser) => {
+	const renderUserDetails = (user: Serialized<IUser>) => {
 		return (
 			<Box>
 				<FieldGroup>
@@ -110,7 +103,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		);
 	};
 
-	const renderUserReports = (reports: Omit<UserReport, 'moderationInfo'>[]) => {
+	const renderUserReports = (reports: Serialized<Omit<UserReport, 'moderationInfo'>[]>) => {
 		return reports.map((report, ind) => (
 			<Box key={report._id}>
 				<ReportReason ind={ind + 1} uinfo={report.reportedBy?.username} msg={report.description} ts={new Date(report.ts)} />
@@ -125,8 +118,8 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 
 				{isSuccessUsersReports && report.reports.length > 0 && (
 					<>
-						{report.user ? isUser(report.user) && renderUserDetails(report.user) : renderDeletedUserWarning()}
-						{renderUserReports(report.reports as unknown as Omit<UserReport, 'moderationInfo'>[])}
+						{report.user ? renderUserDetails(report.user) : renderDeletedUserWarning()}
+						{renderUserReports(report.reports)}
 					</>
 				)}
 
