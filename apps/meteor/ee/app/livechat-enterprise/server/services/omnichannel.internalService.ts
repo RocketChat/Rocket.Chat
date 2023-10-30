@@ -24,7 +24,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 	}
 
 	async placeRoomOnHold(
-		room: Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'u' | 'lastMessage'>,
+		room: Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold'>,
 		comment: string,
 		onHoldBy: Pick<IUser, '_id' | 'username' | 'name'>,
 	) {
@@ -46,7 +46,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		const canAgentPlaceOnHold = !room.lastMessage?.token;
 		const canPlaceChatOnHold = canRoomBePlacedOnHold && (!restrictedOnHold || canAgentPlaceOnHold);
 		if (!canPlaceChatOnHold) {
-			throw new Error('error-contact-sent-last-message-so-cannot-place-on-hold');
+			throw new Error('error-cannot-place-chat-on-hold');
 		}
 		if (!room.servedBy) {
 			throw new Error('error-unserved-rooms-cannot-be-placed-onhold');
