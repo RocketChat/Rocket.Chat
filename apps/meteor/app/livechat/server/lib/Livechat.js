@@ -19,7 +19,6 @@ import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import * as Mailer from '../../../mailer/server/api';
 import { Analytics } from './Analytics';
 import { updateDepartmentAgents } from './Helper';
 import { RoutingManager } from './RoutingManager';
@@ -162,15 +161,5 @@ export const Livechat = {
 	showConnecting() {
 		const { showConnecting } = RoutingManager.getConfig();
 		return showConnecting;
-	},
-
-	async sendEmail(from, to, replyTo, subject, html) {
-		return Mailer.send({
-			to,
-			from,
-			replyTo,
-			subject,
-			html,
-		});
 	},
 };
