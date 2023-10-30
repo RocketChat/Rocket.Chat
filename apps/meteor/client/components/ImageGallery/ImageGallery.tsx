@@ -71,6 +71,7 @@ const swiperStyle = css`
 		left: auto;
 	}
 `;
+
 const ImageGallery = ({ url, onClose }: { url: string; onClose: () => void }) => {
 	const room = useRoom();
 	const swiperRef = useRef<SwiperRef>(null);
