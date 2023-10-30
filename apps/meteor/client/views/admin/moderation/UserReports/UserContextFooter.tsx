@@ -16,17 +16,8 @@ const UserContextFooter: FC<{ userId: string; deleted: boolean }> = ({ userId, d
 
 	return (
 		<ButtonGroup width='full' stretch>
-			<Button onClick={dismissUserAction.onClick} title={t('Moderation_Dismiss_all_reports')} aria-label={t('Moderation_Dismiss_reports')}>
-				{t('Moderation_Dismiss_all_reports')}
-			</Button>
-			<Button
-				disabled={deleted}
-				onClick={deactivateUserAction.onClick}
-				title={t('Deactivate')}
-				aria-label={t('Moderation_Deactivate_User')}
-				secondary
-				danger
-			>
+			<Button onClick={dismissUserAction.onClick}>{t('Moderation_Dismiss_all_reports')}</Button>
+			<Button disabled={deleted} onClick={deactivateUserAction.onClick} secondary danger>
 				{t('Moderation_Deactivate_User')}
 			</Button>
 			<Box display='flex' flexGrow={0}>
