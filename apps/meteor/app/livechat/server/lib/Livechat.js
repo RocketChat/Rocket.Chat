@@ -173,9 +173,4 @@ export const Livechat = {
 			html,
 		});
 	},
-
-	async notifyGuestStatusChanged(token, status) {
-		await LivechatInquiry.updateVisitorStatus(token, status);
-		await LivechatRooms.updateVisitorStatus(token, status);
-	},
 };

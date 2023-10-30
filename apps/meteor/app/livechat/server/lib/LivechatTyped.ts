@@ -1637,6 +1637,11 @@ class LivechatClass {
 
 		return businessHourManager.allowAgentChangeServiceStatus(agentId);
 	}
+
+	async notifyGuestStatusChanged(token: string, status: UserStatus) {
+		await LivechatInquiry.updateVisitorStatus(token, status);
+		await LivechatRooms.updateVisitorStatus(token, status);
+	}
 }
 
 export const Livechat = new LivechatClass();

@@ -7,7 +7,7 @@ import { MongoInternals } from 'meteor/mongo';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
-import { Livechat } from '../../../app/livechat/server';
+import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { metrics } from '../../../app/metrics/server';
 import notifications from '../../../app/notifications/server/lib/Notifications';
