@@ -8176,9 +8176,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/forked-matrix-appservice-bridge@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "@rocket.chat/forked-matrix-appservice-bridge@npm:4.0.1"
+"@rocket.chat/forked-matrix-appservice-bridge@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@rocket.chat/forked-matrix-appservice-bridge@npm:4.0.2"
   dependencies:
     "@alloc/quick-lru": ^5.2.0
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.2
@@ -8198,7 +8198,7 @@ __metadata:
     uuid: ^8.3.2
     winston: ^3.3.3
     winston-daily-rotate-file: ^4.5.1
-  checksum: 218a46170d084bfe672f3a7e48a33d2179b314c0a4d021b1f7d9d8a6388a9bdb52daa7e3abd1502c40f6f7e6cec689ea24dc942d92bc51e4e37d5ba62d5b8f73
+  checksum: 1fc078d972995282fa74537607a1fe1e0ae4012a066d7d40df4190d423eaf461cbaa9bfae02ce8c17169b0eca2209b43025008da1d0baf764711034f290427c6
   languageName: node
   linkType: hard
 
@@ -8226,13 +8226,37 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/forked-matrix-sdk-crypto-nodejs@npm:^0.1.0-beta.12":
-  version: 0.1.0-beta.12
-  resolution: "@rocket.chat/forked-matrix-sdk-crypto-nodejs@npm:0.1.0-beta.12"
+"@rocket.chat/forked-matrix-bot-sdk@npm:^0.6.0-beta.3":
+  version: 0.6.0-beta.3
+  resolution: "@rocket.chat/forked-matrix-bot-sdk@npm:0.6.0-beta.3"
+  dependencies:
+    "@rocket.chat/forked-matrix-sdk-crypto-nodejs": ^0.1.0-beta.12
+    "@types/express": ^4.17.13
+    another-json: ^0.2.0
+    chalk: ^4
+    express: ^4.17.2
+    glob-to-regexp: ^0.4.1
+    hash.js: ^1.1.7
+    html-to-text: ^8.1.0
+    htmlencode: ^0.0.4
+    lowdb: ^1
+    lru-cache: ^6.0.0
+    mkdirp: ^1.0.4
+    morgan: ^1.10.0
+    request: ^2.88.2
+    request-promise: ^4.2.6
+    sanitize-html: ^2.6.1
+  checksum: 43f04e2416b4fc88a6c716002d17725bec7083efe7ae5efc15d5304d8dbe35ed6f570d849877de151f8020a98fb5ba339cb23f11c20d47adab3bbcb6c3443a3a
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/forked-matrix-sdk-crypto-nodejs@npm:0.1.0-beta.13":
+  version: 0.1.0-beta.13
+  resolution: "@rocket.chat/forked-matrix-sdk-crypto-nodejs@npm:0.1.0-beta.13"
   dependencies:
     "@napi-rs/cli": ^2.2.0
     shelljs: ^0.8.4
-  checksum: 61a25753631a9d6d3ee37e437a6b453f0d596beb6d938dea6712793b941baf7bbfbb2240299049bb126ebeddaa65d119f8e716070929e7317f96ae582e457f91
+  checksum: 2f21ef393c498eb06040def813169e15c740505a74dc161b8e3703e37bc746de5aa8cbbf637b093cd2dc7f35fb36da1eec2e0e8ae3d5fd7cba6e95846f3c13e9
   languageName: node
   linkType: hard
 
@@ -8720,8 +8744,8 @@ __metadata:
     "@rocket.chat/emitter": next
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
-    "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.1
-    "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.2
+    "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.2
+    "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.3
     "@rocket.chat/fuselage": ^0.36.0
     "@rocket.chat/fuselage-hooks": ^0.32.1
     "@rocket.chat/fuselage-polyfills": next
