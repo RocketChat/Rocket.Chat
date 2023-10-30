@@ -106,7 +106,6 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 
 	const { isOpen, ...imageGalleryProps } = useImageGallery(rid);
 
-	console.log(isOpen, imageGalleryProps);
 	if (!pseudoRoom) {
 		return isSuccess && !room ? <RoomNotFound /> : <RoomSkeleton />;
 	}
