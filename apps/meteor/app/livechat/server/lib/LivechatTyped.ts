@@ -45,6 +45,7 @@ import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
+import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -1657,6 +1658,38 @@ class LivechatClass {
 		callbacks.runAsync('livechat.onNewAgentCreated', user._id);
 
 		return user;
+	}
+
+	async addAgent(username: string) {
+		check(username, String);
+
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
+
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user');
+		}
+
+		if (await addUserRolesAsync(user._id, ['livechat-agent'])) {
+			return this.afterAgentAdded(user);
+		}
+
+		return false;
+	}
+
+	async addManager(username: string) {
+		check(username, String);
+
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
+
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user');
+		}
+
+		if (await addUserRolesAsync(user._id, ['livechat-manager'])) {
+			return user;
+		}
+
+		return false;
 	}
 }
 

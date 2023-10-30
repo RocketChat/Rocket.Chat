@@ -8,7 +8,6 @@ import {
 	Subscriptions,
 	LivechatDepartment as LivechatDepartmentRaw,
 	Rooms,
-	Users,
 } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -17,7 +16,6 @@ import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
-import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Analytics } from './Analytics';
 import { updateDepartmentAgents } from './Helper';
@@ -75,40 +73,6 @@ export const Livechat = {
 				Subscriptions.updateDisplayNameByRoomId(rid, name)
 			);
 		}
-	},
-
-	async addAgent(username) {
-		check(username, String);
-
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
-
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:addAgent' });
-		}
-
-		if (await addUserRolesAsync(user._id, ['livechat-agent'])) {
-			return this.afterAgentAdded(user);
-		}
-
-		return false;
-	},
-
-	async addManager(username) {
-		check(username, String);
-
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
-
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'livechat:addManager',
-			});
-		}
-
-		if (await addUserRolesAsync(user._id, ['livechat-manager'])) {
-			return user;
-		}
-
-		return false;
 	},
 
 	async saveDepartmentAgents(_id, departmentAgents) {
