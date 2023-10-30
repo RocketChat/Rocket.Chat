@@ -17,7 +17,20 @@ import { useRoom } from '../../views/room/contexts/RoomContext';
 import { useFilesList } from '../../views/room/contextualBar/RoomFiles/hooks/useFilesList';
 
 const swiperStyle = css`
+	.swiper {
+		width: 100%;
+		height: 100%;
+	}
 	.swiper-container {
+		position: absolute;
+		z-index: 99;
+		top: 0;
+
+		overflow: hidden;
+
+		width: 100%;
+		height: 100%;
+
 		background-color: var(--rcx-color-surface-overlay, rgba(0, 0, 0, 0.6));
 	}
 
