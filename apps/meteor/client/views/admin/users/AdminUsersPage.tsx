@@ -28,7 +28,8 @@ const UsersPage = (): ReactElement => {
 	const canCreateUser = usePermission('create-user');
 	const canBulkCreateUser = usePermission('bulk-register-user');
 
-	const [tab, setTab] = useState<'all' | 'invited' | 'new' | 'active' | 'deactivated'>('all');
+	const [tab, setTab] = useState<'all' | 'invited' | 'active' | 'deactivated' | 'pending'>('all');
+	const [pendingActionsCount, setPendingActionsCount] = useState<number>(0);
 	const [createdUsersCount, setCreatedUsersCount] = useState(0);
 
 	useEffect(() => {
@@ -67,25 +68,25 @@ const UsersPage = (): ReactElement => {
 						</ButtonGroup>
 					)}
 				</PageHeader>
-				<Tabs>
-					<TabsItem selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
-						{t('All')}
-					</TabsItem>
-					<TabsItem selected={tab === 'invited'} onClick={() => setTab('invited')}>
-						{t('Invited')}
-					</TabsItem>
-					<TabsItem selected={tab === 'new'} onClick={() => setTab('new')}>
-						{t('New_users')}
-					</TabsItem>
-					<TabsItem selected={tab === 'active'} onClick={() => setTab('active')}>
-						{t('Active')}
-					</TabsItem>
-					<TabsItem selected={tab === 'deactivated'} onClick={() => setTab('deactivated')}>
-						{t('Deactivated')}
-					</TabsItem>
-				</Tabs>
 				<PageContent>
-					<UsersTable reload={reload} tab={tab} onReload={handleReload} />
+					<Tabs>
+						<TabsItem selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
+							{t('All')}
+						</TabsItem>
+						<TabsItem selected={tab === 'pending'} onClick={() => setTab('pending')}>
+							{pendingActionsCount === 0 ? t('Pending') : `${t('Pending')} (${pendingActionsCount})`}
+						</TabsItem>
+						<TabsItem selected={tab === 'active'} onClick={() => setTab('active')}>
+							{t('Active')}
+						</TabsItem>
+						<TabsItem selected={tab === 'deactivated'} onClick={() => setTab('deactivated')}>
+							{t('Deactivated')}
+						</TabsItem>
+						<TabsItem selected={tab === 'invited'} onClick={() => setTab('invited')}>
+							{t('Invited')}
+						</TabsItem>
+					</Tabs>
+					<UsersTable reload={reload} tab={tab} onReload={handleReload} setPendingActionsCount={setPendingActionsCount} />
 				</PageContent>
 			</Page>
 			{context && (

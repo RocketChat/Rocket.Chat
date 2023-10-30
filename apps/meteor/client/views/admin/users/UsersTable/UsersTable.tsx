@@ -16,17 +16,20 @@ import {
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useFilterActiveUsers } from '../hooks/useFilterActiveUsers';
+import { useFilterPendingUsers } from '../hooks/useFilterPendingUsers';
 import { useListUsers } from '../hooks/useListUsers';
 import UsersTableRow from './UsersTableRow';
+
+// TODO: remove bots from pending users + add "resend email" function
 
 type UsersTableProps = {
 	reload: MutableRefObject<() => void>;
 	tab: string;
 	onReload: () => void;
+	setPendingActionsCount: React.Dispatch<React.SetStateAction<number>>;
 };
 
-// TODO: Missing error state
-const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | null => {
+const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const router = useRouter();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -47,11 +50,12 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 		sortDirection,
 		itemsPerPage,
 		current,
+		setPendingActionsCount,
 	);
 
 	const useAllUsers = () => (tab === 'all' && isSuccess ? data?.users : []);
 
-	const filteredUsers = [...useAllUsers(), ...useFilterActiveUsers(data?.users, tab)];
+	const filteredUsers = [...useAllUsers(), ...useFilterActiveUsers(data?.users, tab), ...useFilterPendingUsers(data?.users, tab)];
 
 	useEffect(() => {
 		reload.current = refetch;
@@ -128,7 +132,12 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 					{t('Registration_status')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell key='actions' w='x44' />,
+			tab === 'pending' && (
+				<GenericTableHeaderCell w='x88' key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+					{t('Pending_action')}
+				</GenericTableHeaderCell>
+			),
+			<GenericTableHeaderCell key='actions' w='x176' />,
 		],
 		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
 	);
@@ -136,13 +145,27 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 	return (
 		<>
 			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
+
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && !!data && !!filteredUsers && data.count > 0 && (
+
+			{isError && (
+				<States>
+					<StatesIcon name='warning' variation='danger' />
+					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+					<StatesActions>
+						<StatesAction onClick={() => refetch()}>{t('Reload_page')}</StatesAction>
+					</StatesActions>
+				</States>
+			)}
+
+			{isSuccess && filteredUsers.length === 0 && <GenericNoResults />}
+
+			{isSuccess && !!data && !!filteredUsers && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
@@ -170,16 +193,6 @@ const UsersTable = ({ reload, tab, onReload }: UsersTableProps): ReactElement | 
 						{...paginationProps}
 					/>
 				</>
-			)}
-			{isSuccess && data?.count === 0 && <GenericNoResults />}
-			{isError && (
-				<States>
-					<StatesIcon name='warning' variation='danger' />
-					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
-					<StatesActions>
-						<StatesAction onClick={() => refetch()}>{t('Reload_page')}</StatesAction>
-					</StatesActions>
-				</States>
 			)}
 		</>
 	);

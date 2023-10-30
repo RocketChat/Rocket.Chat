@@ -1,6 +1,6 @@
 import { UserStatus as Status, isUserFederated } from '@rocket.chat/core-typings';
 import type { IRole, IUser } from '@rocket.chat/core-typings';
-import { Box, Menu, Option } from '@rocket.chat/fuselage';
+import { Box, Button, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { useQuery } from '@tanstack/react-query';
@@ -11,6 +11,7 @@ import { Roles } from '../../../../../app/models/client';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { UserStatus } from '../../../../components/UserStatus';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { dispatchToastMessage } from '../../../../lib/toast';
 import { useChangeAdminStatusAction } from '../hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
@@ -53,18 +54,21 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
 
 	const menuOptions = {
-		...(changeAdminStatusAction &&
+		...(tab !== 'pending' &&
+			changeAdminStatusAction &&
 			!isFederatedUser && {
 				makeAdmin: {
 					label: { label: changeAdminStatusAction.label, icon: changeAdminStatusAction.icon },
 					action: changeAdminStatusAction.action,
 				},
 			}),
-		...(resetE2EKeyAction &&
+		...(tab !== 'pending' &&
+			resetE2EKeyAction &&
 			!isFederatedUser && {
 				resetE2EKey: { label: { label: resetE2EKeyAction.label, icon: resetE2EKeyAction.icon }, action: resetE2EKeyAction.action },
 			}),
-		...(resetTOTPAction &&
+		...(tab !== 'pending' &&
+			resetTOTPAction &&
 			!isFederatedUser && {
 				resetTOTP: { label: { label: resetTOTPAction.label, icon: resetTOTPAction.icon }, action: resetTOTPAction.action },
 			}),
@@ -78,6 +82,28 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 		...(deleteUserAction && {
 			delete: { label: { label: deleteUserAction.label, icon: deleteUserAction.icon }, action: deleteUserAction.action },
 		}),
+	};
+
+	// TODO: create action for this?
+	// TODO: implement logic
+	const handleResendWelcomeEmail = () => {
+		console.log('Welcome email resent');
+		dispatchToastMessage({ type: 'success', message: t('Welcome_email_resent') });
+	};
+
+	const checkPendingButton = (): ReactElement => {
+		if (active) {
+			return (
+				<Button small secondary mie={8} onClick={handleResendWelcomeEmail}>
+					{t('Resend_welcome_email')}
+				</Button>
+			);
+		}
+		return (
+			<Button small primary mie={8} onClick={changeUserStatusAction?.action}>
+				{t('Activate')}
+			</Button>
+		);
 	};
 
 	return (
@@ -125,6 +151,14 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 					{registrationStatusText}
 				</GenericTableCell>
 			)}
+			{tab === 'pending' && (
+				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+					<Box display='flex' flexDirection='row' alignContent='flex-end'>
+						{active ? t('User_first_log_in') : t('Activation')}
+					</Box>
+				</GenericTableCell>
+			)}
+
 			<GenericTableCell
 				display='flex'
 				justifyContent='flex-end'
@@ -132,6 +166,8 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 					e.stopPropagation();
 				}}
 			>
+				{tab === 'pending' && checkPendingButton()}
+
 				<Menu
 					mi={4}
 					placement='bottom-start'
