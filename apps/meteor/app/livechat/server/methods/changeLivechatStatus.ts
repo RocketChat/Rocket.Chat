@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { Livechat } from '../lib/Livechat';
 import { Livechat as LivechatTS } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -60,7 +59,7 @@ Meteor.methods<ServerMethods>({
 					method: 'livechat:changeLivechatStatus',
 				});
 			}
-			return Livechat.setUserStatusLivechat(agentId, newStatus);
+			return LivechatTS.setUserStatusLivechat(agentId, newStatus);
 		}
 
 		if (!(await LivechatTS.allowAgentChangeServiceStatus(newStatus, agentId))) {
@@ -69,6 +68,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return Livechat.setUserStatusLivechat(agentId, newStatus);
+		return LivechatTS.setUserStatusLivechat(agentId, newStatus);
 	},
 });

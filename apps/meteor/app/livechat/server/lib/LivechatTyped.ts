@@ -1642,6 +1642,12 @@ class LivechatClass {
 		await LivechatInquiry.updateVisitorStatus(token, status);
 		await LivechatRooms.updateVisitorStatus(token, status);
 	}
+
+	async setUserStatusLivechat(userId: string, status: ILivechatAgentStatus) {
+		const user = await Users.setLivechatStatus(userId, status);
+		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
+		return user;
+	}
 }
 
 export const Livechat = new LivechatClass();

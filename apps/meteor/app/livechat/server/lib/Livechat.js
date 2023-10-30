@@ -120,12 +120,6 @@ export const Livechat = {
 		return false;
 	},
 
-	async setUserStatusLivechat(userId, status) {
-		const user = await Users.setLivechatStatus(userId, status);
-		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
-		return user;
-	},
-
 	async saveDepartmentAgents(_id, departmentAgents) {
 		check(_id, String);
 		check(departmentAgents, {
