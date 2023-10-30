@@ -13,7 +13,6 @@ const FederationVerifyMatrixIdPropsSchema = {
 			type: 'array',
 			items: { type: 'string' },
 			uniqueItems: true,
-			additionalItems: false,
 			minItems: 1,
 			maxItems: 15,
 		},
