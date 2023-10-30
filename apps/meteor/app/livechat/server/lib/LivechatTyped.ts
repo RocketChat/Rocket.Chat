@@ -1728,6 +1728,67 @@ class LivechatClass {
 
 		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
 	}
+
+	async saveRoomInfo(
+		roomData: {
+			_id: string;
+			topic?: string;
+			tags?: string[];
+			livechatData?: { [k: string]: string };
+			// For priority and SLA, if the value is blank (ie ""), then system will remove the priority or SLA from the room
+			priorityId?: string;
+			slaId?: string;
+		},
+		guestData?: {
+			_id: string;
+			name?: string;
+			email?: string;
+			phone?: string;
+			livechatData?: { [k: string]: string };
+		},
+		userId?: string,
+	) {
+		this.logger.debug(`Saving room information on room ${roomData._id}`);
+		const { livechatData = {} } = roomData;
+		const customFields: Record<string, string> = {};
+
+		if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
+			const fields = LivechatCustomField.findByScope('room');
+			for await (const field of fields) {
+				if (!livechatData.hasOwnProperty(field._id)) {
+					continue;
+				}
+				const value = trim(livechatData[field._id]);
+				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
+					const regexp = new RegExp(field.regexp);
+					if (!regexp.test(value)) {
+						throw new Meteor.Error(i18n.t('error-invalid-custom-field-value', { field: field.label }));
+					}
+				}
+				customFields[field._id] = value;
+			}
+			roomData.livechatData = customFields;
+			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields on room ${roomData._id}`);
+		}
+
+		await LivechatRooms.saveRoomById(roomData);
+
+		setImmediate(() => {
+			void Apps.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
+		});
+
+		if (guestData?.name?.trim().length) {
+			const { _id: rid } = roomData;
+			const { name } = guestData;
+			return (
+				(await Rooms.setFnameById(rid, name)) &&
+				(await LivechatInquiry.setNameByRoomId(rid, name)) &&
+				// This one needs to be the last since the agent may not have the subscription
+				// when the conversation is in the queue, then the result will be 0(zero)
+				Subscriptions.updateDisplayNameByRoomId(rid, name)
+			);
+		}
+	}
 }
 
 export const Livechat = new LivechatClass();
