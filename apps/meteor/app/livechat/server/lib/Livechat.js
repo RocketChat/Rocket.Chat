@@ -21,7 +21,6 @@ import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Analytics } from './Analytics';
 import { updateDepartmentAgents } from './Helper';
-import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('Livechat');
 
@@ -156,10 +155,5 @@ export const Livechat = {
 		}
 
 		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
-	},
-
-	showConnecting() {
-		const { showConnecting } = RoutingManager.getConfig();
-		return showConnecting;
 	},
 };
