@@ -52,8 +52,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		await updateSetting('Livechat_allow_manual_on_hold', false);
 		await updateSetting('Livechat_allow_manual_on_hold_upon_agent_engagement_only', true);
 	});
-
-	describe.only('livechat/room.onHold', () => {
+	describe('livechat/room.onHold', () => {
 		it('should fail if user doesnt have on-hold-livechat-room permission', async () => {
 			await updatePermission('on-hold-livechat-room', []);
 			const response = await request
