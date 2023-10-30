@@ -9,6 +9,7 @@ import { ImporterInfo } from '../../lib/ImporterInfo';
 import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterProgressStep';
 import { ImportDataConverter } from './ImportDataConverter';
 import { Progress } from './ImporterProgress';
+import { SelectionMessage } from './ImporterSelectionMessage';
 import { ImporterWebsocket } from './ImporterWebsocket';
 
 /**
@@ -344,6 +345,7 @@ export class Base {
 
 		const users = await ImportData.getAllUsersForSelection();
 		const channels = await ImportData.getAllChannelsForSelection();
+		const messages = await ImportData.getAllMessages().toArray();
 		const hasDM = await ImportData.checkIfDirectMessagesExists();
 
 		const selectionUsers = users.map(
@@ -362,13 +364,17 @@ export class Base {
 					c.data.t === 'd',
 				),
 		);
-		const selectionMessages = await ImportData.countMessages();
+
+		const selectionMessages = messages.map((m) => new SelectionMessage(m._id, m.data.rid, m.data.u));
+
+		const selectionMessagesCount = await ImportData.countMessages();
+		// In the future, iterate the cursor?
 
 		if (hasDM) {
 			selectionChannels.push(new SelectionChannel('__directMessages__', t('Direct_Messages'), false, true, true, undefined, true));
 		}
 
-		const results = new Selection(this.info.name, selectionUsers, selectionChannels, selectionMessages);
+		const results = new Selection(this.info.name, selectionUsers, selectionChannels, selectionMessages, selectionMessagesCount);
 
 		return results;
 	}

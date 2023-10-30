@@ -71,9 +71,6 @@ function PrepareImportPage() {
 			try {
 				const data = await waitFor(getImportFileData, (data) => data && !data.waiting);
 
-				// TODO: remove!!!!!!!!!!!!
-				console.log(data);
-
 				if (!data) {
 					handleError(t('Importer_not_setup'));
 					router.navigate('/admin/import');
@@ -224,6 +221,7 @@ function PrepareImportPage() {
 						{!isPreparing && tab === 'channels' && (
 							<PrepareChannels channels={channels} channelsCount={channelsCount} setChannels={setChannels} />
 						)}
+						{console.log(messages)}
 						{useMessagesCount(users, channels, messages, setMessageCount)}
 					</Margins>
 				</Box>
