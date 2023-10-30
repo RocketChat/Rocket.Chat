@@ -17,10 +17,9 @@ import type {
 	TransferData,
 	MessageAttachment,
 	IMessageInbox,
-	ILivechatAgentStatus,
 	IOmnichannelAgent,
 } from '@rocket.chat/core-typings';
-import { UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
@@ -58,6 +57,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
+import { businessHourManager } from '../business-hour';
 import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -1628,6 +1628,14 @@ class LivechatClass {
 		}
 
 		return postData;
+	}
+
+	async allowAgentChangeServiceStatus(statusLivechat: ILivechatAgentStatus, agentId: string) {
+		if (statusLivechat !== ILivechatAgentStatus.AVAILABLE) {
+			return true;
+		}
+
+		return businessHourManager.allowAgentChangeServiceStatus(agentId);
 	}
 }
 

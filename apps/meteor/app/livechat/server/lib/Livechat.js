@@ -20,7 +20,6 @@ import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import * as Mailer from '../../../mailer/server/api';
-import { businessHourManager } from '../business-hour';
 import { Analytics } from './Analytics';
 import { updateDepartmentAgents } from './Helper';
 import { RoutingManager } from './RoutingManager';
@@ -178,13 +177,5 @@ export const Livechat = {
 	async notifyGuestStatusChanged(token, status) {
 		await LivechatInquiry.updateVisitorStatus(token, status);
 		await LivechatRooms.updateVisitorStatus(token, status);
-	},
-
-	async allowAgentChangeServiceStatus(statusLivechat, agentId) {
-		if (statusLivechat !== 'available') {
-			return true;
-		}
-
-		return businessHourManager.allowAgentChangeServiceStatus(agentId);
 	},
 };

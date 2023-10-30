@@ -95,7 +95,7 @@ API.v1.addRoute(
 				return API.v1.success({ status: agent.statusLivechat });
 			}
 
-			const canChangeStatus = await Livechat.allowAgentChangeServiceStatus(newStatus, agentId);
+			const canChangeStatus = await LivechatTyped.allowAgentChangeServiceStatus(newStatus, agentId);
 
 			if (agentId !== this.userId) {
 				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {
