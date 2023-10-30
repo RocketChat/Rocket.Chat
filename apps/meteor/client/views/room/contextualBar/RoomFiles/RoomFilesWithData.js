@@ -3,8 +3,6 @@ import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useTranslat
 import React, { useState, useCallback, useMemo } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
-import ImageGallery from '../../../../components/ImageGallery/ImageGallery';
-import { useImageGallery } from '../../../../components/ImageGallery/hooks/useImageGallery';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useRoom } from '../../contexts/RoomContext';
@@ -22,7 +20,6 @@ const RoomFilesWithData = () => {
 	const closeModal = useMutableCallback(() => setModal());
 	const dispatchToastMessage = useToastMessageDispatch();
 	const deleteFile = useMethod('deleteFileMessage');
-	const { isOpen, ...imageGalleryProps } = useImageGallery(room._id, 'rcx-avatar__element', 'rcx-verticalbar__content');
 
 	const [type, setType] = useLocalStorage('file-list-type', 'all');
 	const [text, setText] = useState('');
@@ -56,23 +53,20 @@ const RoomFilesWithData = () => {
 	const isDeletionAllowed = useMessageDeletionIsAllowed(room._id, uid);
 
 	return (
-		<>
-			{isOpen && <ImageGallery {...imageGalleryProps} />}
-			<RoomFiles
-				rid={room._id}
-				loading={phase === AsyncStatePhase.LOADING}
-				type={type}
-				text={text}
-				loadMoreItems={loadMoreItems}
-				setType={setType}
-				setText={handleTextChange}
-				filesItems={filesItems}
-				total={totalItemCount}
-				onClickClose={closeTab}
-				onClickDelete={handleDelete}
-				isDeletionAllowed={isDeletionAllowed}
-			/>
-		</>
+		<RoomFiles
+			rid={room._id}
+			loading={phase === AsyncStatePhase.LOADING}
+			type={type}
+			text={text}
+			loadMoreItems={loadMoreItems}
+			setType={setType}
+			setText={handleTextChange}
+			filesItems={filesItems}
+			total={totalItemCount}
+			onClickClose={closeTab}
+			onClickDelete={handleDelete}
+			isDeletionAllowed={isDeletionAllowed}
+		/>
 	);
 };
 

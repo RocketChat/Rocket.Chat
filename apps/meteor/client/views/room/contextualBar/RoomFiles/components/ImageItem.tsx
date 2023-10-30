@@ -9,9 +9,9 @@ type ImageItemProps = {
 };
 const ImageItem = ({ url, name, timestamp, username }: ImageItemProps) => {
 	return (
-		<Box minWidth={0} className='gallery-item' title={name} display='flex' flexGrow={1} flexShrink={1}>
+		<Box minWidth={0} className='gallery-item-container' title={name} display='flex' flexGrow={1} flexShrink={1}>
 			{url && <Avatar size='x48' url={url} className='gallery-item' />}
-			<Box mis={8} flexShrink={1} overflow='hidden' className='gallery-item'>
+			<Box mis={8} flexShrink={1} overflow='hidden' className='gallery-item' cursor='default'>
 				{name && (
 					<Box withTruncatedText color='default' fontScale='p2m' className='gallery-item'>
 						{name}

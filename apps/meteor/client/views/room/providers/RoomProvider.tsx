@@ -6,12 +6,11 @@ import React, { useMemo, memo, useEffect, useCallback } from 'react';
 import { ChatSubscription } from '../../../../app/models/client';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
-import ImageGallery from '../../../components/ImageGallery';
-import { useImageGallery } from '../../../components/ImageGallery/hooks/useImageGallery';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
 import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
 import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
@@ -104,8 +103,6 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		};
 	}, [rid, subscribed]);
 
-	const { isOpen, ...imageGalleryProps } = useImageGallery(rid);
-
 	if (!pseudoRoom) {
 		return isSuccess && !room ? <RoomNotFound /> : <RoomSkeleton />;
 	}
@@ -113,8 +110,9 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	return (
 		<RoomContext.Provider value={context}>
 			<RoomToolboxProvider>
-				{isOpen && <ImageGallery {...imageGalleryProps} />}
-				<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+				<ImageGalleryProvider>
+					<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+				</ImageGalleryProvider>
 			</RoomToolboxProvider>
 		</RoomContext.Provider>
 	);

@@ -13,6 +13,7 @@ import 'swiper/modules/keyboard/keyboard.min.css';
 import 'swiper/modules/zoom/zoom.min.css';
 
 import ImageGalleryLoader from './ImageGalleryLoader';
+import { useImageGallery } from './hooks/useImageGallery';
 
 const swiperStyle = css`
 	.swiper {
@@ -83,19 +84,14 @@ const swiperStyle = css`
 	}
 `;
 
-type ImageGalleryProps = {
-	images: string[];
-	isLoading: boolean;
-	loadMore: () => void;
-	currentSlide: number | undefined;
-	onClose: () => void;
-};
-const ImageGallery = ({ images, isLoading, loadMore, currentSlide, onClose }: ImageGalleryProps) => {
+const ImageGallery = () => {
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();
 
+	const { isLoading, currentSlide, loadMore, images, onClose } = useImageGallery();
+
 	if (isLoading) {
-		return <ImageGalleryLoader />;
+		return <ImageGalleryLoader onClose={onClose} />;
 	}
 
 	return createPortal(
