@@ -7,18 +7,18 @@ import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { hasAtLeastOnePermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
-import { Livechat } from '../../../server/lib/Livechat';
+import { Livechat as LivechatJS } from '../../../server/lib/Livechat';
+import { Livechat } from '../../../server/lib/LivechatTyped';
+
+const emptyStringArray: string[] = [];
 
 API.v1.addRoute(
 	'livechat/users/:type',
 	{
 		authRequired: true,
 		permissionsRequired: {
-			GET: {
-				permissions: ['manage-livechat-agents'],
-				operation: 'hasAll',
-			},
-			POST: { permissions: ['view-livechat-manager'], operation: 'hasAll' },
+			'POST': ['view-livechat-manager'],
+			'*': emptyStringArray,
 		},
 		validateParams: {
 			GET: isLivechatUsersManagerGETProps,
@@ -39,9 +39,13 @@ API.v1.addRoute(
 					return API.v1.unauthorized();
 				}
 
+				const { onlyAvailable, excludeId, showIdleAgents } = this.queryParams;
 				return API.v1.success(
 					await findAgents({
 						text,
+						onlyAvailable,
+						excludeId,
+						showIdleAgents,
 						pagination: {
 							offset,
 							count,
@@ -70,12 +74,12 @@ API.v1.addRoute(
 		},
 		async post() {
 			if (this.urlParams.type === 'agent') {
-				const user = await Livechat.addAgent(this.bodyParams.username);
+				const user = await LivechatJS.addAgent(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
 				}
 			} else if (this.urlParams.type === 'manager') {
-				const user = await Livechat.addManager(this.bodyParams.username);
+				const user = await LivechatJS.addManager(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
 				}
@@ -122,7 +126,7 @@ API.v1.addRoute(
 		async delete() {
 			const user = await Users.findOneById(this.urlParams._id);
 
-			if (!user) {
+			if (!user?.username) {
 				return API.v1.failure();
 			}
 

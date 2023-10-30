@@ -1,5 +1,3 @@
-import { BlockType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
-import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Objects';
 import type { IBanner } from '@rocket.chat/core-typings';
 import { BannerPlatform } from '@rocket.chat/core-typings';
 import moment from 'moment';
@@ -27,10 +25,10 @@ export const getBannerForAdmins = (expireAt: Date): Omit<IBanner, '_id'> => {
 			appId: '',
 			blocks: [
 				{
-					type: BlockType.SECTION,
+					type: 'section',
 					blockId: 'attention',
 					text: {
-						type: TextObjectType.PLAINTEXT,
+						type: 'plain_text',
 						text: i18n.t('NPS_survey_is_scheduled_to-run-at__date__for_all_users', {
 							date: moment(expireAt).format('YYYY-MM-DD'),
 							lng,

@@ -12,7 +12,7 @@ import type { LicenseEvents } from './definition/events';
 import { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
 import { InvalidLicenseError } from './errors/InvalidLicenseError';
 import { NotReadyForValidation } from './errors/NotReadyForValidation';
-import { behaviorTriggered, licenseInvalidated, licenseValidated } from './events/emitter';
+import { behaviorTriggered, behaviorTriggeredToggled, licenseInvalidated, licenseValidated } from './events/emitter';
 import { logger } from './logger';
 import { getModules, invalidateAll, replaceModules } from './modules';
 import { applyPendingLicense, clearPendingLicense, hasPendingLicense, isPendingLicense, setPendingLicense } from './pendingLicense';
@@ -27,6 +27,7 @@ import { isBehaviorsInResult } from './validation/isBehaviorsInResult';
 import { isReadyForValidation } from './validation/isReadyForValidation';
 import { runValidation } from './validation/runValidation';
 import { validateFormat } from './validation/validateFormat';
+import { validateLicenseLimits } from './validation/validateLicenseLimits';
 
 const globalLimitKinds: LicenseLimitKind[] = ['activeUsers', 'guestUsers', 'privateApps', 'marketplaceApps', 'monthlyActiveContacts'];
 
@@ -48,6 +49,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 	private _valid: boolean | undefined;
 
 	private _lockedLicense: string | undefined;
+
+	public shouldPreventActionResults = new Map<LicenseLimitKind, boolean>();
 
 	constructor() {
 		super();
@@ -93,7 +96,27 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		}
 
 		try {
-			await this.validateLicense({ ...options, isNewLicense: false });
+			await this.validateLicense({ ...options, isNewLicense: false, triggerSync: true });
+		} catch (e) {
+			if (e instanceof InvalidLicenseError) {
+				this.invalidateLicense();
+				this.emit('sync');
+			}
+		}
+	}
+
+	/**
+	 * The sync method should be called when a license from a different instance is has changed, so the local instance
+	 * needs to be updated. This method will validate the license and update the local instance if the license is valid, but will not trigger the onSync event.
+	 */
+
+	public async sync(options: Omit<LicenseValidationOptions, 'isNewLicense'> = {}): Promise<void> {
+		if (!this.hasValidLicense()) {
+			return;
+		}
+
+		try {
+			await this.validateLicense({ ...options, isNewLicense: false, triggerSync: false });
 		} catch (e) {
 			if (e instanceof InvalidLicenseError) {
 				this.invalidateLicense();
@@ -106,6 +129,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		this._unmodifiedLicense = undefined;
 		this._valid = false;
 		this._lockedLicense = undefined;
+
+		this.shouldPreventActionResults.clear();
 		clearPendingLicense.call(this);
 	}
 
@@ -148,7 +173,11 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		return Boolean(this._lockedLicense && this._lockedLicense === encryptedLicense);
 	}
 
-	private async validateLicense(options: LicenseValidationOptions = {}): Promise<void> {
+	private async validateLicense(
+		options: LicenseValidationOptions = {
+			triggerSync: true,
+		},
+	): Promise<void> {
 		if (!this._license) {
 			throw new InvalidLicenseError();
 		}
@@ -191,6 +220,16 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		}
 
 		licenseValidated.call(this);
+
+		// If something changed in the license and the sync option is enabled, trigger a sync
+		if (
+			((!options.isNewLicense &&
+				filterBehaviorsResult(validationResult, ['invalidate_license', 'start_fair_policy', 'prevent_installation'])) ||
+				modulesChanged) &&
+			options.triggerSync
+		) {
+			this.emit('sync');
+		}
 	}
 
 	public async setLicense(encryptedLicense: string, isNewLicense = true): Promise<boolean> {
@@ -243,6 +282,12 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		}
 	}
 
+	private triggerBehaviorEventsToggled(validationResult: BehaviorWithContext[]): void {
+		for (const { ...options } of validationResult) {
+			behaviorTriggeredToggled.call(this, { ...options });
+		}
+	}
+
 	public hasValidLicense(): boolean {
 		return Boolean(this.getLicense());
 	}
@@ -251,6 +296,51 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		if (this._valid && this._license) {
 			return this._license;
 		}
+	}
+
+	public syncShouldPreventActionResults(actions: Record<LicenseLimitKind, boolean>): void {
+		for (const [action, shouldPreventAction] of Object.entries(actions)) {
+			this.shouldPreventActionResults.set(action as LicenseLimitKind, shouldPreventAction);
+		}
+	}
+
+	public async shouldPreventActionResultsMap(): Promise<{
+		[key in LicenseLimitKind]: boolean;
+	}> {
+		const keys: LicenseLimitKind[] = [
+			'activeUsers',
+			'guestUsers',
+			'roomsPerGuest',
+			'privateApps',
+			'marketplaceApps',
+			'monthlyActiveContacts',
+		];
+
+		const items = await Promise.all(
+			keys.map(async (limit) => {
+				const cached = this.shouldPreventActionResults.get(limit as LicenseLimitKind);
+
+				if (cached !== undefined) {
+					return [limit as LicenseLimitKind, cached];
+				}
+
+				const fresh = this._license
+					? isBehaviorsInResult(
+							await validateLicenseLimits.call(this, this._license, {
+								behaviors: ['prevent_action'],
+								limits: [limit],
+							}),
+							['prevent_action'],
+					  )
+					: false;
+
+				this.shouldPreventActionResults.set(limit as LicenseLimitKind, fresh);
+
+				return [limit as LicenseLimitKind, fresh];
+			}),
+		);
+
+		return Object.fromEntries(items);
 	}
 
 	public async shouldPreventAction<T extends LicenseLimitKind>(
@@ -268,6 +358,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			...(extraCount && { behaviors: ['prevent_action'] }),
 			isNewLicense: false,
 			suppressLog: !!suppressLog,
+			limits: [action],
 			context: {
 				[action]: {
 					extraCount,
@@ -278,18 +369,37 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 		const validationResult = await runValidation.call(this, license, options);
 
+		const shouldPreventAction = isBehaviorsInResult(validationResult, ['prevent_action']);
+
 		// extra values should not call events since they are not actually reaching the limit just checking if they would
 		if (extraCount) {
-			return isBehaviorsInResult(validationResult, ['prevent_action']);
+			return shouldPreventAction;
 		}
 
 		if (isBehaviorsInResult(validationResult, ['invalidate_license', 'disable_modules', 'start_fair_policy'])) {
 			await this.revalidateLicense();
 		}
 
-		this.triggerBehaviorEvents(filterBehaviorsResult(validationResult, ['prevent_action']));
+		const eventsToEmit = shouldPreventAction
+			? filterBehaviorsResult(validationResult, ['prevent_action'])
+			: [
+					{
+						behavior: 'allow_action',
+						modules: [],
+						reason: 'limit',
+						limit: action,
+					} as BehaviorWithContext,
+			  ];
 
-		return isBehaviorsInResult(validationResult, ['prevent_action']);
+		if (this.shouldPreventActionResults.get(action) !== shouldPreventAction) {
+			this.shouldPreventActionResults.set(action, shouldPreventAction);
+
+			this.triggerBehaviorEventsToggled(eventsToEmit);
+		}
+
+		this.triggerBehaviorEvents(eventsToEmit);
+
+		return shouldPreventAction;
 	}
 
 	public async getInfo({
@@ -330,8 +440,10 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		return {
 			license: (includeLicense && license) || undefined,
 			activeModules,
+			preventedActions: await this.shouldPreventActionResultsMap(),
 			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
 			tags: license?.information.tags || [],
+			trial: Boolean(license?.information.trial),
 		};
 	}
 }

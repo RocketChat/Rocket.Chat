@@ -1,6 +1,9 @@
+import { api } from '@rocket.chat/core-services';
+import type { LicenseLimitKind } from '@rocket.chat/license';
 import { License } from '@rocket.chat/license';
-import { Subscriptions, Users, Settings } from '@rocket.chat/models';
+import { Subscriptions, Users, Settings, LivechatVisitors } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
+import moment from 'moment';
 
 import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorkspace';
 import { settings } from '../../../../app/settings/server';
@@ -93,6 +96,26 @@ settings.onReady(async () => {
 	License.onBehaviorTriggered('start_fair_policy', async (context) => syncByTrigger(`start_fair_policy_${context.limit}`));
 
 	License.onBehaviorTriggered('disable_modules', async (context) => syncByTrigger(`disable_modules_${context.limit}`));
+
+	License.onChange(() => api.broadcast('license.sync'));
+
+	License.onBehaviorToggled('prevent_action', (context) => {
+		if (!context.limit) {
+			return;
+		}
+		void api.broadcast('license.actions', {
+			[context.limit]: true,
+		} as Record<Partial<LicenseLimitKind>, boolean>);
+	});
+
+	License.onBehaviorToggled('allow_action', (context) => {
+		if (!context.limit) {
+			return;
+		}
+		void api.broadcast('license.actions', {
+			[context.limit]: false,
+		} as Record<Partial<LicenseLimitKind>, boolean>);
+	});
 });
 
 License.setLicenseLimitCounter('activeUsers', () => Users.getActiveLocalUserCount());
@@ -100,5 +123,4 @@ License.setLicenseLimitCounter('guestUsers', () => Users.getActiveLocalGuestCoun
 License.setLicenseLimitCounter('roomsPerGuest', async (context) => (context?.userId ? Subscriptions.countByUserId(context.userId) : 0));
 License.setLicenseLimitCounter('privateApps', () => getAppCount('private'));
 License.setLicenseLimitCounter('marketplaceApps', () => getAppCount('marketplace'));
-// #TODO: Get real value
-License.setLicenseLimitCounter('monthlyActiveContacts', async () => 0);
+License.setLicenseLimitCounter('monthlyActiveContacts', async () => LivechatVisitors.countVisitorsOnPeriod(moment.utc().format('YYYY-MM')));
