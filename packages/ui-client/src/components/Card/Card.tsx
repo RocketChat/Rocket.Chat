@@ -10,11 +10,21 @@ type IBackground = {
 
 type CardProps = {
 	background?: IBackground;
-	children?: ReactNode;
+	children: ReactNode;
 };
 
-const Card: FC<CardProps> = ({ children, background }) => (
-	<Box borderRadius='x8' p={20} height='full' display='flex' flexDirection='column' bg='light' color='default' style={{ ...background }}>
+const Card: FC<CardProps> = ({ background, children, ...props }) => (
+	<Box
+		borderRadius='x8'
+		p={20}
+		height='full'
+		display='flex'
+		flexDirection='column'
+		bg='light'
+		color='default'
+		style={{ ...background }}
+		{...props}
+	>
 		{children}
 	</Box>
 );
