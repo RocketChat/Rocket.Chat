@@ -10,8 +10,8 @@ import { UiKitTriggerTimeoutError } from '../../app/ui-message/client/UiKitTrigg
 import type { MessageActionConfig, MessageActionContext } from '../../app/ui-utils/client/lib/MessageAction';
 import type { MessageBoxAction } from '../../app/ui-utils/client/lib/messageBox';
 import { Utilities } from '../../ee/lib/misc/Utilities';
-import { useUiKitActionManager } from '../UIKit/hooks/useUiKitActionManager';
 import type { GenericMenuItemProps } from '../components/GenericMenu/GenericMenuItem';
+import { useUiKitActionManager } from '../uikit/hooks/useUiKitActionManager';
 import { useApplyButtonFilters, useApplyButtonAuthFilter } from './useApplyButtonFilters';
 
 const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
