@@ -167,9 +167,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(updatedRoom.onHold).to.be.true;
 		});
 		it('Should put room on hold, even in the visitor sent the last message', async () => {
-			const { room } = await startANewLivechatRoomAndTakeIt();
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt();
 			await updateSetting('Livechat_allow_manual_on_hold_upon_agent_engagement_only', false);
-			const visitor = await createVisitor();
 			await sendMessage(room._id, '-', visitor.token);
 			const response = await request
 				.post(api('livechat/room.onHold'))
@@ -183,9 +182,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(updatedRoom.onHold).to.be.true;
 		});
 		it('should not put room on hold when visitor sent the last message', async () => {
-			const { room } = await startANewLivechatRoomAndTakeIt();
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt();
 			await updateSetting('Livechat_allow_manual_on_hold_upon_agent_engagement_only', true);
-			const visitor = await createVisitor();
 			await sendMessage(room._id, '-', visitor.token);
 			const response = await request
 				.post(api('livechat/room.onHold'))
