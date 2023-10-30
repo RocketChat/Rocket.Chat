@@ -12,7 +12,6 @@ const Display = ({ elementIndex }: { elementIndex: number }) => {
     const {
       doc: { payload },
     } = state;
-    // @ts-ignore
     payload.splice(elementIndex, 1);
     dispatch(docAction({ payload: [...payload], changedByEditor: false }));
   };

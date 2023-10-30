@@ -12,7 +12,6 @@ export const useAppUiKitInteraction = (handleServerInteraction: (interaction: Ui
 		}
 
 		return notifyUser(`${uid}/uiInteraction`, (interaction) => {
-			// @ts-ignore
 			handleServerInteraction(interaction);
 		});
 	}, [notifyUser, uid, handleServerInteraction]);

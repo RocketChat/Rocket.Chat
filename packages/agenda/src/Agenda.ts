@@ -63,13 +63,10 @@ export class Agenda extends EventEmitter {
 
 	private _defaultLockLifetime: number;
 
-	// @ts-ignore
 	private _db: MongoClient;
 
-	// @ts-ignore
 	private _mdb: Db;
 
-	// @ts-ignore
 	private _collection: Collection;
 
 	private _definitions: Record<string, JobDefinition> = {};
@@ -122,9 +119,7 @@ export class Agenda extends EventEmitter {
 
 		if (config.mongo) {
 			this.mongo(config.mongo, config.db ? config.db.collection : undefined, cb);
-			// @ts-ignore
 			if (config.mongo.s && config.mongo.topology && config.mongo.topology.s) {
-				// @ts-ignore
 				this._mongoUseUnifiedTopology = Boolean(config.mongo?.topology?.s?.options?.useUnifiedTopology);
 			}
 		} else if (config.db) {
@@ -602,7 +597,6 @@ export class Agenda extends EventEmitter {
 		debug('_findAndLockNextJob(%s, [Function])', jobName);
 
 		// Don't try and access MongoDB if we've lost connection to it.
-		// @ts-ignore
 		const s = this._mdb.s.client || this._mdb.db.s.client;
 		if (s.topology.connections && s.topology.connections().length === 0 && !this._mongoUseUnifiedTopology) {
 			if (s.topology.autoReconnect && !s.topology.isDestroyed()) {
