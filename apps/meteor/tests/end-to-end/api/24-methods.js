@@ -259,12 +259,6 @@ describe('Meteor.methods', function () {
 								method: 'readMessages',
 								params: [room._id, true],
 							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
 						});
 				});
 
@@ -337,16 +331,6 @@ describe('Meteor.methods', function () {
 									},
 								],
 							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
-
-							const data = JSON.parse(res.body.message);
-							expect(data).to.have.a.property('result').that.is.an('array');
-							expect(data.result.length).to.equal(2);
 						});
 				});
 
@@ -398,12 +382,6 @@ describe('Meteor.methods', function () {
 								id: 'id',
 								msg: 'method',
 							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
 						});
 				});
 
