@@ -2,6 +2,7 @@ import { usePermission, useRouter, useSetModal, useCurrentModal, useTranslation 
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
+import { getURL } from '../../../../../app/utils/client/getURL';
 import GenericUpsellModal from '../../../../../client/components/GenericUpsellModal';
 import { useUpsellActions } from '../../../../../client/components/GenericUpsellModal/hooks';
 import PageSkeleton from '../../../../../client/components/PageSkeleton';
@@ -32,7 +33,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 			setModal(
 				<GenericUpsellModal
 					title={t('Engagement_Dashboard')}
-					img='images/engagement.png'
+					img={getURL('images/engagement.png')}
 					subtitle={t('Analyze_practical_usage')}
 					description={t('Enrich_your_workspace')}
 					onClose={() => setModal(null)}
