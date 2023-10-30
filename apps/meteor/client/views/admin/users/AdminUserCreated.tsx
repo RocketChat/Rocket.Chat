@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, ContextualbarFooter } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, ContextualbarFooter, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
@@ -13,7 +13,12 @@ const AdminUserCreated = ({ uid, createdUsersCount }: { uid: string; createdUser
 	return (
 		<>
 			<ContextualbarScrollableContent h='100%' fontScale='p1m'>
-				{createdUsersCount === 1 ? t('You_have_created_one_user') : t('You_have_created_users', { count: createdUsersCount })}
+				<States>
+					<StatesIcon name='user' />
+					<StatesTitle>
+						{createdUsersCount === 1 ? t('You_have_created_one_user') : t('You_have_created_users', { count: createdUsersCount })}
+					</StatesTitle>
+				</States>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
