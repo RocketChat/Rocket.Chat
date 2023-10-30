@@ -18,11 +18,8 @@ const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContext
 
 const Room = (): ReactElement => {
 	const t = useTranslation();
-
 	const room = useRoom();
-
 	const toolbox = useRoomToolbox();
-
 	const contextualBarView = useAppsContextualBar();
 
 	return (
