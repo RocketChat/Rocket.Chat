@@ -13,8 +13,6 @@ const AdminUserCreated = ({ uid, createdUsersCount }: { uid: string; createdUser
 	return (
 		<>
 			<ContextualbarEmptyContent
-				h='100%'
-				fontScale='p1m'
 				icon='user'
 				title={createdUsersCount === 1 ? t('You_have_created_one_user') : t('You_have_created_users', { count: createdUsersCount })}
 			/>

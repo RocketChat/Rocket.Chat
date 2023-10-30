@@ -45,7 +45,7 @@ const AdminUserSetRandomPasswordRadios = ({
 					<Controller
 						control={control}
 						name='setRandomPassword'
-						defaultValue={isNewUserPage}
+						defaultValue={isSmtpEnabled && isNewUserPage}
 						render={({ field: { ref, onChange, value } }) => (
 							<RadioButton
 								ref={ref}

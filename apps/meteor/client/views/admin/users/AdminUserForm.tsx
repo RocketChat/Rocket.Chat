@@ -72,7 +72,7 @@ const getInitialValue = ({
 	nickname: data?.nickname ?? '',
 	email: (data?.emails?.length && data.emails[0].address) || '',
 	verified: (data?.emails?.length && data.emails[0].verified) || false,
-	setRandomPassword: (isNewUserPage && isSmtpEnabled) ?? true,
+	setRandomPassword: isNewUserPage && isSmtpEnabled,
 	requirePasswordChange: isNewUserPage && (data?.requirePasswordChange ?? true),
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
