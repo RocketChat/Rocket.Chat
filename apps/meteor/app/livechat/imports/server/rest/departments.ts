@@ -16,7 +16,6 @@ import {
 	findArchivedDepartments,
 } from '../../../server/api/lib/departments';
 import { DepartmentHelper } from '../../../server/lib/Departments';
-import { Livechat } from '../../../server/lib/Livechat';
 import { Livechat as LivechatTs } from '../../../server/lib/LivechatTyped';
 
 API.v1.addRoute(
@@ -128,7 +127,7 @@ API.v1.addRoute(
 			}
 
 			if (success && agents && permissionToAddAgents) {
-				success = Livechat.saveDepartmentAgents(_id, { upsert: agents });
+				success = LivechatTs.saveDepartmentAgents(_id, { upsert: agents });
 			}
 
 			if (success) {
@@ -277,7 +276,7 @@ API.v1.addRoute(
 					remove: Array,
 				}),
 			);
-			await Livechat.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
+			await LivechatTs.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
 
 			return API.v1.success();
 		},

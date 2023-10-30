@@ -1,15 +1,7 @@
 // Note: Please don't add any new methods to this file, since its still in js and we are migrating to ts
 // Please add new methods to LivechatTyped.ts
 import { Logger } from '@rocket.chat/logger';
-import {
-	LivechatCustomField,
-	LivechatRooms,
-	LivechatInquiry,
-	Subscriptions,
-	LivechatDepartment as LivechatDepartmentRaw,
-	Rooms,
-} from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
+import { LivechatCustomField, LivechatRooms, LivechatInquiry, Subscriptions, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { Apps, AppEvents } from '../../../../ee/server/apps';
@@ -18,7 +10,6 @@ import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Analytics } from './Analytics';
-import { updateDepartmentAgents } from './Helper';
 
 const logger = new Logger('Livechat');
 
@@ -73,36 +64,5 @@ export const Livechat = {
 				Subscriptions.updateDisplayNameByRoomId(rid, name)
 			);
 		}
-	},
-
-	async saveDepartmentAgents(_id, departmentAgents) {
-		check(_id, String);
-		check(departmentAgents, {
-			upsert: Match.Maybe([
-				Match.ObjectIncluding({
-					agentId: String,
-					username: String,
-					count: Match.Maybe(Match.Integer),
-					order: Match.Maybe(Match.Integer),
-				}),
-			]),
-			remove: Match.Maybe([
-				Match.ObjectIncluding({
-					agentId: String,
-					username: Match.Maybe(String),
-					count: Match.Maybe(Match.Integer),
-					order: Match.Maybe(Match.Integer),
-				}),
-			]),
-		});
-
-		const department = await LivechatDepartmentRaw.findOneById(_id);
-		if (!department) {
-			throw new Meteor.Error('error-department-not-found', 'Department not found', {
-				method: 'livechat:saveDepartmentAgents',
-			});
-		}
-
-		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
 	},
 };

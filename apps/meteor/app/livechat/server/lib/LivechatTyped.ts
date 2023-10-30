@@ -18,6 +18,7 @@ import type {
 	MessageAttachment,
 	IMessageInbox,
 	IOmnichannelAgent,
+	ILivechatDepartmentAgents,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -37,6 +38,7 @@ import {
 } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { Match, check } from 'meteor/check';
 import moment from 'moment-timezone';
 import type { Filter, FindCursor, UpdateFilter } from 'mongodb';
 import UAParser from 'ua-parser-js';
@@ -1690,6 +1692,41 @@ class LivechatClass {
 		}
 
 		return false;
+	}
+
+	async saveDepartmentAgents(
+		_id: string,
+		departmentAgents: {
+			upsert?: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order' | 'username'>[];
+			remove?: Pick<ILivechatDepartmentAgents, 'agentId'>[];
+		},
+	) {
+		check(_id, String);
+		check(departmentAgents, {
+			upsert: Match.Maybe([
+				Match.ObjectIncluding({
+					agentId: String,
+					username: String,
+					count: Match.Maybe(Match.Integer),
+					order: Match.Maybe(Match.Integer),
+				}),
+			]),
+			remove: Match.Maybe([
+				Match.ObjectIncluding({
+					agentId: String,
+					username: Match.Maybe(String),
+					count: Match.Maybe(Match.Integer),
+					order: Match.Maybe(Match.Integer),
+				}),
+			]),
+		});
+
+		const department = await LivechatDepartment.findOneById(_id);
+		if (!department) {
+			throw new Meteor.Error('error-department-not-found');
+		}
+
+		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
 	}
 }
 
