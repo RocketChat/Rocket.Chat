@@ -243,13 +243,15 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 							<Field key={index}>
 								<FieldLabel htmlFor={actionField}>{t('Action')}</FieldLabel>
 								<FieldRow>
-									<TextInput id={actionField} value={t('Send_a_message')} readOnly />
+									<TextInput value={t('Send_a_message')} readOnly />
 								</FieldRow>
 								<FieldRow>
 									<Controller
 										name={`actions.${index}.params.sender`}
 										control={control}
-										render={({ field }) => <Select {...field} options={senderOptions} placeholder={t('Select_an_option')} />}
+										render={({ field }) => (
+											<Select id={actionField} {...field} options={senderOptions} placeholder={t('Select_an_option')} />
+										)}
 									/>
 								</FieldRow>
 								{actions[index].params?.sender === 'custom' && (
