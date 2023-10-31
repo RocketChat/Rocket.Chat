@@ -109,7 +109,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
-					<Button primary disabled={!hasChanges || isUpdating} type='submit'>
+					<Button primary disabled={!hasChanges} loading={isUpdating} type='submit'>
 						{t('Cloud_Apply_license')}
 					</Button>
 				</Modal.FooterControllers>

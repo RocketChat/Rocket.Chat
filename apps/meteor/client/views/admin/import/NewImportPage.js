@@ -171,8 +171,8 @@ function NewImportPage() {
 						{t('Back_to_imports')}
 					</Button>
 					{importer && (
-						<Button primary minHeight='x40' disabled={isLoading} onClick={handleImportButtonClick}>
-							{isLoading ? <Throbber inheritColor /> : t('Import')}
+						<Button primary minHeight='x40' loading={isLoading} onClick={handleImportButtonClick}>
+							{t('Import')}
 						</Button>
 					)}
 				</ButtonGroup>
