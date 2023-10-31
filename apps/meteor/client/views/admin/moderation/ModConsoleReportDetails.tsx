@@ -26,7 +26,7 @@ const ModConsoleReportDetails = ({ userId, default: defaultTab, onRedirect }: Mo
 				<ContextualbarTitle>{t('Reports')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => moderationRoute.navigate(`/admin/moderation/${activeTab}`, { replace: true })} />
 			</ContextualbarHeader>
-			<Tabs>
+			<Tabs paddingBlockStart={8}>
 				<TabsItem selected={tab === 'messages'} onClick={() => setTab('messages')}>
 					{t('Messages')}
 				</TabsItem>

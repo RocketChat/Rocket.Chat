@@ -1,4 +1,4 @@
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import type { FC } from 'react';
@@ -22,14 +22,17 @@ const MessageContextFooter: FC<{ userId: string; deleted: boolean }> = ({ userId
 				{t('Moderation_Delete_all_messages')}
 			</Button>
 
-			<GenericMenu
-				title={t('More')}
-				items={[
-					{ ...useDeactivateUserAction(userId), ...(deleted && { disabled: true }) },
-					{ ...useResetAvatarAction(userId), ...(deleted && { disabled: true }) },
-				]}
-				placement='top-end'
-			/>
+			<Box flexGrow={0} marginInlineStart={8}>
+				<GenericMenu
+					large
+					title={t('More')}
+					items={[
+						{ ...useDeactivateUserAction(userId), ...(deleted && { disabled: true }) },
+						{ ...useResetAvatarAction(userId), ...(deleted && { disabled: true }) },
+					]}
+					placement='top-end'
+				/>
+			</Box>
 		</ButtonGroup>
 	);
 };

@@ -20,7 +20,7 @@ const UserContextFooter: FC<{ userId: string; deleted: boolean }> = ({ userId, d
 			<Button disabled={deleted} onClick={deactivateUserAction.onClick} secondary danger>
 				{t('Moderation_Deactivate_User')}
 			</Button>
-			<Box display='flex' flexGrow={0}>
+			<Box display='flex' flexGrow={0} marginInlineStart={8}>
 				<GenericMenu large title={t('More')} items={[{ ...useResetAvatarAction(userId), disabled: deleted }]} placement='top-end' />
 			</Box>
 		</ButtonGroup>
