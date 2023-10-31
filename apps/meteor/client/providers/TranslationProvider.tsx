@@ -1,6 +1,7 @@
 import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import languages from '@rocket.chat/i18n/dist/languages';
 import en from '@rocket.chat/i18n/src/locales/en.i18n.json';
+import { normalizeLanguage } from '@rocket.chat/tools';
 import type { TranslationKey, TranslationContextValue } from '@rocket.chat/ui-contexts';
 import { useMethod, useSetting, TranslationContext } from '@rocket.chat/ui-contexts';
 import type i18next from 'i18next';
@@ -17,7 +18,6 @@ import { i18n, addSprinfToI18n } from '../../app/utils/lib/i18n';
 import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator';
 import { applyCustomTranslations } from '../lib/utils/applyCustomTranslations';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
-import { normalizeLanguage } from '../lib/utils/normalizeLanguage';
 
 i18n.use(I18NextHttpBackend).use(initReactI18next).use(sprintf);
 

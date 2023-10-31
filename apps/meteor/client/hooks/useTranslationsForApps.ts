@@ -1,10 +1,10 @@
+import { normalizeLanguage } from '@rocket.chat/tools';
 import { useEndpoint, useSingleStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { withDebouncing } from '../../lib/utils/highOrderFunctions';
-import { normalizeLanguage } from '../lib/utils/normalizeLanguage';
 
 export const useTranslationsForApps = () => {
 	const getAppsLanguages = useEndpoint('GET', '/apps/languages');

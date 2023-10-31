@@ -1,11 +1,10 @@
 import { Button } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
+import { normalizeLanguage } from '@rocket.chat/tools';
 import { type TranslationLanguage, useSetting, useLoadLanguage, useLanguage, useLanguages } from '@rocket.chat/ui-contexts';
 import { type ReactElement, type UIEvent, useMemo, useEffect } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-
-import { normalizeLanguage } from '../../../../apps/meteor/client/lib/utils/normalizeLanguage';
 
 const useSuggestedLanguages = ({
 	browserLanguage = normalizeLanguage(window.navigator.language ?? 'en'),

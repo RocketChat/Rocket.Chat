@@ -3,9 +3,9 @@ import { useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { ChatMessages } from '../../../../../app/ui/client/lib/ChatMessages';
-import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
 import { useEmojiPicker } from '../../../../contexts/EmojiPickerContext';
 import type { ChatAPI } from '../../../../lib/chats/ChatAPI';
+import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
 import { useRoomSubscription } from '../../contexts/RoomContext';
 import { useInstance } from './useInstance';
 import { useUserCard } from './useUserCard';
