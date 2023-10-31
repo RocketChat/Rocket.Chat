@@ -2,15 +2,15 @@ import { HeroLayout, HeroLayoutTitle } from '@rocket.chat/layout';
 import {
 	useToastMessageDispatch,
 	useSessionDispatch,
-	useRoute,
 	useRouteParameter,
 	useUserId,
 	useSetting,
 	useTranslation,
+	useRouter,
 } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import LoginPage from '../root/MainLayout/LoginPage';
@@ -24,9 +24,33 @@ const InvitePage = (): ReactElement => {
 	const registrationForm = useSetting('Accounts_RegistrationForm');
 	const setLoginDefaultState = useSessionDispatch('loginDefaultState');
 	const userId = useUserId();
-	const homeRoute = useRoute('home');
-	const groupRoute = useRoute('group');
-	const channelRoute = useRoute('channel');
+	const router = useRouter();
+
+	const handleInviteRoom = useCallback(async () => {
+		if (!token) {
+			return;
+		}
+
+		try {
+			const result = await sdk.rest.post('/v1/useInviteToken', { token });
+
+			if (!result.room.name) {
+				dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
+				router.navigate('/home');
+				return;
+			}
+
+			if (result.room.t === 'p') {
+				router.navigate(`/group/${result.room.name}`);
+				return;
+			}
+
+			router.navigate(`/channel/${result.room.name}`);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
+			router.navigate('/home');
+		}
+	}, [t, dispatchToastMessage, router, token]);
 
 	const { isLoading, data } = useQuery(
 		['invite', token],
@@ -46,10 +70,6 @@ const InvitePage = (): ReactElement => {
 		},
 		{
 			onSuccess: async (valid) => {
-				if (!token) {
-					return;
-				}
-
 				if (registrationForm !== 'Disabled') {
 					setLoginDefaultState('register');
 				} else {
@@ -60,28 +80,16 @@ const InvitePage = (): ReactElement => {
 					return;
 				}
 
-				try {
-					const result = await sdk.rest.post('/v1/useInviteToken', { token });
-
-					if (!result.room.name) {
-						dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
-						homeRoute.push();
-						return;
-					}
-
-					if (result.room.t === 'p') {
-						groupRoute.push({ name: result.room.name });
-						return;
-					}
-
-					channelRoute.push({ name: result.room.name });
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
-					homeRoute.push();
-				}
+				return handleInviteRoom();
 			},
 		},
 	);
+
+	useEffect(() => {
+		if (userId) {
+			handleInviteRoom();
+		}
+	}, [handleInviteRoom, userId]);
 
 	if (data) {
 		return <LoginPage />;
