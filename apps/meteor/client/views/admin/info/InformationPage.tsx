@@ -4,10 +4,10 @@ import type { IInstance } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
-import SeatsCard from '../../../../ee/client/views/admin/info/SeatsCard';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import SeatsCard from '../subscription/components/cards/SeatsCard';
 import DeploymentCard from './DeploymentCard';
 import LicenseCard from './LicenseCard';
 import UsageCard from './UsageCard';
@@ -95,9 +95,9 @@ const InformationPage = memo(function InformationPage({
 							<Grid.Item xl={12} height={!showSeatCap ? '50%' : 'full'}>
 								<LicenseCard />
 							</Grid.Item>
-							{!showSeatCap && (
+							{seatsCap && seatsCap.maxActiveUsers !== Infinity && (
 								<Grid.Item xl={12} height='50%'>
-									<SeatsCard seatsCap={seatsCap} />
+									<SeatsCard value={seatsCap.activeUsers} max={seatsCap.maxActiveUsers} />
 								</Grid.Item>
 							)}
 						</Grid.Item>
