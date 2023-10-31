@@ -52,6 +52,9 @@ const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../app/lib/s
 	'../../../../app/lib/server/functions/validateName': {
 		validateName: stubs.validateName,
 	},
+	'../../../../server/lib/messageTextToAstMarkdown': {
+		messageTextToAstMarkdown: () => [],
+	},
 });
 
 describe('Users - saveUserIdentity', () => {
