@@ -58,4 +58,9 @@ export const createTroubleshootSettings = () =>
 			hidden: true,
 			readonly: true,
 		});
+
+		await this.add('Troubleshoot_Force_Clear_Browser_Cache', false, {
+			type: 'boolean',
+			i18nDescription: 'Troubleshoot_Force_Clear_Browser_Cache_Alert',
+		});
 	});

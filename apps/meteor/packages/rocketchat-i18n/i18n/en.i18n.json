@@ -5230,6 +5230,8 @@
   "Troubleshoot_Disable_Sessions_Monitor_Alert": "This setting stops the processing of user sessions causing the statistics to stop working correctly!",
   "Troubleshoot_Disable_Teams_Mention": "Disable Teams mention",
   "Troubleshoot_Disable_Teams_Mention_Alert": "This setting disables the teams mention feature. User's won't be able to mention a Team by name in a message and get its members notified.",
+  "Troubleshoot_Force_Clear_Browser_Cache": "Force browsers to clear networking cache",
+  "Troubleshoot_Force_Clear_Browser_Cache_Alert": "This setting should not be enabled for a long period since it affects the browser performance.",
   "True": "True",
   "Try_now": "Try now",
   "Try_searching_in_the_marketplace_instead": "Try searching in the Marketplace instead",

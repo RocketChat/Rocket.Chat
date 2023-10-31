@@ -88,11 +88,6 @@ declare module 'meteor/webapp' {
 	}
 }
 
-// These routes already handle cache control on their own
-const cacheControlledRoutes: Array<RegExp> = ['/assets', '/custom-sounds', '/emoji-custom', '/avatar', '/file-upload'].map(
-	(route) => new RegExp(`^${route}`, 'i'),
-);
-
 // @ts-expect-error - accessing internal property of webapp
 WebAppInternals.staticFilesMiddleware = function (
 	staticFiles: StaticFiles,
@@ -102,10 +97,6 @@ WebAppInternals.staticFilesMiddleware = function (
 ) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	const { arch, path, url } = WebApp.categorizeRequest(req);
-
-	if (Meteor.isProduction && path.match(/\.(js|css|map)$/i) && !cacheControlledRoutes.some((regexp) => regexp.test(path))) {
-		res.setHeader('Cache-Control', 'public, max-age=31536000');
-	}
 
 	// Prevent meteor_runtime_config.js to load from a different expected hash possibly causing
 	// a cache of the file for the wrong hash and start a client loop due to the mismatch
@@ -126,9 +117,17 @@ WebAppInternals.staticFilesMiddleware = function (
 			res.writeHead(404);
 			return res.end();
 		}
+
+		res.setHeader('Cache-Control', 'public, max-age=3600');
 	}
+
 	return _staticFilesMiddleware(staticFiles, req, res, next);
 };
+
+let ForceClearCaching = false;
+settings.watch<boolean>('Troubleshoot_Force_Clear_Browser_Cache', (value) => {
+	ForceClearCaching = value;
+});
 
 const oldHttpServerListeners = WebApp.httpServer.listeners('request').slice(0);
 
@@ -140,6 +139,10 @@ WebApp.httpServer.addListener('request', (req, res, ...args) => {
 			oldListener.apply(WebApp.httpServer, [req, res, ...args]);
 		}
 	};
+
+	if (ForceClearCaching && req.url?.startsWith('/sockjs/info')) {
+		res.setHeader('Clear-Site-Data', '"cache"');
+	}
 
 	if (settings.get('Force_SSL') !== true) {
 		next();
