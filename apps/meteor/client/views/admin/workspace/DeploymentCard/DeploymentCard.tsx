@@ -16,14 +16,12 @@ type DeploymentCardProps = {
 	statistics: IStats;
 };
 
-const DeploymentCard = ({ serverInfo, statistics, instances }: DeploymentCardProps): ReactElement => {
+const DeploymentCard = ({ serverInfo: { info }, statistics, instances }: DeploymentCardProps): ReactElement => {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const setModal = useSetModal();
 
-	const { commit = {} } = serverInfo?.info || {};
-
-	const appsEngineVersion = serverInfo?.info?.marketplaceApiVersion;
+	const { commit = {}, marketplaceApiVersion: appsEngineVersion } = info || {};
 
 	const handleInstancesModal = useMutableCallback(() => {
 		setModal(<InstancesModal instances={instances} onClose={(): void => setModal()} />);

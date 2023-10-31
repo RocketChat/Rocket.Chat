@@ -8,13 +8,13 @@ type VersionCardActionItemListProps = {
 };
 
 const VersionCardActionItemList = ({ actionItems }: VersionCardActionItemListProps) => {
-	return actionItems ? (
+	return (
 		<>
 			{actionItems.map((item, index) => (
 				<VersionCardActionItem key={index} actionItem={item} />
 			))}
 		</>
-	) : null;
+	);
 };
 
 export default VersionCardActionItemList;

@@ -8,15 +8,5 @@ type Limits = Record<
 	}
 >;
 
-export const isOverLicenseLimits = (limits: Limits): boolean => {
-	for (const key in limits) {
-		if (Object.hasOwn(limits, key)) {
-			const limit = limits[key as keyof Limits];
-			if (limit.value !== undefined && limit.value > limit.max) {
-				return true;
-			}
-		}
-	}
-
-	return false;
-};
+export const isOverLicenseLimits = (limits: Limits): boolean =>
+	Object.values(limits).some((limit) => limit.value !== undefined && limit.value > limit.max);

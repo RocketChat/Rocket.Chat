@@ -5,7 +5,7 @@ import React, { memo } from 'react';
 
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
-import { useWorkspaceInfo } from '../../../hooks/useWorkspaceInfo';
+import { useRefreshStatistics, useWorkspaceInfo } from '../../../hooks/useWorkspaceInfo';
 import { downloadJsonAs } from '../../../lib/download';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import WorkspacePage from './WorkspacePage';
@@ -14,32 +14,21 @@ const WorkspaceRoute = (): ReactElement => {
 	const t = useTranslation();
 	const canViewStatistics = usePermission('view-statistics');
 
-	const { instances, statistics, serverInfo, isLoading, isError, refetchStatistics } = useWorkspaceInfo();
-
-	const handleClickRefreshButton = (): void => {
-		if (isLoading) {
-			return;
-		}
-
-		refetchStatistics();
-	};
-
-	const handleClickDownloadInfo = (): void => {
-		if (isLoading) {
-			return;
-		}
-		downloadJsonAs(statistics, 'statistics');
-	};
+	const [serverInfoQuery, instancesQuery, statisticsQuery] = useWorkspaceInfo();
+	const refetchStatistics = useRefreshStatistics();
 
 	if (!canViewStatistics) {
 		return <NotAuthorizedPage />;
 	}
 
-	if (isLoading) {
+	if (serverInfoQuery.isLoading || instancesQuery.isLoading || statisticsQuery.isLoading) {
 		return <PageSkeleton />;
 	}
+	const handleClickRefreshButton = (): void => {
+		refetchStatistics.mutate();
+	};
 
-	if (isError || !statistics || !serverInfo) {
+	if (serverInfoQuery.isError || instancesQuery.isError || statisticsQuery.isError) {
 		return (
 			<Page>
 				<Page.Header title={t('Workspace')}>
@@ -56,12 +45,16 @@ const WorkspaceRoute = (): ReactElement => {
 		);
 	}
 
+	const handleClickDownloadInfo = (): void => {
+		downloadJsonAs(statisticsQuery.data, 'statistics');
+	};
+
 	return (
 		<WorkspacePage
 			canViewStatistics={canViewStatistics}
-			serverInfo={serverInfo}
-			statistics={statistics}
-			instances={instances}
+			serverInfo={serverInfoQuery.data}
+			statistics={statisticsQuery.data}
+			instances={instancesQuery.data}
 			onClickRefreshButton={handleClickRefreshButton}
 			onClickDownloadInfo={handleClickDownloadInfo}
 		/>

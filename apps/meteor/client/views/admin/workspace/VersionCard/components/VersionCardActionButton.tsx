@@ -1,49 +1,36 @@
 import { Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRouter, type To, useSetModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { LocationPathname } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
-import RegisterWorkspaceModal from '../../../cloud/modals/RegisterWorkspaceModal';
+type VersionCardActionButtonProps =
+	| {
+			path: LocationPathname;
+			label: ReactNode;
+	  }
+	| {
+			action: () => void;
+			label: ReactNode;
+	  };
 
-type VersionCardActionButtonProps = {
-	actionButton: VersionActionButton;
-	refetch: () => void;
-};
+export type VersionActionButton = {};
 
-export type VersionActionButton = {
-	path: string;
-	label: ReactElement;
-};
-
-const VersionCardActionButton = ({ actionButton, refetch }: VersionCardActionButtonProps): ReactElement => {
+const VersionCardActionButton = (item: VersionCardActionButtonProps): ReactElement => {
 	const router = useRouter();
-	const setModal = useSetModal();
 
-	const handleActionButton = useMutableCallback((path: string) => {
-		if (path.startsWith('http')) {
-			return window.open(path, '_blank');
+	const handleActionButton = useMutableCallback(() => {
+		if ('action' in item) {
+			return item.action();
 		}
 
-		if (path === 'modal#registerWorkspace') {
-			handleRegisterWorkspaceClick();
-			return;
-		}
-
-		router.navigate(path as To);
+		router.navigate(item.path);
 	});
 
-	const handleRegisterWorkspaceClick = (): void => {
-		const handleModalClose = (): void => {
-			setModal(null);
-			refetch();
-		};
-		setModal(<RegisterWorkspaceModal onClose={handleModalClose} onStatusChange={refetch} />);
-	};
-
 	return (
-		<Button primary onClick={() => handleActionButton(actionButton.path)}>
-			{actionButton.label}
+		<Button primary onClick={() => handleActionButton()}>
+			{item.label}
 		</Button>
 	);
 };
