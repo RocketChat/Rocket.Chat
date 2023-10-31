@@ -46,14 +46,23 @@ const SubscriptionPage = () => {
 	const seatsLimit = getKeyLimit('activeUsers');
 
 	const handleSyncLicenseUpdateClick = () => {
-		syncLicenseUpdate.mutate(undefined, { onSuccess: () => refetchLicense() });
+		syncLicenseUpdate.mutate();
 	};
 
 	useEffect(() => {
 		if (subscriptionSuccess && syncLicenseUpdate.isIdle) {
-			syncLicenseUpdate.mutate(undefined, { onSuccess: () => refetchLicense() });
+			syncLicenseUpdate.mutate(undefined, {
+				onSuccess: () =>
+					router.navigate(
+						{
+							name: router.getRouteName()!,
+							params: Object.fromEntries(Object.entries(router.getSearchParameters()).filter(([key]) => key !== 'subscriptionSuccess')),
+						},
+						{ replace: true },
+					),
+			});
 		}
-	}, [refetchLicense, subscriptionSuccess, syncLicenseUpdate]);
+	}, [refetchLicense, router, subscriptionSuccess, syncLicenseUpdate]);
 
 	return (
 		<Page bg='tint'>

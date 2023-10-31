@@ -8,7 +8,7 @@ export const useWorkspaceSync = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	return useMutation({
-		mutationFn: cloudSync,
+		mutationFn: () => cloudSync(),
 		onSuccess: () => {
 			dispatchToastMessage({
 				type: 'success',
