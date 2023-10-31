@@ -282,13 +282,6 @@ export const createAccountSettings = () =>
 			await this.add('Accounts_EmailVerification', false, {
 				type: 'boolean',
 				public: true,
-				enableQuery: {
-					_id: 'SMTP_Host',
-					value: {
-						$exists: true,
-						$ne: '',
-					},
-				},
 			});
 			await this.add('Accounts_Verify_Email_For_External_Accounts', true, {
 				type: 'boolean',
