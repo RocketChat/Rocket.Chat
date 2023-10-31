@@ -147,7 +147,7 @@ const ResetPasswordPage = (): ReactElement => {
 				</Form.Container>
 				<Form.Footer>
 					<ButtonGroup>
-						<Button primary disabled={isSubmitting} type='submit'>
+						<Button primary loading={isSubmitting} type='submit'>
 							{t('Reset')}
 						</Button>
 					</ButtonGroup>
