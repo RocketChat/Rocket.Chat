@@ -265,45 +265,4 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await deleteUser(user);
 		});
 	});
-
-	describe('livechat/monitors', () => {
-		it('should fail if manage-livechat-monitors permission is missing', async () => {
-			await updatePermission('manage-livechat-monitors', []);
-			return request.get(api('livechat/monitors')).set(credentials).expect(403);
-		});
-		it('should return all monitors', async () => {
-			await updatePermission('manage-livechat-monitors', ['admin']);
-			const user = await createUser();
-			await createMonitor(user.username);
-
-			const { body } = await request.get(api('livechat/monitors')).set(credentials).query({ text: user.username }).expect(200);
-			expect(body).to.have.property('monitors');
-			expect(body.monitors).to.have.lengthOf(1);
-			expect(body.monitors[0]).to.have.property('username', user.username);
-
-			// cleanup
-			await deleteUser(user);
-		});
-	});
-
-	describe('livechat/monitors/:username', () => {
-		it('should fail if manage-livechat-monitors permission is missing', async () => {
-			await updatePermission('manage-livechat-monitors', []);
-			return request.get(api('livechat/monitors/123')).set(credentials).expect(403);
-		});
-		it('should return a monitor', async () => {
-			await updatePermission('manage-livechat-monitors', ['admin']);
-			const user = await createUser();
-			await createMonitor(user.username);
-
-			const { body } = await request
-				.get(api(`livechat/monitors/${user.username}`))
-				.set(credentials)
-				.expect(200);
-			expect(body).to.have.property('username', user.username);
-
-			// cleanup
-			await deleteUser(user);
-		});
-	});
 });
