@@ -25,7 +25,7 @@ import { useWorkspaceSync } from './hooks/useWorkspaceSync';
 const SubscriptionPage = () => {
 	const router = useRouter();
 	const { data: enterpriseData } = useIsEnterprise();
-	const { isRegistered, isLoading: isRegisteredLoading } = useRegistrationStatus();
+	const { isRegistered } = useRegistrationStatus();
 	const { data: licensesData, isLoading: isLicenseLoading, refetch: refetchLicense } = useLicense({ loadValues: true });
 	const syncLicenseUpdate = useWorkspaceSync();
 
@@ -67,20 +67,18 @@ const SubscriptionPage = () => {
 	return (
 		<Page bg='tint'>
 			<Page.Header title={t('Subscription')}>
-				{!isRegisteredLoading && (
-					<ButtonGroup>
-						{(isRegistered || subscriptionSuccess) && (
-							<Button
-								icon={syncLicenseUpdate.isLoading ? undefined : 'reload'}
-								disabled={syncLicenseUpdate.isLoading}
-								onClick={() => handleSyncLicenseUpdateClick()}
-							>
-								{syncLicenseUpdate.isLoading ? <Throbber size='x12' inheritColor /> : t('Sync_license_update')}
-							</Button>
-						)}
-						<UpgradeButton primary mis={8} i18nKey={isEnterprise ? 'Manage_subscription' : 'Upgrade'} />
-					</ButtonGroup>
-				)}
+				<ButtonGroup>
+					{isRegistered && (
+						<Button
+							icon={syncLicenseUpdate.isLoading ? undefined : 'reload'}
+							disabled={syncLicenseUpdate.isLoading}
+							onClick={() => handleSyncLicenseUpdateClick()}
+						>
+							{syncLicenseUpdate.isLoading ? <Throbber size='x12' inheritColor /> : t('Sync_license_update')}
+						</Button>
+					)}
+					<UpgradeButton primary mis={8} i18nKey={isEnterprise ? 'Manage_subscription' : 'Upgrade'} />
+				</ButtonGroup>
 			</Page.Header>
 
 			<Page.ScrollableContentWithShadow p={16}>
