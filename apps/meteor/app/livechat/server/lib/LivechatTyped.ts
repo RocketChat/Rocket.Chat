@@ -1,7 +1,7 @@
 import dns from 'dns';
 import * as util from 'util';
 
-import { Message, VideoConf, api } from '@rocket.chat/core-services';
+import { Message, VideoConf, api, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
 	IOmnichannelRoomClosingInfo,
@@ -33,6 +33,7 @@ import {
 	ReadReceipts,
 	Rooms,
 	Settings,
+	LivechatCustomField,
 } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -41,8 +42,11 @@ import type { Filter, FindCursor, UpdateFilter } from 'mongodb';
 
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
+import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
+import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { canAccessRoomAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { FileUpload } from '../../../file-upload/server';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
@@ -127,6 +131,8 @@ export interface ILivechatMessage {
 type AKeyOf<T> = {
 	[K in keyof T]?: T[K];
 };
+
+type PageInfo = { title: string; location: { href: string }; change: string };
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
 
@@ -519,6 +525,10 @@ class LivechatClass {
 		// allow to only user to send transcripts from their own chats
 		if (room.t !== 'l' || !room.v || room.v.token !== token) {
 			throw new Error('error-invalid-room');
+		}
+
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			throw new Error('error-mac-limit-reached');
 		}
 
 		const showAgentInfo = settings.get<string>('Livechat_show_agent_info');
@@ -1333,6 +1343,208 @@ class LivechatClass {
 		Object.assign(transferMessage, transfer);
 
 		await sendMessage(transferredBy, transferMessage, room);
+	}
+
+	async saveGuest(guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string }, userId: string) {
+		const { _id, name, email, phone, livechatData = {} } = guestData;
+		this.logger.debug({ msg: 'Saving guest', guestData });
+		const updateData: {
+			name?: string | undefined;
+			username?: string | undefined;
+			email?: string | undefined;
+			phone?: string | undefined;
+			livechatData: {
+				[k: string]: any;
+			};
+		} = { livechatData: {} };
+
+		if (name) {
+			updateData.name = name;
+		}
+		if (email) {
+			updateData.email = email;
+		}
+		if (phone) {
+			updateData.phone = phone;
+		}
+
+		const customFields: Record<string, any> = {};
+
+		if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
+			this.logger.debug({ msg: `Saving custom fields for visitor ${_id}`, livechatData });
+			for await (const field of LivechatCustomField.findByScope('visitor')) {
+				if (!livechatData.hasOwnProperty(field._id)) {
+					continue;
+				}
+				const value = trim(livechatData[field._id]);
+				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
+					const regexp = new RegExp(field.regexp);
+					if (!regexp.test(value)) {
+						throw new Error(i18n.t('error-invalid-custom-field-value'));
+					}
+				}
+				customFields[field._id] = value;
+			}
+			updateData.livechatData = customFields;
+			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields for visitor ${_id}`);
+		}
+		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
+
+		setImmediate(() => {
+			void Apps.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
+		});
+
+		return ret;
+	}
+
+	async setCustomFields({ token, key, value, overwrite }: { key: string; value: string; overwrite: boolean; token: string }) {
+		Livechat.logger.debug(`Setting custom fields data for visitor with token ${token}`);
+
+		const customField = await LivechatCustomField.findOneById(key);
+		if (!customField) {
+			throw new Error('invalid-custom-field');
+		}
+
+		if (customField.regexp !== undefined && customField.regexp !== '') {
+			const regexp = new RegExp(customField.regexp);
+			if (!regexp.test(value)) {
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: key }));
+			}
+		}
+
+		let result;
+		if (customField.scope === 'room') {
+			result = await LivechatRooms.updateDataByToken(token, key, value, overwrite);
+		} else {
+			result = await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
+		}
+
+		if (typeof result === 'boolean') {
+			// Note: this only happens when !overwrite is passed, in this case we don't do any db update
+			return 0;
+		}
+
+		return result.modifiedCount;
+	}
+
+	async requestTranscript({
+		rid,
+		email,
+		subject,
+		user,
+	}: {
+		rid: string;
+		email: string;
+		subject: string;
+		user: AtLeast<IUser, '_id' | 'username' | 'utcOffset' | 'name'>;
+	}) {
+		const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, open: 1, transcriptRequest: 1 } });
+
+		if (!room?.open) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room');
+		}
+
+		if (room.transcriptRequest) {
+			throw new Meteor.Error('error-transcript-already-requested', 'Transcript already requested');
+		}
+
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			throw new Error('error-mac-limit-reached');
+		}
+
+		const { _id, username, name, utcOffset } = user;
+		const transcriptRequest = {
+			requestedAt: new Date(),
+			requestedBy: {
+				_id,
+				username,
+				name,
+				utcOffset,
+			},
+			email,
+			subject,
+		};
+
+		await LivechatRooms.setEmailTranscriptRequestedByRoomId(rid, transcriptRequest);
+		return true;
+	}
+
+	async savePageHistory(token: string, roomId: string | undefined, pageInfo: PageInfo) {
+		this.logger.debug({
+			msg: `Saving page movement history for visitor with token ${token}`,
+			pageInfo,
+			roomId,
+		});
+
+		if (pageInfo.change !== settings.get<string>('Livechat_history_monitor_type')) {
+			return;
+		}
+		const user = await Users.findOneById('rocket.cat');
+
+		if (!user) {
+			throw new Error('error-invalid-user');
+		}
+
+		const pageTitle = pageInfo.title;
+		const pageUrl = pageInfo.location.href;
+		const extraData: {
+			navigation: {
+				page: PageInfo;
+				token: string;
+			};
+			expireAt?: number;
+			_hidden?: boolean;
+		} = {
+			navigation: {
+				page: pageInfo,
+				token,
+			},
+		};
+
+		if (!roomId) {
+			this.logger.warn(`Saving page history without room id for visitor with token ${token}`);
+			// keep history of unregistered visitors for 1 month
+			const keepHistoryMiliseconds = 2592000000;
+			extraData.expireAt = new Date().getTime() + keepHistoryMiliseconds;
+		}
+
+		if (!settings.get('Livechat_Visitor_navigation_as_a_message')) {
+			extraData._hidden = true;
+		}
+
+		// @ts-expect-error: Investigating on which case we won't receive a roomId and where that history is supposed to be stored
+		return Message.saveSystemMessage('livechat_navigation_history', roomId, `${pageTitle} - ${pageUrl}`, user, extraData);
+	}
+
+	async afterRemoveAgent(user: AtLeast<IUser, '_id' | 'username'>) {
+		await callbacks.run('livechat.afterAgentRemoved', { agent: user });
+		return true;
+	}
+
+	async removeAgent(username: string) {
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
+
+		if (!user) {
+			throw new Error('error-invalid-user');
+		}
+
+		const { _id } = user;
+
+		if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
+			return this.afterRemoveAgent(user);
+		}
+
+		return false;
+	}
+
+	async removeManager(username: string) {
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+
+		if (!user) {
+			throw new Error('error-invalid-user');
+		}
+
+		return removeUserFromRolesAsync(user._id, ['livechat-manager']);
 	}
 }
 

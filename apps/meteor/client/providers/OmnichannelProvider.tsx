@@ -19,6 +19,7 @@ import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
+import { useLicense } from '../hooks/useLicense';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 
 const emptyContextValue: OmnichannelContextValue = {
@@ -27,6 +28,7 @@ const emptyContextValue: OmnichannelContextValue = {
 	isEnterprise: false,
 	agentAvailable: false,
 	showOmnichannelQueueLink: false,
+	isOverMacLimit: false,
 	livechatPriorities: {
 		enabled: false,
 		data: [],
@@ -63,6 +65,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const subscribe = useStream('notify-logged');
 	const queryClient = useQueryClient();
 	const isPrioritiesEnabled = isEnterprise && accessible;
+	const enabled = accessible && !!user && !!routeConfig;
 
 	const {
 		data: { priorities = [] } = {},
@@ -72,6 +75,10 @@ const OmnichannelProvider: FC = ({ children }) => {
 		staleTime: Infinity,
 		enabled: isPrioritiesEnabled,
 	});
+
+	const { data: { preventedActions } = {} } = useLicense();
+
+	const isOverMacLimit = Boolean(preventedActions?.monthlyActiveContacts);
 
 	useEffect(() => {
 		if (!isPrioritiesEnabled) {
@@ -102,7 +109,6 @@ const OmnichannelProvider: FC = ({ children }) => {
 		}
 	}, [accessible, getRoutingConfig, iceServersSetting, omnichannelRouting, setRouteConfig, voipCallAvailable]);
 
-	const enabled = accessible && !!user && !!routeConfig;
 	const manuallySelected =
 		enabled && canViewOmnichannelQueue && !!routeConfig && routeConfig.showQueue && !routeConfig.autoAssignAgent && agentAvailable;
 
@@ -167,6 +173,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				voipCallAvailable,
 				routeConfig,
 				livechatPriorities,
+				isOverMacLimit,
 			};
 		}
 
@@ -185,6 +192,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				: { enabled: false },
 			showOmnichannelQueueLink: showOmnichannelQueueLink && !!agentAvailable,
 			livechatPriorities,
+			isOverMacLimit,
 		};
 	}, [
 		enabled,
@@ -199,6 +207,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		routeConfig,
 		queue,
 		showOmnichannelQueueLink,
+		isOverMacLimit,
 	]);
 
 	return <OmnichannelContext.Provider children={children} value={contextValue} />;

@@ -1,39 +1,42 @@
+import type { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
-import { FormSkeleton } from '../../../../client/components/Skeleton';
-import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { ContextualbarSkeleton } from '../../../../client/components/Contextualbar';
 import UnitEdit from './UnitEdit';
 
-const UnitEditWithData: FC<{
-	unitId: string;
-	title: string;
-	reload: () => void;
-}> = function UnitEditWithData({ unitId, reload, title }) {
-	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/units/:id', { keys: { id: unitId } });
-
-	const {
-		value: unitMonitors,
-		phase: unitMonitorsState,
-		error: unitMonitorsError,
-	} = useEndpointData('/v1/livechat/units/:unitId/monitors', { keys: { unitId } });
-
-	const {
-		value: unitDepartments,
-		phase: unitDepartmentsState,
-		error: unitDepartmentsError,
-	} = useEndpointData('/v1/livechat/units/:unitId/departments', { keys: { unitId } });
-
+const UnitEditWithData = ({ unitId }: { unitId: IOmnichannelBusinessUnit['_id'] }) => {
 	const t = useTranslation();
 
-	if ([state, unitMonitorsState, unitDepartmentsState].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton />;
+	const getUnitById = useEndpoint('GET', '/v1/livechat/units/:id', { id: unitId });
+	const getMonitorsByUnitId = useEndpoint('GET', '/v1/livechat/units/:unitId/monitors', { unitId });
+	const getDepartmentsByUnitId = useEndpoint('GET', '/v1/livechat/units/:unitId/departments', { unitId });
+
+	const {
+		data: unitData,
+		isError,
+		isLoading,
+	} = useQuery(['livechat-getUnitById', unitId], async () => getUnitById(), { refetchOnWindowFocus: false });
+	const {
+		data: unitMonitors,
+		isError: unitMonitorsError,
+		isLoading: unitMonitorsLoading,
+	} = useQuery(['livechat-getMonitorsByUnitId', unitId], async () => getMonitorsByUnitId({ unitId }), { refetchOnWindowFocus: false });
+	const {
+		data: unitDepartments,
+		isError: unitDepartmentsError,
+		isLoading: unitDepartmentsLoading,
+	} = useQuery(['livechat-getDepartmentsByUnitId', unitId], async () => getDepartmentsByUnitId({ unitId }), {
+		refetchOnWindowFocus: false,
+	});
+
+	if (isLoading || unitMonitorsLoading || unitDepartmentsLoading) {
+		return <ContextualbarSkeleton />;
 	}
 
-	if (error || unitMonitorsError || unitDepartmentsError) {
+	if (isError || unitMonitorsError || unitDepartmentsError) {
 		return (
 			<Callout m={16} type='danger'>
 				{t('Not_Available')}
@@ -41,17 +44,7 @@ const UnitEditWithData: FC<{
 		);
 	}
 
-	return (
-		<UnitEdit
-			title={title}
-			unitId={unitId}
-			data={data}
-			unitMonitors={unitMonitors}
-			unitDepartments={unitDepartments}
-			reload={reload}
-			isNew={false}
-		/>
-	);
+	return <UnitEdit unitData={unitData} unitMonitors={unitMonitors.monitors} unitDepartments={unitDepartments.departments} />;
 };
 
 export default UnitEditWithData;

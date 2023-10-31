@@ -1,34 +1,32 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import type { MutableRefObject } from 'react';
+import { useRouter, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import Page from '../../../../client/components/Page';
+import TagEdit from './TagEdit';
+import TagEditWithData from './TagEditWithData';
 import TagsTable from './TagsTable';
 
-const TagsPage = ({ reload }: { reload: MutableRefObject<() => void> }) => {
+const TagsPage = () => {
 	const t = useTranslation();
-	const tagsRoute = useRoute('omnichannel-tags');
-
-	const handleClick = useMutableCallback(() =>
-		tagsRoute.push({
-			context: 'new',
-		}),
-	);
+	const router = useRouter();
+	const context = useRouteParameter('context');
+	const id = useRouteParameter('id');
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={t('Tags')}>
 					<ButtonGroup>
-						<Button onClick={handleClick}>{t('Create_tag')}</Button>
+						<Button onClick={() => router.navigate('/omnichannel/tags/new')}>{t('Create_tag')}</Button>
 					</ButtonGroup>
 				</Page.Header>
 				<Page.Content>
-					<TagsTable reload={reload} />
+					<TagsTable />
 				</Page.Content>
 			</Page>
+			{context === 'edit' && id && <TagEditWithData tagId={id} />}
+			{context === 'new' && <TagEdit />}
 		</Page>
 	);
 };
