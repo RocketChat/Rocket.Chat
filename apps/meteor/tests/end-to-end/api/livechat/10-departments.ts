@@ -30,6 +30,15 @@ import { IS_EE } from '../../../e2e/config/constants';
 		await updateSetting('Omnichannel_enable_department_removal', true);
 	});
 
+	// Remove departments that may have been created before
+	before(async () => {
+		const { body } = await request.get(api('livechat/department')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+		for await (const department of body.departments) {
+			await deleteDepartment(department._id);
+		}
+	});
+
 	let departmentId: string;
 
 	after(async () => {
