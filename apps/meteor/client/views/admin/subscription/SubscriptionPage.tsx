@@ -124,18 +124,22 @@ const SubscriptionPage = () => {
 								</Grid.Item>
 							)}
 
-							{limits?.marketplaceApps !== undefined && (
-								<Grid.Item lg={4} xs={4} p={8}>
-									<AppsUsageCard privateAppsLimit={limits?.privateApps} marketplaceAppsLimit={limits.marketplaceApps} />
-								</Grid.Item>
-							)}
+							{!license && (
+								<>
+									{limits?.marketplaceApps !== undefined && (
+										<Grid.Item lg={4} xs={4} p={8}>
+											<AppsUsageCard privateAppsLimit={limits?.privateApps} marketplaceAppsLimit={limits.marketplaceApps} />
+										</Grid.Item>
+									)}
 
-							<Grid.Item lg={4} xs={4} p={8}>
-								<ActiveSessionsCard />
-							</Grid.Item>
-							<Grid.Item lg={4} xs={4} p={8}>
-								<ActiveSessionsPeakCard />
-							</Grid.Item>
+									<Grid.Item lg={4} xs={4} p={8}>
+										<ActiveSessionsCard />
+									</Grid.Item>
+									<Grid.Item lg={4} xs={4} p={8}>
+										<ActiveSessionsPeakCard />
+									</Grid.Item>
+								</>
+							)}
 						</Grid>
 						<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise} />
 					</Box>
