@@ -69,7 +69,7 @@ const SubscriptionPage = () => {
 			<Page.Header title={t('Subscription')}>
 				{!isRegisteredLoading && (
 					<ButtonGroup>
-						{isRegistered && subscriptionSuccess && (
+						{(isRegistered || subscriptionSuccess) && (
 							<Button
 								icon={syncLicenseUpdate.isLoading ? undefined : 'reload'}
 								disabled={syncLicenseUpdate.isLoading}
