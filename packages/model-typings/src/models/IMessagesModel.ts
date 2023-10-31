@@ -210,7 +210,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findOneByRoomIdAndMessageId(rid: string, messageId: string, options?: FindOptions<IMessage>): Promise<IMessage | null>;
 
 	updateUserStarById(_id: string, userId: string, starred?: boolean): Promise<UpdateResult>;
-	updateUsernameAndMessageOfMentionByIdAndOldUsername(
+	updateUsernameAndMessageAndMdOfMentionByIdAndOldUsername(
 		_id: string,
 		oldUsername: string,
 		newUsername: string,

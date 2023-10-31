@@ -1199,7 +1199,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateMany(query, update);
 	}
 
-	updateUsernameAndMessageOfMentionByIdAndOldUsername(
+	updateUsernameAndMessageAndMdOfMentionByIdAndOldUsername(
 		_id: string,
 		oldUsername: string,
 		newUsername: string,

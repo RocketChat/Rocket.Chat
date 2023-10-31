@@ -127,7 +127,7 @@ async function updateUsernameReferences({
 		for await (const msg of cursor) {
 			const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
 			const updatedMd = messageTextToAstMarkdown(updatedMsg);
-			await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg, updatedMd);
+			await Messages.updateUsernameAndMessageAndMdOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg, updatedMd);
 		}
 
 		await Rooms.replaceUsername(previousUsername, username);
