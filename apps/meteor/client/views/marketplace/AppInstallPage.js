@@ -169,7 +169,7 @@ function AppInstallPage() {
 				handleClose={cancelAction}
 				handleConfirm={() => uploadFile(appFile, manifest)}
 				handleEnableUnlimitedApps={() => {
-					router.navigate('/admin/manage-subscription');
+					router.navigate('/admin/subscription');
 					setModal(null);
 				}}
 			/>,

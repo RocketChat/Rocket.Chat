@@ -16,7 +16,7 @@ export const useUpsellActions = (hasLicenseModule = false) => {
 	const shouldShowUpsell = !data?.isEnterprise || !hasLicenseModule;
 
 	const handleManageSubscription = useCallback(() => {
-		router.navigate('/admin/manage-subscription');
+		router.navigate('/admin/subscription');
 		setModal(null);
 	}, [router, setModal]);
 

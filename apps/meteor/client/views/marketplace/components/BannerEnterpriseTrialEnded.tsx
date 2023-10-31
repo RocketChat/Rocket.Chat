@@ -9,7 +9,7 @@ const BannerEnterpriseTrialEnded = (): ReactElement => {
 	const isAdmin = usePermission('manage-apps');
 
 	const bannerLink = {
-		link: '/admin/manage-subscription',
+		link: '/admin/subscription',
 		linkText: t('Upgrade_tab_upgrade_your_plan'),
 		linkTarget: '_self',
 	};

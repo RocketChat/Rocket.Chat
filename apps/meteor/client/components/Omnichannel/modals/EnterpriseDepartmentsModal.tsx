@@ -11,7 +11,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 	const router = useRouter();
 	const ref = useRef<HTMLDivElement>(null);
 	const goToManageSubscriptionPage = (): void => {
-		router.navigate('/admin/manage-subscription');
+		router.navigate('/admin/subscription');
 		closeModal();
 	};
 

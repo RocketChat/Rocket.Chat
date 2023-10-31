@@ -109,7 +109,7 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 				handleClose={closeModal}
 				handleConfirm={acquireApp}
 				handleEnableUnlimitedApps={() => {
-					router.navigate('/admin/manage-subscription');
+					router.navigate('/admin/subscription');
 					setModal(null);
 				}}
 			/>,
