@@ -197,7 +197,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 					</Form.Container>
 					<Form.Footer>
 						<ButtonGroup stretch>
-							<Button disabled={loginMutation.isLoading} type='submit' primary>
+							<Button loading={loginMutation.isLoading} type='submit' primary>
 								{t('registration.component.login')}
 							</Button>
 						</ButtonGroup>

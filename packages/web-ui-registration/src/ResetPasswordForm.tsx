@@ -84,7 +84,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 			</Form.Container>
 			<Form.Footer>
 				<ButtonGroup>
-					<Button type='submit' disabled={isSubmitting} primary>
+					<Button type='submit' loading={isSubmitting} primary>
 						{t('registration.page.resetPassword.sendInstructions')}
 					</Button>
 				</ButtonGroup>
