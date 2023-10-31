@@ -103,7 +103,7 @@ WebAppInternals.staticFilesMiddleware = function (
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	const { arch, path, url } = WebApp.categorizeRequest(req);
 
-	if (Meteor.isProduction && !cacheControlledRoutes.some((regexp) => regexp.test(path))) {
+	if (Meteor.isProduction && path.match(/\.(js|css|map)$/i) && !cacheControlledRoutes.some((regexp) => regexp.test(path))) {
 		res.setHeader('Cache-Control', 'public, max-age=31536000');
 	}
 
