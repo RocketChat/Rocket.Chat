@@ -14,8 +14,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/sounds/:context?/:id?';
 		};
 		'admin-info': {
-			pathname: '/admin/workspace';
-			pattern: '/admin/workspace';
+			pathname: '/admin/info';
+			pattern: '/admin/info';
 		};
 		'admin-import': {
 			pathname: '/admin/import';
@@ -70,8 +70,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/registration/:page?';
 		};
 		'admin-view-logs': {
-			pathname: '/admin/logs';
-			pattern: '/admin/logs';
+			pathname: '/admin/reports';
+			pattern: '/admin/reports';
 		};
 		'federation-dashboard': {
 			pathname: '/admin/federation';
@@ -105,6 +105,10 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/admin/moderation${`/${string}` | ''}${`/${string}` | ''}`;
 			pattern: '/admin/moderation/:context?/:id?';
 		};
+		'subscription': {
+			pathname: `/admin/subscription`;
+			pattern: '/admin/subscription';
+		};
 	}
 }
 
@@ -119,7 +123,7 @@ registerAdminRoute('/sounds/:context?/:id?', {
 	component: lazy(() => import('./customSounds/CustomSoundsRoute')),
 });
 
-registerAdminRoute('/workspace', {
+registerAdminRoute('/info', {
 	name: 'admin-info',
 	component: lazy(() => import('./info/InformationRoute')),
 });
@@ -193,7 +197,7 @@ registerAdminRoute('/registration/:page?', {
 	component: lazy(() => import('./cloud/CloudRoute')),
 });
 
-registerAdminRoute('/logs', {
+registerAdminRoute('/reports', {
 	name: 'admin-view-logs',
 	component: lazy(() => import('./viewLogs/ViewLogsRoute')),
 });
@@ -236,4 +240,9 @@ registerAdminRoute('/engagement/:tab?', {
 registerAdminRoute('/device-management/:context?/:id?', {
 	name: 'device-management',
 	component: lazy(() => import('../../../ee/client/views/admin/deviceManagement/DeviceManagementAdminRoute')),
+});
+
+registerAdminRoute('/subscription', {
+	name: 'subscription',
+	component: lazy(() => import('./subscription/SubscriptionRoute')),
 });

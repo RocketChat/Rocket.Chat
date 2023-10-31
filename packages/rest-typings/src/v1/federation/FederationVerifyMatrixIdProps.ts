@@ -11,7 +11,7 @@ const FederationVerifyMatrixIdPropsSchema = {
 	properties: {
 		matrixIds: {
 			type: 'array',
-			items: [{ type: 'string' }],
+			items: { type: 'string' },
 			uniqueItems: true,
 		},
 	},

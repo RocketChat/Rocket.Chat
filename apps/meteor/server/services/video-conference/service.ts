@@ -1,4 +1,3 @@
-import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
@@ -20,6 +19,7 @@ import type {
 	VideoConferenceCapabilities,
 	VideoConferenceCreateData,
 	Optional,
+	UiKit,
 } from '@rocket.chat/core-typings';
 import {
 	VideoConferenceStatus,
@@ -136,7 +136,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return this.joinCall(call, user || undefined, options);
 	}
 
-	public async getInfo(callId: VideoConference['_id'], uid: IUser['_id'] | undefined): Promise<IBlock[]> {
+	public async getInfo(callId: VideoConference['_id'], uid: IUser['_id'] | undefined): Promise<UiKit.LayoutBlock[]> {
 		const call = await VideoConferenceModel.findOneById(callId);
 		if (!call) {
 			throw new Error('invalid-call');
@@ -162,7 +162,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 
 		if (blocks?.length) {
-			return blocks;
+			return blocks as UiKit.LayoutBlock[];
 		}
 
 		return [
@@ -173,7 +173,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 					type: 'mrkdwn',
 					text: `**${i18n.t('Video_Conference_Url')}**: ${call.url}`,
 				},
-			} as IBlock,
+			},
 		];
 	}
 
@@ -618,6 +618,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				caller: call.createdBy,
 				avatar: getUserAvatarURL(call.createdBy.username),
 				status: call.status,
+				callId: call._id,
 			},
 			userId: calleeId,
 			notId: PushNotification.getNotificationId(`${call.rid}|${call._id}`),

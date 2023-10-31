@@ -69,3 +69,4 @@ import './AppsTokens';
 import './CronHistory';
 import './Migrations';
 import './PersistentQueue';
+import './CloudAnnouncements';

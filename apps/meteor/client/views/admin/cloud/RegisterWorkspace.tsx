@@ -14,9 +14,7 @@ const RegisterWorkspace = () => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
-	const { data: registrationStatusData, isLoading, isError, refetch } = useRegistrationStatus();
-	const isWorkspaceRegistered = registrationStatusData?.registrationStatus?.workspaceRegistered ?? false;
-	const isConnectedToCloud = registrationStatusData?.registrationStatus?.connectToCloud ?? false;
+	const { isRegistered, isLoading, isError, refetch } = useRegistrationStatus();
 
 	if (isLoading || isError) {
 		return null;
@@ -27,7 +25,7 @@ const RegisterWorkspace = () => {
 			setModal(null);
 			refetch();
 		};
-		if (isWorkspaceRegistered) {
+		if (isRegistered) {
 			setModal(<ConnectWorkspaceModal onClose={handleModalClose} onStatusChange={refetch} />);
 		} else setModal(<RegisterWorkspaceModal onClose={handleModalClose} onStatusChange={refetch} />);
 	};
@@ -40,32 +38,11 @@ const RegisterWorkspace = () => {
 		setModal(<ManualWorkspaceRegistrationModal onClose={handleModalClose} />);
 	};
 
-	const handleRegistrationTag = () => {
-		if (!isWorkspaceRegistered && !isConnectedToCloud) {
-			return <Tag variant='secondary-danger'>{t('RegisterWorkspace_NotRegistered_Title')}</Tag>;
-		}
-		if (isWorkspaceRegistered && !isConnectedToCloud) {
-			return <Tag variant='secondary-danger'>{t('RegisterWorkspace_NotConnected_Title')}</Tag>;
-		}
-		return <Tag variant='primary'>{t('Workspace_registered')}</Tag>;
-	};
-
-	const handleCardsTitle = () => {
-		if (!isWorkspaceRegistered && !isConnectedToCloud) {
-			return t('RegisterWorkspace_NotRegistered_Subtitle');
-		}
-		if (isWorkspaceRegistered && !isConnectedToCloud) {
-			return t('RegisterWorkspace_NotConnected_Subtitle');
-		}
-		return t('RegisterWorkspace_Registered_Description');
-	};
-
 	return (
 		<Page background='tint'>
 			<Page.Header title={t('Registration')}>
 				<RegisterWorkspaceMenu
-					isWorkspaceRegistered={isWorkspaceRegistered}
-					isConnectedToCloud={isConnectedToCloud}
+					isWorkspaceRegistered={isRegistered || false}
 					onClick={handleRegisterWorkspaceClick}
 					onStatusChange={refetch}
 					onClickOfflineRegistration={handleManualWorkspaceRegistrationButton}
@@ -73,11 +50,15 @@ const RegisterWorkspace = () => {
 			</Page.Header>
 
 			<Page.ScrollableContentWithShadow>
-				<Box display='flex'>{handleRegistrationTag()}</Box>
+				<Box display='flex'>
+					{!isRegistered && <Tag variant='secondary-danger'>{t('RegisterWorkspace_NotRegistered_Title')}</Tag>}
+					{isRegistered && <Tag variant='primary'>{t('Workspace_registered')}</Tag>}
+				</Box>
 
 				<Box pb={8}>
-					<Box fontSize='h3' fontWeight={700}>
-						{handleCardsTitle()}
+					<Box fontScale='h3'>
+						{!isRegistered && t('RegisterWorkspace_NotRegistered_Subtitle')}
+						{isRegistered && t('RegisterWorkspace_Registered_Description')}
 					</Box>
 					<RegisterWorkspaceCards />
 				</Box>

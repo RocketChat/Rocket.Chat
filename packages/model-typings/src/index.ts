@@ -80,3 +80,4 @@ export * from './models/ICronHistoryModel';
 export * from './models/IMigrationsModel';
 export * from './models/IModerationReportsModel';
 export * from './models/IPersistentQueueModel';
+export * from './models/ICloudAnnouncementsModel';

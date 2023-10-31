@@ -57,7 +57,6 @@ type DropDownProps = {
 	selectedOptionsTitle: TranslationKey;
 	selectedOptions: OptionProp[];
 	setSelectedOptions: Dispatch<SetStateAction<OptionProp[]>>;
-	customSetSelected: Dispatch<SetStateAction<OptionProp[]>>;
 	searchBarText?: TranslationKey;
 };
 
@@ -67,7 +66,6 @@ export const MultiSelectCustom = ({
 	selectedOptionsTitle,
 	selectedOptions,
 	setSelectedOptions,
-	customSetSelected,
 	searchBarText,
 }: DropDownProps): ReactElement => {
 	const reference = useRef<HTMLInputElement>(null);
@@ -90,26 +88,15 @@ export const MultiSelectCustom = ({
 
 	const onSelect = (item: OptionProp, e?: FormEvent<HTMLElement>): void => {
 		e?.stopPropagation();
-
 		item.checked = !item.checked;
 
 		if (item.checked === true) {
-			// the user has enabled this option -> add it to the selected options
 			setSelectedOptions([...new Set([...selectedOptions, item])]);
-			customSetSelected((prevItems) => {
-				const newItems = prevItems;
-				const toggledItem = newItems.find(({ id }) => id === item.id);
-
-				if (toggledItem) {
-					toggledItem.checked = !toggledItem.checked;
-				}
-
-				return [...prevItems];
-			});
-		} else {
-			// the user has disabled this option -> remove this from the selected options list
-			setSelectedOptions(selectedOptions.filter((option: OptionProp) => option.id !== item.id));
+			return;
 		}
+
+		// the user has disabled this option -> remove this from the selected options list
+		setSelectedOptions(selectedOptions.filter((option: OptionProp) => option.id !== item.id));
 	};
 
 	const count = dropdownOptions.filter((option) => option.checked).length;

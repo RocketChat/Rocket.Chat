@@ -8,6 +8,7 @@ export type SeatCapProps = {
 };
 
 export const useSeatsCap = (): SeatCapProps | undefined => {
+	// #TODO: Stop using this endpoint
 	const fetch = useEndpoint('GET', '/v1/licenses.maxActiveUsers');
 
 	const result = useQuery(['/v1/licenses.maxActiveUsers'], () => fetch());
@@ -18,7 +19,7 @@ export const useSeatsCap = (): SeatCapProps | undefined => {
 
 	return {
 		activeUsers: result.data.activeUsers,
-		maxActiveUsers: result.data.maxActiveUsers ?? Number.POSITIVE_INFINITY,
+		maxActiveUsers: result.data.maxActiveUsers && result.data.maxActiveUsers > 0 ? result.data.maxActiveUsers : Number.POSITIVE_INFINITY,
 		reload: () => result.refetch(),
 	};
 };

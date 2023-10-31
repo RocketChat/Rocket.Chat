@@ -10,18 +10,17 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
 
 	const { data: licensesData, isSuccess: isSuccessLicense } = useLicense();
-	const { data: registrationStatusData, isSuccess: isSuccessRegistrationStatus } = useRegistrationStatus();
+	const { isRegistered, isSuccess: isSuccessRegistrationStatus } = useRegistrationStatus();
 
-	const registered = registrationStatusData?.registrationStatus?.workspaceRegistered ?? false;
-	const hasValidLicense = licensesData?.licenses.some((license) => license.modules.length > 0) ?? false;
+	const hasValidLicense = Boolean(licensesData?.license ?? false);
 	const hadExpiredTrials = cloudWorkspaceHadTrial ?? false;
 
-	const trialLicense = licensesData?.licenses?.find(({ meta }) => meta?.trial);
-	const isTrial = licensesData?.licenses?.every(({ meta }) => meta?.trial) ?? false;
-	const trialEndDate = trialLicense?.meta ? format(new Date(trialLicense.meta.trialEnd), 'yyyy-MM-dd') : undefined;
+	const isTrial = Boolean(licensesData?.trial);
+	const trialEndDateStr = licensesData?.license?.information?.visualExpiration;
+	const trialEndDate = trialEndDateStr ? format(new Date(trialEndDateStr), 'yyyy-MM-dd') : undefined;
 
 	const upgradeTabType = getUpgradeTabType({
-		registered,
+		registered: isRegistered || false,
 		hasValidLicense,
 		hadExpiredTrials,
 		isTrial,
