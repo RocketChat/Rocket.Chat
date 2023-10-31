@@ -1,6 +1,6 @@
 import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 
-import type { Importer } from '../classes/ImporterBase';
+import type { Importer } from '../classes/Importer';
 
 export type ImporterInfo = {
 	key: string;

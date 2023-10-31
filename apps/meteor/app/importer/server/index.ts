@@ -1,5 +1,5 @@
 import { ProgressStep } from '../lib/ImporterProgressStep';
-import { Importer } from './classes/ImporterBase';
+import { Importer } from './classes/Importer';
 import { Selection } from './classes/ImporterSelection';
 import { SelectionChannel } from './classes/ImporterSelectionChannel';
 import { SelectionUser } from './classes/ImporterSelectionUser';

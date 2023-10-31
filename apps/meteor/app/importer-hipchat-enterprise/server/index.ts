@@ -1,5 +1,5 @@
 import { Importers } from '../../importer/server';
-import { HipChatEnterpriseImporter } from './importer';
+import { HipChatEnterpriseImporter } from './HipChatEnterpriseImporter';
 
 Importers.add({
 	key: 'hipchatenterprise',

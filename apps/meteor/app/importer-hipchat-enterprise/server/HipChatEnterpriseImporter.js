@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Importer, ProgressStep } from '../../importer/server';
 
+/** @deprecated HipChat was discontinued at 2019-02-15 */
 export class HipChatEnterpriseImporter extends Importer {
 	constructor(info, importRecord, converterOptions = {}) {
 		super(info, importRecord, converterOptions);
