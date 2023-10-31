@@ -41,20 +41,17 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	const formatDate = useFormatDate();
 
 	const { data: licenseData, isLoading, refetch: refetchLicense } = useLicense();
-	const { data: regStatus } = useRegistrationStatus();
+	const { isRegistered } = useRegistrationStatus();
 
 	const [actionItems, setActionItems] = useState<VersionActionItem[]>([]);
 	const [actionButton, setActionButton] = useState<VersionActionButton>();
 	const [versionStatus, setVersionStatus] = useState<VersionStatus>();
 
-	const isRegistered = regStatus?.registrationStatus.workspaceRegistered || false;
-
-	const { license, tags, trial, limits } = licenseData || {};
+	const { license, tags, trial: isTrial, limits } = licenseData || {};
 	const isAirgapped = license?.information?.offline;
 	const licenseName = tags?.[0]?.name ?? 'Community';
-	const isTrial = trial;
 	const visualExpiration = formatDate(license?.information?.visualExpiration || '');
-	const licenseLimits = limits;
+
 	const serverVersion = serverInfo.version;
 	const supportedVersions = useMemo(
 		() => decodeBase64(serverInfo?.supportedVersions?.signed || ''),
@@ -80,7 +77,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	const getActionItems = useCallback(() => {
 		const items: VersionActionItem[] = [];
 		let btn;
-		const isOverLimits = licenseLimits ? isOverLicenseLimits(licenseLimits) : false;
+		const isOverLimits = limits ? isOverLicenseLimits(limits) : false;
 
 		if (isOverLimits) {
 			items.push({
@@ -168,7 +165,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 		}
 
 		setActionItems(items.sort((a) => (a.type === 'danger' ? -1 : 1)));
-	}, [licenseLimits, isAirgapped, isRegistered, versionStatus, visualExpiration]);
+	}, [limits, isAirgapped, isRegistered, versionStatus, visualExpiration]);
 
 	useEffect(() => {
 		if (!supportedVersions.versions) {
