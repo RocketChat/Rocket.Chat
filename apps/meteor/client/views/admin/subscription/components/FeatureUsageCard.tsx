@@ -31,7 +31,6 @@ const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactEleme
 			</CardBody>
 			{showUpgradeButton && (
 				<CardFooter>
-					{' '}
 					<UpgradeButton small i18nKey={upgradeButtonText} />
 				</CardFooter>
 			)}
