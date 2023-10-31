@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 export const useRegisterMethod = () => {
 	const register = useEndpoint('POST', '/v1/users.register');
 	const secret = useRouteParameter('hash');
+
 	const login = useLoginWithPassword();
 
 	return useMutation({

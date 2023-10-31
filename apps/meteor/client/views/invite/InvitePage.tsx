@@ -8,9 +8,9 @@ import {
 	useTranslation,
 	useRouter,
 } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import LoginPage from '../root/MainLayout/LoginPage';
@@ -26,14 +26,9 @@ const InvitePage = (): ReactElement => {
 	const userId = useUserId();
 	const router = useRouter();
 
-	const handleInviteRoom = useCallback(async () => {
-		if (!token) {
-			return;
-		}
-
-		try {
-			const result = await sdk.rest.post('/v1/useInviteToken', { token });
-
+	const inviteTokenMutation = useMutation({
+		mutationFn: (token: string) => sdk.rest.post('/v1/useInviteToken', { token }),
+		onSuccess: (result) => {
 			if (!result.room.name) {
 				dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
 				router.navigate('/home');
@@ -46,11 +41,12 @@ const InvitePage = (): ReactElement => {
 			}
 
 			router.navigate(`/channel/${result.room.name}`);
-		} catch (error) {
+		},
+		onError: () => {
 			dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
 			router.navigate('/home');
-		}
-	}, [t, dispatchToastMessage, router, token]);
+		},
+	});
 
 	const { isLoading, data } = useQuery(
 		['invite', token],
@@ -70,6 +66,10 @@ const InvitePage = (): ReactElement => {
 		},
 		{
 			onSuccess: async (valid) => {
+				if (!token) {
+					return;
+				}
+
 				if (registrationForm !== 'Disabled') {
 					setLoginDefaultState('register');
 				} else {
@@ -80,16 +80,16 @@ const InvitePage = (): ReactElement => {
 					return;
 				}
 
-				return handleInviteRoom();
+				return inviteTokenMutation.mutate(token);
 			},
 		},
 	);
 
 	useEffect(() => {
-		if (userId) {
-			handleInviteRoom();
+		if (userId && token) {
+			inviteTokenMutation.mutate(token);
 		}
-	}, [handleInviteRoom, userId]);
+	}, [inviteTokenMutation, token, userId]);
 
 	if (data) {
 		return <LoginPage />;
