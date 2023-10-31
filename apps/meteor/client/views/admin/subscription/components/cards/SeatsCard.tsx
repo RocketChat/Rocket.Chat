@@ -6,15 +6,16 @@ import type { CardProps } from '../FeatureUsageCard';
 import PieGraphCard from '../PieGraphCard';
 
 type SeatsCardProps = {
-	seatsLimit?: { value?: number; max: number };
+	value: number;
+	max: number;
 };
 
-const SeatsCard = ({ seatsLimit }: SeatsCardProps): ReactElement => {
+const SeatsCard = ({ value, max }: SeatsCardProps): ReactElement => {
 	const { t } = useTranslation();
 
-	const pieGraph = seatsLimit && {
-		used: seatsLimit.value || 0,
-		total: seatsLimit.max,
+	const pieGraph = {
+		used: value,
+		total: max,
 	};
 
 	const nearLimit = pieGraph && pieGraph.used / pieGraph.total >= 0.8;
@@ -26,7 +27,7 @@ const SeatsCard = ({ seatsLimit }: SeatsCardProps): ReactElement => {
 		upgradeButtonText: 'Buy_more',
 	};
 
-	return <PieGraphCard pieGraph={pieGraph} card={card} isLoading={Boolean(!seatsLimit)} />;
+	return <PieGraphCard pieGraph={pieGraph} card={card} />;
 };
 
 export default SeatsCard;

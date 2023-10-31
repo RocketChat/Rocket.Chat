@@ -3,7 +3,7 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { CardCol, CardColSection, CardFooter, FramedIcon } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { PRICING_LINK } from '../../utils/links';
 import FeatureUsageCard from '../FeatureUsageCard';
@@ -91,11 +91,9 @@ const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps): React
 					</Box>
 				</CardCol>
 				<CardFooter>
-					<Trans i18nKey='Compare_plans'>
-						<Box is='a' target='_blank' rel='noopener noreferrer' href={PRICING_LINK} textDecorationLine='underline'>
-							Compare plans
-						</Box>
-					</Trans>
+					<Box is='a' target='_blank' rel='noopener noreferrer' href={PRICING_LINK} textDecorationLine='underline'>
+						{t('Compare_plans')}
+					</Box>
 				</CardFooter>
 			</CardColSection>
 		</FeatureUsageCard>

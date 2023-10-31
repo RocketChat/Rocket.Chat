@@ -5,16 +5,12 @@ import { useTranslation } from 'react-i18next';
 import type { CardProps } from '../FeatureUsageCard';
 import PieGraphCard from '../PieGraphCard';
 
-type MACCardProps = {
-	macLimit?: { value?: number; max: number };
-};
-
-const MACCard = ({ macLimit }: MACCardProps): ReactElement => {
+const MACCard = ({ value = 0, max }: { value: number; max: number }): ReactElement => {
 	const { t } = useTranslation();
 
-	const pieGraph = macLimit && {
-		used: macLimit?.value || 0,
-		total: macLimit.max || 100,
+	const pieGraph = {
+		used: value,
+		total: max,
 	};
 
 	const nearLimit = pieGraph && pieGraph.used / pieGraph.total >= 0.8;
@@ -26,7 +22,7 @@ const MACCard = ({ macLimit }: MACCardProps): ReactElement => {
 		upgradeButtonText: 'Buy_more',
 	};
 
-	return <PieGraphCard pieGraph={pieGraph} card={card} isLoading={!macLimit} />;
+	return <PieGraphCard pieGraph={pieGraph} card={card} />;
 };
 
 export default MACCard;

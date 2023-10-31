@@ -1,4 +1,3 @@
-import { Skeleton } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -10,12 +9,11 @@ import type { UsagePieGraphProps } from './UsagePieGraph';
 import UsagePieGraph from './UsagePieGraph';
 
 type PieGraphCardProps = {
-	pieGraph: UsagePieGraphProps | undefined;
+	pieGraph: UsagePieGraphProps;
 	card: CardProps;
-	isLoading: boolean;
 };
 
-const PieGraphCard = ({ pieGraph, card, isLoading }: PieGraphCardProps): ReactElement => {
+const PieGraphCard = ({ pieGraph, card }: PieGraphCardProps): ReactElement => {
 	const t = useTranslation();
 
 	const quantityAvailable = pieGraph && Math.max(pieGraph.total - pieGraph.used, 0);
@@ -23,11 +21,7 @@ const PieGraphCard = ({ pieGraph, card, isLoading }: PieGraphCardProps): ReactEl
 
 	return (
 		<FeatureUsageCard card={card}>
-			{!isLoading && pieGraph ? (
-				<UsagePieGraph label={`${quantityAvailable} ${t('Available')}`} used={pieGraph.used} total={pieGraph.total} color={color} />
-			) : (
-				<Skeleton variant='rect' width='x112' height='x112' />
-			)}
+			<UsagePieGraph label={`${quantityAvailable} ${t('Available')}`} used={pieGraph.used} total={pieGraph.total} color={color} />)
 		</FeatureUsageCard>
 	);
 };

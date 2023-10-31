@@ -4,8 +4,7 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useExternalLink } from '../../../../hooks/useExternalLink';
-import { useCheckoutUrl } from '../hooks/useCheckoutUrl';
+import { useCheckoutUrlAction } from '../hooks/useCheckoutUrl';
 
 type UpgradeButtonProps = {
 	i18nKey?: string;
@@ -13,21 +12,20 @@ type UpgradeButtonProps = {
 
 const UpgradeButton = ({ i18nKey = 'Manage_subscription', ...props }: UpgradeButtonProps): ReactElement => {
 	const { t } = useTranslation();
-	const handleExternalLink = useExternalLink();
-	const { isLoading, url } = useCheckoutUrl();
+	const mutation = useCheckoutUrlAction();
 
 	const handleBtnClick = () => {
-		if (isLoading) {
+		if (mutation.isLoading) {
 			return;
 		}
 
-		handleExternalLink(url);
+		mutation.mutate();
 	};
 
 	return (
 		<ButtonGroup align='end'>
-			<Button onClick={() => handleBtnClick()} {...props}>
-				{isLoading ? <Throbber inheritColor size='x12' /> : t(i18nKey)}
+			<Button onClick={() => handleBtnClick()} {...props} disabled={mutation.isLoading}>
+				{mutation.isLoading ? <Throbber inheritColor size='x12' /> : t(i18nKey)}
 			</Button>
 		</ButtonGroup>
 	);

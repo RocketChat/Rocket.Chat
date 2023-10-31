@@ -2,15 +2,22 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
+import { getURL } from '../../../utils/server/getURL';
+import { getWorkspaceAccessTokenOrThrow } from './getWorkspaceAccessToken';
 
-type CheckoutBodyParams = {
-	okCallback: string;
-	cancelCallback: string;
-	meta?: Record<string, string>;
-};
-
-export const getCheckoutUrl = async (token: string, body: CheckoutBodyParams) => {
+export const getCheckoutUrl = async () => {
 	try {
+		const token = await getWorkspaceAccessTokenOrThrow(false, 'workspace:billing');
+
+		const subscriptionURL = getURL('admin/subscription', {
+			full: true,
+		});
+
+		const body = {
+			okCallback: `${subscriptionURL}?subscriptionSuccess=true`,
+			cancelCallback: subscriptionURL,
+		};
+
 		const billingUrl = settings.get<string>('Cloud_Billing_Url');
 
 		const response = await fetch(`${billingUrl}/api/v2/checkout`, {
@@ -21,9 +28,8 @@ export const getCheckoutUrl = async (token: string, body: CheckoutBodyParams) =>
 			body,
 		});
 
-		if (!response.url) {
-			const { i18n } = await response.json();
-			throw new Error(i18n);
+		if (!response.ok) {
+			throw new Error(await response.json());
 		}
 
 		return response.json();

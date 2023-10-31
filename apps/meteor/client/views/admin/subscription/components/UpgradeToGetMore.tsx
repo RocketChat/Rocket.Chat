@@ -1,8 +1,7 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Grid, Button } from '@rocket.chat/fuselage';
 import { Card, CardBody, CardTitle, FramedIcon } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import React, { memo } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { PRICING_LINK } from '../utils/links';
 
@@ -11,38 +10,32 @@ type UpgradeToGetMoreProps = {
 	isEnterprise: boolean;
 };
 
-const UpgradeToGetMore = ({ activeModules, isEnterprise }: UpgradeToGetMoreProps): ReactElement => {
+const enterpriseModules = [
+	'scalability',
+	'accessibility-certification',
+	'engagement-dashboard',
+	'oauth-enterprise',
+	'custom-roles',
+	'auditing',
+];
+
+const UpgradeToGetMore = ({ activeModules }: UpgradeToGetMoreProps) => {
 	const { t } = useTranslation();
 
-	const getEnterpriseSectionContent = () => {
-		const enterpriseModules = [
-			'scalability',
-			'accessibility-certification',
-			'engagement-dashboard',
-			'oauth-enterprise',
-			'custom-roles',
-			'auditing',
-		];
-
-		if (!isEnterprise) {
-			return enterpriseModules.map((module) => {
-				return { title: t(`UpgradeToGetMore_${module}_Title`), body: t(`UpgradeToGetMore_${module}_Body`) };
-			});
-		}
-
-		const missingModules = enterpriseModules.filter((module) => !activeModules.includes(module));
-
-		return missingModules.map((module) => {
+	const upgradeModules = enterpriseModules
+		.filter((module) => !activeModules.includes(module))
+		.map((module) => {
 			return {
 				title: t(`UpgradeToGetMore_${module}_Title`),
 				body: t(`UpgradeToGetMore_${module}_Body`),
 			};
 		});
-	};
 
-	const upgradeModules = getEnterpriseSectionContent();
+	if (upgradeModules?.length === 0) {
+		return null;
+	}
 
-	return upgradeModules?.length > 0 ? (
+	return (
 		<Box w='full' textAlign='center' p={8} mbs={40}>
 			<States>
 				<StatesIcon name='rocket' />
@@ -70,14 +63,10 @@ const UpgradeToGetMore = ({ activeModules, isEnterprise }: UpgradeToGetMoreProps
 					</Grid.Item>
 				))}
 			</Grid>
-			<Trans i18nKey='Compare_plans'>
-				<Button is='a' external href={PRICING_LINK}>
-					Compare plans
-				</Button>
-			</Trans>
+			<Button is='a' external href={PRICING_LINK}>
+				{t('Compare_plans')}
+			</Button>
 		</Box>
-	) : (
-		<></>
 	);
 };
 

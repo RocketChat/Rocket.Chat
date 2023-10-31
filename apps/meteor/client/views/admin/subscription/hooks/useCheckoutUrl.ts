@@ -1,23 +1,20 @@
-import type { OperationResult } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import type { UseQueryResult } from '@tanstack/react-query';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
+import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { CONTACT_SALES_LINK } from '../utils/links';
 
-export const useCheckoutUrl = (): { isLoading: boolean; isError: boolean; url: string } => {
+export const useCheckoutUrlAction = () => {
 	const getCheckoutUrl = useEndpoint('GET', '/v1/billing.checkoutUrl');
+	const handleExternalLink = useExternalLink();
 
-	const { data, isLoading, isError }: UseQueryResult<OperationResult<'GET', '/v1/billing.checkoutUrl'>> = useQuery(
-		['billing', 'checkoutUrl'],
-		() => getCheckoutUrl(),
-		{
-			staleTime: Infinity,
-			keepPreviousData: true,
+	return useMutation({
+		mutationFn: async () => {
+			const { url } = await getCheckoutUrl();
+			handleExternalLink(url);
 		},
-	);
-
-	const url = data?.url || CONTACT_SALES_LINK;
-
-	return { isLoading, isError, url };
+		onError: () => {
+			handleExternalLink(CONTACT_SALES_LINK);
+		},
+	});
 };

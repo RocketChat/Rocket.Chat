@@ -95,9 +95,9 @@ const InformationPage = memo(function InformationPage({
 							<Grid.Item xl={12} height={!showSeatCap ? '50%' : 'full'}>
 								<LicenseCard />
 							</Grid.Item>
-							{!showSeatCap && (
+							{seatsCap && seatsCap.maxActiveUsers !== Infinity && (
 								<Grid.Item xl={12} height='50%'>
-									<SeatsCard />
+									<SeatsCard value={seatsCap.activeUsers} max={seatsCap.maxActiveUsers} />
 								</Grid.Item>
 							)}
 						</Grid.Item>

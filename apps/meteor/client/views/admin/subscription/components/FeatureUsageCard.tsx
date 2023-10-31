@@ -1,4 +1,3 @@
-import { Box } from '@rocket.chat/fuselage';
 import { Card, CardBody, CardColSection, CardFooter, CardTitle } from '@rocket.chat/ui-client';
 import type { ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
@@ -23,16 +22,19 @@ const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactEleme
 	return (
 		<Card>
 			<CardTitle>
-				<Box display='flex' alignItems='center'>
-					{title} {infoText && <InfoTextIconModal title={title} infoText={infoText} />}
-				</Box>
+				{title} {infoText && <InfoTextIconModal title={title} infoText={infoText} />}
 			</CardTitle>
-			<CardBody>
+			<CardBody height='x184'>
 				<CardColSection display='flex' flexDirection='row' justifyContent='center' alignItems='center' fontScale='p2' h='full' w='full'>
 					{children}
 				</CardColSection>
 			</CardBody>
-			<CardFooter>{showUpgradeButton && <UpgradeButton small i18nKey={upgradeButtonText} />}</CardFooter>
+			{showUpgradeButton && (
+				<CardFooter>
+					{' '}
+					<UpgradeButton small i18nKey={upgradeButtonText} />
+				</CardFooter>
+			)}
 		</Card>
 	);
 };

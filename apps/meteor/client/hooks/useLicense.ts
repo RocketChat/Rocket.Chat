@@ -31,8 +31,8 @@ export const useLicense = (params?: LicenseParams): UseQueryResult<Serialized<Li
 	const notify = useSingleStream('notify-all');
 
 	useEffect(() => notify('license', () => invalidateQueryClientLicenses(queryClient)), [notify, queryClient]);
-	const queryKey = params?.loadValues ? ['licenses', 'getLicensesWithValues'] : ['licenses', 'getLicenses'];
-	return useQuery(queryKey, () => getLicenses({ ...params }), {
+
+	return useQuery(['licenses', 'getLicenses', params?.loadValues], () => getLicenses({ ...params }), {
 		staleTime: Infinity,
 		keepPreviousData: true,
 		select: (data) => data.license,
