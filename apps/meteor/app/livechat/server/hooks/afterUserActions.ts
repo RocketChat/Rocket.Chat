@@ -3,6 +3,7 @@ import { Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
+import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
 
 type IAfterSaveUserProps = {
 	user: IUser;
@@ -16,7 +17,7 @@ const handleAgentUpdated = async (userData: IAfterSaveUserProps) => {
 	const { user: newUser, oldUser } = userData;
 
 	if (wasAgent(oldUser) && !isAgent(newUser)) {
-		await Livechat.afterRemoveAgent(newUser);
+		await LivechatTyped.afterRemoveAgent(newUser);
 	}
 
 	if (!wasAgent(oldUser) && isAgent(newUser)) {

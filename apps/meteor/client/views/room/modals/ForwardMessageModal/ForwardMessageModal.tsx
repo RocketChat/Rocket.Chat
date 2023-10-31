@@ -37,17 +37,12 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 		mutationFn: async () => {
 			const optionalMessage = '';
 			const curMsg = await prependReplies(optionalMessage, [message]);
+			const sendPayload = {
+				roomId: rooms,
+				text: curMsg,
+			};
 
-			return Promise.all(
-				rooms.map(async (roomId) => {
-					const sendPayload = {
-						roomId,
-						text: curMsg,
-					};
-
-					await sendMessage(sendPayload);
-				}),
-			);
+			return sendMessage(sendPayload);
 		},
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Message_has_been_forwarded') });
