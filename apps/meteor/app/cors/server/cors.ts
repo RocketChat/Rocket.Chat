@@ -88,9 +88,9 @@ declare module 'meteor/webapp' {
 	}
 }
 
-let CachingVersion = '';
+let cachingVersion = '';
 settings.watch<string>('Troubleshoot_Force_Caching_Version', (value) => {
-	CachingVersion = String(value).trim();
+	cachingVersion = String(value).trim();
 });
 
 // @ts-expect-error - accessing internal property of webapp
@@ -103,8 +103,8 @@ WebAppInternals.staticFilesMiddleware = function (
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	const { arch, path, url } = WebApp.categorizeRequest(req);
 
-	if (CachingVersion && req.cookies.cache_version !== CachingVersion) {
-		res.cookie('cache_version', CachingVersion);
+	if (cachingVersion && req.cookies.cache_version !== cachingVersion) {
+		res.cookie('cache_version', cachingVersion);
 		res.setHeader('Clear-Site-Data', '"cache"');
 	}
 
