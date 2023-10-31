@@ -497,7 +497,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Department not found [error-department-not-found]');
+					expect(res.body).to.have.property('error', '[error-department-not-found]');
 				});
 		});
 
