@@ -2,6 +2,7 @@ import { check } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { getCheckoutUrl } from '../../../cloud/server/functions/getCheckoutUrl';
 import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirmationPoll';
 import { registerPreIntentWorkspaceWizard } from '../../../cloud/server/functions/registerPreIntentWorkspaceWizard';
 import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
@@ -144,6 +145,31 @@ API.v1.addRoute(
 			} catch (error) {
 				return API.v1.failure('Error during workspace sync');
 			}
+		},
+	},
+);
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Endpoints {
+		'/v1/cloud.checkoutUrl': {
+			GET: () => { url: string };
+		};
+	}
+}
+
+API.v1.addRoute(
+	'cloud.checkoutUrl',
+	{ authRequired: true, permissionsRequired: ['manage-cloud'] },
+	{
+		async get() {
+			const checkoutUrl = await getCheckoutUrl();
+
+			if (!checkoutUrl.url) {
+				return API.v1.failure();
+			}
+
+			return API.v1.success({ url: checkoutUrl.url });
 		},
 	},
 );

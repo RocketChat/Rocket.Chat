@@ -5,7 +5,7 @@ import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { CONTACT_SALES_LINK } from '../utils/links';
 
 export const useCheckoutUrlAction = () => {
-	const getCheckoutUrl = useEndpoint('GET', '/v1/billing.checkoutUrl');
+	const getCheckoutUrl = useEndpoint('GET', '/v1/cloud.checkoutUrl');
 	const handleExternalLink = useExternalLink();
 
 	return useMutation({
