@@ -2,23 +2,23 @@ import type { DatumId } from '@nivo/pie';
 import { Pie } from '@nivo/pie';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactElement, CSSProperties, ReactNode } from 'react';
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, memo } from 'react';
 
-import { useLocalePercentage } from '../../../hooks/useLocalePercentage';
+import { useLocalePercentage } from '../../../../hooks/useLocalePercentage';
 
 type GraphColorsReturn = { [key: string]: string };
 
 const graphColors = (color: CSSProperties['color']): GraphColorsReturn => ({
-	used: color || Palette.stroke['stroke-highlight'].toString(),
+	used: color || Palette.statusColor['status-font-on-success'].toString(),
 	free: Palette.stroke['stroke-extra-light'].toString(),
 });
 
-type UsageGraphProps = {
+export type UsagePieGraphProps = {
 	used: number;
 	total: number;
-	label: ReactNode;
+	label?: ReactNode;
 	color?: string;
-	size: number;
+	size?: number;
 };
 
 type GraphData = Array<{
@@ -27,7 +27,7 @@ type GraphData = Array<{
 	value: number;
 }>;
 
-const UsageGraph = ({ used = 0, total = 0, label, color, size }: UsageGraphProps): ReactElement => {
+const UsagePieGraph = ({ used = 0, total = 0, label, color, size = 140 }: UsagePieGraphProps): ReactElement => {
 	const parsedData = useMemo(
 		(): GraphData => [
 			{
@@ -77,7 +77,6 @@ const UsageGraph = ({ used = 0, total = 0, label, color, size }: UsageGraphProps
 						alignItems='center'
 						justifyContent='center'
 						position='absolute'
-						color={color}
 						fontScale='p2m'
 						style={{ left: 0, right: 0, top: 0, bottom: 0 }}
 					>
@@ -85,17 +84,14 @@ const UsageGraph = ({ used = 0, total = 0, label, color, size }: UsageGraphProps
 					</Box>
 				</Box>
 			</Box>
-			<span>
-				<Box is='span' color='default'>
-					{used}
-				</Box>{' '}
-				/ {unlimited ? '∞' : total}
-			</span>
-			<Box is='span' mbs={4}>
+			<Box is='span' fontScale='p2' color='font-secondary-info'>
+				{used} / {unlimited ? '∞' : total}
+			</Box>
+			<Box is='span' mbs={4} color='font-secondary-info'>
 				{label}
 			</Box>
 		</Box>
 	);
 };
 
-export default UsageGraph;
+export default memo(UsagePieGraph);

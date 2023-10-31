@@ -65,8 +65,7 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 	const isAdmin = useRole('admin');
 	const setModal = useSetModal();
 
-	const { data: registrationStatusData } = useRegistrationStatus();
-	const workspaceRegistered = registrationStatusData?.registrationStatus?.workspaceRegistered ?? false;
+	const { isRegistered } = useRegistrationStatus();
 
 	const handleRegisterWorkspaceClick = (): void => {
 		const handleModalClose = (): void => setModal(null);
@@ -102,10 +101,10 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 	};
 	const adminItem: GenericMenuItemProps = {
 		id: 'registration',
-		content: workspaceRegistered ? t('Registration') : t('Register'),
+		content: isRegistered ? t('Registration') : t('Register'),
 		icon: 'cloud-plus',
 		onClick: () => {
-			if (workspaceRegistered) {
+			if (isRegistered) {
 				cloudRoute.push({ context: '/' });
 				return;
 			}
