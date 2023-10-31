@@ -1,16 +1,15 @@
-import type { Serialized } from '@rocket.chat/core-typings';
 import { Accordion } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import GenericModal from '../../../../components/GenericModal';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import GenericModal from '../../../../../../components/GenericModal';
+import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 import DescriptionList from './DescriptionList';
 import DescriptionListEntry from './DescriptionListEntry';
 
 type InstancesModalProps = {
-	instances: Serialized<IInstance>[];
+	instances: IInstance[];
 	onClose: () => void;
 };
 

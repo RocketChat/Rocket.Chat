@@ -3,8 +3,8 @@ import type { ComponentMeta, ComponentStory, Story } from '@storybook/react';
 import type { ComponentProps } from 'react';
 import React from 'react';
 
-import { useAutoSequence } from '../../../stories/hooks/useAutoSequence';
-import UsagePieGraph from '../subscription/components/UsagePieGraph';
+import { useAutoSequence } from '../../../../stories/hooks/useAutoSequence';
+import UsagePieGraph from './UsagePieGraph';
 
 export default {
 	title: 'Admin/Info/UsagePieGraph',

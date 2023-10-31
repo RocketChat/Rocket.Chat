@@ -1,11 +1,11 @@
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import UsageCard from './UsageCard';
+import MessagesRoomsCard from './MessagesRoomsCard';
 
 export default {
-	title: 'Admin/Info/UsageCard',
-	component: UsageCard,
+	title: 'Admin/Info/MessagesRoomsCard',
+	component: MessagesRoomsCard,
 	parameters: {
 		layout: 'centered',
 	},
@@ -39,6 +39,7 @@ export default {
 			totalChannelMessages: 213,
 			totalPrivateGroupMessages: 21,
 			totalDirectMessages: 23,
+			totalDiscussionsMessages: 32,
 			totalLivechatMessages: 31,
 			// -
 			_id: '',
@@ -257,13 +258,10 @@ export default {
 			},
 		},
 	},
-} as ComponentMeta<typeof UsageCard>;
+} as ComponentMeta<typeof MessagesRoomsCard>;
 
-const Template: ComponentStory<typeof UsageCard> = (args) => <UsageCard {...args} />;
+const Template: ComponentStory<typeof MessagesRoomsCard> = (args) => <MessagesRoomsCard {...args} />;
 
 export const Example = Template.bind({});
 
 export const Vertical = Template.bind({});
-Vertical.args = {
-	vertical: true,
-};

@@ -21,7 +21,7 @@ test.describe.serial('administration-menu', () => {
 		await expect(page).toHaveURL('admin/upgrade/go-fully-featured');
 	});
 
-	test('expect open info page', async ({ page }) => {
+	test('expect open Workspace page', async ({ page }) => {
 		test.skip(!IS_EE, 'Enterprise only');
 		await poHomeDiscussion.sidenav.openAdministrationByLabel('Workspace');
 
