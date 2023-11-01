@@ -273,6 +273,4 @@ export type EventSignatures = {
 	'command.updated'(command: string): void;
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
-	'mac.limitReached'(): void;
-	'mac.limitRestored'(): void;
 };

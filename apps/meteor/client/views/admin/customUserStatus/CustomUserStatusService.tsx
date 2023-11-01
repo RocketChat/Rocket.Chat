@@ -18,7 +18,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { ContextualbarContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import { useActiveConnections } from './hooks/useActiveConnections';
+import { useActiveConnections } from '../../hooks/useActiveConnections';
 
 const CustomUserStatusService = () => {
 	const { t } = useTranslation();

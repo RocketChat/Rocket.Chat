@@ -44,7 +44,7 @@ const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportForm
 		setValue,
 		control,
 		register,
-		formState: { errors, isDirty },
+		formState: { errors, isDirty, isSubmitting },
 		handleSubmit,
 		clearErrors,
 	} = useFormContext<MailExportFormValues>();
@@ -209,7 +209,7 @@ const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportForm
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button disabled={!isDirty} form={formId} primary type='submit'>
+					<Button loading={isSubmitting} disabled={!isDirty} form={formId} primary type='submit'>
 						{t('Send')}
 					</Button>
 				</ButtonGroup>
