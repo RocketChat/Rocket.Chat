@@ -1,7 +1,7 @@
 import type { ImporterInfo } from '../definitions/ImporterInfo';
 
 /** Container class which holds all of the importer details. */
-class ImportersContainer {
+export class ImportersContainer {
 	private importers: Map<ImporterInfo['key'], ImporterInfo>;
 
 	constructor() {
@@ -25,5 +25,3 @@ class ImportersContainer {
 		return Array.from(this.importers.values()).filter(({ visible }) => visible);
 	}
 }
-
-export const Importers = new ImportersContainer();
