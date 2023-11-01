@@ -169,12 +169,7 @@ function AppInstallPage() {
 				handleClose={cancelAction}
 				handleConfirm={() => uploadFile(appFile, manifest)}
 				handleEnableUnlimitedApps={() => {
-					router.navigate({
-						name: 'upgrade',
-						params: {
-							type: 'go-fully-featured-registered',
-						},
-					});
+					router.navigate('/admin/subscription');
 					setModal(null);
 				}}
 			/>,
