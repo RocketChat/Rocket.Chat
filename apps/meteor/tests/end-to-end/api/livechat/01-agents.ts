@@ -13,8 +13,12 @@ import {
 	takeInquiry,
 	fetchInquiry,
 	makeAgentAvailable,
+	startANewLivechatRoomAndTakeIt,
+	moveBackToQueue,
+	closeOmnichannelRoom,
 } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import type { IUserCredentialsHeader } from '../../../data/user';
 import { password } from '../../../data/user';
 import { createUser, deleteUser, getMe, login, setUserStatus } from '../../../data/users.helper';
 
@@ -582,6 +586,68 @@ describe('LIVECHAT - Agents', function () {
 				});
 
 			await disableDefaultBusinessHour();
+		});
+	});
+
+	describe('Agent sidebar', () => {
+		let testUser: { user: IUser; credentials: IUserCredentialsHeader };
+		before(async () => {
+			const user = await createUser();
+			await createAgent(user.username);
+			const credentials2 = await login(user.username, password);
+			await makeAgentAvailable(credentials2);
+
+			testUser = {
+				user,
+				credentials: credentials2,
+			};
+		});
+		after(async () => {
+			await deleteUser(testUser.user._id);
+		});
+
+		it('should return an empty list of rooms for a newly created agent', async () => {
+			const { body } = await request.get(api('rooms.get')).set(testUser.credentials).send({}).expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body.update).to.be.an('array').with.lengthOf(1);
+			expect(body.update[0]._id).to.be.equal('GENERAL');
+		});
+
+		it('should have a new room in his sidebar after taking a conversation from the queue', async () => {
+			const { room } = await startANewLivechatRoomAndTakeIt({ agent: testUser.credentials });
+
+			const { body } = await request.get(api('rooms.get')).set(testUser.credentials).send({}).expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body.update).to.be.an('array').with.lengthOf(2);
+			expect(body.update.find((r: { _id: string }) => r._id === room._id)).to.be.an('object');
+			expect(body.update.find((r: { _id: string }) => r._id === 'GENERAL')).to.be.an('object');
+		});
+
+		it('should not have the room if user moves room back to queue', async () => {
+			const { room } = await startANewLivechatRoomAndTakeIt({ agent: testUser.credentials });
+
+			await moveBackToQueue(room._id, testUser.credentials);
+
+			const { body } = await request
+				.get(api('rooms.get'))
+				.set(testUser.credentials)
+				.query({ updatedSince: new Date(new Date().getTime() - 2000) })
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body.update.find((r: { _id: string }) => r._id === room._id)).to.be.undefined;
+		});
+
+		it('should not have the room if the user closes the room', async () => {
+			const { room } = await startANewLivechatRoomAndTakeIt({ agent: testUser.credentials });
+
+			await closeOmnichannelRoom(room._id);
+
+			const { body } = await request.get(api('rooms.get')).set(testUser.credentials).expect(200);
+
+			expect(body.update.find((r: { _id: string }) => r._id === room._id)).to.be.undefined;
 		});
 	});
 });
