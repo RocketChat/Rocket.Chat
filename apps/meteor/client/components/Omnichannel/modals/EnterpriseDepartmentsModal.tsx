@@ -29,7 +29,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 		<Modal data-qa-id='enterprise-departments-modal' ref={ref}>
 			<Modal.Header>
 				<Modal.HeaderText>
-					<Modal.Tagline>{t('Enterprise_capability')}</Modal.Tagline>
+					<Modal.Tagline>{t('Premium_capability')}</Modal.Tagline>
 					<Modal.Title>{t('Departments')}</Modal.Title>
 				</Modal.HeaderText>
 				<Modal.Close onClick={onClose} data-qa='modal-close' />
@@ -39,7 +39,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 				<Box fontScale='h3' mbe={28}>
 					{t('Enterprise_Departments_title')}
 				</Box>
-				{t('Enterprise_Departments_description_upgrade')}
+				{t('Premium_Departments_description_upgrade')}
 			</Modal.Content>
 			<Modal.Footer>
 				{hasPermission('view-statistics') ? (
