@@ -8,6 +8,7 @@ import { LivechatRooms, Subscriptions, LivechatInquiry } from '@rocket.chat/mode
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 
 export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelEEService {
@@ -40,8 +41,12 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		if (room.onHold) {
 			throw new Error('error-room-is-already-on-hold');
 		}
-		if (room.lastMessage?.token) {
-			throw new Error('error-contact-sent-last-message-so-cannot-place-on-hold');
+		const restrictedOnHold = settings.get('Livechat_allow_manual_on_hold_upon_agent_engagement_only');
+		const canRoomBePlacedOnHold = !room.onHold;
+		const canAgentPlaceOnHold = !room.lastMessage?.token;
+		const canPlaceChatOnHold = canRoomBePlacedOnHold && (!restrictedOnHold || canAgentPlaceOnHold);
+		if (!canPlaceChatOnHold) {
+			throw new Error('error-cannot-place-chat-on-hold');
 		}
 		if (!room.servedBy) {
 			throw new Error('error-unserved-rooms-cannot-be-placed-onhold');
