@@ -3,7 +3,7 @@ import { Messages, Settings, ImportData } from '@rocket.chat/models';
 import type { IZipEntry } from 'adm-zip';
 
 import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server';
-import type { Progress } from '../../importer/server/classes/ImporterProgress';
+import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { settings } from '../../settings/server';
 import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
@@ -266,7 +266,7 @@ export class SlackImporter extends Importer {
 		return data.length;
 	}
 
-	async prepareUsingLocalFile(fullFilePath: string): Promise<Progress> {
+	async prepareUsingLocalFile(fullFilePath: string): Promise<ImporterProgress> {
 		this.logger.debug('start preparing import operation');
 		await this.converter.clearImportData();
 

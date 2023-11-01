@@ -24,7 +24,7 @@ export const ProgressStep = Object.freeze({
 	DONE: 'importer_done',
 	ERROR: 'importer_import_failed',
 	CANCELLED: 'importer_import_cancelled',
-} as Record<string, IImportProgress['step']>);
+} satisfies Record<string, IImportProgress['step']>);
 
 export const ImportWaitingStates: IImportProgress['step'][] = [ProgressStep.NEW, ProgressStep.UPLOADING, ProgressStep.DOWNLOADING_FILE];
 

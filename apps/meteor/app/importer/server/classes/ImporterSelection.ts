@@ -1,6 +1,6 @@
 import type { IImporterSelection, IImporterSelectionChannel, IImporterSelectionUser } from '@rocket.chat/core-typings';
 
-export class Selection implements IImporterSelection {
+export class ImporterSelection implements IImporterSelection {
 	public name: string;
 
 	public users: IImporterSelectionUser[];

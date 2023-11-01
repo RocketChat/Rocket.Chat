@@ -8,7 +8,7 @@ import { Random } from '@rocket.chat/random';
 import { FileUpload } from '../../file-upload/server';
 import { Importer, ProgressStep, Selection } from '../../importer/server';
 import type { IConverterOptions } from '../../importer/server/classes/ImportDataConverter';
-import type { Progress } from '../../importer/server/classes/ImporterProgress';
+import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
 
 export class PendingFileImporter extends Importer {
@@ -40,7 +40,7 @@ export class PendingFileImporter extends Importer {
 		return fileCount;
 	}
 
-	async startImport(importSelection: Selection): Promise<Progress> {
+	async startImport(importSelection: Selection): Promise<ImporterProgress> {
 		const downloadedFileIds: string[] = [];
 		const maxFileCount = 10;
 		const maxFileSize = 1024 * 1024 * 500;

@@ -4,7 +4,7 @@ import type { IImportUser, IImport, ImportStatus } from '@rocket.chat/core-typin
 import { Imports, ImportData } from '@rocket.chat/models';
 import { ObjectId } from 'mongodb';
 
-import { Selection } from '../../../app/importer/server/classes/ImporterSelection';
+import { ImporterSelection } from '../../../app/importer/server/classes/ImporterSelection';
 import { Importers } from '../../../app/importer/server/classes/ImportersContainer';
 import { settings } from '../../../app/settings/server';
 import { validateRoleList } from '../../lib/roles/validateRoleList';
@@ -175,7 +175,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 			skipExistingUsers: true,
 		});
 
-		const selection = new Selection(importer.name, [], [], 0);
+		const selection = new ImporterSelection(importer.name, [], [], 0);
 		await instance.startImport(selection, userId);
 	}
 }

@@ -1,7 +1,7 @@
 import { Users } from '@rocket.chat/models';
 
 import { Importer, ProgressStep, Selection } from '../../importer/server';
-import type { Progress } from '../../importer/server/classes/ImporterProgress';
+import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import { setAvatarFromServiceWithValidation } from '../../lib/server/functions/setUserAvatar';
 
 export class PendingAvatarImporter extends Importer {
@@ -31,7 +31,7 @@ export class PendingAvatarImporter extends Importer {
 		return fileCount;
 	}
 
-	async startImport(importSelection: Selection): Promise<Progress> {
+	async startImport(importSelection: Selection): Promise<ImporterProgress> {
 		const pendingFileUserList = Users.findAllUsersWithPendingAvatar();
 		try {
 			for await (const user of pendingFileUserList) {

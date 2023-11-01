@@ -7,7 +7,7 @@ import { parse } from 'csv-parse/lib/sync';
 import { RocketChatFile } from '../../file/server';
 import { Importer, ProgressStep } from '../../importer/server';
 import type { IConverterOptions } from '../../importer/server/classes/ImportDataConverter';
-import type { Progress } from '../../importer/server/classes/ImporterProgress';
+import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
 
 export class SlackUsersImporter extends Importer {
@@ -19,7 +19,7 @@ export class SlackUsersImporter extends Importer {
 		this.csvParser = parse;
 	}
 
-	async prepareUsingLocalFile(fullFilePath: string): Promise<Progress> {
+	async prepareUsingLocalFile(fullFilePath: string): Promise<ImporterProgress> {
 		this.logger.debug('start preparing import operation');
 		await this.converter.clearImportData();
 
@@ -35,7 +35,7 @@ export class SlackUsersImporter extends Importer {
 		return this.prepare(dataURI, fileName || '');
 	}
 
-	async prepare(dataURI: string, fileName: string): Promise<Progress> {
+	async prepare(dataURI: string, fileName: string): Promise<ImporterProgress> {
 		this.logger.debug('start preparing import operation');
 		await this.converter.clearImportData();
 		await this.updateRecord({ file: fileName });

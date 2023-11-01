@@ -11,7 +11,7 @@ import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterPr
 import type { ImporterInfo } from '../definitions/ImporterInfo';
 import { ImportDataConverter } from './ImportDataConverter';
 import type { IConverterOptions } from './ImportDataConverter';
-import { Progress } from './ImporterProgress';
+import { ImporterProgress } from './ImporterProgress';
 import { ImporterWebsocket } from './ImporterWebsocket';
 
 type OldSettings = {
@@ -42,7 +42,7 @@ export class Importer {
 
 	public importRecord: IImport;
 
-	public progress: Progress;
+	public progress: ImporterProgress;
 
 	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: IConverterOptions = {}) {
 		if (!info.key || !info.importer) {
@@ -57,7 +57,7 @@ export class Importer {
 		this.converter.setLogger(this.logger);
 
 		this.importRecord = importRecord;
-		this.progress = new Progress(this.info.key, this.info.name);
+		this.progress = new ImporterProgress(this.info.key, this.info.name);
 		this.oldSettings = {};
 
 		this.progress.step = this.importRecord.status;
@@ -79,9 +79,9 @@ export class Importer {
 	 * Takes the uploaded file and extracts the users, channels, and messages from it.
 	 *
 	 * @param {string} _fullFilePath the full path of the uploaded file
-	 * @returns {Progress} The progress record of the import.
+	 * @returns {ImporterProgress} The progress record of the import.
 	 */
-	async prepareUsingLocalFile(_fullFilePath: string): Promise<Progress> {
+	async prepareUsingLocalFile(_fullFilePath: string): Promise<ImporterProgress> {
 		return this.updateProgress(ProgressStep.PREPARING_STARTED);
 	}
 
@@ -92,9 +92,9 @@ export class Importer {
 	 * The returned object should be the progress.
 	 *
 	 * @param {Selection} importSelection The selection data.
-	 * @returns {Progress} The progress record of the import.
+	 * @returns {ImporterProgress} The progress record of the import.
 	 */
-	async startImport(importSelection: Selection, startedByUserId: string): Promise<Progress> {
+	async startImport(importSelection: Selection, startedByUserId: string): Promise<ImporterProgress> {
 		if (!(importSelection instanceof Selection)) {
 			throw new Error(`Invalid Selection data provided to the ${this.info.name} importer.`);
 		} else if (importSelection.users === undefined) {
@@ -247,7 +247,7 @@ export class Importer {
 		await Settings.updateValueById('FileUpload_MediaTypeBlackList', settingValues.mediaTypeBlackList ?? '');
 	}
 
-	getProgress(): Progress {
+	getProgress(): ImporterProgress {
 		return this.progress;
 	}
 
@@ -257,9 +257,9 @@ export class Importer {
 	 * This way the importer can adjust user/room information at will.
 	 *
 	 * @param {ProgressStep} step The progress step which this import is currently at.
-	 * @returns {Progress} The progress record of the import.
+	 * @returns {ImporterProgress} The progress record of the import.
 	 */
-	async updateProgress(step: IImportProgress['step']): Promise<Progress> {
+	async updateProgress(step: IImportProgress['step']): Promise<ImporterProgress> {
 		this.progress.step = step;
 
 		this.logger.debug(`${this.info.name} is now at ${step}.`);
@@ -283,9 +283,9 @@ export class Importer {
 	 * Adds the passed in value to the total amount of items needed to complete.
 	 *
 	 * @param {number} count The amount to add to the total count of items.
-	 * @returns {Progress} The progress record of the import.
+	 * @returns {ImporterProgress} The progress record of the import.
 	 */
-	async addCountToTotal(count: number): Promise<Progress> {
+	async addCountToTotal(count: number): Promise<ImporterProgress> {
 		this.progress.count.total += count;
 		await this.updateRecord({ 'count.total': this.progress.count.total });
 
@@ -296,15 +296,15 @@ export class Importer {
 	 * Adds the passed in value to the total amount of items completed.
 	 *
 	 * @param {number} count The amount to add to the total count of finished items.
-	 * @returns {Progress} The progress record of the import.
+	 * @returns {ImporterProgress} The progress record of the import.
 	 */
-	async addCountCompleted(count: number): Promise<Progress> {
+	async addCountCompleted(count: number): Promise<ImporterProgress> {
 		this.progress.count.completed += count;
 
 		return this.maybeUpdateRecord();
 	}
 
-	async addCountError(count: number): Promise<Progress> {
+	async addCountError(count: number): Promise<ImporterProgress> {
 		this.progress.count.error += count;
 
 		return this.maybeUpdateRecord();
@@ -314,7 +314,11 @@ export class Importer {
 		// Only update the database every 500 messages (or 50 for users/channels)
 		// Or the completed is greater than or equal to the total amount
 		const count = this.progress.count.completed + this.progress.count.error;
-		const range = [ProgressStep.IMPORTING_USERS, ProgressStep.IMPORTING_CHANNELS].includes(this.progress.step) ? 50 : 500;
+		const range = ([ProgressStep.IMPORTING_USERS, ProgressStep.IMPORTING_CHANNELS] as IImportProgress['step'][]).includes(
+			this.progress.step,
+		)
+			? 50
+			: 500;
 
 		if (count % range === 0 || count >= this.progress.count.total || count - this._lastProgressReportTotal > range) {
 			this._lastProgressReportTotal = this.progress.count.completed + this.progress.count.error;

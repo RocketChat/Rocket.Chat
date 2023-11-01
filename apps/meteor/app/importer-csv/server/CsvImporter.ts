@@ -5,7 +5,7 @@ import { parse } from 'csv-parse/lib/sync';
 
 import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import type { IConverterOptions } from '../../importer/server/classes/ImportDataConverter';
-import type { Progress } from '../../importer/server/classes/ImporterProgress';
+import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
 
 export class CsvImporter extends Importer {
@@ -17,7 +17,7 @@ export class CsvImporter extends Importer {
 		this.csvParser = parse;
 	}
 
-	async prepareUsingLocalFile(fullFilePath: string): Promise<Progress> {
+	async prepareUsingLocalFile(fullFilePath: string): Promise<ImporterProgress> {
 		this.logger.debug('start preparing import operation');
 		await this.converter.clearImportData();
 

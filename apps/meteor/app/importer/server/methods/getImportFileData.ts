@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import type { IImporterSelection } from '@rocket.chat/core-typings';
+import type { IImportProgress, IImporterSelection } from '@rocket.chat/core-typings';
 import { Imports } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
@@ -26,7 +26,7 @@ export const executeGetImportFileData = async (): Promise<IImporterSelection | {
 
 	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
-	const waitingSteps = [
+	const waitingSteps: IImportProgress['step'][] = [
 		ProgressStep.DOWNLOADING_FILE,
 		ProgressStep.PREPARING_CHANNELS,
 		ProgressStep.PREPARING_MESSAGES,
@@ -41,7 +41,12 @@ export const executeGetImportFileData = async (): Promise<IImporterSelection | {
 		throw new Meteor.Error('error-import-operation-invalid', 'Invalid Import Operation', 'getImportFileData');
 	}
 
-	const readySteps = [ProgressStep.USER_SELECTION, ProgressStep.DONE, ProgressStep.CANCELLED, ProgressStep.ERROR];
+	const readySteps: IImportProgress['step'][] = [
+		ProgressStep.USER_SELECTION,
+		ProgressStep.DONE,
+		ProgressStep.CANCELLED,
+		ProgressStep.ERROR,
+	];
 
 	if (readySteps.indexOf(instance.progress.step) >= 0) {
 		return instance.buildSelection();

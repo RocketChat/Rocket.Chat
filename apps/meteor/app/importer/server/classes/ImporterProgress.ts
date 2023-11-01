@@ -2,7 +2,7 @@ import type { IImportProgress } from '@rocket.chat/core-typings';
 
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 
-export class Progress implements IImportProgress {
+export class ImporterProgress implements IImportProgress {
 	public key: string;
 
 	public name: string;
