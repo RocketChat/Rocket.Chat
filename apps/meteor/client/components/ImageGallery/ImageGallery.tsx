@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton, Throbber } from '@rocket.chat/fuselage';
 import React, { useRef, useState } from 'react';
+import { FocusScope } from 'react-aria';
 import { createPortal } from 'react-dom';
 import { Keyboard, Navigation, Zoom, A11y } from 'swiper';
 import type { SwiperRef } from 'swiper/react';
@@ -95,40 +96,42 @@ const ImageGallery = () => {
 	}
 
 	return createPortal(
-		<Box className={swiperStyle}>
-			<div className='swiper-container'>
-				<IconButton icon='cross' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
-				<IconButton icon='chevron-right' className='rcx-swiper-prev-button' onClick={() => swiperRef?.current?.swiper.slidePrev()} />
-				<IconButton icon='chevron-left' className='rcx-swiper-next-button' onClick={() => swiperRef?.current?.swiper.slideNext()} />
-				<Swiper
-					ref={swiperRef}
-					navigation={{
-						nextEl: '.rcx-swiper-next-button',
-						prevEl: '.rcx-swiper-prev-button',
-					}}
-					keyboard
-					zoom
-					lazyPreloaderClass='rcx-lazy-preloader'
-					runCallbacksOnInit
-					initialSlide={currentSlide}
-					onKeyPress={(_, keyCode) => String(keyCode) === '27' && onClose()}
-					modules={[Navigation, Zoom, Keyboard, A11y]}
-					onInit={(swiper) => setSwiperInst(swiper)}
-					onReachEnd={loadMore}
-				>
-					{images?.map((image, index) => (
-						<SwiperSlide key={`${image}-${index}`}>
-							<div className='swiper-zoom-container'>
-								<img src={image} loading='lazy' />
-								<div className='rcx-lazy-preloader'>
-									<Throbber />
+		<FocusScope contain restoreFocus autoFocus>
+			<Box className={swiperStyle}>
+				<div className='swiper-container'>
+					<IconButton icon='cross' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
+					<IconButton icon='chevron-right' className='rcx-swiper-prev-button' onClick={() => swiperRef?.current?.swiper.slidePrev()} />
+					<IconButton icon='chevron-left' className='rcx-swiper-next-button' onClick={() => swiperRef?.current?.swiper.slideNext()} />
+					<Swiper
+						ref={swiperRef}
+						navigation={{
+							nextEl: '.rcx-swiper-next-button',
+							prevEl: '.rcx-swiper-prev-button',
+						}}
+						keyboard
+						zoom
+						lazyPreloaderClass='rcx-lazy-preloader'
+						runCallbacksOnInit
+						initialSlide={currentSlide}
+						onKeyPress={(_, keyCode) => String(keyCode) === '27' && onClose()}
+						modules={[Navigation, Zoom, Keyboard, A11y]}
+						onInit={(swiper) => setSwiperInst(swiper)}
+						onReachEnd={loadMore}
+					>
+						{images?.map((image, index) => (
+							<SwiperSlide key={`${image}-${index}`}>
+								<div className='swiper-zoom-container'>
+									<img src={image} loading='lazy' />
+									<div className='rcx-lazy-preloader'>
+										<Throbber />
+									</div>
 								</div>
-							</div>
-						</SwiperSlide>
-					))}
-				</Swiper>
-			</div>
-		</Box>,
+							</SwiperSlide>
+						))}
+					</Swiper>
+				</div>
+			</Box>
+		</FocusScope>,
 		document.body,
 	);
 };
