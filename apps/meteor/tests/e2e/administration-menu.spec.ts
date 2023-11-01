@@ -14,13 +14,6 @@ test.describe.serial('administration-menu', () => {
 		await page.goto('/home');
 	});
 
-	test('expect open upgrade page', async ({ page }) => {
-		test.skip(IS_EE, 'Community Only');
-		await poHomeDiscussion.sidenav.openAdministrationByLabel('Go fully featured ⚡');
-
-		await expect(page).toHaveURL('admin/upgrade/go-fully-featured');
-	});
-
 	test('expect open Workspace page', async ({ page }) => {
 		test.skip(!IS_EE, 'Enterprise only');
 		await poHomeDiscussion.sidenav.openAdministrationByLabel('Workspace');

@@ -1,6 +1,5 @@
 import { lazy } from 'react';
 
-import type { UpgradeTabVariant } from '../../../lib/upgradeTab';
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -100,10 +99,6 @@ declare module '@rocket.chat/ui-contexts' {
 		'engagement-dashboard': {
 			pathname: `/admin/engagement${`/${string}` | ''}`;
 			pattern: '/admin/engagement/:tab?';
-		};
-		'upgrade': {
-			pathname: `/admin/upgrade${`/${UpgradeTabVariant}` | ''}`;
-			pattern: '/admin/upgrade/:type?';
 		};
 		'moderation-console': {
 			pathname: `/admin/moderation${`/${string}` | ''}${`/${string}` | ''}`;
@@ -230,11 +225,6 @@ registerAdminRoute('/email-inboxes/:context?/:_id?', {
 registerAdminRoute('/settings/:group?', {
 	name: 'admin-settings',
 	component: lazy(() => import('./settings/SettingsRoute')),
-});
-
-registerAdminRoute('/upgrade/:type?', {
-	name: 'upgrade',
-	component: lazy(() => import('./upgrade/UpgradePage')),
 });
 
 registerAdminRoute('/moderation/:context?/:id?', {
