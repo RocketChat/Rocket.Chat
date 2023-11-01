@@ -194,6 +194,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 			return request.get(api('livechat/monitors')).set(credentials).expect(403);
 		});
 		it('should return all monitors', async () => {
+			await restorePermissionToRoles('manage-livechat-monitors');
 			const user = await createUser();
 			await createMonitor(user.username);
 
