@@ -7,7 +7,6 @@ import { canAccessRoomIdAsync } from '../../../authorization/server/functions/ca
 import { slashCommands } from '../../../utils/server/slashCommand';
 import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
-import { getPaginationItems } from '../helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'commands.get',
@@ -41,8 +40,6 @@ const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string,
 		sort?: {
 			[key: string]: 1 | -1;
 		};
-		limit?: number;
-		skip?: number;
 	} = {},
 ): Pick<T, F>[] => {
 	if (result === undefined || result === null) {
@@ -77,14 +74,6 @@ const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string,
 				}
 				return r;
 			});
-		}
-
-		if (typeof options.skip === 'number') {
-			result.splice(0, options.skip);
-		}
-
-		if (typeof options.limit === 'number' && options.limit !== 0) {
-			result.splice(options.limit);
 		}
 	}
 
@@ -142,8 +131,6 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const params = this.queryParams as Record<string, any>;
-			const { offset, count } = await getPaginationItems(params);
 			const { sort, query } = await this.parseJsonQuery();
 
 			let commands = Object.values(slashCommands.commands);
@@ -157,11 +144,7 @@ API.v1.addRoute(
 			return API.v1.success({
 				commands: processQueryOptionsOnResult(commands, {
 					sort: sort || { name: 1 },
-					skip: offset,
-					limit: count,
 				}),
-				offset,
-				count: commands.length,
 				total: totalCount,
 			});
 		},
