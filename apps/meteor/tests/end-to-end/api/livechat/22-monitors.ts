@@ -14,7 +14,7 @@ import {
 	makeAgentAvailable,
 } from '../../../data/livechat/rooms';
 import { createMonitor, createUnit } from '../../../data/livechat/units';
-import { updateSetting, updatePermission } from '../../../data/permissions.helper';
+import { updateSetting, updatePermission, restorePermissionToRoles, removePermissionFromAllRoles } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
 import { createUser, deleteUser, login, setUserActiveStatus } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -190,11 +190,10 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 
 	describe('[GET] livechat/monitors', () => {
 		it('should fail if manage-livechat-monitors permission is missing', async () => {
-			await updatePermission('manage-livechat-monitors', []);
+			await restorePermissionToRoles('manage-livechat-monitors');
 			return request.get(api('livechat/monitors')).set(credentials).expect(403);
 		});
 		it('should return all monitors', async () => {
-			await updatePermission('manage-livechat-monitors', ['admin']);
 			const user = await createUser();
 			await createMonitor(user.username);
 
@@ -210,11 +209,11 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 
 	describe('livechat/monitors/:username', () => {
 		it('should fail if manage-livechat-monitors permission is missing', async () => {
-			await updatePermission('manage-livechat-monitors', []);
+			await removePermissionFromAllRoles('manage-livechat-monitors');
 			return request.get(api('livechat/monitors/123')).set(credentials).expect(403);
 		});
 		it('should return a monitor', async () => {
-			await updatePermission('manage-livechat-monitors', ['admin']);
+			await restorePermissionToRoles('manage-livechat-monitors');
 			const user = await createUser();
 			await createMonitor(user.username);
 

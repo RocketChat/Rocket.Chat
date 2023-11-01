@@ -15,7 +15,7 @@ import {
 	getLivechatRoomInfo,
 } from '../../../data/livechat/rooms';
 import { createMonitor, createUnit } from '../../../data/livechat/units';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
@@ -24,7 +24,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
-		await updatePermission('view-livechat-manager', ['admin']);
+		await restorePermissionToRoles('view-livechat-manager');
 		await createAgent();
 		await makeAgentAvailable();
 		await updateSetting('Omnichannel_enable_department_removal', true);
