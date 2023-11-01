@@ -5,41 +5,38 @@ import { ImageGalleryContext } from '../contexts/ImageGalleryContext';
 
 type ImageGalleryProviderProps = {
 	children: ReactNode;
-	imageSelector?: string;
-	containerSelector?: string;
 };
 
-const ImageGalleryProvider = ({ children, imageSelector, containerSelector }: ImageGalleryProviderProps) => {
-	const [imageUrl, setImageUrl] = useState<string>();
+const ImageGalleryProvider = ({ children }: ImageGalleryProviderProps) => {
+	const [imageId, setImageId] = useState<string>();
 
 	useEffect(() => {
 		document.addEventListener('click', (event: Event) => {
 			const target = event?.target as HTMLElement | null;
-
 			if (target?.classList.contains('gallery-item')) {
-				return setImageUrl(target.dataset.src || target?.parentElement?.parentElement?.querySelector('img')?.src);
+				return setImageId(target.dataset.id || target?.parentElement?.parentElement?.dataset.id);
 			}
 
 			if (target?.classList.contains('gallery-item-container')) {
-				return setImageUrl((target.querySelector('img.rcx-avatar__element') as HTMLImageElement | null)?.src);
+				return setImageId(target.dataset.id);
 			}
 			if (
 				target?.classList.contains('gallery-item') &&
 				target?.parentElement?.parentElement?.classList.contains('gallery-item-container')
 			) {
-				return setImageUrl((target.parentElement.parentElement.querySelector('img.rcx-avatar__element') as HTMLImageElement | null)?.src);
+				return setImageId(target.dataset.id || target?.parentElement?.parentElement?.dataset.id);
 			}
 
 			if (target?.classList.contains('rcx-avatar__element') && target?.parentElement?.classList.contains('gallery-item')) {
-				return setImageUrl((target as HTMLImageElement).src);
+				return setImageId(target.dataset.id || target?.parentElement?.parentElement?.dataset.id);
 			}
 		});
-	}, [containerSelector, imageSelector]);
+	}, []);
 
 	return (
-		<ImageGalleryContext.Provider value={{ imageUrl: imageUrl || '', isOpen: !!imageUrl, onClose: () => setImageUrl(undefined) }}>
+		<ImageGalleryContext.Provider value={{ imageId: imageId || '', isOpen: !!imageId, onClose: () => setImageId(undefined) }}>
 			{children}
-			{!!imageUrl && <ImageGallery />}
+			{!!imageId && <ImageGallery />}
 		</ImageGalleryContext.Provider>
 	);
 };

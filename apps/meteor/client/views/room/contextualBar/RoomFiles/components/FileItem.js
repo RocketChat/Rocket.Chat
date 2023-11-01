@@ -22,7 +22,7 @@ const FileItem = ({ fileData, isDeletionAllowed, onClickDelete }) => {
 	return (
 		<Box display='flex' p={12} borderRadius='x4' style={style} className={[className, hoverClass]}>
 			{typeGroup === 'image' ? (
-				<ImageItem url={url} name={name} username={user?.username} timestamp={format(uploadedAt)} />
+				<ImageItem id={_id} url={url} name={name} username={user?.username} timestamp={format(uploadedAt)} />
 			) : (
 				<Box
 					is='a'

@@ -2,14 +2,15 @@ import { Avatar, Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 type ImageItemProps = {
+	id: string;
 	url: string | undefined;
 	name: string | undefined;
 	timestamp: string;
 	username: string;
 };
-const ImageItem = ({ url, name, timestamp, username }: ImageItemProps) => {
+const ImageItem = ({ id, url, name, timestamp, username }: ImageItemProps) => {
 	return (
-		<Box minWidth={0} className='gallery-item-container' title={name} display='flex' flexGrow={1} flexShrink={1}>
+		<Box minWidth={0} data-id={id} className='gallery-item-container' title={name} display='flex' flexGrow={1} flexShrink={1}>
 			{url && <Avatar size='x48' url={url} className='gallery-item' />}
 			<Box mis={8} flexShrink={1} overflow='hidden' className='gallery-item' cursor='default'>
 				{name && (

@@ -89,7 +89,7 @@ const ImageGallery = () => {
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();
 
-	const { isLoading, currentSlide, loadMore, images, onClose } = useImageGallery();
+	const { isLoading, loadMore, images, onClose } = useImageGallery();
 
 	if (isLoading) {
 		return <ImageGalleryLoader onClose={onClose} />;
@@ -100,8 +100,8 @@ const ImageGallery = () => {
 			<Box className={swiperStyle}>
 				<div className='swiper-container'>
 					<IconButton icon='cross' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
-					<IconButton icon='chevron-right' className='rcx-swiper-prev-button' onClick={() => swiperRef?.current?.swiper.slidePrev()} />
-					<IconButton icon='chevron-left' className='rcx-swiper-next-button' onClick={() => swiperRef?.current?.swiper.slideNext()} />
+					<IconButton icon='chevron-right' className='rcx-swiper-prev-button' />
+					<IconButton icon='chevron-left' className='rcx-swiper-next-button' />
 					<Swiper
 						ref={swiperRef}
 						navigation={{
@@ -112,16 +112,15 @@ const ImageGallery = () => {
 						zoom
 						lazyPreloaderClass='rcx-lazy-preloader'
 						runCallbacksOnInit
-						initialSlide={currentSlide}
 						onKeyPress={(_, keyCode) => String(keyCode) === '27' && onClose()}
 						modules={[Navigation, Zoom, Keyboard, A11y]}
 						onInit={(swiper) => setSwiperInst(swiper)}
 						onReachEnd={loadMore}
 					>
-						{images?.map((image, index) => (
-							<SwiperSlide key={`${image}-${index}`}>
+						{images?.map(({ _id, url }) => (
+							<SwiperSlide key={_id}>
 								<div className='swiper-zoom-container'>
-									<img src={image} loading='lazy' />
+									<img src={url} loading='lazy' />
 									<div className='rcx-lazy-preloader'>
 										<Throbber />
 									</div>

@@ -1,13 +1,13 @@
 import { createContext } from 'react';
 
 export type ImageGalleryContextValue = {
-	imageUrl: string;
+	imageId: string;
 	isOpen: boolean;
 	onClose: () => void;
 };
 
 export const ImageGalleryContext = createContext<ImageGalleryContextValue>({
-	imageUrl: '',
+	imageId: '',
 	isOpen: false,
 	onClose: () => undefined,
 });
