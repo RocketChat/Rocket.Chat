@@ -39,7 +39,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 				<Box fontScale='h3' mbe={28}>
 					{t('Enterprise_Departments_title')}
 				</Box>
-				{isTypeUpgradeYourPlan ? t('Premium_Departments_description_free_trial') : t('Premium_Departments_description_upgrade')}
+				{t('Premium_Departments_description_upgrade')}
 			</Modal.Content>
 			<Modal.Footer>
 				{hasPermission('view-statistics') ? (
