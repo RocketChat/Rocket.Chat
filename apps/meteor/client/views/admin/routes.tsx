@@ -1,6 +1,5 @@
 import { lazy } from 'react';
 
-import type { UpgradeTabVariant } from '../../../lib/upgradeTab';
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -13,9 +12,13 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/admin/sounds${`/${string}` | ''}${`/${string}` | ''}`;
 			pattern: '/admin/sounds/:context?/:id?';
 		};
-		'admin-info': {
+		'info': {
 			pathname: '/admin/info';
 			pattern: '/admin/info';
+		};
+		'workspace': {
+			pathname: '/admin/workspace';
+			pattern: '/admin/workspace';
 		};
 		'admin-import': {
 			pathname: '/admin/import';
@@ -97,10 +100,6 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/admin/engagement${`/${string}` | ''}`;
 			pattern: '/admin/engagement/:tab?';
 		};
-		'upgrade': {
-			pathname: `/admin/upgrade${`/${UpgradeTabVariant}` | ''}`;
-			pattern: '/admin/upgrade/:type?';
-		};
 		'moderation-console': {
 			pathname: `/admin/moderation${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
 			pattern: '/admin/moderation/:tab?/:context?/:id?';
@@ -123,9 +122,15 @@ registerAdminRoute('/sounds/:context?/:id?', {
 	component: lazy(() => import('./customSounds/CustomSoundsRoute')),
 });
 
+/** @deprecated in favor of `/workspace` route, this is a fallback to work in Mobile app, should be removed in the next major  */
 registerAdminRoute('/info', {
-	name: 'admin-info',
-	component: lazy(() => import('./info/InformationRoute')),
+	name: 'info',
+	component: lazy(() => import('./workspace/WorkspaceRoute')),
+});
+
+registerAdminRoute('/workspace', {
+	name: 'workspace',
+	component: lazy(() => import('./workspace/WorkspaceRoute')),
 });
 
 registerAdminRoute('/import', {
@@ -220,11 +225,6 @@ registerAdminRoute('/email-inboxes/:context?/:_id?', {
 registerAdminRoute('/settings/:group?', {
 	name: 'admin-settings',
 	component: lazy(() => import('./settings/SettingsRoute')),
-});
-
-registerAdminRoute('/upgrade/:type?', {
-	name: 'upgrade',
-	component: lazy(() => import('./upgrade/UpgradePage')),
 });
 
 registerAdminRoute('/moderation/:tab?/:context?/:id?', {

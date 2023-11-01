@@ -21,7 +21,7 @@ const PieGraphCard = ({ pieGraph, card }: PieGraphCardProps): ReactElement => {
 
 	return (
 		<FeatureUsageCard card={card}>
-			<UsagePieGraph label={`${quantityAvailable} ${t('Available')}`} used={pieGraph.used} total={pieGraph.total} color={color} />)
+			<UsagePieGraph label={`${quantityAvailable} ${t('Available')}`} used={pieGraph.used} total={pieGraph.total} color={color} />
 		</FeatureUsageCard>
 	);
 };
