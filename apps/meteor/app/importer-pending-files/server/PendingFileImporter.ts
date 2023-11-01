@@ -105,8 +105,6 @@ export class PendingFileImporter extends Importer {
 
 					const requestModule = /https/i.test(url) ? https : http;
 					const fileStore = FileUpload.getStore('Uploads');
-					const reportProgress = this.reportProgress.bind(this);
-					const getMessageAttachment = this.getMessageAttachment.bind(this);
 
 					nextSize = details.size;
 					await waitForFiles();
@@ -125,7 +123,7 @@ export class PendingFileImporter extends Importer {
 							rawData.push(chunk);
 
 							// Update progress more often on large files
-							reportProgress();
+							this.reportProgress();
 						});
 						res.on('error', async (error) => {
 							await completeFile(details);
@@ -138,7 +136,7 @@ export class PendingFileImporter extends Importer {
 								const file = await fileStore._doInsert(details, Buffer.concat(rawData));
 
 								const url = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
-								const attachment = getMessageAttachment(file, url);
+								const attachment = this.getMessageAttachment(file, url);
 
 								await Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment);
 								await completeFile(details);

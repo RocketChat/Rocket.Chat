@@ -51,13 +51,6 @@ export class Importer {
 
 		this.converter = new ImportDataConverter(converterOptions);
 
-		this.startImport = this.startImport.bind(this);
-		this.getProgress = this.getProgress.bind(this);
-		this.updateProgress = this.updateProgress.bind(this);
-		this.addCountToTotal = this.addCountToTotal.bind(this);
-		this.addCountCompleted = this.addCountCompleted.bind(this);
-		this.updateRecord = this.updateRecord.bind(this);
-
 		this.info = info;
 
 		this.logger = new Logger(`${this.info.name} Importer`);
