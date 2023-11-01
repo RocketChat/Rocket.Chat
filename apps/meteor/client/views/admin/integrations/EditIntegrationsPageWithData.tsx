@@ -16,7 +16,7 @@ const EditIntegrationsPageWithData = ({ integrationId }: { integrationId: IIncom
 
 	if (isLoading) {
 		return (
-			<Box w='full' pb={24}>
+			<Box w='full' p={24}>
 				<Skeleton mbe={4} />
 				<Skeleton mbe={8} />
 				<Skeleton mbe={4} />
