@@ -18,26 +18,17 @@ export class SelectionChannel implements IImporterSelectionChannel {
 	/**
 	 * Constructs a new selection channel.
 	 *
-	 * @param channel_id the unique identifier of the channel
+	 * @param channelId the unique identifier of the channel
 	 * @param name the name of the channel
-	 * @param is_archived whether the channel was archived or not
-	 * @param do_import whether we will be importing the channel or not
+	 * @param isArchived whether the channel was archived or not
+	 * @param doImport whether we will be importing the channel or not
 	 */
-	constructor(
-		/* eslint-disable @typescript-eslint/naming-convention */
-		channel_id: string,
-		name: string | undefined,
-		is_archived: boolean,
-		do_import: boolean,
-		is_private: boolean,
-		is_direct: boolean,
-		/* eslint-enable @typescript-eslint/naming-convention */
-	) {
-		this.channel_id = channel_id;
+	constructor(channelId: string, name: string | undefined, isArchived: boolean, doImport: boolean, isPrivate: boolean, isDirect: boolean) {
+		this.channel_id = channelId;
 		this.name = name;
-		this.is_archived = is_archived;
-		this.do_import = do_import;
-		this.is_private = is_private;
-		this.is_direct = is_direct;
+		this.is_archived = isArchived;
+		this.do_import = doImport;
+		this.is_private = isPrivate;
+		this.is_direct = isDirect;
 	}
 }

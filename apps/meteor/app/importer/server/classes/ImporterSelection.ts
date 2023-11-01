@@ -15,13 +15,12 @@ export class ImporterSelection implements IImporterSelection {
 	 * @param name the name of the importer
 	 * @param users the users which can be selected
 	 * @param channels the channels which can be selected
-	 * @param message_count the number of messages
+	 * @param messageCount the number of messages
 	 */
-	/* eslint-disable-next-line @typescript-eslint/naming-convention */
-	constructor(name: string, users: IImporterSelectionUser[], channels: IImporterSelectionChannel[], message_count: number) {
+	constructor(name: string, users: IImporterSelectionUser[], channels: IImporterSelectionChannel[], messageCount: number) {
 		this.name = name;
 		this.users = users;
 		this.channels = channels;
-		this.message_count = message_count;
+		this.message_count = messageCount;
 	}
 }
