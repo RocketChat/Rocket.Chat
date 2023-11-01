@@ -17,31 +17,15 @@ export class OmnichannelTriggers {
 	}
 
 	get inputName(): Locator {
-		return this.page.locator('[placeholder="Name"]');
+		return this.page.locator('input[name="name"]');
 	}
 
 	get inputDescription(): Locator {
-		return this.page.locator('[placeholder="Description"]');
-	}
-
-	get addTime(): Locator {
-		return this.page.locator('[placeholder="Time in seconds"]');
-	}
-
-	get impersonateAgentListBox(): Locator {
-		return this.page.locator('ol[role="listbox"] >> text=Impersonate next agent from queue');
-	}
-
-	get textArea(): Locator {
-		return this.page.locator('textarea');
+		return this.page.locator('input[name="description"]');
 	}
 
 	get btnSave(): Locator {
 		return this.page.locator('button >> text="Save"');
-	}
-
-	get firstRowInTable() {
-		return this.page.locator('table tr:first-child td:first-child');
 	}
 
 	firstRowInTriggerTable(triggersName1: string) {
@@ -56,14 +40,6 @@ export class OmnichannelTriggers {
 		return this.toastMessage.locator('role=button');
 	}
 
-	get inputSearch() {
-		return this.page.locator('[placeholder="Search"]');
-	}
-
-	get pageTitle() {
-		return this.page.locator('[data-qa-type="PageHeader-title"]');
-	}
-
 	get btnDeletefirstRowInTable() {
 		return this.page.locator('table tr:first-child td:last-child button');
 	}
@@ -76,33 +52,33 @@ export class OmnichannelTriggers {
 		return this.page.locator('text=Trigger removed');
 	}
 
-	get inputCondition(): Locator {
-		return this.page.locator('button', { has: this.page.locator('select[name="condition"]') });
+	get conditionLabel(): Locator {
+		return this.page.locator('label >> text="Condition"')
 	}
 
 	get inputConditionValue(): Locator {
-		return this.page.locator('input[name="conditionValue"]');
+		return this.page.locator('input[name="conditions.0.value"]');
 	}
 
-	get inputSender(): Locator {
-		return this.page.locator('button', { has: this.page.locator('select[name="sender"]') });
+	get actionLabel(): Locator {
+		return this.page.locator('label >> text="Action"')
 	}
 
 	get inputAgentName(): Locator {
-		return this.page.locator('input[name="agentName"]');
+		return this.page.locator('input[name="actions.0.params.name"]');
 	}
 
 	get inputTriggerMessage(): Locator {
-		return this.page.locator('textarea[name="triggerMessage"]');
+		return this.page.locator('textarea[name="actions.0.params.msg"]');
 	}
 
 	async selectCondition(condition: string) {
-		await this.inputCondition.click();
+		await this.conditionLabel.click();
 		await this.page.locator(`li.rcx-option[data-key="${condition}"]`).click();
 	}
 
 	async selectSender(sender: 'queue' | 'custom') {
-		await this.inputSender.click();
+		await this.actionLabel.click();
 		await this.page.locator(`li.rcx-option[data-key="${sender}"]`).click();
 	}
 

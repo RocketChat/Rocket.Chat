@@ -11,3 +11,4 @@ export * from './Card';
 export * from './Header';
 export * from './MultiSelectCustom/MultiSelectCustom';
 export * from './FeaturePreview/FeaturePreview';
+export * from './FramedIcon';
