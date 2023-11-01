@@ -36,12 +36,6 @@ export class Importer {
 
 	protected logger: Logger;
 
-	protected users: Record<string, any>;
-
-	protected channels: Record<string, any>;
-
-	protected messages: Record<string, any>;
-
 	protected oldSettings: OldSettings;
 
 	protected _lastProgressReportTotal = 0;
@@ -71,9 +65,6 @@ export class Importer {
 
 		this.importRecord = importRecord;
 		this.progress = new Progress(this.info.key, this.info.name);
-		this.users = {};
-		this.channels = {};
-		this.messages = {};
 		this.oldSettings = {};
 
 		this.progress.step = this.importRecord.status;
