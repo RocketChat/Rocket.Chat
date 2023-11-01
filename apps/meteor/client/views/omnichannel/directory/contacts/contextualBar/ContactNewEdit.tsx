@@ -83,7 +83,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 
 	const {
 		register,
-		formState: { errors, isValid, isDirty },
+		formState: { errors, isValid, isDirty, isSubmitting },
 		control,
 		setValue,
 		handleSubmit,
@@ -217,7 +217,15 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 					<Button flexGrow={1} onClick={close}>
 						{t('Cancel')}
 					</Button>
-					<Button mie='none' type='submit' onClick={handleSubmit(handleSave)} flexGrow={1} disabled={!isValid || !isDirty} primary>
+					<Button
+						mie='none'
+						type='submit'
+						onClick={handleSubmit(handleSave)}
+						flexGrow={1}
+						loading={isSubmitting}
+						disabled={!isValid || !isDirty}
+						primary
+					>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
