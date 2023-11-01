@@ -14,19 +14,19 @@ export const RegisterSecretPageRouter = ({
 	origin,
 }: {
 	setLoginRoute: DispatchLoginRouter;
-	origin: 'register' | 'secret-register';
+	origin: 'register' | 'secret-register' | 'invite-register';
 }): ReactElement => {
 	const registrationMode = useSetting<string>('Accounts_RegistrationForm');
 
 	const isPublicRegistration = registrationMode === 'Public';
 	const isRegistrationAllowedForSecret = registrationMode === 'Secret URL';
-	const isRegistrationDisabled = registrationMode === 'Disabled';
+	const isRegistrationDisabled = registrationMode === 'Disabled' || (origin === 'register' && isRegistrationAllowedForSecret);
 
 	if (origin === 'secret-register' && !isRegistrationAllowedForSecret) {
 		return <SecretRegisterInvalidForm />;
 	}
 
-	if (isPublicRegistration || (origin === 'register' && isRegistrationAllowedForSecret)) {
+	if (isPublicRegistration || (origin === 'invite-register' && isRegistrationAllowedForSecret)) {
 		return (
 			<RegisterTemplate>
 				<RegisterForm setLoginRoute={setLoginRoute} />

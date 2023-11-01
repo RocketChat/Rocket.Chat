@@ -51,7 +51,7 @@ const InvitePage = (): ReactElement => {
 				}
 
 				if (registrationForm !== 'Disabled') {
-					setLoginDefaultState('register');
+					setLoginDefaultState('invite-register');
 				} else {
 					setLoginDefaultState('login');
 				}
