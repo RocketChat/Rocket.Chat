@@ -422,7 +422,6 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 				(await Promise.all(
 					globalLimitKinds
 						.map((limitKey) => [limitKey, getLicenseLimit(license, limitKey)] as const)
-						.filter(([, max]) => max >= 0 && max < Infinity)
 						.map(async ([limitKey, max]) => {
 							return [
 								limitKey,
