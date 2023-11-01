@@ -105,7 +105,7 @@ class KonchatNotification {
 			this.close();
 			window.focus();
 
-			if (!notification.payload._id || !notification.payload.rid) {
+			if (!notification.payload._id || !notification.payload.rid || !notification.payload.name) {
 				return;
 			}
 
@@ -123,35 +123,29 @@ class KonchatNotification {
 						search: { ...router.getSearchParameters(), jump: notification.payload._id },
 					});
 				case 'c':
-					return (
-						notification.payload?.name &&
-						router.navigate({
-							pattern: '/channel/:name/:tab?/:context?',
-							params: {
-								name: notification.payload.name,
-								...(notification.payload.tmid && {
-									tab: 'thread',
-									context: notification.payload.tmid,
-								}),
-							},
-							search: { ...router.getSearchParameters(), jump: notification.payload._id },
-						})
-					);
+					return router.navigate({
+						pattern: '/channel/:name/:tab?/:context?',
+						params: {
+							name: notification.payload.name,
+							...(notification.payload.tmid && {
+								tab: 'thread',
+								context: notification.payload.tmid,
+							}),
+						},
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
+					});
 				case 'p':
-					return (
-						notification.payload?.name &&
-						router.navigate({
-							pattern: '/group/:name/:tab?/:context?',
-							params: {
-								name: notification.payload.name,
-								...(notification.payload.tmid && {
-									tab: 'thread',
-									context: notification.payload.tmid,
-								}),
-							},
-							search: { ...router.getSearchParameters(), jump: notification.payload._id },
-						})
-					);
+					return router.navigate({
+						pattern: '/group/:name/:tab?/:context?',
+						params: {
+							name: notification.payload.name,
+							...(notification.payload.tmid && {
+								tab: 'thread',
+								context: notification.payload.tmid,
+							}),
+						},
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
+					});
 			}
 		};
 	}
