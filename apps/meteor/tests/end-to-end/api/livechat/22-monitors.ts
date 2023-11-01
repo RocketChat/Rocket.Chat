@@ -190,7 +190,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 
 	describe('[GET] livechat/monitors', () => {
 		it('should fail if manage-livechat-monitors permission is missing', async () => {
-			await restorePermissionToRoles('manage-livechat-monitors');
+			await removePermissionFromAllRoles('manage-livechat-monitors');
 			return request.get(api('livechat/monitors')).set(credentials).expect(403);
 		});
 		it('should return all monitors', async () => {
