@@ -5194,6 +5194,8 @@
   "Troubleshoot_Disable_Workspace_Sync_Alert": "This setting stops the sync of this server with Rocket.Chat's cloud and may cause issues with marketplace and enteprise licenses!",
   "Troubleshoot_Disable_Teams_Mention": "Disable Teams mention",
   "Troubleshoot_Disable_Teams_Mention_Alert": "This setting disables the teams mention feature. User's won't be able to mention a Team by name in a message and get its members notified.",
+  "Troubleshoot_Force_Caching_Version": "Force browsers to clear networking cache based on version change",
+  "Troubleshoot_Force_Caching_Version_Alert": "If the value provided is not empty and different from previous one the browsers will try to clear the cache. This setting should not be set for a long period since it affects the browser performance, please clear it as soon as possible.",
   "True": "True",
   "Try_now": "Try now",
   "Try_searching_in_the_marketplace_instead": "Try searching in the Marketplace instead",

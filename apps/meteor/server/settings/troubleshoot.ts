@@ -48,4 +48,9 @@ export const createTroubleshootSettings = () =>
 			type: 'boolean',
 			i18nDescription: 'Troubleshoot_Disable_Teams_Mention_Alert',
 		});
+
+		await this.add('Troubleshoot_Force_Caching_Version', '', {
+			type: 'string',
+			i18nDescription: 'Troubleshoot_Force_Caching_Version_Alert',
+		});
 	});
