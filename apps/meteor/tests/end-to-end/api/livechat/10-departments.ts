@@ -222,7 +222,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(400);
 		});
 
-		it('should return an error if requestTagsBeforeClosing is true but no tags are not an array', async () => {
+		it('should return an error if requestTagsBeforeClosing is true but tags are not an array', async () => {
 			await request
 				.post(api('livechat/department'))
 				.set(credentials)
