@@ -9,10 +9,11 @@ export const useCreateIntegration = (integrationType: 'webhook-incoming' | 'webh
 
 	return useMutation({
 		mutationFn: createIntegration,
-		onSuccess: () => {
+		onSuccess: (data) => {
 			dispatchToastMessage({ type: 'success', message: t('Integration_added') });
-			router.navigate(`/admin/integrations/${integrationType}`);
-			// router.push({ context: 'edit', type: 'incoming', id: result.integration._id });
+			router.navigate(
+				`/admin/integrations/edit/${integrationType === 'webhook-incoming' ? 'incoming' : 'outgoing'}/${data.integration._id}`,
+			);
 		},
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
