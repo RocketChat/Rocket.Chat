@@ -24,7 +24,7 @@ const ComposerReadOnly = (): ReactElement => {
 		<MessageFooterCallout>
 			<MessageFooterCalloutContent>{t('room_is_read_only')}</MessageFooterCalloutContent>
 			{!isSubscribed && (
-				<Button primary onClick={() => join.mutate()} disabled={join.isLoading}>
+				<Button primary onClick={() => join.mutate()} loading={join.isLoading}>
 					{t('Join')}
 				</Button>
 			)}
