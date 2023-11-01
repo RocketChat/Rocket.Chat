@@ -258,6 +258,27 @@ describe('LIVECHAT - Agents', function () {
 			// cleanup
 			await deleteUser(user);
 		});
+
+		it('should properly create a manager', async () => {
+			const user: IUser = await createUser();
+			await request
+				.post(api('livechat/users/manager'))
+				.set(credentials)
+				.send({
+					username: user.username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('user');
+					expect(res.body.user).to.have.property('_id');
+					expect(res.body.user).to.have.property('username');
+				});
+
+			// cleanup
+			await deleteUser(user);
+		});
 	});
 
 	describe('GET livechat/users/:type/:_id', () => {
