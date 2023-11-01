@@ -8,13 +8,120 @@ import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { settings } from '../../settings/server';
 import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
+type SlackChannel = {
+	id: string;
+	name: string;
+	topic?: {
+		value: string;
+		creator: string;
+		last_set: number;
+	};
+	members: string[];
+	purpose?: {
+		value: string;
+		creator: string;
+		last_set: number;
+	};
+	created: number;
+	creator: string | null;
+	is_general: boolean;
+	is_archived: boolean;
+};
+
+type SlackUser = {
+	id: string;
+	name: string;
+	profile: {
+		real_name: string;
+		email: string;
+		image_512: string;
+		image_original: string;
+		status_text: string;
+		title: string;
+	};
+	tz_offset: number;
+	deleted: boolean;
+	is_bot: boolean;
+};
+
+type SlackFile = {
+	id: string;
+	url_private_download: string;
+	size: number;
+	name: string;
+	is_external: boolean;
+};
+
+type SlackMessage = {
+	id: string;
+	ts: string;
+	user: string;
+	reactions?: {
+		name: string;
+		users: string[];
+	}[];
+	type: 'message';
+	subtype?: string;
+	files?: SlackFile[];
+	text: string;
+	edited?: {
+		ts: string;
+		user: string;
+	};
+	thread_ts?: string;
+	reply_users?: string[];
+	reply_count?: number;
+	replies?: {
+		user: string;
+	}[];
+	latest_reply: string;
+	icons?: {
+		emoji: string;
+	};
+	attachments?: SlackAttachment[];
+} & (
+	| {
+			subtype: 'channel_purpose' | 'group_purpose';
+			purpose: string;
+	  }
+	| {
+			subtype: 'channel_join' | 'group_join' | 'channel_leave' | 'group_leave';
+	  }
+	| {
+			subtype: 'channel_topic' | 'group_topic';
+			topic: string;
+	  }
+	| {
+			subtype: 'channel_name' | 'group_name';
+			name: string;
+	  }
+	| {
+			subtype: 'pinned_item';
+			attachments: SlackAttachment[];
+	  }
+	| {
+			subtype: 'file_share';
+			file: SlackFile;
+	  }
+	| {
+			subtype: 'me_message';
+	  }
+);
+
+type SlackAttachment = {
+	text: string;
+	title: string;
+	fallback: string;
+	author_subname: string;
+};
+
 export class SlackImporter extends Importer {
 	private _useUpsert = false;
 
 	async prepareChannelsFile(entry: IZipEntry): Promise<number> {
 		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-		const data: Record<string, any>[] = JSON.parse(entry.getData().toString()).filter(
-			(channel: Record<string, any>) => channel.creator != null,
+		const data = (JSON.parse(entry.getData().toString()) as SlackChannel[]).filter(
+			(channel): channel is SlackChannel & { creator: string } => 'creator' in channel && channel.creator != null,
 		);
 
 		this.logger.debug(`loaded ${data.length} channels.`);
@@ -43,8 +150,8 @@ export class SlackImporter extends Importer {
 
 	async prepareGroupsFile(entry: IZipEntry): Promise<number> {
 		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-		const data: Record<string, any>[] = JSON.parse(entry.getData().toString()).filter(
-			(channel: Record<string, any>) => channel.creator != null,
+		const data = (JSON.parse(entry.getData().toString()) as SlackChannel[]).filter(
+			(channel): channel is SlackChannel & { creator: string } => 'creator' in channel && channel.creator != null,
 		);
 
 		this.logger.debug(`loaded ${data.length} groups.`);
@@ -72,15 +179,15 @@ export class SlackImporter extends Importer {
 
 	async prepareMpimpsFile(entry: IZipEntry): Promise<number> {
 		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-		const data: Record<string, any>[] = JSON.parse(entry.getData().toString()).filter(
-			(channel: Record<string, any>) => channel.creator != null,
+		const data = (JSON.parse(entry.getData().toString()) as SlackChannel[]).filter(
+			(channel): channel is SlackChannel & { creator: string } => 'creator' in channel && channel.creator != null,
 		);
 
 		this.logger.debug(`loaded ${data.length} mpims.`);
 
 		await this.addCountToTotal(data.length);
 
-		const maxUsers = settings.get('DirectMesssage_maxUsers') || 1;
+		const maxUsers = settings.get<number>('DirectMesssage_maxUsers') || 1;
 
 		for await (const channel of data) {
 			await this.converter.addChannel({
@@ -103,7 +210,7 @@ export class SlackImporter extends Importer {
 
 	async prepareDMsFile(entry: IZipEntry): Promise<number> {
 		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-		const data: Record<string, any>[] = JSON.parse(entry.getData().toString());
+		const data = JSON.parse(entry.getData().toString()) as SlackChannel[];
 
 		this.logger.debug(`loaded ${data.length} dms.`);
 
@@ -122,7 +229,7 @@ export class SlackImporter extends Importer {
 
 	async prepareUsersFile(entry: IZipEntry): Promise<number> {
 		await super.updateProgress(ProgressStep.PREPARING_USERS);
-		const data: Record<string, any>[] = JSON.parse(entry.getData().toString());
+		const data = JSON.parse(entry.getData().toString()) as SlackUser[];
 
 		this.logger.debug(`loaded ${data.length} users.`);
 
@@ -233,7 +340,7 @@ export class SlackImporter extends Importer {
 				await Settings.incrementValueById('Slack_Importer_Count', userCount);
 			}
 
-			const missedTypes = {};
+			const missedTypes: Record<string, SlackMessage> = {};
 			// If we have no slack message yet, then we can insert them instead of upserting
 			this._useUpsert = !(await Messages.findOne({ _id: /slack\-.*/ }));
 
@@ -261,7 +368,7 @@ export class SlackImporter extends Importer {
 								await super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 							}
 
-							const tempMessages: Record<string, any>[] = JSON.parse(entry.getData().toString());
+							const tempMessages = JSON.parse(entry.getData().toString()) as SlackMessage[];
 							messagesCount += tempMessages.length;
 							await this.updateRecord({ messagesstatus: `${channel}/${date}` });
 							await this.addCountToTotal(tempMessages.length);
@@ -329,10 +436,10 @@ export class SlackImporter extends Importer {
 	}
 
 	async processMessageSubType(
-		message: Record<string, any>,
+		message: SlackMessage,
 		slackChannelId: string,
 		newMessage: IImportMessage,
-		missedTypes: Record<string, Record<string, any>>,
+		missedTypes: Record<string, SlackMessage>,
 	): Promise<boolean> {
 		const ignoreTypes: Record<string, boolean> = { bot_add: true, file_comment: true, file_mention: true };
 
@@ -420,11 +527,7 @@ export class SlackImporter extends Importer {
 		return base;
 	}
 
-	async prepareMessageObject(
-		message: Record<string, any>,
-		missedTypes: Record<string, Record<string, any>>,
-		slackChannelId: string,
-	): Promise<void> {
+	async prepareMessageObject(message: SlackMessage, missedTypes: Record<string, SlackMessage>, slackChannelId: string): Promise<void> {
 		const id = this.makeSlackMessageId(slackChannelId, message.ts);
 		const newMessage: IImportMessage = {
 			_id: id,
@@ -438,22 +541,19 @@ export class SlackImporter extends Importer {
 
 		// Process the reactions
 		if (message.reactions && message.reactions.length > 0) {
-			newMessage.reactions = (message.reactions as Record<string, any>[]).reduce(
-				(newReactions: Required<IImportMessage>['reactions'], reaction: Record<string, any>) => {
-					const name = `:${reaction.name}:`;
-					return {
-						...newReactions,
-						...(reaction.users?.length ? { name: { name, users: this._replaceSlackUserIds(reaction.users) } } : {}),
-					};
-				},
-				{},
-			);
+			newMessage.reactions = message.reactions.reduce((newReactions, reaction) => {
+				const name = `:${reaction.name}:`;
+				return {
+					...newReactions,
+					...(reaction.users?.length ? { name: { name, users: this._replaceSlackUserIds(reaction.users) } } : {}),
+				};
+			}, {} as Required<IImportMessage>['reactions']);
 		}
 
 		if (message.type === 'message') {
 			if (message.files) {
 				let fileIndex = 0;
-				const promises = message.files.map(async (file: Record<string, any>) => {
+				const promises = message.files.map(async (file) => {
 					fileIndex++;
 
 					const fileId = this.makeSlackMessageId(slackChannelId, message.ts, String(fileIndex));
@@ -511,7 +611,7 @@ export class SlackImporter extends Importer {
 							}
 						} else if (message.replies) {
 							const replies = new Set<string>();
-							message.repĺies.forEach((item: { user: string }) => {
+							message.replies.forEach((item: { user: string }) => {
 								replies.add(this._replaceSlackUserId(item.user));
 							});
 
@@ -589,7 +689,7 @@ export class SlackImporter extends Importer {
 		return message;
 	}
 
-	convertSlackFileToPendingFile(file: Record<string, any>): IImportPendingFile {
+	convertSlackFileToPendingFile(file: SlackFile): IImportPendingFile {
 		return {
 			downloadUrl: file.url_private_download,
 			id: file.id,
@@ -603,7 +703,7 @@ export class SlackImporter extends Importer {
 		};
 	}
 
-	convertMessageAttachments(attachments: Record<string, any>[]): IImportMessage['attachments'] {
+	convertMessageAttachments(attachments: SlackAttachment[]): IImportMessage['attachments'] {
 		if (!attachments?.length) {
 			return undefined;
 		}
