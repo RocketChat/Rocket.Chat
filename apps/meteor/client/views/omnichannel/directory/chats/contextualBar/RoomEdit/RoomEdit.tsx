@@ -64,7 +64,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 	const {
 		register,
 		control,
-		formState: { isDirty: isFormDirty, isValid: isFormValid },
+		formState: { isDirty: isFormDirty, isValid: isFormValid, isSubmitting },
 		handleSubmit,
 	} = useForm({
 		mode: 'onChange',
@@ -151,7 +151,14 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 						{t('Cancel')}
 					</Button>
 
-					<Button mie='none' flexGrow={1} onClick={handleSubmit(handleSave)} disabled={!isFormValid || !isFormDirty} primary>
+					<Button
+						mie='none'
+						flexGrow={1}
+						onClick={handleSubmit(handleSave)}
+						loading={isSubmitting}
+						disabled={!isFormValid || !isFormDirty}
+						primary
+					>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
