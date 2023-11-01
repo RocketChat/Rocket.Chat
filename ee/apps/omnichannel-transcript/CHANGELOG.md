@@ -1,5 +1,16 @@
 # @rocket.chat/omnichannel-transcript
 
+## 0.2.14
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.5
+- @rocket.chat/omnichannel-services@0.0.20
+- @rocket.chat/pdf-worker@0.0.20
+- @rocket.chat/core-services@0.2.5
+- @rocket.chat/model-typings@0.1.5
+- @rocket.chat/models@0.0.20
+
 ## 0.2.13
 
 ### Patch Changes
