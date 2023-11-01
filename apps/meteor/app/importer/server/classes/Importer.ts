@@ -2,7 +2,7 @@ import type { IImport, IImportRecord, IImportChannel, IImportUser, IImportProgre
 import { Logger } from '@rocket.chat/logger';
 import { Settings, ImportData, Imports } from '@rocket.chat/models';
 import AdmZip from 'adm-zip';
-import type { MatchKeysAndValues } from 'mongodb';
+import type { MatchKeysAndValues, MongoServerError } from 'mongodb';
 
 import { Selection, SelectionChannel, SelectionUser } from '..';
 import { callbacks } from '../../../../lib/callbacks';
@@ -396,5 +396,12 @@ export class Importer {
 		const results = new Selection(this.info.name, selectionUsers, selectionChannels, selectionMessages);
 
 		return results;
+	}
+
+	/**
+	 * Utility method to check if the passed in error is a `MongoServerError` with the `codeName` of `'CursorNotFound'`.
+	 */
+	protected isCursorNotFoundError(error: unknown): error is MongoServerError & { codeName: 'CursorNotFound' } {
+		return typeof error === 'object' && error !== null && 'codeName' in error && error.codeName === 'CursorNotFound';
 	}
 }

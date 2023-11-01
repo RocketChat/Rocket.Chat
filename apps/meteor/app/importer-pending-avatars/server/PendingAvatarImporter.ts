@@ -9,7 +9,7 @@ export class PendingAvatarImporter extends Importer {
 		this.logger.debug('start preparing import operation');
 		await super.updateProgress(ProgressStep.PREPARING_STARTED);
 
-		const users = await Users.findAllUsersWithPendingAvatar();
+		const users = Users.findAllUsersWithPendingAvatar();
 		const fileCount = await users.count();
 
 		if (fileCount === 0) {
@@ -32,7 +32,7 @@ export class PendingAvatarImporter extends Importer {
 	}
 
 	async startImport(importSelection: Selection): Promise<Progress> {
-		const pendingFileUserList = await Users.findAllUsersWithPendingAvatar();
+		const pendingFileUserList = Users.findAllUsersWithPendingAvatar();
 		try {
 			for await (const user of pendingFileUserList) {
 				try {
@@ -56,9 +56,9 @@ export class PendingAvatarImporter extends Importer {
 					this.logger.error(error);
 				}
 			}
-		} catch (error: any) {
+		} catch (error) {
 			// If the cursor expired, restart the method
-			if (error && error.codeName === 'CursorNotFound') {
+			if (this.isCursorNotFoundError(error)) {
 				this.logger.info('CursorNotFound');
 				return this.startImport(importSelection);
 			}

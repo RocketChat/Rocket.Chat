@@ -152,9 +152,10 @@ export class PendingFileImporter extends Importer {
 					this.logger.error(error);
 				}
 			}
-		} catch (error: any) {
+		} catch (error) {
 			// If the cursor expired, restart the method
-			if (error && error.codeName === 'CursorNotFound') {
+			if (this.isCursorNotFoundError(error)) {
+				this.logger.info('CursorNotFound');
 				return this.startImport(importSelection);
 			}
 

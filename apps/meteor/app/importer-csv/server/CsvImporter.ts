@@ -45,17 +45,21 @@ export class CsvImporter extends Importer {
 		let messagesCount = 0;
 		let usersCount = 0;
 		let channelsCount = 0;
-		const dmRooms = new Map();
-		const roomIds = new Map();
+		const dmRooms = new Set<string>();
+		const roomIds = new Map<string, string>();
 		const usedUsernames = new Set<string>();
 		const availableUsernames = new Set<string>();
 
 		const getRoomId = (roomName: string) => {
-			if (!roomIds.has(roomName)) {
-				roomIds.set(roomName, Random.id());
+			const roomId = roomIds.get(roomName);
+
+			if (roomId === undefined) {
+				const fallbackRoomId = Random.id();
+				roomIds.set(roomName, fallbackRoomId);
+				return fallbackRoomId;
 			}
 
-			return roomIds.get(roomName);
+			return roomId;
 		};
 
 		for await (const entry of zip.getEntries()) {
@@ -191,7 +195,7 @@ export class CsvImporter extends Importer {
 								t: 'd',
 							});
 
-							dmRooms.set(sourceId, true);
+							dmRooms.add(sourceId);
 						}
 
 						const newMessage = {
