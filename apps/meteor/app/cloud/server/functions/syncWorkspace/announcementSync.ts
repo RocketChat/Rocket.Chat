@@ -107,7 +107,7 @@ export async function announcementSync() {
 	} catch (err) {
 		SystemLogger.error({
 			msg: 'Failed to sync with Rocket.Chat Cloud',
-			url: '/comms/workspace',
+			url: '/api/v3/comms/workspace',
 			err,
 		});
 	}
