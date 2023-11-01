@@ -7,7 +7,8 @@ import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { hasAtLeastOnePermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
-import { Livechat } from '../../../server/lib/Livechat';
+import { Livechat as LivechatJS } from '../../../server/lib/Livechat';
+import { Livechat } from '../../../server/lib/LivechatTyped';
 
 const emptyStringArray: string[] = [];
 
@@ -73,12 +74,12 @@ API.v1.addRoute(
 		},
 		async post() {
 			if (this.urlParams.type === 'agent') {
-				const user = await Livechat.addAgent(this.bodyParams.username);
+				const user = await LivechatJS.addAgent(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
 				}
 			} else if (this.urlParams.type === 'manager') {
-				const user = await Livechat.addManager(this.bodyParams.username);
+				const user = await LivechatJS.addManager(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
 				}
@@ -125,7 +126,7 @@ API.v1.addRoute(
 		async delete() {
 			const user = await Users.findOneById(this.urlParams._id);
 
-			if (!user) {
+			if (!user?.username) {
 				return API.v1.failure();
 			}
 
