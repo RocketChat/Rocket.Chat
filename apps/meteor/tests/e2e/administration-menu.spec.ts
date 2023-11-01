@@ -14,7 +14,7 @@ test.describe.serial('administration-menu', () => {
 		await page.goto('/home');
 	});
 
-	test('expect open info page', async ({ page }) => {
+	test('expect open Workspace page', async ({ page }) => {
 		test.skip(!IS_EE, 'Enterprise only');
 		await poHomeDiscussion.sidenav.openAdministrationByLabel('Workspace');
 

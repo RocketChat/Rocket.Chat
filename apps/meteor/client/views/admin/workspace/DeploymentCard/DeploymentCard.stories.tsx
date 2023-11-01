@@ -1,45 +1,15 @@
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import InformationPage from './InformationPage';
+import DeploymentCard from './DeploymentCard';
 
 export default {
-	title: 'Admin/Info/InformationPage',
-	component: InformationPage,
+	title: 'Admin/Info/DeploymentCard',
+	component: DeploymentCard,
 	parameters: {
-		layout: 'fullscreen',
-		serverContext: {
-			baseURL: 'http://localhost:3000',
-			callEndpoint: {
-				'GET /v1/licenses.get': async () => ({
-					licenses: [
-						{
-							url: 'https://example.com/license.txt',
-							expiry: '2020-01-01T00:00:00.000Z',
-							maxActiveUsers: 100,
-							modules: ['auditing'],
-							maxGuestUsers: 100,
-							maxRoomsPerGuest: 100,
-						},
-					],
-				}),
-				'GET /v1/licenses.maxActiveUsers': async () => ({
-					maxActiveUsers: 123,
-					activeUsers: 32,
-				}),
-			},
-			callMethod: {
-				'license:getTags': async () => [{ name: 'Example plan', color: 'red' }],
-			},
-		},
-	},
-	decorators: [(fn) => <div style={{ display: 'flex', height: '100vh' }}>{fn()}</div>],
-	argTypes: {
-		onClickDownloadInfo: { action: 'onClickDownloadInfo' },
-		onClickRefreshButton: { action: 'onClickRefreshButton' },
+		layout: 'centered',
 	},
 	args: {
-		canViewStatistics: true,
 		info: {
 			build: {
 				arch: 'x64',
@@ -91,6 +61,7 @@ export default {
 			totalChannelMessages: 213,
 			totalPrivateGroupMessages: 21,
 			totalDirectMessages: 23,
+			totalDiscussionsMessages: 32,
 			totalLivechatMessages: 31,
 			// -
 			_id: '',
@@ -99,7 +70,7 @@ export default {
 			deploymentFingerprintHash: '',
 			deploymentFingerprintVerified: true,
 			installedAt: '',
-			version: '',
+			version: '1.0.0',
 			tag: '',
 			branch: '',
 			userLanguages: {},
@@ -150,7 +121,7 @@ export default {
 				uptime: 0,
 			},
 			deploy: {
-				method: '',
+				method: 'tar',
 				platform: '',
 			},
 			enterpriseReady: false,
@@ -310,9 +281,9 @@ export default {
 		},
 		instances: [],
 	},
-} as ComponentMeta<typeof InformationPage>;
+} as ComponentMeta<typeof DeploymentCard>;
 
-const Template: ComponentStory<typeof InformationPage> = (args) => <InformationPage {...args} />;
+const Template: ComponentStory<typeof DeploymentCard> = (args) => <DeploymentCard {...args} />;
 
-export const Default = Template.bind({});
-Default.storyName = 'InformationPage';
+export const Example = Template.bind({});
+Example.storyName = 'DeploymentCard';
