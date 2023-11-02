@@ -40,7 +40,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 					const { rid } = await createDirectMessage(...reference.split(', '));
 					const { ChatSubscription } = await import('../../../../app/models/client');
 					const { waitUntilFind } = await import('../../../lib/utils/waitUntilFind');
-					await waitUntilFind(() => ChatSubscription.findOne({ rid }));
+					await waitUntilFind(() => ChatSubscription.findOneAsync({ rid }));
 					directRoute.push({ rid }, (prev) => prev);
 				} catch (error) {
 					throw new RoomNotFoundError(undefined, { type, reference });
