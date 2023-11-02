@@ -12,7 +12,6 @@ import type { ParsedMail, Attachment } from 'mailparser';
 import stripHtml from 'string-strip-html';
 
 import { FileUpload } from '../../../app/file-upload/server';
-import { Livechat } from '../../../app/livechat/server/lib/Livechat';
 import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';
@@ -35,7 +34,7 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 				return guest;
 			}
 			await LivechatTyped.setDepartmentForGuest({ token: guest.token, department });
-			return LivechatVisitors.findOneById(guest._id, {});
+			return LivechatVisitors.findOneEnabledById(guest._id, {});
 		}
 		return guest;
 	}
@@ -47,7 +46,9 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 		department,
 	});
 
-	const newGuest = await LivechatVisitors.findOneById(userId);
+	const newGuest = await LivechatVisitors.findOneEnabledById(userId);
+	logger.debug(`Guest ${userId} for visitor ${email} created`);
+
 	if (newGuest) {
 		return newGuest;
 	}
@@ -146,7 +147,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	const rid = room?._id ?? Random.id();
 	const msgId = Random.id();
 
-	Livechat.sendMessage({
+	LivechatTyped.sendMessage({
 		guest,
 		message: {
 			_id: msgId,

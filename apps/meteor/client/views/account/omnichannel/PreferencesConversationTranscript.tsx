@@ -1,4 +1,4 @@
-import { Accordion, Box, Field, FieldGroup, Tag, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Accordion, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, Tag, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -24,24 +24,24 @@ const PreferencesConversationTranscript = () => {
 			<FieldGroup>
 				<Field>
 					<Box display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label htmlFor={omnichannelTranscriptPDF}>
+						<FieldLabel htmlFor={omnichannelTranscriptPDF}>
 							<Box display='flex' alignItems='center'>
 								{t('Omnichannel_transcript_pdf')}
 								<Box marginInline={4}>
-									{!hasLicense && <Tag variant='featured'>{t('Enterprise')}</Tag>}
+									{!hasLicense && <Tag variant='featured'>{t('Premium')}</Tag>}
 									{!canSendTranscriptPDF && hasLicense && <Tag>{t('No_permission')}</Tag>}
 								</Box>
 							</Box>
-						</Field.Label>
-						<Field.Row>
+						</FieldLabel>
+						<FieldRow>
 							<ToggleSwitch id={omnichannelTranscriptPDF} disabled={cantSendTranscriptPDF} {...register('omnichannelTranscriptPDF')} />
-						</Field.Row>
+						</FieldRow>
 					</Box>
-					<Field.Hint>{t('Accounts_Default_User_Preferences_omnichannelTranscriptPDF_Description')}</Field.Hint>
+					<FieldHint>{t('Accounts_Default_User_Preferences_omnichannelTranscriptPDF_Description')}</FieldHint>
 				</Field>
 				<Field>
 					<Box display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label htmlFor={omnichannelTranscriptEmail}>
+						<FieldLabel htmlFor={omnichannelTranscriptEmail}>
 							<Box display='flex' alignItems='center'>
 								{t('Omnichannel_transcript_email')}
 								{!canSendTranscriptEmail && (
@@ -50,16 +50,16 @@ const PreferencesConversationTranscript = () => {
 									</Box>
 								)}
 							</Box>
-						</Field.Label>
-						<Field.Row>
+						</FieldLabel>
+						<FieldRow>
 							<ToggleSwitch
 								id={omnichannelTranscriptEmail}
 								disabled={!canSendTranscriptEmail}
 								{...register('omnichannelTranscriptEmail')}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Box>
-					<Field.Hint>{t('Accounts_Default_User_Preferences_omnichannelTranscriptEmail_Description')}</Field.Hint>
+					<FieldHint>{t('Accounts_Default_User_Preferences_omnichannelTranscriptEmail_Description')}</FieldHint>
 				</Field>
 			</FieldGroup>
 		</Accordion.Item>

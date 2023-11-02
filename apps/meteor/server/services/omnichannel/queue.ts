@@ -1,4 +1,5 @@
 import type { InquiryWithAgentInfo, IOmnichannelQueue } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { LivechatInquiry } from '@rocket.chat/models';
 
 import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
@@ -17,6 +18,10 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	private delay() {
 		const timeout = settings.get<number>('Omnichannel_queue_delay_timeout') ?? 5;
 		return timeout < 1 ? DEFAULT_RACE_TIMEOUT : timeout * 1000;
+	}
+
+	public isRunning() {
+		return this.running;
 	}
 
 	async start() {
@@ -94,9 +99,13 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		}
 	}
 
-	shouldStart() {
+	async shouldStart() {
 		if (!settings.get('Livechat_enabled')) {
 			void this.stop();
+			return;
+		}
+
+		if (await License.shouldPreventAction('monthlyActiveContacts')) {
 			return;
 		}
 

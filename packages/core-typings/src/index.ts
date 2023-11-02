@@ -4,7 +4,6 @@ export * from './FeaturedApps';
 export * from './AppRequests';
 export * from './MarketplaceRest';
 export * from './IRoom';
-export * from './UIKit';
 export * from './IMessage';
 export * from './federation';
 export * from './Serialized';
@@ -19,6 +18,7 @@ export * from './IUserAction';
 export * from './IBanner';
 export * from './IStats';
 export * from './IServerInfo';
+export * from './IWorkspaceInfo';
 export * from './IInstanceStatus';
 export * from './IWebdavAccount';
 export * from './IPermission';
@@ -136,3 +136,5 @@ export * from './IModerationReport';
 export * from './CustomFieldMetadata';
 
 export * as Cloud from './cloud';
+
+export * as UiKit from './uikit';

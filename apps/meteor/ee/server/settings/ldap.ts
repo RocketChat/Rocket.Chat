@@ -14,7 +14,7 @@ export function addSettings(): Promise<void> {
 
 		await this.with(
 			{
-				tab: 'LDAP_Enterprise',
+				tab: 'LDAP_Premium',
 				enterprise: true,
 				modules: ['ldap-enterprise'],
 			},

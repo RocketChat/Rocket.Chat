@@ -1,6 +1,5 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
-import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import type {
 	IEmailInbox,
 	IEmoji,
@@ -32,7 +31,10 @@ import type {
 	ILivechatInquiryRecord,
 	ILivechatAgent,
 	IBanner,
+	ILivechatVisitor,
+	UiKit,
 } from '@rocket.chat/core-typings';
+import type { LicenseLimitKind } from '@rocket.chat/license';
 
 import type { AutoUpdateRecord } from './types/IMeteor';
 
@@ -54,11 +56,14 @@ export type EventSignatures = {
 	'emoji.deleteCustom'(emoji: IEmoji): void;
 	'emoji.updateCustom'(emoji: IEmoji): void;
 	'license.module'(data: { module: string; valid: boolean }): void;
+	'license.sync'(): void;
+	'license.actions'(actions: Record<Partial<LicenseLimitKind>, boolean>): void;
+
 	'livechat-inquiry-queue-observer'(data: { action: string; inquiry: IInquiry }): void;
 	'message'(data: { action: string; message: IMessage }): void;
 	'meteor.clientVersionUpdated'(data: AutoUpdateRecord): void;
 	'notify.desktop'(uid: string, data: INotificationDesktop): void;
-	'notify.uiInteraction'(uid: string, data: IUIKitInteraction): void;
+	'notify.uiInteraction'(uid: string, data: UiKit.ServerInteraction): void;
 	'notify.updateInvites'(uid: string, data: { invite: Omit<IInvite, '_updatedAt'> }): void;
 	'notify.ephemeralMessage'(uid: string, rid: string, message: AtLeast<IMessage, 'msg'>): void;
 	'notify.webdav'(
@@ -242,7 +247,8 @@ export type EventSignatures = {
 		data:
 			| { type: 'agentStatus'; status: string }
 			| { type: 'queueData'; data: { [k: string]: unknown } | undefined }
-			| { type: 'agentData'; data: ILivechatAgent | undefined | { hiddenInfo: boolean } },
+			| { type: 'agentData'; data: ILivechatAgent | undefined | { hiddenInfo: boolean } }
+			| { type: 'visitorData'; visitor: ILivechatVisitor },
 	): void;
 
 	// Send all events from here

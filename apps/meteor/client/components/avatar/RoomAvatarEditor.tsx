@@ -71,7 +71,7 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 						danger
 						icon='trash'
 						title={t('Accounts_SetDefaultAvatar')}
-						disabled={roomAvatar === null || isRoomFederated(room) || disabled}
+						disabled={!roomAvatar || isRoomFederated(room) || disabled}
 						onClick={clickReset}
 					/>
 				</ButtonGroup>

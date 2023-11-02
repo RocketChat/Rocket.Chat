@@ -1,4 +1,4 @@
-import { Modal, Box, Field, FieldGroup, TextInput, Button } from '@rocket.chat/fuselage';
+import { Modal, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldError, TextInput, Button } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, FormEventHandler, ComponentProps } from 'react';
@@ -83,18 +83,18 @@ const FileUploadModal = ({
 					</Box>
 					<FieldGroup>
 						<Field>
-							<Field.Label>{t('Upload_file_name')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Upload_file_name')}</FieldLabel>
+							<FieldRow>
 								<TextInput value={name} onChange={handleName} />
-							</Field.Row>
-							{!name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
+							</FieldRow>
+							{!name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
 						</Field>
 						{showDescription && (
 							<Field>
-								<Field.Label>{t('Upload_file_description')}</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Upload_file_description')}</FieldLabel>
+								<FieldRow>
 									<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={ref} />
-								</Field.Row>
+								</FieldRow>
 							</Field>
 						)}
 					</FieldGroup>

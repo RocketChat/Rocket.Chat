@@ -73,7 +73,7 @@ export async function getWorkspaceLicense(): Promise<{ updated: boolean; license
 
 		const payload = await fetchCloudWorkspaceLicensePayload({ token });
 
-		if (Date.parse(payload.updatedAt) <= currentLicense._updatedAt.getTime()) {
+		if (currentLicense.value && Date.parse(payload.updatedAt) <= currentLicense._updatedAt.getTime()) {
 			return fromCurrentLicense();
 		}
 

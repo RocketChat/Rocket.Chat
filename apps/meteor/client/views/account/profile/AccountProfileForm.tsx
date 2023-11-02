@@ -1,5 +1,17 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Field, FieldGroup, TextInput, TextAreaInput, Box, Icon, Button } from '@rocket.chat/fuselage';
+import {
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldHint,
+	TextInput,
+	TextAreaInput,
+	Box,
+	Icon,
+	Button,
+} from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
@@ -48,12 +60,14 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		control,
 		watch,
 		handleSubmit,
+		reset,
 		formState: { errors },
 	} = useFormContext<AccountProfileFormValues>();
 
 	const { email, avatar, username } = watch();
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
+	const previousUsername = user?.username || '';
 	const isUserVerified = user?.emails?.[0]?.verified ?? false;
 
 	const mutateConfirmationEmail = useMutation({
@@ -72,6 +86,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 
 	const validateUsername = async (username: string): Promise<string | undefined> => {
 		if (!username) {
+			return;
+		}
+
+		if (username === previousUsername) {
 			return;
 		}
 
@@ -109,6 +127,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			reset({ email, name, username, statusType, statusText, nickname, bio, customFields });
 		}
 	};
 
@@ -139,10 +159,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 				</Field>
 				<Box display='flex' flexDirection='row' justifyContent='space-between'>
 					<Field mie={8} flexShrink={1}>
-						<Field.Label required htmlFor={nameId}>
+						<FieldLabel required htmlFor={nameId}>
 							{t('Name')}
-						</Field.Label>
-						<Field.Row>
+						</FieldLabel>
+						<FieldRow>
 							<Controller
 								control={control}
 								name='name'
@@ -159,19 +179,19 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 									/>
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 						{errors.name && (
-							<Field.Error aria-live='assertive' id={`${nameId}-error`}>
+							<FieldError aria-live='assertive' id={`${nameId}-error`}>
 								{errors.name.message}
-							</Field.Error>
+							</FieldError>
 						)}
-						{!allowRealNameChange && <Field.Hint id={`${nameId}-hint`}>{t('RealName_Change_Disabled')}</Field.Hint>}
+						{!allowRealNameChange && <FieldHint id={`${nameId}-hint`}>{t('RealName_Change_Disabled')}</FieldHint>}
 					</Field>
 					<Field mis={8} flexShrink={1}>
-						<Field.Label required htmlFor={usernameId}>
+						<FieldLabel required htmlFor={usernameId}>
 							{t('Username')}
-						</Field.Label>
-						<Field.Row>
+						</FieldLabel>
+						<FieldRow>
 							<Controller
 								control={control}
 								name='username'
@@ -192,18 +212,18 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 									/>
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 						{errors?.username && (
-							<Field.Error aria-live='assertive' id={`${usernameId}-error`}>
+							<FieldError aria-live='assertive' id={`${usernameId}-error`}>
 								{errors.username.message}
-							</Field.Error>
+							</FieldError>
 						)}
-						{!canChangeUsername && <Field.Hint id={`${usernameId}-hint`}>{t('Username_Change_Disabled')}</Field.Hint>}
+						{!canChangeUsername && <FieldHint id={`${usernameId}-hint`}>{t('Username_Change_Disabled')}</FieldHint>}
 					</Field>
 				</Box>
 				<Field>
-					<Field.Label htmlFor={statusTextId}>{t('StatusMessage')}</Field.Label>
-					<Field.Row>
+					<FieldLabel htmlFor={statusTextId}>{t('StatusMessage')}</FieldLabel>
+					<FieldRow>
 						<Controller
 							control={control}
 							name='statusText'
@@ -230,17 +250,17 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 								/>
 							)}
 						/>
-					</Field.Row>
+					</FieldRow>
 					{errors?.statusText && (
-						<Field.Error aria-live='assertive' id={`${statusTextId}-error`}>
+						<FieldError aria-live='assertive' id={`${statusTextId}-error`}>
 							{errors?.statusText.message}
-						</Field.Error>
+						</FieldError>
 					)}
-					{!allowUserStatusMessageChange && <Field.Hint id={`${statusTextId}-hint`}>{t('StatusMessage_Change_Disabled')}</Field.Hint>}
+					{!allowUserStatusMessageChange && <FieldHint id={`${statusTextId}-hint`}>{t('StatusMessage_Change_Disabled')}</FieldHint>}
 				</Field>
 				<Field>
-					<Field.Label htmlFor={nicknameId}>{t('Nickname')}</Field.Label>
-					<Field.Row>
+					<FieldLabel htmlFor={nicknameId}>{t('Nickname')}</FieldLabel>
+					<FieldRow>
 						<Controller
 							control={control}
 							name='nickname'
@@ -248,11 +268,11 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 								<TextInput {...field} id={nicknameId} flexGrow={1} addon={<Icon name='edit' size='x20' alignSelf='center' />} />
 							)}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label htmlFor={bioId}>{t('Bio')}</Field.Label>
-					<Field.Row>
+					<FieldLabel htmlFor={bioId}>{t('Bio')}</FieldLabel>
+					<FieldRow>
 						<Controller
 							control={control}
 							name='bio'
@@ -270,18 +290,18 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 								/>
 							)}
 						/>
-					</Field.Row>
+					</FieldRow>
 					{errors?.bio && (
-						<Field.Error aria-live='assertive' id={`${bioId}-error`}>
+						<FieldError aria-live='assertive' id={`${bioId}-error`}>
 							{errors.bio.message}
-						</Field.Error>
+						</FieldError>
 					)}
 				</Field>
 				<Field>
-					<Field.Label required htmlFor={emailId}>
+					<FieldLabel required htmlFor={emailId}>
 						{t('Email')}
-					</Field.Label>
-					<Field.Row display='flex' flexDirection='row' justifyContent='space-between'>
+					</FieldLabel>
+					<FieldRow display='flex' flexDirection='row' justifyContent='space-between'>
 						<Controller
 							control={control}
 							name='email'
@@ -305,13 +325,13 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 								{t('Resend_verification_email')}
 							</Button>
 						)}
-					</Field.Row>
+					</FieldRow>
 					{errors.email && (
-						<Field.Error aria-live='assertive' id={`${emailId}-error`}>
+						<FieldError aria-live='assertive' id={`${emailId}-error`}>
 							{errors?.email?.message}
-						</Field.Error>
+						</FieldError>
 					)}
-					{!allowEmailChange && <Field.Hint id={`${emailId}-hint`}>{t('Email_Change_Disabled')}</Field.Hint>}
+					{!allowEmailChange && <FieldHint id={`${emailId}-hint`}>{t('Email_Change_Disabled')}</FieldHint>}
 				</Field>
 				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 			</FieldGroup>

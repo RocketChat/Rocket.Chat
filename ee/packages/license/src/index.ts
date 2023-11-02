@@ -1,12 +1,16 @@
 import type { LicenseLimitKind } from './definition/ILicenseV3';
+import type { LicenseInfo } from './definition/LicenseInfo';
 import type { LimitContext } from './definition/LimitContext';
 import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
 import { onLicense } from './events/deprecated';
 import {
+	onBehaviorToggled,
+	onBehaviorTriggered,
 	onInvalidFeature,
 	onInvalidateLicense,
 	onLimitReached,
 	onModule,
+	onChange,
 	onToggledFeature,
 	onValidFeature,
 	onValidateLicense,
@@ -22,6 +26,7 @@ export * from './definition/ILicenseTag';
 export * from './definition/ILicenseV2';
 export * from './definition/ILicenseV3';
 export * from './definition/LicenseBehavior';
+export * from './definition/LicenseInfo';
 export * from './definition/LicenseLimit';
 export * from './definition/LicenseModule';
 export * from './definition/LicensePeriod';
@@ -44,6 +49,10 @@ interface License {
 	onValidateLicense: typeof onValidateLicense;
 	onInvalidateLicense: typeof onInvalidateLicense;
 	onLimitReached: typeof onLimitReached;
+	onBehaviorTriggered: typeof onBehaviorTriggered;
+	revalidateLicense: () => Promise<void>;
+
+	getInfo: (info: { limits: boolean; currentValues: boolean; license: boolean }) => Promise<LicenseInfo>;
 
 	// Deprecated:
 	onLicense: typeof onLicense;
@@ -70,9 +79,11 @@ export class LicenseImp extends LicenseManager implements License {
 
 	getCurrentValueForLicenseLimit = getCurrentValueForLicenseLimit;
 
-	public async isLimitReached<T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>) {
-		return this.shouldPreventAction(action, context, 0);
+	public async isLimitReached<T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>): Promise<boolean> {
+		return this.shouldPreventAction(action, 0, context);
 	}
+
+	onChange = onChange;
 
 	onValidFeature = onValidFeature;
 
@@ -87,6 +98,10 @@ export class LicenseImp extends LicenseManager implements License {
 	onInvalidateLicense = onInvalidateLicense;
 
 	onLimitReached = onLimitReached;
+
+	onBehaviorTriggered = onBehaviorTriggered;
+
+	onBehaviorToggled = onBehaviorToggled;
 
 	// Deprecated:
 	onLicense = onLicense;

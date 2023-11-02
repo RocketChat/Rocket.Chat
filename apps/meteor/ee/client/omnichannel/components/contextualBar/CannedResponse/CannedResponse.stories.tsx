@@ -17,7 +17,7 @@ export default {
 export const Default: ComponentStory<typeof CannedResponse> = (args) => <CannedResponse {...args} />;
 Default.storyName = 'CannedResponse';
 Default.args = {
-	canEdit: true,
+	allowEdit: true,
 	data: {
 		shortcut: 'test3 long long long long long long long long long',
 		text: 'simple canned response test3 long long long long long long long long long long long long long long long longlong long long long long long longlong long long long long long longlong long long long long long longlong long long long long long longlong long long long long long longlong long long long long long long',
