@@ -88,7 +88,7 @@ jobs:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: rs0
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
