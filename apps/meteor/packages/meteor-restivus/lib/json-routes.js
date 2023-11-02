@@ -17,7 +17,7 @@ const responseHeaders = {
 
 // Register as a middleware
 WebApp.connectHandlers.use(
-	connectRoute(function (router) {
+	connectRoute((router) => {
 		connectRouter = router;
 	}),
 );

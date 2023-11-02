@@ -5,7 +5,7 @@ Package.describe({
 	git: '',
 });
 
-Package.onUse(function (api) {
+Package.onUse((api) => {
 	api.use(['ecmascript', 'mongo', 'email', 'http', 'webapp', 'meteor']);
 
 	api.mainModule('server/index.js', 'server');

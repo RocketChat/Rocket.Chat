@@ -5,15 +5,15 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
 
+import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import { Users } from '@rocket.chat/models';
 
 /*
   A valid user will have exactly one of the following identification fields: id, username, or email
 */
-const userValidator = Match.Where(function (user) {
+const userValidator = Match.Where((user) => {
 	check(user, {
 		id: Match.Optional(String),
 		username: Match.Optional(String),

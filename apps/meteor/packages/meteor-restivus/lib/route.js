@@ -29,16 +29,16 @@ export class Route {
 		this._resolveEndpoints();
 		this._configureEndpoints();
 		this.api._config.paths.push(this.path);
-		const allowedMethods = availableMethods.filter(function (method) {
+		const allowedMethods = availableMethods.filter((method) => {
 			return Object.keys(self.endpoints).includes(method);
 		});
-		const rejectedMethods = availableMethods.filter(function (method) {
+		const rejectedMethods = availableMethods.filter((method) => {
 			return !Object.keys(self.endpoints).includes(method);
 		});
 		const fullPath = this.api._config.apiPath + this.path;
-		allowedMethods.forEach(function (method) {
+		allowedMethods.forEach((method) => {
 			const endpoint = self.endpoints[method];
-			return JsonRoutes.add(method, fullPath, async function (req, res) {
+			return JsonRoutes.add(method, fullPath, async (req, res) => {
 				let responseInitiated = false;
 				const doneFunc = function () {
 					responseInitiated = true;
@@ -74,8 +74,8 @@ export class Route {
 				return self._respond(res, responseData);
 			});
 		});
-		return rejectedMethods.forEach(function (method) {
-			return JsonRoutes.add(method, fullPath, function (req, res) {
+		return rejectedMethods.forEach((method) => {
+			return JsonRoutes.add(method, fullPath, (req, res) => {
 				const responseData = {
 					status: 'error',
 					message: 'API endpoint does not exist',

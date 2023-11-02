@@ -1,8 +1,8 @@
 import { exec } from 'child_process';
-import os from 'os';
-import util from 'util';
-import path from 'path';
 import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import util from 'util';
 
 const execAsync = util.promisify(exec);
 
@@ -79,7 +79,7 @@ Plugin.registerCompiler(
 	{
 		extensions: ['info'],
 	},
-	function () {
+	() => {
 		return new VersionCompiler();
 	},
 );

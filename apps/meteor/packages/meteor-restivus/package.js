@@ -5,7 +5,7 @@ Package.describe({
 	git: 'https://github.com/kahmali/meteor-restivus.git',
 });
 
-Package.onUse(function (api) {
+Package.onUse((api) => {
 	// Meteor dependencies
 	api.use('check');
 	api.use('webapp');

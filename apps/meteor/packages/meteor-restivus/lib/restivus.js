@@ -1,5 +1,5 @@
-import { Accounts } from 'meteor/accounts-base';
 import { Users } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
 
 import { Auth } from './auth';
 import { Route } from './route';
