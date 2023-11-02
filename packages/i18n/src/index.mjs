@@ -96,7 +96,11 @@ export type RocketchatI18nKeys = keyof RocketchatI18n;
 const languages = files.map((file) => path.basename(file, '.i18n.json'));
 
 // write the files
-fs.rmdirSync(`./dist`, { recursive: true });
+try {
+	fs.rmdirSync(`./dist`, { recursive: true });
+} catch (e) {
+	//
+}
 fs.mkdirSync(`./dist`, { recursive: true });
 
 fs.writeFileSync(`./dist/languages.js`, `module.exports = ${JSON.stringify(languages, null, 2)}`);
