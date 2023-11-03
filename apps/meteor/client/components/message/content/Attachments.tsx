@@ -7,7 +7,7 @@ import AttachmentsItem from './attachments/AttachmentsItem';
 type AttachmentsProps = {
 	attachments: MessageAttachmentBase[];
 	collapsed?: boolean;
-	id: string | undefined;
+	id?: string | undefined;
 };
 
 const Attachments = ({ attachments, collapsed, id }: AttachmentsProps): ReactElement => {
