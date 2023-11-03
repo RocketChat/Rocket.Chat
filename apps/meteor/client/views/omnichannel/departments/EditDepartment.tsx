@@ -217,7 +217,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 		departmentsRoute.push({});
 	});
 
-	const isFormValid = isValid && isDirty && !isSubmitting;
+	const isFormValid = isValid && isDirty;
 
 	const formId = useUniqueId();
 
@@ -229,7 +229,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 						<Button icon='back' onClick={handleReturn}>
 							{t('Back')}
 						</Button>
-						<Button type='submit' form={formId} primary disabled={!isFormValid}>
+						<Button type='submit' form={formId} primary disabled={!isFormValid} loading={isSubmitting}>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>
