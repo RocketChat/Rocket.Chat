@@ -34,7 +34,6 @@ const ModConsoleReportDetails = ({ userId, default: defaultTab, onRedirect }: Mo
 					{t('User')}
 				</TabsItem>
 			</Tabs>
-
 			{tab === 'messages' && <UserMessages userId={userId} onRedirect={onRedirect} />}
 			{tab === 'users' && <UserReportInfo userId={userId} />}
 		</Contextualbar>

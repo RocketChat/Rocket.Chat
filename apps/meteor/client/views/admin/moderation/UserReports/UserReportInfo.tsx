@@ -33,8 +33,8 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 	const {
 		data: report,
 		refetch: reloadUsersReports,
-		isLoading: isLoadingUsersReports,
-		isSuccess: isSuccessUsersReports,
+		isLoading,
+		isSuccess,
 		isError,
 		dataUpdatedAt,
 	} = useQuery(['moderation.usersReport', userId], async () => getUserReports({ userId }));
@@ -54,18 +54,6 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		}
 		return report.user.emails.map((email) => email.address);
 	}, [report]);
-
-	if (isError) {
-		return (
-			<Box display='flex' flexDirection='column' alignItems='center' pb={20} color='default'>
-				<StatesIcon name='warning' variation='danger' />
-				<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
-				<StatesActions>
-					<StatesAction onClick={() => reloadUsersReports()}>{t('Reload_page')}</StatesAction>
-				</StatesActions>
-			</Box>
-		);
-	}
 
 	const renderUserDetails = (user: Serialized<IUser>) => {
 		return (
@@ -111,23 +99,35 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		));
 	};
 
+	if (isError) {
+		return (
+			<Box display='flex' flexDirection='column' alignItems='center' pb={20} color='default'>
+				<StatesIcon name='warning' variation='danger' />
+				<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+				<StatesActions>
+					<StatesAction onClick={() => reloadUsersReports()}>{t('Reload_page')}</StatesAction>
+				</StatesActions>
+			</Box>
+		);
+	}
+
 	return (
 		<>
 			<ContextualbarScrollableContent>
-				{isLoadingUsersReports && <ContextualbarSkeleton />}
-
-				{isSuccessUsersReports && report.reports.length > 0 && (
+				{isLoading && <ContextualbarSkeleton />}
+				{isSuccess && report.reports.length > 0 && (
 					<>
 						{report.user ? renderUserDetails(report.user) : renderDeletedUserWarning()}
 						{renderUserReports(report.reports)}
 					</>
 				)}
-
-				{isSuccessUsersReports && report.reports.length === 0 && <GenericNoResults title={t('No_user_reports')} icon='user' />}
-			</ContextualbarScrollableContent>{' '}
-			<ContextualbarFooter display='flex'>
-				{isSuccessUsersReports && report.reports.length > 0 && <UserContextFooter userId={userId} deleted={!report.user} />}
-			</ContextualbarFooter>
+				{isSuccess && report.reports.length === 0 && <GenericNoResults title={t('No_user_reports')} icon='user' />}
+			</ContextualbarScrollableContent>
+			{isSuccess && report.reports.length > 0 && (
+				<ContextualbarFooter>
+					<UserContextFooter userId={userId} deleted={!report.user} />
+				</ContextualbarFooter>
+			)}
 		</>
 	);
 };
