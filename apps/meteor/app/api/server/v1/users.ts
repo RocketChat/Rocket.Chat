@@ -556,6 +556,95 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'users.list/:status',
+	{
+		authRequired: true,
+	},
+	{
+		async get() {
+			if (!(await hasPermissionAsync(this.userId, 'view-d-room'))) {
+				return API.v1.unauthorized();
+			}
+
+			if (
+				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
+				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+			) {
+				return API.v1.unauthorized();
+			}
+
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { status } = this.urlParams;
+			const { sort, fields } = await this.parseJsonQuery();
+			const { role } = this.queryParams;
+
+			const nonEmptyFields = getNonEmptyFields(fields);
+
+			const inclusiveFields = getInclusiveFields(nonEmptyFields);
+
+			const actualSort = sort || { username: 1 };
+
+			if (sort?.status) {
+				actualSort.active = sort.status;
+			}
+
+			if (sort?.name) {
+				actualSort.nameInsensitive = sort.name;
+			}
+
+			const limit =
+				count !== 0
+					? [
+							{
+								$limit: count,
+							},
+					  ]
+					: [];
+
+			const result = await Users.col
+				.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
+					{
+						$match: {
+							active: status === 'active',
+							roles: role,
+						},
+					},
+					{
+						$project: inclusiveFields,
+					},
+					{
+						$facet: {
+							sortedResults: [
+								{
+									$sort: actualSort,
+								},
+								{
+									$skip: offset,
+								},
+								...limit,
+							],
+							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+						},
+					},
+				])
+				.toArray();
+
+			const {
+				sortedResults: users,
+				totalCount: [{ total } = { total: 0 }],
+			} = result[0];
+
+			return API.v1.success({
+				users,
+				count: users.length,
+				offset,
+				total,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
 	'users.register',
 	{
 		authRequired: false,

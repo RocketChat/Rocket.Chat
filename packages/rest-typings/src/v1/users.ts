@@ -151,6 +151,12 @@ export type UsersEndpoints = {
 		}>;
 	};
 
+	'/v1/users.list/:status': {
+		GET: (params: PaginatedRequest<{ fields: string }>) => PaginatedResult<{
+			users: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>[];
+		}>;
+	};
+
 	'/v1/users.setAvatar': {
 		POST: (params: UsersSetAvatar) => void;
 	};
