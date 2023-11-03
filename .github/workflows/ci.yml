@@ -83,7 +83,7 @@ jobs:
   packages-build:
     name: 📦 Build Packages
     needs: [release-versions]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Github Info
         run: |
@@ -149,7 +149,7 @@ jobs:
     name: 📦 Meteor Build - official
     needs: [tests-done, release-versions, packages-build]
     if: (github.event_name == 'release' || github.ref == 'refs/heads/develop')
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Github Info
@@ -172,7 +172,7 @@ jobs:
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
     needs: [build, release-versions]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     env:
       RC_DOCKERFILE: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
@@ -201,7 +201,7 @@ jobs:
   build-gh-docker:
     name: 🚢 Build Docker Images for Production
     needs: [build-prod, release-versions]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     env:
       RC_DOCKERFILE: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
@@ -349,7 +349,7 @@ jobs:
 
   tests-done:
     name: ✅ Tests Done
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [test-unit, test-api, test-ui, test-api-ee, test-ui-ee]
 
     steps:
@@ -359,7 +359,7 @@ jobs:
 
   deploy:
     name: 🚀 Publish build assets
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     needs: [build-gh-docker, release-versions]
 
@@ -411,7 +411,7 @@ jobs:
 
   build-docker-preview:
     name: 🚢 Build Docker Image (preview)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [build, checks, release-versions]
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     steps:
@@ -441,7 +441,7 @@ jobs:
 
   docker-image-publish:
     name: 🚀 Publish Docker Image (main)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [deploy, build-docker-preview, release-versions]
 
     strategy:
@@ -552,7 +552,7 @@ jobs:
 
   services-docker-image-publish:
     name: 🚀 Publish Docker Image (services)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [deploy, release-versions]
 
     strategy:
@@ -641,7 +641,7 @@ jobs:
 
   notify-services:
     name: 🚀 Notify external services
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs:
       - services-docker-image-publish
       - docker-image-publish
