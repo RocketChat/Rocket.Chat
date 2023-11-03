@@ -10,7 +10,7 @@ import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/
 import { useOmnichannelPriorities } from '../../../../../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
 import { ContextualbarFooter, ContextualbarScrollableContent } from '../../../../../../components/Contextualbar';
 import Tags from '../../../../../../components/Omnichannel/Tags';
-import { useFormsSubscription } from '../../../../additionalForms';
+import { SlaPoliciesSelect, PrioritiesSelect } from '../../../../additionalForms';
 import { FormSkeleton } from '../../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../../hooks/useCustomFieldsMetadata';
 import { useSlaPolicies } from '../../../hooks/useSlaPolicies';
@@ -56,10 +56,6 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 		enabled: canViewCustomFields,
 	});
 	const { data: priorities, isLoading: isPrioritiesLoading } = useOmnichannelPriorities();
-
-	const { useSlaPoliciesSelect = () => undefined, usePrioritiesSelect = () => undefined } = useFormsSubscription();
-	const SlaPoliciesSelect = useSlaPoliciesSelect();
-	const PrioritiesSelect = usePrioritiesSelect();
 
 	const {
 		register,
