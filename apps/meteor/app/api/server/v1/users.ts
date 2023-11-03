@@ -645,6 +645,26 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'users.sendWelcomeEmail',
+	{
+		authRequired: true,
+	},
+	{
+		async post() {
+			const { email } = this.bodyParams;
+			if (!email) {
+				return API.v1.failure("The 'email' param is required");
+			}
+
+			if (await Meteor.callAsync('sendWelcomeEmail', email)) {
+				return API.v1.success();
+			}
+			return API.v1.failure();
+		},
+	},
+);
+
+API.v1.addRoute(
 	'users.register',
 	{
 		authRequired: false,

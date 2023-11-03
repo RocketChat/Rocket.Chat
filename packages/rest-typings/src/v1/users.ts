@@ -157,6 +157,10 @@ export type UsersEndpoints = {
 		}>;
 	};
 
+	'/v1/users.sendWelcomeEmail': {
+		POST: (params: { email: string }) => void;
+	};
+
 	'/v1/users.setAvatar': {
 		POST: (params: UsersSetAvatar) => void;
 	};
