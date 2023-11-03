@@ -40,4 +40,5 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	findOneByToken(token: string): Promise<ILivechatInquiryRecord | null>;
 	removeDefaultAgentById(inquiryId: string): Promise<UpdateResult | Document>;
 	removeByVisitorToken(token: string): Promise<void>;
+	markInquiryActiveForPeriod(rid: string, period: string): Promise<UpdateResult>;
 }

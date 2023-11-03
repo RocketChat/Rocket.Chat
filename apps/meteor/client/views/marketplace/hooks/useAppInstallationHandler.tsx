@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { useEndpoint, useRoute, useRouteParameter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useRouteParameter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
@@ -23,7 +23,7 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
-	const upgradeRoute = useRoute('upgrade');
+	const router = useRouter();
 	const routeContext = String(useRouteParameter('context'));
 	const context = isMarketplaceRouteContext(routeContext) ? routeContext : 'explore';
 
@@ -109,7 +109,7 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 				handleClose={closeModal}
 				handleConfirm={acquireApp}
 				handleEnableUnlimitedApps={() => {
-					upgradeRoute.push({ type: 'go-fully-featured-registered' });
+					router.navigate('/admin/subscription');
 					setModal(null);
 				}}
 			/>,
@@ -120,13 +120,13 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 		appCountQuery.data,
 		setModal,
 		context,
+		closeModal,
 		acquireApp,
 		openIncompatibleModal,
-		closeModal,
 		dispatchToastMessage,
 		notifyAdmins,
 		success,
 		onDismiss,
-		upgradeRoute,
+		router,
 	]);
 }
