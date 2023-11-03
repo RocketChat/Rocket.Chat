@@ -1,4 +1,6 @@
+import type { Serialized } from '@rocket.chat/core-typings';
 import { TableRow, TableCell } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
@@ -10,8 +12,24 @@ import {
 	ProgressStep,
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-import ImportOperationSummarySkeleton from './ImportOperationSummarySkeleton';
 
+type ImportOperationSummaryProps = {
+	type: string;
+	_updatedAt: Serialized<Date>;
+	status: (typeof ProgressStep)[keyof typeof ProgressStep];
+	file?: string;
+	user: string;
+	small?: boolean;
+	count?: {
+		users?: number;
+		channels?: number;
+		messages?: number;
+		total?: number;
+	};
+	valid?: boolean;
+};
+
+// TODO: review inner logic
 function ImportOperationSummary({
 	type,
 	_updatedAt,
@@ -21,7 +39,7 @@ function ImportOperationSummary({
 	small,
 	count: { users = 0, channels = 0, messages = 0, total = 0 } = {},
 	valid,
-}) {
+}: ImportOperationSummaryProps) {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
@@ -80,7 +98,7 @@ function ImportOperationSummary({
 			<TableCell>{formatDateAndTime(_updatedAt)}</TableCell>
 			{!small && (
 				<>
-					<TableCell>{status && t(status.replace('importer_', 'importer_status_'))}</TableCell>
+					<TableCell>{status && t(status.replace('importer_', 'importer_status_') as TranslationKey)}</TableCell>
 					<TableCell>{fileName}</TableCell>
 					<TableCell align='center'>{users}</TableCell>
 					<TableCell align='center'>{channels}</TableCell>
@@ -92,6 +110,4 @@ function ImportOperationSummary({
 	);
 }
 
-export default Object.assign(ImportOperationSummary, {
-	Skeleton: ImportOperationSummarySkeleton,
-});
+export default ImportOperationSummary;

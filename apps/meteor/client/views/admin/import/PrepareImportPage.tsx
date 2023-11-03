@@ -1,5 +1,7 @@
+import type { IImport, IImporterSelection, Serialized } from '@rocket.chat/core-typings';
 import { Badge, Box, Button, ButtonGroup, Margins, ProgressBar, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
 
@@ -13,12 +15,14 @@ import {
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 import Page from '../../../components/Page';
+import type { ChannelDescriptor } from './ChannelDescriptor';
 import PrepareChannels from './PrepareChannels';
 import PrepareUsers from './PrepareUsers';
+import type { UserDescriptor } from './UserDescriptor';
 import { useErrorHandler } from './useErrorHandler';
 
-const waitFor = (fn, predicate) =>
-	new Promise((resolve, reject) => {
+const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U) =>
+	new Promise<U>((resolve, reject) => {
 		const callPromise = () => {
 			fn().then((result) => {
 				if (predicate(result)) {
@@ -33,16 +37,17 @@ const waitFor = (fn, predicate) =>
 		callPromise();
 	});
 
+// TODO: review inner logic
 function PrepareImportPage() {
 	const t = useTranslation();
 	const handleError = useErrorHandler();
 
 	const [isPreparing, setPreparing] = useSafely(useState(true));
-	const [progressRate, setProgressRate] = useSafely(useState(null));
-	const [status, setStatus] = useSafely(useState(null));
+	const [progressRate, setProgressRate] = useSafely(useState<number | null>(null));
+	const [status, setStatus] = useSafely(useState<string | null>(null));
 	const [messageCount, setMessageCount] = useSafely(useState(0));
-	const [users, setUsers] = useState([]);
-	const [channels, setChannels] = useState([]);
+	const [users, setUsers] = useState<UserDescriptor[]>([]);
+	const [channels, setChannels] = useState<ChannelDescriptor[]>([]);
 	const [isImporting, setImporting] = useSafely(useState(false));
 
 	const usersCount = useMemo(() => users.filter(({ do_import }) => do_import).length, [users]);
@@ -70,7 +75,10 @@ function PrepareImportPage() {
 	useEffect(() => {
 		const loadImportFileData = async () => {
 			try {
-				const data = await waitFor(getImportFileData, (data) => data && !data.waiting);
+				const data = await waitFor(
+					getImportFileData,
+					(data): data is IImporterSelection => data && (!('waiting' in data) || !data.waiting),
+				);
 
 				if (!data) {
 					handleError(t('Importer_not_setup'));
@@ -78,15 +86,9 @@ function PrepareImportPage() {
 					return;
 				}
 
-				if (data.step) {
-					handleError(t('Failed_To_Load_Import_Data'));
-					router.navigate('/admin/import');
-					return;
-				}
-
 				setMessageCount(data.message_count);
-				setUsers(data.users.map((user) => ({ ...user, do_import: true })));
-				setChannels(data.channels.map((channel) => ({ ...channel, do_import: true })));
+				setUsers(data.users.map((user) => ({ ...user, username: user.username ?? '', do_import: true })));
+				setChannels(data.channels.map((channel) => ({ ...channel, name: channel.name ?? '', do_import: true })));
 				setPreparing(false);
 				setProgressRate(null);
 			} catch (error) {
@@ -99,7 +101,8 @@ function PrepareImportPage() {
 			try {
 				const { operation } = await waitFor(
 					getCurrentImportOperation,
-					({ operation }) => operation.valid && !ImportWaitingStates.includes(operation.status),
+					(data): data is Serialized<{ operation: IImport }> =>
+						data.operation.valid && !ImportWaitingStates.includes(data.operation.status),
 				);
 
 				if (!operation.valid) {
@@ -152,7 +155,12 @@ function PrepareImportPage() {
 		setImporting(true);
 
 		try {
-			await startImport({ input: { users, channels } });
+			await startImport({
+				input: {
+					users: users.map((user) => ({ is_bot: false, is_email_taken: false, ...user })),
+					channels: channels.map((channel) => ({ is_private: false, is_direct: false, ...channel })),
+				},
+			});
 			router.navigate('/admin/import/progress');
 		} catch (error) {
 			handleError(error, t('Failed_To_Start_Import'));
@@ -161,7 +169,7 @@ function PrepareImportPage() {
 	};
 
 	const [tab, setTab] = useState('users');
-	const handleTabClick = useMemo(() => (tab) => () => setTab(tab), []);
+	const handleTabClick = useMemo(() => (tab: string) => () => setTab(tab), []);
 
 	const statusDebounced = useDebouncedValue(status, 100);
 
@@ -186,7 +194,7 @@ function PrepareImportPage() {
 			<Page.ScrollableContentWithShadow>
 				<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
 					<Box is='h2' fontScale='p2m'>
-						{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_'))}
+						{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_') as TranslationKey)}
 					</Box>
 					{!isPreparing && (
 						<Tabs flexShrink={0}>
@@ -207,7 +215,7 @@ function PrepareImportPage() {
 							<>
 								{progressRate ? (
 									<Box display='flex' justifyContent='center' fontScale='p2'>
-										<ProgressBar percentage={progressRate.toFixed(0)} />
+										<ProgressBar percentage={Math.floor(progressRate)} />
 										<Box is='span' mis='x24'>
 											{numberFormat(progressRate, 0)}%
 										</Box>

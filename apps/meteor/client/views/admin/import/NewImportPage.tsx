@@ -1,13 +1,16 @@
 import { Box, Button, ButtonGroup, Callout, Chip, Field, Margins, Select, InputBox, TextInput, UrlInput } from '@rocket.chat/fuselage';
 import { useUniqueId, useSafely } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import type { ChangeEvent, DragEvent, FormEvent, Key, SyntheticEvent } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
 
 import Page from '../../../components/Page';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 import { useErrorHandler } from './useErrorHandler';
 
+// TODO: review inner logic
 function NewImportPage() {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -21,12 +24,12 @@ function NewImportPage() {
 		refetchOnWindowFocus: false,
 	});
 
-	const options = useMemo(() => importers?.map(({ key, name }) => [key, t(name)]) || [], [importers, t]);
+	const options = useMemo(() => importers?.map(({ key, name }) => [key, t(name as TranslationKey)] as const) || [], [importers, t]);
 
 	const importerKey = useRouteParameter('importerKey');
 	const importer = useMemo(() => (importers || []).find(({ key }) => key === importerKey), [importerKey, importers]);
 
-	const maxFileSize = useSetting('FileUpload_MaxFileSize');
+	const maxFileSize = useSetting<number>('FileUpload_MaxFileSize') ?? 0;
 
 	const router = useRouter();
 
@@ -45,37 +48,53 @@ function NewImportPage() {
 		router.navigate('/admin/import');
 	};
 
-	const handleImporterKeyChange = (importerKey) => {
+	const handleImporterKeyChange = (importerKey: Key) => {
+		if (typeof importerKey !== 'string') {
+			return;
+		}
+
 		router.navigate(
-			router.buildRoutePath({
-				pattern: '/admin/import/new/:importerKey',
+			{
+				pattern: '/admin/import/new/:importerKey?',
 				params: { importerKey },
-			}),
+			},
 			{ replace: true },
 		);
 	};
 
-	const handleFileTypeChange = (fileType) => {
+	const handleFileTypeChange = (fileType: Key) => {
+		if (typeof fileType !== 'string') {
+			return;
+		}
+
 		setFileType(fileType);
 	};
 
-	const [files, setFiles] = useState([]);
+	const [files, setFiles] = useState<File[]>([]);
 
-	const handleImportFileChange = async (event) => {
-		event = event.originalEvent || event;
+	const isDataTransferEvent = <T extends SyntheticEvent>(event: T): event is T & DragEvent<HTMLInputElement> =>
+		Boolean('dataTransfer' in event && (event as any).dataTransfer.files);
+
+	const handleImportFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
 		let { files } = event.target;
 		if (!files || files.length === 0) {
-			files = (event.dataTransfer != null ? event.dataTransfer.files : undefined) || [];
+			if (isDataTransferEvent(event)) {
+				files = event.dataTransfer.files;
+			}
 		}
 
-		setFiles(Array.from(files));
+		setFiles(Array.from(files ?? []));
 	};
 
-	const handleFileUploadChipClick = (file) => () => {
+	const handleFileUploadChipClick = (file: File) => () => {
 		setFiles((files) => files.filter((_file) => _file !== file));
 	};
 
 	const handleFileUploadImportButtonClick = async () => {
+		if (!importerKey) {
+			return;
+		}
+
 		setLoading(true);
 
 		try {
@@ -83,13 +102,14 @@ function NewImportPage() {
 				Array.from(
 					files,
 					(file) =>
-						new Promise((resolve) => {
+						new Promise<void>((resolve) => {
 							const reader = new FileReader();
 							reader.readAsDataURL(file);
 							reader.onloadend = async () => {
+								const result = reader.result as string;
 								try {
 									await uploadImportFile({
-										binaryContent: reader.result.split(';base64,')[1],
+										binaryContent: result.split(';base64,')[1],
 										contentType: file.type,
 										fileName: file.name,
 										importerKey,
@@ -112,11 +132,15 @@ function NewImportPage() {
 
 	const [fileUrl, setFileUrl] = useSafely(useState(''));
 
-	const handleFileUrlChange = (event) => {
+	const handleFileUrlChange = (event: FormEvent<HTMLInputElement>) => {
 		setFileUrl(event.currentTarget.value);
 	};
 
 	const handleFileUrlImportButtonClick = async () => {
+		if (!importerKey) {
+			return;
+		}
+
 		setLoading(true);
 
 		try {
@@ -132,11 +156,15 @@ function NewImportPage() {
 
 	const [filePath, setFilePath] = useSafely(useState(''));
 
-	const handleFilePathChange = (event) => {
+	const handleFilePathChange = (event: FormEvent<HTMLInputElement>) => {
 		setFilePath(event.currentTarget.value);
 	};
 
 	const handleFilePathImportButtonClick = async () => {
+		if (!importerKey) {
+			return;
+		}
+
 		setLoading(true);
 
 		try {
@@ -156,7 +184,8 @@ function NewImportPage() {
 	const handleImportButtonClick =
 		(fileType === 'upload' && handleFileUploadImportButtonClick) ||
 		(fileType === 'url' && handleFileUrlImportButtonClick) ||
-		(fileType === 'path' && handleFilePathImportButtonClick);
+		(fileType === 'path' && handleFilePathImportButtonClick) ||
+		undefined;
 
 	return (
 		<Page className='page-settings'>
@@ -191,7 +220,9 @@ function NewImportPage() {
 							</Field.Row>
 							{importer && (
 								<Field.Hint>
-									{importer.key === 'csv' ? t('Importer_From_Description_CSV') : t('Importer_From_Description', { from: t(importer.name) })}
+									{importer.key === 'csv'
+										? t('Importer_From_Description_CSV')
+										: t('Importer_From_Description', { from: t(importer.name as TranslationKey) })}
 								</Field.Hint>
 							)}
 						</Field>
