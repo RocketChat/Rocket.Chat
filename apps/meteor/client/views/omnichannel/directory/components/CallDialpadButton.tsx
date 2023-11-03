@@ -27,7 +27,7 @@ export const CallDialpadButton = ({ phoneNumber }: { phoneNumber: string }): Rea
 	return (
 		<IconButton
 			rcx-call-dial-button
-			title={outBoundCallsAllowed ? t('Call_number') : t('Call_number_enterprise_only')}
+			title={outBoundCallsAllowed ? t('Call_number') : t('Call_number_premium_only')}
 			className={rcxCallDialButton}
 			disabled={!outBoundCallsEnabledForUser || !phoneNumber}
 			tiny
