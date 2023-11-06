@@ -15,7 +15,7 @@ const ERROR = {
 
 test.use({ storageState: Users.admin.state });
 
-test.describe('Omnichannel Manage Departments', () => {
+test.describe('OC - Manage Departments', () => {
 	test.skip(!IS_EE, 'Enterprise Edition Only');
 
 	let poOmnichannelDepartments: OmnichannelDepartments;
@@ -83,8 +83,23 @@ test.describe('Omnichannel Manage Departments', () => {
 			await poOmnichannelDepartments.menuDeleteOption.click();
 
 			await test.step('expect confirm delete department', async () => {
-				await poOmnichannelDepartments.inputModalConfirmDelete.fill(departmentName);
-				await poOmnichannelDepartments.btnModalConfirmDelete.click();
+				await expect(poOmnichannelDepartments.modalConfirmDelete).toBeVisible();
+
+				await test.step('expect delete to be disabled when name is incorrect', async () => {
+					await expect(poOmnichannelDepartments.btnModalConfirmDelete).toBeDisabled();
+					await poOmnichannelDepartments.inputModalConfirmDelete.fill('someramdomname');
+					await expect(poOmnichannelDepartments.btnModalConfirmDelete).toBeDisabled();
+				});
+
+				await test.step('expect to successfuly delete if department name is correct', async () => {
+					await expect(poOmnichannelDepartments.btnModalConfirmDelete).toBeDisabled();
+					await poOmnichannelDepartments.inputModalConfirmDelete.fill(departmentName);
+					await expect(poOmnichannelDepartments.btnModalConfirmDelete).toBeEnabled();
+					await poOmnichannelDepartments.btnModalConfirmDelete.click();
+				});
+			});
+
+			await test.step('expect department to have been deleted', async () => {
 				await poOmnichannelDepartments.search(departmentName);
 				await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
 			});
@@ -253,7 +268,7 @@ test.describe('Omnichannel Manage Departments', () => {
 		await test.step('expect to be able to delete department', async () => {
 			await poOmnichannelDepartments.search(department.name);
 			await poOmnichannelDepartments.selectedDepartmentMenu(department.name).click();
-			await expect(poOmnichannelDepartments.menuDeleteOption).toBeVisible();
+			await expect(poOmnichannelDepartments.menuDeleteOption).toBeEnabled();
 		});
 
 		await test.step('expect to disable department removal setting', async () => {
@@ -264,7 +279,7 @@ test.describe('Omnichannel Manage Departments', () => {
 		await test.step('expect not to be able to delete department', async () => {
 			await poOmnichannelDepartments.search(department.name);
 			await poOmnichannelDepartments.selectedDepartmentMenu(department.name).click();
-			await expect(poOmnichannelDepartments.menuDeleteOption).not.toBeVisible();
+			await expect(poOmnichannelDepartments.menuDeleteOption).toBeDisabled();
 		});
 
 		await test.step('expect to enable department removal setting', async () => {
