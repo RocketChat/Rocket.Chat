@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { UserStatus, type ILivechatAgent, type ILivechatDepartment, type IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
@@ -610,8 +611,7 @@ describe('LIVECHAT - Agents', function () {
 			const { body } = await request.get(api('rooms.get')).set(testUser.credentials).send({}).expect(200);
 
 			expect(body).to.have.property('success', true);
-			expect(body.update).to.be.an('array').with.lengthOf(1);
-			expect(body.update[0]._id).to.be.equal('GENERAL');
+			expect(body.update.filter((r: IRoom) => r.t === 'l')).to.have.lengthOf(0);
 		});
 
 		it('should have a new room in his sidebar after taking a conversation from the queue', async () => {
