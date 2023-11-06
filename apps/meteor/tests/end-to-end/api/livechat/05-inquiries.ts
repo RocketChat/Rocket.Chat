@@ -218,6 +218,7 @@ describe('LIVECHAT - inquiries', function () {
 	describe('livechat/inquiries.queuedForUser', () => {
 		let testUser: { user: IUser; credentials: { [key: string]: string } };
 		before(async () => {
+			await updateSetting('Livechat_accept_chats_with_no_agents', true);
 			const user = await createUser();
 			await createAgent(user.username);
 			const credentials2 = await login(user.username, password);
@@ -229,6 +230,7 @@ describe('LIVECHAT - inquiries', function () {
 			};
 		});
 		after(async () => {
+			await updateSetting('Livechat_accept_chats_with_no_agents', false);
 			await deleteUser(testUser.user._id);
 		});
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
@@ -456,7 +458,7 @@ describe('LIVECHAT - inquiries', function () {
 			const response = parseMethodResponse(body);
 			expect(response.result).to.be.true;
 		});
-		it('should appear on users queued elements', async () => {
+		(IS_EE ? it : it.skip)('should appear on users queued elements', async () => {
 			const { body } = await request
 				.get(api('livechat/inquiries.queuedForUser'))
 				.set(testUser.credentials)
