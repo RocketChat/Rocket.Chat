@@ -129,9 +129,9 @@ test.describe.parallel('register', () => {
 		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
 			await page.goto('/home');
 			await poRegistration.goToRegister.click();
-	
+
 			const results = await makeAxeBuilder().analyze();
-	
+
 			expect(results.violations).toEqual([]);
 		});
 	});
@@ -191,6 +191,13 @@ test.describe.parallel('register', () => {
 			await page.goto('/register/secret');
 			await page.waitForSelector('role=heading[level=2]');
 			await expect(page.locator('role=heading[level=2][name="The URL provided is invalid."]')).toBeVisible();
+		});
+	});
+
+	test.describe('Invite flow registration', async () => {
+		test.beforeAll(async ({ api }) => {
+			const result = await api.post('/settings/Accounts_RegistrationForm', { value: 'Public' });
+			expect(result.ok()).toBeTruthy();
 		});
 	});
 });
