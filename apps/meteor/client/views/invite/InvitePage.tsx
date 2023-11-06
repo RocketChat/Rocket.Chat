@@ -13,7 +13,7 @@ const InvitePage = (): ReactElement => {
 
 	const token = useRouteParameter('hash');
 	const userId = useUserId();
-	const { isLoading, data: isValidInvite } = useValidateInviteQuery(userId ?? '', token ?? '');
+	const { isLoading, data: isValidInvite } = useValidateInviteQuery(userId, token);
 
 	const getInviteRoomMutation = useInviteTokenMutation();
 

@@ -3,14 +3,14 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useInviteTokenMutation } from './useInviteTokenMutation';
 
-export const useValidateInviteQuery = (userId: string, token: string) => {
+export const useValidateInviteQuery = (userId: string | null, token: string | undefined) => {
 	const t = useTranslation();
 
 	const registrationForm = useSetting('Accounts_RegistrationForm');
 
 	const setLoginDefaultState = useSessionDispatch('loginDefaultState');
 	const dispatchToastMessage = useToastMessageDispatch();
-	const mutateInviteToken = useInviteTokenMutation();
+	const getInviteRoomMutation = useInviteTokenMutation();
 
 	const handleValidateInviteToken = useEndpoint('POST', '/v1/validateInviteToken');
 
@@ -46,7 +46,7 @@ export const useValidateInviteQuery = (userId: string, token: string) => {
 					return;
 				}
 
-				return mutateInviteToken(token);
+				return getInviteRoomMutation(token);
 			},
 		},
 	);
