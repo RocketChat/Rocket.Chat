@@ -28,7 +28,7 @@ const PreferencesConversationTranscript = () => {
 							<Box display='flex' alignItems='center'>
 								{t('Omnichannel_transcript_pdf')}
 								<Box marginInline={4}>
-									{!hasLicense && <Tag variant='featured'>{t('Enterprise')}</Tag>}
+									{!hasLicense && <Tag variant='featured'>{t('Premium')}</Tag>}
 									{!canSendTranscriptPDF && hasLicense && <Tag>{t('No_permission')}</Tag>}
 								</Box>
 							</Box>

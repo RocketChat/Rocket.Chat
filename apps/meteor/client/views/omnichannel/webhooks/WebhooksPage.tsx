@@ -161,7 +161,7 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 					>
 						{testWebhook.isLoading ? t('Sending') : t('Send_Test')}
 					</Button>
-					<Button primary onClick={handleSubmit(handleSave)} disabled={!isDirty || isSubmitting}>
+					<Button primary onClick={handleSubmit(handleSave)} loading={isSubmitting} disabled={!isDirty}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

@@ -424,7 +424,7 @@ const MessageBox = ({
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (
-							<Button small primary onClick={onJoin} disabled={joinMutation.isLoading}>
+							<Button small primary onClick={onJoin} loading={joinMutation.isLoading}>
 								{t('Join')}
 							</Button>
 						)}

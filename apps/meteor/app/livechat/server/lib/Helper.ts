@@ -77,7 +77,11 @@ export const createLivechatRoom = async (
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
 
-	logger.debug(`Creating livechat room for visitor ${_id}`);
+	const { activity } = guest;
+	logger.debug({
+		msg: `Creating livechat room for visitor ${_id}`,
+		visitor: { _id, username, departmentId, status, activity },
+	});
 
 	const room: InsertionModel<IOmnichannelRoom> = Object.assign(
 		{
@@ -94,6 +98,7 @@ export const createLivechatRoom = async (
 				username,
 				token,
 				status,
+				...(activity?.length && { activity }),
 			},
 			cl: false,
 			open: true,
@@ -132,7 +137,7 @@ export const createLivechatInquiry = async ({
 }: {
 	rid: string;
 	name?: string;
-	guest?: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'department' | 'name' | 'token'>;
+	guest?: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'department' | 'name' | 'token' | 'activity'>;
 	message?: Pick<IMessage, 'msg'>;
 	initialStatus?: LivechatInquiryStatus;
 	extraData?: Pick<ILivechatInquiryRecord, 'source'>;
@@ -146,6 +151,7 @@ export const createLivechatInquiry = async ({
 			username: String,
 			status: Match.Maybe(String),
 			department: Match.Maybe(String),
+			activity: Match.Maybe([String]),
 		}),
 	);
 	check(
@@ -157,11 +163,14 @@ export const createLivechatInquiry = async ({
 
 	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
 
-	const { _id, username, token, department, status = UserStatus.ONLINE } = guest;
+	const { _id, username, token, department, status = UserStatus.ONLINE, activity } = guest;
 	const { msg } = message;
 	const ts = new Date();
 
-	logger.debug(`Creating livechat inquiry for visitor ${_id}`);
+	logger.debug({
+		msg: `Creating livechat inquiry for visitor ${_id}`,
+		visitor: { _id, username, department, status, activity },
+	});
 
 	const inquiry: InsertionModel<ILivechatInquiryRecord> = {
 		rid,
@@ -175,6 +184,7 @@ export const createLivechatInquiry = async ({
 			username,
 			token,
 			status,
+			...(activity?.length && { activity }),
 		},
 		t: 'l',
 		priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,

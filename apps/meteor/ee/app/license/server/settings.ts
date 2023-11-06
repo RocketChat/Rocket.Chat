@@ -3,11 +3,11 @@ import { Meteor } from 'meteor/meteor';
 import { settingsRegistry } from '../../../../app/settings/server';
 
 Meteor.startup(async () => {
-	await settingsRegistry.addGroup('Enterprise', async function () {
-		await this.section('License', async function () {
+	await settingsRegistry.addGroup('Premium', async function () {
+		await this.section('Premium', async function () {
 			await this.add('Enterprise_License', '', {
 				type: 'string',
-				i18nLabel: 'Enterprise_License',
+				i18nLabel: 'Premium_License',
 			});
 			await this.add('Enterprise_License_Data', '', {
 				type: 'string',
