@@ -6,7 +6,7 @@ import React from 'react';
 const ComposerFederationJoinRoomDisabled = (): ReactElement => {
 	const t = useTranslation();
 
-	return <MessageFooterCallout>{t('Federation_Matrix_join_public_rooms_is_enterprise')}</MessageFooterCallout>;
+	return <MessageFooterCallout>{t('Federation_Matrix_join_public_rooms_is_premium')}</MessageFooterCallout>;
 };
 
 export default ComposerFederationJoinRoomDisabled;

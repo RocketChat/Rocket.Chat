@@ -6,7 +6,7 @@ import Page from '../../../components/Page';
 import MarketplaceHeader from '../components/MarketplaceHeader';
 import AppsPageContent from './AppsPageContent';
 
-type AppsContext = 'explore' | 'installed' | 'enterprise' | 'private';
+type AppsContext = 'explore' | 'installed' | 'premium' | 'private';
 
 const AppsPage = (): ReactElement => {
 	const t = useTranslation();

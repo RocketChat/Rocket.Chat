@@ -49,7 +49,7 @@ type CreateChannelModalPayload = {
 
 const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModule>, featureToggle: boolean): TranslationKey => {
 	if (licenseModule === 'loading' || !licenseModule) {
-		return 'error-this-is-an-ee-feature';
+		return 'error-this-is-a-premium-feature';
 	}
 	if (!featureToggle) {
 		return 'Federation_Matrix_Federated_Description_disabled';
