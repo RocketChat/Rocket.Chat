@@ -620,7 +620,8 @@ describe('LIVECHAT - Agents', function () {
 			const { body } = await request.get(api('rooms.get')).set(testUser.credentials).send({}).expect(200);
 
 			expect(body).to.have.property('success', true);
-			expect(body.update).to.be.an('array').with.lengthOf(2);
+			const livechatRooms = body.update.filter((r: IRoom) => r.t === 'l');
+			expect(livechatRooms).to.have.lengthOf(1);
 			expect(body.update.find((r: { _id: string }) => r._id === room._id)).to.be.an('object');
 			expect(body.update.find((r: { _id: string }) => r._id === 'GENERAL')).to.be.an('object');
 		});
