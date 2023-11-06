@@ -1,12 +1,11 @@
 import type { IIntegrationHistory, Serialized } from '@rocket.chat/core-typings';
 import { Skeleton, Box, Accordion } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import React from 'react';
 
 import HistoryItem from './HistoryItem';
 
-function HistoryContent({ data, isLoading }: { data: Serialized<IIntegrationHistory>[]; isLoading: boolean }): ReactElement {
+const HistoryContent = ({ data, isLoading }: { data: Serialized<IIntegrationHistory>[]; isLoading: boolean }) => {
 	const t = useTranslation();
 
 	if (isLoading) {
@@ -35,6 +34,6 @@ function HistoryContent({ data, isLoading }: { data: Serialized<IIntegrationHist
 			</Accordion>
 		</Box>
 	);
-}
+};
 
 export default HistoryContent;
