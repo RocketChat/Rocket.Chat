@@ -11,10 +11,11 @@ import {
 	makeAgentAvailable,
 	sendAgentMessage,
 	getLivechatRoomInfo,
+	fetchInquiry,
+	closeOmnichannelRoom,
 } from '../../../data/livechat/rooms';
-import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('MAC', () => {
+describe('MAC', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
@@ -43,7 +44,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(updatedRoom).to.have.nested.property('v.activity').and.to.be.an('array');
 		});
 
-		it('should mark multiple rooms as active when they come from same visitor', async () => {
+		it('should mark multiple rooms as active when they come from same visitor after an agent sends a message', async () => {
 			const room = await createLivechatRoom(visitor.token);
 
 			await sendAgentMessage(room._id);
@@ -51,6 +52,28 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const updatedRoom = await getLivechatRoomInfo(room._id);
 
 			expect(updatedRoom).to.have.nested.property('v.activity').and.to.be.an('array');
+
+			await closeOmnichannelRoom(room._id);
+		});
+
+		it('should mark room as active when it comes from same visitor on same period, even without agent interaction', async () => {
+			const room = await createLivechatRoom(visitor.token);
+
+			expect(room).to.have.nested.property('v.activity').and.to.be.an('array');
+			expect(room.v.activity?.includes(moment.utc().format('YYYY-MM'))).to.be.true;
+
+			await closeOmnichannelRoom(room._id);
+		});
+
+		it('should mark an inquiry as active when it comes from same visitor on same period, even without agent interaction', async () => {
+			const room = await createLivechatRoom(visitor.token);
+			const inquiry = await fetchInquiry(room._id);
+
+			expect(inquiry).to.have.nested.property('v.activity').and.to.be.an('array');
+			expect(inquiry.v.activity?.includes(moment.utc().format('YYYY-MM'))).to.be.true;
+			expect(room.v.activity?.includes(moment.utc().format('YYYY-MM'))).to.be.true;
+
+			await closeOmnichannelRoom(room._id);
 		});
 
 		it('visitor should be marked as active for period', async () => {

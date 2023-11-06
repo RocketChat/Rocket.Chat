@@ -419,4 +419,8 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 		await this.deleteMany(query);
 	}
+
+	async markInquiryActiveForPeriod(rid: string, period: string): Promise<UpdateResult> {
+		return this.updateOne({ rid }, { $addToSet: { 'v.activity': period } });
+	}
 }

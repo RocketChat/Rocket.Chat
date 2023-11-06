@@ -7,6 +7,10 @@ import { useEffect } from 'react';
 
 type LicenseDataType = Awaited<OperationResult<'GET', '/v1/licenses.info'>>['license'];
 
+type LicenseParams = {
+	loadValues?: boolean;
+};
+
 const invalidateQueryClientLicenses = (() => {
 	let timeout: ReturnType<typeof setTimeout> | undefined;
 
@@ -19,18 +23,24 @@ const invalidateQueryClientLicenses = (() => {
 	};
 })();
 
-export const useLicense = (): UseQueryResult<Serialized<LicenseDataType>> => {
+export const useLicense = (params?: LicenseParams): UseQueryResult<Serialized<LicenseDataType>> => {
 	const getLicenses = useEndpoint('GET', '/v1/licenses.info');
 
-	const queryClient = useQueryClient();
+	const invalidateQueries = useInvalidateLicense();
 
 	const notify = useSingleStream('notify-all');
 
-	useEffect(() => notify('license', () => invalidateQueryClientLicenses(queryClient)), [notify, queryClient]);
+	useEffect(() => notify('license', () => invalidateQueries()), [notify, invalidateQueries]);
 
-	return useQuery(['licenses', 'getLicenses'], () => getLicenses({}), {
+	return useQuery(['licenses', 'getLicenses', params?.loadValues], () => getLicenses({ ...params }), {
 		staleTime: Infinity,
 		keepPreviousData: true,
 		select: (data) => data.license,
 	});
+};
+
+export const useInvalidateLicense = () => {
+	const queryClient = useQueryClient();
+
+	return () => invalidateQueryClientLicenses(queryClient);
 };

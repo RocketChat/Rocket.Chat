@@ -15,7 +15,7 @@ export const addSettings = async function (name: string): Promise<void> {
 	await settingsRegistry.addGroup('SAML', async function () {
 		await this.with(
 			{
-				tab: 'SAML_Enterprise',
+				tab: 'SAML_Premium',
 				enterprise: true,
 				modules: ['saml-enterprise'],
 			},
