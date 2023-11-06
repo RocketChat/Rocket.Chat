@@ -1,25 +1,24 @@
 import { Button, ButtonGroup, Pagination } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useRoute, useRouteParameter, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouteParameter, useMethod, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
-import { sdk } from '../../../../../app/utils/client/lib/SDKClient';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import Page from '../../../../components/Page';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
+import { sdk } from '../../../../../../app/utils/client/lib/SDKClient';
+import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
+import Page from '../../../../../components/Page';
+import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 import HistoryContent from './HistoryContent';
 
-function OutgoingWebhookHistoryPage(props: ComponentProps<typeof Page>): ReactElement {
+const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
+	const router = useRouter();
 
 	const { itemsPerPage, setItemsPerPage, current, setCurrent, itemsPerPageLabel, showingResultsLabel } = usePagination();
 
 	const [mounted, setMounted] = useState(false);
 	const [total, setTotal] = useState(0);
-
-	const router = useRoute('admin-integrations');
 
 	const clearIntegrationHistory = useMethod('clearIntegrationHistory');
 
@@ -66,10 +65,6 @@ function OutgoingWebhookHistoryPage(props: ComponentProps<typeof Page>): ReactEl
 		}
 	};
 
-	const handleClickReturn = (): void => {
-		router.push({});
-	};
-
 	useEffect(() => {
 		if (mounted) {
 			return sdk.stream('integrationHistory', [id], (integration) => {
@@ -113,7 +108,7 @@ function OutgoingWebhookHistoryPage(props: ComponentProps<typeof Page>): ReactEl
 		<Page flexDirection='column' {...props}>
 			<Page.Header title={t('Integration_Outgoing_WebHook_History')}>
 				<ButtonGroup>
-					<Button icon='back' onClick={handleClickReturn}>
+					<Button icon='back' onClick={() => router.navigate(`/admin/integrations/edit/outgoing/${id}`)}>
 						{t('Back')}
 					</Button>
 					<Button icon='trash' danger onClick={handleClearHistory} disabled={total === 0}>
@@ -137,6 +132,6 @@ function OutgoingWebhookHistoryPage(props: ComponentProps<typeof Page>): ReactEl
 			</Page.Content>
 		</Page>
 	);
-}
+};
 
 export default OutgoingWebhookHistoryPage;
