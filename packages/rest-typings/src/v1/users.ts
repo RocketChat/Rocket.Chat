@@ -18,6 +18,7 @@ import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
 import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
+import type { UsersListStatusParamsGET } from './users/UsersListStatusParamsGET';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 import type { UsersSendConfirmationEmailParamsPOST } from './users/UsersSendConfirmationEmailParamsPOST';
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
@@ -152,7 +153,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.list/:status': {
-		GET: (params: PaginatedRequest<{ fields: string }>) => PaginatedResult<{
+		GET: (params: UsersListStatusParamsGET) => PaginatedResult<{
 			users: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>[];
 		}>;
 	};

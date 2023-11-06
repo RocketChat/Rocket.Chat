@@ -592,6 +592,31 @@ API.v1.addRoute(
 				actualSort.nameInsensitive = sort.name;
 			}
 
+			let match;
+
+			switch (status) {
+				case 'active':
+					match = {
+						active: true,
+						lastLogin: { $exists: true },
+					};
+					break;
+				case 'inactive':
+					match = {
+						active: false,
+						lastLogin: { $exists: true },
+					};
+					break;
+				case 'pending':
+					match = {
+						lastLogin: { $exists: false },
+						type: { $ne: 'bot' },
+					};
+					break;
+				default:
+					throw new Meteor.Error('error-invalid-status', 'Invalid status parameter');
+			}
+
 			const limit =
 				count !== 0
 					? [
@@ -605,8 +630,8 @@ API.v1.addRoute(
 				.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
 					{
 						$match: {
-							active: status === 'active',
 							roles: role,
+							...match,
 						},
 					},
 					{
