@@ -53,6 +53,11 @@ export const createPushSettings = () =>
 				},
 			],
 		});
+		await this.add('Custom_push_gateway', false, {
+			type: 'boolean',
+			public: true,
+			hidden: true,
+		});
 		await this.add('Push_production', true, {
 			type: 'boolean',
 			public: true,
