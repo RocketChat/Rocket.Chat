@@ -12,6 +12,8 @@ import { Livechat } from '../../../server/lib/LivechatTyped';
 
 const emptyStringArray: string[] = [];
 
+const emptyStringArray: string[] = [];
+
 API.v1.addRoute(
 	'livechat/users/:type',
 	{
