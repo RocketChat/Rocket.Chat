@@ -1,7 +1,7 @@
 import { Callout, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useState } from 'react';
 
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
@@ -17,12 +17,6 @@ const WorkspaceRoute = (): ReactElement => {
 	const [refreshStatistics, setRefreshStatistics] = useState(false);
 	const [serverInfoQuery, instancesQuery, statisticsQuery] = useWorkspaceInfo({ refreshStatistics });
 
-	useEffect(() => {
-		if (refreshStatistics && !statisticsQuery.isLoading) {
-			statisticsQuery.refetch();
-		}
-	}, [refreshStatistics]);
-
 	if (!canViewStatistics) {
 		return <NotAuthorizedPage />;
 	}
@@ -33,6 +27,7 @@ const WorkspaceRoute = (): ReactElement => {
 
 	const handleClickRefreshButton = async () => {
 		setRefreshStatistics(true);
+		statisticsQuery.refetch();
 	};
 
 	if (serverInfoQuery.isError || instancesQuery.isError || statisticsQuery.isError) {
