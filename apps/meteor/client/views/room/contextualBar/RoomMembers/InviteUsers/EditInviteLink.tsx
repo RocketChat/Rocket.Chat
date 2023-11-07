@@ -14,7 +14,7 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 	const t = useTranslation();
 	const {
 		handleSubmit,
-		formState: { isDirty },
+		formState: { isDirty, isSubmitting },
 		control,
 	} = useForm({ defaultValues: { days: daysAndMaxUses.days, maxUses: daysAndMaxUses.maxUses } });
 
@@ -68,7 +68,7 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 				</FieldRow>
 			</Field>
 			<Box mbs={8}>
-				<Button disabled={!isDirty} primary onClick={handleSubmit(onClickNewLink)}>
+				<Button loading={isSubmitting} disabled={!isDirty} primary onClick={handleSubmit(onClickNewLink)}>
 					{t('Generate_New_Link')}
 				</Button>
 			</Box>

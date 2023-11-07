@@ -14,8 +14,7 @@ const RegisterWorkspace = () => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
-	const { data: registrationStatusData, isLoading, isError, refetch } = useRegistrationStatus();
-	const isWorkspaceRegistered = registrationStatusData?.registrationStatus?.workspaceRegistered ?? false;
+	const { isRegistered, isLoading, isError, refetch } = useRegistrationStatus();
 
 	if (isLoading || isError) {
 		return null;
@@ -26,7 +25,7 @@ const RegisterWorkspace = () => {
 			setModal(null);
 			refetch();
 		};
-		if (isWorkspaceRegistered) {
+		if (isRegistered) {
 			setModal(<ConnectWorkspaceModal onClose={handleModalClose} onStatusChange={refetch} />);
 		} else setModal(<RegisterWorkspaceModal onClose={handleModalClose} onStatusChange={refetch} />);
 	};
@@ -43,7 +42,7 @@ const RegisterWorkspace = () => {
 		<Page background='tint'>
 			<Page.Header title={t('Registration')}>
 				<RegisterWorkspaceMenu
-					isWorkspaceRegistered={isWorkspaceRegistered}
+					isWorkspaceRegistered={isRegistered || false}
 					onClick={handleRegisterWorkspaceClick}
 					onStatusChange={refetch}
 					onClickOfflineRegistration={handleManualWorkspaceRegistrationButton}
@@ -52,14 +51,14 @@ const RegisterWorkspace = () => {
 
 			<Page.ScrollableContentWithShadow>
 				<Box display='flex'>
-					{!isWorkspaceRegistered && <Tag variant='secondary-danger'>{t('RegisterWorkspace_NotRegistered_Title')}</Tag>}
-					{isWorkspaceRegistered && <Tag variant='primary'>{t('Workspace_registered')}</Tag>}
+					{!isRegistered && <Tag variant='secondary-danger'>{t('RegisterWorkspace_NotRegistered_Title')}</Tag>}
+					{isRegistered && <Tag variant='primary'>{t('Workspace_registered')}</Tag>}
 				</Box>
 
 				<Box pb={8}>
 					<Box fontScale='h3'>
-						{!isWorkspaceRegistered && t('RegisterWorkspace_NotRegistered_Subtitle')}
-						{isWorkspaceRegistered && t('RegisterWorkspace_Registered_Description')}
+						{!isRegistered && t('RegisterWorkspace_NotRegistered_Subtitle')}
+						{isRegistered && t('RegisterWorkspace_Registered_Description')}
 					</Box>
 					<RegisterWorkspaceCards />
 				</Box>

@@ -2,9 +2,16 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import UserInfo from '../../../../client/components/UserInfo';
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 const MaxChatsPerAgentDisplay = ({ data: { livechat: { maxNumberSimultaneousChat = 0 } = {} } = {} }) => {
 	const t = useTranslation();
+	const hasLicense = useHasLicenseModule('livechat-enterprise');
+
+	if (!hasLicense) {
+		return null;
+	}
+
 	return maxNumberSimultaneousChat ? (
 		<>
 			<UserInfo.Label>{t('Max_number_of_chats_per_agent')}</UserInfo.Label>
