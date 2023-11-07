@@ -492,6 +492,18 @@ declare module '@rocket.chat/rest-typings' {
 	}
 }
 
+const parseErrorObject = (err: any) => {
+	if (err instanceof Error) {
+		return {
+			message: err.message,
+			stack: process.env.TEST_MODE === 'true' ? err.stack : undefined,
+		};
+	}
+
+	// Meteor errors can be EJSONed without problems
+	return err;
+};
+
 const mountResult = ({
 	id,
 	error,
@@ -506,7 +518,7 @@ const mountResult = ({
 	message: EJSON.stringify({
 		msg: 'result',
 		id,
-		error: error as any,
+		error: parseErrorObject(error),
 		result: result as any,
 	}),
 });
