@@ -25,6 +25,7 @@ import type { Filter } from 'mongodb';
 import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
+import { sendWelcomeEmail } from '../../../../server/methods/sendWelcomeEmail';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -681,7 +682,7 @@ API.v1.addRoute(
 				return API.v1.failure("The 'email' param is required");
 			}
 
-			if (await Meteor.callAsync('sendWelcomeEmail', email)) {
+			if (await sendWelcomeEmail(email)) {
 				return API.v1.success();
 			}
 			return API.v1.failure();
