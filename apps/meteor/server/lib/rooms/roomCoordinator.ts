@@ -3,6 +3,7 @@ import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
 import type { IRoomTypeConfig, IRoomTypeServerDirectives, RoomSettingsEnum, RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { getUserDisplayName } from '../../../lib/getUserDisplayName';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 
 class RoomCoordinatorServer extends RoomCoordinator {
@@ -42,7 +43,8 @@ class RoomCoordinatorServer extends RoomCoordinator {
 				userId: string,
 			): Promise<{ title: string | undefined; text: string; name: string | undefined }> {
 				const title = `#${await this.roomName(room, userId)}`;
-				const senderName = settings.get<boolean>('UI_Use_Real_Name') ? sender.name : sender.username;
+				const useRealName = settings.get<boolean>('UI_Use_Real_Name');
+				const senderName = getUserDisplayName(sender.name, sender.username, useRealName);
 
 				const text = `${senderName}: ${notificationMessage}`;
 
