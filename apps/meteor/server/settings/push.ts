@@ -39,6 +39,7 @@ export const createPushSettings = () =>
 		});
 		await this.add('Push_gateway', 'https://gateway.rocket.chat', {
 			type: 'string',
+			public: true,
 			i18nDescription: 'Push_gateway_description',
 			alert: 'Push_Setting_Requires_Restart_Alert',
 			multiline: true,
@@ -52,11 +53,6 @@ export const createPushSettings = () =>
 					value: true,
 				},
 			],
-		});
-		await this.add('Custom_push_gateway', false, {
-			type: 'boolean',
-			public: true,
-			hidden: true,
 		});
 		await this.add('Push_production', true, {
 			type: 'boolean',

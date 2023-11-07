@@ -1,4 +1,4 @@
-import { AppsTokens, Settings } from '@rocket.chat/models';
+import { AppsTokens } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
@@ -85,11 +85,6 @@ Meteor.methods<ServerMethods>({
 
 RateLimiter.limitMethod('push_test', 1, 1000, {
 	userId: () => true,
-});
-
-settings.watch<string>('Push_gateway', async (pushGateway) => {
-	const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
-	await Settings.updateValueById('Custom_push_gateway', pushGateway !== defaultGateway);
 });
 
 settings.watch<boolean>('Push_enable', async (enabled) => {
