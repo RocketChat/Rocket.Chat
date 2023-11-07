@@ -1,10 +1,8 @@
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import { LivechatBusinessHours, LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
-import moment from 'moment-timezone';
+import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
 import { businessHourLogger } from '../../../../../app/livechat/server/lib/logger';
-import { isEnterprise } from '../../../license/server/license';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 	// Fetch departments with agents excluding archived ones (disabled ones still can be tied to business hours)
@@ -102,29 +100,4 @@ export const removeBusinessHourByAgentIds = async (agentIds: string[], businessH
 	}
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHourId);
 	await Users.updateLivechatStatusBasedOnBusinessHours();
-};
-
-export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
-	if (isEnterprise()) {
-		return;
-	}
-
-	const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour<Pick<ILivechatBusinessHour, '_id'>>({
-		projection: { _id: 1 },
-	});
-	if (!defaultBusinessHour) {
-		return;
-	}
-
-	await LivechatBusinessHours.updateOne(
-		{ _id: defaultBusinessHour._id },
-		{
-			$set: {
-				timezone: {
-					name: moment.tz.guess(),
-					utc: String(moment().utcOffset() / 60),
-				},
-			},
-		},
-	);
 };

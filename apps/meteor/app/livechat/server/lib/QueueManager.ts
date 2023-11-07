@@ -1,3 +1,4 @@
+import { Omnichannel } from '@rocket.chat/core-services';
 import type { ILivechatInquiryRecord, ILivechatVisitor, IMessage, IOmnichannelRoom, SelectedAgent } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
@@ -20,10 +21,17 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 	logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
 
 	await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
+	const room = await LivechatRooms.findOneById(inquiry.rid, { projection: { v: 1 } });
+	if (!room || !(await Omnichannel.isWithinMACLimit(room))) {
+		logger.error({ msg: 'MAC limit reached, not routing inquiry', inquiry });
+		// We'll queue these inquiries so when new license is applied, they just start rolling again
+		// Minimizing disruption
+		await saveQueueInquiry(inquiry);
+		return;
+	}
 	const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
 
 	if (!dbInquiry) {
-		logger.error(`Inquiry with id ${inquiry._id} not found`);
 		throw new Error('inquiry-not-found');
 	}
 
@@ -64,11 +72,11 @@ export const QueueManager: queueManager = {
 				status: Match.Maybe(String),
 				department: Match.Maybe(String),
 				name: Match.Maybe(String),
+				activity: Match.Maybe([String]),
 			}),
 		);
 
 		if (!(await checkServiceStatus({ guest, agent }))) {
-			logger.debug(`Cannot create room for visitor ${guest._id}. No online agents`);
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
 
@@ -96,8 +104,6 @@ export const QueueManager: queueManager = {
 			throw new Error('inquiry-not-found');
 		}
 
-		logger.debug(`Generated inquiry for visitor ${guest._id} with id ${inquiry._id} [Not queued]`);
-
 		await LivechatRooms.updateRoomCount();
 
 		await queueInquiry(inquiry, agent);
@@ -114,7 +120,6 @@ export const QueueManager: queueManager = {
 
 	async unarchiveRoom(archivedRoom) {
 		if (!archivedRoom) {
-			logger.error('No room to unarchive');
 			throw new Error('no-room-to-unarchive');
 		}
 
@@ -145,16 +150,12 @@ export const QueueManager: queueManager = {
 		await LivechatRooms.unarchiveOneById(rid);
 		const room = await LivechatRooms.findOneById(rid);
 		if (!room) {
-			logger.debug(`Room with id ${rid} not found`);
 			throw new Error('room-not-found');
 		}
 		const inquiry = await LivechatInquiry.findOneById(await createLivechatInquiry({ rid, name, guest, message, extraData: { source } }));
 		if (!inquiry) {
-			logger.error(`Inquiry for visitor ${guest._id} not found`);
 			throw new Error('inquiry-not-found');
 		}
-
-		logger.debug(`Generated inquiry for visitor ${v._id} with id ${inquiry._id} [Not queued]`);
 
 		await queueInquiry(inquiry, defaultAgent);
 		logger.debug(`Inquiry ${inquiry._id} queued`);

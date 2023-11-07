@@ -2,11 +2,13 @@ import { check } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { getCheckoutUrl } from '../../../cloud/server/functions/getCheckoutUrl';
 import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirmationPoll';
 import { registerPreIntentWorkspaceWizard } from '../../../cloud/server/functions/registerPreIntentWorkspaceWizard';
 import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
 import { saveRegistrationData } from '../../../cloud/server/functions/saveRegistrationData';
 import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
+import { syncWorkspace } from '../../../cloud/server/functions/syncWorkspace';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -71,6 +73,10 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
+			if (process.env.NODE_ENV === 'development') {
+				return API.v1.success({ offline: true });
+			}
+
 			return API.v1.success({ offline: !(await registerPreIntentWorkspaceWizard()) });
 		},
 	},
@@ -119,6 +125,54 @@ API.v1.addRoute(
 			const registrationStatus = await retrieveRegistrationStatus();
 
 			return API.v1.success({ registrationStatus });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'cloud.syncWorkspace',
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-cloud'],
+		rateLimiterOptions: { numRequestsAllowed: 2, intervalTimeInMS: 60000 },
+	},
+	{
+		async post() {
+			try {
+				await syncWorkspace();
+
+				return API.v1.success({ success: true });
+			} catch (error) {
+				return API.v1.failure('Error during workspace sync');
+			}
+		},
+	},
+);
+
+/**
+ * Declaring endpoint here because we don't want this available to the sdk client
+ */
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Endpoints {
+		'/v1/cloud.checkoutUrl': {
+			GET: () => { url: string };
+		};
+	}
+}
+
+API.v1.addRoute(
+	'cloud.checkoutUrl',
+	{ authRequired: true, permissionsRequired: ['manage-cloud'] },
+	{
+		async get() {
+			const checkoutUrl = await getCheckoutUrl();
+
+			if (!checkoutUrl.url) {
+				return API.v1.failure();
+			}
+
+			return API.v1.success({ url: checkoutUrl.url });
 		},
 	},
 );

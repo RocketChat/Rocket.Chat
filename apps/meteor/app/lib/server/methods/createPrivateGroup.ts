@@ -1,4 +1,4 @@
-import type { ICreatedRoom } from '@rocket.chat/core-typings';
+import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
@@ -21,7 +21,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 export const createPrivateGroupMethod = async (
-	userId: string,
+	user: IUser,
 	name: string,
 	members: string[],
 	readOnly = false,
@@ -35,23 +35,12 @@ export const createPrivateGroupMethod = async (
 > => {
 	check(name, String);
 	check(members, Match.Optional([String]));
-	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-			method: 'createPrivateGroup',
-		});
-	}
-	const user = await Users.findOneById(userId, { projection: { username: 1 } });
-	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-			method: 'createPrivateGroup',
-		});
-	}
 
-	if (!(await hasPermissionAsync(userId, 'create-p'))) {
+	if (!(await hasPermissionAsync(user._id, 'create-p'))) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 	}
 
-	return createRoom('p', name, user.username, members, excludeSelf, readOnly, {
+	return createRoom('p', name, user, members, excludeSelf, readOnly, {
 		customFields,
 		...extraData,
 	});
@@ -67,6 +56,13 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return createPrivateGroupMethod(uid, name, members, readOnly, customFields, extraData);
+		const user = await Users.findOneById(uid);
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'createPrivateGroup',
+			});
+		}
+
+		return createPrivateGroupMethod(user, name, members, readOnly, customFields, extraData);
 	},
 });

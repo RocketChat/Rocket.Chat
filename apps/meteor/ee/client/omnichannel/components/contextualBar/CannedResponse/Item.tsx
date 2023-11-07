@@ -9,9 +9,10 @@ import { useScopeDict } from '../../../hooks/useScopeDict';
 
 const Item: FC<{
 	data: IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] };
+	allowUse?: boolean;
 	onClickItem: (e: MouseEvent<HTMLOrSVGElement>) => void;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
-}> = ({ data, onClickItem, onClickUse }) => {
+}> = ({ data, allowUse, onClickItem, onClickUse }) => {
 	const t = useTranslation();
 
 	const scope = useScopeDict(data.scope, data.departmentName);
@@ -47,7 +48,7 @@ const Item: FC<{
 				</Box>
 				<Box display='flex' flexDirection='row' alignItems='center'>
 					<Button
-						display={visibility ? 'block' : 'none'}
+						display={visibility && allowUse ? 'block' : 'none'}
 						small
 						onClick={(e): void => {
 							onClickUse(e, data.text);

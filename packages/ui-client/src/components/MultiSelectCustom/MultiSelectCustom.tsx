@@ -43,7 +43,6 @@ export type OptionProp = TitleOptionProp | CheckboxOptionProp;
 	@param selectedOptionsTitle dropdown text after clicking one or more options. For example: 'Rooms (3)'
  * @param selectedOptions array with clicked options. This is used in the useFilteredTypeRooms hook, to filter the Rooms' table, for example. This array joins all of the individual clicked options from all available MultiSelectCustom components in the page. It helps to create a union filter for all the selections.
  * @param setSelectedOptions part of an useState hook to set the previous selectedOptions
- * @param customSetSelected part of an useState hook to set the individual selected checkboxes from this instance.
  * @param searchBarText optional text prop that creates a search bar inside the dropdown, when added.
  * @returns a React Component that should be used with a custom hook for filters, such as useFilteredTypeRooms.tsx.
  * Check out the following files, for examples:
@@ -57,8 +56,7 @@ type DropDownProps = {
 	selectedOptionsTitle: TranslationKey;
 	selectedOptions: OptionProp[];
 	setSelectedOptions: Dispatch<SetStateAction<OptionProp[]>>;
-	customSetSelected: Dispatch<SetStateAction<OptionProp[]>>;
-	searchBarText?: string;
+	searchBarText?: TranslationKey;
 };
 
 export const MultiSelectCustom = ({
@@ -67,7 +65,6 @@ export const MultiSelectCustom = ({
 	selectedOptionsTitle,
 	selectedOptions,
 	setSelectedOptions,
-	customSetSelected,
 	searchBarText,
 }: DropDownProps): ReactElement => {
 	const reference = useRef<HTMLInputElement>(null);
@@ -90,26 +87,15 @@ export const MultiSelectCustom = ({
 
 	const onSelect = (item: OptionProp, e?: FormEvent<HTMLElement>): void => {
 		e?.stopPropagation();
-
 		item.checked = !item.checked;
 
 		if (item.checked === true) {
-			// the user has enabled this option -> add it to the selected options
 			setSelectedOptions([...new Set([...selectedOptions, item])]);
-			customSetSelected((prevItems) => {
-				const newItems = prevItems;
-				const toggledItem = newItems.find(({ id }) => id === item.id);
-
-				if (toggledItem) {
-					toggledItem.checked = !toggledItem.checked;
-				}
-
-				return [...prevItems];
-			});
-		} else {
-			// the user has disabled this option -> remove this from the selected options list
-			setSelectedOptions(selectedOptions.filter((option: OptionProp) => option.id !== item.id));
+			return;
 		}
+
+		// the user has disabled this option -> remove this from the selected options list
+		setSelectedOptions(selectedOptions.filter((option: OptionProp) => option.id !== item.id));
 	};
 
 	const count = dropdownOptions.filter((option) => option.checked).length;

@@ -10,6 +10,7 @@ import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { ContextualbarScrollableContent } from '../Contextualbar';
 import InfoPanel from '../InfoPanel';
+import InfoPanelTitle from '../InfoPanel/InfoPanelTitle';
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
 import UserCard from '../UserCard';
@@ -39,6 +40,7 @@ type UserInfoProps = UserInfoDataProps & {
 	verified?: boolean;
 	actions: ReactElement;
 	roles: ReactElement[];
+	reason?: string;
 };
 
 const UserInfo = ({
@@ -54,11 +56,11 @@ const UserInfo = ({
 	email,
 	verified,
 	createdAt,
-	// status,
+	status,
 	statusText,
 	customFields,
-	canViewAllInfo,
 	actions,
+	reason,
 	...props
 }: UserInfoProps): ReactElement => {
 	const t = useTranslation();
@@ -78,7 +80,7 @@ const UserInfo = ({
 				{actions && <InfoPanel.Section>{actions}</InfoPanel.Section>}
 
 				<InfoPanel.Section>
-					{userDisplayName && <InfoPanel.Title title={userDisplayName} />}
+					{userDisplayName && <InfoPanelTitle icon={status} title={userDisplayName} />}
 					{statusText && (
 						<InfoPanel.Text>
 							<MarkdownText content={statusText} parseEmoji={true} variant='inline' />
@@ -87,6 +89,12 @@ const UserInfo = ({
 				</InfoPanel.Section>
 
 				<InfoPanel.Section>
+					{reason && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Reason_for_joining')}</InfoPanel.Label>
+							<InfoPanel.Text>{reason}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)}
 					{nickname && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Nickname')}</InfoPanel.Label>
@@ -124,19 +132,12 @@ const UserInfo = ({
 						</InfoPanel.Field>
 					)}
 
-					{canViewAllInfo && (
+					{Number.isInteger(utcOffset) && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
 							<InfoPanel.Text>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
-
-					{/* {name && (
-						<InfoPanel.Field>
-							<InfoPanel.Label>{t('Full_Name')}</InfoPanel.Label>
-							<InfoPanel.Text>{name}</InfoPanel.Text>
-						</InfoPanel.Field>
-					)} */}
 
 					{phone && (
 						<InfoPanel.Field>

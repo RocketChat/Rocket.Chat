@@ -1281,6 +1281,7 @@
   "error-user-registration-disabled": "O registo de utilizadores está desabilitado",
   "error-user-registration-secret": "O registo de utilizadores só é permitido via URL privada",
   "error-you-are-last-owner": "É o último proprietário da sala. Por favor defina um novo proprietário antes de sair.",
+  "error-cannot-place-chat-on-hold": "Você não pode colocar a conversa em espera",
   "Errors_and_Warnings": "Erros e Avisos",
   "Esc_to": "Prima Esc para",
   "Event_Trigger": "Gerador de Eventos",

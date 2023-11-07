@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Tabs } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useRef, useState } from 'react';
@@ -7,7 +7,10 @@ import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
+import PageContent from '../../../components/Page/PageContent';
+import PageHeader from '../../../components/Page/PageHeader';
 import AdminInviteUsers from './AdminInviteUsers';
+import AdminUserCreated from './AdminUserCreated';
 import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
@@ -25,7 +28,9 @@ const UsersPage = (): ReactElement => {
 	const canCreateUser = usePermission('create-user');
 	const canBulkCreateUser = usePermission('bulk-register-user');
 
-	const [tab, setTab] = useState<'all' | 'invited' | 'new' | 'active' | 'deactivated'>('all');
+	const [tab, setTab] = useState<'all' | 'invited' | 'active' | 'deactivated' | 'pending'>('all');
+	const [pendingActionsCount, setPendingActionsCount] = useState<number>(0);
+	const [createdUsersCount, setCreatedUsersCount] = useState(0);
 
 	useEffect(() => {
 		if (!context || !seatsCap) {
@@ -45,7 +50,7 @@ const UsersPage = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Users')}>
+				<PageHeader title={t('Users')}>
 					{seatsCap && seatsCap.maxActiveUsers < Number.POSITIVE_INFINITY ? (
 						<UserPageHeaderContentWithSeatsCap {...seatsCap} />
 					) : (
@@ -62,27 +67,27 @@ const UsersPage = (): ReactElement => {
 							)}
 						</ButtonGroup>
 					)}
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					<Tabs>
-						<Tabs.Item selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
+						<TabsItem selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
 							{t('All')}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'invited'} onClick={() => setTab('invited')}>
-							{t('Invited')}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'new'} onClick={() => setTab('new')}>
-							{t('New_users')}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'active'} onClick={() => setTab('active')}>
+						</TabsItem>
+						<TabsItem selected={tab === 'pending'} onClick={() => setTab('pending')}>
+							{pendingActionsCount === 0 ? t('Pending') : `${t('Pending')} (${pendingActionsCount})`}
+						</TabsItem>
+						<TabsItem selected={tab === 'active'} onClick={() => setTab('active')}>
 							{t('Active')}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'deactivated'} onClick={() => setTab('deactivated')}>
+						</TabsItem>
+						<TabsItem selected={tab === 'deactivated'} onClick={() => setTab('deactivated')}>
 							{t('Deactivated')}
-						</Tabs.Item>
+						</TabsItem>
+						<TabsItem selected={tab === 'invited'} onClick={() => setTab('invited')}>
+							{t('Invited')}
+						</TabsItem>
 					</Tabs>
-					<UsersTable reload={reload} tab={tab} onReload={handleReload} />
-				</Page.Content>
+					<UsersTable reload={reload} tab={tab} onReload={handleReload} setPendingActionsCount={setPendingActionsCount} />
+				</PageContent>
 			</Page>
 			{context && (
 				<Contextualbar is='aside' aria-labelledby=''>
@@ -90,14 +95,19 @@ const UsersPage = (): ReactElement => {
 						<ContextualbarTitle>
 							{context === 'info' && t('User_Info')}
 							{context === 'edit' && t('Edit_User')}
-							{context === 'new' && t('Add_User')}
+							{(context === 'new' || context === 'created') && (
+								<>
+									<Icon name='user-plus' size={20} /> {t('New_user')}
+								</>
+							)}
 							{context === 'invite' && t('Invite_Users')}
 						</ContextualbarTitle>
 						<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
 					</ContextualbarHeader>
 					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} tab={tab} />}
-					{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
-					{context === 'new' && <AdminUserForm onReload={handleReload} />}
+					{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} context={context} />}
+					{context === 'new' && <AdminUserForm onReload={handleReload} setCreatedUsersCount={setCreatedUsersCount} context={context} />}
+					{context === 'created' && id && <AdminUserCreated uid={id} createdUsersCount={createdUsersCount} />}
 					{context === 'invite' && <AdminInviteUsers />}
 				</Contextualbar>
 			)}

@@ -1,4 +1,18 @@
-import { Box, Modal, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Modal,
+	Button,
+	TextInput,
+	Icon,
+	Field,
+	ToggleSwitch,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldHint,
+	FieldDescription,
+} from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
@@ -35,7 +49,7 @@ type CreateChannelModalPayload = {
 
 const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModule>, featureToggle: boolean): TranslationKey => {
 	if (licenseModule === 'loading' || !licenseModule) {
-		return 'error-this-is-an-ee-feature';
+		return 'error-this-is-a-premium-feature';
 	}
 	if (!featureToggle) {
 		return 'Federation_Matrix_Federated_Description_disabled';
@@ -194,10 +208,10 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 			<Modal.Content mbe={2}>
 				<FieldGroup>
 					<Field>
-						<Field.Label required htmlFor={nameId}>
+						<FieldLabel required htmlFor={nameId}>
 							{t('Channel_name')}
-						</Field.Label>
-						<Field.Row>
+						</FieldLabel>
+						<FieldRow>
 							<TextInput
 								id={nameId}
 								data-qa-type='channel-name-input'
@@ -211,27 +225,27 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 								aria-describedby={`${nameId}-error`}
 								aria-required='true'
 							/>
-						</Field.Row>
+						</FieldRow>
 						{errors.name && (
-							<Field.Error aria-live='assertive' id={`${nameId}-error`}>
+							<FieldError aria-live='assertive' id={`${nameId}-error`}>
 								{errors.name.message}
-							</Field.Error>
+							</FieldError>
 						)}
 					</Field>
 					<Field>
-						<Field.Label htmlFor={topicId}>{t('Topic')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
+						<FieldRow>
 							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} data-qa-type='channel-topic-input' />
-						</Field.Row>
-						<Field.Hint id={`${topicId}-hint`}>{t('Channel_what_is_this_channel_about')}</Field.Hint>
+						</FieldRow>
+						<FieldHint id={`${topicId}-hint`}>{t('Channel_what_is_this_channel_about')}</FieldHint>
 					</Field>
 					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label htmlFor={privateId}>{t('Private')}</Field.Label>
-								<Field.Hint id={`${privateId}-hint`}>
+								<FieldLabel htmlFor={privateId}>{t('Private')}</FieldLabel>
+								<FieldHint id={`${privateId}-hint`}>
 									{isPrivate ? t('Only_invited_users_can_acess_this_channel') : t('Everyone_can_access_this_channel')}
-								</Field.Hint>
+								</FieldHint>
 							</Box>
 							<Controller
 								control={control}
@@ -252,8 +266,8 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label htmlFor={federatedId}>{t('Federation_Matrix_Federated')}</Field.Label>
-								<Field.Hint id={`${federatedId}-hint`}>{t(getFederationHintKey(federatedModule, federationEnabled))}</Field.Hint>
+								<FieldLabel htmlFor={federatedId}>{t('Federation_Matrix_Federated')}</FieldLabel>
+								<FieldHint id={`${federatedId}-hint`}>{t(getFederationHintKey(federatedModule, federationEnabled))}</FieldHint>
 							</Box>
 							<Controller
 								control={control}
@@ -274,10 +288,10 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label htmlFor={readOnlyId}>{t('Read_only')}</Field.Label>
-								<Field.Hint id={`${readOnlyId}-hint`}>
+								<FieldLabel htmlFor={readOnlyId}>{t('Read_only')}</FieldLabel>
+								<FieldHint id={`${readOnlyId}-hint`}>
 									{readOnly ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages')}
-								</Field.Hint>
+								</FieldHint>
 							</Box>
 							<Controller
 								control={control}
@@ -298,10 +312,10 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label htmlFor={encryptedId}>{t('Encrypted')}</Field.Label>
-								<Field.Description id={`${encryptedId}-hint`}>
+								<FieldLabel htmlFor={encryptedId}>{t('Encrypted')}</FieldLabel>
+								<FieldDescription id={`${encryptedId}-hint`}>
 									{isPrivate ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}
-								</Field.Description>
+								</FieldDescription>
 							</Box>
 							<Controller
 								control={control}
@@ -323,8 +337,8 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label htmlFor={broadcastId}>{t('Broadcast')}</Field.Label>
-								<Field.Hint id={`${broadcastId}-hint`}>{t('Broadcast_channel_Description')}</Field.Hint>
+								<FieldLabel htmlFor={broadcastId}>{t('Broadcast')}</FieldLabel>
+								<FieldHint id={`${broadcastId}-hint`}>{t('Broadcast_channel_Description')}</FieldHint>
 							</Box>
 							<Controller
 								control={control}
@@ -343,7 +357,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 						</Box>
 					</Field>
 					<Field>
-						<Field.Label htmlFor={addMembersId}>{t('Add_members')}</Field.Label>
+						<FieldLabel htmlFor={addMembersId}>{t('Add_members')}</FieldLabel>
 						<Controller
 							control={control}
 							name='members'

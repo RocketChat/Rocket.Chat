@@ -1,5 +1,55 @@
 # @rocket.chat/ui-client
 
+## 2.0.5
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.5
+
+## 2.0.4
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.4
+
+## 2.0.3
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.3
+
+## 2.0.2
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.1
+
+## 2.0.0
+
+### Minor Changes
+
+- ebab8c4dd8: Added Reports Metrics Dashboard to Omnichannel
+- ee3815fce4: feat: add ChangePassword field to Account/Security
+
+### Patch Changes
+
+- b8f3d5014f: Fixed the login page language switcher, now the component has a new look, is reactive and the language selection becomes concrete upon login in. Also changed the default language of the login page to be the browser language.
+- Updated dependencies [074db3b419]
+- Updated dependencies [b8f3d5014f]
+  - @rocket.chat/ui-contexts@2.0.0
+
+## 2.0.0-rc.5
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.0-rc.5
+
 ## 2.0.0-rc.4
 
 ### Patch Changes
@@ -37,6 +87,12 @@
 - Updated dependencies [074db3b419]
 - Updated dependencies [b8f3d5014f]
   - @rocket.chat/ui-contexts@2.0.0-rc.0
+
+## 1.0.8
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@1.0.8
 
 ## 1.0.7
 

@@ -3,7 +3,6 @@ import { LivechatRooms } from '@rocket.chat/models';
 
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import { cbLogger } from '../lib/logger';
 
 settings.watch('Livechat_abandoned_rooms_action', (value) => {
 	if (!value || value === 'none') {
@@ -14,7 +13,6 @@ settings.watch('Livechat_abandoned_rooms_action', (value) => {
 		'livechat:afterReturnRoomAsInquiry',
 		({ room }: { room: IOmnichannelRoom }) => {
 			if (!room?._id || !room?.omnichannel?.predictedVisitorAbandonmentAt) {
-				cbLogger.debug('Skipping callback. No room or no visitor abandonment info');
 				return;
 			}
 

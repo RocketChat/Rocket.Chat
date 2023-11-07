@@ -1,5 +1,66 @@
 # @rocket.chat/uikit-playground
 
+## 0.2.5
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.5
+- @rocket.chat/fuselage-ui-kit@2.0.5
+
+## 0.2.4
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.4
+- @rocket.chat/fuselage-ui-kit@2.0.4
+
+## 0.2.3
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.3
+- @rocket.chat/fuselage-ui-kit@2.0.3
+
+## 0.2.2
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.2
+- @rocket.chat/fuselage-ui-kit@2.0.2
+
+## 0.2.1
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.1
+- @rocket.chat/fuselage-ui-kit@2.0.1
+
+## 0.2.0
+
+### Minor Changes
+
+- 1246a21648: feat: Add missing variants to UIKit button
+- f9a748526d: feat: Adding new UIKit components: Callout, Checkbox, Radio Button, Time Picker, Toast Bar, Toggle Switch, Tab Navigation
+
+### Patch Changes
+
+- dc1d8ce92e: feat(fuselage-ui-kit): Introduce `TabsNavigationBlock`
+- Updated dependencies [1246a21648]
+- Updated dependencies [f9a748526d]
+- Updated dependencies [dc1d8ce92e]
+- Updated dependencies [074db3b419]
+- Updated dependencies [dce4a829fa]
+- Updated dependencies [b8f3d5014f]
+  - @rocket.chat/fuselage-ui-kit@2.0.0
+  - @rocket.chat/ui-contexts@2.0.0
+
+## 0.2.0-rc.5
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.0-rc.5
+- @rocket.chat/fuselage-ui-kit@2.0.0-rc.5
+
 ## 0.2.0-rc.4
 
 ### Patch Changes
@@ -46,6 +107,13 @@
 - Updated dependencies [b8f3d5014f]
   - @rocket.chat/fuselage-ui-kit@2.0.0-rc.0
   - @rocket.chat/ui-contexts@2.0.0-rc.0
+
+## 0.1.8
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@1.0.8
+- @rocket.chat/fuselage-ui-kit@1.0.8
 
 ## 0.1.7
 

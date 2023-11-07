@@ -1,7 +1,8 @@
-import { onLicense } from '../../app/license/server';
+import { License } from '@rocket.chat/license';
+
 import { createPermissions } from '../lib/audit/startup';
 
-await onLicense('auditing', async () => {
+await License.onLicense('auditing', async () => {
 	await import('../lib/audit/methods');
 
 	await createPermissions();
