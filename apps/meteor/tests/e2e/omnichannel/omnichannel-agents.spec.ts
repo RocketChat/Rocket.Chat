@@ -1,4 +1,6 @@
 
+import { faker } from '@faker-js/faker';
+
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelAgents } from '../page-objects';
@@ -9,12 +11,24 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('omnichannel-agents', () => {
 	let poOmnichannelAgents: OmnichannelAgents;
 
+	
 	test.beforeAll(async ({ api }) => {
 		await api.post('/livechat/department', {
-			enabled: true,
-			showOnRegistration: true,
-			name: 'department1',
-			description: 'department1',
+			department: {
+				name: 'department1',
+				enabled: true,
+				description: '',
+				showOnRegistration: false,
+				showOnOfflineForm: false,
+				requestTagBeforeClosingChat: false,
+				email: faker.internet.email(),
+				chatClosingTags: [],
+				offlineMessageChannelName: '',
+				abandonedRoomsCloseCustomMessage: '',
+				waitingQueueMessage: '',
+				departmentsAllowedToForward: [],
+				fallbackForwardDepartment: '',
+			},
 		}).then((response) => {
 			expect(response.status()).toBe(200);
 		});
