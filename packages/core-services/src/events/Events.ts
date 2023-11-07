@@ -274,6 +274,4 @@ export type EventSignatures = {
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
 	'message.sent'(message: IMessage): void;
-	'mac.limitReached'(): void;
-	'mac.limitRestored'(): void;
 };

@@ -293,7 +293,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 					</Button>
 				</ButtonGroup>
 				<ButtonGroup mbs={8} stretch>
-					<Button icon='trash' danger disabled={isDeleting || !canDeleteRoom || isRoomFederated(room)} onClick={handleDelete}>
+					<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || isRoomFederated(room)} onClick={handleDelete}>
 						{t('Delete')}
 					</Button>
 				</ButtonGroup>

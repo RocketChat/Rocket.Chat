@@ -23,7 +23,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 			</Modal.Header>
 			<Modal.Content>
 				<Modal.HeroImage maxHeight='initial' src='/images/conf-call-config.svg' />
-				<Box fontScale='h3'>{t('Enterprise_capabilities')}</Box>
+				<Box fontScale='h3'>{t('Premium_capabilities')}</Box>
 				<Box withRichContent>
 					<Box is='ul' pis={24}>
 						<li>{t('Ringtones_and_visual_indicators_notify_people_of_incoming_calls')}</li>
@@ -35,10 +35,10 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 					<Callout icon='team' title={isAdmin ? t('Jitsi_included_with_Community') : 'Jitsi'}>
 						{t('Open-source_conference_call_solution')}
 					</Callout>
-					<Callout icon='lightning' title={t('Pexip_Enterprise_only')}>
+					<Callout icon='lightning' title={t('Pexip_Premium_only')}>
 						{t('A_secure_and_highly_private_self-managed_solution_for_conference_calls')}
 					</Callout>
-					<Callout icon='lightning' title={t('Google_Meet_Enterprise_only')}>
+					<Callout icon='lightning' title={t('Google_Meet_Premium_only')}>
 						{t('Secure_SaaS_solution')} {t('A_cloud-based_platform_for_those_needing_a_plug-and-play_app')}
 					</Callout>
 				</Margins>

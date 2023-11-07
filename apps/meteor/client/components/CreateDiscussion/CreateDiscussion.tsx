@@ -224,7 +224,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' primary disabled={!isDirty || isSubmitting || isValidating}>
+					<Button type='submit' primary disabled={!isDirty} loading={isSubmitting || isValidating}>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

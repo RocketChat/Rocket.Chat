@@ -61,7 +61,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		reset,
 		control,
 		handleSubmit,
-		formState: { isDirty, dirtyFields, errors },
+		formState: { isDirty, dirtyFields, errors, isSubmitting },
 	} = useForm({ mode: 'onBlur', defaultValues });
 
 	const sysMesOptions: SelectOption[] = useMemo(
@@ -467,15 +467,15 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button type='reset' disabled={!isDirty} onClick={() => reset(defaultValues)}>
+					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset(defaultValues)}>
 						{t('Reset')}
 					</Button>
-					<Button form={formId} type='submit' disabled={!isDirty}>
+					<Button form={formId} type='submit' loading={isSubmitting} disabled={!isDirty}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 				<ButtonGroup stretch mbs={8}>
-					<Button icon='trash' danger disabled={!canDeleteRoom || isFederated} onClick={handleDelete}>
+					<Button icon='trash' danger disabled={!canDeleteRoom || isFederated || isSubmitting} onClick={handleDelete}>
 						{t('Delete')}
 					</Button>
 				</ButtonGroup>

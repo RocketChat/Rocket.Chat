@@ -46,6 +46,7 @@ const AccessibilityPage = () => {
 		[t],
 	);
 
+	const pageFormId = useUniqueId();
 	const fontSizeId = useUniqueId();
 	const mentionsWithSymbolId = useUniqueId();
 	const clockModeId = useUniqueId();
@@ -53,7 +54,7 @@ const AccessibilityPage = () => {
 	const hideRolesId = useUniqueId();
 
 	const {
-		formState: { isDirty, dirtyFields },
+		formState: { isDirty, dirtyFields, isSubmitting },
 		handleSubmit,
 		control,
 		reset,
@@ -85,7 +86,7 @@ const AccessibilityPage = () => {
 		<Page>
 			<Page.Header title={t('Accessibility_and_Appearance')} />
 			<Page.ScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center' mb={40} mi={36}>
+				<Box is='form' id={pageFormId} onSubmit={handleSubmit(handleSaveData)} maxWidth='x600' w='full' alignSelf='center' mb={40} mi={36}>
 					<Box fontScale='p1' mbe={24}>
 						<Box pb={16}>{t('Accessibility_activation')}</Box>
 					</Box>
@@ -216,7 +217,7 @@ const AccessibilityPage = () => {
 			<Page.Footer isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(preferencesValues)}>{t('Cancel')}</Button>
-					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveData)}>
+					<Button primary disabled={!isDirty} loading={isSubmitting} form={pageFormId} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

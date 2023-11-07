@@ -1,5 +1,5 @@
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 
 import ActionsBlock from '../blocks/ActionsBlock';
 import CalloutBlock from '../blocks/CalloutBlock';
@@ -24,11 +24,45 @@ import StaticSelectElement from '../elements/StaticSelectElement';
 import TimePickerElement from '../elements/TimePickerElement';
 import ToggleSwitchElement from '../elements/ToggleSwitchElement';
 
-export type FuselageSurfaceRendererProps = ConstructorParameters<
+type TextObjectRenderers = {
+  [TTextObject in UiKit.TextObject as TTextObject['type']]: (
+    textObject: TTextObject,
+    index: number
+  ) => ReactElement | null;
+};
+
+const textObjectRenderers: TextObjectRenderers = {
+  plain_text: (textObject, index) => (
+    <PlainTextElement key={index} textObject={textObject} />
+  ),
+  mrkdwn: (textObject, index) => (
+    <MarkdownTextElement key={index} textObject={textObject} />
+  ),
+};
+
+export const renderTextObject = (
+  textObject: UiKit.TextObject,
+  context: UiKit.BlockContext,
+  index: number
+) => {
+  if (context === UiKit.BlockContext.BLOCK) {
+    return null;
+  }
+
+  switch (textObject.type) {
+    case 'plain_text':
+      return textObjectRenderers.plain_text(textObject, index);
+
+    case 'mrkdwn':
+      return textObjectRenderers.mrkdwn(textObject, index);
+  }
+};
+
+type FuselageSurfaceRendererProps = ConstructorParameters<
   typeof UiKit.SurfaceRenderer
 >[0];
 
-export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement> {
+export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement> {
   public constructor(allowedBlocks?: FuselageSurfaceRendererProps) {
     super(
       allowedBlocks || [
@@ -44,7 +78,7 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
   }
 
   public plain_text(
-    textObject: UiKit.TextObject,
+    textObject: UiKit.PlainText,
     context: UiKit.BlockContext,
     index: number
   ): ReactElement | null {
@@ -52,7 +86,7 @@ export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement>
       return null;
     }
 
-    return <PlainTextElement key={index} textObject={textObject} />;
+    return textObjectRenderers.plain_text(textObject, index);
   }
 
   public mrkdwn(
