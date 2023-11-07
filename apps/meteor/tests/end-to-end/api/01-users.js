@@ -4229,4 +4229,104 @@ describe('[Users]', function () {
 			});
 		});
 	});
+
+	describe('[/users.list/:status]', () => {
+		let user;
+
+		before(async () => {
+			user = await createUser();
+		});
+
+		after(async () => {
+			await deleteUser(user);
+		});
+
+		it('should list pending users', async () => {
+			await request
+				.get(api('users.list/pending'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+
+					expect(users).to.have.length(2);
+				});
+		});
+
+		it('should list active users', async () => {
+			await login(user.username, password);
+
+			await request
+				.get(api('users.list/active'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+
+					expect(users).to.have.length(2);
+				});
+		});
+
+		it('should filter users by role', async () => {
+			await login(user.username, password);
+
+			await request
+				.get(api('users.list/active'))
+				.set(credentials)
+				.query({ role: 'admin' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+
+					expect(users).to.have.length(1);
+				});
+		});
+
+		it('should list deactivated users', async () => {
+			await request.post(api('users.setActiveStatus')).set(credentials).send({
+				userId: user._id,
+				activeStatus: false,
+				confirmRelinquish: false,
+			});
+
+			await request
+				.get(api('users.list/deactivated'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+
+					expect(users).to.have.length(1);
+				});
+		});
+
+		it('should return error for invalid status params', async () => {
+			await request
+				.get(api('users.list/abcd'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-invalid-status');
+					expect(res.body.error).to.be.equal('Invalid status parameter [error-invalid-status]');
+				});
+		});
+	});
 });
