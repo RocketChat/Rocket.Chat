@@ -475,7 +475,7 @@ const AdminUserForm = ({ userData, onReload, setCreatedUsersCount, context, refe
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)} w='100%'>
-					{t('Add_user')}
+					{isNewUserPage ? t('Add_user') : t('Save_user')}
 				</Button>
 			</ContextualbarFooter>
 		</>
