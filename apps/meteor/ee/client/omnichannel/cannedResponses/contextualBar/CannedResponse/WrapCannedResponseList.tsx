@@ -11,7 +11,7 @@ import { useRoom } from '../../../../../../client/views/room/contexts/RoomContex
 import { useRoomToolbox } from '../../../../../../client/views/room/contexts/RoomToolboxContext';
 import { useCannedResponseFilterOptions } from '../../../hooks/useCannedResponseFilterOptions';
 import { useCannedResponseList } from '../../../hooks/useCannedResponseList';
-import CreateCannedResponse from '../../CannedResponse/modals';
+import CreateCannedResponse from '../../modals/CreateCannedResponse';
 import CannedResponseList from './CannedResponseList';
 
 export const WrapCannedResponseList = () => {
@@ -62,7 +62,7 @@ export const WrapCannedResponseList = () => {
 	};
 
 	const onClickCreate = (): void => {
-		setModal(<CreateCannedResponse reloadCannedList={reload} />);
+		setModal(<CreateCannedResponse onClose={() => setModal(null)} reloadCannedList={reload} />);
 	};
 
 	return (
