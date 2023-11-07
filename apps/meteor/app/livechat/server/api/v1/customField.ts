@@ -2,7 +2,7 @@ import { isLivechatCustomFieldsProps, isPOSTLivechatCustomFieldParams, isPOSTLiv
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { Livechat } from '../../lib/Livechat';
+import { Livechat } from '../../lib/LivechatTyped';
 import { findLivechatCustomFields, findCustomFieldById } from '../lib/customFields';
 import { findGuest } from '../lib/livechat';
 

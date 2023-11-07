@@ -2,6 +2,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useEffect } from 'react';
 
 import { useForm } from '../../../../client/hooks/useForm';
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import CustomFieldsAdditionalForm from './CustomFieldsAdditionalForm';
 
 const getInitialValues = (data) => ({
@@ -22,6 +23,7 @@ const checkInvalidOptions = (value) => {
 
 const CustomFieldsAdditionalFormContainer = ({ data = {}, state, onChange, className }) => {
 	const t = useTranslation();
+	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
 	const { values, handlers, hasUnsavedChanges } = useForm(getInitialValues(data));
 
@@ -37,6 +39,10 @@ const CustomFieldsAdditionalFormContainer = ({ data = {}, state, onChange, class
 	useEffect(() => {
 		onChange({ data: values, hasError, hasUnsavedChanges });
 	}, [hasError, hasUnsavedChanges, onChange, values]);
+
+	if (!hasLicense) {
+		return null;
+	}
 
 	return <CustomFieldsAdditionalForm values={values} handlers={handlers} state={state} className={className} errors={errors} />;
 };

@@ -2,6 +2,7 @@ import { usePermission, useRouter, useSetModal, useCurrentModal, useTranslation 
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
+import { getURL } from '../../../../../app/utils/client/getURL';
 import GenericUpsellModal from '../../../../../client/components/GenericUpsellModal';
 import { useUpsellActions } from '../../../../../client/components/GenericUpsellModal/hooks';
 import PageSkeleton from '../../../../../client/components/PageSkeleton';
@@ -25,18 +26,19 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 
 	const hasEngagementDashboard = useHasLicenseModule('engagement-dashboard') as boolean;
 
-	const { shouldShowUpsell, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales } = useUpsellActions(hasEngagementDashboard);
+	const { shouldShowUpsell, cloudWorkspaceHadTrial, handleManageSubscription, handleTalkToSales } =
+		useUpsellActions(hasEngagementDashboard);
 
 	useEffect(() => {
 		if (shouldShowUpsell) {
 			setModal(
 				<GenericUpsellModal
 					title={t('Engagement_Dashboard')}
-					img='images/engagement.png'
+					img={getURL('images/engagement.png')}
 					subtitle={t('Analyze_practical_usage')}
 					description={t('Enrich_your_workspace')}
 					onClose={() => setModal(null)}
-					onConfirm={handleGoFullyFeatured}
+					onConfirm={handleManageSubscription}
 					confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
 					onCancel={handleTalkToSales}
 					cancelText={t('Talk_to_an_expert')}
@@ -53,7 +55,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 				{ replace: true },
 			);
 		}
-	}, [shouldShowUpsell, router, tab, setModal, t, handleGoFullyFeatured, cloudWorkspaceHadTrial, handleTalkToSales]);
+	}, [shouldShowUpsell, router, tab, setModal, t, handleManageSubscription, cloudWorkspaceHadTrial, handleTalkToSales]);
 
 	if (isModalOpen) {
 		return <PageSkeleton />;

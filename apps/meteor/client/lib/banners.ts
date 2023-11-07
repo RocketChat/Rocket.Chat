@@ -32,10 +32,15 @@ export const firstSubscription = [
 
 export const open = (payload: BannerPayload): void => {
 	let index = queue.findIndex((_payload) => {
-		if (isLegacyPayload(_payload)) {
-			return _payload.id === (payload as LegacyBannerPayload).id;
+		if (isLegacyPayload(_payload) && isLegacyPayload(payload)) {
+			return _payload.id === payload.id;
 		}
-		return _payload.viewId === (payload as UiKit.BannerView).viewId;
+
+		if (!isLegacyPayload(_payload) && !isLegacyPayload(payload)) {
+			return _payload.viewId === payload.viewId;
+		}
+
+		return false;
 	});
 
 	if (index === -1) {
