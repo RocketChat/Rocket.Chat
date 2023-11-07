@@ -576,12 +576,21 @@ API.v1.addRoute(
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { status } = this.urlParams;
-			const { sort, fields } = await this.parseJsonQuery();
+			const { sort } = await this.parseJsonQuery();
 			const { role } = this.queryParams;
 
-			const nonEmptyFields = getNonEmptyFields(fields);
-
-			const inclusiveFields = getInclusiveFields(nonEmptyFields);
+			const projection = {
+				name: 1,
+				username: 1,
+				emails: 1,
+				roles: 1,
+				status: 1,
+				active: 1,
+				avatarETag: 1,
+				lastLogin: 1,
+				type: 1,
+				reason: 0,
+			};
 
 			const actualSort = sort || { username: 1 };
 
@@ -613,6 +622,7 @@ API.v1.addRoute(
 						lastLogin: { $exists: false },
 						type: { $ne: 'bot' },
 					};
+					projection.reason = 1;
 					break;
 				default:
 					throw new Meteor.Error('error-invalid-status', 'Invalid status parameter');
@@ -621,10 +631,10 @@ API.v1.addRoute(
 			const result = await Users.findPaginated(
 				{ ...match, roles: role },
 				{
-					projection: inclusiveFields,
 					sort: actualSort,
 					skip: offset,
 					limit: count,
+					projection,
 				},
 			);
 

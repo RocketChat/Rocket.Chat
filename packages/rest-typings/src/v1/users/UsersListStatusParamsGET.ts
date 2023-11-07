@@ -6,7 +6,7 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type UsersListStatusParamsGET = { role: string } & PaginatedRequest<{ fields: string }>;
+export type UsersListStatusParamsGET = { role: string } & PaginatedRequest;
 
 const UsersListStatusParamsGetSchema = {
 	type: 'object',
