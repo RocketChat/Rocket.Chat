@@ -1,10 +1,10 @@
 import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { RateLimiter } from '../../../lib/server';
 import { Livechat } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -33,14 +33,8 @@ Meteor.methods<ServerMethods>({
 	},
 });
 
-DDPRateLimiter.addRule(
-	{
-		type: 'method',
-		name: 'livechat:sendTranscript',
-		connectionId() {
-			return true;
-		},
+RateLimiter.limitMethod('livechat:sendTranscript', 1, 5000, {
+	connectionId() {
+		return true;
 	},
-	1,
-	5000,
-);
+});
