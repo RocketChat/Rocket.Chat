@@ -2,33 +2,41 @@ import { Box, Skeleton, Margins, Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState } from 'react';
 
-const blogSpotStyleScriptImport = (src) =>
+const blogSpotStyleScriptImport = (src: string) =>
 	new Promise((resolve) => {
 		const script = document.createElement('script');
 		script.type = 'text/javascript';
 		document.body.appendChild(script);
 
-		const resolveFunc = (event) => resolve(event.currentTarget);
+		const resolveFunc = (event: Event) => resolve(event.currentTarget);
 
-		script.onreadystatechange = resolveFunc;
-		script.onload = resolveFunc;
+		script.addEventListener('readystatechange', (event) => resolveFunc(event));
+		script.addEventListener('load', (event) => resolveFunc(event));
 		script.src = src;
 	});
 
-export default function NewZapier({ ...props }) {
-	const [script, setScript] = useState();
+const NewZapier = ({ ...props }) => {
 	const t = useTranslation();
+	const [script, setScript] = useState<HTMLScriptElement>();
+
 	useEffect(() => {
 		const importZapier = async () => {
 			const scriptEl = await blogSpotStyleScriptImport(
 				'https://zapier.com/apps/embed/widget.js?services=rocketchat&html_id=zapier-goes-here',
 			);
-			setScript(scriptEl);
+
+			setScript(scriptEl as HTMLScriptElement);
 		};
+
 		if (!script) {
 			importZapier();
 		}
-		return () => script && script.parentNode.removeChild(script);
+
+		return () => {
+			if (script) {
+				script.parentNode?.removeChild(script);
+			}
+		};
 	}, [script]);
 
 	return (
@@ -50,4 +58,6 @@ export default function NewZapier({ ...props }) {
 			<Box id='zapier-goes-here' {...props} />
 		</>
 	);
-}
+};
+
+export default NewZapier;

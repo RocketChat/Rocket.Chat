@@ -1,44 +1,29 @@
-import type { ReactElement } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import BusinessHoursMultipleContainer from '../../../ee/client/omnichannel/additionalForms/BusinessHoursMultipleContainer';
+import ContactManager from '../../../ee/client/omnichannel/additionalForms/ContactManager';
+import CurrentChatTags from '../../../ee/client/omnichannel/additionalForms/CurrentChatTags';
+import CustomFieldsAdditionalFormContainer from '../../../ee/client/omnichannel/additionalForms/CustomFieldsAdditionalFormContainer';
+import DepartmentBusinessHours from '../../../ee/client/omnichannel/additionalForms/DepartmentBusinessHours';
+import DepartmentForwarding from '../../../ee/client/omnichannel/additionalForms/DepartmentForwarding';
+import EeNumberInput from '../../../ee/client/omnichannel/additionalForms/EeNumberInput';
+import EeTextAreaInput from '../../../ee/client/omnichannel/additionalForms/EeTextAreaInput';
+import EeTextInput from '../../../ee/client/omnichannel/additionalForms/EeTextInput';
+import MaxChatsPerAgentContainer from '../../../ee/client/omnichannel/additionalForms/MaxChatsPerAgentContainer';
+import MaxChatsPerAgentDisplay from '../../../ee/client/omnichannel/additionalForms/MaxChatsPerAgentDisplay';
+import PrioritiesSelect from '../../../ee/client/omnichannel/additionalForms/PrioritiesSelect';
+import SlaPoliciesSelect from '../../../ee/client/omnichannel/additionalForms/SlaPoliciesSelect';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-export interface EEFormHooks {}
-
-const createFormSubscription = (): {
-	registerForm: (form: EEFormHooks) => void;
-	unregisterForm: (form: keyof EEFormHooks) => void;
-	formsSubscription: readonly [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => EEFormHooks];
-	getForm: (form: keyof EEFormHooks) => () => ReactElement;
-} => {
-	let forms = {} as EEFormHooks;
-	let updateCb = (): void => undefined;
-
-	const formsSubscription = [
-		(cb: () => void): (() => void) => {
-			updateCb = cb;
-			return (): void => {
-				updateCb = (): void => undefined;
-			};
-		},
-		(): EEFormHooks => forms,
-	] as const;
-
-	const registerForm = (newForm: EEFormHooks): void => {
-		forms = { ...forms, ...newForm };
-		updateCb();
-	};
-	const unregisterForm = (form: keyof EEFormHooks): void => {
-		delete forms[form];
-		updateCb();
-	};
-
-	const getForm = (form: keyof EEFormHooks): (() => ReactElement) => (forms as any)[form] as any;
-
-	return { registerForm, unregisterForm, formsSubscription, getForm };
+export {
+	CustomFieldsAdditionalFormContainer,
+	MaxChatsPerAgentContainer,
+	MaxChatsPerAgentDisplay,
+	EeNumberInput,
+	EeTextAreaInput,
+	BusinessHoursMultipleContainer,
+	EeTextInput,
+	ContactManager,
+	CurrentChatTags,
+	DepartmentBusinessHours,
+	DepartmentForwarding,
+	SlaPoliciesSelect,
+	PrioritiesSelect,
 };
-
-const { registerForm, unregisterForm, formsSubscription, getForm } = createFormSubscription();
-
-export { registerForm, unregisterForm, getForm };
-
-export const useFormsSubscription = (): EEFormHooks => useSyncExternalStore(...formsSubscription);

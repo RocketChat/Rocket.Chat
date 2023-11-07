@@ -1,3 +1,4 @@
+import { LicenseImp } from '.';
 import { MockedLicenseBuilder, getReadyLicenseManager } from '../__tests__/MockedLicenseBuilder';
 
 it('should not prevent if there is no license', async () => {
@@ -228,6 +229,48 @@ describe('Validate License Limits', () => {
 			await expect(licenseManager.shouldPreventAction('activeUsers', 6)).resolves.toBe(true);
 			expect(fairUsageCallback).toHaveBeenCalledTimes(0);
 			expect(preventActionCallback).toHaveBeenCalledTimes(0);
+		});
+	});
+});
+
+describe('License.getInfo', () => {
+	describe('Marketplace Restrictions', () => {
+		it('should respect the default if there is no license applied', async () => {
+			const licenseManager = new LicenseImp();
+
+			expect(
+				(
+					await licenseManager.getInfo({
+						limits: true,
+						currentValues: false,
+						license: false,
+					})
+				).limits,
+			).toMatchObject({
+				privateApps: { max: 3 },
+				marketplaceApps: { max: 5 },
+			});
+		});
+
+		it('should return unlimited if there is license but no limits', async () => {
+			const licenseManager = await getReadyLicenseManager();
+
+			const license = await new MockedLicenseBuilder();
+
+			await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+
+			await expect(
+				(
+					await licenseManager.getInfo({
+						limits: true,
+						currentValues: false,
+						license: false,
+					})
+				).limits,
+			).toMatchObject({
+				privateApps: { max: -1 },
+				marketplaceApps: { max: -1 },
+			});
 		});
 	});
 });
