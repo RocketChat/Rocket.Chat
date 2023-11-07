@@ -85,9 +85,17 @@ export class MentionModule implements IUiKitCoreApp {
 				throw new Error('Mention bot - Failed to retrieve path to room');
 			}
 
+			const messageText = i18n.t(
+				'Youre_not_a_part_of__channel__and_I_mentioned_you_there',
+				{
+					channel: `#${sub.name}`,
+				},
+				payload.user.language,
+			);
+
 			const link = new URL(Meteor.absoluteUrl(roomPath));
 			link.searchParams.set('msg', message._id);
-			const text = `[ ](${link.toString()})`;
+			const text = `[ ](${link.toString()})\n${messageText}`;
 
 			// forwards message to all DMs
 			await processWebhookMessage(
