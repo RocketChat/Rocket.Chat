@@ -127,6 +127,14 @@ class KonchatNotification {
 						},
 						search: { ...router.getSearchParameters(), jump: notification.payload._id },
 					});
+				case 'l':
+					return router.navigate({
+						pattern: '/live/:id/:tab?/:context?',
+						params: {
+							id: notification.payload.rid,
+						},
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
+					})
 			}
 		};
 	}
