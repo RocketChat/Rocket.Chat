@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
+import type { INotificationDesktop, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -22,25 +22,6 @@ declare global {
 	}
 }
 
-export type NotificationEvent = {
-	icon?: string;
-	title: string;
-	text: string;
-	duration?: number;
-	payload: {
-		_id?: IMessage['_id'];
-		rid?: IRoom['_id'];
-		tmid?: IMessage['_id'];
-		sender?: Pick<IUser, '_id' | 'username'>;
-		type?: RoomType;
-		name?: string;
-		message?: {
-			msg: string;
-			t?: string;
-		};
-	};
-};
-
 class KonchatNotification {
 	public notificationStatus = new ReactiveVar<NotificationPermission | undefined>(undefined);
 
@@ -52,7 +33,7 @@ class KonchatNotification {
 		}
 	}
 
-	public async notify(notification: NotificationEvent) {
+	public async notify(notification: INotificationDesktop) {
 		if (typeof window.Notification === 'undefined' || Notification.permission !== 'granted') {
 			return;
 		}
@@ -150,7 +131,7 @@ class KonchatNotification {
 		};
 	}
 
-	public async showDesktop(notification: NotificationEvent) {
+	public async showDesktop(notification: INotificationDesktop) {
 		if (!notification.payload.rid) {
 			return;
 		}

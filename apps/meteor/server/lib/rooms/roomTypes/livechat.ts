@@ -35,7 +35,7 @@ roomCoordinator.add(LivechatRoomType, {
 		const title = `[Omnichannel] ${roomName}`;
 		const text = notificationMessage;
 
-		return { title, text };
+		return { title, text, name: room.name };
 	},
 
 	async getMsgSender(senderId) {
