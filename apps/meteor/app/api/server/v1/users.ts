@@ -601,7 +601,7 @@ API.v1.addRoute(
 						lastLogin: { $exists: true },
 					};
 					break;
-				case 'inactive':
+				case 'deactivated':
 					match = {
 						active: false,
 						lastLogin: { $exists: true },
