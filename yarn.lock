@@ -8434,10 +8434,6 @@ __metadata:
     "@rocket.chat/styled": "*"
     "@rocket.chat/ui-client": 2.0.0
     "@rocket.chat/ui-contexts": 2.0.0
-    katex: "*"
-    react: "*"
-  languageName: unknown
-  linkType: soft
 
 "@rocket.chat/i18n@workspace:^, @rocket.chat/i18n@workspace:packages/i18n, @rocket.chat/i18n@workspace:~":
   version: 0.0.0-use.local
