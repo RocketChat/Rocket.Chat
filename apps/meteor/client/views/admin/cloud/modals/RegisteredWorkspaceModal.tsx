@@ -64,7 +64,7 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
-					<Button icon='reload' onClick={handleSyncAction} disabled={isSyncing}>
+					<Button icon='reload' onClick={handleSyncAction} loading={isSyncing}>
 						{t('Sync')}
 					</Button>
 				</ButtonGroup>
