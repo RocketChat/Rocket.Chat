@@ -31,10 +31,12 @@ const CannedResponseEditWithData: FC<{
 	}
 
 	if (data?.cannedResponse?.scope === 'department') {
-		return <CannedResponseEditWithDepartmentData data={data} reload={reload} totalDataReload={totalDataReload} />;
+		return (
+			<CannedResponseEditWithDepartmentData cannedResponseData={data.cannedResponse} reload={reload} totalDataReload={totalDataReload} />
+		);
 	}
 
-	return <CannedResponseEdit data={data} reload={reload} totalDataReload={totalDataReload} />;
+	return <CannedResponseEdit cannedResponseData={data.cannedResponse} reload={reload} totalDataReload={totalDataReload} />;
 };
 
 export default CannedResponseEditWithData;
