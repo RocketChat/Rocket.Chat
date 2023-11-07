@@ -8,6 +8,7 @@ import React, { useMemo, useState } from 'react';
 import { useDepartmentsList } from '../../../../client/components/Omnichannel/hooks/useDepartmentsList';
 import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 type DepartmentForwardingProps = {
 	departmentId: string;
@@ -19,6 +20,7 @@ type DepartmentForwardingProps = {
 export const DepartmentForwarding = ({ departmentId, value = [], handler, label }: DepartmentForwardingProps) => {
 	const t = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
+	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
@@ -32,6 +34,10 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 		const pending = value.filter(({ value }) => !departmentsItems.find((dep) => dep.value === value));
 		return [...departmentsItems, ...pending];
 	}, [departmentsItems, value]);
+
+	if (!hasLicense) {
+		return null;
+	}
 
 	return (
 		<Field>

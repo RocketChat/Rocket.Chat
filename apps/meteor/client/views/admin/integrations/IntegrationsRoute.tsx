@@ -2,12 +2,15 @@ import { useRouteParameter, useAtLeastOnePermission } from '@rocket.chat/ui-cont
 import React, { useMemo } from 'react';
 
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
+import EditIntegrationsPage from './EditIntegrationsPage';
+import EditIntegrationsPageWithData from './EditIntegrationsPageWithData';
 import IntegrationsPage from './IntegrationsPage';
-import EditIntegrationsPage from './edit/EditIntegrationsPage';
-import OutgoingWebhookHistoryPage from './edit/OutgoingWebhookHistoryPage';
-import NewIntegrationsPage from './new/NewIntegrationsPage';
+import OutgoingWebhookHistoryPage from './outgoing/history/OutgoingWebhookHistoryPage';
 
-function IntegrationsRoute() {
+const IntegrationsRoute = () => {
+	const context = useRouteParameter('context');
+	const integrationId = useRouteParameter('id');
+
 	const canViewIntegrationsPage = useAtLeastOnePermission(
 		useMemo(
 			() => [
@@ -20,18 +23,16 @@ function IntegrationsRoute() {
 		),
 	);
 
-	const context = useRouteParameter('context');
-
 	if (!canViewIntegrationsPage) {
 		return <NotAuthorizedPage />;
 	}
 
 	if (context === 'new') {
-		return <NewIntegrationsPage />;
+		return <EditIntegrationsPage />;
 	}
 
-	if (context === 'edit') {
-		return <EditIntegrationsPage />;
+	if (context === 'edit' && integrationId) {
+		return <EditIntegrationsPageWithData integrationId={integrationId} />;
 	}
 
 	if (context === 'history') {
@@ -39,6 +40,6 @@ function IntegrationsRoute() {
 	}
 
 	return <IntegrationsPage />;
-}
+};
 
 export default IntegrationsRoute;
