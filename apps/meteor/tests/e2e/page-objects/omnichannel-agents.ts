@@ -40,8 +40,20 @@ export class OmnichannelAgents {
 		return this.page.locator('[data-qa="AgentInfoAction-Edit"]');
 	}
 
-	get btnStatus(): Locator {
+	get btnRemove(): Locator {
+		return this.page.locator('[data-qa="AgentInfoAction-Remove"]');
+	}
+
+	get StatusSelect(): Locator {
 		return this.page.locator('[data-qa="AgentEditTextInput-Status"]');
+	}
+
+	get MaxChatsInput(): Locator {
+		return this.page.locator('[data-qa="TextInput-Max-number-of-chats-per-agent"]');
+	}
+
+	get DepartmentSelect(): Locator {
+		return this.page.locator('[data-qa="AgentEditTextInput-Departments"]');
 	}
 
 	get btnSave(): Locator {

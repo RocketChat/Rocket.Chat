@@ -149,7 +149,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 					<FieldLabel>{t('Departments')}</FieldLabel>
 					<FieldRow>
 						<MultiSelect
-							data-qa='AgentEditTextInput-Departaments'
+							data-qa='AgentEditTextInput-Departments'
 							options={options}
 							value={departments}
 							placeholder={t('Select_an_option')}
