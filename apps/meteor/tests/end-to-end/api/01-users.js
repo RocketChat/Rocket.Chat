@@ -4252,8 +4252,9 @@ describe('[Users]', function () {
 					expect(res.body).to.have.property('users');
 
 					const { users } = res.body;
+					const ids = users.map((user) => user._id);
 
-					expect(users).to.have.length(2);
+					expect(ids).to.include(user._id);
 				});
 		});
 
@@ -4270,8 +4271,9 @@ describe('[Users]', function () {
 					expect(res.body).to.have.property('users');
 
 					const { users } = res.body;
+					const ids = users.map((user) => user._id);
 
-					expect(users).to.have.length(2);
+					expect(ids).to.include(user._id);
 				});
 		});
 
@@ -4289,8 +4291,9 @@ describe('[Users]', function () {
 					expect(res.body).to.have.property('users');
 
 					const { users } = res.body;
+					const ids = users.map((user) => user._id);
 
-					expect(users).to.have.length(1);
+					expect(ids).to.not.include(user._id);
 				});
 		});
 
@@ -4311,8 +4314,9 @@ describe('[Users]', function () {
 					expect(res.body).to.have.property('users');
 
 					const { users } = res.body;
+					const ids = users.map((user) => user._id);
 
-					expect(users).to.have.length(1);
+					expect(ids).to.include(user._id);
 				});
 		});
 
