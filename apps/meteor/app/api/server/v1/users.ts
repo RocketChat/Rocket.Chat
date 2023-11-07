@@ -618,47 +618,18 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-status', 'Invalid status parameter');
 			}
 
-			const limit =
-				count !== 0
-					? [
-							{
-								$limit: count,
-							},
-					  ]
-					: [];
+			const result = await Users.findPaginated(
+				{ ...match, roles: role },
+				{
+					projection: inclusiveFields,
+					sort: actualSort,
+					skip: offset,
+					limit: count,
+				},
+			);
 
-			const result = await Users.col
-				.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
-					{
-						$match: {
-							roles: role,
-							...match,
-						},
-					},
-					{
-						$project: inclusiveFields,
-					},
-					{
-						$facet: {
-							sortedResults: [
-								{
-									$sort: actualSort,
-								},
-								{
-									$skip: offset,
-								},
-								...limit,
-							],
-							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
-						},
-					},
-				])
-				.toArray();
-
-			const {
-				sortedResults: users,
-				totalCount: [{ total } = { total: 0 }],
-			} = result[0];
+			const users = await result.cursor.toArray();
+			const total = await result.totalCount;
 
 			return API.v1.success({
 				users,
