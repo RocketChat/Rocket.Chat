@@ -25,13 +25,13 @@ const BannerEnterpriseTrialEnded = (): ReactElement => {
 					closeable
 					icon={<Icon name='store' size='x24' />}
 					variant='warning'
-					title={t('Apps_disabled_when_Enterprise_trial_ended')}
+					title={t('Apps_disabled_when_Premium_trial_ended')}
 					onClose={() => setShowTrialBanner(false)}
 					{...(isAdmin && bannerLink)}
 				>
 					{isAdmin
-						? t('Apps_disabled_when_Enterprise_trial_ended_description_admin')
-						: t('Apps_disabled_when_Enterprise_trial_ended_description')}
+						? t('Apps_disabled_when_Premium_trial_ended_description_admin')
+						: t('Apps_disabled_when_Premium_trial_ended_description')}
 				</Banner>
 			)}
 		</>

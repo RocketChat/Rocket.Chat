@@ -21,12 +21,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import { validateEmail } from '../../../../lib/emailValidator';
+import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import Page from '../../../components/Page';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useRoomsList } from '../../../hooks/useRoomsList';
 import { AsyncStatePhase } from '../../../lib/asyncState';
-import { useFormsSubscription } from '../additionalForms';
+import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentForwarding, DepartmentBusinessHours } from '../additionalForms';
 import DepartmentsAgentsTable from './DepartmentAgentsTable/DepartmentAgentsTable';
 import { DepartmentTags } from './DepartmentTags';
 
@@ -100,24 +102,9 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	const departmentsRoute = useRoute('omnichannel-departments');
 	const queryClient = useQueryClient();
 
-	const {
-		useEeNumberInput = () => null,
-		useEeTextInput = () => null,
-		useEeTextAreaInput = () => null,
-		useDepartmentForwarding = () => null,
-		useDepartmentBusinessHours = () => null,
-		useSelectForwardDepartment = () => null,
-	} = useFormsSubscription();
-
 	const { department, agents = [] } = data || {};
 
-	const MaxChats = useEeNumberInput();
-	const VisitorInactivity = useEeNumberInput();
-	const WaitingQueueMessageInput = useEeTextAreaInput();
-	const AbandonedMessageInput = useEeTextInput();
-	const DepartmentForwarding = useDepartmentForwarding();
-	const DepartmentBusinessHours = useDepartmentBusinessHours();
-	const AutoCompleteDepartment = useSelectForwardDepartment();
+	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
 	const initialValues = getInitialValues({ department, agents, allowedToForwardData });
 
@@ -341,73 +328,60 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							</FieldRow>
 						</Field>
 
-						{MaxChats && (
-							<Field>
-								<Controller
-									control={control}
-									name='maxNumberSimultaneousChat'
-									render={({ field: { value, onChange } }) => (
-										<MaxChats
-											value={value}
-											handler={onChange}
-											label='Max_number_of_chats_per_agent'
-											placeholder='Max_number_of_chats_per_agent_description'
-										/>
-									)}
-								/>
-							</Field>
-						)}
+						<Field>
+							<Controller
+								control={control}
+								name='maxNumberSimultaneousChat'
+								render={({ field: { value, onChange } }) => (
+									<EeNumberInput
+										value={value}
+										handler={onChange}
+										label='Max_number_of_chats_per_agent'
+										placeholder='Max_number_of_chats_per_agent_description'
+									/>
+								)}
+							/>
+						</Field>
 
-						{VisitorInactivity && (
-							<Field>
-								<Controller
-									control={control}
-									name='visitorInactivityTimeoutInSeconds'
-									render={({ field: { value, onChange } }) => (
-										<VisitorInactivity
-											value={value}
-											handler={onChange}
-											label='How_long_to_wait_to_consider_visitor_abandonment_in_seconds'
-											placeholder='Number_in_seconds'
-										/>
-									)}
-								/>
-							</Field>
-						)}
+						<Field>
+							<Controller
+								control={control}
+								name='visitorInactivityTimeoutInSeconds'
+								render={({ field: { value, onChange } }) => (
+									<EeNumberInput
+										value={value}
+										handler={onChange}
+										label='How_long_to_wait_to_consider_visitor_abandonment_in_seconds'
+										placeholder='Number_in_seconds'
+									/>
+								)}
+							/>
+						</Field>
 
-						{AbandonedMessageInput && (
-							<Field>
-								<Controller
-									control={control}
-									name='abandonedRoomsCloseCustomMessage'
-									render={({ field: { value, onChange } }) => (
-										<AbandonedMessageInput
-											value={value}
-											handler={onChange}
-											label='Livechat_abandoned_rooms_closed_custom_message'
-											placeholder='Enter_a_custom_message'
-										/>
-									)}
-								/>
-							</Field>
-						)}
+						<Field>
+							<Controller
+								control={control}
+								name='abandonedRoomsCloseCustomMessage'
+								render={({ field: { value, onChange } }) => (
+									<EeTextInput
+										value={value}
+										handler={onChange}
+										label='Livechat_abandoned_rooms_closed_custom_message'
+										placeholder='Enter_a_custom_message'
+									/>
+								)}
+							/>
+						</Field>
 
-						{WaitingQueueMessageInput && (
-							<Field>
-								<Controller
-									control={control}
-									name='waitingQueueMessage'
-									render={({ field: { value, onChange } }) => (
-										<WaitingQueueMessageInput
-											value={value}
-											handler={onChange}
-											label='Waiting_queue_message'
-											placeholder='Waiting_queue_message'
-										/>
-									)}
-								/>
-							</Field>
-						)}
+						<Field>
+							<Controller
+								control={control}
+								name='waitingQueueMessage'
+								render={({ field: { value, onChange } }) => (
+									<EeTextAreaInput value={value} handler={onChange} label='Waiting_queue_message' placeholder='Waiting_queue_message' />
+								)}
+							/>
+						</Field>
 
 						{DepartmentForwarding && (
 							<Field>
@@ -426,7 +400,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							</Field>
 						)}
 
-						{AutoCompleteDepartment && (
+						{hasLicense && (
 							<Field>
 								<FieldLabel>{t('Fallback_forward_department')}</FieldLabel>
 								<Controller
@@ -474,11 +448,9 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							</Field>
 						)}
 
-						{DepartmentBusinessHours && (
-							<Field>
-								<DepartmentBusinessHours bhId={department?.businessHourId} />
-							</Field>
-						)}
+						<Field>
+							<DepartmentBusinessHours bhId={department?.businessHourId} />
+						</Field>
 
 						<Divider mb={16} />
 						<Field>
