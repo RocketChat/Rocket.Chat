@@ -15,8 +15,8 @@ export const useUpsellActions = (hasLicenseModule = false) => {
 	const { data } = useIsEnterprise();
 	const shouldShowUpsell = !data?.isEnterprise || !hasLicenseModule;
 
-	const handleGoFullyFeatured = useCallback(() => {
-		router.navigate('/admin/upgrade/go-fully-featured-registered');
+	const handleManageSubscription = useCallback(() => {
+		router.navigate('/admin/subscription');
 		setModal(null);
 	}, [router, setModal]);
 
@@ -25,5 +25,5 @@ export const useUpsellActions = (hasLicenseModule = false) => {
 		setModal(null);
 	}, [handleOpenLink, setModal]);
 
-	return { shouldShowUpsell, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales };
+	return { shouldShowUpsell, cloudWorkspaceHadTrial, handleManageSubscription, handleTalkToSales };
 };

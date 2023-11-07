@@ -1,5 +1,151 @@
 # @rocket.chat/meteor
 
+## 6.4.5
+
+### Patch Changes
+
+- 40ac9ea019: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.4.5
+  - @rocket.chat/rest-typings@6.4.5
+  - @rocket.chat/api-client@0.1.14
+  - @rocket.chat/omnichannel-services@0.0.20
+  - @rocket.chat/pdf-worker@0.0.20
+  - @rocket.chat/presence@0.0.20
+  - @rocket.chat/core-services@0.2.5
+  - @rocket.chat/cron@0.0.16
+  - @rocket.chat/gazzodown@2.0.5
+  - @rocket.chat/model-typings@0.1.5
+  - @rocket.chat/ui-contexts@2.0.5
+  - @rocket.chat/fuselage-ui-kit@2.0.5
+  - @rocket.chat/models@0.0.20
+  - @rocket.chat/ui-theming@0.1.0
+  - @rocket.chat/ui-client@2.0.5
+  - @rocket.chat/ui-video-conf@2.0.5
+  - @rocket.chat/web-ui-registration@2.0.5
+  - @rocket.chat/instance-status@0.0.20
+
+## 6.4.4
+
+### Patch Changes
+
+- 9e61d9c8b5: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- e832e9fe96: Fixed widget's `nextAgent` API sending an array of chars instead of an object for `departmentId` parameter
+- a20c4799a4: fix: custom-css injection
+- 4789616afd: Fixed a problem that would prevent private apps from being shown on air-gapped environments
+- e832e9fe96: Fixed a problem caused by `onlyAvailable` property of `livechat/users/agent` endpoint not having the proper type validation
+  - @rocket.chat/core-typings@6.4.4
+  - @rocket.chat/rest-typings@6.4.4
+  - @rocket.chat/api-client@0.1.13
+  - @rocket.chat/omnichannel-services@0.0.19
+  - @rocket.chat/pdf-worker@0.0.19
+  - @rocket.chat/presence@0.0.19
+  - @rocket.chat/core-services@0.2.4
+  - @rocket.chat/cron@0.0.15
+  - @rocket.chat/gazzodown@2.0.4
+  - @rocket.chat/model-typings@0.1.4
+  - @rocket.chat/ui-contexts@2.0.4
+  - @rocket.chat/fuselage-ui-kit@2.0.4
+  - @rocket.chat/models@0.0.19
+  - @rocket.chat/ui-theming@0.1.0
+  - @rocket.chat/ui-client@2.0.4
+  - @rocket.chat/ui-video-conf@2.0.4
+  - @rocket.chat/web-ui-registration@2.0.4
+  - @rocket.chat/instance-status@0.0.19
+
+## 6.4.3
+
+### Patch Changes
+
+- a8676a3c5e: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 69d89c4700: Fix unnecessary username validation on accounts profile form
+- 02f4491d5a: fix: Omnichannel webhook is not retrying requests
+- 02f4491d5a: Fixed intermittent errors caused by the removal of subscriptions and inquiries when lacking permissions.
+- 25a2129beb: Rolled back a change of route from `/admin/workspace` to `/admin/info`
+- 02f4491d5a: Add pagination & tooltips to agent's dropdown on forwarding modal
+- 02f4491d5a: Added new Omnichannel setting 'Hide conversation after closing'
+  - @rocket.chat/core-typings@6.4.3
+  - @rocket.chat/rest-typings@6.4.3
+  - @rocket.chat/api-client@0.1.12
+  - @rocket.chat/omnichannel-services@0.0.18
+  - @rocket.chat/pdf-worker@0.0.18
+  - @rocket.chat/presence@0.0.18
+  - @rocket.chat/core-services@0.2.3
+  - @rocket.chat/cron@0.0.14
+  - @rocket.chat/gazzodown@2.0.3
+  - @rocket.chat/model-typings@0.1.3
+  - @rocket.chat/ui-contexts@2.0.3
+  - @rocket.chat/fuselage-ui-kit@2.0.3
+  - @rocket.chat/models@0.0.18
+  - @rocket.chat/ui-theming@0.1.0
+  - @rocket.chat/ui-client@2.0.3
+  - @rocket.chat/ui-video-conf@2.0.3
+  - @rocket.chat/web-ui-registration@2.0.3
+  - @rocket.chat/instance-status@0.0.18
+
+## 6.4.2
+
+### Patch Changes
+
+- eceeaf3b5d: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 8e155d4212: fixed threads breaking when sending messages too fast
+- 3f7ce23a90: fix: mobile ringing notification missing call id
+- 36bcec8e40: Forward headers when using proxy for file uploads
+- d20033723c: Handle the username update in the background
+  - @rocket.chat/core-typings@6.4.2
+  - @rocket.chat/rest-typings@6.4.2
+  - @rocket.chat/api-client@0.1.11
+  - @rocket.chat/omnichannel-services@0.0.17
+  - @rocket.chat/pdf-worker@0.0.17
+  - @rocket.chat/presence@0.0.17
+  - @rocket.chat/core-services@0.2.2
+  - @rocket.chat/cron@0.0.13
+  - @rocket.chat/gazzodown@2.0.2
+  - @rocket.chat/model-typings@0.1.2
+  - @rocket.chat/ui-contexts@2.0.2
+  - @rocket.chat/fuselage-ui-kit@2.0.2
+  - @rocket.chat/models@0.0.17
+  - @rocket.chat/ui-theming@0.1.0
+  - @rocket.chat/ui-client@2.0.2
+  - @rocket.chat/ui-video-conf@2.0.2
+  - @rocket.chat/web-ui-registration@2.0.2
+  - @rocket.chat/instance-status@0.0.17
+
+## 6.4.1
+
+### Patch Changes
+
+- b289bbf26c: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 636a412866: fix: Remove model-level query restrictions for monitors
+- 5e3473a2c9: New setting to automatically enable autotranslate when joining rooms
+- 2fa78b0563: fix: Monitors now able to forward a chat without taking it first
+- 0d14dc49c3: Add new permission to allow kick users from rooms without being a member
+- 919fe1f33d: download translation files through CDN
+- eb4881ca53: fix: user dropdown menu position on RTL layout
+- 5ee909bd94: Improve cache of static files
+  - @rocket.chat/core-typings@6.4.1
+  - @rocket.chat/rest-typings@6.4.1
+  - @rocket.chat/api-client@0.1.10
+  - @rocket.chat/omnichannel-services@0.0.16
+  - @rocket.chat/pdf-worker@0.0.16
+  - @rocket.chat/presence@0.0.16
+  - @rocket.chat/core-services@0.2.1
+  - @rocket.chat/cron@0.0.12
+  - @rocket.chat/gazzodown@2.0.1
+  - @rocket.chat/model-typings@0.1.1
+  - @rocket.chat/ui-contexts@2.0.1
+  - @rocket.chat/fuselage-ui-kit@2.0.1
+  - @rocket.chat/models@0.0.16
+  - @rocket.chat/ui-theming@0.1.0
+  - @rocket.chat/ui-client@2.0.1
+  - @rocket.chat/ui-video-conf@2.0.1
+  - @rocket.chat/web-ui-registration@2.0.1
+  - @rocket.chat/instance-status@0.0.16
+
 ## 6.4.0
 
 ### Minor Changes

@@ -14,14 +14,14 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { FC, ReactElement } from 'react';
+import type { FC } from 'react';
 import React, { useMemo, useRef, useState } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import UserInfo from '../../../components/UserInfo';
 import { useForm } from '../../../hooks/useForm';
-import { useFormsSubscription } from '../additionalForms';
+import { MaxChatsPerAgentContainer } from '../additionalForms';
 
 // TODO: TYPE:
 // Department
@@ -63,7 +63,6 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 		() => (userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []),
 		[userDepartments],
 	);
-	const eeForms = useFormsSubscription();
 
 	const saveRef = useRef({
 		values: {},
@@ -82,8 +81,6 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 		}
 	});
 
-	const { useMaxChatsPerAgent = (): ReactElement | null => null } = eeForms as any; // TODO: Find out how to use ts with eeForms
-
 	const { values, handlers, hasUnsavedChanges, commit } = useForm({
 		departments: initialDepartmentValue,
 		status: statusLivechat,
@@ -97,8 +94,6 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 		status: ILivechatAgent['statusLivechat'];
 		voipExtension: string;
 	};
-
-	const MaxChats = useMaxChatsPerAgent();
 
 	const saveAgentInfo = useMethod('livechat:saveAgentInfo');
 	const saveAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
@@ -177,7 +172,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 						/>
 					</FieldRow>
 				</Field>
-				{MaxChats && <MaxChats data={user} onChange={onChangeMaxChats} />}
+				<MaxChatsPerAgentContainer data={user as any} onChange={onChangeMaxChats} />
 				{voipEnabled && (
 					<Field>
 						<FieldLabel>{t('VoIP_Extension')}</FieldLabel>

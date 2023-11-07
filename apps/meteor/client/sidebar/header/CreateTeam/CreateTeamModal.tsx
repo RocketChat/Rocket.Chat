@@ -80,7 +80,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		handleSubmit,
 		setValue,
 		watch,
-		formState: { isDirty, errors },
+		formState: { isDirty, errors, isSubmitting },
 	} = useForm<CreateTeamModalInputs>({
 		defaultValues: {
 			isPrivate: true,
@@ -304,7 +304,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isButtonEnabled} type='submit' primary>
+					<Button disabled={!isButtonEnabled} loading={isSubmitting} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>
