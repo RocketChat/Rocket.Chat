@@ -1,8 +1,6 @@
-import { Pagination } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MutableRefObject } from 'react';
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 
@@ -17,86 +15,77 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import { useFilterActiveUsers } from '../hooks/useFilterActiveUsers';
+import { useFilterPendingUsers } from '../hooks/useFilterPendingUsers';
+import { useListUsers } from '../hooks/useListUsers';
 import UsersTableRow from './UsersTableRow';
+
+// TODO: remove bots from pending users + add "resend email" function
 
 type UsersTableProps = {
 	reload: MutableRefObject<() => void>;
+	tab: string;
+	onReload: () => void;
+	setPendingActionsCount: React.Dispatch<React.SetStateAction<number>>;
 };
 
-// TODO: Missing error state
-const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
+const UsersTable = ({ reload, tab, onReload, setPendingActionsCount }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
-	const usersRoute = useRoute('admin-users');
+	const router = useRouter();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
+
 	const [text, setText] = useState('');
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'status'>('name');
 
 	const searchTerm = useDebouncedValue(text, 500);
-	const prevSearchTerm = useRef<string>('');
+	const prevSearchTerm = useRef('');
 
-	const query = useDebouncedValue(
-		useMemo(() => {
-			if (searchTerm !== prevSearchTerm.current) {
-				setCurrent(0);
-			}
-
-			return {
-				fields: JSON.stringify({
-					name: 1,
-					username: 1,
-					emails: 1,
-					roles: 1,
-					status: 1,
-					avatarETag: 1,
-					active: 1,
-				}),
-				query: JSON.stringify({
-					$or: [
-						{ 'emails.address': { $regex: escapeRegExp(searchTerm), $options: 'i' } },
-						{ username: { $regex: escapeRegExp(searchTerm), $options: 'i' } },
-						{ name: { $regex: escapeRegExp(searchTerm), $options: 'i' } },
-					],
-				}),
-				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: searchTerm === prevSearchTerm.current ? current : 0,
-			};
-		}, [searchTerm, sortBy, sortDirection, itemsPerPage, current, setCurrent]),
-		500,
+	const { data, isLoading, isSuccess, isError, refetch } = useListUsers(
+		searchTerm,
+		prevSearchTerm,
+		setCurrent,
+		sortBy,
+		sortDirection,
+		itemsPerPage,
+		current,
+		setPendingActionsCount,
 	);
 
-	const getUsers = useEndpoint('GET', '/v1/users.list');
+	const useAllUsers = () => (tab === 'all' && isSuccess ? data?.users : []);
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const { data, isLoading, error, isSuccess, refetch } = useQuery(
-		['users', query],
-		async () => {
-			const users = await getUsers(query);
-			return users;
-		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
-		},
-	);
+	const filteredUsers = [...useAllUsers(), ...useFilterActiveUsers(data?.users, tab), ...useFilterPendingUsers(data?.users, tab)];
 
 	useEffect(() => {
 		reload.current = refetch;
-	}, [reload, refetch]);
-
-	useEffect(() => {
 		prevSearchTerm.current = searchTerm;
-	}, [searchTerm]);
+	}, [reload, refetch, searchTerm]);
 
-	const handleClick = useMutableCallback((id): void =>
-		usersRoute.push({
-			context: 'info',
-			id,
-		}),
+	const isKeyboardEvent = (
+		event: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>,
+	): event is React.KeyboardEvent<HTMLElement> => {
+		return (event as React.KeyboardEvent<HTMLElement>).key !== undefined;
+	};
+
+	const handleClickOrKeyDown = useMutableCallback(
+		(id, e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>): void => {
+			e.stopPropagation();
+
+			const keyboardSubmitKeys = ['Enter', ' '];
+
+			if (isKeyboardEvent(e) && !keyboardSubmitKeys.includes(e.key)) {
+				return;
+			}
+
+			router.navigate({
+				name: 'admin-users',
+				params: {
+					context: 'info',
+					id,
+				},
+			});
+		},
 	);
 
 	const headers = useMemo(
@@ -131,33 +120,66 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 					{t('Roles')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell w='x100' key='status' direction={sortDirection} active={sortBy === 'status'} onClick={setSort} sort='status'>
-				{t('Status')}
-			</GenericTableHeaderCell>,
+			tab === 'all' && (
+				<GenericTableHeaderCell
+					w='x100'
+					key='status'
+					direction={sortDirection}
+					active={sortBy === 'status'}
+					onClick={setSort}
+					sort='status'
+				>
+					{t('Registration_status')}
+				</GenericTableHeaderCell>
+			),
+			tab === 'pending' && (
+				<GenericTableHeaderCell w='x88' key='action' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+					{t('Pending_action')}
+				</GenericTableHeaderCell>
+			),
+			<GenericTableHeaderCell key='actions' w='x176' />,
 		],
-		[mediaQuery, setSort, sortBy, sortDirection, t],
+		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
 	);
-
-	if (error) {
-		return null;
-	}
 
 	return (
 		<>
 			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
+
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
 				</GenericTable>
 			)}
-			{data?.users && data.count > 0 && isSuccess && (
+
+			{isError && (
+				<States>
+					<StatesIcon name='warning' variation='danger' />
+					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+					<StatesActions>
+						<StatesAction onClick={() => refetch()}>{t('Reload_page')}</StatesAction>
+					</StatesActions>
+				</States>
+			)}
+
+			{isSuccess && filteredUsers.length === 0 && <GenericNoResults />}
+
+			{isSuccess && !!data && !!filteredUsers && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{data?.users.map((user) => (
-								<UsersTableRow key={user._id} onClick={handleClick} mediaQuery={mediaQuery} user={user} />
+							{filteredUsers.map((user) => (
+								<UsersTableRow
+									key={user._id}
+									onClick={handleClickOrKeyDown}
+									mediaQuery={mediaQuery}
+									user={user}
+									refetchUsers={refetch}
+									onReload={onReload}
+									tab={tab}
+								/>
 							))}
 						</GenericTableBody>
 					</GenericTable>
@@ -172,7 +194,6 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 					/>
 				</>
 			)}
-			{isSuccess && data?.count === 0 && <GenericNoResults />}
 		</>
 	);
 };

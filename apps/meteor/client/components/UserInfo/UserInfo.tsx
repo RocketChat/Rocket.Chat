@@ -39,6 +39,7 @@ type UserInfoProps = UserInfoDataProps & {
 	verified?: boolean;
 	actions: ReactElement;
 	roles: ReactElement[];
+	reason?: string;
 };
 
 const UserInfo = ({
@@ -59,6 +60,7 @@ const UserInfo = ({
 	customFields,
 	canViewAllInfo,
 	actions,
+	reason,
 	...props
 }: UserInfoProps): ReactElement => {
 	const t = useTranslation();
@@ -81,16 +83,36 @@ const UserInfo = ({
 					{userDisplayName && <InfoPanel.Title icon={status} title={userDisplayName} />}
 					{statusText && (
 						<InfoPanel.Text>
-							<MarkdownText content={statusText} parseEmoji={true} />
+							<MarkdownText content={statusText} parseEmoji={true} variant='inline' />
 						</InfoPanel.Text>
 					)}
 				</InfoPanel.Section>
 
 				<InfoPanel.Section>
+					{reason && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Reason_for_joining')}</InfoPanel.Label>
+							<InfoPanel.Text>{reason}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)}
+					{nickname && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Nickname')}</InfoPanel.Label>
+							<InfoPanel.Text>{nickname}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)}
+
 					{roles.length !== 0 && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Roles')}</InfoPanel.Label>
 							<UserCard.Roles>{roles}</UserCard.Roles>
+						</InfoPanel.Field>
+					)}
+
+					{username && username !== name && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Username')}</InfoPanel.Label>
+							<InfoPanel.Text data-qa='UserInfoUserName'>{username}</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
 
@@ -101,10 +123,12 @@ const UserInfo = ({
 						</InfoPanel.Field>
 					)}
 
-					{username && username !== name && (
+					{bio && (
 						<InfoPanel.Field>
-							<InfoPanel.Label>{t('Username')}</InfoPanel.Label>
-							<InfoPanel.Text data-qa='UserInfoUserName'>{username}</InfoPanel.Text>
+							<InfoPanel.Label>{t('Bio')}</InfoPanel.Label>
+							<InfoPanel.Text withTruncatedText={false}>
+								<MarkdownText variant='inline' content={bio} />
+							</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
 
@@ -119,22 +143,6 @@ const UserInfo = ({
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Full_Name')}</InfoPanel.Label>
 							<InfoPanel.Text>{name}</InfoPanel.Text>
-						</InfoPanel.Field>
-					)}
-
-					{nickname && (
-						<InfoPanel.Field>
-							<InfoPanel.Label>{t('Nickname')}</InfoPanel.Label>
-							<InfoPanel.Text>{nickname}</InfoPanel.Text>
-						</InfoPanel.Field>
-					)}
-
-					{bio && (
-						<InfoPanel.Field>
-							<InfoPanel.Label>{t('Bio')}</InfoPanel.Label>
-							<InfoPanel.Text withTruncatedText={false}>
-								<MarkdownText variant='inline' content={bio} />
-							</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
 
