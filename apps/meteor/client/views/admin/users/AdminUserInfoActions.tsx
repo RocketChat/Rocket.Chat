@@ -20,7 +20,7 @@ type AdminUserInfoActionsProps = {
 	isAdmin: boolean;
 	onChange: () => void;
 	onReload: () => void;
-	tab: 'all' | 'invited' | 'new' | 'active' | 'deactivated';
+	tab: 'all' | 'invited' | 'active' | 'deactivated' | 'pending';
 };
 
 const AdminUserInfoActions = ({

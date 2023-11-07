@@ -19,7 +19,7 @@ import AdminUserInfoActions from './AdminUserInfoActions';
 type AdminUserInfoWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
-	tab: 'all' | 'invited' | 'new' | 'active' | 'deactivated';
+	tab: 'all' | 'invited' | 'active' | 'deactivated' | 'pending';
 };
 
 const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProps): ReactElement => {
