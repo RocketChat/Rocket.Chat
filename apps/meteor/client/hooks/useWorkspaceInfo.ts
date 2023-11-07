@@ -1,9 +1,9 @@
 import type { IStats, IWorkspaceInfo, Serialized } from '@rocket.chat/core-typings';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 
-export const useWorkspaceInfo = () => {
+export const useWorkspaceInfo = ({ refreshStatistics }: { refreshStatistics?: boolean } = {}) => {
 	const getStatistics = useEndpoint('GET', '/v1/statistics');
 	const getInstances = useEndpoint('GET', '/v1/instances.get');
 	const getServerInfo = useEndpoint('GET', '/info');
@@ -49,7 +49,7 @@ export const useWorkspaceInfo = () => {
 			},
 			{
 				queryKey: ['info', 'statistics'],
-				queryFn: () => getStatistics({ refresh: 'true' }),
+				queryFn: () => getStatistics({ refresh: refreshStatistics ? 'true' : 'false' }),
 				staleTime: Infinity,
 				keepPreviousData: true,
 				select: (data: Serialized<IStats>) => ({
@@ -58,12 +58,5 @@ export const useWorkspaceInfo = () => {
 				}),
 			},
 		],
-	});
-};
-
-export const useRefreshStatistics = () => {
-	const queryClient = useQueryClient();
-	return useMutation({
-		mutationFn: () => queryClient.invalidateQueries(['info', 'statistics']),
 	});
 };
