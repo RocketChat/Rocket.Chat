@@ -132,6 +132,7 @@ class KonchatNotification {
 						pattern: '/live/:id/:tab?/:context?',
 						params: {
 							id: notification.payload.rid,
+							tab: 'room-info',
 						},
 						search: { ...router.getSearchParameters(), jump: notification.payload._id },
 					});
