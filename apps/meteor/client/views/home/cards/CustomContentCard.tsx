@@ -80,7 +80,7 @@ const CustomContentCard = (): ReactElement | null => {
 						<Button
 							icon='lightning'
 							disabled={willNotShowCustomContent || !isEnterprise}
-							title={!isEnterprise ? t('Enterprise_Only') : customContentOnlyTooltipText}
+							title={!isEnterprise ? t('Premium_only') : customContentOnlyTooltipText}
 							onClick={handleOnlyShowCustomContent}
 							role='button'
 						>

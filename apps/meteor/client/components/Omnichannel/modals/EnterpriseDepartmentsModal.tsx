@@ -37,7 +37,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 			<Modal.Content fontScale='p2'>
 				<Modal.HeroImage src='/images/departments.svg' />
 				<Box fontScale='h3' mbe={28}>
-					{t('Enterprise_Departments_title')}
+					{t('Premium_Departments_title')}
 				</Box>
 				{t('Premium_Departments_description_upgrade')}
 			</Modal.Content>

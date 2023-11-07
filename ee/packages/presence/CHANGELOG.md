@@ -1,5 +1,45 @@
 # @rocket.chat/presence
 
+## 0.0.20
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.5
+- @rocket.chat/core-services@0.2.5
+- @rocket.chat/models@0.0.20
+
+## 0.0.19
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.4
+- @rocket.chat/core-services@0.2.4
+- @rocket.chat/models@0.0.19
+
+## 0.0.18
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.3
+- @rocket.chat/core-services@0.2.3
+- @rocket.chat/models@0.0.18
+
+## 0.0.17
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.2
+- @rocket.chat/core-services@0.2.2
+- @rocket.chat/models@0.0.17
+
+## 0.0.16
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.1
+- @rocket.chat/core-services@0.2.1
+- @rocket.chat/models@0.0.16
+
 ## 0.0.15
 
 ### Patch Changes
