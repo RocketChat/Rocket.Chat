@@ -82,7 +82,7 @@ const ManagersTable = () => {
 			<AddManager reload={refetch} />
 			{((isSuccess && data?.users.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setText(text)} />}
 			{isLoading && (
-				<GenericTable>
+				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={2} />
@@ -100,7 +100,7 @@ const ManagersTable = () => {
 			)}
 			{isSuccess && data.users.length > 0 && (
 				<>
-					<GenericTable aria-busy={text !== debouncedText} aria-live='assertive'>
+					<GenericTable aria-busy={text !== debouncedText}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody data-qa-id='GenericTableManagerInfoBody'>
 							{data.users.map((user) => (
