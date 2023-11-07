@@ -72,8 +72,15 @@ const TooltipProvider: FC = ({ children }) => {
 				return;
 			}
 
+			const ShortcutMap: { [key: string]: string } = {
+				preview: 'Alt + Shift + M',
+				// Add shortcuts for formatting buttons here
+			};
+
+			const shortcut = ShortcutMap[title.toLowerCase()];
+
 			// eslint-disable-next-line react/no-multi-comp
-			const Handler = () => {
+			const Handler: React.FC<{ shortcut: string | undefined }> = ({ shortcut }) => {
 				const [state, setState] = useState(title);
 				useEffect(() => {
 					const close = (): void => contextValue.close();
@@ -109,9 +116,14 @@ const TooltipProvider: FC = ({ children }) => {
 						observer.disconnect();
 					};
 				}, []);
-				return <>{state}</>;
+				return (
+					<>
+						{state}
+						{shortcut ? <div>{shortcut}</div> : null}
+					</>
+				);
 			};
-			contextValue.open(<Handler />, anchor);
+			contextValue.open(<Handler shortcut={shortcut} />, anchor);
 		};
 
 		const dismissOnClick = (): void => {

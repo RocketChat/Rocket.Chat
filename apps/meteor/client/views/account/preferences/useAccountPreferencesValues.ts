@@ -14,6 +14,7 @@ export type AccountPreferencesData = {
 	enableMobileRinging?: boolean;
 	unreadAlert?: boolean;
 	showThreadsInMainChannel?: boolean;
+	showMessagePreview?: boolean;
 	alsoSendThreadToChannel?: 'default' | 'always' | 'never';
 	useEmojis?: boolean;
 	convertAsciiEmoji?: boolean;
@@ -55,6 +56,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 
 	const unreadAlert = useUserPreference<boolean>('unreadAlert');
 	const showThreadsInMainChannel = useUserPreference<boolean>('showThreadsInMainChannel');
+	const showMessagePreview = useUserPreference<boolean>('showMessagePreview');
 	const alsoSendThreadToChannel = useUserPreference<'default' | 'always' | 'never'>('alsoSendThreadToChannel');
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 	const convertAsciiEmoji = useUserPreference<boolean>('convertAsciiEmoji');
@@ -86,6 +88,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 		enableMobileRinging,
 		unreadAlert,
 		showThreadsInMainChannel,
+		showMessagePreview,
 		alsoSendThreadToChannel,
 		useEmojis,
 		convertAsciiEmoji,

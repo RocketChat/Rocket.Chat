@@ -38,6 +38,7 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarSortby?: string;
 		sidebarViewMode?: string;
 		sidebarDisplayAvatar?: boolean;
+		showMessagePreview?: boolean;
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
@@ -182,6 +183,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				sidebarDisplayAvatar: {
+					type: 'boolean',
+					nullable: true,
+				},
+				showMessagePreview: {
 					type: 'boolean',
 					nullable: true,
 				},

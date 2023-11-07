@@ -178,6 +178,7 @@ describe('miscellaneous', function () {
 					'muteFocusedConversations',
 					'notifyCalendarEvents',
 					'enableMobileRinging',
+					'showMessagePreview',
 				].filter((p) => Boolean(p));
 
 				expect(res.body).to.have.property('success', true);

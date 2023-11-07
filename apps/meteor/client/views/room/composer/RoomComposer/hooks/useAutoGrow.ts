@@ -16,6 +16,7 @@ export const useAutoGrow = (
 	ref: RefObject<HTMLTextAreaElement>,
 	shadowRef: RefObject<HTMLTextAreaElement>,
 	hideTextArea?: boolean,
+	collapseTextArea?: boolean,
 ): {
 	textAreaStyle: CSSProperties;
 	shadowStyle: CSSProperties;
@@ -66,6 +67,11 @@ export const useAutoGrow = (
 		textAreaStyle: {
 			...(hideTextArea && {
 				visibility: 'hidden',
+			}),
+			...(collapseTextArea && {
+				visibility: 'hidden',
+				display: 'none',
+				margin: 0,
 			}),
 			whiteSpace: 'pre-wrap',
 			wordWrap: 'break-word',
