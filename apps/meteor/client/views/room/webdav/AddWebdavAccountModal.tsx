@@ -80,8 +80,8 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 					<Button secondary onClick={onClose}>
 						{t('Cancel')}
 					</Button>
-					<Button primary type='submit' disabled={isLoading}>
-						{isLoading ? t('Please_wait') : t('Webdav_add_new_account')}
+					<Button primary type='submit' loading={isLoading}>
+						{t('Webdav_add_new_account')}
 					</Button>
 				</Modal.FooterControllers>
 			</Modal.Footer>

@@ -3,9 +3,15 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import AutoCompleteAgent from '../../../../client/components/AutoCompleteAgent';
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 export const ContactManager = ({ value: userId, handler }) => {
 	const t = useTranslation();
+	const hasLicense = useHasLicenseModule('livechat-enterprise');
+
+	if (!hasLicense) {
+		return null;
+	}
 
 	return (
 		<Field>
