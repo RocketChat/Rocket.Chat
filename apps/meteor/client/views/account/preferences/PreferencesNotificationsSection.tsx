@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { KonchatNotification } from '../../../../app/ui/client/lib/KonchatNotification';
+import { INotificationDesktop } from '@rocket.chat/core-typings';
 
 const notificationOptionsLabelMap = {
 	all: 'All_messages',
@@ -45,7 +46,7 @@ const PreferencesNotificationsSection = () => {
 
 	const onSendNotification = useCallback(() => {
 		KonchatNotification.notify({
-			payload: { sender: { _id: 'rocket.cat', username: 'rocket.cat' } },
+			payload: { sender: { _id: 'rocket.cat', username: 'rocket.cat' }, rid: 'GENERAL' } as INotificationDesktop['payload'],
 			title: t('Desktop_Notification_Test'),
 			text: t('This_is_a_desktop_notification'),
 		});
