@@ -1,3 +1,4 @@
+import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Accordion, Field, FieldLabel, FieldRow, FieldHint, Select, FieldGroup, ToggleSwitch, Button, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
@@ -7,7 +8,6 @@ import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { KonchatNotification } from '../../../../app/ui/client/lib/KonchatNotification';
-import { INotificationDesktop } from '@rocket.chat/core-typings';
 
 const notificationOptionsLabelMap = {
 	all: 'All_messages',

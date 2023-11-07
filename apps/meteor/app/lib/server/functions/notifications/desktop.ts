@@ -30,7 +30,9 @@ export async function notifyDesktopUser({
 	duration: number;
 	notificationMessage: string;
 }): Promise<void> {
-	const { title, text, name } = await roomCoordinator.getRoomDirectives(room.t).getNotificationDetails(room, user, notificationMessage, userId);
+	const { title, text, name } = await roomCoordinator
+		.getRoomDirectives(room.t)
+		.getNotificationDetails(room, user, notificationMessage, userId);
 
 	const payload = {
 		title: title || '',

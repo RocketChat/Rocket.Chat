@@ -134,7 +134,7 @@ class KonchatNotification {
 							id: notification.payload.rid,
 						},
 						search: { ...router.getSearchParameters(), jump: notification.payload._id },
-					})
+					});
 			}
 		};
 	}
