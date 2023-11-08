@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 
 import type { IUser } from '@rocket.chat/core-typings';
+import { isMeteorError } from '@rocket.chat/core-typings';
 import { Settings, Users } from '@rocket.chat/models';
 import {
 	isShieldSvgProps,
@@ -493,7 +494,7 @@ declare module '@rocket.chat/rest-typings' {
 }
 
 const parseErrorObject = (err: any) => {
-	if (err instanceof Error) {
+	if (!isMeteorError(err)) {
 		return {
 			message: err.message,
 			stack: process.env.TEST_MODE === 'true' ? err.stack : undefined,
