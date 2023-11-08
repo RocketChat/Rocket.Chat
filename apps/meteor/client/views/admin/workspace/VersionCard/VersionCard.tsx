@@ -65,7 +65,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	const { data: licenseData, isLoading, refetch: refetchLicense } = useLicense();
 	const { isRegistered } = useRegistrationStatus();
 
-	const { license, trial: isTrial, limits } = licenseData || {};
+	const { license, limits } = licenseData || {};
 	const isAirgapped = license?.information?.offline;
 	const licenseName = useLicenseName();
 	const visualExpiration = formatDate(license?.information?.visualExpiration || '');
@@ -203,7 +203,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 							<CardColSection m={0}>
 								<Box color='secondary-info' fontScale='p2'>
-									<Icon name='rocketchat' size={16} /> {licenseName.data} {isTrial && `(${t('trial')})`}
+									<Icon name='rocketchat' size={16} /> {licenseName.data}
 								</Box>
 							</CardColSection>
 							{actionItems.length > 0 && (
