@@ -46,13 +46,10 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps): ReactElement => {
 						<ExternalLink to={TRIAL_LINK}>Why has a trial been applied to this workspace?</ExternalLink>
 					</Trans>
 				</Box>
-				{isSalesAssisted ? (
-					<Button mbs='auto' primary w='full' is='a' href={CONTACT_SALES_LINK} external>
-						{t('Contact_sales')}
-					</Button>
-				) : (
-					<UpgradeButton i18nKey='Finish_purchase' primary mbs='auto' w='full' />
-				)}
+
+				<UpgradeButton primary mbs='auto' w='full'>
+					{isSalesAssisted ? t('Finish_purchase') : t('Contact_sales')}
+				</UpgradeButton>
 			</Box>
 		</PlanCardBase>
 	);
