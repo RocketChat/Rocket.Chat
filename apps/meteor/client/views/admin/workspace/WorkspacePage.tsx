@@ -15,6 +15,7 @@ type WorkspaceStatusPageProps = {
 	canViewStatistics: boolean;
 	serverInfo: IWorkspaceInfo;
 	statistics: IStats;
+	statisticsIsLoading: boolean;
 	instances: IInstance[];
 	onClickRefreshButton: () => void;
 	onClickDownloadInfo: () => void;
@@ -24,6 +25,7 @@ const WorkspacePage = ({
 	canViewStatistics,
 	serverInfo,
 	statistics,
+	statisticsIsLoading,
 	instances,
 	onClickRefreshButton,
 	onClickDownloadInfo,
@@ -40,10 +42,8 @@ const WorkspacePage = ({
 			<Page.Header title={t('Workspace')}>
 				{canViewStatistics && (
 					<ButtonGroup>
-						<Button type='button' onClick={onClickDownloadInfo}>
-							{t('Download_Info')}
-						</Button>
-						<Button type='button' onClick={onClickRefreshButton}>
+						<Button onClick={onClickDownloadInfo}>{t('Download_Info')}</Button>
+						<Button onClick={onClickRefreshButton} loading={statisticsIsLoading}>
 							{t('Refresh')}
 						</Button>
 					</ButtonGroup>
