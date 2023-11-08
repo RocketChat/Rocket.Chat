@@ -74,12 +74,12 @@ export const SubscriptionCalloutLimits = () => {
 	return (
 		<>
 			{start_fair_policy && (
-				<Callout type='danger' title={t('subscription.callout.servicesDisruptionsMayOccur')} m={8}>
+				<Callout type='warning' title={t('subscription.callout.servicesDisruptionsMayOccur')} m={8}>
 					<Trans i18nKey='subscription.callout.description.limitsReached' count={start_fair_policy.length}>
-						Your workspace reached the <b>{{ val: start_fair_policy.map(map) }}</b> limit.
+						Your workspace reached the <>{{ val: start_fair_policy.map(map) }}</> limit.
 						<ExternalLink to={CONTACT_SALES_LINK} onClick={handleClick}>
 							Talk to sales
-						</ExternalLink>{' '}
+						</ExternalLink>
 						to increase limits.
 					</Trans>
 				</Callout>
@@ -87,10 +87,10 @@ export const SubscriptionCalloutLimits = () => {
 			{prevent_action && (
 				<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} m={8}>
 					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={prevent_action.length}>
-						Your workspace exceeded the <b>{{ val: prevent_action.map(map) }}</b> license limit.
+						Your workspace exceeded the <>{{ val: prevent_action.map(map) }}</> license limit.
 						<ExternalLink to={CONTACT_SALES_LINK} onClick={handleClick}>
 							Talk to sales
-						</ExternalLink>{' '}
+						</ExternalLink>
 						to increase limits.
 					</Trans>
 				</Callout>
@@ -99,7 +99,7 @@ export const SubscriptionCalloutLimits = () => {
 			{disable_modules && (
 				<Callout type='danger' title={t('subscription.callout.capabilitiesDisabled')} m={8}>
 					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={disable_modules.length}>
-						Your workspace exceeded the <b>{{ val: disable_modules.map(map) }}</b> license limit.
+						Your workspace exceeded the <>{{ val: disable_modules.map(map) }}</> license limit.
 						<ExternalLink to={CONTACT_SALES_LINK} onClick={handleClick}>
 							Talk to sales
 						</ExternalLink>{' '}
@@ -111,10 +111,10 @@ export const SubscriptionCalloutLimits = () => {
 			{invalidate_license && (
 				<Callout type='danger' title={t('subscription.callout.allPremiumCapabilitiesDisabled')} m={8}>
 					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={disable_modules.length}>
-						Your workspace exceeded the <b>{{ val: invalidate_license.map(map) }}</b> license limit.
+						Your workspace exceeded the <>{{ val: invalidate_license.map(map) }}</> license limit.
 						<ExternalLink to={CONTACT_SALES_LINK} onClick={handleClick}>
 							Talk to sales
-						</ExternalLink>{' '}
+						</ExternalLink>
 						to increase limits.
 					</Trans>
 				</Callout>
