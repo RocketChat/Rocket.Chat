@@ -66,14 +66,18 @@ export class CROWD {
 		};
 
 		this.crowdClient = new AtlassianCrowd(this.options);
+		this.crowdClient.user.authenticateSync = Meteor.wrapAsync(this.crowdClient.user.authenticate, this);
+		this.crowdClient.user.findSync = Meteor.wrapAsync(this.crowdClient.user.find, this);
+		this.crowdClient.searchSync = Meteor.wrapAsync(this.crowdClient.search, this);
+		this.crowdClient.pingSync = Meteor.wrapAsync(this.crowdClient.ping, this);
 	}
 
 	async checkConnection() {
-		await this.crowdClient.ping();
+		this.crowdClient.ping();
 	}
 
-	async fetchCrowdUser(crowdUsername: string) {
-		const userResponse = await this.crowdClient.user.find(crowdUsername);
+	fetchCrowdUser(crowdUsername: string) {
+		const userResponse = this.crowdClient.user.findSync(crowdUsername);
 
 		return {
 			displayname: userResponse['display-name'],
@@ -134,13 +138,13 @@ export class CROWD {
 			logger.debug('New user. User is not synced yet.');
 		}
 		logger.debug('Going to crowd:', crowdUsername);
-		const auth = await this.crowdClient.user.authenticate(crowdUsername, password);
+		const auth = this.crowdClient.user.authenticateSync(crowdUsername, password);
 
 		if (!auth) {
 			return;
 		}
 
-		const crowdUser: Record<string, any> = await this.fetchCrowdUser(crowdUsername);
+		const crowdUser: Record<string, any> = this.fetchCrowdUser(crowdUsername);
 
 		if (user && settings.get('CROWD_Allow_Custom_Username') === true) {
 			crowdUser.username = user.username;
@@ -211,7 +215,7 @@ export class CROWD {
 			let crowdUser = null;
 
 			try {
-				crowdUser = await this.fetchCrowdUser(crowdUsername);
+				crowdUser = this.fetchCrowdUser(crowdUsername);
 			} catch (err) {
 				logger.debug({ err });
 				logger.error({ msg: 'Could not sync user with username', crowd_username: crowdUsername });
@@ -238,7 +242,7 @@ export class CROWD {
 					continue;
 				}
 
-				crowdUser = await this.fetchCrowdUser(crowdUsername);
+				crowdUser = this.fetchCrowdUser(crowdUsername);
 			}
 
 			if (settings.get('CROWD_Allow_Custom_Username') === true) {
