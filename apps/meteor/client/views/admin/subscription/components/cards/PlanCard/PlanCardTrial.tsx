@@ -1,4 +1,4 @@
-import { Box, Button, Tag } from '@rocket.chat/fuselage';
+import { Box, Tag } from '@rocket.chat/fuselage';
 import type { ILicenseV3 } from '@rocket.chat/license';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import differenceInDays from 'date-fns/differenceInDays';
@@ -6,7 +6,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { CONTACT_SALES_LINK, DOWNGRADE_LINK, TRIAL_LINK } from '../../../utils/links';
+import { DOWNGRADE_LINK, TRIAL_LINK } from '../../../utils/links';
 import UpgradeButton from '../../UpgradeButton';
 import PlanCardBase from './PlanCardBase';
 
@@ -46,13 +46,10 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps): ReactElement => {
 						<ExternalLink to={TRIAL_LINK}>Why has a trial been applied to this workspace?</ExternalLink>
 					</Trans>
 				</Box>
-				{isSalesAssisted ? (
-					<Button mbs='auto' primary w='full' is='a' href={CONTACT_SALES_LINK} external>
-						{t('Contact_sales')}
-					</Button>
-				) : (
-					<UpgradeButton i18nKey='Finish_purchase' primary mbs='auto' w='full' />
-				)}
+
+				<UpgradeButton primary mbs='auto' w='full'>
+					{isSalesAssisted ? t('Finish_purchase') : t('Contact_sales')}
+				</UpgradeButton>
 			</Box>
 		</PlanCardBase>
 	);

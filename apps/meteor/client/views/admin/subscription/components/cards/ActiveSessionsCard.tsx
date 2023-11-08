@@ -29,9 +29,7 @@ const ActiveSessionsCard = (): ReactElement => {
 	const card: CardProps = {
 		title: t('ActiveSessions'),
 		infoText: t('ActiveSessions_InfoText'),
-		showUpgradeButton: true,
 	};
-
 	if (result.isLoading || result.isError) {
 		return (
 			<FeatureUsageCard card={card}>
@@ -43,7 +41,14 @@ const ActiveSessionsCard = (): ReactElement => {
 	const { total, used, available, exceedLimit } = getLimits(result.data);
 
 	return (
-		<FeatureUsageCard card={{ ...card, showUpgradeButton: exceedLimit }}>
+		<FeatureUsageCard
+			card={{
+				...card,
+				...(exceedLimit && {
+					upgradeButtonText: t('Upgrade'),
+				}),
+			}}
+		>
 			<Box textAlign='center'>
 				<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'}>
 					{used} / {total}

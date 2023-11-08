@@ -78,7 +78,9 @@ const SubscriptionPage = () => {
 							{syncLicenseUpdate.isLoading ? <Throbber size='x12' inheritColor /> : t('Sync_license_update')}
 						</Button>
 					)}
-					<UpgradeButton primary mis={8} i18nKey={isEnterprise ? 'Manage_subscription' : 'Upgrade'} />
+					<UpgradeButton primary mis={8}>
+						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
+					</UpgradeButton>
 				</ButtonGroup>
 			</Page.Header>
 
