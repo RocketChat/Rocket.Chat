@@ -39,6 +39,22 @@ export const useLicense = (params?: LicenseParams): UseQueryResult<Serialized<Li
 	});
 };
 
+export const useLicenseName = (params?: LicenseParams) => {
+	const getLicenses = useEndpoint('GET', '/v1/licenses.info');
+
+	const invalidateQueries = useInvalidateLicense();
+
+	const notify = useSingleStream('notify-all');
+
+	useEffect(() => notify('license', () => invalidateQueries()), [notify, invalidateQueries]);
+
+	return useQuery(['licenses', 'getLicenses', params?.loadValues], () => getLicenses({ ...params }), {
+		staleTime: Infinity,
+		keepPreviousData: true,
+		select: (data) => data.license.tags?.map((tag) => tag.name).join(' ') ?? 'Community',
+	});
+};
+
 export const useInvalidateLicense = () => {
 	const queryClient = useQueryClient();
 
