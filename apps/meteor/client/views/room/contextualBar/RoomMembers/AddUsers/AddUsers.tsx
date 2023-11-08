@@ -39,7 +39,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 		handleSubmit,
 		control,
 		getValues,
-		formState: { isDirty },
+		formState: { isDirty, isSubmitting },
 	} = useForm({ defaultValues: { users: [] } });
 
 	const handleSave = useMutableCallback(async ({ users }) => {
@@ -98,7 +98,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 							{t('Add_users')}
 						</Button>
 					) : (
-						<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
+						<Button primary loading={isSubmitting} disabled={!isDirty} onClick={handleSubmit(handleSave)}>
 							{t('Add_users')}
 						</Button>
 					)}

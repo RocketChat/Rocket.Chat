@@ -18,6 +18,7 @@ export * from './IUserAction';
 export * from './IBanner';
 export * from './IStats';
 export * from './IServerInfo';
+export * from './IWorkspaceInfo';
 export * from './IInstanceStatus';
 export * from './IWebdavAccount';
 export * from './IPermission';

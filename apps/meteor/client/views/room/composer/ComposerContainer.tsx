@@ -25,7 +25,7 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 
 	const isBlockedOrBlocker = useMessageComposerIsBlocked({ subscription: props.subscription });
 
-	const isReadOnly = useMessageComposerIsReadOnly(props.rid, props.subscription);
+	const isReadOnly = useMessageComposerIsReadOnly(room._id, props.subscription);
 
 	const isOmnichannel = isOmnichannelRoom(room);
 

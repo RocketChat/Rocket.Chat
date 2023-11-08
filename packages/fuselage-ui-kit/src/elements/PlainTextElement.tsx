@@ -9,8 +9,8 @@ const PlainTextElement = ({ textObject }: { textObject: TextObject }) => {
     key: string,
     args: { [key: string]: string | number }
   ) => string;
-  const { appId } = useContext(UiKitContext);
 
+  const { appId } = useContext(UiKitContext);
   const { i18n } = textObject;
 
   if (i18n) {
