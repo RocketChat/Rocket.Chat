@@ -25,8 +25,9 @@ const SeatsCard = ({ value, max }: SeatsCardProps): ReactElement => {
 	const card: CardProps = {
 		title: t('Seats'),
 		infoText: t('Seats_InfoText'),
-		showUpgradeButton: nearLimit,
-		upgradeButtonText: t('Buy_more'),
+		...(nearLimit && {
+			upgradeButtonText: t('Buy_more'),
+		}),
 	};
 
 	const seatsLeft = pieGraph.total - pieGraph.used;

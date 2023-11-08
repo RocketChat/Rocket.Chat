@@ -22,8 +22,10 @@ const MACCard = ({ value = 0, max }: { value: number; max: number }): ReactEleme
 	const card: CardProps = {
 		title: t('Monthly_active_contacts'),
 		infoText: t('MAC_InfoText'),
-		showUpgradeButton: nearLimit,
 		upgradeButtonText: t('Buy_more'),
+		...(nearLimit && {
+			upgradeButtonText: t('Upgrade'),
+		}),
 	};
 
 	const color = nearLimit ? Palette.statusColor['status-font-on-danger'].toString() : undefined;

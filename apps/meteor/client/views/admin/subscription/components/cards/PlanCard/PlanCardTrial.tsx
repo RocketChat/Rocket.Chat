@@ -1,4 +1,4 @@
-import { Box, Button, Tag } from '@rocket.chat/fuselage';
+import { Box, Tag } from '@rocket.chat/fuselage';
 import type { ILicenseV3 } from '@rocket.chat/license';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import differenceInDays from 'date-fns/differenceInDays';
@@ -6,7 +6,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { CONTACT_SALES_LINK, DOWNGRADE_LINK, TRIAL_LINK } from '../../../utils/links';
+import { DOWNGRADE_LINK, TRIAL_LINK } from '../../../utils/links';
 import UpgradeButton from '../../UpgradeButton';
 import PlanCardBase from './PlanCardBase';
 
