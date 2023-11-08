@@ -118,10 +118,10 @@ API.v1.addRoute(
 	{
 		async get() {
 			const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
-			const pushGatewayModified = settings.get('Push_gateway') !== defaultGateway;
+			const defaultPushGateway = settings.get('Push_gateway') !== defaultGateway;
 			return API.v1.success({
 				pushGatewayEnabled: settings.get('Push_enable'),
-				pushGatewayModified,
+				defaultPushGateway,
 			});
 		},
 	},
