@@ -6,6 +6,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { useLicenseName } from '../../../../../../hooks/useLicense';
 import { DOWNGRADE_LINK, TRIAL_LINK } from '../../../utils/links';
 import UpgradeButton from '../../UpgradeButton';
 import PlanCardBase from './PlanCardBase';
@@ -17,14 +18,14 @@ type PlanCardProps = {
 const PlanCardTrial = ({ licenseInformation }: PlanCardProps): ReactElement => {
 	const { t } = useTranslation();
 
-	const planName = licenseInformation.tags?.[0]?.name ?? '';
+	const planName = useLicenseName();
 	const isSalesAssisted = licenseInformation.grantedBy?.method !== 'self-service' || true;
 	const { visualExpiration } = licenseInformation;
 
 	const trialDaysLeft = differenceInDays(new Date(visualExpiration), new Date());
 
 	return (
-		<PlanCardBase name={planName}>
+		<PlanCardBase name={planName.data ?? ''}>
 			<Box display='flex' flexDirection='column' h='full'>
 				<Box fontScale='p2b' mb={6} display='flex'>
 					<Box mie={8}>{t('Trial_active')}</Box> <Tag>{t('n_days_left', { n: trialDaysLeft })}</Tag>
