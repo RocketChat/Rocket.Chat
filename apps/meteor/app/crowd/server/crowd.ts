@@ -73,7 +73,7 @@ export class CROWD {
 	}
 
 	async checkConnection() {
-		this.crowdClient.ping();
+		this.crowdClient.pingSync();
 	}
 
 	fetchCrowdUser(crowdUsername: string) {
