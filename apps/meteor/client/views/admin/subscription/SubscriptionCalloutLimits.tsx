@@ -78,7 +78,7 @@ export const SubscriptionCalloutLimits = () => {
 					<Trans i18nKey='subscription.callout.description.limitsReached' count={start_fair_policy.length}>
 						Your workspace reached the <>{{ val: start_fair_policy.map(map) }}</> limit.
 						<ExternalLink to={CONTACT_SALES_LINK} onClick={handleClick}>
-							Talk to sales
+							Manage your subscription
 						</ExternalLink>
 						to increase limits.
 					</Trans>
@@ -89,7 +89,7 @@ export const SubscriptionCalloutLimits = () => {
 					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={prevent_action.length}>
 						Your workspace exceeded the <>{{ val: prevent_action.map(map) }}</> license limit.
 						<ExternalLink to={CONTACT_SALES_LINK} onClick={handleClick}>
-							Talk to sales
+							Manage your subscription
 						</ExternalLink>
 						to increase limits.
 					</Trans>
@@ -101,7 +101,7 @@ export const SubscriptionCalloutLimits = () => {
 					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={disable_modules.length}>
 						Your workspace exceeded the <>{{ val: disable_modules.map(map) }}</> license limit.
 						<ExternalLink to={CONTACT_SALES_LINK} onClick={handleClick}>
-							Talk to sales
+							Manage your subscription
 						</ExternalLink>{' '}
 						to increase limits.
 					</Trans>
@@ -113,7 +113,7 @@ export const SubscriptionCalloutLimits = () => {
 					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={disable_modules.length}>
 						Your workspace exceeded the <>{{ val: invalidate_license.map(map) }}</> license limit.
 						<ExternalLink to={CONTACT_SALES_LINK} onClick={handleClick}>
-							Talk to sales
+							Manage your subscription
 						</ExternalLink>
 						to increase limits.
 					</Trans>
