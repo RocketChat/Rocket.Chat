@@ -1,9 +1,10 @@
 
-import { faker } from '@faker-js/faker';
+import { ILivechatDepartment } from '@rocket.chat/core-typings';
 
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelAgents } from '../page-objects';
+import { createDepartment, deleteDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -11,39 +12,26 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('omnichannel-agents', () => {
 	let poOmnichannelAgents: OmnichannelAgents;
 
-	
-	test.beforeAll(async ({ api }) => {
-		await api.post('/livechat/department', {
-			department: {
-				name: 'department1',
-				enabled: true,
-				description: '',
-				showOnRegistration: false,
-				showOnOfflineForm: false,
-				requestTagBeforeClosingChat: false,
-				email: faker.internet.email(),
-				chatClosingTags: [],
-				offlineMessageChannelName: '',
-				abandonedRoomsCloseCustomMessage: '',
-				waitingQueueMessage: '',
-				departmentsAllowedToForward: [],
-				fallbackForwardDepartment: '',
-			},
-		}).then((response) => {
-			expect(response.status()).toBe(200);
-		});
-	});
+	let department: ILivechatDepartment;
 
-	test.beforeEach(async ({ page }) => {
+	
+	test.beforeEach(async ({ api, page }) => {
 		poOmnichannelAgents = new OmnichannelAgents(page);
 		await page.goto('/omnichannel');
 		await poOmnichannelAgents.sidenav.linkAgents.click();
+		const res = await createDepartment(api);
+
+		await expect(res.status()).toBe(200);
+
+		({ department } = await res.json())
 	});
 
 	test.afterEach(async ({ api }) => {
 		// Ensure that there is no leftover data even if test fails
 		await api.delete('/livechat/users/agent/user1');
-		await api.delete('/livechat/department/department1');
+		await api.post('/settings/Omnichannel_enable_department_removal', { value: true }).then((res) => expect(res.status()).toBe(200));
+		await deleteDepartment(api, { id: department._id });
+		await api.post('/settings/Omnichannel_enable_department_removal', { value: false }).then((res) => expect(res.status()).toBe(200));
 	});
 
 	test('OC - Manage Agents - Add, search and remove using table', async ({ page }) => {
@@ -86,7 +74,7 @@ test.describe.serial('omnichannel-agents', () => {
 			await poOmnichannelAgents.StatusSelect.click();
 			await page.locator(`.rcx-option__content:has-text("Not available")`).click();
 			await poOmnichannelAgents.DepartmentSelect.click();
-			await page.locator(`.rcx-option__content:has-text("department1")`).click();
+			await page.locator(`.rcx-option__content:has-text("${department.name}")`).click();
 			await poOmnichannelAgents.btnSave.click();
 		});
 
