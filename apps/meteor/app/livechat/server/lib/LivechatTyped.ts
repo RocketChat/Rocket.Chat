@@ -527,11 +527,7 @@ class LivechatClass {
 			throw new Error('error-invalid-room');
 		}
 
-		if (!(await Omnichannel.isWithinMACLimit(room))) {
-			throw new Error('error-mac-limit-reached');
-		}
-
-		const showAgentInfo = settings.get<string>('Livechat_show_agent_info');
+		const showAgentInfo = settings.get<boolean>('Livechat_show_agent_info');
 		const closingMessage = await Messages.findLivechatClosingMessage(rid, { projection: { ts: 1 } });
 		const ignoredMessageTypes: MessageTypesValues[] = [
 			'livechat_navigation_history',

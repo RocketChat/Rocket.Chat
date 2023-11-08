@@ -178,10 +178,6 @@ export const RoutingManager: Routing = {
 			return false;
 		}
 
-		if (!(await Omnichannel.isWithinMACLimit(room))) {
-			throw new Error('error-mac-limit-reached');
-		}
-
 		if (departmentId && departmentId !== department) {
 			logger.debug(`Switching department for inquiry ${inquiry._id} [Current: ${department} | Next: ${departmentId}]`);
 			await updateChatDepartment({
@@ -269,10 +265,6 @@ export const RoutingManager: Routing = {
 	},
 
 	async transferRoom(room, guest, transferData) {
-		if (!(await Omnichannel.isWithinMACLimit(room))) {
-			throw new Error('error-mac-limit-reached');
-		}
-
 		logger.debug(`Transfering room ${room._id} by ${transferData.transferredBy._id}`);
 		if (transferData.departmentId) {
 			logger.debug(`Transfering room ${room._id} to department ${transferData.departmentId}`);
