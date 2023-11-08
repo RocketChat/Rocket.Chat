@@ -45,7 +45,7 @@ const ActiveSessionsCard = (): ReactElement => {
 			card={{
 				...card,
 				...(exceedLimit && {
-					upgradeButtonText: 'Upgrade',
+					upgradeButtonText: t('Upgrade'),
 				}),
 			}}
 		>
