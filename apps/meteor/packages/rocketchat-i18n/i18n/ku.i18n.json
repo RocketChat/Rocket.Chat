@@ -946,6 +946,7 @@
   "Email_Notification_Mode": "Notifications Email is offline",
   "Email_Notification_Mode_All": "Her qala / DM",
   "Email_Notification_Mode_Disabled": "Bêmecel",
+  "Enterprise": "Enterprise",
   "Email_or_username": "ئیمەیڵ یان ناوی بەکارهێنەر",
   "Email_Placeholder": "Ji kerema xwe ji navnîşana emailê xwe bişîne ...",
   "Email_Placeholder_any": "Ji kerema xwe re navnîşan e-nameyan bişînin",
@@ -972,7 +973,6 @@
   "Enter_name_here": "name li vir binivîse",
   "Enter_Normal": "Modeya Normal (Ji Bi Enter bişîne)",
   "Enter_to": "binivîse",
-  "Enterprise": "Enterprise",
   "Entertainment": "Axaftin",
   "Error": "Şaşî",
   "Error_404": "Çewt: 404",
@@ -2747,5 +2747,6 @@
   "registration.component.form.reasonToJoin": "Reason to join",
   "registration.component.form.invalidConfirmPass": "دووبارەکراوەی تێپەڕەوشە یەکناگرێتەوە لەگەڵ تێپەڕەوشە",
   "registration.component.form.confirmPassword": "تێپەڕەوشەکەت پشتڕاستکەوە",
-  "registration.component.form.sendConfirmationEmail": "ئیمەیڵی پشتڕاستکردنەوە بنێرە"
+  "registration.component.form.sendConfirmationEmail": "ئیمەیڵی پشتڕاستکردنەوە بنێرە",
+  "UpgradeToGetMore_engagement-dashboard_Title": "analytics"
 }

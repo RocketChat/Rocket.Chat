@@ -201,13 +201,12 @@ class PushClass {
 	}
 
 	private getGatewayNotificationData(notification: PendingPushNotification): Omit<GatewayNotification, 'uniqueId'> {
-		// Gateway accepts every attribute from the PendingPushNotification type, except for the priority and apn.topicSuffix
-		const { priority: _priority, apn, ...notifData } = notification;
-		const { topicSuffix: _topicSuffix, ...apnData } = apn || ({} as RequiredField<PendingPushNotification, 'apn'>['apn']);
+		// Gateway currently accepts every attribute from the PendingPushNotification type, except for the priority
+		// If new attributes are added to the PendingPushNotification type, they'll need to be removed here as well.
+		const { priority: _priority, ...notifData } = notification;
 
 		return {
 			...notifData,
-			...(notification.apn ? { apn: { ...apnData } } : {}),
 		};
 	}
 
@@ -221,8 +220,6 @@ class PushClass {
 			return;
 		}
 
-		const { topicSuffix = '' } = notification.apn || {};
-
 		const gatewayNotification = this.getGatewayNotificationData(notification);
 
 		for (const gateway of this.options.gateways) {
@@ -230,7 +227,7 @@ class PushClass {
 
 			if ('apn' in app.token && app.token.apn) {
 				countApn.push(app._id);
-				return this.sendGatewayPush(gateway, 'apn', app.token.apn, { topic: `${app.appName}${topicSuffix}`, ...gatewayNotification });
+				return this.sendGatewayPush(gateway, 'apn', app.token.apn, { topic: app.appName, ...gatewayNotification });
 			}
 
 			if ('gcm' in app.token && app.token.gcm) {
@@ -318,7 +315,6 @@ class PushClass {
 			contentAvailable: Match.Optional(Match.Integer),
 			apn: Match.Optional({
 				category: Match.Optional(String),
-				topicSuffix: Match.Optional(String),
 			}),
 			gcm: Match.Optional({
 				image: Match.Optional(String),
@@ -357,7 +353,7 @@ class PushClass {
 			...(this.hasApnOptions(options)
 				? {
 						apn: {
-							...pick(options.apn, 'category', 'topicSuffix'),
+							...pick(options.apn, 'category'),
 						},
 				  }
 				: {}),

@@ -33,7 +33,7 @@ import {
 } from '../../../data/livechat/rooms';
 import { saveTags } from '../../../data/livechat/tags';
 import type { DummyResponse } from '../../../data/livechat/utils';
-import { sleep } from '../../../data/livechat/utils';
+import { parseMethodResponse, sleep } from '../../../data/livechat/utils';
 import {
 	restorePermissionToRoles,
 	addPermissions,
@@ -2001,6 +2001,145 @@ describe('LIVECHAT - rooms', function () {
 				.delete(api(`livechat/transcript/${_id}`))
 				.set(credentials)
 				.expect(200);
+		});
+	});
+
+	describe('livechat:sendTranscript', () => {
+		it('should fail if user doesnt have send-omnichannel-chat-transcript permission', async () => {
+			await updatePermission('send-omnichannel-chat-transcript', []);
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: ['test', 'test', 'test', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object').that.has.property('error', 'error-not-allowed');
+		});
+		it('should fail if not all params are provided', async () => {
+			await updatePermission('send-omnichannel-chat-transcript', ['admin']);
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: [],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object').that.has.property('errorType', 'Match.Error');
+		});
+		it('should fail if token is invalid', async () => {
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: ['invalid-token', 'test', 'test', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object');
+		});
+		it('should fail if roomId is invalid', async () => {
+			const visitor = await createVisitor();
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: [visitor.token, 'invalid-room-id', 'test', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object');
+		});
+		it('should fail if token is from another conversation', async () => {
+			const visitor = await createVisitor();
+			const visitor2 = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: [visitor2.token, _id, 'test', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object');
+		});
+		it('should fail if email provided is invalid', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: [visitor.token, _id, 'invalid-email', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object');
+		});
+		it('should work if all params are good', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: [visitor.token, _id, 'test@test', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('result', true);
 		});
 	});
 });

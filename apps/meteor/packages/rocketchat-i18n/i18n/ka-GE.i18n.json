@@ -1268,6 +1268,8 @@
   "email_style_description": "ქვე სელექტორების უგულებელყოფა",
   "email_style_label": "ელ.ფოსტის სტილი",
   "Email_subject": "საგანი",
+  "Enterprise_License": "საწარმოოს ლიცენზია",
+  "Enterprise_License_Description": "თუ თქვენი სამუშაო ადგილი რეგისტრირებულია და ლიცენზირებულია Rocket.Chat Cloud–-ის მიერ , აქ ლიცენზიის ხელით განახლება არ დაგჭირდებათ.",
   "Email_verified": "ელ.ფოსტა დამოწმდა",
   "Emoji": "ემოჯი",
   "EmojiCustomFilesystem": "პერსონალური ემოჯი ფაილ-სისტემა",
@@ -1304,8 +1306,6 @@
   "Enter_Normal": "ნორმალური რეჟიმი",
   "Enter_to": "შესვლა",
   "Enter_your_E2E_password": "შეიყვანეთ თქვენი E2E პაროლი",
-  "Enterprise_License": "საწარმოოს ლიცენზია",
-  "Enterprise_License_Description": "თუ თქვენი სამუშაო ადგილი რეგისტრირებულია და ლიცენზირებულია Rocket.Chat Cloud–-ის მიერ , აქ ლიცენზიის ხელით განახლება არ დაგჭირდებათ.",
   "Entertainment": "გართობა",
   "Error": "შეცდომა",
   "Error_404": "შეცდომა: 404",
@@ -3666,5 +3666,9 @@
   "registration.component.form.reasonToJoin": "გაწევრიანების მიზეზი",
   "registration.component.form.invalidConfirmPass": "პაროლის დასტური არ შეესაბამება პაროლს",
   "registration.component.form.confirmPassword": "დაადასტურეთ თქვენი პაროლი",
-  "registration.component.form.sendConfirmationEmail": "დადასტურების ელ.ფოსტის გაგზავნა"
+  "registration.component.form.sendConfirmationEmail": "დადასტურების ელ.ფოსტის გაგზავნა",
+  "onboarding.component.form.action.pasteHere": "ჩასვით აქ ...",
+  "onboarding.form.registerOfflineForm.title": "ხელით დარეგისტრირება",
+  "UpgradeToGetMore_engagement-dashboard_Title": "ანალიტიკა",
+  "UpgradeToGetMore_auditing_Title": "შეტყობინებების შემოწმება"
 }
