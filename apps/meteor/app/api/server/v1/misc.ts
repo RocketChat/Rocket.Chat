@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 import type { IUser } from '@rocket.chat/core-typings';
-import { isMeteorError } from '@rocket.chat/core-typings';
+import { isMeteorError } from '@rocket.chat/core-services';
 import { Settings, Users } from '@rocket.chat/models';
 import {
 	isShieldSvgProps,
