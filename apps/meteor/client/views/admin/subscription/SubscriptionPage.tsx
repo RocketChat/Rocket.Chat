@@ -7,6 +7,7 @@ import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { useLicense } from '../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
+import { SubscriptionCalloutLimits } from './SubscriptionCalloutLimits';
 import SubscriptionPageSkeleton from './SubscriptionPageSkeleton';
 import UpgradeButton from './components/UpgradeButton';
 import UpgradeToGetMore from './components/UpgradeToGetMore';
@@ -87,6 +88,7 @@ const SubscriptionPage = () => {
 						{t('Sync_license_update_Callout')}
 					</Callout>
 				)}
+				<SubscriptionCalloutLimits />
 				{isLicenseLoading && <SubscriptionPageSkeleton />}
 				{!isLicenseLoading && (
 					<Box marginBlock='none' marginInline='auto' width='full' color='default'>
