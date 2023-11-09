@@ -9,6 +9,8 @@ import { Meteor } from 'meteor/meteor';
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../lib/callbacks';
 import { isTruthy } from '../../../lib/isTruthy';
+import { broadcastEventToServices } from '../../../server/lib/isRunningMs';
+import { broadcastMessageSentEvent } from '../../../server/modules/watchers/lib/messages';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
@@ -226,6 +228,10 @@ Meteor.methods<ServerMethods>({
 		if (settings.get('Message_Read_Receipt_Store_Users')) {
 			await ReadReceipts.setPinnedByMessageId(originalMessage._id, originalMessage.pinned);
 		}
+		void broadcastMessageSentEvent({
+			id: message._id,
+			broadcastCallback: (message) => broadcastEventToServices('message.sent', message),
+		});
 
 		return true;
 	},
