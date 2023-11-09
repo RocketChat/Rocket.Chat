@@ -3,7 +3,9 @@ import { Meteor } from 'meteor/meteor';
 import { settingsRegistry } from '../../../../app/settings/server';
 
 Meteor.startup(async () => {
-	await settingsRegistry.addGroup('Premium', async function () {
+	// The proper name for this group is Premium, but we can't change it because it's already in use and we will break the settings
+	// Keep this until next major updates
+	await settingsRegistry.addGroup('Enterprise', async function () {
 		await this.section('Premium', async function () {
 			await this.add('Enterprise_License', '', {
 				type: 'string',
