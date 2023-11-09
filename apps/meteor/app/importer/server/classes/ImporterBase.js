@@ -376,6 +376,10 @@ export class Base {
 
 		const results = new Selection(this.info.name, selectionUsers, selectionChannels, selectionMessages, selectionMessagesCount);
 
+		console.log(`selectionMessages: ${selectionMessages}`);
+		console.log(`selectionMessagesCount: ${selectionMessagesCount}`);
+		console.log(`results: ${results}`);
+
 		return results;
 	}
 }

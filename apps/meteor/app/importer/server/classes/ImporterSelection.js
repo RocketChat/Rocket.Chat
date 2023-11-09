@@ -8,11 +8,11 @@ export class Selection {
 	 * @param {number} message_count the number of messages
 	 * @param {SelectionMessage[]} messages the messages from this import (with only: _id, rid, u)
 	 */
-	constructor(name, users, channels, message_count, messages) {
+	constructor(name, users, channels, messages, ) {
 		this.name = name;
 		this.users = users;
 		this.channels = channels;
+		this.messages = messages;
 		this.message_count = message_count;
-		this.messages = messages | undefined;
 	}
 }
