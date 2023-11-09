@@ -48,11 +48,14 @@ function PrepareImportPage() {
 
 	const usersCount = useMemo(() => users.filter(({ do_import }) => do_import).length, [users]);
 	const channelsCount = useMemo(() => channels.filter(({ do_import }) => do_import).length, [channels]);
+
+	// TODO: create useStates for users and channels: [usersCount,setUsersCount] and set it inside the useMemo, instead of duplicating the code
+	const users1 = useMemo(() => users.filter(({ do_import }) => do_import), [users]);
+	const channels1 = useMemo(() => channels.filter(({ do_import }) => do_import), [channels]);
+
 	const messagesCount = useMemo(() => {
-		console.log('chamei o useMemo do messagesCount');
-		countMessages(users, channels, messages);
-		console.log(`rodei o countMessages pra calcular messagesCount: ${  countMessages(users, channels, messages)}`);
-	}, [users, channels, messages]);
+		countMessages(users1, channels1, messages);
+	}, [users1, channels1, messages]);
 
 	const router = useRouter();
 
