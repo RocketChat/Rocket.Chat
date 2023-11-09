@@ -48,7 +48,11 @@ function PrepareImportPage() {
 
 	const usersCount = useMemo(() => users.filter(({ do_import }) => do_import).length, [users]);
 	const channelsCount = useMemo(() => channels.filter(({ do_import }) => do_import).length, [channels]);
-	const messagesCount = useMemo(() => countMessages(users, channels, messages), [users, channels, messages]);
+	const messagesCount = useMemo(() => {
+		console.log('chamei o useMemo do messagesCount');
+		countMessages(users, channels, messages);
+		console.log(`rodei o countMessages pra calcular messagesCount: ${  countMessages(users, channels, messages)}`);
+	}, [users, channels, messages]);
 
 	const router = useRouter();
 
@@ -83,9 +87,9 @@ function PrepareImportPage() {
 					return;
 				}
 
-				console.log(`data.messages: ${data.messages}`);
-				console.log(`data.messages_count: ${data.messages_count}`);
-				console.log(`messagesCount: ${messagesCount}`);
+				console.log(`data.messages de PrepareImportPage: ${data.messages}`);
+				console.log(`data.messages_count de PrepareImportPage: ${data.messages_count}`);
+				console.log(`messagesCount de PrepareImportPage: ${messagesCount}`);
 
 				setUsers(data.users.map((user) => ({ ...user, do_import: true })));
 				setChannels(data.channels.map((channel) => ({ ...channel, do_import: true })));
@@ -146,18 +150,7 @@ function PrepareImportPage() {
 		};
 
 		loadCurrentOperation();
-	}, [
-		getCurrentImportOperation,
-		getImportFileData,
-		handleError,
-		messages,
-		messagesCount,
-		router,
-		setPreparing,
-		setProgressRate,
-		setStatus,
-		t,
-	]);
+	}, [getCurrentImportOperation, getImportFileData, handleError, messagesCount, router, setPreparing, setProgressRate, setStatus, t]);
 
 	const handleBackToImportsButtonClick = () => {
 		router.navigate('/admin/import');

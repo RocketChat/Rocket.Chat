@@ -374,11 +374,7 @@ export class Base {
 			selectionChannels.push(new SelectionChannel('__directMessages__', t('Direct_Messages'), false, true, true, undefined, true));
 		}
 
-		const results = new Selection(this.info.name, selectionUsers, selectionChannels, selectionMessages, selectionMessagesCount);
-
-		console.log(`selectionMessages: ${selectionMessages}`);
-		console.log(`selectionMessagesCount: ${selectionMessagesCount}`);
-		console.log(`results: ${results}`);
+		const results = new Selection(this.info.name, selectionUsers, selectionChannels, selectionMessagesCount, selectionMessages);
 
 		return results;
 	}
