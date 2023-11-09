@@ -67,7 +67,7 @@ export type PushEndpoints = {
 	};
 	'/v1/push.info': {
 		GET: () => {
-			pushGateWayEnabled: boolean;
+			pushGatewayEnabled: boolean;
 			defaultPushGateway: boolean;
 		};
 	};
