@@ -993,6 +993,7 @@
   "Email_Notification_Mode": "Notifiche email offline",
   "Email_Notification_Mode_All": "Ogni menzione/DM",
   "Email_Notification_Mode_Disabled": "Disabilitato",
+  "Enterprise": "impresa",
   "Email_or_username": "Email o nome utente",
   "Email_Placeholder": "Inserisci il tuo indirizzo email...",
   "Email_Placeholder_any": "Per favore inserisci gli indirizzi email ...",
@@ -1020,7 +1021,6 @@
   "Enter_name_here": "Inserisci il nome qui",
   "Enter_Normal": "Modalità normale (inviato con Invio)",
   "Enter_to": "Invio per",
-  "Enterprise": "impresa",
   "Entertainment": "Divertimento",
   "Error": "Errore",
   "Error_404": "Errore 404",
@@ -2860,5 +2860,6 @@
   "registration.component.form.reasonToJoin": "Motivo per partecipare",
   "registration.component.form.invalidConfirmPass": "La password di conferma non corrisponde con la password",
   "registration.component.form.confirmPassword": "Conferma la tua password",
-  "registration.component.form.sendConfirmationEmail": "Invia email di conferma"
+  "registration.component.form.sendConfirmationEmail": "Invia email di conferma",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

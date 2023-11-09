@@ -966,6 +966,7 @@
   "Email_Notification_Mode": "Offline Апавяшчэнні па электроннай пошце",
   "Email_Notification_Mode_All": "Кожны Згадванне / DM",
   "Email_Notification_Mode_Disabled": "інвалід",
+  "Enterprise": "прадпрыемства",
   "Email_or_username": "Email або імя карыстальніка",
   "Email_Placeholder": "Калі ласка, увядзіце ваш адрас электроннай пошты ...",
   "Email_Placeholder_any": "Калі ласка, увядзіце адрасы электроннай пошты ...",
@@ -992,7 +993,6 @@
   "Enter_name_here": "Калі ласка, увядзіце імя тут",
   "Enter_Normal": "Нармальны рэжым (адпраўка з Enter)",
   "Enter_to": "увядзіце ў",
-  "Enterprise": "прадпрыемства",
   "Entertainment": "забавы",
   "Error": "памылка",
   "Error_404": "Памылка: 404",
@@ -2775,5 +2775,6 @@
   "registration.component.form.reasonToJoin": "прычына рэгістрацыі",
   "registration.component.form.invalidConfirmPass": "Пацвярджэнне пароля не супадае пароль",
   "registration.component.form.confirmPassword": "Пацвердзіць пароль",
-  "registration.component.form.sendConfirmationEmail": "Адправіць па электроннай пошце пацвярджэнне"
+  "registration.component.form.sendConfirmationEmail": "Адправіць па электроннай пошце пацвярджэнне",
+  "UpgradeToGetMore_engagement-dashboard_Title": "аналітыка"
 }
