@@ -5,6 +5,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
+import { broadcastEventToServices } from '../../../../server/lib/isRunningMs';
+import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
 import { settings } from '../../../settings/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
@@ -86,6 +88,11 @@ export const updateMessage = async function (
 		const msg = await Messages.findOneById(_id);
 		if (msg) {
 			await callbacks.run('afterSaveMessage', msg, room, user._id);
+			void broadcastMessageSentEvent({
+				id: msg._id,
+				data: msg,
+				broadcastCallback: (message) => broadcastEventToServices('message.sent', message),
+			});
 		}
 	});
 };

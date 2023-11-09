@@ -6,6 +6,8 @@ import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import { isURL } from '../../../../lib/utils/isURL';
+import { broadcastEventToServices } from '../../../../server/lib/isRunningMs';
+import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import notifications from '../../../notifications/server/lib/Notifications';
@@ -288,6 +290,10 @@ export const sendMessage = async function (user, message, room, upsert = false, 
 
 		// Execute all callbacks
 		await callbacks.run('afterSaveMessage', message, room);
+		void broadcastMessageSentEvent({
+			id: message._id,
+			broadcastCallback: (message) => broadcastEventToServices('message.sent', message),
+		});
 		return message;
 	}
 };
