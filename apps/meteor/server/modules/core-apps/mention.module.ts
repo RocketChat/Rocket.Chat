@@ -34,18 +34,20 @@ export class MentionModule implements IUiKitCoreApp {
 
 		const usernames = mentions.map(({ username }) => username);
 
-		const message = await Messages.findOneById(referenceMessageId);
+		const message = await Messages.findOneById(referenceMessageId, { projection: { _id: 1, tmid: 1 } });
 
 		if (!message) {
 			throw new Error('Mention bot - Failed to retrieve message information');
 		}
+
+		const joinedUsernames = `@${usernames.join(', @')}`;
 
 		if (actionId === 'dismiss') {
 			void api.broadcast('notify.ephemeralMessage', payload.user._id, payload.room, {
 				msg: i18n.t(
 					'You_mentioned___mentions__but_theyre_not_in_this_room',
 					{
-						mentions: `@${usernames.join(', @')}`,
+						mentions: joinedUsernames,
 					},
 					payload.user.language,
 				),
@@ -62,7 +64,7 @@ export class MentionModule implements IUiKitCoreApp {
 				msg: i18n.t(
 					'You_mentioned___mentions__but_theyre_not_in_this_room',
 					{
-						mentions: `@${usernames.join(', @')}`,
+						mentions: joinedUsernames,
 					},
 					payload.user.language,
 				),
@@ -74,7 +76,7 @@ export class MentionModule implements IUiKitCoreApp {
 		}
 
 		if (actionId === 'share-message') {
-			const sub = await Subscriptions.findOneByRoomIdAndUserId(payload.room, payload.user._id);
+			const sub = await Subscriptions.findOneByRoomIdAndUserId(payload.room, payload.user._id, { projection: { t: 1, rid: 1, name: 1 } });
 			// this should exist since the event is fired from withing the room (e.g the user sent a message)
 			if (!sub) {
 				throw new Error('Mention bot - Failed to retrieve room information');
@@ -110,7 +112,7 @@ export class MentionModule implements IUiKitCoreApp {
 				msg: i18n.t(
 					'You_mentioned___mentions__but_theyre_not_in_this_room_You_let_them_know_via_dm',
 					{
-						mentions: `@${usernames.join(', @')}`,
+						mentions: joinedUsernames,
 					},
 					payload.user.language,
 				),

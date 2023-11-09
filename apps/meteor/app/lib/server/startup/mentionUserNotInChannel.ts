@@ -61,14 +61,13 @@ callbacks.add(
 			return message;
 		}
 
-		const room = await Rooms.findOneById(message.rid);
-		if (!room || isDirectMessageRoom(room) || isRoomFederated(room) || room.t === 'l') {
+		const mentions = message.mentions.filter(({ _id }) => _id !== 'all' && _id !== 'here');
+		if (!mentions.length) {
 			return message;
 		}
 
-		const mentions = message.mentions.filter(({ _id }) => _id !== 'all' && _id !== 'here');
-
-		if (!mentions.length) {
+		const room = await Rooms.findOneById(message.rid);
+		if (!room || isDirectMessageRoom(room) || isRoomFederated(room) || room.t === 'l') {
 			return message;
 		}
 
