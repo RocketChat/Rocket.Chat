@@ -8916,7 +8916,7 @@ __metadata:
     eslint-plugin-testing-library: ~5.11.0
     eslint-plugin-you-dont-need-lodash-underscore: ~6.12.0
     eventemitter3: ^4.0.7
-    exif-be-gone: ^1.3.2
+    exif-be-gone: ^1.4.1
     express: ^4.17.3
     express-rate-limit: ^5.5.1
     fast-glob: ^3.2.12
@@ -21278,14 +21278,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"exif-be-gone@npm:^1.3.2":
-  version: 1.3.2
-  resolution: "exif-be-gone@npm:1.3.2"
+"exif-be-gone@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "exif-be-gone@npm:1.4.1"
   dependencies:
     "@types/stream-buffers": ^3.0.3
   bin:
     exif-be-gone: cli.js
-  checksum: 88e90721d83563cf6638b764db6b865c1fd454b7e55702523171650c889c914ee8af72df6bace5888c8550a69b1d626965321c6add368c2f806183cc75ebba77
+  checksum: e8477d771df2debb80ee024fae4035da9bed46e84ef87a51b35040d6c8df4691fcfd36f17639240f9558078b89e00a556bee37d84ccf369766d71dc9764b10b1
   languageName: node
   linkType: hard
 
