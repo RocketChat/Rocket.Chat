@@ -13,6 +13,20 @@ import { validateEmail } from '../../lib/emailValidator';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 
 Meteor.startup(async () => {
+	if (!Meteor.settings?.public) {
+		Meteor.settings = {
+			public: {},
+		};
+	}
+
+	if (Meteor.settings.public.packages) {
+		Meteor.settings.public.packages = {};
+	}
+
+	Meteor.settings.public.packages['dynamic-import'] = {
+		useLocationOrigin: true,
+	};
+
 	if (!settings.get('Initial_Channel_Created')) {
 		const exists = await Rooms.findOneById('GENERAL', { projection: { _id: 1 } });
 		if (!exists) {
