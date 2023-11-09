@@ -27,7 +27,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarScrollableContent,
 } from '../../../components/Contextualbar';
-import { useFormsSubscription } from '../additionalForms';
+import { CustomFieldsAdditionalForm } from '../additionalForms';
 import { useRemoveCustomField } from './useRemoveCustomField';
 
 const getInitialValues = (customFieldData: Serialized<ILivechatCustomField> | undefined) => ({
@@ -50,9 +50,6 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
-
-	const additionalForms = useFormsSubscription();
-	const CustomFieldAdditionalForm = additionalForms?.useCustomFieldsAdditionalForm();
 
 	const handleDelete = useRemoveCustomField();
 
@@ -202,7 +199,7 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 									<Controller name='regexp' control={control} render={({ field }) => <TextInput id={regexpField} {...field} />} />
 								</FieldRow>
 							</Field>
-							{CustomFieldAdditionalForm && <CustomFieldAdditionalForm />}
+							{CustomFieldsAdditionalForm && <CustomFieldsAdditionalForm />}
 						</FieldGroup>
 					</form>
 				</FormProvider>
