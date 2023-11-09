@@ -6,6 +6,8 @@ import type { ComponentProps } from 'react';
 import React, { useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
+
 const checkIsOptionsValid = (value: string) => {
 	if (!value || value.trim() === '') {
 		return false;
@@ -21,6 +23,7 @@ const CustomFieldsAdditionalForm = ({ className }: { className?: ComponentProps<
 		watch,
 		formState: { errors },
 	} = useFormContext();
+	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
 	const { visibility, type } = watch();
 
@@ -37,6 +40,10 @@ const CustomFieldsAdditionalForm = ({ className }: { className?: ComponentProps<
 	const defaultValueField = useUniqueId();
 	const optionsField = useUniqueId();
 	const publicField = useUniqueId();
+
+	if (!hasLicense) {
+		return null;
+	}
 
 	return (
 		<>
