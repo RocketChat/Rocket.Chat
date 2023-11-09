@@ -16,6 +16,7 @@ const MaxChatsPerAgent: FC<{
 			<FieldLabel>{t('Max_number_of_chats_per_agent')}</FieldLabel>
 			<FieldRow>
 				<NumberInput
+					name='maxNumberSimultaneousChat'
 					data-qa='TextInput-Max-number-of-chats-per-agent'
 					value={maxNumberSimultaneousChat}
 					onChange={handleMaxNumberSimultaneousChat}

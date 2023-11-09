@@ -40,7 +40,7 @@ const AddAgent = ({ reload }: AddAgentProps): ReactElement => {
 			<Field>
 				<FieldLabel>{t('Username')}</FieldLabel>
 				<FieldRow>
-					<UserAutoComplete value={username} onChange={handleChange} />
+					<UserAutoComplete name='agentAutoComplete' value={username} onChange={handleChange} />
 					<Button disabled={!username} onClick={handleSave} mis={8} primary>
 						{t('Add_agent')}
 					</Button>

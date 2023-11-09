@@ -177,7 +177,12 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 					<Field>
 						<FieldLabel>{t('VoIP_Extension')}</FieldLabel>
 						<FieldRow>
-							<TextInput data-qa='AgentEditTextInput-VoIP_Extension' value={voipExtension as string} onChange={handleVoipExtension} />
+							<TextInput
+								name='agentVoipExtension'
+								data-qa='AgentEditTextInput-VoIP_Extension'
+								value={voipExtension as string}
+								onChange={handleVoipExtension}
+							/>
 						</FieldRow>
 					</Field>
 				)}

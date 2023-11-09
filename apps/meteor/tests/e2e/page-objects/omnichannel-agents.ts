@@ -13,7 +13,7 @@ export class OmnichannelAgents {
 	}
 
 	get inputUsername(): Locator {
-		return this.page.locator('input').first();
+		return this.page.locator('input[name="agentAutoComplete"]');
 	}
 
 	get inputSearch(): Locator {
@@ -41,7 +41,7 @@ export class OmnichannelAgents {
 	}
 
 	get btnRemove(): Locator {
-		return this.page.locator('[data-qa="AgentInfoAction-Remove"]');
+		return this.page.locator('.rcx-vertical-bar button[title="Remove"]');
 	}
 
 	get StatusSelect(): Locator {
@@ -49,7 +49,7 @@ export class OmnichannelAgents {
 	}
 
 	get MaxChatsInput(): Locator {
-		return this.page.locator('[data-qa="TextInput-Max-number-of-chats-per-agent"]');
+		return this.page.locator('input[name="maxNumberSimultaneousChat"]');
 	}
 
 	get DepartmentSelect(): Locator {
