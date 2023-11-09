@@ -18,7 +18,7 @@ export const useRemoveCannedResponse = () => {
 		const onDeleteCannedResponse: () => Promise<void> = async () => {
 			try {
 				await removeCannedResponse(id);
-				queryClient.invalidateQueries(['canned-responses']);
+				queryClient.invalidateQueries(['getCannedResponses']);
 				router.navigate('/omnichannel/canned-responses');
 				dispatchToastMessage({ type: 'success', message: t('Canned_Response_Removed') });
 			} catch (error) {

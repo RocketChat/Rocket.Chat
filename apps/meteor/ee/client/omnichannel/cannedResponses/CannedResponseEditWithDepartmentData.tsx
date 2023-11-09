@@ -8,13 +8,7 @@ import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import CannedResponseEdit from './CannedResponseEdit';
 
-type CannedResponseEditWithDataProps = {
-	cannedResponseData: Serialized<IOmnichannelCannedResponse>;
-	reload: () => void;
-	totalDataReload: () => void;
-};
-
-const CannedResponseEditWithData = ({ cannedResponseData, reload, totalDataReload }: CannedResponseEditWithDataProps) => {
+const CannedResponseEditWithDepartmentData = ({ cannedResponseData }: { cannedResponseData: Serialized<IOmnichannelCannedResponse> }) => {
 	const departmentId = useMemo(() => cannedResponseData?.departmentId, [cannedResponseData]) as string;
 	const { value: departmentData, phase: state, error } = useEndpointData('/v1/livechat/department/:_id', { keys: { _id: departmentId } });
 
@@ -32,14 +26,7 @@ const CannedResponseEditWithData = ({ cannedResponseData, reload, totalDataReloa
 		);
 	}
 
-	return (
-		<CannedResponseEdit
-			cannedResponseData={cannedResponseData}
-			reload={reload}
-			totalDataReload={totalDataReload}
-			departmentData={departmentData.department}
-		/>
-	);
+	return <CannedResponseEdit cannedResponseData={cannedResponseData} departmentData={departmentData.department} />;
 };
 
-export default CannedResponseEditWithData;
+export default CannedResponseEditWithDepartmentData;

@@ -2,6 +2,7 @@ import type { ILivechatDepartment, IOmnichannelCannedResponse, Serialized } from
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import React, { memo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -11,8 +12,6 @@ import { useRemoveCannedResponse } from './useRemoveCannedResponse';
 
 type CannedResponseEditProps = {
 	cannedResponseData?: Serialized<IOmnichannelCannedResponse>;
-	reload: () => void;
-	totalDataReload: () => void;
 	departmentData?: Serialized<ILivechatDepartment>;
 };
 
@@ -25,10 +24,11 @@ const getInitialData = (cannedResponseData: Serialized<IOmnichannelCannedRespons
 	departmentId: cannedResponseData?.departmentId || '',
 });
 
-const CannedResponseEdit = ({ cannedResponseData, reload, totalDataReload }: CannedResponseEditProps) => {
+const CannedResponseEdit = ({ cannedResponseData }: CannedResponseEditProps) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const queryClient = useQueryClient();
 
 	const saveCannedResponse = useEndpoint('POST', '/v1/canned-responses');
 
@@ -55,13 +55,12 @@ const CannedResponseEdit = ({ cannedResponseData, reload, totalDataReload }: Can
 					message: t(cannedResponseData?._id ? 'Canned_Response_Updated' : 'Canned_Response_Created'),
 				});
 				router.navigate('/omnichannel/canned-responses');
-				reload();
-				totalDataReload();
+				queryClient.invalidateQueries(['getCannedResponses']);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[cannedResponseData?._id, saveCannedResponse, dispatchToastMessage, t, router, reload, totalDataReload],
+		[cannedResponseData?._id, queryClient, saveCannedResponse, dispatchToastMessage, t, router],
 	);
 	const formId = useUniqueId();
 

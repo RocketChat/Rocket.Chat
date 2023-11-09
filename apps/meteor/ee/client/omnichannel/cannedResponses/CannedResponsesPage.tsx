@@ -1,7 +1,5 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
 import Page from '../../../../client/components/Page';
@@ -12,19 +10,16 @@ import CannedResponsesTable from './CannedResponsesTable';
 const CannedResponsesPage = () => {
 	const t = useTranslation();
 	const router = useRouter();
-	const queryClient = useQueryClient();
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	const reload = useMutableCallback(() => queryClient.invalidateQueries(['canned-responses']));
-
 	if (context === 'edit' && id) {
-		return <CannedResponseEditWithData reload={reload} totalDataReload={reload} cannedResponseId={id} />;
+		return <CannedResponseEditWithData cannedResponseId={id} />;
 	}
 
 	if (context === 'new') {
-		return <CannedResponseEdit reload={reload} totalDataReload={reload} />;
+		return <CannedResponseEdit />;
 	}
 
 	return (
