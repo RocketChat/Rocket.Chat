@@ -50,8 +50,6 @@
   "Accounts_LoginExpiration": "תפוגת כניסת ימים",
   "Accounts_ManuallyApproveNewUsers": "אשר משתמשים חדשים ידנית",
   "Accounts_OAuth_Custom_Authorize_Path": "נתיב אימות",
-  "Accounts_OAuth_Custom_Button_Color": "צבע הכפתור",
-  "Accounts_OAuth_Custom_Button_Label_Color": "צבע טקסט הכפתור",
   "Accounts_OAuth_Custom_Button_Label_Text": "טקסט הכפתור",
   "Accounts_OAuth_Custom_Enable": "הפעלה",
   "Accounts_OAuth_Custom_id": "מזהה ייחודי",

@@ -92,8 +92,6 @@ API.v1.addRoute(
 							(service as OAuthConfiguration).clientId ||
 							(service as TwitterOAuthConfiguration).consumerKey,
 						buttonLabelText: service.buttonLabelText || '',
-						buttonColor: service.buttonColor || '',
-						buttonLabelColor: service.buttonLabelColor || '',
 						custom: false,
 					};
 				}),
