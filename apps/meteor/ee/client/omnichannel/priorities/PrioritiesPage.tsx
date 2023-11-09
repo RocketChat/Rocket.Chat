@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Throbber } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -77,8 +77,8 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 			<Page>
 				<Page.Header title={t('Priorities')}>
 					<ButtonGroup>
-						<Button onClick={handleReset} title={t('Reset')} disabled={!isPrioritiesDirty || isResetting}>
-							{isResetting ? <Throbber size='x12' inheritColor /> : t('Reset')}
+						<Button onClick={handleReset} title={t('Reset')} disabled={!isPrioritiesDirty} loading={isResetting}>
+							{t('Reset')}
 						</Button>
 					</ButtonGroup>
 				</Page.Header>

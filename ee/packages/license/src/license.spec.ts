@@ -1,3 +1,4 @@
+import { LicenseImp } from '.';
 import { MockedLicenseBuilder, getReadyLicenseManager } from '../__tests__/MockedLicenseBuilder';
 
 it('should not prevent if there is no license', async () => {
@@ -22,6 +23,19 @@ it('should not prevent if the counter is under the limit', async () => {
 	await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
 });
 
+it('should not prevent actions if there is no limit set in the license', async () => {
+	const licenseManager = await getReadyLicenseManager();
+
+	const license = await new MockedLicenseBuilder();
+
+	await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+
+	licenseManager.setLicenseLimitCounter('activeUsers', () => 5);
+	licenseManager.setLicenseLimitCounter('monthlyActiveContacts', () => 5);
+	await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
+	await expect(licenseManager.shouldPreventAction('monthlyActiveContacts')).resolves.toBe(false);
+});
+
 it('should prevent if the counter is equal or over the limit', async () => {
 	const licenseManager = await getReadyLicenseManager();
 
@@ -38,6 +52,31 @@ it('should prevent if the counter is equal or over the limit', async () => {
 	await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
 
 	licenseManager.setLicenseLimitCounter('activeUsers', () => 11);
+	await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
+});
+
+it('should not prevent an action if another limit is over the limit', async () => {
+	const licenseManager = await getReadyLicenseManager();
+
+	const license = await new MockedLicenseBuilder()
+		.withLimits('activeUsers', [
+			{
+				max: 10,
+				behavior: 'prevent_action',
+			},
+		])
+		.withLimits('monthlyActiveContacts', [
+			{
+				max: 10,
+				behavior: 'prevent_action',
+			},
+		]);
+
+	await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+
+	licenseManager.setLicenseLimitCounter('activeUsers', () => 11);
+	licenseManager.setLicenseLimitCounter('monthlyActiveContacts', () => 2);
+	await expect(licenseManager.shouldPreventAction('monthlyActiveContacts')).resolves.toBe(false);
 	await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
 });
 
@@ -190,6 +229,48 @@ describe('Validate License Limits', () => {
 			await expect(licenseManager.shouldPreventAction('activeUsers', 6)).resolves.toBe(true);
 			expect(fairUsageCallback).toHaveBeenCalledTimes(0);
 			expect(preventActionCallback).toHaveBeenCalledTimes(0);
+		});
+	});
+});
+
+describe('License.getInfo', () => {
+	describe('Marketplace Restrictions', () => {
+		it('should respect the default if there is no license applied', async () => {
+			const licenseManager = new LicenseImp();
+
+			expect(
+				(
+					await licenseManager.getInfo({
+						limits: true,
+						currentValues: false,
+						license: false,
+					})
+				).limits,
+			).toMatchObject({
+				privateApps: { max: 3 },
+				marketplaceApps: { max: 5 },
+			});
+		});
+
+		it('should return unlimited if there is license but no limits', async () => {
+			const licenseManager = await getReadyLicenseManager();
+
+			const license = await new MockedLicenseBuilder();
+
+			await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+
+			await expect(
+				(
+					await licenseManager.getInfo({
+						limits: true,
+						currentValues: false,
+						license: false,
+					})
+				).limits,
+			).toMatchObject({
+				privateApps: { max: -1 },
+				marketplaceApps: { max: -1 },
+			});
 		});
 	});
 });

@@ -1,6 +1,5 @@
 import { lazy } from 'react';
 
-import type { UpgradeTabVariant } from '../../../lib/upgradeTab';
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -13,7 +12,11 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/admin/sounds${`/${string}` | ''}${`/${string}` | ''}`;
 			pattern: '/admin/sounds/:context?/:id?';
 		};
-		'admin-info': {
+		'info': {
+			pathname: '/admin/info';
+			pattern: '/admin/info';
+		};
+		'workspace': {
 			pathname: '/admin/workspace';
 			pattern: '/admin/workspace';
 		};
@@ -97,13 +100,13 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/admin/engagement${`/${string}` | ''}`;
 			pattern: '/admin/engagement/:tab?';
 		};
-		'upgrade': {
-			pathname: `/admin/upgrade${`/${UpgradeTabVariant}` | ''}`;
-			pattern: '/admin/upgrade/:type?';
-		};
 		'moderation-console': {
 			pathname: `/admin/moderation${`/${string}` | ''}${`/${string}` | ''}`;
 			pattern: '/admin/moderation/:context?/:id?';
+		};
+		'subscription': {
+			pathname: `/admin/subscription`;
+			pattern: '/admin/subscription';
 		};
 	}
 }
@@ -119,9 +122,15 @@ registerAdminRoute('/sounds/:context?/:id?', {
 	component: lazy(() => import('./customSounds/CustomSoundsRoute')),
 });
 
+/** @deprecated in favor of `/workspace` route, this is a fallback to work in Mobile app, should be removed in the next major  */
+registerAdminRoute('/info', {
+	name: 'info',
+	component: lazy(() => import('./workspace/WorkspaceRoute')),
+});
+
 registerAdminRoute('/workspace', {
-	name: 'admin-info',
-	component: lazy(() => import('./info/InformationRoute')),
+	name: 'workspace',
+	component: lazy(() => import('./workspace/WorkspaceRoute')),
 });
 
 registerAdminRoute('/import', {
@@ -218,11 +227,6 @@ registerAdminRoute('/settings/:group?', {
 	component: lazy(() => import('./settings/SettingsRoute')),
 });
 
-registerAdminRoute('/upgrade/:type?', {
-	name: 'upgrade',
-	component: lazy(() => import('./upgrade/UpgradePage')),
-});
-
 registerAdminRoute('/moderation/:context?/:id?', {
 	name: 'moderation-console',
 	component: lazy(() => import('./moderation/ModerationConsoleRoute')),
@@ -236,4 +240,9 @@ registerAdminRoute('/engagement/:tab?', {
 registerAdminRoute('/device-management/:context?/:id?', {
 	name: 'device-management',
 	component: lazy(() => import('../../../ee/client/views/admin/deviceManagement/DeviceManagementAdminRoute')),
+});
+
+registerAdminRoute('/subscription', {
+	name: 'subscription',
+	component: lazy(() => import('./subscription/SubscriptionRoute')),
 });

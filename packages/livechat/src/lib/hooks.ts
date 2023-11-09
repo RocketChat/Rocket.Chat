@@ -158,16 +158,12 @@ const api = {
 		store.setState({ expanded });
 	},
 
-	async setGuestToken({ token }: { token: StoreState['token'] }) {
-		const {
-			token: localToken,
-			iframe,
-			iframe: { guest },
-		} = store.state;
+	async setGuestToken(token: string) {
+		const { token: localToken } = store.state;
 		if (token === localToken) {
 			return;
 		}
-		store.setState({ token, iframe: { ...iframe, guest: { ...guest, token } } });
+		createOrUpdateGuest({ token });
 		await loadConfig();
 	},
 
@@ -227,9 +223,6 @@ const api = {
 		store.setState({ parentUrl });
 	},
 };
-
-function hasCorrectParams<T extends ApiMethods>(fn: T, args: ApiArgs<T>): boolean {
-	
 
 function onNewMessage<T extends ApiMethods>(event: MessageEvent<{ src?: string; fn: T; args: ApiArgs<T> }>) {
 	if (event.source === event.target) {

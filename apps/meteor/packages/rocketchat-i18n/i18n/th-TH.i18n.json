@@ -946,6 +946,7 @@
   "Email_Notification_Mode": "การแจ้งเตือนทางอีเมลแบบออฟไลน์",
   "Email_Notification_Mode_All": "ทุกข้อเสนอ / DM",
   "Email_Notification_Mode_Disabled": "พิการ",
+  "Enterprise": "องค์กร",
   "Email_or_username": "อีเมล์หรือชื่อผู้ใช้",
   "Email_Placeholder": "กรุณากรอกอีเมลของคุณ...",
   "Email_Placeholder_any": "โปรดป้อนที่อยู่อีเมล ...",
@@ -972,7 +973,6 @@
   "Enter_name_here": "ป้อนชื่อที่นี่",
   "Enter_Normal": "โหมดปกติ (ส่งพร้อมด้วย Enter)",
   "Enter_to": "เข้าสู่",
-  "Enterprise": "องค์กร",
   "Entertainment": "การบันเทิง",
   "Error": "ความผิดพลาด",
   "Error_404": "ข้อผิดพลาด: 404",
@@ -2740,5 +2740,6 @@
   "registration.component.form.reasonToJoin": "เหตุผลที่เข้าร่วม",
   "registration.component.form.invalidConfirmPass": "การยืนยันรหัสผ่านไม่ตรงกับรหัสผ่าน",
   "registration.component.form.confirmPassword": "ยืนยันรหัสผ่านของคุณ",
-  "registration.component.form.sendConfirmationEmail": "ส่งอีเมลยืนยัน"
+  "registration.component.form.sendConfirmationEmail": "ส่งอีเมลยืนยัน",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

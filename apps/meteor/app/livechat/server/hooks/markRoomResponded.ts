@@ -1,6 +1,6 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
-import { LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
+import { LivechatRooms, LivechatVisitors, LivechatInquiry } from '@rocket.chat/models';
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -30,11 +30,18 @@ callbacks.add(
 		// Return YYYY-MM from moment
 		const monthYear = moment().format('YYYY-MM');
 		const isVisitorActive = await LivechatVisitors.isVisitorActiveOnPeriod(room.v._id, monthYear);
+
+		// Case: agent answers & visitor is not active, we mark visitor as active
 		if (!isVisitorActive) {
 			await LivechatVisitors.markVisitorActiveForPeriod(room.v._id, monthYear);
 		}
 
-		await LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear);
+		if (!room.v?.activity?.includes(monthYear)) {
+			await Promise.all([
+				LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear),
+				LivechatInquiry.markInquiryActiveForPeriod(room._id, monthYear),
+			]);
+		}
 
 		if (room.responseBy) {
 			await LivechatRooms.setAgentLastMessageTs(room._id);

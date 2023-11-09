@@ -3,16 +3,6 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import { useContext, useMemo, useState } from 'react';
 
 import { UiKitContext } from '../contexts/UiKitContext';
-import { useUiKitStateValue } from './useUiKitStateValue';
-
-type UiKitState<
-  TElement extends UiKit.ActionableElement = UiKit.ActionableElement
-> = {
-  loading: boolean;
-  setLoading: (loading: boolean) => void;
-  error?: string;
-  value: UiKit.ActionOf<TElement>;
-};
 
 const hasInitialValue = <TElement extends UiKit.ActionableElement>(
   element: TElement
@@ -37,10 +27,48 @@ const hasInitialOptions = <TElement extends UiKit.ActionableElement>(
 ): element is TElement & { initialOptions: UiKit.Option[] } =>
   'initialOptions' in element;
 
-export const useUiKitState: <TElement extends UiKit.ActionableElement>(
+const getInitialValue = <TElement extends UiKit.ActionableElement>(
+  element: TElement
+) =>
+  (hasInitialValue(element) && element.initialValue) ||
+  (hasInitialTime(element) && element.initialTime) ||
+  (hasInitialDate(element) && element.initialDate) ||
+  (hasInitialOption(element) && element.initialOption.value) ||
+  (hasInitialOptions(element) &&
+    element.initialOptions.map((option) => option.value)) ||
+  undefined;
+
+const getElementValueFromState = (
+  actionId: string,
+  values: Record<
+    string,
+    | {
+        value: unknown;
+      }
+    | undefined
+  >,
+  initialValue: string | number | string[] | undefined
+) => {
+  return (
+    (values &&
+      (values[actionId]?.value as string | number | string[] | undefined)) ??
+    initialValue
+  );
+};
+
+type UiKitState<
+  TElement extends UiKit.ActionableElement = UiKit.ActionableElement
+> = {
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
+  error?: string;
+  value: UiKit.ActionOf<TElement>;
+};
+
+export const useUiKitState = <TElement extends UiKit.ActionableElement>(
   element: TElement,
   context: UiKit.BlockContext
-) => [
+): [
   state: UiKitState<TElement>,
   action: (
     pseudoEvent?:
@@ -48,25 +76,22 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
       | { target: EventTarget }
       | { target: { value: UiKit.ActionOf<TElement> } }
   ) => void
-] = (rest, context) => {
-  const { blockId, actionId, appId, dispatchActionConfig } = rest;
+] => {
+  const { blockId, actionId, appId, dispatchActionConfig } = element;
   const {
     action,
-    appId: appIdFromContext,
-    viewId,
-    state,
+    appId: appIdFromContext = undefined,
+    viewId = undefined,
+    updateState,
   } = useContext(UiKitContext);
 
-  const initialValue =
-    (hasInitialValue(rest) && rest.initialValue) ||
-    (hasInitialTime(rest) && rest.initialTime) ||
-    (hasInitialDate(rest) && rest.initialDate) ||
-    (hasInitialOption(rest) && rest.initialOption.value) ||
-    (hasInitialOptions(rest) &&
-      rest.initialOptions.map((option) => option.value)) ||
-    undefined;
+  const initialValue = getInitialValue(element);
 
-  const { value: _value, error } = useUiKitStateValue(actionId, initialValue);
+  const { values, errors } = useContext(UiKitContext);
+
+  const _value = getElementValueFromState(actionId, values, initialValue);
+  const error = errors?.[actionId];
+
   const [value, setValue] = useSafely(useState(_value));
   const [loading, setLoading] = useSafely(useState(false));
 
@@ -88,12 +113,14 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
       setValue(elValue);
     }
 
-    state &&
-      (await state({ blockId, appId, actionId, value: elValue, viewId }, e));
+    await updateState?.(
+      { blockId, appId, actionId, value: elValue, viewId },
+      e
+    );
     await action(
       {
         blockId,
-        appId: appId || appIdFromContext,
+        appId: appId || appIdFromContext || 'core',
         actionId,
         value: elValue,
         viewId,
@@ -110,11 +137,14 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
       target: { value },
     } = e;
     setValue(value);
-    state && (await state({ blockId, appId, actionId, value, viewId }, e));
+
+    updateState &&
+      (await updateState({ blockId, appId, actionId, value, viewId }, e));
+
     await action(
       {
         blockId,
-        appId: appId || appIdFromContext,
+        appId: appId || appIdFromContext || 'core',
         actionId,
         value,
         viewId,
@@ -128,11 +158,13 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
     const {
       target: { value },
     } = e;
+
     setValue(value);
-    await state(
+
+    await updateState?.(
       {
         blockId,
-        appId: appId || appIdFromContext,
+        appId: appId || appIdFromContext || 'core',
         actionId,
         value,
         viewId,
@@ -147,9 +179,9 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
   );
 
   if (
-    rest.type === 'plain_text_input' &&
-    Array.isArray(rest?.dispatchActionConfig) &&
-    rest.dispatchActionConfig.includes('on_character_entered')
+    element.type === 'plain_text_input' &&
+    Array.isArray(element?.dispatchActionConfig) &&
+    element.dispatchActionConfig.includes('on_character_entered')
   ) {
     return [result, noLoadStateActionFunction];
   }
@@ -159,8 +191,8 @@ export const useUiKitState: <TElement extends UiKit.ActionableElement>(
       [UiKit.BlockContext.SECTION, UiKit.BlockContext.ACTION].includes(
         context
       )) ||
-    (Array.isArray(rest?.dispatchActionConfig) &&
-      rest.dispatchActionConfig.includes('on_item_selected'))
+    (Array.isArray(element?.dispatchActionConfig) &&
+      element.dispatchActionConfig.includes('on_item_selected'))
   ) {
     return [result, actionFunction];
   }
