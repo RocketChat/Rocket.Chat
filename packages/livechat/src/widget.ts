@@ -1,6 +1,6 @@
 import mitt from 'mitt';
 
-import type { ApiArgs, ApiMethods } from './lib/hooks';
+import type { ApiArgs, ApiMethods, ApiMethodsAndArgs } from './lib/hooks';
 
 const log =
 	process.env.NODE_ENV === 'development'
@@ -309,7 +309,7 @@ function setTheme(theme: ApiArgs<'setTheme'>['theme']) {
 	callHook('setTheme', { theme });
 }
 
-function setDepartment(department: ApiArgs<'setDepartment'>['value']) {
+function setDepartment(department: ApiArgs<'setDepartment'>[0]['value']) {
 	callHook('setDepartment', { value: department });
 }
 
@@ -455,27 +455,49 @@ const currentPage: { href: string | null; title: string | null } = {
 	title: null,
 };
 
-function onNewMessage<T extends ApiMethods>(msg: MessageEvent<{ src?: string; fn: T; args: ApiArgs<T> }>) {
-	if (msg.source === msg.target) {
-		return;
-	}
+function onNewMessage<T extends ApiMethods>(event: ApiMethodsAndArgs<T>) {
+	const fn = api[event.fn];
 
-	if (!msg.data || typeof msg.data !== 'object') {
-		return;
-	}
-
-	if (!msg.data.src || msg.data.src !== 'rocketchat') {
-		return;
-	}
-
-	const { fn } = msg.data;
-
-	const { args } = msg.data;
-
-	// TODO: Refactor widget.js to ts and change their calls to use objects instead of ordered arguments
-	log(`api.${msg.data.fn}`, ...args);
-	api[fn](args);
+	fn(event.args[0]);
 }
+
+function onNewMessageHandler<T extends ApiMethods>(event: MessageEvent) {
+	if (event.source === event.target) {
+		return;
+	}
+
+	if (!event.data || typeof event.data !== 'object') {
+		return;
+	}
+
+	if (!event.data.src || event.data.src !== 'rocketchat') {
+		return;
+	}
+
+	return onNewMessage(event.data as { fn: T; args: ApiArgs<T> });
+}
+
+// function onNewMessage<T extends ApiMethods>(msg: MessageEvent<{ src?: string; fn: T; args: ApiArgs<T> }>) {
+// 	if (msg.source === msg.target) {
+// 		return;
+// 	}
+
+// 	if (!msg.data || typeof msg.data !== 'object') {
+// 		return;
+// 	}
+
+// 	if (!msg.data.src || msg.data.src !== 'rocketchat') {
+// 		return;
+// 	}
+
+// 	const { fn } = msg.data;
+
+// 	const { args } = msg.data;
+
+// 	// TODO: Refactor widget.js to ts and change their calls to use objects instead of ordered arguments
+// 	log(`api.${msg.data.fn}`, ...args);
+// 	api[fn](args);
+// }
 
 // (msg) => {
 // 	if (typeof msg.data === 'object' && msg.data.src !== undefined && msg.data.src === 'rocketchat') {
@@ -487,7 +509,7 @@ function onNewMessage<T extends ApiMethods>(msg: MessageEvent<{ src?: string; fn
 // 	}
 
 const attachMessageListener = () => {
-	window.addEventListener('message', onNewMessage, false);
+	window.addEventListener('message', onNewMessageHandler, false);
 };
 
 const trackNavigation = () => {

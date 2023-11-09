@@ -44,14 +44,17 @@ export type Api = typeof api;
 
 export type ApiMethods = keyof Api;
 
-export type ApiArgs<Method> = Method extends ApiMethods ? Parameters<Api[Method]>[0] : never;
+type ApiParams<T extends ApiMethods> = Parameters<Api[T]>;
 
-export type ApiMethodsAndArgs = {
-	[Method in ApiMethods]: ApiArgs<Method>;
+export type ApiArgs<N extends ApiMethods> = ApiParams<N> extends infer U ? (U extends any ? U : never) : never;
+
+export type ApiMethodsAndArgs<N extends ApiMethods> = {
+	fn: N;
+	args: ApiArgs<N>;
 };
 
 const api = {
-	pageVisited({ info }: { info: { change: string; title: string; location: { href: string } } }) {
+	pageVisited: (info: { change: string; title: string; location: { href: string } }) => {
 		if (info.change === 'url') {
 			Triggers.processRequest(info);
 		}
@@ -68,11 +71,11 @@ const api = {
 		Livechat.sendVisitorNavigation({ token, rid, pageInfo: { change, title, location: { href } } });
 	},
 
-	setCustomField({ key, value, overwrite = true }: { key: string; value?: string; overwrite: boolean }) {
+	setCustomField: (key: string, value = '', overwrite: boolean) => {
 		CustomFields.setCustomField(key, value, overwrite);
 	},
 
-	setTheme({ theme: { color, fontColor, iconColor, title, offlineTitle } }: { theme: StoreState['iframe']['theme'] }) {
+	setTheme: ({ theme: { color, fontColor, iconColor, title, offlineTitle } }: { theme: StoreState['iframe']['theme'] }) => {
 		const {
 			iframe,
 			iframe: { theme },
@@ -92,7 +95,7 @@ const api = {
 		});
 	},
 
-	async setDepartment({ value }: { value: string }) {
+	setDepartment: async (value: string) => {
 		const {
 			user,
 			config: { departments = [] },
@@ -115,7 +118,7 @@ const api = {
 		}
 	},
 
-	async setBusinessUnit({ newBusinessUnit }: { newBusinessUnit: string }) {
+	setBusinessUnit: async (newBusinessUnit: string) => {
 		if (!newBusinessUnit?.trim().length) {
 			throw new Error('Error! Invalid business ids');
 		}
@@ -125,21 +128,22 @@ const api = {
 		return existingBusinessUnit !== newBusinessUnit && updateBusinessUnit(newBusinessUnit);
 	},
 
-	async clearBusinessUnit() {
+	clearBusinessUnit: async () => {
 		const { businessUnit } = store.state;
 		return businessUnit && updateBusinessUnit();
 	},
 
-	clearDepartment() {
+	clearDepartment: () => {
 		updateIframeGuestData({ department: '' });
 	},
 
-	async clearWidgetData() {
+	clearWidgetData: async () => {
 		const { minimized, visible, undocked, expanded, businessUnit, ...initial } = initialState();
 		await store.setState(initial);
 	},
 
-	setAgent({ agent: { _id, username, ...props } }: { agent: StoreState['defaultAgent'] }) {
+	setAgent: (agent: StoreState['defaultAgent']) => {
+		const { _id, username, ...props } = agent;
 		if (!_id || !username) {
 			return console.warn('The fields _id and username are mandatory.');
 		}
@@ -154,11 +158,11 @@ const api = {
 		});
 	},
 
-	setExpanded({ expanded }: { expanded: StoreState['expanded'] }) {
+	setExpanded: (expanded: StoreState['expanded']) => {
 		store.setState({ expanded });
 	},
 
-	async setGuestToken(token: string) {
+	setGuestToken: async (token: string) => {
 		const { token: localToken } = store.state;
 		if (token === localToken) {
 			return;
@@ -167,15 +171,15 @@ const api = {
 		await loadConfig();
 	},
 
-	setGuestName({ name }: { name: string }) {
+	setGuestName: (name: string) => {
 		updateIframeGuestData({ name });
 	},
 
-	setGuestEmail({ email }: { email: string }) {
+	setGuestEmail: (email: string) => {
 		updateIframeGuestData({ email });
 	},
 
-	registerGuest({ data }: { data: StoreState['guest'] }) {
+	registerGuest: (data: StoreState['guest']) => {
 		if (typeof data !== 'object') {
 			return;
 		}
@@ -191,40 +195,48 @@ const api = {
 		createOrUpdateGuest(data);
 	},
 
-	async setLanguage({ language }: { language: StoreState['iframe']['language'] }) {
+	setLanguage: async ({ language }: { language: StoreState['iframe']['language'] }) => {
 		const { iframe } = store.state;
 		await store.setState({ iframe: { ...iframe, language } });
 		i18next.changeLanguage(language);
 	},
 
-	showWidget() {
+	showWidget: () => {
 		const { iframe } = store.state;
 		store.setState({ iframe: { ...iframe, visible: true } });
 		parentCall('showWidget');
 	},
 
-	hideWidget() {
+	hideWidget: () => {
 		const { iframe } = store.state;
 		store.setState({ iframe: { ...iframe, visible: false } });
 		parentCall('hideWidget');
 	},
 
-	minimizeWidget() {
+	minimizeWidge: () => {
 		store.setState({ minimized: true });
 		parentCall('closeWidget');
 	},
 
-	maximizeWidget() {
+	maximizeWidget: () => {
 		store.setState({ minimized: false });
 		parentCall('openWidget');
 	},
 
-	setParentUrl({ parentUrl }: { parentUrl: StoreState['parentUrl'] }) {
+	setParentUrl: (parentUrl: StoreState['parentUrl']) => {
 		store.setState({ parentUrl });
 	},
 };
 
-function onNewMessage<T extends ApiMethods>(event: MessageEvent<{ src?: string; fn: T; args: ApiArgs<T> }>) {
+function onNewMessage<T extends ApiMethods>(event: ApiMethodsAndArgs<T>) {
+	const fn = api[event.fn];
+
+	// There is an existing issue with overload resolution with type union arguments please see https://github.com/microsoft/TypeScript/issues/14107
+	// @ts-ignore: A spread argument must either have a tuple type or be passed to a rest parameter
+	fn(...event.args);
+}
+
+function onNewMessageHandler<T extends ApiMethods>(event: MessageEvent) {
 	if (event.source === event.target) {
 		return;
 	}
@@ -237,12 +249,7 @@ function onNewMessage<T extends ApiMethods>(event: MessageEvent<{ src?: string; 
 		return;
 	}
 
-	const { fn } = event.data;
-
-	const { args } = event.data;
-
-	// TODO: Refactor widget.js to ts and change their calls to use objects instead of ordered arguments
-	api[fn](args);
+	return onNewMessage(event.data as { fn: T; args: ApiArgs<T> });
 }
 
 class Hooks {
@@ -262,12 +269,12 @@ class Hooks {
 		}
 
 		this._started = true;
-		window.addEventListener('message', onNewMessage, false);
+		window.addEventListener('message', onNewMessageHandler, false);
 	}
 
 	reset() {
 		this._started = false;
-		window.removeEventListener('message', onNewMessage, false);
+		window.removeEventListener('message', onNewMessageHandler, false);
 	}
 }
 
