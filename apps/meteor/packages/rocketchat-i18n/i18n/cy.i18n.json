@@ -946,6 +946,7 @@
   "Email_Notification_Mode": "Hysbysiadau E-bost Amlinellol",
   "Email_Notification_Mode_All": "Pob Mention / DM",
   "Email_Notification_Mode_Disabled": "Anabl",
+  "Enterprise": "Menter",
   "Email_or_username": "E-bost neu Enw defnyddiwr",
   "Email_Placeholder": "Rhowch eich cyfeiriad e-bost ...",
   "Email_Placeholder_any": "Rhowch gyfeiriadau e-bost ...",
@@ -972,7 +973,6 @@
   "Enter_name_here": "Rhowch enw yma",
   "Enter_Normal": "Modd arferol (anfonwch â Enter)",
   "Enter_to": "Rhowch i",
-  "Enterprise": "Menter",
   "Entertainment": "Adloniant",
   "Error": "Gwall",
   "Error_404": "Gwall: 404",
@@ -2748,5 +2748,6 @@
   "registration.component.form.reasonToJoin": "Rheswm i Ymuno",
   "registration.component.form.invalidConfirmPass": "Nid yw'r cadarnhad cyfrinair yn cyfateb i'r cyfrinair",
   "registration.component.form.confirmPassword": "Cadarnhau eich cyfrinair",
-  "registration.component.form.sendConfirmationEmail": "Anfon ebost cadarnhad"
+  "registration.component.form.sendConfirmationEmail": "Anfon ebost cadarnhad",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Dadansoddiadau"
 }

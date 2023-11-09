@@ -311,7 +311,10 @@ export const useQuickActions = (): {
 	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
 	const canCloseRoom = usePermission('close-livechat-room');
 	const canCloseOthersRoom = usePermission('close-others-livechat-room');
-	const canPlaceChatOnHold = Boolean(!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed);
+	const restrictedOnHold = useSetting('Livechat_allow_manual_on_hold_upon_agent_engagement_only');
+	const canRoomBePlacedOnHold = !room.onHold && room.u;
+	const canAgentPlaceOnHold = !room.lastMessage?.token;
+	const canPlaceChatOnHold = Boolean(manualOnHoldAllowed && canRoomBePlacedOnHold && (!restrictedOnHold || canAgentPlaceOnHold));
 	const isRoomOverMacLimit = useIsRoomOverMacLimit(room);
 
 	const hasPermissionButtons = (id: string): boolean => {
