@@ -65,13 +65,12 @@ const AppsProvider: FC = ({ children }) => {
 		},
 		{
 			staleTime: Infinity,
-			keepPreviousData: true,
 			onSettled: () => queryClient.invalidateQueries(['marketplace', 'apps-stored']),
 		},
 	);
 
 	const store = useQuery(
-		['marketplace', 'apps-stored', isAdminUser],
+		['marketplace', 'apps-stored', instance.data, marketplace.data],
 		() => {
 			if (!marketplace.isFetched && !instance.isFetched) {
 				throw new Error('Apps not loaded');

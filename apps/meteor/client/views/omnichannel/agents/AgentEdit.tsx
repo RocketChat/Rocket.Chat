@@ -29,7 +29,7 @@ import {
 	ContextualbarScrollableContent,
 } from '../../../components/Contextualbar';
 import UserInfo from '../../../components/UserInfo';
-import { useFormsSubscription } from '../additionalForms';
+import { MaxChatsPerAgent } from '../additionalForms';
 
 type AgentEditProps = {
 	agentData: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'>;
@@ -68,9 +68,6 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 	);
 
 	const initialDepartmentValue = useMemo(() => userDepartments.map(({ departmentId }) => departmentId) || [], [userDepartments]);
-
-	const { useMaxChatsPerAgent } = useFormsSubscription();
-	const MaxChatsPerAgent = useMaxChatsPerAgent();
 
 	const methods = useForm({
 		values: {

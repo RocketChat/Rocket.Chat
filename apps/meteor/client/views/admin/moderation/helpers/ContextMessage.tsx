@@ -75,6 +75,7 @@ const ContextMessage = ({
 						) : (
 							message.msg
 						)}
+
 						{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
 						{message.attachments && <Attachments attachments={message.attachments} />}
 					</Message.Body>

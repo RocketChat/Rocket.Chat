@@ -13,7 +13,7 @@ import {
 } from '../../../components/Contextualbar';
 import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
-import { useFormsSubscription } from '../additionalForms';
+import { MaxChatsPerAgentDisplay } from '../additionalForms';
 import AgentInfoAction from './AgentInfoAction';
 import { useRemoveAgent } from './hooks/useRemoveAgent';
 
@@ -28,9 +28,6 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 	const { data, isLoading, isError } = useQuery(['livechat-getAgentInfoById', uid], async () => getAgentById(), {
 		refetchOnWindowFocus: false,
 	});
-
-	const { useMaxChatsPerAgentDisplay } = useFormsSubscription();
-	const MaxChats = useMaxChatsPerAgentDisplay();
 
 	const handleDelete = useRemoveAgent(uid);
 
@@ -76,7 +73,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 							<UserInfo.Info>{t(statusLivechat === 'available' ? 'Available' : 'Not_Available')}</UserInfo.Info>
 						</>
 					)}
-					{MaxChats && <MaxChats maxNumberSimultaneousChat={data.user.livechat?.maxNumberSimultaneousChat} />}
+					{MaxChatsPerAgentDisplay && <MaxChatsPerAgentDisplay maxNumberSimultaneousChat={data.user.livechat?.maxNumberSimultaneousChat} />}
 				</Margins>
 			</ContextualbarScrollableContent>
 		</Contextualbar>
