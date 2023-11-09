@@ -496,8 +496,8 @@ declare module '@rocket.chat/rest-typings' {
 const parseErrorObject = (err: any) => {
 	if (!isMeteorError(err)) {
 		return {
-			message: err.message,
-			stack: process.env.TEST_MODE === 'true' ? err.stack : undefined,
+			message: err?.message || 'Error',
+			...(process.env.TEST_MODE === 'true' ? { stack: err?.stack } : {}),
 		};
 	}
 
