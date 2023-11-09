@@ -954,6 +954,7 @@
   "Email_Notification_Mode": "Ειδοποιήσεις Email Εκτός Σύνδεσης",
   "Email_Notification_Mode_All": "Κάθε Μνεία/ΑΜ",
   "Email_Notification_Mode_Disabled": "Απενεργοποιημένο",
+  "Enterprise": "Επιχείρηση",
   "Email_or_username": "Email ή όνομα χρήστη",
   "Email_Placeholder": "Παρακαλούμε εισάγετε τη διεύθυνση ηλεκτρονικού ταχυδρομείου σας...",
   "Email_Placeholder_any": "Παρακαλούμε εισάγετε διευθύνσεις ηλεκτρονικού ταχυδρομείου...",
@@ -980,7 +981,6 @@
   "Enter_name_here": "Πληκτρολογήστε το όνομα εδώ",
   "Enter_Normal": "Κανονική λειτουργία (αποστολή με Enter)",
   "Enter_to": "Enter για να",
-  "Enterprise": "Επιχείρηση",
   "Entertainment": "Ψυχαγωγία",
   "Error": "Λάθος",
   "Error_404": "Σφάλμα 404",
@@ -2766,5 +2766,6 @@
   "registration.component.form.reasonToJoin": "Λόγος για συμμετοχή",
   "registration.component.form.invalidConfirmPass": "Η επιβεβαίωση κωδικού δεν ταιριάζει με τον αρχικό κωδικό",
   "registration.component.form.confirmPassword": "Επιβεβαιώστε τον κωδικό σας",
-  "registration.component.form.sendConfirmationEmail": "Αποστολή email επιβεβαίωσης"
+  "registration.component.form.sendConfirmationEmail": "Αποστολή email επιβεβαίωσης",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Αναλυτικά στοιχεία"
 }

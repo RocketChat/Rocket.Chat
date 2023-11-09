@@ -5,7 +5,7 @@ import React, { useCallback, useState } from 'react';
 
 import Page from '../../../components/Page';
 import { useForm } from '../../../hooks/useForm';
-import { useFormsSubscription } from '../additionalForms';
+import { CustomFieldsAdditionalFormContainer } from '../additionalForms';
 import NewCustomFieldsForm from './NewCustomFieldsForm';
 
 const getInitialValues = (cf) => ({
@@ -23,9 +23,6 @@ const EditCustomFieldsPage = ({ customField, id, reload }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [additionalValues, setAdditionalValues] = useState({});
-
-	const { useCustomFieldsAdditionalForm = () => {} } = useFormsSubscription();
-	const AdditionalForm = useCustomFieldsAdditionalForm();
 
 	const router = useRoute('omnichannel-customfields');
 
@@ -79,7 +76,7 @@ const EditCustomFieldsPage = ({ customField, id, reload }) => {
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<FieldGroup>
 						<NewCustomFieldsForm values={values} handlers={handlers} />
-						{AdditionalForm && <AdditionalForm onChange={handleAdditionalForm} state={values} data={customField} />}
+						<CustomFieldsAdditionalFormContainer onChange={handleAdditionalForm} state={values} data={customField} />
 					</FieldGroup>
 				</Box>
 			</Page.ScrollableContentWithShadow>

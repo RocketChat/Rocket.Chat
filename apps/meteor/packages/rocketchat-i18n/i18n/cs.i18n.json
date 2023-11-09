@@ -1329,6 +1329,7 @@
   "Email_Notification_Mode_Disabled": "Zakázáno",
   "Email_notification_show_message": "Zobrazit zprávu v e-mailové notifikaci",
   "Email_Notifications_Change_Disabled": "Administrátor vašeho Rocket.Chatu zakázal e-mailové notifikace",
+  "Enterprise": "Korporace",
   "Email_or_username": "E-mail nebo uživatelské jméno",
   "Email_Placeholder": "Zadejte svou e-mailovou adresu...",
   "Email_Placeholder_any": "Zadejte prosím emailovou adresu",
@@ -1336,6 +1337,8 @@
   "email_style_description": "Vyhnout se vnořeným selektorům",
   "email_style_label": "Styl e-mailu",
   "Email_subject": "Předmět",
+  "Enterprise_License": "Enterprise licence",
+  "Enterprise_License_Description": "Pokud je vaše prostředí registrováno a máte od Rocket.Chat licenci není potřeba ji zde ručně doplňovat",
   "Email_verified": "Email ověřen",
   "Emoji": "Emotikony",
   "EmojiCustomFilesystem": "Vlastní filesystem pro emotikony",
@@ -1372,9 +1375,6 @@
   "Enter_Normal": "Normální mód (odeslání po stisku klávesy enter)",
   "Enter_to": "Enter",
   "Enter_your_E2E_password": "Zadejte heslo E2E",
-  "Enterprise": "Korporace",
-  "Enterprise_License": "Enterprise licence",
-  "Enterprise_License_Description": "Pokud je vaše prostředí registrováno a máte od Rocket.Chat licenci není potřeba ji zde ručně doplňovat",
   "Entertainment": "Zábava",
   "Error": "Chyba",
   "Error_404": "Chyba: 404 nenalezeno",
@@ -3962,5 +3962,9 @@
   "registration.component.form.reasonToJoin": "Důvod připojení",
   "registration.component.form.invalidConfirmPass": "Hesla nesouhlasí",
   "registration.component.form.confirmPassword": "Potvrďte heslo",
-  "registration.component.form.sendConfirmationEmail": "Zaslat potvrzovací e-mail"
+  "registration.component.form.sendConfirmationEmail": "Zaslat potvrzovací e-mail",
+  "onboarding.component.form.action.pasteHere": "Vložte sem ...",
+  "onboarding.form.registerOfflineForm.title": "Registrovat ručně",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytika",
+  "UpgradeToGetMore_auditing_Title": "Audit zpráv"
 }

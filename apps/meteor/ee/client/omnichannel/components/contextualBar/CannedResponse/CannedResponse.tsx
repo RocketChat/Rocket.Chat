@@ -15,7 +15,8 @@ import {
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
 const CannedResponse: FC<{
-	canEdit: boolean;
+	allowEdit: boolean;
+	allowUse: boolean;
 	data: {
 		departmentName: ILivechatDepartment['name'];
 		shortcut: IOmnichannelCannedResponse['shortcut'];
@@ -26,7 +27,7 @@ const CannedResponse: FC<{
 	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
 	onClickEdit: MouseEventHandler<HTMLOrSVGElement>;
 	onClickUse: MouseEventHandler<HTMLOrSVGElement>;
-}> = ({ canEdit, data: { departmentName, shortcut, text, scope: dataScope, tags }, onClickBack, onClickEdit, onClickUse }) => {
+}> = ({ allowEdit, allowUse, data: { departmentName, shortcut, text, scope: dataScope, tags }, onClickBack, onClickEdit, onClickUse }) => {
 	const t = useTranslation();
 	const scope = useScopeDict(dataScope, departmentName);
 
@@ -84,8 +85,8 @@ const CannedResponse: FC<{
 			</ContextualbarContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					{canEdit && <Button onClick={onClickEdit}>{t('Edit')}</Button>}
-					<Button primary onClick={onClickUse}>
+					{allowEdit && <Button onClick={onClickEdit}>{t('Edit')}</Button>}
+					<Button primary disabled={!allowUse} onClick={onClickUse}>
 						{t('Use')}
 					</Button>
 				</ButtonGroup>

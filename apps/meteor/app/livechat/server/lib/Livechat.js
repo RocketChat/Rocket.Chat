@@ -1,6 +1,5 @@
 // Note: Please don't add any new methods to this file, since its still in js and we are migrating to ts
 // Please add new methods to LivechatTyped.ts
-import { Message } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatVisitors,
@@ -21,10 +20,8 @@ import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
-import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import * as Mailer from '../../../mailer/server/api';
-import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import { Analytics } from './Analytics';
 import { parseAgentCustomFields, updateDepartmentAgents } from './Helper';
@@ -36,85 +33,6 @@ export const Livechat = {
 	Analytics,
 
 	logger,
-
-	async saveGuest(guestData, userId) {
-		const { _id, name, email, phone, livechatData = {} } = guestData;
-		Livechat.logger.debug(`Saving data for visitor ${_id}`);
-		const updateData = {};
-
-		if (name) {
-			updateData.name = name;
-		}
-		if (email) {
-			updateData.email = email;
-		}
-		if (phone) {
-			updateData.phone = phone;
-		}
-
-		const customFields = {};
-
-		if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
-			Livechat.logger.debug(`Saving custom fields for visitor ${_id}`);
-			const fields = LivechatCustomField.findByScope('visitor');
-			for await (const field of fields) {
-				if (!livechatData.hasOwnProperty(field._id)) {
-					continue;
-				}
-				const value = trim(livechatData[field._id]);
-				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
-					const regexp = new RegExp(field.regexp);
-					if (!regexp.test(value)) {
-						throw new Meteor.Error(i18n.t('error-invalid-custom-field-value', { field: field.label }));
-					}
-				}
-				customFields[field._id] = value;
-			}
-			updateData.livechatData = customFields;
-			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields for visitor ${_id}`);
-		}
-		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
-
-		setImmediate(() => {
-			Apps.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
-			callbacks.run('livechat.saveGuest', updateData);
-		});
-
-		return ret;
-	},
-
-	async setCustomFields({ token, key, value, overwrite } = {}) {
-		check(token, String);
-		check(key, String);
-		check(value, String);
-		check(overwrite, Boolean);
-		Livechat.logger.debug(`Setting custom fields data for visitor with token ${token}`);
-
-		const customField = await LivechatCustomField.findOneById(key);
-		if (!customField) {
-			throw new Meteor.Error('invalid-custom-field');
-		}
-
-		if (customField.regexp !== undefined && customField.regexp !== '') {
-			const regexp = new RegExp(customField.regexp);
-			if (!regexp.test(value)) {
-				throw new Meteor.Error(i18n.t('error-invalid-custom-field-value', { field: key }));
-			}
-		}
-
-		let result;
-		if (customField.scope === 'room') {
-			result = await LivechatRooms.updateDataByToken(token, key, value, overwrite);
-		} else {
-			result = await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
-		}
-
-		if (result) {
-			return result.modifiedCount;
-		}
-
-		return 0;
-	},
 
 	async saveRoomInfo(roomData, guestData, userId) {
 		Livechat.logger.debug(`Saving room information on room ${roomData._id}`);
@@ -162,35 +80,6 @@ export const Livechat = {
 				Subscriptions.updateDisplayNameByRoomId(rid, name)
 			);
 		}
-	},
-
-	async savePageHistory(token, roomId, pageInfo) {
-		Livechat.logger.debug(`Saving page movement history for visitor with token ${token}`);
-		if (pageInfo.change !== settings.get('Livechat_history_monitor_type')) {
-			return;
-		}
-		const user = await Users.findOneById('rocket.cat');
-
-		const pageTitle = pageInfo.title;
-		const pageUrl = pageInfo.location.href;
-		const extraData = {
-			navigation: {
-				page: pageInfo,
-				token,
-			},
-		};
-
-		if (!roomId) {
-			// keep history of unregistered visitors for 1 month
-			const keepHistoryMiliseconds = 2592000000;
-			extraData.expireAt = new Date().getTime() + keepHistoryMiliseconds;
-		}
-
-		if (!settings.get('Livechat_Visitor_navigation_as_a_message')) {
-			extraData._hidden = true;
-		}
-
-		return Message.saveSystemMessage('livechat_navigation_history', roomId, `${pageTitle} - ${pageUrl}`, user, extraData);
 	},
 
 	async getLivechatRoomGuestInfo(room) {
@@ -296,45 +185,6 @@ export const Livechat = {
 		return false;
 	},
 
-	async afterRemoveAgent(user) {
-		await callbacks.run('livechat.afterAgentRemoved', { agent: user });
-		return true;
-	},
-
-	async removeAgent(username) {
-		check(username, String);
-
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
-
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'livechat:removeAgent',
-			});
-		}
-
-		const { _id } = user;
-
-		if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
-			return this.afterRemoveAgent(user);
-		}
-
-		return false;
-	},
-
-	async removeManager(username) {
-		check(username, String);
-
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
-
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'livechat:removeManager',
-			});
-		}
-
-		return removeUserFromRolesAsync(user._id, ['livechat-manager']);
-	},
-
 	async setUserStatusLivechat(userId, status) {
 		const user = await Users.setLivechatStatus(userId, status);
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
@@ -385,47 +235,6 @@ export const Livechat = {
 			subject,
 			html,
 		});
-	},
-
-	async requestTranscript({ rid, email, subject, user }) {
-		check(rid, String);
-		check(email, String);
-		check(subject, String);
-		check(
-			user,
-			Match.ObjectIncluding({
-				_id: String,
-				username: String,
-				utcOffset: Number,
-				name: Match.Maybe(String),
-			}),
-		);
-
-		const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, open: 1, transcriptRequest: 1 } });
-
-		if (!room || !room.open) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room');
-		}
-
-		if (room.transcriptRequest) {
-			throw new Meteor.Error('error-transcript-already-requested', 'Transcript already requested');
-		}
-
-		const { _id, username, name, utcOffset } = user;
-		const transcriptRequest = {
-			requestedAt: new Date(),
-			requestedBy: {
-				_id,
-				username,
-				name,
-				utcOffset,
-			},
-			email,
-			subject,
-		};
-
-		await LivechatRooms.setEmailTranscriptRequestedByRoomId(rid, transcriptRequest);
-		return true;
 	},
 
 	async notifyGuestStatusChanged(token, status) {
