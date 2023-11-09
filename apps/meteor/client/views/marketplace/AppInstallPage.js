@@ -169,12 +169,7 @@ function AppInstallPage() {
 				handleClose={cancelAction}
 				handleConfirm={() => uploadFile(appFile, manifest)}
 				handleEnableUnlimitedApps={() => {
-					router.navigate({
-						name: 'upgrade',
-						params: {
-							type: 'go-fully-featured-registered',
-						},
-					});
+					router.navigate('/admin/subscription');
 					setModal(null);
 				}}
 			/>,
@@ -235,8 +230,8 @@ function AppInstallPage() {
 					</Field>
 					<Field>
 						<ButtonGroup>
-							<Button disabled={!canSave || installing} onClick={install}>
-								{installing ? t('Installing') : t('Install')}
+							<Button disabled={!canSave} loading={installing} onClick={install}>
+								{t('Install')}
 							</Button>
 							<Button onClick={handleCancel}>{t('Cancel')}</Button>
 						</ButtonGroup>

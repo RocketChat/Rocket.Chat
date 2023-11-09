@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, it, describe } from 'mocha';
+import { before, it, describe, after } from 'mocha';
 
-import { getCredentials, api, request } from '../../../data/api-data';
+import { getCredentials, api, request, methodCall, credentials } from '../../../data/api-data';
 import { addOrRemoveAgentFromDepartment, createDepartment } from '../../../data/livechat/department';
 import {
 	createAgent,
@@ -14,9 +14,9 @@ import {
 	makeAgentAvailable,
 } from '../../../data/livechat/rooms';
 import { createMonitor, createUnit } from '../../../data/livechat/units';
-import { updateSetting, updatePermission } from '../../../data/permissions.helper';
+import { updateSetting, updatePermission, restorePermissionToRoles, removePermissionFromAllRoles } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
-import { createUser, login, setUserActiveStatus } from '../../../data/users.helper';
+import { createUser, deleteUser, login, setUserActiveStatus } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
@@ -68,6 +68,165 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 	});
 	before(async () => {
 		await updatePermission('transfer-livechat-guest', ['admin', 'livechat-manager', 'livechat-agent', 'livechat-monitor']);
+	});
+
+	describe('Monitors', () => {
+		let user: IUser;
+		before(async () => {
+			user = await createUser();
+		});
+		after(async () => {
+			await deleteUser(user);
+		});
+
+		it('should properly create a new monitor', async () => {
+			const { body } = await request
+				.post(methodCall(`livechat:addMonitor`))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:addMonitor',
+						params: [user.username],
+						id: '101',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			expect(body.success).to.be.true;
+		});
+
+		it('should not fail when trying to create a monitor that already exists', async () => {
+			const { body } = await request
+				.post(methodCall(`livechat:addMonitor`))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:addMonitor',
+						params: [user.username],
+						id: '101',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			expect(body.success).to.be.true;
+		});
+
+		it('should fail when trying to create a monitor with an invalid username', async () => {
+			const { body } = await request
+				.post(methodCall(`livechat:addMonitor`))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:addMonitor',
+						params: ['invalid-username'],
+						id: '101',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			expect(body.success).to.be.true;
+			const parsedBody = JSON.parse(body.message);
+
+			expect(parsedBody.error).to.have.property('error').to.be.equal('error-invalid-user');
+		});
+
+		it('should fail when trying to create a monitor with an empty username', async () => {
+			const { body } = await request
+				.post(methodCall(`livechat:addMonitor`))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:addMonitor',
+						params: [''],
+						id: '101',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			expect(body.success).to.be.true;
+			const parsedBody = JSON.parse(body.message);
+
+			expect(parsedBody.error).to.have.property('error').to.be.equal('error-invalid-user');
+		});
+
+		it('should remove a monitor', async () => {
+			const { body } = await request
+				.post(methodCall(`livechat:removeMonitor`))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:removeMonitor',
+						params: [user.username],
+						id: '101',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			expect(body.success).to.be.true;
+		});
+
+		it('should not fail when trying to remove a monitor that does not exist', async () => {
+			const { body } = await request
+				.post(methodCall(`livechat:removeMonitor`))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:removeMonitor',
+						params: [user.username],
+						id: '101',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			expect(body.success).to.be.true;
+		});
+	});
+
+	describe('[GET] livechat/monitors', () => {
+		it('should fail if manage-livechat-monitors permission is missing', async () => {
+			await removePermissionFromAllRoles('manage-livechat-monitors');
+			return request.get(api('livechat/monitors')).set(credentials).expect(403);
+		});
+		it('should return all monitors', async () => {
+			await restorePermissionToRoles('manage-livechat-monitors');
+			const user = await createUser();
+			await createMonitor(user.username);
+
+			const { body } = await request.get(api('livechat/monitors')).set(credentials).query({ text: user.username }).expect(200);
+			expect(body).to.have.property('monitors');
+			expect(body.monitors).to.have.lengthOf(1);
+			expect(body.monitors[0]).to.have.property('username', user.username);
+
+			// cleanup
+			await deleteUser(user);
+		});
+	});
+
+	describe('livechat/monitors/:username', () => {
+		it('should fail if manage-livechat-monitors permission is missing', async () => {
+			await removePermissionFromAllRoles('manage-livechat-monitors');
+			return request.get(api('livechat/monitors/123')).set(credentials).expect(403);
+		});
+		it('should return a monitor', async () => {
+			await restorePermissionToRoles('manage-livechat-monitors');
+			const user = await createUser();
+			await createMonitor(user.username);
+
+			const { body } = await request
+				.get(api(`livechat/monitors/${user.username}`))
+				.set(credentials)
+				.expect(200);
+			expect(body).to.have.property('username', user.username);
+
+			// cleanup
+			await deleteUser(user);
+		});
 	});
 
 	describe('Monitors & Rooms', () => {

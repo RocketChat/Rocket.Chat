@@ -19,7 +19,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	const hasDeviceManagement = useHasLicenseModule('device-management') as boolean;
 	const canViewDeviceManagement = usePermission('view-device-management');
 
-	const { shouldShowUpsell, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales } = useUpsellActions(hasDeviceManagement);
+	const { shouldShowUpsell, cloudWorkspaceHadTrial, handleManageSubscription, handleTalkToSales } = useUpsellActions(hasDeviceManagement);
 
 	useEffect(() => {
 		if (shouldShowUpsell) {
@@ -32,12 +32,12 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 					cancelText={t('Talk_to_an_expert')}
 					confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
 					onClose={() => setModal(null)}
-					onConfirm={handleGoFullyFeatured}
+					onConfirm={handleManageSubscription}
 					onCancel={handleTalkToSales}
 				/>,
 			);
 		}
-	}, [shouldShowUpsell, router, setModal, t, cloudWorkspaceHadTrial, handleGoFullyFeatured, handleTalkToSales]);
+	}, [shouldShowUpsell, router, setModal, t, cloudWorkspaceHadTrial, handleManageSubscription, handleTalkToSales]);
 
 	if (isModalOpen) {
 		return <PageSkeleton />;
