@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
-import { broadcastEventToServices } from '../../../../server/lib/isRunningMs';
 import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
 import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../file-upload/server';
@@ -96,7 +95,6 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	if (mustNotifyNewMessageSent) {
 		void broadcastMessageSentEvent({
 			id: message._id,
-			broadcastCallback: (message) => broadcastEventToServices('message.sent', message),
 		});
 	}
 

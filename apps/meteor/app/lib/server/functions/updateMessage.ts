@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
-import { broadcastEventToServices } from '../../../../server/lib/isRunningMs';
 import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
 import { settings } from '../../../settings/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
@@ -91,7 +90,6 @@ export const updateMessage = async function (
 			void broadcastMessageSentEvent({
 				id: msg._id,
 				data: msg,
-				broadcastCallback: (message) => broadcastEventToServices('message.sent', message),
 			});
 		}
 	});
