@@ -62,7 +62,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 	const formatDate = useFormatDate();
 
-	const { data: licenseData, isLoading, refetch: refetchLicense } = useLicense();
+	const { data: licenseData, isLoading, refetch: refetchLicense } = useLicense({ loadValues: true });
 	const { isRegistered } = useRegistrationStatus();
 
 	const { license, limits } = licenseData || {};
