@@ -42,7 +42,9 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 		});
 
 		License.onValidateLicense(async (): Promise<void> => {
-			RoutingManager.isMethodSet() && (await this.queueWorker.shouldStart());
+			RoutingManager.isMethodSet() &&
+				!(await License.shouldPreventAction('monthlyActiveContacts', 1)) &&
+				(await this.queueWorker.shouldStart());
 		});
 	}
 
