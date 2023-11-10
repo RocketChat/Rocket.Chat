@@ -25,7 +25,9 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 	const card: CardProps = {
 		title: t('Apps'),
 		infoText: t('Apps_InfoText'),
-		showUpgradeButton: (marketplaceAppsPercentage || 0) >= 80,
+		...((marketplaceAppsPercentage || 0) >= 80 && {
+			upgradeButtonText: t('Upgrade'),
+		}),
 	};
 
 	return (

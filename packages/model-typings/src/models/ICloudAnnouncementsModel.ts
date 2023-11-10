@@ -1,6 +1,8 @@
 import type { Cloud } from '@rocket.chat/core-typings';
+import type { DeleteResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ICloudAnnouncementsModel extends IBaseModel<Cloud.Announcement> {}
+export interface ICloudAnnouncementsModel extends IBaseModel<Cloud.Announcement> {
+	removeByViewId(viewId: string): Promise<DeleteResult>;
+}
