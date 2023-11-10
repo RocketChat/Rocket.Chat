@@ -70,6 +70,8 @@ callbacks.add(
 const handleMaxSeatsBanners = throttle(async function _handleMaxSeatsBanners() {
 	const maxActiveUsers = License.getMaxActiveUsers();
 
+	await License.shouldPreventAction('activeUsers');
+
 	if (!maxActiveUsers) {
 		await disableWarningBannerDiscardingDismissal();
 		await disableDangerBannerDiscardingDismissal();

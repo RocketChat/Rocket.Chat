@@ -11,7 +11,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import semver from 'semver';
 
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useLicense } from '../../../../hooks/useLicense';
+import { useLicense, useLicenseName } from '../../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
 import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
 import RegisterWorkspaceModal from '../../cloud/modals/RegisterWorkspaceModal';
@@ -65,9 +65,9 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	const { data: licenseData, isLoading, refetch: refetchLicense } = useLicense();
 	const { isRegistered } = useRegistrationStatus();
 
-	const { license, tags, trial: isTrial, limits } = licenseData || {};
+	const { license, limits } = licenseData || {};
 	const isAirgapped = license?.information?.offline;
-	const licenseName = tags?.[0]?.name ?? 'Community';
+	const licenseName = useLicenseName();
 	const visualExpiration = formatDate(license?.information?.visualExpiration || '');
 
 	const serverVersion = serverInfo.version;
@@ -203,7 +203,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 							<CardColSection m={0}>
 								<Box color='secondary-info' fontScale='p2'>
-									<Icon name='rocketchat' size={16} /> {licenseName} {isTrial && `(${t('trial')})`}
+									<Icon name='rocketchat' size={16} /> {licenseName.data}
 								</Box>
 							</CardColSection>
 							{actionItems.length > 0 && (

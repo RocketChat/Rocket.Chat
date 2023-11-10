@@ -1,5 +1,33 @@
 # @rocket.chat/ddp-client
 
+## 0.2.6-rc.2
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.2
+- @rocket.chat/api-client@0.1.15-rc.2
+
+## 0.2.6-rc.1
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.0-rc.1
+- @rocket.chat/api-client@0.1.15-rc.1
+
+## 0.2.6-rc.0
+
+### Patch Changes
+
+- 5b9d6883bf: feat: Improve UI when MAC limits are reached
+  feat: Limit endpoints on MAC limit reached
+- Updated dependencies [5b9d6883bf]
+- Updated dependencies [92613680b7]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [a98f3ff303]
+- Updated dependencies [5f81a0f3cb]
+  - @rocket.chat/rest-typings@6.5.0-rc.0
+  - @rocket.chat/api-client@0.1.15-rc.0
+
 ## 0.2.5
 
 ### Patch Changes
