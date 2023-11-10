@@ -1,3 +1,4 @@
+import { api } from '@rocket.chat/core-services';
 import type { IMessage, SettingValue, IUser } from '@rocket.chat/core-typings';
 import { Messages, Settings, Users } from '@rocket.chat/models';
 import mem from 'mem';
@@ -15,7 +16,6 @@ const getUserNameCached = mem(
 export const broadcastMessageSentEvent = async ({
 	id,
 	data,
-	broadcastCallback,
 }: {
 	id: IMessage['_id'];
 	broadcastCallback: (message: IMessage) => Promise<void>;
@@ -47,6 +47,6 @@ export const broadcastMessageSentEvent = async ({
 			}
 		}
 
-		void broadcastCallback(message);
+		void api.broadcast('message.sent', message);
 	}
 };

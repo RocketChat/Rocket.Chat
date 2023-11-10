@@ -1,4 +1,4 @@
-import type { CloudRegistrationIntentData, CloudConfirmationPollData, CloudRegistrationStatus } from '@rocket.chat/core-typings';
+import type { CloudRegistrationIntentData, CloudConfirmationPollData, CloudRegistrationStatus, Cloud } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -90,5 +90,8 @@ export type CloudEndpoints = {
 	};
 	'/v1/cloud.syncWorkspace': {
 		POST: () => { success: boolean };
+	};
+	'/v1/cloud.announcements': {
+		GET: () => { announcements: Cloud.Announcement[] };
 	};
 };

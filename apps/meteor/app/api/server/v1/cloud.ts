@@ -1,3 +1,4 @@
+import { CloudAnnouncements } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -173,6 +174,26 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({ url: checkoutUrl.url });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'cloud.announcements',
+	{ authRequired: true },
+	{
+		async get() {
+			const now = new Date();
+			const announcements = await CloudAnnouncements.find(
+				{
+					$or: [{ 'selector.roles': { $elemMatch: { $in: this.user.roles } } }, { selector: { $exists: false } }],
+					platform: { $in: ['web'] },
+					startAt: { $lte: now },
+					expireAt: { $gte: now },
+				},
+				{ sort: { startAt: 1 } },
+			).toArray();
+			return API.v1.success({ announcements });
 		},
 	},
 );
