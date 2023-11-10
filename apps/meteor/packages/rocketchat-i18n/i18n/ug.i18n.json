@@ -1242,5 +1242,6 @@
   "registration.component.form.submit": "تاپشۇرۇش",
   "registration.component.form.invalidConfirmPass": "ئىككىنچى قېتىم كىرگۈزۈلگەن مەخپىي نومۇر بىلەن بىرىنچى قېتىم كىرگۈزۈلگىنى بىلەن ماس كەلمىدى.",
   "registration.component.form.confirmPassword": "مەخپىي نومۇرنى جەزملەشتۈرۈش",
-  "registration.component.form.sendConfirmationEmail": "جەزملەشتۈرگەن ئىلخەت يوللاندى"
+  "registration.component.form.sendConfirmationEmail": "جەزملەشتۈرگەن ئىلخەت يوللاندى",
+  "UpgradeToGetMore_engagement-dashboard_Title": "ئانالىز قىلىش"
 }

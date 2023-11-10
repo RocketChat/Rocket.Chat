@@ -1337,6 +1337,7 @@
   "Email_Notification_Mode_Disabled": "Deaktiveret",
   "Email_notification_show_message": "Vis meddelelse i e-mail-notifikation",
   "Email_Notifications_Change_Disabled": "Din Rocket.Chat-administrator har slået e-mail-notifikationer fra",
+  "Enterprise": "Firma",
   "Email_or_username": "E-mail eller brugernavn",
   "Email_Placeholder": "Indtast venligst din email-adresse...",
   "Email_Placeholder_any": "Indtast venligst email-adresser...",
@@ -1344,6 +1345,8 @@
   "email_style_description": "Undgå nedarvede valg",
   "email_style_label": "E-mail-Style",
   "Email_subject": "Emne",
+  "Enterprise_License": "Koncernlicens",
+  "Enterprise_License_Description": "Hvis dit workspace er registreret og en licens er tildelt af Rocket.Chat Cloud, behøver du ikke manuelt at opdatere licensen her",
   "Email_verified": "Email bekræftet",
   "Emoji": "Emoji",
   "EmojiCustomFilesystem": "Brugerdefineret emoji-filsystem",
@@ -1380,9 +1383,6 @@
   "Enter_Normal": "Normal mode (send med Enter)",
   "Enter_to": "Indtast til",
   "Enter_your_E2E_password": "Indtast din E2E adgangskode",
-  "Enterprise": "Firma",
-  "Enterprise_License": "Koncernlicens",
-  "Enterprise_License_Description": "Hvis dit workspace er registreret og en licens er tildelt af Rocket.Chat Cloud, behøver du ikke manuelt at opdatere licensen her",
   "Entertainment": "Underholdning",
   "Error": "Fejl",
   "Error_404": "Fejl: 404",
@@ -3984,5 +3984,9 @@
   "registration.component.form.reasonToJoin": "Årsag til at deltage",
   "registration.component.form.invalidConfirmPass": "Adgangskodebekræftelsen stemmer ikke overens med adgangskoden",
   "registration.component.form.confirmPassword": "Bekræft dit kodeord",
-  "registration.component.form.sendConfirmationEmail": "Send bekræftelses-email"
+  "registration.component.form.sendConfirmationEmail": "Send bekræftelses-email",
+  "onboarding.component.form.action.pasteHere": "Indsæt her ...",
+  "onboarding.form.registerOfflineForm.title": "Registrer offline",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analyse",
+  "UpgradeToGetMore_auditing_Title": "Meddelelsesovervågning"
 }

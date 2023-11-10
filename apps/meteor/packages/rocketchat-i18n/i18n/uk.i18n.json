@@ -1249,6 +1249,7 @@
   "Email_Notification_Mode_Disabled": "Вимкнено",
   "Email_notification_show_message": "Показувати повідомлення в електронній пошті",
   "Email_Notifications_Change_Disabled": "Ваш адміністратор Rocket.Chat відключив сповіщення на електронну пошту",
+  "Enterprise": "Підприємство",
   "Email_or_username": "Адреса електронної пошти або логін",
   "Email_Placeholder": "Будь ласка, введіть свої електронні адреси ...",
   "Email_Placeholder_any": "Будь ласка, введіть адреси електронної пошти ...",
@@ -1256,6 +1257,7 @@
   "email_style_description": "Уникайте вкладених селекторів",
   "email_style_label": "Стиль листа",
   "Email_subject": "Тема",
+  "Enterprise_License": "Ліцензія підприємства",
   "Email_verified": "Електронну адресу підтверджено ",
   "Emoji": "Emoji",
   "EmojiCustomFilesystem": "Спеціальна файлова система Emoji",
@@ -1289,8 +1291,6 @@
   "Enter_Normal": "Нормальний режим (відправляти клавішою \"Enter\")",
   "Enter_to": "Ввійти в",
   "Enter_your_E2E_password": "Введіть свій пароль E2E",
-  "Enterprise": "Підприємство",
-  "Enterprise_License": "Ліцензія підприємства",
   "Entertainment": "Розваги",
   "Error": "Помилка",
   "Error_404": "Помилка: 404",
@@ -3348,5 +3348,8 @@
   "registration.component.form.reasonToJoin": "Причина приєднання",
   "registration.component.form.invalidConfirmPass": "Підтвердження пароля не збігаються пароль",
   "registration.component.form.confirmPassword": "Підтвердити новий пароль",
-  "registration.component.form.sendConfirmationEmail": "Надіслати електронною поштою підтвердження"
+  "registration.component.form.sendConfirmationEmail": "Надіслати електронною поштою підтвердження",
+  "onboarding.form.registerOfflineForm.title": "Реєстрація вручну",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Аналітика",
+  "UpgradeToGetMore_auditing_Title": "Аудит повідомлень"
 }

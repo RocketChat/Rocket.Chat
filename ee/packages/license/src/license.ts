@@ -349,7 +349,9 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		action: T,
 		extraCount = 0,
 		context: Partial<LimitContext<T>> = {},
-		{ suppressLog }: Pick<LicenseValidationOptions, 'suppressLog'> = {},
+		{ suppressLog }: Pick<LicenseValidationOptions, 'suppressLog'> = {
+			suppressLog: process.env.LICENSE_VALIDATION_SUPPRESS_LOG !== 'false',
+		},
 	): Promise<boolean> {
 		const options: LicenseValidationOptions = {
 			...(extraCount && { behaviors: ['prevent_action'] }),

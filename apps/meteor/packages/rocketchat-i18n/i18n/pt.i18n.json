@@ -1137,6 +1137,7 @@
   "Email_Notification_Mode": "Notificações de E-mail no modo desligado",
   "Email_Notification_Mode_All": "Cada Menção / Mensagem Directa",
   "Email_Notification_Mode_Disabled": "Desactivado",
+  "Enterprise": "Empreendimento",
   "Email_or_username": "Email ou nome de utilizador",
   "Email_Placeholder": "Por favor, indique o seu endereço de e-mail...",
   "Email_Placeholder_any": "Digite endereços de e-mail ...",
@@ -1172,7 +1173,6 @@
   "Enter_Normal": "Modo normal (enviar com Enter)",
   "Enter_to": "Clique ( Enter )para",
   "Enter_your_E2E_password": "Digite sua senha E2E",
-  "Enterprise": "Empreendimento",
   "Entertainment": "Entretenimento",
   "Error": "Erro",
   "Error_404": "Erro:404",
@@ -3174,5 +3174,6 @@
   "registration.component.form.reasonToJoin": "Razão para se juntar",
   "registration.component.form.invalidConfirmPass": "A confirmação da senha não é igual à senha",
   "registration.component.form.confirmPassword": "Confirmar a senha",
-  "registration.component.form.sendConfirmationEmail": "Enviar email de confirmação"
+  "registration.component.form.sendConfirmationEmail": "Enviar email de confirmação",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }

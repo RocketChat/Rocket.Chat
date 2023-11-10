@@ -1407,6 +1407,7 @@
   "Email_Notification_Mode_Disabled": "已禁用",
   "Email_notification_show_message": "在电子邮件通知中显示消息",
   "Email_Notifications_Change_Disabled": "您的 Rocket.Chat 管理员已禁止电子邮箱通知",
+  "Enterprise": "企业",
   "Email_or_username": "电子邮件或用户名",
   "Email_Placeholder": "请输入您的电子邮件地址...",
   "Email_Placeholder_any": "请输入电子邮件地址...",
@@ -1414,6 +1415,8 @@
   "email_style_description": "避免嵌套选择器",
   "email_style_label": "邮箱风格",
   "Email_subject": "邮件主题",
+  "Enterprise_License": "企业许可证",
+  "Enterprise_License_Description": "如果您的工作区已经注册，且您的许可证由Rock.Chat Cloud提供，那么您无需在这里手动更新许可证。",
   "Email_verified": "邮箱已验证",
   "Email_sent": "已发送的电子邮件",
   "Emoji": "表情符号",
@@ -1452,9 +1455,6 @@
   "Enter_Normal": "常规模式（Enter 发送消息）",
   "Enter_to": "进入",
   "Enter_your_E2E_password": "输入您的端到端密码",
-  "Enterprise": "企业",
-  "Enterprise_License": "企业许可证",
-  "Enterprise_License_Description": "如果您的工作区已经注册，且您的许可证由Rock.Chat Cloud提供，那么您无需在这里手动更新许可证。",
   "Entertainment": "娱乐",
   "Error": "错误",
   "Error_404": "错误：404",
@@ -4134,5 +4134,9 @@
   "registration.component.form.reasonToJoin": "加入的理由",
   "registration.component.form.invalidConfirmPass": "两次输入的密码不一致",
   "registration.component.form.confirmPassword": "确认密码",
-  "registration.component.form.sendConfirmationEmail": "已发送确认电子邮件"
+  "registration.component.form.sendConfirmationEmail": "已发送确认电子邮件",
+  "onboarding.component.form.action.pasteHere": "在此粘贴",
+  "onboarding.form.registerOfflineForm.title": "离线注册",
+  "UpgradeToGetMore_engagement-dashboard_Title": "分析",
+  "UpgradeToGetMore_auditing_Title": "消息审计"
 }
