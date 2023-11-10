@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useDebugValue } from 'react';
 
 import { UiKitContext } from './UiKitContext';
 
-const AppIdContext = createContext('core');
+const AppIdContext = createContext<string | undefined>(undefined);
 
 type AppIdProviderProps = {
   children: ReactNode;
@@ -11,14 +11,20 @@ type AppIdProviderProps = {
 };
 
 export const AppIdProvider = ({ children, appId }: AppIdProviderProps) => {
-  const parentAppId = useContext(AppIdContext);
-  const value = appId || parentAppId || 'core';
+  if (!appId) {
+    return <>{children}</>;
+  }
+
   return (
-    <AppIdContext.Provider value={value}>{children}</AppIdContext.Provider>
+    <AppIdContext.Provider value={appId}>{children}</AppIdContext.Provider>
   );
 };
 
 export const useAppId = () => {
-  const outerAppId = useContext(UiKitContext).appId;
-  return useContext(AppIdContext) || outerAppId || 'core';
+  const outerAppId = useContext(UiKitContext).appId ?? 'core';
+  const appId = useContext(AppIdContext) ?? outerAppId;
+
+  useDebugValue(appId);
+
+  return appId;
 };
