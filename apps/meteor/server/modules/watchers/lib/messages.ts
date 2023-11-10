@@ -1,4 +1,3 @@
-import { api } from '@rocket.chat/core-services';
 import type { IMessage, SettingValue, IUser } from '@rocket.chat/core-typings';
 import { Messages, Settings, Users } from '@rocket.chat/models';
 import mem from 'mem';
@@ -13,7 +12,15 @@ const getUserNameCached = mem(
 	{ maxAge: 10000 },
 );
 
-export const broadcastMessageSentEvent = async ({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<void> => {
+export const broadcastMessageSentEvent = async ({
+	id,
+	data,
+	broadcastCallback,
+}: {
+	id: IMessage['_id'];
+	broadcastCallback: (message: IMessage) => Promise<void>;
+	data?: IMessage;
+}): Promise<void> => {
 	const message = data ?? (await Messages.findOneById(id));
 	if (!message) {
 		return;
@@ -40,6 +47,6 @@ export const broadcastMessageSentEvent = async ({ id, data }: { id: IMessage['_i
 			}
 		}
 
-		void api.broadcast('message.sent', message);
+		void broadcastCallback(message);
 	}
 };
