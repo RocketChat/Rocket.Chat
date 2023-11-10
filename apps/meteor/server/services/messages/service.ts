@@ -1,5 +1,5 @@
 import type { IMessageService } from '@rocket.chat/core-services';
-import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { ServiceClassInternal, api } from '@rocket.chat/core-services';
 import type { IMessage, MessageTypesValues, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import type BadWordsFilter from 'bad-words';
@@ -76,6 +76,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		);
 		void broadcastMessageSentEvent({
 			id: result.insertedId,
+			broadcastCallback: (message) => api.broadcast('message.sent', message),
 		});
 		return result.insertedId;
 	}

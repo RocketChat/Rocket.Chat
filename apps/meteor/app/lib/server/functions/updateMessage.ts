@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, api } from '@rocket.chat/core-services';
 import type { IEditedMessage, IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -90,6 +90,7 @@ export const updateMessage = async function (
 			void broadcastMessageSentEvent({
 				id: msg._id,
 				data: msg,
+				broadcastCallback: (message) => api.broadcast('message.sent', message),
 			});
 		}
 	});

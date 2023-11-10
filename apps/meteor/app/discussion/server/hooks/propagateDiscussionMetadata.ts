@@ -1,3 +1,4 @@
+import { api } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 
@@ -13,6 +14,7 @@ const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<
 	void broadcastMessageSentEvent({
 		id: parentMessage._id,
 		data: parentMessage,
+		broadcastCallback: (message) => api.broadcast('message.sent', message),
 	});
 };
 

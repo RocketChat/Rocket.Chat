@@ -95,6 +95,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	if (mustNotifyNewMessageSent) {
 		void broadcastMessageSentEvent({
 			id: message._id,
+			broadcastCallback: (message) => api.broadcast('message.sent', message),
 		});
 	}
 

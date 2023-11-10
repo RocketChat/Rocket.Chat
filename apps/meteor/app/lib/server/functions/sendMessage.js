@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, api } from '@rocket.chat/core-services';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
@@ -291,6 +291,7 @@ export const sendMessage = async function (user, message, room, upsert = false, 
 		await callbacks.run('afterSaveMessage', message, room);
 		void broadcastMessageSentEvent({
 			id: message._id,
+			broadcastCallback: (message) => api.broadcast('message.sent', message),
 		});
 		return message;
 	}
