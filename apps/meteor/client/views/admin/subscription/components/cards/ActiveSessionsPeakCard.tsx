@@ -23,7 +23,9 @@ const ActiveSessionsPeakCard = (): ReactElement => {
 	const card: CardProps = {
 		title: t('ActiveSessionsPeak'),
 		infoText: t('ActiveSessionsPeak_InfoText'),
-		showUpgradeButton: exceedLimit,
+		...(exceedLimit && {
+			upgradeButtonText: t('Upgrade'),
+		}),
 	};
 
 	return (
