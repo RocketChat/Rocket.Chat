@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, api } from '@rocket.chat/core-services';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
@@ -6,7 +6,6 @@ import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import { isURL } from '../../../../lib/utils/isURL';
-import { broadcastEventToServices } from '../../../../server/lib/isRunningMs';
 import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
@@ -292,7 +291,7 @@ export const sendMessage = async function (user, message, room, upsert = false, 
 		await callbacks.run('afterSaveMessage', message, room);
 		void broadcastMessageSentEvent({
 			id: message._id,
-			broadcastCallback: (message) => broadcastEventToServices('message.sent', message),
+			broadcastCallback: (message) => api.broadcast('message.sent', message),
 		});
 		return message;
 	}

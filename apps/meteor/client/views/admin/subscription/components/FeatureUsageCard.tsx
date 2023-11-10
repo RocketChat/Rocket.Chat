@@ -13,25 +13,24 @@ type FeatureUsageCardProps = {
 export type CardProps = {
 	title: string;
 	infoText?: string;
-	showUpgradeButton?: boolean;
 	upgradeButtonText?: string;
 };
 
 const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactElement => {
-	const { title, infoText, showUpgradeButton, upgradeButtonText = 'Upgrade' } = card;
+	const { title, infoText, upgradeButtonText } = card;
 	return (
 		<Card>
 			<CardTitle>
 				{title} {infoText && <InfoTextIconModal title={title} infoText={infoText} />}
 			</CardTitle>
-			<CardBody height='x184'>
+			<CardBody minHeight='x184'>
 				<CardColSection display='flex' flexDirection='row' justifyContent='center' alignItems='center' fontScale='p2' h='full' w='full'>
 					{children}
 				</CardColSection>
 			</CardBody>
-			{showUpgradeButton && (
+			{upgradeButtonText && (
 				<CardFooter>
-					<UpgradeButton small i18nKey={upgradeButtonText} />
+					<UpgradeButton small>{upgradeButtonText}</UpgradeButton>
 				</CardFooter>
 			)}
 		</Card>
