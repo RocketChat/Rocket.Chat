@@ -63,5 +63,8 @@
 		"minimist": "1.2.6",
 		"adm-zip": "0.5.9",
 		"preact@10.15.1": "patch:preact@npm:10.15.1#.yarn/patches/preact-npm-10.15.1-bd458de913.patch"
+	},
+	"dependencies": {
+		"node-gyp": "^9.4.1"
 	}
 }
