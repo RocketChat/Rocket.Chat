@@ -17,7 +17,10 @@ const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 	const { token } = guest;
 	token && (await store.setState({ token }));
 	const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...guest } });
-	store.setState({ user });
+	if (!user) {
+		return;
+	}
+	store.setState({ user } as Omit<StoreState['user'], 'ts'>);
 };
 
 const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
@@ -46,7 +49,7 @@ export type ApiMethods = keyof Api;
 
 type ApiParams<T extends ApiMethods> = Parameters<Api[T]>;
 
-export type ApiArgs<N extends ApiMethods> = ApiParams<N> extends infer U ? (U extends any ? U : never) : never;
+export type ApiArgs<N extends ApiMethods> = ApiParams<N> extends infer U ? (U extends any[] ? U : never) : never;
 
 export type ApiMethodsAndArgs<N extends ApiMethods> = {
 	fn: N;
@@ -143,7 +146,12 @@ const api = {
 	},
 
 	setAgent: (agent: StoreState['defaultAgent']) => {
+		if (!agent) {
+			return;
+		}
+
 		const { _id, username, ...props } = agent;
+
 		if (!_id || !username) {
 			return console.warn('The fields _id and username are mandatory.');
 		}
@@ -189,7 +197,7 @@ const api = {
 		}
 
 		if (data.department) {
-			api.setDepartment({ value: data.department });
+			api.setDepartment(data.department);
 		}
 
 		createOrUpdateGuest(data);
@@ -213,7 +221,7 @@ const api = {
 		parentCall('hideWidget');
 	},
 
-	minimizeWidge: () => {
+	minimizeWidget: () => {
 		store.setState({ minimized: true });
 		parentCall('closeWidget');
 	},
@@ -232,7 +240,7 @@ function onNewMessage<T extends ApiMethods>(event: ApiMethodsAndArgs<T>) {
 	const fn = api[event.fn];
 
 	// There is an existing issue with overload resolution with type union arguments please see https://github.com/microsoft/TypeScript/issues/14107
-	// @ts-ignore: A spread argument must either have a tuple type or be passed to a rest parameter
+	// @ts-expect-error: A spread argument must either have a tuple type or be passed to a rest parameter
 	fn(...event.args);
 }
 

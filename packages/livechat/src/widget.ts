@@ -1,11 +1,6 @@
 import mitt from 'mitt';
 
-import type { ApiArgs, ApiMethods, ApiMethodsAndArgs } from './lib/hooks';
-
-const log =
-	process.env.NODE_ENV === 'development'
-		? (...args: any) => window.console.log('%cwidget%c', 'color: red', 'color: initial', ...args)
-		: () => undefined;
+import type { ApiArgs, ApiMethods } from './lib/hooks';
 
 const WIDGET_OPEN_WIDTH = 365;
 const WIDGET_OPEN_HEIGHT = 525;
@@ -57,7 +52,7 @@ function emitCallback(eventName: string, data?: unknown) {
 }
 
 // hooks
-function callHook<T extends ApiMethods>(action: T, params?: ApiArgs<T>) {
+function callHook<T extends ApiMethods>(action: T, params: ApiArgs<T> | [] = []) {
 	if (!ready) {
 		return hookQueue.push([action, params]);
 	}
@@ -145,8 +140,8 @@ const createWidget = (url: string) => {
 
 		smallScreen = matches;
 		updateWidgetStyle(widget.dataset.state === 'opened');
-		callHook('setExpanded', { expanded: smallScreen });
-		callHook('setParentUrl', { parentUrl: window.location.href });
+		callHook('setExpanded', [smallScreen]);
+		callHook('setParentUrl', [window.location.href]);
 	};
 
 	const mediaQueryList = window.matchMedia('screen and (max-device-width: 480px)');
@@ -216,7 +211,9 @@ const api: ApiTypes = {
 		ready = true;
 		if (hookQueue.length > 0) {
 			hookQueue.forEach(function (hookParams) {
-				callHook.apply(this, hookParams);
+				// There is an existing issue with overload resolution with type union arguments please see https://github.com/microsoft/TypeScript/issues/14107
+				// @ts-expect-error: A spread argument must either have a tuple type or be passed to a rest parameter
+				callHook(...hookParams);
 			});
 			hookQueue = [];
 		}
@@ -289,64 +286,68 @@ const api: ApiTypes = {
 };
 
 function pageVisited(change: string) {
-	callHook('pageVisited', {
-		info: {
+	callHook('pageVisited', [
+		{
 			change,
 			location: JSON.parse(JSON.stringify(document.location)),
 			title: document.title,
 		},
-	});
+	]);
 }
 
 function setCustomField(key: string, value: string, overwrite: boolean) {
 	if (typeof overwrite === 'undefined') {
 		overwrite = true;
 	}
-	callHook('setCustomField', { key, value, overwrite });
+	if (!key) {
+		return;
+	}
+
+	callHook('setCustomField', [key, value, overwrite]);
 }
 
-function setTheme(theme: ApiArgs<'setTheme'>['theme']) {
-	callHook('setTheme', { theme });
+function setTheme(theme: ApiArgs<'setTheme'>[0]) {
+	callHook('setTheme', [theme]);
 }
 
-function setDepartment(department: ApiArgs<'setDepartment'>[0]['value']) {
-	callHook('setDepartment', { value: department });
+function setDepartment(department: ApiArgs<'setDepartment'>[0]) {
+	callHook('setDepartment', [department]);
 }
 
-function setBusinessUnit(businessUnit: ApiArgs<'setBusinessUnit'>['newBusinessUnit']) {
-	callHook('setBusinessUnit', { newBusinessUnit: businessUnit });
+function setBusinessUnit(businessUnit: ApiArgs<'setBusinessUnit'>[0]) {
+	callHook('setBusinessUnit', [businessUnit]);
 }
 
 function clearBusinessUnit() {
 	callHook('clearBusinessUnit');
 }
 
-function setGuestToken(token: ApiArgs<'setGuestToken'>['token']) {
-	callHook('setGuestToken', { token });
+function setGuestToken(token: ApiArgs<'setGuestToken'>[0]) {
+	callHook('setGuestToken', [token]);
 }
 
-function setGuestName(name: ApiArgs<'setGuestName'>['name']) {
-	callHook('setGuestName', { name });
+function setGuestName(name: ApiArgs<'setGuestName'>[0]) {
+	callHook('setGuestName', [name]);
 }
 
-function setGuestEmail(email: ApiArgs<'setGuestEmail'>['email']) {
-	callHook('setGuestEmail', { email });
+function setGuestEmail(email: ApiArgs<'setGuestEmail'>[0]) {
+	callHook('setGuestEmail', [email]);
 }
 
-function registerGuest(guest: ApiArgs<'registerGuest'>['data']) {
-	callHook('registerGuest', { data: guest });
+function registerGuest(guest: ApiArgs<'registerGuest'>[0]) {
+	callHook('registerGuest', [guest]);
 }
 
 function clearDepartment() {
 	callHook('clearDepartment');
 }
 
-function setAgent(agent: ApiArgs<'setAgent'>['agent']) {
-	callHook('setAgent', { agent });
+function setAgent(agent: ApiArgs<'setAgent'>[0]) {
+	callHook('setAgent', [agent]);
 }
 
-function setLanguage(language: ApiArgs<'setLanguage'>['language']) {
-	callHook('setLanguage', { language });
+function setLanguage(lang: ApiArgs<'setLanguage'>[0]) {
+	callHook('setLanguage', [lang]);
 }
 
 function showWidget() {
@@ -365,8 +366,8 @@ function minimizeWidget() {
 	callHook('minimizeWidget');
 }
 
-function setParentUrl(url?: ApiArgs<'setParentUrl'>['parentUrl']) {
-	callHook('setParentUrl', { parentUrl: url });
+function setParentUrl(url?: ApiArgs<'setParentUrl'>[0]) {
+	callHook('setParentUrl', [url]);
 }
 
 function isDefined<T>(val: T | undefined | null): val is T {
@@ -376,16 +377,16 @@ function isDefined<T>(val: T | undefined | null): val is T {
 function initialize(params: {
 	customField?: ApiArgs<'setCustomField'>;
 	setCustomFields?: ApiArgs<'setCustomField'>[];
-	theme?: ApiArgs<'setTheme'>['theme'];
-	department?: ApiArgs<'setDepartment'>['value'];
-	businessUnit?: ApiArgs<'setBusinessUnit'>['newBusinessUnit'];
-	guestToken?: ApiArgs<'setGuestToken'>['token'];
-	guestName?: ApiArgs<'setGuestName'>['name'];
-	guestEmail?: ApiArgs<'setGuestEmail'>['email'];
-	registerGuest?: ApiArgs<'registerGuest'>['data'];
-	language?: ApiArgs<'setLanguage'>['language'];
-	agent?: ApiArgs<'setAgent'>['agent'];
-	parentUrl?: ApiArgs<'setParentUrl'>['parentUrl'];
+	theme?: ApiArgs<'setTheme'>[0];
+	department?: ApiArgs<'setDepartment'>[0];
+	businessUnit?: ApiArgs<'setBusinessUnit'>[0];
+	guestToken?: ApiArgs<'setGuestToken'>[0];
+	guestName?: ApiArgs<'setGuestName'>[0];
+	guestEmail?: ApiArgs<'setGuestEmail'>[0];
+	registerGuest?: ApiArgs<'registerGuest'>[0];
+	language?: ApiArgs<'setLanguage'>[0];
+	agent?: ApiArgs<'setAgent'>[0];
+	parentUrl?: ApiArgs<'setParentUrl'>[0];
 }) {
 	for (const method in params) {
 		if (!params.hasOwnProperty(method)) {
@@ -400,49 +401,55 @@ function initialize(params: {
 
 		switch (method) {
 			case 'customField':
-				const { key, value, overwrite } = param;
+				const customFieldParam = param as ApiArgs<'setCustomField'>;
+				const key = customFieldParam[0];
+				const value = customFieldParam[1] || '';
+				const overwrite = customFieldParam[2];
 				setCustomField(key, value, overwrite);
 				continue;
 			case 'setCustomFields':
-				if (!Array.isArray(params[method])) {
+				const customFieldsParam = param as ApiArgs<'setCustomField'>[];
+				if (!Array.isArray(customFieldsParam)) {
 					console.log('Error: Invalid parameters. Value must be an array of objects');
 					continue;
 				}
-				param.forEach((data: ApiArgs<'setCustomField'>) => {
-					const { key, value = '', overwrite } = data;
+				customFieldsParam.forEach((data: ApiArgs<'setCustomField'>) => {
+					const key = data[0];
+					const value = data[1] || '';
+					const overwrite = data[2];
 					setCustomField(key, value, overwrite);
 				});
 				continue;
 			case 'theme':
-				setTheme(param);
+				setTheme(param as ApiArgs<'setTheme'>[0]);
 				continue;
 			case 'department':
-				setDepartment(param);
+				setDepartment(param as ApiArgs<'setDepartment'>[0]);
 				continue;
 			case 'businessUnit': {
-				setBusinessUnit(param);
+				setBusinessUnit(param as ApiArgs<'setBusinessUnit'>[0]);
 				continue;
 			}
 			case 'guestToken':
-				setGuestToken(param);
+				setGuestToken(param as ApiArgs<'setGuestToken'>[0]);
 				continue;
 			case 'guestName':
-				setGuestName(param);
+				setGuestName(param as ApiArgs<'setGuestName'>[0]);
 				continue;
 			case 'guestEmail':
-				setGuestEmail(param);
+				setGuestEmail(param as ApiArgs<'setGuestEmail'>[0]);
 				continue;
 			case 'registerGuest':
-				registerGuest(param);
+				registerGuest(param as ApiArgs<'registerGuest'>[0]);
 				continue;
 			case 'language':
-				setLanguage(param);
+				setLanguage(param as ApiArgs<'setLanguage'>[0]);
 				continue;
 			case 'agent':
-				setAgent(param);
+				setAgent(param as ApiArgs<'setAgent'>[0]);
 				continue;
 			case 'parentUrl':
-				setParentUrl(param);
+				setParentUrl(param as ApiArgs<'setParentUrl'>[0]);
 				continue;
 			default:
 				continue;
@@ -455,61 +462,29 @@ const currentPage: { href: string | null; title: string | null } = {
 	title: null,
 };
 
-function onNewMessage<T extends ApiMethods>(event: ApiMethodsAndArgs<T>) {
-	const fn = api[event.fn];
+function onNewMessage<T extends ApiMethods>(msg: MessageEvent<{ src?: string; fn: T; args: ApiArgs<T> }>) {
+	if (msg.source === msg.target) {
+		return;
+	}
 
-	fn(event.args[0]);
+	if (!msg.data || typeof msg.data !== 'object') {
+		return;
+	}
+
+	if (!msg.data.src || msg.data.src !== 'rocketchat') {
+		return;
+	}
+
+	const { fn } = msg.data;
+
+	const { args } = msg.data;
+
+	// There is an existing issue with overload resolution with type union arguments please see https://github.com/microsoft/TypeScript/issues/14107
+	// @ts-expect-error: A spread argument must either have a tuple type or be passed to a rest parameter
+	api[fn](...args);
 }
-
-function onNewMessageHandler<T extends ApiMethods>(event: MessageEvent) {
-	if (event.source === event.target) {
-		return;
-	}
-
-	if (!event.data || typeof event.data !== 'object') {
-		return;
-	}
-
-	if (!event.data.src || event.data.src !== 'rocketchat') {
-		return;
-	}
-
-	return onNewMessage(event.data as { fn: T; args: ApiArgs<T> });
-}
-
-// function onNewMessage<T extends ApiMethods>(msg: MessageEvent<{ src?: string; fn: T; args: ApiArgs<T> }>) {
-// 	if (msg.source === msg.target) {
-// 		return;
-// 	}
-
-// 	if (!msg.data || typeof msg.data !== 'object') {
-// 		return;
-// 	}
-
-// 	if (!msg.data.src || msg.data.src !== 'rocketchat') {
-// 		return;
-// 	}
-
-// 	const { fn } = msg.data;
-
-// 	const { args } = msg.data;
-
-// 	// TODO: Refactor widget.js to ts and change their calls to use objects instead of ordered arguments
-// 	log(`api.${msg.data.fn}`, ...args);
-// 	api[fn](args);
-// }
-
-// (msg) => {
-// 	if (typeof msg.data === 'object' && msg.data.src !== undefined && msg.data.src === 'rocketchat') {
-// 		if (api[msg.data.fn] !== undefined && typeof api[msg.data.fn] === 'function') {
-// 			const args = [].concat(msg.data.args || []);
-// 			log(`api.${msg.data.fn}`, ...args);
-// 			api[msg.data.fn].apply(null, args);
-// 		}
-// 	}
-
 const attachMessageListener = () => {
-	window.addEventListener('message', onNewMessageHandler, false);
+	window.addEventListener('message', onNewMessage, false);
 };
 
 const trackNavigation = () => {
@@ -555,8 +530,7 @@ window.RocketChat._.push = function (c: () => void) {
 };
 window.RocketChat = window.RocketChat._.push;
 
-// exports
-window.RocketChat.livechat = {
+const livechatWidgetAPI = {
 	// methods
 	pageVisited,
 	setCustomField,
@@ -616,6 +590,9 @@ window.RocketChat.livechat = {
 		registerCallback('no-agent-online', fn);
 	},
 };
+
+// exports
+window.RocketChat.livechat = livechatWidgetAPI;
 
 // proccess queue
 queue.forEach((c: () => void) => {
