@@ -19,7 +19,7 @@ Meteor.startup(async () => {
 		};
 	}
 
-	if (Meteor.settings.public.packages) {
+	if (!Meteor.settings.public.packages) {
 		Meteor.settings.public.packages = {};
 	}
 
