@@ -162,7 +162,7 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 	{
 		...common(args),
 		entry: {
-			script: _('./src/widget.js'),
+			script: _('./src/widget.ts'),
 		} as webpack.Entry,
 		output: {
 			path: _('./dist'),
