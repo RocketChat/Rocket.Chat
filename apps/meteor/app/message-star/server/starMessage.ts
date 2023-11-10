@@ -1,10 +1,10 @@
+import { api } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
-import { broadcastEventToServices } from '../../../server/lib/isRunningMs';
 import { broadcastMessageSentEvent } from '../../../server/modules/watchers/lib/messages';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
@@ -64,7 +64,7 @@ Meteor.methods<ServerMethods>({
 
 		void broadcastMessageSentEvent({
 			id: message._id,
-			broadcastCallback: (message) => broadcastEventToServices('message.sent', message),
+			broadcastCallback: (message) => api.broadcast('message.sent', message),
 		});
 
 		return true;

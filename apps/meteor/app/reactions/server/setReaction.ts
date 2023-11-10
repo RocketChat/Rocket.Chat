@@ -8,7 +8,6 @@ import _ from 'underscore';
 import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../../server/lib/i18n';
-import { broadcastEventToServices } from '../../../server/lib/isRunningMs';
 import { broadcastMessageSentEvent } from '../../../server/modules/watchers/lib/messages';
 import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
@@ -111,7 +110,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 
 	void broadcastMessageSentEvent({
 		id: message._id,
-		broadcastCallback: (message) => broadcastEventToServices('message.sent', message),
+		broadcastCallback: (message) => api.broadcast('message.sent', message),
 	});
 }
 
