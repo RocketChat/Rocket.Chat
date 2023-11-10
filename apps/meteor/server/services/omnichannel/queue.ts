@@ -1,5 +1,4 @@
 import type { InquiryWithAgentInfo, IOmnichannelQueue } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
 import { LivechatInquiry } from '@rocket.chat/models';
 
 import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
@@ -102,10 +101,6 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	async shouldStart() {
 		if (!settings.get('Livechat_enabled')) {
 			void this.stop();
-			return;
-		}
-
-		if (await License.shouldPreventAction('monthlyActiveContacts')) {
 			return;
 		}
 
