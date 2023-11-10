@@ -10,6 +10,8 @@ import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
+import { broadcastEventToServices } from '../../lib/isRunningMs';
+import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
 import { inboxes } from './EmailInbox';
 import type { Inbox } from './EmailInbox';
 import { logger } from './logger';
@@ -170,6 +172,10 @@ slashCommands.add({
 				},
 			},
 		);
+		void broadcastMessageSentEvent({
+			id: message._id,
+			broadcastCallback: (message) => broadcastEventToServices('message.sent', message),
+		});
 
 		return sendSuccessReplyMessage({
 			msgId: message._id,
