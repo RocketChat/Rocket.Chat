@@ -124,32 +124,32 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 			<ContextualbarScrollableContent is='form' {...props}>
 				{username && (
 					<Box alignSelf='center'>
-						<UserInfo.Avatar data-qa='AgentEdit-Avatar' username={username} />
+						<UserInfo.Avatar data-qa='agent-edit-avatar' username={username} />
 					</Box>
 				)}
 				<Field>
 					<FieldLabel>{t('Name')}</FieldLabel>
 					<FieldRow>
-						<TextInput data-qa='AgentEditTextInput-Name' value={name} disabled />
+						<TextInput data-qa='agent-edit-text-input-name' value={name} disabled />
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldLabel>{t('Username')}</FieldLabel>
 					<FieldRow>
-						<TextInput data-qa='AgentEditTextInput-Username' value={username} disabled addon={<Icon name='at' size='x20' />} />
+						<TextInput data-qa='agent-edit-text-input-username' value={username} disabled addon={<Icon name='at' size='x20' />} />
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldLabel>{t('Email')}</FieldLabel>
 					<FieldRow>
-						<TextInput data-qa='AgentEditTextInput-Email' value={email} disabled addon={<Icon name='mail' size='x20' />} />
+						<TextInput data-qa='agent-edit-text-input-email' value={email} disabled addon={<Icon name='mail' size='x20' />} />
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldLabel>{t('Departments')}</FieldLabel>
 					<FieldRow>
 						<MultiSelect
-							data-qa='AgentEditTextInput-Departments'
+							data-qa='agent-edit-text-input-departments'
 							options={options}
 							value={departments}
 							placeholder={t('Select_an_option')}
@@ -161,7 +161,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 					<FieldLabel>{t('Status')}</FieldLabel>
 					<FieldRow>
 						<Select
-							data-qa='AgentEditTextInput-Status'
+							data-qa='agent-edit-text-input-status'
 							options={[
 								['available', t('Available')],
 								['not-available', t('Not_Available')],
@@ -179,7 +179,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 						<FieldRow>
 							<TextInput
 								name='agentVoipExtension'
-								data-qa='AgentEditTextInput-VoIP_Extension'
+								data-qa='agent-edit-text-input-voip-extension'
 								value={voipExtension as string}
 								onChange={handleVoipExtension}
 							/>
@@ -190,7 +190,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 			<ContextualbarFooter>
 				<ButtonGroup wrap>
 					<Button
-						data-qa='AgentEditButtonReset'
+						data-qa='agent-edit-button-reset'
 						flexGrow={1}
 						type='reset'
 						disabled={!hasUnsavedChanges && !maxChatUnsaved}
@@ -199,7 +199,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 						{t('Reset')}
 					</Button>
 					<Button
-						data-qa='AgentEditButtonSave'
+						data-qa='agent-edit-button-save'
 						mie='none'
 						flexGrow={1}
 						disabled={!hasUnsavedChanges && !maxChatUnsaved}

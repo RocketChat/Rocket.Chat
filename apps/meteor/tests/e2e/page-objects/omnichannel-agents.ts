@@ -44,19 +44,19 @@ export class OmnichannelAgents {
 		return this.page.locator('.rcx-vertical-bar button[title="Remove"]');
 	}
 
-	get StatusSelect(): Locator {
-		return this.page.locator('[data-qa="AgentEditTextInput-Status"]');
+	get btnSave(): Locator {
+		return this.page.locator('[data-qa="agent-edit-button-save"]');
 	}
 
-	get MaxChatsInput(): Locator {
+	get selectStatus(): Locator {
+		return this.page.locator('[data-qa="agent-edit-text-input-status"]');
+	}
+
+	get inputMaxChats(): Locator {
 		return this.page.locator('input[name="maxNumberSimultaneousChat"]');
 	}
 
-	get DepartmentSelect(): Locator {
-		return this.page.locator('[data-qa="AgentEditTextInput-Departments"]');
-	}
-
-	get btnSave(): Locator {
-		return this.page.locator('[data-qa="AgentEditButtonSave"]');
+	get selectDepartment(): Locator {
+		return this.page.locator('[data-qa="agent-edit-text-input-departments"]');
 	}
 }
