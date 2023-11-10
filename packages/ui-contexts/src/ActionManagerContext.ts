@@ -14,6 +14,9 @@ type ActionManager = {
 				view: UiKit.ContextualBarView;
 		  }
 		| undefined;
+	openView(surface: 'modal', view: UiKit.ModalView): void;
+	openView(surface: 'banner', view: UiKit.BannerView): void;
+	openView(surface: 'contextual_bar', view: UiKit.ContextualBarView): void;
 	disposeView(viewId: UiKit.ModalView['id'] | UiKit.BannerView['viewId'] | UiKit.ContextualBarView['id']): void;
 };
 

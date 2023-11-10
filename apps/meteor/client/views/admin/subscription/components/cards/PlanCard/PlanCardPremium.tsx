@@ -7,6 +7,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { useFormatDate } from '../../../../../../hooks/useFormatDate';
 import { useIsSelfHosted } from '../../../../../../hooks/useIsSelfHosted';
+import { useLicenseName } from '../../../../../../hooks/useLicense';
 import { CONTACT_SALES_LINK } from '../../../utils/links';
 import PlanCardBase from './PlanCardBase';
 
@@ -25,13 +26,13 @@ const PlanCardPremium = ({ licenseInformation, licenseLimits }: PlanCardProps): 
 	const { isSelfHosted, isLoading } = useIsSelfHosted();
 	const formatDate = useFormatDate();
 
-	const planName = licenseInformation.tags?.[0]?.name ?? '';
+	const planName = useLicenseName();
 
 	const isAutoRenew = licenseInformation.autoRenew;
 	const { visualExpiration } = licenseInformation;
 
 	return (
-		<PlanCardBase name={planName}>
+		<PlanCardBase name={planName.data ?? ''}>
 			{licenseLimits?.activeUsers.max === Infinity ||
 				(licenseLimits?.monthlyActiveContacts.max === Infinity && (
 					<Box fontScale='p2' display='flex' mb={4} alignItems='center'>
