@@ -13,14 +13,7 @@ const getUserNameCached = mem(
 	{ maxAge: 10000 },
 );
 
-export const broadcastMessageSentEvent = async ({
-	id,
-	data,
-}: {
-	id: IMessage['_id'];
-	broadcastCallback: (message: IMessage) => Promise<void>;
-	data?: IMessage;
-}): Promise<void> => {
+export const broadcastMessageSentEvent = async ({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<void> => {
 	const message = data ?? (await Messages.findOneById(id));
 	if (!message) {
 		return;
