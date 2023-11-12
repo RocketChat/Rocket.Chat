@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRef, useEffect } from 'react';
 
-export const useFileInput = (
+export const useSingleFileInput = (
 	onSetFile: (file: FileList[number], formData: FormData) => void,
 	fileType = 'image/*',
 	fileField = 'image',

@@ -5,7 +5,7 @@ import React, { useCallback, useState } from 'react';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
-import { useFileInput } from '../../../hooks/useFileInput';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 type AddCustomEmojiProps = {
 	close: () => void;
@@ -56,7 +56,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 		}
 	}, [emojiFile, name, aliases, saveAction, onChange, close]);
 
-	const [clickUpload] = useFileInput(setEmojiPreview, 'emoji');
+	const [clickUpload] = useSingleFileInput(setEmojiPreview, 'emoji');
 
 	const handleChangeName = (e: ChangeEvent<HTMLInputElement>): void => {
 		if (e.currentTarget.value !== '') {
