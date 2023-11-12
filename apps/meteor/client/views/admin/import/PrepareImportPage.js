@@ -46,16 +46,26 @@ function PrepareImportPage() {
 	const [messages, setMessages] = useState([]);
 	const [isImporting, setImporting] = useSafely(useState(false));
 
-	const usersCount = useMemo(() => users.filter(({ do_import }) => do_import).length, [users]);
-	const channelsCount = useMemo(() => channels.filter(({ do_import }) => do_import).length, [channels]);
+	const [usersCount, setUsersCount] = useState(0);
+	const [channelsCount, setChannelsCount] = useState(0);
 
-	// TODO: create useStates for users and channels: [usersCount,setUsersCount] and set it inside the useMemo, instead of duplicating the code
-	const users1 = useMemo(() => users.filter(({ do_import }) => do_import), [users]);
-	const channels1 = useMemo(() => channels.filter(({ do_import }) => do_import), [channels]);
+	// usersCount = selectedUsers.length
+	// channelsCount = selectedChannels.length
+	const selectedUsers = useMemo(() => {
+		const filtered = users.filter(({ do_import }) => do_import);
+		setUsersCount(filtered.length);
+		return filtered;
+	}, [users]);
+
+	const selectedChannels = useMemo(() => {
+		const filtered = channels.filter(({ do_import }) => do_import);
+		setChannelsCount(filtered.length);
+		return filtered;
+	}, [channels]);
 
 	const messagesCount = useMemo(() => {
-		countMessages(users1, channels1, messages);
-	}, [users1, channels1, messages]);
+		return countMessages(selectedUsers, selectedChannels, messages);
+	}, [selectedUsers, selectedChannels, messages]);
 
 	const router = useRouter();
 
@@ -89,10 +99,6 @@ function PrepareImportPage() {
 					router.navigate('/admin/import');
 					return;
 				}
-
-				console.log(`data.messages de PrepareImportPage: ${data.messages}`);
-				console.log(`data.messages_count de PrepareImportPage: ${data.messages_count}`);
-				console.log(`messagesCount de PrepareImportPage: ${messagesCount}`);
 
 				setUsers(data.users.map((user) => ({ ...user, do_import: true })));
 				setChannels(data.channels.map((channel) => ({ ...channel, do_import: true })));
