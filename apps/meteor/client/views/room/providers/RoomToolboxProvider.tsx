@@ -1,6 +1,6 @@
 import type { RoomType, IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback, useStableArray } from '@rocket.chat/fuselage-hooks';
-import { useUserId, useSetting, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useUserId, useSetting, useRouter, useRouteParameter, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import React, { useMemo } from 'react';
 
@@ -87,10 +87,13 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 	const allowAnonymousRead = useSetting<boolean>('Accounts_AllowAnonymousRead', false);
 	const uid = useUserId();
 
+	const { roomToolbox: hiddenActions } = useLayoutHiddenActions();
+
 	const actions = useStableArray(
 		[...coreRoomActions, ...appsRoomActions]
 			.filter((action) => uid || (allowAnonymousRead && 'anonymous' in action && action.anonymous))
 			.filter((action) => !action.groups || action.groups.includes(getGroup(room)))
+			.filter((action) => !hiddenActions.includes(action.id))
 			.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
 	);
 
