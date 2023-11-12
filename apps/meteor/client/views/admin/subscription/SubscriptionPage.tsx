@@ -7,6 +7,7 @@ import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { useLicense } from '../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
+import { SubscriptionCalloutLimits } from './SubscriptionCalloutLimits';
 import SubscriptionPageSkeleton from './SubscriptionPageSkeleton';
 import UpgradeButton from './components/UpgradeButton';
 import UpgradeToGetMore from './components/UpgradeToGetMore';
@@ -77,7 +78,9 @@ const SubscriptionPage = () => {
 							{syncLicenseUpdate.isLoading ? <Throbber size='x12' inheritColor /> : t('Sync_license_update')}
 						</Button>
 					)}
-					<UpgradeButton primary mis={8} i18nKey={isEnterprise ? 'Manage_subscription' : 'Upgrade'} />
+					<UpgradeButton primary mis={8}>
+						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
+					</UpgradeButton>
 				</ButtonGroup>
 			</Page.Header>
 
@@ -87,6 +90,7 @@ const SubscriptionPage = () => {
 						{t('Sync_license_update_Callout')}
 					</Callout>
 				)}
+				<SubscriptionCalloutLimits />
 				{isLicenseLoading && <SubscriptionPageSkeleton />}
 				{!isLicenseLoading && (
 					<Box marginBlock='none' marginInline='auto' width='full' color='default'>
