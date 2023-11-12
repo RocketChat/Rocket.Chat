@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -10,7 +11,7 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
@@ -344,6 +345,10 @@ const MessageBox = ({
 	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef);
 
 	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
+
+	// const { messageToolbox: hiddenActions } = useLayoutHiddenActions();
+
+	console.log('formatters', formatters);
 
 	return (
 		<>
