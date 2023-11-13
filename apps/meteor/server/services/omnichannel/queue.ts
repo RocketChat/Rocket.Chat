@@ -64,6 +64,11 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 			return;
 		}
 
+		if (await License.shouldPreventAction('monthlyActiveContacts', 1)) {
+			queueLogger.debug('MAC limit reached. Queue wont execute');
+			return;
+		}
+
 		const queue = await this.nextQueue();
 		const queueDelayTimeout = this.delay();
 		queueLogger.info(`Executing queue ${queue || 'Public'} with timeout of ${queueDelayTimeout}`);
@@ -102,10 +107,6 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	async shouldStart() {
 		if (!settings.get('Livechat_enabled')) {
 			void this.stop();
-			return;
-		}
-
-		if (await License.shouldPreventAction('monthlyActiveContacts')) {
 			return;
 		}
 

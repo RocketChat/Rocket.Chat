@@ -10,6 +10,7 @@ import type {
 	InquiryWithAgentInfo,
 	TransferData,
 } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -80,6 +81,13 @@ export const RoutingManager: Routing = {
 			this.methodName = 'Manual_Selection';
 		} else {
 			this.methodName = name;
+		}
+
+		const shouldPreventQueueStart = await License.shouldPreventAction('monthlyActiveContacts');
+
+		if (shouldPreventQueueStart) {
+			logger.error('Monthly Active Contacts limit reached. Queue will not start');
+			return;
 		}
 
 		void (await Omnichannel.getQueueWorker()).shouldStart();
