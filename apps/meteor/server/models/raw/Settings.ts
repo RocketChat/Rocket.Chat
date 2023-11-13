@@ -69,6 +69,24 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		return this.updateOne(query, update);
 	}
 
+	updateBlockedSettingById(
+		_id: string,
+		value: (ISetting['value'] extends undefined ? never : ISetting['value']) | null,
+	): Promise<Document | UpdateResult> {
+		const query = {
+			_id,
+			value: { $ne: value },
+		};
+
+		const update = {
+			$set: {
+				value,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
 	async resetValueById(
 		_id: string,
 		value?: (ISetting['value'] extends undefined ? never : ISetting['value']) | null,
