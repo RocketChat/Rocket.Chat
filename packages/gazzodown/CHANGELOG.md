@@ -1,5 +1,78 @@
 # @rocket.chat/gazzodown
 
+## 3.0.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.2
+- @rocket.chat/ui-contexts@3.0.0-rc.2
+- @rocket.chat/ui-client@3.0.0-rc.2
+
+## 3.0.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.1
+- @rocket.chat/ui-contexts@3.0.0-rc.1
+- @rocket.chat/ui-client@3.0.0-rc.1
+
+## 3.0.0-rc.0
+
+### Patch Changes
+
+- c2f337664e: fixed an issue with mentions showing usernames instead of names on smaller screens
+- Updated dependencies [7da1edf866]
+- Updated dependencies [dea1fe9191]
+- Updated dependencies [c0ef13a0bf]
+- Updated dependencies [5b9d6883bf]
+- Updated dependencies [92613680b7]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [5f81a0f3cb]
+- Updated dependencies [dea1fe9191]
+  - @rocket.chat/ui-contexts@3.0.0-rc.0
+  - @rocket.chat/core-typings@6.5.0-rc.0
+  - @rocket.chat/ui-client@3.0.0-rc.0
+
+## 2.0.5
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.5
+- @rocket.chat/ui-contexts@2.0.5
+- @rocket.chat/ui-client@2.0.5
+
+## 2.0.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.4
+- @rocket.chat/ui-contexts@2.0.4
+- @rocket.chat/ui-client@2.0.4
+
+## 2.0.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.3
+- @rocket.chat/ui-contexts@2.0.3
+- @rocket.chat/ui-client@2.0.3
+
+## 2.0.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.2
+- @rocket.chat/ui-contexts@2.0.2
+- @rocket.chat/ui-client@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.1
+- @rocket.chat/ui-contexts@2.0.1
+- @rocket.chat/ui-client@2.0.1
+
 ## 2.0.0
 
 ### Patch Changes

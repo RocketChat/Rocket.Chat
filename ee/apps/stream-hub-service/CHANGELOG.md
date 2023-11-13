@@ -1,5 +1,91 @@
 # @rocket.chat/stream-hub-service
 
+## 0.3.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.2
+- @rocket.chat/core-services@0.3.0-rc.2
+- @rocket.chat/model-typings@0.2.0-rc.2
+- @rocket.chat/models@0.0.21-rc.2
+
+## 0.3.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.1
+- @rocket.chat/core-services@0.3.0-rc.1
+- @rocket.chat/model-typings@0.2.0-rc.1
+- @rocket.chat/models@0.0.21-rc.1
+
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- 5f81a0f3cb: Implemented the License library, it is used to handle the functionality like expiration date, modules, limits, etc.
+  Also added a version v3 of the license, which contains an extended list of features.
+  v2 is still supported, since we convert it to v3 on the fly.
+
+### Patch Changes
+
+- Updated dependencies [dea1fe9191]
+- Updated dependencies [c0ef13a0bf]
+- Updated dependencies [223dce18a3]
+- Updated dependencies [5b9d6883bf]
+- Updated dependencies [92613680b7]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [5f81a0f3cb]
+- Updated dependencies [dea1fe9191]
+  - @rocket.chat/core-typings@6.5.0-rc.0
+  - @rocket.chat/model-typings@0.2.0-rc.0
+  - @rocket.chat/core-services@0.3.0-rc.0
+  - @rocket.chat/models@0.0.21-rc.0
+
+## 0.2.14
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.5
+- @rocket.chat/core-services@0.2.5
+- @rocket.chat/model-typings@0.1.5
+- @rocket.chat/models@0.0.20
+
+## 0.2.13
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.4
+- @rocket.chat/core-services@0.2.4
+- @rocket.chat/model-typings@0.1.4
+- @rocket.chat/models@0.0.19
+
+## 0.2.12
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.3
+- @rocket.chat/core-services@0.2.3
+- @rocket.chat/model-typings@0.1.3
+- @rocket.chat/models@0.0.18
+
+## 0.2.11
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.2
+- @rocket.chat/core-services@0.2.2
+- @rocket.chat/model-typings@0.1.2
+- @rocket.chat/models@0.0.17
+
+## 0.2.10
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.1
+- @rocket.chat/core-services@0.2.1
+- @rocket.chat/model-typings@0.1.1
+- @rocket.chat/models@0.0.16
+
 ## 0.2.9
 
 ### Patch Changes

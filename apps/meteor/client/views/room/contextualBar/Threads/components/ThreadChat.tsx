@@ -101,7 +101,6 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 
 				<RoomComposer>
 					<ComposerContainer
-						rid={mainMessage.rid}
 						tmid={mainMessage._id}
 						subscription={subscription}
 						onSend={handleSend}

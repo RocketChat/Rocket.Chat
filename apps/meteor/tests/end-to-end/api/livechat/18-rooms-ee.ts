@@ -39,6 +39,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		const user: IUser = await createUser();
 		const userCredentials = await login(user.username, password);
 		await createAgent(user.username);
+		await updateSetting('Livechat_allow_manual_on_hold', true);
 
 		agent2 = {
 			user,
@@ -48,8 +49,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	after(async () => {
 		await deleteUser(agent2.user);
+		await updateSetting('Livechat_allow_manual_on_hold', false);
+		await updateSetting('Livechat_allow_manual_on_hold_upon_agent_engagement_only', true);
 	});
-
 	describe('livechat/room.onHold', () => {
 		it('should fail if user doesnt have on-hold-livechat-room permission', async () => {
 			await updatePermission('on-hold-livechat-room', []);
@@ -115,7 +117,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(400);
 
 			expect(response.body.success).to.be.false;
-			expect(response.body.error).to.be.equal('error-contact-sent-last-message-so-cannot-place-on-hold');
+			expect(response.body.error).to.be.equal('error-cannot-place-chat-on-hold');
 		});
 		it('should fail if room is closed', async () => {
 			const visitor = await createVisitor();
@@ -151,7 +153,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should put room on hold', async () => {
 			const { room } = await startANewLivechatRoomAndTakeIt();
 			await sendAgentMessage(room._id);
-
 			const response = await request
 				.post(api('livechat/room.onHold'))
 				.set(credentials)
@@ -164,6 +165,35 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			const updatedRoom = await getLivechatRoomInfo(room._id);
 			expect(updatedRoom.onHold).to.be.true;
+		});
+		it('Should put room on hold, even in the visitor sent the last message', async () => {
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt();
+			await updateSetting('Livechat_allow_manual_on_hold_upon_agent_engagement_only', false);
+			await sendMessage(room._id, '-', visitor.token);
+			const response = await request
+				.post(api('livechat/room.onHold'))
+				.set(credentials)
+				.send({
+					roomId: room._id,
+				})
+				.expect(200);
+			expect(response.body.success).to.be.true;
+			const updatedRoom = await getLivechatRoomInfo(room._id);
+			expect(updatedRoom.onHold).to.be.true;
+		});
+		it('should not put room on hold when visitor sent the last message', async () => {
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt();
+			await updateSetting('Livechat_allow_manual_on_hold_upon_agent_engagement_only', true);
+			await sendMessage(room._id, '-', visitor.token);
+			const response = await request
+				.post(api('livechat/room.onHold'))
+				.set(credentials)
+				.send({
+					roomId: room._id,
+				})
+				.expect(400);
+			expect(response.body.success).to.be.false;
+			expect(response.body.error).to.be.equal('error-cannot-place-chat-on-hold');
 		});
 	});
 

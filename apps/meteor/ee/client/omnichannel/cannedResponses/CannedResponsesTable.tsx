@@ -17,18 +17,9 @@ import {
 import { usePagination } from '../../../../client/components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../client/components/GenericTable/hooks/useSort';
 import UserAvatar from '../../../../client/components/avatar/UserAvatar';
-import { useForm } from '../../../../client/hooks/useForm';
 import { useFormatDateAndTime } from '../../../../client/hooks/useFormatDateAndTime';
 import CannedResponseFilter from './CannedResponseFilter';
 import RemoveCannedResponseButton from './RemoveCannedResponseButton';
-
-type CannedResponseFilterValues = {
-	sharing: string;
-	createdBy: string;
-	tags: Array<{ value: string; label: string }>;
-	text: string;
-	firstMessage: string;
-};
 
 type Scope = 'global' | 'department' | 'user';
 
@@ -41,20 +32,13 @@ const CannedResponsesTable = () => {
 	const isMonitor = usePermission('save-department-canned-responses');
 	const isManager = usePermission('save-all-canned-responses');
 
-	const { values, handlers } = useForm({
-		sharing: '',
-		createdBy: '',
-		tags: [],
-		text: '',
-	});
-
-	const { sharing, createdBy, text } = values as CannedResponseFilterValues;
-	const { handleSharing, handleCreatedBy, handleText } = handlers;
+	const [createdBy, setCreatedBy] = useState('all');
+	const [sharing, setSharing] = useState<'' | 'user' | 'global' | 'department'>('');
+	const [text, setText] = useState('');
+	const debouncedText = useDebouncedValue(text, 500);
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, setSort, sortDirection } = useSort<'shortcut' | 'scope' | 'tags' | '_createdAt' | 'createdBy'>('shortcut');
-
-	const debouncedText = useDebouncedValue(text, 500);
 
 	const query = useMemo(
 		() => ({
@@ -131,12 +115,12 @@ const CannedResponsesTable = () => {
 		<>
 			{((isSuccess && data?.cannedResponses.length > 0) || queryHasChanged) && (
 				<CannedResponseFilter
-					sharingValue={sharing}
-					createdByValue={createdBy}
-					shortcutValue={text}
-					setSharing={handleSharing}
-					setCreatedBy={handleCreatedBy}
-					setShortcut={handleText}
+					createdBy={createdBy}
+					setCreatedBy={setCreatedBy}
+					sharing={sharing}
+					setSharing={setSharing}
+					text={text}
+					setText={setText}
 				/>
 			)}
 			{isLoading && (

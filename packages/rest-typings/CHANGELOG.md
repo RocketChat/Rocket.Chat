@@ -1,5 +1,77 @@
 # @rocket.chat/rest-typings
 
+## 6.5.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.2
+- @rocket.chat/license@0.1.0-rc.2
+
+## 6.5.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.1
+- @rocket.chat/license@0.1.0-rc.1
+
+## 6.5.0-rc.0
+
+### Minor Changes
+
+- 92613680b7: Added option to select between two script engine options for the integrations
+- ec1b2b9846: Create a deployment fingerprint to identify possible deployment changes caused by database cloning. A question to the admin will confirm if it's a regular deployment change or an intent of a new deployment and correct identification values as needed.
+  The fingerprint is composed by `${siteUrl}${dbConnectionString}` and hashed via `sha256` in `base64`.
+  An environment variable named `AUTO_ACCEPT_FINGERPRINT`, when set to `true`, can be used to auto-accept an expected fingerprint change as a regular deployment update.
+- a98f3ff303: feat: added `licenses.info` endpoint
+- 5f81a0f3cb: Implemented the License library, it is used to handle the functionality like expiration date, modules, limits, etc.
+  Also added a version v3 of the license, which contains an extended list of features.
+  v2 is still supported, since we convert it to v3 on the fly.
+
+### Patch Changes
+
+- 5b9d6883bf: feat: Improve UI when MAC limits are reached
+  feat: Limit endpoints on MAC limit reached
+- Updated dependencies [dea1fe9191]
+- Updated dependencies [c0ef13a0bf]
+- Updated dependencies [5b9d6883bf]
+- Updated dependencies [92613680b7]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [a98f3ff303]
+- Updated dependencies [5f81a0f3cb]
+- Updated dependencies [dea1fe9191]
+  - @rocket.chat/core-typings@6.5.0-rc.0
+  - @rocket.chat/license@0.1.0-rc.0
+
+## 6.4.5
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.5
+
+## 6.4.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.4
+
+## 6.4.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.3
+
+## 6.4.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.2
+
+## 6.4.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.1
+
 ## 6.4.0
 
 ### Minor Changes

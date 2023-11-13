@@ -1185,7 +1185,6 @@
   "Enter_Normal": "Normal mod (Enter ile gönder)",
   "Enter_to": "İçin girin",
   "Enter_your_E2E_password": "Uçtan uca şifrenizi girin",
-  "Enterprise": "Kuruluş",
   "Entertainment": "Eğlence",
   "Error": "Hata",
   "Error_404": "Hata:404",
@@ -3262,5 +3261,8 @@
   "registration.component.form.invalidConfirmPass": "Şifre doğrulaması şifre ile eşleşmiyor",
   "registration.component.form.confirmPassword": "Parolanızı onaylayın",
   "registration.component.form.sendConfirmationEmail": "Doğrulama e-postası gönder",
-  "RegisterWorkspace_Features_Omnichannel_Title": "Çoklu Kanal"
+  "onboarding.component.form.action.pasteHere": "Buraya yapıştırın...",
+  "onboarding.form.registerOfflineForm.title": "Manuel Kayıt",
+  "RegisterWorkspace_Features_Omnichannel_Title": "Çoklu Kanal",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Mantıksal Analiz"
 }

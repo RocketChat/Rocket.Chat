@@ -9,7 +9,7 @@ import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import { useFormsSubscription } from '../additionalForms';
+import { MaxChatsPerAgentDisplay } from '../additionalForms';
 
 type AgentInfoProps = {
 	uid: string;
@@ -18,10 +18,6 @@ type AgentInfoProps = {
 const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...props }) {
 	const t = useTranslation();
 	const result = useEndpointData('/v1/livechat/users/agent/:_id', { keys: { _id: uid } });
-
-	const { useMaxChatsPerAgentDisplay } = useFormsSubscription();
-
-	const MaxChats = useMaxChatsPerAgentDisplay?.();
 
 	if (result.phase === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
@@ -58,7 +54,7 @@ const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...pr
 					</>
 				)}
 
-				{MaxChats && <MaxChats data={user} />}
+				<MaxChatsPerAgentDisplay data={user} />
 			</Margins>
 		</ContextualbarScrollableContent>
 	);

@@ -1,4 +1,5 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, Omnichannel } from '@rocket.chat/core-services';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Messages, Settings, Rooms } from '@rocket.chat/models';
 import { isGETWebRTCCall, isPUTWebRTCCallId } from '@rocket.chat/rest-typings';
 
@@ -25,6 +26,10 @@ API.v1.addRoute(
 			);
 			if (!room) {
 				throw new Error('invalid-room');
+			}
+
+			if (!(await Omnichannel.isWithinMACLimit(room as IOmnichannelRoom))) {
+				throw new Error('error-mac-limit-reached');
 			}
 
 			const webrtcCallingAllowed = rcSettings.get('WebRTC_Enabled') === true && rcSettings.get('Omnichannel_call_provider') === 'WebRTC';
@@ -77,6 +82,10 @@ API.v1.addRoute(
 			);
 			if (!room) {
 				throw new Error('invalid-room');
+			}
+
+			if (!(await Omnichannel.isWithinMACLimit(room as IOmnichannelRoom))) {
+				throw new Error('error-mac-limit-reached');
 			}
 
 			const call = await Messages.findOneById(callId);
