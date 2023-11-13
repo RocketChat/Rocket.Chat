@@ -20,13 +20,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	private preventMention: BeforeSavePreventMention;
 
-	constructor() {
-		super();
-
-		this.preventMention = new BeforeSavePreventMention(this.api);
-	}
-
 	async created() {
+		this.preventMention = new BeforeSavePreventMention(this.api);
+
 		await this.configureBadWords();
 	}
 

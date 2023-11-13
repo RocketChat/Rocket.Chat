@@ -21,7 +21,7 @@ const { BeforeSavePreventMention } = proxyquire
 		},
 	});
 
-describe.only('Message service', () => {
+describe('Prevent mention on messages', () => {
 	it('should return void if message has no mentions', async () => {
 		const preventMention = new BeforeSavePreventMention();
 
