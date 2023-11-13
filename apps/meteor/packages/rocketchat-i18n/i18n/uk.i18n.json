@@ -1249,7 +1249,6 @@
   "Email_Notification_Mode_Disabled": "Вимкнено",
   "Email_notification_show_message": "Показувати повідомлення в електронній пошті",
   "Email_Notifications_Change_Disabled": "Ваш адміністратор Rocket.Chat відключив сповіщення на електронну пошту",
-  "Enterprise": "Підприємство",
   "Email_or_username": "Адреса електронної пошти або логін",
   "Email_Placeholder": "Будь ласка, введіть свої електронні адреси ...",
   "Email_Placeholder_any": "Будь ласка, введіть адреси електронної пошти ...",
