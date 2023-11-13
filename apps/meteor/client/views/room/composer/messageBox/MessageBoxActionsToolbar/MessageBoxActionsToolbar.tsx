@@ -5,6 +5,7 @@ import ActionsToolbarDropdown from './ActionsToolbarDropdown';
 import AudioMessageAction from './actions/AudioMessageAction';
 import FileUploadAction from './actions/FileUploadAction';
 import VideoMessageAction from './actions/VideoMessageAction';
+import { useToolbarActions } from './hooks/useToolbarActions';
 
 type MessageBoxActionsToolbarProps = {
 	variant: 'small' | 'large';
@@ -24,17 +25,16 @@ const MessageBoxActionsToolbar = ({
 	rid,
 	tmid,
 	isMicrophoneDenied,
-	...props
 }: MessageBoxActionsToolbarProps) => {
+	useToolbarActions({ canSend, typing, isRecording, isMicrophoneDenied: Boolean(isMicrophoneDenied), rid, tmid, variant });
 	const actions = [
-		<VideoMessageAction key='video' collapsed={variant === 'small'} disabled={!canSend || typing || isRecording} {...props} />,
+		<VideoMessageAction key='video' collapsed={variant === 'small'} disabled={!canSend || typing || isRecording} />,
 		<AudioMessageAction
 			key='audio'
 			disabled={!canSend || typing || isRecording || isMicrophoneDenied}
 			isMicrophoneDenied={isMicrophoneDenied}
-			{...props}
 		/>,
-		<FileUploadAction key='file' collapsed={variant === 'small'} disabled={!canSend || isRecording} {...props} />,
+		<FileUploadAction key='file' collapsed={variant === 'small'} disabled={!canSend || isRecording} />,
 	];
 
 	let featuredAction;
@@ -46,7 +46,7 @@ const MessageBoxActionsToolbar = ({
 		<>
 			{variant !== 'small' && actions}
 			{variant === 'small' && featuredAction}
-			<ActionsToolbarDropdown {...(variant === 'small' && { actions })} isRecording={isRecording} rid={rid} tmid={tmid} {...props} />
+			<ActionsToolbarDropdown {...(variant === 'small' && { actions })} isRecording={isRecording} rid={rid} tmid={tmid} />
 		</>
 	);
 };

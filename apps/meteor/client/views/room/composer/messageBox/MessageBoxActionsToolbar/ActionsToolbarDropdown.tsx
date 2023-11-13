@@ -1,27 +1,21 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Dropdown, IconButton, Option, OptionTitle, OptionIcon, OptionContent } from '@rocket.chat/fuselage';
-import { useTranslation, useUserRoom } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactNode } from 'react';
-import React, { useRef, Fragment } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ComponentProps } from 'react';
+import React, { useRef } from 'react';
 
-import { messageBox } from '../../../../../../app/ui-utils/client';
-import { useMessageboxAppsActionButtons } from '../../../../../hooks/useAppActionButtons';
-import type { ChatAPI } from '../../../../../lib/chats/ChatAPI';
 import { useDropdownVisibility } from '../../../../../sidebar/header/hooks/useDropdownVisibility';
 import { useChat } from '../../../contexts/ChatContext';
-import CreateDiscussionAction from './actions/CreateDiscussionAction';
-import ShareLocationAction from './actions/ShareLocationAction';
-import WebdavAction from './actions/WebdavAction';
+import type { ToolbarAction } from './hooks/ToolbarAction';
 
 type ActionsToolbarDropdownProps = {
-	chatContext?: ChatAPI;
 	rid: IRoom['_id'];
 	isRecording?: boolean;
 	tmid?: string;
-	actions?: ReactNode[];
+	actions: Array<ToolbarAction | string>;
 };
 
-const ActionsToolbarDropdown = ({ isRecording, rid, tmid, actions, ...props }: ActionsToolbarDropdownProps) => {
+const ActionsToolbarDropdown = ({ actions, isRecording, rid, tmid, ...props }: ActionsToolbarDropdownProps) => {
 	const chatContext = useChat();
 
 	if (!chatContext) {
@@ -32,34 +26,7 @@ const ActionsToolbarDropdown = ({ isRecording, rid, tmid, actions, ...props }: A
 	const reference = useRef(null);
 	const target = useRef(null);
 
-	const room = useUserRoom(rid);
-
 	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
-
-	const apps = useMessageboxAppsActionButtons();
-
-	const groups = {
-		...(apps.isSuccess &&
-			apps.data.length > 0 && {
-				Apps: apps.data,
-			}),
-		...messageBox.actions.get(),
-	};
-
-	const messageBoxActions = Object.entries(groups).map(([name, group]) => {
-		const items = group.map((item) => ({
-			icon: item.icon,
-			name: t(item.label),
-			type: 'messagebox-action',
-			id: item.id,
-			action: item.action,
-		}));
-
-		return {
-			title: t.has(name) && t(name),
-			items,
-		};
-	});
 
 	return (
 		<>
@@ -74,33 +41,29 @@ const ActionsToolbarDropdown = ({ isRecording, rid, tmid, actions, ...props }: A
 			/>
 			{isVisible && (
 				<Dropdown reference={reference} ref={target} placement='bottom-start'>
-					<OptionTitle>{t('Create_new')}</OptionTitle>
-					{room && <CreateDiscussionAction room={room} />}
-					{actions}
-					<WebdavAction chatContext={chatContext} />
-					{room && <ShareLocationAction room={room} tmid={tmid} />}
-					{messageBoxActions?.map((actionGroup, index) => (
-						<Fragment key={index}>
-							<OptionTitle>{actionGroup.title}</OptionTitle>
-							{actionGroup.items.map((item) => (
-								<Option
-									key={item.id}
-									onClick={(event) =>
-										item.action({
-											rid,
-											tmid,
-											event: event as unknown as Event,
-											chat: chatContext,
-										})
-									}
-									gap={!item.icon}
-								>
-									{item.icon && <OptionIcon name={item.icon as ComponentProps<typeof OptionIcon>['name']} />}
-									<OptionContent>{item.name}</OptionContent>
-								</Option>
-							))}
-						</Fragment>
-					))}
+					{actions.map((option) => {
+						if (typeof option === 'string') {
+							return <OptionTitle key={option}>{t.has(option) ? t(option) : option}</OptionTitle>;
+						}
+
+						return (
+							<Option
+								key={option.id}
+								onClick={(event) =>
+									option.onClick({
+										rid,
+										tmid,
+										event: event as unknown as Event,
+										chat: chatContext,
+									})
+								}
+								gap={!option.icon}
+							>
+								{option.icon && <OptionIcon name={option.icon as ComponentProps<typeof OptionIcon>['name']} />}
+								<OptionContent>{option.label}</OptionContent>
+							</Option>
+						);
+					})}
 				</Dropdown>
 			)}
 		</>

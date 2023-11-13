@@ -11,7 +11,7 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
@@ -38,7 +38,10 @@ import { useRoom } from '../../contexts/RoomContext';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
-import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
+// import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
+import MessageBoxActionsToolbarBuilder from './MessageBoxActionsToolbar/MessageBoxActionsToolbarBuilder';
+import { useToolbarActions } from './MessageBoxActionsToolbar/hooks/useToolbarActions';
+// TODO fix index for this \/
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
@@ -348,7 +351,15 @@ const MessageBox = ({
 
 	// const { messageToolbox: hiddenActions } = useLayoutHiddenActions();
 
-	console.log('formatters', formatters);
+	const { data: actions, isSuccess } = useToolbarActions({
+		canSend,
+		typing,
+		isRecording,
+		isMicrophoneDenied: Boolean(isMicrophoneDenied),
+		rid: room._id,
+		tmid,
+		variant: sizes.inlineSize < 480 ? 'small' : 'large',
+	});
 
 	return (
 		<>
@@ -416,7 +427,7 @@ const MessageBox = ({
 							/>
 						)}
 						<MessageComposerActionsDivider />
-						<MessageBoxActionsToolbar
+						{/* <MessageBoxActionsToolbar
 							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 							isRecording={isRecording}
 							typing={typing}
@@ -424,7 +435,8 @@ const MessageBox = ({
 							rid={room._id}
 							tmid={tmid}
 							isMicrophoneDenied={isMicrophoneDenied}
-						/>
+						/> */}
+						{isSuccess && <MessageBoxActionsToolbarBuilder rid={room._id} tmid={tmid} isRecording={isRecording} actions={actions} />}
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (
