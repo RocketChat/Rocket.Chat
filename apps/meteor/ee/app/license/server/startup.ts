@@ -123,4 +123,4 @@ License.setLicenseLimitCounter('guestUsers', () => Users.getActiveLocalGuestCoun
 License.setLicenseLimitCounter('roomsPerGuest', async (context) => (context?.userId ? Subscriptions.countByUserId(context.userId) : 0));
 License.setLicenseLimitCounter('privateApps', () => getAppCount('private'));
 License.setLicenseLimitCounter('marketplaceApps', () => getAppCount('marketplace'));
-License.setLicenseLimitCounter('monthlyActiveContacts', async () => LivechatVisitors.countVisitorsOnPeriod(moment.utc().format('YYYY-MM')));
+License.setLicenseLimitCounter('monthlyActiveContacts', () => LivechatVisitors.countVisitorsOnPeriod(moment.utc().format('YYYY-MM')));
