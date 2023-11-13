@@ -1,19 +1,24 @@
 import { Users } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import * as Mailer from '../../app/mailer/server/api';
 import { settings } from '../../app/settings/server';
 
-export async function sendWelcomeEmail(to: string) {
-	check(to, String);
+export async function sendWelcomeEmail(to: string): Promise<void> {
+	if (typeof to !== 'string') {
+		throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
+			method: 'sendWelcomeEmail',
+		});
+	}
 
 	const email = to.trim();
 
 	const user = await Users.findOneByEmailAddress(email, { projection: { _id: 1 } });
 
 	if (!user) {
-		return false;
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'sendWelcomeEmail',
+		});
 	}
 
 	try {
@@ -28,8 +33,6 @@ export async function sendWelcomeEmail(to: string) {
 			subject: settings.get('Accounts_UserAddedEmail_Subject'),
 			html,
 		});
-
-		return true;
 	} catch (error: any) {
 		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
 			method: 'sendWelcomeEmail',

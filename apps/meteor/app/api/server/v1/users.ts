@@ -6,6 +6,7 @@ import {
 	isUserSetActiveStatusParamsPOST,
 	isUserDeactivateIdleParamsPOST,
 	isUsersInfoParamsGetProps,
+	isUsersListStatusProps,
 	isUserRegisterParamsPOST,
 	isUserLogoutParamsPOST,
 	isUsersListTeamsProps,
@@ -560,20 +561,11 @@ API.v1.addRoute(
 	'users.list/:status',
 	{
 		authRequired: true,
+		validateParams: isUsersListStatusProps,
+		permissionsRequired: ['view-d-room', 'view-outside-room'],
 	},
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-d-room'))) {
-				return API.v1.unauthorized();
-			}
-
-			if (
-				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
-				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
-			) {
-				return API.v1.unauthorized();
-			}
-
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { status } = this.urlParams;
 			const { sort } = await this.parseJsonQuery();
@@ -663,10 +655,9 @@ API.v1.addRoute(
 				return API.v1.failure("The 'email' param is required");
 			}
 
-			if (await sendWelcomeEmail(email)) {
-				return API.v1.success();
-			}
-			return API.v1.failure();
+			await sendWelcomeEmail(email);
+
+			return API.v1.success();
 		},
 	},
 );
