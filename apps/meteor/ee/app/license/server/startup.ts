@@ -64,7 +64,7 @@ const syncByTrigger = async (context: string) => {
 		return;
 	}
 
-	await Settings.updateBlockedSettingById(
+	await Settings.updateValueById(
 		'Enterprise_License_Data',
 		JSON.stringify({
 			...(existingData.signed === signed && existingData),
