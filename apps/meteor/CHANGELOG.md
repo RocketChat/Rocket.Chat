@@ -1,5 +1,65 @@
 # @rocket.chat/meteor
 
+## 6.5.0-rc.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- 8668485fda: fix: immediate auto reload issues
+
+  Immediate auto reload increases server load on restarts/upgrades and increases the chance of getting 404 on Meteor's config file blocking the UI on a loading screen
+
+  This change adds delays on front and backend codes on automatic client reload:
+
+  - Front-end, adds a warning message including the old and new hashes, and a delay of 60 seconds after being notified by the server
+  - Back-end, delays the client notifications on a random value between 2 and 10 minutes per connection, allowing different clients to reload at different moments and distributing the load along the time.
+  - @rocket.chat/core-typings@6.5.0-rc.3
+  - @rocket.chat/rest-typings@6.5.0-rc.3
+  - @rocket.chat/api-client@0.1.15-rc.3
+  - @rocket.chat/license@0.1.0-rc.3
+  - @rocket.chat/omnichannel-services@0.1.0-rc.3
+  - @rocket.chat/pdf-worker@0.0.21-rc.3
+  - @rocket.chat/presence@0.1.0-rc.3
+  - @rocket.chat/core-services@0.3.0-rc.3
+  - @rocket.chat/cron@0.0.17-rc.3
+  - @rocket.chat/gazzodown@3.0.0-rc.3
+  - @rocket.chat/model-typings@0.2.0-rc.3
+  - @rocket.chat/ui-contexts@3.0.0-rc.3
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.0-rc.3
+  - @rocket.chat/models@0.0.21-rc.3
+  - @rocket.chat/ui-theming@0.1.1-rc.0
+  - @rocket.chat/ui-client@3.0.0-rc.3
+  - @rocket.chat/ui-video-conf@3.0.0-rc.3
+  - @rocket.chat/instance-status@0.0.21-rc.3
+  - @rocket.chat/web-ui-registration@3.0.0-rc.2
+
+## 6.5.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.5.0-rc.2
+  - @rocket.chat/rest-typings@6.5.0-rc.2
+  - @rocket.chat/api-client@0.1.15-rc.2
+  - @rocket.chat/license@0.1.0-rc.2
+  - @rocket.chat/omnichannel-services@0.1.0-rc.2
+  - @rocket.chat/pdf-worker@0.0.21-rc.2
+  - @rocket.chat/presence@0.1.0-rc.2
+  - @rocket.chat/core-services@0.3.0-rc.2
+  - @rocket.chat/cron@0.0.17-rc.2
+  - @rocket.chat/gazzodown@3.0.0-rc.2
+  - @rocket.chat/model-typings@0.2.0-rc.2
+  - @rocket.chat/ui-contexts@3.0.0-rc.2
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.0-rc.2
+  - @rocket.chat/models@0.0.21-rc.2
+  - @rocket.chat/ui-theming@0.1.1-rc.0
+  - @rocket.chat/ui-client@3.0.0-rc.2
+  - @rocket.chat/ui-video-conf@3.0.0-rc.2
+  - @rocket.chat/web-ui-registration@3.0.0-rc.2
+  - @rocket.chat/instance-status@0.0.21-rc.2
+
 ## 6.5.0-rc.1
 
 ### Patch Changes

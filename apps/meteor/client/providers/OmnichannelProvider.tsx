@@ -19,8 +19,8 @@ import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
-import { useLicense } from '../hooks/useLicense';
 import { useReactiveValue } from '../hooks/useReactiveValue';
+import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
 
 const emptyContextValue: OmnichannelContextValue = {
 	inquiries: { enabled: false },
@@ -76,9 +76,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		enabled: isPrioritiesEnabled,
 	});
 
-	const { data: { preventedActions } = {} } = useLicense();
-
-	const isOverMacLimit = Boolean(preventedActions?.monthlyActiveContacts);
+	const isOverMacLimit = useShouldPreventAction('monthlyActiveContacts');
 
 	useEffect(() => {
 		if (!isPrioritiesEnabled) {
