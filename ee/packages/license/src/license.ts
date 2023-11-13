@@ -189,7 +189,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		}
 
 		const validationResult = await runValidation.call(this, this._license, {
-			behaviors: ['invalidate_license', 'start_fair_policy', 'prevent_installation', 'disable_modules', 'prevent_action'],
+			behaviors: ['invalidate_license', 'start_fair_policy', 'prevent_installation', 'disable_modules'],
 			...options,
 		});
 
