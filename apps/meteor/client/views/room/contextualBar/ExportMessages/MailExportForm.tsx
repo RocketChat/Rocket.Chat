@@ -131,7 +131,7 @@ const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportForm
 								<Controller
 									name='toUsers'
 									control={control}
-									render={({ field: { value, onChange, onBlur, name } }) => (
+									render={({ field: { value, onChange, name } }) => (
 										<UserAutoCompleteMultiple
 											id={toUsersField}
 											value={value}
@@ -139,7 +139,6 @@ const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportForm
 												onChange(value);
 												clearErrors('additionalEmails');
 											}}
-											onBlur={onBlur}
 											name={name}
 										/>
 									)}

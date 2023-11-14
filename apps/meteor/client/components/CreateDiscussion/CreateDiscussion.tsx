@@ -117,10 +117,9 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 									control={control}
 									name='parentRoom'
 									rules={{ required: t('error-the-field-is-required', { field: t('Discussion_target_channel') }) }}
-									render={({ field: { name, onBlur, onChange, value } }) => (
+									render={({ field: { name, onChange, value } }): ReactElement => (
 										<RoomAutoComplete
 											name={name}
-											onBlur={onBlur}
 											onChange={onChange}
 											value={value}
 											id={targetChannelField}
@@ -186,13 +185,12 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 							<Controller
 								control={control}
 								name='usernames'
-								render={({ field: { name, onChange, value, onBlur } }) => (
+								render={({ field: { name, onChange, value } }): ReactElement => (
 									<UserAutoCompleteMultiple
 										id={usersField}
 										name={name}
 										onChange={onChange}
 										value={value}
-										onBlur={onBlur}
 										placeholder={t('Username_Placeholder')}
 									/>
 								)}

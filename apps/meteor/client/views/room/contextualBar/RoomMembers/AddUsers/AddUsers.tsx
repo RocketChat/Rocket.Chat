@@ -70,13 +70,17 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 							<Controller
 								name='users'
 								control={control}
-								render={({ field }) => <UserAutoCompleteMultipleFederated {...field} placeholder={t('Choose_users')} />}
+								render={({ field: { onChange, value } }): ReactElement => (
+									<UserAutoCompleteMultipleFederated value={value} onChange={onChange} placeholder={t('Choose_users')} />
+								)}
 							/>
 						) : (
 							<Controller
 								name='users'
 								control={control}
-								render={({ field }) => <UserAutoCompleteMultiple {...field} placeholder={t('Choose_users')} />}
+								render={({ field: { onChange, value } }): ReactElement => (
+									<UserAutoCompleteMultiple value={value} onChange={onChange} placeholder={t('Choose_users')} />
+								)}
 							/>
 						)}
 					</Field>
