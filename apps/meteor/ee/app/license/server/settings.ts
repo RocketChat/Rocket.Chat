@@ -14,7 +14,6 @@ Meteor.startup(async () => {
 			await this.add('Enterprise_License_Data', '', {
 				type: 'string',
 				hidden: true,
-				blocked: true,
 				public: false,
 			});
 			await this.add('Enterprise_License_Status', '', {

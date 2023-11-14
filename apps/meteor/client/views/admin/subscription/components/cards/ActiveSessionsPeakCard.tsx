@@ -30,7 +30,7 @@ const ActiveSessionsPeakCard = (): ReactElement => {
 
 	return (
 		<FeatureUsageCard card={card}>
-			{!isLoading && maxMonthlyPeakConnections ? (
+			{!isLoading && maxMonthlyPeakConnections !== undefined ? (
 				<Box textAlign='center'>
 					<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'}>
 						{used} / {total}
