@@ -32,7 +32,27 @@ type LinkSpanProps = {
 	label: MessageParser.Markup | MessageParser.Markup[];
 };
 
+/**
+ * Parses the provided URL string that might contain HTML-encoded characters.
+ * This function uses DOMParser to decode the HTML-encoded URL and then parses it using the URL constructor.
+ * It returns the resulting URL string after decoding and parsing.
+ *
+ * @param url - The URL string that might contain HTML-encoded characters
+ * @returns A string representing the parsed and decoded URL
+ */
+const parseLinkUrl = (url: string): string => {
+	// Decoding the HTML encoded URL using DOMParser
+	const parser = new DOMParser();
+	const decodedURL = parser.parseFromString(`<!doctype html><body>${url}`, 'text/html').body.textContent as string;
+
+	// Parsing the URL using the URL constructor
+	const urlInstance = new URL(decodedURL);
+	return urlInstance.toString();
+};
+
 const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {
+	const parsedHrefUrl = parseLinkUrl(href);
+
 	const children = useMemo(() => {
 		const labelArray = Array.isArray(label) ? label : [label];
 
@@ -58,16 +78,16 @@ const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {
 		return labelElements;
 	}, [label]);
 
-	if (isExternal(href)) {
+	if (isExternal(parsedHrefUrl)) {
 		return (
-			<a href={href} title={href} rel='noopener noreferrer' target='_blank'>
+			<a href={parsedHrefUrl} title={parsedHrefUrl} rel='noopener noreferrer' target='_blank'>
 				{children}
 			</a>
 		);
 	}
 
 	return (
-		<a href={href} title={href}>
+		<a href={parsedHrefUrl} title={parsedHrefUrl}>
 			{children}
 		</a>
 	);
