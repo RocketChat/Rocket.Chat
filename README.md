@@ -73,7 +73,7 @@ After initialized, you can access the server at http://localhost:3000
 yarn turbo run ms
 ```
 
-After initialized, you can access the server at http://localhost:4000
+After initialized, you can access the server at http://localhost:3000
 
 > ⚠️ Check more detailed information in the [Rocket.Chat Environment Setup](https://developer.rocket.chat/rocket.chat/rocket-chat-environment-setup) guide
 
