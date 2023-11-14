@@ -29,7 +29,7 @@ export const useStatusItems = (user: IUser): GenericMenuItemProps[] => {
 	const setStatus = useEndpoint('POST', '/v1/users.setStatus');
 
 	const setStatusAction = (status: (typeof userStatus.list)['']): void => {
-		setStatus({ status: status.statusType, message: !isDefaultStatus(status.id) ? status.name : '' });
+		setStatus({ status: status.statusType, message: !isDefaultStatus(user.statusText || status.id) ? user.statusText : '' });
 		void callbacks.run('userStatusManuallySet', status);
 	};
 
