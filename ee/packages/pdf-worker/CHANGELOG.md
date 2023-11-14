@@ -1,5 +1,11 @@
 # @rocket.chat/pdf-worker
 
+## 0.0.21-rc.6
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.6
+
 ## 0.0.21-rc.5
 
 ### Patch Changes

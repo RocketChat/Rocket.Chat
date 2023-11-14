@@ -1,5 +1,32 @@
 # @rocket.chat/meteor
 
+## 6.5.0-rc.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- aaf11e92dc: Fixed Canned responses stream not working, causing users to refresh to see newly created responses.
+  - @rocket.chat/core-typings@6.5.0-rc.6
+  - @rocket.chat/rest-typings@6.5.0-rc.6
+  - @rocket.chat/api-client@0.1.15-rc.6
+  - @rocket.chat/license@0.1.0-rc.6
+  - @rocket.chat/omnichannel-services@0.1.0-rc.6
+  - @rocket.chat/pdf-worker@0.0.21-rc.6
+  - @rocket.chat/presence@0.1.0-rc.6
+  - @rocket.chat/core-services@0.3.0-rc.6
+  - @rocket.chat/cron@0.0.17-rc.6
+  - @rocket.chat/gazzodown@3.0.0-rc.6
+  - @rocket.chat/model-typings@0.2.0-rc.6
+  - @rocket.chat/ui-contexts@3.0.0-rc.6
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.0-rc.6
+  - @rocket.chat/models@0.0.21-rc.6
+  - @rocket.chat/ui-theming@0.1.1-rc.0
+  - @rocket.chat/ui-client@3.0.0-rc.6
+  - @rocket.chat/ui-video-conf@3.0.0-rc.6
+  - @rocket.chat/web-ui-registration@3.0.0-rc.5
+  - @rocket.chat/instance-status@0.0.21-rc.6
+
 ## 6.5.0-rc.5
 
 ### Patch Changes
