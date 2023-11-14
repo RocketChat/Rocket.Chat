@@ -7,6 +7,7 @@ import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import Page from '../../../components/Page';
+import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
 import AdminInviteUsers from './AdminInviteUsers';
 import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
@@ -25,15 +26,17 @@ const UsersPage = (): ReactElement => {
 	const canCreateUser = usePermission('create-user');
 	const canBulkCreateUser = usePermission('bulk-register-user');
 
+	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
+
 	useEffect(() => {
 		if (!context || !seatsCap) {
 			return;
 		}
 
-		if (seatsCap.activeUsers >= seatsCap.maxActiveUsers && !['edit', 'info'].includes(context)) {
+		if (isCreateUserDisabled && !['edit', 'info'].includes(context)) {
 			router.navigate('/admin/users');
 		}
-	}, [router, context, seatsCap]);
+	}, [router, context, seatsCap, isCreateUserDisabled]);
 
 	const handleReload = (): void => {
 		seatsCap?.reload();

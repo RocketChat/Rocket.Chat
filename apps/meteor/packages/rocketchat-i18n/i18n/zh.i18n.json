@@ -1407,7 +1407,6 @@
   "Email_Notification_Mode_Disabled": "已禁用",
   "Email_notification_show_message": "在电子邮件通知中显示消息",
   "Email_Notifications_Change_Disabled": "您的 Rocket.Chat 管理员已禁止电子邮箱通知",
-  "Enterprise": "企业",
   "Email_or_username": "电子邮件或用户名",
   "Email_Placeholder": "请输入您的电子邮件地址...",
   "Email_Placeholder_any": "请输入电子邮件地址...",
