@@ -4,12 +4,10 @@ import type { ServerResponse, IncomingMessage } from 'http';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
-import { WebAppHashing } from 'meteor/webapp-hashing';
-import _ from 'underscore';
 import sizeOf from 'image-size';
 import sharp from 'sharp';
 import type { NextHandleFunction } from 'connect';
-import type { IRocketChatAssets, IRocketChatAsset, IRocketChatAssetCache } from '@rocket.chat/core-typings';
+import type { IRocketChatAssets, IRocketChatAsset } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
 import { settings, settingsRegistry } from '../../settings/server';
@@ -372,55 +370,6 @@ Meteor.startup(() => {
 		});
 	}, 200);
 });
-
-const { calculateClientHash } = WebAppHashing;
-
-WebAppHashing.calculateClientHash = function (manifest, includeFilter, runtimeConfigOverride): string {
-	for (const key of Object.keys(assets)) {
-		const value = getAssetByKey(key);
-		if (!value.cache && !value.defaultUrl) {
-			continue;
-		}
-
-		let cache: IRocketChatAssetCache;
-		if (value.cache) {
-			cache = {
-				path: value.cache.path,
-				cacheable: value.cache.cacheable,
-				sourceMapUrl: value.cache.sourceMapUrl,
-				where: value.cache.where,
-				type: value.cache.type,
-				url: value.cache.url,
-				size: value.cache.size,
-				hash: value.cache.hash,
-			};
-		} else {
-			const extension = value.defaultUrl?.split('.').pop();
-			cache = {
-				path: `assets/${key}.${extension}`,
-				cacheable: false,
-				sourceMapUrl: undefined,
-				where: 'client',
-				type: 'asset',
-				url: `/assets/${key}.${extension}?v3`,
-				hash: 'v3',
-			};
-		}
-
-		const manifestItem = _.findWhere(manifest, {
-			path: key,
-		});
-
-		if (manifestItem) {
-			const index = manifest.indexOf(manifestItem);
-			manifest[index] = cache;
-		} else {
-			manifest.push(cache);
-		}
-	}
-
-	return calculateClientHash.call(this, manifest, includeFilter, runtimeConfigOverride);
-};
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
