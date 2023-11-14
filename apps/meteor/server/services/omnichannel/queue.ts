@@ -66,6 +66,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 
 		if (await License.shouldPreventAction('monthlyActiveContacts', 1)) {
 			queueLogger.debug('MAC limit reached. Queue wont execute');
+			this.running = false;
 			return;
 		}
 
