@@ -436,6 +436,7 @@ export class MockedAppRootBuilder {
 																handleServerInteraction: () => undefined,
 																off: () => undefined,
 																on: () => undefined,
+																openView: () => undefined,
 																disposeView: () => undefined,
 															}}
 														>

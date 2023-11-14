@@ -1,5 +1,44 @@
 # rocketchat-services
 
+## 1.1.15-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.2
+- @rocket.chat/rest-typings@6.5.0-rc.2
+- @rocket.chat/core-services@0.3.0-rc.2
+- @rocket.chat/model-typings@0.2.0-rc.2
+- @rocket.chat/models@0.0.21-rc.2
+
+## 1.1.15-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.1
+- @rocket.chat/rest-typings@6.5.0-rc.1
+- @rocket.chat/core-services@0.3.0-rc.1
+- @rocket.chat/model-typings@0.2.0-rc.1
+- @rocket.chat/models@0.0.21-rc.1
+
+## 1.1.15-rc.0
+
+### Patch Changes
+
+- Updated dependencies [dea1fe9191]
+- Updated dependencies [c0ef13a0bf]
+- Updated dependencies [223dce18a3]
+- Updated dependencies [5b9d6883bf]
+- Updated dependencies [92613680b7]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [a98f3ff303]
+- Updated dependencies [5f81a0f3cb]
+- Updated dependencies [dea1fe9191]
+  - @rocket.chat/core-typings@6.5.0-rc.0
+  - @rocket.chat/model-typings@0.2.0-rc.0
+  - @rocket.chat/core-services@0.3.0-rc.0
+  - @rocket.chat/rest-typings@6.5.0-rc.0
+  - @rocket.chat/models@0.0.21-rc.0
+
 ## 1.1.14
 
 ### Patch Changes
