@@ -22,14 +22,15 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps): ReactElement => {
 	const isSalesAssisted = licenseInformation.grantedBy?.method !== 'self-service' || true;
 	const { visualExpiration } = licenseInformation;
 
-	const trialDaysLeft = differenceInDays(new Date(visualExpiration), new Date());
-
 	return (
 		<PlanCardBase name={planName.data ?? ''}>
 			<Box display='flex' flexDirection='column' h='full'>
-				<Box fontScale='p2b' mb={6} display='flex'>
-					<Box mie={8}>{t('Trial_active')}</Box> <Tag>{t('n_days_left', { n: trialDaysLeft })}</Tag>
-				</Box>
+				{visualExpiration && (
+					<Box fontScale='p2b' mb={6} display='flex'>
+						<Box mie={8}>{t('Trial_active')}</Box>{' '}
+						<Tag>{t('n_days_left', { n: differenceInDays(new Date(visualExpiration), new Date()) })}</Tag>
+					</Box>
+				)}
 				<Box fontScale='p2' mb={6}>
 					{isSalesAssisted ? (
 						<Trans i18nKey='Contact_sales_trial'>
