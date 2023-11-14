@@ -132,28 +132,28 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 					),
 				},
 
-				versionStatus?.label !== 'outdated'
-					? {
-							type: 'neutral',
-							icon: 'check',
-							label: (
-								<Trans i18nKey='Version_supported_until' values={{ date: formatDate(versionStatus?.expiration || '') }}>
-									Version
-									<ExternalLink to={SUPPORT_EXTERNAL_LINK}>supported</ExternalLink>
-									until {formatDate(versionStatus?.expiration || '')}
-								</Trans>
-							),
-					  }
-					: {
-							type: 'danger',
-							icon: 'warning',
-							label: (
-								<Trans i18nKey='Version_not_supported'>
-									Version
-									<ExternalLink to={SUPPORT_EXTERNAL_LINK}>not supported</ExternalLink>
-								</Trans>
-							),
-					  },
+				versionStatus?.label !== 'outdated' &&
+					versionStatus?.expiration && {
+						type: 'neutral',
+						icon: 'check',
+						label: (
+							<Trans i18nKey='Version_supported_until' values={{ date: formatDate(versionStatus?.expiration) }}>
+								Version
+								<ExternalLink to={SUPPORT_EXTERNAL_LINK}>supported</ExternalLink>
+								until {formatDate(versionStatus?.expiration)}
+							</Trans>
+						),
+					},
+				versionStatus?.label === 'outdated' && {
+					type: 'danger',
+					icon: 'warning',
+					label: (
+						<Trans i18nKey='Version_not_supported'>
+							Version
+							<ExternalLink to={SUPPORT_EXTERNAL_LINK}>not supported</ExternalLink>
+						</Trans>
+					),
+				},
 				isRegistered
 					? {
 							type: 'neutral',
@@ -230,16 +230,10 @@ const getVersionStatus = (
 		expiration: Date | undefined;
 	} = {
 		label: 'outdated',
+		...(semver.gte(coercedServerVersion, highestVersion.version) && { label: 'latest' }),
+		...(isSupported && semver.gt(highestVersion.version, coercedServerVersion) && { label: 'available_version' }),
 		expiration: currentVersionData?.expiration,
 	};
-
-	if (semver.gte(coercedServerVersion, highestVersion.version)) {
-		versionStatus.label = 'latest';
-	}
-
-	if (isSupported && semver.gt(highestVersion.version, coercedServerVersion)) {
-		versionStatus.label = 'available_version';
-	}
 
 	return versionStatus;
 };
