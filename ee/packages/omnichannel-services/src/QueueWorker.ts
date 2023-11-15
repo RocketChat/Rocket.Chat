@@ -19,7 +19,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 
 	private shouldWork = true;
 
-	constructor(private readonly db: Db, loggerClass: typeof Logger) {
+	constructor(private readonly db: Db, loggerClass: typeof Logger, private readonly isRunningMs = false) {
 		super();
 
 		// eslint-disable-next-line new-cap
@@ -27,6 +27,10 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 		this.queue = new MessageQueue();
 
 		this.onEvent('license.module', ({ module, valid }) => {
+			if (!this.isRunningMs) {
+				this.shouldWork = true;
+				return;
+			}
 			if (module === 'scalability') {
 				this.shouldWork = valid;
 			}
@@ -35,7 +39,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 
 	async started(): Promise<void> {
 		try {
-			this.shouldWork = await License.hasModule('scalability');
+			this.shouldWork = this.isRunningMs ? await License.hasModule('scalability') : true;
 		} catch (e: unknown) {
 			// ignore
 		}

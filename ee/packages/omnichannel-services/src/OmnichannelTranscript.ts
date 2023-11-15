@@ -63,13 +63,17 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	shouldWork = false;
 
-	constructor(loggerClass: typeof Logger) {
+	constructor(loggerClass: typeof Logger, private readonly isRunningMs = false) {
 		super();
 		this.worker = new PdfWorker('chat-transcript');
 		// eslint-disable-next-line new-cap
 		this.log = new loggerClass('OmnichannelTranscript');
 
 		this.onEvent('license.module', ({ module, valid }) => {
+			if (!this.isRunningMs) {
+				this.shouldWork = true;
+				return;
+			}
 			if (module === 'scalability') {
 				this.shouldWork = valid;
 			}
@@ -78,7 +82,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	async started(): Promise<void> {
 		try {
-			this.shouldWork = await licenseService.hasModule('scalability');
+			this.shouldWork = this.isRunningMs ? await licenseService.hasModule('scalability') : true;
 		} catch (e: unknown) {
 			// ignore
 		}

@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 3036;
 	// need to import service after models are registered
 	const { OmnichannelTranscript } = await import('@rocket.chat/omnichannel-services');
 
-	api.registerService(new OmnichannelTranscript(Logger), ['queue-worker']);
+	api.registerService(new OmnichannelTranscript(Logger, true), ['queue-worker']);
 
 	await api.start();
 
