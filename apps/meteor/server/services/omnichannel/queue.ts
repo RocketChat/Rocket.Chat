@@ -102,7 +102,6 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				queue: queue || 'Public',
 				err: e,
 			});
-			
 		} finally {
 			void this.execute();
 		}
