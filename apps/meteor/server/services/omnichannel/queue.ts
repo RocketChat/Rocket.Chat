@@ -92,14 +92,17 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				// Note: this removes the "one-shot" behavior of queue, allowing it to take a conversation again in the future
 				// And sorting them by _updatedAt: -1 will make it so that the oldest inquiries are taken first
 				// preventing us from playing with the same inquiry over and over again
-				await LivechatInquiry.unlock(nextInquiry._id);
+				return await LivechatInquiry.unlockAndQueue(nextInquiry._id);
 			}
+
+			await LivechatInquiry.unlock(nextInquiry._id);
 		} catch (e) {
 			queueLogger.error({
 				msg: 'Error processing queue',
 				queue: queue || 'Public',
 				err: e,
 			});
+			
 		} finally {
 			void this.execute();
 		}
