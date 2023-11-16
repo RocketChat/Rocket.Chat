@@ -30,7 +30,7 @@ const MACCard = ({ value = 0, max }: { value: number; max: number }): ReactEleme
 
 	const color = nearLimit ? Palette.statusColor['status-font-on-danger'].toString() : undefined;
 
-	const message = macLeft > 0 ? t('MAC_Available', { macLeft }) : t('MAC_Required', { macRequired: -macLeft });
+	const message = macLeft > 0 ? t('MAC_Available', { macLeft }) : undefined;
 
 	return (
 		<FeatureUsageCard card={card}>
