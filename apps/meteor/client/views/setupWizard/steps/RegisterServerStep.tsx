@@ -2,7 +2,7 @@ import { RegisterServerPage, RegisterOfflinePage } from '@rocket.chat/onboarding
 import { useEndpoint, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { ReactElement, ComponentProps } from 'react';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { queryClient } from '../../../lib/queryClient';
 import { dispatchToastMessage } from '../../../lib/toast';
@@ -17,7 +17,6 @@ const RegisterServerStep = (): ReactElement => {
 	const t = useTranslation();
 	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, completeSetupWizard } = useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
-	const [offline, setOffline] = useState(false);
 
 	const handleRegister: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async (data: {
 		email: string;
@@ -64,19 +63,11 @@ const RegisterServerStep = (): ReactElement => {
 		mutate(token);
 	};
 
-	useEffect(() => {
-		if (isLoading) {
-			setOffline(false);
-			return;
-		}
-
-		if (isError) {
-			setOffline(true);
-			return;
-		}
-
-		setOffline(!!intent?.offline);
-	}, [intent, isError, isLoading]);
+	const offline = useMemo(() => {
+		if (isLoading) return false;
+		if (isError) return true;
+		return !!intent?.offline;
+	}, [intent?.offline, isError, isLoading]);
 
 	if (serverOption === SERVER_OPTIONS.OFFLINE) {
 		return (
