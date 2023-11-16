@@ -63,11 +63,11 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	const isOverLimits = limits && isOverLicenseLimits(limits);
 
 	const versionStatus = useMemo(() => {
-		if (!supportedVersions.versions) {
+		if (!supportedVersions?.versions) {
 			return;
 		}
-		return getVersionStatus(serverVersion, supportedVersions.versions);
-	}, [serverVersion, supportedVersions.versions]);
+		return getVersionStatus(serverVersion, supportedVersions?.versions);
+	}, [serverVersion, supportedVersions]);
 
 	const actionButton:
 		| undefined
@@ -120,7 +120,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 							icon: 'check',
 							label: t('Operating_withing_plan_limits'),
 					  },
-				isAirgapped && {
+				(isAirgapped || !supportedVersions?.versions) && {
 					type: 'neutral',
 					icon: 'warning',
 					label: (
@@ -167,7 +167,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 					  },
 			].filter(Boolean) as VersionActionItem[]
 		).sort((a) => (a.type === 'danger' ? -1 : 1));
-	}, [isOverLimits, t, isAirgapped, versionStatus, formatDate, isRegistered]);
+	}, [isOverLimits, t, isAirgapped, versionStatus, formatDate, isRegistered, supportedVersions]);
 
 	return (
 		<Card background={cardBackground}>
@@ -179,7 +179,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 								<Box fontScale='h3' mbe={4} display='flex'>
 									{t('Version_version', { version: serverVersion })}
 									<Box mis={8} alignSelf='center' width='auto'>
-										<VersionTag versionStatus={versionStatus?.label} />
+										{!isAirgapped && supportedVersions?.versions && <VersionTag versionStatus={versionStatus?.label} />}
 									</Box>
 								</Box>
 							</CardColTitle>
@@ -211,8 +211,12 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 export default VersionCard;
 
-const decodeBase64 = (b64: string): SupportedVersions => {
+const decodeBase64 = (b64: string): SupportedVersions | undefined => {
 	const [, bodyEncoded] = b64.split('.');
+	if (!bodyEncoded) {
+		return;
+	}
+
 	return JSON.parse(atob(bodyEncoded));
 };
 
