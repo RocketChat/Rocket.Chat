@@ -27,15 +27,15 @@ target "base" {
 }
 
 function "image_full_name" {
-	params = [repo_name, passed_tag]
-	result = "${registry}/${repository_owner}/${repo_name}:${notequal(passed_tag, "") ? passed_tag : tag}"
+	params = [repo_name]
+	result = "${registry}/${repository_owner}/${repo_name}:${tag}"
 }
 
 target "monolith" {
 	inherits = ["base"]
 	dockerfile = target_monolith_use_alpine ? "Dockerfile.alpine" : "Dockerfile"
 	context = "/tmp/build"
-	tags = [image_full_name("rocket.chat", monolith_tag)]
+	tags = ["${registry}/${repository_owner}/rocket.chat:${monolith_tag}"]
 }
 
 target "rocketchat-alpine" {
