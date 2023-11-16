@@ -50,6 +50,7 @@ WORKDIR /app/ee/apps/${SERVICE}
 
 RUN apk update && \
     apk --no-cache --virtual build-dependencies add g++ python3 make && \
+    yarn config set unsafe-perm true && \
     yarn workspaces focus --production && \
     rm -rf /var/cache/apk/* && \
     apk del build-dependencies
