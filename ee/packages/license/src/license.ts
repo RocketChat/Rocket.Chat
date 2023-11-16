@@ -9,6 +9,7 @@ import type { LicenseModule } from './definition/LicenseModule';
 import type { LicenseValidationOptions } from './definition/LicenseValidationOptions';
 import type { LimitContext } from './definition/LimitContext';
 import type { LicenseEvents } from './definition/events';
+import { getLicenseLimit } from './deprecated';
 import { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
 import { InvalidLicenseError } from './errors/InvalidLicenseError';
 import { NotReadyForValidation } from './errors/NotReadyForValidation';
@@ -26,6 +27,7 @@ import { getModulesToDisable } from './validation/getModulesToDisable';
 import { isBehaviorsInResult } from './validation/isBehaviorsInResult';
 import { isReadyForValidation } from './validation/isReadyForValidation';
 import { runValidation } from './validation/runValidation';
+import { validateDefaultLimits } from './validation/validateDefaultLimits';
 import { validateFormat } from './validation/validateFormat';
 import { validateLicenseLimits } from './validation/validateLicenseLimits';
 
@@ -347,13 +349,10 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		action: T,
 		extraCount = 0,
 		context: Partial<LimitContext<T>> = {},
-		{ suppressLog }: Pick<LicenseValidationOptions, 'suppressLog'> = {},
+		{ suppressLog }: Pick<LicenseValidationOptions, 'suppressLog'> = {
+			suppressLog: process.env.LICENSE_VALIDATION_SUPPRESS_LOG !== 'false',
+		},
 	): Promise<boolean> {
-		const license = this.getLicense();
-		if (!license) {
-			return false;
-		}
-
 		const options: LicenseValidationOptions = {
 			...(extraCount && { behaviors: ['prevent_action'] }),
 			isNewLicense: false,
@@ -366,6 +365,11 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 				},
 			},
 		};
+
+		const license = this.getLicense();
+		if (!license) {
+			return isBehaviorsInResult(await validateDefaultLimits.call(this, options), ['prevent_action']);
+		}
 
 		const validationResult = await runValidation.call(this, license, options);
 
@@ -415,27 +419,23 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		const license = this.getLicense();
 
 		// Get all limits present in the license and their current value
-		const limits = (
-			(license &&
-				includeLimits &&
+		const limits = Object.fromEntries(
+			(includeLimits &&
 				(await Promise.all(
 					globalLimitKinds
-						.map((limitKey) => ({
-							limitKey,
-							max: Math.max(-1, Math.min(...Array.from(license.limits[limitKey as LicenseLimitKind] || [])?.map(({ max }) => max))),
-						}))
-						.filter(({ max }) => max >= 0 && max < Infinity)
-						.map(async ({ max, limitKey }) => {
-							return {
-								[limitKey as LicenseLimitKind]: {
-									...(loadCurrentValues ? { value: await getCurrentValueForLicenseLimit.call(this, limitKey as LicenseLimitKind) } : {}),
+						.map((limitKey) => [limitKey, getLicenseLimit(license, limitKey)] as const)
+						.map(async ([limitKey, max]) => {
+							return [
+								limitKey,
+								{
+									...(loadCurrentValues && { value: await getCurrentValueForLicenseLimit.call(this, limitKey) }),
 									max,
 								},
-							};
+							];
 						}),
 				))) ||
-			[]
-		).reduce((prev, curr) => ({ ...prev, ...curr }), {});
+				[],
+		);
 
 		return {
 			license: (includeLicense && license) || undefined,
