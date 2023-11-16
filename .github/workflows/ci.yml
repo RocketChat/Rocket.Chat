@@ -450,7 +450,7 @@ jobs:
         release: ['official', 'preview', 'alpine']
 
     env:
-      IMAGE_NAME: 'rocketchat/rocket.chat'
+      IMAGE_NAME: 'docker.io/rocketchat/rocket.chat'
 
     steps:
       - name: Login to DockerHub
@@ -480,9 +480,6 @@ jobs:
           echo "DOCKER_TAG_SHA: ${DOCKER_TAG_SHA}"
           echo "gh-docker-tag-sha=${DOCKER_TAG_SHA}" >> $GITHUB_OUTPUT
 
-      - name: Pull Docker image
-        run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
-
       - name: Publish Docker image
         run: |
           if [[ '${{ matrix.release }}' = 'preview' ]]; then
@@ -493,38 +490,33 @@ jobs:
           DOCKER_TAG=$GITHUB_REF_NAME
 
           # append the variant name to docker tag
-          if [[ '${{ matrix.release }}' = 'alpine' ]]; then
-            DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
+          if [[ '${{ matrix.release }}' == 'alpine' ]]; then
+            DOCKER_TAG+="-alpine"
           fi;
 
           PUBLISHED_TAGS=()
 
-          # tag and push the specific tag version
-          docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$DOCKER_TAG
-          docker push $IMAGE_NAME:$DOCKER_TAG
+          # tag and push the specific tag version // [source] [dest]
+          docker buildx imagetools --tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$DOCKER_TAG
 
           PUBLISHED_TAGS+=("$IMAGE_NAME:$DOCKER_TAG")
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             RELEASE="${{ needs.release-versions.outputs.release }}"
 
-            if [[ '${{ matrix.release }}' = 'alpine' ]]; then
-              RELEASE="${RELEASE}-${{ matrix.release }}"
+            if [[ '${{ matrix.release }}' == 'alpine' ]]; then
+              RELEASE="${RELEASE}-alpine"
             fi;
 
             echo "RELEASE: $RELEASE"
 
             if [[ $RELEASE == 'latest' ]]; then
               if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
-                docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
-                docker push $IMAGE_NAME:$RELEASE
-
+                docker buildx imagetols --tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
                 PUBLISHED_TAGS+=("$IMAGE_NAME:$RELEASE")
               fi
             else
-              docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
-              docker push $IMAGE_NAME:$RELEASE
-
+              docker buildx imagetools --tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
               PUBLISHED_TAGS+=("$IMAGE_NAME:$RELEASE")
             fi
           fi
@@ -537,8 +529,7 @@ jobs:
             TAG_SHA="${TAG_SHA}-${{ matrix.release }}"
           fi;
 
-          docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$TAG_SHA
-          docker push $IMAGE_NAME:$TAG_SHA
+          docker buildx imagetools --tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$TAG_SHA
 
           PUBLISHED_TAGS+=("$IMAGE_NAME:$TAG_SHA")
 
@@ -587,9 +578,6 @@ jobs:
           echo "DOCKER_TAG_SHA: ${DOCKER_TAG_SHA}"
           echo "gh-docker-tag-sha=${DOCKER_TAG_SHA}" >> $GITHUB_OUTPUT
 
-      - name: Pull Docker image
-        run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
-
       - name: Publish Docker images
         run: |
           DH_IMAGE_NAME="rocketchat/${{ matrix.service }}-service"
@@ -600,8 +588,7 @@ jobs:
           PUBLISHED_TAGS=()
 
           # tag and push the specific tag version
-          docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$DOCKER_TAG
-          docker push $DH_IMAGE_NAME:$DOCKER_TAG
+          docker buildx imagetools --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$DOCKER_TAG
 
           PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$DOCKER_TAG")
 
@@ -610,14 +597,12 @@ jobs:
 
             if [[ $RELEASE == 'latest' ]]; then
               if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
-                docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
-                docker push $DH_IMAGE_NAME:$RELEASE
+                docker buildx imagetools --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
 
                 PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$RELEASE")
               fi
             else
-              docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
-              docker push $DH_IMAGE_NAME:$RELEASE
+              docker buildx imagetools --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
 
               PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$RELEASE")
             fi
@@ -626,8 +611,7 @@ jobs:
           # commit hash
           TAG_SHA="${{ steps.gh-docker.outputs.gh-docker-tag-sha }}"
 
-          docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$TAG_SHA
-          docker push $DH_IMAGE_NAME:$TAG_SHA
+          docker buildx imagetools --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$TAG_SHA
 
           PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$TAG_SHA")
 
@@ -683,21 +667,6 @@ jobs:
 
           # Makes build fail if the release isn't there
           curl --fail https://releases.rocket.chat/$RC_VERSION/info
-
-      - name: RedHat Registry
-        if: github.event_name == 'release'
-        env:
-          REDHAT_REGISTRY_PID: ${{ secrets.REDHAT_REGISTRY_PID }}
-          REDHAT_REGISTRY_KEY: ${{ secrets.REDHAT_REGISTRY_KEY }}
-        run: |
-          GIT_TAG="${GITHUB_REF#*tags/}"
-
-          curl -X POST \
-            https://connect.redhat.com/api/v2/projects/$REDHAT_REGISTRY_PID/build \
-            -H "Authorization: Bearer $REDHAT_REGISTRY_KEY" \
-            -H 'Cache-Control: no-cache' \
-            -H 'Content-Type: application/json' \
-            -d '{"tag":"'$GIT_TAG'"}'
 
   trigger-dependent-workflows:
     runs-on: ubuntu-latest

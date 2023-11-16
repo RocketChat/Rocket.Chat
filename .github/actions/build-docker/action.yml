@@ -2,17 +2,17 @@ name: 'Meteor Docker'
 
 inputs:
   CR_USER:
+    description: ''
     required: true
   CR_PAT:
+    description: ''
     required: true
   node-version:
     required: true
     description: 'Node version'
-    type: string
   platform:
     required: false
     description: 'Platform'
-    type: string
 
 runs:
   using: composite
@@ -51,25 +51,26 @@ runs:
     - run: yarn build
       shell: bash
 
-    - name: Build Docker images
+    - name: Build and push docker images
       shell: bash
       run: |
-        args=(rocketchat)
+        cp apps/meteor/.docker/Dockerfile /tmp/build
+        cp apps/meteor/.docker/Dockerfile.alpine /tmp/build
+
+        targets=(monolith)
 
         if [[ '${{ inputs.platform }}' = 'alpine' ]]; then
-          args+=($SERVICES_PUBLISH)
+          targets+=($SERVICES_PUBLISH)
         fi;
 
-        docker compose -f docker-compose-ci.yml build "${args[@]}"
+        if [[ ${{ matrix.platform }} == 'alpine' ]]; then export target_monolith_use_alpine=true; fi
+        export repository_owner=$LOWERCASE_REPOSITORY
+        export monolith_tag=$RC_DOCKER_TAG
+        export tag=$DOCKER_TAG
+        export registry=ghcr.io
 
-    - name: Publish Docker images to GitHub Container Registry
-      if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-      shell: bash
-      run: |
-        args=(rocketchat)
+        maybe_push=
+        { [[ $GITHUB_EVENT_NAME == 'release' ]] || [[ ${{ github.event.pull_request.head.repo.full_name }} == $GITHUB_REPOSITORY ]] || [[ $GITHUB_REF == 'refs/heads/develop' ]]; } && maybe_push=--push
 
-        if [[ '${{ inputs.platform }}' = 'alpine' ]]; then
-          args+=($SERVICES_PUBLISH)
-        fi;
-
-        docker compose -f docker-compose-ci.yml push "${args[@]}"
+        docker buildx bake --print "${targets[@]}"
+        docker buildx bake "${targets[@]}" $maybe_push
