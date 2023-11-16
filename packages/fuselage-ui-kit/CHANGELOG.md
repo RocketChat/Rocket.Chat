@@ -1,5 +1,29 @@
 # Change Log
 
+## 3.0.0-rc.6
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.6
+- @rocket.chat/ui-contexts@3.0.0-rc.6
+- @rocket.chat/ui-video-conf@3.0.0-rc.6
+
+## 3.0.0-rc.5
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.5
+- @rocket.chat/ui-contexts@3.0.0-rc.5
+- @rocket.chat/ui-video-conf@3.0.0-rc.5
+
+## 3.0.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.4
+- @rocket.chat/ui-contexts@3.0.0-rc.4
+- @rocket.chat/ui-video-conf@3.0.0-rc.4
+
 ## 3.0.0-rc.3
 
 ### Patch Changes

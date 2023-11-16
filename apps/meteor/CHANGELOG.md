@@ -1,5 +1,90 @@
 # @rocket.chat/meteor
 
+## 6.5.0-rc.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- aaf11e92dc: Fixed Canned responses stream not working, causing users to refresh to see newly created responses.
+  - @rocket.chat/core-typings@6.5.0-rc.6
+  - @rocket.chat/rest-typings@6.5.0-rc.6
+  - @rocket.chat/api-client@0.1.15-rc.6
+  - @rocket.chat/license@0.1.0-rc.6
+  - @rocket.chat/omnichannel-services@0.1.0-rc.6
+  - @rocket.chat/pdf-worker@0.0.21-rc.6
+  - @rocket.chat/presence@0.1.0-rc.6
+  - @rocket.chat/core-services@0.3.0-rc.6
+  - @rocket.chat/cron@0.0.17-rc.6
+  - @rocket.chat/gazzodown@3.0.0-rc.6
+  - @rocket.chat/model-typings@0.2.0-rc.6
+  - @rocket.chat/ui-contexts@3.0.0-rc.6
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.0-rc.6
+  - @rocket.chat/models@0.0.21-rc.6
+  - @rocket.chat/ui-theming@0.1.1-rc.0
+  - @rocket.chat/ui-client@3.0.0-rc.6
+  - @rocket.chat/ui-video-conf@3.0.0-rc.6
+  - @rocket.chat/web-ui-registration@3.0.0-rc.5
+  - @rocket.chat/instance-status@0.0.21-rc.6
+
+## 6.5.0-rc.5
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- 3ce070a3de: fix: wrong client hash calculation due to race condition on assets
+
+  Some deployments may suffer from some reloads if running multiple instances. It's caused by different client hashes generated due to a possible race condition on custom assets load at the startup time. Forcing the clients to talk to the right backend instances, which causes reloads if sticky sessions are not enabled.
+  This change removes the assets from the hash calculation preventing the race condition and possible different hashes. After this change, the clients will not reload when the admin changes assets.
+
+- 26b8c8124c: fix: `TypeError`: Cannot use 'in' operator in `undefined` for every message sent
+  - @rocket.chat/core-typings@6.5.0-rc.5
+  - @rocket.chat/rest-typings@6.5.0-rc.5
+  - @rocket.chat/api-client@0.1.15-rc.5
+  - @rocket.chat/license@0.1.0-rc.5
+  - @rocket.chat/omnichannel-services@0.1.0-rc.5
+  - @rocket.chat/pdf-worker@0.0.21-rc.5
+  - @rocket.chat/presence@0.1.0-rc.5
+  - @rocket.chat/core-services@0.3.0-rc.5
+  - @rocket.chat/cron@0.0.17-rc.5
+  - @rocket.chat/gazzodown@3.0.0-rc.5
+  - @rocket.chat/model-typings@0.2.0-rc.5
+  - @rocket.chat/ui-contexts@3.0.0-rc.5
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.0-rc.5
+  - @rocket.chat/models@0.0.21-rc.5
+  - @rocket.chat/ui-theming@0.1.1-rc.0
+  - @rocket.chat/ui-client@3.0.0-rc.5
+  - @rocket.chat/ui-video-conf@3.0.0-rc.5
+  - @rocket.chat/web-ui-registration@3.0.0-rc.4
+  - @rocket.chat/instance-status@0.0.21-rc.5
+
+## 6.5.0-rc.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.5.0-rc.4
+  - @rocket.chat/rest-typings@6.5.0-rc.4
+  - @rocket.chat/api-client@0.1.15-rc.4
+  - @rocket.chat/license@0.1.0-rc.4
+  - @rocket.chat/omnichannel-services@0.1.0-rc.4
+  - @rocket.chat/pdf-worker@0.0.21-rc.4
+  - @rocket.chat/presence@0.1.0-rc.4
+  - @rocket.chat/core-services@0.3.0-rc.4
+  - @rocket.chat/cron@0.0.17-rc.4
+  - @rocket.chat/gazzodown@3.0.0-rc.4
+  - @rocket.chat/model-typings@0.2.0-rc.4
+  - @rocket.chat/ui-contexts@3.0.0-rc.4
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.0-rc.4
+  - @rocket.chat/models@0.0.21-rc.4
+  - @rocket.chat/ui-theming@0.1.1-rc.0
+  - @rocket.chat/ui-client@3.0.0-rc.4
+  - @rocket.chat/ui-video-conf@3.0.0-rc.4
+  - @rocket.chat/web-ui-registration@3.0.0-rc.3
+  - @rocket.chat/instance-status@0.0.21-rc.4
+
 ## 6.5.0-rc.3
 
 ### Patch Changes
