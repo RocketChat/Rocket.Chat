@@ -15,7 +15,6 @@ const UsersListStatusParamsGetSchema = {
 			type: 'string',
 		},
 	},
-	required: ['role'],
 	additionalProperties: false,
 };
 
