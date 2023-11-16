@@ -7,11 +7,11 @@ variable "registry" {
 }
 
 variable "tag" {
-	description = "common tag for all microservice images"
+	// description = "common tag for all microservice images"
 }
 
 variable "monolith_tag" {
-	description = "separate tag for monolith image due to a non release event on the repository"
+	// description = "separate tag for monolith image due to a non release event on the repository"
 }
 
 variable "repository_owner" {
