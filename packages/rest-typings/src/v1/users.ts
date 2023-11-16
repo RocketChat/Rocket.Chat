@@ -21,6 +21,7 @@ import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListStatusParamsGET } from './users/UsersListStatusParamsGET';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 import type { UsersSendConfirmationEmailParamsPOST } from './users/UsersSendConfirmationEmailParamsPOST';
+import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEmailParamsPOST';
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
 import type { UsersUpdateOwnBasicInfoParamsPOST } from './users/UsersUpdateOwnBasicInfoParamsPOST';
 import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
@@ -159,7 +160,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.sendWelcomeEmail': {
-		POST: (params: { email: string }) => void;
+		POST: (params: UsersSendWelcomeEmailParamsPOST) => void;
 	};
 
 	'/v1/users.setAvatar': {
@@ -385,6 +386,7 @@ export * from './users/UserSetActiveStatusParamsPOST';
 export * from './users/UserDeactivateIdleParamsPOST';
 export * from './users/UsersInfoParamsGet';
 export * from './users/UsersListStatusParamsGET';
+export * from './users/UsersSendWelcomeEmailParamsPOST';
 export * from './users/UserRegisterParamsPOST';
 export * from './users/UserLogoutParamsPOST';
 export * from './users/UsersListTeamsParamsGET';

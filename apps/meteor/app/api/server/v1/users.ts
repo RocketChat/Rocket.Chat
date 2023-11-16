@@ -7,6 +7,7 @@ import {
 	isUserDeactivateIdleParamsPOST,
 	isUsersInfoParamsGetProps,
 	isUsersListStatusProps,
+	isUsersSendWelcomeEmailProps,
 	isUserRegisterParamsPOST,
 	isUserLogoutParamsPOST,
 	isUsersListTeamsProps,
@@ -647,13 +648,11 @@ API.v1.addRoute(
 	'users.sendWelcomeEmail',
 	{
 		authRequired: true,
+		validateParams: isUsersSendWelcomeEmailProps,
 	},
 	{
 		async post() {
 			const { email } = this.bodyParams;
-			if (!email) {
-				return API.v1.failure("The 'email' param is required");
-			}
 
 			await sendWelcomeEmail(email);
 
