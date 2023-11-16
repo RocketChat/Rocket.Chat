@@ -1,3 +1,4 @@
+import { api } from '@rocket.chat/core-services';
 import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
@@ -24,7 +25,10 @@ const updateMessages = debounceByRoomId(async ({ _id, lm }) => {
 		return;
 	}
 
-	await Messages.setVisibleMessagesAsRead(_id, firstSubscription.ls);
+	const result = await Messages.setVisibleMessagesAsRead(_id, firstSubscription.ls);
+	if (result.modifiedCount > 0) {
+		void api.broadcast('notify.messagesRead', _id, { until: firstSubscription.ls });
+	}
 
 	if (lm <= firstSubscription.ls) {
 		await Rooms.setLastMessageAsRead(_id);
@@ -61,7 +65,10 @@ export const ReadReceipt = {
 		// mark message as read if the sender is the only one in the room
 		const isUserAlone = (await Subscriptions.countByRoomIdAndNotUserId(roomId, userId)) === 0;
 		if (isUserAlone) {
-			await Messages.setAsReadById(message._id);
+			const result = await Messages.setAsReadById(message._id);
+			if (result.modifiedCount > 0) {
+				void api.broadcast('notify.messagesRead', roomId);
+			}
 		}
 
 		const extraData = roomCoordinator.getRoomDirectives(t).getReadReceiptsExtraData(message);
