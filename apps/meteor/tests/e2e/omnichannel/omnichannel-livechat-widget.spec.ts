@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
 import { test, expect } from '../utils/test';
