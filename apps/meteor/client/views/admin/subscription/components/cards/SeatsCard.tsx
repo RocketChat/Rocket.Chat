@@ -10,9 +10,10 @@ import UsagePieGraph from '../UsagePieGraph';
 type SeatsCardProps = {
 	value: number;
 	max: number;
+	hideManageSubscription?: boolean;
 };
 
-const SeatsCard = ({ value, max }: SeatsCardProps): ReactElement => {
+const SeatsCard = ({ value, max, hideManageSubscription }: SeatsCardProps): ReactElement => {
 	const { t } = useTranslation();
 
 	const pieGraph = {
@@ -25,9 +26,10 @@ const SeatsCard = ({ value, max }: SeatsCardProps): ReactElement => {
 	const card: CardProps = {
 		title: t('Seats'),
 		infoText: t('Seats_InfoText'),
-		...(nearLimit && {
-			upgradeButtonText: t('Buy_more'),
-		}),
+		...(!hideManageSubscription &&
+			nearLimit && {
+				upgradeButtonText: t('Buy_more'),
+			}),
 	};
 
 	const seatsLeft = pieGraph.total - pieGraph.used;
