@@ -361,20 +361,21 @@ export const createMessageSettings = () =>
 			});
 		});
 
-		await this.section('Google Maps', async () => {
-			await settingsRegistry.add('MapView_Enabled', false, {
-				type: 'boolean',
-				public: true,
-				i18nLabel: 'MapView_Enabled',
-				i18nDescription: 'MapView_Enabled_Description',
-			});
-			await settingsRegistry.add('MapView_GMapsAPIKey', '', {
-				type: 'string',
-				public: true,
-				i18nLabel: 'MapView_GMapsAPIKey',
-				i18nDescription: 'MapView_GMapsAPIKey_Description',
-				secret: true,
-			});
+		await this.add('MapView_Enabled', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'MapView_Enabled',
+			i18nDescription: 'MapView_Enabled_Description',
+			section: 'Google Maps',
+		});
+
+		await this.add('MapView_GMapsAPIKey', '', {
+			type: 'string',
+			public: true,
+			i18nLabel: 'MapView_GMapsAPIKey',
+			i18nDescription: 'MapView_GMapsAPIKey_Description',
+			secret: true,
+			section: 'Google Maps',
 		});
 
 		await this.add('Message_AllowPinning', true, {
