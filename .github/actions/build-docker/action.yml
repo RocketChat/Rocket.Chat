@@ -51,6 +51,12 @@ runs:
     - run: yarn build
       shell: bash
 
+    - uses: docker/setup-qemu-action@v2
+    - uses: docker/setup-buildx-action@v2
+      with:
+        driver: docker-container
+        platforms: linux/amd64,linux/arm64
+
     - name: Build and push docker images
       shell: bash
       run: |
