@@ -2,7 +2,7 @@ import { RegisterServerPage, RegisterOfflinePage } from '@rocket.chat/onboarding
 import { useEndpoint, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { ReactElement, ComponentProps } from 'react';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
 import { queryClient } from '../../../lib/queryClient';
 import { dispatchToastMessage } from '../../../lib/toast';
@@ -38,11 +38,12 @@ const RegisterServerStep = (): ReactElement => {
 	});
 
 	const {
-		data: intent,
+		data: offline,
 		isLoading,
 		isError,
 	} = useQuery(['setupWizard/registerIntent'], async () => registerPreIntent(), {
 		staleTime: Infinity,
+		select: (data) => data.offline,
 	});
 
 	const { mutate } = useMutation<null, unknown, string>(
@@ -63,12 +64,6 @@ const RegisterServerStep = (): ReactElement => {
 		mutate(token);
 	};
 
-	const offline = useMemo(() => {
-		if (isLoading) return false;
-		if (isError) return true;
-		return !!intent?.offline;
-	}, [intent?.offline, isError, isLoading]);
-
 	if (serverOption === SERVER_OPTIONS.OFFLINE) {
 		return (
 			<RegisterOfflinePage
@@ -87,7 +82,7 @@ const RegisterServerStep = (): ReactElement => {
 			stepCount={maxSteps}
 			onSubmit={handleRegister}
 			currentStep={currentStep}
-			offline={offline}
+			offline={isError || (!isLoading && offline)}
 		/>
 	);
 };
