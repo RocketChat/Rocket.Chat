@@ -497,7 +497,7 @@ jobs:
           PUBLISHED_TAGS=()
 
           # tag and push the specific tag version // [source] [dest]
-          docker buildx imagetools --tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$DOCKER_TAG
+          docker buildx imagetools create --tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$DOCKER_TAG
 
           PUBLISHED_TAGS+=("$IMAGE_NAME:$DOCKER_TAG")
 
@@ -516,7 +516,7 @@ jobs:
                 PUBLISHED_TAGS+=("$IMAGE_NAME:$RELEASE")
               fi
             else
-              docker buildx imagetools --tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
+              docker buildx imagetools create --tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
               PUBLISHED_TAGS+=("$IMAGE_NAME:$RELEASE")
             fi
           fi
@@ -529,7 +529,7 @@ jobs:
             TAG_SHA="${TAG_SHA}-${{ matrix.release }}"
           fi;
 
-          docker buildx imagetools --tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$TAG_SHA
+          docker buildx imagetools create --tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$TAG_SHA
 
           PUBLISHED_TAGS+=("$IMAGE_NAME:$TAG_SHA")
 
@@ -588,7 +588,7 @@ jobs:
           PUBLISHED_TAGS=()
 
           # tag and push the specific tag version
-          docker buildx imagetools --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$DOCKER_TAG
+          docker buildx imagetools create --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$DOCKER_TAG
 
           PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$DOCKER_TAG")
 
@@ -597,12 +597,12 @@ jobs:
 
             if [[ $RELEASE == 'latest' ]]; then
               if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
-                docker buildx imagetools --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
+                docker buildx imagetools create --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
 
                 PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$RELEASE")
               fi
             else
-              docker buildx imagetools --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
+              docker buildx imagetools create --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
 
               PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$RELEASE")
             fi
@@ -611,7 +611,7 @@ jobs:
           # commit hash
           TAG_SHA="${{ steps.gh-docker.outputs.gh-docker-tag-sha }}"
 
-          docker buildx imagetools --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$TAG_SHA
+          docker buildx imagetools create --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$TAG_SHA
 
           PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$TAG_SHA")
 
