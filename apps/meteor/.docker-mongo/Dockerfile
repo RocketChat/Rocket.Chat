@@ -16,8 +16,8 @@ RUN set -x \
     && chown rocketchat:rocketchat /app/uploads
 
 # --chown requires Docker 17.12 and works only on Linux
-ADD --chown=rocketchat:rocketchat . /app
-ADD --chown=rocketchat:rocketchat entrypoint.sh /app/bundle/
+COPY --chown=rocketchat:rocketchat dist /app
+COPY --chown=rocketchat:rocketchat apps/meteor/.docker-mongo/entrypoint.sh /app/bundle/
 
 RUN aptMark="$(apt-mark showmanual)" \
     && apt-get install -y --no-install-recommends g++ make python ca-certificates \

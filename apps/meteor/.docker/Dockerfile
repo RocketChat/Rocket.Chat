@@ -30,7 +30,7 @@ RUN set -e \
 	| xargs -r apt-mark manual
 
 
-COPY --chown=rocketchat:rocketchat . /app
+COPY --chown=rocketchat:rocketchat dist /app
 
 USER rocketchat
 

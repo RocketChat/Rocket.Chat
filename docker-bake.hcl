@@ -7,11 +7,6 @@ variable "registry" {
 }
 
 variable "tag" {
-	// description = "common tag for all microservice images"
-}
-
-variable "monolith_tag" {
-	// description = "separate tag for monolith image due to a non release event on the repository"
 }
 
 variable "repository_owner" {
@@ -32,21 +27,26 @@ function "image_full_name" {
 }
 
 target "monolith" {
-	inherits = ["base"]
-	dockerfile = target_monolith_use_alpine ? "Dockerfile.alpine" : "Dockerfile"
-	context = "/tmp/build"
-	tags = ["${registry}/${repository_owner}/rocket.chat:${monolith_tag}"]
+	inherits = [target.base.name]
+	dockerfile = "apps/meteor/.docker/Dockerfile"
+	tags = ["${image_full_name("rocket.chat")}.official"] // ghcr.io/rocketchat/rocket.chat:pr-xxxx.official
 }
 
-target "rocketchat-alpine" {
-	inherits = ["rocketchat"]
-	dockerfile = "Dockerfile.alpine"
+target "monolith_alpine" {
+	inherits = [target.monolith.name]
+	dockerfile = "apps/meteor/.docker/Dockerfile.alpine"
+}
+
+target "preview" {
+	inherits = [target.monolith.name]
+	dockerfile = "apps/meteor/.docker-mongo/Dockerfile"
+	tags = ["${image_full_name("rocket.chat")}.preview"]
 }
 
 // if wondering about why not using some way to infer the name of the target and use that for
 // args and other stuff, it's not possible as of today - Debdut
 target "authorization-service" {
-	inherits = ["base"]
+	inherits = [target.base.name]
 	dockerfile = "./ee/apps/authorization-service/Dockerfile"
 	args = {
 		SERVICE = "authorization-service"
@@ -55,7 +55,7 @@ target "authorization-service" {
 }
 
 target "account-service" {
-	inherits = ["base"]
+	inherits = [target.base.name]
 	dockerfile = "./ee/apps/account-service/Dockerfile"
 	args = {
 		SERVICE = "account-service"
@@ -64,7 +64,7 @@ target "account-service" {
 }
 
 target "presence-service" {
-	inherits = ["base"]
+	inherits = [target.base.name]
 	dockerfile = "./ee/apps/presence-service/Dockerfile"
 	args = {
 		SERVICE = "presence-service"
@@ -73,8 +73,8 @@ target "presence-service" {
 }
 
 target "ddp-streamer-service" {
-	inherits = ["base"]
-	dockerfile = "./ee/apps/ddp-streamer-service/Dockerfile"
+	inherits = [target.base.name]
+	dockerfile = "./ee/apps/ddp-streamer/Dockerfile"
 	args = {
 		SERVICE = "ddp-streamer"
 	}
@@ -82,7 +82,7 @@ target "ddp-streamer-service" {
 }
 
 target "stream-hub-service" {
-	inherits = ["base"]
+	inherits = [target.base.name]
 	dockerfile = "./ee/apps/stream-hub-service/Dockerfile"
 	args = {
 		SERVICE = "stream-hub-service"
@@ -91,7 +91,7 @@ target "stream-hub-service" {
 }
 
 target "queue-worker-service" {
-	inherits = ["base"]
+	inherits = [target.base.name]
 	dockerfile = "./ee/apps/queue-worker/Dockerfile"
 	args = {
 		SERVICE = "queue-worker"
@@ -100,7 +100,7 @@ target "queue-worker-service" {
 }
 
 target "omnichannel-transcript-service" {
-	inherits = ["base"]
+	inherits = [target.base.name]
 	dockerfile = "./ee/apps/omnichannel-transcript/Dockerfile"
 	args = {
 		SERVICE = "omnichannel-transcript"

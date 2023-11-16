@@ -1,47 +1,62 @@
-name: 'Meteor Docker'
+name: 'Build docker image'
+description: 'Build container image for alpine, debian bases and the preview image; pushes to github container registry'
 
 inputs:
-  CR_USER:
+  registry-username:
     description: ''
     required: true
-  CR_PAT:
+  registry-token:
     description: ''
     required: true
   node-version:
-    required: true
+    required: false
     description: 'Node version'
   platform:
     required: false
     description: 'Platform'
+  repository-owner:
+    description: 'Owner of registry repository'
+    required: false
+    default: 'rocketchat'
+  version-tag:
+    description: 'Version part of a image tag'
+    required: true
+  registry:
+    default: ghcr.io
+    description: 'Registry to push the images to'
+  targets:
+    description: 'Targets to build'
+    required: false
 
 runs:
   using: composite
 
   steps:
     - name: Login to GitHub Container Registry
-      if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
       uses: docker/login-action@v2
       with:
-        registry: ghcr.io
-        username: ${{ inputs.CR_USER }}
-        password: ${{ inputs.CR_PAT }}
+        registry: ${{ inputs.registry }}
+        username: ${{ inputs.registry-username }}
+        password: ${{ inputs.registry-token }}
 
     - name: Restore build
       uses: actions/download-artifact@v3
       with:
         name: build
-        path: /tmp/build
+        path: dist
 
     - name: Unpack build
       shell: bash
       run: |
-        cd /tmp/build
+        cd dist
         tar xzf Rocket.Chat.tar.gz
         rm Rocket.Chat.tar.gz
 
     - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
+    # no need to "build" stuff if not building the ms targets
     - name: Setup NodeJS
+      if: inputs.platform == 'alpine'
       uses: ./.github/actions/setup-node
       with:
         node-version: ${{ inputs.node-version }}
@@ -49,6 +64,7 @@ runs:
         install: true
 
     - run: yarn build
+      if: inputs.platform == 'alpine'
       shell: bash
 
     - uses: docker/setup-qemu-action@v2
@@ -60,23 +76,28 @@ runs:
     - name: Build and push docker images
       shell: bash
       run: |
-        cp apps/meteor/.docker/Dockerfile /tmp/build
-        cp apps/meteor/.docker/Dockerfile.alpine /tmp/build
+        export repository_owner=${{ inputs.repository-owner }}
+        export tag=${{ inputs.version-tag }}
+        export registry=${{ inputs.registry }}
 
-        targets=(monolith)
+        print_and_build() {
+          docker buildx bake --print "$@"
+          docker buildx bake "$@" --push
+        }
 
-        if [[ '${{ inputs.platform }}' = 'alpine' ]]; then
-          targets+=($SERVICES_PUBLISH)
-        fi;
+        type=${{ inputs.platform }}
+        
+        if [[ $type == 'preview' ]]; then
+          print_and_build preview
+          exit $?
+        fi
 
-        if [[ ${{ matrix.platform }} == 'alpine' ]]; then export target_monolith_use_alpine=true; fi
-        export repository_owner=$LOWERCASE_REPOSITORY
-        export monolith_tag=$RC_DOCKER_TAG
-        export tag=$DOCKER_TAG
-        export registry=ghcr.io
+        if [[ $type == 'official' ]]; then
+          print_and_build monolith
+          exit $?
+        fi
 
-        maybe_push=
-        { [[ $GITHUB_EVENT_NAME == 'release' ]] || [[ ${{ github.event.pull_request.head.repo.full_name }} == $GITHUB_REPOSITORY ]] || [[ $GITHUB_REF == 'refs/heads/develop' ]]; } && maybe_push=--push
+        targets=(monolith_alpine)
+        targets+=(${{inputs.targets}})
 
-        docker buildx bake --print "${targets[@]}"
-        docker buildx bake "${targets[@]}" $maybe_push
+        print_and_build "${targets[@]}"

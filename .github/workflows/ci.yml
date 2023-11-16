@@ -174,17 +174,10 @@ jobs:
     needs: [build, release-versions]
     runs-on: ubuntu-20.04
 
-    env:
-      RC_DOCKERFILE: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
-      RC_DOCKER_TAG: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
-      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
-      SERVICES_PUBLISH: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
-
     strategy:
       fail-fast: false
       matrix:
-        platform: ['official', 'alpine']
+        platform: ['official', 'alpine'] # TODO: add preview here?
 
     steps:
       - uses: actions/checkout@v4
@@ -193,22 +186,18 @@ jobs:
       - uses: ./.github/actions/build-docker
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         with:
-          CR_USER: ${{ secrets.CR_USER }}
-          CR_PAT: ${{ secrets.CR_PAT }}
+          registry-username: ${{ secrets.CR_USER }}
+          registry-token: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
           platform: ${{ matrix.platform }}
+          version-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+          repository-owner: ${{ needs.release-versions.outputs.lowercase-repo }}
+          targets: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
 
   build-gh-docker:
     name: 🚢 Build Docker Images for Production
     needs: [build-prod, release-versions]
     runs-on: ubuntu-20.04
-
-    env:
-      RC_DOCKERFILE: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
-      RC_DOCKER_TAG: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
-      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
-      SERVICES_PUBLISH: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
 
     strategy:
       fail-fast: false
@@ -220,19 +209,13 @@ jobs:
 
       - uses: ./.github/actions/build-docker
         with:
-          CR_USER: ${{ secrets.CR_USER }}
-          CR_PAT: ${{ secrets.CR_PAT }}
+          registry-username: ${{ secrets.CR_USER }}
+          registry-token: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
           platform: ${{ matrix.platform }}
-
-      - name: Rename official Docker tag to GitHub Container Registry
-        if: matrix.platform == 'official'
-        run: |
-          IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
-
-          echo "Push Docker image: ${IMAGE_NAME_BASE}"
-          docker tag ${IMAGE_NAME_BASE}.official $IMAGE_NAME_BASE
-          docker push $IMAGE_NAME_BASE
+          version-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+          repository-owner: ${{ needs.release-versions.outputs.lowercase-repo }}
+          targets: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
 
   checks:
     needs: [release-versions, packages-build]
@@ -417,30 +400,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Restore build
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-          path: /tmp/build
-
-      - name: Unpack build
-        run: |
-          cd /tmp/build
-          tar xzf Rocket.Chat.tar.gz
-          rm Rocket.Chat.tar.gz
-
       - name: Build Docker image
-        id: build-docker-image-preview
-        uses: ./.github/actions/build-docker-image
+        uses: ./.github/actions/build-docker
         with:
-          root-dir: /tmp/build
-          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          release: preview
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
+          platform: preview
+          registry-username: ${{ secrets.CR_USER }}
+          registry-token: ${{ secrets.CR_PAT }}
+          repository-owner: ${{ needs.release-versions.outputs.lowercase-repo }}
+          version-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
 
   docker-image-publish:
-    name: 🚀 Publish Docker Image (main)
+    name: 🚀 Publish Docker Image (docker hub)
     runs-on: ubuntu-20.04
     needs: [deploy, build-docker-preview, release-versions]
 
@@ -497,7 +467,7 @@ jobs:
           PUBLISHED_TAGS=()
 
           # tag and push the specific tag version // [source] [dest]
-          docker buildx imagetools create --tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$DOCKER_TAG
+          docker buildx imagetools create ${{ steps.gh-docker.outputs.gh-image-name }} --tag $IMAGE_NAME:$DOCKER_TAG
 
           PUBLISHED_TAGS+=("$IMAGE_NAME:$DOCKER_TAG")
 
@@ -512,11 +482,11 @@ jobs:
 
             if [[ $RELEASE == 'latest' ]]; then
               if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
-                docker buildx imagetols --tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
+                docker buildx imagetols ${{ steps.gh-docker.outputs.gh-image-name }} --tag $IMAGE_NAME:$RELEASE
                 PUBLISHED_TAGS+=("$IMAGE_NAME:$RELEASE")
               fi
             else
-              docker buildx imagetools create --tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
+              docker buildx imagetools create ${{ steps.gh-docker.outputs.gh-image-name }} --tag $IMAGE_NAME:$RELEASE
               PUBLISHED_TAGS+=("$IMAGE_NAME:$RELEASE")
             fi
           fi
@@ -529,7 +499,7 @@ jobs:
             TAG_SHA="${TAG_SHA}-${{ matrix.release }}"
           fi;
 
-          docker buildx imagetools create --tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$TAG_SHA
+          docker buildx imagetools create ${{ steps.gh-docker.outputs.gh-image-name }} --tag $IMAGE_NAME:$TAG_SHA
 
           PUBLISHED_TAGS+=("$IMAGE_NAME:$TAG_SHA")
 
@@ -588,7 +558,7 @@ jobs:
           PUBLISHED_TAGS=()
 
           # tag and push the specific tag version
-          docker buildx imagetools create --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$DOCKER_TAG
+          docker buildx imagetools create ${{ steps.gh-docker.outputs.gh-image-name }} --tag $DH_IMAGE_NAME:$DOCKER_TAG
 
           PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$DOCKER_TAG")
 
@@ -597,12 +567,12 @@ jobs:
 
             if [[ $RELEASE == 'latest' ]]; then
               if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
-                docker buildx imagetools create --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
+                docker buildx imagetools create ${{ steps.gh-docker.outputs.gh-image-name }} --tag $DH_IMAGE_NAME:$RELEASE
 
                 PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$RELEASE")
               fi
             else
-              docker buildx imagetools create --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
+              docker buildx imagetools create ${{ steps.gh-docker.outputs.gh-image-name }} --tag $DH_IMAGE_NAME:$RELEASE
 
               PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$RELEASE")
             fi
@@ -611,7 +581,7 @@ jobs:
           # commit hash
           TAG_SHA="${{ steps.gh-docker.outputs.gh-docker-tag-sha }}"
 
-          docker buildx imagetools create --tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$TAG_SHA
+          docker buildx imagetools create ${{ steps.gh-docker.outputs.gh-image-name }} --tag $DH_IMAGE_NAME:$TAG_SHA
 
           PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$TAG_SHA")
 
