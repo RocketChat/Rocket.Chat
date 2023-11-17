@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
+import UpgradeButton from '../UpgradeButton';
 import UsagePieGraph from '../UsagePieGraph';
 
 const MACCard = ({
@@ -30,11 +31,19 @@ const MACCard = ({
 	const card: CardProps = {
 		title: t('Monthly_active_contacts'),
 		infoText: t('MAC_InfoText'),
+		...(hideManageSubscription && {
+			upgradeButton: (
+				<UpgradeButton target='mac-card' action='buy_more' small>
+					{t('Buy_more')}
+				</UpgradeButton>
+			),
 
-		...(!hideManageSubscription && {
-			upgradeButtonText: t('Buy_more'),
 			...(nearLimit && {
-				upgradeButtonText: t('Upgrade'),
+				upgradeButton: (
+					<UpgradeButton target='mac-card' action='upgrade' small>
+						{t('Upgrade')}
+					</UpgradeButton>
+				),
 			}),
 		}),
 	};
