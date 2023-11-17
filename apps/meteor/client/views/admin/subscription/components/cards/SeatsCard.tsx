@@ -10,9 +10,10 @@ import UsagePieGraph from '../UsagePieGraph';
 type SeatsCardProps = {
 	value: number;
 	max: number;
+	hideManageSubscription?: boolean;
 };
 
-const SeatsCard = ({ value, max }: SeatsCardProps): ReactElement => {
+const SeatsCard = ({ value, max, hideManageSubscription }: SeatsCardProps): ReactElement => {
 	const { t } = useTranslation();
 
 	const pieGraph = {
@@ -25,15 +26,16 @@ const SeatsCard = ({ value, max }: SeatsCardProps): ReactElement => {
 	const card: CardProps = {
 		title: t('Seats'),
 		infoText: t('Seats_InfoText'),
-		...(nearLimit && {
-			upgradeButtonText: t('Buy_more'),
-		}),
+		...(!hideManageSubscription &&
+			nearLimit && {
+				upgradeButtonText: t('Buy_more'),
+			}),
 	};
 
 	const seatsLeft = pieGraph.total - pieGraph.used;
 	const color = pieGraph.used / pieGraph.total >= 0.8 ? Palette.statusColor['status-font-on-danger'].toString() : undefined;
 
-	const message = seatsLeft > 0 ? t('Seats_Available', { seatsLeft }) : t('Seats_Required', { seatsRequired: -seatsLeft });
+	const message = seatsLeft > 0 ? t('Seats_Available', { seatsLeft }) : undefined;
 	return (
 		<FeatureUsageCard card={card}>
 			<UsagePieGraph label={message} used={pieGraph.used} total={pieGraph.total} color={color} />
