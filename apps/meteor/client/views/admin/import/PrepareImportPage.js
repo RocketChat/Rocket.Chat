@@ -46,21 +46,14 @@ function PrepareImportPage() {
 	const [messages, setMessages] = useState([]);
 	const [isImporting, setImporting] = useSafely(useState(false));
 
-	const [usersCount, setUsersCount] = useState(0);
-	const [channelsCount, setChannelsCount] = useState(0);
-
 	// usersCount = selectedUsers.length
 	// channelsCount = selectedChannels.length
 	const selectedUsers = useMemo(() => {
-		const filtered = users.filter(({ do_import }) => do_import);
-		setUsersCount(filtered.length);
-		return filtered;
+		return users.filter(({ do_import }) => do_import);
 	}, [users]);
 
 	const selectedChannels = useMemo(() => {
-		const filtered = channels.filter(({ do_import }) => do_import);
-		setChannelsCount(filtered.length);
-		return filtered;
+		return channels.filter(({ do_import }) => do_import);
 	}, [channels]);
 
 	const messagesCount = useMemo(() => {
@@ -183,8 +176,8 @@ function PrepareImportPage() {
 	const statusDebounced = useDebouncedValue(status, 100);
 
 	const handleMinimumImportData = !!(
-		(!usersCount && !channelsCount && !messagesCount) ||
-		(!usersCount && !channelsCount && messagesCount !== 0)
+		(!selectedUsers.length && !selectedChannels.length && !messagesCount) ||
+		(!selectedUsers.length && !selectedChannels.length && messagesCount !== 0)
 	);
 
 	return (
@@ -208,10 +201,10 @@ function PrepareImportPage() {
 					{!isPreparing && (
 						<Tabs flexShrink={0}>
 							<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
-								{t('Users')} <Badge>{usersCount}</Badge>
+								{t('Users')} <Badge>{selectedUsers.length}</Badge>
 							</Tabs.Item>
 							<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
-								{t('Channels')} <Badge>{channelsCount}</Badge>
+								{t('Channels')} <Badge>{selectedChannels.length}</Badge>
 							</Tabs.Item>
 							<Tabs.Item disabled>
 								{t('Messages')}
@@ -234,9 +227,9 @@ function PrepareImportPage() {
 								)}
 							</>
 						)}
-						{!isPreparing && tab === 'users' && <PrepareUsers usersCount={usersCount} users={users} setUsers={setUsers} />}
+						{!isPreparing && tab === 'users' && <PrepareUsers usersCount={selectedUsers.length} users={users} setUsers={setUsers} />}
 						{!isPreparing && tab === 'channels' && (
-							<PrepareChannels channels={channels} channelsCount={channelsCount} setChannels={setChannels} />
+							<PrepareChannels channels={channels} channelsCount={selectedChannels.length} setChannels={setChannels} />
 						)}
 					</Margins>
 				</Box>
