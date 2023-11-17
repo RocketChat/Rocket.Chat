@@ -1,7 +1,7 @@
 #!/bin/ash
 set -xe
 
-cat <<EOF > /dev/null
+cat <<EOF
 Why this ugliness?
 There are two reasons. 
 1. For some reason yarn is adding a "node-gyp" script in PATH when running yarn workspaces focus. This shadows any actual installation of node-gyp, and looks for a script at the top level workspace. Adding node-gyp at the root workspace doesn't work either. 
