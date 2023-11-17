@@ -56,8 +56,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 	constructor() {
 		super();
-
-		this.on('validate', () => showLicense.call(this, this._license, this._valid));
+		this.on('installed', () => showLicense.call(this, this._license, this._valid));
 	}
 
 	public get license(): ILicenseV3 | undefined {
@@ -267,6 +266,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 				return true;
 			}
 			await this.setLicenseV3(decrypted, encryptedLicense, decrypted, isNewLicense);
+
+			this.emit('installed');
 
 			return true;
 		} catch (e) {
