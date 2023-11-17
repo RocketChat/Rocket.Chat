@@ -3,9 +3,9 @@ set -xe
 
 cat <<EOF
 Why this ugliness?
-There are two reasons. 
-1. For some reason yarn is adding a "node-gyp" script in PATH when running yarn workspaces focus. This shadows any actual installation of node-gyp, and looks for a script at the top level workspace. Adding node-gyp at the root workspace doesn't work either. 
-2. On arm64, fibers uses ucontexts instead of pthreads. But sadly, my naive attempts at linking with ucontext all failed on arm64 alpine. Why? Very likely I am just that stupid. At this point I am attempting to return to pthreads for arm64 ..hoping this will work and last known issues have been fixed since then. 
+There are two reasons.
+1. For some reason yarn is adding a "node-gyp" script in PATH when running yarn workspaces focus. This shadows any actual installation of node-gyp, and looks for a script at the top level workspace. Adding node-gyp at the root workspace doesn't work either.
+2. On arm64, fibers uses ucontexts instead of pthreads. But sadly, my naive attempts at linking with ucontext all failed on arm64 alpine. Why? Very likely I am just that stupid. At this point I am attempting to return to pthreads for arm64 ..hoping this will work and last known issues have been fixed since then.
 EOF
 
 apply_patch() {
@@ -35,7 +35,7 @@ index 2289325..cc5c62f 100644
  					},
  				],
  			],
--- 
+--
 2.39.3 (Apple Git-145)
 EOF
 	patch < binding.gyp.patch
@@ -43,6 +43,7 @@ EOF
 npm install node-gyp@9.4.1 -g
 apply_patch
 node build.js --silly
+node quick-test.js
 rm -rf build
 npm uninstall node-gyp -g
 
