@@ -21,7 +21,7 @@ RUN set -x \
             npm install --production --unsafe-perm && code=0 || exit $?; \
         fi; \
     if [ $code -ne 0 ]; then exit $code; fi; \
-    && npm cache clear --force \
+    npm cache clear --force \
     && apk del .fetch-deps
 
 # needs a mongo instance - defaults to container linking with alias 'mongo'
