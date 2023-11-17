@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
+import UpgradeButton from '../UpgradeButton';
 import UsagePieGraph from '../UsagePieGraph';
 
 type SeatsCardProps = {
@@ -26,9 +27,13 @@ const SeatsCard = ({ value, max, hideManageSubscription }: SeatsCardProps): Reac
 	const card: CardProps = {
 		title: t('Seats'),
 		infoText: t('Seats_InfoText'),
-		...(!hideManageSubscription &&
+		...(hideManageSubscription &&
 			nearLimit && {
-				upgradeButtonText: t('Buy_more'),
+				upgradeButton: (
+					<UpgradeButton target='seats-card' action='buy_more' small>
+						{t('Buy_more')}
+					</UpgradeButton>
+				),
 			}),
 	};
 
