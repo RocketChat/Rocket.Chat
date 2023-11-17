@@ -57,7 +57,7 @@ export const createMiscSettings = async () => {
 		readonly: true,
 	});
 
-	await settingsRegistry.add('Deployment_FingerPrint_Verified', false, {
+	await settingsRegistry.add('Deployment_FingerPrint_Verified', true, {
 		type: 'boolean',
 		public: true,
 		readonly: true,
