@@ -166,6 +166,8 @@ const api = {
 			api.setDepartment(data.department);
 		}
 
+		Livechat.unsubscribeAll();
+
 		await createOrUpdateGuest(data);
 	},
 
