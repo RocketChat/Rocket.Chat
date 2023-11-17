@@ -145,7 +145,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 	private invalidateLicense(): void {
 		this._valid = false;
-		this.shouldPreventActionResults.clear();
+		this.states.clear();
 		licenseInvalidated.call(this);
 		invalidateAll.call(this);
 	}
