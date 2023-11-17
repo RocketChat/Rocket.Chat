@@ -41,9 +41,11 @@ type LinkSpanProps = {
  * @returns A string representing the parsed and decoded URL
  */
 const parseLinkUrl = (url: string): string => {
+	// Sanitize and validate the input URL to prevent XSS
+	const sanitizedUrl = encodeURI(url);
 	// Decoding the HTML encoded URL using DOMParser
 	const parser = new DOMParser();
-	const decodedURL = parser.parseFromString(`<!doctype html><body>${url}`, 'text/html').body.textContent as string;
+	const decodedURL = parser.parseFromString(`<!doctype html><body>${sanitizedUrl}`, 'text/html').body.textContent as string;
 
 	// Parsing the URL using the URL constructor
 	const urlInstance = new URL(decodedURL);
