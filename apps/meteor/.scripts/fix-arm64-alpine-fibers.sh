@@ -42,9 +42,7 @@ EOF
 }
 npm install node-gyp@9.4.1 -g
 apply_patch
-dest="bin/linux-$(node -p process.arch)-$(node -p process.versions.modules)-musl"
-mkdir -p $dest
-mv build/Release/fibers.node $dest
+node build.js --silly
 rm -rf build
 npm uninstall node-gyp -g
 
