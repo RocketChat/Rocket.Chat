@@ -35,6 +35,7 @@ target "monolith" {
 target "monolith_alpine" {
 	inherits = [target.monolith.name]
 	dockerfile = "apps/meteor/.docker/Dockerfile.alpine"
+	tags = ["${image_full_name("rocket.chat")}.alpine"]
 }
 
 target "preview" {
