@@ -43,6 +43,9 @@ COPY ./.yarn/releases .yarn/releases
 COPY ./.yarn/patches .yarn/patches
 COPY ./ee/apps/${SERVICE}/package.json ee/apps/${SERVICE}/package.json
 
+
+COPY apps/meteor/.scripts/fix-arm64-alpine-fibers.sh /fix-fibers.sh
+
 ENV NODE_ENV=production \
     PORT=3000
 
@@ -50,9 +53,17 @@ WORKDIR /app/ee/apps/${SERVICE}
 
 RUN apk update && \
     apk --no-cache --virtual build-dependencies add g++ python3 make && \
-    yarn workspaces focus --production && \
+    yarn workspaces focus --production; code=$?; \
+    if [[ $(uname -m) == 'aarch64' ]]; then \
+        cd /app/node_modules/fibers; \
+        ash /fix-fibers.sh || exit $?; \
+        cd -;\
+        yarn workspaces focus --production || exit $?; \
+    fi; \
+    if [ $code -ne 0 ]; then exit $code; fi; \
     rm -rf /var/cache/apk/* && \
     apk del build-dependencies
+
 
 EXPOSE 3000 9458
 
