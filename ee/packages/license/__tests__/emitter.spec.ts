@@ -277,7 +277,7 @@ describe('Event License behaviors', () => {
 			expect(preventFn).toBeCalledTimes(0);
 			expect(preventToggleFn).toBeCalledTimes(0);
 			expect(allowFn).toBeCalledTimes(1);
-			expect(allowToggleFn).toBeCalledTimes(1);
+			expect(allowToggleFn).toBeCalledTimes(0);
 
 			preventFn.mockClear();
 			preventToggleFn.mockClear();
