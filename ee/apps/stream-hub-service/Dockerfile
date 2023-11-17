@@ -51,7 +51,7 @@ ENV NODE_ENV=production \
 WORKDIR /app/ee/apps/${SERVICE}
 
 RUN apk update && \
-    apk --no-cache --virtual build-dependencies add g++ python3 make && \
+    apk --no-cache --virtual build-dependencies add g++ python3 make patch && \
     yarn workspaces focus --production; code=$?; \
     if [[ $(uname -m) == 'aarch64' ]]; then \
         cd /app/node_modules/fibers; \
