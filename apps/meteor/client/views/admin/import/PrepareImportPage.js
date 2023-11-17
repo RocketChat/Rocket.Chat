@@ -1,7 +1,7 @@
 import { Badge, Box, Button, ButtonGroup, Margins, ProgressBar, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 
 import {
 	ProgressStep,
@@ -14,6 +14,7 @@ import {
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 import Page from '../../../components/Page';
 import PrepareChannels from './PrepareChannels';
+import PrepareImportFilters from './PrepareImportFilters';
 import PrepareUsers from './PrepareUsers';
 import { countMessages } from './countMessages';
 import { useErrorHandler } from './useErrorHandler';
@@ -46,15 +47,24 @@ function PrepareImportPage() {
 	const [messages, setMessages] = useState([]);
 	const [isImporting, setImporting] = useSafely(useState(false));
 
-	// usersCount = selectedUsers.length
-	// channelsCount = selectedChannels.length
+	const [tab, setTab] = useState('users');
+	const handleTabClick = useMemo(() => (tab) => () => setTab(tab), []);
+
+	const [searchFilters, setSearchFilters] = useState('');
+	const prevSearchFilterText = useRef(searchFilters);
+	const searchText = useDebouncedValue(searchFilters, 500);
+
+	useEffect(() => {
+		prevSearchFilterText.current = searchText;
+	}, [searchText]);
+
 	const selectedUsers = useMemo(() => {
-		return users.filter(({ do_import }) => do_import);
-	}, [users]);
+		return users.filter(({ do_import, username }) => (tab === 'users' ? username.includes(searchText) && do_import : do_import));
+	}, [searchText, tab, users]);
 
 	const selectedChannels = useMemo(() => {
-		return channels.filter(({ do_import }) => do_import);
-	}, [channels]);
+		return channels.filter(({ do_import, name }) => (tab === 'channels' ? name.includes(searchText) && do_import : do_import));
+	}, [channels, searchText, tab]);
 
 	const messagesCount = useMemo(() => {
 		return countMessages(selectedUsers, selectedChannels, messages);
@@ -170,15 +180,14 @@ function PrepareImportPage() {
 		}
 	};
 
-	const [tab, setTab] = useState('users');
-	const handleTabClick = useMemo(() => (tab) => () => setTab(tab), []);
-
 	const statusDebounced = useDebouncedValue(status, 100);
 
 	const handleMinimumImportData = !!(
 		(!selectedUsers.length && !selectedChannels.length && !messagesCount) ||
 		(!selectedUsers.length && !selectedChannels.length && messagesCount !== 0)
 	);
+
+	// TODO: when using the search bar, display only the results!
 
 	return (
 		<Page>
@@ -192,6 +201,8 @@ function PrepareImportPage() {
 					</Button>
 				</ButtonGroup>
 			</Page.Header>
+
+			<PrepareImportFilters setFilters={setSearchFilters} />
 
 			<Page.ScrollableContentWithShadow>
 				<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
