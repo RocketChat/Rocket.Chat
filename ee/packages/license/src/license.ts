@@ -56,7 +56,6 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 	constructor() {
 		super();
-		// TODO: create on installed
 		this.on('installed', () => showLicense.call(this, this._license, this._valid));
 	}
 
