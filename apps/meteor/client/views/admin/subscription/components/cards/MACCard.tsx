@@ -7,7 +7,15 @@ import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
 import UsagePieGraph from '../UsagePieGraph';
 
-const MACCard = ({ value = 0, max }: { value: number; max: number }): ReactElement => {
+const MACCard = ({
+	value = 0,
+	max,
+	hideManageSubscription,
+}: {
+	value: number;
+	max: number;
+	hideManageSubscription?: boolean;
+}): ReactElement => {
 	const { t } = useTranslation();
 
 	const pieGraph = {
@@ -22,15 +30,18 @@ const MACCard = ({ value = 0, max }: { value: number; max: number }): ReactEleme
 	const card: CardProps = {
 		title: t('Monthly_active_contacts'),
 		infoText: t('MAC_InfoText'),
-		upgradeButtonText: t('Buy_more'),
-		...(nearLimit && {
-			upgradeButtonText: t('Upgrade'),
+
+		...(!hideManageSubscription && {
+			upgradeButtonText: t('Buy_more'),
+			...(nearLimit && {
+				upgradeButtonText: t('Upgrade'),
+			}),
 		}),
 	};
 
 	const color = nearLimit ? Palette.statusColor['status-font-on-danger'].toString() : undefined;
 
-	const message = macLeft > 0 ? t('MAC_Available', { macLeft }) : t('MAC_Required', { macRequired: -macLeft });
+	const message = macLeft > 0 ? t('MAC_Available', { macLeft }) : undefined;
 
 	return (
 		<FeatureUsageCard card={card}>
