@@ -10,7 +10,7 @@ export class MockedLicenseBuilder {
 	information: {
 		id?: string;
 		autoRenew: boolean;
-		visualExpiration: Timestamp;
+		visualExpiration?: Timestamp;
 		notifyAdminsAt?: Timestamp;
 		notifyUsersAt?: Timestamp;
 		trial: boolean;

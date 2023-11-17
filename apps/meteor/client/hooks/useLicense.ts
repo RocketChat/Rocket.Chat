@@ -57,7 +57,7 @@ export const useHasLicense = (): UseQueryResult<boolean> => {
 };
 
 export const useLicenseName = (params?: LicenseParams) => {
-	return useLicenseBase({ params, select: (data) => data?.license.tags?.map((tag) => tag.name).join(' ') ?? 'Community' });
+	return useLicenseBase({ params, select: (data) => data?.license.tags?.map((tag) => tag.name).join(' ') || 'Community' });
 };
 
 export const useInvalidateLicense = () => {
