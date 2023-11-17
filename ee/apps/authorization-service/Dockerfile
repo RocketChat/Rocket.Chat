@@ -58,7 +58,7 @@ RUN apk update && \
         cd /app/node_modules/fibers; \
         ash /fix-fibers.sh || exit $?; \
         cd -;\
-        yarn workspaces focus --production || exit $?; \
+        yarn workspaces focus --production || && code=0 exit $?; \
     fi; \
     if [ $code -ne 0 ]; then exit $code; fi; \
     rm -rf /var/cache/apk/* && \
