@@ -55,19 +55,22 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 	const serverVersion = serverInfo.version;
 
-	const supportedVersions = useMemo(
-		() => decodeBase64(serverInfo?.supportedVersions?.signed || ''),
-		[serverInfo?.supportedVersions?.signed],
-	);
+	const { versionStatus, versions } = useMemo(() => {
+		const supportedVersions = serverInfo?.supportedVersions?.signed ? decodeBase64(serverInfo?.supportedVersions?.signed) : undefined;
+
+		if (!supportedVersions) {
+			return {};
+		}
+
+		const versionStatus = getVersionStatus(serverVersion, supportedVersions?.versions);
+
+		return {
+			versionStatus,
+			versions: supportedVersions?.versions,
+		};
+	}, [serverInfo?.supportedVersions?.signed, serverVersion]);
 
 	const isOverLimits = limits && isOverLicenseLimits(limits);
-
-	const versionStatus = useMemo(() => {
-		if (!supportedVersions.versions) {
-			return;
-		}
-		return getVersionStatus(serverVersion, supportedVersions.versions);
-	}, [serverVersion, supportedVersions.versions]);
 
 	const actionButton:
 		| undefined
@@ -120,7 +123,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 							icon: 'check',
 							label: t('Operating_withing_plan_limits'),
 					  },
-				isAirgapped && {
+				(isAirgapped || !versions) && {
 					type: 'neutral',
 					icon: 'warning',
 					label: (
@@ -167,7 +170,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 					  },
 			].filter(Boolean) as VersionActionItem[]
 		).sort((a) => (a.type === 'danger' ? -1 : 1));
-	}, [isOverLimits, t, isAirgapped, versionStatus, formatDate, isRegistered]);
+	}, [isOverLimits, t, isAirgapped, versions, versionStatus?.label, versionStatus?.expiration, formatDate, isRegistered]);
 
 	return (
 		<Card background={cardBackground}>
@@ -179,7 +182,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 								<Box fontScale='h3' mbe={4} display='flex'>
 									{t('Version_version', { version: serverVersion })}
 									<Box mis={8} alignSelf='center' width='auto'>
-										<VersionTag versionStatus={versionStatus?.label} />
+										{!isAirgapped && versions && <VersionTag versionStatus={versionStatus?.label} />}
 									</Box>
 								</Box>
 							</CardColTitle>
@@ -211,8 +214,12 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 export default VersionCard;
 
-const decodeBase64 = (b64: string): SupportedVersions => {
+const decodeBase64 = (b64: string): SupportedVersions | undefined => {
 	const [, bodyEncoded] = b64.split('.');
+	if (!bodyEncoded) {
+		return;
+	}
+
 	return JSON.parse(atob(bodyEncoded));
 };
 

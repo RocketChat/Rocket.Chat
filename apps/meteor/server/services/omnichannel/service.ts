@@ -44,6 +44,12 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 		License.onValidateLicense(async (): Promise<void> => {
 			RoutingManager.isMethodSet() && (await this.queueWorker.shouldStart());
 		});
+
+		// NOTE: When there's no license or license is invalid, we fallback to CE behavior
+		// CE behavior means there's no MAC limit, so we start the queue
+		License.onInvalidateLicense(async (): Promise<void> => {
+			this.queueWorker.isRunning() && (await this.queueWorker.shouldStart());
+		});
 	}
 
 	getQueueWorker(): IOmnichannelQueue {

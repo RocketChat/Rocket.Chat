@@ -15,7 +15,7 @@ const makeWarningBanner = (seats: number): IBanner => ({
 	view: {
 		icon: 'warning',
 		variant: 'warning',
-		viewId: '',
+		viewId: WARNING_BANNER_ID,
 		appId: 'banner-core',
 		blocks: [
 			{
@@ -49,7 +49,7 @@ const makeDangerBanner = (): IBanner => ({
 	view: {
 		icon: 'ban',
 		variant: 'danger',
-		viewId: '',
+		viewId: DANGER_BANNER_ID,
 		appId: 'banner-core',
 		blocks: [
 			{

@@ -1,5 +1,11 @@
 # @rocket.chat/ui-video-conf
 
+## 3.0.0-rc.7
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.7
+
 ## 3.0.0-rc.6
 
 ### Patch Changes

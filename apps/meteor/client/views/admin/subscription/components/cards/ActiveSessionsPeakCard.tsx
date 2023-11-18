@@ -7,6 +7,7 @@ import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { useStatistics } from '../../../../hooks/useStatistics';
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
+import UpgradeButton from '../UpgradeButton';
 
 const ActiveSessionsPeakCard = (): ReactElement => {
 	const { t } = useTranslation();
@@ -24,7 +25,11 @@ const ActiveSessionsPeakCard = (): ReactElement => {
 		title: t('ActiveSessionsPeak'),
 		infoText: t('ActiveSessionsPeak_InfoText'),
 		...(exceedLimit && {
-			upgradeButtonText: t('Upgrade'),
+			upgradeButton: (
+				<UpgradeButton target='active-session-peak-card' action='upgrade' small>
+					{t('Upgrade')}
+				</UpgradeButton>
+			),
 		}),
 	};
 
