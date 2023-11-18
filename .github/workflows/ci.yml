@@ -193,7 +193,8 @@ jobs:
           version-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           repository-owner: ${{ needs.release-versions.outputs.lowercase-repo }}
           targets: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
-          arch: 'amd64'
+          arch: all # build and push all here, amd64 images are rebuilt and tested on separate workflow
+          push: 'true'
 
   build-gh-docker:
     name: 🚢 Build Docker Images for Production (AMD64)
@@ -217,7 +218,8 @@ jobs:
           version-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           repository-owner: ${{ needs.release-versions.outputs.lowercase-repo }}
           targets: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
-          arch: amd64
+          arch: all # build and push all here, amd64 images are rebuilt and tested on separate workflow
+          push: 'true'
 
   checks:
     needs: [release-versions, packages-build]
@@ -415,7 +417,7 @@ jobs:
   docker-image-publish:
     name: 🚀 Publish Docker Image (docker hub)
     runs-on: ubuntu-20.04
-    needs: [deploy, build-docker-preview, release-versions, merge-images]
+    needs: [deploy, build-docker-preview, release-versions]
 
     strategy:
       matrix:
@@ -517,7 +519,7 @@ jobs:
   services-docker-image-publish:
     name: 🚀 Publish Docker Image (services)
     runs-on: ubuntu-20.04
-    needs: [deploy, release-versions, merge-images]
+    needs: [deploy, release-versions]
 
     strategy:
       matrix:
