@@ -1,5 +1,5 @@
 name: 'Build docker image'
-description: 'Build container image for alpine, debian bases and the preview image; pushes to github container registry'
+description: 'Build container image for alpine, debian bases and the preview image; pushes to github container registry (single platform at a time)'
 
 inputs:
   registry-username:
@@ -27,6 +27,10 @@ inputs:
   targets:
     description: 'Targets to build'
     required: false
+  arch:
+    description: 'Host architecture to build for'
+    required: true
+    deprecationMessage: 'Soon to use concurrent builds'
 
 runs:
   using: composite
@@ -80,13 +84,18 @@ runs:
         export tag=${{ inputs.version-tag }}
         export registry=${{ inputs.registry }}
 
+        arch=${{inputs.arch}}
+        if [ "$arch" = "arm64" ]; then
+          tag+="-$arch" # pr-xxxxx.official-arm64
+        fi
+
         print_and_build() {
           docker buildx bake --print "$@"
           docker buildx bake "$@" --push
         }
 
         type=${{ inputs.platform }}
-        
+
         if [[ $type == 'preview' ]]; then
           print_and_build preview
           exit $?
@@ -100,4 +109,8 @@ runs:
         targets=(monolith_alpine)
         targets+=(${{inputs.targets}})
 
-        print_and_build "${targets[@]}"
+        if [[ $arch == 'all' ]]; then
+          print_and_build "${targets[@]}"
+        else
+          print_and_build "${targets[@]}" --set="*.platform=linux/$arch"
+        fi

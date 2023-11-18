@@ -170,7 +170,7 @@ jobs:
           coverage: false
 
   build-gh-docker-coverage:
-    name: 🚢 Build Docker Images for Testing
+    name: 🚢 Build Docker Images for Testing (AMD64)
     needs: [build, release-versions]
     runs-on: ubuntu-20.04
 
@@ -193,9 +193,55 @@ jobs:
           version-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           repository-owner: ${{ needs.release-versions.outputs.lowercase-repo }}
           targets: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
+          arch: 'amd64'
+
+  # build arm images the same time as amd64
+  build-gh-docker-coverage-arm64:
+    name: 🚢 Build Docker Images for Testing (ARM64)
+    needs: [build, release-versions]
+    runs-on: ubuntu-20.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ['official', 'alpine'] # TODO: add preview here?
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # we only build and publish the actual docker images if not a PR from a fork
+      - uses: ./.github/actions/build-docker
+        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        with:
+          registry-username: ${{ secrets.CR_USER }}
+          registry-token: ${{ secrets.CR_PAT }}
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+          platform: ${{ matrix.platform }}
+          version-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+          repository-owner: ${{ needs.release-versions.outputs.lowercase-repo }}
+          targets: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
+          arch: 'arm64'
+
+  merge-images-coverage:
+    name: Merge Arm64 and Amd64 images (Coverage)
+    needs: [build-gh-docker-coverage, build-gh-docker-coverage-arm64, release-versions]
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ['official', 'alpine']
+
+    steps:
+      - name: Merge images coverage
+        shell: bash
+        run: |
+          src_image="ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.${{ matrix.platform }}"
+
+          docker buildx imagetools create $src_image --tag $src_image --append ${src_image}-arm64
 
   build-gh-docker:
-    name: 🚢 Build Docker Images for Production
+    name: 🚢 Build Docker Images for Production (AMD64)
     needs: [build-prod, release-versions]
     runs-on: ubuntu-20.04
 
@@ -216,6 +262,50 @@ jobs:
           version-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           repository-owner: ${{ needs.release-versions.outputs.lowercase-repo }}
           targets: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
+          arch: amd64
+
+  # build arm images the same time as amd64
+  build-gh-docker-arm64:
+    name: 🚢 Build Docker Images for Production (ARM64)
+    needs: [build-prod, release-versions]
+    runs-on: ubuntu-20.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ['official', 'alpine']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/build-docker
+        with:
+          registry-username: ${{ secrets.CR_USER }}
+          registry-token: ${{ secrets.CR_PAT }}
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+          platform: ${{ matrix.platform }}
+          version-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+          repository-owner: ${{ needs.release-versions.outputs.lowercase-repo }}
+          targets: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
+          arch: arm64
+
+  merge-images:
+    name: Merge Arm64 and Amd64 images
+    needs: [build-gh-docker, build-gh-docker-arm64, release-versions]
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ['official', 'alpine']
+
+    steps:
+      - name: Merge images
+        shell: bash
+        run: |
+          src_image="ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.${{ matrix.platform }}"
+
+          docker buildx imagetools create $src_image --tag $src_image --append ${src_image}-arm64
 
   checks:
     needs: [release-versions, packages-build]
@@ -408,11 +498,12 @@ jobs:
           registry-token: ${{ secrets.CR_PAT }}
           repository-owner: ${{ needs.release-versions.outputs.lowercase-repo }}
           version-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+          arch: all
 
   docker-image-publish:
     name: 🚀 Publish Docker Image (docker hub)
     runs-on: ubuntu-20.04
-    needs: [deploy, build-docker-preview, release-versions]
+    needs: [deploy, build-docker-preview, release-versions, merge-images]
 
     strategy:
       matrix:
@@ -514,7 +605,7 @@ jobs:
   services-docker-image-publish:
     name: 🚀 Publish Docker Image (services)
     runs-on: ubuntu-20.04
-    needs: [deploy, release-versions]
+    needs: [deploy, release-versions, merge-images]
 
     strategy:
       matrix:
