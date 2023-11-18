@@ -1,5 +1,3 @@
-// docker buildx bake [target] --set [target].platform=linux/amd64 --load
-
 group "default" {targets = []}
 
 variable "registry" {
@@ -13,12 +11,11 @@ variable "repository_owner" {
 	default = "rocketchat"
 }
 
-variable "target_monolith_use_alpine" { default = false }
-
 target "base" {
 	platforms = ["linux/amd64", "linux/arm64"]
 	context = "."
 	pull = true
+	output = ["type=image"]
 }
 
 function "image_full_name" {
