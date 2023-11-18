@@ -27,7 +27,7 @@ inputs:
   targets:
     description: 'Targets to build'
     required: false
-    default: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
+    default: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service omnichannel-transcript-service queue-worker-service'
   arch:
     description: 'Host architecture to build for'
     required: true
