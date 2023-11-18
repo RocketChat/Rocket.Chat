@@ -120,6 +120,16 @@ jobs:
 
       - run: yarn build
 
+      - name: Build AMD64 application docker images (CE)
+        if: inputs.release == 'ce' && github.event.pull_request.head.repo.full_name != github.repository
+        uses: ./.github/actions/build-docker
+        with:
+          platform: official
+          arch: amd64
+          push: 'false'
+          repository-owner: ${{ inputs.lowercase-repo }}
+          version-tag: ${{ inputs.rc-docker-tag }}
+
       - name: Start containers for CE
         if: inputs.release == 'ce'
         env:
