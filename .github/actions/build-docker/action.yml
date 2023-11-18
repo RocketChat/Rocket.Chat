@@ -91,13 +91,13 @@ runs:
 
         print_and_build() {
           if [ "$arch" = 'all' ]; then
-            docker buildx bake --print "$@" --set="*.platform=linux/$arch"
-            docker buildx bake "$@" --push --set="*.platform=linux/$arch"
+            docker buildx bake --print "$@"
+            docker buildx bake "$@" --push
             return
           fi
 
-          docker buildx bake --print "$@"
-          docker buildx bake "$@" --push
+          docker buildx bake --print "$@" --set="*.platform=linux/$arch"
+          docker buildx bake "$@" --push --set="*.platform=linux/$arch"
         }
 
         type=${{ inputs.platform }}
