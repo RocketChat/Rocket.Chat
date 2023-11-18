@@ -233,6 +233,13 @@ jobs:
         platform: ['official', 'alpine']
 
     steps:
+      - name: Login to ghcr.io
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
       - name: Merge images coverage
         shell: bash
         run: |
@@ -300,6 +307,13 @@ jobs:
         platform: ['official', 'alpine']
 
     steps:
+      - name: Login to ghcr.io
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
       - name: Merge images
         shell: bash
         run: |
