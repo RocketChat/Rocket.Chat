@@ -99,6 +99,7 @@ jobs:
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
+
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api'
         run: |
@@ -126,6 +127,16 @@ jobs:
         run: |
           # when we are testing CE, we only need to start the rocketchat container
           docker compose -f docker-compose-ci.yml up -d rocketchat
+
+      - name: Build AMD64 application docker images (MS) for testing (EE)
+        if: inputs.release == 'ee'
+        uses: ./.github/actions/build-docker
+        with:
+          platform: alpine
+          arch: amd64
+          push: 'false'
+          repository-owner: ${{ inputs.lowercase-repo }}
+          version-tag: ${{ inputs.rc-docker-tag }}
 
       - name: Start containers for EE
         if: inputs.release == 'ee'
