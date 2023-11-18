@@ -90,6 +90,12 @@ runs:
         fi
 
         print_and_build() {
+          if [ "$arch" = 'all' ]; then
+            docker buildx bake --print "$@" --set="*.platform=linux/$arch"
+            docker buildx bake "$@" --push --set="*.platform=linux/$arch"
+            return
+          fi
+
           docker buildx bake --print "$@"
           docker buildx bake "$@" --push
         }
@@ -112,5 +118,5 @@ runs:
         if [[ $arch == 'all' ]]; then
           print_and_build "${targets[@]}"
         else
-          print_and_build "${targets[@]}" --set="*.platform=linux/$arch"
+          print_and_build "${targets[@]}"
         fi
