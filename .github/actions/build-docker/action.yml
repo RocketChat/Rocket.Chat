@@ -99,11 +99,13 @@ runs:
         print_and_build() {
           args=()
           if [ "$arch" != 'all' ]; then
-            args+=(--set="*.platform=linux/$arch" --load)
+            args+=(--set="*.platform=linux/$arch")
           fi
 
           if [ ${{inputs.push}} = 'true' ]; then
             args+=(--push)
+          else
+            args+=(--load)
           fi
 
           docker buildx bake --print "$@" "${args[@]}"
