@@ -139,7 +139,7 @@ jobs:
           version-tag: ${{ inputs.rc-docker-tag }}
 
       - name: Start containers for EE
-        if: inputs.release == 'ee'
+        if: inputs.release == 'ee' && github.event.pull_request.head.repo.full_name != github.repository
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}

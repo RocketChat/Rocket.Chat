@@ -99,7 +99,7 @@ runs:
         print_and_build() {
           args=()
           if [ "$arch" != 'all' ]; then
-            args+=(--set="*.platform=linux/$arch")
+            args+=(--set="*.platform=linux/$arch" --load)
           fi
 
           if [ ${{inputs.push}} = 'true' ]; then
