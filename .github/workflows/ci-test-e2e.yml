@@ -129,7 +129,7 @@ jobs:
           docker compose -f docker-compose-ci.yml up -d rocketchat
 
       - name: Build AMD64 application docker images (MS) for testing (EE)
-        if: inputs.release == 'ee'
+        if: inputs.release == 'ee' && github.event.pull_request.head.repo.full_name != github.repository
         uses: ./.github/actions/build-docker
         with:
           platform: alpine
@@ -139,7 +139,7 @@ jobs:
           version-tag: ${{ inputs.rc-docker-tag }}
 
       - name: Start containers for EE
-        if: inputs.release == 'ee' && github.event.pull_request.head.repo.full_name != github.repository
+        if: inputs.release == 'ee'
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
