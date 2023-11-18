@@ -128,7 +128,7 @@ jobs:
           arch: amd64
           push: 'false'
           repository-owner: ${{ inputs.lowercase-repo }}
-          version-tag: ${{ inputs.rc-docker-tag }}
+          version-tag: ${{ inputs.gh-docker-tag }}
 
       - name: Start containers for CE
         if: inputs.release == 'ce'
@@ -146,7 +146,7 @@ jobs:
           arch: amd64
           push: 'false'
           repository-owner: ${{ inputs.lowercase-repo }}
-          version-tag: ${{ inputs.rc-docker-tag }}
+          version-tag: ${{ inputs.gh-docker-tag }}
 
       - name: Start containers for EE
         if: inputs.release == 'ee'
