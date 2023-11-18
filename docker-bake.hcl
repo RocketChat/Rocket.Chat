@@ -15,7 +15,7 @@ target "base" {
 	platforms = ["linux/amd64", "linux/arm64"]
 	context = "."
 	pull = true
-	output = ["type=image"]
+	output = ["type=docker"]
 }
 
 function "image_full_name" {
