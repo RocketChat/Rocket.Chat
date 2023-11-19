@@ -241,14 +241,14 @@ jobs:
           export registry=ghcr.io
           export tag=${{needs.release-versions.outputs.gh-docker-tag}}
 
-          srcs=($(docker buildx bake --print | jq -r '.target | .[].tags[0]'))
+          dsts=($(docker buildx bake --print | jq -r '.target | .[].tags[0]'))
 
-          export tag=${{needs.release-versions.outputs.gh-docker-tag}}-arm64
+          export tag+=-arm64
           arms=($(docker buildx bake --print | jq -r '.target | .[].tags[0]'))
 
-          for i in "${#srcs[@]}"; do
+          for (( i=0; i<${#dsts[@]}; i++ )); do
             set -x
-            docker buildx imagetools create "${srcs[$i]}" --tag "${srcs[$i]}" --append "${arms[$i]}"
+            docker buildx imagetools create "${dsts[$i]}" --tag "${dsts[$i]}" --append "${arms[$i]}"
             set +x
           done
 
