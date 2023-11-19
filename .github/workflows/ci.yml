@@ -317,22 +317,18 @@ jobs:
       - name: Merge images coverage
         shell: bash
         run: |
-          set -x
           export registry=ghcr.io
-          # export tag=${{needs.release-versions.outputs.gh-docker-tag}}
-          export tag=pr-30980
+          export tag=${{needs.release-versions.outputs.gh-docker-tag}}
 
           dsts=($(docker buildx bake --print | jq -r '.target | .[].tags[0]'))
 
-          echo "${dsts[@]}" | tr ' ' '\n'
-
-          export tag=${tag}-arm64
+          export tag+=-arm64
           arms=($(docker buildx bake --print | jq -r '.target | .[].tags[0]'))
-          echo "${arms[@]}" | tr ' ' '\n'
 
-          for i in "${#dsts[@]}"; do
-            echo "${dsts[$i]}"
-            # docker buildx imagetools create "${srcs[$i]}" --tag "${srcs[$i]}" --append "${arms[$i]}"
+          for (( i=0;  i<${#dsts[@]}; i++ )); do
+            set -x
+            docker buildx imagetools create "${srcs[$i]}" --tag "${srcs[$i]}" --append "${arms[$i]}"
+            set +x
           done
 
   checks:
