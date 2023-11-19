@@ -1,4 +1,16 @@
-group "default" {targets = []}
+group "default" {
+	targets = [
+		target.monolith.name,
+		target.monolith-alpine.name,
+		target.authorization-service.name,
+		target.account-service.name,
+		target.presence-service.name,
+		target.ddp-streamer-service.name,
+		target.stream-hub-service.name,
+		target.queue-worker-service.name,
+		target.omnichannel-transcript-service.name,
+	]
+}
 
 variable "registry" {
 	default = "docker.io"
@@ -28,7 +40,7 @@ target "monolith" {
 	tags = ["${image_full_name("rocket.chat")}.official"] // ghcr.io/rocketchat/rocket.chat:pr-xxxx.official
 }
 
-target "monolith_alpine" {
+target "monolith-alpine" {
 	inherits = [target.monolith.name]
 	dockerfile = "apps/meteor/.docker/Dockerfile.alpine"
 	tags = ["${image_full_name("rocket.chat")}.alpine"]

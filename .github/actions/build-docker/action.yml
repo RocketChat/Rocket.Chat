@@ -93,9 +93,6 @@ runs:
         export registry=${{ inputs.registry }}
 
         arch=${{inputs.arch}}
-        if [ "$arch" = "arm64" ]; then
-          tag+="-$arch" # pr-xxxxx.official-arm64
-        fi
 
         print_and_build() {
           args=()
@@ -132,11 +129,6 @@ runs:
           print_and_build "${targets[@]}"
         else
           print_and_build "${targets[@]}"
-        fi
-
-        # temporary TODO: remove
-        if [ $type = 'alpine' ]; then
-          docker pull ghcr.io/rocketchat/account-service:pr-30980
         fi
 
     - name: Clean buildx cache

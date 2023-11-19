@@ -170,7 +170,7 @@ jobs:
           coverage: false
 
   build-gh-docker-coverage:
-    name: 🚢 Build Docker Images for Testing (AMD64)
+    name: 🚢 (AMD64) Build Docker Images for Testing
     needs: [build, release-versions]
     runs-on: ubuntu-20.04
 
@@ -192,12 +192,67 @@ jobs:
           platform: ${{ matrix.platform }}
           version-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           repository-owner: ${{ needs.release-versions.outputs.lowercase-repo }}
-          targets: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
-          arch: all # build and push all here, amd64 images are rebuilt and tested on separate workflow
+          arch: amd64
           push: 'true'
 
+  build-gh-docker-coverage-arm64:
+    name: 🚢 (ARM64) Build Docker Images for Testing
+    needs: [build, release-versions]
+    runs-on: ubuntu-20.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ['official', 'alpine'] # TODO: add preview here?
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # we only build and publish the actual docker images if not a PR from a fork
+      - uses: ./.github/actions/build-docker
+        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        with:
+          registry-username: ${{ secrets.CR_USER }}
+          registry-token: ${{ secrets.CR_PAT }}
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+          platform: ${{ matrix.platform }}
+          version-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}-arm64
+          repository-owner: ${{ needs.release-versions.outputs.lowercase-repo }}
+          arch: arm64
+          push: 'true'
+
+  merge-images-coverage:
+    name: Merge Arm64 and Amd64 images (Coverage)
+    needs: [build-gh-docker-coverage, build-gh-docker-coverage-arm64, release-versions]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Login to ghcr.io
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Merge images coverage
+        shell: bash
+        run: |
+          export registry=ghcr.io
+          export tag=${{needs.release-versions.outputs.gh-docker-tag}}
+
+          srcs=($(docker buildx bake --print | jq -r '.target.[].tags[0]'))
+
+          export tag=${{needs.release-versions.outputs.gh-docker-tag}}-arm64
+          arms=($(docker buildx bake --print | jq -r '.target.[].tags[0]'))
+
+          for i in "${#srcs[@]}"; do
+            set -x
+            docker buildx imagetools create "${srcs[$i]}" --tag "${srcs[$i]}" --append "${arms[$i]}"
+            set +x
+          done
+
   build-gh-docker:
-    name: 🚢 Build Docker Images for Production (AMD64)
+    name: 🚢 (AMD64) Build Docker Images for Production
     needs: [build-prod, release-versions]
     runs-on: ubuntu-20.04
 
@@ -217,9 +272,62 @@ jobs:
           platform: ${{ matrix.platform }}
           version-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           repository-owner: ${{ needs.release-versions.outputs.lowercase-repo }}
-          targets: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
-          arch: all # build and push all here, amd64 images are rebuilt and tested on separate workflow
+          arch: amd64
           push: 'true'
+
+  build-gh-docker-arm64:
+    name: 🚢 (ARM64) Build Docker Images for Production
+    needs: [build-prod, release-versions]
+    runs-on: ubuntu-20.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ['official', 'alpine']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/build-docker
+        with:
+          registry-username: ${{ secrets.CR_USER }}
+          registry-token: ${{ secrets.CR_PAT }}
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+          platform: ${{ matrix.platform }}
+          version-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}-arm64
+          repository-owner: ${{ needs.release-versions.outputs.lowercase-repo }}
+          arch: arm64
+          push: 'true'
+
+  merge-images-prod:
+    name: Merge Arm64 and Amd64 images (Prod)
+    needs: [build-gh-docker, build-gh-docker-arm64, release-versions]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Login to ghcr.io
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Merge images coverage
+        shell: bash
+        run: |
+          export registry=ghcr.io
+          export tag=${{needs.release-versions.outputs.gh-docker-tag}}
+
+          srcs=($(docker buildx bake --print | jq -r '.target.[].tags[0]'))
+
+          export tag=${{needs.release-versions.outputs.gh-docker-tag}}-arm64
+          arms=($(docker buildx bake --print | jq -r '.target.[].tags[0]'))
+
+          for i in "${#srcs[@]}"; do
+            set -x
+            docker buildx imagetools create "${srcs[$i]}" --tag "${srcs[$i]}" --append "${arms[$i]}"
+            set +x
+          done
 
   checks:
     needs: [release-versions, packages-build]
@@ -241,7 +349,7 @@ jobs:
 
   test-api:
     name: 🔨 Test API (CE)
-    needs: [checks, build, release-versions]
+    needs: [checks, build-gh-docker-coverage, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -260,7 +368,7 @@ jobs:
 
   test-ui:
     name: 🔨 Test UI (CE)
-    needs: [checks, build, release-versions]
+    needs: [checks, build-gh-docker-coverage, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -286,7 +394,7 @@ jobs:
 
   test-api-ee:
     name: 🔨 Test API (EE)
-    needs: [checks, build, release-versions]
+    needs: [checks, build-gh-docker-coverage, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -308,7 +416,7 @@ jobs:
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
-    needs: [checks, build, release-versions]
+    needs: [checks, build-gh-docker-coverage, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -417,7 +525,7 @@ jobs:
   docker-image-publish:
     name: 🚀 Publish Docker Image (docker hub)
     runs-on: ubuntu-20.04
-    needs: [deploy, build-docker-preview, release-versions]
+    needs: [deploy, build-docker-preview, merge-images-prod, release-versions]
 
     strategy:
       matrix:
@@ -519,7 +627,7 @@ jobs:
   services-docker-image-publish:
     name: 🚀 Publish Docker Image (services)
     runs-on: ubuntu-20.04
-    needs: [deploy, release-versions]
+    needs: [deploy, release-versions, merge-images-prod]
 
     strategy:
       matrix:

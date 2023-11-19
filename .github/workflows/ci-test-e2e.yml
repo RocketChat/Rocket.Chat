@@ -28,6 +28,7 @@ on:
         type: string
       transporter:
         type: string
+        default: nats://nats:4222
       mongodb-version:
         default: "['4.4', '6.0']"
         required: false
@@ -120,25 +121,13 @@ jobs:
 
       - run: yarn build
 
-      - name: Build AMD64 application docker images (CE)
-        if: inputs.release == 'ce'
-        uses: ./.github/actions/build-docker
-        with:
-          platform: official
-          arch: amd64
-          push: 'false'
-          repository-owner: ${{ inputs.lowercase-repo }}
-          version-tag: ${{ inputs.gh-docker-tag }}
-
-      - name: Build AMD64 application docker images (EE)
+      - name: Login to github container registry for microservice images
         if: inputs.release == 'ee'
-        uses: ./.github/actions/build-docker
+        uses: docker/login-action@v2
         with:
-          platform: alpine
-          arch: amd64
-          push: 'false'
-          repository-owner: ${{ inputs.lowercase-repo }}
-          version-tag: ${{ inputs.gh-docker-tag }}
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
 
       - name: Start containers for CE
         if: inputs.release == 'ce'
