@@ -327,7 +327,7 @@ jobs:
 
           for (( i=0;  i<${#dsts[@]}; i++ )); do
             set -x
-            docker buildx imagetools create "${srcs[$i]}" --tag "${srcs[$i]}" --append "${arms[$i]}"
+            docker buildx imagetools create "${dsts[$i]}" --tag "${dsts[$i]}" --append "${arms[$i]}"
             set +x
           done
 
