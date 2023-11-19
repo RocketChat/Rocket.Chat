@@ -302,7 +302,7 @@ jobs:
 
   merge-images-prod:
     name: Merge Arm64 and Amd64 images (Prod)
-    needs: [build-gh-docker, build-gh-docker-arm64, release-versions]
+    #needs: [build-gh-docker, build-gh-docker-arm64, release-versions]
     runs-on: ubuntu-latest
 
     steps:
@@ -327,9 +327,7 @@ jobs:
           arms=($(docker buildx bake --print | jq -r '.target | .[].tags[0]'))
 
           for i in "${#srcs[@]}"; do
-            set -x
-            docker buildx imagetools create "${srcs[$i]}" --tag "${srcs[$i]}" --append "${arms[$i]}"
-            set +x
+            # docker buildx imagetools create "${srcs[$i]}" --tag "${srcs[$i]}" --append "${arms[$i]}"
           done
 
   checks:
