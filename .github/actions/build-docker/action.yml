@@ -134,6 +134,11 @@ runs:
           print_and_build "${targets[@]}"
         fi
 
+        # temporary TODO: remove
+        if [ $type = 'alpine' ]; then
+          docker pull ghcr.io/rocketchat/account-service:pr-30980
+        fi
+
     - name: Clean buildx cache
       shell: bash
       run: docker buildx prune -af
