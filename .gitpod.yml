@@ -2,7 +2,7 @@ tasks:
   - init: |
       nvm install $(jq -r .engines.node package.json) &&
       curl https://install.meteor.com/?release=$(curl -so- https://raw.githubusercontent.com/RocketChat/Rocket.Chat/develop/apps/meteor/.meteor/release | cut -d@ -f2) | sh &&
-      export PATH=$PATH:/home/gitpod/.meteor &&
+      export PATH="$PATH:$HOME/.meteor" &&
       yarn &&
       export ROOT_URL=$(gp url 3000)
     command: yarn build && yarn dev
