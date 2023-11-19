@@ -318,7 +318,8 @@ jobs:
         shell: bash
         run: |
           export registry=ghcr.io
-          export tag=${{needs.release-versions.outputs.gh-docker-tag}}
+          # export tag=${{needs.release-versions.outputs.gh-docker-tag}}
+          export tag=pr-30980
 
           dsts=($(docker buildx bake --print | jq -r '.target | .[].tags[0]'))
 
