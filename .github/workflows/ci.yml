@@ -321,7 +321,7 @@ jobs:
           export registry=ghcr.io
           export tag=${{needs.release-versions.outputs.gh-docker-tag}}
 
-          srcs=($(docker buildx bake --print | jq -r '.target | .[].tags[0]'))
+          docker buildx bake --print | jq -r '.target | .[].tags[0]'
 
           export tag=${{needs.release-versions.outputs.gh-docker-tag}}-arm64
           arms=($(docker buildx bake --print | jq -r '.target | .[].tags[0]'))
