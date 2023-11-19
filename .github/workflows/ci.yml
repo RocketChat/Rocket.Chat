@@ -317,6 +317,7 @@ jobs:
       - name: Merge images coverage
         shell: bash
         run: |
+          set -x
           export registry=ghcr.io
           export tag=${{needs.release-versions.outputs.gh-docker-tag}}
 
