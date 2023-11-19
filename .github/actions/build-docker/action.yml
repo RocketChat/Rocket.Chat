@@ -80,6 +80,7 @@ runs:
 
     - uses: docker/setup-qemu-action@v2
     - uses: docker/setup-buildx-action@v2
+      id: setup-buildx
       with:
         driver: docker-container
         platforms: linux/amd64,linux/arm64
@@ -132,3 +133,11 @@ runs:
         else
           print_and_build "${targets[@]}"
         fi
+
+    - name: Clean buildx cache
+      shell: bash
+      run: docker buildx prune -af
+
+    - name: Stop buildx builder
+      shell: bash
+      run: docker buildx stop ${{ steps.setup-buildx.outputs.name }}

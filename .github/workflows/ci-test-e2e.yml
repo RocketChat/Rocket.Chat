@@ -140,10 +140,6 @@ jobs:
           repository-owner: ${{ inputs.lowercase-repo }}
           version-tag: ${{ inputs.gh-docker-tag }}
 
-      - name: Clean buildx cache
-        shell: bash
-        run: docker buildx prune -af
-
       - name: Start containers for CE
         if: inputs.release == 'ce'
         env:
