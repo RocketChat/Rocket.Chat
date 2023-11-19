@@ -227,6 +227,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
       - name: Login to ghcr.io
         uses: docker/login-action@v2
         with:
@@ -305,6 +306,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
       - name: Login to ghcr.io
         uses: docker/login-action@v2
         with:
