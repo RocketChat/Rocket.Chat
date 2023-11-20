@@ -279,6 +279,9 @@ describe('License.getInfo', () => {
 		it('should respect the default if there is no license applied', async () => {
 			const licenseManager = new LicenseImp();
 
+			licenseManager.setLicenseLimitCounter('privateApps', () => 0);
+			licenseManager.setLicenseLimitCounter('marketplaceApps', () => 0);
+
 			expect(
 				(
 					await licenseManager.getInfo({
