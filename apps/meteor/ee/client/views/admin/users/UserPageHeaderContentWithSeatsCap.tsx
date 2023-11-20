@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { useExternalLink } from '../../../../../client/hooks/useExternalLink';
+import { useShouldPreventAction } from '../../../../../client/hooks/useShouldPreventAction';
 import CloseToSeatsCapModal from './CloseToSeatsCapModal';
 import ReachedSeatsCapModal from './ReachedSeatsCapModal';
 import SeatsCapUsage from './SeatsCapUsage';
@@ -18,6 +19,8 @@ const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: User
 	const seatsLinkUrl = useRequestSeatsLink();
 	const handleExternalLink = useExternalLink();
 
+	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
+
 	const t = useTranslation();
 	const usersRoute = useRoute('admin-users');
 
@@ -29,16 +32,11 @@ const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: User
 		return ratio >= 0.8;
 	};
 
-	const hasReachedLimit = (): boolean => {
-		const ratio = activeUsers / maxActiveUsers;
-		return ratio >= 1;
-	};
-
 	const withPreventionOnReachedLimit = (fn: () => void) => (): void => {
 		if (typeof seatsLinkUrl !== 'string') {
 			return;
 		}
-		if (hasReachedLimit()) {
+		if (isCreateUserDisabled) {
 			setModal(<ReachedSeatsCapModal members={activeUsers} limit={maxActiveUsers} requestSeatsLink={seatsLinkUrl} onClose={closeModal} />);
 			return;
 		}

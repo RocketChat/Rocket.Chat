@@ -627,8 +627,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				image: RocketChatAssets.getURL('Assets_favicon_192'),
 			},
 			apn: {
-				category: 'MESSAGE_NOREPLY',
-				topicSuffix: '.voip',
+				category: 'VIDEOCONF',
 			},
 		});
 	}

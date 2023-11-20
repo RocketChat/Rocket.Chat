@@ -6,7 +6,7 @@ import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
 
 const CustomRoleUpsellModal = ({ onClose }: { onClose: () => void }) => {
 	const t = useTranslation();
-	const { cloudWorkspaceHadTrial, handleTalkToSales, handleGoFullyFeatured } = useUpsellActions();
+	const { cloudWorkspaceHadTrial, handleTalkToSales, handleManageSubscription } = useUpsellActions();
 
 	return (
 		<GenericUpsellModal
@@ -18,7 +18,7 @@ const CustomRoleUpsellModal = ({ onClose }: { onClose: () => void }) => {
 			onClose={onClose}
 			cancelText={t('Talk_to_an_expert')}
 			confirmText={cloudWorkspaceHadTrial ? t('Learn_more') : t('Start_a_free_trial')}
-			onConfirm={handleGoFullyFeatured}
+			onConfirm={handleManageSubscription}
 			onCancel={handleTalkToSales}
 		/>
 	);
