@@ -1,6 +1,7 @@
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 
 import { MatrixRoomJoinRules } from '../../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixRoomJoinRules';
+import type { Queue } from '../../../../../../../server/services/federation/infrastructure/queue';
 import type { RocketChatFileAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatNotificationAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Notification';
@@ -8,7 +9,6 @@ import type { RocketChatSettingsAdapter } from '../../../../../../../server/serv
 import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/definitions/FederatedRoomInternalRoles';
 import { FederatedUserEE } from '../../../domain/FederatedUser';
 import type { IFederationBridgeEE, IFederationPublicRoomsResult } from '../../../domain/IFederationBridge';
-import type { RocketChatQueueAdapterEE } from '../../../infrastructure/rocket-chat/adapters/Queue';
 import type { RocketChatRoomAdapterEE } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatUserAdapterEE } from '../../../infrastructure/rocket-chat/adapters/User';
 import { AbstractFederationApplicationServiceEE } from '../../AbstractFederationApplicationServiceEE';
@@ -30,7 +30,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected internalMessageAdapter: RocketChatMessageAdapter,
 		protected internalNotificationAdapter: RocketChatNotificationAdapter,
-		protected internalQueueAdapter: RocketChatQueueAdapterEE,
+		protected internalQueueForJoinExternalPublicRoom: Queue,
 		protected bridge: IFederationBridgeEE,
 	) {
 		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
@@ -149,7 +149,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		if (!this.internalSettingsAdapter.isFederationEnabled()) {
 			throw new Error('Federation is disabled');
 		}
-		await this.internalQueueAdapter.enqueueJob('federation-enterprise.joinExternalPublicRoom', {
+		await this.internalQueueForJoinExternalPublicRoom.addToQueue({
 			internalUserId,
 			externalRoomId,
 			roomName,

@@ -7,7 +7,7 @@ import { FederatedUser } from '../../../domain/FederatedUser';
 import { EVENT_ORIGIN } from '../../../domain/IFederationBridge';
 import type { IFederationBridge } from '../../../domain/IFederationBridge';
 import { removeExternalSpecificCharsFromExternalIdentifier } from '../../../infrastructure/matrix/converters/room/RoomReceiver';
-import type { InMemoryQueue } from '../../../infrastructure/queue/InMemoryQueue';
+import type { Queue } from '../../../infrastructure/queue';
 import type { RocketChatFileAdapter } from '../../../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from '../../../infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatNotificationAdapter } from '../../../infrastructure/rocket-chat/adapters/Notification';
@@ -37,7 +37,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		protected internalFileAdapter: RocketChatFileAdapter,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected internalNotificationAdapter: RocketChatNotificationAdapter,
-		protected federationQueueInstance: InMemoryQueue,
+		protected federationQueueInstance: Queue,
 		protected bridge: IFederationBridge,
 	) {
 		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);

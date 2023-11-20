@@ -78,6 +78,7 @@ import type {
 	ICronHistoryModel,
 	IMigrationsModel,
 	IModerationReportsModel,
+	IPersistentQueueModel,
 	ICloudAnnouncementsModel,
 } from '@rocket.chat/model-typings';
 
@@ -171,4 +172,5 @@ export const AuditLog = proxify<IAuditLogModel>('IAuditLogModel');
 export const CronHistory = proxify<ICronHistoryModel>('ICronHistoryModel');
 export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
+export const PersistentQueue = proxify<IPersistentQueueModel>('IPersistentQueueModel');
 export const CloudAnnouncements = proxify<ICloudAnnouncementsModel>('ICloudAnnouncementsModel');

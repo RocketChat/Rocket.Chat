@@ -135,6 +135,7 @@ export * from './ICustomOAuthConfig';
 export * from './IModerationReport';
 export * from './CustomFieldMetadata';
 
+export * from './IPersistentQueue';
 export * as Cloud from './cloud';
 
 export * as UiKit from './uikit';

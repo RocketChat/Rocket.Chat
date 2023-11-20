@@ -31,7 +31,10 @@ export class MatrixBridge implements IFederationBridge {
 
 	protected isUpdatingBridgeStatus = false;
 
-	constructor(protected internalSettings: RocketChatSettingsAdapter, protected eventHandler: (event: AbstractMatrixEvent) => void) {} // eslint-disable-line no-empty-function
+	constructor(
+		protected internalSettings: RocketChatSettingsAdapter,
+		protected eventHandler: (event: AbstractMatrixEvent) => Promise<void>,
+	) {} // eslint-disable-line no-empty-function
 
 	public async start(): Promise<void> {
 		if (this.isUpdatingBridgeStatus) {
@@ -724,8 +727,7 @@ export class MatrixBridge implements IFederationBridge {
 			controller: {
 				onEvent: (request) => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
-					console.log({ event });
-					this.eventHandler(event);
+					this.eventHandler(event).catch(console.error);
 				},
 				onLog: (line, isError) => {
 					console.log(line, isError);
@@ -734,7 +736,7 @@ export class MatrixBridge implements IFederationBridge {
 					? {
 							onEphemeralEvent: (request) => {
 								const event = request.getData() as unknown as AbstractMatrixEvent;
-								this.eventHandler(event);
+								this.eventHandler(event).catch(console.error);
 							},
 					  }
 					: {}),

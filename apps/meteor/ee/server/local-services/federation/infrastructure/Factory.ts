@@ -1,7 +1,7 @@
 import type { IRoom, IUser, Username } from '@rocket.chat/core-typings';
 
 import { FederationFactory } from '../../../../../server/services/federation/infrastructure/Factory';
-import type { InMemoryQueue } from '../../../../../server/services/federation/infrastructure/queue/InMemoryQueue';
+import { Queue } from '../../../../../server/services/federation/infrastructure/queue';
 import type { RocketChatFileAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Message';
 import { RocketChatNotificationAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Notification';
@@ -11,14 +11,13 @@ import { FederationDirectMessageRoomServiceSender } from '../application/room/se
 import { FederationRoomServiceSender } from '../application/room/sender/RoomServiceSender';
 import type { IFederationBridgeEE } from '../domain/IFederationBridge';
 import { MatrixBridgeEE } from './matrix/Bridge';
-import { RocketChatQueueAdapterEE } from './rocket-chat/adapters/Queue';
 import { RocketChatRoomAdapterEE } from './rocket-chat/adapters/Room';
 import { RocketChatUserAdapterEE } from './rocket-chat/adapters/User';
 import { FederationRoomSenderConverterEE } from './rocket-chat/converters/RoomSender';
 import { FederationHooksEE } from './rocket-chat/hooks';
 
 export class FederationFactoryEE extends FederationFactory {
-	public static buildFederationBridge(internalSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridgeEE {
+	public static buildFederationBridge(internalSettingsAdapter: RocketChatSettingsAdapter, queue: Queue): IFederationBridgeEE {
 		return new MatrixBridgeEE(internalSettingsAdapter, queue.addToQueue.bind(queue));
 	}
 
@@ -34,8 +33,8 @@ export class FederationFactoryEE extends FederationFactory {
 		return new RocketChatUserAdapterEE();
 	}
 
-	public static buildInternalQueueAdapter(): RocketChatQueueAdapterEE {
-		return new RocketChatQueueAdapterEE();
+	public static buildInternalQueueAdapter(): Queue {
+		return new Queue('matrix_join_external_public_room');
 	}
 
 	public static buildRoomServiceSenderEE(
@@ -45,7 +44,7 @@ export class FederationFactoryEE extends FederationFactory {
 		internalSettingsAdapter: RocketChatSettingsAdapter,
 		internalMessageAdapter: RocketChatMessageAdapter,
 		internalNotificationAdapter: RocketChatNotificationAdapter,
-		internalQueueAdapter: RocketChatQueueAdapterEE,
+		internalQueueAdapter: Queue,
 		bridge: IFederationBridgeEE,
 	): FederationRoomServiceSender {
 		return new FederationRoomServiceSender(

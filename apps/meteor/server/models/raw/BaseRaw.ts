@@ -93,6 +93,10 @@ export abstract class BaseRaw<
 		return this.collectionName;
 	}
 
+	getDb(): Db {
+		return this.db;
+	}
+
 	private doNotMixInclusionAndExclusionFields(options: FindOptions<T> = {}): FindOptions<T> {
 		const optionsDef = this.ensureDefaultFields(options);
 		if (optionsDef?.projection === undefined) {

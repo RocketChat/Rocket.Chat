@@ -5,7 +5,9 @@ import type { FederationRoomServiceSender } from './application/room/sender/Room
 import type { FederationUserServiceSender } from './application/user/sender/UserServiceSender';
 import type { IFederationBridge } from './domain/IFederationBridge';
 import { FederationFactory } from './infrastructure/Factory';
-import type { InMemoryQueue } from './infrastructure/queue/InMemoryQueue';
+import type { AbstractMatrixEvent } from './infrastructure/matrix/definitions/AbstractMatrixEvent';
+import type { MatrixEventsHandler } from './infrastructure/matrix/handlers';
+import type { Queue } from './infrastructure/queue';
 import type { RocketChatFileAdapter } from './infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from './infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatNotificationAdapter } from './infrastructure/rocket-chat/adapters/Notification';
@@ -18,7 +20,7 @@ import { FederationHooks } from './infrastructure/rocket-chat/hooks';
 export abstract class AbstractFederationService extends ServiceClassInternal {
 	private cancelSettingsObserver: () => void;
 
-	private internalQueueInstance: InMemoryQueue;
+	private internalQueueInstance: Queue;
 
 	private internalSettingsAdapter: RocketChatSettingsAdapter;
 
@@ -36,6 +38,8 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 
 	private internalNotificationAdapter: RocketChatNotificationAdapter;
 
+	private federationEventsHandler: MatrixEventsHandler;
+
 	private isRunning = false;
 
 	protected PROCESSING_CONCURRENCY = 1;
@@ -52,11 +56,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 
 	protected abstract onDisableFederation(): Promise<void>;
 
-	constructor(
-		federationBridge: IFederationBridge,
-		internalQueueInstance: InMemoryQueue,
-		internalSettingsAdapter: RocketChatSettingsAdapter,
-	) {
+	constructor(federationBridge: IFederationBridge, internalQueueInstance: Queue, internalSettingsAdapter: RocketChatSettingsAdapter) {
 		super();
 		this.internalQueueInstance = internalQueueInstance;
 		this.internalSettingsAdapter = internalSettingsAdapter;
@@ -83,6 +83,8 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			this.bridge,
 		);
 		this.setEventListeners();
+
+		this.internalQueueInstance.startWorkersWith(this.handleMatrixEvent.bind(this)).catch(console.error);
 	}
 
 	private setEventListeners(): void {
@@ -136,10 +138,6 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		);
 	}
 
-	private async noop(): Promise<void> {
-		// noop
-	}
-
 	private async setupEventHandlersForExternalEvents(): Promise<void> {
 		const federationRoomServiceReceiver = FederationFactory.buildRoomServiceReceiver(
 			this.internalRoomAdapter,
@@ -167,13 +165,16 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			this.internalSettingsAdapter,
 			this.bridge,
 		);
-		const federationEventsHandler = FederationFactory.buildFederationEventHandler(
+		this.federationEventsHandler = FederationFactory.buildFederationEventHandler(
 			federationRoomServiceReceiver,
 			federationMessageServiceReceiver,
 			federationUserServiceReceiver,
 			this.internalSettingsAdapter,
 		);
-		this.internalQueueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), this.PROCESSING_CONCURRENCY);
+	}
+
+	protected getFederationEventsHandler(): MatrixEventsHandler {
+		return this.federationEventsHandler;
 	}
 
 	protected getInternalSettingsAdapter(): RocketChatSettingsAdapter {
@@ -227,8 +228,8 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		this.isRunning = false;
 	}
 
-	protected async cleanUpHandlers(): Promise<void> {
-		this.internalQueueInstance.setHandler(this.noop.bind(this), this.PROCESSING_CONCURRENCY);
+	protected async handleMatrixEvent(event: AbstractMatrixEvent): Promise<void> {
+		await this.getFederationEventsHandler().handleEvent(event);
 	}
 
 	protected async verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>> {
@@ -294,7 +295,6 @@ abstract class AbstractBaseFederationService extends AbstractFederationService {
 	private async stopFederation(): Promise<void> {
 		FederationFactory.removeAllListeners();
 		await this.bridge.stop();
-		await super.cleanUpHandlers();
 	}
 
 	public async stopped(): Promise<void> {

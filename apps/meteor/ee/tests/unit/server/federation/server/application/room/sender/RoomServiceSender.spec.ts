@@ -84,8 +84,8 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 		subscribeToUserTypingEventsOnFederatedRoomId: sinon.stub(),
 		broadcastUserTypingOnRoom: sinon.stub(),
 	};
-	const queueAdapter = {
-		enqueueJob: sinon.stub(),
+	const internalQueueForJoinExternalPublicRoom = {
+		addToQueue: sinon.stub(),
 	};
 	const invitees = [
 		{
@@ -103,7 +103,7 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 			settingsAdapter as any,
 			messageAdapter as any,
 			notificationAdapter as any,
-			queueAdapter as any,
+			internalQueueForJoinExternalPublicRoom as any,
 			bridge as any,
 		);
 	});
@@ -136,7 +136,7 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 		bridge.joinRoom.reset();
 		bridge.searchPublicRooms.reset();
 		bridge.getRoomData.reset();
-		queueAdapter.enqueueJob.reset();
+		internalQueueForJoinExternalPublicRoom.addToQueue.reset();
 		settingsAdapter.isFederationEnabled.reset();
 		settingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms.reset();
 		notificationAdapter.broadcastUserTypingOnRoom.reset();
@@ -1062,7 +1062,7 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 			await service.scheduleJoinExternalPublicRoom(internalUserId, externalRoomId, roomName, pageToken);
 
 			expect(
-				queueAdapter.enqueueJob.calledOnceWithExactly('federation-enterprise.joinExternalPublicRoom', {
+				internalQueueForJoinExternalPublicRoom.addToQueue.calledOnceWithExactly('federation-enterprise.joinExternalPublicRoom', {
 					internalUserId,
 					externalRoomId,
 					roomName,
