@@ -1852,7 +1852,6 @@
   "Enterprise_Departments_title": "Liitä asiakkaat jonoihin ja paranna agenttien tuottavuutta",
   "Enterprise_Departments_description_upgrade": "Yhteisöversion työtiloissa voidaan luoda vain yksi osasto. Poista rajat ja tehosta työtilaasi päivittämällä yritysversioon.",
   "Enterprise_Departments_description_free_trial": "Yhteisöversion työtiloissa voi luoda yhden osaston. Aloita maksuton yritysversion kokeilu, jotta voit luoda useita osastoja heti!",
-  "Enterprise_Description": "Päivitä yrityskäyttöoikeus manuaalisesti.",
   "Enterprise_License": "Yrityskäyttöoikeus",
   "Enterprise_License_Description": "Jos työtilasi on rekisteröity ja sinulla on Rocket.Chat-pilven käyttöoikeus, sinun ei tarvitse päivittää käyttöoikeutta manuaalisesti tässä.",
   "Enterprise_Only": "Vain yritysversio",

@@ -72,7 +72,7 @@ const SubscriptionPage = () => {
 							{syncLicenseUpdate.isLoading ? <Throbber size='x12' inheritColor /> : t('Sync_license_update')}
 						</Button>
 					)}
-					<UpgradeButton primary mis={8}>
+					<UpgradeButton target='subscription_header' action={isEnterprise ? 'manage_subscription' : 'upgrade'} primary mis={8}>
 						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
 					</UpgradeButton>
 				</ButtonGroup>
@@ -105,7 +105,7 @@ const SubscriptionPage = () => {
 							{seatsLimit.value !== undefined && (
 								<Grid.Item lg={6} xs={4} p={8}>
 									{seatsLimit.max !== Infinity ? (
-										<SeatsCard value={seatsLimit.value} max={seatsLimit.max} />
+										<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
 									) : (
 										<CountSeatsCard activeUsers={seatsLimit?.value} />
 									)}
@@ -115,7 +115,7 @@ const SubscriptionPage = () => {
 							{macLimit.value !== undefined && (
 								<Grid.Item lg={6} xs={4} p={8}>
 									{macLimit.max !== Infinity ? (
-										<MACCard max={macLimit.max} value={macLimit.value} />
+										<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
 									) : (
 										<CountMACCard macsCount={macLimit.value} />
 									)}

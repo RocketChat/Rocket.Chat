@@ -148,7 +148,48 @@ describe('Validate License Limits', () => {
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
 			expect(preventActionCallback).toHaveBeenCalledTimes(4);
-			expect(fairUsageCallback).toHaveBeenCalledTimes(4);
+			expect(fairUsageCallback).toHaveBeenCalledTimes(1);
+		});
+		it('should trigger the toggle event if the counter is under the limit', async () => {
+			const licenseManager = await getReadyLicenseManager();
+
+			const fairUsageCallback = jest.fn();
+			const preventActionCallback = jest.fn();
+
+			licenseManager.onBehaviorToggled('start_fair_policy', fairUsageCallback);
+			licenseManager.onBehaviorTriggered('prevent_action', preventActionCallback);
+
+			const license = await new MockedLicenseBuilder().withLimits('activeUsers', [
+				{
+					max: 12,
+					behavior: 'prevent_action',
+				},
+				{
+					max: 10,
+					behavior: 'start_fair_policy',
+				},
+			]);
+
+			await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+
+			licenseManager.setLicenseLimitCounter('activeUsers', () => 12);
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
+			expect(fairUsageCallback).toHaveBeenCalledTimes(1);
+			expect(preventActionCallback).toHaveBeenCalledTimes(1);
+
+			preventActionCallback.mockClear();
+			fairUsageCallback.mockClear();
+			licenseManager.setLicenseLimitCounter('activeUsers', () => 12);
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
+			expect(fairUsageCallback).toHaveBeenCalledTimes(0);
+			expect(preventActionCallback).toHaveBeenCalledTimes(1);
+
+			preventActionCallback.mockClear();
+			fairUsageCallback.mockClear();
+			licenseManager.setLicenseLimitCounter('activeUsers', () => 5);
+			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(false);
+			expect(fairUsageCallback).toHaveBeenCalledTimes(1);
+			expect(preventActionCallback).toHaveBeenCalledTimes(0);
 		});
 	});
 
