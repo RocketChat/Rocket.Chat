@@ -115,20 +115,7 @@ export class ActionManager implements ActionManagerType {
 
 			case 'modal.open': {
 				const { view } = interaction;
-				const instance = imperativeModal.open({
-					component: UiKitModal,
-					props: {
-						key: view.id,
-						initialView: interaction.view,
-					},
-				});
-
-				this.viewInstances.set(view.id, {
-					close: () => {
-						instance.close();
-						this.viewInstances.delete(view.id);
-					},
-				});
+				this.openModal(view);
 				break;
 			}
 
@@ -151,12 +138,7 @@ export class ActionManager implements ActionManagerType {
 
 			case 'banner.open': {
 				const { type, triggerId, ...view } = interaction;
-				banners.open(view);
-				this.viewInstances.set(view.viewId, {
-					close: () => {
-						banners.closeById(view.viewId);
-					},
-				});
+				this.openBanner(view);
 				break;
 			}
 
@@ -181,30 +163,7 @@ export class ActionManager implements ActionManagerType {
 
 			case 'contextual_bar.open': {
 				const { view } = interaction;
-				this.viewInstances.set(view.id, {
-					payload: {
-						view,
-					},
-					close: () => {
-						this.viewInstances.delete(view.id);
-					},
-				});
-
-				const routeName = this.router.getRouteName();
-				const routeParams = this.router.getRouteParameters();
-
-				if (!routeName) {
-					break;
-				}
-
-				this.router.navigate({
-					name: routeName,
-					params: {
-						...routeParams,
-						tab: 'app',
-						context: view.id,
-					},
-				});
+				this.openContextualBar(view);
 				break;
 			}
 
@@ -224,6 +183,81 @@ export class ActionManager implements ActionManagerType {
 		}
 
 		return this.viewInstances.get(viewId)?.payload;
+	}
+
+	public openView(surface: 'modal', view: UiKit.ModalView): void;
+
+	public openView(surface: 'banner', view: UiKit.BannerView): void;
+
+	public openView(surface: 'contextual_bar', view: UiKit.ContextualBarView): void;
+
+	public openView(surface: string, view: UiKit.View) {
+		switch (surface) {
+			case 'modal':
+				this.openModal(view as UiKit.ModalView);
+				break;
+
+			case 'banner':
+				this.openBanner(view as UiKit.BannerView);
+				break;
+
+			case 'contextual_bar':
+				this.openContextualBar(view as UiKit.ContextualBarView);
+				break;
+		}
+	}
+
+	private openModal(view: UiKit.ModalView) {
+		const instance = imperativeModal.open({
+			component: UiKitModal,
+			props: {
+				key: view.id,
+				initialView: view,
+			},
+		});
+
+		this.viewInstances.set(view.id, {
+			close: () => {
+				instance.close();
+				this.viewInstances.delete(view.id);
+			},
+		});
+	}
+
+	private openBanner(view: UiKit.BannerView) {
+		banners.open(view);
+		this.viewInstances.set(view.viewId, {
+			close: () => {
+				banners.closeById(view.viewId);
+			},
+		});
+	}
+
+	private openContextualBar(view: UiKit.ContextualBarView) {
+		this.viewInstances.set(view.id, {
+			payload: {
+				view,
+			},
+			close: () => {
+				this.viewInstances.delete(view.id);
+			},
+		});
+
+		const routeName = this.router.getRouteName();
+		const routeParams = this.router.getRouteParameters();
+
+		if (!routeName) {
+			return;
+		}
+
+		this.router.navigate({
+			name: routeName,
+			params: {
+				...routeParams,
+				tab: 'app',
+				context: view.id,
+			},
+		});
 	}
 
 	public disposeView(viewId: UiKit.ModalView['id'] | UiKit.BannerView['viewId'] | UiKit.ContextualBarView['id']) {
