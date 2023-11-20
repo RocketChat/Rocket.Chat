@@ -1,5 +1,31 @@
 # @rocket.chat/meteor
 
+## 6.4.7
+
+### Patch Changes
+
+- 037efa4f4f: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- b98492e3ee: Add additional checks to the OAuth tokens to prevent future issues
+  - @rocket.chat/core-typings@6.4.7
+  - @rocket.chat/rest-typings@6.4.7
+  - @rocket.chat/api-client@0.1.16
+  - @rocket.chat/omnichannel-services@0.0.22
+  - @rocket.chat/pdf-worker@0.0.22
+  - @rocket.chat/presence@0.0.22
+  - @rocket.chat/core-services@0.2.7
+  - @rocket.chat/cron@0.0.18
+  - @rocket.chat/gazzodown@2.0.7
+  - @rocket.chat/model-typings@0.1.7
+  - @rocket.chat/ui-contexts@2.0.7
+  - @rocket.chat/fuselage-ui-kit@2.0.7
+  - @rocket.chat/models@0.0.22
+  - @rocket.chat/ui-theming@0.1.0
+  - @rocket.chat/ui-client@2.0.7
+  - @rocket.chat/ui-video-conf@2.0.7
+  - @rocket.chat/web-ui-registration@2.0.7
+  - @rocket.chat/instance-status@0.0.22
+
 ## 6.4.6
 
 ### Patch Changes
