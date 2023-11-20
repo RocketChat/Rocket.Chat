@@ -14,7 +14,7 @@ export const RegisterSecretPageRouter = ({
 	origin,
 }: {
 	setLoginRoute: DispatchLoginRouter;
-	origin: 'register' | 'secret-register';
+	origin: 'register' | 'secret-register' | 'invite-register';
 }): ReactElement => {
 	const registrationMode = useSetting<string>('Accounts_RegistrationForm');
 
@@ -26,7 +26,7 @@ export const RegisterSecretPageRouter = ({
 		return <SecretRegisterInvalidForm />;
 	}
 
-	if (isPublicRegistration) {
+	if (isPublicRegistration || (origin === 'invite-register' && isRegistrationAllowedForSecret)) {
 		return (
 			<RegisterTemplate>
 				<RegisterForm setLoginRoute={setLoginRoute} />
