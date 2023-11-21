@@ -87,9 +87,11 @@ const UsagePieGraph = ({ used = 0, total = 0, label, color, size = 140 }: UsageP
 			<Box is='span' fontScale='p2' color='font-secondary-info'>
 				{used} / {unlimited ? '∞' : total}
 			</Box>
-			<Box is='span' mbs={4} color='font-secondary-info'>
-				{label}
-			</Box>
+			{label && (
+				<Box is='span' mbs={4} color='font-secondary-info'>
+					{label}
+				</Box>
+			)}
 		</Box>
 	);
 };

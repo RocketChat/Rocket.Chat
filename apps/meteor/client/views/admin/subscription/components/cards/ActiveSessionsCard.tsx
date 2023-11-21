@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useActiveConnections } from '../../../../hooks/useActiveConnections';
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
+import UpgradeButton from '../UpgradeButton';
 
 const getLimits = ({ max, current }: { max: number; current: number }) => {
 	const total = max || 0;
@@ -30,6 +31,7 @@ const ActiveSessionsCard = (): ReactElement => {
 		title: t('ActiveSessions'),
 		infoText: t('ActiveSessions_InfoText'),
 	};
+
 	if (result.isLoading || result.isError) {
 		return (
 			<FeatureUsageCard card={card}>
@@ -45,7 +47,11 @@ const ActiveSessionsCard = (): ReactElement => {
 			card={{
 				...card,
 				...(exceedLimit && {
-					upgradeButtonText: t('Upgrade'),
+					upgradeButton: (
+						<UpgradeButton target='active-session-card' action='upgrade' small>
+							{t('Upgrade')}
+						</UpgradeButton>
+					),
 				}),
 			}}
 		>

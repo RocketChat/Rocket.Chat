@@ -1,6 +1,7 @@
 import { proxify, proxifyWithWait } from './lib/proxify';
 import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
+import { IApiService } from './types/IApiService';
 import type { IAppsEngineService } from './types/IAppsEngineService';
 import type { IAuthorization, RoomAccessValidator } from './types/IAuthorization';
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
@@ -64,6 +65,7 @@ export {
 	FindVoipRoomsParams,
 	IAccount,
 	IAnalyticsService,
+	IApiService,
 	IAppsEngineService,
 	IAuthorization,
 	IAuthorizationLivechat,
