@@ -48,6 +48,16 @@ Meteor.methods<ServerMethods>({
 			const editPrivilegedSetting = await hasPermissionAsync(uid, 'edit-privileged-setting');
 			const manageSelectedSettings = await hasPermissionAsync(uid, 'manage-selected-settings');
 
+			// if the id contains Organization_Name then change the Site_Name
+			const orgName = params.find(({ _id }) => _id === 'Organization_Name');
+
+			if (orgName) {
+				params.push({
+					_id: 'Site_Name',
+					value: orgName.value,
+				});
+			}
+
 			await Promise.all(
 				params.map(async ({ _id, value }) => {
 					// Verify the _id passed in is a string.
