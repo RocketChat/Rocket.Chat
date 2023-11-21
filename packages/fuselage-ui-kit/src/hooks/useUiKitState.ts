@@ -3,40 +3,7 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import { useContext, useMemo, useState } from 'react';
 
 import { UiKitContext } from '../contexts/UiKitContext';
-
-const hasInitialValue = <TElement extends UiKit.ActionableElement>(
-  element: TElement
-): element is TElement & { initialValue: number | string } =>
-  'initialValue' in element;
-
-const hasInitialTime = <TElement extends UiKit.ActionableElement>(
-  element: TElement
-): element is TElement & { initialTime: string } => 'initialTime' in element;
-
-const hasInitialDate = <TElement extends UiKit.ActionableElement>(
-  element: TElement
-): element is TElement & { initialDate: string } => 'initialDate' in element;
-
-const hasInitialOption = <TElement extends UiKit.ActionableElement>(
-  element: TElement
-): element is TElement & { initialOption: UiKit.Option } =>
-  'initialOption' in element;
-
-const hasInitialOptions = <TElement extends UiKit.ActionableElement>(
-  element: TElement
-): element is TElement & { initialOptions: UiKit.Option[] } =>
-  'initialOptions' in element;
-
-const getInitialValue = <TElement extends UiKit.ActionableElement>(
-  element: TElement
-) =>
-  (hasInitialValue(element) && element.initialValue) ||
-  (hasInitialTime(element) && element.initialTime) ||
-  (hasInitialDate(element) && element.initialDate) ||
-  (hasInitialOption(element) && element.initialOption.value) ||
-  (hasInitialOptions(element) &&
-    element.initialOptions.map((option) => option.value)) ||
-  undefined;
+import { getInitialValue } from '../utils/getInitialValue';
 
 const getElementValueFromState = (
   actionId: string,

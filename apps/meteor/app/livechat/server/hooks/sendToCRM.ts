@@ -269,7 +269,7 @@ callbacks.add(
 		if (message.token && !settings.get('Livechat_webhook_on_visitor_message')) {
 			return message;
 		}
-		if (!settings.get('Livechat_webhook_on_agent_message')) {
+		if (!message.token && !settings.get('Livechat_webhook_on_agent_message')) {
 			return message;
 		}
 		// if the message has a type means it is a special message (like the closing comment), so skips
