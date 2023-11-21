@@ -438,6 +438,8 @@ export class MockedAppRootBuilder {
 																on: () => undefined,
 																openView: () => undefined,
 																disposeView: () => undefined,
+																notifyBusy: () => undefined,
+																notifyIdle: () => undefined,
 															}}
 														>
 															{/* <VideoConfProvider>

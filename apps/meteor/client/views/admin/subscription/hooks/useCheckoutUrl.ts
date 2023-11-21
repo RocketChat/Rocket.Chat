@@ -9,12 +9,29 @@ export const useCheckoutUrlAction = () => {
 	const handleExternalLink = useExternalLink();
 
 	return useMutation({
-		mutationFn: async () => {
+		mutationFn: async (extraData?: Record<string, string>) => {
 			const { url } = await getCheckoutUrl();
-			handleExternalLink(url);
+
+			const extraUrlParams = new URL(url);
+
+			if (extraData) {
+				Object.entries(extraData).forEach(([key, value]) => {
+					extraUrlParams.searchParams.append(key, value.toString());
+				});
+			}
+
+			handleExternalLink(extraUrlParams.toString());
 		},
-		onError: () => {
-			handleExternalLink(CONTACT_SALES_LINK);
+		onError: (_e, extraData) => {
+			const extraUrlParams = new URL(CONTACT_SALES_LINK);
+
+			if (extraData) {
+				Object.entries(extraData).forEach(([key, value]) => {
+					extraUrlParams.searchParams.append(key, value.toString());
+				});
+			}
+
+			handleExternalLink(extraUrlParams.toString());
 		},
 	});
 };
