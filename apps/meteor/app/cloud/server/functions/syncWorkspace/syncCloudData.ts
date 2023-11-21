@@ -10,9 +10,8 @@ import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/Cloud
 import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { settings } from '../../../../settings/server';
 import { buildWorkspaceRegistrationData } from '../buildRegistrationData';
-import { getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
+import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
 import { retrieveRegistrationStatus } from '../retrieveRegistrationStatus';
-import { legacySyncWorkspace } from './legacySyncWorkspace';
 
 const workspaceSyncPayloadSchema = v.object({
 	workspaceId: v.string().required(),
@@ -63,7 +62,7 @@ export async function syncCloudData() {
 
 		const token = await getWorkspaceAccessToken(true);
 		if (!token) {
-			throw new CloudWorkspaceAccessError('Workspace does not have a valid access token');
+			throw new CloudWorkspaceAccessTokenEmptyError();
 		}
 
 		const workspaceRegistrationData = await buildWorkspaceRegistrationData(undefined);
@@ -88,28 +87,25 @@ export async function syncCloudData() {
 		 * The DuplicatedLicenseError license error is also ignored because it is not a problem. the Cloud is allowed to send the same license twice.
 		 */
 		switch (true) {
+			case err instanceof DuplicatedLicenseError:
+				return;
 			case err instanceof CloudWorkspaceAccessError:
 			case err instanceof CloudWorkspaceRegistrationError:
-			case err instanceof DuplicatedLicenseError:
+			case err instanceof CloudWorkspaceAccessTokenEmptyError:
 				SystemLogger.info({
 					msg: 'Failed to sync with Rocket.Chat Cloud',
 					function: 'syncCloudData',
 					err,
 				});
-				return;
+				break;
+
+			default:
+				SystemLogger.error({
+					msg: 'Failed to sync with Rocket.Chat Cloud',
+					function: 'syncCloudData',
+					err,
+				});
 		}
-
-		SystemLogger.error({
-			msg: 'Failed to sync with Rocket.Chat Cloud',
-			url: '/sync',
-			err,
-		});
+		throw err;
 	}
-
-	SystemLogger.info({
-		msg: 'Falling back to legacy sync',
-		function: 'syncCloudData',
-	});
-
-	await legacySyncWorkspace();
 }
