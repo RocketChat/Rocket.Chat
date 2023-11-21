@@ -48,6 +48,24 @@
 
 - @rocket.chat/models@0.0.21-rc.0
 
+## 0.0.23
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.23
+
+## 0.0.22
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.22
+
+## 0.0.21
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.21
+
 ## 0.0.20
 
 ### Patch Changes

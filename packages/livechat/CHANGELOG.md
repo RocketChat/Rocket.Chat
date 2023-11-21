@@ -49,6 +49,25 @@
 - Updated dependencies [c2f337664e]
   - @rocket.chat/gazzodown@3.0.0-rc.0
 
+## 1.14.8
+
+### Patch Changes
+
+- d1c8e7ac13: Fixes reactivity issue with `registerGuest` Widget API Call, as well as other similar endpoint
+  - @rocket.chat/gazzodown@2.0.8
+
+## 1.14.7
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.7
+
+## 1.14.6
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.6
+
 ## 1.14.5
 
 ### Patch Changes

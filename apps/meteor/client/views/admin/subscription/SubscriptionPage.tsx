@@ -1,7 +1,9 @@
 import { Box, Button, ButtonGroup, Callout, Grid, Throbber } from '@rocket.chat/fuselage';
+import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
 import React, { memo, useCallback, useEffect } from 'react';
+import tinykeys from 'tinykeys';
 
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
@@ -23,7 +25,25 @@ import PlanCardCommunity from './components/cards/PlanCard/PlanCardCommunity';
 import SeatsCard from './components/cards/SeatsCard';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
 
+function useShowLicense() {
+	const [showLicenseTab, setShowLicenseTab] = useSessionStorage('admin:showLicenseTab', false);
+
+	useEffect(() => {
+		const unsubscribe = tinykeys(window, {
+			'ArrowUp ArrowUp ArrowDown ArrowDown ArrowLeft ArrowRight ArrowLeft ArrowRight b a': () => {
+				setShowLicenseTab((showLicenseTab) => !showLicenseTab);
+			},
+		});
+		return () => {
+			unsubscribe();
+		};
+	});
+
+	return showLicenseTab;
+}
+
 const SubscriptionPage = () => {
+	const showLicense = useShowLicense();
 	const router = useRouter();
 	const { data: enterpriseData } = useIsEnterprise();
 	const { isRegistered } = useRegistrationStatus();
@@ -89,6 +109,11 @@ const SubscriptionPage = () => {
 				{!isLicenseLoading && (
 					<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 						<Grid m={0}>
+							{showLicense && (
+								<Grid.Item lg={12} xs={4} p={8}>
+									<pre>{JSON.stringify(licensesData, null, 2)}</pre>
+								</Grid.Item>
+							)}
 							<Grid.Item lg={4} xs={4} p={8}>
 								{license && (
 									<PlanCard
