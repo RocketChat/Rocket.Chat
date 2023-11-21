@@ -31,7 +31,7 @@ const MACCard = ({
 	const card: CardProps = {
 		title: t('Monthly_active_contacts'),
 		infoText: t('MAC_InfoText'),
-		...(hideManageSubscription && {
+		...(!hideManageSubscription && {
 			upgradeButton: (
 				<UpgradeButton target='mac-card' action='buy_more' small>
 					{t('Buy_more')}
