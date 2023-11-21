@@ -3,3 +3,8 @@ import './lenny';
 import './shrug';
 import './tableflip';
 import './unflip';
+import './happy';
+import './cheer';
+import './dealwithit';
+import './cry';
+import './stare';
