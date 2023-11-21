@@ -13,7 +13,6 @@ rocketchat:restivus
 rocketchat:livechat
 rocketchat:streamer
 rocketchat:version
-rocketchat:supported-versions
 rocketchat:user-presence
 
 accounts-base@2.2.8
