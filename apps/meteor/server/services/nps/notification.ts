@@ -1,5 +1,6 @@
 import type { IBanner } from '@rocket.chat/core-typings';
 import { BannerPlatform } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import moment from 'moment';
 
 import { settings } from '../../../app/settings/server';
@@ -21,7 +22,7 @@ export const getBannerForAdmins = (expireAt: Date): Omit<IBanner, '_id'> => {
 		},
 		_updatedAt: new Date(),
 		view: {
-			viewId: '',
+			viewId: Random.id(),
 			appId: '',
 			blocks: [
 				{
