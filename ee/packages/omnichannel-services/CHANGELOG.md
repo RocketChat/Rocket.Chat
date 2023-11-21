@@ -105,6 +105,39 @@
   - @rocket.chat/pdf-worker@0.0.21-rc.0
   - @rocket.chat/models@0.0.21-rc.0
 
+## 0.0.23
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.8
+- @rocket.chat/rest-typings@6.4.8
+- @rocket.chat/pdf-worker@0.0.23
+- @rocket.chat/core-services@0.2.8
+- @rocket.chat/model-typings@0.1.8
+- @rocket.chat/models@0.0.23
+
+## 0.0.22
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.7
+- @rocket.chat/rest-typings@6.4.7
+- @rocket.chat/pdf-worker@0.0.22
+- @rocket.chat/core-services@0.2.7
+- @rocket.chat/model-typings@0.1.7
+- @rocket.chat/models@0.0.22
+
+## 0.0.21
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.6
+- @rocket.chat/rest-typings@6.4.6
+- @rocket.chat/pdf-worker@0.0.21
+- @rocket.chat/core-services@0.2.6
+- @rocket.chat/model-typings@0.1.6
+- @rocket.chat/models@0.0.21
+
 ## 0.0.20
 
 ### Patch Changes
