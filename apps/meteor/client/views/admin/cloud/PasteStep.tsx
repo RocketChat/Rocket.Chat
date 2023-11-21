@@ -3,7 +3,7 @@ import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.ch
 import type { ChangeEvent, FC } from 'react';
 import React, { useState } from 'react';
 
-import { queryClient } from '../../../lib/queryClient';
+import { useInvalidateLicense } from '../../../hooks/useLicense';
 
 type PasteStepProps = {
 	onBackButtonClick: () => void;
@@ -13,6 +13,7 @@ type PasteStepProps = {
 const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const invalidateLicenseQuery = useInvalidateLicense();
 
 	const [isLoading, setLoading] = useState(false);
 	const [cloudKey, setCloudKey] = useState('');
@@ -28,7 +29,7 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 
 		try {
 			await registerManually({ cloudBlob: cloudKey });
-			queryClient.invalidateQueries(['licenses']);
+			invalidateLicenseQuery(100);
 			dispatchToastMessage({ type: 'success', message: t('Cloud_register_success') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
