@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -52,10 +53,15 @@ Meteor.methods<ServerMethods>({
 			const orgName = params.find(({ _id }) => _id === 'Organization_Name');
 
 			if (orgName) {
-				params.push({
-					_id: 'Site_Name',
-					value: orgName.value,
-				});
+				// check if the site name is still the default value or ifs the same as organization name
+				const siteName = await Settings.findOneById('Site_Name');
+
+				if (siteName?.value === siteName?.packageValue || siteName?.value === settings.get('Organization_Name')) {
+					params.push({
+						_id: 'Site_Name',
+						value: orgName.value,
+					});
+				}
 			}
 
 			await Promise.all(
