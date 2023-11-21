@@ -1,5 +1,11 @@
 # @rocket.chat/livechat Change Log
 
+## 1.14.6-rc.7
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.7
+
 ## 1.14.6-rc.6
 
 ### Patch Changes

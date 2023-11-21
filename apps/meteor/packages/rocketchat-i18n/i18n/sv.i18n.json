@@ -1853,7 +1853,6 @@
   "Enterprise_Departments_title": "Tilldela kunder till köer och förbättra agenternas produktivitet",
   "Enterprise_Departments_description_upgrade": "Arbetsytorna i Community Edition kan bara skapa en avdelning. Uppgradera till Enterprise för att ta bort begränsningar och ge ditt arbetsområde mer kraft.",
   "Enterprise_Departments_description_free_trial": "Arbetsytorna i Community Edition kan skapa en avdelning. Starta en kostnadsfri testversion för Enterprise för att skapa flera avdelningar idag!",
-  "Enterprise_Description": "Uppdatera Enterprise-licensen manuellt.",
   "Enterprise_License": "Enterprise-licens",
   "Enterprise_License_Description": "Om din arbetsyta är registrerad och en licens har tillhandahållits av Rocket.Chat-molnet behöver du inte uppdatera licensen manuellt här.",
   "Enterprise_Only": "Endast Enterprise",
