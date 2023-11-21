@@ -44,6 +44,24 @@
 - Updated dependencies [7da1edf866]
   - @rocket.chat/ui-contexts@3.0.0-rc.0
 
+## 2.0.8
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.8
+
+## 2.0.7
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.7
+
+## 2.0.6
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@2.0.6
+
 ## 2.0.5
 
 ### Patch Changes

@@ -1852,6 +1852,7 @@
   "email_plain_text_only": "Send only plain text emails",
   "email_style_description": "Avoid nested selectors",
   "email_style_label": "Email Style",
+  "Enterprise_Description": "Manually update your Premium license.",
   "Email_subject": "Email Subject",
   "Email_verified": "Email verified",
   "Email_sent": "Email sent",

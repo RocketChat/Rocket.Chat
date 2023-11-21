@@ -64,6 +64,27 @@
   - @rocket.chat/core-typings@6.5.0-rc.0
   - @rocket.chat/rest-typings@6.5.0-rc.0
 
+## 0.1.17
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.8
+- @rocket.chat/rest-typings@6.4.8
+
+## 0.1.16
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.7
+- @rocket.chat/rest-typings@6.4.7
+
+## 0.1.15
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.6
+- @rocket.chat/rest-typings@6.4.6
+
 ## 0.1.14
 
 ### Patch Changes

@@ -42,6 +42,12 @@
   feat: Limit endpoints on MAC limit reached
 - dea1fe9191: feat: Disable and annonimize visitors instead of removing
 
+## 6.4.8
+
+## 6.4.7
+
+## 6.4.6
+
 ## 6.4.5
 
 ## 6.4.4
