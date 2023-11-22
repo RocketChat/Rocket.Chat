@@ -262,6 +262,13 @@ API.v1.addRoute(
 			return API.v1.success(agents);
 		},
 		async post() {
+			check(
+				this.bodyParams,
+				Match.ObjectIncluding({
+					upsert: Array,
+					remove: Array,
+				}),
+			);
 			await Livechat.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
 
 			return API.v1.success();
