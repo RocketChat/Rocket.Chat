@@ -18,5 +18,6 @@ export async function removeWorkspaceRegistrationInfo() {
 		Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', null),
 	]);
 
+	await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 	return true;
 }

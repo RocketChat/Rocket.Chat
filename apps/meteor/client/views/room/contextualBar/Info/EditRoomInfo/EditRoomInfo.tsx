@@ -37,6 +37,7 @@ import {
 import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
+import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
@@ -93,7 +94,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const changeArchiving = archived !== !!room.archived;
 
 	const saveAction = useEndpoint('POST', '/v1/rooms.saveRoomSettings');
-	const archiveAction = useEndpoint('POST', '/v1/rooms.changeArchivationState');
+
+	const handleArchive = useArchiveRoom(room);
 
 	const handleUpdateRoomData = useMutableCallback(async ({ hideSysMes, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
@@ -110,15 +112,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 
 			dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
 			onClickClose();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
-
-	const handleArchive = useMutableCallback(async () => {
-		try {
-			await archiveAction({ rid: room._id, action: room.archived ? 'unarchive' : 'archive' });
-			dispatchToastMessage({ type: 'success', message: room.archived ? t('Room_has_been_unarchived') : t('Room_has_been_archived') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
