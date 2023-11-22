@@ -15,6 +15,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
+import { useInvalidateLicense } from '../../../hooks/useLicense';
 import { queryClient } from '../../../lib/queryClient';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';
@@ -38,6 +39,7 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 type HandleRegisterServer = (params: { email: string; resend?: boolean }) => Promise<void>;
 
 const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactElement => {
+	const invalidateLicenseQuery = useInvalidateLicense();
 	const t = useTranslation();
 	const [setupWizardData, setSetupWizardData] = useState<ContextType<typeof SetupWizardContext>['setupWizardData']>(initialData);
 	const [currentStep, setCurrentStep] = useStepRouting();
@@ -148,7 +150,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const registerServer: HandleRegisterServer = useMutableCallback(async ({ email, resend = false }): Promise<void> => {
 		try {
 			const { intentData } = await createRegistrationIntent({ resend, email });
-			queryClient.invalidateQueries(['licenses']);
+			invalidateLicenseQuery(100);
 			queryClient.invalidateQueries(['getRegistrationStatus']);
 
 			setSetupWizardData((prevState) => ({

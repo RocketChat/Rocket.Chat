@@ -4572,10 +4572,8 @@
   "Search_rooms": "Search rooms",
   "Search_Rooms": "Search Rooms",
   "Search_Users": "Search Users",
-  "Seats_Available": "{{seatsLeft}} Seats Available",
-  "MAC_Available": "{{macLeft}} MAC's Available",
-  "MAC_Required": "{{macRequired}} MAC's Required",
-  "Seats_Required": "{{seatsRequired}} Seats Required",
+  "Seats_Available": "{{seatsLeft, number}} Seats Available",
+  "MAC_Available": "{{macLeft, number}} MAC's Available",
   "Seats_usage": "Seats Usage",
   "seconds": "seconds",
   "Secret_token": "Secret Token",
@@ -6191,7 +6189,5 @@
   "Sync_license_update_Callout": "If you don't notice any changes in your workspace within a few minutes, sync the license update.",
   "Includes": "Includes",
   "Unlock_premium_capabilities": "Unlock premium capabilities",
-  "Unlimited_seats": "Unlimited seats",
-  "Unlimited_MACs": "Unlimited MACs",
-  "Unlimited_seats_MACs": "Unlimited seats and MACs"
+  "Unlimited_seats": "Unlimited seats"
 }

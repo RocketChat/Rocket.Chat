@@ -25,7 +25,7 @@ License.onInvalidateLicense(async () => {
 	await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
 });
 
-const applyLicense = async (license: string, isNewLicense: boolean): Promise<boolean> => {
+export const applyLicense = async (license: string, isNewLicense: boolean): Promise<boolean> => {
 	const enterpriseLicense = (license ?? '').trim();
 	if (!enterpriseLicense) {
 		return false;
