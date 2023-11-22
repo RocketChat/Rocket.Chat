@@ -110,6 +110,48 @@ export class MockedLicenseBuilder {
 		};
 	}
 
+	public withExpiredDate(): this {
+		// expired 1 minute ago
+		const date = new Date();
+		date.setMinutes(date.getMinutes() - 1);
+		const expired = date.toISOString();
+
+		const rule = this.validation.validPeriods.find((period) => period.invalidBehavior === 'invalidate_license');
+
+		if (rule) {
+			rule.validUntil = expired;
+		} else {
+			this.validation.validPeriods.push({
+				invalidBehavior: 'invalidate_license',
+				validFrom: new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString(),
+				validUntil: expired,
+			});
+		}
+
+		return this;
+	}
+
+	public withNotStartedDate(): this {
+		// starts in 1 minute
+		const date = new Date();
+		date.setMinutes(date.getMinutes() + 1);
+		const starts = date.toISOString();
+
+		const rule = this.validation.validPeriods.find((period) => period.invalidBehavior === 'invalidate_license');
+
+		if (rule) {
+			rule.validFrom = starts;
+		} else {
+			this.validation.validPeriods.push({
+				invalidBehavior: 'invalidate_license',
+				validUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
+				validFrom: starts,
+			});
+		}
+
+		return this;
+	}
+
 	public resetValidPeriods(): this {
 		this.validation.validPeriods = [];
 		return this;
