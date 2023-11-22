@@ -19,9 +19,9 @@ function logMethod(this: Logger, args: unknown[], method: any): void {
 const mainPino = pino({
 	hooks: { logMethod },
 	customLevels: {
-		http: 35,
-		method: 35,
-		subscription: 35,
+		http: 20,
+		method: 20,
+		subscription: 20,
 		startup: 51,
 	},
 	level: 'warn',
