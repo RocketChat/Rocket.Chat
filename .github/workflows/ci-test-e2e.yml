@@ -66,6 +66,7 @@ env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
   LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
   DOCKER_TAG: ${{ inputs.gh-docker-tag }}
+  IS_FORK: ${{ github.repository_owner != github.actor }}
 
 jobs:
   test:
@@ -100,7 +101,6 @@ jobs:
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api'
         run: |
@@ -122,12 +122,22 @@ jobs:
       - run: yarn build
 
       - name: Login to github container registry for microservice images
-        if: inputs.release == 'ee'
+        if: env.IS_FORK == 'false'
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
+
+      - name: Build docker image at this stage if PR from a fork
+        if: env.IS_FORK == 'true'
+        uses: ./.github/actions/build-docker
+        with:
+          node-version: ${{ inputs.node-version }}
+          platform: ${{ inputs.release == 'ee' && 'alpine' || 'official' }}
+          repository-owner: ${{ inputs.lowercase-repo }}
+          arch: 'amd64'
+          push: 'false'
 
       - name: Start containers for CE
         if: inputs.release == 'ce'

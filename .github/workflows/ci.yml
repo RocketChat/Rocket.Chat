@@ -15,6 +15,7 @@ concurrency:
 
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+  IS_FORK: ${{ github.repository_owner != github.actor }}
 
 jobs:
   release-versions:
@@ -173,6 +174,7 @@ jobs:
     name: 🚢 (AMD64) Build Docker Images for Testing
     needs: [build, release-versions]
     runs-on: ubuntu-20.04
+    if: ${{ github.repository_owner != github.actor }}
 
     strategy:
       fail-fast: false
@@ -184,7 +186,6 @@ jobs:
 
       # we only build and publish the actual docker images if not a PR from a fork
       - uses: ./.github/actions/build-docker
-        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         with:
           registry-username: ${{ secrets.CR_USER }}
           registry-token: ${{ secrets.CR_PAT }}
@@ -210,7 +211,6 @@ jobs:
 
       # we only build and publish the actual docker images if not a PR from a fork
       - uses: ./.github/actions/build-docker
-        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         with:
           registry-username: ${{ secrets.CR_USER }}
           registry-token: ${{ secrets.CR_PAT }}
@@ -219,12 +219,13 @@ jobs:
           version-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}-arm64
           repository-owner: ${{ needs.release-versions.outputs.lowercase-repo }}
           arch: arm64
-          push: 'true'
+          push: ${{ env.IS_FORK == 'false' }}
 
   merge-images-coverage:
     name: Merge Arm64 and Amd64 images (Coverage)
     needs: [build-gh-docker-coverage, build-gh-docker-coverage-arm64, release-versions]
     runs-on: ubuntu-latest
+    if: ${{ github.repository_owner != github.actor }}
 
     steps:
       - uses: actions/checkout@v4
