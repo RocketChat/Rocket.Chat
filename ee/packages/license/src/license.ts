@@ -163,7 +163,6 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			this._license = newLicense;
 
 			this._lockedLicense = encryptedLicense;
-
 			await this.validateLicense({ isNewLicense });
 		} catch (e) {
 			if (e instanceof InvalidLicenseError) {
@@ -251,10 +250,16 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			if (hasPendingLicense.call(this) && !isPendingLicense.call(this, encryptedLicense)) {
 				// simply remove the pending license
 				clearPendingLicense.call(this);
-				throw new Error('Invalid license 1');
+				throw new Error('Invalid license');
 			}
 
-			throw new DuplicatedLicenseError();
+			/**
+			 * The license can be set with future minimum date, failing during the first set,
+			 * but if the user tries to set the same license again later it can be valid or not, so we need to check it again
+			 */
+			if (this.hasValidLicense()) {
+				throw new DuplicatedLicenseError();
+			}
 		}
 
 		if (!isReadyForValidation.call(this)) {
