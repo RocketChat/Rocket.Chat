@@ -44,18 +44,20 @@ const PlanCardPremium = ({ licenseInformation, licenseLimits }: PlanCardProps): 
 						{licenseLimits?.activeUsers.max !== Infinity && licenseLimits?.monthlyActiveContacts.max === Infinity && t('Unlimited_MACs')}
 					</Box>
 				))}
-			<Box fontScale='p2' display='flex' mb={4} alignItems='center'>
-				<Icon name='calendar' size={24} mie={12} />
-				<Box is='span'>
-					{isAutoRenew ? (
-						t('Renews_DATE', { date: formatDate(visualExpiration) })
-					) : (
-						<Trans i18nKey='Contact_sales_renew_date'>
-							<ExternalLink to={CONTACT_SALES_LINK}>Contact sales</ExternalLink> to check plan renew date.
-						</Trans>
-					)}
+			{visualExpiration && (
+				<Box fontScale='p2' display='flex' mb={4} alignItems='center'>
+					<Icon name='calendar' size={24} mie={12} />
+					<Box is='span'>
+						{isAutoRenew ? (
+							t('Renews_DATE', { date: formatDate(visualExpiration) })
+						) : (
+							<Trans i18nKey='Contact_sales_renew_date'>
+								<ExternalLink to={CONTACT_SALES_LINK}>Contact sales</ExternalLink> to check plan renew date.
+							</Trans>
+						)}
+					</Box>
 				</Box>
-			</Box>
+			)}
 			{!isLoading ? (
 				<Box fontScale='p2' display='flex' mb={4} alignItems='center'>
 					<Icon name='cloud-plus' size={24} mie={12} /> {isSelfHosted ? t('Self_managed_hosting') : t('Cloud_hosting')}

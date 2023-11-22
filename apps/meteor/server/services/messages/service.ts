@@ -1,6 +1,6 @@
 import type { IMessageService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IMessage, MessageTypesValues, IUser, IRoom } from '@rocket.chat/core-typings';
+import { type IMessage, type MessageTypesValues, type IUser, type IRoom, isEditedMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import type BadWordsFilter from 'bad-words';
 
@@ -10,6 +10,7 @@ import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
+import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { configureBadWords } from './hooks/badwords';
 
 export class MessageService extends ServiceClassInternal implements IMessageService {
@@ -17,7 +18,11 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	private badWordsFilter?: BadWordsFilter;
 
+	private preventMention: BeforeSavePreventMention;
+
 	async created() {
+		this.preventMention = new BeforeSavePreventMention(this.api);
+
 		await this.configureBadWords();
 	}
 
@@ -80,11 +85,11 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	async beforeSave({
 		message,
 		room: _room,
-		user: _user,
+		user,
 	}: {
 		message: IMessage;
 		room: IRoom;
-		user: Pick<IUser, '_id' | 'username' | 'name'>;
+		user: Pick<IUser, '_id' | 'username' | 'name' | 'language'>;
 	}): Promise<IMessage> {
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
@@ -94,7 +99,18 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			message = await this.filterBadWords(message);
 		}
 
+		if (!this.isEditedOrOld(message)) {
+			await Promise.all([
+				this.preventMention.preventMention({ message, user, mention: 'all', permission: 'mention-all' }),
+				this.preventMention.preventMention({ message, user, mention: 'here', permission: 'mention-here' }),
+			]);
+		}
+
 		return message;
+	}
+
+	private isEditedOrOld(message: IMessage): boolean {
+		return isEditedMessage(message) || !message.ts || Math.abs(Date.now() - message.ts.getTime()) > 60000;
 	}
 
 	private isBadWordsFilterEnabled() {
