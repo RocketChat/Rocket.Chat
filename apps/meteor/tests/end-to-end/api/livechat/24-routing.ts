@@ -1,4 +1,4 @@
-import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
+import { UserStatus, type ILivechatDepartment, type IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
@@ -16,7 +16,7 @@ import { sleep } from '../../../data/livechat/utils';
 import { updateSetting } from '../../../data/permissions.helper';
 import type { IUserCredentialsHeader } from '../../../data/user';
 import { password } from '../../../data/user';
-import { createUser, deleteUser, login } from '../../../data/users.helper';
+import { createUser, deleteUser, login, setUserActiveStatus, setUserStatus } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('Omnichannel - Routing', () => {
@@ -121,6 +121,30 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
+			expect(roomInfo.servedBy).to.be.undefined;
+		});
+		it('should ignore disabled users', async () => {
+			await updateSetting('Livechat_maximum_chats_per_agent', 0);
+			await setUserActiveStatus(testUser2.user._id, false);
+
+			const visitor = await createVisitor(testDepartment._id);
+			const room = await createLivechatRoom(visitor.token);
+
+			await sleep(5000);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo.servedBy).to.be.undefined;
+		});
+		it('should ignore offline users when Livechat_enabled_when_agent_idle is false', async () => {
+			await updateSetting('Livechat_enabled_when_agent_idle', false);
+			await setUserStatus(testUser.credentials, UserStatus.OFFLINE);
+
+			const visitor = await createVisitor(testDepartment._id);
+			const room = await createLivechatRoom(visitor.token);
+
+			await sleep(5000);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
 			expect(roomInfo.servedBy).to.be.undefined;
 		});
 	});

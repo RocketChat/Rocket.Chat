@@ -53,14 +53,7 @@ export type AppsEndpoints = {
 		GET: () => {
 			apps: {
 				id: string;
-				languages: {
-					[key: string]: {
-						Params: string;
-						Description: string;
-						Setting_Name: string;
-						Setting_Description: string;
-					};
-				};
+				languages: { [language: string]: { [key: string]: string } };
 			}[];
 		};
 	};
