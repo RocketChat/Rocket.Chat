@@ -7,7 +7,7 @@ import { getWorkspaceAccessTokenOrThrow } from './getWorkspaceAccessToken';
 
 export const getCheckoutUrl = async () => {
 	try {
-		const token = await getWorkspaceAccessTokenOrThrow(false, 'workspace:billing');
+		const token = await getWorkspaceAccessTokenOrThrow(true, 'workspace:billing', false);
 
 		const subscriptionURL = getURL('admin/subscription', {
 			full: true,

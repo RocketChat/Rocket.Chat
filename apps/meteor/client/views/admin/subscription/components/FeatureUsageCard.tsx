@@ -3,7 +3,6 @@ import type { ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
 import InfoTextIconModal from './InfoTextIconModal';
-import UpgradeButton from './UpgradeButton';
 
 type FeatureUsageCardProps = {
 	children?: ReactNode;
@@ -13,11 +12,11 @@ type FeatureUsageCardProps = {
 export type CardProps = {
 	title: string;
 	infoText?: string;
-	upgradeButtonText?: string;
+	upgradeButton?: ReactNode;
 };
 
 const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactElement => {
-	const { title, infoText, upgradeButtonText } = card;
+	const { title, infoText, upgradeButton } = card;
 	return (
 		<Card>
 			<CardTitle>
@@ -28,11 +27,7 @@ const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactEleme
 					{children}
 				</CardColSection>
 			</CardBody>
-			{upgradeButtonText && (
-				<CardFooter>
-					<UpgradeButton small>{upgradeButtonText}</UpgradeButton>
-				</CardFooter>
-			)}
+			{upgradeButton && <CardFooter>{upgradeButton}</CardFooter>}
 		</Card>
 	);
 };

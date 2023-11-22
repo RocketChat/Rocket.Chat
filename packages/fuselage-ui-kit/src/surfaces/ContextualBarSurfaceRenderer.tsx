@@ -2,6 +2,7 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 
 import TabNavigationBlock from '../blocks/TabNavigationBlock';
+import { AppIdProvider } from '../contexts/AppIdContext';
 import {
   FuselageSurfaceRenderer,
   renderTextObject,
@@ -33,13 +34,14 @@ export class ContextualBarSurfaceRenderer extends FuselageSurfaceRenderer {
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
-        <TabNavigationBlock
-          key={index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
+        <AppIdProvider key={index} appId={block.appId}>
+          <TabNavigationBlock
+            block={block}
+            context={context}
+            index={index}
+            surfaceRenderer={this}
+          />
+        </AppIdProvider>
       );
     }
 
