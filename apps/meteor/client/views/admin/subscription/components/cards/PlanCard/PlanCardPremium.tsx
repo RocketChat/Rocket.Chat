@@ -35,7 +35,7 @@ const PlanCardPremium = ({ licenseInformation, licenseLimits }: PlanCardProps): 
 			{licenseLimits?.activeUsers.max === Infinity && (
 				<Box fontScale='p2' display='flex' mb={4} alignItems='center'>
 					<Icon name='lightning' size={24} mie={12} />
-					{licenseLimits?.activeUsers.max === Infinity && t('Unlimited_seats')}
+					{t('Unlimited_seats')}
 				</Box>
 			)}
 			{visualExpiration && (
