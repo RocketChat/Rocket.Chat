@@ -5,7 +5,6 @@
 	"main": "index.js",
 	"private": true,
 	"scripts": {
-		"postinstall": "husky install",
 		"build": "turbo run build",
 		"build:services": "turbo run build --filter=rocketchat-services...",
 		"build:ci": "turbo run build:ci",
