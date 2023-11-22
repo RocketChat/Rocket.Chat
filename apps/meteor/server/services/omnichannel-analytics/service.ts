@@ -1,6 +1,11 @@
 /* eslint-disable new-cap */
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { AgentOverviewDataOptions, AnalyticsOverviewDataOptions, ChartDataOptions } from '@rocket.chat/core-services';
+import type {
+	AgentOverviewDataOptions,
+	AnalyticsOverviewDataOptions,
+	ChartDataOptions,
+	IOmnichannelAnalyticsService,
+} from '@rocket.chat/core-services';
 import moment from 'moment-timezone';
 
 import { getTimezone } from '../../../app/utils/server/lib/getTimezone';
@@ -15,7 +20,7 @@ import { dayIterator } from './utils';
 const HOURS_IN_DAY = 24;
 
 // TODO: move EE analytics to this service & remove callback usage
-export class OmnichannelAnalyticsService extends ServiceClassInternal {
+export class OmnichannelAnalyticsService extends ServiceClassInternal implements IOmnichannelAnalyticsService {
 	protected name = 'omnichannel-analytics';
 
 	readonly overview: OverviewData;
