@@ -39,6 +39,10 @@ export const SubscriptionCalloutLimits = () => {
 				return undefined;
 			}
 
+			if (rule.max === 0) {
+				return undefined;
+			}
+
 			return [key, rule.behavior];
 		})
 		.filter(Boolean) as Array<[keyof typeof limits, LicenseBehavior]>;

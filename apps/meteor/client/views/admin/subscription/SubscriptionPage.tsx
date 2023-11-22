@@ -59,7 +59,7 @@ const SubscriptionPage = () => {
 	const getKeyLimit = (key: 'monthlyActiveContacts' | 'activeUsers') => {
 		const { max, value } = limits?.[key] || {};
 		return {
-			max: max && max !== -1 ? max : Infinity,
+			max: max !== undefined && max !== -1 ? max : Infinity,
 			value,
 		};
 	};
