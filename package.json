@@ -17,9 +17,9 @@
 		"fuselage": "./fuselage.sh"
 	},
 	"devDependencies": {
-		"@changesets/cli": "^2.26.1",
-		"@types/chart.js": "^2.9.37",
-		"@types/js-yaml": "^4.0.5",
+		"@changesets/cli": "^2.26.2",
+		"@types/chart.js": "^2.9.39",
+		"@types/js-yaml": "^4.0.8",
 		"husky": "^7.0.4",
 		"turbo": "~1.10.16"
 	},

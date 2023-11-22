@@ -1,4 +1,5 @@
-import { Users } from '@rocket.chat/models';
+import { Omnichannel } from '@rocket.chat/core-services';
+import { LivechatRooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -29,6 +30,15 @@ Meteor.methods<ServerMethods>({
 		const user = await Users.findOneById(uid, {
 			projection: { _id: 1, username: 1, name: 1, utcOffset: 1 },
 		});
+
+		const room = await LivechatRooms.findOneById(rid, { projection: { activity: 1 } });
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:sendTranscript' });
+		}
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			throw new Meteor.Error('error-mac-limit-reached', 'MAC limit reached', { method: 'livechat:sendTranscript' });
+		}
+
 		return Livechat.sendTranscript({ token, rid, email, subject, user });
 	},
 });

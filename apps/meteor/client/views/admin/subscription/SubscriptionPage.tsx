@@ -1,11 +1,11 @@
 import { Box, Button, ButtonGroup, Callout, Grid, Throbber } from '@rocket.chat/fuselage';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
-import React, { memo, useEffect } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 
 import Page from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import { useLicense } from '../../../hooks/useLicense';
+import { useInvalidateLicense, useLicense } from '../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 import { SubscriptionCalloutLimits } from './SubscriptionCalloutLimits';
 import SubscriptionPageSkeleton from './SubscriptionPageSkeleton';
@@ -27,8 +27,9 @@ const SubscriptionPage = () => {
 	const router = useRouter();
 	const { data: enterpriseData } = useIsEnterprise();
 	const { isRegistered } = useRegistrationStatus();
-	const { data: licensesData, isLoading: isLicenseLoading, refetch: refetchLicense } = useLicense({ loadValues: true });
+	const { data: licensesData, isLoading: isLicenseLoading } = useLicense({ loadValues: true });
 	const syncLicenseUpdate = useWorkspaceSync();
+	const invalidateLicenseQuery = useInvalidateLicense();
 
 	const { subscriptionSuccess } = router.getSearchParameters();
 
@@ -46,24 +47,17 @@ const SubscriptionPage = () => {
 	const macLimit = getKeyLimit('monthlyActiveContacts');
 	const seatsLimit = getKeyLimit('activeUsers');
 
-	const handleSyncLicenseUpdateClick = () => {
-		syncLicenseUpdate.mutate();
-	};
+	const handleSyncLicenseUpdate = useCallback(() => {
+		syncLicenseUpdate.mutate(undefined, {
+			onSuccess: () => invalidateLicenseQuery(),
+		});
+	}, [invalidateLicenseQuery, syncLicenseUpdate]);
 
 	useEffect(() => {
 		if (subscriptionSuccess && syncLicenseUpdate.isIdle) {
-			syncLicenseUpdate.mutate(undefined, {
-				onSuccess: () =>
-					router.navigate(
-						{
-							name: router.getRouteName()!,
-							params: Object.fromEntries(Object.entries(router.getSearchParameters()).filter(([key]) => key !== 'subscriptionSuccess')),
-						},
-						{ replace: true },
-					),
-			});
+			handleSyncLicenseUpdate();
 		}
-	}, [refetchLicense, router, subscriptionSuccess, syncLicenseUpdate]);
+	}, [handleSyncLicenseUpdate, subscriptionSuccess, syncLicenseUpdate]);
 
 	return (
 		<Page bg='tint'>
@@ -73,12 +67,12 @@ const SubscriptionPage = () => {
 						<Button
 							icon={syncLicenseUpdate.isLoading ? undefined : 'reload'}
 							disabled={syncLicenseUpdate.isLoading}
-							onClick={() => handleSyncLicenseUpdateClick()}
+							onClick={() => handleSyncLicenseUpdate()}
 						>
 							{syncLicenseUpdate.isLoading ? <Throbber size='x12' inheritColor /> : t('Sync_license_update')}
 						</Button>
 					)}
-					<UpgradeButton primary mis={8}>
+					<UpgradeButton target='subscription_header' action={isEnterprise ? 'manage_subscription' : 'upgrade'} primary mis={8}>
 						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
 					</UpgradeButton>
 				</ButtonGroup>
@@ -111,7 +105,7 @@ const SubscriptionPage = () => {
 							{seatsLimit.value !== undefined && (
 								<Grid.Item lg={6} xs={4} p={8}>
 									{seatsLimit.max !== Infinity ? (
-										<SeatsCard value={seatsLimit.value} max={seatsLimit.max} />
+										<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
 									) : (
 										<CountSeatsCard activeUsers={seatsLimit?.value} />
 									)}
@@ -121,7 +115,7 @@ const SubscriptionPage = () => {
 							{macLimit.value !== undefined && (
 								<Grid.Item lg={6} xs={4} p={8}>
 									{macLimit.max !== Infinity ? (
-										<MACCard max={macLimit.max} value={macLimit.value} />
+										<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
 									) : (
 										<CountMACCard macsCount={macLimit.value} />
 									)}
