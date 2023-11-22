@@ -23,15 +23,12 @@ import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import * as Mailer from '../../../mailer/server/api';
 import { businessHourManager } from '../business-hour';
-import { Analytics } from './Analytics';
 import { parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('Livechat');
 
 export const Livechat = {
-	Analytics,
-
 	logger,
 
 	async saveRoomInfo(roomData, guestData, userId) {

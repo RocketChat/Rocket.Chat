@@ -215,13 +215,13 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	getAnalyticsMetricsBetweenDate(
 		t: 'l',
 		date: { gte: Date; lt: Date },
-		data?: { departmentId: string },
+		data?: { departmentId?: string },
 		extraQuery?: Filter<IOmnichannelRoom>,
 	): FindCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs'>>;
 	getAnalyticsMetricsBetweenDateWithMessages(
 		t: string,
 		date: { gte: Date; lt: Date },
-		data?: { departmentId: string },
+		data?: { departmentId?: string },
 		extraQuery?: Document,
 		extraMatchers?: Document,
 	): AggregationCursor<Pick<IOmnichannelRoom, '_id' | 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs'>>;
