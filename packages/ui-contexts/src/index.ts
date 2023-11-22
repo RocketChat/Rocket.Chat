@@ -14,7 +14,7 @@ export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { TranslationContext, TranslationContextValue } from './TranslationContext';
 export { UserContext, UserContextValue, LoginService } from './UserContext';
 export { DeviceContext, Device, IExperimentalHTMLAudioElement, DeviceContextValue } from './DeviceContext';
-export { ActionManagerContext } from './ActionManagerContext';
+export { ActionManagerContext, IActionManager } from './ActionManagerContext';
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';

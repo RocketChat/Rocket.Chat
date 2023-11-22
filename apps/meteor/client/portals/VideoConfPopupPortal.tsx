@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from 'react';
-import { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { createAnchor } from '../lib/utils/createAnchor';
@@ -12,7 +12,7 @@ type VideoConfPortalProps = {
 const VideoConfPortal = ({ children }: VideoConfPortalProps): ReactElement => {
 	const [videoConfRoot] = useState(() => createAnchor('video-conf-root'));
 	useEffect(() => (): void => deleteAnchor(videoConfRoot), [videoConfRoot]);
-	return createPortal(children, videoConfRoot);
+	return <>{createPortal(children, videoConfRoot)}</>;
 };
 
 export default memo(VideoConfPortal);
