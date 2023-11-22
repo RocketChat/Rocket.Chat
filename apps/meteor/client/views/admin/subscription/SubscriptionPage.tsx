@@ -115,12 +115,7 @@ const SubscriptionPage = () => {
 								</Grid.Item>
 							)}
 							<Grid.Item lg={4} xs={4} p={8}>
-								{license && (
-									<PlanCard
-										licenseInformation={license.information}
-										licenseLimits={{ activeUsers: seatsLimit, monthlyActiveContacts: macLimit }}
-									/>
-								)}
+								{license && <PlanCard licenseInformation={license.information} licenseLimits={{ activeUsers: seatsLimit }} />}
 								{!license && <PlanCardCommunity />}
 							</Grid.Item>
 							<Grid.Item lg={8} xs={4} p={8}>
