@@ -24078,15 +24078,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"husky@npm:^7.0.4":
-  version: 7.0.4
-  resolution: "husky@npm:7.0.4"
-  bin:
-    husky: lib/bin.js
-  checksum: c6ec4af63da2c9522da8674a20ad9b48362cc92704896cc8a58c6a2a39d797feb2b806f93fbd83a6d653fbdceb2c3b6e0b602c6b2e8565206ffc2882ef7db9e9
-  languageName: node
-  linkType: hard
-
 "hyperquest@npm:~2.0.0":
   version: 2.0.0
   resolution: "hyperquest@npm:2.0.0"
@@ -34567,7 +34558,6 @@ __metadata:
     "@changesets/cli": ^2.26.2
     "@types/chart.js": ^2.9.39
     "@types/js-yaml": ^4.0.8
-    husky: ^7.0.4
     node-gyp: ^9.4.1
     turbo: ~1.10.16
   languageName: unknown
