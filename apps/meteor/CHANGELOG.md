@@ -1,5 +1,32 @@
 # @rocket.chat/meteor
 
+## 6.5.0-rc.8
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- 928177b602: Fix rocket.cat's app request message escaping
+  - @rocket.chat/core-typings@6.5.0-rc.8
+  - @rocket.chat/rest-typings@6.5.0-rc.8
+  - @rocket.chat/api-client@0.1.18-rc.1
+  - @rocket.chat/license@0.1.0-rc.8
+  - @rocket.chat/omnichannel-services@0.1.0-rc.8
+  - @rocket.chat/pdf-worker@0.0.24-rc.1
+  - @rocket.chat/presence@0.1.0-rc.8
+  - @rocket.chat/core-services@0.3.0-rc.8
+  - @rocket.chat/cron@0.0.20-rc.1
+  - @rocket.chat/gazzodown@3.0.0-rc.8
+  - @rocket.chat/model-typings@0.2.0-rc.8
+  - @rocket.chat/ui-contexts@3.0.0-rc.8
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.0-rc.8
+  - @rocket.chat/models@0.0.24-rc.1
+  - @rocket.chat/ui-theming@0.1.1-rc.0
+  - @rocket.chat/ui-client@3.0.0-rc.8
+  - @rocket.chat/ui-video-conf@3.0.0-rc.8
+  - @rocket.chat/web-ui-registration@3.0.0-rc.7
+  - @rocket.chat/instance-status@0.0.24-rc.1
+
 ## 6.5.0-rc.7
 
 ### Patch Changes
@@ -321,6 +348,98 @@
   - @rocket.chat/models@0.0.21-rc.0
   - @rocket.chat/server-cloud-communication@0.0.1
   - @rocket.chat/instance-status@0.0.21-rc.0
+
+## 6.4.8
+
+### Patch Changes
+
+- 550900bb2b: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.4.8
+  - @rocket.chat/rest-typings@6.4.8
+  - @rocket.chat/api-client@0.1.17
+  - @rocket.chat/omnichannel-services@0.0.23
+  - @rocket.chat/pdf-worker@0.0.23
+  - @rocket.chat/presence@0.0.23
+  - @rocket.chat/core-services@0.2.8
+  - @rocket.chat/cron@0.0.19
+  - @rocket.chat/gazzodown@2.0.8
+  - @rocket.chat/model-typings@0.1.8
+  - @rocket.chat/ui-contexts@2.0.8
+  - @rocket.chat/fuselage-ui-kit@2.0.8
+  - @rocket.chat/models@0.0.23
+  - @rocket.chat/ui-theming@0.1.0
+  - @rocket.chat/ui-client@2.0.8
+  - @rocket.chat/ui-video-conf@2.0.8
+  - @rocket.chat/web-ui-registration@2.0.8
+  - @rocket.chat/instance-status@0.0.23
+
+## 6.4.7
+
+### Patch Changes
+
+- 037efa4f4f: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- b98492e3ee: Add additional checks to the OAuth tokens to prevent future issues
+  - @rocket.chat/core-typings@6.4.7
+  - @rocket.chat/rest-typings@6.4.7
+  - @rocket.chat/api-client@0.1.16
+  - @rocket.chat/omnichannel-services@0.0.22
+  - @rocket.chat/pdf-worker@0.0.22
+  - @rocket.chat/presence@0.0.22
+  - @rocket.chat/core-services@0.2.7
+  - @rocket.chat/cron@0.0.18
+  - @rocket.chat/gazzodown@2.0.7
+  - @rocket.chat/model-typings@0.1.7
+  - @rocket.chat/ui-contexts@2.0.7
+  - @rocket.chat/fuselage-ui-kit@2.0.7
+  - @rocket.chat/models@0.0.22
+  - @rocket.chat/ui-theming@0.1.0
+  - @rocket.chat/ui-client@2.0.7
+  - @rocket.chat/ui-video-conf@2.0.7
+  - @rocket.chat/web-ui-registration@2.0.7
+  - @rocket.chat/instance-status@0.0.22
+
+## 6.4.6
+
+### Patch Changes
+
+- 35ea15005a: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 57deb49ceb: fix: OAuth login by redirect failing on firefox
+- 00875fc9ab: fix: wrong client hash calculation due to race condition on assets
+
+  Some deployments may suffer from some reloads if running multiple instances. It's caused by different client hashes generated due to a possible race condition on custom assets load at the startup time. Forcing the clients to talk to the right backend instances, which causes reloads if sticky sessions are not enabled.
+  This change removes the assets from the hash calculation preventing the race condition and possible different hashes. After this change, the clients will not reload when the admin changes assets.
+
+- b7ea8651bf: fix: immediate auto reload issues
+
+  Immediate auto reload increases server load on restarts/upgrades and increases the chance of getting 404 on Meteor's config file blocking the UI on a loading screen
+
+  This change adds delays on front and backend codes on automatic client reload:
+
+  - Front-end, adds a warning message including the old and new hashes, and a delay of 60 seconds after being notified by the server
+  - Back-end, delays the client notifications on a random value between 2 and 10 minutes per connection, allowing different clients to reload at different moments and distributing the load along the time.
+
+- 873eea9d54: fix: `TypeError`: Cannot use 'in' operator in `undefined` for every message sent
+  - @rocket.chat/core-typings@6.4.6
+  - @rocket.chat/rest-typings@6.4.6
+  - @rocket.chat/api-client@0.1.15
+  - @rocket.chat/omnichannel-services@0.0.21
+  - @rocket.chat/pdf-worker@0.0.21
+  - @rocket.chat/presence@0.0.21
+  - @rocket.chat/core-services@0.2.6
+  - @rocket.chat/cron@0.0.17
+  - @rocket.chat/gazzodown@2.0.6
+  - @rocket.chat/model-typings@0.1.6
+  - @rocket.chat/ui-contexts@2.0.6
+  - @rocket.chat/fuselage-ui-kit@2.0.6
+  - @rocket.chat/models@0.0.21
+  - @rocket.chat/ui-theming@0.1.0
+  - @rocket.chat/ui-client@2.0.6
+  - @rocket.chat/ui-video-conf@2.0.6
+  - @rocket.chat/web-ui-registration@2.0.6
+  - @rocket.chat/instance-status@0.0.21
 
 ## 6.4.5
 

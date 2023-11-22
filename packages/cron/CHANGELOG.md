@@ -1,5 +1,12 @@
 # @rocket.chat/cron
 
+## 0.0.20-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.8
+- @rocket.chat/models@0.0.24-rc.1
+
 ## 0.0.17-rc.7
 
 ### Patch Changes
@@ -62,6 +69,27 @@
 - Updated dependencies [dea1fe9191]
   - @rocket.chat/core-typings@6.5.0-rc.0
   - @rocket.chat/models@0.0.21-rc.0
+
+## 0.0.19
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.8
+- @rocket.chat/models@0.0.23
+
+## 0.0.18
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.7
+- @rocket.chat/models@0.0.22
+
+## 0.0.17
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.6
+- @rocket.chat/models@0.0.21
 
 ## 0.0.16
 

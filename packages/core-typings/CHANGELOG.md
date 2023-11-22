@@ -1,5 +1,7 @@
 # @rocket.chat/core-typings
 
+## 6.5.0-rc.8
+
 ## 6.5.0-rc.7
 
 ## 6.5.0-rc.6
@@ -41,6 +43,12 @@
 - 5b9d6883bf: feat: Improve UI when MAC limits are reached
   feat: Limit endpoints on MAC limit reached
 - dea1fe9191: feat: Disable and annonimize visitors instead of removing
+
+## 6.4.8
+
+## 6.4.7
+
+## 6.4.6
 
 ## 6.4.5
 

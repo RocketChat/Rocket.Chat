@@ -1,5 +1,12 @@
 # @rocket.chat/rest-typings
 
+## 6.5.0-rc.8
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.8
+- @rocket.chat/license@0.1.0-rc.8
+
 ## 6.5.0-rc.7
 
 ### Patch Changes
@@ -76,6 +83,24 @@
 - Updated dependencies [dea1fe9191]
   - @rocket.chat/core-typings@6.5.0-rc.0
   - @rocket.chat/license@0.1.0-rc.0
+
+## 6.4.8
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.8
+
+## 6.4.7
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.7
+
+## 6.4.6
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.6
 
 ## 6.4.5
 
