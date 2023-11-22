@@ -66,21 +66,25 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 					? (reaction: string): string[] =>
 							reactions?.[reaction]?.usernames.filter((user) => user !== username).map((username) => `@${username}`) || []
 					: (reaction: string): string[] => {
+							const reactedUsernames = reactions?.[reaction]?.usernames || [];
+							const reactedNames = (reactions?.[reaction]?.names?.filter(Boolean) as string[]) || [];
+
 							if (!reactions?.[reaction]) {
 								return [];
 							}
 							if (!isMessageReactionsNormalized(message)) {
-								return message.reactions?.[reaction]?.usernames.filter((user) => user !== username).map((username) => `@${username}`) || [];
+								return reactedUsernames.filter((user) => user !== username).map((username) => `@${username}`) || [];
 							}
 							if (!username) {
-								return message.reactions[reaction].names;
+								return reactedNames;
 							}
-							const index = message.reactions[reaction].usernames.indexOf(username);
+							const index = reactedUsernames.indexOf(username);
 							if (index === -1) {
-								return message.reactions[reaction].names;
+								return reactedNames;
 							}
 
-							return message.reactions[reaction].names.splice(index, 1);
+							reactedNames.splice(index, 1);
+							return reactedNames;
 					  };
 			},
 			useUserHasReacted: username

@@ -68,45 +68,166 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
 
 	const getUserNameCached = mem(
-		async (userId: string): Promise<string | undefined> => {
-			const user = await Users.findOne<Pick<IUser, 'name'>>(userId, { projection: { name: 1 } });
+		async (query: { _id: string } | { username: string }): Promise<string | undefined> => {
+			const user = await Users.findOne<Pick<IUser, 'name'>>(query, { projection: { name: 1 } });
 			return user?.name;
 		},
 		{ maxAge: 10000 },
 	);
 
-	watcher.on<IMessage>(Messages.getCollectionName(), async ({ clientAction, id, data }) => {
+	watcher.on<IMessage>(Messages.getCollectionName(), async ({ clientAction, id, data, diff, oplog }) => {
 		switch (clientAction) {
 			case 'inserted':
-			case 'updated':
-				const message = data ?? (await Messages.findOneById(id));
-				if (!message) {
+				if (!data || data._hidden || data.imported) {
 					return;
 				}
 
-				if (message._hidden !== true && message.imported == null) {
-					const UseRealName = (await getSettingCached('UI_Use_Real_Name')) === true;
-
-					if (UseRealName) {
-						if (message.u?._id) {
-							const name = await getUserNameCached(message.u._id);
-							if (name) {
-								message.u.name = name;
-							}
-						}
-
-						if (message.mentions?.length) {
-							for await (const mention of message.mentions) {
-								const name = await getUserNameCached(mention._id);
-								if (name) {
-									mention.name = name;
-								}
-							}
+				if (await getSettingCached('UI_Use_Real_Name')) {
+					if (!data.u.name) {
+						const name = await getUserNameCached({ _id: data.u._id });
+						if (name) {
+							data.u.name = name;
 						}
 					}
 
-					void broadcast('watch.messages', { clientAction, message });
+					if (data.mentions?.length) {
+						for await (const mention of data.mentions) {
+							if ('name' in mention) {
+								continue;
+							}
+							const name = await getUserNameCached({ _id: mention._id });
+							if (name) {
+								mention.name = name;
+							}
+						}
+					}
 				}
+
+				void broadcast('watch.messages', { clientAction, message: data });
+				break;
+			case 'updated':
+				// debugger;
+				const message = data ?? (await Messages.findOneById(id));
+
+				if (!message || message._hidden || message.imported || !diff) {
+					return;
+				}
+
+				const delta: {
+					update: Record<string, unknown>;
+					removeFields: string[];
+				} = {
+					update: {},
+					removeFields: [],
+				};
+
+				if (oplog) {
+					// TODO:
+					throw new Error('oplog is not supported');
+				} else {
+					// process changestream specific fields
+					await Promise.all(
+						Object.entries(diff).map(async ([key, value]: [string, unknown]) => {
+							delta.update[key] = value;
+
+							if (key === 'u.username' && typeof value === 'string') {
+								if ('u.name' in diff) {
+									return;
+								}
+								const name = await getUserNameCached({ username: value });
+								if (name) {
+									delta.update['u.name'] = name;
+								}
+								return;
+							}
+
+							if (key === 'mentions' && Array.isArray(value)) {
+								for await (const mention of value) {
+									if ('name' in mention) {
+										continue;
+									}
+									const name = await getUserNameCached({ _id: mention._id });
+									if (name) {
+										mention.name = name;
+									}
+								}
+							}
+
+							/*
+							 * understanding the op information
+							 * operations are in $pull, $push and $unset
+							 * all are read as $set, except for when value is undefined, that is an $unset, which would happen
+							 * on only two occassions: 1. all reactions for an emoji is removed, 2. all reactions are gone
+							 * everything else is $set
+							 * example of a $pull: `reactions.${emoji}.usernames`
+							 * example of a $push: `reactions.${emoji}.usernames`
+							 * start from the outer most field and work your way in, the first field that doesn't exist already is te whole object being set.
+							 * for example if no reaction exist already, then the whole `{ [${emoji}]: { usernames: [${username}] } }` is the object being set to the `reaction` field
+							 * let's say there is another reaction being added now, this time `reaction key exists but the next `${emoji}` doesn't, then the object being set to that key is `{ usernames: [${username}] }`
+							 * if everything exists, even `usernames` array, then convert push to indexed set, `reactions.${emoji}.usernames.0` for first element,
+							 * `reactions.${emoji}.usernames.1` for second element and so on
+							 * lastly, a $pull isn't an $unset but a $set with all the elements excluding the one being pulled, like a new list being created.
+							 */
+
+							if (key === 'reactions') {
+								if (value === undefined) {
+									// all reactions are gone
+									delta.removeFields.push(key);
+									delete delta.update[key];
+									return;
+								}
+
+								if (typeof value === 'object' && value !== null) {
+									// the very first reaction, whole reactions object is created
+									const reaction = Object.values(value)[0] as { usernames: string[]; names: string[] };
+									const username = reaction.usernames[0];
+									const realName = await getUserNameCached({ username });
+									if (realName) {
+										reaction.names = [realName];
+									}
+									delta.update[key] = value;
+									return;
+								}
+							}
+
+							if (key.startsWith('reactions.')) {
+								if (value === undefined) {
+									// an emoji field is being removed, e.g. all reactions for :joy: is lifted.
+									delta.removeFields.push(key);
+									delete delta.update[key];
+									return;
+								}
+
+								if (typeof value === 'string') {
+									// a reaction is being appended, i.e. at least one reaction for this emoji already exists
+									const name = await getUserNameCached({ username: value });
+									if (!name) {
+										return;
+									}
+									const nestedKeys = key.split('.');
+									nestedKeys[2] = 'names';
+									delta.update[nestedKeys.join('.')] = name;
+									return;
+								}
+
+								if (typeof value === 'object' && value && 'usernames' in value) {
+									// fresh new reaction, first reaction of this emoji.
+									delta.update[key] = value;
+									const name = await getUserNameCached({ username: (value.usernames as string[])[0] });
+									if (name) {
+										(delta.update[key] as any).names = [name];
+									}
+								}
+
+								console.log('unknown changestream diff for reactions');
+							}
+						}),
+					);
+				}
+
+				message.delta = delta;
+
+				void broadcast('watch.messages', { clientAction, message });
 				break;
 		}
 	});
