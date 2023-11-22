@@ -10,6 +10,7 @@ export async function syncWorkspace() {
 	try {
 		await syncCloudData();
 		await announcementSync();
+		await getCachedSupportedVersionsToken.reset();
 	} catch (err) {
 		switch (true) {
 			case err instanceof CloudWorkspaceRegistrationError:
@@ -27,6 +28,7 @@ export async function syncWorkspace() {
 				});
 				try {
 					await legacySyncWorkspace();
+					await getCachedSupportedVersionsToken.reset();
 				} catch (err) {
 					switch (true) {
 						case err instanceof CloudWorkspaceRegistrationError:
@@ -37,12 +39,11 @@ export async function syncWorkspace() {
 						}
 						default: {
 							SystemLogger.error({ msg: 'Error during fallback workspace sync', err });
+							throw err;
 						}
 					}
 				}
 			}
 		}
 	}
-
-	await getCachedSupportedVersionsToken.reset();
 }
