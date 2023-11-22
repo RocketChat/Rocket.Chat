@@ -7,7 +7,7 @@ import { getCheckoutUrl } from '../../../cloud/server/functions/getCheckoutUrl';
 import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirmationPoll';
 import { registerPreIntentWorkspaceWizard } from '../../../cloud/server/functions/registerPreIntentWorkspaceWizard';
 import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
-import { saveRegistrationData } from '../../../cloud/server/functions/saveRegistrationData';
+import { saveRegistrationData, saveRegistrationDataManual } from '../../../cloud/server/functions/saveRegistrationData';
 import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
 import { syncWorkspace } from '../../../cloud/server/functions/syncWorkspace';
 import { API } from '../api';
@@ -33,7 +33,7 @@ API.v1.addRoute(
 
 			const settingsData = JSON.parse(Buffer.from(this.bodyParams.cloudBlob, 'base64').toString());
 
-			await saveRegistrationData(settingsData);
+			await saveRegistrationDataManual(settingsData);
 
 			return API.v1.success();
 		},
