@@ -130,7 +130,7 @@ API.v1.addRoute(
 			if (success) {
 				return API.v1.success({
 					department: await LivechatDepartment.findOneById(_id),
-					agents: await LivechatDepartmentAgents.find({ departmentId: _id }).toArray(),
+					agents: await LivechatDepartmentAgents.findByDepartmentId(_id).toArray(),
 				});
 			}
 
