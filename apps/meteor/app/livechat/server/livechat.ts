@@ -7,6 +7,32 @@ import { addServerUrlToIndex } from '../lib/Assets';
 
 const indexHtmlWithServerURL = addServerUrlToIndex((await Assets.getTextAsync('livechat/index.html')) || '');
 
+const jsdom = require("jsdom");
+const domParser = new jsdom.JSDOM(indexHtmlWithServerURL);
+const doc = domParser.window.document;
+const head = doc.querySelector("head");
+const body = doc.querySelector("body");
+
+const liveChatAdditionalScripts = settings.get<string>('Livechat_AdditionalWidgetScripts');
+if (liveChatAdditionalScripts) {
+	liveChatAdditionalScripts.split(',').forEach((script) => {
+		const scriptElement = doc.createElement('script');
+		scriptElement.src = script;
+		head?.appendChild(scriptElement);
+		body?.appendChild(scriptElement);
+	});
+}
+const additionalClass = settings.get<string>('Livechat_WidgetLayoutClasses');
+console.debug("CC-11 Livechat_WidgetLayoutClasses is " + additionalClass);
+if (additionalClass) {
+	additionalClass.split(',').forEach((css) => {
+		const linkElement = doc.createElement('link');
+		linkElement.rel="stylesheet";
+		linkElement.href = css;
+		head.appendChild(linkElement);
+	});
+}
+
 WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 	if (!req.url) {
 		return next();
