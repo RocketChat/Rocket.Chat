@@ -45,6 +45,7 @@ export async function getWorkspaceAccessTokenWithScope(scope = '', throwOnError 
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			method: 'POST',
 			body,
+			timeout: 3000,
 		});
 
 		payload = await response.json();
