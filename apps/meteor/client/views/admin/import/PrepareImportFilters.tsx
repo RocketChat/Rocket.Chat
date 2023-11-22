@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Dispatch, SetStateAction } from 'react';
 import React, { useCallback, useState } from 'react';
 
-const PrepareImportFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction<string>> }) => {
+const PrepareImportFilters = ({ setFilters, tab }: { setFilters: Dispatch<SetStateAction<string>>; tab: string }) => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
 
@@ -31,7 +31,7 @@ const PrepareImportFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAct
 				<TextInput
 					name='search-importer'
 					alignItems='center'
-					placeholder={t('Search_importer')}
+					placeholder={tab === 'users' ? t('Search_users') : t('Search_channels')}
 					addon={<Icon name='magnifier' size='x20' />}
 					onChange={handleSearchTextChange}
 					value={text}

@@ -202,7 +202,7 @@ function PrepareImportPage() {
 				</ButtonGroup>
 			</Page.Header>
 
-			<PrepareImportFilters setFilters={setSearchFilters} />
+			<PrepareImportFilters setFilters={setSearchFilters} tab={tab} />
 
 			<Page.ScrollableContentWithShadow>
 				<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
@@ -238,9 +238,18 @@ function PrepareImportPage() {
 								)}
 							</>
 						)}
-						{!isPreparing && tab === 'users' && <PrepareUsers usersCount={selectedUsers.length} users={users} setUsers={setUsers} />}
+						{/* TODO: create filters for paginated results on PrepareUsers and PrepareChannels */}
+
+						{!isPreparing && tab === 'users' && (
+							<PrepareUsers usersCount={selectedUsers.length} users={users} setUsers={setUsers} searchText={searchText} />
+						)}
 						{!isPreparing && tab === 'channels' && (
-							<PrepareChannels channels={channels} channelsCount={selectedChannels.length} setChannels={setChannels} />
+							<PrepareChannels
+								channels={channels}
+								channelsCount={selectedChannels.length}
+								setChannels={setChannels}
+								searchText={searchText}
+							/>
 						)}
 					</Margins>
 				</Box>

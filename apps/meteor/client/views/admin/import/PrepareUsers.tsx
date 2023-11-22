@@ -15,9 +15,10 @@ type PrepareUsersProps = {
 	usersCount: number;
 	users: UserDescriptor[];
 	setUsers: Dispatch<SetStateAction<UserDescriptor[]>>;
+	searchText: string;
 };
 
-const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers }) => {
+const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers, searchText }) => {
 	const t = useTranslation();
 	const [current, setCurrent] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
@@ -62,18 +63,23 @@ const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers }) =>
 				<TableBody>
 					{users.slice(current, current + itemsPerPage).map((user) => (
 						<TableRow key={user.user_id}>
-							<TableCell width='x36'>
-								<CheckBox
-									checked={user.do_import}
-									onChange={(event: ChangeEvent<HTMLInputElement>): void => {
-										const { checked } = event.currentTarget;
-										setUsers((users) => users.map((_user) => (_user === user ? { ..._user, do_import: checked } : _user)));
-									}}
-								/>
-							</TableCell>
-							<TableCell>{user.username}</TableCell>
-							<TableCell>{user.email}</TableCell>
-							<TableCell align='end'>{user.is_deleted && <Tag variant='danger'>{t('Deleted')}</Tag>}</TableCell>
+							{/* TODO: create filter for paginated results */}
+							{user.username.includes(searchText) && (
+								<>
+									<TableCell width='x36'>
+										<CheckBox
+											checked={user.do_import}
+											onChange={(event: ChangeEvent<HTMLInputElement>): void => {
+												const { checked } = event.currentTarget;
+												setUsers((users) => users.map((_user) => (_user === user ? { ..._user, do_import: checked } : _user)));
+											}}
+										/>
+									</TableCell>
+									<TableCell>{user.username}</TableCell>
+									<TableCell>{user.email}</TableCell>
+									<TableCell align='end'>{user.is_deleted && <Tag variant='danger'>{t('Deleted')}</Tag>}</TableCell>
+								</>
+							)}
 						</TableRow>
 					))}
 				</TableBody>

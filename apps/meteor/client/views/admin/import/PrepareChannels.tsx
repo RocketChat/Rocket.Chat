@@ -14,9 +14,10 @@ type PrepareChannelsProps = {
 	channelsCount: number;
 	channels: ChannelDescriptor[];
 	setChannels: Dispatch<SetStateAction<ChannelDescriptor[]>>;
+	searchText: string;
 };
 
-const PrepareChannels: FC<PrepareChannelsProps> = ({ channels, channelsCount, setChannels }) => {
+const PrepareChannels: FC<PrepareChannelsProps> = ({ channels, channelsCount, setChannels, searchText }) => {
 	const t = useTranslation();
 	const [current, setCurrent] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
@@ -64,19 +65,24 @@ const PrepareChannels: FC<PrepareChannelsProps> = ({ channels, channelsCount, se
 				<TableBody>
 					{channels.slice(current, current + itemsPerPage).map((channel) => (
 						<TableRow key={channel.channel_id}>
-							<TableCell width='x36'>
-								<CheckBox
-									checked={channel.do_import}
-									onChange={(event: ChangeEvent<HTMLInputElement>): void => {
-										const { checked } = event.currentTarget;
-										setChannels((channels) =>
-											channels.map((_channel) => (_channel === channel ? { ..._channel, do_import: checked } : _channel)),
-										);
-									}}
-								/>
-							</TableCell>
-							<TableCell>{channel.name}</TableCell>
-							<TableCell align='end'>{channel.is_archived && <Tag variant='danger'>{t('Importer_Archived')}</Tag>}</TableCell>
+							{/* TODO: create filter for paginated results */}
+							{channel.name.includes(searchText) && (
+								<>
+									<TableCell width='x36'>
+										<CheckBox
+											checked={channel.do_import}
+											onChange={(event: ChangeEvent<HTMLInputElement>): void => {
+												const { checked } = event.currentTarget;
+												setChannels((channels) =>
+													channels.map((_channel) => (_channel === channel ? { ..._channel, do_import: checked } : _channel)),
+												);
+											}}
+										/>
+									</TableCell>
+									<TableCell>{channel.name}</TableCell>
+									<TableCell align='end'>{channel.is_archived && <Tag variant='danger'>{t('Importer_Archived')}</Tag>}</TableCell>
+								</>
+							)}
 						</TableRow>
 					))}
 				</TableBody>
