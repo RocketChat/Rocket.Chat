@@ -112,7 +112,7 @@ describe('LIVECHAT - appearance', function () {
 
 			// Get data from livechat/config
 			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
-			expect(body.config.settings.messageCharacterLimit).to.be.equal(100);
+			expect(body.config.settings.limitTextLength).to.be.equal(100);
 		});
 	});
 });
