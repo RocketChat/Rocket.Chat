@@ -5,6 +5,7 @@ import type { ReactElement, CSSProperties, ReactNode } from 'react';
 import React, { useMemo, useCallback, memo } from 'react';
 
 import { useLocalePercentage } from '../../../../hooks/useLocalePercentage';
+import { useTranslation } from 'react-i18next';
 
 type GraphColorsReturn = { [key: string]: string };
 
@@ -28,6 +29,7 @@ type GraphData = Array<{
 }>;
 
 const UsagePieGraph = ({ used = 0, total = 0, label, color, size = 140 }: UsagePieGraphProps): ReactElement => {
+	const { t } = useTranslation();
 	const parsedData = useMemo(
 		(): GraphData => [
 			{
@@ -85,7 +87,15 @@ const UsagePieGraph = ({ used = 0, total = 0, label, color, size = 140 }: UsageP
 				</Box>
 			</Box>
 			<Box is='span' fontScale='p2' color='font-secondary-info'>
-				{used} / {unlimited ? '∞' : total}
+				{unlimited &&
+					t('used_limit_infinite', {
+						used,
+					})}
+				{!unlimited &&
+					t('used_limit', {
+						used,
+						limit: total,
+					})}
 			</Box>
 			{label && (
 				<Box is='span' mbs={4} color='font-secondary-info'>

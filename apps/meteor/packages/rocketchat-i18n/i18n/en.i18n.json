@@ -4572,6 +4572,8 @@
   "Search_Users": "Search Users",
   "Seats_Available": "{{seatsLeft, number}} Seats Available",
   "MAC_Available": "{{macLeft, number}} MAC's Available",
+  "used_limit": "{{used, number}}/{{limit, number}}",
+  "used_limit_infinite": "{{used, number}}/∞",
   "Seats_usage": "Seats Usage",
   "seconds": "seconds",
   "Secret_token": "Secret Token",
