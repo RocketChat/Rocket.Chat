@@ -13,15 +13,16 @@ export async function validateUserRoles(userData: Partial<IUser>, currentUserDat
 
 	const isGuest = Boolean(userData.roles?.includes('guest') && userData.roles.length === 1);
 	const wasGuest = Boolean(currentUserData?.roles?.includes('guest') && currentUserData.roles.length === 1);
-	const hasTypeChanged = currentUserData && (isApp !== wasApp || isBot !== wasBot);
 
-	if (!hasTypeChanged) {
+	const isSpecialType = isApp || isBot;
+
+	const hasGuestToChanged = isGuest && !wasGuest;
+
+	if (isSpecialType) {
 		return;
 	}
 
-	const hasGuestChanged = isGuest && !wasGuest;
-
-	if (hasGuestChanged && (await License.shouldPreventAction('guestUsers'))) {
+	if (hasGuestToChanged && (await License.shouldPreventAction('guestUsers'))) {
 		throw new MeteorError('error-max-guests-number-reached', 'Maximum number of guests reached.', {
 			method: 'insertOrUpdateUser',
 			field: 'Assign_role',
@@ -34,9 +35,15 @@ export async function validateUserRoles(userData: Partial<IUser>, currentUserDat
 
 	const isActive = Boolean(userData.active);
 	const wasActive = Boolean(currentUserData?.active);
-	const hasStatusChanged = isActive && !wasActive;
 
-	if (hasStatusChanged && (await License.shouldPreventAction('activeUsers'))) {
+	const hasStatusChanged = isActive && !wasActive;
+	const hasRemovedSpecialType = (wasApp && !isApp) || (wasBot && !isBot);
+
+	if (!hasStatusChanged && !hasRemovedSpecialType) {
+		return;
+	}
+
+	if (await License.shouldPreventAction('activeUsers')) {
 		throw new MeteorError('error-license-user-limit-reached', i18n.t('error-license-user-limit-reached'));
 	}
 }
