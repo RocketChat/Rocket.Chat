@@ -32,6 +32,7 @@ export * from './definition/LicenseLimit';
 export * from './definition/LicenseModule';
 export * from './definition/LicensePeriod';
 export * from './definition/LimitContext';
+export * from './MockedLicenseBuilder';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface License {
