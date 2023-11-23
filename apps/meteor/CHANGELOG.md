@@ -1,5 +1,31 @@
 # @rocket.chat/meteor
 
+## 6.5.0-rc.10
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.5.0-rc.10
+  - @rocket.chat/rest-typings@6.5.0-rc.10
+  - @rocket.chat/api-client@0.1.18-rc.3
+  - @rocket.chat/license@0.1.0-rc.10
+  - @rocket.chat/omnichannel-services@0.1.0-rc.10
+  - @rocket.chat/pdf-worker@0.0.24-rc.3
+  - @rocket.chat/presence@0.1.0-rc.10
+  - @rocket.chat/core-services@0.3.0-rc.10
+  - @rocket.chat/cron@0.0.20-rc.3
+  - @rocket.chat/gazzodown@3.0.0-rc.10
+  - @rocket.chat/model-typings@0.2.0-rc.10
+  - @rocket.chat/ui-contexts@3.0.0-rc.10
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.0-rc.10
+  - @rocket.chat/models@0.0.24-rc.3
+  - @rocket.chat/ui-theming@0.1.1-rc.0
+  - @rocket.chat/ui-client@3.0.0-rc.10
+  - @rocket.chat/ui-video-conf@3.0.0-rc.10
+  - @rocket.chat/web-ui-registration@3.0.0-rc.9
+  - @rocket.chat/instance-status@0.0.24-rc.3
+
 ## 6.5.0-rc.9
 
 ### Patch Changes
