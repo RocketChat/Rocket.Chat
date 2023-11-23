@@ -1,4 +1,4 @@
-import { api, ServiceClassInternal } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, listenToMessageSentEvent } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
@@ -221,7 +221,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		});
 
 		if (!disableMsgRoundtripTracking) {
-			this.onEvent('watch.messages', ({ message }) => {
+			listenToMessageSentEvent(this, async (message) => {
 				if (message?._updatedAt) {
 					metrics.messageRoundtripTime.set(Date.now() - message._updatedAt.getDate());
 				}

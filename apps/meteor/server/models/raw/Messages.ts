@@ -27,7 +27,7 @@ import type {
 	IndexDescription,
 	InsertOneResult,
 	UpdateFilter,
-	UpdateResult,
+	ModifyResult,
 } from 'mongodb';
 
 import { otrSystemMessages } from '../../../app/otr/lib/constants';
@@ -1596,19 +1596,23 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	 * to race conditions: If multiple updates occur, the current state will be updated
 	 * only if the new state of the discussion room is really newer.
 	 */
-	async refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<UpdateResult | Document | false> {
+	async refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<ModifyResult<IMessage>> {
 		const { _id: drid, msgs: dcount, lm: dlm } = room;
 
 		const query = {
 			drid,
 		};
 
-		return this.updateMany(query, {
-			$set: {
-				dcount,
-				dlm,
+		return this.col.findOneAndUpdate(
+			query,
+			{
+				$set: {
+					dcount,
+					dlm,
+				},
 			},
-		});
+			{ returnDocument: 'after' },
+		);
 	}
 
 	// //////////////////////////////////////////////////////////////////
