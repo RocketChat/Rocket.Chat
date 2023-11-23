@@ -2,7 +2,6 @@ import type { IMessageService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import { type IMessage, type MessageTypesValues, type IUser, type IRoom, isEditedMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
-import type BadWordsFilter from 'bad-words';
 
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -11,18 +10,19 @@ import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage'
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
+import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
-import { configureBadWords } from './hooks/badwords';
 
 export class MessageService extends ServiceClassInternal implements IMessageService {
 	protected name = 'message';
 
-	private badWordsFilter?: BadWordsFilter;
-
 	private preventMention: BeforeSavePreventMention;
+
+	private badWords: BeforeSaveBadWords;
 
 	async created() {
 		this.preventMention = new BeforeSavePreventMention(this.api);
+		this.badWords = new BeforeSaveBadWords();
 
 		await this.configureBadWords();
 	}
@@ -32,10 +32,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			['Message_AllowBadWordsFilter', 'Message_BadWordsFilterList', 'Message_BadWordsWhitelist'],
 			async ([enabled, badWordsList, whiteList]) => {
 				if (!enabled) {
-					this.badWordsFilter = undefined;
+					this.badWords.disable();
 					return;
 				}
-				this.badWordsFilter = await configureBadWords(badWordsList as string, whiteList as string);
+				await this.badWords.configure(badWordsList as string, whiteList as string);
 			},
 		);
 	}
@@ -98,10 +98,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
 
-		// conditionals here should be fast, so they won't add up for each message
-		if (this.isBadWordsFilterEnabled()) {
-			message = await this.filterBadWords(message);
-		}
+		message = await this.badWords.filterBadWords({ message });
 
 		if (!this.isEditedOrOld(message)) {
 			await Promise.all([
@@ -115,24 +112,6 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	private isEditedOrOld(message: IMessage): boolean {
 		return isEditedMessage(message) || !message.ts || Math.abs(Date.now() - message.ts.getTime()) > 60000;
-	}
-
-	private isBadWordsFilterEnabled() {
-		return !!settings.get('Message_AllowBadWordsFilter');
-	}
-
-	private async filterBadWords(message: IMessage): Promise<IMessage> {
-		if (!message.msg || !this.badWordsFilter) {
-			return message;
-		}
-
-		try {
-			message.msg = this.badWordsFilter.clean(message.msg);
-		} catch (error) {
-			// ignore
-		}
-
-		return message;
 	}
 
 	// joinDiscussionOnMessage
