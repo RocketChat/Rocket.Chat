@@ -6,6 +6,7 @@ import { Random } from '@rocket.chat/random';
 
 import { FileUpload } from '../../file-upload/server';
 import { Base, ProgressStep, Selection } from '../../importer/server';
+import { msgStream } from '../../lib/server';
 
 export class PendingFileImporter extends Base {
 	constructor(info, importRecord) {
@@ -80,6 +81,7 @@ export class PendingFileImporter extends Base {
 
 		try {
 			const pendingFileMessageList = Messages.findAllImportedMessagesWithFilesToDownload();
+			const roomIdsToNotifyMessageImporting = new Set();
 			for await (const message of pendingFileMessageList) {
 				try {
 					const { _importFile } = message;
@@ -163,6 +165,7 @@ export class PendingFileImporter extends Base {
 
 								await Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment);
 								await completeFile(details);
+								roomIdsToNotifyMessageImporting.add(message.rid);
 							} catch (error) {
 								await completeFile(details);
 								logError(error);
@@ -173,6 +176,8 @@ export class PendingFileImporter extends Base {
 					this.logger.error(error);
 				}
 			}
+
+			Array.from(roomIdsToNotifyMessageImporting).forEach((rid) => msgStream.emitWithoutBroadcast(`${rid}/messages-imported`, { rid }));
 		} catch (error) {
 			// If the cursor expired, restart the method
 			if (error && error.codeName === 'CursorNotFound') {

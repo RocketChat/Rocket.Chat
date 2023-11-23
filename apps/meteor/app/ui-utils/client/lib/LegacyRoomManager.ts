@@ -171,6 +171,11 @@ const computation = Tracker.autorun(() => {
 							record.streamActive = true;
 							openedRoomsDependency.changed();
 						});
+
+					void sdk.stream('room-messages', [`${record.rid}/messages-imported`], async ({ rid }) => {
+						await RoomHistoryManager.clear(rid);
+						await RoomHistoryManager.getMore(rid);
+					});
 					Notifications.onRoom(record.rid, 'deleteMessage', (msg) => {
 						ChatMessage.remove({ _id: msg._id });
 

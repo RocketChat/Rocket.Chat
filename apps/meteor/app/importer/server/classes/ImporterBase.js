@@ -4,6 +4,7 @@ import AdmZip from 'adm-zip';
 
 import { Selection, SelectionChannel, SelectionUser } from '..';
 import { callbacks } from '../../../../lib/callbacks';
+import { msgStream } from '../../../lib/server';
 import { t } from '../../../utils/lib/i18n';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterProgressStep';
@@ -96,6 +97,7 @@ export class Base {
 		await this.updateProgress(ProgressStep.IMPORTING_STARTED);
 		this.reloadCount();
 		const started = Date.now();
+		const existingRooms = [];
 
 		const beforeImportFn = async ({ data, dataType: type }) => {
 			if (this.importRecord.valid === false) {
@@ -143,6 +145,19 @@ export class Base {
 			}
 		};
 
+		const afterImportChannelsFn = async (record, isNew) => {
+			afterImportFn();
+			if (!isNew) {
+				existingRooms.push(record.data._id);
+			}
+		};
+
+		const afterImportAllMessagesFn = async (roomIdsWithMessagesSent) => {
+			afterImportFn();
+			const roomIdsToNotifyMessageImporting = existingRooms.filter((rid) => roomIdsWithMessagesSent.includes(rid));
+			roomIdsToNotifyMessageImporting.forEach((rid) => msgStream.emitWithoutBroadcast(`${rid}/messages-imported`, { rid }));
+		};
+
 		const afterBatchFn = async (successCount, errorCount) => {
 			if (successCount) {
 				await this.addCountCompleted(successCount);
@@ -173,10 +188,10 @@ export class Base {
 				await this.converter.convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn });
 
 				await this.updateProgress(ProgressStep.IMPORTING_CHANNELS);
-				await this.converter.convertChannels(startedByUserId, { beforeImportFn, afterImportFn, onErrorFn });
+				await this.converter.convertChannels(startedByUserId, { beforeImportFn, afterImportFn: afterImportChannelsFn, onErrorFn });
 
 				await this.updateProgress(ProgressStep.IMPORTING_MESSAGES);
-				await this.converter.convertMessages({ afterImportFn, onErrorFn });
+				await this.converter.convertMessages({ afterImportFn, onErrorFn, afterImportAllMessagesFn });
 
 				await this.updateProgress(ProgressStep.FINISHING);
 
