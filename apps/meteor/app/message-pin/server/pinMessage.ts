@@ -108,9 +108,9 @@ Meteor.methods<ServerMethods>({
 			username: me.username,
 		};
 
-		originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
-
 		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
+
+		originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
 
 		await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 		if (settings.get('Message_Read_Receipt_Store_Users')) {
@@ -211,9 +211,9 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
 		}
 
-		originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
-
 		originalMessage = await callbacks.run('beforeSaveMessage', originalMessage);
+
+		originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
 
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);

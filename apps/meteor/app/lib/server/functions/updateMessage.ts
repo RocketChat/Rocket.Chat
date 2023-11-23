@@ -54,10 +54,10 @@ export const updateMessage = async function (
 		return;
 	}
 
+	message = await callbacks.run('beforeSaveMessage', message);
+
 	// TODO remove type cast
 	message = await Message.beforeSave({ message: message as IMessage, room, user });
-
-	message = await callbacks.run('beforeSaveMessage', message);
 
 	const { _id, ...editedMessage } = message;
 
