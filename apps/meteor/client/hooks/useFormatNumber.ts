@@ -5,7 +5,11 @@ export const useFormatNumber = (options?: Intl.NumberFormatOptions) => {
 	const language = useLanguage();
 	return useCallback(
 		(value: number) => {
-			return new Intl.NumberFormat(language, options).format(value);
+			try {
+				return new Intl.NumberFormat(language, options).format(value);
+			} catch (_error) {
+				return value;
+			}
 		},
 		[language, options],
 	);
