@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import { CustomSounds } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { ICustomSound } from '@rocket.chat/core-typings';
+import { CustomSounds } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';

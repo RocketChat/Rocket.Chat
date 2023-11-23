@@ -1,45 +1,35 @@
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 
-import { FormSkeleton } from '../../../../client/components/Skeleton';
-import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { ContextualbarSkeleton } from '../../../../client/components/Contextualbar';
 import TagEdit from './TagEdit';
 
-type TagEditWithDepartmentDataPropsType = {
-	data: ILivechatTag;
-	title: ReactNode;
-	tagId: ILivechatTag['_id'];
-	reload: () => void;
-};
-
-function TagEditWithDepartmentData({ data, title, ...props }: TagEditWithDepartmentDataPropsType): ReactElement {
+const TagEditWithDepartmentData = ({ tagData }: { tagData: ILivechatTag }) => {
 	const t = useTranslation();
 
-	const {
-		value: currentDepartments,
-		phase: currentDepartmentsState,
-		error: currentDepartmentsError,
-	} = useEndpointData('/v1/livechat/department.listByIds', {
-		params: useMemo(() => ({ ids: data?.departments ? data.departments : [] }), [data]),
-	});
+	const getDepartmentsById = useEndpoint('GET', '/v1/livechat/department.listByIds');
+	const { data, isLoading, isError } = useQuery(
+		['livechat-getDepartmentsById', tagData.departments],
+		async () => getDepartmentsById({ ids: tagData.departments }),
+		{ refetchOnWindowFocus: false },
+	);
 
-	if ([currentDepartmentsState].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton />;
+	if (isLoading) {
+		return <ContextualbarSkeleton />;
 	}
 
-	if (currentDepartmentsError) {
+	if (isError) {
 		return (
-			<Callout m='x16' type='danger'>
+			<Callout m={16} type='danger'>
 				{t('Not_Available')}
 			</Callout>
 		);
 	}
 
-	return <TagEdit title={title} currentDepartments={currentDepartments} data={data} {...props} />;
-}
+	return <TagEdit tagData={tagData} currentDepartments={data?.departments} />;
+};
 
 export default TagEditWithDepartmentData;

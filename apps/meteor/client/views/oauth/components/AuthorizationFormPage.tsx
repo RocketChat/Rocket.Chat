@@ -25,7 +25,7 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 
 	const { t } = useTranslation();
 
-	const homeRoute = useRoute('/home');
+	const homeRoute = useRoute('home');
 
 	const handleCancelButtonClick = () => {
 		queueMicrotask(() => {

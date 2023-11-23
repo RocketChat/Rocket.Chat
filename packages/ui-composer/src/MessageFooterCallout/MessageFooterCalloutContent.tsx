@@ -8,7 +8,7 @@ const MessageFooterCalloutContent = forwardRef<
 		children: ReactNode;
 	}
 >(function MessageFooterCalloutContent(props, ref): ReactElement {
-	return <Box mi='x4' ref={ref} flexWrap='wrap' textAlign='center' color='default' flexGrow={1} flexShrink={1} {...props} />;
+	return <Box mi={4} ref={ref} flexWrap='wrap' textAlign='center' color='default' flexGrow={1} flexShrink={1} {...props} />;
 });
 
 export default MessageFooterCalloutContent;

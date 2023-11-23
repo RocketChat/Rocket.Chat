@@ -1,4 +1,4 @@
-import { createClassName } from '../../helpers';
+import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
 
 export const TypingDots = ({ text, className, style = {} }) => (

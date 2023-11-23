@@ -1,32 +1,62 @@
-import { useTranslation, useRoute, useMethod, useSetModal, useRole } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import {
+	useTranslation,
+	useRoute,
+	useSetModal,
+	useRole,
+	useRouter,
+	useAtLeastOnePermission,
+	usePermission,
+} from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import type { AccountBoxItem } from '../../../../../app/ui-utils/client/lib/AccountBox';
-import type { UpgradeTabVariant } from '../../../../../lib/upgradeTab';
-import { getUpgradeTabLabel, isFullyFeature } from '../../../../../lib/upgradeTab';
-import Emoji from '../../../../components/Emoji';
-import type { GenericMenuItemProps } from '../../../../components/GenericMenuItem';
+import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
+import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
 import RegisterWorkspaceModal from '../../../../views/admin/cloud/modals/RegisterWorkspaceModal';
-import { useUpgradeTabParams } from '../../../../views/hooks/useUpgradeTabParams';
 
-type useAdministrationItemProps = {
-	accountBoxItems: AccountBoxItem[];
-	showWorkspace: boolean;
-};
-export const useAdministrationItems = ({ accountBoxItems, showWorkspace }: useAdministrationItemProps): GenericMenuItemProps[] => {
+const ADMIN_PERMISSIONS = [
+	'view-statistics',
+	'run-import',
+	'view-user-administration',
+	'view-room-administration',
+	'create-invite-links',
+	'manage-cloud',
+	'view-logs',
+	'manage-sounds',
+	'view-federation-data',
+	'manage-email-inbox',
+	'manage-emoji',
+	'manage-outgoing-integrations',
+	'manage-own-outgoing-integrations',
+	'manage-incoming-integrations',
+	'manage-own-incoming-integrations',
+	'manage-oauth-apps',
+	'access-mailer',
+	'manage-user-status',
+	'access-permissions',
+	'access-setting-permissions',
+	'view-privileged-setting',
+	'edit-privileged-setting',
+	'manage-selected-settings',
+	'view-engagement-dashboard',
+	'view-moderation-console',
+];
+
+/**
+ * @deprecated Feature preview
+ * @description Should be moved to navbar when the feature became part of the core
+ * @memberof navigationBar
+ */
+
+export const useAdministrationItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
+	const router = useRouter();
 
-	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
-	const shouldShowEmoji = isFullyFeature(tabType);
-	const label = getUpgradeTabLabel(tabType);
+	const shouldShowAdminMenu = useAtLeastOnePermission(ADMIN_PERMISSIONS);
+
 	const isAdmin = useRole('admin');
 	const setModal = useSetModal();
 
-	const checkCloudRegisterStatus = useMethod('cloud:checkRegisterStatus');
-	const result = useQuery(['admin/cloud/register-status'], async () => checkCloudRegisterStatus());
-	const { workspaceRegistered } = result.data || {};
+	const { isRegistered } = useRegistrationStatus();
 
 	const handleRegisterWorkspaceClick = (): void => {
 		const handleModalClose = (): void => setModal(null);
@@ -34,28 +64,23 @@ export const useAdministrationItems = ({ accountBoxItems, showWorkspace }: useAd
 	};
 
 	const adminRoute = useRoute('admin-index');
-	const upgradeRoute = useRoute('upgrade');
 	const cloudRoute = useRoute('cloud');
-	const showUpgradeItem = !isLoading && tabType;
 
-	const upgradeItem: GenericMenuItemProps = {
-		id: 'showUpgradeItem',
-		content: (
-			<>
-				{t(label)} {shouldShowEmoji && <Emoji emojiHandle=':zap:' />}
-			</>
-		),
-		icon: 'arrow-stack-up',
-		onClick: () => {
-			upgradeRoute.push({ type: tabType as UpgradeTabVariant }, trialEndDate ? { trialEndDate } : undefined);
-		},
+	const omnichannel = usePermission('view-livechat-manager');
+
+	const omnichannelItem: GenericMenuItemProps = {
+		id: 'omnichannel',
+		content: t('Omnichannel'),
+		icon: 'headset',
+		onClick: () => router.navigate('/omnichannel/current'),
 	};
+
 	const adminItem: GenericMenuItemProps = {
 		id: 'registration',
-		content: workspaceRegistered ? t('Registration') : t('Register'),
+		content: isRegistered ? t('Registration') : t('Register'),
 		icon: 'cloud-plus',
 		onClick: () => {
-			if (workspaceRegistered) {
+			if (isRegistered) {
 				cloudRoute.push({ context: '/' });
 				return;
 			}
@@ -71,24 +96,7 @@ export const useAdministrationItems = ({ accountBoxItems, showWorkspace }: useAd
 		},
 	};
 
-	const accountBoxItem: GenericMenuItemProps[] = accountBoxItems.map((item, key) => {
-		const action = () => {
-			if (item.href) {
-				FlowRouter.go(item.href);
-			}
-		};
-		return {
-			id: `account-box-item-${key}`,
-			content: t(item.name),
-			icon: item.icon,
-			onClick: action,
-		};
-	});
-
-	return [
-		...(showUpgradeItem ? [upgradeItem] : []),
-		...(isAdmin ? [adminItem] : []),
-		...(showWorkspace ? [workspaceItem] : []),
-		...(accountBoxItems.length ? accountBoxItem : []),
-	];
+	return [shouldShowAdminMenu && workspaceItem, isAdmin && adminItem, omnichannel && omnichannelItem].filter(
+		Boolean,
+	) as GenericMenuItemProps[];
 };

@@ -5,14 +5,16 @@ import React, { useState, useCallback, useMemo } from 'react';
 import GenericModal from '../../../../components/GenericModal';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useRoom } from '../../contexts/RoomContext';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import RoomFiles from './RoomFiles';
 import { useFilesList } from './hooks/useFilesList';
 import { useMessageDeletionIsAllowed } from './hooks/useMessageDeletionIsAllowed';
 
-const RoomFilesWithData = ({ rid }) => {
+const RoomFilesWithData = () => {
 	const uid = useUserId();
-	const onClickClose = useTabBarClose();
+	const room = useRoom();
+	const { closeTab } = useRoomToolbox();
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
@@ -26,7 +28,7 @@ const RoomFilesWithData = ({ rid }) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const { filesList, loadMoreItems, reload } = useFilesList(useMemo(() => ({ rid, type, text }), [rid, type, text]));
+	const { filesList, loadMoreItems, reload } = useFilesList(useMemo(() => ({ rid: room._id, type, text }), [room._id, type, text]));
 	const { phase, items: filesItems, itemCount: totalItemCount } = useRecordList(filesList);
 
 	const handleDelete = useMutableCallback((_id) => {
@@ -48,11 +50,11 @@ const RoomFilesWithData = ({ rid }) => {
 		);
 	}, []);
 
-	const isDeletionAllowed = useMessageDeletionIsAllowed(rid, uid);
+	const isDeletionAllowed = useMessageDeletionIsAllowed(room._id, uid);
 
 	return (
 		<RoomFiles
-			rid={rid}
+			rid={room._id}
 			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}
@@ -61,7 +63,7 @@ const RoomFilesWithData = ({ rid }) => {
 			setText={handleTextChange}
 			filesItems={filesItems}
 			total={totalItemCount}
-			onClickClose={onClickClose}
+			onClickClose={closeTab}
 			onClickDelete={handleDelete}
 			isDeletionAllowed={isDeletionAllowed}
 		/>

@@ -1,8 +1,8 @@
 import moment from 'moment';
 
 import '@testing-library/jest-dom';
-import { ChatTranscript } from './ChatTranscript';
 import { invalidData, validData, newDayData, sameDayData, translationsData } from '../templates/ChatTranscript/ChatTranscript.fixtures';
+import { ChatTranscript } from './ChatTranscript';
 
 jest.mock('../templates/ChatTranscript', () => {
 	return {

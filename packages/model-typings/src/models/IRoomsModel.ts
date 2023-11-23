@@ -130,6 +130,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findByE2E(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
+	findE2ERoomById(roomId: IRoom['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
+
 	findRoomsInsideTeams(autoJoin?: boolean): FindCursor<IRoom>;
 
 	findOneDirectRoomContainingAllUserIDs(uid: IDirectMessageRoom['uids'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
@@ -213,7 +215,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		options?: FindOptions<IRoom>,
 		includeFederatedRooms?: boolean,
 	): FindCursor<IRoom>;
-	findByNameAndTypesNotInIds(
+	findByNameOrFNameAndTypesNotInIds(
 		name: IRoom['name'] | RegExp,
 		types: IRoom['t'][],
 		ids: string[],
@@ -251,7 +253,9 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	): Promise<UpdateResult>;
 	setCustomFieldsById(rid: string, customFields: Record<string, any>): Promise<UpdateResult>;
 	muteUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
-	unmuteUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
+	muteReadOnlyUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
+	unmuteMutedUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
+	unmuteReadOnlyUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
 	saveFeaturedById(rid: string, featured: boolean): Promise<UpdateResult>;
 	saveDefaultById(rid: string, defaultValue: boolean): Promise<UpdateResult>;
 	saveFavoriteById(rid: string, favorite: boolean, defaultValue: boolean): Promise<UpdateResult>;

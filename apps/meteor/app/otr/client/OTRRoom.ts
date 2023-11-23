@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
-import { Random } from '@rocket.chat/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
@@ -12,8 +12,11 @@ import { dispatchToastMessage } from '../../../client/lib/toast';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { Notifications } from '../../notifications/client';
-import { otrSystemMessages } from '../lib/constants';
+import { sdk } from '../../utils/client/lib/SDKClient';
+import { t } from '../../utils/lib/i18n';
 import type { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom } from '../lib/IOTR';
+import { OtrRoomState } from '../lib/OtrRoomState';
+import { otrSystemMessages } from '../lib/constants';
 import {
 	decryptAES,
 	deriveBits,
@@ -25,9 +28,6 @@ import {
 	importKeyRaw,
 	joinEncryptedData,
 } from '../lib/functions';
-import { OtrRoomState } from '../lib/OtrRoomState';
-import { t } from '../../utils/lib/i18n';
-import { sdk } from '../../utils/client/lib/SDKClient';
 
 export class OTRRoom implements IOTRRoom {
 	private _userId: string;
@@ -89,7 +89,10 @@ export class OTRRoom implements IOTRRoom {
 				if (!user) {
 					return;
 				}
-				await sdk.call('sendSystemMessages', this._roomId, user.username, otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
+				await sdk.rest.post('/v1/chat.otr', {
+					roomId: this._roomId,
+					type: otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
+				});
 				this.isFirstOTR = false;
 			}
 		} catch (e) {

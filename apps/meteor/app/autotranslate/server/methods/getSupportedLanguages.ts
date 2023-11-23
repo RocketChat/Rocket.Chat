@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ISupportedLanguage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { TranslationProviderRegistry } from '..';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/ui-contexts' {

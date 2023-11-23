@@ -1,10 +1,11 @@
-/* eslint-env mocha */
-import { expect } from 'chai';
+import { faker } from '@faker-js/faker';
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import { expect } from 'chai';
+import { before, describe, it, after } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../../data/livechat/department';
 import {
 	makeAgentAvailable,
 	createAgent,
@@ -12,14 +13,74 @@ import {
 	createVisitor,
 	createLivechatRoom,
 	getLivechatRoomInfo,
-	deleteDepartment,
 } from '../../../data/livechat/rooms';
-import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
-import { IS_EE } from '../../../e2e/config/constants';
-import { createUser } from '../../../data/users.helper';
 import { createMonitor, createUnit } from '../../../data/livechat/units';
+import { restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { createUser, deleteUser } from '../../../data/users.helper';
+import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('LIVECHAT - Departments', function () {
+(IS_EE ? describe.skip : describe)('LIVECHAT - Departments[CE]', () => {
+	before((done) => getCredentials(done));
+
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
+		await restorePermissionToRoles('view-livechat-manager');
+		await createAgent();
+		await makeAgentAvailable();
+		await updateSetting('Omnichannel_enable_department_removal', true);
+	});
+
+	// Remove departments that may have been created before
+	before(async () => {
+		const { body } = await request.get(api('livechat/department')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+		for await (const department of body.departments) {
+			await deleteDepartment(department._id);
+		}
+	});
+
+	let departmentId: string;
+
+	after(async () => {
+		await deleteDepartment(departmentId);
+	});
+
+	it('should create a new department', async () => {
+		const { body } = await request
+			.post(api('livechat/department'))
+			.set(credentials)
+			.send({ department: { name: 'Test', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' } })
+			.expect('Content-Type', 'application/json')
+			.expect(200);
+		expect(body).to.have.property('success', true);
+		expect(body).to.have.property('department');
+		expect(body.department).to.have.property('_id');
+		expect(body.department).to.have.property('name', 'Test');
+		expect(body.department).to.have.property('enabled', true);
+		expect(body.department).to.have.property('showOnOfflineForm', true);
+		expect(body.department).to.have.property('showOnRegistration', true);
+		departmentId = body.department._id;
+	});
+
+	it('should not create a 2nd department', () => {
+		return request
+			.post(api('livechat/department'))
+			.set(credentials)
+			.send({ department: { name: 'Test', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' } })
+			.expect('Content-Type', 'application/json')
+			.expect(400);
+	});
+
+	it('should return a list of 1 department', async () => {
+		const { body } = await request.get(api('livechat/department')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+		expect(body).to.have.property('success', true);
+		expect(body).to.have.property('departments');
+		expect(body.departments).to.be.an('array');
+		expect(body.departments).to.have.lengthOf(1);
+	});
+});
+
+(IS_EE ? describe : describe.skip)('LIVECHAT - Departments', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
@@ -52,6 +113,72 @@ import { createMonitor, createUnit } from '../../../data/livechat/units';
 					expect(res.body.departments).to.have.length.of.at.least(0);
 				});
 		});
+
+		it('should reject invalid pagination params', async () => {
+			await request
+				.get(api('livechat/department'))
+				.set(credentials)
+				.query({ count: 'invalid' })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should return a list of paginated departments', async () => {
+			await request
+				.get(api('livechat/department'))
+				.set(credentials)
+				.query({ count: 1, offset: 0 })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('departments');
+					expect(res.body.departments).to.be.an('array');
+					expect(res.body.departments).to.have.lengthOf(1);
+				});
+		});
+
+		it('should sort list alphabetically following mongodb default sort (no collation)', async () => {
+			const department1 = await createDepartment(undefined, 'A test');
+			const department2 = await createDepartment(undefined, 'a test');
+			await request
+				.get(api('livechat/department'))
+				.set(credentials)
+				.query({ count: 2, offset: 0, text: 'test' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('departments');
+					expect(res.body.departments).to.be.an('array');
+					expect(res.body.departments).to.have.lengthOf(2);
+					expect(res.body.departments[0]).to.have.property('_id', department1._id);
+					expect(res.body.departments[1]).to.have.property('_id', department2._id);
+				});
+			await deleteDepartment(department1._id);
+			await deleteDepartment(department2._id);
+		});
+
+		it('should return a list of departments matching name', async () => {
+			const department1 = await createDepartment(undefined, 'A test 123');
+			const department2 = await createDepartment(undefined, 'a test 456');
+			await request
+				.get(api('livechat/department'))
+				.set(credentials)
+				.query({ count: 2, offset: 0, text: 'A test 123' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('departments');
+					expect(res.body.departments).to.be.an('array');
+					expect(res.body.departments).to.have.lengthOf(1);
+					expect(res.body.departments[0]).to.have.property('_id', department1._id);
+					expect(res.body.departments.find((dept: ILivechatDepartment) => dept._id === department2._id)).to.be.undefined;
+				});
+			await deleteDepartment(department1._id);
+			await deleteDepartment(department2._id);
+		});
 	});
 
 	describe('POST livechat/departments', () => {
@@ -77,8 +204,62 @@ import { createMonitor, createUnit } from '../../../data/livechat/units';
 				.expect(400);
 		});
 
+		it('should return an error if requestTagsBeforeClosing is true but no tags are provided', async () => {
+			await request
+				.post(api('livechat/department'))
+				.set(credentials)
+				.send({
+					department: {
+						name: 'Test',
+						enabled: true,
+						showOnOfflineForm: true,
+						showOnRegistration: true,
+						email: 'bla@bla',
+						requestTagBeforeClosingChat: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should return an error if requestTagsBeforeClosing is true but tags are not an array', async () => {
+			await request
+				.post(api('livechat/department'))
+				.set(credentials)
+				.send({
+					department: {
+						name: 'Test',
+						enabled: true,
+						showOnOfflineForm: true,
+						showOnRegistration: true,
+						email: 'bla@bla',
+						requestTagBeforeClosingChat: true,
+						chatClosingTags: 'not an array',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should return an error if fallbackForwardDepartment is present but is not a department id', async () => {
+			await request
+				.post(api('livechat/department'))
+				.set(credentials)
+				.send({
+					department: {
+						name: 'Test',
+						enabled: true,
+						showOnOfflineForm: true,
+						showOnRegistration: true,
+						email: 'bla@bla',
+						fallbackForwardDepartment: 'not a department id',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
 		it('should create a new department', async () => {
-			await updatePermission('manage-livechat-departments', ['admin']);
 			const { body } = await request
 				.post(api('livechat/department'))
 				.set(credentials)
@@ -92,6 +273,28 @@ import { createMonitor, createUnit } from '../../../data/livechat/units';
 			expect(body.department).to.have.property('enabled', true);
 			expect(body.department).to.have.property('showOnOfflineForm', true);
 			expect(body.department).to.have.property('showOnRegistration', true);
+			await deleteDepartment(body.department._id);
+		});
+
+		it('should create a new disabled department', async () => {
+			const { body } = await request
+				.post(api('livechat/department'))
+				.set(credentials)
+				.send({
+					department: {
+						name: faker.hacker.adjective(),
+						enabled: false,
+						showOnOfflineForm: true,
+						showOnRegistration: true,
+						email: faker.internet.email(),
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('department');
+			expect(body.department).to.have.property('_id');
+			expect(body.department).to.have.property('enabled', false);
 			await deleteDepartment(body.department._id);
 		});
 	});
@@ -137,6 +340,86 @@ import { createMonitor, createUnit } from '../../../data/livechat/units';
 			expect(body.department).to.have.property('showOnRegistration', department.showOnRegistration);
 			expect(body.department).to.have.property('email', department.email);
 			await deleteDepartment(body.department._id);
+		});
+	});
+
+	describe('PUT livechat/departments/:_id', () => {
+		let department: ILivechatDepartment;
+		before(async () => {
+			department = await createDepartment();
+		});
+		after(async () => {
+			await deleteDepartment(department._id);
+		});
+
+		it('should return an error if fallbackForwardDepartment points to same department', async () => {
+			await request
+				.put(api(`livechat/department/${department._id}`))
+				.set(credentials)
+				.send({
+					department: {
+						name: faker.hacker.adjective(),
+						enabled: true,
+						showOnOfflineForm: true,
+						showOnRegistration: true,
+						email: faker.internet.email(),
+						fallbackForwardDepartment: department._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+		it('should fail if `agents` param is not an array', async () => {
+			await request
+				.put(api(`livechat/department/${department._id}`))
+				.set(credentials)
+				.send({
+					department: {
+						name: faker.hacker.adjective(),
+						enabled: true,
+						showOnOfflineForm: true,
+						showOnRegistration: true,
+						email: faker.internet.email(),
+					},
+					agents: 'not an array',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+		it('should throw an error if user has permission to add agents and agents array has invalid format', async () => {
+			await updatePermission('add-livechat-department-agents', ['admin']);
+			await request
+				.put(api(`livechat/department/${department._id}`))
+				.set(credentials)
+				.send({
+					department: {
+						name: faker.hacker.adjective(),
+						enabled: true,
+						showOnOfflineForm: true,
+						showOnRegistration: true,
+						email: faker.internet.email(),
+					},
+					agents: [{ notAValidKey: 'string' }],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+		it('should throw an error if user has permission to add agents and agents array has invalid internal format', async () => {
+			await request
+				.put(api(`livechat/department/${department._id}`))
+				.set(credentials)
+				.send({
+					department: {
+						name: faker.hacker.adjective(),
+						enabled: true,
+						showOnOfflineForm: true,
+						showOnRegistration: true,
+						email: faker.internet.email(),
+					},
+					agents: [{ upsert: [{ notAValidKey: 'string' }] }],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
 		});
 	});
 
@@ -219,6 +502,9 @@ import { createMonitor, createUnit } from '../../../data/livechat/units';
 			latestRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(latestRoom.departmentId).to.be.undefined;
 			expect(latestRoom.departmentAncestors).to.be.undefined;
+
+			// cleanup
+			await deleteUser(monitor);
 		});
 
 		(IS_EE ? it : it.skip)(
@@ -259,6 +545,9 @@ import { createMonitor, createUnit } from '../../../data/livechat/units';
 				latestRoom2 = await getLivechatRoomInfo(newRoom2._id);
 				expect(latestRoom2.departmentId).to.be.equal(department2._id);
 				expect(latestRoom2.departmentAncestors).to.be.an('array').that.includes(unit._id);
+
+				// cleanup
+				await deleteUser(monitor);
 			},
 		);
 	});

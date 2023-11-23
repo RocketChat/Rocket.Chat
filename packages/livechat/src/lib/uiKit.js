@@ -104,16 +104,19 @@ export const triggerAction = async ({ appId, type, actionId, rid, mid, viewId, c
 
 	try {
 		const result = await Promise.race([
-			Livechat.rest.post(`/apps/ui.interaction/${appId}`, {
-				type,
-				actionId,
-				rid,
-				mid,
-				viewId,
-				container,
-				triggerId,
-				payload,
-			}),
+			Livechat.sendUiInteraction(
+				{
+					type,
+					actionId,
+					rid,
+					mid,
+					viewId,
+					container,
+					triggerId,
+					payload,
+				},
+				appId,
+			),
 
 			new Promise((_, reject) => {
 				setTimeout(() => {

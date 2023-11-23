@@ -2,7 +2,7 @@ import { Registration } from './page-objects';
 import { test, expect } from './utils/test';
 
 test.describe.parallel('Forgot Password', () => {
-	let poRegistration: Registration;
+	let poRegistration: Registration;	
 
 	test.beforeEach(async ({ page }) => {
 		poRegistration = new Registration(page);
@@ -11,7 +11,7 @@ test.describe.parallel('Forgot Password', () => {
 		await poRegistration.btnForgotPassword.click();
 	});
 
-	test('Email validation', async () => {
+	test('Send email to recover account', async () => {
 		await test.step('expect trigger a validation error if no email is provided', async () => {
 			await poRegistration.btnSendInstructions.click();
 			await expect(poRegistration.inputEmail).toBeInvalid();
@@ -31,11 +31,16 @@ test.describe.parallel('Forgot Password', () => {
 			await expect(poRegistration.inputEmail).toBeInvalid();
 		});
 
-		await test.step('expect to show a success toast if a valid email is provided', async () => {
+		await test.step('expect to show a success callout if a valid email is provided', async () => {
 			await poRegistration.inputEmail.fill('mail@mail.com');
 			await poRegistration.btnSendInstructions.click();
 
 			await expect(poRegistration.forgotPasswordEmailCallout).toBeVisible();
 		});
 	});
+
+	test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
+		const results = await makeAxeBuilder().analyze();
+		expect(results.violations).toEqual([]);
+	})
 });

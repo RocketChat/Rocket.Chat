@@ -1,13 +1,15 @@
-import { Meteor } from 'meteor/meteor';
-import { Messages } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings/server';
-import { reply } from '../functions';
+import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
 import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
+import { settings } from '../../../settings/server';
+import { reply } from '../functions';
 
 async function notifyUsersOnReply(message: IMessage, replies: string[], room: IRoom) {
 	// skips this callback if the message was edited
@@ -61,19 +63,23 @@ export async function processThreads(message: IMessage, room: IRoom) {
 	await notifyUsersOnReply(message, replies, room);
 	await metaData(message, parentMessage, replies);
 	await notification(message, room, replies);
+	void broadcastMessageSentEvent({
+		id: message.tmid,
+		broadcastCallback: (message) => api.broadcast('message.sent', message),
+	});
 
 	return message;
 }
 
-Meteor.startup(function () {
-	settings.watch<boolean>('Threads_enabled', function (value) {
+Meteor.startup(() => {
+	settings.watch<boolean>('Threads_enabled', (value) => {
 		if (!value) {
 			callbacks.remove('afterSaveMessage', 'threads-after-save-message');
 			return;
 		}
 		callbacks.add(
 			'afterSaveMessage',
-			async function (message, room) {
+			async (message, room) => {
 				return processThreads(message, room);
 			},
 			callbacks.priority.LOW,

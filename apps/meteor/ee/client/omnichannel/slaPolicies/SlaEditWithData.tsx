@@ -23,7 +23,7 @@ function SlaEditWithData({ slaId, reload }: SlaEditProps): ReactElement {
 
 	if (isError || !data) {
 		return (
-			<Callout m='x16' type='danger'>
+			<Callout m={16} type='danger'>
 				{t('Not_Available')}
 			</Callout>
 		);

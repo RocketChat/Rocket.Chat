@@ -1,15 +1,17 @@
-import { Match, check } from 'meteor/check';
+import { Message, api } from '@rocket.chat/core-services';
 import { Messages } from '@rocket.chat/models';
+import { Match, check } from 'meteor/check';
 
-import { settings } from '../../../settings/server';
-import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../ee/server/apps';
-import { isURL } from '../../../../lib/utils/isURL';
-import { FileUpload } from '../../../file-upload/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { parseUrlsInMessage } from './parseUrlsInMessage';
+import { callbacks } from '../../../../lib/callbacks';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
+import { isURL } from '../../../../lib/utils/isURL';
+import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { FileUpload } from '../../../file-upload/server';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { settings } from '../../../settings/server';
+import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 /**
  * IMPORTANT
@@ -203,7 +205,16 @@ function cleanupMessageObject(message) {
 	['customClass'].forEach((field) => delete message[field]);
 }
 
-export const sendMessage = async function (user, message, room, upsert = false) {
+/**
+ * Validates and sends the message object.
+ * @param {IUser} user
+ * @param {AtLeast<IMessage, 'rid'>} message
+ * @param {IRoom} room
+ * @param {boolean} [upsert=false]
+ * @param {string[]} [previewUrls]
+ * @returns {Promise<IMessage>}
+ */
+export const sendMessage = async function (user, message, room, upsert = false, previewUrls = undefined) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
@@ -236,9 +247,11 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 
 	cleanupMessageObject(message);
 
-	parseUrlsInMessage(message);
+	parseUrlsInMessage(message, previewUrls);
 
 	message = await callbacks.run('beforeSaveMessage', message, room);
+
+	message = await Message.beforeSave({ message, room, user });
 	if (message) {
 		if (message.t === 'otr') {
 			const otrStreamer = notifications.streamRoomMessage;
@@ -276,6 +289,10 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 
 		// Execute all callbacks
 		await callbacks.run('afterSaveMessage', message, room);
+		void broadcastMessageSentEvent({
+			id: message._id,
+			broadcastCallback: (message) => api.broadcast('message.sent', message),
+		});
 		return message;
 	}
 };

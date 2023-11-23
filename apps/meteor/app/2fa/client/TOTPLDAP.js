@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
 import '../../../client/startup/ldap';
-import { reportError } from '../../../client/lib/2fa/utils';
 import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod';
+import { reportError } from '../../../client/lib/2fa/utils';
 
 Meteor.loginWithLDAPAndTOTP = function (...args) {
 	// Pull username and password

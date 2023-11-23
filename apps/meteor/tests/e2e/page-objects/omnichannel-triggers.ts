@@ -12,60 +12,20 @@ export class OmnichannelTriggers {
 		this.sidenav = new OmnichannelSidenav(page);
 	}
 
-	get btnNew(): Locator {
-		return this.page.locator('role=button[name="New"]');
+	headingButtonNew(name: string) {
+		return this.page.locator(`role=main >> role=button[name="${name}"]`).first();
 	}
 
-	get Name(): Locator {
-		return this.page.locator('[placeholder="Name"]');
+	get inputName(): Locator {
+		return this.page.locator('input[name="name"]');
 	}
 
-	get Description(): Locator {
-		return this.page.locator('[placeholder="Description"]');
+	get inputDescription(): Locator {
+		return this.page.locator('input[name="description"]');
 	}
 
-	get visitorTimeOnSite(): Locator {
-		return this.page.locator('text=Visitor time on site');
-	}
-
-	get visitorPageURL(): Locator {
-		return this.page.locator('text=Visitor page URL');
-	}
-
-	get chatOpenedByVisitor(): Locator {
-		return this.page.locator('text=Chat opened by the visitor');
-	}
-
-	get addTime(): Locator {
-		return this.page.locator('[placeholder="Time in seconds"]');
-	}
-
-	get impersonateAgent(): Locator {
-		return this.page.locator('text=Impersonate next agent from queue');
-	}
-
-	get impersonateAgentListBox(): Locator {
-		return this.page.locator('ol[role="listbox"] >> text=Impersonate next agent from queue');
-	}
-
-	get customAgent(): Locator {
-		return this.page.locator('text=Custom agent');
-	}
-
-	get agentName(): Locator {
-		return this.page.locator('[placeholder="Name of agent"]');
-	}
-
-	get textArea(): Locator {
-		return this.page.locator('textarea');
-	}
-
-	get saveBtn(): Locator {
+	get btnSave(): Locator {
 		return this.page.locator('button >> text="Save"');
-	}
-
-	get firstRowInTable() {
-		return this.page.locator('table tr:first-child td:first-child');
 	}
 
 	firstRowInTriggerTable(triggersName1: string) {
@@ -76,12 +36,8 @@ export class OmnichannelTriggers {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--success >> nth=0');
 	}
 
-	get inputSearch() {
-		return this.page.locator('[placeholder="Search"]');
-	}
-
-	get pageTitle() {
-		return this.page.locator('[data-qa-type="PageHeader-title"]');
+	get btnCloseToastMessage(): Locator {
+		return this.toastMessage.locator('role=button');
 	}
 
 	get btnDeletefirstRowInTable() {
@@ -96,27 +52,85 @@ export class OmnichannelTriggers {
 		return this.page.locator('text=Trigger removed');
 	}
 
+	get conditionLabel(): Locator {
+		return this.page.locator('label >> text="Condition"')
+	}
+
+	get inputConditionValue(): Locator {
+		return this.page.locator('input[name="conditions.0.value"]');
+	}
+
+	get actionLabel(): Locator {
+		return this.page.locator('label >> text="Action"')
+	}
+
+	get inputAgentName(): Locator {
+		return this.page.locator('input[name="actions.0.params.name"]');
+	}
+
+	get inputTriggerMessage(): Locator {
+		return this.page.locator('textarea[name="actions.0.params.msg"]');
+	}
+
+	async selectCondition(condition: string) {
+		await this.conditionLabel.click();
+		await this.page.locator(`li.rcx-option[data-key="${condition}"]`).click();
+	}
+
+	async selectSender(sender: 'queue' | 'custom') {
+		await this.actionLabel.click();
+		await this.page.locator(`li.rcx-option[data-key="${sender}"]`).click();
+	}
+
 	public async createTrigger(triggersName: string, triggerMessage: string) {
-		await this.btnNew.click();
-		await this.Name.fill(triggersName);
-		await this.Description.fill('Creating a fresh trigger');
-		await this.visitorPageURL.click();
-		await this.visitorTimeOnSite.click();
-		await this.addTime.click();
-		await this.addTime.fill('5s');
-		await this.impersonateAgent.click();
-		await this.textArea.fill(triggerMessage);
-		await this.saveBtn.click();
+		await this.headingButtonNew('Create trigger').click();
+		await this.fillTriggerForm({
+			name: triggersName,
+			description: 'Creating a fresh trigger',
+			condition: 'time-on-site',
+			conditionValue: '5s',
+			triggerMessage,
+		});
+		await this.btnSave.click();
 	}
 
 	public async updateTrigger(newName: string) {
-		await this.Name.fill(newName);
-		await this.Description.fill('Updating the existing trigger');
-		await this.visitorTimeOnSite.click();
-		await this.chatOpenedByVisitor.click();
-		await this.impersonateAgent.click();
-		await this.customAgent.click();
-		await this.agentName.fill('Rocket.cat');
-		await this.saveBtn.click();
+		await this.fillTriggerForm({
+			name: `edited-${newName}`,
+			description: 'Updating the existing trigger',
+			condition: 'chat-opened-by-visitor',
+			sender: 'custom',
+			agentName: 'Rocket.cat',
+		});
+		await this.btnSave.click();
+	}
+
+	public async fillTriggerForm(
+		data: Partial<{
+			name: string;
+			description: string;
+			condition: 'time-on-site' | 'chat-opened-by-visitor' | 'after-guest-registration';
+			conditionValue?: string;
+			sender: 'queue' | 'custom';
+			agentName?: string;
+			triggerMessage: string;
+		}>,
+	) {
+		data.name && (await this.inputName.fill(data.name));
+		data.description && (await this.inputDescription.fill(data.description));
+		data.condition && (await this.selectCondition(data.condition));
+
+		if (data.conditionValue) {
+			await this.inputConditionValue.fill(data.conditionValue);
+		}
+
+		data.sender && (await this.selectSender(data.sender));
+		if (data.sender === 'custom' && !data.agentName) {
+			throw new Error('A custom agent is required for this action');
+		} else {
+			data.agentName && (await this.inputAgentName.fill(data.agentName));
+		}
+
+		data.triggerMessage && (await this.inputTriggerMessage.fill(data.triggerMessage));
 	}
 }

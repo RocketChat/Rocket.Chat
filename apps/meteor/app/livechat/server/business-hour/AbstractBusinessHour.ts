@@ -1,7 +1,7 @@
-import moment from 'moment-timezone';
-import type { ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatAgentStatus, ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/model-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
+import moment from 'moment-timezone';
 import type { UpdateFilter } from 'mongodb';
 
 import type { IWorkHoursCronJobsWrapper } from '../../../../server/models/raw/LivechatBusinessHours';
@@ -11,13 +11,17 @@ export interface IBusinessHourBehavior {
 	openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
 	closeBusinessHoursByDayAndHour(day: string, hour: string): Promise<void>;
 	onDisableBusinessHours(): Promise<void>;
-	onAddAgentToDepartment(options?: Record<string, any>): Promise<any>;
+	onAddAgentToDepartment(options?: { departmentId: string; agentsId: string[] }): Promise<any>;
 	onRemoveAgentFromDepartment(options?: Record<string, any>): Promise<any>;
-	onRemoveDepartment(department?: ILivechatDepartment): Promise<any>;
+	onRemoveDepartment(options: { department: ILivechatDepartment; agentsIds: string[] }): Promise<any>;
+	onDepartmentDisabled(department?: ILivechatDepartment): Promise<any>;
+	onDepartmentArchived(department: Pick<ILivechatDepartment, '_id'>): Promise<void>;
 	onStartBusinessHours(): Promise<void>;
 	afterSaveBusinessHours(businessHourData: ILivechatBusinessHour): Promise<void>;
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
 	changeAgentActiveStatus(agentId: string, status: string): Promise<any>;
+	// If a new agent is created, this callback will be called
+	onNewAgentCreated(agentId: string): Promise<void>;
 }
 
 export interface IBusinessHourType {
@@ -44,9 +48,7 @@ export abstract class AbstractBusinessHourBehavior {
 		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
 
-	// After logout, users are turned not-available by default
-	// This will turn them available unless they put themselves offline (manual status change)
-	async changeAgentActiveStatus(agentId: string, status: string): Promise<any> {
+	async changeAgentActiveStatus(agentId: string, status: ILivechatAgentStatus): Promise<any> {
 		return this.UsersRepository.setLivechatStatusIf(
 			agentId,
 			status,

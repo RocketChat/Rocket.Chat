@@ -1,5 +1,5 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
-import { Box, Field, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -68,11 +68,11 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 			</Page.Header>
 			<Page.Content>
 				<Box display='flex' flexDirection='column' w='full' mi='neg-x4'>
-					<Margins inline='x4'>
+					<Margins inline={4}>
 						{role.scope !== 'Users' && (
-							<Field mbe='x4'>
-								<Field.Label>{t('Choose_a_room')}</Field.Label>
-								<Field.Row>
+							<Field mbe={4}>
+								<FieldLabel>{t('Choose_a_room')}</FieldLabel>
+								<FieldRow>
 									<Controller
 										control={control}
 										name='rid'
@@ -80,12 +80,12 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 											<RoomAutoComplete value={value} onChange={onChange} placeholder={t('User')} />
 										)}
 									/>
-								</Field.Row>
+								</FieldRow>
 							</Field>
 						)}
 						<Field>
-							<Field.Label>{t('Add_users')}</Field.Label>
-							<Field.Row>
+							<FieldLabel>{t('Add_users')}</FieldLabel>
+							<FieldRow>
 								<Controller
 									control={control}
 									name='users'
@@ -93,16 +93,16 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 										<UserAutoCompleteMultiple value={value} placeholder={t('User')} onChange={onChange} />
 									)}
 								/>
-								<ButtonGroup mis='x8' align='end'>
+								<ButtonGroup mis={8} align='end'>
 									<Button primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
 										{t('Add')}
 									</Button>
 								</ButtonGroup>
-							</Field.Row>
+							</FieldRow>
 						</Field>
 					</Margins>
 				</Box>
-				<Margins blockStart='x8'>
+				<Margins blockStart={8}>
 					{(role.scope === 'Users' || rid) && (
 						<UsersInRoleTable reloadRef={reload} rid={rid} roleId={_id} roleName={name} description={description} />
 					)}

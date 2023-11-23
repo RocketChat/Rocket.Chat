@@ -9,7 +9,7 @@ import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import { useFormsSubscription } from '../additionalForms';
+import { MaxChatsPerAgentDisplay } from '../additionalForms';
 
 type AgentInfoProps = {
 	uid: string;
@@ -19,23 +19,19 @@ const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...pr
 	const t = useTranslation();
 	const result = useEndpointData('/v1/livechat/users/agent/:_id', { keys: { _id: uid } });
 
-	const { useMaxChatsPerAgentDisplay } = useFormsSubscription();
-
-	const MaxChats = useMaxChatsPerAgentDisplay?.();
-
 	if (result.phase === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}
 
 	if (result.phase === AsyncStatePhase.REJECTED) {
-		return <Box mbs='x16'>{t('User_not_found')}</Box>;
+		return <Box mbs={16}>{t('User_not_found')}</Box>;
 	}
 
 	const { user } = result.value;
 	const { username, statusLivechat, status: userStatus } = user;
 
 	return (
-		<ContextualbarScrollableContent p='x24' {...props}>
+		<ContextualbarScrollableContent p={24} {...props}>
 			{username && (
 				<Box alignSelf='center'>
 					<UserInfo.Avatar data-qa='AgentUserInfoAvatar' username={username} />
@@ -46,8 +42,8 @@ const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...pr
 				{children}
 			</ButtonGroup>
 
-			<Margins block='x4'>
-				<Box mb='x2'>
+			<Margins block={4}>
+				<Box mb={2}>
 					<UserInfo.Username data-qa='AgentInfoUserInfoUserName' username={username} status={<UserStatus status={userStatus} />} />
 				</Box>
 
@@ -58,7 +54,7 @@ const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...pr
 					</>
 				)}
 
-				{MaxChats && <MaxChats data={user} />}
+				<MaxChatsPerAgentDisplay data={user} />
 			</Margins>
 		</ContextualbarScrollableContent>
 	);

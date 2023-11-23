@@ -1,10 +1,12 @@
 import type { CustomFieldMetadata } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Field, Select, TextInput } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError, Select, TextInput } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useCallback, useMemo } from 'react';
 import type { Control, FieldValues } from 'react-hook-form';
-import { Controller } from 'react-hook-form';
+import { Controller, useFormState, get } from 'react-hook-form';
 
 type CustomFieldFormProps<T extends FieldValues> = {
 	metadata: CustomFieldMetadata[];
@@ -33,42 +35,61 @@ const CustomField = <T extends FieldValues>({
 	...props
 }: CustomFieldProps<T>) => {
 	const t = useTranslation();
-	const { getFieldState } = control;
+	const { errors } = useFormState({ control });
+	const fieldId = useUniqueId();
 
 	const Component = FIELD_TYPES[type] ?? null;
 
-	const selectOptions =
-		options.length > 0 && options[0] instanceof Array ? options : options.map((option) => [option, option, defaultValue === option]);
+	const selectOptions = useMemo(
+		() =>
+			options.length > 0 && options[0] instanceof Array ? options : options.map((option) => [option, option, defaultValue === option]),
+		[defaultValue, options],
+	);
 
-	const getErrorMessage = (error: any) => {
-		switch (error?.type) {
-			case 'required':
-				return t('The_field_is_required', label || name);
-			case 'minLength':
-				return t('Min_length_is', props?.minLength);
-			case 'maxLength':
-				return t('Max_length_is', props?.maxLength);
-		}
-	};
+	const validateRequired = useCallback((value) => (required ? typeof value === 'string' && !!value.trim() : true), [required]);
 
-	const error = getErrorMessage(getFieldState(name as any).error);
+	const getErrorMessage = useCallback(
+		(error) => {
+			switch (error?.type) {
+				case 'required':
+					return t('The_field_is_required', label || name);
+				case 'minLength':
+					return t('Min_length_is', props?.minLength);
+				case 'maxLength':
+					return t('Max_length_is', props?.maxLength);
+			}
+		},
+		[label, name, props?.maxLength, props?.minLength, t],
+	);
+
+	const error = get(errors, name);
+	const errorMessage = useMemo(() => getErrorMessage(error), [error, getErrorMessage]);
 
 	return (
 		<Controller<T, any>
 			name={name}
 			control={control}
 			defaultValue={defaultValue ?? ''}
-			rules={{ required, minLength: props.minLength, maxLength: props.maxLength }}
+			rules={{ minLength: props.minLength, maxLength: props.maxLength, validate: { required: validateRequired } }}
 			render={({ field }) => (
 				<Field rcx-field-group__item>
-					<Field.Label>
+					<FieldLabel htmlFor={fieldId} required={required}>
 						{label || t(name as TranslationKey)}
-						{required && '*'}
-					</Field.Label>
-					<Field.Row>
-						<Component {...props} {...field} error={error} options={selectOptions as SelectOption[]} flexGrow={1} />
-					</Field.Row>
-					<Field.Error>{error}</Field.Error>
+					</FieldLabel>
+					<FieldRow>
+						<Component
+							{...props}
+							{...field}
+							id={fieldId}
+							aria-describedby={`${fieldId}-error`}
+							error={errorMessage}
+							options={selectOptions as SelectOption[]}
+							flexGrow={1}
+						/>
+					</FieldRow>
+					<FieldError aria-live='assertive' id={`${fieldId}-error`}>
+						{errorMessage}
+					</FieldError>
 				</Field>
 			)}
 		/>

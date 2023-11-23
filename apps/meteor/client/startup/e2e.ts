@@ -1,5 +1,4 @@
 import type { AtLeast, IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -11,6 +10,7 @@ import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 import { isLayoutEmbedded } from '../lib/utils/isLayoutEmbedded';
 import { waitUntilFind } from '../lib/utils/waitUntilFind';
+import { router } from '../providers/RouterProvider';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
@@ -18,9 +18,15 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const adminEmbedded = isLayoutEmbedded() && FlowRouter.current().path.startsWith('/admin');
+		if (!window.crypto) {
+			return;
+		}
 
-		if (!adminEmbedded && settings.get('E2E_Enable') && window.crypto) {
+		const enabled = settings.get('E2E_Enable');
+		// we don't care about the reactivity of this boolean
+		const adminEmbedded = isLayoutEmbedded() && router.getLocationPathname().startsWith('/admin');
+
+		if (enabled && !adminEmbedded) {
 			e2e.startClient();
 			e2e.enabled.set(true);
 		} else {

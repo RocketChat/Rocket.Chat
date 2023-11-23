@@ -41,10 +41,6 @@ export async function fixWorkspaceVersionsBeforePublish() {
 			for (const dependency of dependencies) {
 				const dependencyVersion = packageJson[dependencyType][dependency];
 				if (dependencyVersion.startsWith('workspace:')) {
-					if (!dependencyVersion.startsWith('workspace:^')) {
-						throw new Error(`Unsupported workspace version range: ${dependencyVersion}`);
-					}
-
 					const realVersion = workspaceVersions.get(dependency);
 					if (!realVersion) {
 						throw new Error(`Could not find version for workspace ${dependency}`);

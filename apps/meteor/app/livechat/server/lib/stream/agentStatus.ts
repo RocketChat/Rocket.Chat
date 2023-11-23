@@ -1,6 +1,7 @@
-import { Livechat } from '../Livechat';
+import { Logger } from '@rocket.chat/logger';
+
 import { settings } from '../../../../settings/server';
-import { Logger } from '../../../../logger/server';
+import { Livechat } from '../LivechatTyped';
 
 const logger = new Logger('AgentStatusWatcher');
 

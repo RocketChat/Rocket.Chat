@@ -1,16 +1,16 @@
-import type { UiKitBannerPayload, IBanner, BannerPlatform } from '@rocket.chat/core-typings';
 import { Banner } from '@rocket.chat/core-services';
+import type { UiKit, IBanner, BannerPlatform } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { settings } from '../../../app/settings/server';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
+import { settings } from '../../../app/settings/server';
 import { SystemLogger } from '../../lib/logger/system';
 
 type NpsSurveyData = {
 	id: string;
 	platform: BannerPlatform[];
 	roles: string[];
-	survey: UiKitBannerPayload;
+	survey: UiKit.BannerView;
 	createdAt: Date;
 	startAt: Date;
 	expireAt: Date;

@@ -17,5 +17,4 @@ export default async function (): Promise<void> {
 	if (requiredEnvVars.some((envVar) => !process.env[envVar])) {
 		throw new Error(`Missing required environment variables: ${requiredEnvVars.filter((envVar) => !process.env[envVar]).join(', ')}`);
 	}
-
 }

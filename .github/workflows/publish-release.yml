@@ -16,8 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           token: ${{ secrets.CI_PAT }}
 
       - name: Setup NodeJS
@@ -29,8 +30,8 @@ jobs:
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-      - name: Build
-        run: yarn build --filter=@rocket.chat/release-action
+      - name: Build packages
+        run: yarn build
 
       - name: Publish final release
         uses: ./packages/release-action

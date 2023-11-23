@@ -144,6 +144,7 @@ const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRo
 				_id: string;
 				t: string;
 				name: string;
+				teamMain?: boolean;
 				fname?: string;
 				avatarETag?: string | undefined;
 				uids?: string[] | undefined;

@@ -12,9 +12,14 @@ RUN set -x \
     && npm install --production \
     # Start hack for sharp...
     && rm -rf npm/node_modules/sharp \
-    && npm install sharp@0.30.4 \
+    && npm install sharp@0.32.6 \
     && mv node_modules/sharp npm/node_modules/sharp \
     # End hack for sharp
+    # Start hack for isolated-vm...
+    && rm -rf npm/node_modules/isolated-vm \
+    && npm install isolated-vm@4.4.2 \
+    && mv node_modules/isolated-vm npm/node_modules/isolated-vm \
+    # End hack for isolated-vm
     && cd npm \
     && npm rebuild bcrypt --build-from-source \
     && npm cache clear --force \

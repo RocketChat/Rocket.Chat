@@ -1,4 +1,4 @@
-import { Pagination, Field } from '@rocket.chat/fuselage';
+import { Pagination, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -74,7 +74,7 @@ const ModerationConsoleTable: FC = () => {
 	const headers = useMemo(
 		() => [
 			<GenericTableHeaderCell
-				key={'name'}
+				key='name'
 				direction={sortDirection}
 				active={sortBy === 'reports.message.u.username'}
 				onClick={setSort}
@@ -95,7 +95,7 @@ const ModerationConsoleTable: FC = () => {
 				</GenericTableHeaderCell>
 			),
 			<GenericTableHeaderCell
-				key={'reportedMessage'}
+				key='reportedMessage'
 				direction={sortDirection}
 				active={sortBy === 'reports.description'}
 				onClick={setSort}
@@ -103,22 +103,16 @@ const ModerationConsoleTable: FC = () => {
 			>
 				{t('Moderation_Reported_message')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'room'} direction={sortDirection}>
+			<GenericTableHeaderCell key='room' direction={sortDirection}>
 				{t('Room')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell
-				key={'postdate'}
-				direction={sortDirection}
-				active={sortBy === 'reports.ts'}
-				onClick={setSort}
-				sort='reports.ts'
-			>
+			<GenericTableHeaderCell key='postdate' direction={sortDirection} active={sortBy === 'reports.ts'} onClick={setSort} sort='reports.ts'>
 				{t('Moderation_Report_date')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'reports'} direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
+			<GenericTableHeaderCell key='reports' direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
 				{t('Moderation_Report_plural')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'actions'} width={'5%'} />,
+			<GenericTableHeaderCell key='actions' width='x48' />,
 		],
 		[sortDirection, sortBy, setSort, t, isDesktopOrLarger],
 	);
@@ -127,10 +121,10 @@ const ModerationConsoleTable: FC = () => {
 		<>
 			<FilterByText autoFocus placeholder={t('Search')} onChange={({ text }): void => setText(text)} />
 			<Field alignSelf='stretch'>
-				<Field.Label>{t('Date')}</Field.Label>
-				<Field.Row>
+				<FieldLabel>{t('Date')}</FieldLabel>
+				<FieldRow>
 					<DateRangePicker display='flex' flexGrow={1} onChange={setDateRange} />
-				</Field.Row>
+				</FieldRow>
 			</Field>
 			{isLoading && (
 				<GenericTable>

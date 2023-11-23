@@ -1,13 +1,14 @@
 import type { ServerResponse } from 'http';
 
-import { match } from 'path-to-regexp';
 import type { IncomingMessage } from 'connect';
 import { WebApp } from 'meteor/webapp';
+import { match } from 'path-to-regexp';
 
 const matchRoute = match<{ lng: string }>('/:lng.json', { decode: decodeURIComponent });
 
 const i18nHandler = async function (req: IncomingMessage, res: ServerResponse) {
-	const match = matchRoute(req.url ?? '/');
+	const url = new URL(req.url ?? '/', `https://${req.headers.host}`);
+	const match = matchRoute(url.pathname);
 
 	if (match === false) {
 		res.writeHead(400);

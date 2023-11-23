@@ -1,5 +1,5 @@
-import type { Db, DeleteResult, Filter } from 'mongodb';
 import type { IAppLogsModel } from '@rocket.chat/model-typings';
+import type { Db, DeleteResult, Filter } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 

@@ -6,10 +6,9 @@ on:
       node-version:
         required: true
         type: string
-      mongodb-version:
-        default: "['4.4', '6.0']"
+    secrets:
+      CODECOV_TOKEN:
         required: false
-        type: string
 
 env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
@@ -19,21 +18,10 @@ jobs:
   test:
     runs-on: ubuntu-20.04
 
-    strategy:
-      fail-fast: false
-      matrix:
-        mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
-
-    name: MongoDB ${{ matrix.mongodb-version }}
+    name: Unit Tests
 
     steps:
-      - name: Launch MongoDB
-        uses: supercharge/mongodb-github-action@1.9.0
-        with:
-          mongodb-version: ${{ matrix.mongodb-version }}
-          mongodb-replica-set: rs0
-
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -46,3 +34,9 @@ jobs:
 
       - name: Unit Test
         run: yarn testunit
+
+      - uses: codecov/codecov-action@v3
+        with:
+          flags: unit
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}

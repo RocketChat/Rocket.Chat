@@ -1,12 +1,13 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Options, Box, Option, Field, SelectLegacy } from '@rocket.chat/fuselage';
+import { Options, Box, Option, Field, FieldLabel, FieldRow, SelectLegacy } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { useCallback, forwardRef, useMemo, useState } from 'react';
 
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { PriorityIcon } from '../priorities/PriorityIcon';
 
 type PrioritiesSelectProps = {
@@ -18,6 +19,7 @@ type PrioritiesSelectProps = {
 
 export const PrioritiesSelect = ({ value = '', label, options, onChange }: PrioritiesSelectProps) => {
 	const t = useTranslation();
+	const hasLicense = useHasLicenseModule('livechat-enterprise');
 	const [sorting] = useState<Record<string, LivechatPriorityWeight>>({});
 
 	const formattedOptions = useMemo<SelectOption[]>(() => {
@@ -40,15 +42,19 @@ export const PrioritiesSelect = ({ value = '', label, options, onChange }: Prior
 		[sorting],
 	);
 
-	// eslint-disable-next-line react/no-multi-comp, react/display-name
-	const renderOptions = forwardRef<HTMLElement, ComponentProps<typeof Options>>((props, ref) => (
-		<Options ref={ref} {...props} maxHeight={200} />
-	));
+	// eslint-disable-next-line react/no-multi-comp
+	const renderOptions = forwardRef<HTMLElement, ComponentProps<typeof Options>>(function OptionsWrapper(props, ref) {
+		return <Options ref={ref} {...props} maxHeight={200} />;
+	});
+
+	if (!hasLicense) {
+		return null;
+	}
 
 	return (
 		<Field>
-			<Field.Label>{label}</Field.Label>
-			<Field.Row>
+			<FieldLabel>{label}</FieldLabel>
+			<FieldRow>
 				<SelectLegacy
 					value={value}
 					onChange={onChange}
@@ -57,7 +63,7 @@ export const PrioritiesSelect = ({ value = '', label, options, onChange }: Prior
 					renderSelected={({ label, value }) => <Box flexGrow='1'>{renderOption(label, value)}</Box>}
 					renderItem={({ label, value, ...props }) => <Option {...props} label={renderOption(label, value)} />}
 				/>
-			</Field.Row>
+			</FieldRow>
 		</Field>
 	);
 };

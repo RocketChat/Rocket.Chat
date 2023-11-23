@@ -15,6 +15,8 @@ import './hooks/sendEmailTranscriptOnClose';
 import './hooks/saveContactLastChat';
 import './hooks/saveLastMessageToInquiry';
 import './hooks/afterUserActions';
+import './hooks/afterAgentRemoved';
+import './hooks/checkMAC';
 import './methods/addAgent';
 import './methods/addManager';
 import './methods/changeLivechatStatus';

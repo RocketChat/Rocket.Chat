@@ -1,19 +1,18 @@
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { ITypingDescriptor } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
 import { MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { api } from '@rocket.chat/core-services';
 import { Users, Subscriptions, Messages } from '@rocket.chat/models';
 
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import notifications from '../../../notifications/server/lib/Notifications';
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
-import { deleteMessage } from '../../../lib/server';
 
 export class AppMessageBridge extends MessageBridge {
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 	}
@@ -104,7 +103,11 @@ export class AppMessageBridge extends MessageBridge {
 	protected async typing({ scope, id, username, isTyping }: ITypingDescriptor): Promise<void> {
 		switch (scope) {
 			case 'room':
-				notifications.notifyRoom(id, 'typing', username!, isTyping);
+				if (!username) {
+					throw new Error('Invalid username');
+				}
+
+				notifications.notifyRoom(id, 'user-activity', username, isTyping ? ['user-typing'] : []);
 				return;
 			default:
 				throw new Error('Unrecognized typing scope provided');

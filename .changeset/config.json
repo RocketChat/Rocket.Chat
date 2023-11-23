@@ -1,6 +1,6 @@
 {
 	"$schema": "https://unpkg.com/@changesets/config@2.3.0/schema.json",
-	"changelog": ["@changesets/changelog-github", { "repo": "RocketChat/Rocket.Chat" }],
+	"changelog": "@changesets/changelog-git",
 	"commit": false,
 	"fixed": [
 		["@rocket.chat/meteor", "@rocket.chat/core-typings", "@rocket.chat/rest-typings"]

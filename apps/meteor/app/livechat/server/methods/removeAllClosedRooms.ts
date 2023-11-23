@@ -1,11 +1,11 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import { LivechatRooms } from '@rocket.chat/models';
 
+import { callbacks } from '../../../../lib/callbacks';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../lib/LivechatTyped';
-import { callbacks } from '../../../../lib/callbacks';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

@@ -1,12 +1,12 @@
-import { Meteor } from 'meteor/meteor';
 import ejson from 'ejson';
+import { Meteor } from 'meteor/meteor';
 
-import { isValidQuery } from '../lib/isValidQuery';
-import { clean } from '../lib/cleanQuery';
-import { API } from '../api';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { API } from '../api';
 import type { PartialThis } from '../definition';
+import { clean } from '../lib/cleanQuery';
+import { isValidQuery } from '../lib/isValidQuery';
 
 const pathAllowConf = {
 	'/api/v1/users.list': ['$or', '$regex', '$and'],

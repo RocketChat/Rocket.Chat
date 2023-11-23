@@ -1,32 +1,27 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Field, Select, ButtonGroup, Button, FieldGroup, InputBox } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, MouseEventHandler } from 'react';
+import { Field, FieldLabel, FieldRow, Select, ButtonGroup, Button, FieldGroup, InputBox } from '@rocket.chat/fuselage';
+import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
 
-import { useForm } from '../../../../hooks/useForm';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../components/Contextualbar';
+import type { MailExportFormValues } from './ExportMessages';
+import { useRoomExportMutation } from './useRoomExportMutation';
 
-type MailExportFormValues = {
-	dateFrom: string;
-	dateTo: string;
-	format: 'html' | 'json';
+type FileExportProps = {
+	formId: string;
+	rid: IRoom['_id'];
+	onCancel: () => void;
+	exportOptions: SelectOption[];
 };
 
-type FileExportProps = { onCancel: MouseEventHandler<HTMLOrSVGElement>; rid: IRoom['_id'] };
-
-const FileExport: FC<FileExportProps> = ({ onCancel, rid }) => {
+const FileExport = ({ formId, rid, exportOptions, onCancel }: FileExportProps) => {
 	const t = useTranslation();
-
-	const { values, handlers } = useForm({
-		dateFrom: '',
-		dateTo: '',
-		format: 'html',
-	});
-
-	const { dateFrom, dateTo, format } = values as MailExportFormValues;
-
-	const { handleDateFrom, handleDateTo, handleFormat } = handlers;
+	const { control, handleSubmit } = useFormContext<MailExportFormValues>();
+	const roomExportMutation = useRoomExportMutation();
+	const formFocus = useAutoFocus<HTMLFormElement>();
 
 	const outputOptions = useMemo<SelectOption[]>(
 		() => [
@@ -36,59 +31,74 @@ const FileExport: FC<FileExportProps> = ({ onCancel, rid }) => {
 		[t],
 	);
 
-	const roomsExport = useEndpoint('POST', '/v1/rooms.export');
-
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const handleSubmit = async (): Promise<void> => {
-		try {
-			await roomsExport({
-				rid,
-				type: 'file',
-				dateFrom,
-				dateTo,
-				format,
-			});
-
-			dispatchToastMessage({
-				type: 'success',
-				message: t('Your_email_has_been_queued_for_sending'),
-			});
-		} catch (error) {
-			dispatchToastMessage({
-				type: 'error',
-				message: error,
-			});
-		}
+	const handleExport = ({ type, dateFrom, dateTo, format }: MailExportFormValues) => {
+		roomExportMutation.mutateAsync({
+			rid,
+			type,
+			dateFrom,
+			dateTo,
+			format,
+		});
 	};
 
+	const typeField = useUniqueId();
+	const dateFromField = useUniqueId();
+	const dateToField = useUniqueId();
+	const formatField = useUniqueId();
+
 	return (
-		<FieldGroup>
-			<Field>
-				<Field.Label>{t('Date_From')}</Field.Label>
-				<Field.Row>
-					<InputBox type='date' value={dateFrom} onChange={handleDateFrom} />
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Date_to')}</Field.Label>
-				<Field.Row>
-					<InputBox type='date' value={dateTo} onChange={handleDateTo} />
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Output_format')}</Field.Label>
-				<Field.Row>
-					<Select value={format} onChange={handleFormat} placeholder={t('Format')} options={outputOptions} />
-				</Field.Row>
-			</Field>
-			<ButtonGroup stretch mb='x12'>
-				<Button onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary onClick={(): Promise<void> => handleSubmit()}>
-					{t('Export')}
-				</Button>
-			</ButtonGroup>
-		</FieldGroup>
+		<>
+			<ContextualbarScrollableContent>
+				<form ref={formFocus} tabIndex={-1} aria-labelledby={`${formId}-title`} id={formId} onSubmit={handleSubmit(handleExport)}>
+					<FieldGroup>
+						<Field>
+							<FieldLabel htmlFor={typeField}>{t('Method')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='type'
+									control={control}
+									render={({ field }) => <Select id={typeField} {...field} placeholder={t('Type')} options={exportOptions} />}
+								/>
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldLabel htmlFor={dateFromField}>{t('Date_From')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='dateFrom'
+									control={control}
+									render={({ field }) => <InputBox id={dateFromField} type='date' {...field} />}
+								/>
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldLabel htmlFor={dateToField}>{t('Date_to')}</FieldLabel>
+							<FieldRow>
+								<Controller name='dateTo' control={control} render={({ field }) => <InputBox id={dateToField} {...field} type='date' />} />
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldLabel htmlFor={formatField}>{t('Output_format')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='format'
+									control={control}
+									render={({ field }) => <Select {...field} id={formatField} placeholder={t('Format')} options={outputOptions} />}
+								/>
+							</FieldRow>
+						</Field>
+					</FieldGroup>
+				</form>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button onClick={onCancel}>{t('Cancel')}</Button>
+					<Button form={formId} primary type='submit'>
+						{t('Export')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
+		</>
 	);
 };
 

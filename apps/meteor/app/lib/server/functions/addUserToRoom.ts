@@ -1,13 +1,14 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Meteor } from 'meteor/meteor';
+import { Message, Team } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import { Message, Team } from '@rocket.chat/core-services';
+import { Meteor } from 'meteor/meteor';
 
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
+import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
 export const addUserToRoom = async function (
 	rid: string,
@@ -24,7 +25,7 @@ export const addUserToRoom = async function (
 		});
 	}
 
-	const userToBeAdded = typeof user !== 'string' ? user : await Users.findOneByUsername(user.replace('@', ''));
+	const userToBeAdded = typeof user === 'string' ? await Users.findOneByUsername(user.replace('@', '')) : await Users.findOneById(user._id);
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 
 	if (!userToBeAdded) {
@@ -70,6 +71,8 @@ export const addUserToRoom = async function (
 		await callbacks.run('beforeJoinRoom', userToBeAdded, room);
 	}
 
+	const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
+
 	await Subscriptions.createWithRoomAndUser(room, userToBeAdded as IUser, {
 		ts: now,
 		open: true,
@@ -77,6 +80,7 @@ export const addUserToRoom = async function (
 		unread: 1,
 		userMentions: 1,
 		groupMentions: 0,
+		...autoTranslateConfig,
 	});
 
 	if (!userToBeAdded.username) {
@@ -107,7 +111,7 @@ export const addUserToRoom = async function (
 	}
 
 	if (room.t === 'c' || room.t === 'p') {
-		process.nextTick(async function () {
+		process.nextTick(async () => {
 			// Add a new event, with an optional inviter
 			await callbacks.run('afterAddedToRoom', { user: userToBeAdded, inviter }, room);
 

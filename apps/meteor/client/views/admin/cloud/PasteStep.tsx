@@ -1,4 +1,4 @@
-import { Box, Button, Scrollable, Throbber, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, Scrollable, Modal } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, FC } from 'react';
 import React, { useState } from 'react';
@@ -44,7 +44,7 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 				<Box withRichContent>
 					<p>{t('Cloud_register_offline_finish_helper')}</p>
 				</Box>
-				<Box display='flex' flexDirection='column' alignItems='stretch' padding='x16' flexGrow={1} backgroundColor='dark'>
+				<Box display='flex' flexDirection='column' alignItems='stretch' padding={16} flexGrow={1} backgroundColor='dark'>
 					<Scrollable vertical>
 						<Box
 							is='textarea'
@@ -70,8 +70,8 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 					<Button disabled={isLoading} onClick={onBackButtonClick}>
 						{t('Back')}
 					</Button>
-					<Button primary disabled={isLoading || !cloudKey.trim()} marginInlineStart='auto' onClick={handleFinishButtonClick}>
-						{isLoading ? <Throbber inheritColor /> : t('Finish_Registration')}
+					<Button primary loading={isLoading} disabled={!cloudKey.trim()} marginInlineStart='auto' onClick={handleFinishButtonClick}>
+						{t('Finish_Registration')}
 					</Button>
 				</Modal.FooterControllers>
 			</Modal.Footer>

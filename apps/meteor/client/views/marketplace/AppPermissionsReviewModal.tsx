@@ -28,7 +28,7 @@ const AppPermissionsReviewModal: FC<AppPermissionsReviewModalProps> = ({ appPerm
 			<Box fontScale='p2' mbe={20}>
 				{t('Apps_Permissions_Review_Modal_Subtitle')}
 			</Box>
-			<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis='x24'>
+			<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis={24}>
 				<AppPermissionsList appPermissions={appPermissions} />
 			</Box>
 		</GenericModal>

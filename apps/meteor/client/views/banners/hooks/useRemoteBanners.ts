@@ -1,5 +1,5 @@
 import { BannerPlatform } from '@rocket.chat/core-typings';
-import type { IBanner, Serialized, UiKitBannerPayload } from '@rocket.chat/core-typings';
+import type { IBanner, Serialized, UiKit } from '@rocket.chat/core-typings';
 import { useEndpoint, useStream, useUserId, ServerContext } from '@rocket.chat/ui-contexts';
 import { useContext, useEffect } from 'react';
 
@@ -11,6 +11,7 @@ export const useRemoteBanners = () => {
 	const serverContext = useContext(ServerContext);
 	const getBanners = useEndpoint('GET', '/v1/banners');
 	const subscribeToNotifyLoggedIn = useStream('notify-logged');
+	const subscribeToNotifyUser = useStream('notify-user');
 
 	useEffect(() => {
 		if (!uid) {
@@ -21,7 +22,7 @@ export const useRemoteBanners = () => {
 
 		const { signal } = controller;
 
-		const mapBanner = (banner: Serialized<IBanner>): UiKitBannerPayload => ({
+		const mapBanner = (banner: Serialized<IBanner>): UiKit.BannerView => ({
 			...banner.view,
 			viewId: banner.view.viewId || banner._id,
 		});
@@ -63,11 +64,17 @@ export const useRemoteBanners = () => {
 			});
 		});
 
+		const unsubscribeBanners = subscribeToNotifyUser(`${uid}/banners`, async (banner) => {
+			banners.open(banner.view);
+		});
+
 		return () => {
 			controller.abort();
 
 			unsubscribeFromBannerChanged();
+			unsubscribeBanners();
+
 			banners.clear();
 		};
-	}, [getBanners, serverContext, subscribeToNotifyLoggedIn, uid]);
+	}, [getBanners, serverContext, subscribeToNotifyLoggedIn, uid, subscribeToNotifyUser]);
 };

@@ -1,8 +1,29 @@
+import type { ILivechatUnitMonitor, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
+
 import { API } from '../../../../../app/api/server';
-import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
-import { LivechatEnterprise } from '../lib/LivechatEnterprise';
-import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../lib/Department';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
+import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../lib/Department';
+import { LivechatEnterprise } from '../lib/LivechatEnterprise';
+import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Endpoints {
+		'/v1/livechat/units/:unitId/monitors': {
+			GET: (params: { unitId: string }) => { monitors: ILivechatUnitMonitor[] };
+		};
+		'/v1/livechat/units': {
+			GET: (params: { text: string }) => PaginatedResult & { units: IOmnichannelBusinessUnit[] };
+			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
+		};
+		'/v1/livechat/units/:id': {
+			GET: () => IOmnichannelBusinessUnit;
+			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
+			DELETE: () => number;
+		};
+	}
+}
 
 API.v1.addRoute(
 	'livechat/units/:unitId/monitors',

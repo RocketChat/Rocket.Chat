@@ -2,8 +2,8 @@ import type { AppRequest, IUser, Pagination } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
-import { sendDirectMessageToUsers } from '../../../../server/lib/sendDirectMessageToUsers';
 import { i18n } from '../../../../server/lib/i18n';
+import { sendDirectMessageToUsers } from '../../../../server/lib/sendDirectMessageToUsers';
 
 const ROCKET_CAT_USERID = 'rocket.cat';
 const DEFAULT_LIMIT = 100;

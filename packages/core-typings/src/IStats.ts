@@ -3,11 +3,22 @@ import type { CpuInfo } from 'os';
 import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
 import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
+import type { MACStats } from './omnichannel';
 
 export interface IStats {
 	_id: string;
-	wizard: Record<string, unknown>;
+	wizard: {
+		organizationType?: string;
+		industry?: string;
+		size?: string;
+		country?: string;
+		language?: string;
+		serverType?: string;
+		registerServer?: boolean;
+	};
 	uniqueId: string;
+	deploymentFingerprintHash: string;
+	deploymentFingerprintVerified: boolean;
 	installedAt?: string;
 	version?: string;
 	tag?: string;
@@ -40,6 +51,7 @@ export interface IStats {
 	totalChannelMessages: number;
 	totalPrivateGroupMessages: number;
 	totalDirectMessages: number;
+	totalDiscussionsMessages: number;
 	totalLivechatMessages: number;
 	totalTriggers: number;
 	totalMessages: number;
@@ -85,6 +97,10 @@ export interface IStats {
 	mongoStorageEngine: string;
 	pushQueue: number;
 	omnichannelSources: { [key: string]: number | string }[];
+	omnichannelContactsBySource: MACStats;
+	uniqueContactsOfLastMonth: MACStats;
+	uniqueContactsOfLastWeek: MACStats;
+	uniqueContactsOfYesterday: MACStats;
 	departments: number;
 	archivedDepartments: number;
 	routingAlgorithm: string;
@@ -203,10 +219,14 @@ export interface IStats {
 	totalCustomRoles: number;
 	totalWebRTCCalls: number;
 	uncaughtExceptionsCount: number;
+	push: number;
+	dailyPeakConnections: number;
+	maxMonthlyPeakConnections: number;
 	matrixFederation: {
 		enabled: boolean;
 	};
 	webRTCEnabled: boolean;
 	webRTCEnabledForOmnichannel: boolean;
 	omnichannelWebRTCCalls: number;
+	statsToken?: string;
 }

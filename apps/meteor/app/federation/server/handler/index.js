@@ -1,9 +1,9 @@
 import qs from 'querystring';
 
 import { disabled } from '../functions/errors';
-import { clientLogger } from '../lib/logger';
-import { isFederationEnabled } from '../lib/isFederationEnabled';
 import { federationRequestToPeer } from '../lib/http';
+import { isFederationEnabled } from '../lib/isFederationEnabled';
+import { clientLogger } from '../lib/logger';
 
 export async function federationSearchUsers(query) {
 	if (!isFederationEnabled()) {

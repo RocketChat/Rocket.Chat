@@ -1,12 +1,12 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import RegisterForm from './RegisterForm';
 import RegisterFormDisabled from './RegisterFormDisabled';
 import RegisterTemplate from './RegisterTemplate';
 import SecretRegisterForm from './SecretRegisterForm';
 import SecretRegisterInvalidForm from './SecretRegisterInvalidForm';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import FormSkeleton from './template/FormSkeleton';
 
 export const RegisterSecretPageRouter = ({
@@ -14,7 +14,7 @@ export const RegisterSecretPageRouter = ({
 	origin,
 }: {
 	setLoginRoute: DispatchLoginRouter;
-	origin: 'register' | 'secret-register';
+	origin: 'register' | 'secret-register' | 'invite-register';
 }): ReactElement => {
 	const registrationMode = useSetting<string>('Accounts_RegistrationForm');
 
@@ -26,7 +26,7 @@ export const RegisterSecretPageRouter = ({
 		return <SecretRegisterInvalidForm />;
 	}
 
-	if (isPublicRegistration) {
+	if (isPublicRegistration || (origin === 'invite-register' && isRegistrationAllowedForSecret)) {
 		return (
 			<RegisterTemplate>
 				<RegisterForm setLoginRoute={setLoginRoute} />

@@ -9,14 +9,14 @@ import type {
 	ISubscription,
 	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
-import type { ComponentProps } from 'react';
-import type { Icon } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
+import type { IRouterPaths, RouteName } from '@rocket.chat/ui-contexts';
 
 export type RoomIdentification = { rid?: IRoom['_id']; name?: string; tab?: string };
 
-export interface IRoomTypeRouteConfig {
-	name: string;
-	path?: string;
+export interface IRoomTypeRouteConfig<TRouteName extends RouteName> {
+	name: TRouteName;
+	path?: IRouterPaths[TRouteName]['pattern'];
 	link?: (data: RoomIdentification) => Record<string, string>;
 }
 
@@ -56,7 +56,7 @@ export const UiTextContext = {
 
 export interface IRoomTypeConfig {
 	identifier: string;
-	route?: IRoomTypeRouteConfig;
+	route?: IRoomTypeRouteConfig<RouteName>;
 }
 
 export interface IRoomTypeClientConfig extends IRoomTypeConfig {
@@ -80,8 +80,8 @@ export interface IRoomTypeClientDirectives {
 	getAvatarPath: (
 		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
 	) => string;
-	getIcon?: (room: Partial<IRoom>) => ComponentProps<typeof Icon>['name'];
-	extractOpenRoomParams?: (routeParams: Record<string, string | null | undefined>) => { type: RoomType; ref: string };
+	getIcon?: (room: Partial<IRoom>) => IconName;
+	extractOpenRoomParams?: (routeParams: Record<string, string | null | undefined>) => { type: RoomType; reference: string };
 	findRoom: (identifier: string) => IRoom | undefined;
 	showJoinLink: (roomId: string) => boolean;
 	isLivechatRoom: () => boolean;
@@ -105,7 +105,7 @@ export interface IRoomTypeServerDirectives {
 		sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 		notificationMessage: string,
 		userId: string,
-	) => Promise<{ title: string | undefined; text: string }>;
+	) => Promise<{ title: string | undefined; text: string; name: string | undefined }>;
 	getMsgSender: (senderId: IUser['_id']) => Promise<IUser | null>;
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;

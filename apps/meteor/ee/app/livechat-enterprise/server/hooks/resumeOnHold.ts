@@ -1,10 +1,10 @@
+import { OmnichannelEEService } from '@rocket.chat/core-services';
 import type { ILivechatVisitor, IMessage, IOmnichannelRoom, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatVisitors, Users } from '@rocket.chat/models';
-import { OmnichannelEEService } from '@rocket.chat/core-services';
 
+import { callbackLogger } from '../../../../../app/livechat/server/lib/logger';
 import { callbacks } from '../../../../../lib/callbacks';
-import { callbackLogger } from '../../../../../app/livechat/server/lib/callbackLogger';
 import { i18n } from '../../../../../server/lib/i18n';
 
 const resumeOnHoldCommentAndUser = async (room: IOmnichannelRoom): Promise<{ comment: string; resumedBy: IUser }> => {
@@ -12,7 +12,7 @@ const resumeOnHoldCommentAndUser = async (room: IOmnichannelRoom): Promise<{ com
 		v: { _id: visitorId },
 		_id: rid,
 	} = room;
-	const visitor = await LivechatVisitors.findOneById<Pick<ILivechatVisitor, 'name' | 'username'>>(visitorId, {
+	const visitor = await LivechatVisitors.findOneEnabledById<Pick<ILivechatVisitor, 'name' | 'username'>>(visitorId, {
 		projection: { name: 1, username: 1 },
 	});
 	if (!visitor) {

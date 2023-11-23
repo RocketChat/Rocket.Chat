@@ -1,6 +1,6 @@
-import { PushToken } from '@rocket.chat/models';
 import type { IPushService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { PushToken } from '@rocket.chat/models';
 
 export class PushService extends ServiceClassInternal implements IPushService {
 	protected name = 'push';
@@ -9,7 +9,8 @@ export class PushService extends ServiceClassInternal implements IPushService {
 		super();
 
 		this.onEvent('watch.users', async (data) => {
-			if (!('diff' in data) || !('services.resume.loginTokens' in data.diff)) {
+			// for some reason data.diff can be set to undefined
+			if (!('diff' in data) || !data.diff || !('services.resume.loginTokens' in data.diff)) {
 				return;
 			}
 			if (data.diff['services.resume.loginTokens'] === undefined) {

@@ -1,15 +1,15 @@
-import { Meteor } from 'meteor/meteor';
-import { Random } from '@rocket.chat/random';
+import { OmnichannelIntegration } from '@rocket.chat/core-services';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
-import { OmnichannelIntegration } from '@rocket.chat/core-services';
+import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { Meteor } from 'meteor/meteor';
 
-import { FileUpload } from '../../../../file-upload/server';
 import { API } from '../../../../api/server';
+import { FileUpload } from '../../../../file-upload/server';
+import { settings } from '../../../../settings/server';
 import { Livechat } from '../../../server/lib/Livechat';
 import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
-import { settings } from '../../../../settings/server';
 
 const getUploadFile = async (details, fileUrl) => {
 	const response = await fetch(fileUrl);
@@ -56,7 +56,7 @@ const defineVisitor = async (smsNumber, targetDepartment) => {
 	}
 
 	const id = await LivechatTyped.registerGuest(data);
-	return LivechatVisitors.findOneById(id);
+	return LivechatVisitors.findOneEnabledById(id);
 };
 
 const normalizeLocationSharing = (payload) => {
@@ -182,7 +182,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		};
 
 		try {
-			const msg = SMSService.response.call(this, await Livechat.sendMessage(sendMessage));
+			const msg = SMSService.response.call(this, await LivechatTyped.sendMessage(sendMessage));
 			setImmediate(async () => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {

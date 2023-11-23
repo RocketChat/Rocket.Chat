@@ -1,9 +1,8 @@
-import { Pagination } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
-import React, { useMemo, useState, useEffect } from 'react';
+import { Pagination, IconButton } from '@rocket.chat/fuselage';
+import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery, hashQueryKey } from '@tanstack/react-query';
+import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../../client/components/FilterByText';
 import GenericNoResults from '../../../../client/components/GenericNoResults/GenericNoResults';
@@ -18,12 +17,13 @@ import {
 } from '../../../../client/components/GenericTable';
 import { usePagination } from '../../../../client/components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../client/components/GenericTable/hooks/useSort';
-import RemoveUnitButton from './RemoveUnitButton';
+import { useRemoveUnit } from './useRemoveUnit';
 
-const UnitsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
+const UnitsTable = () => {
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
-	const unitsRoute = useRoute('omnichannel-units');
+	const debouncedFilter = useDebouncedValue(filter, 500);
+	const router = useRouter();
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'visibility'>('name');
@@ -31,37 +31,31 @@ const UnitsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	const query = useMemo(
 		() => ({
 			fields: JSON.stringify({ name: 1 }),
-			text: filter,
+			text: debouncedFilter,
 			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
 			...(itemsPerPage && { count: itemsPerPage }),
 			...(current && { offset: current }),
 		}),
-		[filter, itemsPerPage, current, sortBy, sortDirection],
+		[debouncedFilter, itemsPerPage, current, sortBy, sortDirection],
 	);
 
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
-	const { isSuccess, isLoading, data, refetch } = useQuery(['livechat-units', query], async () => getUnits(query), {
-		refetchOnWindowFocus: false,
-	});
+	const { isSuccess, isLoading, data } = useQuery(['livechat-units', query], async () => getUnits(query));
 
-	useEffect(() => {
-		reload.current = refetch;
-	}, [refetch, reload]);
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
 
-	const onRowClick = useMutableCallback(
-		(id) => () =>
-			unitsRoute.push({
-				context: 'edit',
-				id,
-			}),
-	);
+	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/units/new'));
+	const onRowClick = useMutableCallback((id) => () => router.navigate(`/omnichannel/units/edit/${id}`));
+	const handleDelete = useRemoveUnit();
+
 	const headers = (
 		<>
-			<GenericTableHeaderCell key={'name'} direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell
-				key={'visibility'}
+				key='visibility'
 				direction={sortDirection}
 				active={sortBy === 'visibility'}
 				onClick={setSort}
@@ -69,15 +63,13 @@ const UnitsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			>
 				{t('Visibility')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key={'remove'} w='x60'>
-				{t('Remove')}
-			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='remove' w='x60' />
 		</>
 	);
 
 	return (
 		<>
-			<FilterByText onChange={({ text }): void => setFilter(text)} />
+			{((isSuccess && data?.units.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setFilter(text)} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -86,7 +78,18 @@ const UnitsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data.units.length === 0 && <GenericNoResults />}
+			{isSuccess && data.units.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data.units.length === 0 && !queryHasChanged && (
+				<GenericNoResults
+					icon='business'
+					title={t('No_units_yet')}
+					description={t('No_units_yet_description')}
+					linkHref='https://go.rocket.chat/omnichannel-docs'
+					buttonAction={handleAddNew}
+					buttonTitle={t('Create_unit')}
+					linkText={t('Learn_more_about_units')}
+				/>
+			)}
 			{isSuccess && data?.units.length > 0 && (
 				<>
 					<GenericTable>
@@ -96,7 +99,17 @@ const UnitsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
 									<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{visibility}</GenericTableCell>
-									<RemoveUnitButton _id={_id} reload={refetch} />
+									<GenericTableCell>
+										<IconButton
+											icon='trash'
+											small
+											title={t('Remove')}
+											onClick={(e) => {
+												e.stopPropagation();
+												handleDelete(_id);
+											}}
+										/>
+									</GenericTableCell>
 								</GenericTableRow>
 							))}
 						</GenericTableBody>
