@@ -1,4 +1,5 @@
 import type { EventSignatures } from '@rocket.chat/core-services';
+import { dbWatchersDisabled } from '@rocket.chat/core-services';
 import type {
 	ISubscription,
 	IUser,
@@ -64,17 +65,17 @@ export function isWatcherRunning(): boolean {
 	return watcherStarted;
 }
 
-export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallback): void {
-	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
+const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
 
-	const getUserNameCached = mem(
-		async (userId: string): Promise<string | undefined> => {
-			const user = await Users.findOne<Pick<IUser, 'name'>>(userId, { projection: { name: 1 } });
-			return user?.name;
-		},
-		{ maxAge: 10000 },
-	);
+const getUserNameCached = mem(
+	async (userId: string): Promise<string | undefined> => {
+		const user = await Users.findOne<Pick<IUser, 'name'>>(userId, { projection: { name: 1 } });
+		return user?.name;
+	},
+	{ maxAge: 10000 },
+);
 
+const messageWatcher = (watcher: DatabaseWatcher, broadcast: BroadcastCallback): void => {
 	watcher.on<IMessage>(Messages.getCollectionName(), async ({ clientAction, id, data }) => {
 		switch (clientAction) {
 			case 'inserted':
@@ -110,6 +111,13 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 				break;
 		}
 	});
+};
+
+export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallback): void {
+	const dbWatchersEnabled = !dbWatchersDisabled;
+	if (dbWatchersEnabled) {
+		messageWatcher(watcher, broadcast);
+	}
 
 	watcher.on<ISubscription>(Subscriptions.getCollectionName(), async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {

@@ -436,7 +436,10 @@ export class MockedAppRootBuilder {
 																handleServerInteraction: () => undefined,
 																off: () => undefined,
 																on: () => undefined,
+																openView: () => undefined,
 																disposeView: () => undefined,
+																notifyBusy: () => undefined,
+																notifyIdle: () => undefined,
 															}}
 														>
 															{/* <VideoConfProvider>

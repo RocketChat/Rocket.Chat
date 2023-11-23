@@ -7,6 +7,6 @@ export const getAgentOverviewDataCached = mem(Analytics.getAgentOverviewData, { 
 // while the data on the overview page is cached for 1 minute
 export const getAnalyticsOverviewDataCached = mem(Analytics.getAnalyticsOverviewData, { maxAge: 60000, cacheKey: JSON.stringify });
 export const getAnalyticsOverviewDataCachedForRealtime = mem(Analytics.getAnalyticsOverviewData, {
-	maxAge: 5000,
+	maxAge: process.env.TEST_MODE === 'true' ? 1 : 5000,
 	cacheKey: JSON.stringify,
 });

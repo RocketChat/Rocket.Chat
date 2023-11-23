@@ -1018,6 +1018,8 @@
   "Email_Placeholder": "Vennligst skriv inn E-postadressen din...",
   "Email_Placeholder_any": "Vennligst skriv inn e-postadresser ...",
   "Email_subject": "Emne",
+  "Enterprise_License": "Enterpriselisens",
+  "Enterprise_License_Description": "Hvis arbeidsområdet ditt er registrert og lisensen er levert av Rocket.Chat Cloud trenger du ikke å oppdatere lisensen manuelt her.",
   "Email_verified": "E-post bekreftet",
   "Emoji": "Emoji",
   "EmojiCustomFilesystem": "Egendefinert Emoji-filsystem",
@@ -1040,9 +1042,6 @@
   "Enter_name_here": "Skriv inn navn her",
   "Enter_Normal": "Normal modus (send med Enter)",
   "Enter_to": "Skriv inn til",
-  "Enterprise": "Bedriften",
-  "Enterprise_License": "Enterpriselisens",
-  "Enterprise_License_Description": "Hvis arbeidsområdet ditt er registrert og lisensen er levert av Rocket.Chat Cloud trenger du ikke å oppdatere lisensen manuelt her.",
   "Entertainment": "Underholdning",
   "Error": "Feil",
   "Error_404": "Feil: 404",
@@ -2859,5 +2858,6 @@
   "registration.component.form.reasonToJoin": "Årsak til å bli med",
   "registration.component.form.invalidConfirmPass": "Passordbekreftelsen stemmer ikke overens med passordet",
   "registration.component.form.confirmPassword": "Bekreft passordet ditt",
-  "registration.component.form.sendConfirmationEmail": "Send bekreftelses-e-post"
+  "registration.component.form.sendConfirmationEmail": "Send bekreftelses-e-post",
+  "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }
