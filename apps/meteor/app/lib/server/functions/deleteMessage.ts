@@ -91,8 +91,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 
 	await callbacks.run('afterDeleteMessage', deletedMsg, room);
 
-	const mustNotifyNewMessageSent = keepHistory || showDeletedStatus;
-	if (mustNotifyNewMessageSent) {
+	if (keepHistory || showDeletedStatus) {
 		void broadcastMessageSentEvent({
 			id: message._id,
 			broadcastCallback: (message) => api.broadcast('message.sent', message),
