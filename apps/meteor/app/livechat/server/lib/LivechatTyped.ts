@@ -552,11 +552,7 @@ class LivechatClass {
 			throw new Error('error-invalid-room');
 		}
 
-		if (!(await Omnichannel.isWithinMACLimit(room))) {
-			throw new Error('error-mac-limit-reached');
-		}
-
-		const showAgentInfo = settings.get<string>('Livechat_show_agent_info');
+		const showAgentInfo = settings.get<boolean>('Livechat_show_agent_info');
 		const closingMessage = await Messages.findLivechatClosingMessage(rid, { projection: { ts: 1 } });
 		const ignoredMessageTypes: MessageTypesValues[] = [
 			'livechat_navigation_history',
@@ -1721,9 +1717,9 @@ class LivechatClass {
 			]),
 		});
 
-		const department = await LivechatDepartment.findOneById(_id);
+		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'enabled'>>(_id, { projection: { enabled: 1 } });
 		if (!department) {
-			throw new Meteor.Error('error-department-not-found');
+			throw new Meteor.Error('error-department-not-found', 'Department not found');
 		}
 
 		return updateDepartmentAgents(_id, departmentAgents, department.enabled);

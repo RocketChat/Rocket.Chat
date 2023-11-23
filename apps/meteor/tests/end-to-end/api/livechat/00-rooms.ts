@@ -33,7 +33,7 @@ import {
 } from '../../../data/livechat/rooms';
 import { saveTags } from '../../../data/livechat/tags';
 import type { DummyResponse } from '../../../data/livechat/utils';
-import { sleep } from '../../../data/livechat/utils';
+import { parseMethodResponse, sleep } from '../../../data/livechat/utils';
 import {
 	restorePermissionToRoles,
 	addPermissions,
@@ -1122,100 +1122,6 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
-	describe('livechat/messages.history/rid', () => {
-		it('should fail if token is not sent as query param', async () => {
-			await request.get(api('livechat/messages.history/test')).set(credentials).expect('Content-Type', 'application/json').expect(400);
-		});
-		it('should fail if token is not a valid guest token', async () => {
-			await request
-				.get(api('livechat/messages.history/test'))
-				.set(credentials)
-				.query({ token: 'test' })
-				.expect('Content-Type', 'application/json')
-				.expect(400);
-		});
-		it('should fail if token is good, but rid is not valid', async () => {
-			const visitor = await createVisitor();
-			await request
-				.get(api('livechat/messages.history/fadsfdsafads'))
-				.set(credentials)
-				.query({ token: visitor.token })
-				.expect('Content-Type', 'application/json')
-				.expect(400);
-		});
-		it('should return message history for a valid room', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			await sendMessage(room._id, 'Hello', visitor.token);
-
-			const { body } = await request
-				.get(api(`livechat/messages.history/${room._id}`))
-				.set(credentials)
-				.query({ token: visitor.token })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(body).to.have.property('success', true);
-			expect(body).to.have.property('messages');
-			expect(body.messages).to.be.an('array');
-			expect(body.messages.length <= 4).to.be.true;
-			expect(body.messages[0]).to.have.property('msg', 'Hello');
-			expect(body.messages[1]).to.have.property('t');
-		});
-		it('should return message history for a valid room with pagination', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			await sendMessage(room._id, 'Hello', visitor.token);
-
-			const { body } = await request
-				.get(api(`livechat/messages.history/${room._id}`))
-				.set(credentials)
-				.query({ token: visitor.token, limit: 1 })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(body).to.have.property('success', true);
-			expect(body).to.have.property('messages').of.length(1);
-			expect(body.messages[0]).to.have.property('msg', 'Hello');
-		});
-		it('should return message history for a valid room with pagination and offset', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			await sendMessage(room._id, 'Hello', visitor.token);
-
-			const { body } = await request
-				.get(api(`livechat/messages.history/${room._id}`))
-				.set(credentials)
-				.query({ token: visitor.token, limit: 1, offset: 1 })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(body).to.have.property('success', true);
-			expect(body).to.have.property('messages').of.length(1);
-			expect(body.messages[0]).to.have.property('t');
-		});
-		it('should return message history for a valid date filtering (max date)', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			await sendMessage(room._id, 'Hello', visitor.token);
-			const sendMessageTs = new Date();
-			await sendMessage(room._id, 'Hello2', visitor.token);
-
-			const { body } = await request
-				.get(api(`livechat/messages.history/${room._id}`))
-				.set(credentials)
-				.query({ token: visitor.token, end: sendMessageTs.toISOString() })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(body).to.have.property('success', true);
-			expect(body).to.have.property('messages').that.is.an('array');
-			expect(body.messages.length <= 4).to.be.true;
-			expect(body.messages[0]).to.have.property('msg', 'Hello');
-			expect(body.messages[1]).to.have.property('t');
-		});
-	});
-
 	describe('livechat/messages', () => {
 		it('should fail if visitor is not sent as body param', async () => {
 			await request.post(api('livechat/messages')).set(credentials).expect('Content-Type', 'application/json').expect(400);
@@ -2095,6 +2001,145 @@ describe('LIVECHAT - rooms', function () {
 				.delete(api(`livechat/transcript/${_id}`))
 				.set(credentials)
 				.expect(200);
+		});
+	});
+
+	describe('livechat:sendTranscript', () => {
+		it('should fail if user doesnt have send-omnichannel-chat-transcript permission', async () => {
+			await updatePermission('send-omnichannel-chat-transcript', []);
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: ['test', 'test', 'test', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object').that.has.property('error', 'error-not-allowed');
+		});
+		it('should fail if not all params are provided', async () => {
+			await updatePermission('send-omnichannel-chat-transcript', ['admin']);
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: [],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object').that.has.property('errorType', 'Match.Error');
+		});
+		it('should fail if token is invalid', async () => {
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: ['invalid-token', 'test', 'test', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object');
+		});
+		it('should fail if roomId is invalid', async () => {
+			const visitor = await createVisitor();
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: [visitor.token, 'invalid-room-id', 'test', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object');
+		});
+		it('should fail if token is from another conversation', async () => {
+			const visitor = await createVisitor();
+			const visitor2 = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: [visitor2.token, _id, 'test', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object');
+		});
+		it('should fail if email provided is invalid', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: [visitor.token, _id, 'invalid-email', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('error').that.is.an('object');
+		});
+		it('should work if all params are good', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			const { body } = await request
+				.post(methodCall('livechat:sendTranscript'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '1091',
+						method: 'livechat:sendTranscript',
+						params: [visitor.token, _id, 'test@test', 'test'],
+					}),
+				})
+				.expect(200);
+
+			const result = parseMethodResponse(body);
+			expect(body.success).to.be.true;
+			expect(result).to.have.property('result', true);
 		});
 	});
 });

@@ -99,9 +99,10 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('user.deleted', ({ _id: userId }) => {
+		service.onEvent('user.deleted', ({ _id: userId }, data) => {
 			notifications.notifyLoggedInThisInstance('Users:Deleted', {
 				userId,
+				...data,
 			});
 		});
 
@@ -473,14 +474,6 @@ export class ListenersModule {
 		service.onEvent('actions.changed', () => {
 			notifications.streamApps.emitWithoutBroadcast('actions/changed');
 			notifications.streamApps.emitWithoutBroadcast('apps', ['actions/changed', []]);
-		});
-
-		service.onEvent('mac.limitReached', () => {
-			notifications.notifyLoggedInThisInstance('mac.limit', { limitReached: true });
-		});
-
-		service.onEvent('mac.limitRestored', () => {
-			notifications.notifyLoggedInThisInstance('mac.limit', { limitReached: false });
 		});
 	}
 }

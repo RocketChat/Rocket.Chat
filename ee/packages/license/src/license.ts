@@ -3,12 +3,13 @@ import { Emitter } from '@rocket.chat/emitter';
 import { type ILicenseTag } from './definition/ILicenseTag';
 import type { ILicenseV2 } from './definition/ILicenseV2';
 import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
-import type { BehaviorWithContext } from './definition/LicenseBehavior';
+import type { BehaviorWithContext, LicenseBehavior } from './definition/LicenseBehavior';
 import type { LicenseInfo } from './definition/LicenseInfo';
 import type { LicenseModule } from './definition/LicenseModule';
 import type { LicenseValidationOptions } from './definition/LicenseValidationOptions';
 import type { LimitContext } from './definition/LimitContext';
 import type { LicenseEvents } from './definition/events';
+import { getLicenseLimit } from './deprecated';
 import { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
 import { InvalidLicenseError } from './errors/InvalidLicenseError';
 import { NotReadyForValidation } from './errors/NotReadyForValidation';
@@ -26,6 +27,7 @@ import { getModulesToDisable } from './validation/getModulesToDisable';
 import { isBehaviorsInResult } from './validation/isBehaviorsInResult';
 import { isReadyForValidation } from './validation/isReadyForValidation';
 import { runValidation } from './validation/runValidation';
+import { validateDefaultLimits } from './validation/validateDefaultLimits';
 import { validateFormat } from './validation/validateFormat';
 import { validateLicenseLimits } from './validation/validateLicenseLimits';
 
@@ -50,12 +52,19 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 	private _lockedLicense: string | undefined;
 
-	public shouldPreventActionResults = new Map<LicenseLimitKind, boolean>();
+	private states = new Map<LicenseBehavior, Map<LicenseLimitKind, boolean>>();
+
+	public get shouldPreventActionResults() {
+		const state = this.states.get('prevent_action') ?? new Map<LicenseLimitKind, boolean>();
+
+		this.states.set('prevent_action', state);
+
+		return state;
+	}
 
 	constructor() {
 		super();
-
-		this.on('validate', () => showLicense.call(this, this._license, this._valid));
+		this.on('installed', () => showLicense.call(this, this._license, this._valid));
 	}
 
 	public get license(): ILicenseV3 | undefined {
@@ -266,6 +275,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			}
 			await this.setLicenseV3(decrypted, encryptedLicense, decrypted, isNewLicense);
 
+			this.emit('installed');
+
 			return true;
 		} catch (e) {
 			logger.error('Invalid license');
@@ -347,13 +358,10 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		action: T,
 		extraCount = 0,
 		context: Partial<LimitContext<T>> = {},
-		{ suppressLog }: Pick<LicenseValidationOptions, 'suppressLog'> = {},
+		{ suppressLog }: Pick<LicenseValidationOptions, 'suppressLog'> = {
+			suppressLog: process.env.LICENSE_VALIDATION_SUPPRESS_LOG !== 'false',
+		},
 	): Promise<boolean> {
-		const license = this.getLicense();
-		if (!license) {
-			return false;
-		}
-
 		const options: LicenseValidationOptions = {
 			...(extraCount && { behaviors: ['prevent_action'] }),
 			isNewLicense: false,
@@ -367,6 +375,11 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			},
 		};
 
+		const license = this.getLicense();
+		if (!license) {
+			return isBehaviorsInResult(await validateDefaultLimits.call(this, options), ['prevent_action']);
+		}
+
 		const validationResult = await runValidation.call(this, license, options);
 
 		const shouldPreventAction = isBehaviorsInResult(validationResult, ['prevent_action']);
@@ -376,7 +389,22 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			return shouldPreventAction;
 		}
 
-		if (isBehaviorsInResult(validationResult, ['invalidate_license', 'disable_modules', 'start_fair_policy'])) {
+		// check if any of the behaviors that should trigger a sync changed
+		if (
+			(['invalidate_license', 'disable_modules', 'start_fair_policy'] as const).some((behavior) => {
+				const hasChanged = this.consolidateBehaviorState(action, behavior, isBehaviorsInResult(validationResult, [behavior]));
+				if (hasChanged && behavior === 'start_fair_policy') {
+					this.triggerBehaviorEventsToggled([
+						{
+							behavior: 'start_fair_policy',
+							reason: 'limit',
+							limit: action,
+						},
+					]);
+				}
+				return hasChanged;
+			})
+		) {
 			await this.revalidateLicense();
 		}
 
@@ -391,15 +419,30 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 					} as BehaviorWithContext,
 			  ];
 
-		if (this.shouldPreventActionResults.get(action) !== shouldPreventAction) {
-			this.shouldPreventActionResults.set(action, shouldPreventAction);
-
+		if (this.consolidateBehaviorState(action, 'prevent_action', shouldPreventAction)) {
 			this.triggerBehaviorEventsToggled(eventsToEmit);
 		}
 
 		this.triggerBehaviorEvents(eventsToEmit);
 
 		return shouldPreventAction;
+	}
+
+	private consolidateBehaviorState<T extends LicenseLimitKind>(action: T, behavior: LicenseBehavior, triggered: boolean): boolean {
+		// check if the behavior changed
+		const state = this.states.get(behavior) ?? new Map<LicenseLimitKind, boolean>();
+
+		const currentState = state.get(action) ?? false;
+
+		if (currentState === triggered) {
+			return false;
+		}
+
+		// if it changed, update the state
+		state.set(action, triggered);
+
+		this.states.set(behavior, state);
+		return true;
 	}
 
 	public async getInfo({
@@ -415,27 +458,23 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		const license = this.getLicense();
 
 		// Get all limits present in the license and their current value
-		const limits = (
-			(license &&
-				includeLimits &&
+		const limits = Object.fromEntries(
+			(includeLimits &&
 				(await Promise.all(
 					globalLimitKinds
-						.map((limitKey) => ({
-							limitKey,
-							max: Math.max(-1, Math.min(...Array.from(license.limits[limitKey as LicenseLimitKind] || [])?.map(({ max }) => max))),
-						}))
-						.filter(({ max }) => max >= 0 && max < Infinity)
-						.map(async ({ max, limitKey }) => {
-							return {
-								[limitKey as LicenseLimitKind]: {
-									...(loadCurrentValues ? { value: await getCurrentValueForLicenseLimit.call(this, limitKey as LicenseLimitKind) } : {}),
+						.map((limitKey) => [limitKey, getLicenseLimit(license, limitKey)] as const)
+						.map(async ([limitKey, max]) => {
+							return [
+								limitKey,
+								{
+									...(loadCurrentValues && { value: await getCurrentValueForLicenseLimit.call(this, limitKey) }),
 									max,
 								},
-							};
+							];
 						}),
 				))) ||
-			[]
-		).reduce((prev, curr) => ({ ...prev, ...curr }), {});
+				[],
+		);
 
 		return {
 			license: (includeLicense && license) || undefined,

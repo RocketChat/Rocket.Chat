@@ -14,8 +14,6 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 
 	private queueWorker: IOmnichannelQueue;
 
-	private macLimitReached = false;
-
 	constructor() {
 		super();
 		this.queueWorker = new OmnichannelQueue();
@@ -40,20 +38,17 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 		});
 
 		License.onLimitReached('monthlyActiveContacts', async (): Promise<void> => {
-			if (this.macLimitReached) {
-				// Dupe events
-				return;
-			}
-
-			this.macLimitReached = true;
-			void this.api?.broadcast('mac.limitReached');
 			this.queueWorker.isRunning() && (await this.queueWorker.stop());
 		});
 
 		License.onValidateLicense(async (): Promise<void> => {
-			this.macLimitReached = false;
-			void this.api?.broadcast('mac.limitRestored');
 			RoutingManager.isMethodSet() && (await this.queueWorker.shouldStart());
+		});
+
+		// NOTE: When there's no license or license is invalid, we fallback to CE behavior
+		// CE behavior means there's no MAC limit, so we start the queue
+		License.onInvalidateLicense(async (): Promise<void> => {
+			this.queueWorker.isRunning() && (await this.queueWorker.shouldStart());
 		});
 	}
 

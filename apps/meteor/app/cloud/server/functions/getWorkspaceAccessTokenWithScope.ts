@@ -4,10 +4,11 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { workspaceScopes } from '../oauthScopes';
 import { getRedirectUri } from './getRedirectUri';
+import { CloudWorkspaceAccessTokenError } from './getWorkspaceAccessToken';
 import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
-export async function getWorkspaceAccessTokenWithScope(scope = '') {
+export async function getWorkspaceAccessTokenWithScope(scope = '', throwOnError = false) {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
 	const tokenResponse = { token: '', expiresAt: new Date() };
@@ -58,6 +59,9 @@ export async function getWorkspaceAccessTokenWithScope(scope = '') {
 		if (err.response?.data?.error === 'oauth_invalid_client_credentials') {
 			SystemLogger.error('Server has been unregistered from cloud');
 			void removeWorkspaceRegistrationInfo();
+			if (throwOnError) {
+				throw new CloudWorkspaceAccessTokenError();
+			}
 		}
 
 		return tokenResponse;
