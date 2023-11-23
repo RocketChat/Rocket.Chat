@@ -1,5 +1,35 @@
 # @rocket.chat/instance-status
 
+## 0.0.21-rc.7
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.21-rc.7
+
+## 0.0.21-rc.6
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.21-rc.6
+
+## 0.0.21-rc.5
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.21-rc.5
+
+## 0.0.21-rc.4
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.21-rc.4
+
+## 0.0.21-rc.3
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.21-rc.3
+
 ## 0.0.21-rc.2
 
 ### Patch Changes
@@ -17,6 +47,24 @@
 ### Patch Changes
 
 - @rocket.chat/models@0.0.21-rc.0
+
+## 0.0.23
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.23
+
+## 0.0.22
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.22
+
+## 0.0.21
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.21
 
 ## 0.0.20
 
