@@ -104,6 +104,7 @@ describe('LIVECHAT - appearance', function () {
 			expect(body.config.settings.registrationForm).to.be.false;
 		});
 		it('should update a number setting and keep it as number', async () => {
+			await updateSetting('Livechat_enable_message_character_limit', true);
 			await request
 				.post(api('livechat/appearance'))
 				.set(credentials)
@@ -113,6 +114,7 @@ describe('LIVECHAT - appearance', function () {
 			// Get data from livechat/config
 			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
 			expect(body.config.settings.limitTextLength).to.be.equal(100);
+			await updateSetting('Livechat_enable_message_character_limit', false);
 		});
 	});
 });
