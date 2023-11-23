@@ -1,6 +1,7 @@
 import { Modal, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldError, TextInput, Button } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import fileSize from 'filesize';
 import type { ReactElement, ChangeEvent, FormEventHandler, ComponentProps } from 'react';
 import React, { memo, useState, useEffect } from 'react';
 
@@ -50,11 +51,12 @@ const FileUploadModal = ({
 			});
 		}
 
-		if(file.size > maxFileSize) {
+		// -1 maxFileSize means there is no limit
+		if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
 			onClose();
 			return dispatchToastMessage({
 				type: 'error',
-				message: t('File_exceeds_allowed_size_of_bytes', { size: maxFileSize + ' bytes' }),
+				message: t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) }),
 			});
 		}
 
