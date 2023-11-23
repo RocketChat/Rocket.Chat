@@ -3,14 +3,13 @@ import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { v, compile } from 'suretype';
 
-import { CloudWorkspaceAccessError } from '../../../../../lib/errors/CloudWorkspaceAccessError';
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { settings } from '../../../../settings/server';
 import type { WorkspaceRegistrationData } from '../buildRegistrationData';
 import { buildWorkspaceRegistrationData } from '../buildRegistrationData';
-import { getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
+import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
 import { getWorkspaceLicense } from '../getWorkspaceLicense';
 import { retrieveRegistrationStatus } from '../retrieveRegistrationStatus';
 import { handleBannerOnWorkspaceSync, handleNpsOnWorkspaceSync } from './handleCommsSync';
@@ -154,7 +153,7 @@ export async function legacySyncWorkspace() {
 
 		const token = await getWorkspaceAccessToken(true);
 		if (!token) {
-			throw new CloudWorkspaceAccessError('Workspace does not have a valid access token');
+			throw new CloudWorkspaceAccessTokenEmptyError();
 		}
 
 		const workspaceRegistrationData = await buildWorkspaceRegistrationData(undefined);

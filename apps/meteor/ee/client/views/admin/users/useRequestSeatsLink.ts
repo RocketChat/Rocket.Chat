@@ -1,3 +1,3 @@
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 
-export const useRequestSeatsLink = (): string => useAbsoluteUrl()('/requestSeats');
+export const useRequestSeatsLink = (): string => useAbsoluteUrl()('/links/manage-subscription');

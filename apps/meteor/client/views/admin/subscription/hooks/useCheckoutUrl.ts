@@ -1,4 +1,4 @@
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useAbsoluteUrl, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 
 import { useExternalLink } from '../../../../hooks/useExternalLink';
@@ -34,4 +34,18 @@ export const useCheckoutUrlAction = () => {
 			handleExternalLink(extraUrlParams.toString());
 		},
 	});
+};
+
+export const useCheckoutUrl = () => {
+	const absoluteUrl = useAbsoluteUrl()('/links/manage-subscription');
+
+	return (query?: Record<string, string>) => {
+		const url = new URL(absoluteUrl);
+		if (query) {
+			Object.entries(query).forEach(([key, value]) => {
+				url.searchParams.append(key, value.toString());
+			});
+		}
+		return url.toString();
+	};
 };
