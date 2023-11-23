@@ -36,7 +36,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { LicenseLimitKind } from '@rocket.chat/license';
 
-import type { AutoUpdateRecord } from './types/IMeteor';
+import type { AutoUpdateRecord } from '../types/IMeteor';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
@@ -100,7 +100,17 @@ export type EventSignatures = {
 	'stream'([streamer, eventName, payload]: [string, string, any[]]): void;
 	'subscription'(data: { action: string; subscription: Partial<ISubscription> }): void;
 	'user.avatarUpdate'(user: Partial<IUser>): void;
-	'user.deleted'(user: Pick<IUser, '_id'>): void;
+	'user.deleted'(
+		user: Pick<IUser, '_id'>,
+		data:
+			| {
+					messageErasureType: 'Delete';
+			  }
+			| {
+					messageErasureType: 'Unlink';
+					replaceByUser: { _id: IUser['_id']; username: IUser['username']; alias: string };
+			  },
+	): void;
 	'user.deleteCustomStatus'(userStatus: IUserStatus): void;
 	'user.nameChanged'(user: Pick<IUser, '_id' | 'name' | 'username'>): void;
 	'user.realNameChanged'(user: Partial<IUser>): void;
@@ -273,4 +283,5 @@ export type EventSignatures = {
 	'command.updated'(command: string): void;
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
+	'message.sent'(message: IMessage): void;
 };

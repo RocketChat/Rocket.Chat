@@ -19,6 +19,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateResult>;
 	findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null>;
 	unlock(inquiryId: string): Promise<UpdateResult>;
+	unlockAndQueue(inquiryId: string): Promise<UpdateResult>;
 	unlockAll(): Promise<UpdateResult | Document>;
 	getCurrentSortedQueueAsync(props: {
 		inquiryId?: string;

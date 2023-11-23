@@ -1,5 +1,35 @@
 # @rocket.chat/livechat Change Log
 
+## 1.14.6-rc.7
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.7
+
+## 1.14.6-rc.6
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.6
+
+## 1.14.6-rc.5
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.5
+
+## 1.14.6-rc.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.4
+
+## 1.14.6-rc.3
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@3.0.0-rc.3
+
 ## 1.14.6-rc.2
 
 ### Patch Changes
@@ -18,6 +48,25 @@
 
 - Updated dependencies [c2f337664e]
   - @rocket.chat/gazzodown@3.0.0-rc.0
+
+## 1.14.8
+
+### Patch Changes
+
+- d1c8e7ac13: Fixes reactivity issue with `registerGuest` Widget API Call, as well as other similar endpoint
+  - @rocket.chat/gazzodown@2.0.8
+
+## 1.14.7
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.7
+
+## 1.14.6
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@2.0.6
 
 ## 1.14.5
 

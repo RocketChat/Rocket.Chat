@@ -131,7 +131,7 @@ const defineRoutes = (routes: RouteObject[]) => {
 	const flowRoutes = routes.map((route) => {
 		if (route.path === '*') {
 			FlowRouter.notFound = {
-				action: () => appLayout.renderStandalone(<>{route.element}</>),
+				action: () => appLayout.render(<>{route.element}</>),
 			};
 
 			return FlowRouter.notFound;
@@ -139,7 +139,7 @@ const defineRoutes = (routes: RouteObject[]) => {
 
 		return FlowRouter.route(route.path, {
 			name: route.id,
-			action: () => appLayout.renderStandalone(<>{route.element}</>),
+			action: () => appLayout.render(<>{route.element}</>),
 		});
 	});
 
@@ -156,7 +156,7 @@ const defineRoutes = (routes: RouteObject[]) => {
 				delete FlowRouter._routesMap[flowRoute.name];
 			} else {
 				FlowRouter.notFound = {
-					action: () => appLayout.renderStandalone(<></>),
+					action: () => appLayout.render(<></>),
 				};
 			}
 		});
