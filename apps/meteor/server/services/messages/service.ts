@@ -10,6 +10,7 @@ import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
+import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { configureBadWords } from './hooks/badwords';
 
@@ -78,7 +79,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			settings.get('Message_Read_Receipt_Enabled'),
 			extraData,
 		);
-
+		void broadcastMessageSentEvent({
+			id: result.insertedId,
+			broadcastCallback: async (message) => this.api?.broadcast('message.sent', message),
+		});
 		return result.insertedId;
 	}
 
