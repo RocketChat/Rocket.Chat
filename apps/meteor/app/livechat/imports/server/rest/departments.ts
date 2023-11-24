@@ -110,10 +110,6 @@ API.v1.addRoute(
 			const permissionToSave = await hasPermissionAsync(this.userId, 'manage-livechat-departments');
 			const permissionToAddAgents = await hasPermissionAsync(this.userId, 'add-livechat-department-agents');
 
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			check(this.bodyParams, {
 				department: Object,
 				agents: Match.Maybe(Array),
@@ -128,13 +124,13 @@ API.v1.addRoute(
 			}
 
 			if (success && agents && permissionToAddAgents) {
-				success = Livechat.saveDepartmentAgents(_id, { upsert: agents });
+				success = await Livechat.saveDepartmentAgents(_id, { upsert: agents });
 			}
 
 			if (success) {
 				return API.v1.success({
 					department: await LivechatDepartment.findOneById(_id),
-					agents: await LivechatDepartmentAgents.find({ departmentId: _id }).toArray(),
+					agents: await LivechatDepartmentAgents.findByDepartmentId(_id).toArray(),
 				});
 			}
 
@@ -266,10 +262,6 @@ API.v1.addRoute(
 			return API.v1.success(agents);
 		},
 		async post() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			check(
 				this.bodyParams,
 				Match.ObjectIncluding({

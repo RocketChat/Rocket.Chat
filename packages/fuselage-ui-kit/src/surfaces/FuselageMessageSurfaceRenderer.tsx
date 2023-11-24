@@ -2,6 +2,7 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 
 import VideoConferenceBlock from '../blocks/VideoConferenceBlock/VideoConferenceBlock';
+import { AppIdProvider } from '../contexts/AppIdContext';
 import {
   FuselageSurfaceRenderer,
   renderTextObject,
@@ -32,13 +33,14 @@ export class FuselageMessageSurfaceRenderer extends FuselageSurfaceRenderer {
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
-        <VideoConferenceBlock
-          key={index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
+        <AppIdProvider key={index} appId={block.appId}>
+          <VideoConferenceBlock
+            block={block}
+            context={context}
+            index={index}
+            surfaceRenderer={this}
+          />
+        </AppIdProvider>
       );
     }
 

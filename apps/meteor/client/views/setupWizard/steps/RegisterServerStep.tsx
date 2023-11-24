@@ -37,8 +37,13 @@ const RegisterServerStep = (): ReactElement => {
 		staleTime: Infinity,
 	});
 
-	const { data } = useQuery(['setupWizard/registerIntent'], async () => registerPreIntent(), {
+	const {
+		data: offline,
+		isLoading,
+		isError,
+	} = useQuery(['setupWizard/registerIntent'], async () => registerPreIntent(), {
 		staleTime: Infinity,
+		select: (data) => data.offline,
 	});
 
 	const { mutate } = useMutation<null, unknown, string>(
@@ -77,7 +82,7 @@ const RegisterServerStep = (): ReactElement => {
 			stepCount={maxSteps}
 			onSubmit={handleRegister}
 			currentStep={currentStep}
-			offline={!data || data.offline}
+			offline={isError || (!isLoading && offline)}
 		/>
 	);
 };

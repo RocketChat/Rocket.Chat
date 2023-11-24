@@ -5,7 +5,15 @@ import React, { memo } from 'react';
 
 import { useCheckoutUrlAction } from '../hooks/useCheckoutUrl';
 
-const UpgradeButton = ({ children, ...props }: Partial<ButtonProps>): ReactElement => {
+const UpgradeButton = ({
+	children,
+	target = '_blank',
+	action,
+	...props
+}: Partial<ButtonProps> & {
+	target: string;
+	action: string;
+}): ReactElement => {
 	const mutation = useCheckoutUrlAction();
 
 	const handleBtnClick = () => {
@@ -13,7 +21,10 @@ const UpgradeButton = ({ children, ...props }: Partial<ButtonProps>): ReactEleme
 			return;
 		}
 
-		mutation.mutate();
+		mutation.mutate({
+			target,
+			action,
+		});
 	};
 
 	return (
