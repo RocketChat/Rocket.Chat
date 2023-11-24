@@ -27,7 +27,7 @@ const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: User
 	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'user-page', action: 'buy_more' });
 
 	const withReachedLimit = (fn: () => void) => (): void => {
-		if (activeUsers >= maxActiveUsers || isCreateUserDisabled) {
+		if (isCreateUserDisabled) {
 			setModal(
 				<ReachedSeatsCapModal
 					onClose={closeModal}
@@ -67,9 +67,11 @@ const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: User
 				<Button icon='user-plus' onClick={handleNewButtonClick}>
 					{t('New_user')}
 				</Button>
-				<Button primary onClick={() => openExternalLink(manageSubscriptionUrl)}>
-					{t('Buy_more_seats')}
-				</Button>
+				{isCreateUserDisabled && (
+					<Button is='a' href={manageSubscriptionUrl} target='_blank' rel='noopener noreferrer' primary>
+						{t('Buy_more_seats')}
+					</Button>
+				)}
 			</ButtonGroup>
 		</>
 	);
