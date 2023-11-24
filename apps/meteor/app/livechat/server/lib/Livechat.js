@@ -189,7 +189,6 @@ export const Livechat = {
 	},
 
 	async saveDepartmentAgents(_id, departmentAgents) {
-		check(_id, String);
 		check(departmentAgents, {
 			upsert: Match.Maybe([
 				Match.ObjectIncluding({
@@ -209,7 +208,7 @@ export const Livechat = {
 			]),
 		});
 
-		const department = await LivechatDepartmentRaw.findOneById(_id);
+		const department = await LivechatDepartmentRaw.findOneById(_id, { projection: { enabled: 1 } });
 		if (!department) {
 			throw new Meteor.Error('error-department-not-found', 'Department not found', {
 				method: 'livechat:saveDepartmentAgents',
