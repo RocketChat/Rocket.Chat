@@ -139,7 +139,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		this._valid = false;
 		this._lockedLicense = undefined;
 
-		this.shouldPreventActionResults.clear();
+		this.states.clear();
 		clearPendingLicense.call(this);
 	}
 
