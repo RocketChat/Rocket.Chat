@@ -71,6 +71,7 @@ const RegisterServerStep = (): ReactElement => {
 				termsHref='https://rocket.chat/terms'
 				policyHref='https://rocket.chat/privacy'
 				clientKey={clientKey || ''}
+				onCopySecurityCode={(): void => dispatchToastMessage({ type: 'success', message: t('Copied') })}
 				onBackButtonClick={(): void => setServerOption(SERVER_OPTIONS.REGISTERED)}
 				onSubmit={handleConfirmOffline}
 			/>
