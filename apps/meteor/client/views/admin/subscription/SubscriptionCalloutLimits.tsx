@@ -62,13 +62,12 @@ export const SubscriptionCalloutLimits = () => {
 
 	const map = (key: keyof typeof limits) => t(`subscription.callout.${key}`);
 
-	const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+	const handleClick = (params: Record<string, string>) => (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
 		e.preventDefault();
 		if (mutation.isLoading) {
 			return;
 		}
-
-		mutation.mutate();
+		mutation.mutate(params);
 	};
 
 	return (
@@ -77,7 +76,14 @@ export const SubscriptionCalloutLimits = () => {
 				<Callout type='warning' title={t('subscription.callout.servicesDisruptionsMayOccur')} m={8}>
 					<Trans i18nKey='subscription.callout.description.limitsReached' count={start_fair_policy.length}>
 						Your workspace reached the <>{{ val: start_fair_policy.map(map) }}</> limit.
-						<ExternalLink to={CONTACT_SALES_LINK} onClick={handleClick}>
+						<ExternalLink
+							to={CONTACT_SALES_LINK}
+							onClick={handleClick({
+								target: 'callout',
+								action: 'start_fair_policy',
+								limits: start_fair_policy.join(','),
+							})}
+						>
 							Manage your subscription
 						</ExternalLink>
 						to increase limits.
@@ -88,7 +94,14 @@ export const SubscriptionCalloutLimits = () => {
 				<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} m={8}>
 					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={prevent_action.length}>
 						Your workspace exceeded the <>{{ val: prevent_action.map(map) }}</> license limit.
-						<ExternalLink to={CONTACT_SALES_LINK} onClick={handleClick}>
+						<ExternalLink
+							to={CONTACT_SALES_LINK}
+							onClick={handleClick({
+								target: 'callout',
+								action: 'prevent_action',
+								limits: prevent_action.join(','),
+							})}
+						>
 							Manage your subscription
 						</ExternalLink>
 						to increase limits.
@@ -100,9 +113,16 @@ export const SubscriptionCalloutLimits = () => {
 				<Callout type='danger' title={t('subscription.callout.capabilitiesDisabled')} m={8}>
 					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={disable_modules.length}>
 						Your workspace exceeded the <>{{ val: disable_modules.map(map) }}</> license limit.
-						<ExternalLink to={CONTACT_SALES_LINK} onClick={handleClick}>
+						<ExternalLink
+							to={CONTACT_SALES_LINK}
+							onClick={handleClick({
+								target: 'callout',
+								action: 'disable_modules',
+								limits: disable_modules.join(','),
+							})}
+						>
 							Manage your subscription
-						</ExternalLink>{' '}
+						</ExternalLink>
 						to increase limits.
 					</Trans>
 				</Callout>
@@ -112,7 +132,14 @@ export const SubscriptionCalloutLimits = () => {
 				<Callout type='danger' title={t('subscription.callout.allPremiumCapabilitiesDisabled')} m={8}>
 					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={disable_modules.length}>
 						Your workspace exceeded the <>{{ val: invalidate_license.map(map) }}</> license limit.
-						<ExternalLink to={CONTACT_SALES_LINK} onClick={handleClick}>
+						<ExternalLink
+							to={CONTACT_SALES_LINK}
+							onClick={handleClick({
+								target: 'callout',
+								action: 'invalidate_license',
+								limits: invalidate_license.join(','),
+							})}
+						>
 							Manage your subscription
 						</ExternalLink>
 						to increase limits.

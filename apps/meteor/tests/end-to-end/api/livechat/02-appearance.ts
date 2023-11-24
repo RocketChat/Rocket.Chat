@@ -80,5 +80,41 @@ describe('LIVECHAT - appearance', function () {
 				.send([{ _id: 'Livechat_title', value: 'test' }])
 				.expect(200);
 		});
+		// Test for: https://github.com/ajv-validator/ajv/issues/1140
+		it('should update a boolean setting and keep it as boolean', async () => {
+			await request
+				.post(api('livechat/appearance'))
+				.set(credentials)
+				.send([{ _id: 'Livechat_registration_form', value: true }])
+				.expect(200);
+
+			// Get data from livechat/config
+			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
+			expect(body.config.settings.registrationForm).to.be.true;
+		});
+		it('should update a boolean setting and keep it as boolean', async () => {
+			await request
+				.post(api('livechat/appearance'))
+				.set(credentials)
+				.send([{ _id: 'Livechat_registration_form', value: false }])
+				.expect(200);
+
+			// Get data from livechat/config
+			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
+			expect(body.config.settings.registrationForm).to.be.false;
+		});
+		it('should update a number setting and keep it as number', async () => {
+			await updateSetting('Livechat_enable_message_character_limit', true);
+			await request
+				.post(api('livechat/appearance'))
+				.set(credentials)
+				.send([{ _id: 'Livechat_message_character_limit', value: 100 }])
+				.expect(200);
+
+			// Get data from livechat/config
+			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
+			expect(body.config.settings.limitTextLength).to.be.equal(100);
+			await updateSetting('Livechat_enable_message_character_limit', false);
+		});
 	});
 });

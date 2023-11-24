@@ -29,7 +29,6 @@ declare module '@rocket.chat/ui-contexts' {
 		'cloud:syncWorkspace': () => boolean;
 		'cloud:connectWorkspace': (token: string) => boolean | Error;
 		'cloud:reconnectWorkspace': () => boolean;
-		'cloud:disconnectWorkspace': () => boolean;
 		'cloud:getOAuthAuthorizationUrl': () => string;
 		'cloud:finishOAuthAuthorization': (code: string, state: string) => boolean;
 		'cloud:checkUserLoggedIn': () => boolean;

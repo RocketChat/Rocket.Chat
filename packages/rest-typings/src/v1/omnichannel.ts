@@ -3138,7 +3138,8 @@ const POSTLivechatAppearanceParamsSchema = {
 				type: 'string',
 			},
 			value: {
-				anyOf: [{ type: 'string' }, { type: 'boolean' }, { type: 'number' }],
+				// Be careful with anyOf - https://github.com/ajv-validator/ajv/issues/1140
+				type: ['string', 'boolean', 'number'],
 			},
 		},
 		required: ['_id', 'value'],
@@ -3359,7 +3360,7 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 	'/v1/livechat/custom-fields/:_id': {
-		GET: () => { customField: ILivechatCustomField | null };
+		GET: () => { customField: ILivechatCustomField };
 	};
 	'/v1/livechat/:rid/messages': {
 		GET: (params: LivechatRidMessagesProps) => PaginatedResult<{
