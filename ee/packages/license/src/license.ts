@@ -346,7 +346,9 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 							}),
 							['prevent_action'],
 					  )
-					: false;
+					: isBehaviorsInResult(await validateDefaultLimits.call(this, { behaviors: ['prevent_action'], limits: [limit] }), [
+							'prevent_action',
+					  ]);
 
 				this.shouldPreventActionResults.set(limit as LicenseLimitKind, fresh);
 
