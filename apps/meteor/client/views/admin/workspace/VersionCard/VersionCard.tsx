@@ -29,22 +29,6 @@ type VersionCardProps = {
 	serverInfo: IWorkspaceInfo;
 };
 
-const getVersionStatus = (serverVersion: string, versions: { version: string }[]): VersionStatus => {
-	const coercedServerVersion = String(semver.coerce(serverVersion));
-	const highestVersion = versions.reduce((prev, current) => (prev.version > current.version ? prev : current));
-	const isSupported = versions.some((v) => v.version === coercedServerVersion || v.version === serverVersion);
-
-	if (semver.gte(coercedServerVersion, highestVersion.version)) {
-		return 'latest';
-	}
-
-	if (isSupported && semver.gt(highestVersion.version, coercedServerVersion)) {
-		return 'available_version';
-	}
-
-	return 'outdated';
-};
-
 const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
@@ -62,29 +46,31 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 	const formatDate = useFormatDate();
 
-	const { data: licenseData, isLoading, refetch: refetchLicense } = useLicense();
+	const { data: licenseData, isLoading, refetch: refetchLicense } = useLicense({ loadValues: true });
 	const { isRegistered } = useRegistrationStatus();
 
 	const { license, limits } = licenseData || {};
 	const isAirgapped = license?.information?.offline;
 	const licenseName = useLicenseName();
-	const visualExpiration = formatDate(license?.information?.visualExpiration || '');
 
 	const serverVersion = serverInfo.version;
 
-	const supportedVersions = useMemo(
-		() => decodeBase64(serverInfo?.supportedVersions?.signed || ''),
-		[serverInfo?.supportedVersions?.signed],
-	);
+	const { versionStatus, versions } = useMemo(() => {
+		const supportedVersions = serverInfo?.supportedVersions?.signed ? decodeBase64(serverInfo?.supportedVersions?.signed) : undefined;
+
+		if (!supportedVersions) {
+			return {};
+		}
+
+		const versionStatus = getVersionStatus(serverVersion, supportedVersions?.versions);
+
+		return {
+			versionStatus,
+			versions: supportedVersions?.versions,
+		};
+	}, [serverInfo?.supportedVersions?.signed, serverVersion]);
 
 	const isOverLimits = limits && isOverLicenseLimits(limits);
-
-	const versionStatus = useMemo(() => {
-		if (!supportedVersions.versions) {
-			return;
-		}
-		return getVersionStatus(serverVersion, supportedVersions.versions);
-	}, [serverVersion, supportedVersions.versions]);
 
 	const actionButton:
 		| undefined
@@ -109,7 +95,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 			};
 		}
 
-		if (versionStatus === 'outdated') {
+		if (versionStatus?.label === 'outdated') {
 			return {
 				action: () => {
 					window.open(RELEASES_EXTERNAL_LINK, '_blank');
@@ -137,7 +123,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 							icon: 'check',
 							label: t('Operating_withing_plan_limits'),
 					  },
-				isAirgapped && {
+				(isAirgapped || !versions) && {
 					type: 'neutral',
 					icon: 'warning',
 					label: (
@@ -149,28 +135,28 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 					),
 				},
 
-				versionStatus !== 'outdated'
-					? {
-							type: 'neutral',
-							icon: 'check',
-							label: (
-								<Trans i18nKey='Version_supported_until' values={{ date: visualExpiration }}>
-									Version
-									<ExternalLink to={SUPPORT_EXTERNAL_LINK}>supported</ExternalLink>
-									until {visualExpiration}
-								</Trans>
-							),
-					  }
-					: {
-							type: 'danger',
-							icon: 'warning',
-							label: (
-								<Trans i18nKey='Version_not_supported'>
-									Version
-									<ExternalLink to={SUPPORT_EXTERNAL_LINK}>not supported</ExternalLink>
-								</Trans>
-							),
-					  },
+				versionStatus?.label !== 'outdated' &&
+					versionStatus?.expiration && {
+						type: 'neutral',
+						icon: 'check',
+						label: (
+							<Trans i18nKey='Version_supported_until' values={{ date: formatDate(versionStatus?.expiration) }}>
+								Version
+								<ExternalLink to={SUPPORT_EXTERNAL_LINK}>supported</ExternalLink>
+								until {formatDate(versionStatus?.expiration)}
+							</Trans>
+						),
+					},
+				versionStatus?.label === 'outdated' && {
+					type: 'danger',
+					icon: 'warning',
+					label: (
+						<Trans i18nKey='Version_not_supported'>
+							Version
+							<ExternalLink to={SUPPORT_EXTERNAL_LINK}>not supported</ExternalLink>
+						</Trans>
+					),
+				},
 				isRegistered
 					? {
 							type: 'neutral',
@@ -184,7 +170,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 					  },
 			].filter(Boolean) as VersionActionItem[]
 		).sort((a) => (a.type === 'danger' ? -1 : 1));
-	}, [isOverLimits, isAirgapped, versionStatus, isRegistered, t, visualExpiration]);
+	}, [isOverLimits, t, isAirgapped, versions, versionStatus?.label, versionStatus?.expiration, formatDate, isRegistered]);
 
 	return (
 		<Card background={cardBackground}>
@@ -196,7 +182,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 								<Box fontScale='h3' mbe={4} display='flex'>
 									{t('Version_version', { version: serverVersion })}
 									<Box mis={8} alignSelf='center' width='auto'>
-										<VersionTag versionStatus={versionStatus} />
+										{!isAirgapped && versions && <VersionTag versionStatus={versionStatus?.label} />}
 									</Box>
 								</Box>
 							</CardColTitle>
@@ -228,7 +214,33 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 export default VersionCard;
 
-const decodeBase64 = (b64: string): SupportedVersions => {
+const decodeBase64 = (b64: string): SupportedVersions | undefined => {
 	const [, bodyEncoded] = b64.split('.');
+	if (!bodyEncoded) {
+		return;
+	}
+
 	return JSON.parse(atob(bodyEncoded));
+};
+
+const getVersionStatus = (
+	serverVersion: string,
+	versions: SupportedVersions['versions'],
+): { label: VersionStatus; expiration: Date | undefined } => {
+	const coercedServerVersion = String(semver.coerce(serverVersion));
+	const highestVersion = versions.reduce((prev, current) => (prev.version > current.version ? prev : current));
+	const currentVersionData = versions.find((v) => v.version.includes(coercedServerVersion) || v.version.includes(serverVersion));
+	const isSupported = currentVersionData?.version === coercedServerVersion || currentVersionData?.version === serverVersion;
+
+	const versionStatus: {
+		label: VersionStatus;
+		expiration: Date | undefined;
+	} = {
+		label: 'outdated',
+		...(semver.gte(coercedServerVersion, highestVersion.version) && { label: 'latest' }),
+		...(isSupported && semver.gt(highestVersion.version, coercedServerVersion) && { label: 'available_version' }),
+		expiration: currentVersionData?.expiration,
+	};
+
+	return versionStatus;
 };
