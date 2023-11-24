@@ -12,7 +12,7 @@ import { Livechat } from '../lib/Livechat';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'livechat:getAnalyticsOverviewData'(options: { analyticsOptions: { name: string } }): AnalyticsOverviewDataResult[] | undefined;
+		'livechat:getAnalyticsOverviewData'(options: { analyticsOptions: { name: string } }): AnalyticsOverviewDataResult[] | void;
 	}
 }
 

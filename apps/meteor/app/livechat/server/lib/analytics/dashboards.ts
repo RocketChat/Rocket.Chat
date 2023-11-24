@@ -41,18 +41,19 @@ const getProductivityMetricsAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const totalizers = await OmnichannelAnalytics.getAnalyticsOverviewData({
-		daterange: {
-			from: start,
-			to: end,
-		},
-		analyticsOptions: {
-			name: 'Productivity',
-		},
-		departmentId,
-		utcOffset: user?.utcOffset,
-		language: user?.language || settings.get('Language') || 'en',
-	});
+	const totalizers =
+		(await OmnichannelAnalytics.getAnalyticsOverviewData({
+			daterange: {
+				from: start,
+				to: end,
+			},
+			analyticsOptions: {
+				name: 'Productivity',
+			},
+			departmentId,
+			utcOffset: user?.utcOffset,
+			language: user?.language || settings.get('Language') || 'en',
+		})) || [];
 	const averageWaitingTime = await findAllAverageWaitingTimeAsync({
 		start,
 		end,
@@ -98,18 +99,19 @@ const getAgentsProductivityMetricsAsync = async ({
 		end,
 		departmentId,
 	});
-	const totalizers = await OmnichannelAnalytics.getAnalyticsOverviewData({
-		daterange: {
-			from: start,
-			to: end,
-		},
-		analyticsOptions: {
-			name: 'Conversations',
-		},
-		departmentId,
-		utcOffset: user.utcOffset,
-		language: user.language || settings.get('Language') || 'en',
-	});
+	const totalizers =
+		(await OmnichannelAnalytics.getAnalyticsOverviewData({
+			daterange: {
+				from: start,
+				to: end,
+			},
+			analyticsOptions: {
+				name: 'Conversations',
+			},
+			departmentId,
+			utcOffset: user.utcOffset,
+			language: user.language || settings.get('Language') || 'en',
+		})) || [];
 
 	const totalOfServiceTime = averageOfServiceTime.departments.length;
 
@@ -231,18 +233,19 @@ const getConversationsMetricsAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const totalizers = await getAnalyticsOverviewDataCachedForRealtime({
-		daterange: {
-			from: start,
-			to: end,
-		},
-		analyticsOptions: {
-			name: 'Conversations',
-		},
-		...(departmentId && departmentId !== 'undefined' && { departmentId }),
-		utcOffset: user.utcOffset,
-		language: user.language || settings.get('Language') || 'en',
-	});
+	const totalizers =
+		(await getAnalyticsOverviewDataCachedForRealtime({
+			daterange: {
+				from: start,
+				to: end,
+			},
+			analyticsOptions: {
+				name: 'Conversations',
+			},
+			...(departmentId && departmentId !== 'undefined' && { departmentId }),
+			utcOffset: user.utcOffset,
+			language: user.language || settings.get('Language') || 'en',
+		})) || [];
 	const metrics = ['Total_conversations', 'Open_conversations', 'On_Hold_conversations', 'Total_messages'];
 	const visitorsCount = await LivechatVisitors.getVisitorsBetweenDate({
 		start: new Date(start),

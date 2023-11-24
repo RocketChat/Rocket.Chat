@@ -50,12 +50,12 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 
 		if (!moment(from).isValid() || !moment(to).isValid()) {
 			serviceLogger.error('AgentOverview -> Invalid dates');
-			throw new Error('Invalid dates');
+			return;
 		}
 
 		if (!this.agentOverview.isActionAllowed(name)) {
 			serviceLogger.error(`AgentOverview.${name} is not a valid action`);
-			throw new Error('Invalid action');
+			return;
 		}
 
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
@@ -73,7 +73,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 		// Check if function exists, prevent server error in case property altered
 		if (!this.chart.isActionAllowed(chartLabel)) {
 			serviceLogger.error(`ChartData.${chartLabel} is not a valid action`);
-			throw new Error('Invalid action');
+			return;
 		}
 
 		const timezone = getTimezone({ utcOffset });
@@ -89,7 +89,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 
 		if (!moment(from).isValid() || !moment(to).isValid()) {
 			serviceLogger.error('ChartData -> Invalid dates');
-			throw new Error('Invalid dates');
+			return;
 		}
 
 		const data: {
@@ -151,12 +151,12 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 
 		if (!moment(from).isValid() || !moment(to).isValid()) {
 			serviceLogger.error('OverviewData -> Invalid dates');
-			throw new Error('Invalid dates');
+			return;
 		}
 
 		if (!this.overview.isActionAllowed(name)) {
 			serviceLogger.error(`OverviewData.${name} is not a valid action`);
-			throw new Error('Invalid action');
+			return;
 		}
 
 		const t = (s: string) => i18n.t(s, { lng: language });

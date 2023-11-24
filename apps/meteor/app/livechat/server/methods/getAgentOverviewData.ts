@@ -11,7 +11,7 @@ import { Livechat } from '../lib/Livechat';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'livechat:getAgentOverviewData'(options: { chartOptions: { name: string } }): ConversationData | undefined;
+		'livechat:getAgentOverviewData'(options: { chartOptions: { name: string } }): ConversationData | void;
 	}
 }
 
