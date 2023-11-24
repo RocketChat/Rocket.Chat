@@ -69,8 +69,8 @@ class PopoverMenuWrapper extends Component<PopoverMenuWrapperProps, PopoverMenuW
 		this.menuRef = ref;
 	};
 
-	handleClick = ({ currentTarget }: TargetedEvent<HTMLElement, MouseEvent>) => {
-		if (!currentTarget?.closest(`.${styles.menu__item}`)) {
+	handleClick = ({ target }: TargetedEvent<HTMLElement, MouseEvent>) => {
+		if (!(target as HTMLElement)?.closest(`.${styles.menu__item}`)) {
 			return;
 		}
 
