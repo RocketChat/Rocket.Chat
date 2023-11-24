@@ -4,6 +4,7 @@ import { useEndpoint, useStream, useUserId, ServerContext } from '@rocket.chat/u
 import { useContext, useEffect } from 'react';
 
 import * as banners from '../../../lib/banners';
+import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
 
 export const useRemoteBanners = () => {
 	const uid = useUserId();
@@ -12,6 +13,8 @@ export const useRemoteBanners = () => {
 	const getBanners = useEndpoint('GET', '/v1/banners');
 	const subscribeToNotifyLoggedIn = useStream('notify-logged');
 	const subscribeToNotifyUser = useStream('notify-user');
+
+	const actionManager = useUiKitActionManager();
 
 	useEffect(() => {
 		if (!uid) {
@@ -37,7 +40,7 @@ export const useRemoteBanners = () => {
 			}
 
 			response.banners.forEach((banner) => {
-				banners.open(mapBanner(banner));
+				actionManager.openView('banner', mapBanner(banner));
 			});
 		};
 
@@ -56,16 +59,17 @@ export const useRemoteBanners = () => {
 			}
 
 			if (!response.banners.length) {
-				return banners.closeById(event.bannerId);
+				actionManager.disposeView(event.bannerId);
+				return;
 			}
 
 			response.banners.forEach((banner) => {
-				banners.open(mapBanner(banner));
+				actionManager.openView('banner', mapBanner(banner));
 			});
 		});
 
 		const unsubscribeBanners = subscribeToNotifyUser(`${uid}/banners`, async (banner) => {
-			banners.open(banner.view);
+			actionManager.openView('banner', banner.view);
 		});
 
 		return () => {
@@ -76,5 +80,5 @@ export const useRemoteBanners = () => {
 
 			banners.clear();
 		};
-	}, [getBanners, serverContext, subscribeToNotifyLoggedIn, uid, subscribeToNotifyUser]);
+	}, [getBanners, serverContext, subscribeToNotifyLoggedIn, uid, subscribeToNotifyUser, actionManager]);
 };

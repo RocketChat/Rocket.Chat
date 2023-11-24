@@ -1,12 +1,9 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings, Users } from '@rocket.chat/models';
 
-import { getCheckoutUrl } from '../../../../app/cloud/server/functions/getCheckoutUrl';
-
 type WizardSettings = Array<ISetting>;
 
-export const getSeatsRequestLink = async (params?: Record<string, string>): Promise<string> => {
-	const { url } = await getCheckoutUrl();
+export const getSeatsRequestLink = async (url: string, params?: Record<string, string>): Promise<string> => {
 	const workspaceId = await Settings.findOneById('Cloud_Workspace_Id');
 	const activeUsers = await Users.getActiveLocalUserCount();
 	const wizardSettings: WizardSettings = await Settings.findSetupWizardSettings().toArray();

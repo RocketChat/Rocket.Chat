@@ -11,6 +11,20 @@ export function onChange(this: LicenseManager, cb: () => void) {
 	this.on('sync', cb);
 }
 
+export function onInstall(this: LicenseManager, cb: () => void) {
+	if (this.hasValidLicense()) {
+		cb();
+	}
+	this.on('installed', cb);
+}
+
+export function onInvalidate(this: LicenseManager, cb: () => void) {
+	if (!this.hasValidLicense()) {
+		cb();
+	}
+	this.on('invalidate', cb);
+}
+
 export function onValidFeature(this: LicenseManager, feature: LicenseModule, cb: () => void) {
 	this.on(`valid:${feature}`, cb);
 

@@ -51,14 +51,14 @@ const UsersPage = (): ReactElement => {
 						<UserPageHeaderContentWithSeatsCap {...seatsCap} />
 					) : (
 						<ButtonGroup>
-							{canCreateUser && (
-								<Button icon='user-plus' onClick={() => router.navigate('/admin/users/new')}>
-									{t('New')}
-								</Button>
-							)}
 							{canBulkCreateUser && (
 								<Button icon='mail' onClick={() => router.navigate('/admin/users/invite')}>
 									{t('Invite')}
+								</Button>
+							)}
+							{canCreateUser && (
+								<Button icon='user-plus' onClick={() => router.navigate('/admin/users/new')}>
+									{t('New_user')}
 								</Button>
 							)}
 						</ButtonGroup>

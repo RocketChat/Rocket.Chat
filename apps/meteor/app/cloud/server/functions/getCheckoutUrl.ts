@@ -6,6 +6,8 @@ import { getURL } from '../../../utils/server/getURL';
 import { getWorkspaceAccessTokenOrThrow } from './getWorkspaceAccessToken';
 import { syncWorkspace } from './syncWorkspace';
 
+export const fallback = `https://go.rocket.chat/i/contact-sales`;
+
 export const getCheckoutUrl = async (): Promise<{
 	url: string;
 }> => {
@@ -46,7 +48,7 @@ export const getCheckoutUrl = async (): Promise<{
 		});
 
 		return {
-			url: `https://go.rocket.chat/i/contact-sales`,
+			url: fallback,
 		};
 	}
 };
