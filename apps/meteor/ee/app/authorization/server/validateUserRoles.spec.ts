@@ -38,6 +38,14 @@ describe('Operating after activeUsers Limits', () => {
 	});
 
 	describe('Adding a new user', () => {
+		it('should  throw error when user is active as undefined', async () => {
+			const user = {
+				roles: ['user'],
+			};
+
+			await expect(validateUserRoles(user)).rejects.toThrow(MeteorError);
+		});
+
 		it('should not throw error when user is not active', async () => {
 			const user = {
 				active: false,

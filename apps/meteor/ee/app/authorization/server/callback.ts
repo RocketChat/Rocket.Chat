@@ -3,7 +3,7 @@ import { License } from '@rocket.chat/license';
 import { callbacks } from '../../../../lib/callbacks';
 import { validateUserRoles } from './validateUserRoles';
 
-License.on('installed', async () => {
+License.onInstall(async () => {
 	callbacks.add(
 		'beforeSaveUser',
 		async ({ user, oldUser }) => {
@@ -16,7 +16,7 @@ License.on('installed', async () => {
 	callbacks.add('afterDeleteUser', () => License.shouldPreventAction('activeUsers'), callbacks.priority.HIGH, 'validateUserRoles');
 });
 
-License.on('invalidate', async () => {
+License.onInvalidate(async () => {
 	callbacks.remove('beforeSaveUser', 'validateUserRoles');
 	callbacks.remove('afterSaveUser', 'validateUserRoles');
 	callbacks.remove('afterDeleteUser', 'validateUserRoles');

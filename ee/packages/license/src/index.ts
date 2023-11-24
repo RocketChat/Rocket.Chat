@@ -14,6 +14,8 @@ import {
 	onToggledFeature,
 	onValidFeature,
 	onValidateLicense,
+	onInstall,
+	onInvalidate,
 } from './events/listeners';
 import { overwriteClassOnLicense } from './events/overwriteClassOnLicense';
 import { LicenseManager } from './license';
@@ -86,6 +88,10 @@ export class LicenseImp extends LicenseManager implements License {
 	}
 
 	onChange = onChange;
+
+	onInstall = onInstall;
+
+	onInvalidate = onInvalidate;
 
 	onValidFeature = onValidFeature;
 
