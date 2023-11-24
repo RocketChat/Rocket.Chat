@@ -139,12 +139,13 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		this._valid = false;
 		this._lockedLicense = undefined;
 
-		this.shouldPreventActionResults.clear();
+		this.states.clear();
 		clearPendingLicense.call(this);
 	}
 
 	private invalidateLicense(): void {
 		this._valid = false;
+		this.states.clear();
 		licenseInvalidated.call(this);
 		invalidateAll.call(this);
 	}
@@ -332,6 +333,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			'monthlyActiveContacts',
 		];
 
+		const license = this.getLicense();
+
 		const items = await Promise.all(
 			keys.map(async (limit) => {
 				const cached = this.shouldPreventActionResults.get(limit as LicenseLimitKind);
@@ -340,15 +343,17 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 					return [limit as LicenseLimitKind, cached];
 				}
 
-				const fresh = this._license
+				const fresh = license
 					? isBehaviorsInResult(
-							await validateLicenseLimits.call(this, this._license, {
+							await validateLicenseLimits.call(this, license, {
 								behaviors: ['prevent_action'],
 								limits: [limit],
 							}),
 							['prevent_action'],
 					  )
-					: false;
+					: isBehaviorsInResult(await validateDefaultLimits.call(this, { behaviors: ['prevent_action'], limits: [limit] }), [
+							'prevent_action',
+					  ]);
 
 				this.shouldPreventActionResults.set(limit as LicenseLimitKind, fresh);
 
