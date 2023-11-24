@@ -116,6 +116,10 @@ settings.onReady(async () => {
 
 	callbacks.add('workspaceLicenseChanged', async (updatedLicense) => applyLicense(updatedLicense, true));
 
+	License.onInstall(async () => void api.broadcast('license.actions', {} as Record<Partial<LicenseLimitKind>, boolean>));
+
+	License.onInvalidate(async () => void api.broadcast('license.actions', {} as Record<Partial<LicenseLimitKind>, boolean>));
+
 	License.onBehaviorTriggered('prevent_action', (context) => syncByTriggerDebounced(`prevent_action_${context.limit}`));
 
 	License.onBehaviorTriggered('start_fair_policy', async (context) => syncByTriggerDebounced(`start_fair_policy_${context.limit}`));

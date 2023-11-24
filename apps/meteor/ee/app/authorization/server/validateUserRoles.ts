@@ -33,13 +33,16 @@ export async function validateUserRoles(userData: Partial<IUser>, currentUserDat
 		return;
 	}
 
-	const isActive = Boolean(userData.active);
-	const wasActive = Boolean(currentUserData?.active);
+	const isActive = Boolean(userData.active !== false);
+	const wasActive = currentUserData && currentUserData?.active !== false;
 
-	const hasStatusChanged = isActive && !wasActive;
 	const hasRemovedSpecialType = (wasApp && !isApp) || (wasBot && !isBot);
 
-	if (!hasStatusChanged && !hasRemovedSpecialType) {
+	if (!isActive) {
+		return;
+	}
+
+	if (!hasRemovedSpecialType && wasActive) {
 		return;
 	}
 
