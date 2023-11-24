@@ -1017,7 +1017,6 @@
   "Close": "Close",
   "Close_chat": "Close chat",
   "Close_room_description": "You are about to close this chat. Are you sure you want to continue?",
-  "Close_to_seat_limit_warning": "New members cannot be created once the seat limit is met.",
   "close-livechat-room": "Close Omnichannel Room",
   "close-livechat-room_description": "Permission to close the current Omnichannel room",
   "Close_menu": "Close menu",
@@ -3656,6 +3655,7 @@
   "New_Trigger": "New Trigger",
   "New_Unit": "New Unit",
   "New_users": "New users",
+  "New_user": "New user",
   "New_version_available_(s)": "New version available (%s)",
   "New_videocall_request": "New Video Call Request",
   "New_visitor_navigation": "New Navigation: {{history}}",
@@ -4273,11 +4273,6 @@
   "Report_User": "Report user",
   "Reporting": "Reporting",
   "Request": "Request",
-  "Request_seats": "Request Seats",
-  "Request_more_seats": "Request more seats.",
-  "Request_more_seats_out_of_seats": "You can not add members because this Workspace is out of seats, please request more seats.",
-  "Request_more_seats_sales_team": "Once your request is submitted, our Sales Team will look into it and will reach out to you within the next couple of days.",
-  "Request_more_seats_title": "Request More Seats",
   "Request_comment_when_closing_conversation": "Request comment when closing conversation",
   "Request_comment_when_closing_conversation_description": "If enabled, the agent will need to set a comment before the conversation is closed.",
   "Request_tag_before_closing_chat": "Request tag(s) before closing conversation",
@@ -6187,5 +6182,8 @@
   "Sync_license_update_Callout": "If you don't notice any changes in your workspace within a few minutes, sync the license update.",
   "Includes": "Includes",
   "Unlock_premium_capabilities": "Unlock premium capabilities",
-  "Unlimited_seats": "Unlimited seats"
+  "Unlimited_seats": "Unlimited seats",
+  "Seat_limit_reached": "Seat limit reached",
+  "Seat_limit_reached_Description": "Your workspace has reached its contractual seat limit and soon you won't be able to add more users.",
+  "Buy_more_seats": "Buy more seats"
 }

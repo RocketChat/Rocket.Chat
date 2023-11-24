@@ -41,18 +41,29 @@ export function authenticationMiddleware(
 	};
 }
 
-export function hasPermissionMiddleware(permission: string) {
+export function hasPermissionMiddleware(
+	permission: string,
+	{ rejectUnauthorized } = {
+		rejectUnauthorized: true,
+	},
+) {
 	return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		if (!req.userId) {
-			res.status(401).send('Unauthorized');
-			return;
+			if (rejectUnauthorized) {
+				res.status(401).send('Unauthorized');
+				return;
+			}
+			req.unauthorized = true;
+			return next();
 		}
 
 		if (!(await Authorization.hasPermission(req.userId, permission))) {
-			res.status(403).send('Forbidden');
-			return;
+			if (rejectUnauthorized) {
+				res.status(403).send('Forbidden');
+				return;
+			}
+			req.unauthorized = true;
 		}
-
 		next();
 	};
 }
