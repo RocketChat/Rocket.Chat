@@ -8217,9 +8217,9 @@ __metadata:
     "@rocket.chat/icons": "*"
     "@rocket.chat/prettier-config": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-contexts": 3.0.0-rc.11
+    "@rocket.chat/ui-contexts": 3.0.0-rc.12
     "@rocket.chat/ui-kit": "*"
-    "@rocket.chat/ui-video-conf": 3.0.0-rc.11
+    "@rocket.chat/ui-video-conf": 3.0.0-rc.12
     "@tanstack/react-query": "*"
     react: "*"
     react-dom: "*"
@@ -8301,14 +8301,14 @@ __metadata:
     ts-jest: ~29.0.5
     typescript: ~5.2.2
   peerDependencies:
-    "@rocket.chat/core-typings": 6.5.0-rc.11
+    "@rocket.chat/core-typings": 6.5.0-rc.12
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-tokens": "*"
     "@rocket.chat/message-parser": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-client": 3.0.0-rc.11
-    "@rocket.chat/ui-contexts": 3.0.0-rc.11
+    "@rocket.chat/ui-client": 3.0.0-rc.12
+    "@rocket.chat/ui-contexts": 3.0.0-rc.12
     katex: "*"
     react: "*"
   languageName: unknown
@@ -8659,7 +8659,6 @@ __metadata:
     "@types/chai-datetime": 0.0.38
     "@types/chai-dom": 1.11.2
     "@types/chai-spies": ~1.0.5
-    "@types/clipboard": ^2.0.7
     "@types/codemirror": ^5.60.12
     "@types/cookie": ^0.5.3
     "@types/cookie-parser": ^1.4.5
@@ -8751,7 +8750,6 @@ __metadata:
     chalk: ^4.0.0
     change-case: ^4.1.2
     chart.js: ^3.8.0
-    clipboard: ^2.0.11
     codemirror: ^5.65.15
     colorette: ^2.0.20
     colors: ^1.4.0
@@ -9472,7 +9470,7 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-contexts": 3.0.0-rc.11
+    "@rocket.chat/ui-contexts": 3.0.0-rc.12
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -9625,7 +9623,7 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-contexts": 3.0.0-rc.11
+    "@rocket.chat/ui-contexts": 3.0.0-rc.12
     react: ^17.0.2
     react-dom: ^17.0.2
   languageName: unknown
@@ -9711,7 +9709,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": "*"
-    "@rocket.chat/ui-contexts": 3.0.0-rc.11
+    "@rocket.chat/ui-contexts": 3.0.0-rc.12
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
@@ -12111,15 +12109,6 @@ __metadata:
   dependencies:
     moment: ^2.10.2
   checksum: c19cab03143db9cabc9c7277b77a974634baa9a9554dc95a7d2996091ac88ca9d98718e701446932a4cf0b8f3c2862ad0d3f232e1deb6a9bdf72d9ef5342582d
-  languageName: node
-  linkType: hard
-
-"@types/clipboard@npm:^2.0.7":
-  version: 2.0.7
-  resolution: "@types/clipboard@npm:2.0.7"
-  dependencies:
-    clipboard: "*"
-  checksum: 9ab127a8a60a72fab044ae634da4d766fdf0242c06feca5c1b22f128e7cbebafc7dc89fce5e9e4251c5a93f35a608f71d0e9d251d9591d03f667703801c8a914
   languageName: node
   linkType: hard
 
@@ -17182,17 +17171,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clipboard@npm:*, clipboard@npm:^2.0.11":
-  version: 2.0.11
-  resolution: "clipboard@npm:2.0.11"
-  dependencies:
-    good-listener: ^1.2.2
-    select: ^1.1.2
-    tiny-emitter: ^2.0.0
-  checksum: 413055a6038e43898e0e895216b58ed54fbf386f091cb00188875ef35b186cefbd258acdf4cb4b0ac87cbc00de936f41b45dde9fe1fd1a57f7babb28363b8748
-  languageName: node
-  linkType: hard
-
 "clipboardy@npm:1.2.3":
   version: 1.2.3
   resolution: "clipboardy@npm:1.2.3"
@@ -19196,13 +19174,6 @@ __metadata:
   version: 1.0.0
   resolution: "delayed-stream@npm:1.0.0"
   checksum: 46fe6e83e2cb1d85ba50bd52803c68be9bd953282fa7096f51fc29edd5d67ff84ff753c51966061e5ba7cb5e47ef6d36a91924eddb7f3f3483b1c560f77a0020
-  languageName: node
-  linkType: hard
-
-"delegate@npm:^3.1.2":
-  version: 3.2.0
-  resolution: "delegate@npm:3.2.0"
-  checksum: d943058fe05897228b158cbd1bab05164df28c8f54127873231d6b03b0a5acc1b3ee1f98ac70ccc9b79cd84aa47118a7de111fee2923753491583905069da27d
   languageName: node
   linkType: hard
 
@@ -22948,15 +22919,6 @@ __metadata:
   version: 0.1.4
   resolution: "globjoin@npm:0.1.4"
   checksum: 0a47d88d566122d9e42da946453ee38b398e0021515ac6a95d13f980ba8c1e42954e05ee26cfcbffce1ac1ee094d0524b16ce1dd874ca52408d6db5c6d39985b
-  languageName: node
-  linkType: hard
-
-"good-listener@npm:^1.2.2":
-  version: 1.2.2
-  resolution: "good-listener@npm:1.2.2"
-  dependencies:
-    delegate: ^3.1.2
-  checksum: f39fb82c4e41524f56104cfd2d7aef1a88e72f3f75139115fbdf98cc7d844e0c1b39218b2e83438c6188727bf904ed78c7f0f2feff67b32833bc3af7f0202b33
   languageName: node
   linkType: hard
 
@@ -34954,13 +34916,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"select@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "select@npm:1.1.2"
-  checksum: 4346151e94f226ea6131e44e68e6d837f3fdee64831b756dd657cc0b02f4cb5107f867cb34a1d1216ab7737d0bf0645d44546afb030bbd8d64e891f5e4c4814e
-  languageName: node
-  linkType: hard
-
 "selfsigned@npm:^2.1.1":
   version: 2.1.1
   resolution: "selfsigned@npm:2.1.1"
@@ -37413,13 +37368,6 @@ __metadata:
   version: 0.3.0
   resolution: "timsort@npm:0.3.0"
   checksum: 1a66cb897dacabd7dd7c91b7e2301498ca9e224de2edb9e42d19f5b17c4b6dc62a8d4cbc64f28be82aaf1541cb5a78ab49aa818f42a2989ebe049a64af731e2a
-  languageName: node
-  linkType: hard
-
-"tiny-emitter@npm:^2.0.0":
-  version: 2.1.0
-  resolution: "tiny-emitter@npm:2.1.0"
-  checksum: fbcfb5145751a0e3b109507a828eb6d6d4501352ab7bb33eccef46e22e9d9ad3953158870a6966a59e57ab7c3f9cfac7cab8521db4de6a5e757012f4677df2dd
   languageName: node
   linkType: hard
 

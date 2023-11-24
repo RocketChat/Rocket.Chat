@@ -14,13 +14,13 @@ import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useLicense, useLicenseName } from '../../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
 import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
-import RegisterWorkspaceModal from '../../cloud/modals/RegisterWorkspaceModal';
 import VersionCardActionButton from './components/VersionCardActionButton';
 import type { VersionActionItem } from './components/VersionCardActionItem';
 import VersionCardActionItemList from './components/VersionCardActionItemList';
 import { VersionCardSkeleton } from './components/VersionCardSkeleton';
 import { VersionTag } from './components/VersionTag';
 import type { VersionStatus } from './components/VersionTag';
+import RegisterWorkspaceModal from './modals/RegisterWorkspaceModal';
 
 const SUPPORT_EXTERNAL_LINK = 'https://go.rocket.chat/i/version-support';
 const RELEASES_EXTERNAL_LINK = 'https://go.rocket.chat/i/update-product';
