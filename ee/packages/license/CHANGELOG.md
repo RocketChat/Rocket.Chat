@@ -1,5 +1,11 @@
 # @rocket.chat/license
 
+## 0.1.0-rc.11
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.11
+
 ## 0.1.0-rc.10
 
 ### Patch Changes
