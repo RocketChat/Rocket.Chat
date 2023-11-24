@@ -13,9 +13,11 @@ License.on('installed', async () => {
 		'validateUserRoles',
 	);
 	callbacks.add('afterSaveUser', () => License.shouldPreventAction('activeUsers'), callbacks.priority.HIGH, 'validateUserRoles');
+	callbacks.add('afterDeleteUser', () => License.shouldPreventAction('activeUsers'), callbacks.priority.HIGH, 'validateUserRoles');
 });
 
 License.on('invalidate', async () => {
 	callbacks.remove('beforeSaveUser', 'validateUserRoles');
 	callbacks.remove('afterSaveUser', 'validateUserRoles');
+	callbacks.remove('afterDeleteUser', 'validateUserRoles');
 });
