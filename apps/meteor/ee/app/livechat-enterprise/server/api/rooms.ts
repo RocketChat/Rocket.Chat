@@ -15,10 +15,10 @@ API.v1.addRoute(
 		async post() {
 			const { roomId } = this.bodyParams;
 
-			type Room = Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'lastMessage' | 'servedBy'>;
+			type Room = Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'u' | 'lastMessage' | 'servedBy'>;
 
 			const room = await LivechatRooms.findOneById<Room>(roomId, {
-				projection: { _id: 1, t: 1, open: 1, onHold: 1, lastMessage: 1, servedBy: 1 },
+				projection: { _id: 1, t: 1, open: 1, onHold: 1, u: 1, lastMessage: 1, servedBy: 1 },
 			});
 			if (!room) {
 				throw new Error('error-invalid-room');
@@ -51,7 +51,7 @@ API.v1.addRoute(
 				throw new Error('invalid-param');
 			}
 
-			type Room = Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'servedBy'>;
+			type Room = Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'servedBy' | 'u' | 'lastMessage'>;
 
 			const room = await LivechatRooms.findOneById<Room>(roomId, {
 				projection: { t: 1, open: 1, onHold: 1, servedBy: 1 },

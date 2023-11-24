@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { createPortal } from 'react-dom';
 
 import { convertToCss } from './helpers/convertToCss';
@@ -18,5 +18,5 @@ export const SidebarPaletteStyleTag = memo(function SidebarPaletteStyleTag(): Re
 
 	const palette = convertToCss({ ...darkPalette, ...defaultSidebarPalette }, '.rcx-sidebar--main');
 
-	return createPortal(palette, useCreateStyleContainer('sidebar-palette'));
+	return <>{createPortal(palette, useCreateStyleContainer('sidebar-palette'))}</>;
 });

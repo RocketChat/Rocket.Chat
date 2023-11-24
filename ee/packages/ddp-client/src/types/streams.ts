@@ -226,9 +226,16 @@ export interface StreamerEvents {
 		{
 			key: 'Users:Deleted';
 			args: [
-				{
-					userId: IUser['_id'];
-				},
+				| {
+						userId: IUser['_id'];
+						messageErasureType: 'Delete';
+						replaceByUser?: never;
+				  }
+				| {
+						userId: IUser['_id'];
+						messageErasureType: 'Unlink';
+						replaceByUser?: { _id: IUser['_id']; username: IUser['username']; alias: string };
+				  },
 			];
 		},
 		{
@@ -237,7 +244,6 @@ export interface StreamerEvents {
 		},
 
 		{ key: 'voip.statuschanged'; args: [boolean] },
-		{ key: 'mac.limit'; args: [{ limitReached: boolean }] },
 		{ key: 'omnichannel.priority-changed'; args: [{ id: string; clientAction: ClientAction; name?: string }] },
 	];
 
