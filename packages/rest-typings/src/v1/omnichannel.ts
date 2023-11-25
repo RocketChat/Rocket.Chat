@@ -3138,7 +3138,8 @@ const POSTLivechatAppearanceParamsSchema = {
 				type: 'string',
 			},
 			value: {
-				anyOf: [{ type: 'string' }, { type: 'boolean' }, { type: 'number' }],
+				// Be careful with anyOf - https://github.com/ajv-validator/ajv/issues/1140
+				type: ['string', 'boolean', 'number'],
 			},
 		},
 		required: ['_id', 'value'],
