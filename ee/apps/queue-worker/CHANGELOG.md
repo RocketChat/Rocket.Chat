@@ -1,5 +1,15 @@
 # @rocket.chat/queue-worker
 
+## 0.3.0-rc.13
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.13
+- @rocket.chat/omnichannel-services@0.1.0-rc.13
+- @rocket.chat/core-services@0.3.0-rc.13
+- @rocket.chat/model-typings@0.2.0-rc.13
+- @rocket.chat/models@0.0.24-rc.6
+
 ## 0.3.0-rc.12
 
 ### Patch Changes
