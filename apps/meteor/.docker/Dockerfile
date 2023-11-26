@@ -1,8 +1,11 @@
 FROM node:14.21.3-bullseye-slim as builder
+
 WORKDIR /app
+
 RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends g++ make python ca-certificates
+
 RUN set -x \
     && cd /app \
     && npm install sharp@0.30.4 isolated-vm@4.4.2 bcrypt@5.0.1
