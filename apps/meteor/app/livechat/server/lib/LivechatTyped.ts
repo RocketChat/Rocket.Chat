@@ -1776,13 +1776,13 @@ class LivechatClass {
 		if (guestData?.name?.trim().length) {
 			const { _id: rid } = roomData;
 			const { name } = guestData;
-			return (
-				(await Rooms.setFnameById(rid, name)) &&
-				(await LivechatInquiry.setNameByRoomId(rid, name)) &&
-				// This one needs to be the last since the agent may not have the subscription
-				// when the conversation is in the queue, then the result will be 0(zero)
-				Subscriptions.updateDisplayNameByRoomId(rid, name)
-			);
+			await Promise.all([
+				Rooms.setFnameById(rid, name),
+				LivechatInquiry.setNameByRoomId(rid, name),
+				Subscriptions.updateDisplayNameByRoomId(rid, name),
+			]);
+
+			return true;
 		}
 	}
 }
