@@ -105,7 +105,7 @@ describe('Validate License Limits', () => {
 		});
 	});
 	describe('fair usage behavior', () => {
-		it('should change the flag to true if the counter is equal or over the limit', async () => {
+		it('should change the `prevent_action` flag to true if the counter is equal or over the limit', async () => {
 			const licenseManager = await getReadyLicenseManager();
 
 			const fairUsageCallback = jest.fn();
@@ -137,7 +137,7 @@ describe('Validate License Limits', () => {
 			fairUsageCallback.mockClear();
 			licenseManager.setLicenseLimitCounter('activeUsers', () => 10);
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
-			expect(fairUsageCallback).toHaveBeenCalledTimes(0);
+			expect(fairUsageCallback).toHaveBeenCalledTimes(1);
 			expect(preventActionCallback).toHaveBeenCalledTimes(1);
 
 			licenseManager.setLicenseLimitCounter('activeUsers', () => 11);
@@ -148,7 +148,7 @@ describe('Validate License Limits', () => {
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
 			await expect(licenseManager.shouldPreventAction('activeUsers')).resolves.toBe(true);
 			expect(preventActionCallback).toHaveBeenCalledTimes(4);
-			expect(fairUsageCallback).toHaveBeenCalledTimes(1);
+			expect(fairUsageCallback).toHaveBeenCalledTimes(0);
 		});
 		it('should trigger the toggle event if the counter is under the limit', async () => {
 			const licenseManager = await getReadyLicenseManager();
