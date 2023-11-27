@@ -10,6 +10,7 @@ Meteor.startup(async () => {
 			await this.add('Enterprise_License', '', {
 				type: 'string',
 				i18nLabel: 'Premium_License',
+				alert: 'Premium_License_alert',
 			});
 			await this.add('Enterprise_License_Data', '', {
 				type: 'string',
