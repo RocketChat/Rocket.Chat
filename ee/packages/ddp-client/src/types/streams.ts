@@ -58,7 +58,7 @@ export interface StreamerEvents {
 
 	'room-messages': [
 		{ key: '__my_messages__'; args: [IMessage] },
-		{ key: 'messages-imported'; args: [{ rid: string }] },
+		{ key: `${string}/messages-imported`; args: [{ rid: string }] },
 		{ key: string; args: [IMessage] },
 	];
 
