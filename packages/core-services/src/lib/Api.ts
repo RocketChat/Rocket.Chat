@@ -47,8 +47,7 @@ export class Api implements IApiService {
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		if (!this.broker) {
-			console.error(new Error(`No broker set to broadcast: ${event}`));
-			return;
+			throw new Error(`No broker set to broadcast: ${event}`);
 		}
 
 		return this.broker.broadcast(event, ...args);
