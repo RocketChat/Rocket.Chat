@@ -1,8 +1,10 @@
 import type { App } from '@rocket.chat/core-typings';
-import { useEndpoint, useRouter, useRouteParameter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouteParameter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
+import { useExternalLink } from '../../../hooks/useExternalLink';
+import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 import IframeModal from '../IframeModal';
 import AppInstallModal from '../components/AppInstallModal/AppInstallModal';
 import type { Actions } from '../helpers';
@@ -23,7 +25,6 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
-	const router = useRouter();
 	const routeContext = String(useRouteParameter('context'));
 	const context = isMarketplaceRouteContext(routeContext) ? routeContext : 'explore';
 
@@ -32,6 +33,9 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 	const notifyAdmins = useEndpoint('POST', `/apps/notify-admins`);
 
 	const openIncompatibleModal = useOpenIncompatibleModal();
+
+	const openExternalLink = useExternalLink();
+	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'user-page', action: 'buy_more' });
 
 	const closeModal = useCallback(() => {
 		setModal(null);
@@ -109,7 +113,7 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 				handleClose={closeModal}
 				handleConfirm={acquireApp}
 				handleEnableUnlimitedApps={() => {
-					router.navigate('/admin/subscription');
+					openExternalLink(manageSubscriptionUrl);
 					setModal(null);
 				}}
 			/>,
@@ -127,6 +131,7 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 		notifyAdmins,
 		success,
 		onDismiss,
-		router,
+		openExternalLink,
+		manageSubscriptionUrl,
 	]);
 }
