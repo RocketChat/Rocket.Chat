@@ -1,5 +1,12 @@
 # @rocket.chat/rest-typings
 
+## 6.5.0-rc.13
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.13
+- @rocket.chat/license@0.1.0-rc.13
+
 ## 6.5.0-rc.12
 
 ### Patch Changes
