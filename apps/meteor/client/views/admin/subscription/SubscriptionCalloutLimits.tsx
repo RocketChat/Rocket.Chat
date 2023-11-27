@@ -1,6 +1,6 @@
 import { Callout } from '@rocket.chat/fuselage';
 import type { LicenseBehavior } from '@rocket.chat/license/src/definition/LicenseBehavior';
-import { validateLimit } from '@rocket.chat/license/src/validation/validateLimit';
+import { validateWarnLimit } from '@rocket.chat/license/src/validation/validateLimit';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -31,7 +31,7 @@ export const SubscriptionCalloutLimits = () => {
 	const rules = keyLimits
 		.map((key) => {
 			const rule = license.limits[key]
-				?.filter((limit) => validateLimit(limit.max, limits[key].value ?? 0, limit.behavior))
+				?.filter((limit) => validateWarnLimit(limit.max, limits[key].value ?? 0, limit.behavior))
 				.sort((a, b) => b.max - a.max)[0];
 
 			if (!rule) {
