@@ -1,0 +1,18 @@
+import { License } from '@rocket.chat/license';
+
+export const applyLicense = async (license: string, isNewLicense: boolean): Promise<boolean> => {
+	const enterpriseLicense = (license ?? '').trim();
+	if (!enterpriseLicense) {
+		return false;
+	}
+
+	if (enterpriseLicense === License.encryptedLicense) {
+		return false;
+	}
+
+	try {
+		return License.setLicense(enterpriseLicense, isNewLicense);
+	} catch {
+		return false;
+	}
+};
