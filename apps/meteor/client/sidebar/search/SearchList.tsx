@@ -53,12 +53,12 @@ const shortcut = ((): string => {
 		return '';
 	}
 	if (window.navigator.platform.toLowerCase().includes('mac')) {
-		return '(\u2318+B)';
+		return '(\u2318+K)';
 	}
 	if (window.navigator.platform.toLowerCase().includes('win')) {
-		return '(Ctrl+B)';
+		return '(Ctrl+K)';
 	}
-	return '(\u2303+B)';
+	return '(\u2303+K)';
 })();
 
 const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));
