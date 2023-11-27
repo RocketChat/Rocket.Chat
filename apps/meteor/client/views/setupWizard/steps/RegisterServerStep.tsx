@@ -15,7 +15,8 @@ const SERVER_OPTIONS = {
 
 const RegisterServerStep = (): ReactElement => {
 	const t = useTranslation();
-	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, completeSetupWizard } = useSetupWizardContext();
+	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, completeSetupWizard, saveAgreementData } =
+		useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
 	const invalidateLicenseQuery = useInvalidateLicense();
 
@@ -61,7 +62,8 @@ const RegisterServerStep = (): ReactElement => {
 		},
 	);
 
-	const handleConfirmOffline: ComponentProps<typeof RegisterOfflinePage>['onSubmit'] = ({ token }) => {
+	const handleConfirmOffline: ComponentProps<typeof RegisterOfflinePage>['onSubmit'] = async ({ token, agreement }) => {
+		await saveAgreementData(agreement);
 		mutate(token);
 	};
 
@@ -71,6 +73,7 @@ const RegisterServerStep = (): ReactElement => {
 				termsHref='https://rocket.chat/terms'
 				policyHref='https://rocket.chat/privacy'
 				clientKey={clientKey || ''}
+				onCopySecurityCode={(): void => dispatchToastMessage({ type: 'success', message: t('Copied') })}
 				onBackButtonClick={(): void => setServerOption(SERVER_OPTIONS.REGISTERED)}
 				onSubmit={handleConfirmOffline}
 			/>

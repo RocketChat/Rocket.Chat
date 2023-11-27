@@ -1862,7 +1862,7 @@
   "error-avatar-invalid-url": "Ogiltig avatar-URL: {{url}}",
   "error-avatar-url-handling": "Fel vid hantering av avatarinställning från en URL ({{url}}) för {{username}}",
   "error-business-hours-are-closed": "Kontorstiden är slut",
-  "error-blocked-username": "<strong>{{field}}</strong> är låst och kan inte användas.",
+  "error-blocked-username": "**{{field}}** är låst och kan inte användas.",
   "error-canned-response-not-found": "Standardsvaret hittades inte",
   "error-cannot-delete-app-user": "Det är inte tillåtet att ta bort appanvändaren. Avinstallera den motsvarande appen om du vill ta bort användaren.",
   "error-cant-add-federated-users": "Kan inte lägga till samordnade användare i ett icke federerat rum",

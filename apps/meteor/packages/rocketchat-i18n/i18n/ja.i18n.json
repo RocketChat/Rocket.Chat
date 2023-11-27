@@ -1630,7 +1630,7 @@
   "error-avatar-invalid-url": "無効なアバターURL：{{url}}",
   "error-avatar-url-handling": "{{username}}のURL（{{url}}）からアバター設定を処理中にエラーが発生しました",
   "error-business-hours-are-closed": "営業時間は閉じられています",
-  "error-blocked-username": "<strong>{{field}}</strong>がブロックされており、使用できません！",
+  "error-blocked-username": "**{{field}}**がブロックされており、使用できません！",
   "error-canned-response-not-found": "返信定型文が見つかりません",
   "error-cannot-delete-app-user": "アプリユーザーの削除は許可されていません。対応するアプリをアンインストールして削除してください。",
   "error-cant-invite-for-direct-room": "ユーザーをダイレクトルームに招待できません",

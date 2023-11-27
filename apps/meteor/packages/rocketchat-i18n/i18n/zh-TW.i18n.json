@@ -1623,7 +1623,7 @@
   "error-avatar-invalid-url": "無效的大頭貼網址：{{url}}",
   "error-avatar-url-handling": "錯誤從{{username}}一個 URL（{{url}}）辦理大頭貼設定",
   "error-business-hours-are-closed": "營業時間已關閉",
-  "error-blocked-username": "<strong>{{field}}</strong> 被封鎖且無法使用！",
+  "error-blocked-username": "**{{field}}** 被封鎖且無法使用！",
   "error-canned-response-not-found": "找不到罐頭訊息",
   "error-cannot-delete-app-user": "禁止刪除應用程式使用者，請反安裝相關應用程式來移除它。",
   "error-cant-invite-for-direct-room": "無法邀請使用者進入私訊",

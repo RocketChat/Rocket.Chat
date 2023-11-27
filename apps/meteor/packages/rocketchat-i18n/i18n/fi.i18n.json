@@ -1861,7 +1861,7 @@
   "error-avatar-invalid-url": "Virheellinen avatarin URL-osoite: {{url}}",
   "error-avatar-url-handling": "Virhe käsiteltäessä avatar-asetusta URL-osoitteesta ({{url}}) käyttäjälle {{username}}",
   "error-business-hours-are-closed": "Aukioloaika on suljettu",
-  "error-blocked-username": "<strong>{{field}}</strong> on estetty eikä sitä voi käyttää!",
+  "error-blocked-username": "**{{field}}** on estetty eikä sitä voi käyttää!",
   "error-canned-response-not-found": "Valmista vastausta ei löydy",
   "error-cannot-delete-app-user": "Sovelluskäyttäjän poistaminen ei ole sallittua. Poista käyttäjä poistamalla kyseinen sovellus.",
   "error-cant-add-federated-users": "Liittoutuneita käyttäjiä ei voi lisätä organisaation sisäiseen huoneeseen",

@@ -8,8 +8,8 @@ import moment from 'moment';
 import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorkspace';
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { getAppCount } from './lib/getAppCount';
 import { applyLicense } from './applyLicense';
+import { getAppCount } from './lib/getAppCount';
 
 settings.watch<string>('Site_Url', (value) => {
 	if (value) {

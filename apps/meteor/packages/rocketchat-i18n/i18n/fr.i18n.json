@@ -1648,7 +1648,7 @@
   "error-avatar-invalid-url": "URL d'avatar non valide : {{url}}",
   "error-avatar-url-handling": "Erreur lors du traitement du paramètre d'avatar à partir d'une URL ({{url}}) pour {{username}}",
   "error-business-hours-are-closed": "Les heures d'ouverture sont fermées",
-  "error-blocked-username": "<strong>{{field}}</strong> est bloqué et ne peut pas être utilisé !",
+  "error-blocked-username": "**{{field}}** est bloqué et ne peut pas être utilisé !",
   "error-canned-response-not-found": "Réponse standardisée introuvable",
   "error-cannot-delete-app-user": "La suppression de l'utilisateur de l'application n'est pas autorisée, désinstallez l'application correspondante pour le supprimer.",
   "error-cant-invite-for-direct-room": "Impossible d'inviter l'utilisateur dans les salons directs",

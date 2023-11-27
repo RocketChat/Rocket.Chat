@@ -8612,7 +8612,7 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/mp3-encoder": 0.24.0
     "@rocket.chat/omnichannel-services": "workspace:^"
-    "@rocket.chat/onboarding-ui": ~0.33.1
+    "@rocket.chat/onboarding-ui": ~0.33.2
     "@rocket.chat/password-policies": "workspace:^"
     "@rocket.chat/pdf-worker": "workspace:^"
     "@rocket.chat/poplib": "workspace:^"
@@ -9056,9 +9056,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/onboarding-ui@npm:~0.33.1":
-  version: 0.33.1
-  resolution: "@rocket.chat/onboarding-ui@npm:0.33.1"
+"@rocket.chat/onboarding-ui@npm:~0.33.2":
+  version: 0.33.2
+  resolution: "@rocket.chat/onboarding-ui@npm:0.33.2"
   dependencies:
     i18next: ~21.6.16
     react-hook-form: ~7.27.1
@@ -9073,7 +9073,7 @@ __metadata:
     react: 17.0.2
     react-dom: 17.0.2
     react-i18next: ~11.15.4
-  checksum: 48be4af0c4d6ca4f4746d21cc76d0a0087ff4b768e578a18e62bee3736b1b4860aa9ff1a73b3b4c3590149ce9ea7cf8d7fcfe964d37000a8a71766b08a4bcdce
+  checksum: abbfde9f8ac5655b9dbd30872aabe585f2814d58c1c66d672b4aaf3ef3f69d0e31e626924bab19b052d242a0abdb9c7a0d3ff907a7f21742ec15a6dc367951af
   languageName: node
   linkType: hard
 

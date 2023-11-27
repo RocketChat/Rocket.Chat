@@ -1686,7 +1686,7 @@
   "error-avatar-invalid-url": "URL inválido de avatar: {{url}}",
   "error-avatar-url-handling": "Erro durante o manuseio configuração avatar a partir de uma URL ({{url}}) para {{username}}",
   "error-business-hours-are-closed": "Horário de expediente fechado",
-  "error-blocked-username": "<strong>{{field}}</strong> está bloqueado e não pode ser usado!",
+  "error-blocked-username": "**{{field}}** está bloqueado e não pode ser usado!",
   "error-canned-response-not-found": "Resposta modelo não encontrada",
   "error-cannot-delete-app-user": "Excluir um usuário de aplicativo não é permitido, desinstale o app correspondente para removê-lo.",
   "error-cant-invite-for-direct-room": "Não é possível convidar usuários para salas diretas",

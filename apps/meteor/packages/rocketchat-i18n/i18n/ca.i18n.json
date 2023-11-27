@@ -1635,7 +1635,7 @@
   "error-avatar-invalid-url": "URL de l'avatar no vàlid: {{url}}",
   "error-avatar-url-handling": "Error durant la configuració d'avatar d'usuari des de l'adreça URL ({{url}}) per a l'usuari {{username}}",
   "error-business-hours-are-closed": "L'horari comercial està tancat",
-  "error-blocked-username": "<strong>{{field}} </strong> està bloquejat i no es pot utilitzar.",
+  "error-blocked-username": "**{{field}}** està bloquejat i no es pot utilitzar.",
   "error-canned-response-not-found": "Resposta predefinida no trobada",
   "error-cannot-delete-app-user": "No es permet esborrar l'usuari de l'aplicació, desinstal l'aplicació corresponent per eliminar-la.",
   "error-cant-invite-for-direct-room": "No es pot convidar a l'usuari a sales directes",

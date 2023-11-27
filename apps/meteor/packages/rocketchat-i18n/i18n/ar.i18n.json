@@ -1645,7 +1645,7 @@
   "error-avatar-invalid-url": "عنوان URL:‏ {{url}} للصورة الرمزية غير صالح",
   "error-avatar-url-handling": "خطأ أثناء ضبط إعداد الصورة الرمزية من عنوان URL‏ ({{url}}) لـ {{username}}",
   "error-business-hours-are-closed": "ساعات العمل مغلقة",
-  "error-blocked-username": "<strong>{{field}}</strong> محظور ولا يمكن استخدامه!",
+  "error-blocked-username": "**{{field}}** محظور ولا يمكن استخدامه!",
   "error-canned-response-not-found": "لم يتم العثور على ردود مسجلة",
   "error-cannot-delete-app-user": "غير مسموح بحذف مستخدم التطبيق، قم بإلغاء تثبيت التطبيق المقابل لإزالته.",
   "error-cant-invite-for-direct-room": "لا يمكن دعوة المستخدم في الغرفة المباشرة",

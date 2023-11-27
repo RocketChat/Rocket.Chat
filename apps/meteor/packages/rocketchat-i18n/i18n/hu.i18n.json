@@ -1812,7 +1812,7 @@
   "error-avatar-invalid-url": "Érvénytelen profilkép URL: {{url}}",
   "error-avatar-url-handling": "Hiba történt {{username}} {{url}} URL-éről érkező profilkép-beállításának kezelésekor",
   "error-business-hours-are-closed": "A munkaidő véget ért",
-  "error-blocked-username": "A(z) <strong>{{field}}</strong> tiltva van és nem használható!",
+  "error-blocked-username": "A(z) **{{field}}** tiltva van és nem használható!",
   "error-canned-response-not-found": "A sablonválasz nem található",
   "error-cannot-delete-app-user": "Az alkalmazás felhasználójának törlése nem engedélyezett, távolítsa el a megfelelő alkalmazást a felhasználó eltávolításához.",
   "error-cant-add-federated-users": "Nem lehet föderált felhasználókat hozzáadni egy nem föderált szobához",
