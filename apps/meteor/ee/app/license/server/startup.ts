@@ -9,6 +9,7 @@ import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorksp
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { getAppCount } from './lib/getAppCount';
+import { applyLicense } from './applyLicense';
 
 settings.watch<string>('Site_Url', (value) => {
 	if (value) {
@@ -24,23 +25,6 @@ License.onValidateLicense(async () => {
 License.onInvalidateLicense(async () => {
 	await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
 });
-
-export const applyLicense = async (license: string, isNewLicense: boolean): Promise<boolean> => {
-	const enterpriseLicense = (license ?? '').trim();
-	if (!enterpriseLicense) {
-		return false;
-	}
-
-	if (enterpriseLicense === License.encryptedLicense) {
-		return false;
-	}
-
-	try {
-		return License.setLicense(enterpriseLicense, isNewLicense);
-	} catch {
-		return false;
-	}
-};
 
 /**
  * This is a debounced function that will sync the workspace data to the cloud.
