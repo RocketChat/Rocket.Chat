@@ -190,6 +190,26 @@ const computation = Tracker.autorun(() => {
 						}
 						ChatMessage.remove(query);
 					});
+
+					void sdk.stream(
+						'room-messages',
+						[`${record.rid}/reported-messages`],
+						async ({ messageIds, hidden, showDeletedStatus, remove }: Record<string, any>) => {
+							if (remove) {
+								return ChatMessage.remove({ _id: { $in: messageIds } });
+							}
+							if (hidden) {
+								return ChatMessage.update({ _id: { $in: messageIds } }, { $set: { _hidden: true } }, { multi: true });
+							}
+							if (showDeletedStatus) {
+								return ChatMessage.update(
+									{ _id: { $in: messageIds } },
+									{ $set: { t: 'rm', msg: '', urls: [], mentions: [], attachments: [], reactions: {} } },
+									{ multi: true },
+								);
+							}
+						},
+					);
 				}
 			}
 

@@ -402,6 +402,20 @@ export class ListenersModule {
 			notifications.notifyRoomInThisInstance(rid, 'deleteMessageBulk', data);
 		});
 
+		service.onEvent('notify.deletedReportedMessages', ({ messages, hidden, showDeletedStatus, remove }): void => {
+			const transformed = messages.reduce((acc, { rid, _id }) => {
+				if (!acc[rid]) {
+					acc[rid] = [];
+				}
+				acc[rid].push(_id);
+				return acc;
+			}, {} as Record<string, string[]>);
+
+			Object.entries(transformed).forEach(([rid, messageIds]) => {
+				notifications.streamRoomMessage.emitWithoutBroadcast(`${rid}/reported-messages`, { messageIds, hidden, showDeletedStatus, remove });
+			});
+		});
+
 		service.onEvent('notify.deleteCustomSound', (data): void => {
 			notifications.notifyAllInThisInstance('deleteCustomSound', data);
 			notifications.notifyAllInThisInstance('public-info', ['deleteCustomSound', [data]]);

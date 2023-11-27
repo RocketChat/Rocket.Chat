@@ -1,3 +1,4 @@
+import { api } from '@rocket.chat/core-services';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { Messages, Uploads, ReadReceipts } from '@rocket.chat/models';
 
@@ -7,8 +8,8 @@ import { settings } from '../../../app/settings/server';
 // heavily inspired from message delete taking place in the user deletion process
 // in this path we don't care about the apps engine events - it's a "raw" bulk action
 export async function deleteReportedMessages(messages: IMessage[], user: IUser): Promise<void> {
-	const keepHistory = settings.get('Message_KeepHistory');
-	const showDeletedStatus = settings.get('Message_ShowDeletedStatus');
+	const keepHistory = settings.get<boolean>('Message_KeepHistory');
+	const showDeletedStatus = settings.get<boolean>('Message_ShowDeletedStatus');
 	const files: string[] = [];
 	const messageIds: string[] = [];
 	for (const message of messages) {
@@ -47,4 +48,11 @@ export async function deleteReportedMessages(messages: IMessage[], user: IUser):
 	if (showDeletedStatus) {
 		await Messages.setAsDeletedByIdsAndUser(messageIds, user as any);
 	}
+
+	void api.broadcast('notify.deletedReportedMessages', {
+		messages: messages.map((message) => ({ _id: message._id, rid: message.rid })),
+		showDeletedStatus,
+		hidden: keepHistory && !showDeletedStatus,
+		remove: !keepHistory && !showDeletedStatus,
+	});
 }

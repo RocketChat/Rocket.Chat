@@ -96,7 +96,11 @@ export class NotificationsModule {
 
 		this.streamRoomMessage.allowWrite('none');
 		this.streamRoomMessage.allowRead(async function (eventName, extraData) {
-			const room = await Rooms.findOneById(eventName);
+			const roomId: string | undefined = eventName.includes('/') ? eventName.split('/').shift() : eventName;
+			if (!roomId) {
+				return false;
+			}
+			const room = await Rooms.findOneById(roomId);
 			if (!room) {
 				return false;
 			}
