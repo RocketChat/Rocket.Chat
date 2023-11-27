@@ -11,7 +11,7 @@ const BannerEnterpriseTrialEnded = (): ReactElement => {
 	const bannerLink = {
 		link: '/links/manage-subscription',
 		linkText: t('Upgrade_tab_upgrade_your_plan'),
-		linkTarget: '_self',
+		linkTarget: '_blank',
 	};
 
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
