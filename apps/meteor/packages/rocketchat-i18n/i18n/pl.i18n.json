@@ -1783,7 +1783,7 @@
   "error-avatar-invalid-url": "Nieprawidłowy awatar URL: {{url}}",
   "error-avatar-url-handling": "Błąd podczas przenoszenia ustawienia awatara z URL ({{url}}) do użytkownika {{username}}",
   "error-business-hours-are-closed": "Godziny pracy są zamknięte",
-  "error-blocked-username": "<strong>{{field}}</strong> jest zablokowane i nie może być użyte!",
+  "error-blocked-username": "**{{field}}** jest zablokowane i nie może być użyte!",
   "error-canned-response-not-found": "Predefiniowana odpowiedź nie odnaleziona",
   "error-cannot-delete-app-user": "Usuwanie użytkownika aplikacyjnego jest niedozwolone, odinstaluj odpowiednią aplikację aby móc go usunąć.",
   "error-cant-add-federated-users": "Nie można dodać użytkowników federacyjnych do pokoju niefederacyjnego",

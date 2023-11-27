@@ -1643,7 +1643,7 @@
   "error-avatar-invalid-url": "Ongeldige avatar-URL: {{url}}",
   "error-avatar-url-handling": "Fout bij het afhandelen van avatar-instellingen vanaf een URL ({{url}}) voor {{username}}",
   "error-business-hours-are-closed": "De openingstijden zijn gesloten",
-  "error-blocked-username": "<strong>{{field}}</strong> is geblokkeerd en kan niet worden gebruikt!",
+  "error-blocked-username": "**{{field}}** is geblokkeerd en kan niet worden gebruikt!",
   "error-canned-response-not-found": "Standaardantwoord niet gevonden",
   "error-cannot-delete-app-user": "Het verwijderen van de app-gebruiker is niet toegestaan, verwijder de bijhorende app om deze te verwijderen.",
   "error-cant-invite-for-direct-room": "Kan gebruiker niet uitnodigen in directe kamers",

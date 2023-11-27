@@ -1844,7 +1844,7 @@
   "error-avatar-invalid-url": "Ungültige Avatar-URL: {{url}}",
   "error-avatar-url-handling": "Fehler beim Übernehmen des Avatars- von URL  ({{url}}) für {{username}}",
   "error-business-hours-are-closed": "Geschäftszeiten sind geschlossen",
-  "error-blocked-username": "<strong>{{field}}</strong> ist blockiert und kann nicht verwendet werden!",
+  "error-blocked-username": "**{{field}}** ist blockiert und kann nicht verwendet werden!",
   "error-canned-response-not-found": "Vorformulierte Antwort nicht gefunden",
   "error-cannot-delete-app-user": "Das Löschen von App-Benutzern ist nicht erlaubt, deinstallieren Sie die entsprechende App, um sie zu entfernen.",
   "error-cant-add-federated-users": "Es können keine Verbund-Benutzer zu einem Nicht-Verbundraum hinzugefügt werden",

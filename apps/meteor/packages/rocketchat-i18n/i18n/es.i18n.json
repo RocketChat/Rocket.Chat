@@ -1633,7 +1633,7 @@
   "error-avatar-invalid-url": "URL de avatar no válida: {{url}}",
   "error-avatar-url-handling": "Error al gestionar el ajuste de avatar desde una dirección URL ({{url}}) para {{username}}",
   "error-business-hours-are-closed": "El horario comercial ha finalizado",
-  "error-blocked-username": "<strong>{{field}}</strong> está bloqueado y no se puede usar.",
+  "error-blocked-username": "**{{field}}** está bloqueado y no se puede usar.",
   "error-canned-response-not-found": "Respuesta predefinida no encontrada",
   "error-cannot-delete-app-user": "No se permite eliminar el usuario de la aplicación; desinstale la aplicación correspondiente para que se elimine.",
   "error-cant-invite-for-direct-room": "No se puede invitar al usuario a salas directas",

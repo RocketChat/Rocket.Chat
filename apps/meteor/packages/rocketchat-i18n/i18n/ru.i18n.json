@@ -1775,7 +1775,7 @@
   "error-avatar-invalid-url": "Неверный URL аватара: {{url}}",
   "error-avatar-url-handling": "Ошибка установки аватара из URL ({{url}}) для {{username}}",
   "error-business-hours-are-closed": "Рабочие часы окончены",
-  "error-blocked-username": "<strong>{{field}}</strong> запрещен к использованию!",
+  "error-blocked-username": "**{{field}}** запрещен к использованию!",
   "error-canned-response-not-found": "Заготовленный ответ не найден",
   "error-cannot-delete-app-user": "Удаление пользователя приложения не разрешено, удалите соответствующее приложение, чтобы удалить его.",
   "error-cant-add-federated-users": "Невозможно добавить федеративных пользователей в нефедеративный чат",
