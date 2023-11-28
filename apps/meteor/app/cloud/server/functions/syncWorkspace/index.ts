@@ -1,6 +1,6 @@
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
-import { CloudWorkspaceAccessTokenEmptyError, CloudWorkspaceAccessTokenError } from '../getWorkspaceAccessToken';
+import { CloudWorkspaceAccessTokenEmptyError, CloudWorkspaceAccessTokenError, isAbortError } from '../getWorkspaceAccessToken';
 import { getCachedSupportedVersionsToken } from '../supportedVersionsToken/supportedVersionsToken';
 import { announcementSync } from './announcementSync';
 import { legacySyncWorkspace } from './legacySyncWorkspace';
@@ -25,7 +25,7 @@ export async function syncWorkspace() {
 				break;
 			}
 			default: {
-				if (!(err instanceof CloudWorkspaceAccessTokenEmptyError)) {
+				if (!(err instanceof CloudWorkspaceAccessTokenEmptyError) && !isAbortError(err)) {
 					SystemLogger.error({ msg: 'Error during workspace sync', err });
 				}
 				SystemLogger.info({
@@ -43,7 +43,7 @@ export async function syncWorkspace() {
 							break;
 						}
 						default: {
-							if (!(err instanceof CloudWorkspaceAccessTokenEmptyError)) {
+							if (!(err instanceof CloudWorkspaceAccessTokenEmptyError) && !isAbortError(err)) {
 								SystemLogger.error({ msg: 'Error during fallback workspace sync', err });
 							}
 							throw err;
