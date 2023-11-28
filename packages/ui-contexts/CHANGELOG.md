@@ -1,5 +1,53 @@
 # @rocket.chat/ui-contexts
 
+## 3.0.0-rc.14
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.14
+- @rocket.chat/rest-typings@6.5.0-rc.14
+- @rocket.chat/ddp-client@0.2.9-rc.7
+
+## 3.0.0-rc.13
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.13
+- @rocket.chat/rest-typings@6.5.0-rc.13
+- @rocket.chat/ddp-client@0.2.9-rc.6
+
+## 3.0.0-rc.12
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.12
+- @rocket.chat/rest-typings@6.5.0-rc.12
+- @rocket.chat/ddp-client@0.2.9-rc.5
+
+## 3.0.0-rc.11
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.11
+- @rocket.chat/rest-typings@6.5.0-rc.11
+- @rocket.chat/ddp-client@0.2.9-rc.4
+
+## 3.0.0-rc.10
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.10
+- @rocket.chat/rest-typings@6.5.0-rc.10
+- @rocket.chat/ddp-client@0.2.9-rc.3
+
+## 3.0.0-rc.9
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.9
+- @rocket.chat/rest-typings@6.5.0-rc.9
+- @rocket.chat/ddp-client@0.2.9-rc.2
+
 ## 3.0.0-rc.8
 
 ### Patch Changes

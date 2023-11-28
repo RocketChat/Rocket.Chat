@@ -1,5 +1,47 @@
 # @rocket.chat/uikit-playground
 
+## 0.2.9-rc.7
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.14
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.14
+
+## 0.2.9-rc.6
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.13
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.13
+
+## 0.2.9-rc.5
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.12
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.12
+
+## 0.2.9-rc.4
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.11
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.11
+
+## 0.2.9-rc.3
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.10
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.10
+
+## 0.2.9-rc.2
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.9
+- @rocket.chat/fuselage-ui-kit@3.0.0-rc.9
+
 ## 0.2.9-rc.1
 
 ### Patch Changes

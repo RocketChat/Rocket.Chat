@@ -1,5 +1,41 @@
 # @rocket.chat/pdf-worker
 
+## 0.0.24-rc.7
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.14
+
+## 0.0.24-rc.6
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.13
+
+## 0.0.24-rc.5
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.12
+
+## 0.0.24-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.11
+
+## 0.0.24-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.10
+
+## 0.0.24-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.9
+
 ## 0.0.24-rc.1
 
 ### Patch Changes

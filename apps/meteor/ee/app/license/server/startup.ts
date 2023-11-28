@@ -8,6 +8,7 @@ import moment from 'moment';
 import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorkspace';
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { applyLicense } from './applyLicense';
 import { getAppCount } from './lib/getAppCount';
 
 settings.watch<string>('Site_Url', (value) => {
@@ -24,23 +25,6 @@ License.onValidateLicense(async () => {
 License.onInvalidateLicense(async () => {
 	await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
 });
-
-export const applyLicense = async (license: string, isNewLicense: boolean): Promise<boolean> => {
-	const enterpriseLicense = (license ?? '').trim();
-	if (!enterpriseLicense) {
-		return false;
-	}
-
-	if (enterpriseLicense === License.encryptedLicense) {
-		return false;
-	}
-
-	try {
-		return License.setLicense(enterpriseLicense, isNewLicense);
-	} catch {
-		return false;
-	}
-};
 
 /**
  * This is a debounced function that will sync the workspace data to the cloud.
@@ -115,6 +99,10 @@ settings.onReady(async () => {
 	settings.watch<string>('Enterprise_License', async (license) => applyLicense(license, true));
 
 	callbacks.add('workspaceLicenseChanged', async (updatedLicense) => applyLicense(updatedLicense, true));
+
+	License.onInstall(async () => void api.broadcast('license.actions', {} as Record<Partial<LicenseLimitKind>, boolean>));
+
+	License.onInvalidate(async () => void api.broadcast('license.actions', {} as Record<Partial<LicenseLimitKind>, boolean>));
 
 	License.onBehaviorTriggered('prevent_action', (context) => syncByTriggerDebounced(`prevent_action_${context.limit}`));
 

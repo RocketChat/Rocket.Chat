@@ -1,5 +1,71 @@
 # @rocket.chat/omnichannel-services
 
+## 0.1.0-rc.14
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.14
+- @rocket.chat/rest-typings@6.5.0-rc.14
+- @rocket.chat/pdf-worker@0.0.24-rc.7
+- @rocket.chat/core-services@0.3.0-rc.14
+- @rocket.chat/model-typings@0.2.0-rc.14
+- @rocket.chat/models@0.0.24-rc.7
+
+## 0.1.0-rc.13
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.13
+- @rocket.chat/rest-typings@6.5.0-rc.13
+- @rocket.chat/pdf-worker@0.0.24-rc.6
+- @rocket.chat/core-services@0.3.0-rc.13
+- @rocket.chat/model-typings@0.2.0-rc.13
+- @rocket.chat/models@0.0.24-rc.6
+
+## 0.1.0-rc.12
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.12
+- @rocket.chat/rest-typings@6.5.0-rc.12
+- @rocket.chat/pdf-worker@0.0.24-rc.5
+- @rocket.chat/core-services@0.3.0-rc.12
+- @rocket.chat/model-typings@0.2.0-rc.12
+- @rocket.chat/models@0.0.24-rc.5
+
+## 0.1.0-rc.11
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.11
+- @rocket.chat/rest-typings@6.5.0-rc.11
+- @rocket.chat/pdf-worker@0.0.24-rc.4
+- @rocket.chat/core-services@0.3.0-rc.11
+- @rocket.chat/model-typings@0.2.0-rc.11
+- @rocket.chat/models@0.0.24-rc.4
+
+## 0.1.0-rc.10
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.10
+- @rocket.chat/rest-typings@6.5.0-rc.10
+- @rocket.chat/pdf-worker@0.0.24-rc.3
+- @rocket.chat/core-services@0.3.0-rc.10
+- @rocket.chat/model-typings@0.2.0-rc.10
+- @rocket.chat/models@0.0.24-rc.3
+
+## 0.1.0-rc.9
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.9
+- @rocket.chat/rest-typings@6.5.0-rc.9
+- @rocket.chat/pdf-worker@0.0.24-rc.2
+- @rocket.chat/core-services@0.3.0-rc.9
+- @rocket.chat/model-typings@0.2.0-rc.9
+- @rocket.chat/models@0.0.24-rc.2
+
 ## 0.1.0-rc.8
 
 ### Patch Changes

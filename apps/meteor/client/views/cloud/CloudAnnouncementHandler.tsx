@@ -12,6 +12,9 @@ const CloudAnnouncementHandler = ({ dictionary = {}, surface, view }: CloudAnnou
 
 	useEffect(() => {
 		const appNs = `app-cloud-announcements-core`;
+		if (!dictionary) {
+			return;
+		}
 
 		for (const [language, translations] of Object.entries(dictionary)) {
 			i18n.addResources(language, appNs, translations);

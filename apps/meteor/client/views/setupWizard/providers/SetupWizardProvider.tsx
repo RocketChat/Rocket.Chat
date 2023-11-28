@@ -96,6 +96,18 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		[registerUser, setForceLogin, defineUsername, dispatchSettings, loginWithPassword, dispatchToastMessage, t],
 	);
 
+	const saveAgreementData = useCallback(
+		async (agreement): Promise<void> => {
+			await dispatchSettings([
+				{
+					_id: 'Cloud_Service_Agree_PrivacyTerms',
+					value: agreement,
+				},
+			]);
+		},
+		[dispatchSettings],
+	);
+
 	const saveWorkspaceData = useCallback(async (): Promise<void> => {
 		const {
 			serverData: { updates, agreement },
@@ -114,12 +126,9 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 				_id: 'Allow_Marketing_Emails',
 				value: updates,
 			},
-			{
-				_id: 'Cloud_Service_Agree_PrivacyTerms',
-				value: agreement,
-			},
 		]);
-	}, [dispatchSettings, setupWizardData]);
+		await saveAgreementData(agreement);
+	}, [dispatchSettings, saveAgreementData, setupWizardData]);
 
 	const saveOrganizationData = useCallback(
 		async (organizationData: ContextType<typeof SetupWizardContext>['setupWizardData']['organizationData']): Promise<void> => {
@@ -184,6 +193,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			registerAdminUser,
 			validateEmail: _validateEmail,
 			registerServer,
+			saveAgreementData,
 			saveWorkspaceData,
 			saveOrganizationData,
 			completeSetupWizard,
@@ -201,6 +211,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			registerAdminUser,
 			_validateEmail,
 			registerServer,
+			saveAgreementData,
 			saveWorkspaceData,
 			saveOrganizationData,
 			completeSetupWizard,

@@ -1,5 +1,162 @@
 # @rocket.chat/meteor
 
+## 6.5.0-rc.14
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.5.0-rc.14
+  - @rocket.chat/rest-typings@6.5.0-rc.14
+  - @rocket.chat/api-client@0.1.18-rc.7
+  - @rocket.chat/license@0.1.0-rc.14
+  - @rocket.chat/omnichannel-services@0.1.0-rc.14
+  - @rocket.chat/pdf-worker@0.0.24-rc.7
+  - @rocket.chat/presence@0.1.0-rc.14
+  - @rocket.chat/core-services@0.3.0-rc.14
+  - @rocket.chat/cron@0.0.20-rc.7
+  - @rocket.chat/gazzodown@3.0.0-rc.14
+  - @rocket.chat/model-typings@0.2.0-rc.14
+  - @rocket.chat/ui-contexts@3.0.0-rc.14
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.0-rc.14
+  - @rocket.chat/models@0.0.24-rc.7
+  - @rocket.chat/ui-theming@0.1.1-rc.0
+  - @rocket.chat/ui-client@3.0.0-rc.14
+  - @rocket.chat/ui-video-conf@3.0.0-rc.14
+  - @rocket.chat/web-ui-registration@3.0.0-rc.13
+  - @rocket.chat/instance-status@0.0.24-rc.7
+
+## 6.5.0-rc.13
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.5.0-rc.13
+  - @rocket.chat/rest-typings@6.5.0-rc.13
+  - @rocket.chat/api-client@0.1.18-rc.6
+  - @rocket.chat/license@0.1.0-rc.13
+  - @rocket.chat/omnichannel-services@0.1.0-rc.13
+  - @rocket.chat/pdf-worker@0.0.24-rc.6
+  - @rocket.chat/presence@0.1.0-rc.13
+  - @rocket.chat/core-services@0.3.0-rc.13
+  - @rocket.chat/cron@0.0.20-rc.6
+  - @rocket.chat/gazzodown@3.0.0-rc.13
+  - @rocket.chat/model-typings@0.2.0-rc.13
+  - @rocket.chat/ui-contexts@3.0.0-rc.13
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.0-rc.13
+  - @rocket.chat/models@0.0.24-rc.6
+  - @rocket.chat/ui-theming@0.1.1-rc.0
+  - @rocket.chat/ui-client@3.0.0-rc.13
+  - @rocket.chat/ui-video-conf@3.0.0-rc.13
+  - @rocket.chat/web-ui-registration@3.0.0-rc.12
+  - @rocket.chat/instance-status@0.0.24-rc.6
+
+## 6.5.0-rc.12
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.5.0-rc.12
+  - @rocket.chat/rest-typings@6.5.0-rc.12
+  - @rocket.chat/api-client@0.1.18-rc.5
+  - @rocket.chat/license@0.1.0-rc.12
+  - @rocket.chat/omnichannel-services@0.1.0-rc.12
+  - @rocket.chat/pdf-worker@0.0.24-rc.5
+  - @rocket.chat/presence@0.1.0-rc.12
+  - @rocket.chat/core-services@0.3.0-rc.12
+  - @rocket.chat/cron@0.0.20-rc.5
+  - @rocket.chat/gazzodown@3.0.0-rc.12
+  - @rocket.chat/model-typings@0.2.0-rc.12
+  - @rocket.chat/ui-contexts@3.0.0-rc.12
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.0-rc.12
+  - @rocket.chat/models@0.0.24-rc.5
+  - @rocket.chat/ui-theming@0.1.1-rc.0
+  - @rocket.chat/ui-client@3.0.0-rc.12
+  - @rocket.chat/ui-video-conf@3.0.0-rc.12
+  - @rocket.chat/web-ui-registration@3.0.0-rc.11
+  - @rocket.chat/instance-status@0.0.24-rc.5
+
+## 6.5.0-rc.11
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- 7e96fbd75f: Fixed issue with the creation of groups with the name of an already existing room throwing `internalError`
+  - @rocket.chat/core-typings@6.5.0-rc.11
+  - @rocket.chat/rest-typings@6.5.0-rc.11
+  - @rocket.chat/api-client@0.1.18-rc.4
+  - @rocket.chat/license@0.1.0-rc.11
+  - @rocket.chat/omnichannel-services@0.1.0-rc.11
+  - @rocket.chat/pdf-worker@0.0.24-rc.4
+  - @rocket.chat/presence@0.1.0-rc.11
+  - @rocket.chat/core-services@0.3.0-rc.11
+  - @rocket.chat/cron@0.0.20-rc.4
+  - @rocket.chat/gazzodown@3.0.0-rc.11
+  - @rocket.chat/model-typings@0.2.0-rc.11
+  - @rocket.chat/ui-contexts@3.0.0-rc.11
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.0-rc.11
+  - @rocket.chat/models@0.0.24-rc.4
+  - @rocket.chat/ui-theming@0.1.1-rc.0
+  - @rocket.chat/ui-client@3.0.0-rc.11
+  - @rocket.chat/ui-video-conf@3.0.0-rc.11
+  - @rocket.chat/web-ui-registration@3.0.0-rc.10
+  - @rocket.chat/instance-status@0.0.24-rc.4
+
+## 6.5.0-rc.10
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.5.0-rc.10
+  - @rocket.chat/rest-typings@6.5.0-rc.10
+  - @rocket.chat/api-client@0.1.18-rc.3
+  - @rocket.chat/license@0.1.0-rc.10
+  - @rocket.chat/omnichannel-services@0.1.0-rc.10
+  - @rocket.chat/pdf-worker@0.0.24-rc.3
+  - @rocket.chat/presence@0.1.0-rc.10
+  - @rocket.chat/core-services@0.3.0-rc.10
+  - @rocket.chat/cron@0.0.20-rc.3
+  - @rocket.chat/gazzodown@3.0.0-rc.10
+  - @rocket.chat/model-typings@0.2.0-rc.10
+  - @rocket.chat/ui-contexts@3.0.0-rc.10
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.0-rc.10
+  - @rocket.chat/models@0.0.24-rc.3
+  - @rocket.chat/ui-theming@0.1.1-rc.0
+  - @rocket.chat/ui-client@3.0.0-rc.10
+  - @rocket.chat/ui-video-conf@3.0.0-rc.10
+  - @rocket.chat/web-ui-registration@3.0.0-rc.9
+  - @rocket.chat/instance-status@0.0.24-rc.3
+
+## 6.5.0-rc.9
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/core-typings@6.5.0-rc.9
+  - @rocket.chat/rest-typings@6.5.0-rc.9
+  - @rocket.chat/api-client@0.1.18-rc.2
+  - @rocket.chat/license@0.1.0-rc.9
+  - @rocket.chat/omnichannel-services@0.1.0-rc.9
+  - @rocket.chat/pdf-worker@0.0.24-rc.2
+  - @rocket.chat/presence@0.1.0-rc.9
+  - @rocket.chat/core-services@0.3.0-rc.9
+  - @rocket.chat/cron@0.0.20-rc.2
+  - @rocket.chat/gazzodown@3.0.0-rc.9
+  - @rocket.chat/model-typings@0.2.0-rc.9
+  - @rocket.chat/ui-contexts@3.0.0-rc.9
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.0-rc.9
+  - @rocket.chat/models@0.0.24-rc.2
+  - @rocket.chat/ui-theming@0.1.1-rc.0
+  - @rocket.chat/ui-client@3.0.0-rc.9
+  - @rocket.chat/ui-video-conf@3.0.0-rc.9
+  - @rocket.chat/web-ui-registration@3.0.0-rc.8
+  - @rocket.chat/instance-status@0.0.24-rc.2
+
 ## 6.5.0-rc.8
 
 ### Patch Changes

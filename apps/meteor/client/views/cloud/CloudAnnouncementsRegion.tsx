@@ -14,6 +14,8 @@ const CloudAnnouncementsRegion = () => {
 		queryFn: () => getAnnouncements(),
 		select: (data) => data.announcements,
 		enabled: !!uid,
+		staleTime: 0,
+		refetchInterval: 1000 * 60 * 5,
 	});
 
 	if (!isSuccess) {

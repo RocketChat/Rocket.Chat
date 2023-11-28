@@ -7,7 +7,7 @@ import { getCheckoutUrl } from '../../../cloud/server/functions/getCheckoutUrl';
 import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirmationPoll';
 import { registerPreIntentWorkspaceWizard } from '../../../cloud/server/functions/registerPreIntentWorkspaceWizard';
 import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
-import { saveRegistrationDataManual } from '../../../cloud/server/functions/saveRegistrationData';
+import { saveRegistrationData, saveRegistrationDataManual } from '../../../cloud/server/functions/saveRegistrationData';
 import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
 import { syncWorkspace } from '../../../cloud/server/functions/syncWorkspace';
 import { API } from '../api';
@@ -100,7 +100,7 @@ API.v1.addRoute(
 			const pollData = await getConfirmationPoll(deviceCode);
 			if (pollData) {
 				if ('successful' in pollData && pollData.successful) {
-					await saveRegistrationDataManual(pollData.payload);
+					await saveRegistrationData(pollData.payload);
 				}
 				return API.v1.success({ pollData });
 			}

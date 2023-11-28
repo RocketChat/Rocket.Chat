@@ -14,6 +14,8 @@ import {
 	onToggledFeature,
 	onValidFeature,
 	onValidateLicense,
+	onInstall,
+	onInvalidate,
 } from './events/listeners';
 import { overwriteClassOnLicense } from './events/overwriteClassOnLicense';
 import { LicenseManager } from './license';
@@ -32,6 +34,7 @@ export * from './definition/LicenseLimit';
 export * from './definition/LicenseModule';
 export * from './definition/LicensePeriod';
 export * from './definition/LimitContext';
+export * from './MockedLicenseBuilder';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface License {
@@ -85,6 +88,10 @@ export class LicenseImp extends LicenseManager implements License {
 	}
 
 	onChange = onChange;
+
+	onInstall = onInstall;
+
+	onInvalidate = onInvalidate;
 
 	onValidFeature = onValidFeature;
 

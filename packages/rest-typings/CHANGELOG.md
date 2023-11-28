@@ -1,5 +1,47 @@
 # @rocket.chat/rest-typings
 
+## 6.5.0-rc.14
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.14
+- @rocket.chat/license@0.1.0-rc.14
+
+## 6.5.0-rc.13
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.13
+- @rocket.chat/license@0.1.0-rc.13
+
+## 6.5.0-rc.12
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.12
+- @rocket.chat/license@0.1.0-rc.12
+
+## 6.5.0-rc.11
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.11
+- @rocket.chat/license@0.1.0-rc.11
+
+## 6.5.0-rc.10
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.10
+- @rocket.chat/license@0.1.0-rc.10
+
+## 6.5.0-rc.9
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.9
+- @rocket.chat/license@0.1.0-rc.9
+
 ## 6.5.0-rc.8
 
 ### Patch Changes
