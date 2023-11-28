@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { connectWorkspace } from './functions/connectWorkspace';
-import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
+import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
 import { getWorkspaceAccessTokenWithScope } from './functions/getWorkspaceAccessTokenWithScope';
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
 import { syncWorkspace } from './functions/syncWorkspace';
@@ -32,6 +32,9 @@ Meteor.startup(async () => {
 		try {
 			await syncWorkspace();
 		} catch (e: any) {
+			if (e instanceof CloudWorkspaceAccessTokenEmptyError) {
+				return;
+			}
 			SystemLogger.error('An error occurred syncing workspace.', e.message);
 		}
 	});
@@ -39,6 +42,9 @@ Meteor.startup(async () => {
 		try {
 			await syncWorkspace();
 		} catch (e: any) {
+			if (e instanceof CloudWorkspaceAccessTokenEmptyError) {
+				return;
+			}
 			SystemLogger.error('An error occurred syncing workspace.', e.message);
 		}
 	});
