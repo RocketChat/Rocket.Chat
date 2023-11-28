@@ -5,7 +5,6 @@ import { v, compile } from 'suretype';
 
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
-import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { settings } from '../../../../settings/server';
 import type { WorkspaceRegistrationData } from '../buildRegistrationData';
 import { buildWorkspaceRegistrationData } from '../buildRegistrationData';
