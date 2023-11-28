@@ -173,7 +173,7 @@ function ChatInfo({ id, route }) {
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button icon='pencil' onClick={onEditClick}>
+					<Button icon='pencil' onClick={onEditClick} data-qa-id='room-info-edit'>
 						{t('Edit')}
 					</Button>
 				</ButtonGroup>
