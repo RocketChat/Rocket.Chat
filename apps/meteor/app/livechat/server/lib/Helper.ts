@@ -1,5 +1,5 @@
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
-import { api, Message } from '@rocket.chat/core-services';
+import { api, Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
 	IOmnichannelRoom,
@@ -543,10 +543,8 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		agent = { agentId, username };
 	}
 
-	if (!RoutingManager.getConfig()?.autoAssignAgent) {
-		logger.debug(
-			`Routing algorithm doesn't support auto assignment (using ${RoutingManager.methodName}). Chat will be on department queue`,
-		);
+	if (!RoutingManager.getConfig()?.autoAssignAgent || !(await Omnichannel.isWithinMACLimit(room))) {
+		logger.debug(`Room ${room._id} will be on department queue`);
 		await LivechatTyped.saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId);
 	}

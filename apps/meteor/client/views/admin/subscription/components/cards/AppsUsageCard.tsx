@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
+import UpgradeButton from '../UpgradeButton';
 
 type AppsUsageCardProps = {
 	privateAppsLimit?: { value?: number; max: number };
@@ -26,7 +27,11 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 		title: t('Apps'),
 		infoText: t('Apps_InfoText'),
 		...((marketplaceAppsPercentage || 0) >= 80 && {
-			upgradeButtonText: t('Upgrade'),
+			upgradeButton: (
+				<UpgradeButton target='app-usage-card' action='upgrade' small>
+					{t('Upgrade')}
+				</UpgradeButton>
+			),
 		}),
 	};
 
