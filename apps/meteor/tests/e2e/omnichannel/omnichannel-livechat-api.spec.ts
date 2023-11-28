@@ -124,15 +124,20 @@ test.describe('Omnichannel - Livechat API', () => {
 		});
 	});
 
-	test.describe('Complex Widget Interactions', () => {
+	test.describe.only('Complex Widget Interactions', () => {
 		// Tests that requires interaction from an agent or more
 		let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 		let poLiveChat: OmnichannelLiveChatEmbedded;
 		let page: Page;
+		const depId = faker.string.uuid();
 
 		test.beforeAll(async ({ api }) => {
 			const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
 			await expect(statusCode).toBe(200);
+			
+			// await expect((await api.post('/livechat/department', { _id: depId, name: 'TestDep', email: 'TestDep@email.com' })).status()).toBe(200);
+			const response = await api.post('/livechat/department', { _id: depId, name: 'TestDep', email: 'TestDep@email.com' });
+			console.log(response);
 			await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
 		});
@@ -163,6 +168,9 @@ test.describe('Omnichannel - Livechat API', () => {
 		test.afterAll(async ({ api }) => {
 			// await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
 			await api.delete('/livechat/users/agent/user1');
+			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status()).toBe(200);
+			await expect((await api.delete(`/livechat/department/${depId}`, { name: 'TestDep', email: 'TestDep@email.com' })).status()).toBe(200);
+			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status()).toBe(200);
 		});
 
 		// clearBusinessUnit
@@ -182,8 +190,8 @@ test.describe('Omnichannel - Livechat API', () => {
 		// setParentUrl
 		// setTheme
 
-		test.skip('clearBusinessUnit', async () => {
-			// TODO
+		test('clearBusinessUnit', async () => {
+			// TODO: check how to test this, and if this is working as intended 
 			await test.step('Expect clearBusinessUnit to do something', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.clearBusinessUnit());
 			});
