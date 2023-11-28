@@ -66,7 +66,6 @@ import '../app/slashcommands-status/server';
 import '../app/slashcommands-topic/server';
 import '../app/slashcommands-unarchiveroom/server';
 import '../app/smarsh-connector/server';
-import '../app/spotify/server';
 import '../app/theme/server';
 import '../app/threads/server';
 import '../app/tokenpass/server';
