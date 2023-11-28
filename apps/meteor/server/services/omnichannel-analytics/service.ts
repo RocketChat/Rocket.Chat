@@ -6,6 +6,7 @@ import type {
 	ChartDataOptions,
 	IOmnichannelAnalyticsService,
 } from '@rocket.chat/core-services';
+import { LivechatRooms } from '@rocket.chat/models';
 import moment from 'moment-timezone';
 
 import { getTimezone } from '../../../app/utils/server/lib/getTimezone';
@@ -33,7 +34,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 		super();
 		this.overview = new OverviewData();
 		this.chart = new ChartData();
-		this.agentOverview = new AgentOverviewData();
+		this.agentOverview = new AgentOverviewData(LivechatRooms);
 	}
 
 	async getAgentOverviewData(options: AgentOverviewDataOptions) {

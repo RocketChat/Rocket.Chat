@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
 import type { ConversationData } from '@rocket.chat/core-services';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatRooms } from '@rocket.chat/models';
+import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type { Filter } from 'mongodb';
 
 import { secondsToHHMMSS } from '../../../lib/utils/secondsToHHMMSS';
@@ -16,6 +16,8 @@ type AgentOverviewValidActions =
 	| 'Avg_reaction_time';
 
 export class AgentOverviewData {
+	constructor(private readonly roomsModel: ILivechatRoomsModel) {}
+
 	updateMap<K>(map: Map<K, number>, key: K, value: number) {
 		const currentKeyValue = map.get(key);
 		map.set(key, currentKeyValue ? currentKeyValue + value : value);
@@ -90,20 +92,22 @@ export class AgentOverviewData {
 			data: [],
 		};
 
-		await LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages(
-			'l',
-			date,
-			{
-				departmentId,
-			},
-			{},
-			extraQuery,
-		).forEach((room) => {
-			if (room.servedBy) {
-				this.updateMap(agentConversations, room.servedBy.username, 1);
-				total++;
-			}
-		});
+		await this.roomsModel
+			.getAnalyticsMetricsBetweenDateWithMessages(
+				'l',
+				date,
+				{
+					departmentId,
+				},
+				{},
+				extraQuery,
+			)
+			.forEach((room) => {
+				if (room.servedBy) {
+					this.updateMap(agentConversations, room.servedBy.username, 1);
+					total++;
+				}
+			});
 
 		agentConversations.forEach((value, key) => {
 			// calculate percentage
@@ -139,7 +143,7 @@ export class AgentOverviewData {
 			data: [],
 		};
 
-		await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
+		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
 			if (servedBy && metrics && metrics.chatDuration) {
 				if (agentChatDurations.has(servedBy.username)) {
 					agentChatDurations.set(servedBy.username, {
@@ -191,13 +195,13 @@ export class AgentOverviewData {
 
 		// we don't want to count visitor messages
 		const extraFilter = { $lte: ['$token', null] };
-		await LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }, extraFilter, extraQuery).forEach(
-			({ servedBy, msgs }) => {
+		await this.roomsModel
+			.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }, extraFilter, extraQuery)
+			.forEach(({ servedBy, msgs }) => {
 				if (servedBy) {
 					this.updateMap(agentMessages, servedBy.username, msgs);
 				}
-			},
-		);
+			});
 
 		agentMessages.forEach((value, key) => {
 			// calculate percentage
@@ -231,7 +235,7 @@ export class AgentOverviewData {
 			data: [],
 		};
 
-		await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
+		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
 			if (servedBy && metrics && metrics.response && metrics.response.ft) {
 				if (agentAvgRespTime.has(servedBy.username)) {
 					agentAvgRespTime.set(servedBy.username, {
@@ -281,7 +285,7 @@ export class AgentOverviewData {
 			data: [],
 		};
 
-		await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
+		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
 			if (servedBy && metrics && metrics.response && metrics.response.ft) {
 				if (agentFirstRespTime.has(servedBy.username)) {
 					agentFirstRespTime.set(servedBy.username, Math.min(agentFirstRespTime.get(servedBy.username), metrics.response.ft));
@@ -323,7 +327,7 @@ export class AgentOverviewData {
 			data: [],
 		};
 
-		await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
+		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
 			if (servedBy && metrics && metrics.response && metrics.response.avg) {
 				if (agentAvgRespTime.has(servedBy.username)) {
 					agentAvgRespTime.set(servedBy.username, {
@@ -373,7 +377,7 @@ export class AgentOverviewData {
 			data: [],
 		};
 
-		await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
+		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
 			if (servedBy && metrics && metrics.reaction && metrics.reaction.ft) {
 				if (agentAvgReactionTime.has(servedBy.username)) {
 					agentAvgReactionTime.set(servedBy.username, {
