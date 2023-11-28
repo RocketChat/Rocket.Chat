@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import { route } from 'preact-router';
 
 import { Livechat } from '../api';
 import { store } from '../store';
@@ -198,6 +199,13 @@ const api = {
 		store.setState({ minimized: false });
 		parentCall('openWidget');
 	},
+
+	openTriggerMessage() {
+		parentCall('setFullScreenDocumentMobile');
+		parentCall('openWidget');
+		route('/');
+	},
+
 	setParentUrl(parentUrl) {
 		store.setState({ parentUrl });
 	},

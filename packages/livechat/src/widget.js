@@ -315,6 +315,11 @@ function maximizeWidget() {
 	callHook('maximizeWidget');
 }
 
+function openTriggerMessage() {
+	callHook('openTriggerMessage');
+	emitCallback('chat-maximized');
+}
+
 function minimizeWidget() {
 	callHook('minimizeWidget');
 }
@@ -464,6 +469,7 @@ window.RocketChat.livechat = {
 	hideWidget,
 	maximizeWidget,
 	minimizeWidget,
+	openTriggerMessage,
 	setBusinessUnit,
 	clearBusinessUnit,
 	setParentUrl,
