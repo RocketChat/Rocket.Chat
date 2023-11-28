@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatRooms } from '@rocket.chat/models';
+import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type { Filter } from 'mongodb';
 
 /* eslint-disable new-cap */
@@ -16,6 +16,8 @@ type DateParam = {
 };
 
 export class ChartData {
+	constructor(private readonly roomsModel: ILivechatRoomsModel) {}
+
 	isActionAllowed(action: string | undefined): action is ChartDataValidActions {
 		if (!action) {
 			return false;
@@ -42,14 +44,14 @@ export class ChartData {
 
 	async Total_conversations(date: DateParam, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		// @ts-expect-error - Check extraquery usage on this func
-		return LivechatRooms.getTotalConversationsBetweenDate('l', date, { departmentId }, extraQuery);
+		return this.roomsModel.getTotalConversationsBetweenDate('l', date, { departmentId }, extraQuery);
 	}
 
 	async Avg_chat_duration(date: DateParam, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		let total = 0;
 		let count = 0;
 
-		await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics }) => {
+		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics }) => {
 			if (metrics?.chatDuration) {
 				total += metrics.chatDuration;
 				count++;
@@ -65,13 +67,13 @@ export class ChartData {
 
 		// we don't want to count visitor messages
 		const extraFilter = { $lte: ['$token', null] };
-		await LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }, extraFilter, extraQuery).forEach(
-			({ msgs }) => {
+		await this.roomsModel
+			.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }, extraFilter, extraQuery)
+			.forEach(({ msgs }) => {
 				if (msgs) {
 					total += msgs;
 				}
-			},
-		);
+			});
 
 		return total;
 	}
@@ -79,7 +81,7 @@ export class ChartData {
 	async Avg_first_response_time(date: DateParam, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		let frt = 0;
 		let count = 0;
-		await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics }) => {
+		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics }) => {
 			if (metrics?.response?.ft) {
 				frt += metrics.response.ft;
 				count++;
@@ -93,7 +95,7 @@ export class ChartData {
 	async Best_first_response_time(date: DateParam, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		let maxFrt = 0;
 
-		await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics }) => {
+		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics }) => {
 			if (metrics?.response?.ft) {
 				maxFrt = maxFrt ? Math.min(maxFrt, metrics.response.ft) : metrics.response.ft;
 			}
@@ -109,7 +111,7 @@ export class ChartData {
 	async Avg_response_time(date: DateParam, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		let art = 0;
 		let count = 0;
-		await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics }) => {
+		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics }) => {
 			if (metrics?.response?.avg) {
 				art += metrics.response.avg;
 				count++;
@@ -124,7 +126,7 @@ export class ChartData {
 	async Avg_reaction_time(date: DateParam, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		let arnt = 0;
 		let count = 0;
-		await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics }) => {
+		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics }) => {
 			if (metrics?.reaction?.ft) {
 				arnt += metrics.reaction.ft;
 				count++;

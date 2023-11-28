@@ -33,7 +33,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 	constructor() {
 		super();
 		this.overview = new OverviewData();
-		this.chart = new ChartData();
+		this.chart = new ChartData(LivechatRooms);
 		this.agentOverview = new AgentOverviewData(LivechatRooms);
 	}
 
