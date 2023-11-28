@@ -27,6 +27,7 @@ import type {
 	IndexDescription,
 	InsertOneResult,
 	UpdateFilter,
+	UpdateResult,
 	ModifyResult,
 } from 'mongodb';
 

@@ -13,8 +13,6 @@ import type {
 	AggregationCursor,
 	CountDocumentsOptions,
 	DeleteResult,
-	Document,
-	Filter,
 	FindCursor,
 	FindOptions,
 	InsertOneResult,
