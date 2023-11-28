@@ -98,6 +98,7 @@ const fetchWorkspaceClientPayload = async ({
 			Authorization: `Bearer ${token}`,
 		},
 		body: workspaceRegistrationData,
+		timeout: 3000,
 	});
 
 	if (!response.ok) {

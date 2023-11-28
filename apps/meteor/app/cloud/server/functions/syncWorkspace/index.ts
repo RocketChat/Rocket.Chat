@@ -1,6 +1,6 @@
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
-import { CloudWorkspaceAccessTokenEmptyError, CloudWorkspaceAccessTokenError } from '../getWorkspaceAccessToken';
+import { CloudWorkspaceAccessTokenError } from '../getWorkspaceAccessToken';
 import { getCachedSupportedVersionsToken } from '../supportedVersionsToken/supportedVersionsToken';
 import { announcementSync } from './announcementSync';
 import { legacySyncWorkspace } from './legacySyncWorkspace';
@@ -19,8 +19,7 @@ export async function syncWorkspace() {
 	} catch (err) {
 		switch (true) {
 			case err instanceof CloudWorkspaceRegistrationError:
-			case err instanceof CloudWorkspaceAccessTokenError:
-			case err instanceof CloudWorkspaceAccessTokenEmptyError: {
+			case err instanceof CloudWorkspaceAccessTokenError: {
 				// There is no access token, so we can't sync
 				SystemLogger.info('Workspace does not have a valid access token, sync aborted');
 				break;
@@ -37,8 +36,7 @@ export async function syncWorkspace() {
 				} catch (err) {
 					switch (true) {
 						case err instanceof CloudWorkspaceRegistrationError:
-						case err instanceof CloudWorkspaceAccessTokenError:
-						case err instanceof CloudWorkspaceAccessTokenEmptyError: {
+						case err instanceof CloudWorkspaceAccessTokenError: {
 							// There is no access token, so we can't sync
 							break;
 						}
