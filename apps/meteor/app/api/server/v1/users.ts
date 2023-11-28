@@ -6,6 +6,8 @@ import {
 	isUserSetActiveStatusParamsPOST,
 	isUserDeactivateIdleParamsPOST,
 	isUsersInfoParamsGetProps,
+	isUsersListStatusProps,
+	isUsersSendWelcomeEmailProps,
 	isUserRegisterParamsPOST,
 	isUserLogoutParamsPOST,
 	isUsersListTeamsProps,
@@ -25,6 +27,7 @@ import type { Filter } from 'mongodb';
 import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
+import { sendWelcomeEmail } from '../../../../server/methods/sendWelcomeEmail';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -551,6 +554,109 @@ API.v1.addRoute(
 				offset,
 				total,
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.list/:status',
+	{
+		authRequired: true,
+		validateParams: isUsersListStatusProps,
+		permissionsRequired: ['view-d-room', 'view-outside-room'],
+	},
+	{
+		async get() {
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { status } = this.urlParams;
+			const { sort } = await this.parseJsonQuery();
+			const { role } = this.queryParams;
+
+			const projection = {
+				name: 1,
+				username: 1,
+				emails: 1,
+				roles: 1,
+				status: 1,
+				active: 1,
+				avatarETag: 1,
+				lastLogin: 1,
+				type: 1,
+				reason: 0,
+			};
+
+			const actualSort = sort || { username: 1 };
+
+			if (sort?.status) {
+				actualSort.active = sort.status;
+			}
+
+			if (sort?.name) {
+				actualSort.nameInsensitive = sort.name;
+			}
+
+			let match;
+
+			switch (status) {
+				case 'active':
+					match = {
+						active: true,
+						lastLogin: { $exists: true },
+					};
+					break;
+				case 'deactivated':
+					match = {
+						active: false,
+						lastLogin: { $exists: true },
+					};
+					break;
+				case 'pending':
+					match = {
+						lastLogin: { $exists: false },
+						type: { $ne: 'bot' },
+					};
+					projection.reason = 1;
+					break;
+				default:
+					throw new Meteor.Error('error-invalid-status', 'Invalid status parameter');
+			}
+
+			const result = await Users.findPaginated(
+				{ ...match, roles: role },
+				{
+					sort: actualSort,
+					skip: offset,
+					limit: count,
+					projection,
+				},
+			);
+
+			const users = await result.cursor.toArray();
+			const total = await result.totalCount;
+
+			return API.v1.success({
+				users,
+				count: users.length,
+				offset,
+				total,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.sendWelcomeEmail',
+	{
+		authRequired: true,
+		validateParams: isUsersSendWelcomeEmailProps,
+	},
+	{
+		async post() {
+			const { email } = this.bodyParams;
+
+			await sendWelcomeEmail(email);
+
+			return API.v1.success();
 		},
 	},
 );

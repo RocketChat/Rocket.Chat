@@ -4229,4 +4229,141 @@ describe('[Users]', function () {
 			});
 		});
 	});
+
+	describe('[/users.list/:status]', () => {
+		let user;
+		let otherUser;
+		let otherUserCredentials;
+
+		before(async () => {
+			user = await createUser();
+			otherUser = await createUser();
+			otherUserCredentials = await login(otherUser.username, password);
+		});
+
+		after(async () => {
+			await deleteUser(user);
+			await deleteUser(otherUser);
+			await updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']);
+			await updatePermission('view-d-room', ['admin', 'owner', 'moderator', 'user']);
+		});
+
+		it('should list pending users', async () => {
+			await request
+				.get(api('users.list/pending'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+					const ids = users.map((user) => user._id);
+
+					expect(ids).to.include(user._id);
+				});
+		});
+
+		it('should list active users', async () => {
+			await login(user.username, password);
+
+			await request
+				.get(api('users.list/active'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+					const ids = users.map((user) => user._id);
+
+					expect(ids).to.include(user._id);
+				});
+		});
+
+		it('should filter users by role', async () => {
+			await login(user.username, password);
+
+			await request
+				.get(api('users.list/active'))
+				.set(credentials)
+				.query({ role: 'admin' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+					const ids = users.map((user) => user._id);
+
+					expect(ids).to.not.include(user._id);
+				});
+		});
+
+		it('should list deactivated users', async () => {
+			await request.post(api('users.setActiveStatus')).set(credentials).send({
+				userId: user._id,
+				activeStatus: false,
+				confirmRelinquish: false,
+			});
+
+			await request
+				.get(api('users.list/deactivated'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+
+					const { users } = res.body;
+					const ids = users.map((user) => user._id);
+
+					expect(ids).to.include(user._id);
+				});
+		});
+
+		it('should return error for invalid status params', async () => {
+			await request
+				.get(api('users.list/abcd'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-invalid-status');
+					expect(res.body.error).to.be.equal('Invalid status parameter [error-invalid-status]');
+				});
+		});
+
+		it('should throw unauthorized error to user without "view-d-room" permission', async () => {
+			await updatePermission('view-d-room', ['admin']);
+			await request
+				.get(api('users.list/active'))
+				.set(otherUserCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				});
+		});
+
+		it('should throw unauthorized error to user without "view-outside-room" permission', async () => {
+			await updatePermission('view-outside-room', ['admin']);
+			await request
+				.get(api('users.list/active'))
+				.set(otherUserCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				});
+		});
+	});
 });
