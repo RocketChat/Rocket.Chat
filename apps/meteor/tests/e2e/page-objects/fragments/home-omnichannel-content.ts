@@ -22,4 +22,24 @@ export class HomeOmnichannelContent extends HomeContent {
 	get btnCloseChat(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-close-top-right"]');
 	}
+
+	get btnReturn(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-back"]');
+	}
+
+	get btnResume(): Locator {
+		return this.page.locator('role=button[name="Resume"]');
+	}
+
+	get modalOnHold(): Locator {
+		return this.page.locator('[data-qa-id="on-hold-modal"]');
+	}
+
+	get btnEditRoomInfo(): Locator {
+		return this.page.locator('button[data-qa-id="room-info-edit"]');
+	}
+
+	get btnOnHoldConfirm(): Locator {
+		return this.modalOnHold.locator('role=button[name="Place chat On-Hold"]');
+	}
 }
