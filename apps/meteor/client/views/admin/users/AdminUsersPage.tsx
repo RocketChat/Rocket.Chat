@@ -1,4 +1,4 @@
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, ContextualbarIcon } from '@rocket.chat/fuselage';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useRef } from 'react';
@@ -12,6 +12,7 @@ import AdminInviteUsers from './AdminInviteUsers';
 import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
+import AdminUserUpgrade from './AdminUserUpgrade';
 import UsersTable from './UsersTable';
 
 const UsersPage = (): ReactElement => {
@@ -33,7 +34,7 @@ const UsersPage = (): ReactElement => {
 			return;
 		}
 
-		if (isCreateUserDisabled && !['edit', 'info'].includes(context)) {
+		if (isCreateUserDisabled && !['edit', 'info', 'upgrade'].includes(context)) {
 			router.navigate('/admin/users');
 		}
 	}, [router, context, seatsCap, isCreateUserDisabled]);
@@ -71,11 +72,13 @@ const UsersPage = (): ReactElement => {
 			{context && (
 				<Contextualbar is='aside' aria-labelledby=''>
 					<ContextualbarHeader>
+						{context === 'upgrade' && <ContextualbarIcon name='user-plus' />}
 						<ContextualbarTitle>
 							{context === 'info' && t('User_Info')}
 							{context === 'edit' && t('Edit_User')}
 							{context === 'new' && t('Add_User')}
 							{context === 'invite' && t('Invite_Users')}
+							{context === 'upgrade' && t('New_user')}
 						</ContextualbarTitle>
 						<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
 					</ContextualbarHeader>
@@ -83,6 +86,7 @@ const UsersPage = (): ReactElement => {
 					{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
 					{context === 'new' && <AdminUserForm onReload={handleReload} />}
 					{context === 'invite' && <AdminInviteUsers />}
+					{context === 'upgrade' && <AdminUserUpgrade />}
 				</Contextualbar>
 			)}
 		</Page>

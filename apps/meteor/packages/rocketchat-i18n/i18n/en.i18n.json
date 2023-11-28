@@ -6187,6 +6187,6 @@
   "Unlock_premium_capabilities": "Unlock premium capabilities",
   "Unlimited_seats": "Unlimited seats",
   "Seat_limit_reached": "Seat limit reached",
-  "Seat_limit_reached_Description": "Your workspace has reached its contractual seat limit and soon you won't be able to add more users.",
+  "Seat_limit_reached_Description": "Your workspace reached its contractual seat limit. Buy more seats to add more users.",
   "Buy_more_seats": "Buy more seats"
 }
