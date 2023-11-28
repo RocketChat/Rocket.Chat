@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { HomeChannel, OmnichannelLiveChat } from '../page-objects';
+import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
 import { OmnichannelRoomInfo } from '../page-objects/omnichannel-room-info';
 import { test, expect } from '../utils/test';
 
@@ -20,7 +20,7 @@ test.skip(!IS_EE, 'Omnichannel Priorities > Enterprise Only');
 test.use({ storageState: Users.user1.state });
 
 test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
-	let poHomeChannel: HomeChannel;
+	let poHomeChannel: HomeOmnichannel;
 	let poRoomInfo: OmnichannelRoomInfo;
 
 	test.beforeAll(async ({ api }) => {
@@ -39,7 +39,7 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 	});
 
 	test.beforeEach(async ({ page }) => {
-		poHomeChannel = new HomeChannel(page);
+		poHomeChannel = new HomeOmnichannel(page);
 		poRoomInfo = new OmnichannelRoomInfo(page);
 	});
 
@@ -89,7 +89,7 @@ test.describe.serial('Omnichannel Priorities [Sidebar]', () => {
 		});
 
 		await test.step('Subscription: Sidebar priority change', async () => {
-			await poHomeChannel.content.takeOmnichannelChatButton.click();
+			await poHomeChannel.content.btnTakeChat.click();
 			await systemMessage.locator('text="joined the channel"').waitFor();
 
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
