@@ -97,7 +97,7 @@ describe('OverviewData Analytics', () => {
 		it('should return all values as 0 when theres data but not on the period we pass', async () => {
 			const overview = new OverviewData({
 				getAnalyticsBetweenDate: () => ({
-					toArray: () => analytics({ gte: moment().startOf('day').toDate(), lt: moment().endOf('day').toDate() }),
+					toArray: () => analytics({ gte: moment().set('month', 9).toDate(), lt: moment().set('month', 9).toDate() }),
 				}),
 				getOnHoldConversationsBetweenDate: () => 0,
 			} as any);
@@ -154,7 +154,14 @@ describe('OverviewData Analytics', () => {
 			const overview = new OverviewData({
 				getAnalyticsMetricsBetweenDate: (_: any, date: { gte: Date; lt: Date }) => analytics(date),
 			} as any);
-			const result = await overview.Productivity(moment(), moment(), '', 'UTC', (v: string): string => v, {});
+			const result = await overview.Productivity(
+				moment().set('month', 9),
+				moment().set('month', 9),
+				'',
+				'UTC',
+				(v: string): string => v,
+				{},
+			);
 			expect(result).to.be.deep.equal([
 				{ title: 'Avg_response_time', value: '00:00:00' },
 				{ title: 'Avg_first_response_time', value: '00:00:00' },
