@@ -6,6 +6,11 @@ import { announcementSync } from './announcementSync';
 import { legacySyncWorkspace } from './legacySyncWorkspace';
 import { syncCloudData } from './syncCloudData';
 
+/**
+ * Syncs the workspace with the cloud
+ * @returns {Promise<void>}
+ * @throws {Error} - If there is an unexpected error during sync like a network error
+ */
 export async function syncWorkspace() {
 	try {
 		await syncCloudData();
