@@ -1,13 +1,13 @@
 import { api, ServiceClassInternal, listenToMessageSentEvent } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, UserStatus } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
-import { Livechat } from '../../../app/livechat/server';
+import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { metrics } from '../../../app/metrics/server';
 import notifications from '../../../app/notifications/server/lib/Notifications';
@@ -275,7 +275,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		};
 	}
 
-	async notifyGuestStatusChanged(token: string, status: string): Promise<void> {
+	async notifyGuestStatusChanged(token: string, status: UserStatus): Promise<void> {
 		return Livechat.notifyGuestStatusChanged(token, status);
 	}
 

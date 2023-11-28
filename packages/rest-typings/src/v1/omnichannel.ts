@@ -3296,10 +3296,7 @@ export type OmnichannelEndpoints = {
 		};
 		PUT: (params: {
 			department: LivechatDepartmentDTO;
-			agents: {
-				upsert?: { agentId: string; count?: number; order?: number }[];
-				remove?: { agentId: string; count?: number; order?: number };
-			}[];
+			agents: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order' | 'username'>[];
 		}) => {
 			department: ILivechatDepartment | null;
 			agents: ILivechatDepartmentAgents[];
