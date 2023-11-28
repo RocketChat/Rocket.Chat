@@ -35,6 +35,9 @@ Meteor.startup(async () => {
 			if (e instanceof CloudWorkspaceAccessTokenEmptyError) {
 				return;
 			}
+			if (e.type && e.type === 'AbortError') {
+				return;
+			}
 			SystemLogger.error('An error occurred syncing workspace.', e.message);
 		}
 	});
@@ -43,6 +46,9 @@ Meteor.startup(async () => {
 			await syncWorkspace();
 		} catch (e: any) {
 			if (e instanceof CloudWorkspaceAccessTokenEmptyError) {
+				return;
+			}
+			if (e.type && e.type === 'AbortError') {
 				return;
 			}
 			SystemLogger.error('An error occurred syncing workspace.', e.message);
