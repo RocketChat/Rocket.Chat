@@ -28,9 +28,19 @@ Meteor.startup(async () => {
 		}
 	}
 
-	setImmediate(() => syncWorkspace());
+	setImmediate(async () => {
+		try {
+			await syncWorkspace();
+		} catch (e: any) {
+			SystemLogger.error('An error occurred syncing workspace.', e.message);
+		}
+	});
 	await cronJobs.add(licenseCronName, '0 */12 * * *', async () => {
-		await syncWorkspace();
+		try {
+			await syncWorkspace();
+		} catch (e: any) {
+			SystemLogger.error('An error occurred syncing workspace.', e.message);
+		}
 	});
 });
 
