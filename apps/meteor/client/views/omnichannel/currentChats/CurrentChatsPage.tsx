@@ -176,7 +176,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 			};
 
 			return (
-				<GenericTableRow key={_id} onClick={(): void => onRowClick(_id)} action>
+				<GenericTableRow key={_id} onClick={(): void => onRowClick(_id)} action data-qa-id={fname}>
 					{isPriorityEnabled && (
 						<GenericTableCell withTruncatedText data-qa='current-chats-cell-priority'>
 							<PriorityIcon level={priorityWeight} />
