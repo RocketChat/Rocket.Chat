@@ -1308,31 +1308,40 @@ describe('[Users]', function () {
 					name: `channel.test.${Date.now()}-${Math.random()}`,
 					members: [user.username],
 				})
-            ).body.channel;
+			).body.channel;
 
-            const message = (await request
-							.post(api('chat.sendMessage'))
-							.set(createdUserCredentials)
-							.send({
-								message: {
-                                    text: `Mention test: @${targetUser.username}`,
-                                    rid: room._id,
-								},
-							})).body?.message;
+			const message = (
+				await request
+					.post(api('chat.sendMessage'))
+					.set(createdUserCredentials)
+					.send({
+						message: {
+							text: `Mention test: @${targetUser.username}`,
+							rid: room._id,
+						},
+					})
+			).body?.message;
 
-            await request.post(api('users.update')).set(credentials).send({
-                userId: targetUser._id,
-                data: {
-                    username: `fake.name.${Date.now()}`,
-                },
-            });
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						username: `fake.name.${Date.now()}`,
+					},
+				});
 
-            await request.get(api('chat.getMessage')).set(createdUserCredentials).query({
-                msgId: message._id,
-            }).expect((res) => {
-                expect(res.body).to.have.property('success', true);
-                expect(res.body).to.have.nested.property('message.mentions[0].username', targetUser.username);
-            });
+			await request
+				.get(api('chat.getMessage'))
+				.set(createdUserCredentials)
+				.query({
+					msgId: message._id,
+				})
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.mentions[0].username', targetUser.username);
+				});
 		});
 
 		it('should return an error when trying update user real name and it is not allowed', (done) => {
