@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
 import type { IOmnichannelRoom, AtLeast } from '@rocket.chat/core-typings';
-import { LivechatRooms } from '@rocket.chat/models';
-import moment from 'moment';
+import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import moment from 'moment-timezone';
 import type { Filter } from 'mongodb';
 
 import { secondsToHHMMSS } from '../../../lib/utils/secondsToHHMMSS';
@@ -10,6 +10,8 @@ import { weekIterator, hourIterator } from './utils';
 type OverviewDataValidActions = 'Conversations' | 'Productivity';
 
 export class OverviewData {
+	constructor(private readonly roomsModel: ILivechatRoomsModel) {}
+
 	isActionAllowed(action: string | undefined): action is OverviewDataValidActions {
 		if (!action) {
 			return false;
@@ -83,7 +85,7 @@ export class OverviewData {
 			};
 			// eslint-disable-next-line no-await-in-loop
 			// @ts-expect-error - Check extraquery usage on this func
-			const result = await LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }, extraQuery).toArray();
+			const result = await this.roomsModel.getAnalyticsBetweenDate(date, { departmentId }, extraQuery).toArray();
 			totalConversations += result.length;
 
 			result.forEach(summarize(clonedDate));
@@ -106,7 +108,7 @@ export class OverviewData {
 					lt: h.add(1, 'hours'),
 				};
 				// @ts-expect-error - Check extraquery usage on this func
-				(await LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }, extraQuery).toArray()).forEach(({ msgs }) => {
+				(await this.roomsModel.getAnalyticsBetweenDate(date, { departmentId }, extraQuery).toArray()).forEach(({ msgs }) => {
 					const dayHour = h.format('H'); // @int : 0, 1, ... 23
 					totalMessagesInHour.set(dayHour, totalMessagesInHour.has(dayHour) ? totalMessagesInHour.get(dayHour) + msgs : msgs);
 				});
@@ -115,11 +117,11 @@ export class OverviewData {
 
 		const utcBusiestHour = this.getKeyHavingMaxValue<number>(totalMessagesInHour, -1);
 		const busiestHour = {
-			to: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).tz(timezone).format('hA') : '-',
+			to: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).tz(timezone).format('hA') : '',
 			from: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).subtract(1, 'hour').tz(timezone).format('hA') : '',
 		};
 		// @ts-expect-error - Check extraquery usage on this func
-		const onHoldConversations = await LivechatRooms.getOnHoldConversationsBetweenDate(from, to, departmentId, extraQuery);
+		const onHoldConversations = await this.roomsModel.getOnHoldConversationsBetweenDate(from, to, departmentId, extraQuery);
 
 		return [
 			{
@@ -148,7 +150,7 @@ export class OverviewData {
 			},
 			{
 				title: 'Busiest_time',
-				value: `${busiestHour.from}${busiestHour.to ? `- ${busiestHour.to}` : ''}`,
+				value: `${busiestHour.from}${busiestHour.to ? ` - ${busiestHour.to}` : ''}`,
 			},
 		];
 	}
@@ -171,7 +173,7 @@ export class OverviewData {
 			lt: to.add(1, 'days').toDate(),
 		};
 
-		await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics }) => {
+		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics }) => {
 			if (metrics?.response && metrics.reaction) {
 				avgResponseTime += metrics.response.avg;
 				firstResponseTime += metrics.response.ft;
