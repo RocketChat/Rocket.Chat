@@ -65,7 +65,7 @@ export const sendAPN = ({
 	note.payload.messageFrom = notification.from;
 	note.priority = priority;
 
-	note.topic = `${notification.topic}${notification.apn?.topicSuffix || ''}`;
+	note.topic = notification.topic;
 	note.mutableContent = true;
 
 	void apnConnection.send(note, userToken).then((response) => {

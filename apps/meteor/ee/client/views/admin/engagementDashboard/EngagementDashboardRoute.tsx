@@ -1,4 +1,4 @@
-import { usePermission, useRouter, useSetModal, useCurrentModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter, useSetModal, useCurrentModal, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
@@ -21,7 +21,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	const isModalOpen = useCurrentModal() !== null;
 
 	const router = useRouter();
-	const { tab } = router.getRouteParameters();
+	const tab = useRouteParameter('tab');
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 
 	const hasEngagementDashboard = useHasLicenseModule('engagement-dashboard') as boolean;
@@ -46,15 +46,17 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 			);
 		}
 
-		if (!isValidTab(tab)) {
-			router.navigate(
-				{
-					pattern: '/admin/engagement/:tab?',
-					params: { tab: 'users' },
-				},
-				{ replace: true },
-			);
-		}
+		router.subscribeToRouteChange(() => {
+			if (!isValidTab(tab)) {
+				router.navigate(
+					{
+						pattern: '/admin/engagement/:tab?',
+						params: { tab: 'users' },
+					},
+					{ replace: true },
+				);
+			}
+		});
 	}, [shouldShowUpsell, router, tab, setModal, t, handleManageSubscription, cloudWorkspaceHadTrial, handleTalkToSales]);
 
 	if (isModalOpen) {
