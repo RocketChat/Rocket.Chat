@@ -870,8 +870,6 @@
   "Cloud_register_offline_finish_helper": "Després de completar el procés de registre en Cloud Console, hauria d'aparèixer un text. Enganxeu-lo aquí per finalitzar el registre.",
   "Cloud_register_offline_helper": "Els espais de treball es poden registrar manualment si restringiu l'accés a la xarxa o l'espai d'aire. Copieu el text a continuació i aneu a la nostra consola al núvol per completar el procés.",
   "Cloud_register_success": "El seu espai de treball s'ha registrat correctament!",
-  "Cloud_registration_pending_html": "<span> Les notificacions en dispositius mòbils no funcionessin fins que el registre hagi finalitzat. <a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/registration\"> Llegir més </a></span>",
-  "Cloud_registration_pending_title": "El registre en el núvol encara està pendent",
   "Cloud_registration_required": "Cal registrar-se",
   "Cloud_registration_required_description": "Sembla que durant la configuració no va triar registrar el seu espai de treball.",
   "Cloud_registration_required_link_text": "Feu clic aquí per registrar el vostre espai de treball.",
@@ -2408,6 +2406,7 @@
   "LDAP_DataSync_Roles": "Funcions de sincronització",
   "LDAP_DataSync_Channels": "Sincronització Channels",
   "LDAP_DataSync_Teams": "Equips de sincronització",
+  "LDAP_Enterprise": "Empresa",
   "LDAP_DataSync_BackgroundSync": "Sincronització en segon pla",
   "LDAP_Server_Type": "Tipus de servidor",
   "LDAP_Server_Type_AD": "Directori Actiu",
@@ -3598,6 +3597,7 @@
   "SAML_AuthnRequest_Template": "Plantilla AuthnRequest",
   "SAML_AuthnRequest_Template_Description": "Les següents variables estan disponibles:  \n - ** \\ _ \\ _ newId \\ _ \\ _ **: Cadena d'identificació generada aleatoriamente  \n- ** \\ _ \\ _ instant \\ _ \\ _ **: Data i hora actual  \n- ** \\ _ \\ _ callbackUrl \\ _ \\ _ **: la URL de devolució de trucada d'Rocket.Chat.  \n- ** \\ _ \\ _ entryPoint \\ _ \\ _ **: El valor de l'opció {{Custom Entry Point }}  \n- ** \\ _ \\ _ issuer \\ _ \\ _ **: El valor de l'opció {{Custom Issuer }}  \n- ** \\ _ \\ _ identifierFormatTag \\ _ \\ _ **: El contingut d'{{NameID Policy Template}} si un vàlid {{Identifier Format}} és configurado.  \n- ** \\ _ \\ _ identifierFormat \\ _ \\ _ **: El valor de l'opció {{Identifier Format }}  \n- ** \\ _ \\ _ authnContextTag \\ _ \\ _ **: El contingut de {{AuthnContext Template}} si un vàlid {{Custom Authn Context}} és configurado.  \n- ** \\ _ \\ _ authnContextComparison \\ _ \\ _ * *: El valor de l'opció {{Authn Context Comparison }}  \n- ** \\ _ \\ _ authnContext \\ _ \\ _ **: El valor de l'opció {{Custom Authn Context}}",
   "SAML_Connection": "Connexió",
+  "SAML_Enterprise": "Empresa",
   "SAML_General": "General",
   "SAML_Custom_Authn_Context": "Context Authn personalitzat",
   "SAML_Custom_Authn_Context_Comparison": "Comparació del context d’Authn",
@@ -4695,6 +4695,7 @@
   "onboarding.form.registerOfflineForm.title": "Registra't sense connexió",
   "RegisterWorkspace_Features_Marketplace_Title": "Mercat",
   "RegisterWorkspace_Features_Omnichannel_Title": "LiveChat",
+  "Enterprise": "Empresa",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analítiques",
   "UpgradeToGetMore_auditing_Title": "Auditoria de missatges"
 }

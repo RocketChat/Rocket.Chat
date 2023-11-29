@@ -3174,5 +3174,6 @@
   "registration.component.form.invalidConfirmPass": "A confirmação da senha não é igual à senha",
   "registration.component.form.confirmPassword": "Confirmar a senha",
   "registration.component.form.sendConfirmationEmail": "Enviar email de confirmação",
+  "Enterprise": "Empreendimento",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }
