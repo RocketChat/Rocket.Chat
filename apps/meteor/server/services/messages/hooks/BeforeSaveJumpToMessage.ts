@@ -1,15 +1,14 @@
 import QueryString from 'querystring';
 import URL from 'url';
 
-import type { MessageAttachment, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Authorization } from '@rocket.chat/core-services';
+import type { MessageAttachment, IMessage, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
-import { Messages, Users, Rooms } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 
-import { callbacks } from '../../../lib/callbacks';
-import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
-import { canAccessRoomAsync } from '../../authorization/server/functions/canAccessRoom';
-import { settings } from '../../settings/server';
-import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
+import { settings } from '../../../../app/settings/server';
+import { getUserAvatarURL } from '../../../../app/utils/server/getUserAvatarURL';
+import { createQuoteAttachment } from '../../../../lib/createQuoteAttachment';
 
 const recursiveRemoveAttachments = (attachments: MessageAttachment, deep = 1, quoteChainLimit: number): MessageAttachment => {
 	if (attachments && isQuoteAttachment(attachments)) {
@@ -38,17 +37,23 @@ const validateAttachmentDeepness = (message: IMessage): IMessage => {
 	return message;
 };
 
-callbacks.add(
-	'beforeSaveMessage',
-	async (msg) => {
+/**
+ * Transform URLs in messages into quote attachments
+ */
+export class BeforeSaveJumpToMessage {
+	async createAttachmentForMessageURLs({
+		message,
+		user: currentUser,
+	}: {
+		message: IMessage;
+		user: Pick<IUser, '_id' | 'username' | 'name' | 'language'>;
+	}): Promise<IMessage> {
 		// if no message is present, or the message doesn't have any URL, skip
-		if (!msg?.urls?.length) {
-			return msg;
+		if (!message?.urls?.length) {
+			return message;
 		}
 
-		const currentUser = await Users.findOneById(msg.u._id);
-
-		for await (const item of msg.urls) {
+		for await (const item of message.urls) {
 			// if the URL doesn't belong to the current server, skip
 			if (!item.url.includes(settings.get('Site_Url'))) {
 				continue;
@@ -67,9 +72,9 @@ callbacks.add(
 				continue;
 			}
 
-			const message = await Messages.findOneById(msgId);
+			const messageFromUrl = await Messages.findOneById(msgId);
 
-			const jumpToMessage = message && validateAttachmentDeepness(message);
+			const jumpToMessage = messageFromUrl && validateAttachmentDeepness(messageFromUrl);
 			if (!jumpToMessage) {
 				continue;
 			}
@@ -80,29 +85,27 @@ callbacks.add(
 			if (!room) {
 				continue;
 			}
-			const isLiveChatRoomVisitor = !!msg.token && !!room.v?.token && msg.token === room.v.token;
-			const canAccessRoomForUser = isLiveChatRoomVisitor || (currentUser && (await canAccessRoomAsync(room, currentUser)));
+			const isLiveChatRoomVisitor = !!message.token && !!room.v?.token && message.token === room.v.token;
+			const canAccessRoomForUser = isLiveChatRoomVisitor || (currentUser && (await Authorization.canAccessRoom(room, currentUser)));
 			if (!canAccessRoomForUser) {
 				continue;
 			}
 
-			msg.attachments = msg.attachments || [];
+			message.attachments = message.attachments || [];
 			// Only QuoteAttachments have "message_link" property
-			const index = msg.attachments.findIndex((a) => isQuoteAttachment(a) && a.message_link === item.url);
+			const index = message.attachments.findIndex((a) => isQuoteAttachment(a) && a.message_link === item.url);
 			if (index > -1) {
-				msg.attachments.splice(index, 1);
+				message.attachments.splice(index, 1);
 			}
 
 			const useRealName = Boolean(settings.get('UI_Use_Real_Name'));
 
-			msg.attachments.push(
+			message.attachments.push(
 				createQuoteAttachment(jumpToMessage, item.url, useRealName, getUserAvatarURL(jumpToMessage.u.username || '') as string),
 			);
 			item.ignoreParse = true;
 		}
 
-		return msg;
-	},
-	callbacks.priority.LOW,
-	'jumpToMessage',
-);
+		return message;
+	}
+}

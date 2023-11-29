@@ -11,6 +11,7 @@ import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
+import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
 
@@ -23,10 +24,13 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	private spotify: BeforeSaveSpotify;
 
+	private jumpToMessage: BeforeSaveJumpToMessage;
+
 	async created() {
 		this.preventMention = new BeforeSavePreventMention(this.api);
 		this.badWords = new BeforeSaveBadWords();
 		this.spotify = new BeforeSaveSpotify();
+		this.jumpToMessage = new BeforeSaveJumpToMessage();
 
 		await this.configureBadWords();
 	}
@@ -104,6 +108,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		message = await this.badWords.filterBadWords({ message });
 		message = await this.spotify.convertSpotifyLinks({ message });
+		message = await this.jumpToMessage.createAttachmentForMessageURLs({ message, user });
 
 		if (!this.isEditedOrOld(message)) {
 			await Promise.all([
