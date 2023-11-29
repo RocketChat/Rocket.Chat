@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Callout, Grid, Throbber } from '@rocket.chat/fuselage';
+import { Accordion, Box, Button, ButtonGroup, Callout, Grid, Throbber } from '@rocket.chat/fuselage';
 import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
@@ -107,60 +107,64 @@ const SubscriptionPage = () => {
 				<SubscriptionCalloutLimits />
 				{isLicenseLoading && <SubscriptionPageSkeleton />}
 				{!isLicenseLoading && (
-					<Box marginBlock='none' marginInline='auto' width='full' color='default'>
-						<Grid m={0}>
-							{showLicense && (
-								<Grid.Item lg={12} xs={4} p={8}>
+					<>
+						{showLicense && (
+							<Accordion>
+								<Accordion.Item defaultExpanded={true} title={t('License')}>
 									<pre>{JSON.stringify(licensesData, null, 2)}</pre>
+								</Accordion.Item>
+							</Accordion>
+						)}
+						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
+							<Grid m={0}>
+								<Grid.Item lg={4} xs={4} p={8}>
+									{license && <PlanCard licenseInformation={license.information} licenseLimits={{ activeUsers: seatsLimit }} />}
+									{!license && <PlanCardCommunity />}
 								</Grid.Item>
-							)}
-							<Grid.Item lg={4} xs={4} p={8}>
-								{license && <PlanCard licenseInformation={license.information} licenseLimits={{ activeUsers: seatsLimit }} />}
-								{!license && <PlanCardCommunity />}
-							</Grid.Item>
-							<Grid.Item lg={8} xs={4} p={8}>
-								<FeaturesCard activeModules={activeModules} isEnterprise={isEnterprise} />
-							</Grid.Item>
-
-							{seatsLimit.value !== undefined && (
-								<Grid.Item lg={6} xs={4} p={8}>
-									{seatsLimit.max !== Infinity ? (
-										<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
-									) : (
-										<CountSeatsCard activeUsers={seatsLimit?.value} />
-									)}
+								<Grid.Item lg={8} xs={4} p={8}>
+									<FeaturesCard activeModules={activeModules} isEnterprise={isEnterprise} />
 								</Grid.Item>
-							)}
 
-							{macLimit.value !== undefined && (
-								<Grid.Item lg={6} xs={4} p={8}>
-									{macLimit.max !== Infinity ? (
-										<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
-									) : (
-										<CountMACCard macsCount={macLimit.value} />
-									)}
-								</Grid.Item>
-							)}
+								{seatsLimit.value !== undefined && (
+									<Grid.Item lg={6} xs={4} p={8}>
+										{seatsLimit.max !== Infinity ? (
+											<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
+										) : (
+											<CountSeatsCard activeUsers={seatsLimit?.value} />
+										)}
+									</Grid.Item>
+								)}
 
-							{!license && (
-								<>
-									{limits?.marketplaceApps !== undefined && (
+								{macLimit.value !== undefined && (
+									<Grid.Item lg={6} xs={4} p={8}>
+										{macLimit.max !== Infinity ? (
+											<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
+										) : (
+											<CountMACCard macsCount={macLimit.value} />
+										)}
+									</Grid.Item>
+								)}
+
+								{!license && (
+									<>
+										{limits?.marketplaceApps !== undefined && (
+											<Grid.Item lg={4} xs={4} p={8}>
+												<AppsUsageCard privateAppsLimit={limits?.privateApps} marketplaceAppsLimit={limits.marketplaceApps} />
+											</Grid.Item>
+										)}
+
 										<Grid.Item lg={4} xs={4} p={8}>
-											<AppsUsageCard privateAppsLimit={limits?.privateApps} marketplaceAppsLimit={limits.marketplaceApps} />
+											<ActiveSessionsCard />
 										</Grid.Item>
-									)}
-
-									<Grid.Item lg={4} xs={4} p={8}>
-										<ActiveSessionsCard />
-									</Grid.Item>
-									<Grid.Item lg={4} xs={4} p={8}>
-										<ActiveSessionsPeakCard />
-									</Grid.Item>
-								</>
-							)}
-						</Grid>
-						<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise} />
-					</Box>
+										<Grid.Item lg={4} xs={4} p={8}>
+											<ActiveSessionsPeakCard />
+										</Grid.Item>
+									</>
+								)}
+							</Grid>
+							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise} />
+						</Box>
+					</>
 				)}
 			</Page.ScrollableContentWithShadow>
 		</Page>

@@ -83,7 +83,11 @@ const syncByTrigger = async (contexts: string[]) => {
 		}),
 	);
 
-	await syncWorkspace();
+	try {
+		await syncWorkspace();
+	} catch (error) {
+		console.error(error);
+	}
 };
 
 // When settings are loaded, apply the current license if there is one.
