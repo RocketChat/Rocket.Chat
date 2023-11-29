@@ -226,9 +226,16 @@ export interface StreamerEvents {
 		{
 			key: 'Users:Deleted';
 			args: [
-				{
-					userId: IUser['_id'];
-				},
+				| {
+						userId: IUser['_id'];
+						messageErasureType: 'Delete';
+						replaceByUser?: never;
+				  }
+				| {
+						userId: IUser['_id'];
+						messageErasureType: 'Unlink';
+						replaceByUser?: { _id: IUser['_id']; username: IUser['username']; alias: string };
+				  },
 			];
 		},
 		{

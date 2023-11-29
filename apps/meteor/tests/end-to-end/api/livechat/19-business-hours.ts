@@ -43,6 +43,17 @@ describe('LIVECHAT - business hours', function () {
 
 	let defaultBhId: any;
 	describe('[CE] livechat/business-hour', () => {
+		after(async () => {
+			await saveBusinessHour({
+				...defaultBhId,
+				timezone: {
+					name: 'America/Sao_Paulo',
+					utc: '-03:00',
+				},
+				workHours: getWorkHours(true),
+			});
+		});
+
 		it('should fail when user doesnt have view-livechat-business-hours permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-business-hours');
 			const response = await request.get(api('livechat/business-hour')).set(credentials).expect(403);
@@ -98,6 +109,39 @@ describe('LIVECHAT - business hours', function () {
 
 			const { body } = await makeAgentAvailable(credentials);
 
+			expect(body).to.have.property('success', true);
+		});
+		it('should save a default business hour with proper timezone settings', async () => {
+			await saveBusinessHour({
+				...defaultBhId,
+				timezone: {
+					name: 'Asia/Kolkata',
+					utc: '+05:30',
+				},
+				workHours: getWorkHours(true),
+				timezoneName: 'Asia/Kolkata',
+			});
+
+			const { body } = await request
+				.get(api('livechat/business-hour'))
+				.set(credentials)
+				.query({ type: LivechatBusinessHourTypes.DEFAULT })
+				.expect(200);
+
+			expect(body.success).to.be.true;
+			expect(body.businessHour).to.be.an('object');
+			expect(body.businessHour.timezone).to.be.an('object').that.has.property('name').that.is.equal('Asia/Kolkata');
+			expect(body.businessHour.workHours).to.be.an('array').with.lengthOf(7);
+
+			const { workHours } = body.businessHour;
+
+			expect(workHours[0].day).to.be.equal('Sunday');
+			expect(workHours[0].start.utc.dayOfWeek).to.be.equal('Saturday');
+			expect(workHours[0].finish.utc.dayOfWeek).to.be.equal('Sunday');
+		});
+
+		it('should allow agents to be available', async () => {
+			const { body } = await makeAgentAvailable(credentials);
 			expect(body).to.have.property('success', true);
 		});
 	});

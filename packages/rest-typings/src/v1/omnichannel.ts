@@ -3138,7 +3138,8 @@ const POSTLivechatAppearanceParamsSchema = {
 				type: 'string',
 			},
 			value: {
-				anyOf: [{ type: 'string' }, { type: 'boolean' }, { type: 'number' }],
+				// Be careful with anyOf - https://github.com/ajv-validator/ajv/issues/1140
+				type: ['string', 'boolean', 'number'],
 			},
 		},
 		required: ['_id', 'value'],
@@ -3290,15 +3291,12 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/department/:_id': {
 		GET: (params: LivechatDepartmentId) => {
-			department: ILivechatDepartment | null;
+			department: ILivechatDepartment;
 			agents?: ILivechatDepartmentAgents[];
 		};
 		PUT: (params: {
 			department: LivechatDepartmentDTO;
-			agents: {
-				upsert?: { agentId: string; count?: number; order?: number }[];
-				remove?: { agentId: string; count?: number; order?: number };
-			}[];
+			agents: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order' | 'username'>[];
 		}) => {
 			department: ILivechatDepartment | null;
 			agents: ILivechatDepartmentAgents[];
