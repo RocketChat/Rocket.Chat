@@ -26,8 +26,11 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 
 	// Allow manual on hold
 	test.beforeAll(async ({ api }) => {
-		const res = await api.post('/settings/Livechat_allow_manual_on_hold', { value: true });
-		expect(res.status()).toBe(200);
+		const responses = await Promise.all([
+			api.post('/settings/Livechat_allow_manual_on_hold', { value: true }),
+			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: false }),
+		]);
+		responses.forEach((res) => expect(res.status()).toBe(200));
 	});
 
 	// Create departments
@@ -119,6 +122,7 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 			...agents.map((agent) => agent.delete()),
 			// Reset setting
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }),
+			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: true }),
 			// TODO: remove tags
 		]);
 	});
