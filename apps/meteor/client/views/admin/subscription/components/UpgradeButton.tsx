@@ -19,7 +19,7 @@ const UpgradeButton = ({
 	const url = useCheckoutUrl()({ target, action });
 
 	return (
-		<Button onClick={() => handleOpenLink(url)} {...props}>
+		<Button icon='new-window' onClick={() => handleOpenLink(url)} {...props}>
 			{children}
 		</Button>
 	);
