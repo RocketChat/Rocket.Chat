@@ -21,4 +21,7 @@ const applyLicenseBase =
 
 export const applyLicense = applyLicenseBase(async () => false);
 
-export const applyLicenseOrRemove = applyLicenseBase(async () => License.remove() ?? false);
+export const applyLicenseOrRemove = applyLicenseBase(async () => {
+	await License.remove();
+	return false;
+});

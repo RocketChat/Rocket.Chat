@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { PRICING_LINK } from '../utils/links';
+import { useInvalidateLicense } from '../../../../hooks/useLicense';
 
 type UpgradeToGetMoreProps = {
 	activeModules: string[];
@@ -27,6 +28,8 @@ const UpgradeToGetMore = ({ activeModules }: UpgradeToGetMoreProps) => {
 	const handleOpenLink = useExternalLink();
 	const dispatchToastMessage = useToastMessageDispatch();
 
+	const invalidadeLicense = useInvalidateLicense();
+
 	const upgradeModules = enterpriseModules
 		.filter((module) => !activeModules.includes(module))
 		.map((module) => {
@@ -41,6 +44,7 @@ const UpgradeToGetMore = ({ activeModules }: UpgradeToGetMoreProps) => {
 	const removeLicenseMutation = useMutation({
 		mutationFn: () => removeLicense(),
 		onSuccess: () => {
+			invalidadeLicense(100);
 			dispatchToastMessage({
 				type: 'success',
 				message: t('Removed'),
