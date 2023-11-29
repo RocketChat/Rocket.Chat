@@ -106,7 +106,7 @@ const UsersPage = (): ReactElement => {
 						</ContextualbarTitle>
 						<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
 					</ContextualbarHeader>
-					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
+					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} tab={tab} />}
 					{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} context={context} />}
 					{context === 'new' && <AdminUserForm onReload={handleReload} setCreatedUsersCount={setCreatedUsersCount} context={context} />}
 					{context === 'created' && id && <AdminUserCreated uid={id} createdUsersCount={createdUsersCount} />}

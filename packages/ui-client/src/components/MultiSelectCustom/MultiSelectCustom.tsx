@@ -43,7 +43,6 @@ export type OptionProp = TitleOptionProp | CheckboxOptionProp;
 	@param selectedOptionsTitle dropdown text after clicking one or more options. For example: 'Rooms (3)'
  * @param selectedOptions array with clicked options. This is used in the useFilteredTypeRooms hook, to filter the Rooms' table, for example. This array joins all of the individual clicked options from all available MultiSelectCustom components in the page. It helps to create a union filter for all the selections.
  * @param setSelectedOptions part of an useState hook to set the previous selectedOptions
- * @param customSetSelected part of an useState hook to set the individual selected checkboxes from this instance.
  * @param searchBarText optional text prop that creates a search bar inside the dropdown, when added.
  * @returns a React Component that should be used with a custom hook for filters, such as useFilteredTypeRooms.tsx.
  * Check out the following files, for examples:

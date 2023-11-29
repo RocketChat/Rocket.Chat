@@ -55,6 +55,7 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 
 	const menuOptions = {
 		...(tab !== 'pending' &&
+			tab !== 'deactivated' &&
 			changeAdminStatusAction &&
 			!isFederatedUser && {
 				makeAdmin: {
@@ -63,11 +64,13 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 				},
 			}),
 		...(tab !== 'pending' &&
+			tab !== 'deactivated' &&
 			resetE2EKeyAction &&
 			!isFederatedUser && {
 				resetE2EKey: { label: { label: resetE2EKeyAction.label, icon: resetE2EKeyAction.icon }, action: resetE2EKeyAction.action },
 			}),
 		...(tab !== 'pending' &&
+			tab !== 'deactivated' &&
 			resetTOTPAction &&
 			!isFederatedUser && {
 				resetTOTP: { label: { label: resetTOTPAction.label, icon: resetTOTPAction.icon }, action: resetTOTPAction.action },
@@ -91,7 +94,7 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 		dispatchToastMessage({ type: 'success', message: t('Welcome_email_resent') });
 	};
 
-	const checkPendingButton = (): ReactElement => {
+	const renderPendingButton = (): ReactElement => {
 		if (active) {
 			return (
 				<Button small secondary mie={8} onClick={handleResendWelcomeEmail}>
@@ -166,7 +169,7 @@ const UsersTableRow = ({ user, onClick, mediaQuery, refetchUsers, onReload, tab 
 					e.stopPropagation();
 				}}
 			>
-				{tab === 'pending' && checkPendingButton()}
+				{tab === 'pending' && renderPendingButton()}
 
 				<Menu
 					mi={4}
