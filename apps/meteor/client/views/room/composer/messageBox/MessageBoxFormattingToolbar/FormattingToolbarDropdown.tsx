@@ -7,11 +7,11 @@ import type { ComposerAPI } from '../../../../../lib/chats/ChatAPI';
 import { useDropdownVisibility } from '../../../../../sidebar/header/hooks/useDropdownVisibility';
 
 type FormattingToolbarDropdownProps = {
-	composer: ComposerAPI;
+	composer?: ComposerAPI;
 	items: FormattingButton[];
 };
 
-const FormattingToolbarDropdown = ({ composer, items, ...props }: FormattingToolbarDropdownProps) => {
+const FormattingToolbarDropdown = ({ composer: _, items, ...props }: FormattingToolbarDropdownProps) => {
 	const t = useTranslation();
 	const reference = useRef(null);
 	const target = useRef(null);
@@ -28,9 +28,9 @@ const FormattingToolbarDropdown = ({ composer, items, ...props }: FormattingTool
 						const handleFormattingAction = () => {
 							if ('link' in formatter) {
 								window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
-								return;
+								// return;
 							}
-							composer.wrapSelection(formatter.pattern);
+							// composer.wrapSelectionV2(formatter.pattern);
 						};
 
 						return (

@@ -10,7 +10,7 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout, useQuill } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
@@ -26,7 +26,6 @@ import { useEnablePopupPreview } from '../../../../../app/ui-message/client/popu
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
@@ -42,6 +41,7 @@ import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
+import 'quill/dist/quill.snow.css';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -52,7 +52,7 @@ const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 const handleFormattingShortcut = (
 	event: KeyboardEvent<HTMLTextAreaElement>,
 	formattingButtons: FormattingButton[],
-	composer: ComposerAPI,
+	// composer: ComposerAPI,
 ) => {
 	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
 	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
@@ -69,7 +69,10 @@ const handleFormattingShortcut = (
 		return false;
 	}
 
-	composer.wrapSelection(formatter.pattern);
+	// const input = event.target as any;
+	// console.log(input.innerText);
+
+	// composer.wrapSelectionV2(formatter.pattern);
 	return true;
 };
 
@@ -124,6 +127,11 @@ const MessageBox = ({
 		throw new Error('Chat context not found');
 	}
 
+	const { quillRef } = useQuill({
+		modules: {
+			toolbar: '#toolbar',
+		},
+	});
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
 	const shadowRef = useRef(null);
@@ -131,7 +139,7 @@ const MessageBox = ({
 	const storageID = `${room._id}${tmid ? `-${tmid}` : ''}`;
 
 	const callbackRef = useCallback(
-		(node: HTMLTextAreaElement) => {
+		(node: any) => {
 			if (node === null) {
 				return;
 			}
@@ -157,6 +165,7 @@ const MessageBox = ({
 	});
 
 	const handleSendMessage = useMutableCallback(() => {
+		chat.composer?.wrapSelectionV2();
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
 		clearPopup();
@@ -171,7 +180,7 @@ const MessageBox = ({
 	const handler: KeyboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
 		const { which: keyCode } = event;
 
-		const input = event.target as HTMLTextAreaElement;
+		const input = event.target as any;
 
 		const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
 
@@ -231,14 +240,15 @@ const MessageBox = ({
 			}
 
 			case 'ArrowDown': {
-				if (input.selectionEnd === input.value.length) {
+				console.log(input.selectionEnd, input.innerText.length);
+				if (input.selectionEnd === input.innerText.length) {
 					event.preventDefault();
 					event.stopPropagation();
 
 					onNavigateToNextMessage?.();
 
 					if (event.altKey) {
-						input.setSelectionRange(input.value.length, input.value.length);
+						input.setSelectionRange(input.innerText.length, input.innerText.length);
 					}
 				}
 			}
@@ -333,15 +343,15 @@ const MessageBox = ({
 		ariaActiveDescendant,
 		suspended,
 		select,
+		clearPopup,
 		commandsRef,
 		callbackRef: c,
 		filter,
-		clearPopup,
 	} = useComposerBoxPopup<{ _id: string; sort?: number }>({
 		configurations: composerPopupConfig,
 	});
 
-	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef);
+	const mergedRefs = useMessageComposerMergedRefs(c, quillRef, callbackRef, autofocusRef);
 
 	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
 
@@ -381,7 +391,7 @@ const MessageBox = ({
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInput
-					ref={mergedRefs as unknown as Ref<HTMLInputElement>}
+					ref={mergedRefs as unknown as Ref<any>}
 					aria-label={composerPlaceholder}
 					name='msg'
 					disabled={isRecording || !canSend}
@@ -427,16 +437,13 @@ const MessageBox = ({
 								{t('Join')}
 							</Button>
 						)}
-						{canSend && (
-							<MessageComposerAction
-								aria-label={t('Send')}
-								icon='send'
-								disabled={!canSend || (!typing && !isEditing)}
-								onClick={handleSendMessage}
-								secondary={typing || isEditing}
-								info={typing || isEditing}
-							/>
-						)}
+						<MessageComposerAction
+							aria-label={t('Send')}
+							icon='send'
+							onClick={handleSendMessage}
+							secondary={typing || isEditing}
+							info={typing || isEditing}
+						/>
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
 			</MessageComposer>

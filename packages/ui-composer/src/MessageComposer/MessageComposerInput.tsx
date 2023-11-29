@@ -32,7 +32,6 @@ const MessageComposerInput = forwardRef(function MessageComposerInput(
 				pi={12}
 				mb={16}
 				borderWidth={0}
-				is='textarea'
 			/>
 		</Box>
 	);

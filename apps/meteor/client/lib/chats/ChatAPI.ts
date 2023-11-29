@@ -20,6 +20,7 @@ export type ComposerAPI = {
 		},
 	): void;
 	wrapSelection(pattern: string): void;
+	wrapSelectionV2(pattern?: string): void;
 	insertText(text: string): void;
 	insertNewLine(): void;
 	clear(): void;

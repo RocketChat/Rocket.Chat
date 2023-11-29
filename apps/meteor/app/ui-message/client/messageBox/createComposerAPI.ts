@@ -4,10 +4,11 @@ import { Meteor } from 'meteor/meteor';
 
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
+import buildMarkdown from '../../../ui-utils/client/lib/buildMarkDown';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 
-export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
+export const createComposerAPI = (input: any, storageID: string): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
@@ -93,6 +94,9 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 	};
 
 	const clear = (): void => {
+		while (input.childNodes[0].firstChild) {
+			input.childNodes[0].removeChild(input.childNodes[0].firstChild);
+		}
 		setText('');
 	};
 
@@ -260,6 +264,12 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		focus();
 	};
 
+	const wrapSelectionV2 = (_?: string): void => {
+		// console.log(input.innerHTML);
+		setText(buildMarkdown(input));
+		// console.log(pattern);
+	};
+
 	const insertNewLine = (): void => insertText('\n');
 
 	setText(Meteor._localStorage.getItem(storageID) ?? '', {
@@ -314,6 +324,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		},
 		release,
 		wrapSelection,
+		wrapSelectionV2,
 		get text(): string {
 			return input.value;
 		},
