@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { Page } from '@playwright/test';
 
+import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelCurrentChats } from '../page-objects';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
@@ -12,6 +13,8 @@ import { test, expect } from '../utils/test';
 const visitorA = faker.person.firstName();
 const visitorB = faker.person.firstName();
 const visitorC = faker.person.firstName();
+
+test.skip(!IS_EE, 'OC - Current Chats > Enterprise Only');
 
 test.use({ storageState: Users.admin.state });
 
