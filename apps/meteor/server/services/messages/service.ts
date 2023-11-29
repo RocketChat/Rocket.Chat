@@ -10,6 +10,7 @@ import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
+import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
@@ -40,6 +41,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			},
 			canAccessRoom(room: IRoom, user: IUser): Promise<boolean> {
 				return Authorization.canAccessRoom(room, user);
+			},
+			getUserAvatarURL(user?: string): string {
+				return (user && getUserAvatarURL(user)) || '';
 			},
 		});
 

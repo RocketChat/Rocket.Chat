@@ -4,7 +4,6 @@ import URL from 'url';
 import type { MessageAttachment, IMessage, IUser, IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
 
-import { getUserAvatarURL } from '../../../../app/utils/server/getUserAvatarURL';
 import { createQuoteAttachment } from '../../../../lib/createQuoteAttachment';
 
 const recursiveRemoveAttachments = (attachments: MessageAttachment, deep = 1, quoteChainLimit: number): MessageAttachment => {
@@ -35,8 +34,9 @@ const validateAttachmentDeepness = (message: IMessage, quoteChainLimit: number):
 
 type JumpToMessageInit = {
 	getMessage(messageId: IMessage['_id']): Promise<IMessage | null>;
-	getRoom(roomId: IRoom['_id']): Promise<IOmnichannelRoom | null>;
+	getRoom(roomId: IRoom['_id']): Promise<IRoom | IOmnichannelRoom | null>;
 	canAccessRoom(room: IRoom, user: Pick<IUser, '_id' | 'username' | 'name' | 'language'>): Promise<boolean>;
+	getUserAvatarURL(user?: string): string;
 };
 
 /**
@@ -49,10 +49,13 @@ export class BeforeSaveJumpToMessage {
 
 	private canAccessRoom: JumpToMessageInit['canAccessRoom'];
 
+	private getUserAvatarURL: JumpToMessageInit['getUserAvatarURL'];
+
 	constructor(options: JumpToMessageInit) {
 		this.getMessage = options.getMessage;
 		this.getRoom = options.getRoom;
 		this.canAccessRoom = options.canAccessRoom;
+		this.getUserAvatarURL = options.getUserAvatarURL;
 	}
 
 	async createAttachmentForMessageURLs({
@@ -121,7 +124,7 @@ export class BeforeSaveJumpToMessage {
 			const { useRealName } = config;
 
 			message.attachments.push(
-				createQuoteAttachment(jumpToMessage, item.url, useRealName, getUserAvatarURL(jumpToMessage.u.username || '') as string),
+				createQuoteAttachment(jumpToMessage, item.url, useRealName, this.getUserAvatarURL(jumpToMessage.u.username)),
 			);
 			item.ignoreParse = true;
 		}
