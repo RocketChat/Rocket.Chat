@@ -1,7 +1,8 @@
 import type { IMessageService } from '@rocket.chat/core-services';
-import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { type IMessage, type MessageTypesValues, type IUser, type IRoom, isEditedMessage } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -30,7 +31,17 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		this.preventMention = new BeforeSavePreventMention(this.api);
 		this.badWords = new BeforeSaveBadWords();
 		this.spotify = new BeforeSaveSpotify();
-		this.jumpToMessage = new BeforeSaveJumpToMessage();
+		this.jumpToMessage = new BeforeSaveJumpToMessage({
+			getMessage(messageId: IMessage['_id']): Promise<IMessage | null> {
+				return Messages.findOneById(messageId);
+			},
+			getRoom(roomId: IRoom['_id']): Promise<IOmnichannelRoom | null> {
+				return Rooms.findOneById<IOmnichannelRoom>(roomId);
+			},
+			canAccessRoom(room: IRoom, user: IUser): Promise<boolean> {
+				return Authorization.canAccessRoom(room, user);
+			},
+		});
 
 		await this.configureBadWords();
 	}
@@ -108,7 +119,15 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		message = await this.badWords.filterBadWords({ message });
 		message = await this.spotify.convertSpotifyLinks({ message });
-		message = await this.jumpToMessage.createAttachmentForMessageURLs({ message, user });
+		message = await this.jumpToMessage.createAttachmentForMessageURLs({
+			message,
+			user,
+			config: {
+				chainLimit: settings.get<number>('Message_QuoteChainLimit'),
+				siteUrl: settings.get<string>('Site_Url'),
+				useRealName: settings.get<boolean>('UI_Use_Real_Name'),
+			},
+		});
 
 		if (!this.isEditedOrOld(message)) {
 			await Promise.all([

@@ -1,12 +1,9 @@
 import QueryString from 'querystring';
 import URL from 'url';
 
-import { Authorization } from '@rocket.chat/core-services';
-import type { MessageAttachment, IMessage, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { MessageAttachment, IMessage, IUser, IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
-import { Messages, Rooms } from '@rocket.chat/models';
 
-import { settings } from '../../../../app/settings/server';
 import { getUserAvatarURL } from '../../../../app/utils/server/getUserAvatarURL';
 import { createQuoteAttachment } from '../../../../lib/createQuoteAttachment';
 
@@ -22,12 +19,11 @@ const recursiveRemoveAttachments = (attachments: MessageAttachment, deep = 1, qu
 	return attachments;
 };
 
-const validateAttachmentDeepness = (message: IMessage): IMessage => {
+const validateAttachmentDeepness = (message: IMessage, quoteChainLimit: number): IMessage => {
 	if (!message?.attachments) {
 		return message;
 	}
 
-	const quoteChainLimit = settings.get<number>('Message_QuoteChainLimit');
 	if ((message.attachments && quoteChainLimit < 2) || isNaN(quoteChainLimit)) {
 		delete message.attachments;
 	}
@@ -37,16 +33,40 @@ const validateAttachmentDeepness = (message: IMessage): IMessage => {
 	return message;
 };
 
+type JumpToMessageInit = {
+	getMessage(messageId: IMessage['_id']): Promise<IMessage | null>;
+	getRoom(roomId: IRoom['_id']): Promise<IOmnichannelRoom | null>;
+	canAccessRoom(room: IRoom, user: Pick<IUser, '_id' | 'username' | 'name' | 'language'>): Promise<boolean>;
+};
+
 /**
  * Transform URLs in messages into quote attachments
  */
 export class BeforeSaveJumpToMessage {
+	private getMessage: JumpToMessageInit['getMessage'];
+
+	private getRoom: JumpToMessageInit['getRoom'];
+
+	private canAccessRoom: JumpToMessageInit['canAccessRoom'];
+
+	constructor(options: JumpToMessageInit) {
+		this.getMessage = options.getMessage;
+		this.getRoom = options.getRoom;
+		this.canAccessRoom = options.canAccessRoom;
+	}
+
 	async createAttachmentForMessageURLs({
 		message,
 		user: currentUser,
+		config,
 	}: {
 		message: IMessage;
 		user: Pick<IUser, '_id' | 'username' | 'name' | 'language'>;
+		config: {
+			chainLimit: number;
+			siteUrl: string;
+			useRealName: boolean;
+		};
 	}): Promise<IMessage> {
 		// if no message is present, or the message doesn't have any URL, skip
 		if (!message?.urls?.length) {
@@ -55,7 +75,7 @@ export class BeforeSaveJumpToMessage {
 
 		for await (const item of message.urls) {
 			// if the URL doesn't belong to the current server, skip
-			if (!item.url.includes(settings.get('Site_Url'))) {
+			if (!item.url.includes(config.siteUrl)) {
 				continue;
 			}
 
@@ -72,21 +92,21 @@ export class BeforeSaveJumpToMessage {
 				continue;
 			}
 
-			const messageFromUrl = await Messages.findOneById(msgId);
+			const messageFromUrl = await this.getMessage(msgId);
 
-			const jumpToMessage = messageFromUrl && validateAttachmentDeepness(messageFromUrl);
+			const jumpToMessage = messageFromUrl && validateAttachmentDeepness(messageFromUrl, config.chainLimit);
 			if (!jumpToMessage) {
 				continue;
 			}
 
 			// validates if user can see the message
 			// user has to belong to the room the message was first wrote in
-			const room = await Rooms.findOneById<IOmnichannelRoom>(jumpToMessage.rid);
+			const room = await this.getRoom(jumpToMessage.rid);
 			if (!room) {
 				continue;
 			}
 			const isLiveChatRoomVisitor = !!message.token && !!room.v?.token && message.token === room.v.token;
-			const canAccessRoomForUser = isLiveChatRoomVisitor || (currentUser && (await Authorization.canAccessRoom(room, currentUser)));
+			const canAccessRoomForUser = isLiveChatRoomVisitor || (currentUser && (await this.canAccessRoom(room, currentUser)));
 			if (!canAccessRoomForUser) {
 				continue;
 			}
@@ -98,7 +118,7 @@ export class BeforeSaveJumpToMessage {
 				message.attachments.splice(index, 1);
 			}
 
-			const useRealName = Boolean(settings.get('UI_Use_Real_Name'));
+			const { useRealName } = config;
 
 			message.attachments.push(
 				createQuoteAttachment(jumpToMessage, item.url, useRealName, getUserAvatarURL(jumpToMessage.u.username || '') as string),
