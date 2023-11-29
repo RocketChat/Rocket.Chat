@@ -24,7 +24,7 @@ const AdminUserUpgrade = () => {
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={() => router.navigate('/admin/users')}>{t('Cancel')}</Button>
-					<Button primary onClick={() => openExternalLink(manageSubscriptionUrl)}>
+					<Button primary role='link' onClick={() => openExternalLink(manageSubscriptionUrl)}>
 						{t('Buy_more_seats')}
 					</Button>
 				</ButtonGroup>

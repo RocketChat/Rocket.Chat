@@ -3,6 +3,7 @@ import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import { useExternalLink } from '../../../../../client/hooks/useExternalLink';
 import { useShouldPreventAction } from '../../../../../client/hooks/useShouldPreventAction';
 import { useCheckoutUrl } from '../../../../../client/views/admin/subscription/hooks/useCheckoutUrl';
 import SeatsCapUsage from './SeatsCapUsage';
@@ -19,6 +20,7 @@ const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: User
 	const router = useRouter();
 
 	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'user-page', action: 'buy_more' });
+	const openExternalLink = useExternalLink();
 
 	const withReachedLimit = (fn: () => void) => (): void => {
 		if (isCreateUserDisabled) {
@@ -50,7 +52,7 @@ const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: User
 					{t('New_user')}
 				</Button>
 				{isCreateUserDisabled && (
-					<Button mis={8} is='a' href={manageSubscriptionUrl} target='_blank' rel='noopener noreferrer' primary>
+					<Button primary role='link' onClick={() => openExternalLink(manageSubscriptionUrl)}>
 						{t('Buy_more_seats')}
 					</Button>
 				)}
