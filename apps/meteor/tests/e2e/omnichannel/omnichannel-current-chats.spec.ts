@@ -24,8 +24,10 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 	let conversations: Awaited<ReturnType<typeof createConversation>>[];
 	let agents: Awaited<ReturnType<typeof createAgent>>[];
 
-	test.beforeEach(async ({ page }) => {
-		await page.goto('/omnichannel/current');
+	// Allow manual on hold
+	test.beforeAll(async ({ api }) => {
+		const res = await api.post('/settings/Livechat_allow_manual_on_hold', { value: true });
+		expect(res.status()).toBe(200);
 	});
 
 	// Create departments
@@ -107,7 +109,7 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 		await poCurrentChats.sidenav.linkCurrentChats.click();
 	});
 
-	test.afterAll(async () => {
+	test.afterAll(async ({ api }) => {
 		await Promise.all([
 			// Delete conversations
 			...conversations.map((conversation) => conversation.delete()),
@@ -115,6 +117,8 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 			...departments.map((department) => department.delete()),
 			// Delete agents
 			...agents.map((agent) => agent.delete()),
+			// Reset setting
+			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }),
 			// TODO: remove tags
 		]);
 	});
