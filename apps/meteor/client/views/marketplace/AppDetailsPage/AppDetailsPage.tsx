@@ -20,6 +20,7 @@ import AppReleases from './tabs/AppReleases';
 import AppRequests from './tabs/AppRequests/AppRequests';
 import AppSecurity from './tabs/AppSecurity/AppSecurity';
 import AppSettings from './tabs/AppSettings';
+import { useFilters } from '../context/FiltersContext';
 
 const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const t = useTranslation();
@@ -36,6 +37,8 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const context = useRouteParameter('context');
 
 	const appData = useAppInfo(id, context || '');
+	const { filters } = useFilters();
+	console.log('filters', filters);
 
 	const handleReturn = useMutableCallback((): void => {
 		if (!context) {

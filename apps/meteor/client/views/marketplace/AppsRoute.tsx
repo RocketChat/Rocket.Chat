@@ -9,6 +9,7 @@ import AppDetailsPage from './AppDetailsPage';
 import AppInstallPage from './AppInstallPage';
 import AppsPage from './AppsPage';
 import BannerEnterpriseTrialEnded from './components/BannerEnterpriseTrialEnded';
+import { FiltersProvider } from './context/FiltersContext';
 
 const AppsRoute = (): ReactElement => {
 	const [isLoading, setLoading] = useState(true);
@@ -57,10 +58,12 @@ const AppsRoute = (): ReactElement => {
 
 	return (
 		<AppsProvider>
-			<BannerEnterpriseTrialEnded />
-			{(page === 'list' && <AppsPage />) ||
-				(id && page === 'info' && <AppDetailsPage id={id} />) ||
-				(page === 'install' && <AppInstallPage />)}
+			<FiltersProvider>
+				<BannerEnterpriseTrialEnded />
+				{(page === 'list' && <AppsPage />) ||
+					(id && page === 'info' && <AppDetailsPage id={id} />) ||
+					(page === 'install' && <AppInstallPage />)}
+			</FiltersProvider>
 		</AppsProvider>
 	);
 };

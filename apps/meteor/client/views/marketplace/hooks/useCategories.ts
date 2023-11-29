@@ -12,10 +12,12 @@ import type {
 import { handleAPIError } from '../helpers/handleAPIError';
 import { useCategoryFlatList } from './useCategoryFlatList';
 import { useCategoryToggle } from './useCategoryToggle';
+import { useFilters } from '../context/FiltersContext';
 
 export const useCategories = (): [CategoryDropDownGroups, selectedCategoriesList, selectedCategoriesList, CategoryOnSelected] => {
 	const t = useTranslation();
-	const [categories, setCategories] = useState<CategoryDropDownListProps['categories']>([]);
+	const { filters } = useFilters();
+	const [categories, setCategories] = useState<CategoryDropDownListProps['categories']>(filters?.selectedCategories || []);
 
 	const fetchCategories = useCallback(async (): Promise<void> => {
 		try {

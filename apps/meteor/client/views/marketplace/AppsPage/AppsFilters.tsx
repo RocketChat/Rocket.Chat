@@ -26,7 +26,7 @@ type AppsFiltersProps = {
 	categoryTagList: selectedCategoriesList;
 	statusFilterStructure: RadioDropDownGroup;
 	statusFilterOnSelected: RadioDropDownOnSelected;
-	context: string;
+	context?: string;
 };
 
 const AppsFilters = ({
@@ -41,7 +41,7 @@ const AppsFilters = ({
 	categoryTagList,
 	statusFilterStructure,
 	statusFilterOnSelected,
-	context,
+	context = 'explore',
 }: AppsFiltersProps): ReactElement => {
 	const t = useTranslation();
 
