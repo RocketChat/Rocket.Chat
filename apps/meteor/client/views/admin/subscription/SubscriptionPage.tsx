@@ -1,4 +1,4 @@
-import { Accordion, Box, Button, ButtonGroup, Callout, Grid, Throbber } from '@rocket.chat/fuselage';
+import { Accordion, Box, Button, ButtonGroup, Callout, Grid } from '@rocket.chat/fuselage';
 import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
@@ -84,15 +84,11 @@ const SubscriptionPage = () => {
 			<Page.Header title={t('Subscription')}>
 				<ButtonGroup>
 					{isRegistered && (
-						<Button
-							icon={syncLicenseUpdate.isLoading ? undefined : 'reload'}
-							disabled={syncLicenseUpdate.isLoading}
-							onClick={() => handleSyncLicenseUpdate()}
-						>
-							{syncLicenseUpdate.isLoading ? <Throbber size='x12' inheritColor /> : t('Sync_license_update')}
+						<Button loading={syncLicenseUpdate.isLoading} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
+							{t('Sync_license_update')}
 						</Button>
 					)}
-					<UpgradeButton target='subscription_header' action={isEnterprise ? 'manage_subscription' : 'upgrade'} primary mis={8}>
+					<UpgradeButton target='subscription_header' action={isEnterprise ? 'manage_subscription' : 'upgrade'} primary>
 						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
 					</UpgradeButton>
 				</ButtonGroup>

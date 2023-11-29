@@ -1,8 +1,9 @@
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import type { ButtonProps } from '@rocket.chat/fuselage/dist/components/Button/Button';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
+import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../hooks/useCheckoutUrl';
 
 const UpgradeButton = ({
@@ -14,14 +15,13 @@ const UpgradeButton = ({
 	target: string;
 	action: string;
 }): ReactElement => {
+	const handleOpenLink = useExternalLink();
 	const url = useCheckoutUrl()({ target, action });
 
 	return (
-		<ButtonGroup align='end'>
-			<Button is='a' href={url} target='_blank' rel='noopener noreferrer' {...props}>
-				{children}
-			</Button>
-		</ButtonGroup>
+		<Button onClick={() => handleOpenLink(url)} {...props}>
+			{children}
+		</Button>
 	);
 };
 
