@@ -8,7 +8,7 @@ import moment from 'moment';
 import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorkspace';
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { applyLicense } from './applyLicense';
+import { applyLicense, applyLicenseOrRemove } from './applyLicense';
 import { getAppCount } from './lib/getAppCount';
 
 settings.watch<string>('Site_Url', (value) => {
@@ -23,6 +23,11 @@ License.onValidateLicense(async () => {
 });
 
 License.onInvalidateLicense(async () => {
+	await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
+});
+
+License.onRemoveLicense(async () => {
+	await Settings.updateValueById('Enterprise_License', '');
 	await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
 });
 
@@ -100,7 +105,9 @@ settings.onReady(async () => {
 	}
 
 	// After the current license is already loaded, watch the setting value to react to new licenses being applied.
-	settings.watch<string>('Enterprise_License', async (license) => applyLicense(license, true));
+	settings.change<string>('Enterprise_License', async (license) => applyLicenseOrRemove(license, true));
+
+	callbacks.add('workspaceLicenseRemoved', () => License.remove());
 
 	callbacks.add('workspaceLicenseChanged', async (updatedLicense) => applyLicense(updatedLicense, true));
 
