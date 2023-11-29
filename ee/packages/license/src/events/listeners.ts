@@ -18,6 +18,10 @@ export function onInstall(this: LicenseManager, cb: () => void) {
 	this.on('installed', cb);
 }
 
+export function onRemoveLicense(this: LicenseManager, cb: () => void) {
+	this.on('removed', cb);
+}
+
 export function onInvalidate(this: LicenseManager, cb: () => void) {
 	if (!this.hasValidLicense()) {
 		cb();

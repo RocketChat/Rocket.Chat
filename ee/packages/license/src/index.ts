@@ -16,6 +16,7 @@ import {
 	onValidateLicense,
 	onInstall,
 	onInvalidate,
+	onRemoveLicense,
 } from './events/listeners';
 import { overwriteClassOnLicense } from './events/overwriteClassOnLicense';
 import { LicenseManager } from './license';
@@ -90,6 +91,8 @@ export class LicenseImp extends LicenseManager implements License {
 	onChange = onChange;
 
 	onInstall = onInstall;
+
+	onRemoveLicense = onRemoveLicense;
 
 	onInvalidate = onInvalidate;
 

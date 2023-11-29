@@ -155,7 +155,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			return;
 		}
 		this.clearLicenseData();
-		this.invalidateLicense();
+		invalidateAll.call(this);
+		this.emit('removed');
 	}
 
 	private async setLicenseV3(
