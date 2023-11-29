@@ -17,7 +17,7 @@ slashCommands.add({
 	command: 'stare',
 	callback: stare,
 	options: {
-		description: 'Slash_stare_Description',
+		description: 'Slash_Stare_Description',
 		params: 'your_message_optional',
 		clientOnly: true,
 	},

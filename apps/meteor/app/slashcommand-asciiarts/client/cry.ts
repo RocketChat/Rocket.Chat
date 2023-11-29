@@ -14,7 +14,7 @@ slashCommands.add({
 		await sdk.call('sendMessage', { ...msg, msg: `${params} (╥﹏╥)` });
 	},	
 	options: {
-		description: 'Slash_cry_Description',
+		description: 'Slash_Cry_Description',
 		params: 'your_message_optional',
 		clientOnly: true,
 	},

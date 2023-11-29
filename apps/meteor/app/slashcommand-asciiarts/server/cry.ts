@@ -17,7 +17,7 @@ slashCommands.add({
 	command: 'cry',
 	callback: cry,
 	options: {
-		description: 'Slash_cry_Description',
+		description: 'Slash_Cry_Description',
 		params: 'your_message_optional',
 		clientOnly: true,
 	},
