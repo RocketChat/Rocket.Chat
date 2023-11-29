@@ -23,6 +23,7 @@ import MACCard from './components/cards/MACCard';
 import PlanCard from './components/cards/PlanCard';
 import PlanCardCommunity from './components/cards/PlanCard/PlanCardCommunity';
 import SeatsCard from './components/cards/SeatsCard';
+import { useRemoveLicense } from './hooks/useRemoveLicense';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
 
 function useShowLicense() {
@@ -78,6 +79,8 @@ const SubscriptionPage = () => {
 			handleSyncLicenseUpdate();
 		}
 	}, [handleSyncLicenseUpdate, subscriptionSuccess, syncLicenseUpdate]);
+
+	const removeLicense = useRemoveLicense();
 
 	return (
 		<Page bg='tint'>
@@ -158,7 +161,13 @@ const SubscriptionPage = () => {
 									</>
 								)}
 							</Grid>
-							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise} />
+							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
+								{Boolean(licensesData?.trial || licensesData?.license?.cancelable) && (
+									<Button loading={removeLicense.isLoading} secondary danger onClick={() => removeLicense.mutate()}>
+										{t('Cancel_subscription')}
+									</Button>
+								)}
+							</UpgradeToGetMore>
 						</Box>
 					</>
 				)}

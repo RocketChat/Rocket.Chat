@@ -1,17 +1,15 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Grid, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { Card, CardBody, CardTitle, FramedIcon } from '@rocket.chat/ui-client';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { PRICING_LINK } from '../utils/links';
-import { useInvalidateLicense } from '../../../../hooks/useLicense';
 
 type UpgradeToGetMoreProps = {
 	activeModules: string[];
 	isEnterprise: boolean;
+	children: React.ReactNode;
 };
 
 const enterpriseModules = [
@@ -23,12 +21,9 @@ const enterpriseModules = [
 	'auditing',
 ];
 
-const UpgradeToGetMore = ({ activeModules }: UpgradeToGetMoreProps) => {
+const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) => {
 	const { t } = useTranslation();
 	const handleOpenLink = useExternalLink();
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const invalidadeLicense = useInvalidateLicense();
 
 	const upgradeModules = enterpriseModules
 		.filter((module) => !activeModules.includes(module))
@@ -38,25 +33,6 @@ const UpgradeToGetMore = ({ activeModules }: UpgradeToGetMoreProps) => {
 				body: t(`UpgradeToGetMore_${module}_Body`),
 			};
 		});
-
-	const removeLicense = useEndpoint('POST', '/v1/cloud.removeLicense');
-
-	const removeLicenseMutation = useMutation({
-		mutationFn: () => removeLicense(),
-		onSuccess: () => {
-			invalidadeLicense(100);
-			dispatchToastMessage({
-				type: 'success',
-				message: t('Removed'),
-			});
-		},
-		onError: (error) => {
-			dispatchToastMessage({
-				type: 'error',
-				message: error,
-			});
-		},
-	});
 
 	if (upgradeModules?.length === 0) {
 		return null;
@@ -94,9 +70,7 @@ const UpgradeToGetMore = ({ activeModules }: UpgradeToGetMoreProps) => {
 				<Button icon='new-window' onClick={() => handleOpenLink(PRICING_LINK)}>
 					{t('Compare_plans')}
 				</Button>
-				<Button loading={removeLicenseMutation.isLoading} secondary danger onClick={() => removeLicenseMutation.mutate()}>
-					{t('Cancel_subscription')}
-				</Button>
+				{children}
 			</ButtonGroup>
 		</Box>
 	);

@@ -12,6 +12,7 @@ export interface ILicenseV3 {
 		notifyAdminsAt?: Timestamp;
 		notifyUsersAt?: Timestamp;
 		trial: boolean;
+		cancelable?: boolean;
 		offline: boolean;
 		createdAt: Timestamp;
 		grantedBy: {
