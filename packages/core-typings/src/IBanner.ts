@@ -6,6 +6,15 @@ export enum BannerPlatform {
 	Web = 'web',
 	Mobile = 'mobile',
 }
+
+type Dictionary = {
+	[lng: string]: {
+		[key: string]: string;
+	};
+};
+
+// type Creator = 'cloud' | 'system';
+
 export interface IBanner extends IRocketChatRecord {
 	platform: BannerPlatform[]; // pĺatforms a banner could be shown
 	expireAt: Date; // date when banner should not be shown anymore
@@ -17,6 +26,12 @@ export interface IBanner extends IRocketChatRecord {
 	active?: boolean;
 	inactivedAt?: Date;
 	snapshot?: string;
+
+	dictionary?: Dictionary;
+	surface: 'banner' | 'modal';
+	selector?: {
+		roles?: string[];
+	};
 }
 
 export type InactiveBanner = IBanner & {

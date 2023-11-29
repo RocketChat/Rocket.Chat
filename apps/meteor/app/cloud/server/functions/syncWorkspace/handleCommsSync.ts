@@ -59,7 +59,7 @@ export const handleAnnouncementsOnWorkspaceSync = async (
 
 	for await (const announcement of create.map(deserializeAnnouncement)) {
 		const { _id, ...rest } = announcement;
-
+		await Banner.updateOrCreate(_id, { ...rest });
 		await CloudAnnouncements.updateOne({ _id }, { $set: rest }, { upsert: true });
 	}
 };
