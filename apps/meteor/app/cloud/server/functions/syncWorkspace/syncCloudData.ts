@@ -67,12 +67,12 @@ export async function syncCloudData() {
 
 		const workspaceRegistrationData = await buildWorkspaceRegistrationData(undefined);
 
-		const { license, REMOVE = false } = await fetchWorkspaceSyncPayload({
+		const { license, removeLicense = false } = await fetchWorkspaceSyncPayload({
 			token,
 			data: workspaceRegistrationData,
 		});
 
-		if (REMOVE) {
+		if (removeLicense) {
 			await callbacks.run('workspaceLicenseRemoved');
 		} else {
 			await callbacks.run('workspaceLicenseChanged', license);

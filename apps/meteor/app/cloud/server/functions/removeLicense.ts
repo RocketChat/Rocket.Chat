@@ -24,7 +24,6 @@ export async function removeLicense() {
 		headers: {
 			Authorization: `Bearer ${token}`,
 		},
-		// body: data,
 	});
 
 	if (!response.ok) {
@@ -35,8 +34,6 @@ export async function removeLicense() {
 			throw new CloudWorkspaceConnectionError(`Failed to connect to Rocket.Chat Cloud: ${response.statusText}`);
 		}
 	}
-
-	// const payload = await response.json();
 
 	await callbacks.run('workspaceLicenseRemoved');
 }
