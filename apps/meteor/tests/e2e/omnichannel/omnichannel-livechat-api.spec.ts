@@ -129,15 +129,24 @@ test.describe('Omnichannel - Livechat API', () => {
 		let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 		let poLiveChat: OmnichannelLiveChatEmbedded;
 		let page: Page;
-		const depId = faker.string.uuid();
+		let depId;
 
 		test.beforeAll(async ({ api }) => {
 			const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
 			await expect(statusCode).toBe(200);
 			
 			// await expect((await api.post('/livechat/department', { _id: depId, name: 'TestDep', email: 'TestDep@email.com' })).status()).toBe(200);
-			const response = await api.post('/livechat/department', { _id: depId, name: 'TestDep', email: 'TestDep@email.com' });
-			console.log(response);
+			const response = await api.post('/livechat/department', {department: {
+				enabled: true,
+				email: faker.internet.email(),
+				showOnRegistration: true,
+				showOnOfflineForm: true,
+				name: `new department ${Date.now()}`,
+				description: 'created from api',
+			}});
+			console.log('response', response.data)
+			depId = response.data?.department?._id;
+			expect(response.status()).toBe(200);
 			await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
 		});
@@ -167,9 +176,12 @@ test.describe('Omnichannel - Livechat API', () => {
 
 		test.afterAll(async ({ api }) => {
 			// await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
+			console.log('depId', depId);
 			await api.delete('/livechat/users/agent/user1');
 			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status()).toBe(200);
-			await expect((await api.delete(`/livechat/department/${depId}`, { name: 'TestDep', email: 'TestDep@email.com' })).status()).toBe(200);
+			const response = await api.delete(`/livechat/department/${depId}`, { name: 'TestDep', email: 'TestDep@email.com' });
+			console.log('response', response);
+			expect(response.status()).toBe(200);
 			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status()).toBe(200);
 		});
 
