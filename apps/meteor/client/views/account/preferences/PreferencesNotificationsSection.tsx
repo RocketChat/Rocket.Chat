@@ -1,3 +1,4 @@
+import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Accordion, Field, FieldLabel, FieldRow, FieldHint, Select, FieldGroup, ToggleSwitch, Button, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
@@ -45,7 +46,7 @@ const PreferencesNotificationsSection = () => {
 
 	const onSendNotification = useCallback(() => {
 		KonchatNotification.notify({
-			payload: { sender: { _id: 'rocket.cat', username: 'rocket.cat' } },
+			payload: { sender: { _id: 'rocket.cat', username: 'rocket.cat' }, rid: 'GENERAL' } as INotificationDesktop['payload'],
 			title: t('Desktop_Notification_Test'),
 			text: t('This_is_a_desktop_notification'),
 		});

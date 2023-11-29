@@ -9,4 +9,4 @@ type Limits = Record<
 >;
 
 export const isOverLicenseLimits = (limits: Limits): boolean =>
-	Object.values(limits).some((limit) => limit.value !== undefined && limit.value > limit.max);
+	Object.values(limits).some((limit) => limit.value !== undefined && limit.max !== -1 && limit.value > limit.max);
