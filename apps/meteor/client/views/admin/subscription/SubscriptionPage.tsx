@@ -162,7 +162,7 @@ const SubscriptionPage = () => {
 								)}
 							</Grid>
 							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
-								{Boolean(licensesData?.trial || licensesData?.license?.cancelable) && (
+								{Boolean(licensesData?.trial || licensesData?.license?.information.cancelable) && (
 									<Button loading={removeLicense.isLoading} secondary danger onClick={() => removeLicense.mutate()}>
 										{t('Cancel_subscription')}
 									</Button>
