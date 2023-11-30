@@ -6,8 +6,10 @@ import { CloudWorkspaceRegistrationError } from '../../../../lib/errors/CloudWor
 import { settings } from '../../../settings/server';
 import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+import { syncWorkspace } from './syncWorkspace';
 
 export async function removeLicense() {
+	await callbacks.run('workspaceLicenseRemoved');
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 	if (!workspaceRegistered) {
 		throw new CloudWorkspaceRegistrationError('Workspace is not registered');
@@ -35,5 +37,5 @@ export async function removeLicense() {
 		}
 	}
 
-	await callbacks.run('workspaceLicenseRemoved');
+	await syncWorkspace();
 }
