@@ -1,14 +1,14 @@
+import { Banner } from '@rocket.chat/core-services';
 import type { IUiKitCoreApp, UiKitCoreAppPayload } from '@rocket.chat/core-services';
-import type { IUser, UiKit } from '@rocket.chat/core-typings';
-import { CloudAnnouncements } from '@rocket.chat/models';
+import type { Cloud, IUser, UiKit } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
+import { syncWorkspace } from '../../../app/cloud/server/functions/syncWorkspace';
 import { settings } from '../../../app/settings/server';
 import { CloudWorkspaceConnectionError } from '../../../lib/errors/CloudWorkspaceConnectionError';
 import { InvalidCloudAnnouncementInteractionError } from '../../../lib/errors/InvalidCloudAnnouncementInteractionError';
 import { InvalidCoreAppInteractionError } from '../../../lib/errors/InvalidCoreAppInteractionError';
-import { exhaustiveCheck } from '../../../lib/utils/exhaustiveCheck';
 
 type CloudAnnouncementInteractant =
 	| {
@@ -31,76 +31,6 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 		return settings.get('Cloud_Url');
 	}
 
-	protected async handleServerInteraction(serverInteraction: UiKit.ServerInteraction): Promise<void> {
-		switch (serverInteraction.type) {
-			case 'modal.open': {
-				const { view } = serverInteraction;
-				await CloudAnnouncements.updateMany({ 'view.id': view.id }, { $set: { view } });
-				break;
-			}
-
-			case 'modal.update': {
-				const { view } = serverInteraction;
-				await CloudAnnouncements.updateMany({ 'view.id': view.id }, { $set: { view } });
-				break;
-			}
-
-			case 'modal.close': {
-				const { viewId } = serverInteraction;
-				await CloudAnnouncements.deleteMany({ 'view.id': viewId });
-				break;
-			}
-
-			case 'banner.open': {
-				const { type, triggerId, ...view } = serverInteraction;
-				await CloudAnnouncements.updateMany({ 'view.viewId': view.viewId }, { $set: { view } });
-				break;
-			}
-
-			case 'banner.update': {
-				const { view } = serverInteraction;
-				await CloudAnnouncements.updateMany({ 'view.viewId': view.viewId }, { $set: { view } });
-				break;
-			}
-
-			case 'banner.close': {
-				const { viewId } = serverInteraction;
-				await CloudAnnouncements.deleteMany({ 'view.viewId': viewId });
-				break;
-			}
-
-			case 'contextual_bar.open': {
-				const { view } = serverInteraction;
-				await CloudAnnouncements.updateMany({ 'view.id': view.id }, { $set: { view } });
-				break;
-			}
-
-			case 'contextual_bar.update': {
-				const { view } = serverInteraction;
-				await CloudAnnouncements.updateMany({ 'view.id': view.id }, { $set: { view } });
-				break;
-			}
-
-			case 'contextual_bar.close': {
-				const { view } = serverInteraction;
-				await CloudAnnouncements.deleteMany({ 'view.id': view.id });
-				break;
-			}
-
-			case 'errors':
-				break;
-
-			default:
-				exhaustiveCheck(serverInteraction);
-		}
-	}
-
-	protected async handleFallbackInteraction(userInteraction: UiKit.UserInteraction): Promise<void> {
-		if (userInteraction.type === 'viewClosed') {
-			await CloudAnnouncements.deleteMany({ 'view.id': userInteraction.payload.viewId ?? userInteraction.payload.view.id });
-		}
-	}
-
 	blockAction(payload: UiKitCoreAppPayload): Promise<UiKit.ServerInteraction> {
 		return this.handlePayload(payload);
 	}
@@ -109,33 +39,54 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 		return this.handlePayload(payload);
 	}
 
-	viewClosed(payload: UiKitCoreAppPayload): Promise<UiKit.ServerInteraction> {
-		return this.handlePayload(payload);
+	async viewClosed(payload: UiKitCoreAppPayload): Promise<UiKit.ServerInteraction> {
+		const {
+			payload: { view: { viewId: bannerId } = {} },
+			user: { _id: userId } = {},
+		} = payload;
+
+		if (!userId) {
+			throw new Error('invalid user');
+		}
+
+		if (!bannerId) {
+			throw new Error('invalid banner');
+		}
+
+		if (!payload.triggerId) {
+			throw new Error('invalid triggerId');
+		}
+
+		await Banner.dismiss(userId, bannerId);
+
+		// for viewClosed we just need to let Cloud know that the banner was closed, no need to wait for the response
+		setImmediate(async () => {
+			await this.handlePayload(payload);
+		});
+
+		return {
+			type: 'banner.close',
+			triggerId: payload.triggerId,
+			appId: payload.appId,
+			viewId: bannerId,
+		};
 	}
 
 	protected async handlePayload(payload: UiKitCoreAppPayload): Promise<UiKit.ServerInteraction> {
 		const interactant = this.getInteractant(payload);
 		const interaction = this.getInteraction(payload);
 
-		try {
-			const serverInteraction = await this.pushUserInteraction(interactant, interaction);
+		const serverInteraction = await this.pushUserInteraction(interactant, interaction);
 
-			if (serverInteraction.appId !== this.appId) {
-				throw new InvalidCloudAnnouncementInteractionError(`Invalid appId`);
-			}
-
-			if (serverInteraction.triggerId !== interaction.triggerId) {
-				throw new InvalidCloudAnnouncementInteractionError(`Invalid triggerId`);
-			}
-
-			await this.handleServerInteraction(serverInteraction);
-
-			return serverInteraction;
-		} catch (error) {
-			await this.handleFallbackInteraction(interaction);
-
-			throw error;
+		if (serverInteraction.appId !== this.appId) {
+			throw new InvalidCloudAnnouncementInteractionError(`Invalid appId`);
 		}
+
+		if (serverInteraction.triggerId !== interaction.triggerId) {
+			throw new InvalidCloudAnnouncementInteractionError(`Invalid triggerId`);
+		}
+
+		return serverInteraction;
 	}
 
 	protected getInteractant(payload: UiKitCoreAppPayload): CloudAnnouncementInteractant {
@@ -164,6 +115,9 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 		throw new CloudWorkspaceConnectionError(`Invalid user data received from Rocket.Chat Cloud`);
 	}
 
+	/**
+	 * Transform the payload received from the Core App back to the format the UI sends from the client
+	 */
 	protected getInteraction(payload: UiKitCoreAppPayload): UiKit.UserInteraction {
 		if (payload.type === 'blockAction' && payload.container?.type === 'message') {
 			const {
@@ -267,7 +221,10 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 		throw new InvalidCoreAppInteractionError();
 	}
 
-	protected async pushUserInteraction(interactant: CloudAnnouncementInteractant, userInteraction: UiKit.UserInteraction) {
+	protected async pushUserInteraction(
+		interactant: CloudAnnouncementInteractant,
+		userInteraction: UiKit.UserInteraction,
+	): Promise<UiKit.ServerInteraction> {
 		const token = await this.getWorkspaceAccessToken();
 
 		const request: CloudAnnouncementInteractionRequest = {
@@ -288,7 +245,18 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			throw new CloudWorkspaceConnectionError(`Failed to connect to Rocket.Chat Cloud: ${error}`);
 		}
 
-		const serverInteraction: UiKit.ServerInteraction = await response.json();
+		const payload: Cloud.WorkspaceInteractionResponsePayload = await response.json();
+
+		const { serverInteraction, serverAction } = payload;
+
+		if (serverAction) {
+			switch (serverAction) {
+				case 'syncWorkspace': {
+					await syncWorkspace();
+					break;
+				}
+			}
+		}
 
 		return serverInteraction;
 	}
