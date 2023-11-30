@@ -13,7 +13,7 @@ import { test, expect } from '../utils/test';
 test.use({ storageState: Users.admin.state });
 
 test.describe('OC - Manage Units', () => {
-	test.skip(!IS_EE, 'Enterprise Edition Only');
+	test.skip(!IS_EE, 'OC - Manage Units > Enterprise Edition Only');
 
 	let poOmnichannelUnits: OmnichannelUnits;
 
@@ -48,7 +48,7 @@ test.describe('OC - Manage Units', () => {
 		await poOmnichannelUnits.sidenav.linkUnits.click();
 	});
 
-	test.skip('OC - Manage Units - Create Unit', async () => {
+	test('OC - Manage Units - Create Unit', async ({ page }) => {
 		const unitName = faker.string.uuid();
 
 		await test.step('expect correct form default state', async () => {
@@ -67,6 +67,7 @@ test.describe('OC - Manage Units', () => {
 			await poOmnichannelUnits.selectDepartment(department.data);
 			await poOmnichannelUnits.selectMonitor('user2');
 			await poOmnichannelUnits.btnSave.click();
+			await expect(poOmnichannelUnits.contextualBar).not.toBeVisible();
 
 			await test.step('expect unit to have been created', async () => {
 				await poOmnichannelUnits.search(unitName);
@@ -92,13 +93,17 @@ test.describe('OC - Manage Units', () => {
 			});
 
 			await test.step('expect to have been deleted', async () => {
-				await poOmnichannelUnits.search(unitName);
-				await expect(poOmnichannelUnits.findRowByName(unitName)).not.toBeVisible();
+				if (await poOmnichannelUnits.inputSearch.isVisible()) {
+					await poOmnichannelUnits.search(unitName);
+					await expect(poOmnichannelUnits.findRowByName(unitName)).not.toBeVisible();
+				} else {
+					await expect(page.locator('h3 >> text="No units yet"')).toBeVisible();
+				}
 			});
 		});
 	});
 
-	test('OC - Manage Units - Edit unit', async ({ api }) => {
+	test('OC - Manage Units - Edit unit', async ({ api, page }) => {
 		const edittedUnitName = faker.string.uuid();
 
 		const unit = await test.step('expect to create new unit', async () => {
@@ -152,8 +157,13 @@ test.describe('OC - Manage Units', () => {
 			await test.step('expect to have been deleted', async () => {
 				await poOmnichannelUnits.sidenav.linkPriorities.click();
 				await poOmnichannelUnits.sidenav.linkUnits.click(); // refresh the page
-				await poOmnichannelUnits.search(edittedUnitName);
-				await expect(poOmnichannelUnits.findRowByName(edittedUnitName)).not.toBeVisible();
+
+				if (await poOmnichannelUnits.inputSearch.isVisible()) {
+					await poOmnichannelUnits.search(edittedUnitName);
+					await expect(poOmnichannelUnits.findRowByName(edittedUnitName)).not.toBeVisible();
+				} else {
+					await expect(page.locator('h3 >> text="No units yet"')).toBeVisible();
+				}
 			});
 		});
 	});
