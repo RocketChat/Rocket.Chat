@@ -717,8 +717,6 @@
   "Cloud_register_offline_finish_helper": "Efter afslutningen af registreringsprocessen i Cloud Console, skal du præsenteres for noget tekst. Indsæt det her for at afslutte registreringen.",
   "Cloud_register_offline_helper": "Arbejdsområder kan registreres manuelt, hvis der ikke er netværksadgang eller den er begrænset. Kopier teksten nedenfor og gå til vores Cloud Console for at afslutte processen.",
   "Cloud_register_success": "Dit workspace er blevet registreret!",
-  "Cloud_registration_pending_html": "<span> Mobil-notifikationer fungerer ikke før registreringen er afsluttet. <a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/registration\"> Lær mere </a> </span>",
-  "Cloud_registration_pending_title": "Cloudregistrering afventer stadig",
   "Cloud_registration_required": "Registrering er påkrævet",
   "Cloud_registration_required_description": "Under opsætningen valgte du tilsyneladende ikke at registrere dit workspace.",
   "Cloud_registration_required_link_text": "Tryk her for at registrere dit workspace.",
@@ -3986,6 +3984,7 @@
   "registration.component.form.sendConfirmationEmail": "Send bekræftelses-email",
   "onboarding.component.form.action.pasteHere": "Indsæt her ...",
   "onboarding.form.registerOfflineForm.title": "Registrer offline",
+  "Enterprise": "Firma",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analyse",
   "UpgradeToGetMore_auditing_Title": "Meddelelsesovervågning"
 }
