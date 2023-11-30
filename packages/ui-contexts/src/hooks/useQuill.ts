@@ -12,37 +12,14 @@ const modules = {
 		[{ align: [] }],
 
 		[{ list: 'ordered' }, { list: 'bullet' }],
-		[{ indent: '-1' }, { indent: '+1' }],
-
-		[{ size: ['small', false, 'large', 'huge'] }],
 		[{ header: [1, 2, 3, 4, 5, 6, false] }],
-		['link', 'image', 'video'],
-		[{ color: [] }, { background: [] }],
-
-		['clean'],
 	],
 	clipboard: {
 		matchVisual: false,
 	},
 };
 
-const formats = [
-	'bold',
-	'italic',
-	'underline',
-	'strike',
-	'align',
-	'list',
-	'indent',
-	'size',
-	'header',
-	'link',
-	'image',
-	'video',
-	'color',
-	'background',
-	'clean',
-];
+const formats = ['bold', 'italic', 'underline', 'strike', 'align'];
 
 function assign(target: any, _varArgs: any) {
 	'use strict';
@@ -67,12 +44,7 @@ function assign(target: any, _varArgs: any) {
 	return to;
 }
 
-/**
- *
- * @param options Quill static options. https://github.com/gtgalone/react-quilljs#options
- * @returns Returns quill, quillRef, and Quill. https://github.com/gtgalone/react-quilljs#return
- */
-export const useQuill = (options: QuillOptionsStatic | undefined = { theme, modules, formats }) => {
+export const useQuill = (options: QuillOptionsStatic | undefined = { modules }) => {
 	const quillRef: RefObject<any> = useRef();
 
 	const [isLoaded, setIsLoaded] = useState(false);

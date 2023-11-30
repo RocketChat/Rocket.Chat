@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -12,8 +13,8 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useQuill } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
-import React, { memo, useRef, useReducer, useCallback } from 'react';
+import type { ReactElement, MouseEventHandler, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
+import React, { memo, useRef, useCallback, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
@@ -43,12 +44,6 @@ import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import 'quill/dist/quill.snow.css';
 
-const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
-	const target = event.target as HTMLInputElement;
-
-	return Boolean(target.value.trim());
-};
-
 const handleFormattingShortcut = (
 	event: KeyboardEvent<HTMLTextAreaElement>,
 	formattingButtons: FormattingButton[],
@@ -69,10 +64,6 @@ const handleFormattingShortcut = (
 		return false;
 	}
 
-	// const input = event.target as any;
-	// console.log(input.innerText);
-
-	// composer.wrapSelectionV2(formatter.pattern);
 	return true;
 };
 
@@ -117,7 +108,7 @@ const MessageBox = ({
 	const t = useTranslation();
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 
-	const [typing, setTyping] = useReducer(reducer, false);
+	const [typing, setTyping] = useState(false);
 
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
@@ -127,11 +118,16 @@ const MessageBox = ({
 		throw new Error('Chat context not found');
 	}
 
-	const { quillRef } = useQuill({
+	const { quillRef, quill } = useQuill({
 		modules: {
 			toolbar: '#toolbar',
 		},
 	});
+
+	quill?.on('text-change', () => {
+		setTyping(quill.root.innerText.length !== 0 && quill.root.innerText !== '\n');
+	});
+
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
 	const shadowRef = useRef(null);
@@ -395,7 +391,6 @@ const MessageBox = ({
 					aria-label={composerPlaceholder}
 					name='msg'
 					disabled={isRecording || !canSend}
-					onChange={setTyping}
 					style={textAreaStyle}
 					placeholder={composerPlaceholder}
 					onKeyDown={handler}
@@ -437,13 +432,16 @@ const MessageBox = ({
 								{t('Join')}
 							</Button>
 						)}
-						<MessageComposerAction
-							aria-label={t('Send')}
-							icon='send'
-							onClick={handleSendMessage}
-							secondary={typing || isEditing}
-							info={typing || isEditing}
-						/>
+						{canSend && (
+							<MessageComposerAction
+								aria-label={t('Send')}
+								icon='send'
+								disabled={!canSend || (!typing && !isEditing)}
+								onClick={handleSendMessage}
+								secondary={typing || isEditing}
+								info={typing || isEditing}
+							/>
+						)}
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
 			</MessageComposer>
