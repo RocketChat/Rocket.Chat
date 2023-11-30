@@ -52,7 +52,7 @@ function MultiSelectSettingInput({
 				</Box>
 			</Flex.Container>
 			<Component
-				display='flex'
+				max-width='full'
 				data-qa-setting-id={_id}
 				id={_id}
 				value={value}
