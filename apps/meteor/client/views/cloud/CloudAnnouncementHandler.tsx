@@ -23,8 +23,8 @@ const CloudAnnouncementHandler = ({ dictionary = {}, surface, view }: CloudAnnou
 
 	const actionManager = useUiKitActionManager();
 
-	const viewRef = useRef({ ...view, appId: 'cloud-announcements-core' });
-	viewRef.current = { ...view, appId: 'cloud-announcements-core' };
+	const viewRef = useRef({ ...view, appId: view.appId || 'cloud-announcements-core' });
+	viewRef.current = { ...view, appId: view.appId || 'cloud-announcements-core' };
 
 	useEffect(() => {
 		switch (surface) {
