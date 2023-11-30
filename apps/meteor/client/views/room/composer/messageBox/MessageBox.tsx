@@ -118,11 +118,7 @@ const MessageBox = ({
 		throw new Error('Chat context not found');
 	}
 
-	const { quillRef, quill } = useQuill({
-		modules: {
-			toolbar: '#toolbar',
-		},
-	});
+	const { quillRef, quill } = useQuill();
 
 	quill?.on('text-change', () => {
 		setTyping(quill.root.innerText.length !== 0 && quill.root.innerText !== '\n');
@@ -193,7 +189,7 @@ const MessageBox = ({
 			return false;
 		}
 
-		if (chat.composer && handleFormattingShortcut(event, [...formattingButtons], chat.composer)) {
+		if (chat.composer && handleFormattingShortcut(event, [...formattingButtons])) {
 			return;
 		}
 
