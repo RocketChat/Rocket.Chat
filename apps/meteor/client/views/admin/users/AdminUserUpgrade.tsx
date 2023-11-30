@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, ContextualbarFooter, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, ContextualbarEmptyContent, ContextualbarFooter } from '@rocket.chat/fuselage';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -15,13 +15,7 @@ const AdminUserUpgrade = () => {
 	return (
 		<>
 			<ContextualbarScrollableContent h='full'>
-				<Box display='flex' justifyContent='center' height='full'>
-					<States>
-						<StatesIcon name='warning' />
-						<StatesTitle>{t('Seat_limit_reached')}</StatesTitle>
-						<StatesSubtitle>{t('Seat_limit_reached_Description')}</StatesSubtitle>
-					</States>
-				</Box>
+				<ContextualbarEmptyContent icon='warning' title={t('Seat_limit_reached')} subtitle={t('Seat_limit_reached_Description')} />
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
