@@ -293,10 +293,6 @@ test.describe('OC - Current Chats [Manual Selection]', () => {
 		expect(agentStatus.status()).toBe(200);
 	});
 
-	test.beforeAll(async ({ api }) => {
-		queuedConversation = await createConversation(api, { visitorToken: 'visitorQueued' });
-	});
-
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poCurrentChats = new OmnichannelCurrentChats(page);
 
@@ -304,9 +300,12 @@ test.describe('OC - Current Chats [Manual Selection]', () => {
 		await poCurrentChats.sidenav.linkCurrentChats.click();
 	});
 
-	test('OC - Current chats - Access queued conversation', async ({ page }) => {
+	test('OC - Current chats - Access queued conversation', async ({ page, api }) => {
+		queuedConversation = await createConversation(api, { visitorToken: 'visitorQueued' });
+
 		await test.step('expect to be able to take it', async () => {
 			const { room, visitor } = queuedConversation.data;
+			await poCurrentChats.inputGuest.fill(visitor.name);
 			await poCurrentChats.findRowByName(visitor.name).click();
 			await expect(page).toHaveURL(`/omnichannel/current/${room._id}`);
 			await expect(poCurrentChats.content.btnTakeChat).toBeVisible();
