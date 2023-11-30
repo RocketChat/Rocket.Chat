@@ -13,8 +13,8 @@ import { syncCloudData } from './syncCloudData';
  */
 export async function syncWorkspace() {
 	try {
-		await syncCloudData();
 		await announcementSync();
+		await syncCloudData();
 		await getCachedSupportedVersionsToken.reset();
 	} catch (err) {
 		switch (true) {

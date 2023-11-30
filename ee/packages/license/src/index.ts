@@ -20,7 +20,9 @@ import {
 } from './events/listeners';
 import { overwriteClassOnLicense } from './events/overwriteClassOnLicense';
 import { LicenseManager } from './license';
+import { logger } from './logger';
 import { getModules, hasModule } from './modules';
+import { showLicense } from './showLicense';
 import { getTags } from './tags';
 import { getCurrentValueForLicenseLimit, setLicenseLimitCounter } from './validation/getCurrentValueForLicenseLimit';
 import { validateFormat } from './validation/validateFormat';
@@ -70,6 +72,31 @@ interface License {
 }
 
 export class LicenseImp extends LicenseManager implements License {
+	constructor() {
+		super();
+		this.onValidateLicense(() => showLicense.call(this, this.getLicense(), this.hasValidLicense()));
+
+		this.onValidateLicense(() => {
+			logger.startup({
+				msg: 'License installed',
+				version: this.getLicense()?.version,
+				hash: this._lockedLicense?.slice(-8),
+			});
+		});
+
+		this.onRemoveLicense(() => {
+			logger.startup({
+				msg: 'License removed',
+			});
+		});
+
+		this.onInvalidateLicense(() => {
+			logger.startup({
+				msg: 'License invalidated',
+			});
+		});
+	}
+
 	validateFormat = validateFormat;
 
 	hasModule = hasModule;

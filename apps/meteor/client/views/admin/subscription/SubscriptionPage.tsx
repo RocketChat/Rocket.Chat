@@ -109,7 +109,7 @@ const SubscriptionPage = () => {
 					<>
 						{showLicense && (
 							<Accordion>
-								<Accordion.Item defaultExpanded={true} title={t('License')}>
+								<Accordion.Item title={t('License')}>
 									<pre>{JSON.stringify(licensesData, null, 2)}</pre>
 								</Accordion.Item>
 							</Accordion>
@@ -162,7 +162,7 @@ const SubscriptionPage = () => {
 								)}
 							</Grid>
 							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
-								{Boolean(licensesData?.trial || licensesData?.license?.information.cancelable) && (
+								{Boolean(licensesData?.trial || licensesData?.license?.information.cancellable) && (
 									<Button loading={removeLicense.isLoading} secondary danger onClick={() => removeLicense.mutate()}>
 										{t('Cancel_subscription')}
 									</Button>

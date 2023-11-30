@@ -105,11 +105,11 @@ settings.onReady(async () => {
 	}
 
 	// After the current license is already loaded, watch the setting value to react to new licenses being applied.
-	settings.change<string>('Enterprise_License', async (license) => applyLicenseOrRemove(license, true));
+	settings.change<string>('Enterprise_License', (license) => applyLicenseOrRemove(license, true));
 
 	callbacks.add('workspaceLicenseRemoved', () => License.remove());
 
-	callbacks.add('workspaceLicenseChanged', async (updatedLicense) => applyLicense(updatedLicense, true));
+	callbacks.add('workspaceLicenseChanged', (updatedLicense) => applyLicense(updatedLicense, true));
 
 	License.onInstall(async () => void api.broadcast('license.actions', {} as Record<Partial<LicenseLimitKind>, boolean>));
 

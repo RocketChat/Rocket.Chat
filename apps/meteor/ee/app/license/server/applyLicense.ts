@@ -1,27 +1,37 @@
 import { License } from '@rocket.chat/license';
 
-const applyLicenseBase =
-	(fn: () => Promise<boolean>) =>
-	async (license: string, isNewLicense: boolean): Promise<boolean> => {
-		const enterpriseLicense = (license ?? '').trim();
-		if (!enterpriseLicense) {
-			return fn();
-		}
+export const applyLicense = async (license: string, isNewLicense: boolean): Promise<boolean> => {
+	const enterpriseLicense = (license ?? '').trim();
+	if (!enterpriseLicense) {
+		return false;
+	}
 
-		if (enterpriseLicense === License.encryptedLicense) {
-			return false;
-		}
+	if (enterpriseLicense === License.encryptedLicense) {
+		return false;
+	}
 
-		try {
-			return License.setLicense(enterpriseLicense, isNewLicense);
-		} catch {
-			return fn();
-		}
-	};
+	try {
+		return License.setLicense(enterpriseLicense, isNewLicense);
+	} catch {
+		return false;
+	}
+};
 
-export const applyLicense = applyLicenseBase(async () => false);
+export const applyLicenseOrRemove = async (license: string, isNewLicense: boolean): Promise<boolean> => {
+	const enterpriseLicense = (license ?? '').trim();
+	if (!enterpriseLicense) {
+		License.remove();
+		return false;
+	}
 
-export const applyLicenseOrRemove = applyLicenseBase(async () => {
-	await License.remove();
-	return false;
-});
+	if (enterpriseLicense === License.encryptedLicense) {
+		return false;
+	}
+
+	try {
+		return License.setLicense(enterpriseLicense, isNewLicense);
+	} catch {
+		License.remove();
+		return false;
+	}
+};

@@ -78,7 +78,7 @@ const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps): React
 		<FeatureUsageCard card={{ title: !isEnterprise ? t('Unlock_premium_capabilities') : t('Includes') }}>
 			<CardColSection h='full' w='full' display='flex' flexDirection='column'>
 				<CardCol>
-					<Box display='flex' flexWrap='wrap' justifyContent='space-between' flexDirection={isSmall ? 'column' : 'row'}>
+					<Box display='flex' flexWrap='wrap' justifyContent='space-between' flexDirection={isSmall ? 'row' : 'column'}>
 						{getFeatureSet(activeModules, isEnterprise).map(({ type, title, infoText }, index) => (
 							<Box key={`feature_${index}`} display='flex' alignItems='center' mbe={4} width={isSmall ? '50%' : 'full'}>
 								<FramedIcon type={type} icon={type === 'success' ? 'check' : 'lock'} />
