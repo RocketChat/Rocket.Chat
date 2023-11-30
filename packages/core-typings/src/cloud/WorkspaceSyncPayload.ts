@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import type { UiKit } from '..';
 import type { IBanner } from '../IBanner';
 import type { Announcement } from './Announcement';
 import type { NpsSurveyAnnouncement } from './NpsSurveyAnnouncement';
@@ -55,10 +56,16 @@ export interface WorkspaceCommsRequestPayload {
 	deploymentPlatform: string;
 	version: string;
 }
+
 export interface WorkspaceCommsResponsePayload {
 	nps?: NpsSurveyAnnouncement | null; // Potentially consolidate into announcements
 	announcements?: {
 		create: Announcement[];
 		delete: Announcement['_id'][];
 	};
+}
+
+export interface WorkspaceInteractionResponsePayload {
+	serverInteraction: UiKit.ServerInteraction;
+	serverAction?: 'syncWorkspace';
 }
