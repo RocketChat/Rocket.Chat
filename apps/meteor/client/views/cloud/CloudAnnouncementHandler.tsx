@@ -1,11 +1,11 @@
-import type { Cloud, UiKit } from '@rocket.chat/core-typings';
+import type { IBanner, UiKit } from '@rocket.chat/core-typings';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { exhaustiveCheck } from '../../../lib/utils/exhaustiveCheck';
 import { useUiKitActionManager } from '../../uikit/hooks/useUiKitActionManager';
 
-type CloudAnnouncementHandlerProps = Pick<Cloud.Announcement, 'dictionary' | 'surface' | 'view'>;
+type CloudAnnouncementHandlerProps = Pick<IBanner, 'dictionary' | 'surface' | 'view'>;
 
 const CloudAnnouncementHandler = ({ dictionary = {}, surface, view }: CloudAnnouncementHandlerProps) => {
 	const { i18n } = useTranslation();
@@ -29,7 +29,8 @@ const CloudAnnouncementHandler = ({ dictionary = {}, surface, view }: CloudAnnou
 	useEffect(() => {
 		switch (surface) {
 			case 'modal': {
-				const modalView = viewRef.current as UiKit.ModalView;
+				// TODO fixme
+				const modalView = viewRef.current as unknown as UiKit.ModalView;
 
 				actionManager.openView('modal', modalView);
 
