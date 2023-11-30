@@ -2255,7 +2255,7 @@
   "Field_required": "Field required",
   "File": "File",
   "File_Downloads_Started": "File Downloads Started",
-  "File_exceeds_allowed_size_of_bytes": "File exceeds allowed size of {{size}}.",
+  "File_exceeds_allowed_size_of_bytes": "File size exceeds upload limit of {{size}}.",
   "File_name_Placeholder": "Search files...",
   "File_not_allowed_direct_messages": "File sharing not allowed in direct messages.",
   "File_Path": "File Path",
@@ -6234,7 +6234,7 @@
   "Unlock_premium_capabilities": "Unlock premium capabilities",
   "Unlimited_seats": "Unlimited seats",
   "Unlimited_MACs": "Unlimited MACs",
-  "Unlimited_seats_MACs": "Unlimited seats and MACs",
   "Search_users": "Search users",
-  "Search_channels": "Search channels"
+  "Search_channels": "Search channels",
+  "Unlimited_seats_MACs": "Unlimited seats and MACs"
 }
