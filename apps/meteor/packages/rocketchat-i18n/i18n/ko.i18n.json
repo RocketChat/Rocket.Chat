@@ -755,8 +755,6 @@
   "Cloud_register_offline_finish_helper": "Cloud Console에서 등록 프로세스를 완료하면 몇 가지 텍스트가 표시됩니다. 등록을 마치려면 여기에 붙여 넣으십시오.",
   "Cloud_register_offline_helper": "에어 갭 또는 네트워크 액세스가 제한되는 경우 Workspace를 수동으로 등록 할 수 있습니다. 아래 텍스트를 복사하고 Cloud Console로 이동하여 프로세스를 완료하십시오.",
   "Cloud_register_success": "Workspace가 성공적으로 등록되었습니다!",
-  "Cloud_registration_pending_html": "<span> 등록이 완료 될 때까지 모바일 알림이 작동하지 않습니다. <a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/registration\"> 자세히 알아보기 </a> </span>",
-  "Cloud_registration_pending_title": "현재 클라우드 등록 처리가 지연 중입니다.",
   "Cloud_registration_required": "등록이 필요합니다.",
   "Cloud_registration_required_description": "설치 중에는 Workspace가 등록되지 않은 것처럼 보입니다.",
   "Cloud_registration_required_link_text": " Workspace를 등록하려면 여기를 클릭하십시오.",
@@ -4028,6 +4026,7 @@
   "registration.component.form.sendConfirmationEmail": "확인 메일 보내기",
   "onboarding.component.form.action.pasteHere": "여기에 붙여 넣기 ...",
   "onboarding.form.registerOfflineForm.title": "오프라인 등록",
+  "Enterprise": "기업",
   "UpgradeToGetMore_engagement-dashboard_Title": "분석(에널리틱스)",
   "UpgradeToGetMore_auditing_Title": "메시지 감사"
 }

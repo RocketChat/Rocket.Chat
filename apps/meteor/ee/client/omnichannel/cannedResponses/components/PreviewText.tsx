@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
 import React, { memo } from 'react';
 
-import MarkdownText from '../../../../../../../client/components/MarkdownText';
+import MarkdownText from '../../../../../client/components/MarkdownText';
 
 const PreviewText: FC<{ text: string }> = ({ text }) => {
 	const textM = text.split(/\n/).join('  \n');

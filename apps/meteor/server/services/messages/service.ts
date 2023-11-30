@@ -12,6 +12,7 @@ import { settings } from '../../../app/settings/server';
 import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
+import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
 
 export class MessageService extends ServiceClassInternal implements IMessageService {
 	protected name = 'message';
@@ -20,9 +21,12 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	private badWords: BeforeSaveBadWords;
 
+	private spotify: BeforeSaveSpotify;
+
 	async created() {
 		this.preventMention = new BeforeSavePreventMention(this.api);
 		this.badWords = new BeforeSaveBadWords();
+		this.spotify = new BeforeSaveSpotify();
 
 		await this.configureBadWords();
 	}
@@ -99,6 +103,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		// await this.joinDiscussionOnMessage({ message, room, user });
 
 		message = await this.badWords.filterBadWords({ message });
+		message = await this.spotify.convertSpotifyLinks({ message });
 
 		if (!this.isEditedOrOld(message)) {
 			await Promise.all([
