@@ -1,10 +1,17 @@
 import { check } from 'meteor/check';
 
+import { CloudWorkspaceRegistrationError } from '../../../../lib/errors/CloudWorkspaceRegistrationError';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { getCheckoutUrl } from '../../../cloud/server/functions/getCheckoutUrl';
 import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirmationPoll';
+import {
+	CloudWorkspaceAccessTokenEmptyError,
+	CloudWorkspaceAccessTokenError,
+} from '../../../cloud/server/functions/getWorkspaceAccessToken';
 import { registerPreIntentWorkspaceWizard } from '../../../cloud/server/functions/registerPreIntentWorkspaceWizard';
+import { removeLicense } from '../../../cloud/server/functions/removeLicense';
 import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
 import { saveRegistrationData, saveRegistrationDataManual } from '../../../cloud/server/functions/saveRegistrationData';
 import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
@@ -141,6 +148,45 @@ API.v1.addRoute(
 			} catch (error) {
 				return API.v1.failure('Error during workspace sync');
 			}
+		},
+	},
+);
+
+API.v1.addRoute(
+	'cloud.removeLicense',
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-cloud'],
+		rateLimiterOptions: { numRequestsAllowed: 2, intervalTimeInMS: 60000 },
+	},
+	{
+		async post() {
+			try {
+				await removeLicense();
+				return API.v1.success({ success: true });
+			} catch (error) {
+				switch (true) {
+					case error instanceof CloudWorkspaceRegistrationError:
+					case error instanceof CloudWorkspaceAccessTokenEmptyError:
+					case error instanceof CloudWorkspaceAccessTokenError: {
+						SystemLogger.info({
+							msg: 'Manual license removal failed',
+							endpoint: 'cloud.removeLicense',
+							error,
+						});
+						break;
+					}
+					default: {
+						SystemLogger.error({
+							msg: 'Manual license removal failed',
+							endpoint: 'cloud.removeLicense',
+							error,
+						});
+						break;
+					}
+				}
+			}
+			return API.v1.failure('License removal failed');
 		},
 	},
 );

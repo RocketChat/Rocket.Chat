@@ -67,12 +67,16 @@ export async function syncCloudData() {
 
 		const workspaceRegistrationData = await buildWorkspaceRegistrationData(undefined);
 
-		const { license } = await fetchWorkspaceSyncPayload({
+		const { license, removeLicense = false } = await fetchWorkspaceSyncPayload({
 			token,
 			data: workspaceRegistrationData,
 		});
 
-		await callbacks.run('workspaceLicenseChanged', license);
+		if (removeLicense) {
+			await callbacks.run('workspaceLicenseRemoved');
+		} else {
+			await callbacks.run('workspaceLicenseChanged', license);
+		}
 
 		SystemLogger.info({
 			msg: 'Synced with Rocket.Chat Cloud',
