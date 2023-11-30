@@ -86,6 +86,11 @@ jobs:
     needs: [release-versions]
     if: github.event_name == 'release'
     steps:
+      - uses: Bhacaz/checkout-files@v2
+        with:
+          files: package.json
+          branch: ${{ github.ref }}
+
       - name: Register release on cloud as Draft
         run: |
           REPO_VERSION=$(node -p "require('./package.json').version")
