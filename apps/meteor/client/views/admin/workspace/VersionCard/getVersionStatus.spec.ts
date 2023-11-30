@@ -59,7 +59,7 @@ describe('if the server version is in the list of supported versions but is not 
 				},
 				{
 					version: '4.0.0',
-					expiration: new Date(),
+					expiration: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
 					security: false,
 					infoUrl: '',
 				},
@@ -106,5 +106,80 @@ describe('if the server version is not in the list of supported versions but is 
 		]);
 
 		expect(status.label).toBe('outdated');
+		expect(status.version).toBe('4.0.0');
+	});
+});
+
+describe('prerelease version', () => {
+	it('should not suggest available version the highest version is a prerelease from a different tag', () => {
+		const status = getVersionStatus('3.0.0', [
+			{
+				version: '3.0.0',
+				expiration: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+				security: false,
+				infoUrl: '',
+			},
+			{
+				version: '4.0.0-develop',
+				expiration: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+				security: false,
+				infoUrl: '',
+			},
+		]);
+
+		expect(status.label).toBe('latest');
+		expect(status.version).toBe('3.0.0');
+	});
+
+	it('should suggest available version the highest version is a prerelease from the same tag', () => {
+		const status = getVersionStatus('6.5.0-rc.14', [
+			{
+				version: '6.5.0-rc.14',
+				expiration: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+				security: false,
+				infoUrl: '',
+			},
+			{
+				version: '6.5.0-rc.15',
+				expiration: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+				security: false,
+				infoUrl: '',
+			},
+			{
+				version: '4.0.0-develop',
+				expiration: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+				security: false,
+				infoUrl: '',
+			},
+		]);
+
+		expect(status.label).toBe('available_version');
+		expect(status.version).toBe('6.5.0-rc.15');
+	});
+
+	it('should suggest available version the highest version even if the current one is a prerelease', () => {
+		const status = getVersionStatus('6.5.0-rc.14', [
+			{
+				version: '6.5.0-rc.14',
+				expiration: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+				security: false,
+				infoUrl: '',
+			},
+			{
+				version: '6.5.0-rc.15',
+				expiration: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+				security: false,
+				infoUrl: '',
+			},
+			{
+				version: '7.0.0',
+				expiration: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+				security: false,
+				infoUrl: '',
+			},
+		]);
+
+		expect(status.label).toBe('available_version');
+		expect(status.version).toBe('7.0.0');
 	});
 });

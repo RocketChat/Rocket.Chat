@@ -181,7 +181,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 								<Box fontScale='h3' mbe={4} display='flex'>
 									{t('Version_version', { version: serverVersion })}
 									<Box mis={8} alignSelf='center' width='auto'>
-										{!isAirgapped && versions && <VersionTag versionStatus={versionStatus?.label} />}
+										{!isAirgapped && versions && <VersionTag versionStatus={versionStatus?.label} title={versionStatus.version} />}
 									</Box>
 								</Box>
 							</CardColTitle>
