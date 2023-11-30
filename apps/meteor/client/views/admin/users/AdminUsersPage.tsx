@@ -1,6 +1,5 @@
 import { Button, ButtonGroup, ContextualbarIcon } from '@rocket.chat/fuselage';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
-import { is } from 'date-fns/locale';
 import type { ReactElement } from 'react';
 import React, { useEffect, useRef } from 'react';
 
