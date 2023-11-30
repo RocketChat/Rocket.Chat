@@ -122,6 +122,15 @@ jobs:
       - name: Build Rocket.Chat Packages
         run: yarn build
 
+      - name: Register release on cloud as Draft
+        run: |
+          REPO_VERSION=$(node -p "require('./package.json').version")
+
+          curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
+            "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"releaseType\": \"draft\"" \
+            https://releases.rocket.chat/update
+
+
   build:
     name: 📦 Meteor Build - coverage
     needs: [release-versions, packages-build]
