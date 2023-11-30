@@ -25,6 +25,7 @@ import {
 	useToastMessageDispatch,
 	usePermissionWithScopedRoles,
 } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -71,28 +72,38 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 
 	const canCreateChannel = usePermission('create-c');
-	const canCreatePrivateChannel = usePermission('create-p');
+	const canCreateGroup = usePermission('create-p');
 	const getEncryptedHint = useEncryptedRoomDescription('channel');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 	const federatedModule = useHasLicenseModule('federation');
 	const canUseFederation = federatedModule !== 'loading' && federatedModule && federationEnabled;
 
+	const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
 	const channelNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 	const createChannel = useEndpoint('POST', '/v1/channels.create');
 	const createPrivateChannel = useEndpoint('POST', '/v1/groups.create');
 
+	const { data: teamInfoData } = useQuery(['teamId', teamId], async () => teamsInfoEndpoint({ teamId }), {
+		keepPreviousData: true,
+		retry: false,
+		enabled: teamId !== '',
+	});
+
+	const canCreateTeamChannel = usePermission('create-team-channel', teamInfoData?.teamInfo.roomId);
+	const canCreateTeamGroup = usePermission('create-team-group', teamInfoData?.teamInfo.roomId);
+
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canOnlyCreateOneType = useMemo(() => {
-		if (!canCreateChannel && canCreatePrivateChannel) {
+		if ((!teamId && !canCreateChannel && canCreateGroup) || (teamId && !canCreateTeamChannel && canCreateTeamGroup)) {
 			return 'p';
 		}
-		if (canCreateChannel && !canCreatePrivateChannel) {
+		if ((!teamId && canCreateChannel && !canCreateGroup) || (teamId && canCreateTeamChannel && !canCreateTeamGroup)) {
 			return 'c';
 		}
 		return false;
-	}, [canCreateChannel, canCreatePrivateChannel]);
+	}, [canCreateChannel, canCreateGroup, canCreateTeamChannel, canCreateTeamGroup, teamId]);
 
 	const {
 		register,
@@ -267,7 +278,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 										id={privateId}
 										aria-describedby={`${privateId}-hint`}
 										ref={ref}
-										checked={value}
+										checked={canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value}
 										disabled={!!canOnlyCreateOneType}
 										onChange={onChange}
 									/>
