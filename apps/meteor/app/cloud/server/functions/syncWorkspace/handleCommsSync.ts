@@ -1,5 +1,5 @@
 import { NPS, Banner } from '@rocket.chat/core-services';
-import type { IBanner, Cloud, Serialized } from '@rocket.chat/core-typings';
+import type { Cloud, Serialized } from '@rocket.chat/core-typings';
 
 import { getAndCreateNpsSurvey } from '../../../../../server/services/nps/getAndCreateNpsSurvey';
 
@@ -39,7 +39,7 @@ export const handleBannerOnWorkspaceSync = async (banners: Exclude<Serialized<Cl
 	}
 };
 
-const deserializeAnnouncement = (announcement: Serialized<IBanner>): IBanner => {
+const deserializeAnnouncement = (announcement: Serialized<Cloud.Announcement>): Cloud.Announcement => {
 	const { inactivedAt, _updatedAt, expireAt, startAt, createdAt } = announcement;
 
 	return {
@@ -63,10 +63,11 @@ export const handleAnnouncementsOnWorkspaceSync = async (
 
 	await Promise.all(
 		create.map(deserializeAnnouncement).map((announcement) => {
-			const { view } = announcement;
+			const { view, selector } = announcement;
 
 			return Banner.create({
 				...announcement,
+				...(selector?.roles ? { roles: selector.roles } : {}),
 				view: {
 					...view,
 					appId: 'cloud-announcements-core',

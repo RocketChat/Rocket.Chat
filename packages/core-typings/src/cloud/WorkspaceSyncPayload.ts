@@ -2,6 +2,7 @@
 
 import type { UiKit } from '..';
 import type { IBanner } from '../IBanner';
+import type { Announcement } from './Announcement';
 import type { NpsSurveyAnnouncement } from './NpsSurveyAnnouncement';
 
 export interface WorkspaceSyncPayload {
@@ -58,8 +59,8 @@ export interface WorkspaceCommsRequestPayload {
 export interface WorkspaceCommsResponsePayload {
 	nps?: NpsSurveyAnnouncement | null; // Potentially consolidate into announcements
 	announcements?: {
-		create: IBanner[];
-		delete: IBanner['_id'][];
+		create: Announcement[];
+		delete: Announcement['_id'][];
 	};
 }
 
