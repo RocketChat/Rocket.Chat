@@ -1169,6 +1169,7 @@ export default class SlackAdapter {
 
 	async processPinnedItemMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (slackMessage.attachments && slackMessage.attachments[0] && slackMessage.attachments[0].text) {
+			// TODO: refactor this logic to use the service to send this system message instead of using sendMessage
 			const rocketMsgObj = {
 				rid: rocketChannel._id,
 				t: 'message_pinned',
@@ -1380,6 +1381,7 @@ export default class SlackAdapter {
 			for await (const pin of items) {
 				if (pin.message) {
 					const user = await this.rocket.findUser(pin.message.user);
+					// TODO: send this system message to the room as well (using the service)
 					const msgObj = {
 						rid,
 						t: 'message_pinned',
