@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, ContextualbarIcon } from '@rocket.chat/fuselage';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
@@ -17,6 +17,7 @@ import UsersTable from './UsersTable';
 
 const UsersPage = (): ReactElement => {
 	const t = useTranslation();
+
 	const seatsCap = useSeatsCap();
 	const reload = useRef(() => null);
 
@@ -29,24 +30,12 @@ const UsersPage = (): ReactElement => {
 
 	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
-	useEffect(() => {
-		if (!context || !seatsCap) {
-			return;
-		}
-
-		if (isCreateUserDisabled && !['edit', 'info', 'upgrade'].includes(context)) {
-			router.navigate('/admin/users');
-		}
-
-		if (!isCreateUserDisabled && context === 'upgrade') {
-			router.navigate('/admin/users');
-		}
-	}, [router, context, seatsCap, isCreateUserDisabled]);
-
 	const handleReload = (): void => {
 		seatsCap?.reload();
 		reload.current();
 	};
+
+	const isRoutePrevented = context && ['new', 'invite'].includes(context) && isCreateUserDisabled;
 
 	return (
 		<Page flexDirection='row'>
@@ -82,15 +71,14 @@ const UsersPage = (): ReactElement => {
 							{context === 'edit' && t('Edit_User')}
 							{context === 'new' && t('Add_User')}
 							{context === 'invite' && t('Invite_Users')}
-							{context === 'upgrade' && t('New_user')}
 						</ContextualbarTitle>
 						<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
 					</ContextualbarHeader>
 					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
 					{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
-					{context === 'new' && <AdminUserForm onReload={handleReload} />}
-					{context === 'invite' && <AdminInviteUsers />}
-					{context === 'upgrade' && <AdminUserUpgrade />}
+					{!isRoutePrevented && context === 'new' && <AdminUserForm onReload={handleReload} />}
+					{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}
+					{isRoutePrevented && <AdminUserUpgrade />}
 				</Contextualbar>
 			)}
 		</Page>

@@ -22,22 +22,13 @@ const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: User
 	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'user-page', action: 'buy_more' });
 	const openExternalLink = useExternalLink();
 
-	const withReachedLimit = (fn: () => void) => (): void => {
-		if (isCreateUserDisabled) {
-			router.navigate('/admin/users/upgrade');
-			return;
-		}
-
-		fn();
+	const handleNewButtonClick = () => {
+		router.navigate('/admin/users/new');
 	};
 
-	const handleNewButtonClick = withReachedLimit(() => {
-		router.navigate('/admin/users/new');
-	});
-
-	const handleInviteButtonClick = withReachedLimit(() => {
+	const handleInviteButtonClick = () => {
 		router.navigate('/admin/users/invite');
-	});
+	};
 
 	return (
 		<>
