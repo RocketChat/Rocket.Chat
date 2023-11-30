@@ -40,7 +40,7 @@ function MultiSelectSettingInput({
 		onChangeValue?.(value);
 		// onChangeValue && onChangeValue([...event.currentTarget.querySelectorAll('option')].filter((e) => e.selected).map((el) => el.value));
 	};
-	const Component = autocomplete ? MultiSelectFiltered : MultiSelect;
+	const Component = false ? MultiSelectFiltered : MultiSelect;
 	return (
 		<>
 			<Flex.Container>
@@ -52,6 +52,7 @@ function MultiSelectSettingInput({
 				</Box>
 			</Flex.Container>
 			<Component
+				// display='flex'
 				data-qa-setting-id={_id}
 				id={_id}
 				value={value}
