@@ -102,15 +102,34 @@ const validators: RoomSettingsValidators = {
 			return;
 		}
 
-		if (value === 'c' && !(await hasPermissionAsync(userId, 'create-c'))) {
+		if (value === 'c' && !room.teamId && !(await hasPermissionAsync(userId, 'create-c'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a private group to a public channel is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
 		}
 
-		if (value === 'p' && !(await hasPermissionAsync(userId, 'create-p'))) {
+		if (value === 'p' && !room.teamId && !(await hasPermissionAsync(userId, 'create-p'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a public channel to a private room is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
+		if (!room.teamId) {
+			return;
+		}
+		const team = await Team.getInfoById(room.teamId);
+
+		if (value === 'c' && !(await hasPermissionAsync(userId, 'create-team-channel', team?.roomId))) {
+			throw new Meteor.Error('error-action-not-allowed', `Changing a team's private group to a public channel is not allowed`, {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
+		if (value === 'p' && !(await hasPermissionAsync(userId, 'create-team-group', team?.roomId))) {
+			throw new Meteor.Error('error-action-not-allowed', `Changing a team's public channel to a private room is not allowed`, {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
