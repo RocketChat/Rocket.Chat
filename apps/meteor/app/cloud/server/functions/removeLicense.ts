@@ -39,7 +39,14 @@ export async function removeLicense() {
 
 		await syncWorkspace();
 	} catch (err) {
-		await callbacks.run('workspaceLicenseRemoved');
-		throw err;
+		switch (true) {
+			case err instanceof CloudWorkspaceConnectionError:
+			case err instanceof CloudWorkspaceRegistrationError:
+			case err instanceof CloudWorkspaceAccessTokenEmptyError:
+				await callbacks.run('workspaceLicenseRemoved');
+				break;
+			default:
+				throw err;
+		}
 	}
 }
