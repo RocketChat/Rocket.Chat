@@ -90,13 +90,32 @@ jobs:
         run: |
           REPO_VERSION=$(node -p "require('./package.json').version")
 
+          if [[ '${{ github.event_name }}' = 'release' ]]; then
+            GIT_TAG="${GITHUB_REF#*tags/}"
+            GIT_BRANCH=""
+            ARTIFACT_NAME="${REPO_VERSION}"
+            RC_VERSION=$GIT_TAG
+
+            if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
+              RC_RELEASE=candidate
+            elif [[ '${{ needs.release-versions.outputs.release }}' = 'latest' ]]; then
+              RC_RELEASE=stable
+            fi
+          else
+            GIT_TAG=""
+            GIT_BRANCH="${GITHUB_REF#*heads/}"
+            ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
+            RC_VERSION="${REPO_VERSION}"
+            RC_RELEASE=develop
+          fi;
+
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-            "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"releaseType\": \"draft\"" \
-            https://releases.rocket.chat/update
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
+              https://releases.rocket.chat/update
 
   packages-build:
     name: 📦 Build Packages
-    needs: [release-versions]
+    needs: [release-versions, notify-draft-services]
     runs-on: ubuntu-20.04
     steps:
       - name: Github Info
@@ -135,6 +154,7 @@ jobs:
 
       - name: Build Rocket.Chat Packages
         run: yarn build
+
   build:
     name: 📦 Meteor Build - coverage
     needs: [release-versions, packages-build]
