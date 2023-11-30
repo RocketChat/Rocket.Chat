@@ -29,10 +29,10 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 	async create(doc: Optional<IBanner, '_id' | '_updatedAt'>): Promise<IBanner> {
 		const bannerId = doc._id || uuidv4();
 
-		doc.view.appId = 'banner-core';
+		doc.view.appId = doc.view.appId ?? 'banner-core';
 		doc.view.viewId = bannerId;
 
-		await Banners.create({
+		await Banners.createOrUpdate({
 			...doc,
 			_id: bannerId,
 		});

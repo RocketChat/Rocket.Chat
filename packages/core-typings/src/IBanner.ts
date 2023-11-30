@@ -19,6 +19,7 @@ export interface IBanner extends IRocketChatRecord {
 	platform: BannerPlatform[]; // pĺatforms a banner could be shown
 	expireAt: Date; // date when banner should not be shown anymore
 	startAt: Date; // start date a banner should be presented
+	/** @deprecated a new `selector` field should be created for filtering instead */
 	roles?: string[]; // only show the banner to this roles
 	createdBy: Pick<IUser, '_id' | 'username'>;
 	createdAt: Date;
@@ -29,9 +30,6 @@ export interface IBanner extends IRocketChatRecord {
 
 	dictionary?: Dictionary;
 	surface: 'banner' | 'modal';
-	selector?: {
-		roles?: string[];
-	};
 }
 
 export type InactiveBanner = IBanner & {
