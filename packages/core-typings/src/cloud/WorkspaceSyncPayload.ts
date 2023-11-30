@@ -46,6 +46,7 @@ export interface WorkspaceSyncResponse {
 	workspaceId: string;
 	publicKey: string;
 	license: unknown;
+	removeLicense?: boolean;
 }
 
 export interface WorkspaceCommsRequestPayload {

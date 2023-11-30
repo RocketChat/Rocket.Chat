@@ -1,6 +1,6 @@
-import { Accordion, Box, Button, ButtonGroup, Callout, Grid, Throbber } from '@rocket.chat/fuselage';
-import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
-import { useRouter } from '@rocket.chat/ui-contexts';
+import { Accordion, Box, Button, ButtonGroup, Callout, Grid } from '@rocket.chat/fuselage';
+import { useDebouncedValue, useSessionStorage } from '@rocket.chat/fuselage-hooks';
+import { useSearchParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
 import React, { memo, useCallback, useEffect } from 'react';
 import tinykeys from 'tinykeys';
@@ -23,6 +23,7 @@ import MACCard from './components/cards/MACCard';
 import PlanCard from './components/cards/PlanCard';
 import PlanCardCommunity from './components/cards/PlanCard/PlanCardCommunity';
 import SeatsCard from './components/cards/SeatsCard';
+import { useRemoveLicense } from './hooks/useRemoveLicense';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
 
 function useShowLicense() {
@@ -51,7 +52,9 @@ const SubscriptionPage = () => {
 	const syncLicenseUpdate = useWorkspaceSync();
 	const invalidateLicenseQuery = useInvalidateLicense();
 
-	const { subscriptionSuccess } = router.getSearchParameters();
+	const subscriptionSuccess = useSearchParameter('subscriptionSuccess');
+
+	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isLoading, 10000);
 
 	const { license, limits, activeModules = [] } = licensesData || {};
 	const { isEnterprise = true } = enterpriseData || {};
@@ -69,37 +72,48 @@ const SubscriptionPage = () => {
 
 	const handleSyncLicenseUpdate = useCallback(() => {
 		syncLicenseUpdate.mutate(undefined, {
-			onSuccess: () => invalidateLicenseQuery(),
+			onSuccess: () => invalidateLicenseQuery(100),
 		});
 	}, [invalidateLicenseQuery, syncLicenseUpdate]);
 
 	useEffect(() => {
 		if (subscriptionSuccess && syncLicenseUpdate.isIdle) {
 			handleSyncLicenseUpdate();
+			return;
 		}
-	}, [handleSyncLicenseUpdate, subscriptionSuccess, syncLicenseUpdate]);
+
+		if (subscriptionSuccess) {
+			router.navigate(
+				{
+					name: router.getRouteName()!,
+					params: Object.fromEntries(Object.entries(router.getSearchParameters()).filter(([key]) => key !== 'subscriptionSuccess')),
+				},
+				{
+					replace: true,
+				},
+			);
+		}
+	}, [handleSyncLicenseUpdate, router, subscriptionSuccess, syncLicenseUpdate.isIdle]);
+
+	const removeLicense = useRemoveLicense();
 
 	return (
 		<Page bg='tint'>
 			<Page.Header title={t('Subscription')}>
 				<ButtonGroup>
 					{isRegistered && (
-						<Button
-							icon={syncLicenseUpdate.isLoading ? undefined : 'reload'}
-							disabled={syncLicenseUpdate.isLoading}
-							onClick={() => handleSyncLicenseUpdate()}
-						>
-							{syncLicenseUpdate.isLoading ? <Throbber size='x12' inheritColor /> : t('Sync_license_update')}
+						<Button loading={syncLicenseUpdate.isLoading} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
+							{t('Sync_license_update')}
 						</Button>
 					)}
-					<UpgradeButton target='subscription_header' action={isEnterprise ? 'manage_subscription' : 'upgrade'} primary mis={8}>
+					<UpgradeButton target='subscription_header' action={isEnterprise ? 'manage_subscription' : 'upgrade'} primary>
 						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
 					</UpgradeButton>
 				</ButtonGroup>
 			</Page.Header>
 
 			<Page.ScrollableContentWithShadow p={16}>
-				{subscriptionSuccess && (
+				{(showSubscriptionCallout || syncLicenseUpdate.isLoading) && (
 					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>
 						{t('Sync_license_update_Callout')}
 					</Callout>
@@ -110,7 +124,7 @@ const SubscriptionPage = () => {
 					<>
 						{showLicense && (
 							<Accordion>
-								<Accordion.Item defaultExpanded={true} title={t('License')}>
+								<Accordion.Item title={t('License')}>
 									<pre>{JSON.stringify(licensesData, null, 2)}</pre>
 								</Accordion.Item>
 							</Accordion>
@@ -162,7 +176,13 @@ const SubscriptionPage = () => {
 									</>
 								)}
 							</Grid>
-							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise} />
+							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
+								{Boolean(licensesData?.trial || licensesData?.license?.information.cancellable) && (
+									<Button loading={removeLicense.isLoading} secondary danger onClick={() => removeLicense.mutate()}>
+										{t('Cancel_subscription')}
+									</Button>
+								)}
+							</UpgradeToGetMore>
 						</Box>
 					</>
 				)}

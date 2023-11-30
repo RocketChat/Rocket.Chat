@@ -91,6 +91,9 @@ export type CloudEndpoints = {
 	'/v1/cloud.syncWorkspace': {
 		POST: () => { success: boolean };
 	};
+	'/v1/cloud.removeLicense': {
+		POST: () => { success: boolean };
+	};
 	'/v1/cloud.announcements': {
 		GET: () => { announcements: Cloud.Announcement[] };
 	};

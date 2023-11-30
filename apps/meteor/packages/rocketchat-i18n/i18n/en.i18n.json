@@ -883,6 +883,7 @@
   "Cancel": "Cancel",
   "Cancel_message_input": "Cancel",
   "Canceled": "Canceled",
+  "Cancel_subscription": "Cancel subscription",
   "Canned_Response_Created": "Canned Response created",
   "Canned_Response_Updated": "Canned Response updated",
   "Canned_Response_Delete_Warning": "Deleting a canned response cannot be undone.",

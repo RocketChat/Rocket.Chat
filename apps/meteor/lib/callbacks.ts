@@ -40,6 +40,7 @@ interface EventLikeCallbackSignatures {
 	'afterDeactivateUser': (user: IUser) => void;
 	'afterDeleteMessage': (message: IMessage, room: IRoom) => void;
 	'workspaceLicenseChanged': (license: string) => void;
+	'workspaceLicenseRemoved': () => void;
 	'afterReadMessages': (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen?: Date; tmid?: IMessage['_id'] }) => void;
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
