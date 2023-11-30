@@ -13,8 +13,6 @@ type Dictionary = {
 	};
 };
 
-// type Creator = 'cloud' | 'system';
-
 export interface IBanner extends IRocketChatRecord {
 	platform: BannerPlatform[]; // pĺatforms a banner could be shown
 	expireAt: Date; // date when banner should not be shown anymore

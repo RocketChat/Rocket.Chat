@@ -64,7 +64,13 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 
 		const dismissed = new Set(result.map(({ bannerId }) => bannerId));
 
-		return banners.filter((banner) => !dismissed.has(banner._id));
+		return banners
+			.filter((banner) => !dismissed.has(banner._id))
+			.map((banner) => ({
+				...banner,
+				// add surface to legacy banners
+				surface: !banner.surface ? 'banner' : banner.surface,
+			}));
 	}
 
 	async dismiss(userId: string, bannerId: string): Promise<boolean> {
