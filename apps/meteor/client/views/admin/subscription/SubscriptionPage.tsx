@@ -1,6 +1,6 @@
 import { Accordion, Box, Button, ButtonGroup, Callout, Grid } from '@rocket.chat/fuselage';
-import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
-import { useRouter } from '@rocket.chat/ui-contexts';
+import { useDebouncedValue, useSessionStorage } from '@rocket.chat/fuselage-hooks';
+import { useSearchParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
 import React, { memo, useCallback, useEffect } from 'react';
 import tinykeys from 'tinykeys';
@@ -52,7 +52,9 @@ const SubscriptionPage = () => {
 	const syncLicenseUpdate = useWorkspaceSync();
 	const invalidateLicenseQuery = useInvalidateLicense();
 
-	const { subscriptionSuccess } = router.getSearchParameters();
+	const subscriptionSuccess = useSearchParameter('subscriptionSuccess');
+
+	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isLoading, 10000);
 
 	const { license, limits, activeModules = [] } = licensesData || {};
 	const { isEnterprise = true } = enterpriseData || {};
@@ -70,15 +72,28 @@ const SubscriptionPage = () => {
 
 	const handleSyncLicenseUpdate = useCallback(() => {
 		syncLicenseUpdate.mutate(undefined, {
-			onSuccess: () => invalidateLicenseQuery(),
+			onSuccess: () => invalidateLicenseQuery(100),
 		});
 	}, [invalidateLicenseQuery, syncLicenseUpdate]);
 
 	useEffect(() => {
 		if (subscriptionSuccess && syncLicenseUpdate.isIdle) {
 			handleSyncLicenseUpdate();
+			return;
 		}
-	}, [handleSyncLicenseUpdate, subscriptionSuccess, syncLicenseUpdate]);
+
+		if (subscriptionSuccess) {
+			router.navigate(
+				{
+					name: router.getRouteName()!,
+					params: Object.fromEntries(Object.entries(router.getSearchParameters()).filter(([key]) => key !== 'subscriptionSuccess')),
+				},
+				{
+					replace: true,
+				},
+			);
+		}
+	}, [handleSyncLicenseUpdate, router, subscriptionSuccess, syncLicenseUpdate.isIdle]);
 
 	const removeLicense = useRemoveLicense();
 
@@ -98,7 +113,7 @@ const SubscriptionPage = () => {
 			</Page.Header>
 
 			<Page.ScrollableContentWithShadow p={16}>
-				{subscriptionSuccess && (
+				{(showSubscriptionCallout || syncLicenseUpdate.isLoading) && (
 					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>
 						{t('Sync_license_update_Callout')}
 					</Callout>
