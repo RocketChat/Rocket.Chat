@@ -22,6 +22,7 @@ import { getTags } from './tags';
 import { getCurrentValueForLicenseLimit, setLicenseLimitCounter } from './validation/getCurrentValueForLicenseLimit';
 import { validateFormat } from './validation/validateFormat';
 
+export { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
 export * from './definition/ILicenseTag';
 export * from './definition/ILicenseV2';
 export * from './definition/ILicenseV3';

@@ -1,5 +1,40 @@
 # @rocket.chat/rest-typings
 
+## 6.5.0-rc.7
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.7
+- @rocket.chat/license@0.1.0-rc.7
+
+## 6.5.0-rc.6
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.6
+- @rocket.chat/license@0.1.0-rc.6
+
+## 6.5.0-rc.5
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.5
+- @rocket.chat/license@0.1.0-rc.5
+
+## 6.5.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.4
+- @rocket.chat/license@0.1.0-rc.4
+
+## 6.5.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.3
+- @rocket.chat/license@0.1.0-rc.3
+
 ## 6.5.0-rc.2
 
 ### Patch Changes
@@ -41,6 +76,24 @@
 - Updated dependencies [dea1fe9191]
   - @rocket.chat/core-typings@6.5.0-rc.0
   - @rocket.chat/license@0.1.0-rc.0
+
+## 6.4.8
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.8
+
+## 6.4.7
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.7
+
+## 6.4.6
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.4.6
 
 ## 6.4.5
 

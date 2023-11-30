@@ -42,7 +42,29 @@ const applyLicense = async (license: string, isNewLicense: boolean): Promise<boo
 	}
 };
 
-const syncByTrigger = async (context: string) => {
+/**
+ * This is a debounced function that will sync the workspace data to the cloud.
+ * it caches the context, waits for a second and then syncs the data.
+ */
+
+const syncByTriggerDebounced = (() => {
+	let timeout: NodeJS.Timeout | undefined;
+	const contexts: Set<string> = new Set();
+	return async (context: string) => {
+		contexts.add(context);
+		if (timeout) {
+			clearTimeout(timeout);
+		}
+
+		timeout = setTimeout(() => {
+			timeout = undefined;
+			void syncByTrigger([...contexts]);
+			contexts.clear();
+		}, 1000);
+	};
+})();
+
+const syncByTrigger = async (contexts: string[]) => {
 	if (!License.encryptedLicense) {
 		return;
 	}
@@ -60,16 +82,19 @@ const syncByTrigger = async (context: string) => {
 	const [, , signed] = License.encryptedLicense.split('.');
 
 	// Check if this sync has already been done. Based on License, behavior.
-	if (existingData.signed === signed && existingData[context] === period) {
+
+	if ([...contexts.values()].every((context) => existingData.signed === signed && existingData[context] === period)) {
 		return;
 	}
+
+	const obj = Object.fromEntries(contexts.map((context) => [context, period]));
 
 	await Settings.updateValueById(
 		'Enterprise_License_Data',
 		JSON.stringify({
 			...(existingData.signed === signed && existingData),
 			...existingData,
-			[context]: period,
+			...obj,
 			signed,
 		}),
 	);
@@ -91,11 +116,11 @@ settings.onReady(async () => {
 
 	callbacks.add('workspaceLicenseChanged', async (updatedLicense) => applyLicense(updatedLicense, true));
 
-	License.onBehaviorTriggered('prevent_action', (context) => syncByTrigger(`prevent_action_${context.limit}`));
+	License.onBehaviorTriggered('prevent_action', (context) => syncByTriggerDebounced(`prevent_action_${context.limit}`));
 
-	License.onBehaviorTriggered('start_fair_policy', async (context) => syncByTrigger(`start_fair_policy_${context.limit}`));
+	License.onBehaviorTriggered('start_fair_policy', async (context) => syncByTriggerDebounced(`start_fair_policy_${context.limit}`));
 
-	License.onBehaviorTriggered('disable_modules', async (context) => syncByTrigger(`disable_modules_${context.limit}`));
+	License.onBehaviorTriggered('disable_modules', async (context) => syncByTriggerDebounced(`disable_modules_${context.limit}`));
 
 	License.onChange(() => api.broadcast('license.sync'));
 
@@ -123,4 +148,4 @@ License.setLicenseLimitCounter('guestUsers', () => Users.getActiveLocalGuestCoun
 License.setLicenseLimitCounter('roomsPerGuest', async (context) => (context?.userId ? Subscriptions.countByUserId(context.userId) : 0));
 License.setLicenseLimitCounter('privateApps', () => getAppCount('private'));
 License.setLicenseLimitCounter('marketplaceApps', () => getAppCount('marketplace'));
-License.setLicenseLimitCounter('monthlyActiveContacts', async () => LivechatVisitors.countVisitorsOnPeriod(moment.utc().format('YYYY-MM')));
+License.setLicenseLimitCounter('monthlyActiveContacts', () => LivechatVisitors.countVisitorsOnPeriod(moment.utc().format('YYYY-MM')));

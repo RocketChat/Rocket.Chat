@@ -55,7 +55,7 @@ const shortcut = ((): string => {
 	if (window.navigator.platform.toLowerCase().includes('mac')) {
 		return '(\u2318+K)';
 	}
-	return '(\u2303+K)';
+	return '(Ctrl+K)';
 })();
 
 const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));

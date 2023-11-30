@@ -33,9 +33,12 @@
 	<a href="#page-7">page 7</a><br>
 
 	<script type="text/javascript">
-		RocketChat(function() {
-			this.setCustomField('key-test', 'value test');
-		});
+	(function(w, d, s, u) {
+		w.RocketChat = function(c) { w.RocketChat._.push(c) }; w.RocketChat._ = []; w.RocketChat.url = u;
+		var h = d.getElementsByTagName(s)[0], j = d.createElement(s);
+		j.async = true; j.src = `${window.location.origin}/livechat/rocketchat-livechat.min.js?_=201903270000`;
+		h.parentNode.insertBefore(j, h);
+	})(window, document, 'script', `${window.location.origin}/livechat`);
 	</script>
 </body>
 

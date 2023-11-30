@@ -1,19 +1,22 @@
-import { ActionManagerContext } from '@rocket.chat/ui-contexts';
+import { ActionManagerContext, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement } from 'react';
 import React from 'react';
 
-import { actionManager } from '../../app/ui-message/client/ActionManager';
+import { ActionManager } from '../../app/ui-message/client/ActionManager';
 import { useAppActionButtons } from '../hooks/useAppActionButtons';
 import { useAppSlashCommands } from '../hooks/useAppSlashCommands';
-import { useAppTranslations } from '../hooks/useAppTranslations';
 import { useAppUiKitInteraction } from '../hooks/useAppUiKitInteraction';
+import { useTranslationsForApps } from '../hooks/useTranslationsForApps';
+import { useInstance } from '../views/room/providers/hooks/useInstance';
 
 type ActionManagerProviderProps = {
 	children?: ReactNode;
 };
 
 const ActionManagerProvider = ({ children }: ActionManagerProviderProps): ReactElement => {
-	useAppTranslations();
+	const router = useRouter();
+	const actionManager = useInstance(() => [new ActionManager(router)], [router]);
+	useTranslationsForApps();
 	useAppActionButtons();
 	useAppSlashCommands();
 	useAppUiKitInteraction(actionManager.handleServerInteraction.bind(actionManager));
