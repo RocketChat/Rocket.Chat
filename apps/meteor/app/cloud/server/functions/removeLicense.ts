@@ -19,7 +19,7 @@ export async function removeLicense() {
 	}
 
 	const workspaceRegistrationClientUri = settings.get<string>('Cloud_Workspace_Registration_Client_Uri');
-	const response = await fetch(`${workspaceRegistrationClientUri}/CANCEL`, {
+	const response = await fetch(`${workspaceRegistrationClientUri}/client/downgrade`, {
 		method: 'POST',
 		headers: {
 			Authorization: `Bearer ${token}`,
