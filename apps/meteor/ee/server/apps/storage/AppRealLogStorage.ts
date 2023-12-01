@@ -1,4 +1,5 @@
 import type { ILoggerStorageEntry } from '@rocket.chat/apps-engine/server/logging';
+import type { IAppLogStorageFindOptions } from '@rocket.chat/apps-engine/server/storage';
 import { AppLogStorage } from '@rocket.chat/apps-engine/server/storage';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import type { AppLogs } from '@rocket.chat/models';
@@ -8,8 +9,13 @@ export class AppRealLogStorage extends AppLogStorage {
 		super('mongodb');
 	}
 
-	async find(...args: any): Promise<ILoggerStorageEntry[]> {
-		return this.db.find(...args).toArray();
+	async find(
+		query: {
+			[field: string]: any;
+		},
+		options?: IAppLogStorageFindOptions,
+	): Promise<ILoggerStorageEntry[]> {
+		return this.db.find(query, options).toArray();
 	}
 
 	async storeEntries(logEntry: ILoggerStorageEntry): Promise<ILoggerStorageEntry> {
