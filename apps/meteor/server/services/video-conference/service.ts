@@ -19,7 +19,6 @@ import type {
 	VideoConferenceCapabilities,
 	VideoConferenceCreateData,
 	Optional,
-	UiKit,
 } from '@rocket.chat/core-typings';
 import {
 	VideoConferenceStatus,
@@ -29,7 +28,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
+import type * as UiKit from '@rocket.chat/ui-kit';
 import { MongoInternals } from 'meteor/mongo';
 
 import { RocketChatAssets } from '../../../app/assets/server';
@@ -571,7 +570,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		]);
 	}
 
-	private buildVideoConfBlock(callId: string): MessageSurfaceLayout[number] {
+	private buildVideoConfBlock(callId: string): UiKit.MessageSurfaceLayout[number] {
 		return {
 			type: 'video_conf',
 			blockId: callId,
@@ -580,7 +579,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
-	private buildMessageBlock(text: string): MessageSurfaceLayout[number] {
+	private buildMessageBlock(text: string): UiKit.MessageSurfaceLayout[number] {
 		return {
 			type: 'section',
 			appId: 'videoconf-core',

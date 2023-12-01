@@ -1,7 +1,7 @@
-import type { UiKit } from '@rocket.chat/core-typings';
 import { Modal, AnimatedVisibility, Button, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
+import type * as UiKit from '@rocket.chat/ui-kit';
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
 import type { FormEventHandler, ReactElement } from 'react';
