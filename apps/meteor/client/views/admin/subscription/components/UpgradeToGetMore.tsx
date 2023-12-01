@@ -35,7 +35,11 @@ const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) =>
 		});
 
 	if (upgradeModules?.length === 0) {
-		return null;
+		return (
+			<ButtonGroup large vertical>
+				{children}
+			</ButtonGroup>
+		);
 	}
 
 	return (
