@@ -14,7 +14,9 @@ class VersionCompiler {
 				const currentVersion =
 					JSON.parse(fs.readFileSync(path.resolve(process.cwd(), './package.json'), { encoding: 'utf8' }))?.version || '';
 
-				const url = `https://releases.rocket.chat/v2/server/supportedVersions?includeDraftType=stable&includeDraftTag=${currentVersion}`;
+				const type = currentVersion.includes('-rc.') ? 'candidate' : currentVersion.includes('-develop') ? 'develop' : 'stable';
+
+				const url = `https://releases.rocket.chat/v2/server/supportedVersions?includeDraftType=${type}&includeDraftTag=${currentVersion}`;
 
 				https
 					.get(url, function (response) {
