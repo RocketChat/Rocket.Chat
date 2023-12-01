@@ -1,5 +1,15 @@
 # @rocket.chat/web-ui-registration
 
+## 3.0.0
+
+### Patch Changes
+
+- 7da1edf866: Fixed an issue in the invite registration flow in which the user would not be automatically redirected to the homepage upon succesfully submiting the user registration form.
+- Updated dependencies [7da1edf866]
+- Updated dependencies [92613680b7]
+  - @rocket.chat/ui-contexts@3.0.0
+  - @rocket.chat/tools@0.2.0
+
 ## 3.0.0-rc.18
 
 ### Patch Changes

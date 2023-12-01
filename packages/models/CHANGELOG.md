@@ -1,5 +1,15 @@
 # @rocket.chat/models
 
+## 0.0.24
+
+### Patch Changes
+
+- Updated dependencies [dea1fe9191]
+- Updated dependencies [223dce18a3]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [5f81a0f3cb]
+  - @rocket.chat/model-typings@0.2.0
+
 ## 0.0.24-rc.12
 
 ### Patch Changes

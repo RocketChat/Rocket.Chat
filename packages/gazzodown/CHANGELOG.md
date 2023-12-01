@@ -1,5 +1,22 @@
 # @rocket.chat/gazzodown
 
+## 3.0.0
+
+### Patch Changes
+
+- c2f337664e: fixed an issue with mentions showing usernames instead of names on smaller screens
+- Updated dependencies [7da1edf866]
+- Updated dependencies [dea1fe9191]
+- Updated dependencies [c0ef13a0bf]
+- Updated dependencies [5b9d6883bf]
+- Updated dependencies [92613680b7]
+- Updated dependencies [ec1b2b9846]
+- Updated dependencies [5f81a0f3cb]
+- Updated dependencies [dea1fe9191]
+  - @rocket.chat/ui-contexts@3.0.0
+  - @rocket.chat/core-typings@6.5.0
+  - @rocket.chat/ui-client@3.0.0
+
 ## 3.0.0-rc.19
 
 ### Patch Changes
