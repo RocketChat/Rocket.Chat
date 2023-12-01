@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -10,7 +10,7 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout, useUserRoom } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, MouseEventHandler, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
@@ -33,6 +33,7 @@ import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
 import VideoMessageRecorder from '../../../composer/VideoMessageRecorder';
 import { useChat } from '../../contexts/ChatContext';
 import { useComposerPopup } from '../../contexts/ComposerPopupContext';
+import { useRoom } from '../../contexts/RoomContext';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
@@ -78,7 +79,6 @@ const a: any[] = [];
 const getEmptyArray = () => a;
 
 type MessageBoxProps = {
-	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
 	readOnly: boolean;
 	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[] }) => Promise<void>;
@@ -97,7 +97,6 @@ type MessageBoxProps = {
 };
 
 const MessageBox = ({
-	rid,
 	tmid,
 	onSend,
 	onJoin,
@@ -111,8 +110,8 @@ const MessageBox = ({
 	previewUrls,
 }: MessageBoxProps): ReactElement => {
 	const chat = useChat();
+	const room = useRoom();
 	const t = useTranslation();
-	const room = useUserRoom(rid);
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 
 	const [typing, setTyping] = useReducer(reducer, false);
@@ -129,7 +128,7 @@ const MessageBox = ({
 	const messageComposerRef = useRef<HTMLElement>(null);
 	const shadowRef = useRef(null);
 
-	const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
+	const storageID = `${room._id}${tmid ? `-${tmid}` : ''}`;
 
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {
@@ -141,7 +140,7 @@ const MessageBox = ({
 		[chat, storageID],
 	);
 
-	const autofocusRef = useMessageBoxAutoFocus();
+	const autofocusRef = useMessageBoxAutoFocus(!isMobile);
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
@@ -277,7 +276,7 @@ const MessageBox = ({
 
 	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef, isRecordingAudio);
 
-	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid), [rid]));
+	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(room._id), [room._id]));
 
 	const sizes = useContentBoxSize(textareaRef);
 
@@ -366,7 +365,7 @@ const MessageBox = ({
 					focused={focused as any}
 					renderItem={popup.renderItem}
 					ref={commandsRef}
-					rid={rid}
+					rid={room._id}
 					tmid={tmid}
 					suspended={suspended}
 				/>
@@ -378,9 +377,9 @@ const MessageBox = ({
 				</Box>
 			)}
 
-			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={rid} tmid={tmid} />}
+			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
-				{isRecordingAudio && <AudioMessageRecorder rid={rid} isMicrophoneDenied={isMicrophoneDenied} />}
+				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInput
 					ref={mergedRefs as unknown as Ref<HTMLInputElement>}
 					aria-label={composerPlaceholder}
@@ -417,14 +416,14 @@ const MessageBox = ({
 							isRecording={isRecording}
 							typing={typing}
 							canSend={canSend}
-							rid={rid}
+							rid={room._id}
 							tmid={tmid}
 							isMicrophoneDenied={isMicrophoneDenied}
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (
-							<Button small primary onClick={onJoin} disabled={joinMutation.isLoading}>
+							<Button small primary onClick={onJoin} loading={joinMutation.isLoading}>
 								{t('Join')}
 							</Button>
 						)}
@@ -441,7 +440,7 @@ const MessageBox = ({
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
 			</MessageComposer>
-			<ComposerUserActionIndicator rid={rid} tmid={tmid} />
+			<ComposerUserActionIndicator rid={room._id} tmid={tmid} />
 		</>
 	);
 };

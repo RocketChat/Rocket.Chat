@@ -11,12 +11,10 @@ let autoCloseOnHoldChatTimeout = 0;
 const handleAfterOnHold = async (room: Pick<IOmnichannelRoom, '_id'>): Promise<any> => {
 	const { _id: rid } = room;
 	if (!rid) {
-		cbLogger.debug('Skipping callback. No room provided');
 		return;
 	}
 
 	if (!autoCloseOnHoldChatTimeout || autoCloseOnHoldChatTimeout <= 0) {
-		cbLogger.debug('Skipping callback. Autoclose on hold disabled by setting');
 		return;
 	}
 

@@ -18,12 +18,9 @@ const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContext
 
 const Room = (): ReactElement => {
 	const t = useTranslation();
-
 	const room = useRoom();
-
 	const toolbox = useRoomToolbox();
-
-	const appsContextualBarContext = useAppsContextualBar();
+	const contextualBarView = useAppsContextualBar();
 
 	return (
 		<ChatProvider>
@@ -41,16 +38,11 @@ const Room = (): ReactElement => {
 								</SelectedMessagesProvider>
 							</ErrorBoundary>
 						)) ||
-						(appsContextualBarContext && (
+						(contextualBarView && (
 							<ErrorBoundary fallback={null}>
 								<SelectedMessagesProvider>
 									<Suspense fallback={<ContextualbarSkeleton />}>
-										<UiKitContextualBar
-											viewId={appsContextualBarContext.viewId}
-											roomId={appsContextualBarContext.roomId}
-											payload={appsContextualBarContext.payload}
-											appId={appsContextualBarContext.appId}
-										/>
+										<UiKitContextualBar key={contextualBarView.id} initialView={contextualBarView} />
 									</Suspense>
 								</SelectedMessagesProvider>
 							</ErrorBoundary>

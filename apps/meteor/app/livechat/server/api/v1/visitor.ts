@@ -45,7 +45,7 @@ API.v1.addRoute('livechat/visitor', {
 
 		const visitorId = await LivechatTyped.registerGuest(guest);
 
-		let visitor = await VisitorsRaw.findOneById(visitorId, {});
+		let visitor = await VisitorsRaw.findOneEnabledById(visitorId, {});
 		if (visitor) {
 			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 			// If it's updating an existing visitor, it must also update the roomInfo
@@ -65,7 +65,7 @@ API.v1.addRoute('livechat/visitor', {
 				}
 			}
 
-			visitor = await VisitorsRaw.findOneById(visitorId, {});
+			visitor = await VisitorsRaw.findOneEnabledById(visitorId, {});
 		}
 
 		if (!visitor) {
@@ -121,8 +121,8 @@ API.v1.addRoute('livechat/visitor/:token', {
 		}
 
 		const { _id } = visitor;
-		const result = await Livechat.removeGuest(_id);
-		if (!result) {
+		const result = await LivechatTyped.removeGuest(_id);
+		if (!result.modifiedCount) {
 			throw new Meteor.Error('error-removing-visitor', 'An error ocurred while deleting visitor');
 		}
 
@@ -174,7 +174,7 @@ API.v1.addRoute('livechat/visitor.callStatus', {
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}
-		await Livechat.updateCallStatus(callId, rid, callStatus, guest);
+		await LivechatTyped.updateCallStatus(callId, rid, callStatus, guest);
 		return API.v1.success({ token, callStatus });
 	},
 });

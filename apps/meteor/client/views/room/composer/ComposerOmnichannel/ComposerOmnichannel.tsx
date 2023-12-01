@@ -3,6 +3,7 @@ import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import { useIsRoomOverMacLimit } from '../../../../hooks/omnichannel/useIsRoomOverMacLimit';
 import { useOmnichannelRoom, useUserIsSubscribed } from '../../contexts/RoomContext';
 import type { ComposerMessageProps } from '../ComposerMessage';
 import ComposerMessage from '../ComposerMessage';
@@ -11,7 +12,8 @@ import { ComposerOmnichannelJoin } from './ComposerOmnichannelJoin';
 import { ComposerOmnichannelOnHold } from './ComposerOmnichannelOnHold';
 
 const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement => {
-	const { servedBy, queuedAt, open, onHold } = useOmnichannelRoom();
+	const room = useOmnichannelRoom();
+	const { servedBy, queuedAt, open, onHold } = room;
 	const userId = useUserId();
 
 	const isSubscribed = useUserIsSubscribed();
@@ -22,8 +24,14 @@ const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement => {
 
 	const isSameAgent = servedBy?._id === userId;
 
+	const isRoomOverMacLimit = useIsRoomOverMacLimit(room);
+
 	if (!open) {
-		return <MessageFooterCallout>{t('This_conversation_is_already_closed')}</MessageFooterCallout>;
+		return <MessageFooterCallout color='default'>{t('This_conversation_is_already_closed')}</MessageFooterCallout>;
+	}
+
+	if (isRoomOverMacLimit) {
+		return <MessageFooterCallout color='default'>{t('Workspace_exceeded_MAC_limit_disclaimer')}</MessageFooterCallout>;
 	}
 
 	if (onHold) {

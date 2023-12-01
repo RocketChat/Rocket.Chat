@@ -14,9 +14,9 @@ export const {
 		permissionGranted: (): boolean => hasPermission('view-statistics'),
 	},
 	{
-		href: '/admin/registration',
-		i18nLabel: 'Registration',
-		icon: 'cloud-plus',
+		href: '/admin/subscription',
+		i18nLabel: 'Subscription',
+		icon: 'card',
 		permissionGranted: (): boolean => hasPermission('manage-cloud'),
 	},
 	{
@@ -112,8 +112,8 @@ export const {
 		permissionGranted: (): boolean => hasPermission('run-import'),
 	},
 	{
-		href: '/admin/logs',
-		i18nLabel: 'Logs',
+		href: '/admin/reports',
+		i18nLabel: 'Reports',
 		icon: 'post',
 		permissionGranted: (): boolean => hasPermission('view-logs'),
 	},

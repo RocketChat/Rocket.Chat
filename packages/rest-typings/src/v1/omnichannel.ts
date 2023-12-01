@@ -2568,6 +2568,10 @@ const GETLivechatRoomsParamsSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
 		fields: {
 			type: 'string',
 			nullable: true,
@@ -2600,12 +2604,16 @@ const GETLivechatRoomsParamsSchema = {
 			nullable: true,
 		},
 		open: {
-			type: ['string', 'boolean'],
-			nullable: true,
+			anyOf: [
+				{ type: 'string', nullable: true },
+				{ type: 'boolean', nullable: true },
+			],
 		},
 		onhold: {
-			type: ['string', 'boolean'],
-			nullable: true,
+			anyOf: [
+				{ type: 'string', nullable: true },
+				{ type: 'boolean', nullable: true },
+			],
 		},
 		tags: {
 			type: 'array',
@@ -3130,7 +3138,7 @@ const POSTLivechatAppearanceParamsSchema = {
 				type: 'string',
 			},
 			value: {
-				type: ['string', 'boolean', 'number'],
+				anyOf: [{ type: 'string' }, { type: 'boolean' }, { type: 'number' }],
 			},
 		},
 		required: ['_id', 'value'],
@@ -3269,7 +3277,7 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 	'/v1/livechat/tags/:tagId': {
-		GET: () => ILivechatTag | null;
+		GET: () => ILivechatTag;
 	};
 	'/v1/livechat/department': {
 		GET: (params?: LivechatDepartmentProps) => PaginatedResult<{
@@ -3607,7 +3615,8 @@ export type OmnichannelEndpoints = {
 		POST: (params: POSTLivechatTriggersParams) => void;
 	};
 	'/v1/livechat/triggers/:_id': {
-		GET: () => { trigger: ILivechatTrigger | null };
+		GET: () => { trigger: ILivechatTrigger };
+		DELETE: () => void;
 	};
 	'/v1/livechat/rooms': {
 		GET: (params: GETLivechatRoomsParams) => PaginatedResult<{ rooms: IOmnichannelRoom[] }>;
@@ -3627,7 +3636,7 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 	'/v1/livechat/integrations.settings': {
-		GET: () => { settings: ISetting[] };
+		GET: () => { settings: ISetting[]; success: boolean };
 	};
 	'/v1/livechat/upload/:rid': {
 		POST: (params: { file: File }) => IMessage & { newRoom: boolean; showConnecting: boolean };
@@ -3823,5 +3832,8 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/analytics/dashboards/conversations-by-agent': {
 		GET: (params: GETDashboardConversationsByType) => ReportWithUnmatchingElements;
+	};
+	'/v1/livechat/webhook.test': {
+		POST: () => void;
 	};
 };

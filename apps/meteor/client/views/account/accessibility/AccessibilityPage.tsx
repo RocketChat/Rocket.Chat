@@ -1,7 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
-	Icon,
 	FieldDescription,
 	Accordion,
 	Box,
@@ -14,20 +13,16 @@ import {
 	FieldRow,
 	RadioButton,
 	Select,
-	Tag,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
-import { useLocalStorage, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import Page from '../../../components/Page';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
-import HighContrastUpsellModal from './HighContrastUpsellModal';
-import MentionsWithSymbolUpsellModal from './MentionsWithSymbolUpsellModal';
 import { fontSizes } from './fontSizes';
 import type { AccessibilityPreferencesData } from './hooks/useAcessibilityPreferencesValues';
 import { useAccessiblityPreferencesValues } from './hooks/useAcessibilityPreferencesValues';
@@ -36,13 +31,9 @@ import { themeItems as themes } from './themeItems';
 
 const AccessibilityPage = () => {
 	const t = useTranslation();
-	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { data: license } = useIsEnterprise();
 	const preferencesValues = useAccessiblityPreferencesValues();
 
-	const { themeAppearence } = preferencesValues;
-	const [, setPrevTheme] = useLocalStorage('prevTheme', themeAppearence);
 	const createFontStyleElement = useCreateFontStyleElement();
 	const displayRolesEnabled = useSetting('UI_DisplayRoles');
 
@@ -55,6 +46,7 @@ const AccessibilityPage = () => {
 		[t],
 	);
 
+	const pageFormId = useUniqueId();
 	const fontSizeId = useUniqueId();
 	const mentionsWithSymbolId = useUniqueId();
 	const clockModeId = useUniqueId();
@@ -62,7 +54,7 @@ const AccessibilityPage = () => {
 	const hideRolesId = useUniqueId();
 
 	const {
-		formState: { isDirty, dirtyFields },
+		formState: { isDirty, dirtyFields, isSubmitting },
 		handleSubmit,
 		control,
 		reset,
@@ -81,7 +73,6 @@ const AccessibilityPage = () => {
 		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
 		onSettled: (_data, _error, { data: { fontSize } }) => {
 			reset(currentData);
-			dirtyFields.themeAppearence && setPrevTheme(themeAppearence);
 			dirtyFields.fontSize && fontSize && createFontStyleElement(fontSize);
 		},
 	});
@@ -95,51 +86,31 @@ const AccessibilityPage = () => {
 		<Page>
 			<Page.Header title={t('Accessibility_and_Appearance')} />
 			<Page.ScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center' mb={40} mi={36}>
+				<Box is='form' id={pageFormId} onSubmit={handleSubmit(handleSaveData)} maxWidth='x600' w='full' alignSelf='center' mb={40} mi={36}>
 					<Box fontScale='p1' mbe={24}>
 						<Box pb={16}>{t('Accessibility_activation')}</Box>
 					</Box>
 					<Accordion>
 						<Accordion.Item defaultExpanded={true} title={t('Theme')}>
-							{themes.map(({ id, title, description, ...item }, index) => {
-								const communityDisabled = 'isEEOnly' in item && item.isEEOnly && !license?.isEnterprise;
-
+							{themes.map(({ id, title, description }, index) => {
 								return (
 									<Field key={id} pbe={themes.length - 1 ? undefined : 'x28'} pbs={index === 0 ? undefined : 'x28'}>
 										<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 											<FieldLabel display='flex' alignItems='center' htmlFor={id}>
-												{t.has(title) ? t(title) : title}
-												{communityDisabled && (
-													<Box is='span' mis={8}>
-														<Tag variant='featured'>
-															<Icon name='lightning' />
-															{t('Enterprise')}
-														</Tag>
-													</Box>
-												)}
+												{t(title)}
 											</FieldLabel>
 											<FieldRow>
 												<Controller
 													control={control}
 													name='themeAppearence'
-													render={({ field: { onChange, value, ref } }) => {
-														if (communityDisabled) {
-															return (
-																<RadioButton
-																	id={id}
-																	ref={ref}
-																	onChange={() => setModal(<HighContrastUpsellModal onClose={() => setModal(null)} />)}
-																	checked={false}
-																/>
-															);
-														}
-														return <RadioButton id={id} ref={ref} onChange={() => onChange(id)} checked={value === id} />;
-													}}
+													render={({ field: { onChange, value, ref } }) => (
+														<RadioButton id={id} ref={ref} onChange={() => onChange(id)} checked={value === id} />
+													)}
 												/>
 											</FieldRow>
 										</Box>
 										<FieldHint mbs={12} style={{ whiteSpace: 'break-spaces' }}>
-											{t.has(description) ? t(description) : description}
+											{t(description)}
 										</FieldHint>
 									</Field>
 								);
@@ -164,30 +135,15 @@ const AccessibilityPage = () => {
 								</Field>
 								<Field>
 									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-										<FieldLabel htmlFor={fontSizeId}>
-											{t('Mentions_with_@_symbol')}
-											<Box is='span' mis={8} display='inline-block'>
-												<Tag variant='featured'>
-													<Icon name='lightning' />
-													{t('Enterprise')}
-												</Tag>
-											</Box>
-										</FieldLabel>
+										<FieldLabel htmlFor={fontSizeId}>{t('Mentions_with_@_symbol')}</FieldLabel>
 										<FieldRow>
-											{license?.isEnterprise ? (
-												<Controller
-													control={control}
-													name='mentionsWithSymbol'
-													render={({ field: { onChange, value, ref } }) => (
-														<ToggleSwitch id={mentionsWithSymbolId} ref={ref} checked={value} onChange={onChange} />
-													)}
-												/>
-											) : (
-												<ToggleSwitch
-													onChange={() => setModal(<MentionsWithSymbolUpsellModal onClose={() => setModal(null)} />)}
-													checked={false}
-												/>
-											)}
+											<Controller
+												control={control}
+												name='mentionsWithSymbol'
+												render={({ field: { onChange, value, ref } }) => (
+													<ToggleSwitch id={mentionsWithSymbolId} ref={ref} checked={value} onChange={onChange} />
+												)}
+											/>
 										</FieldRow>
 									</Box>
 									<FieldDescription
@@ -261,7 +217,7 @@ const AccessibilityPage = () => {
 			<Page.Footer isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(preferencesValues)}>{t('Cancel')}</Button>
-					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveData)}>
+					<Button primary disabled={!isDirty} loading={isSubmitting} form={pageFormId} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

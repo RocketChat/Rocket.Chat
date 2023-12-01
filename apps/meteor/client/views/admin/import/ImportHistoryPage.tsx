@@ -101,12 +101,20 @@ function ImportHistoryPage() {
 						{t('Import_New_File')}
 					</Button>
 					{hasAnySuccessfulImport && (
-						<Button disabled={isLoading || downloadPendingFilesResult.isLoading} onClick={() => downloadPendingFilesResult.mutate()}>
+						<Button
+							loading={downloadPendingFilesResult.isLoading}
+							disabled={downloadPendingAvatarsResult.isLoading}
+							onClick={() => downloadPendingFilesResult.mutate()}
+						>
 							{t('Download_Pending_Files')}
 						</Button>
 					)}
 					{hasAnySuccessfulImport && (
-						<Button disabled={isLoading || downloadPendingAvatarsResult.isLoading} onClick={() => downloadPendingAvatarsResult.mutate()}>
+						<Button
+							loading={downloadPendingAvatarsResult.isLoading}
+							disabled={downloadPendingFilesResult.isLoading}
+							onClick={() => downloadPendingAvatarsResult.mutate()}
+						>
 							{t('Download_Pending_Avatars')}
 						</Button>
 					)}

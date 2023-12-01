@@ -34,15 +34,9 @@ export const login = (username, password) =>
 			});
 	});
 
-export const deleteUser = (user) =>
-	new Promise((resolve) => {
-		request
-			.post(api('users.delete'))
-			.set(credentials)
-			.send({
-				userId: user._id,
-			})
-			.end(resolve);
+export const deleteUser = async (user) =>
+	request.post(api('users.delete')).set(credentials).send({
+		userId: user._id,
 	});
 
 export const getUserByUsername = (username) =>

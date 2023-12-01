@@ -39,7 +39,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	}
 
 	async started(): Promise<void> {
-		if (!(await License.isEnterprise())) {
+		if (!(await License.hasValidLicense())) {
 			return;
 		}
 
