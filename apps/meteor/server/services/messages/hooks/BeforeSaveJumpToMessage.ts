@@ -2,7 +2,7 @@ import QueryString from 'querystring';
 import URL from 'url';
 
 import type { MessageAttachment, IMessage, IUser, IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
-import { isQuoteAttachment } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, isQuoteAttachment } from '@rocket.chat/core-typings';
 
 import { createQuoteAttachment } from '../../../../lib/createQuoteAttachment';
 
@@ -108,7 +108,8 @@ export class BeforeSaveJumpToMessage {
 			if (!room) {
 				continue;
 			}
-			const isLiveChatRoomVisitor = !!message.token && !!room.v?.token && message.token === room.v.token;
+
+			const isLiveChatRoomVisitor = !!message.token && isOmnichannelRoom(room) && !!room.v?.token && message.token === room.v.token;
 			const canAccessRoomForUser = isLiveChatRoomVisitor || (currentUser && (await this.canAccessRoom(room, currentUser)));
 			if (!canAccessRoomForUser) {
 				continue;
