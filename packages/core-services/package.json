@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/core-services",
-	"version": "0.3.0-rc.17",
+	"version": "0.3.0-rc.18",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
