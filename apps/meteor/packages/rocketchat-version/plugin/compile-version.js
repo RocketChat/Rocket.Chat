@@ -20,10 +20,11 @@ class VersionCompiler {
 
 				function handleError(err) {
 					console.error(err);
-					if (process.env.NODE_ENV !== 'development') {
-						reject(err);
-						return;
-					}
+					// TODO remove this when we are ready to fail
+					// if (process.env.NODE_ENV !== 'development') {
+					// 	reject(err);
+					// 	return;
+					// }
 					resolve({});
 				}
 
