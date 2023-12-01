@@ -419,3 +419,43 @@ describe('License.setLicense', () => {
 		expect(syncCallback).toHaveBeenCalledTimes(1);
 	});
 });
+
+describe('License.removeLicense', () => {
+	it('should trigger the sync event even if the module callback throws an error', async () => {
+		const licenseManager = await getReadyLicenseManager();
+
+		const removeLicense = jest.fn();
+		const moduleCallback = jest.fn();
+
+		licenseManager.on('removed', removeLicense);
+
+		licenseManager.onModule(moduleCallback);
+
+		const license = await new MockedLicenseBuilder().withGratedModules(['auditing']).withLimits('activeUsers', [
+			{
+				max: 10,
+				behavior: 'disable_modules',
+				modules: ['auditing'],
+			},
+		]);
+
+		await expect(licenseManager.setLicense(await license.sign(), true)).resolves.toBe(true);
+		await expect(removeLicense).toHaveBeenCalledTimes(0);
+		await expect(moduleCallback).toHaveBeenNthCalledWith(1, {
+			module: 'auditing',
+			valid: true,
+		});
+
+		removeLicense.mockClear();
+		moduleCallback.mockClear();
+		await licenseManager.remove();
+
+		await expect(removeLicense).toHaveBeenCalledTimes(1);
+		await expect(moduleCallback).toHaveBeenNthCalledWith(1, {
+			module: 'auditing',
+			valid: false,
+		});
+
+		await expect(licenseManager.hasValidLicense()).toBe(false);
+	});
+});
