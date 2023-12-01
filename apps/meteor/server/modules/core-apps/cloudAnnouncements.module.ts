@@ -1,8 +1,9 @@
 import { Banner } from '@rocket.chat/core-services';
 import type { IUiKitCoreApp, UiKitCoreAppPayload } from '@rocket.chat/core-services';
-import type { Cloud, IBanner, IUser, UiKit } from '@rocket.chat/core-typings';
+import type { Cloud, IBanner, IUser } from '@rocket.chat/core-typings';
 import { Banners } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import type * as UiKit from '@rocket.chat/ui-kit';
 
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { syncWorkspace } from '../../../app/cloud/server/functions/syncWorkspace';
