@@ -1,4 +1,3 @@
-import { AppConsole } from '@rocket.chat/apps-engine/server/logging';
 import type { ILoggerStorageEntry } from '@rocket.chat/apps-engine/server/logging';
 import { AppLogStorage } from '@rocket.chat/apps-engine/server/storage';
 import { InstanceStatus } from '@rocket.chat/instance-status';
@@ -13,12 +12,10 @@ export class AppRealLogStorage extends AppLogStorage {
 		return this.db.find(...args).toArray();
 	}
 
-	async storeEntries(appId: string, logger: AppConsole): Promise<ILoggerStorageEntry> {
-		const item = AppConsole.toStorageEntry(appId, logger);
+	async storeEntries(logEntry: ILoggerStorageEntry): Promise<ILoggerStorageEntry> {
+		logEntry.instanceId = InstanceStatus.id();
 
-		item.instanceId = InstanceStatus.id();
-
-		const id = (await this.db.insertOne(item)).insertedId;
+		const id = (await this.db.insertOne(logEntry)).insertedId;
 
 		return this.db.findOneById(id);
 	}
