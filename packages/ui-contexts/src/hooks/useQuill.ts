@@ -3,6 +3,10 @@ import type Quill from 'quill';
 import type { RefObject } from 'react';
 import { useRef, useState, useEffect } from 'react';
 
+type QuillOptions = {
+	placeholder?: string;
+};
+
 function assign(target: any, _varArgs: any) {
 	if (target === null || target === undefined) {
 		throw new TypeError('Cannot convert undefined or null to object');
@@ -24,16 +28,14 @@ function assign(target: any, _varArgs: any) {
 	return to;
 }
 
-export const useQuill = () => {
+export const useQuill = (options: QuillOptions) => {
 	const quillRef: RefObject<any> = useRef();
 
 	const [isLoaded, setIsLoaded] = useState(false);
-	const [placeholder, setPlaceholder] = useState<string>('');
 	const [obj, setObj] = useState({
 		Quill: undefined as any | undefined,
 		quillRef,
 		quill: undefined as Quill | undefined,
-		setPlaceholder,
 	});
 
 	useEffect(() => {
@@ -43,7 +45,7 @@ export const useQuill = () => {
 		if (obj.Quill && !obj.quill && quillRef && quillRef.current && isLoaded) {
 			const opts = {
 				modules: { toolbar: '#toolbar' },
-				placeholder,
+				placeholder: options.placeholder,
 				formats: ['bold', 'italic', 'underline', 'strike', 'list'],
 				theme: 'snow',
 			};
@@ -52,7 +54,7 @@ export const useQuill = () => {
 			setObj(assign(assign({}, obj), { quill }));
 		}
 		setIsLoaded(true);
-	}, [isLoaded, placeholder, obj]);
+	}, [isLoaded, options, obj]);
 
 	return obj;
 };
