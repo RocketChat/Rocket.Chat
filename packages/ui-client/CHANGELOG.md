@@ -1,5 +1,23 @@
 # @rocket.chat/ui-client
 
+## 3.0.0-rc.17
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.17
+
+## 3.0.0-rc.16
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.16
+
+## 3.0.0-rc.15
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@3.0.0-rc.15
+
 ## 3.0.0-rc.14
 
 ### Patch Changes

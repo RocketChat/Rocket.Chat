@@ -17,7 +17,6 @@ import { behaviorTriggered, behaviorTriggeredToggled, licenseInvalidated, licens
 import { logger } from './logger';
 import { getModules, invalidateAll, replaceModules } from './modules';
 import { applyPendingLicense, clearPendingLicense, hasPendingLicense, isPendingLicense, setPendingLicense } from './pendingLicense';
-import { showLicense } from './showLicense';
 import { replaceTags } from './tags';
 import { decrypt } from './token';
 import { convertToV3 } from './v2/convertToV3';
@@ -44,13 +43,13 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 	private workspaceUrl: string | undefined;
 
-	private _license: ILicenseV3 | undefined;
+	protected _license: ILicenseV3 | undefined;
 
 	private _unmodifiedLicense: ILicenseV2 | ILicenseV3 | undefined;
 
 	private _valid: boolean | undefined;
 
-	private _lockedLicense: string | undefined;
+	protected _lockedLicense: string | undefined;
 
 	private states = new Map<LicenseBehavior, Map<LicenseLimitKind, boolean>>();
 
@@ -60,11 +59,6 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		this.states.set('prevent_action', state);
 
 		return state;
-	}
-
-	constructor() {
-		super();
-		this.on('installed', () => showLicense.call(this, this._license, this._valid));
 	}
 
 	public get license(): ILicenseV3 | undefined {
@@ -146,8 +140,17 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 	private invalidateLicense(): void {
 		this._valid = false;
 		this.states.clear();
-		licenseInvalidated.call(this);
 		invalidateAll.call(this);
+		licenseInvalidated.call(this);
+	}
+
+	public remove(): void {
+		if (!this._license) {
+			return;
+		}
+		this.clearLicenseData();
+		invalidateAll.call(this);
+		this.emit('removed');
 	}
 
 	private async setLicenseV3(

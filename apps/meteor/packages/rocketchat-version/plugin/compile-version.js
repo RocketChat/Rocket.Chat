@@ -11,8 +11,13 @@ class VersionCompiler {
 	async processFilesForTarget(files) {
 		const processVersionFile = async function (file) {
 			const data = await new Promise((resolve, reject) => {
+				const currentVersion =
+					JSON.parse(fs.readFileSync(path.resolve(process.cwd(), './package.json'), { encoding: 'utf8' }))?.version || '';
+
+				const url = `https://releases.rocket.chat/v2/server/supportedVersions?includeDraftType=stable&includeDraftTag=${currentVersion}`;
+
 				https
-					.get('https://releases.rocket.chat/v2/server/supportedVersions', function (response) {
+					.get(url, function (response) {
 						let data = '';
 						response.on('data', function (chunk) {
 							data += chunk;

@@ -1,5 +1,38 @@
 # @rocket.chat/omnichannel-services
 
+## 0.1.0-rc.17
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.17
+- @rocket.chat/rest-typings@6.5.0-rc.17
+- @rocket.chat/pdf-worker@0.0.24-rc.10
+- @rocket.chat/core-services@0.3.0-rc.17
+- @rocket.chat/model-typings@0.2.0-rc.17
+- @rocket.chat/models@0.0.24-rc.10
+
+## 0.1.0-rc.16
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.16
+- @rocket.chat/rest-typings@6.5.0-rc.16
+- @rocket.chat/pdf-worker@0.0.24-rc.9
+- @rocket.chat/core-services@0.3.0-rc.16
+- @rocket.chat/model-typings@0.2.0-rc.16
+- @rocket.chat/models@0.0.24-rc.9
+
+## 0.1.0-rc.15
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.0-rc.15
+- @rocket.chat/rest-typings@6.5.0-rc.15
+- @rocket.chat/pdf-worker@0.0.24-rc.8
+- @rocket.chat/core-services@0.3.0-rc.15
+- @rocket.chat/model-typings@0.2.0-rc.15
+- @rocket.chat/models@0.0.24-rc.8
+
 ## 0.1.0-rc.14
 
 ### Patch Changes

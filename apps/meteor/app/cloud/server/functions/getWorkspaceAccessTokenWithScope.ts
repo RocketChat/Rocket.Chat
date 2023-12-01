@@ -64,13 +64,6 @@ export async function getWorkspaceAccessTokenWithScope(scope = '', throwOnError 
 			expiresAt,
 		};
 	} catch (err: any) {
-		SystemLogger.error({
-			msg: 'Failed to get Workspace AccessToken from Rocket.Chat Cloud',
-			url: '/api/oauth/token',
-			scope,
-			err,
-		});
-
 		if (err instanceof CloudWorkspaceAccessTokenError) {
 			SystemLogger.error('Server has been unregistered from cloud');
 			void removeWorkspaceRegistrationInfo();

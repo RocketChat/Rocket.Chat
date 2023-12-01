@@ -883,6 +883,7 @@
   "Cancel": "Cancel",
   "Cancel_message_input": "Cancel",
   "Canceled": "Canceled",
+  "Cancel_subscription": "Cancel subscription",
   "Canned_Response_Created": "Canned Response created",
   "Canned_Response_Updated": "Canned Response updated",
   "Canned_Response_Delete_Warning": "Deleting a canned response cannot be undone.",
@@ -5958,8 +5959,8 @@
   "onboarding.form.standaloneServerForm.servicesUnavailable": "Some of the services will be unavailable or will require manual setup",
   "onboarding.form.standaloneServerForm.publishOwnApp": "In order to send push notitications you need to compile and publish your own app to Google Play and App Store",
   "onboarding.form.standaloneServerForm.manuallyIntegrate": "Need to manually integrate with external services",
-  "subscription.callout.servicesDisruptionsMayOccur": "Services Disruptions may occur",
-  "subscription.callout.servicesDisruptionsOccurring": "Services Disruptions occurring",
+  "subscription.callout.servicesDisruptionsMayOccur": "Services disruptions may occur",
+  "subscription.callout.servicesDisruptionsOccurring": "Services disruptions occurring",
   "subscription.callout.capabilitiesDisabled": "Capabilities disabled",
   "subscription.callout.description.limitsExceeded_one": "Your workspace exceeded the <1>{{val}}</1> license limit. <3>Manage your subscription</3> to increase limits.",
   "subscription.callout.description.limitsExceeded_other": "Your workspace exceeded the <1>{{val, list}}</1> license limits. <3>Manage your subscription</3> to increase limits.",
@@ -6187,6 +6188,6 @@
   "Unlock_premium_capabilities": "Unlock premium capabilities",
   "Unlimited_seats": "Unlimited seats",
   "Seat_limit_reached": "Seat limit reached",
-  "Seat_limit_reached_Description": "Your workspace has reached its contractual seat limit and soon you won't be able to add more users.",
+  "Seat_limit_reached_Description": "Your workspace reached its contractual seat limit. Buy more seats to add more users.",
   "Buy_more_seats": "Buy more seats"
 }
