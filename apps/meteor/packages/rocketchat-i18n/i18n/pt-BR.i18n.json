@@ -880,7 +880,6 @@
   "Close": "Fechar",
   "Close_chat": "Fechar conversa",
   "Close_room_description": "Você está prestes a fechar esta conversa. Você tem certeza de que deseja continuar?",
-  "Close_to_seat_limit_banner_warning": "*Você tem [{{seats}}] lugares vagos*  \nEste espaço de trabalho está próximo do seu limite de lugares. Assim que o limite for atingido, não poderão ser adicionados novos membros. *[Solicitar mais lugares]({{url}})*",
   "Close_to_seat_limit_warning": "Novos membros não podem ser criados, pois o limite de lugares foi atingido.",
   "close-livechat-room": "Fechar sala omnichannel",
   "close-livechat-room_description": "Permissão para fechar a sala Omnichannel atual",
@@ -1690,7 +1689,7 @@
   "error-avatar-invalid-url": "URL inválido de avatar: {{url}}",
   "error-avatar-url-handling": "Erro durante o manuseio configuração avatar a partir de uma URL ({{url}}) para {{username}}",
   "error-business-hours-are-closed": "Horário de expediente fechado",
-  "error-blocked-username": "<strong>{{field}}</strong> está bloqueado e não pode ser usado!",
+  "error-blocked-username": "**{{field}}** está bloqueado e não pode ser usado!",
   "error-canned-response-not-found": "Resposta modelo não encontrada",
   "error-cannot-delete-app-user": "Excluir um usuário de aplicativo não é permitido, desinstale o app correspondente para removê-lo.",
   "error-cant-invite-for-direct-room": "Não é possível convidar usuários para salas diretas",
@@ -3474,7 +3473,6 @@
   "Random": "Aleatória",
   "Rate_Limiter_Limit_RegisterUser": "Número padrão de chamadas para o limitador de taxa para os endpoints de registro de usuário",
   "Rate_Limiter_Limit_RegisterUser_Description": "Número de chamadas padrão para as endpoints de registro de usuário (API REST e real-time), permitido dentro do intervalo de tempo na seção Limitação de Taxa de API.",
-  "Reached_seat_limit_banner_warning": "*Não há mais lugares disponíveis*  \nEste espaço de trabalho atingiu o seu limite de lugares, portanto nenhum membro poderá entrar. *[Solicitar mais lugares]({{url}})*",
   "React_when_read_only": "Permitir reação",
   "React_when_read_only_changed_successfully": "Permitir reação quando somente leitura foi alterada com sucesso",
   "Reacted_with": "Reagiu com",
@@ -4984,7 +4982,6 @@
   "RegisterWorkspace_Features_Omnichannel_Title": "Omnichannel",
   "RegisterWorkspace_Setup_Label": "E-mail da conta da nuvem",
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "Eu concordo com os <1>Termos e condições</1> e a <3>Política de privacidade</3>",
-  "Enterprise": "Enterprise",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics",
   "UpgradeToGetMore_auditing_Title": "Auditoria de mensagem"
 }

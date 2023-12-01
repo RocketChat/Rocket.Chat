@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/livechat",
-	"version": "1.14.9-rc.0",
+	"version": "1.14.9",
 	"files": [
 		"/build"
 	],
@@ -30,8 +30,8 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage-tokens": "^0.32.0",
-		"@rocket.chat/logo": "^0.31.28",
+		"@rocket.chat/fuselage-tokens": "~0.32.0",
+		"@rocket.chat/logo": "~0.31.28",
 		"@storybook/addon-essentials": "~6.5.16",
 		"@storybook/addon-postcss": "~2.0.0",
 		"@storybook/preact": "~6.5.16",
@@ -94,10 +94,10 @@
 	},
 	"dependencies": {
 		"@rocket.chat/gazzodown": "workspace:^",
-		"@rocket.chat/message-parser": "next",
+		"@rocket.chat/message-parser": "~0.31.27",
 		"@rocket.chat/random": "workspace:~",
 		"@rocket.chat/sdk": "^1.0.0-alpha.42",
-		"@rocket.chat/ui-kit": "^0.32.1",
+		"@rocket.chat/ui-kit": "~0.32.1",
 		"css-vars-ponyfill": "^2.4.8",
 		"date-fns": "^2.15.0",
 		"emoji-mart": "^3.0.1",

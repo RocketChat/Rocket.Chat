@@ -951,7 +951,6 @@
   "Close": "Schließen",
   "Close_chat": "Chat schließen",
   "Close_room_description": "Sie sind im Begriff, diesen Chat zu schließen. Sind Sie sicher, dass Sie fortfahren möchten?",
-  "Close_to_seat_limit_banner_warning": "*Es sind noch [{{seats}}] Plätze übrig*  \nDieser Arbeitsbereich nähert sich seinem Platzlimit. Wenn das Limit erreicht ist, können keine neuen Mitglieder mehr hinzugefügt werden. *[Weitere Plätze anfordern]({{url}})*",
   "Close_to_seat_limit_warning": "Wenn das Platzlimit erreicht ist, können keine weiteren neuen Mitglieder erstellt werden.",
   "close-livechat-room": "Livechat-Room schließen",
   "close-livechat-room_description": "Berechtigung, den aktuellen Livechat-Raum zu schließen",
@@ -1851,7 +1850,7 @@
   "error-avatar-invalid-url": "Ungültige Avatar-URL: {{url}}",
   "error-avatar-url-handling": "Fehler beim Übernehmen des Avatars- von URL  ({{url}}) für {{username}}",
   "error-business-hours-are-closed": "Geschäftszeiten sind geschlossen",
-  "error-blocked-username": "<strong>{{field}}</strong> ist blockiert und kann nicht verwendet werden!",
+  "error-blocked-username": "**{{field}}** ist blockiert und kann nicht verwendet werden!",
   "error-canned-response-not-found": "Vorformulierte Antwort nicht gefunden",
   "error-cannot-delete-app-user": "Das Löschen von App-Benutzern ist nicht erlaubt, deinstallieren Sie die entsprechende App, um sie zu entfernen.",
   "error-cant-add-federated-users": "Es können keine Verbund-Benutzer zu einem Nicht-Verbundraum hinzugefügt werden",
@@ -3841,7 +3840,6 @@
   "Rate Limiter_Description": "Kontrollieren Sie die Rate der von Ihrem Server gesendeten oder empfangenen Anfragen, um Cyberangriffe und Scraping zu verhindern.",
   "Rate_Limiter_Limit_RegisterUser": "Rate-Limit für die Registrierung eines Benutzers",
   "Rate_Limiter_Limit_RegisterUser_Description": "Anzahl der erlaubten Standardaufrufe der Benutzerregistrierungs Endpunkte (REST and real-time API's), innherhalb der, im API Rate Limiter Absschnitt definierten, Zeitspanne.",
-  "Reached_seat_limit_banner_warning": "*Keine Plätze mehr vrefügbar*  \nDieser Arbeitsbereich hat sein Platzlimit erreicht, es können also keine Mitglieder mehr beitreten. *[Mehr Plätze anfordern]({{url}})*",
   "React_when_read_only": "Reaktionen erlauben",
   "React_when_read_only_changed_successfully": "Reaktionen erlauben, wenn ein Kanal schreibgeschützt wurde",
   "Reacted_with": "Reagierten mit",
@@ -5522,7 +5520,6 @@
   "RegisterWorkspace_Connection_Error": "Beim Verbinden ist ein Fehler aufgetreten",
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "Ich bin mit den Nutzungsvereinbarung und den Datenschutzbestimmungen einverstanden",
   "Uninstall_grandfathered_app": "{{appName}} deinstallieren?",
-  "Enterprise": "Unternehmen",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics",
   "UpgradeToGetMore_auditing_Title": "Nachrichtenüberprüfung"
 }

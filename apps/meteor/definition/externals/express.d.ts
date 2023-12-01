@@ -6,5 +6,6 @@ declare module 'express' {
 	interface Request {
 		userId?: string;
 		user?: IUser;
+		unauthorized?: boolean;
 	}
 }
