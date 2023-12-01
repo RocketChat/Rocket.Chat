@@ -84,7 +84,6 @@ jobs:
     name: 🚀 Notify external services - draft
     runs-on: ubuntu-20.04
     needs: [release-versions]
-    if: github.event_name == 'release'
     steps:
       - uses: Bhacaz/checkout-files@v2
         with:
@@ -92,6 +91,7 @@ jobs:
           branch: ${{ github.ref }}
 
       - name: Register release on cloud as Draft
+        if: github.event_name == 'release'
         env:
           UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
         run: |
