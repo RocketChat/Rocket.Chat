@@ -18,6 +18,15 @@ class VersionCompiler {
 
 				const url = `https://releases.rocket.chat/v2/server/supportedVersions?includeDraftType=${type}&includeDraftTag=${currentVersion}`;
 
+				function handleError(err) {
+					console.error(err);
+					if (process.env.NODE_ENV !== 'development') {
+						reject(err);
+						return;
+					}
+					resolve({});
+				}
+
 				https
 					.get(url, function (response) {
 						let data = '';
@@ -25,15 +34,14 @@ class VersionCompiler {
 							data += chunk;
 						});
 						response.on('end', function () {
-							resolve(JSON.parse(data));
+							const supportedVersions = JSON.parse(data);
+							if (!supportedVersions?.signed) {
+								return handleError(new Error(`Invalid supportedVersions result:\n  URL: ${url} \n  RESULT: ${data}`));
+							}
+							resolve(supportedVersions);
 						});
 						response.on('error', function (err) {
-							console.error(err);
-							if (process.env.NODE_ENV !== 'development') {
-								reject(err);
-								return;
-							}
-							resolve({});
+							handleError(err);
 						});
 					})
 					.end();
