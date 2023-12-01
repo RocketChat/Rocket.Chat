@@ -29,8 +29,7 @@ const MessageComposerInput = forwardRef(function MessageComposerInput(
 				rows={1}
 				fontScale='p2'
 				ref={ref}
-				pi={12}
-				mb={16}
+				mb={5}
 				borderWidth={0}
 			/>
 		</Box>
