@@ -92,6 +92,8 @@ jobs:
           branch: ${{ github.ref }}
 
       - name: Register release on cloud as Draft
+        env:
+          UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
         run: |
           REPO_VERSION=$(node -p "require('./package.json').version")
 
