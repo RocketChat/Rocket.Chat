@@ -755,8 +755,6 @@
   "Cloud_register_offline_finish_helper": "Cloud Console에서 등록 프로세스를 완료하면 몇 가지 텍스트가 표시됩니다. 등록을 마치려면 여기에 붙여 넣으십시오.",
   "Cloud_register_offline_helper": "에어 갭 또는 네트워크 액세스가 제한되는 경우 Workspace를 수동으로 등록 할 수 있습니다. 아래 텍스트를 복사하고 Cloud Console로 이동하여 프로세스를 완료하십시오.",
   "Cloud_register_success": "Workspace가 성공적으로 등록되었습니다!",
-  "Cloud_registration_pending_html": "<span> 등록이 완료 될 때까지 모바일 알림이 작동하지 않습니다. <a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/registration\"> 자세히 알아보기 </a> </span>",
-  "Cloud_registration_pending_title": "현재 클라우드 등록 처리가 지연 중입니다.",
   "Cloud_registration_required": "등록이 필요합니다.",
   "Cloud_registration_required_description": "설치 중에는 Workspace가 등록되지 않은 것처럼 보입니다.",
   "Cloud_registration_required_link_text": " Workspace를 등록하려면 여기를 클릭하십시오.",
@@ -1324,7 +1322,7 @@
   "E2E_Encryption_Password_Explanation": "이제 암호화된 비공개 그룹 및 1:1 대화방을 만들 수 있습니다. 기존 비공개 그룹이나 1:1 대화방을 암호화하도록 변경할 수도 있습니다. <br/><br/>메시지 암호화/복호화 키가 서버에 저장되지 않는 종단간 암호화입니다. 그러므로 안전한 곳에 비밀번호를 저장해야 합니다. E2E 암호화를 사용하려는 다른 장치에 이 비밀번호를 입력해야 합니다.",
   "E2E_key_reset_email": "E2E 키 재설정 알림",
   "E2E_password_request_text": "암호화된 비공개그룹 및 1:1 대화방에 액세스하려면 암호화 비밀번호를 입력하십시오. <br/>키가 서버에 저장되어 있지 않으므로 사용하는 모든 클라이언트에서 메시지를 암호화/복호화하려면 이 비밀번호를 입력해야합니다.",
-  "E2E_password_reveal_text": "이제 암호화된 비공개 그룹 및 1:1 대화방을 만들 수 있습니다. 기존 비공개 그룹이나 1:1  대화방을 암호화하도록 변경할 수도 있습니다. <br/><br/>메시지 암호화/복호화 키가 서버에 저장되지 않는 종단간 암호화입니다. 그러므로 안전한 곳에 비밀번호를 저장해야 합니다. E2E 암호화를 사용하려는 다른 장치에 이 비밀번호를 입력해야 합니다. <a href=\"https://rocket.chat/docs/user-guides/end-to-end-encryption/\" target=\"_blank\">더 배워보세요!</a><br/><br/>비밀번호는 <span style=\"font-weight: bold;\">%s</span>입니다. <br/><br/>자동으로 만들어진 비밀번호입니다. 기존 비밀번호를 입력한 모든 브라우저에서 언제든 새 비밀번호를 설정할 수 있습니다. <br/>이 비밀번호는 이 메시지를 닫을 때까지 오직 현재 브라우저에만 저장됩니다.",
+  "E2E_password_reveal_text": "이제 암호화된 비공개 그룹 및 1:1 대화방을 만들 수 있습니다. 기존 비공개 그룹이나 1:1  대화방을 암호화하도록 변경할 수도 있습니다. <br/><br/>메시지 암호화/복호화 키가 서버에 저장되지 않는 종단간 암호화입니다. 그러므로 안전한 곳에 비밀번호를 저장해야 합니다. E2E 암호화를 사용하려는 다른 장치에 이 비밀번호를 입력해야 합니다. <a href=\"https://rocket.chat/docs/user-guides/end-to-end-encryption/\" target=\"_blank\">더 배워보세요!</a><br/><br/>비밀번호는 <span style=\"font-weight: bold;\">{{randomPassword}}</span>입니다. <br/><br/>자동으로 만들어진 비밀번호입니다. 기존 비밀번호를 입력한 모든 브라우저에서 언제든 새 비밀번호를 설정할 수 있습니다. <br/>이 비밀번호는 이 메시지를 닫을 때까지 오직 현재 브라우저에만 저장됩니다.",
   "E2E_Reset_Email_Content": "자동으로 로그 아웃되었습니다. 다시 로그인하면 Rocket.Chat은 새 키를 생성하고 온라인 회원이 한 명 이상인 암호화 된 방에 대한 액세스를 복원합니다. E2E 암호화의 특성으로 인해 Rocket.Chat은 온라인에 회원이없는 암호화 된 방에 대한 액세스를 복원 할 수 없습니다.",
   "E2E_Reset_Key_Explanation": "이 옵션은 현재 E2E 키를 제거하고 로그 아웃합니다. <BR/> 다시 로그인하면 Rocket.Chat에서 새 키를 생성하고 온라인으로 하나 이상의 구성원이있는 암호화 된 방에 대한 액세스 권한을 복원합니다. <BR/> E2E 암호화의 특성상 Rocket.Chat은 온라인으로 회원이없는 암호화 된 방에 대한 액세스를 복원 할 수 있습니다.",
   "E2E_Reset_Other_Key_Warning": "현재 E2E 키를 재설정하면 사용자가 로그 아웃됩니다. 사용자가 다시 로그인하면 Rocket.Chat은 새 키를 생성하고 한 명 이상의 온라인 회원이있는 암호화 된 방에 대한 사용자 액세스를 복원합니다. E2E 암호화의 특성으로 인해 Rocket.Chat은 온라인에 회원이없는 암호화 된 방에 대한 액세스를 복원 할 수 없습니다.",
@@ -4028,6 +4026,7 @@
   "registration.component.form.sendConfirmationEmail": "확인 메일 보내기",
   "onboarding.component.form.action.pasteHere": "여기에 붙여 넣기 ...",
   "onboarding.form.registerOfflineForm.title": "오프라인 등록",
+  "Enterprise": "기업",
   "UpgradeToGetMore_engagement-dashboard_Title": "분석(에널리틱스)",
   "UpgradeToGetMore_auditing_Title": "메시지 감사"
 }

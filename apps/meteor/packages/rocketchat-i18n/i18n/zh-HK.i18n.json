@@ -2772,5 +2772,6 @@
   "registration.component.form.invalidConfirmPass": "第二次密码输入与第一次不匹配",
   "registration.component.form.confirmPassword": "确认密码",
   "registration.component.form.sendConfirmationEmail": "已发送确认电子邮件",
+  "Enterprise": "企业",
   "UpgradeToGetMore_engagement-dashboard_Title": "分析"
 }

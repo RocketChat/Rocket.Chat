@@ -1,4 +1,4 @@
-import { Box, Pagination } from '@rocket.chat/fuselage';
+import { Box, IconButton, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashQueryKey } from '@tanstack/react-query';
@@ -19,7 +19,7 @@ import { useSort } from '../../../../client/components/GenericTable/hooks/useSor
 import UserAvatar from '../../../../client/components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../../client/hooks/useFormatDateAndTime';
 import CannedResponseFilter from './CannedResponseFilter';
-import RemoveCannedResponseButton from './RemoveCannedResponseButton';
+import { useRemoveCannedResponse } from './useRemoveCannedResponse';
 
 type Scope = 'global' | 'department' | 'user';
 
@@ -56,7 +56,7 @@ const CannedResponsesTable = () => {
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
 
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
-	const { data, isLoading, isSuccess, refetch } = useQuery(['/v1/canned-responses', query], () => getCannedResponses(query), {
+	const { data, isLoading, isSuccess } = useQuery(['getCannedResponses', query], () => getCannedResponses(query), {
 		refetchOnWindowFocus: false,
 	});
 
@@ -72,6 +72,8 @@ const CannedResponsesTable = () => {
 
 		router.navigate(`/omnichannel/canned-responses/edit/${id}`);
 	});
+
+	const handleDelete = useRemoveCannedResponse();
 
 	const defaultOptions = useMemo(
 		() => ({
@@ -166,7 +168,19 @@ const CannedResponsesTable = () => {
 									</GenericTableCell>
 									<GenericTableCell withTruncatedText>{getTime(_createdAt)}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{tags.join(', ')}</GenericTableCell>
-									{!(scope === 'global' && isMonitor && !isManager) && <RemoveCannedResponseButton _id={_id} reload={refetch} />}
+									{!(scope === 'global' && isMonitor && !isManager) && (
+										<GenericTableCell withTruncatedText>
+											<IconButton
+												icon='trash'
+												small
+												title={t('Remove')}
+												onClick={(e) => {
+													e.stopPropagation();
+													handleDelete(_id);
+												}}
+											/>
+										</GenericTableCell>
+									)}
 								</GenericTableRow>
 							))}
 						</GenericTableBody>

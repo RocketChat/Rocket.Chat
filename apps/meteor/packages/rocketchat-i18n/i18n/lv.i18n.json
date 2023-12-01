@@ -2753,5 +2753,6 @@
   "registration.component.form.invalidConfirmPass": "Paroles apstiprinājums neatbilst parolei",
   "registration.component.form.confirmPassword": "Apstipriniet savu paroli",
   "registration.component.form.sendConfirmationEmail": "Nosūtīt apstiprinājuma e-pastu",
+  "Enterprise": "Uzņēmums",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analītika"
 }

@@ -61,6 +61,8 @@ const CannedResponseList: FC<{
 		debounceDelay: 200,
 	});
 
+	const cannedItem = cannedItems.find((canned) => canned._id === cannedId);
+
 	return (
 		<>
 			<ContextualbarHeader>
@@ -112,11 +114,11 @@ const CannedResponseList: FC<{
 				)}
 			</ContextualbarContent>
 
-			{cannedId && (
+			{cannedItem && (
 				<ContextualbarInnerContent>
 					<WrapCannedResponse
 						allowUse={!isRoomOverMacLimit}
-						cannedItem={cannedItems.find((canned) => canned._id === (cannedId as unknown))}
+						cannedItem={cannedItem}
 						onClickBack={onClickItem}
 						onClickUse={onClickUse}
 						reload={reload}
