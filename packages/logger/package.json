@@ -22,7 +22,7 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@rocket.chat/emitter": "next",
+		"@rocket.chat/emitter": "~0.31.25",
 		"pino": "^8.15.0"
 	}
 }

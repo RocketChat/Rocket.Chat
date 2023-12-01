@@ -1,9 +1,10 @@
-import { Button, ButtonGroup, Throbber } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import type { ButtonProps } from '@rocket.chat/fuselage/dist/components/Button/Button';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import { useCheckoutUrlAction } from '../hooks/useCheckoutUrl';
+import { useExternalLink } from '../../../../hooks/useExternalLink';
+import { useCheckoutUrl } from '../hooks/useCheckoutUrl';
 
 const UpgradeButton = ({
 	children,
@@ -14,25 +15,13 @@ const UpgradeButton = ({
 	target: string;
 	action: string;
 }): ReactElement => {
-	const mutation = useCheckoutUrlAction();
-
-	const handleBtnClick = () => {
-		if (mutation.isLoading) {
-			return;
-		}
-
-		mutation.mutate({
-			target,
-			action,
-		});
-	};
+	const handleOpenLink = useExternalLink();
+	const url = useCheckoutUrl()({ target, action });
 
 	return (
-		<ButtonGroup align='end'>
-			<Button onClick={() => handleBtnClick()} {...props} disabled={mutation.isLoading}>
-				{mutation.isLoading ? <Throbber inheritColor size='x12' /> : children}
-			</Button>
-		</ButtonGroup>
+		<Button icon='new-window' onClick={() => handleOpenLink(url)} {...props}>
+			{children}
+		</Button>
 	);
 };
 

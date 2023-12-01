@@ -1,4 +1,4 @@
-import { Banner, Icon, Pagination } from '@rocket.chat/fuselage';
+import { Callout, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
@@ -306,15 +306,14 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 						/>
 					)}
 					{isWorkspaceOverMacLimit && (
-						<Banner
-							variant='danger'
-							actionable
-							icon={<Icon name='warning' size='x24' />}
+						<Callout
+							type='danger'
+							icon='warning'
 							title={t('The_workspace_has_exceeded_the_monthly_limit_of_active_contacts')}
 							style={{ marginBlock: '2rem' }}
 						>
 							{t('Talk_to_your_workspace_admin_to_address_this_issue')}
-						</Banner>
+						</Callout>
 					)}
 					{isSuccess && data?.rooms.length === 0 && queryHasChanged && <GenericNoResults />}
 					{isSuccess && data?.rooms.length === 0 && !queryHasChanged && (
