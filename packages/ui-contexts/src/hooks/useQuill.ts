@@ -28,10 +28,12 @@ export const useQuill = () => {
 	const quillRef: RefObject<any> = useRef();
 
 	const [isLoaded, setIsLoaded] = useState(false);
+	const [placeholder, setPlaceholder] = useState<string>('');
 	const [obj, setObj] = useState({
 		Quill: undefined as any | undefined,
 		quillRef,
 		quill: undefined as Quill | undefined,
+		setPlaceholder,
 	});
 
 	useEffect(() => {
@@ -41,6 +43,7 @@ export const useQuill = () => {
 		if (obj.Quill && !obj.quill && quillRef && quillRef.current && isLoaded) {
 			const opts = {
 				modules: { toolbar: '#toolbar' },
+				placeholder,
 				formats: ['bold', 'italic', 'underline', 'strike', 'list'],
 				theme: 'snow',
 			};
@@ -49,7 +52,7 @@ export const useQuill = () => {
 			setObj(assign(assign({}, obj), { quill }));
 		}
 		setIsLoaded(true);
-	}, [isLoaded, obj]);
+	}, [isLoaded, placeholder, obj]);
 
 	return obj;
 };

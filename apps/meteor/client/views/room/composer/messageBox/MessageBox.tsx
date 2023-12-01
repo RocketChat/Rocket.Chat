@@ -120,6 +120,8 @@ const MessageBox = ({
 
 	const { quillRef, quill } = useQuill();
 
+	// setPlaceholder(composerPlaceholder);
+
 	quill?.on('text-change', () => {
 		setTyping(quill.root.innerText.length !== 0 && quill.root.innerText !== '\n');
 	});
