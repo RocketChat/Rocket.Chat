@@ -2255,7 +2255,7 @@
   "Field_required": "Field required",
   "File": "File",
   "File_Downloads_Started": "File Downloads Started",
-  "File_exceeds_allowed_size_of_bytes": "File exceeds allowed size of {{size}}.",
+  "File_exceeds_allowed_size_of_bytes": "File size exceeds upload limit of {{size}}.",
   "File_name_Placeholder": "Search files...",
   "File_not_allowed_direct_messages": "File sharing not allowed in direct messages.",
   "File_Path": "File Path",
