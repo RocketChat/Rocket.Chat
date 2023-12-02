@@ -4,6 +4,7 @@ const elementTagMaps = {
 	s: '~',
 	li: '- ',
 	pre: '```',
+	code: '`',
 	p: '\n',
 	br: '',
 	span: '',

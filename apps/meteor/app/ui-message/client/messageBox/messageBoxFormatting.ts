@@ -45,6 +45,7 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
 		label: 'Inline_code',
 		icon: 'code',
+		buttonName: 'ql-code',
 		pattern: '`{{text}}`',
 	},
 	{
