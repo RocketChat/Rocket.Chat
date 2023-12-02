@@ -24,25 +24,22 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, ...pr
 		return (
 			<Box id='toolbar' style={{ display: 'flex', flexDirection: 'row', border: 0, padding: 0 }}>
 				{'icon' in featuredFormatter && (
-					<MessageComposerAction
-						{...props}
-						className={`ql-${featuredFormatter.icon}`}
-						// onClick={() => composer.wrapSelectionV2(featuredFormatter.pattern)}
-						icon={featuredFormatter.icon}
-					/>
+					<MessageComposerAction {...props} className={featuredFormatter.buttonName} icon={featuredFormatter.icon} />
 				)}
 				<FormattingToolbarDropdown {...props} composer={composer} items={collapsedItems} />
 			</Box>
 		);
 	}
 
+	console.log(items);
+
 	return (
 		<Box id='toolbar' style={{ display: 'flex', flexDirection: 'row', border: 0, padding: 0 }}>
-			{items.slice(0, 3).map((formatter) =>
+			{items.slice(0, 5).map((formatter) =>
 				'icon' in formatter ? (
 					<MessageComposerAction
 						{...props}
-						className={`ql-${formatter.icon}`}
+						className={formatter.buttonName}
 						icon={formatter.icon}
 						key={formatter.label}
 						data-id={formatter.label}
@@ -51,7 +48,6 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, ...pr
 							if ('link' in formatter) {
 								window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
 							}
-							// composer.wrapSelectionV2(formatter.pattern);
 						}}
 					/>
 				) : (

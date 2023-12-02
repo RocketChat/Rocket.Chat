@@ -42,7 +42,7 @@ import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
-import 'quill/dist/quill.snow.css';
+import './MessageEditor.css';
 
 const handleFormattingShortcut = (
 	event: KeyboardEvent<HTMLTextAreaElement>,

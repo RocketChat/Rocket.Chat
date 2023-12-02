@@ -3,6 +3,7 @@ const elementTagMaps = {
 	em: '_',
 	s: '~',
 	li: '- ',
+	pre: '```',
 	p: '\n',
 	br: '',
 	span: '',
@@ -24,6 +25,13 @@ const makeListMarkDown = (element: HTMLElement) => {
 	return text;
 };
 
+const makeCodeBlockMarkDown = (element: HTMLElement) => {
+	let text = `${elementTagMaps.pre}\n`;
+	text += parseMarkdown(element as HTMLElement);
+	text += elementTagMaps.pre;
+	return text;
+};
+
 const parseMarkdown = (element: HTMLElement) => {
 	let text = '';
 	for (const child of element.childNodes) {
@@ -32,6 +40,9 @@ const parseMarkdown = (element: HTMLElement) => {
 		} else if (child.nodeType === Node.ELEMENT_NODE) {
 			if (child.nodeName.toLowerCase() === 'ul' || child.nodeName.toLowerCase() === 'ol') {
 				text += makeListMarkDown(child as HTMLElement);
+				continue;
+			} else if (child.nodeName.toLowerCase() === 'pre') {
+				text += makeCodeBlockMarkDown(child as HTMLElement);
 				continue;
 			}
 			const mdSymbol = elementTagMaps[child.nodeName.toLowerCase() as keyof typeof elementTagMaps] || '';

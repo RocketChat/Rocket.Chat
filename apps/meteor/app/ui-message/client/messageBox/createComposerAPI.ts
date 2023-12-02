@@ -264,10 +264,8 @@ export const createComposerAPI = (input: any, storageID: string): ComposerAPI =>
 		focus();
 	};
 
-	const wrapSelectionV2 = (_?: string): void => {
-		// console.log(input.innerHTML);
+	const wrapSelectionV2 = (): void => {
 		setText(buildMarkdown(input));
-		// console.log(pattern);
 	};
 
 	const insertNewLine = (): void => insertText('\n');

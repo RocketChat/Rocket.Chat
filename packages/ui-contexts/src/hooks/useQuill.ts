@@ -46,7 +46,7 @@ export const useQuill = (options: QuillOptions) => {
 			const opts = {
 				modules: { toolbar: '#toolbar' },
 				placeholder: options.placeholder,
-				formats: ['bold', 'italic', 'underline', 'strike', 'list'],
+				formats: ['bold', 'italic', 'underline', 'strike', 'list', 'code-block'],
 				theme: 'snow',
 			};
 			const quill = new obj.Quill(quillRef.current, opts);
