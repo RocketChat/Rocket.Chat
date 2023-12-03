@@ -31,8 +31,6 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, ...pr
 		);
 	}
 
-	console.log(items);
-
 	return (
 		<Box id='toolbar' style={{ display: 'flex', flexDirection: 'row', border: 0, padding: 0 }}>
 			{items.slice(0, 5).map((formatter) =>

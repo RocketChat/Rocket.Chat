@@ -39,16 +39,13 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
+import { customIcons } from './MessageBoxFormattingToolbar/MessageBoxFormattingIcons';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import './MessageEditor.css';
 
-const handleFormattingShortcut = (
-	event: KeyboardEvent<HTMLTextAreaElement>,
-	formattingButtons: FormattingButton[],
-	// composer: ComposerAPI,
-) => {
+const handleFormattingShortcut = (event: KeyboardEvent<HTMLTextAreaElement>, formattingButtons: FormattingButton[]) => {
 	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
 	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
 
@@ -120,6 +117,7 @@ const MessageBox = ({
 
 	const { quillRef, quill } = useQuill({
 		placeholder: composerPlaceholder,
+		customIcons,
 	});
 
 	quill?.on('text-change', () => {

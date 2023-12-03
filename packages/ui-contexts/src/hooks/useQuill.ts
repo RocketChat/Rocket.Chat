@@ -5,6 +5,7 @@ import { useRef, useState, useEffect } from 'react';
 
 type QuillOptions = {
 	placeholder?: string;
+	customIcons?: { [key: string]: string };
 };
 
 function assign(target: any, _varArgs: any) {
@@ -28,6 +29,15 @@ function assign(target: any, _varArgs: any) {
 	return to;
 }
 
+const setIcons = (obj: any, options: QuillOptions) => {
+	const icons = obj.Quill.import('ui/icons');
+	const customIcons = options.customIcons || {};
+
+	Object.keys(customIcons).forEach((key) => {
+		icons[key] = customIcons[key];
+	});
+};
+
 export const useQuill = (options: QuillOptions) => {
 	const quillRef: RefObject<any> = useRef();
 
@@ -43,6 +53,7 @@ export const useQuill = (options: QuillOptions) => {
 			setObj((prev) => assign(prev, { Quill: require('quill') }));
 		}
 		if (obj.Quill && !obj.quill && quillRef && quillRef.current && isLoaded) {
+			setIcons(obj, options);
 			const opts = {
 				modules: { toolbar: '#toolbar' },
 				placeholder: options.placeholder,
